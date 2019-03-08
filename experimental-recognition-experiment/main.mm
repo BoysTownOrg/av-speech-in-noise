@@ -1,0 +1,446 @@
+#include <presentation/Presenter.h>
+#include <recognition-test/Model.hpp>
+#include <stimulus-list/RandomizedStimulusList.hpp>
+#include <stimulus-list/FileFilterDecorator.hpp>
+#import <AVFoundation/AVFoundation.h>
+#import <Cocoa/Cocoa.h>
+
+static AVURLAsset *makeAvAsset(std::string filePath) {
+    const auto url = [NSURL URLWithString:
+        [NSString stringWithFormat:@"file://%@/",
+            [
+                [NSString stringWithCString:
+                    filePath.c_str()
+                    encoding:[NSString defaultCStringEncoding]
+                ]
+                stringByAddingPercentEncodingWithAllowedCharacters:
+                    [NSCharacterSet URLQueryAllowedCharacterSet]
+            ]
+        ]
+    ];
+    return [AVURLAsset URLAssetWithURL:url options:nil];
+}
+
+class AvFoundationStimulusPlayer;
+
+@interface StimulusPlayerActions : NSObject
+@property AvFoundationStimulusPlayer *controller;
+- (void) playbackComplete;
+@end
+
+class AvFoundationStimulusPlayer : public recognition_test::StimulusPlayer {
+    EventListener *listener{};
+    StimulusPlayerActions *actions{[StimulusPlayerActions alloc]};
+    NSWindow *videoWindow{};
+    AVPlayer *player{[AVPlayer playerWithPlayerItem:nil]};
+    AVPlayerLayer *playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]};
+public:
+    AvFoundationStimulusPlayer() {
+        actions.controller = this;
+    }
+    
+    void setWindow(NSWindow *window) {
+        videoWindow = window;
+        [videoWindow.contentView setWantsLayer:YES];
+        [videoWindow.contentView.layer addSublayer:playerLayer];
+    }
+    
+    void subscribe(EventListener *listener_) override {
+        listener = listener_;
+    }
+    
+    void playbackComplete() {
+        listener->playbackComplete();
+    }
+    
+    void play() override {
+        [player play];
+    }
+    
+    void loadFile(std::string filePath) override {
+        const auto asset = makeAvAsset(filePath);
+        [player replaceCurrentItemWithPlayerItem:
+            [AVPlayerItem playerItemWithAsset:asset]];
+        [videoWindow setContentSize:NSSizeFromCGSize(
+            [asset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize)];
+        [playerLayer setFrame:videoWindow.contentView.bounds];
+        [NSNotificationCenter.defaultCenter addObserver:
+            actions
+            selector:@selector(playbackComplete)
+            name:AVPlayerItemDidPlayToEndTimeNotification
+            object:player.currentItem
+        ];
+    }
+};
+
+@implementation StimulusPlayerActions
+@synthesize controller;
+- (void)playbackComplete {
+    controller->playbackComplete();
+}
+@end
+
+class CocoaView;
+
+@interface ViewActions : NSObject
+@property CocoaView *controller;
+- (void) newTest;
+- (void) openTest;
+- (void) confirmTestSetup;
+- (void) playTrial;
+@end
+
+class CocoaView : public presentation::View {
+    class CocoaTestSetupView : public TestSetupView {
+        EventListener *listener{};
+        NSView *view{
+            [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
+        };
+        NSTextField *signalLevel_dB_SPL_label{allocLabel(
+            @"signal level (dB SPL):",
+            NSMakeRect(10, 430, 140, 25))
+        };
+        NSTextField *signalLevel_dB_SPL_{
+            [[NSTextField alloc]
+                initWithFrame:NSMakeRect(155, 430, 150, 25)]
+        };
+        NSTextField *maskerLevel_dB_SPL_label{allocLabel(
+            @"masker level (dB SPL):",
+            NSMakeRect(10, 400, 140, 25))
+        };
+        NSTextField *maskerLevel_dB_SPL_{
+            [[NSTextField alloc]
+                initWithFrame:NSMakeRect(155, 400, 150, 25)]
+        };
+        NSTextField *stimulusListDirectoryLabel{allocLabel(
+            @"stimulus directory:",
+            NSMakeRect(10, 370, 140, 25))
+        };
+        NSTextField *stimulusListDirectory_{
+            [[NSTextField alloc]
+                initWithFrame:NSMakeRect(155, 370, 300, 25)]
+        };
+        NSTextField *maskerFilePath_label{allocLabel(
+            @"masker file path:",
+            NSMakeRect(10, 340, 140, 25))
+        };
+        NSTextField *maskerFilePath_{
+            [[NSTextField alloc]
+                initWithFrame:NSMakeRect(155, 340, 300, 25)]
+        };
+    public:
+        CocoaTestSetupView(NSWindow *window, ViewActions *actions) {
+            [view setHidden:YES];
+            [view addSubview:signalLevel_dB_SPL_label];
+            [view addSubview:signalLevel_dB_SPL_];
+            [view addSubview:maskerLevel_dB_SPL_label];
+            [view addSubview:maskerLevel_dB_SPL_];
+            [view addSubview:stimulusListDirectoryLabel];
+            [view addSubview:stimulusListDirectory_];
+            [view addSubview:maskerFilePath_label];
+            [view addSubview:maskerFilePath_];
+            const auto confirmButton = [NSButton buttonWithTitle:
+                @"Confirm"
+                target:actions
+                action:@selector(confirmTestSetup)
+            ];
+            confirmButton.target = actions;
+            [view addSubview:confirmButton];
+            [window.contentView addSubview:view];
+            stimulusListDirectory_.stringValue =
+                @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
+            maskerFilePath_.stringValue =
+                @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
+        }
+        
+        void subscribe(EventListener *listener_) override {
+            listener = listener_;
+        }
+        
+        void show() override {
+            [view setHidden:NO];
+        }
+        
+        void hide() override {
+            [view setHidden:YES];
+        }
+        
+        std::string maskerLevel_dB_SPL() override {
+            return [maskerLevel_dB_SPL_.stringValue UTF8String];
+        }
+        
+        std::string signalLevel_dB_SPL() override {
+            return [signalLevel_dB_SPL_.stringValue UTF8String];
+        }
+        
+        std::string maskerFilePath() override {
+            return [maskerFilePath_.stringValue UTF8String];
+        }
+        
+        std::string stimulusListDirectory() override {
+            return [stimulusListDirectory_.stringValue UTF8String];
+        }
+        
+        std::string testerId() override {
+            return "";
+        }
+        
+        std::string subjectId() override {
+            return "";
+        }
+        
+        std::string condition() override {
+            return "";
+        }
+        
+    private:
+        NSTextField *allocLabel(NSString *label, NSRect frame) {
+            const auto text = [[NSTextField alloc] initWithFrame:frame];
+            [text setStringValue:label];
+            [text setBezeled:NO];
+            [text setDrawsBackground:NO];
+            [text setEditable:NO];
+            [text setSelectable:NO];
+            return text;
+        }
+    };
+    
+    class CocoaTesterView : public TesterView {
+        EventListener *listener{};
+        NSView *view{
+            [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
+        };
+    public:
+        CocoaTesterView(NSWindow *window, ViewActions *actions) {
+            [view setHidden:YES];
+            const auto playTrialButton = [NSButton buttonWithTitle:
+                @"Play Next Trial"
+                target:actions
+                action:@selector(playTrial)
+            ];
+            playTrialButton.target = actions;
+            [view addSubview:playTrialButton];
+            [window.contentView addSubview:view];
+        }
+        
+        void subscribe(EventListener *listener_) override {
+            listener = listener_;
+        }
+        
+        void show() override {
+            [view setHidden:NO];
+        }
+        
+        void hide() override {
+            [view setHidden:YES];
+        }
+    };
+    
+    class CocoaSubjectView : public recognition_test::SubjectView {
+        AvFoundationStimulusPlayer player{};
+        // Defer may be critical here...
+        NSWindow *videoWindow{
+            [[NSWindow alloc]
+                initWithContentRect: NSMakeRect(400, 400, 0, 0)
+                styleMask:NSWindowStyleMaskBorderless
+                backing:NSBackingStoreBuffered
+                defer:YES
+            ]
+        };
+    public:
+        CocoaSubjectView() {
+            player.setWindow(videoWindow);
+            [videoWindow makeKeyAndOrderFront:nil];
+        }
+        
+        recognition_test::StimulusPlayer *stimulusPlayer() override {
+            return &player;
+        }
+    };
+    
+    NSApplication *app{[NSApplication sharedApplication]};
+    NSWindow *window{
+        [[NSWindow alloc] initWithContentRect:
+            NSMakeRect(300, 500, 900, 800)
+            styleMask:
+                NSWindowStyleMaskClosable |
+                NSWindowStyleMaskResizable |
+                NSWindowStyleMaskTitled
+            backing:NSBackingStoreBuffered
+            defer:NO
+        ]
+    };
+    ViewActions *actions{[ViewActions alloc]};
+    CocoaTestSetupView testSetupView_{window, actions};
+    CocoaTesterView testerView_{window, actions};
+    CocoaSubjectView subjectView_{};
+    EventListener *listener{};
+public:
+    CocoaView() {
+        app.mainMenu = [[NSMenu alloc] init];
+        auto appMenu = [[NSMenuItem alloc] init];
+        [app.mainMenu addItem:appMenu];
+        auto fileMenu = [[NSMenuItem alloc] init];
+        [app.mainMenu addItem:fileMenu];
+        auto appSubMenu = [[NSMenu alloc] init];
+        [appSubMenu addItemWithTitle:
+            @"Quit"
+            action:@selector(terminate:)
+            keyEquivalent:@"q"
+        ];
+        [appMenu setSubmenu:appSubMenu];
+        auto fileSubMenu = [[NSMenu alloc] initWithTitle:@"File"];
+        auto newTestItem = [[NSMenuItem alloc] initWithTitle:
+            @"New Test..."
+            action:@selector(newTest)
+            keyEquivalent:@"n"
+        ];
+        newTestItem.target = actions;
+        [fileSubMenu addItem:newTestItem];
+        auto openTestItem = [[NSMenuItem alloc] initWithTitle:
+            @"Open Test..."
+            action:@selector(openTest)
+            keyEquivalent:@"o"
+        ];
+        openTestItem.target = actions;
+        [fileSubMenu addItem:openTestItem];
+        [fileMenu setSubmenu:fileSubMenu];
+        actions.controller = this;
+        [window makeKeyAndOrderFront:nil];
+    }
+    
+    void newTest() {
+        listener->newTest();
+    }
+    
+    void openTest() {
+        listener->openTest();
+    }
+    
+    void confirmTestSetup() {
+        listener->confirmTestSetup();
+    }
+    
+    void playTrial() {
+        listener->playTrial();
+    }
+    
+    void subscribe(EventListener *listener_) override {
+        listener = listener_;
+    }
+    
+    void eventLoop() override {
+        [app run];
+    }
+    
+    TestSetupView *setupView() override {
+        return &testSetupView_;
+    }
+    
+    TesterView *testerView() override {
+        return &testerView_;
+    }
+    
+    recognition_test::SubjectView *subjectView() override {
+        return &subjectView_;
+    }
+    
+    DialogResponse showConfirmationDialog() override {
+        const auto alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Are you sure?"];
+        [alert setInformativeText:@"huehuehue"];
+        [alert addButtonWithTitle:@"Cancel"];
+        [alert addButtonWithTitle:@"No"];
+        [alert addButtonWithTitle:@"Yes"];
+        switch([alert runModal]) {
+            case NSAlertSecondButtonReturn:
+                return DialogResponse::decline;
+            case NSAlertThirdButtonReturn:
+                return DialogResponse::accept;
+            default:
+                return DialogResponse::cancel;
+        }
+    }
+};
+
+@implementation ViewActions
+@synthesize controller;
+- (void)newTest {
+    controller->newTest();
+}
+
+- (void)openTest {
+    controller->openTest();
+}
+
+- (void)confirmTestSetup {
+    controller->confirmTestSetup();
+}
+
+- (void)playTrial {
+    controller->playTrial();
+}
+@end
+
+class CoreAudioMaskerPlayer : public recognition_test::MaskerPlayer {
+    AVPlayer *player{[AVPlayer playerWithPlayerItem:nil]};
+    EventListener *listener{};
+public:
+    void subscribe(EventListener *listener_) override {
+        listener = listener_;
+    }
+    
+    void fadeIn() override {
+        [player play];
+        listener->fadeInComplete();
+    }
+    
+    void fadeOut() override {
+        [player pause];
+    }
+    
+    void loadFile(std::string filePath) override {
+        const auto asset = makeAvAsset(filePath);
+        [player replaceCurrentItemWithPlayerItem:
+            [AVPlayerItem playerItemWithAsset:asset]];
+    }
+};
+
+class MacOsDirectoryReader : public stimulus_list::DirectoryReader {
+    std::vector<std::string> filesIn(std::string directory) override {
+        std::vector<std::string> files{};
+        const auto path = [NSString stringWithCString:
+            directory.c_str()
+            encoding:[NSString defaultCStringEncoding]
+        ];
+        const auto contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:
+            path
+            error: nil
+        ];
+        for (id thing in contents)
+            files.push_back([thing UTF8String]);
+        return files;
+    }
+};
+
+#include <random>
+
+class MersenneTwisterRandomizer : public stimulus_list::Randomizer {
+    std::mt19937 engine{std::random_device{}()};
+public:
+    void shuffle(shuffle_iterator begin, shuffle_iterator end) override {
+        std::shuffle(begin, end, engine);
+    }
+};
+
+int main() {
+    CoreAudioMaskerPlayer maskerPlayer;
+    MacOsDirectoryReader reader;
+    stimulus_list::FileFilterDecorator filter{&reader, ".mov"};
+    MersenneTwisterRandomizer randomizer;
+    stimulus_list::RandomizedStimulusList list{&filter, &randomizer};
+    recognition_test::Model model{&maskerPlayer, &list};
+    CocoaView view;
+    presentation::Presenter presenter{&model, &view};
+    presenter.run();
+}
