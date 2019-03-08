@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:experimental-recognition-experiment.xcodeproj">
+      location = "group:../main">
+   </FileRef>
+   <FileRef
+      location = "self:">
    </FileRef>
 </Workspace>
