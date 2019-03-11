@@ -403,6 +403,12 @@ protected:
         setupView.confirm();
         ASSERT_FALSE(setupView.hidden());
     }
+    
+    void assertConfirmTestSetupDoesNotShowTesterView() {
+        presentation::Presenter presenter{model, &view};
+        setupView.confirm();
+        ASSERT_FALSE(testerView.shown());
+    }
 };
 
 TEST_F(
@@ -422,4 +428,13 @@ TEST_F(
     RequestFailingModel failure{};
     model = &failure;
     assertConfirmTestSetupDoesNotHideSetupView();
+}
+
+TEST_F(
+    PresenterFailureTests,
+    initializeTestDoesNotShowTesterViewWhenModelFailsRequest
+) {
+    RequestFailingModel failure{};
+    model = &failure;
+    assertConfirmTestSetupDoesNotShowTesterView();
 }

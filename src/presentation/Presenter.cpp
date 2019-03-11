@@ -31,10 +31,10 @@ namespace presentation {
     }
     
     void Presenter::initializeTest(Model::TestParameters p) {
-        tester.run();
         try {
             model->initializeTest(std::move(p));
             testSetup.close();
+            tester.run();
         } catch (const Model::RequestFailure &e) {
             view->showErrorMessage(e.what());
         }
