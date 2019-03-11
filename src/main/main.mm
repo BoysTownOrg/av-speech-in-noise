@@ -4,6 +4,71 @@
 #include <stimulus-list/FileFilterDecorator.hpp>
 #import <AVFoundation/AVFoundation.h>
 #import <Cocoa/Cocoa.h>
+#include <gsl/gsl>
+
+class CoreAudioDevice {
+    std::vector<AudioObjectID> devices{};
+public:
+    CoreAudioDevice() {
+        AudioObjectPropertyAddress address = {
+            kAudioHardwarePropertyDevices,
+            kAudioObjectPropertyScopeGlobal,
+            kAudioObjectPropertyElementMaster
+        };
+        UInt32 dataSize{};
+        if (kAudioHardwareNoError !=
+            AudioObjectGetPropertyDataSize(
+                kAudioObjectSystemObject,
+                &address,
+                0,
+                nullptr,
+                &dataSize
+            )
+        )
+            throw std::runtime_error{"Bad news bears"};
+        const auto _deviceCount = dataSize / sizeof(AudioDeviceID);
+        devices.resize(_deviceCount);
+        if (kAudioHardwareNoError !=
+            AudioObjectGetPropertyData(
+                kAudioObjectSystemObject,
+                &address,
+                0,
+                nullptr,
+                &dataSize,
+                &devices[0]
+            )
+        )
+            throw std::runtime_error{"Bad news bears"};
+    }
+
+    int deviceCount() {
+        return gsl::narrow<int>(devices.size());
+    }
+
+    std::string description(int device) {
+        AudioObjectPropertyAddress address = {
+            kAudioObjectPropertyName,
+            kAudioObjectPropertyScopeGlobal,
+            kAudioObjectPropertyElementMaster
+        };
+        CFStringRef deviceName{};
+        UInt32 dataSize = sizeof(CFStringRef);
+        if (kAudioHardwareNoError !=
+            AudioObjectGetPropertyData(
+                devices.at(gsl::narrow<decltype(devices)::size_type>(device)),
+                &address,
+                0,
+                nullptr,
+                &dataSize,
+                &deviceName
+            )
+        )
+            throw std::runtime_error{"Bad news bears"};
+        char buffer[128];
+        CFStringGetCString(deviceName, buffer, sizeof(buffer), kCFStringEncodingUTF8);
+        return buffer;
+    }
+};
 
 static AVURLAsset *makeAvAsset(std::string filePath) {
     const auto url = [NSURL URLWithString:
@@ -413,6 +478,7 @@ public:
 };
 
 class CoreAudioMaskerPlayer : public recognition_test::MaskerPlayer {
+    CoreAudioDevice device{};
     AVPlayer *player{[AVPlayer playerWithPlayerItem:nil]};
     EventListener *listener{};
 public:
@@ -436,11 +502,11 @@ public:
     }
     
     int deviceCount() override {
-        return -1;
+        return device.deviceCount();
     }
     
     std::string deviceDescription(int index) override {
-        return "a";
+        return device.description(index);
     }
     
     void setDevice(int index) override {
