@@ -66,7 +66,7 @@ namespace recognition_test {
         );
         void initializeTest(TestParameters) override;
         bool testComplete() override;
-        void playTrial() override;
+        void playTrial(const TrialParameters &) override;
         void fadeInComplete() override;
         void playbackComplete() override;
     };

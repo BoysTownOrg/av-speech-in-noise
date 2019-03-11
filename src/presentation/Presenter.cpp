@@ -44,8 +44,8 @@ namespace presentation {
         tester.run();
     }
     
-    void Presenter::playTrial() { 
-        model->playTrial();
+    void Presenter::playTrial() {
+        tester.submitRequest(model);
     }
 
     Presenter::TestSetup::TestSetup(View::TestSetup *view) :
@@ -120,5 +120,11 @@ namespace presentation {
 
     void Presenter::Tester::close() {
         view->hide();
+    }
+    
+    void Presenter::Tester::submitRequest(Model *model) {
+        Model::TrialParameters p;
+        p.audioDevice = view->audioDevice();
+        model->playTrial(p);
     }
 }

@@ -14,7 +14,7 @@ namespace recognition_test {
         view->stimulusPlayer()->subscribe(this);
     }
     
-    void Model::playTrial() {
+    void Model::playTrial(const TrialParameters &) {
         if (list->empty())
             return;
         view->stimulusPlayer()->loadFile(list->next());

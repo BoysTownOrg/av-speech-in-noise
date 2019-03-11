@@ -137,7 +137,7 @@ TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
 }
 
 TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
-    model.playTrial();
+    model.playTrial({});
     EXPECT_TRUE(maskerPlayer.fadeInCalled());
 }
 
@@ -178,7 +178,7 @@ TEST_F(
     playTrialPassesNextStimulusToStimulusPlayer
 ) {
     list.setNext("a");
-    model.playTrial();
+    model.playTrial({});
     assertEqual("a", stimulusPlayer.filePath());
 }
 
@@ -195,6 +195,6 @@ TEST_F(
     playTrialDoesNotPlayIfListEmpty
 ) {
     list.setEmpty();
-    model.playTrial();
+    model.playTrial({});
     EXPECT_FALSE(maskerPlayer.fadeInCalled());
 }

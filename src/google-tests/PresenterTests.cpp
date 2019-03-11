@@ -5,9 +5,14 @@
 namespace {
     class ModelStub : public presentation::Model {
         TestParameters testParameters_{};
+        TrialParameters trialParameters_{};
         bool testComplete_{};
         bool trialPlayed_{};
     public:
+        auto &trialParameters() const {
+            return trialParameters_;
+        }
+        
         void setTestIncomplete() {
             testComplete_ = false;
         }
@@ -16,7 +21,8 @@ namespace {
             return testComplete_;
         }
         
-        void playTrial() override {
+        void playTrial(const TrialParameters &p) override {
+            trialParameters_ = p;
             trialPlayed_ = true;
         }
         
@@ -200,10 +206,15 @@ namespace {
         };
         
         class TesterViewStub : public Tester {
+            std::string audioDevice_{};
             EventListener *listener_{};
             bool shown_{};
             bool hidden_{};
         public:
+            std::string audioDevice() override {
+                return audioDevice_;
+            }
+            
             auto shown() const {
                 return shown_;
             }
@@ -226,6 +237,10 @@ namespace {
             
             auto hidden() const {
                 return hidden_;
+            }
+            
+            void setAudioDevice(std::string s) {
+                audioDevice_ = std::move(s);
             }
         };
     };
@@ -382,6 +397,12 @@ namespace {
         EXPECT_TRUE(model.trialPlayed());
     }
 
+    TEST_F(PresenterTests, playingTrialPassesAudioDevice) {
+        testerView.setAudioDevice("a");
+        testerView.playTrial();
+        assertEqual("a", model.trialParameters().audioDevice);
+    }
+
     TEST_F(PresenterTests, closingTestPromptsTesterToSave) {
         view.close();
         EXPECT_TRUE(view.confirmationDialogShown());
@@ -416,7 +437,7 @@ namespace {
             throw RequestFailure{errorMessage};
         }
         
-        void playTrial() override {
+        void playTrial(const TrialParameters &) override {
             throw RequestFailure{errorMessage};
         }
         

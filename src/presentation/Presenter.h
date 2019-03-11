@@ -32,7 +32,11 @@ namespace presentation {
         virtual void initializeTest(TestParameters) = 0;
         RUNTIME_ERROR(RequestFailure)
         virtual bool testComplete() = 0;
-        virtual void playTrial() = 0;
+        
+        struct TrialParameters {
+            std::string audioDevice;
+        };
+        virtual void playTrial(const TrialParameters &) = 0;
     };
 
     class View {
@@ -59,6 +63,7 @@ namespace presentation {
             virtual void subscribe(EventListener *) = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
+            virtual std::string audioDevice() = 0;
         };
 
         class TestSetup {
@@ -118,6 +123,7 @@ namespace presentation {
             explicit Tester(View::Tester *);
             void setParent(Presenter *);
             void run();
+            void submitRequest(Model *);
             void close();
             void playTrial() override;
         private:
