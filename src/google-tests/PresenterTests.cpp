@@ -246,6 +246,14 @@ namespace {
             setupView.setMaskerLevel("?");
             confirmTestSetup();
         }
+        
+        void assertTesterViewShown() {
+            EXPECT_TRUE(testerView.shown());
+        }
+        
+        void assertTesterViewHidden() {
+            EXPECT_TRUE(testerView.hidden());
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -319,12 +327,12 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupShowsTesterView) {
         confirmTestSetup();
-        EXPECT_TRUE(testerView.shown());
+        assertTesterViewShown();
     }
 
     TEST_F(PresenterTests, openTestShowsTesterView) {
         view.openTest();
-        EXPECT_TRUE(testerView.shown());
+        assertTesterViewShown();
     }
 
     TEST_F(PresenterTests, playingTrialDoesNotHideViewWhileTestInProgress) {
@@ -346,13 +354,13 @@ namespace {
     TEST_F(PresenterTests, closingTestHidesTesterViewIfUserDeclinesSaving) {
         view.setDialogResponse(presentation::View::DialogResponse::decline);
         view.close();
-        EXPECT_TRUE(testerView.hidden());
+        assertTesterViewHidden();
     }
 
     TEST_F(PresenterTests, closingTestHidesTesterViewIfUserAcceptsSaving) {
         view.setDialogResponse(presentation::View::DialogResponse::accept);
         view.close();
-        EXPECT_TRUE(testerView.hidden());
+        assertTesterViewHidden();
     }
 
     TEST_F(PresenterTests, closingTestDoesNotHideTesterViewIfUserCancels) {
