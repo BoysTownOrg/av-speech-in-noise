@@ -10,6 +10,24 @@ class CoreAudioDevice {
     std::vector<AudioObjectID> devices{};
 public:
     CoreAudioDevice() {
+        auto count = deviceCount_();
+        devices.resize(count);
+        UInt32 dataSize = count * sizeof(AudioDeviceID);
+        auto address = propertyAddress(kAudioHardwarePropertyDevices);
+        if (kAudioHardwareNoError !=
+            AudioObjectGetPropertyData(
+                kAudioObjectSystemObject,
+                &address,
+                0,
+                nullptr,
+                &dataSize,
+                &devices[0]
+            )
+        )
+            throw std::runtime_error{"Cannot determine audio device IDs."};
+    }
+    
+    UInt32 deviceCount_() {
         auto address = propertyAddress(kAudioHardwarePropertyDevices);
         UInt32 dataSize{};
         if (kAudioHardwareNoError !=
@@ -21,20 +39,8 @@ public:
                 &dataSize
             )
         )
-            throw std::runtime_error{"Bad news bears"};
-        const auto _deviceCount = dataSize / sizeof(AudioDeviceID);
-        devices.resize(_deviceCount);
-        if (kAudioHardwareNoError !=
-            AudioObjectGetPropertyData(
-                kAudioObjectSystemObject,
-                &address,
-                0,
-                nullptr,
-                &dataSize,
-                &devices[0]
-            )
-        )
-            throw std::runtime_error{"Bad news bears"};
+            throw std::runtime_error{"Cannot determine number of audio devices."};
+        return dataSize / sizeof(AudioDeviceID);
     }
     
     AudioObjectPropertyAddress propertyAddress(AudioObjectPropertySelector s) {
@@ -67,7 +73,7 @@ public:
                 &deviceName
             )
         )
-            throw std::runtime_error{"Bad news bears"};
+            throw std::runtime_error{"Cannot do something..."};
         char buffer[128];
         CFStringGetCString(deviceName, buffer, sizeof(buffer), kCFStringEncodingUTF8);
         return buffer;
