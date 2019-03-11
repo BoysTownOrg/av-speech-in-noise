@@ -53,24 +53,24 @@ namespace presentation {
     {
         view->subscribe(this);
     }
-
-    void Presenter::TestSetup::confirmTestSetup() {
-        parent->initializeTest();
-    }
     
     void Presenter::TestSetup::setParent(presentation::Presenter *p) {
         parent = p;
     }
     
-    void Presenter::TestSetup::run() { 
+    void Presenter::TestSetup::run() {
         view->show();
     }
-    
-    void Presenter::TestSetup::close() { 
-        view->hide();
+
+    void Presenter::TestSetup::confirmTestSetup() {
+        parent->initializeTest();
     }
     
     void Presenter::TestSetup::submitRequest(Model *model) {
+        model->initializeTest(testParameters());
+    }
+    
+    Model::TestParameters Presenter::TestSetup::testParameters() {
         Model::TestParameters p;
         p.maskerLevel_dB_SPL =
             readInteger(view->maskerLevel_dB_SPL(), "masker level");
@@ -84,7 +84,7 @@ namespace presentation {
             view->condition() == "Auditory-only"
             ? Model::TestParameters::Condition::auditoryOnly
             : Model::TestParameters::Condition::audioVisual;
-        model->initializeTest(std::move(p));
+        return p;
     }
     
     int Presenter::TestSetup::readInteger(std::string x, std::string identifier) {
@@ -94,6 +94,10 @@ namespace presentation {
         catch (const std::invalid_argument &) {
             throw BadInput{"'" + x + "' is not a valid " + identifier + "."};
         }
+    }
+    
+    void Presenter::TestSetup::close() {
+        view->hide();
     }
     
     Presenter::Tester::Tester(View::Tester *view) :

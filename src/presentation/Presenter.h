@@ -99,7 +99,7 @@ namespace presentation {
     public:
         class TestSetup : public View::TestSetup::EventListener {
         public:
-            TestSetup(View::TestSetup *);
+            explicit TestSetup(View::TestSetup *);
             void setParent(Presenter *);
             void run();
             void submitRequest(Model *);
@@ -107,6 +107,7 @@ namespace presentation {
             void confirmTestSetup() override;
         private:
             int readInteger(std::string x, std::string identifier);
+            Model::TestParameters testParameters();
             
             Presenter *parent;
             View::TestSetup *view;
@@ -114,7 +115,7 @@ namespace presentation {
         
         class Tester : public View::Tester::EventListener {
         public:
-            Tester(View::Tester *);
+            explicit Tester(View::Tester *);
             void setParent(Presenter *);
             void run();
             void close();
