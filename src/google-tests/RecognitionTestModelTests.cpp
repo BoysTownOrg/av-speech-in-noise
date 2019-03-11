@@ -1,13 +1,24 @@
 #include "assert-utility.h"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
+#include <gsl/gsl>
 
 class MaskerPlayerStub : public recognition_test::MaskerPlayer {
+    std::vector<std::string> audioDeviceDescriptions_{};
     std::string filePath_{};
+    int deviceIndex_{};
     EventListener *listener_{};
     bool fadeInCalled_{};
     bool fadeOutCalled_{};
 public:
+    void setAudioDeviceDescriptions(std::vector<std::string> v) {
+        audioDeviceDescriptions_ = std::move(v);
+    }
+    
+    auto deviceIndex() {
+        return deviceIndex_;
+    }
+    
     bool fadeInCalled() const {
         return fadeInCalled_;
     }
@@ -31,6 +42,18 @@ public:
         filePath_ = filePath;
     }
     
+    int deviceCount() override {
+        return gsl::narrow<int>(audioDeviceDescriptions_.size());
+    }
+    
+    std::string deviceDescription(int index) override {
+        return audioDeviceDescriptions_.at(index);
+    }
+    
+    void setDevice(int index) override {
+        deviceIndex_ = index;
+    }
+    
     const EventListener *listener() const {
         return listener_;
     }
@@ -46,9 +69,14 @@ public:
 
 class StimulusPlayerStub : public recognition_test::StimulusPlayer {
     std::string filePath_{};
+    int deviceIndex_{};
     EventListener *listener_{};
     bool played_{};
 public:
+    auto deviceIndex() {
+        return deviceIndex_;
+    }
+    
     bool played() const {
         return played_;
     }
@@ -63,6 +91,10 @@ public:
     
     void loadFile(std::string filePath) override {
         filePath_ = filePath;
+    }
+    
+    void setDevice(int index) override {
+        deviceIndex_ = index;
     }
     
     void playbackComplete() {
@@ -140,6 +172,14 @@ protected:
 TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
     EXPECT_EQ(&model, stimulusPlayer.listener());
     EXPECT_EQ(&model, maskerPlayer.listener());
+}
+
+TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceIndexToPlayers) {
+    maskerPlayer.setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
+    trialParameters.audioDevice = "second";
+    playTrial();
+    EXPECT_EQ(2, maskerPlayer.deviceIndex());
+    EXPECT_EQ(2, stimulusPlayer.deviceIndex());
 }
 
 TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
