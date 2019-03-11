@@ -241,6 +241,22 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
         [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
     };
     SetupViewActions *actions{[SetupViewActions alloc]};
+    NSTextField *subjectIdLabel{allocLabel(
+        @"subject id:",
+        NSMakeRect(10, 490, 140, 25))
+    };
+    NSTextField *subjectId_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 490, 150, 25)]
+    };
+    NSTextField *testerIdLabel{allocLabel(
+        @"tester id:",
+        NSMakeRect(10, 460, 140, 25))
+    };
+    NSTextField *testerId_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 460, 150, 25)]
+    };
     NSTextField *signalLevel_dB_SPL_label{allocLabel(
         @"signal level (dB SPL):",
         NSMakeRect(10, 430, 140, 25))
@@ -276,6 +292,10 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
 public:
     CocoaTestSetupView(NSWindow *window) {
         [view setHidden:YES];
+        [view addSubview:subjectIdLabel];
+        [view addSubview:subjectId_];
+        [view addSubview:testerIdLabel];
+        [view addSubview:testerId_];
         [view addSubview:signalLevel_dB_SPL_label];
         [view addSubview:signalLevel_dB_SPL_];
         [view addSubview:maskerLevel_dB_SPL_label];
@@ -331,11 +351,11 @@ public:
     }
     
     std::string testerId() override {
-        return "";
+        return [testerId_.stringValue UTF8String];
     }
     
     std::string subjectId() override {
-        return "";
+        return [subjectId_.stringValue UTF8String];
     }
     
     std::string condition() override {
