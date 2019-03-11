@@ -4,7 +4,6 @@
 
 class ModelStub : public presentation::Model {
     TestParameters testParameters_{};
-    recognition_test::SubjectView *subjectView_{};
     bool testComplete_{};
     bool trialPlayed_{};
 public:
@@ -35,10 +34,6 @@ public:
     const TestParameters &testParameters() const {
         return testParameters_;
     }
-    
-    const recognition_test::SubjectView *subjectView() const {
-        return subjectView_;
-    }
 };
 
 class ViewStub : public presentation::View {
@@ -46,18 +41,15 @@ class ViewStub : public presentation::View {
     EventListener *listener_{};
     TestSetupView *setupView_;
     TesterView *testerView_;
-    recognition_test::SubjectView *subjectView_;
     bool eventLoopCalled_{};
     bool confirmationDialogShown_{};
 public:
     ViewStub(
         TestSetupView *setupView,
-        TesterView *testerView,
-        recognition_test::SubjectView *subjectView
+        TesterView *testerView
     ) :
         setupView_{setupView},
-        testerView_{testerView},
-        subjectView_{subjectView} {}
+        testerView_{testerView} {}
     
     const EventListener *listener() const {
         return listener_;
@@ -82,10 +74,6 @@ public:
     DialogResponse showConfirmationDialog() override {
         confirmationDialogShown_ = true;
         return dialogResponse_;
-    }
-    
-    recognition_test::SubjectView *subjectView() override {
-        return subjectView_;
     }
     
     bool eventLoopCalled() const {
@@ -253,12 +241,11 @@ protected:
     ModelStub model{};
     ViewStub::TestSetupViewStub setupView{};
     ViewStub::TesterViewStub testerView{};
-    recognition_test::SubjectView *subjectView{};
     ViewStub view;
     presentation::Presenter presenter;
     
     PresenterTests() :
-        view{&setupView, &testerView, subjectView},
+        view{&setupView, &testerView},
         presenter{&model, &view} {}
     
     void confirmTestSetupWithInvalidInput() {

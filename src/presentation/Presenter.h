@@ -3,10 +3,6 @@
 
 #include <string>
 
-namespace recognition_test {
-    class SubjectView;
-}
-
 namespace presentation {
     class Model {
     public:
@@ -70,7 +66,6 @@ namespace presentation {
         virtual void eventLoop() = 0;
         virtual TestSetupView *setupView() = 0;
         virtual TesterView *testerView() = 0;
-        virtual recognition_test::SubjectView *subjectView() = 0;
         enum class DialogResponse {
             decline,
             accept,
