@@ -1,4 +1,5 @@
 #include "Model.hpp"
+#include <gsl/gsl>
 
 namespace recognition_test {
     Model::Model(
@@ -18,12 +19,16 @@ namespace recognition_test {
         if (list->empty())
             return;
         
-        for (int i = 0; i < maskerPlayer->deviceCount(); ++i)
-            if (trial.audioDevice == maskerPlayer->deviceDescription(i)) {
-                maskerPlayer->setDevice(i);
-                stimulusPlayer->setDevice(i);
-                break;
-            }
+        auto devices_ = audioDevices();
+        auto deviceIndex = gsl::narrow<int>(
+            std::find(
+                devices_.begin(),
+                devices_.end(),
+                trial.audioDevice
+            ) - devices_.begin()
+        );
+        maskerPlayer->setDevice(deviceIndex);
+        stimulusPlayer->setDevice(deviceIndex);
         stimulusPlayer->loadFile(list->next());
         maskerPlayer->fadeIn();
     }
