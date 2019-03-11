@@ -1,3 +1,4 @@
+#include "assert-utility.h"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
 
@@ -120,6 +121,7 @@ public:
 class RecognitionTestModelTests : public ::testing::Test {
 protected:
     recognition_test::Model::TestParameters testParameters;
+    recognition_test::Model::TrialParameters trialParameters;
     StimulusPlayerStub stimulusPlayer{};
     SubjectViewStub view{&stimulusPlayer};
     MaskerPlayerStub maskerPlayer{};
@@ -129,6 +131,10 @@ protected:
     void initializeTest() {
         model.initializeTest(testParameters);
     }
+    
+    void playTrial() {
+        model.playTrial(trialParameters);
+    }
 };
 
 TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -137,7 +143,7 @@ TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
 }
 
 TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
-    model.playTrial({});
+    playTrial();
     EXPECT_TRUE(maskerPlayer.fadeInCalled());
 }
 
@@ -149,10 +155,6 @@ TEST_F(RecognitionTestModelTests, fadeInCompletePlaysStimulus) {
 TEST_F(RecognitionTestModelTests, stimulusPlaybackCompleteFadesOutMasker) {
     stimulusPlayer.playbackComplete();
     EXPECT_TRUE(maskerPlayer.fadeOutCalled());
-}
-
-static void assertEqual(std::string expected, std::string actual) {
-    EXPECT_EQ(expected, actual);
 }
 
 TEST_F(
@@ -178,7 +180,7 @@ TEST_F(
     playTrialPassesNextStimulusToStimulusPlayer
 ) {
     list.setNext("a");
-    model.playTrial({});
+    playTrial();
     assertEqual("a", stimulusPlayer.filePath());
 }
 
@@ -195,6 +197,6 @@ TEST_F(
     playTrialDoesNotPlayIfListEmpty
 ) {
     list.setEmpty();
-    model.playTrial({});
+    playTrial();
     EXPECT_FALSE(maskerPlayer.fadeInCalled());
 }
