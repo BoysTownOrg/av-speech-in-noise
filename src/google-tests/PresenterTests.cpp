@@ -250,12 +250,8 @@ protected:
     ModelStub model{};
     ViewStub::TestSetupViewStub setupView{};
     ViewStub::TesterViewStub testerView{};
-    ViewStub view;
-    presentation::Presenter presenter;
-    
-    PresenterTests() :
-        view{&setupView, &testerView},
-        presenter{&model, &view} {}
+    ViewStub view{&setupView, &testerView};
+    presentation::Presenter presenter{&model, &view};
     
     void confirmTestSetupWithInvalidInput() {
         setupView.setMaskerLevel("?");
@@ -401,6 +397,12 @@ protected:
         setupView.confirm();
         assertEqual(std::move(s), view.errorMessage());
     }
+    
+    void assertConfirmTestSetupDoesNotHideSetupView() {
+        presentation::Presenter presenter{model, &view};
+        setupView.confirm();
+        ASSERT_FALSE(setupView.hidden());
+    }
 };
 
 TEST_F(
@@ -411,4 +413,13 @@ TEST_F(
     failure.setErrorMessage("a");
     model = &failure;
     assertConfirmTestSetupShowsErrorMessage("a");
+}
+
+TEST_F(
+    PresenterFailureTests,
+    initializeTestDoesNotHideSetupViewWhenModelFailsRequest
+) {
+    RequestFailingModel failure{};
+    model = &failure;
+    assertConfirmTestSetupDoesNotHideSetupView();
 }
