@@ -258,6 +258,14 @@ namespace {
         void assertTesterViewNotHidden() {
             EXPECT_FALSE(testerView.hidden());
         }
+        
+        void assertSetupViewShown() {
+            EXPECT_TRUE(setupView.shown());
+        }
+        
+        void assertSetupViewHidden() {
+            EXPECT_TRUE(setupView.hidden());
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -271,12 +279,12 @@ namespace {
 
     TEST_F(PresenterTests, newTestShowsTestSetupView) {
         view.newTest();
-        EXPECT_TRUE(setupView.shown());
+        assertSetupViewShown();
     }
 
     TEST_F(PresenterTests, confirmTestSetupHidesTestSetupView) {
         confirmTestSetup();
-        EXPECT_TRUE(setupView.hidden());
+        assertSetupViewHidden();
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
