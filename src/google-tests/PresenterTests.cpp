@@ -1,3 +1,4 @@
+#include "assert-utility.h"
 #include <presentation/Presenter.h>
 #include <gtest/gtest.h>
 
@@ -287,10 +288,6 @@ TEST_F(PresenterTests, newTestShowsTestSetupView) {
 TEST_F(PresenterTests, confirmTestSetupHidesTestSetupView) {
     setupView.confirm();
     EXPECT_TRUE(setupView.hidden());
-}
-
-static void assertEqual(std::string expected, std::string actual) {
-    EXPECT_EQ(expected, actual);
 }
 
 TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
