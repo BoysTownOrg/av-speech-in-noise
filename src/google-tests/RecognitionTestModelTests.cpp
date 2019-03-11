@@ -119,17 +119,20 @@ public:
 
 class RecognitionTestModelTests : public ::testing::Test {
 protected:
+    recognition_test::Model::TestParameters testParameters;
     StimulusPlayerStub stimulusPlayer{};
-    SubjectViewStub view;
+    SubjectViewStub view{&stimulusPlayer};
     MaskerPlayerStub maskerPlayer{};
     StimulusListStub list{};
-    recognition_test::Model model;
+    recognition_test::Model model{&maskerPlayer, &list};
     
-    RecognitionTestModelTests() :
-        view{&stimulusPlayer},
-        model{&maskerPlayer, &list}
+    RecognitionTestModelTests()
     {
         model.setSubjectView(&view);
+    }
+    
+    void initializeTest() {
+        model.initializeTest(testParameters);
     }
 };
 
@@ -161,9 +164,8 @@ TEST_F(
     RecognitionTestModelTests,
     initializeTestPassesMaskerFilePathToMaskerPlayer
 ) {
-    recognition_test::Model::TestParameters parameters;
-    parameters.maskerFilePath = "a";
-    model.initializeTest(parameters);
+    testParameters.maskerFilePath = "a";
+    initializeTest();
     assertEqual("a", maskerPlayer.filePath());
 }
 
@@ -171,9 +173,8 @@ TEST_F(
     RecognitionTestModelTests,
     initializeTestPassesStimulusListDirectoryToStimulusList
 ) {
-    recognition_test::Model::TestParameters parameters;
-    parameters.stimulusListDirectory = "a";
-    model.initializeTest(parameters);
+    testParameters.stimulusListDirectory = "a";
+    initializeTest();
     assertEqual("a", list.directory());
 }
 
