@@ -2,11 +2,13 @@
 
 namespace presentation {
     Presenter::Presenter(Model *model, View *view) :
-        testSetup{model, view->setupView()},
-        tester{model, view->testerView()},
+        testSetup{view->setupView()},
+        tester{view->testerView()},
         model{model},
         view{view}
     {
+        testSetup.setParent(this);
+        tester.setParent(this);
         view->subscribe(this);
     }
 
@@ -27,9 +29,18 @@ namespace presentation {
             return;
         view->testerView()->hide();
     }
+    
+    void Presenter::initializeTest(Model::TestParameters p) {
+        view->setupView()->hide();
+        view->testerView()->show();
+        model->initializeTest(std::move(p));
+    }
+    
+    void Presenter::playTrial() { 
+        model->playTrial();
+    }
 
-    Presenter::TestSetup::TestSetup(Model *model, View::TestSetupView *view) :
-        model{model},
+    Presenter::TestSetup::TestSetup(View::TestSetupView *view) :
         view{view}
     {
         view->subscribe(this);
@@ -55,18 +66,24 @@ namespace presentation {
             view->condition() == "Auditory-only"
             ? Model::TestParameters::Condition::auditoryOnly
             : Model::TestParameters::Condition::audioVisual;
-        view->hide();
-        model->initializeTest(p);
+        parent->initializeTest(std::move(p));
+    }
+    
+    void Presenter::TestSetup::setParent(presentation::Presenter *p) {
+        parent = p;
     }
 
-    Presenter::Tester::Tester(presentation::Model *model, View::TesterView *view) :
-        model{model},
+    Presenter::Tester::Tester(View::TesterView *view) :
         view{view}
     {
         view->subscribe(this);
     }
+    
+    void Presenter::Tester::setParent(presentation::Presenter *p) {
+        parent = p;
+    }
 
     void Presenter::Tester::playTrial() {
-        model->playTrial();
+        parent->playTrial();
     }
 }

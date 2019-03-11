@@ -88,24 +88,28 @@ namespace presentation {
     public:
         class TestSetup : public View::TestSetupView::EventListener {
         public:
-            TestSetup(Model *, View::TestSetupView *);
+            TestSetup(View::TestSetupView *);
+            void setParent(Presenter *);
             void confirmTestSetup() override;
         private:
-            Model *model;
+            Presenter *parent;
             View::TestSetupView *view;
         };
         
         class Tester : public View::TesterView::EventListener {
         public:
-            Tester(Model *, View::TesterView *);
+            Tester(View::TesterView *);
+            void setParent(Presenter *);
             void playTrial() override;
         private:
-            Model *model;
+            Presenter *parent;
             View::TesterView *view;
         };
         
         Presenter(Model *, View *);
         void run();
+        void initializeTest(Model::TestParameters);
+        void playTrial();
         void newTest() override;
         void openTest() override;
         void closeTest() override;
