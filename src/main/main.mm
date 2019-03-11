@@ -10,11 +10,7 @@ class CoreAudioDevice {
     std::vector<AudioObjectID> devices{};
 public:
     CoreAudioDevice() {
-        AudioObjectPropertyAddress address = {
-            kAudioHardwarePropertyDevices,
-            kAudioObjectPropertyScopeGlobal,
-            kAudioObjectPropertyElementMaster
-        };
+        auto address = propertyAddress(kAudioHardwarePropertyDevices);
         UInt32 dataSize{};
         if (kAudioHardwareNoError !=
             AudioObjectGetPropertyDataSize(
@@ -40,22 +36,30 @@ public:
         )
             throw std::runtime_error{"Bad news bears"};
     }
+    
+    AudioObjectPropertyAddress propertyAddress(AudioObjectPropertySelector s) {
+        return {
+            s,
+            kAudioObjectPropertyScopeGlobal,
+            kAudioObjectPropertyElementMaster
+        };
+    }
 
     int deviceCount() {
         return gsl::narrow<int>(devices.size());
     }
 
     std::string description(int device) {
-        AudioObjectPropertyAddress address = {
-            kAudioObjectPropertyName,
-            kAudioObjectPropertyScopeGlobal,
-            kAudioObjectPropertyElementMaster
-        };
+        return stringProperty(kAudioObjectPropertyName, device);
+    }
+    
+    std::string stringProperty(AudioObjectPropertySelector s, int device) {
+        auto address = propertyAddress(s);
         CFStringRef deviceName{};
         UInt32 dataSize = sizeof(CFStringRef);
         if (kAudioHardwareNoError !=
             AudioObjectGetPropertyData(
-                devices.at(gsl::narrow<decltype(devices)::size_type>(device)),
+                objectId(device),
                 &address,
                 0,
                 nullptr,
@@ -68,29 +72,13 @@ public:
         CFStringGetCString(deviceName, buffer, sizeof(buffer), kCFStringEncodingUTF8);
         return buffer;
     }
+    
+    AudioObjectID objectId(int device) {
+        return devices.at(gsl::narrow<decltype(devices)::size_type>(device));
+    }
 
     std::string uid(int device) {
-        AudioObjectPropertyAddress address = {
-            kAudioDevicePropertyDeviceUID,
-            kAudioObjectPropertyScopeGlobal,
-            kAudioObjectPropertyElementMaster
-        };
-        CFStringRef deviceUid{};
-        UInt32 dataSize = sizeof(CFStringRef);
-        if (kAudioHardwareNoError !=
-            AudioObjectGetPropertyData(
-                devices.at(gsl::narrow<decltype(devices)::size_type>(device)),
-                &address,
-                0,
-                nullptr,
-                &dataSize,
-                &deviceUid
-            )
-        )
-            throw std::runtime_error{"Bad news bears"};
-        char buffer[128];
-        CFStringGetCString(deviceUid, buffer, sizeof(buffer), kCFStringEncodingUTF8);
-        return buffer;
+        return stringProperty(kAudioDevicePropertyDeviceUID, device);
     }
 };
 
