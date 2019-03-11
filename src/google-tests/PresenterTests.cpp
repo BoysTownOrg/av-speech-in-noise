@@ -37,6 +37,7 @@ public:
 };
 
 class ViewStub : public presentation::View {
+    std::string errorMessage_{};
     DialogResponse dialogResponse_{};
     EventListener *listener_{};
     TestSetup *setupView_;
@@ -50,6 +51,14 @@ public:
     ) :
         setupView_{setupView},
         testerView_{testerView} {}
+    
+    void showErrorMessage(std::string s) override {
+        errorMessage_ = std::move(s);
+    }
+    
+    auto errorMessage() {
+        return errorMessage_;
+    }
     
     const EventListener *listener() const {
         return listener_;
@@ -359,4 +368,47 @@ TEST_F(PresenterTests, closingTestDoesNotHideTesterViewIfUserCancels) {
     view.setDialogResponse(presentation::View::DialogResponse::cancel);
     view.close();
     EXPECT_FALSE(testerView.hidden());
+}
+
+class RequestFailingModel : public presentation::Model {
+    std::string errorMessage{};
+public:
+    void setErrorMessage(std::string s) {
+        errorMessage = std::move(s);
+    }
+    
+    void initializeTest(presentation::Model::TestParameters) override {
+        throw RequestFailure{errorMessage};
+    }
+    
+    void playTrial() override {
+        throw RequestFailure{errorMessage};
+    }
+    
+    bool testComplete() override { return {}; }
+};
+
+class PresenterFailureTests : public ::testing::Test {
+protected:
+    ModelStub defaultModel{};
+    presentation::Model *model{&defaultModel};
+    ViewStub::TestSetupViewStub setupView{};
+    ViewStub::TesterViewStub testerView{};
+    ViewStub view{&setupView, &testerView};
+    
+    void assertConfirmTestSetupShowsErrorMessage(std::string s) {
+        presentation::Presenter presenter{model, &view};
+        setupView.confirm();
+        assertEqual(std::move(s), view.errorMessage());
+    }
+};
+
+TEST_F(
+    PresenterFailureTests,
+    initializeTestShowsErrorMessageWhenModelFailsRequest
+) {
+    RequestFailingModel failure{};
+    failure.setErrorMessage("a");
+    model = &failure;
+    assertConfirmTestSetupShowsErrorMessage("a");
 }

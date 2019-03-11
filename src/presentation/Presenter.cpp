@@ -33,7 +33,11 @@ namespace presentation {
     void Presenter::initializeTest(Model::TestParameters p) {
         testSetup.close();
         tester.run();
-        model->initializeTest(std::move(p));
+        try {
+            model->initializeTest(std::move(p));
+        } catch (const Model::RequestFailure &e) {
+            view->showErrorMessage(e.what());
+        }
     }
     
     void Presenter::playTrial() { 

@@ -3,6 +3,15 @@
 
 #include <string>
 
+#include <stdexcept>
+#include <string>
+
+#define RUNTIME_ERROR(class_name) \
+    class class_name : public std::runtime_error {\
+    public:\
+        explicit class_name(std::string s) : std::runtime_error{ s } {}\
+};
+
 namespace presentation {
     class Model {
     public:
@@ -21,6 +30,7 @@ namespace presentation {
             Condition condition;
         };
         virtual void initializeTest(TestParameters) = 0;
+        RUNTIME_ERROR(RequestFailure)
         virtual bool testComplete() = 0;
         virtual void playTrial() = 0;
     };
@@ -76,6 +86,7 @@ namespace presentation {
         virtual void eventLoop() = 0;
         virtual TestSetup *testSetup() = 0;
         virtual Tester *tester() = 0;
+        virtual void showErrorMessage(std::string) = 0;
         enum class DialogResponse {
             decline,
             accept,
