@@ -63,7 +63,7 @@ namespace presentation {
         view->show();
     }
 
-    void Presenter::TestSetup::confirmTestSetup() {
+    void Presenter::TestSetup::confirm() {
         parent->initializeTest();
     }
     

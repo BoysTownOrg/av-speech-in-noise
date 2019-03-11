@@ -74,7 +74,7 @@ namespace presentation {
             class EventListener {
             public:
                 virtual ~EventListener() = default;
-                virtual void confirmTestSetup() = 0;
+                virtual void confirm() = 0;
             };
             
             virtual ~TestSetup() = default;
@@ -112,7 +112,7 @@ namespace presentation {
             void run();
             void submitRequest(Model *);
             void close();
-            void confirmTestSetup() override;
+            void confirm() override;
         private:
             int readInteger(std::string x, std::string identifier);
             Model::TestParameters testParameters();

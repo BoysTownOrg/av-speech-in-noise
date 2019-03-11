@@ -327,7 +327,7 @@ public:
     }
 
     void confirmTestSetup() {
-        listener->confirmTestSetup();
+        listener->confirm();
     }
     
     void show() override {

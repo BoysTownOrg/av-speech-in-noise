@@ -158,7 +158,7 @@ namespace {
             }
             
             void confirm() {
-                listener_->confirmTestSetup();
+                listener_->confirm();
             }
             
             bool hidden() const {

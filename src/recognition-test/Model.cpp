@@ -45,8 +45,11 @@ namespace recognition_test {
         maskerPlayer->fadeOut();
     }
     
-    std::vector<std::string> Model::audioDevices() { 
-        return {};
+    std::vector<std::string> Model::audioDevices() {
+        std::vector<std::string> descriptions{};
+        for (int i = 0; i < maskerPlayer->deviceCount(); ++i)
+            descriptions.push_back(maskerPlayer->deviceDescription(i));
+        return descriptions;
     }
     
 }

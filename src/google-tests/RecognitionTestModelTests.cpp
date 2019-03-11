@@ -173,6 +173,11 @@ namespace {
         EXPECT_EQ(2, stimulusPlayer.deviceIndex());
     }
 
+    TEST_F(RecognitionTestModelTests, audioDevicesReturnsDescriptions) {
+        maskerPlayer.setAudioDeviceDescriptions({"a", "b", "c"});
+        assertEqual({"a", "b", "c"}, model.audioDevices());
+    }
+
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
         playTrial();
         EXPECT_TRUE(maskerPlayer.fadeInCalled());
