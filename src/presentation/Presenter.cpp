@@ -2,8 +2,8 @@
 
 namespace presentation {
     Presenter::Presenter(Model *model, View *view) :
-        testSetup{view->setupView()},
-        tester{view->testerView()},
+        testSetup{view->testSetup()},
+        tester{view->tester()},
         model{model},
         view{view}
     {
@@ -17,22 +17,22 @@ namespace presentation {
     }
 
     void Presenter::newTest() {
-        view->setupView()->show();
+        view->testSetup()->show();
     }
 
     void Presenter::openTest() {
-        view->testerView()->show();
+        view->tester()->show();
     }
 
     void Presenter::closeTest() {
         if (view->showConfirmationDialog() == View::DialogResponse::cancel)
             return;
-        view->testerView()->hide();
+        view->tester()->hide();
     }
     
     void Presenter::initializeTest(Model::TestParameters p) {
-        view->setupView()->hide();
-        view->testerView()->show();
+        view->testSetup()->hide();
+        view->tester()->show();
         model->initializeTest(std::move(p));
     }
     
@@ -40,7 +40,7 @@ namespace presentation {
         model->playTrial();
     }
 
-    Presenter::TestSetup::TestSetup(View::TestSetupView *view) :
+    Presenter::TestSetup::TestSetup(View::TestSetup *view) :
         view{view}
     {
         view->subscribe(this);
@@ -73,7 +73,7 @@ namespace presentation {
         parent = p;
     }
 
-    Presenter::Tester::Tester(View::TesterView *view) :
+    Presenter::Tester::Tester(View::Tester *view) :
         view{view}
     {
         view->subscribe(this);

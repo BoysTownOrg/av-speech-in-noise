@@ -37,7 +37,7 @@ namespace presentation {
             virtual void closeTest() = 0;
         };
 
-        class TesterView {
+        class Tester {
         public:
             class EventListener {
             public:
@@ -45,13 +45,13 @@ namespace presentation {
                 virtual void playTrial() = 0;
             };
             
-            virtual ~TesterView() = default;
+            virtual ~Tester() = default;
             virtual void subscribe(EventListener *) = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
         };
 
-        class TestSetupView {
+        class TestSetup {
         public:
             class EventListener {
             public:
@@ -59,7 +59,7 @@ namespace presentation {
                 virtual void confirmTestSetup() = 0;
             };
             
-            virtual ~TestSetupView() = default;
+            virtual ~TestSetup() = default;
             virtual void subscribe(EventListener *) = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
@@ -74,8 +74,8 @@ namespace presentation {
         
         virtual void subscribe(EventListener *) = 0;
         virtual void eventLoop() = 0;
-        virtual TestSetupView *setupView() = 0;
-        virtual TesterView *testerView() = 0;
+        virtual TestSetup *testSetup() = 0;
+        virtual Tester *tester() = 0;
         enum class DialogResponse {
             decline,
             accept,
@@ -86,24 +86,24 @@ namespace presentation {
 
     class Presenter : public View::EventListener {
     public:
-        class TestSetup : public View::TestSetupView::EventListener {
+        class TestSetup : public View::TestSetup::EventListener {
         public:
-            TestSetup(View::TestSetupView *);
+            TestSetup(View::TestSetup *);
             void setParent(Presenter *);
             void confirmTestSetup() override;
         private:
             Presenter *parent;
-            View::TestSetupView *view;
+            View::TestSetup *view;
         };
         
-        class Tester : public View::TesterView::EventListener {
+        class Tester : public View::Tester::EventListener {
         public:
-            Tester(View::TesterView *);
+            Tester(View::Tester *);
             void setParent(Presenter *);
             void playTrial() override;
         private:
             Presenter *parent;
-            View::TesterView *view;
+            View::Tester *view;
         };
         
         Presenter(Model *, View *);

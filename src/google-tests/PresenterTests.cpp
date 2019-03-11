@@ -39,14 +39,14 @@ public:
 class ViewStub : public presentation::View {
     DialogResponse dialogResponse_{};
     EventListener *listener_{};
-    TestSetupView *setupView_;
-    TesterView *testerView_;
+    TestSetup *setupView_;
+    Tester *testerView_;
     bool eventLoopCalled_{};
     bool confirmationDialogShown_{};
 public:
     ViewStub(
-        TestSetupView *setupView,
-        TesterView *testerView
+        TestSetup *setupView,
+        Tester *testerView
     ) :
         setupView_{setupView},
         testerView_{testerView} {}
@@ -63,11 +63,11 @@ public:
         eventLoopCalled_ = true;
     }
     
-    TestSetupView *setupView() override {
+    TestSetup *testSetup() override {
         return setupView_;
     }
     
-    TesterView *testerView() override {
+    Tester *tester() override {
         return testerView_;
     }
     
@@ -80,7 +80,7 @@ public:
         return eventLoopCalled_;
     }
     
-    void setTestSetupView(TestSetupView *view) {
+    void setTestSetupView(TestSetup *view) {
         setupView_ = view;
     }
     
@@ -104,7 +104,7 @@ public:
         dialogResponse_ = response;
     }
 
-    class TestSetupViewStub : public TestSetupView {
+    class TestSetupViewStub : public TestSetup {
         std::string signalLevel_{"0"};
         std::string maskerLevel_{"0"};
         std::string condition_{};
@@ -201,7 +201,7 @@ public:
         }
     };
     
-    class TesterViewStub : public TesterView {
+    class TesterViewStub : public Tester {
         EventListener *listener_{};
         bool shown_{};
         bool hidden_{};

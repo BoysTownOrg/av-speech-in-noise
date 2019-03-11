@@ -91,7 +91,7 @@ class CocoaView;
 @end
 
 class CocoaView : public presentation::View {
-    class CocoaTestSetupView : public TestSetupView {
+    class CocoaTestSetupView : public TestSetup {
         EventListener *listener{};
         NSView *view{
             [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
@@ -205,7 +205,7 @@ class CocoaView : public presentation::View {
         }
     };
     
-    class CocoaTesterView : public TesterView {
+    class CocoaTesterView : public Tester {
         EventListener *listener{};
         NSView *view{
             [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
@@ -333,11 +333,11 @@ public:
         [app run];
     }
     
-    TestSetupView *setupView() override {
+    TestSetup *testSetup() override {
         return &testSetupView_;
     }
     
-    TesterView *testerView() override {
+    Tester *tester() override {
         return &testerView_;
     }
     
