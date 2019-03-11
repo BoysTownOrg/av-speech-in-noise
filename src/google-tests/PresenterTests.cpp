@@ -386,27 +386,35 @@ public:
 
 class PresenterFailureTests : public ::testing::Test {
 protected:
+    RequestFailingModel failure{};
     ModelStub defaultModel{};
     presentation::Model *model{&defaultModel};
     ViewStub::TestSetupViewStub setupView{};
     ViewStub::TesterViewStub testerView{};
     ViewStub view{&setupView, &testerView};
     
-    void assertConfirmTestSetupShowsErrorMessage(std::string s) {
+    void useFailingModel(std::string s = {}) {
+        failure.setErrorMessage(std::move(s));
+        model = &failure;
+    }
+    
+    void confirmTestSetup() {
         presentation::Presenter presenter{model, &view};
         setupView.confirm();
+    }
+    
+    void assertConfirmTestSetupShowsErrorMessage(std::string s) {
+        confirmTestSetup();
         assertEqual(std::move(s), view.errorMessage());
     }
     
     void assertConfirmTestSetupDoesNotHideSetupView() {
-        presentation::Presenter presenter{model, &view};
-        setupView.confirm();
+        confirmTestSetup();
         ASSERT_FALSE(setupView.hidden());
     }
     
     void assertConfirmTestSetupDoesNotShowTesterView() {
-        presentation::Presenter presenter{model, &view};
-        setupView.confirm();
+        confirmTestSetup();
         ASSERT_FALSE(testerView.shown());
     }
 };
@@ -415,9 +423,7 @@ TEST_F(
     PresenterFailureTests,
     initializeTestShowsErrorMessageWhenModelFailsRequest
 ) {
-    RequestFailingModel failure{};
-    failure.setErrorMessage("a");
-    model = &failure;
+    useFailingModel("a");
     assertConfirmTestSetupShowsErrorMessage("a");
 }
 
@@ -425,8 +431,7 @@ TEST_F(
     PresenterFailureTests,
     initializeTestDoesNotHideSetupViewWhenModelFailsRequest
 ) {
-    RequestFailingModel failure{};
-    model = &failure;
+    useFailingModel();
     assertConfirmTestSetupDoesNotHideSetupView();
 }
 
@@ -434,7 +439,6 @@ TEST_F(
     PresenterFailureTests,
     initializeTestDoesNotShowTesterViewWhenModelFailsRequest
 ) {
-    RequestFailingModel failure{};
-    model = &failure;
+    useFailingModel();
     assertConfirmTestSetupDoesNotShowTesterView();
 }
