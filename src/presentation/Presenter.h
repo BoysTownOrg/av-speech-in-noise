@@ -90,6 +90,8 @@ namespace presentation {
         public:
             TestSetup(View::TestSetup *);
             void setParent(Presenter *);
+            void run();
+            void close();
             void confirmTestSetup() override;
         private:
             Presenter *parent;
@@ -100,6 +102,8 @@ namespace presentation {
         public:
             Tester(View::Tester *);
             void setParent(Presenter *);
+            void run();
+            void close();
             void playTrial() override;
         private:
             Presenter *parent;

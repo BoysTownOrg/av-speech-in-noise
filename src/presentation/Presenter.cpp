@@ -17,22 +17,22 @@ namespace presentation {
     }
 
     void Presenter::newTest() {
-        view->testSetup()->show();
+        testSetup.run();
     }
 
     void Presenter::openTest() {
-        view->tester()->show();
+        tester.run();
     }
 
     void Presenter::closeTest() {
         if (view->showConfirmationDialog() == View::DialogResponse::cancel)
             return;
-        view->tester()->hide();
+        tester.close();
     }
     
     void Presenter::initializeTest(Model::TestParameters p) {
-        view->testSetup()->hide();
-        view->tester()->show();
+        testSetup.close();
+        tester.run();
         model->initializeTest(std::move(p));
     }
     
@@ -72,11 +72,27 @@ namespace presentation {
     void Presenter::TestSetup::setParent(presentation::Presenter *p) {
         parent = p;
     }
-
+    
+    void Presenter::TestSetup::run() { 
+        view->show();
+    }
+    
+    void Presenter::TestSetup::close() { 
+        view->hide();
+    }
+    
     Presenter::Tester::Tester(View::Tester *view) :
         view{view}
     {
         view->subscribe(this);
+    }
+    
+    void Presenter::Tester::run() {
+        view->show();
+    }
+
+    void Presenter::Tester::close() {
+        view->hide();
     }
     
     void Presenter::Tester::setParent(presentation::Presenter *p) {
