@@ -312,6 +312,12 @@ TEST_F(PresenterTests, confirmTestSetupPassesAuditoryOnlyCondition) {
     );
 }
 
+TEST_F(PresenterTests, confirmTestSetupWithInvalidLevelShowsErrorMessage) {
+    setupView.setMaskerLevel("a");
+    setupView.confirm();
+    assertEqual("'a' is not a valid masker level.", view.errorMessage());
+}
+
 TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotHideSetupView) {
     confirmTestSetupWithInvalidInput();
     EXPECT_FALSE(setupView.hidden());

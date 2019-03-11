@@ -30,11 +30,13 @@ namespace presentation {
         tester.close();
     }
     
-    void Presenter::initializeTest(Model::TestParameters p) {
+    void Presenter::initializeTest() {
         try {
-            model->initializeTest(std::move(p));
+            testSetup.submitRequest(model);
             testSetup.close();
             tester.run();
+        } catch (const BadInput &e) {
+            view->showErrorMessage(e.what());
         } catch (const Model::RequestFailure &e) {
             view->showErrorMessage(e.what());
         }
@@ -51,26 +53,7 @@ namespace presentation {
     }
 
     void Presenter::TestSetup::confirmTestSetup() {
-        Model::TestParameters p;
-        try {
-            p.maskerLevel_dB_SPL =
-                std::stoi(view->maskerLevel_dB_SPL());
-            p.signalLevel_dB_SPL =
-                std::stoi(view->signalLevel_dB_SPL());
-        }
-        catch (const std::invalid_argument &) {
-            return;
-        }
-        p.maskerFilePath = view->maskerFilePath();
-        p.stimulusListDirectory =
-            view->stimulusListDirectory();
-        p.subjectId = view->subjectId();
-        p.testerId = view->testerId();
-        p.condition =
-            view->condition() == "Auditory-only"
-            ? Model::TestParameters::Condition::auditoryOnly
-            : Model::TestParameters::Condition::audioVisual;
-        parent->initializeTest(std::move(p));
+        parent->initializeTest();
     }
     
     void Presenter::TestSetup::setParent(presentation::Presenter *p) {
@@ -84,6 +67,30 @@ namespace presentation {
     void Presenter::TestSetup::close() { 
         view->hide();
     }
+    
+    void Presenter::TestSetup::submitRequest(presentation::Model *model) {
+        Model::TestParameters p;
+        try {
+            p.maskerLevel_dB_SPL =
+                std::stoi(view->maskerLevel_dB_SPL());
+            p.signalLevel_dB_SPL =
+                std::stoi(view->signalLevel_dB_SPL());
+        }
+        catch (const std::invalid_argument &) {
+            throw BadInput{"'" + view->maskerLevel_dB_SPL() + "' is not a valid masker level."};
+        }
+        p.maskerFilePath = view->maskerFilePath();
+        p.stimulusListDirectory =
+            view->stimulusListDirectory();
+        p.subjectId = view->subjectId();
+        p.testerId = view->testerId();
+        p.condition =
+            view->condition() == "Auditory-only"
+            ? Model::TestParameters::Condition::auditoryOnly
+            : Model::TestParameters::Condition::audioVisual;
+        model->initializeTest(std::move(p));
+    }
+    
     
     Presenter::Tester::Tester(View::Tester *view) :
         view{view}

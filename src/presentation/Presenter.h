@@ -102,6 +102,7 @@ namespace presentation {
             TestSetup(View::TestSetup *);
             void setParent(Presenter *);
             void run();
+            void submitRequest(Model *);
             void close();
             void confirmTestSetup() override;
         private:
@@ -123,11 +124,12 @@ namespace presentation {
         
         Presenter(Model *, View *);
         void run();
-        void initializeTest(Model::TestParameters);
+        void initializeTest();
         void playTrial();
         void newTest() override;
         void openTest() override;
         void closeTest() override;
+        RUNTIME_ERROR(BadInput)
     private:
         TestSetup testSetup;
         Tester tester;
