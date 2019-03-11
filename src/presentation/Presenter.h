@@ -2,7 +2,7 @@
 #define presentation_Presenter_h
 
 #include <string>
-
+#include <vector>
 #include <stdexcept>
 #include <string>
 
@@ -37,6 +37,8 @@ namespace presentation {
             std::string audioDevice;
         };
         virtual void playTrial(const TrialParameters &) = 0;
+        
+        virtual std::vector<std::string> audioDevices() = 0;
     };
 
     class View {
@@ -64,6 +66,7 @@ namespace presentation {
             virtual void show() = 0;
             virtual void hide() = 0;
             virtual std::string audioDevice() = 0;
+            virtual void populateAudioDeviceMenu(std::vector<std::string>) = 0;
         };
 
         class TestSetup {
@@ -122,6 +125,7 @@ namespace presentation {
         public:
             explicit Tester(View::Tester *);
             void setParent(Presenter *);
+            void initialize(Model *);
             void run();
             void submitRequest(Model *);
             void close();

@@ -44,5 +44,10 @@ namespace recognition_test {
     void Model::playbackComplete() {
         maskerPlayer->fadeOut();
     }
+    
+    std::vector<std::string> Model::audioDevices() { 
+        return {};
+    }
+    
 }
 

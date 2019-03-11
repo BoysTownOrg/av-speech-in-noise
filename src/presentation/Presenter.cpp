@@ -9,6 +9,7 @@ namespace presentation {
     {
         testSetup.setParent(this);
         tester.setParent(this);
+        tester.initialize(model);
         view->subscribe(this);
     }
 
@@ -127,4 +128,9 @@ namespace presentation {
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
     }
+    
+    void Presenter::Tester::initialize(Model *m) {
+        view->populateAudioDeviceMenu(m->audioDevices());
+    }
+    
 }

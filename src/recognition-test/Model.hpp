@@ -65,6 +65,7 @@ namespace recognition_test {
         void initializeTest(const TestParameters &) override;
         bool testComplete() override;
         void playTrial(const TrialParameters &) override;
+        std::vector<std::string> audioDevices() override;
         void fadeInComplete() override;
         void playbackComplete() override;
     };

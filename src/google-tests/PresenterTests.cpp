@@ -6,9 +6,14 @@ namespace {
     class ModelStub : public presentation::Model {
         TestParameters testParameters_{};
         TrialParameters trialParameters_{};
+        std::vector<std::string> audioDevices_{};
         bool testComplete_{};
         bool trialPlayed_{};
     public:
+        void setAudioDevices(std::vector<std::string> v) {
+            audioDevices_ = std::move(v);
+        }
+        
         auto &trialParameters() const {
             return trialParameters_;
         }
@@ -28,6 +33,10 @@ namespace {
         
         void initializeTest(const TestParameters &p) override {
             testParameters_ = p;
+        }
+        
+        std::vector<std::string> audioDevices() override {
+            return audioDevices_;
         }
         
         auto trialPlayed() const {
@@ -206,11 +215,16 @@ namespace {
         };
         
         class TesterViewStub : public Tester {
+            std::vector<std::string> audioDevices_{};
             std::string audioDevice_{};
             EventListener *listener_{};
             bool shown_{};
             bool hidden_{};
         public:
+            auto audioDevices() const {
+                return audioDevices_;
+            }
+            
             std::string audioDevice() override {
                 return audioDevice_;
             }
@@ -231,6 +245,10 @@ namespace {
                 hidden_ = true;
             }
             
+            void populateAudioDeviceMenu(std::vector<std::string> v) override {
+                audioDevices_ = std::move(v);
+            }
+            
             void playTrial() {
                 listener_->playTrial();
             }
@@ -244,6 +262,24 @@ namespace {
             }
         };
     };
+
+    class PresenterConstructionTests : public ::testing::Test {
+    protected:
+        ModelStub model{};
+        ViewStub::TestSetupViewStub setupView{};
+        ViewStub::TesterViewStub testerView{};
+        ViewStub view{&setupView, &testerView};
+        
+        presentation::Presenter construct() {
+            return {&model, &view};
+        }
+    };
+    
+    TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
+        model.setAudioDevices({"a", "b", "c"});
+        auto presenter = construct();
+        assertEqual({"a", "b", "c"}, testerView.audioDevices());
+    }
 
     class PresenterTests : public ::testing::Test {
     protected:
@@ -442,6 +478,7 @@ namespace {
         }
         
         bool testComplete() override { return {}; }
+        std::vector<std::string> audioDevices() override { return {}; }
     };
 
     class PresenterFailureTests : public ::testing::Test {
