@@ -272,12 +272,6 @@ protected:
 
 TEST_F(PresenterTests, subscribesToViewEvents) {
     EXPECT_EQ(&presenter, view.listener());
-    EXPECT_EQ(&presenter, setupView.listener());
-    EXPECT_EQ(&presenter, testerView.listener());
-}
-
-TEST_F(PresenterTests, passesSubjectViewToModel) {
-    EXPECT_EQ(subjectView, model.subjectView());
 }
 
 TEST_F(PresenterTests, callsEventLoopWhenRun) {
@@ -306,7 +300,6 @@ TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
     setupView.setSubjectId("b");
     setupView.setTesterId("c");
     setupView.setMasker("d");
-    setupView.setCondition("Auditory-only");
     setupView.confirm();
     EXPECT_EQ(1, model.testParameters().maskerLevel_dB_SPL);
     EXPECT_EQ(2, model.testParameters().signalLevel_dB_SPL);
@@ -314,10 +307,6 @@ TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
     assertEqual("b", model.testParameters().subjectId);
     assertEqual("c", model.testParameters().testerId);
     assertEqual("d", model.testParameters().maskerFilePath);
-    EXPECT_EQ(
-        presentation::Model::TestParameters::Condition::auditoryOnly,
-        model.testParameters().condition
-    );
 }
 
 TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
@@ -325,6 +314,15 @@ TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
     setupView.confirm();
     EXPECT_EQ(
         presentation::Model::TestParameters::Condition::audioVisual,
+        model.testParameters().condition
+    );
+}
+
+TEST_F(PresenterTests, confirmTestSetupPassesAuditoryOnlyCondition) {
+    setupView.setCondition("Auditory-only");
+    setupView.confirm();
+    EXPECT_EQ(
+        presentation::Model::TestParameters::Condition::auditoryOnly,
         model.testParameters().condition
     );
 }
