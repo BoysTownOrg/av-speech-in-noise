@@ -1,3 +1,4 @@
+#include "assert-utility.h"
 #include <stimulus-list/RandomizedStimulusList.hpp>
 #include <stimulus-list/FileFilterDecorator.hpp>
 #include <gtest/gtest.h>
@@ -36,21 +37,18 @@ class RandomizedStimulusListTests : public ::testing::Test {
 protected:
     DirectoryReaderStub reader{};
     RandomizerStub randomizer{};
-    stimulus_list::RandomizedStimulusList list;
+    stimulus_list::RandomizedStimulusList list{&reader, &randomizer};
     
-    RandomizedStimulusListTests() :
-        list{&reader, &randomizer} {}
+    void initialize(std::string s = {}) {
+        list.initialize(std::move(s));
+    }
 };
-
-static void assertEqual(std::string expected, std::string actual) {
-    EXPECT_EQ(expected, actual);
-}
 
 TEST_F(
     RandomizedStimulusListTests,
     initializePassesDirectoryToDirectoryReader
 ) {
-    list.initialize("a");
+    initialize("a");
     assertEqual("a", reader.directory());
 }
 
@@ -59,7 +57,7 @@ TEST_F(
     testCompleteWhenStimulusFilesExhausted
 ) {
     reader.setFileNames({ "a", "b", "c" });
-    list.initialize({});
+    initialize();
     EXPECT_FALSE(list.empty());
     list.next();
     EXPECT_FALSE(list.empty());
@@ -74,17 +72,10 @@ TEST_F(
     nextReturnsFullPathToFileAtFront
 ) {
     reader.setFileNames({ "a", "b", "c" });
-    list.initialize({"C:"});
+    initialize("C:");
     assertEqual("C:/a", list.next());
     assertEqual("C:/b", list.next());
     assertEqual("C:/c", list.next());
-}
-
-template<typename T>
-void assertEqual(std::vector<T> expected, std::vector<T> actual) {
-    EXPECT_EQ(expected.size(), actual.size());
-    for (typename std::vector<T>::size_type i = 0; i < expected.size(); ++i)
-        EXPECT_EQ(expected.at(i), actual.at(i));
 }
 
 TEST_F(
@@ -92,7 +83,7 @@ TEST_F(
     initializeShufflesFileNames
 ) {
     reader.setFileNames({ "a", "b", "c" });
-    list.initialize({});
+    initialize();
     assertEqual({ "a", "b", "c" }, randomizer.toShuffle());
 }
 
