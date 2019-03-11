@@ -71,6 +71,10 @@ public:
             object:player.currentItem
         ];
     }
+    
+    void setDevice(int index) override {
+        ;
+    }
 };
 
 @implementation StimulusPlayerActions
@@ -81,183 +85,188 @@ public:
 @end
 
 class CocoaView;
+class CocoaTestSetupView;
+class CocoaTesterView;
 
 @interface ViewActions : NSObject
 @property CocoaView *controller;
 - (void) newTest;
 - (void) openTest;
+@end
+
+@interface SetupViewActions : NSObject
+@property CocoaTestSetupView *controller;
 - (void) confirmTestSetup;
+@end
+
+@interface TesterViewActions : NSObject
+@property CocoaTesterView *controller;
 - (void) playTrial;
 @end
 
+class CocoaTesterView : public presentation::View::Tester {
+    EventListener *listener{};
+    NSPopUpButton *deviceMenu;
+    NSView *view{
+        [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
+    };
+    TesterViewActions *actions{[TesterViewActions alloc]};
+public:
+    CocoaTesterView(NSWindow *window) :
+    deviceMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30) pullsDown:NO]}
+    {
+        [view setHidden:YES];
+        const auto playTrialButton = [NSButton buttonWithTitle:
+            @"Play Next Trial"
+            target:actions
+            action:@selector(playTrial)
+        ];
+        playTrialButton.target = actions;
+        [view addSubview:playTrialButton];
+        [window.contentView addSubview:view];
+    }
+    
+    void subscribe(EventListener *listener_) override {
+        listener = listener_;
+    }
+    
+    void show() override {
+        [view setHidden:NO];
+    }
+    
+    void hide() override {
+        [view setHidden:YES];
+    }
+
+    void playTrial() {
+        listener->playTrial();
+    }
+    
+    std::string audioDevice() override {
+        return [deviceMenu.titleOfSelectedItem UTF8String];
+    }
+};
+
+class CocoaTestSetupView : public presentation::View::TestSetup {
+    EventListener *listener{};
+    NSView *view{
+        [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
+    };
+    SetupViewActions *actions{[SetupViewActions alloc]};
+    NSTextField *signalLevel_dB_SPL_label{allocLabel(
+        @"signal level (dB SPL):",
+        NSMakeRect(10, 430, 140, 25))
+    };
+    NSTextField *signalLevel_dB_SPL_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 430, 150, 25)]
+    };
+    NSTextField *maskerLevel_dB_SPL_label{allocLabel(
+        @"masker level (dB SPL):",
+        NSMakeRect(10, 400, 140, 25))
+    };
+    NSTextField *maskerLevel_dB_SPL_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 400, 150, 25)]
+    };
+    NSTextField *stimulusListDirectoryLabel{allocLabel(
+        @"stimulus directory:",
+        NSMakeRect(10, 370, 140, 25))
+    };
+    NSTextField *stimulusListDirectory_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 370, 300, 25)]
+    };
+    NSTextField *maskerFilePath_label{allocLabel(
+        @"masker file path:",
+        NSMakeRect(10, 340, 140, 25))
+    };
+    NSTextField *maskerFilePath_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 340, 300, 25)]
+    };
+public:
+    CocoaTestSetupView(NSWindow *window) {
+        [view setHidden:YES];
+        [view addSubview:signalLevel_dB_SPL_label];
+        [view addSubview:signalLevel_dB_SPL_];
+        [view addSubview:maskerLevel_dB_SPL_label];
+        [view addSubview:maskerLevel_dB_SPL_];
+        [view addSubview:stimulusListDirectoryLabel];
+        [view addSubview:stimulusListDirectory_];
+        [view addSubview:maskerFilePath_label];
+        [view addSubview:maskerFilePath_];
+        const auto confirmButton = [NSButton buttonWithTitle:
+            @"Confirm"
+            target:actions
+            action:@selector(confirmTestSetup)
+        ];
+        confirmButton.target = actions;
+        [view addSubview:confirmButton];
+        [window.contentView addSubview:view];
+        stimulusListDirectory_.stringValue =
+            @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
+        maskerFilePath_.stringValue =
+            @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
+    }
+    
+    void subscribe(EventListener *listener_) override {
+        listener = listener_;
+    }
+
+    void confirmTestSetup() {
+        listener->confirmTestSetup();
+    }
+    
+    void show() override {
+        [view setHidden:NO];
+    }
+    
+    void hide() override {
+        [view setHidden:YES];
+    }
+    
+    std::string maskerLevel_dB_SPL() override {
+        return [maskerLevel_dB_SPL_.stringValue UTF8String];
+    }
+    
+    std::string signalLevel_dB_SPL() override {
+        return [signalLevel_dB_SPL_.stringValue UTF8String];
+    }
+    
+    std::string maskerFilePath() override {
+        return [maskerFilePath_.stringValue UTF8String];
+    }
+    
+    std::string stimulusListDirectory() override {
+        return [stimulusListDirectory_.stringValue UTF8String];
+    }
+    
+    std::string testerId() override {
+        return "";
+    }
+    
+    std::string subjectId() override {
+        return "";
+    }
+    
+    std::string condition() override {
+        return "";
+    }
+    
+private:
+    NSTextField *allocLabel(NSString *label, NSRect frame) {
+        const auto text = [[NSTextField alloc] initWithFrame:frame];
+        [text setStringValue:label];
+        [text setBezeled:NO];
+        [text setDrawsBackground:NO];
+        [text setEditable:NO];
+        [text setSelectable:NO];
+        return text;
+    }
+};
+
 class CocoaView : public presentation::View {
-    class CocoaTestSetupView : public TestSetup {
-        EventListener *listener{};
-        NSView *view{
-            [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
-        };
-        NSTextField *signalLevel_dB_SPL_label{allocLabel(
-            @"signal level (dB SPL):",
-            NSMakeRect(10, 430, 140, 25))
-        };
-        NSTextField *signalLevel_dB_SPL_{
-            [[NSTextField alloc]
-                initWithFrame:NSMakeRect(155, 430, 150, 25)]
-        };
-        NSTextField *maskerLevel_dB_SPL_label{allocLabel(
-            @"masker level (dB SPL):",
-            NSMakeRect(10, 400, 140, 25))
-        };
-        NSTextField *maskerLevel_dB_SPL_{
-            [[NSTextField alloc]
-                initWithFrame:NSMakeRect(155, 400, 150, 25)]
-        };
-        NSTextField *stimulusListDirectoryLabel{allocLabel(
-            @"stimulus directory:",
-            NSMakeRect(10, 370, 140, 25))
-        };
-        NSTextField *stimulusListDirectory_{
-            [[NSTextField alloc]
-                initWithFrame:NSMakeRect(155, 370, 300, 25)]
-        };
-        NSTextField *maskerFilePath_label{allocLabel(
-            @"masker file path:",
-            NSMakeRect(10, 340, 140, 25))
-        };
-        NSTextField *maskerFilePath_{
-            [[NSTextField alloc]
-                initWithFrame:NSMakeRect(155, 340, 300, 25)]
-        };
-    public:
-        CocoaTestSetupView(NSWindow *window, ViewActions *actions) {
-            [view setHidden:YES];
-            [view addSubview:signalLevel_dB_SPL_label];
-            [view addSubview:signalLevel_dB_SPL_];
-            [view addSubview:maskerLevel_dB_SPL_label];
-            [view addSubview:maskerLevel_dB_SPL_];
-            [view addSubview:stimulusListDirectoryLabel];
-            [view addSubview:stimulusListDirectory_];
-            [view addSubview:maskerFilePath_label];
-            [view addSubview:maskerFilePath_];
-            const auto confirmButton = [NSButton buttonWithTitle:
-                @"Confirm"
-                target:actions
-                action:@selector(confirmTestSetup)
-            ];
-            confirmButton.target = actions;
-            [view addSubview:confirmButton];
-            [window.contentView addSubview:view];
-            stimulusListDirectory_.stringValue =
-                @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
-            maskerFilePath_.stringValue =
-                @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
-        }
-        
-        void subscribe(EventListener *listener_) override {
-            listener = listener_;
-        }
-        
-        void show() override {
-            [view setHidden:NO];
-        }
-        
-        void hide() override {
-            [view setHidden:YES];
-        }
-        
-        std::string maskerLevel_dB_SPL() override {
-            return [maskerLevel_dB_SPL_.stringValue UTF8String];
-        }
-        
-        std::string signalLevel_dB_SPL() override {
-            return [signalLevel_dB_SPL_.stringValue UTF8String];
-        }
-        
-        std::string maskerFilePath() override {
-            return [maskerFilePath_.stringValue UTF8String];
-        }
-        
-        std::string stimulusListDirectory() override {
-            return [stimulusListDirectory_.stringValue UTF8String];
-        }
-        
-        std::string testerId() override {
-            return "";
-        }
-        
-        std::string subjectId() override {
-            return "";
-        }
-        
-        std::string condition() override {
-            return "";
-        }
-        
-    private:
-        NSTextField *allocLabel(NSString *label, NSRect frame) {
-            const auto text = [[NSTextField alloc] initWithFrame:frame];
-            [text setStringValue:label];
-            [text setBezeled:NO];
-            [text setDrawsBackground:NO];
-            [text setEditable:NO];
-            [text setSelectable:NO];
-            return text;
-        }
-    };
-    
-    class CocoaTesterView : public Tester {
-        EventListener *listener{};
-        NSView *view{
-            [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
-        };
-    public:
-        CocoaTesterView(NSWindow *window, ViewActions *actions) {
-            [view setHidden:YES];
-            const auto playTrialButton = [NSButton buttonWithTitle:
-                @"Play Next Trial"
-                target:actions
-                action:@selector(playTrial)
-            ];
-            playTrialButton.target = actions;
-            [view addSubview:playTrialButton];
-            [window.contentView addSubview:view];
-        }
-        
-        void subscribe(EventListener *listener_) override {
-            listener = listener_;
-        }
-        
-        void show() override {
-            [view setHidden:NO];
-        }
-        
-        void hide() override {
-            [view setHidden:YES];
-        }
-    };
-    
-    class CocoaSubjectView : public recognition_test::SubjectView {
-        AvFoundationStimulusPlayer player{};
-        // Defer may be critical here...
-        NSWindow *videoWindow{
-            [[NSWindow alloc]
-                initWithContentRect: NSMakeRect(400, 400, 0, 0)
-                styleMask:NSWindowStyleMaskBorderless
-                backing:NSBackingStoreBuffered
-                defer:YES
-            ]
-        };
-    public:
-        CocoaSubjectView() {
-            player.setWindow(videoWindow);
-            [videoWindow makeKeyAndOrderFront:nil];
-        }
-        
-        recognition_test::StimulusPlayer *stimulusPlayer() override {
-            return &player;
-        }
-    };
-    
     NSApplication *app{[NSApplication sharedApplication]};
     NSWindow *window{
         [[NSWindow alloc] initWithContentRect:
@@ -270,11 +279,10 @@ class CocoaView : public presentation::View {
             defer:NO
         ]
     };
-    ViewActions *actions{[ViewActions alloc]};
-    CocoaTestSetupView testSetupView_{window, actions};
-    CocoaTesterView testerView_{window, actions};
-    CocoaSubjectView subjectView_{};
+    CocoaTestSetupView testSetupView_{window};
+    CocoaTesterView testerView_{window};
     EventListener *listener{};
+    ViewActions *actions{[ViewActions alloc]};
 public:
     CocoaView() {
         app.mainMenu = [[NSMenu alloc] init];
@@ -317,14 +325,6 @@ public:
         listener->openTest();
     }
     
-    void confirmTestSetup() {
-        listener->confirmTestSetup();
-    }
-    
-    void playTrial() {
-        listener->playTrial();
-    }
-    
     void subscribe(EventListener *listener_) override {
         listener = listener_;
     }
@@ -339,10 +339,6 @@ public:
     
     Tester *tester() override {
         return &testerView_;
-    }
-    
-    recognition_test::SubjectView *subjectView() override {
-        return &subjectView_;
     }
     
     DialogResponse showConfirmationDialog() override {
@@ -361,6 +357,11 @@ public:
                 return DialogResponse::cancel;
         }
     }
+    
+    void showErrorMessage(std::string) override {
+        ;
+    }
+    
 };
 
 @implementation ViewActions
@@ -372,15 +373,44 @@ public:
 - (void)openTest {
     controller->openTest();
 }
+@end
+
+@implementation SetupViewActions
+@synthesize controller;
 
 - (void)confirmTestSetup {
     controller->confirmTestSetup();
 }
+@end
 
+@implementation TesterViewActions
+@synthesize controller;
 - (void)playTrial {
     controller->playTrial();
 }
 @end
+
+class CocoaSubjectView {
+    AvFoundationStimulusPlayer player{};
+    // Defer may be critical here...
+    NSWindow *videoWindow{
+        [[NSWindow alloc]
+            initWithContentRect: NSMakeRect(400, 400, 0, 0)
+            styleMask:NSWindowStyleMaskBorderless
+            backing:NSBackingStoreBuffered
+            defer:YES
+        ]
+    };
+public:
+    CocoaSubjectView() {
+        player.setWindow(videoWindow);
+        [videoWindow makeKeyAndOrderFront:nil];
+    }
+    
+    recognition_test::StimulusPlayer *stimulusPlayer() {
+        return &player;
+    }
+};
 
 class CoreAudioMaskerPlayer : public recognition_test::MaskerPlayer {
     AVPlayer *player{[AVPlayer playerWithPlayerItem:nil]};
@@ -403,6 +433,18 @@ public:
         const auto asset = makeAvAsset(filePath);
         [player replaceCurrentItemWithPlayerItem:
             [AVPlayerItem playerItemWithAsset:asset]];
+    }
+    
+    int deviceCount() override {
+        return -1;
+    }
+    
+    std::string deviceDescription(int index) override {
+        return "a";
+    }
+    
+    void setDevice(int index) override {
+        ;
     }
 };
 
@@ -439,7 +481,8 @@ int main() {
     stimulus_list::FileFilterDecorator filter{&reader, ".mov"};
     MersenneTwisterRandomizer randomizer;
     stimulus_list::RandomizedStimulusList list{&filter, &randomizer};
-    recognition_test::Model model{&maskerPlayer, &list};
+    CocoaSubjectView subjectView{};
+    recognition_test::Model model{&maskerPlayer, &list, subjectView.stimulusPlayer()};
     CocoaView view;
     presentation::Presenter presenter{&model, &view};
     presenter.run();
