@@ -194,18 +194,16 @@ class CocoaTesterView;
 
 class CocoaTesterView : public presentation::View::Tester {
     EventListener *listener{};
-    NSPopUpButton *deviceMenu;
+    NSPopUpButton *deviceMenu{[
+        [NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30)
+        pullsDown:NO
+    ]};
     NSView *view{
         [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
     };
     TesterViewActions *actions{[TesterViewActions alloc]};
 public:
-    CocoaTesterView(NSWindow *window) :
-    deviceMenu{[
-        [NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30)
-        pullsDown:NO
-    ]}
-    {
+    CocoaTesterView(NSWindow *window) {
         [view setHidden:YES];
         const auto playTrialButton = [NSButton buttonWithTitle:
             @"Play Next Trial"
@@ -214,6 +212,7 @@ public:
         ];
         playTrialButton.target = actions;
         [view addSubview:playTrialButton];
+        [view addSubview:deviceMenu];
         [window.contentView addSubview:view];
         actions.controller = this;
     }
