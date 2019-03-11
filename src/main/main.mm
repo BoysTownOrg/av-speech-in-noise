@@ -68,6 +68,30 @@ public:
         CFStringGetCString(deviceName, buffer, sizeof(buffer), kCFStringEncodingUTF8);
         return buffer;
     }
+
+    std::string uid(int device) {
+        AudioObjectPropertyAddress address = {
+            kAudioDevicePropertyDeviceUID,
+            kAudioObjectPropertyScopeGlobal,
+            kAudioObjectPropertyElementMaster
+        };
+        CFStringRef deviceUid{};
+        UInt32 dataSize = sizeof(CFStringRef);
+        if (kAudioHardwareNoError !=
+            AudioObjectGetPropertyData(
+                devices.at(gsl::narrow<decltype(devices)::size_type>(device)),
+                &address,
+                0,
+                nullptr,
+                &dataSize,
+                &deviceUid
+            )
+        )
+            throw std::runtime_error{"Bad news bears"};
+        char buffer[128];
+        CFStringGetCString(deviceUid, buffer, sizeof(buffer), kCFStringEncodingUTF8);
+        return buffer;
+    }
 };
 
 static AVURLAsset *makeAvAsset(std::string filePath) {
@@ -94,6 +118,7 @@ class AvFoundationStimulusPlayer;
 @end
 
 class AvFoundationStimulusPlayer : public recognition_test::StimulusPlayer {
+    CoreAudioDevice device{};
     EventListener *listener{};
     StimulusPlayerActions *actions{[StimulusPlayerActions alloc]};
     NSWindow *videoWindow{};
@@ -138,7 +163,11 @@ public:
     }
     
     void setDevice(int index) override {
-        ;
+        auto uid_ = device.uid(index);
+        player.audioOutputDeviceUniqueID = [
+            NSString stringWithCString:uid_.c_str()
+            encoding:[NSString defaultCStringEncoding]
+        ];
     }
 };
 
@@ -510,7 +539,11 @@ public:
     }
     
     void setDevice(int index) override {
-        ;
+        auto uid_ = device.uid(index);
+        player.audioOutputDeviceUniqueID = [
+            NSString stringWithCString:uid_.c_str()
+            encoding:[NSString defaultCStringEncoding]
+        ];
     }
 };
 
