@@ -247,32 +247,48 @@ namespace {
             confirmTestSetup();
         }
         
+        bool testerViewShown() {
+            return testerView.shown();
+        }
+        
+        bool testerViewHidden() {
+            return testerView.hidden();
+        }
+        
+        bool setupViewHidden() {
+            return setupView.hidden();
+        }
+        
+        bool setupViewShown() {
+            return setupView.shown();
+        }
+        
         void assertTesterViewShown() {
-            EXPECT_TRUE(testerView.shown());
+            EXPECT_TRUE(testerViewShown());
         }
         
         void assertTesterViewNotShown() {
-            EXPECT_FALSE(testerView.shown());
+            EXPECT_FALSE(testerViewShown());
         }
         
         void assertTesterViewHidden() {
-            EXPECT_TRUE(testerView.hidden());
+            EXPECT_TRUE(testerViewHidden());
         }
         
         void assertTesterViewNotHidden() {
-            EXPECT_FALSE(testerView.hidden());
+            EXPECT_FALSE(testerViewHidden());
         }
         
         void assertSetupViewShown() {
-            EXPECT_TRUE(setupView.shown());
+            EXPECT_TRUE(setupViewShown());
         }
         
         void assertSetupViewHidden() {
-            EXPECT_TRUE(setupView.hidden());
+            EXPECT_TRUE(setupViewHidden());
         }
         
         void assertSetupViewNotHidden() {
-            EXPECT_FALSE(setupView.hidden());
+            EXPECT_FALSE(setupViewHidden());
         }
     };
 
