@@ -21,12 +21,6 @@ namespace recognition_test {
         virtual void loadFile(std::string filePath) = 0;
     };
 
-    class SubjectView {
-    public:
-        virtual ~SubjectView() = default;
-        virtual StimulusPlayer *stimulusPlayer() = 0;
-    };
-
     class MaskerPlayer {
     public:
         virtual ~MaskerPlayer() = default;
@@ -61,12 +55,12 @@ namespace recognition_test {
     {
         MaskerPlayer *maskerPlayer;
         StimulusList *list;
-        SubjectView *view;
+        StimulusPlayer *stimulusPlayer;
     public:
         Model(
-            MaskerPlayer *player,
-            StimulusList *list,
-            SubjectView *view
+            MaskerPlayer *,
+            StimulusList *,
+            StimulusPlayer *
         );
         void initializeTest(const TestParameters &) override;
         bool testComplete() override;

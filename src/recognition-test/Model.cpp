@@ -4,14 +4,14 @@ namespace recognition_test {
     Model::Model(
         MaskerPlayer *maskerPlayer,
         StimulusList *list,
-        SubjectView *view
+        StimulusPlayer *stimulusPlayer
     ) :
         maskerPlayer{maskerPlayer},
         list{list},
-        view{view}
+        stimulusPlayer{stimulusPlayer}
     {
         maskerPlayer->subscribe(this);
-        view->stimulusPlayer()->subscribe(this);
+        stimulusPlayer->subscribe(this);
     }
     
     void Model::playTrial(const TrialParameters &trial) {
@@ -21,10 +21,10 @@ namespace recognition_test {
         for (int i = 0; i < maskerPlayer->deviceCount(); ++i)
             if (trial.audioDevice == maskerPlayer->deviceDescription(i)) {
                 maskerPlayer->setDevice(i);
-                view->stimulusPlayer()->setDevice(i);
+                stimulusPlayer->setDevice(i);
                 break;
             }
-        view->stimulusPlayer()->loadFile(list->next());
+        stimulusPlayer->loadFile(list->next());
         maskerPlayer->fadeIn();
     }
 
@@ -38,7 +38,7 @@ namespace recognition_test {
     }
     
     void Model::fadeInComplete() {
-        view->stimulusPlayer()->play();
+        stimulusPlayer->play();
     }
     
     void Model::playbackComplete() {

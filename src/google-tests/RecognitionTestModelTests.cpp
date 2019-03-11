@@ -26,6 +26,7 @@ public:
     void fadeIn() override {
         fadeInCalled_ = true;
     }
+    
     bool fadeOutCalled() const {
         return fadeOutCalled_;
     }
@@ -110,16 +111,6 @@ public:
     }
 };
 
-class SubjectViewStub : public recognition_test::SubjectView {
-    StimulusPlayerStub *player;
-public:
-    explicit SubjectViewStub(StimulusPlayerStub *player) : player{player} {}
-    
-    recognition_test::StimulusPlayer *stimulusPlayer() override {
-        return player;
-    }
-};
-
 class StimulusListStub : public recognition_test::StimulusList {
     std::string directory_{};
     std::string next_{};
@@ -155,10 +146,9 @@ protected:
     recognition_test::Model::TestParameters testParameters;
     recognition_test::Model::TrialParameters trialParameters;
     StimulusPlayerStub stimulusPlayer{};
-    SubjectViewStub view{&stimulusPlayer};
     MaskerPlayerStub maskerPlayer{};
     StimulusListStub list{};
-    recognition_test::Model model{&maskerPlayer, &list, &view};
+    recognition_test::Model model{&maskerPlayer, &list, &stimulusPlayer};
     
     void initializeTest() {
         model.initializeTest(testParameters);
