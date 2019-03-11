@@ -201,7 +201,10 @@ class CocoaTesterView : public presentation::View::Tester {
     TesterViewActions *actions{[TesterViewActions alloc]};
 public:
     CocoaTesterView(NSWindow *window) :
-    deviceMenu{[[NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30) pullsDown:NO]}
+    deviceMenu{[
+        [NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30)
+        pullsDown:NO
+    ]}
     {
         [view setHidden:YES];
         const auto playTrialButton = [NSButton buttonWithTitle:
@@ -212,6 +215,7 @@ public:
         playTrialButton.target = actions;
         [view addSubview:playTrialButton];
         [window.contentView addSubview:view];
+        actions.controller = this;
     }
     
     void subscribe(EventListener *listener_) override {
@@ -316,6 +320,7 @@ public:
             @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
         maskerFilePath_.stringValue =
             @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
+        actions.controller = this;
     }
     
     void subscribe(EventListener *listener_) override {
@@ -466,10 +471,17 @@ public:
         }
     }
     
-    void showErrorMessage(std::string) override {
-        ;
+    void showErrorMessage(std::string s) override {
+        auto alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error."];
+        auto errorMessage_ = [
+            NSString stringWithCString:s.c_str()
+            encoding:[NSString defaultCStringEncoding]
+        ];
+        [alert setInformativeText:errorMessage_];
+        [alert addButtonWithTitle:@"Ok"];
+        [alert runModal];
     }
-    
 };
 
 @implementation ViewActions
