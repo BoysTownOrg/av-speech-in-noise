@@ -106,19 +106,19 @@ namespace presentation {
         view->subscribe(this);
     }
     
+    void Presenter::Tester::setParent(presentation::Presenter *p) {
+        parent = p;
+    }
+    
     void Presenter::Tester::run() {
         view->show();
     }
 
-    void Presenter::Tester::close() {
-        view->hide();
-    }
-    
-    void Presenter::Tester::setParent(presentation::Presenter *p) {
-        parent = p;
-    }
-
     void Presenter::Tester::playTrial() {
         parent->playTrial();
+    }
+
+    void Presenter::Tester::close() {
+        view->hide();
     }
 }
