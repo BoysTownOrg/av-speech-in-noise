@@ -3,12 +3,15 @@
 namespace recognition_test {
     Model::Model(
         MaskerPlayer *maskerPlayer,
-        StimulusList *list
+        StimulusList *list,
+        SubjectView *view
     ) :
         maskerPlayer{maskerPlayer},
-        list{list}
+        list{list},
+        view{view}
     {
         maskerPlayer->subscribe(this);
+        view->stimulusPlayer()->subscribe(this);
     }
     
     void Model::playTrial() {
@@ -16,11 +19,6 @@ namespace recognition_test {
             return;
         view->stimulusPlayer()->loadFile(list->next());
         maskerPlayer->fadeIn();
-    }
-
-    void Model::setSubjectView(SubjectView *v) {
-        view = v;
-        view->stimulusPlayer()->subscribe(this);
     }
 
     void Model::initializeTest(TestParameters p) {

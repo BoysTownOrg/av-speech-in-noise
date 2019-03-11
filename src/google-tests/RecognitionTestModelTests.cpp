@@ -124,12 +124,7 @@ protected:
     SubjectViewStub view{&stimulusPlayer};
     MaskerPlayerStub maskerPlayer{};
     StimulusListStub list{};
-    recognition_test::Model model{&maskerPlayer, &list};
-    
-    RecognitionTestModelTests()
-    {
-        model.setSubjectView(&view);
-    }
+    recognition_test::Model model{&maskerPlayer, &list, &view};
     
     void initializeTest() {
         model.initializeTest(testParameters);

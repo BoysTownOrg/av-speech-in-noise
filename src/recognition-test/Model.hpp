@@ -57,13 +57,13 @@ namespace recognition_test {
     {
         MaskerPlayer *maskerPlayer;
         StimulusList *list;
-        SubjectView *view{};
+        SubjectView *view;
     public:
         Model(
             MaskerPlayer *player,
-            StimulusList *list
+            StimulusList *list,
+            SubjectView *view
         );
-        void setSubjectView(SubjectView *) override;
         void initializeTest(TestParameters) override;
         bool testComplete() override;
         void playTrial() override;

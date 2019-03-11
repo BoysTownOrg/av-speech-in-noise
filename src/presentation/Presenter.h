@@ -11,7 +11,6 @@ namespace presentation {
     class Model {
     public:
         virtual ~Model() = default;
-        virtual void setSubjectView(recognition_test::SubjectView *) = 0;
         struct TestParameters {
             enum class Condition {
                 auditoryOnly,

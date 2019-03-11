@@ -5,7 +5,6 @@ namespace presentation {
         model{model},
         view{view}
     {
-        model->setSubjectView(view->subjectView());
         view->subscribe(this);
         view->setupView()->subscribe(this);
         view->testerView()->subscribe(this);

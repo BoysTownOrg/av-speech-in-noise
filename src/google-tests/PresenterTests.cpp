@@ -28,10 +28,6 @@ public:
         testParameters_ = std::move(p);
     }
     
-    void setSubjectView(recognition_test::SubjectView *view) override {
-        subjectView_ = view;
-    }
-    
     bool trialPlayed() const {
         return trialPlayed_;
     }
