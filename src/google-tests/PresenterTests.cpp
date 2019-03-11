@@ -238,9 +238,13 @@ namespace {
         ViewStub view{&setupView, &testerView};
         presentation::Presenter presenter{&model, &view};
         
+        void confirmTestSetup() {
+            setupView.confirm();
+        }
+        
         void confirmTestSetupWithInvalidInput() {
             setupView.setMaskerLevel("?");
-            setupView.confirm();
+            confirmTestSetup();
         }
     };
 
@@ -259,7 +263,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupHidesTestSetupView) {
-        setupView.confirm();
+        confirmTestSetup();
         EXPECT_TRUE(setupView.hidden());
     }
 
@@ -270,7 +274,7 @@ namespace {
         setupView.setSubjectId("b");
         setupView.setTesterId("c");
         setupView.setMasker("d");
-        setupView.confirm();
+        confirmTestSetup();
         EXPECT_EQ(1, model.testParameters().maskerLevel_dB_SPL);
         EXPECT_EQ(2, model.testParameters().signalLevel_dB_SPL);
         assertEqual("a", model.testParameters().stimulusListDirectory);
@@ -281,7 +285,7 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
         setupView.setCondition("Audio-visual");
-        setupView.confirm();
+        confirmTestSetup();
         EXPECT_EQ(
             presentation::Model::TestParameters::Condition::audioVisual,
             model.testParameters().condition
@@ -290,7 +294,7 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupPassesAuditoryOnlyCondition) {
         setupView.setCondition("Auditory-only");
-        setupView.confirm();
+        confirmTestSetup();
         EXPECT_EQ(
             presentation::Model::TestParameters::Condition::auditoryOnly,
             model.testParameters().condition
@@ -299,7 +303,7 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidLevelShowsErrorMessage) {
         setupView.setMaskerLevel("a");
-        setupView.confirm();
+        confirmTestSetup();
         assertEqual("'a' is not a valid masker level.", view.errorMessage());
     }
 
@@ -314,7 +318,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupShowsTesterView) {
-        setupView.confirm();
+        confirmTestSetup();
         EXPECT_TRUE(testerView.shown());
     }
 
