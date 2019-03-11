@@ -251,6 +251,10 @@ namespace {
             EXPECT_TRUE(testerView.shown());
         }
         
+        void assertTesterViewNotShown() {
+            EXPECT_FALSE(testerView.shown());
+        }
+        
         void assertTesterViewHidden() {
             EXPECT_TRUE(testerView.hidden());
         }
@@ -265,6 +269,10 @@ namespace {
         
         void assertSetupViewHidden() {
             EXPECT_TRUE(setupView.hidden());
+        }
+        
+        void assertSetupViewNotHidden() {
+            EXPECT_FALSE(setupView.hidden());
         }
     };
 
@@ -329,12 +337,12 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotHideSetupView) {
         confirmTestSetupWithInvalidInput();
-        EXPECT_FALSE(setupView.hidden());
+        assertSetupViewNotHidden();
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotShowTesterView) {
         confirmTestSetupWithInvalidInput();
-        EXPECT_FALSE(testerView.shown());
+        assertTesterViewNotShown();
     }
 
     TEST_F(PresenterTests, confirmTestSetupShowsTesterView) {
