@@ -254,6 +254,10 @@ namespace {
         void assertTesterViewHidden() {
             EXPECT_TRUE(testerView.hidden());
         }
+        
+        void assertTesterViewNotHidden() {
+            EXPECT_FALSE(testerView.hidden());
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -338,7 +342,7 @@ namespace {
     TEST_F(PresenterTests, playingTrialDoesNotHideViewWhileTestInProgress) {
         model.setTestIncomplete();
         testerView.playTrial();
-        EXPECT_FALSE(testerView.hidden());
+        assertTesterViewNotHidden();
     }
 
     TEST_F(PresenterTests, playingTrialPlaysTrial) {
@@ -366,7 +370,7 @@ namespace {
     TEST_F(PresenterTests, closingTestDoesNotHideTesterViewIfUserCancels) {
         view.setDialogResponse(presentation::View::DialogResponse::cancel);
         view.close();
-        EXPECT_FALSE(testerView.hidden());
+        assertTesterViewNotHidden();
     }
 
     class RequestFailingModel : public presentation::Model {
