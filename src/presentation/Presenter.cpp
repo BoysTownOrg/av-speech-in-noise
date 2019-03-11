@@ -32,12 +32,16 @@ namespace presentation {
     
     void Presenter::initializeTest() {
         try {
-            testSetup.submitRequest(model);
-            testSetup.close();
-            tester.run();
+            initializeTest_();
         } catch (const std::runtime_error &e) {
             view->showErrorMessage(e.what());
         }
+    }
+    
+    void Presenter::initializeTest_() {
+        testSetup.submitRequest(model);
+        testSetup.close();
+        tester.run();
     }
     
     void Presenter::playTrial() { 
@@ -66,13 +70,14 @@ namespace presentation {
         view->hide();
     }
     
-    void Presenter::TestSetup::submitRequest(presentation::Model *model) {
+    void Presenter::TestSetup::submitRequest(Model *model) {
         Model::TestParameters p;
-        p.maskerLevel_dB_SPL = readInteger(view->maskerLevel_dB_SPL(), "masker level");
-        p.signalLevel_dB_SPL = readInteger(view->signalLevel_dB_SPL(), "signal level");
+        p.maskerLevel_dB_SPL =
+            readInteger(view->maskerLevel_dB_SPL(), "masker level");
+        p.signalLevel_dB_SPL =
+            readInteger(view->signalLevel_dB_SPL(), "signal level");
         p.maskerFilePath = view->maskerFilePath();
-        p.stimulusListDirectory =
-            view->stimulusListDirectory();
+        p.stimulusListDirectory = view->stimulusListDirectory();
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.condition =
@@ -90,7 +95,6 @@ namespace presentation {
             throw BadInput{"'" + x + "' is not a valid " + identifier + "."};
         }
     }
-    
     
     Presenter::Tester::Tester(View::Tester *view) :
         view{view}

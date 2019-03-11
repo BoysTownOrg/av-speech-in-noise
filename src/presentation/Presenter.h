@@ -133,6 +133,8 @@ namespace presentation {
         void closeTest() override;
         RUNTIME_ERROR(BadInput)
     private:
+        void initializeTest_();
+        
         TestSetup testSetup;
         Tester tester;
         Model *model;
