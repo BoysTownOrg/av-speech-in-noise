@@ -92,6 +92,10 @@ public:
         listener_->openTest();
     }
     
+    void close() {
+        listener_->closeTest();
+    }
+    
     bool confirmationDialogShown() const {
         return confirmationDialogShown_;
     }
@@ -229,10 +233,6 @@ public:
         const EventListener *listener() const {
             return listener_;
         }
-        
-        void close() {
-            listener_->closeTest();
-        }
     };
 };
 
@@ -339,24 +339,24 @@ TEST_F(PresenterTests, playingTrialPlaysTrial) {
 }
 
 TEST_F(PresenterTests, closingTestPromptsTesterToSave) {
-    testerView.close();
+    view.close();
     EXPECT_TRUE(view.confirmationDialogShown());
 }
 
 TEST_F(PresenterTests, closingTestHidesTesterViewIfUserDeclinesSaving) {
     view.setDialogResponse(presentation::View::DialogResponse::decline);
-    testerView.close();
+    view.close();
     EXPECT_TRUE(testerView.hidden());
 }
 
 TEST_F(PresenterTests, closingTestHidesTesterViewIfUserAcceptsSaving) {
     view.setDialogResponse(presentation::View::DialogResponse::accept);
-    testerView.close();
+    view.close();
     EXPECT_TRUE(testerView.hidden());
 }
 
 TEST_F(PresenterTests, closingTestDoesNotHideTesterViewIfUserCancels) {
     view.setDialogResponse(presentation::View::DialogResponse::cancel);
-    testerView.close();
+    view.close();
     EXPECT_FALSE(testerView.hidden());
 }

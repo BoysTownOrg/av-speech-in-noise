@@ -33,14 +33,18 @@ namespace presentation {
         public:
             virtual ~EventListener() = default;
             virtual void newTest() = 0;
-            virtual void confirmTestSetup() = 0;
             virtual void openTest() = 0;
-            virtual void playTrial() = 0;
             virtual void closeTest() = 0;
         };
 
         class TesterView {
         public:
+            class EventListener {
+            public:
+                virtual ~EventListener() = default;
+                virtual void playTrial() = 0;
+            };
+            
             virtual ~TesterView() = default;
             virtual void subscribe(EventListener *) = 0;
             virtual void show() = 0;
@@ -49,6 +53,12 @@ namespace presentation {
 
         class TestSetupView {
         public:
+            class EventListener {
+            public:
+                virtual ~EventListener() = default;
+                virtual void confirmTestSetup() = 0;
+            };
+            
             virtual ~TestSetupView() = default;
             virtual void subscribe(EventListener *) = 0;
             virtual void show() = 0;
@@ -75,16 +85,35 @@ namespace presentation {
     };
 
     class Presenter : public View::EventListener {
-        Model *model;
-        View *view;
     public:
-        Presenter(Model *, View *view);
+        class TestSetup : public View::TestSetupView::EventListener {
+        public:
+            TestSetup(Model *, View::TestSetupView *);
+            void confirmTestSetup() override;
+        private:
+            Model *model;
+            View::TestSetupView *view;
+        };
+        
+        class Tester : public View::TesterView::EventListener {
+        public:
+            Tester(Model *, View::TesterView *);
+            void playTrial() override;
+        private:
+            Model *model;
+            View::TesterView *view;
+        };
+        
+        Presenter(Model *, View *);
         void run();
         void newTest() override;
-        void confirmTestSetup() override;
         void openTest() override;
-        void playTrial() override;
         void closeTest() override;
+    private:
+        TestSetup testSetup;
+        Tester tester;
+        Model *model;
+        View *view;
     };
 }
 
