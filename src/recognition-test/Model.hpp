@@ -64,7 +64,7 @@ namespace recognition_test {
             StimulusList *list,
             SubjectView *view
         );
-        void initializeTest(TestParameters) override;
+        void initializeTest(const TestParameters &) override;
         bool testComplete() override;
         void playTrial(const TrialParameters &) override;
         void fadeInComplete() override;

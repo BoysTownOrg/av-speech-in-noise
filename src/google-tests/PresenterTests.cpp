@@ -26,8 +26,8 @@ namespace {
             trialPlayed_ = true;
         }
         
-        void initializeTest(Model::TestParameters p) override {
-            testParameters_ = std::move(p);
+        void initializeTest(const TestParameters &p) override {
+            testParameters_ = p;
         }
         
         auto trialPlayed() const {
@@ -433,7 +433,7 @@ namespace {
             errorMessage = std::move(s);
         }
         
-        void initializeTest(presentation::Model::TestParameters) override {
+        void initializeTest(const TestParameters &) override {
             throw RequestFailure{errorMessage};
         }
         

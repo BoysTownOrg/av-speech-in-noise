@@ -29,7 +29,7 @@ namespace presentation {
             int signalLevel_dB_SPL;
             Condition condition;
         };
-        virtual void initializeTest(TestParameters) = 0;
+        virtual void initializeTest(const TestParameters &) = 0;
         RUNTIME_ERROR(RequestFailure)
         virtual bool testComplete() = 0;
         

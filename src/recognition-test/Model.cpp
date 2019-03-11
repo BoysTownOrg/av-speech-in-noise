@@ -21,7 +21,7 @@ namespace recognition_test {
         maskerPlayer->fadeIn();
     }
 
-    void Model::initializeTest(TestParameters p) {
+    void Model::initializeTest(const TestParameters &p) {
         maskerPlayer->loadFile(p.maskerFilePath);
         list->initialize(p.stimulusListDirectory);
     }

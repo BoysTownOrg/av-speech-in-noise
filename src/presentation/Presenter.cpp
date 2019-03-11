@@ -54,7 +54,7 @@ namespace presentation {
         view->subscribe(this);
     }
     
-    void Presenter::TestSetup::setParent(presentation::Presenter *p) {
+    void Presenter::TestSetup::setParent(Presenter *p) {
         parent = p;
     }
     
@@ -106,7 +106,7 @@ namespace presentation {
         view->subscribe(this);
     }
     
-    void Presenter::Tester::setParent(presentation::Presenter *p) {
+    void Presenter::Tester::setParent(Presenter *p) {
         parent = p;
     }
     
