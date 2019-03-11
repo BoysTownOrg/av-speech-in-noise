@@ -35,9 +35,7 @@ namespace presentation {
             testSetup.submitRequest(model);
             testSetup.close();
             tester.run();
-        } catch (const BadInput &e) {
-            view->showErrorMessage(e.what());
-        } catch (const Model::RequestFailure &e) {
+        } catch (const std::runtime_error &e) {
             view->showErrorMessage(e.what());
         }
     }
@@ -70,15 +68,8 @@ namespace presentation {
     
     void Presenter::TestSetup::submitRequest(presentation::Model *model) {
         Model::TestParameters p;
-        try {
-            p.maskerLevel_dB_SPL =
-                std::stoi(view->maskerLevel_dB_SPL());
-            p.signalLevel_dB_SPL =
-                std::stoi(view->signalLevel_dB_SPL());
-        }
-        catch (const std::invalid_argument &) {
-            throw BadInput{"'" + view->maskerLevel_dB_SPL() + "' is not a valid masker level."};
-        }
+        p.maskerLevel_dB_SPL = readInteger(view->maskerLevel_dB_SPL(), "masker level");
+        p.signalLevel_dB_SPL = readInteger(view->signalLevel_dB_SPL(), "signal level");
         p.maskerFilePath = view->maskerFilePath();
         p.stimulusListDirectory =
             view->stimulusListDirectory();
@@ -89,6 +80,15 @@ namespace presentation {
             ? Model::TestParameters::Condition::auditoryOnly
             : Model::TestParameters::Condition::audioVisual;
         model->initializeTest(std::move(p));
+    }
+    
+    int Presenter::TestSetup::readInteger(std::string x, std::string identifier) {
+        try {
+            return std::stoi(x);
+        }
+        catch (const std::invalid_argument &) {
+            throw BadInput{"'" + x + "' is not a valid " + identifier + "."};
+        }
     }
     
     

@@ -106,6 +106,8 @@ namespace presentation {
             void close();
             void confirmTestSetup() override;
         private:
+            int readInteger(std::string x, std::string identifier);
+            
             Presenter *parent;
             View::TestSetup *view;
         };
