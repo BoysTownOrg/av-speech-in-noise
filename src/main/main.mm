@@ -236,6 +236,16 @@ public:
     std::string audioDevice() override {
         return [deviceMenu.titleOfSelectedItem UTF8String];
     }
+    
+    void populateAudioDeviceMenu(std::vector<std::string> items) override {
+        for (const auto &item : items) {
+            auto title = [NSString stringWithCString:
+                item.c_str()
+                encoding:[NSString defaultCStringEncoding]
+            ];
+            [deviceMenu addItemWithTitle: title];
+        }
+    }
 };
 
 class CocoaTestSetupView : public presentation::View::TestSetup {
