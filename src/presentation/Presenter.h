@@ -120,7 +120,6 @@ namespace presentation {
         
         Presenter(Model *, View *);
         void run();
-        void initializeTest();
         void playTrial() override;
         void newTest() override;
         void openTest() override;

@@ -28,7 +28,7 @@ namespace presentation {
         tester.tuneOut();
     }
     
-    void Presenter::initializeTest() {
+    void Presenter::confirmTestSetup() {
         try {
             initializeTest_();
         } catch (const std::runtime_error &e) {
@@ -44,10 +44,6 @@ namespace presentation {
     
     void Presenter::playTrial() {
         tester.playTrial();
-    }
-    
-    void Presenter::confirmTestSetup() { 
-        initializeTest();
     }
     
 
