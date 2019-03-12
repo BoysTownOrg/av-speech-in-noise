@@ -1,5 +1,15 @@
 #include "CocoaView.h"
 
+static NSTextField *allocLabel(NSString *label, NSRect frame) {
+    const auto text = [[NSTextField alloc] initWithFrame:frame];
+    [text setStringValue:label];
+    [text setBezeled:NO];
+    [text setDrawsBackground:NO];
+    [text setEditable:NO];
+    [text setSelectable:NO];
+    return text;
+}
+
 CocoaTesterView::CocoaTesterView() {
     [view_ setHidden:YES];
     [view_ addSubview:deviceMenu];
@@ -141,6 +151,34 @@ std::string CocoaTestSetupView::subjectId() {
 
 std::string CocoaTestSetupView::condition() {
     return "";
+}
+
+CocoaSubjectView::CocoaSubjectView() :
+    // Defer may be critical here...
+    window{
+        [[NSWindow alloc]
+            initWithContentRect: NSMakeRect(600, 400, 400, 400)
+            styleMask:NSWindowStyleMaskBorderless
+            backing:NSBackingStoreBuffered
+            defer:YES
+        ]
+    }
+{
+    const auto greenButton = [NSButton buttonWithTitle:@"hello" target:nil action:nil];
+    //greenButton.bezelStyle = NSBezelStyleTexturedSquare;
+    greenButton.bordered = false;
+    greenButton.wantsLayer = true;
+    [[greenButton layer] setBackgroundColor:[[NSColor systemGreenColor] CGColor]];
+    [window.contentView addSubview:greenButton];
+    [window makeKeyAndOrderFront:nil];
+}
+
+int CocoaSubjectView::numberResponse() {
+    return 0;
+}
+
+bool CocoaSubjectView::greenResponse() {
+    return false;
 }
 
 CocoaView::CocoaView() {

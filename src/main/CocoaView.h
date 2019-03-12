@@ -59,46 +59,14 @@ public:
     std::string testerId() override;
     std::string subjectId() override;
     std::string condition() override;
-private:
-    NSTextField *allocLabel(NSString *label, NSRect frame) {
-        const auto text = [[NSTextField alloc] initWithFrame:frame];
-        [text setStringValue:label];
-        [text setBezeled:NO];
-        [text setDrawsBackground:NO];
-        [text setEditable:NO];
-        [text setSelectable:NO];
-        return text;
-    }
 };
 
 class CocoaSubjectView : public presentation::View::SubjectView {
-    // Defer may be critical here...
-    NSWindow *window{
-        [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(600, 400, 400, 400)
-            styleMask:NSWindowStyleMaskBorderless
-            backing:NSBackingStoreBuffered
-            defer:YES
-        ]
-    };
+    NSWindow *window;
 public:
-    CocoaSubjectView() {
-        const auto greenButton = [NSButton buttonWithTitle:@"hello" target:nil action:nil];
-        //greenButton.bezelStyle = NSBezelStyleTexturedSquare;
-        greenButton.bordered = false;
-        greenButton.wantsLayer = true;
-        [[greenButton layer] setBackgroundColor:[[NSColor systemGreenColor] CGColor]];
-        [window.contentView addSubview:greenButton];
-        [window makeKeyAndOrderFront:nil];
-    }
-    
-    int numberResponse() override {
-        return 0;
-    }
-    
-    bool greenResponse() override {
-        return false;
-    }
+    CocoaSubjectView();
+    int numberResponse() override;
+    bool greenResponse() override;
 };
 
 class CocoaView : public presentation::View {
