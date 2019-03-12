@@ -64,6 +64,10 @@ namespace {
             setupView_{setupView},
             testerView_{testerView} {}
         
+        void submitResponse() {
+            listener_->submitResponse();
+        }
+        
         void playTrial() {
             listener_->playTrial();
         }
@@ -293,6 +297,10 @@ namespace {
         ViewStub view{&setupView, &testerView};
         presentation::Presenter presenter{&model, &view};
         
+        void submitResponse() {
+            view.submitResponse();
+        }
+        
         void playTrial() {
             view.playTrial();
         }
@@ -450,7 +458,7 @@ namespace {
     TEST_F(PresenterTests, subjectResponsePassesCoordinates) {
         subjectView.setGreenResponse();
         subjectView.setNumberResponse(1);
-        //submitResponse();
+        submitResponse();
         //EXPECT_EQ(Model::ResponseParameters::Color::green, model.responseParameters().color);
         //EXPECT_EQ(1, model.responseParameters().number);
     }
