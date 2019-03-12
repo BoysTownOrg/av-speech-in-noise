@@ -192,7 +192,7 @@ class CocoaSubjectView : public presentation::View::SubjectView {
     // Defer may be critical here...
     NSWindow *window{
         [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(400, 400, 0, 0)
+            initWithContentRect: NSMakeRect(600, 400, 400, 400)
             styleMask:NSWindowStyleMaskBorderless
             backing:NSBackingStoreBuffered
             defer:YES
@@ -200,6 +200,12 @@ class CocoaSubjectView : public presentation::View::SubjectView {
     };
 public:
     CocoaSubjectView() {
+        const auto greenButton = [NSButton buttonWithTitle:@"hello" target:nil action:nil];
+        //greenButton.bezelStyle = NSBezelStyleTexturedSquare;
+        greenButton.bordered = false;
+        greenButton.wantsLayer = true;
+        [[greenButton layer] setBackgroundColor:[[NSColor systemGreenColor] CGColor]];
+        [window.contentView addSubview:greenButton];
         [window makeKeyAndOrderFront:nil];
     }
     
