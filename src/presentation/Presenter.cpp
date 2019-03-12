@@ -16,6 +16,7 @@ namespace presentation {
 
     void Presenter::newTest() {
         testSetup.listen();
+        view->showConfirmTestSetupButton();
     }
 
     void Presenter::openTest() {

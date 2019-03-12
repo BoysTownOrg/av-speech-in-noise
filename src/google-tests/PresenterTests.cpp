@@ -67,6 +67,7 @@ namespace {
         SubjectView *subjectView_;
         bool eventLoopCalled_{};
         bool confirmationDialogShown_{};
+        bool confirmTestSetupButtonShown_{};
     public:
         ViewStub(
             TestSetup *setupView,
@@ -76,6 +77,14 @@ namespace {
             setupView_{setupView},
             testerView_{testerView},
             subjectView_{subjectView} {}
+        
+        void showConfirmTestSetupButton() override {
+            confirmTestSetupButtonShown_ = true;
+        }
+        
+        auto confirmTestSetupButtonShown() const {
+            return confirmTestSetupButtonShown_;
+        }
         
         void submitResponse() {
             listener_->submitResponse();
@@ -374,6 +383,7 @@ namespace {
         
         void assertSetupViewShown() {
             EXPECT_TRUE(setupViewShown());
+            EXPECT_TRUE(view.confirmTestSetupButtonShown());
         }
         
         void assertSetupViewHidden() {
