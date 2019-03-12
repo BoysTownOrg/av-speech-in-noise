@@ -38,6 +38,14 @@ namespace presentation {
         };
         virtual void playTrial(const TrialParameters &) = 0;
         
+        struct ResponseParameters {
+            enum class Color {
+                green
+            };
+            
+            Color color;
+        };
+        
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
     };

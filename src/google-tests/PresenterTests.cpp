@@ -6,12 +6,17 @@ namespace {
     class ModelStub : public presentation::Model {
         TestParameters testParameters_{};
         TrialParameters trialParameters_{};
+        ResponseParameters responseParameters_{};
         std::vector<std::string> audioDevices_{};
         bool testComplete_{};
         bool trialPlayed_{};
     public:
         void setAudioDevices(std::vector<std::string> v) {
             audioDevices_ = std::move(v);
+        }
+        
+        auto &responseParameters() const {
+            return responseParameters_;
         }
         
         auto &trialParameters() const {
@@ -459,7 +464,10 @@ namespace {
         subjectView.setGreenResponse();
         subjectView.setNumberResponse(1);
         submitResponse();
-        //EXPECT_EQ(Model::ResponseParameters::Color::green, model.responseParameters().color);
+        EXPECT_EQ(
+            presentation::Model::ResponseParameters::Color::green,
+            model.responseParameters().color
+        );
         //EXPECT_EQ(1, model.responseParameters().number);
     }
 
