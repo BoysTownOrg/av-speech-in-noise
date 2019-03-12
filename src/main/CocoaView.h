@@ -40,9 +40,7 @@ public:
         return view_;
     }
     
-    void show() override {
-        [view_ setHidden:NO];
-    }
+    void show() override;
     
     void hide() override {
         [view_ setHidden:YES];
@@ -62,6 +60,7 @@ public:
         }
     }
 };
+
 
 class CocoaTestSetupView : public presentation::View::TestSetup {
     NSView *view_{
@@ -355,24 +354,5 @@ public:
         [alert runModal];
     }
 };
-
-@implementation ViewActions
-@synthesize controller;
-- (void)newTest {
-    controller->newTest();
-}
-
-- (void)openTest {
-    controller->openTest();
-}
-
-- (void)confirmTestSetup {
-    controller->confirmTestSetup();
-}
-
-- (void)playTrial {
-    controller->playTrial();
-}
-@end
 
 #endif /* CocoaView_h */
