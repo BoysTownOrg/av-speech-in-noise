@@ -190,7 +190,7 @@ private:
 
 class CocoaSubjectView : public presentation::View::SubjectView {
     // Defer may be critical here...
-    NSWindow *videoWindow{
+    NSWindow *window{
         [[NSWindow alloc]
             initWithContentRect: NSMakeRect(400, 400, 0, 0)
             styleMask:NSWindowStyleMaskBorderless
@@ -200,7 +200,7 @@ class CocoaSubjectView : public presentation::View::SubjectView {
     };
 public:
     CocoaSubjectView() {
-        [videoWindow makeKeyAndOrderFront:nil];
+        [window makeKeyAndOrderFront:nil];
     }
     
     int numberResponse() override {
