@@ -64,6 +64,10 @@ namespace {
             setupView_{setupView},
             testerView_{testerView} {}
         
+        void confirmTestSetup() {
+            listener_->confirmTestSetup();
+        }
+        
         void showErrorMessage(std::string s) override {
             errorMessage_ = std::move(s);
         }
@@ -290,7 +294,7 @@ namespace {
         presentation::Presenter presenter{&model, &view};
         
         void confirmTestSetup() {
-            setupView.confirm();
+            view.confirmTestSetup();
         }
         
         void confirmTestSetupWithInvalidInput() {

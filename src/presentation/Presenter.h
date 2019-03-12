@@ -51,6 +51,7 @@ namespace presentation {
             virtual void newTest() = 0;
             virtual void openTest() = 0;
             virtual void closeTest() = 0;
+            virtual void confirmTestSetup() = 0;
         };
 
         class Tester {
@@ -142,6 +143,8 @@ namespace presentation {
         void newTest() override;
         void openTest() override;
         void closeTest() override;
+        void confirmTestSetup() override;
+        
         RUNTIME_ERROR(BadInput)
     private:
         void initializeTest_();

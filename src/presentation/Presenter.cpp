@@ -48,6 +48,11 @@ namespace presentation {
     void Presenter::playTrial() {
         tester.submitRequest(model);
     }
+    
+    void Presenter::confirmTestSetup() { 
+        initializeTest();
+    }
+    
 
     Presenter::TestSetup::TestSetup(View::TestSetup *view) :
         view{view}
