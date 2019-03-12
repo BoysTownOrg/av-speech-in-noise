@@ -216,7 +216,6 @@ namespace {
         class TesterViewStub : public Tester {
             std::vector<std::string> audioDevices_{};
             std::string audioDevice_{};
-            EventListener *listener_{};
             bool shown_{};
             bool hidden_{};
         public:
@@ -234,10 +233,6 @@ namespace {
             
             void show() override {
                 shown_ = true;
-            }
-            
-            void subscribe(EventListener *listener) override {
-                listener_ = listener;
             }
             
             void hide() override {

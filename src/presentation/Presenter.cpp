@@ -7,8 +7,6 @@ namespace presentation {
         model{model},
         view{view}
     {
-        testSetup.setParent(this);
-        tester.setParent(this);
         tester.initialize(model);
         view->subscribe(this);
     }
@@ -59,10 +57,6 @@ namespace presentation {
     {
     }
     
-    void Presenter::TestSetup::setParent(Presenter *p) {
-        parent = p;
-    }
-    
     void Presenter::TestSetup::run() {
         view->show();
     }
@@ -104,19 +98,10 @@ namespace presentation {
     Presenter::Tester::Tester(View::Tester *view) :
         view{view}
     {
-        view->subscribe(this);
-    }
-    
-    void Presenter::Tester::setParent(Presenter *p) {
-        parent = p;
     }
     
     void Presenter::Tester::run() {
         view->show();
-    }
-
-    void Presenter::Tester::playTrial() {
-        parent->playTrial();
     }
 
     void Presenter::Tester::close() {

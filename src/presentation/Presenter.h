@@ -57,14 +57,7 @@ namespace presentation {
 
         class Tester {
         public:
-            class EventListener {
-            public:
-                virtual ~EventListener() = default;
-                virtual void playTrial() = 0;
-            };
-            
             virtual ~Tester() = default;
-            virtual void subscribe(EventListener *) = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
             virtual std::string audioDevice() = 0;
@@ -103,7 +96,6 @@ namespace presentation {
         class TestSetup {
         public:
             explicit TestSetup(View::TestSetup *);
-            void setParent(Presenter *);
             void run();
             void submitRequest(Model *);
             void close();
@@ -111,21 +103,18 @@ namespace presentation {
             int readInteger(std::string x, std::string identifier);
             Model::TestParameters testParameters();
             
-            Presenter *parent;
             View::TestSetup *view;
         };
         
-        class Tester : public View::Tester::EventListener {
+        class Tester {
         public:
             explicit Tester(View::Tester *);
-            void setParent(Presenter *);
             void initialize(Model *);
             void run();
             void submitRequest(Model *);
             void close();
-            void playTrial() override;
         private:
-            Presenter *parent;
+        
             View::Tester *view;
         };
         
