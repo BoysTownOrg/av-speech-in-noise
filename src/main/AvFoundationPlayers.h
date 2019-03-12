@@ -89,22 +89,6 @@ public:
     }
 };
 
-static AVURLAsset *makeAvAsset(std::string filePath) {
-    const auto url = [NSURL URLWithString:
-        [NSString stringWithFormat:@"file://%@/",
-            [
-                [NSString stringWithCString:
-                    filePath.c_str()
-                    encoding:[NSString defaultCStringEncoding]
-                ]
-                stringByAddingPercentEncodingWithAllowedCharacters:
-                    [NSCharacterSet URLQueryAllowedCharacterSet]
-            ]
-        ]
-    ];
-    return [AVURLAsset URLAssetWithURL:url options:nil];
-}
-
 class AvFoundationStimulusPlayer;
 
 @interface StimulusPlayerActions : NSObject
@@ -127,47 +111,12 @@ class AvFoundationStimulusPlayer : public recognition_test::StimulusPlayer {
     AVPlayer *player{[AVPlayer playerWithPlayerItem:nil]};
     AVPlayerLayer *playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]};
 public:
-    AvFoundationStimulusPlayer() {
-        [videoWindow.contentView setWantsLayer:YES];
-        [videoWindow.contentView.layer addSublayer:playerLayer];
-        [videoWindow makeKeyAndOrderFront:nil];
-        actions.controller = this;
-    }
-    
-    void subscribe(EventListener *listener_) override {
-        listener = listener_;
-    }
-    
-    void playbackComplete() {
-        listener->playbackComplete();
-    }
-    
-    void play() override {
-        [player play];
-    }
-    
-    void loadFile(std::string filePath) override {
-        const auto asset = makeAvAsset(filePath);
-        [player replaceCurrentItemWithPlayerItem:
-            [AVPlayerItem playerItemWithAsset:asset]];
-        [videoWindow setContentSize:NSSizeFromCGSize(
-            [asset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize)];
-        [playerLayer setFrame:videoWindow.contentView.bounds];
-        [NSNotificationCenter.defaultCenter addObserver:
-            actions
-            selector:@selector(playbackComplete)
-            name:AVPlayerItemDidPlayToEndTimeNotification
-            object:player.currentItem
-        ];
-    }
-    
-    void setDevice(int index) override {
-        auto uid_ = device.uid(index);
-        player.audioOutputDeviceUniqueID = [
-            NSString stringWithCString:uid_.c_str()
-            encoding:[NSString defaultCStringEncoding]
-        ];
-    }
+    AvFoundationStimulusPlayer();
+    void subscribe(EventListener *) override;
+    void playbackComplete();
+    void play() override;
+    void loadFile(std::string filePath) override;
+    void setDevice(int index) override;
 };
 
 class AvFoundationMaskerPlayer : public recognition_test::MaskerPlayer {
