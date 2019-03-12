@@ -43,7 +43,7 @@ namespace presentation {
     }
     
     void Presenter::playTrial() {
-        tester.submitRequest(model);
+        tester.playTrial();
     }
     
     void Presenter::confirmTestSetup() { 
@@ -95,6 +95,7 @@ namespace presentation {
     }
     
     Presenter::Tester::Tester(Model *model, View::Tester *view) :
+        model{model},
         view{view}
     {
         view->populateAudioDeviceMenu(model->audioDevices());
@@ -109,6 +110,12 @@ namespace presentation {
     }
     
     void Presenter::Tester::submitRequest(Model *model) {
+        Model::TrialParameters p;
+        p.audioDevice = view->audioDevice();
+        model->playTrial(p);
+    }
+    
+    void Presenter::Tester::playTrial() {
         Model::TrialParameters p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
