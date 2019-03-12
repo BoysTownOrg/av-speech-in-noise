@@ -145,10 +145,6 @@ namespace {
                 shown_ = true;
             }
             
-            void subscribe(EventListener *listener) override {
-                listener_ = listener;
-            }
-            
             void hide() override {
                 hidden_ = true;
             }
@@ -159,10 +155,6 @@ namespace {
             
             std::string signalLevel_dB_SPL() override {
                 return signalLevel_;
-            }
-            
-            void confirm() {
-                listener_->confirm();
             }
             
             bool hidden() const {
@@ -501,7 +493,7 @@ namespace {
         
         void confirmTestSetup() {
             presentation::Presenter presenter{model, &view};
-            setupView.confirm();
+            view.confirmTestSetup();
         }
         
         void assertConfirmTestSetupShowsErrorMessage(std::string s) {

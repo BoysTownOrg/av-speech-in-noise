@@ -72,14 +72,7 @@ namespace presentation {
 
         class TestSetup {
         public:
-            class EventListener {
-            public:
-                virtual ~EventListener() = default;
-                virtual void confirm() = 0;
-            };
-            
             virtual ~TestSetup() = default;
-            virtual void subscribe(EventListener *) = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
             virtual std::string maskerLevel_dB_SPL() = 0;
@@ -106,14 +99,13 @@ namespace presentation {
 
     class Presenter : public View::EventListener {
     public:
-        class TestSetup : public View::TestSetup::EventListener {
+        class TestSetup {
         public:
             explicit TestSetup(View::TestSetup *);
             void setParent(Presenter *);
             void run();
             void submitRequest(Model *);
             void close();
-            void confirm() override;
         private:
             int readInteger(std::string x, std::string identifier);
             Model::TestParameters testParameters();

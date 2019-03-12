@@ -57,7 +57,6 @@ namespace presentation {
     Presenter::TestSetup::TestSetup(View::TestSetup *view) :
         view{view}
     {
-        view->subscribe(this);
     }
     
     void Presenter::TestSetup::setParent(Presenter *p) {
@@ -66,10 +65,6 @@ namespace presentation {
     
     void Presenter::TestSetup::run() {
         view->show();
-    }
-
-    void Presenter::TestSetup::confirm() {
-        parent->initializeTest();
     }
     
     void Presenter::TestSetup::submitRequest(Model *model) {
