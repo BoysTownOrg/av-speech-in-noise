@@ -207,6 +207,11 @@ namespace {
         void setMaskerIsPlaying() {
             maskerPlayer.setPlaying();
         }
+        
+        void assertMaskerPlayerNotPlayedAfterPlayingTrial() {
+            playTrial();
+            assertMaskerPlayerNotPlayed();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -246,8 +251,7 @@ namespace {
 
     TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfMaskerAlreadyPlaying) {
         setMaskerIsPlaying();
-        playTrial();
-        assertMaskerPlayerNotPlayed();
+        assertMaskerPlayerNotPlayedAfterPlayingTrial();
     }
 
     TEST_F(
@@ -255,8 +259,7 @@ namespace {
         playTrialDoesNotPlayIfListEmpty
     ) {
         setListToEmpty();
-        playTrial();
-        assertMaskerPlayerNotPlayed();
+        assertMaskerPlayerNotPlayedAfterPlayingTrial();
     }
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
