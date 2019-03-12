@@ -203,6 +203,10 @@ namespace {
         void assertListNotAdvanced() {
             EXPECT_FALSE(list.nextCalled());
         }
+        
+        void setMaskerIsPlaying() {
+            maskerPlayer.setPlaying();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -235,13 +239,13 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, playTrialDoesChangeAudioDeviceWhenMaskerPlaying) {
-        maskerPlayer.setPlaying();
+        setMaskerIsPlaying();
         playTrial();
         EXPECT_FALSE(maskerPlayer.setDeviceCalled());
     }
 
     TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfMaskerAlreadyPlaying) {
-        maskerPlayer.setPlaying();
+        setMaskerIsPlaying();
         playTrial();
         assertMaskerPlayerNotPlayed();
     }
@@ -310,7 +314,7 @@ namespace {
         RecognitionTestModelTests,
         playTrialDoesNotAdvanceListIfMaskerIsPlaying
     ) {
-        maskerPlayer.setPlaying();
+        setMaskerIsPlaying();
         playTrial();
         assertListNotAdvanced();
     }
