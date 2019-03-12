@@ -31,34 +31,12 @@ class CocoaTesterView : public presentation::View::Tester {
         [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
     };
 public:
-    CocoaTesterView() {
-        [view_ setHidden:YES];
-        [view_ addSubview:deviceMenu];
-    }
-    
-    NSView *view() {
-        return view_;
-    }
-    
+    CocoaTesterView();
+    NSView *view();
     void show() override;
-    
-    void hide() override {
-        [view_ setHidden:YES];
-    }
-    
-    std::string audioDevice() override {
-        return [deviceMenu.titleOfSelectedItem UTF8String];
-    }
-    
-    void populateAudioDeviceMenu(std::vector<std::string> items) override {
-        for (const auto &item : items) {
-            auto title = [NSString stringWithCString:
-                item.c_str()
-                encoding:[NSString defaultCStringEncoding]
-            ];
-            [deviceMenu addItemWithTitle: title];
-        }
-    }
+    void hide() override;
+    std::string audioDevice() override;
+    void populateAudioDeviceMenu(std::vector<std::string> items) override;
 };
 
 
@@ -115,66 +93,17 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
             initWithFrame:NSMakeRect(155, 340, 300, 25)]
     };
 public:
-    CocoaTestSetupView() {
-        [view_ setHidden:YES];
-        [view_ addSubview:subjectIdLabel];
-        [view_ addSubview:subjectId_];
-        [view_ addSubview:testerIdLabel];
-        [view_ addSubview:testerId_];
-        [view_ addSubview:signalLevel_dB_SPL_label];
-        [view_ addSubview:signalLevel_dB_SPL_];
-        [view_ addSubview:maskerLevel_dB_SPL_label];
-        [view_ addSubview:maskerLevel_dB_SPL_];
-        [view_ addSubview:stimulusListDirectoryLabel];
-        [view_ addSubview:stimulusListDirectory_];
-        [view_ addSubview:maskerFilePath_label];
-        [view_ addSubview:maskerFilePath_];
-        stimulusListDirectory_.stringValue =
-            @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
-        maskerFilePath_.stringValue =
-            @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
-    }
-    
-    NSView *view() {
-        return view_;
-    }
-    
-    void show() override {
-        [view_ setHidden:NO];
-    }
-    
-    void hide() override {
-        [view_ setHidden:YES];
-    }
-    
-    std::string maskerLevel_dB_SPL() override {
-        return [maskerLevel_dB_SPL_.stringValue UTF8String];
-    }
-    
-    std::string signalLevel_dB_SPL() override {
-        return [signalLevel_dB_SPL_.stringValue UTF8String];
-    }
-    
-    std::string maskerFilePath() override {
-        return [maskerFilePath_.stringValue UTF8String];
-    }
-    
-    std::string stimulusListDirectory() override {
-        return [stimulusListDirectory_.stringValue UTF8String];
-    }
-    
-    std::string testerId() override {
-        return [testerId_.stringValue UTF8String];
-    }
-    
-    std::string subjectId() override {
-        return [subjectId_.stringValue UTF8String];
-    }
-    
-    std::string condition() override {
-        return "";
-    }
-    
+    CocoaTestSetupView();
+    NSView *view();
+    void show() override;
+    void hide() override;
+    std::string maskerLevel_dB_SPL() override;
+    std::string signalLevel_dB_SPL() override;
+    std::string maskerFilePath() override;
+    std::string stimulusListDirectory() override;
+    std::string testerId() override;
+    std::string subjectId() override;
+    std::string condition() override;
 private:
     NSTextField *allocLabel(NSString *label, NSRect frame) {
         const auto text = [[NSTextField alloc] initWithFrame:frame];
