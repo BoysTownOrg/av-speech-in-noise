@@ -43,8 +43,10 @@ namespace presentation {
                 green
             };
             
+            int number;
             Color color;
         };
+        virtual void submitResponse(const ResponseParameters &) = 0;
         
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
@@ -63,6 +65,13 @@ namespace presentation {
             virtual void confirmTestSetup() = 0;
             virtual void playTrial() = 0;
             virtual void submitResponse() = 0;
+        };
+        
+        class SubjectView {
+        public:
+            virtual ~SubjectView() = default;
+            virtual int numberResponse() = 0;
+            virtual bool greenResponse() = 0;
         };
 
         class Tester {
@@ -92,6 +101,7 @@ namespace presentation {
         virtual void eventLoop() = 0;
         virtual TestSetup *testSetup() = 0;
         virtual Tester *tester() = 0;
+        virtual SubjectView *subject() = 0;
         virtual void showErrorMessage(std::string) = 0;
         enum class DialogResponse {
             decline,

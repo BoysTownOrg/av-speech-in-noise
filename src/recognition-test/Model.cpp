@@ -57,5 +57,8 @@ namespace recognition_test {
         return descriptions;
     }
     
+    void Model::submitResponse(const ResponseParameters &) { 
+        ;
+    }
 }
 

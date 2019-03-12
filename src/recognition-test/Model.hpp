@@ -63,8 +63,9 @@ namespace recognition_test {
             StimulusPlayer *
         );
         void initializeTest(const TestParameters &) override;
-        bool testComplete() override;
         void playTrial(const TrialParameters &) override;
+        void submitResponse(const ResponseParameters &) override;
+        bool testComplete() override;
         std::vector<std::string> audioDevices() override;
         void fadeInComplete() override;
         void playbackComplete() override;

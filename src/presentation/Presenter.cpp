@@ -47,7 +47,11 @@ namespace presentation {
     }
     
     void Presenter::submitResponse() { 
-        ;
+        Model::ResponseParameters p;
+        if (view->subject()->greenResponse())
+            p.color = Model::ResponseParameters::Color::green;
+        p.number = view->subject()->numberResponse();
+        model->submitResponse(p);
     }
     
     

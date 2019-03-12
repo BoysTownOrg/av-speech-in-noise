@@ -44,6 +44,11 @@ namespace {
             return audioDevices_;
         }
         
+        void submitResponse(const ResponseParameters &p) override {
+            responseParameters_ = p;
+        }
+        
+        
         auto trialPlayed() const {
             return trialPlayed_;
         }
@@ -59,15 +64,18 @@ namespace {
         EventListener *listener_{};
         TestSetup *setupView_;
         Tester *testerView_;
+        SubjectView *subjectView_;
         bool eventLoopCalled_{};
         bool confirmationDialogShown_{};
     public:
         ViewStub(
             TestSetup *setupView,
-            Tester *testerView
+            Tester *testerView,
+            SubjectView *subjectView
         ) :
             setupView_{setupView},
-            testerView_{testerView} {}
+            testerView_{testerView},
+            subjectView_{subjectView} {}
         
         void submitResponse() {
             listener_->submitResponse();
@@ -113,6 +121,11 @@ namespace {
             confirmationDialogShown_ = true;
             return dialogResponse_;
         }
+        
+        SubjectView *subject() override {
+            return subjectView_;
+        }
+        
         
         auto eventLoopCalled() const {
             return eventLoopCalled_;
@@ -261,7 +274,7 @@ namespace {
             }
         };
         
-        class SubjectViewStub {
+        class SubjectViewStub : public SubjectView {
             int numberResponse_{};
             bool greenResponse_{};
         public:
@@ -272,6 +285,14 @@ namespace {
             void setNumberResponse(int n) {
                 numberResponse_ = n;
             }
+            
+            int numberResponse() override {
+                return numberResponse_;
+            }
+            
+            bool greenResponse() override {
+                return greenResponse_;
+            }
         };
     };
 
@@ -280,7 +301,7 @@ namespace {
         ModelStub model{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
-        ViewStub view{&setupView, &testerView};
+        ViewStub view{&setupView, &testerView, nullptr};
         
         presentation::Presenter construct() {
             return {&model, &view};
@@ -299,7 +320,7 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        ViewStub view{&setupView, &testerView};
+        ViewStub view{&setupView, &testerView, &subjectView};
         presentation::Presenter presenter{&model, &view};
         
         void submitResponse() {
@@ -468,7 +489,7 @@ namespace {
             presentation::Model::ResponseParameters::Color::green,
             model.responseParameters().color
         );
-        //EXPECT_EQ(1, model.responseParameters().number);
+        EXPECT_EQ(1, model.responseParameters().number);
     }
 
     TEST_F(PresenterTests, closingTestPromptsTesterToSave) {
@@ -509,6 +530,10 @@ namespace {
             throw RequestFailure{errorMessage};
         }
         
+        void submitResponse(const ResponseParameters &) override {
+            throw RequestFailure{errorMessage};
+        }
+        
         bool testComplete() override { return {}; }
         std::vector<std::string> audioDevices() override { return {}; }
     };
@@ -520,7 +545,7 @@ namespace {
         presentation::Model *model{&defaultModel};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
-        ViewStub view{&setupView, &testerView};
+        ViewStub view{&setupView, &testerView, nullptr};
         
         void useFailingModel(std::string s = {}) {
             failure.setErrorMessage(std::move(s));
