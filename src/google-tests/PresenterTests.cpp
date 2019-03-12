@@ -64,6 +64,10 @@ namespace {
             setupView_{setupView},
             testerView_{testerView} {}
         
+        void playTrial() {
+            listener_->playTrial();
+        }
+        
         void confirmTestSetup() {
             listener_->confirmTestSetup();
         }
@@ -133,7 +137,6 @@ namespace {
             std::string stimulusList_{};
             std::string subjectId_{};
             std::string testerId_{};
-            EventListener *listener_{};
             bool shown_{};
             bool hidden_{};
         public:
@@ -245,10 +248,6 @@ namespace {
                 audioDevices_ = std::move(v);
             }
             
-            void playTrial() {
-                listener_->playTrial();
-            }
-            
             auto hidden() const {
                 return hidden_;
             }
@@ -284,6 +283,10 @@ namespace {
         ViewStub::TesterViewStub testerView{};
         ViewStub view{&setupView, &testerView};
         presentation::Presenter presenter{&model, &view};
+        
+        void playTrial() {
+            view.playTrial();
+        }
         
         void confirmTestSetup() {
             view.confirmTestSetup();
@@ -420,18 +423,18 @@ namespace {
 
     TEST_F(PresenterTests, playingTrialDoesNotHideViewWhileTestInProgress) {
         model.setTestIncomplete();
-        testerView.playTrial();
+        playTrial();
         assertTesterViewNotHidden();
     }
 
     TEST_F(PresenterTests, playingTrialPlaysTrial) {
-        testerView.playTrial();
+        playTrial();
         EXPECT_TRUE(model.trialPlayed());
     }
 
     TEST_F(PresenterTests, playingTrialPassesAudioDevice) {
         testerView.setAudioDevice("a");
-        testerView.playTrial();
+        playTrial();
         assertEqual("a", model.trialParameters().audioDevice);
     }
 

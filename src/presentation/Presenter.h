@@ -52,6 +52,7 @@ namespace presentation {
             virtual void openTest() = 0;
             virtual void closeTest() = 0;
             virtual void confirmTestSetup() = 0;
+            virtual void playTrial() = 0;
         };
 
         class Tester {
@@ -131,7 +132,7 @@ namespace presentation {
         Presenter(Model *, View *);
         void run();
         void initializeTest();
-        void playTrial();
+        void playTrial() override;
         void newTest() override;
         void openTest() override;
         void closeTest() override;
