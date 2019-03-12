@@ -95,14 +95,16 @@ namespace presentation {
     public:
         class TestSetup {
         public:
-            explicit TestSetup(View::TestSetup *);
+            TestSetup(Model *model, View::TestSetup *);
             void run();
             void submitRequest(Model *);
+            void initializeTest();
             void close();
         private:
             int readInteger(std::string x, std::string identifier);
             Model::TestParameters testParameters();
             
+            Model *model;
             View::TestSetup *view;
         };
         

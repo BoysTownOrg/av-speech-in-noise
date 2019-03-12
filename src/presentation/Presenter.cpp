@@ -2,7 +2,7 @@
 
 namespace presentation {
     Presenter::Presenter(Model *model, View *view) :
-        testSetup{view->testSetup()},
+        testSetup{model, view->testSetup()},
         tester{model, view->tester()},
         model{model},
         view{view}
@@ -37,7 +37,7 @@ namespace presentation {
     }
     
     void Presenter::initializeTest_() {
-        testSetup.submitRequest(model);
+        testSetup.initializeTest();
         testSetup.close();
         tester.run();
     }
@@ -51,7 +51,8 @@ namespace presentation {
     }
     
 
-    Presenter::TestSetup::TestSetup(View::TestSetup *view) :
+    Presenter::TestSetup::TestSetup(Model *model, View::TestSetup *view) :
+        model{model},
         view{view}
     {
     }
@@ -93,6 +94,11 @@ namespace presentation {
     void Presenter::TestSetup::close() {
         view->hide();
     }
+    
+    void Presenter::TestSetup::initializeTest() {
+        model->initializeTest(testParameters());
+    }
+    
     
     Presenter::Tester::Tester(Model *model, View::Tester *view) :
         model{model},
