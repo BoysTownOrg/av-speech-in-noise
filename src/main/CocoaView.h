@@ -226,7 +226,7 @@ class CocoaView : public presentation::View {
         ]
     };
     NSView *tbdView{
-        [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 500, 100)]
     };
     CocoaTestSetupView testSetupView_{};
     CocoaTesterView testerView_{};
@@ -268,18 +268,18 @@ public:
             target:actions
             action:@selector(playTrial)
         ];
-        playTrialButton.target = actions;
         const auto confirmButton = [NSButton buttonWithTitle:
             @"Confirm"
             target:actions
             action:@selector(confirmTestSetup)
         ];
-        confirmButton.target = actions;
-        [window.contentView addSubview:testerView_.view()];
-        [window.contentView addSubview:testSetupView_.view()];
+        confirmButton.frame = NSMakeRect(0, 0, 130, 40);
+        playTrialButton.frame = NSMakeRect(200, 0, 130, 40);
         [tbdView addSubview:confirmButton];
         [tbdView addSubview:playTrialButton];
         [window.contentView addSubview:tbdView];
+        [window.contentView addSubview:testerView_.view()];
+        [window.contentView addSubview:testSetupView_.view()];
         actions.controller = this;
         [window makeKeyAndOrderFront:nil];
     }
