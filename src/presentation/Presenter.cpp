@@ -1,6 +1,13 @@
 #include "Presenter.h"
 
 namespace presentation {
+    std::string conditionName(Model::TestParameters::Condition c) {
+        if (c == Model::TestParameters::Condition::auditoryOnly)
+            return "auditory-only";
+        else
+            return "audio-visual";
+    }
+    
     Presenter::Presenter(Model *model, View *view) :
         testSetup{model, view->testSetup()},
         tester{model, view->tester()},
@@ -62,6 +69,9 @@ namespace presentation {
         model{model},
         view{view}
     {
+        view->populateConditionMenu({
+            conditionName(Model::TestParameters::Condition::auditoryOnly)
+        });
     }
     
     void Presenter::TestSetup::listen() {

@@ -51,6 +51,8 @@ namespace presentation {
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
     };
+    
+    std::string conditionName(Model::TestParameters::Condition);
 
     class View {
     public:
@@ -95,6 +97,7 @@ namespace presentation {
             virtual std::string testerId() = 0;
             virtual std::string subjectId() = 0;
             virtual std::string condition() = 0;
+            virtual void populateConditionMenu(std::vector<std::string> items) = 0;
         };
         
         virtual void subscribe(EventListener *) = 0;

@@ -3,6 +3,17 @@
 #include <gtest/gtest.h>
 
 namespace {
+    template<typename T>
+    class Collection {
+        std::vector<T> items{};
+    public:
+        Collection(std::vector<T> items = {}) : items{std::move(items)} {}
+        
+        bool contains(T item) {
+            return std::find(items.begin(), items.end(), item) != items.end();
+        }
+    };
+    
     class ModelStub : public presentation::Model {
         TestParameters testParameters_{};
         TrialParameters trialParameters_{};
@@ -170,6 +181,7 @@ namespace {
         }
 
         class TestSetupViewStub : public TestSetup {
+            Collection<std::string> conditions_{};
             std::string signalLevel_{"0"};
             std::string maskerLevel_{"0"};
             std::string condition_{};
@@ -180,6 +192,14 @@ namespace {
             bool shown_{};
             bool hidden_{};
         public:
+            void populateConditionMenu(std::vector<std::string> items) override {
+                conditions_ = std::move(items);
+            }
+            
+            auto conditions() const {
+                return conditions_;
+            }
+            
             auto shown() const {
                 return shown_;
             }
@@ -407,6 +427,12 @@ namespace {
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
         EXPECT_EQ(&presenter, view.listener());
+    }
+
+    TEST_F(PresenterTests, populatesConditionMenu) {
+        auto actual = setupView.conditions();
+        EXPECT_TRUE(actual.contains(conditionName(
+            presentation::Model::TestParameters::Condition::auditoryOnly)));
     }
 
     TEST_F(PresenterTests, callsEventLoopWhenRun) {
