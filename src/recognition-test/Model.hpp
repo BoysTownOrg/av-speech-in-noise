@@ -70,6 +70,8 @@ namespace recognition_test {
         std::vector<std::string> audioDevices() override;
         void fadeInComplete() override;
         void playbackComplete() override;
+    private:
+        int findDeviceIndex(const TrialParameters &trial);
     };
 }
 #endif

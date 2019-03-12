@@ -21,6 +21,14 @@ namespace recognition_test {
         if (maskerPlayer->playing())
             return;
         
+        int deviceIndex = findDeviceIndex(trial);
+        maskerPlayer->setDevice(deviceIndex);
+        stimulusPlayer->setDevice(deviceIndex);
+        stimulusPlayer->loadFile(list->next());
+        maskerPlayer->fadeIn();
+    }
+    
+    int Model::findDeviceIndex(const TrialParameters &trial) {
         auto devices_ = audioDevices();
         auto deviceIndex = gsl::narrow<int>(
             std::find(
@@ -31,10 +39,7 @@ namespace recognition_test {
         );
         if (deviceIndex == maskerPlayer->deviceCount())
             throw RequestFailure{"'" + trial.audioDevice + "' is not a valid audio device."};
-        maskerPlayer->setDevice(deviceIndex);
-        stimulusPlayer->setDevice(deviceIndex);
-        stimulusPlayer->loadFile(list->next());
-        maskerPlayer->fadeIn();
+        return deviceIndex;
     }
 
     void Model::initializeTest(const TestParameters &p) {
