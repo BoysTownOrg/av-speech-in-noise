@@ -2,10 +2,13 @@
 
 namespace presentation {
     std::string conditionName(Model::TestParameters::Condition c) {
-        if (c == Model::TestParameters::Condition::auditoryOnly)
+        using condition_type = decltype(c);
+        switch (c) {
+        case condition_type::auditoryOnly:
             return "auditory-only";
-        else
+        case condition_type::audioVisual:
             return "audio-visual";
+        }
     }
     
     Presenter::Presenter(Model *model, View *view) :
