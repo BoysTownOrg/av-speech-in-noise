@@ -251,6 +251,14 @@ namespace {
                 audioDevice_ = std::move(s);
             }
         };
+        
+        class SubjectViewStub {
+            bool greenResponse_{};
+        public:
+            void setGreenResponse() {
+                greenResponse_ = true;
+            }
+        };
     };
 
     class PresenterConstructionTests : public ::testing::Test {
@@ -276,6 +284,7 @@ namespace {
         ModelStub model{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
+        ViewStub::SubjectViewStub subjectView{};
         ViewStub view{&setupView, &testerView};
         presentation::Presenter presenter{&model, &view};
         
@@ -431,6 +440,14 @@ namespace {
         testerView.setAudioDevice("a");
         playTrial();
         assertEqual("a", model.trialParameters().audioDevice);
+    }
+
+    TEST_F(PresenterTests, subjectResponsePassesCoordinates) {
+        subjectView.setGreenResponse();
+        //subjectView.setNumberResponse(1);
+        //submitResponse();
+        //EXPECT_EQ(Model::ResponseParameters::Color::green, model.responseParameters().color);
+        //EXPECT_EQ(1, model.responseParameters().number);
     }
 
     TEST_F(PresenterTests, closingTestPromptsTesterToSave) {
