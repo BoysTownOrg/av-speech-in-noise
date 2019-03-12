@@ -167,7 +167,7 @@ namespace {
         recognition_test::Model model{&maskerPlayer, &list, &stimulusPlayer};
         
         RecognitionTestModelTests() {
-            maskerPlayer.setAudioDeviceDescriptions({"valid"});
+            setAudioDeviceDescriptions({"valid"});
             trialParameters.audioDevice = "valid";
         }
         
@@ -178,6 +178,14 @@ namespace {
         void playTrial() {
             model.playTrial(trialParameters);
         }
+        
+        void setAudioDeviceDescriptions(std::vector<std::string> v) {
+            maskerPlayer.setAudioDeviceDescriptions(std::move(v));
+        }
+        
+        bool maskerPlayerFadedIn() {
+            return maskerPlayer.fadeInCalled();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -186,7 +194,7 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceIndexToPlayers) {
-        maskerPlayer.setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
+        setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
         trialParameters.audioDevice = "second";
         playTrial();
         EXPECT_EQ(2, maskerPlayer.deviceIndex());
@@ -194,7 +202,7 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, playTrialWithInvalidAudioDeviceThrowsRequestFailure) {
-        maskerPlayer.setAudioDeviceDescriptions({"a", "b", "c"});
+        setAudioDeviceDescriptions({"a", "b", "c"});
         trialParameters.audioDevice = "d";
         try {
             playTrial();
@@ -205,7 +213,7 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, audioDevicesReturnsDescriptions) {
-        maskerPlayer.setAudioDeviceDescriptions({"a", "b", "c"});
+        setAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, model.audioDevices());
     }
 
@@ -215,15 +223,24 @@ namespace {
         EXPECT_FALSE(maskerPlayer.setDeviceCalled());
     }
 
-    TEST_F(RecognitionTestModelTests, playTrialDoesNotFadeInMaskerWhenMaskerPlaying) {
+    TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfMaskerAlreadyPlaying) {
         maskerPlayer.setPlaying();
         playTrial();
-        EXPECT_FALSE(maskerPlayer.fadeInCalled());
+        EXPECT_FALSE(maskerPlayerFadedIn());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialDoesNotPlayIfListEmpty
+    ) {
+        list.setEmpty();
+        playTrial();
+        EXPECT_FALSE(maskerPlayerFadedIn());
     }
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
         playTrial();
-        EXPECT_TRUE(maskerPlayer.fadeInCalled());
+        EXPECT_TRUE(maskerPlayerFadedIn());
     }
 
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysStimulus) {
@@ -269,15 +286,6 @@ namespace {
     ) {
         list.setEmpty();
         EXPECT_TRUE(model.testComplete());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialDoesNotPlayIfListEmpty
-    ) {
-        list.setEmpty();
-        playTrial();
-        EXPECT_FALSE(maskerPlayer.fadeInCalled());
     }
 }
 
