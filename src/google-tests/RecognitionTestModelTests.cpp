@@ -131,7 +131,12 @@ namespace {
         std::string directory_{};
         std::string next_{};
         bool empty_{};
+        bool nextCalled_{};
     public:
+        auto nextCalled() const {
+            return nextCalled_;
+        }
+        
         auto directory() const {
             return directory_;
         }
@@ -278,6 +283,15 @@ namespace {
         list.setNext("a");
         playTrial();
         assertEqual("a", stimulusPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialDoesNotAdvanceListIfEmpty
+    ) {
+        list.setEmpty();
+        playTrial();
+        EXPECT_FALSE(list.nextCalled());
     }
 
     TEST_F(
