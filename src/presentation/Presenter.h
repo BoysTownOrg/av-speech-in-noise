@@ -110,7 +110,6 @@ namespace presentation {
         public:
             Tester(Model *, View::Tester *);
             void run();
-            void submitRequest(Model *);
             void playTrial();
             void close();
         private:

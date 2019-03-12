@@ -109,12 +109,6 @@ namespace presentation {
         view->hide();
     }
     
-    void Presenter::Tester::submitRequest(Model *model) {
-        Model::TrialParameters p;
-        p.audioDevice = view->audioDevice();
-        model->playTrial(p);
-    }
-    
     void Presenter::Tester::playTrial() {
         Model::TrialParameters p;
         p.audioDevice = view->audioDevice();
