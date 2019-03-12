@@ -190,3 +190,9 @@ void AvFoundationMaskerPlayer::setDevice(int index) {
         encoding:[NSString defaultCStringEncoding]
     ];
 }
+
+AvFoundationMaskerPlayer::AvFoundationMaskerPlayer() :
+    player{[AVPlayer playerWithPlayerItem:nil]}
+{
+}
+

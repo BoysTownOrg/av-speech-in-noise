@@ -44,9 +44,10 @@ public:
 
 class AvFoundationMaskerPlayer : public recognition_test::MaskerPlayer {
     CoreAudioDevice device{};
-    AVPlayer *player{[AVPlayer playerWithPlayerItem:nil]};
     EventListener *listener{};
+    AVPlayer *player;
 public:
+    AvFoundationMaskerPlayer();
     void subscribe(EventListener *listener_) override;
     void fadeIn() override;
     void fadeOut() override;
