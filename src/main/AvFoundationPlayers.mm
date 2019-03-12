@@ -1,4 +1,5 @@
 #include "AvFoundationPlayers.h"
+#include <gsl/gsl>
 
 CoreAudioDevice::CoreAudioDevice() {
     auto count = deviceCount_();
@@ -94,7 +95,19 @@ static AVURLAsset *makeAvAsset(std::string filePath) {
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
 
-AvFoundationStimulusPlayer::AvFoundationStimulusPlayer() {
+AvFoundationStimulusPlayer::AvFoundationStimulusPlayer() :
+    actions{[StimulusPlayerActions alloc]},
+    videoWindow{
+        [[NSWindow alloc]
+            initWithContentRect: NSMakeRect(400, 400, 0, 0)
+            styleMask:NSWindowStyleMaskBorderless
+            backing:NSBackingStoreBuffered
+            defer:YES
+        ]
+    },
+    player{[AVPlayer playerWithPlayerItem:nil]},
+    playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}
+{
     [videoWindow.contentView setWantsLayer:YES];
     [videoWindow.contentView.layer addSublayer:playerLayer];
     [videoWindow makeKeyAndOrderFront:nil];

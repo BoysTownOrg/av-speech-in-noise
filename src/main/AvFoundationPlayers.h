@@ -4,7 +4,6 @@
 #include <recognition-test/Model.hpp>
 #import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>
-#include <gsl/gsl>
 #include <vector>
 
 class CoreAudioDevice {
@@ -30,17 +29,10 @@ class AvFoundationStimulusPlayer;
 class AvFoundationStimulusPlayer : public recognition_test::StimulusPlayer {
     CoreAudioDevice device{};
     EventListener *listener{};
-    StimulusPlayerActions *actions{[StimulusPlayerActions alloc]};
-    NSWindow *videoWindow{
-        [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(400, 400, 0, 0)
-            styleMask:NSWindowStyleMaskBorderless
-            backing:NSBackingStoreBuffered
-            defer:YES
-        ]
-    };
-    AVPlayer *player{[AVPlayer playerWithPlayerItem:nil]};
-    AVPlayerLayer *playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]};
+    StimulusPlayerActions *actions;
+    NSWindow *videoWindow;
+    AVPlayer *player;
+    AVPlayerLayer *playerLayer;
 public:
     AvFoundationStimulusPlayer();
     void subscribe(EventListener *) override;
