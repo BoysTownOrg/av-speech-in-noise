@@ -160,6 +160,11 @@ namespace {
         StimulusListStub list{};
         recognition_test::Model model{&maskerPlayer, &list, &stimulusPlayer};
         
+        RecognitionTestModelTests() {
+            maskerPlayer.setAudioDeviceDescriptions({"valid"});
+            trialParameters.audioDevice = "valid";
+        }
+        
         void initializeTest() {
             model.initializeTest(testParameters);
         }
@@ -180,6 +185,17 @@ namespace {
         playTrial();
         EXPECT_EQ(2, maskerPlayer.deviceIndex());
         EXPECT_EQ(2, stimulusPlayer.deviceIndex());
+    }
+
+    TEST_F(RecognitionTestModelTests, playTrialWithInvalidAudioDeviceThrowsRequestFailure) {
+        maskerPlayer.setAudioDeviceDescriptions({"a", "b", "c"});
+        trialParameters.audioDevice = "d";
+        try {
+            playTrial();
+            FAIL() << "Expected 'recognition_test::Model::RequestFailure'.";
+        } catch (const recognition_test::Model::RequestFailure &e) {
+            assertEqual("'d' is not a valid audio device.", e.what());
+        }
     }
 
     TEST_F(RecognitionTestModelTests, audioDevicesReturnsDescriptions) {

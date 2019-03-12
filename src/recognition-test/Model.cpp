@@ -27,6 +27,8 @@ namespace recognition_test {
                 trial.audioDevice
             ) - devices_.begin()
         );
+        if (deviceIndex == maskerPlayer->deviceCount())
+            throw RequestFailure{"'" + trial.audioDevice + "' is not a valid audio device."};
         maskerPlayer->setDevice(deviceIndex);
         stimulusPlayer->setDevice(deviceIndex);
         stimulusPlayer->loadFile(list->next());
