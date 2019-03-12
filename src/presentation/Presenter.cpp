@@ -40,6 +40,7 @@ namespace presentation {
     void Presenter::initializeTest_() {
         testSetup.initializeTest();
         testSetup.tuneOut();
+        view->hideConfirmTestSetupButton();
         tester.listen();
     }
     
