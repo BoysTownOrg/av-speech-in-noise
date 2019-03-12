@@ -432,7 +432,11 @@ namespace {
     TEST_F(PresenterTests, populatesConditionMenu) {
         auto actual = setupView.conditions();
         EXPECT_TRUE(actual.contains(conditionName(
-            presentation::Model::TestParameters::Condition::auditoryOnly)));
+            presentation::Model::TestParameters::Condition::auditoryOnly))
+        );
+        EXPECT_TRUE(actual.contains(conditionName(
+            presentation::Model::TestParameters::Condition::audioVisual))
+        );
     }
 
     TEST_F(PresenterTests, callsEventLoopWhenRun) {

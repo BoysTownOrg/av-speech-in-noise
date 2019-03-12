@@ -70,7 +70,8 @@ namespace presentation {
         view{view}
     {
         view->populateConditionMenu({
-            conditionName(Model::TestParameters::Condition::auditoryOnly)
+            conditionName(Model::TestParameters::Condition::auditoryOnly),
+            conditionName(Model::TestParameters::Condition::audioVisual)
         });
     }
     
