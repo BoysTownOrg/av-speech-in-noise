@@ -70,26 +70,14 @@ public:
 };
 
 class CocoaView : public presentation::View {
-    NSApplication *app{[NSApplication sharedApplication]};
-    NSWindow *window{
-        [[NSWindow alloc] initWithContentRect:
-            NSMakeRect(300, 500, 900, 800)
-            styleMask:
-                NSWindowStyleMaskClosable |
-                NSWindowStyleMaskResizable |
-                NSWindowStyleMaskTitled
-            backing:NSBackingStoreBuffered
-            defer:NO
-        ]
-    };
-    NSView *tbdView{
-        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 500, 100)]
-    };
     CocoaTestSetupView testSetupView_{};
     CocoaTesterView testerView_{};
     CocoaSubjectView subjectView_{};
+    NSApplication *app;
+    NSWindow *window;
+    NSView *tbdView;
+    ViewActions *actions;
     EventListener *listener{};
-    ViewActions *actions{[ViewActions alloc]};
 public:
     CocoaView();
     void confirmTestSetup();

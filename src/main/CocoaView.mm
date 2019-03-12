@@ -181,7 +181,24 @@ bool CocoaSubjectView::greenResponse() {
     return false;
 }
 
-CocoaView::CocoaView() {
+CocoaView::CocoaView() :
+    app{[NSApplication sharedApplication]},
+    window{
+        [[NSWindow alloc] initWithContentRect:
+            NSMakeRect(300, 500, 900, 800)
+            styleMask:
+                NSWindowStyleMaskClosable |
+                NSWindowStyleMaskResizable |
+                NSWindowStyleMaskTitled
+            backing:NSBackingStoreBuffered
+            defer:NO
+        ]
+    },
+    tbdView{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 500, 100)]
+    },
+    actions{[ViewActions alloc]}
+{
     app.mainMenu = [[NSMenu alloc] init];
     auto appMenu = [[NSMenuItem alloc] init];
     [app.mainMenu addItem:appMenu];
