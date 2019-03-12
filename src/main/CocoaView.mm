@@ -10,7 +10,15 @@ static NSTextField *allocLabel(NSString *label, NSRect frame) {
     return text;
 }
 
-CocoaTesterView::CocoaTesterView() {
+CocoaTesterView::CocoaTesterView() :
+    deviceMenu{[
+        [NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30)
+        pullsDown:NO
+    ]},
+    view_{
+        [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
+    }
+{
     [view_ setHidden:YES];
     [view_ addSubview:deviceMenu];
 }
@@ -32,7 +40,7 @@ std::string CocoaTesterView::audioDevice() {
 }
 
 void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
-    for (const auto &item : items) {
+    for (auto item : items) {
         auto title = [NSString stringWithCString:
             item.c_str()
             encoding:[NSString defaultCStringEncoding]
@@ -47,8 +55,8 @@ CocoaTestSetupView::CocoaTestSetupView() :
     },
     subjectIdLabel{allocLabel(
         @"subject id:",
-        NSMakeRect(10, 490, 140, 25))
-    },
+        NSMakeRect(10, 490, 140, 25)
+    )},
     subjectId_{
         [[NSTextField alloc]
             initWithFrame:NSMakeRect(155, 490, 150, 25)]
@@ -165,7 +173,6 @@ CocoaSubjectView::CocoaSubjectView() :
     }
 {
     const auto greenButton = [NSButton buttonWithTitle:@"hello" target:nil action:nil];
-    //greenButton.bezelStyle = NSBezelStyleTexturedSquare;
     greenButton.bordered = false;
     greenButton.wantsLayer = true;
     [[greenButton layer] setBackgroundColor:[[NSColor systemGreenColor] CGColor]];
@@ -178,7 +185,7 @@ int CocoaSubjectView::numberResponse() {
 }
 
 bool CocoaSubjectView::greenResponse() {
-    return false;
+    return true;
 }
 
 CocoaView::CocoaView() :

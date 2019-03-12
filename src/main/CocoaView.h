@@ -14,22 +14,16 @@ class CocoaView;
 - (void) playTrial;
 @end
 
-
 class CocoaTesterView : public presentation::View::Tester {
-    NSPopUpButton *deviceMenu{[
-        [NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30)
-        pullsDown:NO
-    ]};
-    NSView *view_{
-        [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
-    };
+    NSPopUpButton *deviceMenu;
+    NSView *view_;
 public:
     CocoaTesterView();
     NSView *view();
     void show() override;
     void hide() override;
     std::string audioDevice() override;
-    void populateAudioDeviceMenu(std::vector<std::string> items) override;
+    void populateAudioDeviceMenu(std::vector<std::string>) override;
 };
 
 
@@ -73,24 +67,24 @@ class CocoaView : public presentation::View {
     CocoaTestSetupView testSetupView_{};
     CocoaTesterView testerView_{};
     CocoaSubjectView subjectView_{};
+    EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
     NSView *tbdView;
     ViewActions *actions;
-    EventListener *listener{};
 public:
     CocoaView();
     void confirmTestSetup();
     void playTrial();
     void newTest();
     void openTest();
-    void subscribe(EventListener *listener_) override;
+    void subscribe(EventListener *) override;
     void eventLoop() override;
     TestSetup *testSetup() override;
     Tester *tester() override;
     SubjectView *subject() override;
     DialogResponse showConfirmationDialog() override;
-    void showErrorMessage(std::string s) override;
+    void showErrorMessage(std::string) override;
 };
 
 #endif
