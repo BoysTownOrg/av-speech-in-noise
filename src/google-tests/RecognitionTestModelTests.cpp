@@ -296,6 +296,15 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        playTrialDoesNotAdvanceListIfMaskerIsPlaying
+    ) {
+        maskerPlayer.setPlaying();
+        playTrial();
+        EXPECT_FALSE(list.nextCalled());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         testCompleteWhenListEmpty
     ) {
         list.setEmpty();
