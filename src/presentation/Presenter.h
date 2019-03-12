@@ -16,6 +16,8 @@ namespace presentation {
     class Model {
     public:
         virtual ~Model() = default;
+        RUNTIME_ERROR(RequestFailure)
+        
         struct TestParameters {
             enum class Condition {
                 auditoryOnly,
@@ -30,14 +32,13 @@ namespace presentation {
             Condition condition;
         };
         virtual void initializeTest(const TestParameters &) = 0;
-        RUNTIME_ERROR(RequestFailure)
-        virtual bool testComplete() = 0;
         
         struct TrialParameters {
             std::string audioDevice;
         };
         virtual void playTrial(const TrialParameters &) = 0;
         
+        virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
     };
 
@@ -125,9 +126,8 @@ namespace presentation {
         void openTest() override;
         void closeTest() override;
         void confirmTestSetup() override;
-        
-        RUNTIME_ERROR(BadInput)
     private:
+        RUNTIME_ERROR(BadInput)
         void initializeTest_();
         
         TestSetup testSetup;

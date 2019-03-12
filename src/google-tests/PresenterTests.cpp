@@ -160,7 +160,7 @@ namespace {
                 return signalLevel_;
             }
             
-            bool hidden() const {
+            auto hidden() const {
                 return hidden_;
             }
             
