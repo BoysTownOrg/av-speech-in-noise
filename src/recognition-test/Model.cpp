@@ -30,6 +30,8 @@ namespace recognition_test {
         maskerPlayer->setDevice(deviceIndex);
         stimulusPlayer->setDevice(deviceIndex);
         stimulusPlayer->loadFile(list->next());
+        if (maskerPlayer->playing())
+            return;
         maskerPlayer->fadeIn();
     }
 

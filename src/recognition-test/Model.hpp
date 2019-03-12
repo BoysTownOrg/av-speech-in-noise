@@ -38,6 +38,7 @@ namespace recognition_test {
         virtual void fadeIn() = 0;
         virtual void fadeOut() = 0;
         virtual void loadFile(std::string filePath) = 0;
+        virtual bool playing() = 0;
     };
 
     class StimulusList {

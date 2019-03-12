@@ -11,7 +11,16 @@ namespace {
         EventListener *listener_{};
         bool fadeInCalled_{};
         bool fadeOutCalled_{};
+        bool playing_{};
     public:
+        bool playing() override {
+            return playing_;
+        }
+        
+        void setPlaying() {
+            playing_ = true;
+        }
+        
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
             audioDeviceDescriptions_ = std::move(v);
         }
@@ -176,6 +185,12 @@ namespace {
     TEST_F(RecognitionTestModelTests, audioDevicesReturnsDescriptions) {
         maskerPlayer.setAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, model.audioDevices());
+    }
+
+    TEST_F(RecognitionTestModelTests, playTrialDoesNotFadeInMaskerWhenMaskerPlaying) {
+        maskerPlayer.setPlaying();
+        playTrial();
+        EXPECT_FALSE(maskerPlayer.fadeInCalled());
     }
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
