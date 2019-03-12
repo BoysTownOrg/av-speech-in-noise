@@ -117,18 +117,21 @@ class AvFoundationStimulusPlayer : public recognition_test::StimulusPlayer {
     CoreAudioDevice device{};
     EventListener *listener{};
     StimulusPlayerActions *actions{[StimulusPlayerActions alloc]};
-    NSWindow *videoWindow{};
+    NSWindow *videoWindow{
+        [[NSWindow alloc]
+            initWithContentRect: NSMakeRect(400, 400, 0, 0)
+            styleMask:NSWindowStyleMaskBorderless
+            backing:NSBackingStoreBuffered
+            defer:YES
+        ]
+    };
     AVPlayer *player{[AVPlayer playerWithPlayerItem:nil]};
     AVPlayerLayer *playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]};
 public:
     AvFoundationStimulusPlayer() {
-        actions.controller = this;
-    }
-    
-    void setWindow(NSWindow *window) {
-        videoWindow = window;
         [videoWindow.contentView setWantsLayer:YES];
         [videoWindow.contentView.layer addSublayer:playerLayer];
+        actions.controller = this;
     }
     
     void subscribe(EventListener *listener_) override {
@@ -239,7 +242,8 @@ int main() {
     MersenneTwisterRandomizer randomizer;
     stimulus_list::RandomizedStimulusList list{&filter, &randomizer};
     CocoaSubjectView subjectView{};
-    recognition_test::Model model{&maskerPlayer, &list, subjectView.stimulusPlayer()};
+    AvFoundationStimulusPlayer player{};
+    recognition_test::Model model{&maskerPlayer, &list, &player};
     CocoaView view;
     presentation::Presenter presenter{&model, &view};
     presenter.run();

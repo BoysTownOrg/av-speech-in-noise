@@ -27,22 +27,25 @@ class CocoaTesterView : public presentation::View::Tester {
         [NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30)
         pullsDown:NO
     ]};
-    NSView *view{
+    NSView *view_{
         [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
     };
 public:
-    CocoaTesterView(NSWindow *window) {
-        [view setHidden:YES];
-        [view addSubview:deviceMenu];
-        [window.contentView addSubview:view];
+    CocoaTesterView() {
+        [view_ setHidden:YES];
+        [view_ addSubview:deviceMenu];
+    }
+    
+    NSView *view() {
+        return view_;
     }
     
     void show() override {
-        [view setHidden:NO];
+        [view_ setHidden:NO];
     }
     
     void hide() override {
-        [view setHidden:YES];
+        [view_ setHidden:YES];
     }
     
     std::string audioDevice() override {
@@ -61,7 +64,7 @@ public:
 };
 
 class CocoaTestSetupView : public presentation::View::TestSetup {
-    NSView *view{
+    NSView *view_{
         [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
     };
     NSTextField *subjectIdLabel{allocLabel(
@@ -113,33 +116,36 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
             initWithFrame:NSMakeRect(155, 340, 300, 25)]
     };
 public:
-    CocoaTestSetupView(NSWindow *window) {
-        [view setHidden:YES];
-        [view addSubview:subjectIdLabel];
-        [view addSubview:subjectId_];
-        [view addSubview:testerIdLabel];
-        [view addSubview:testerId_];
-        [view addSubview:signalLevel_dB_SPL_label];
-        [view addSubview:signalLevel_dB_SPL_];
-        [view addSubview:maskerLevel_dB_SPL_label];
-        [view addSubview:maskerLevel_dB_SPL_];
-        [view addSubview:stimulusListDirectoryLabel];
-        [view addSubview:stimulusListDirectory_];
-        [view addSubview:maskerFilePath_label];
-        [view addSubview:maskerFilePath_];
-        [window.contentView addSubview:view];
+    CocoaTestSetupView() {
+        [view_ setHidden:YES];
+        [view_ addSubview:subjectIdLabel];
+        [view_ addSubview:subjectId_];
+        [view_ addSubview:testerIdLabel];
+        [view_ addSubview:testerId_];
+        [view_ addSubview:signalLevel_dB_SPL_label];
+        [view_ addSubview:signalLevel_dB_SPL_];
+        [view_ addSubview:maskerLevel_dB_SPL_label];
+        [view_ addSubview:maskerLevel_dB_SPL_];
+        [view_ addSubview:stimulusListDirectoryLabel];
+        [view_ addSubview:stimulusListDirectory_];
+        [view_ addSubview:maskerFilePath_label];
+        [view_ addSubview:maskerFilePath_];
         stimulusListDirectory_.stringValue =
             @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
         maskerFilePath_.stringValue =
             @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
     }
     
+    NSView *view() {
+        return view_;
+    }
+    
     void show() override {
-        [view setHidden:NO];
+        [view_ setHidden:NO];
     }
     
     void hide() override {
-        [view setHidden:YES];
+        [view_ setHidden:YES];
     }
     
     std::string maskerLevel_dB_SPL() override {
@@ -183,7 +189,6 @@ private:
 };
 
 class CocoaSubjectView : public presentation::View::SubjectView {
-    AvFoundationStimulusPlayer player{};
     // Defer may be critical here...
     NSWindow *videoWindow{
         [[NSWindow alloc]
@@ -195,12 +200,7 @@ class CocoaSubjectView : public presentation::View::SubjectView {
     };
 public:
     CocoaSubjectView() {
-        player.setWindow(videoWindow);
         [videoWindow makeKeyAndOrderFront:nil];
-    }
-    
-    recognition_test::StimulusPlayer *stimulusPlayer() {
-        return &player;
     }
     
     int numberResponse() override {
@@ -228,8 +228,8 @@ class CocoaView : public presentation::View {
     NSView *tbdView{
         [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
     };
-    CocoaTestSetupView testSetupView_{window};
-    CocoaTesterView testerView_{window};
+    CocoaTestSetupView testSetupView_{};
+    CocoaTesterView testerView_{};
     CocoaSubjectView subjectView_{};
     EventListener *listener{};
     ViewActions *actions{[ViewActions alloc]};
@@ -275,6 +275,8 @@ public:
             action:@selector(confirmTestSetup)
         ];
         confirmButton.target = actions;
+        [window.contentView addSubview:testerView_.view()];
+        [window.contentView addSubview:testSetupView_.view()];
         [tbdView addSubview:confirmButton];
         [tbdView addSubview:playTrialButton];
         [window.contentView addSubview:tbdView];
@@ -314,6 +316,10 @@ public:
         return &testerView_;
     }
     
+    SubjectView *subject() override {
+        return &subjectView_;
+    }
+    
     DialogResponse showConfirmationDialog() override {
         const auto alert = [[NSAlert alloc] init];
         [alert setMessageText:@"Are you sure?"];
@@ -341,10 +347,6 @@ public:
         [alert setInformativeText:errorMessage_];
         [alert addButtonWithTitle:@"Ok"];
         [alert runModal];
-    }
-    
-    SubjectView *subject() override {
-        return &subjectView_;
     }
 };
 
