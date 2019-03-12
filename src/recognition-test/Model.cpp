@@ -18,6 +18,8 @@ namespace recognition_test {
     void Model::playTrial(const TrialParameters &trial) {
         if (list->empty())
             return;
+        if (maskerPlayer->playing())
+            return;
         
         auto devices_ = audioDevices();
         auto deviceIndex = gsl::narrow<int>(
@@ -32,8 +34,6 @@ namespace recognition_test {
         maskerPlayer->setDevice(deviceIndex);
         stimulusPlayer->setDevice(deviceIndex);
         stimulusPlayer->loadFile(list->next());
-        if (maskerPlayer->playing())
-            return;
         maskerPlayer->fadeIn();
     }
 

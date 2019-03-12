@@ -12,7 +12,12 @@ namespace {
         bool fadeInCalled_{};
         bool fadeOutCalled_{};
         bool playing_{};
+        bool setDeviceCalled_{};
     public:
+        auto setDeviceCalled() const {
+            return setDeviceCalled_;
+        }
+        
         bool playing() override {
             return playing_;
         }
@@ -63,6 +68,7 @@ namespace {
         
         void setDevice(int index) override {
             deviceIndex_ = index;
+            setDeviceCalled_ = true;
         }
         
         auto listener() const {
@@ -201,6 +207,12 @@ namespace {
     TEST_F(RecognitionTestModelTests, audioDevicesReturnsDescriptions) {
         maskerPlayer.setAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, model.audioDevices());
+    }
+
+    TEST_F(RecognitionTestModelTests, playTrialDoesChangeAudioDeviceWhenMaskerPlaying) {
+        maskerPlayer.setPlaying();
+        playTrial();
+        EXPECT_FALSE(maskerPlayer.setDeviceCalled());
     }
 
     TEST_F(RecognitionTestModelTests, playTrialDoesNotFadeInMaskerWhenMaskerPlaying) {
