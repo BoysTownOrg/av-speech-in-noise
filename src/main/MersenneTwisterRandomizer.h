@@ -1,10 +1,3 @@
-//
-//  MersenneTwisterRandomizer.h
-//  av-coordinated-response-measure
-//
-//  Created by Bashford, Seth on 3/12/19.
-//
-
 #ifndef MersenneTwisterRandomizer_h
 #define MersenneTwisterRandomizer_h
 
@@ -19,4 +12,4 @@ public:
     }
 };
 
-#endif /* MersenneTwisterRandomizer_h */
+#endif

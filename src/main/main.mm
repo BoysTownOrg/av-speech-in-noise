@@ -29,9 +29,8 @@ int main() {
     stimulus_list::FileFilterDecorator filter{&reader, ".mov"};
     MersenneTwisterRandomizer randomizer;
     stimulus_list::RandomizedStimulusList list{&filter, &randomizer};
-    CocoaSubjectView subjectView{};
-    AvFoundationStimulusPlayer player{};
-    recognition_test::Model model{&maskerPlayer, &list, &player};
+    AvFoundationStimulusPlayer stimulusPlayer;
+    recognition_test::Model model{&maskerPlayer, &list, &stimulusPlayer};
     CocoaView view;
     presentation::Presenter presenter{&model, &view};
     presenter.run();
