@@ -212,6 +212,11 @@ namespace {
             playTrial();
             assertMaskerPlayerNotPlayed();
         }
+        
+        void assertListNotAdvancedAfterPlayingTrial() {
+            playTrial();
+            assertListNotAdvanced();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -309,8 +314,7 @@ namespace {
         playTrialDoesNotAdvanceListIfEmpty
     ) {
         setListToEmpty();
-        playTrial();
-        assertListNotAdvanced();
+        assertListNotAdvancedAfterPlayingTrial();
     }
 
     TEST_F(
@@ -318,8 +322,7 @@ namespace {
         playTrialDoesNotAdvanceListIfMaskerIsPlaying
     ) {
         setMaskerIsPlaying();
-        playTrial();
-        assertListNotAdvanced();
+        assertListNotAdvancedAfterPlayingTrial();
     }
 
     TEST_F(
