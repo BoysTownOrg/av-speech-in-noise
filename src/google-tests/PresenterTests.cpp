@@ -253,10 +253,15 @@ namespace {
         };
         
         class SubjectViewStub {
+            int numberResponse_{};
             bool greenResponse_{};
         public:
             void setGreenResponse() {
                 greenResponse_ = true;
+            }
+            
+            void setNumberResponse(int n) {
+                numberResponse_ = n;
             }
         };
     };
@@ -444,7 +449,7 @@ namespace {
 
     TEST_F(PresenterTests, subjectResponsePassesCoordinates) {
         subjectView.setGreenResponse();
-        //subjectView.setNumberResponse(1);
+        subjectView.setNumberResponse(1);
         //submitResponse();
         //EXPECT_EQ(Model::ResponseParameters::Color::green, model.responseParameters().color);
         //EXPECT_EQ(1, model.responseParameters().number);
