@@ -361,6 +361,18 @@ namespace {
         ViewStub view{&setupView, &testerView, &subjectView};
         presentation::Presenter presenter{&model, &view};
         
+        std::string auditoryOnlyConditionName() {
+            return conditionName(
+                presentation::Model::TestParameters::Condition::auditoryOnly
+            );
+        }
+        
+        std::string audioVisualConditionName() {
+            return conditionName(
+                presentation::Model::TestParameters::Condition::audioVisual
+            );
+        }
+        
         void submitResponse() {
             view.submitResponse();
         }
@@ -431,12 +443,8 @@ namespace {
 
     TEST_F(PresenterTests, populatesConditionMenu) {
         auto actual = setupView.conditions();
-        EXPECT_TRUE(actual.contains(conditionName(
-            presentation::Model::TestParameters::Condition::auditoryOnly))
-        );
-        EXPECT_TRUE(actual.contains(conditionName(
-            presentation::Model::TestParameters::Condition::audioVisual))
-        );
+        EXPECT_TRUE(actual.contains(auditoryOnlyConditionName()));
+        EXPECT_TRUE(actual.contains(audioVisualConditionName()));
     }
 
     TEST_F(PresenterTests, callsEventLoopWhenRun) {
