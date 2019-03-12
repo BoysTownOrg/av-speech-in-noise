@@ -71,6 +71,7 @@ class CocoaView : public presentation::View {
     NSApplication *app;
     NSWindow *window;
     NSView *tbdView;
+    NSView *confirmTestSetupButtonView_;
     ViewActions *actions;
 public:
     CocoaView();
@@ -85,6 +86,8 @@ public:
     SubjectView *subject() override;
     DialogResponse showConfirmationDialog() override;
     void showErrorMessage(std::string) override;
+    void showConfirmTestSetupButton() override;
+    void hideConfirmTestSetupButton() override;
 };
 
 #endif
