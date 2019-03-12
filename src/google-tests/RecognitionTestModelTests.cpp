@@ -199,6 +199,10 @@ namespace {
         void assertMaskerPlayerNotPlayed() {
             EXPECT_FALSE(maskerPlayerFadedIn());
         }
+        
+        void assertListNotAdvanced() {
+            EXPECT_FALSE(list.nextCalled());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -299,7 +303,7 @@ namespace {
     ) {
         setListToEmpty();
         playTrial();
-        EXPECT_FALSE(list.nextCalled());
+        assertListNotAdvanced();
     }
 
     TEST_F(
@@ -308,7 +312,7 @@ namespace {
     ) {
         maskerPlayer.setPlaying();
         playTrial();
-        EXPECT_FALSE(list.nextCalled());
+        assertListNotAdvanced();
     }
 
     TEST_F(
