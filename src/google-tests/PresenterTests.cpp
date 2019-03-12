@@ -479,7 +479,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
-        setupView.setCondition("Audio-visual");
+        setupView.setCondition(audioVisualConditionName());
         confirmTestSetup();
         EXPECT_EQ(
             presentation::Model::TestParameters::Condition::audioVisual,
@@ -488,7 +488,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAuditoryOnlyCondition) {
-        setupView.setCondition("Auditory-only");
+        setupView.setCondition(auditoryOnlyConditionName());
         confirmTestSetup();
         EXPECT_EQ(
             presentation::Model::TestParameters::Condition::auditoryOnly,

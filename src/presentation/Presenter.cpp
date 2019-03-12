@@ -94,7 +94,7 @@ namespace presentation {
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.condition =
-            view->condition() == "Auditory-only"
+            view->condition() == conditionName(Model::TestParameters::Condition::auditoryOnly)
             ? Model::TestParameters::Condition::auditoryOnly
             : Model::TestParameters::Condition::audioVisual;
         return p;
