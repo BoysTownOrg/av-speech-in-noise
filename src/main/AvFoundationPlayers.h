@@ -10,83 +10,14 @@
 class CoreAudioDevice {
     std::vector<AudioObjectID> devices{};
 public:
-    CoreAudioDevice() {
-        auto count = deviceCount_();
-        devices.resize(count);
-        UInt32 dataSize = count * sizeof(AudioDeviceID);
-        auto address = propertyAddress(kAudioHardwarePropertyDevices);
-        if (kAudioHardwareNoError !=
-            AudioObjectGetPropertyData(
-                kAudioObjectSystemObject,
-                &address,
-                0,
-                nullptr,
-                &dataSize,
-                &devices[0]
-            )
-        )
-            throw std::runtime_error{"Cannot determine audio device IDs."};
-    }
-    
-    UInt32 deviceCount_() {
-        auto address = propertyAddress(kAudioHardwarePropertyDevices);
-        UInt32 dataSize{};
-        if (kAudioHardwareNoError !=
-            AudioObjectGetPropertyDataSize(
-                kAudioObjectSystemObject,
-                &address,
-                0,
-                nullptr,
-                &dataSize
-            )
-        )
-            throw std::runtime_error{"Cannot determine number of audio devices."};
-        return dataSize / sizeof(AudioDeviceID);
-    }
-    
-    AudioObjectPropertyAddress propertyAddress(AudioObjectPropertySelector s) {
-        return {
-            s,
-            kAudioObjectPropertyScopeGlobal,
-            kAudioObjectPropertyElementMaster
-        };
-    }
-
-    int deviceCount() {
-        return gsl::narrow<int>(devices.size());
-    }
-
-    std::string description(int device) {
-        return stringProperty(kAudioObjectPropertyName, device);
-    }
-    
-    std::string stringProperty(AudioObjectPropertySelector s, int device) {
-        auto address = propertyAddress(s);
-        CFStringRef deviceName{};
-        UInt32 dataSize = sizeof(CFStringRef);
-        if (kAudioHardwareNoError !=
-            AudioObjectGetPropertyData(
-                objectId(device),
-                &address,
-                0,
-                nullptr,
-                &dataSize,
-                &deviceName
-            )
-        )
-            throw std::runtime_error{"Cannot do something..."};
-        char buffer[128];
-        CFStringGetCString(deviceName, buffer, sizeof(buffer), kCFStringEncodingUTF8);
-        return buffer;
-    }
-    
-    AudioObjectID objectId(int device) {
-        return devices.at(gsl::narrow<decltype(devices)::size_type>(device));
-    }
-
-    std::string uid(int device) {
-        return stringProperty(kAudioDevicePropertyDeviceUID, device);
-    }
+    CoreAudioDevice();
+    UInt32 deviceCount_();
+    AudioObjectPropertyAddress propertyAddress(AudioObjectPropertySelector);
+    int deviceCount();
+    std::string description(int device);
+    std::string stringProperty(AudioObjectPropertySelector, int device);
+    AudioObjectID objectId(int device);
+    std::string uid(int device);
 };
 
 class AvFoundationStimulusPlayer;
