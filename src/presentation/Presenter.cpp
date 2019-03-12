@@ -15,17 +15,17 @@ namespace presentation {
     }
 
     void Presenter::newTest() {
-        testSetup.run();
+        testSetup.listen();
     }
 
     void Presenter::openTest() {
-        tester.run();
+        tester.listen();
     }
 
     void Presenter::closeTest() {
         if (view->showConfirmationDialog() == View::DialogResponse::cancel)
             return;
-        tester.close();
+        tester.tuneOut();
     }
     
     void Presenter::initializeTest() {
@@ -38,8 +38,8 @@ namespace presentation {
     
     void Presenter::initializeTest_() {
         testSetup.initializeTest();
-        testSetup.close();
-        tester.run();
+        testSetup.tuneOut();
+        tester.listen();
     }
     
     void Presenter::playTrial() {
@@ -57,11 +57,11 @@ namespace presentation {
     {
     }
     
-    void Presenter::TestSetup::run() {
+    void Presenter::TestSetup::listen() {
         view->show();
     }
     
-    void Presenter::TestSetup::submitRequest(Model *model) {
+    void Presenter::TestSetup::initializeTest() {
         model->initializeTest(testParameters());
     }
     
@@ -91,12 +91,8 @@ namespace presentation {
         }
     }
     
-    void Presenter::TestSetup::close() {
+    void Presenter::TestSetup::tuneOut() {
         view->hide();
-    }
-    
-    void Presenter::TestSetup::initializeTest() {
-        model->initializeTest(testParameters());
     }
     
     
@@ -107,17 +103,17 @@ namespace presentation {
         view->populateAudioDeviceMenu(model->audioDevices());
     }
     
-    void Presenter::Tester::run() {
+    void Presenter::Tester::listen() {
         view->show();
-    }
-
-    void Presenter::Tester::close() {
-        view->hide();
     }
     
     void Presenter::Tester::playTrial() {
         Model::TrialParameters p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
+    }
+
+    void Presenter::Tester::tuneOut() {
+        view->hide();
     }
 }

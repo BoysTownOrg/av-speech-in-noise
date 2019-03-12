@@ -96,10 +96,9 @@ namespace presentation {
         class TestSetup {
         public:
             TestSetup(Model *model, View::TestSetup *);
-            void run();
-            void submitRequest(Model *);
+            void listen();
             void initializeTest();
-            void close();
+            void tuneOut();
         private:
             int readInteger(std::string x, std::string identifier);
             Model::TestParameters testParameters();
@@ -111,9 +110,9 @@ namespace presentation {
         class Tester {
         public:
             Tester(Model *, View::Tester *);
-            void run();
+            void listen();
             void playTrial();
-            void close();
+            void tuneOut();
         private:
             Model *model;
             View::Tester *view;
