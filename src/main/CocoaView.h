@@ -1,10 +1,3 @@
-//
-//  CocoaView.h
-//  av-coordinated-response-measure
-//
-//  Created by Bashford, Seth on 3/12/19.
-//
-
 #ifndef CocoaView_h
 #define CocoaView_h
 
@@ -41,57 +34,19 @@ public:
 
 
 class CocoaTestSetupView : public presentation::View::TestSetup {
-    NSView *view_{
-        [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
-    };
-    NSTextField *subjectIdLabel{allocLabel(
-        @"subject id:",
-        NSMakeRect(10, 490, 140, 25))
-    };
-    NSTextField *subjectId_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 490, 150, 25)]
-    };
-    NSTextField *testerIdLabel{allocLabel(
-        @"tester id:",
-        NSMakeRect(10, 460, 140, 25))
-    };
-    NSTextField *testerId_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 460, 150, 25)]
-    };
-    NSTextField *signalLevel_dB_SPL_label{allocLabel(
-        @"signal level (dB SPL):",
-        NSMakeRect(10, 430, 140, 25))
-    };
-    NSTextField *signalLevel_dB_SPL_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 430, 150, 25)]
-    };
-    NSTextField *maskerLevel_dB_SPL_label{allocLabel(
-        @"masker level (dB SPL):",
-        NSMakeRect(10, 400, 140, 25))
-    };
-    NSTextField *maskerLevel_dB_SPL_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 400, 150, 25)]
-    };
-    NSTextField *stimulusListDirectoryLabel{allocLabel(
-        @"stimulus directory:",
-        NSMakeRect(10, 370, 140, 25))
-    };
-    NSTextField *stimulusListDirectory_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 370, 300, 25)]
-    };
-    NSTextField *maskerFilePath_label{allocLabel(
-        @"masker file path:",
-        NSMakeRect(10, 340, 140, 25))
-    };
-    NSTextField *maskerFilePath_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 340, 300, 25)]
-    };
+    NSView *view_;
+    NSTextField *subjectIdLabel;
+    NSTextField *subjectId_;
+    NSTextField *testerIdLabel;
+    NSTextField *testerId_;
+    NSTextField *signalLevel_dB_SPL_label;
+    NSTextField *signalLevel_dB_SPL_;
+    NSTextField *maskerLevel_dB_SPL_label;
+    NSTextField *maskerLevel_dB_SPL_;
+    NSTextField *stimulusListDirectoryLabel;
+    NSTextField *stimulusListDirectory_;
+    NSTextField *maskerFilePath_label;
+    NSTextField *maskerFilePath_;
 public:
     CocoaTestSetupView();
     NSView *view();
@@ -182,4 +137,4 @@ public:
     void showErrorMessage(std::string s) override;
 };
 
-#endif /* CocoaView_h */
+#endif

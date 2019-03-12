@@ -31,7 +31,59 @@ void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
     }
 }
 
-CocoaTestSetupView::CocoaTestSetupView() {
+CocoaTestSetupView::CocoaTestSetupView() :
+    view_{
+        [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
+    },
+    subjectIdLabel{allocLabel(
+        @"subject id:",
+        NSMakeRect(10, 490, 140, 25))
+    },
+    subjectId_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 490, 150, 25)]
+    },
+    testerIdLabel{allocLabel(
+        @"tester id:",
+        NSMakeRect(10, 460, 140, 25))
+    },
+    testerId_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 460, 150, 25)]
+    },
+    signalLevel_dB_SPL_label{allocLabel(
+        @"signal level (dB SPL):",
+        NSMakeRect(10, 430, 140, 25))
+    },
+    signalLevel_dB_SPL_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 430, 150, 25)]
+    },
+    maskerLevel_dB_SPL_label{allocLabel(
+        @"masker level (dB SPL):",
+        NSMakeRect(10, 400, 140, 25))
+    },
+    maskerLevel_dB_SPL_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 400, 150, 25)]
+    },
+    stimulusListDirectoryLabel{allocLabel(
+        @"stimulus directory:",
+        NSMakeRect(10, 370, 140, 25))
+    },
+    stimulusListDirectory_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 370, 300, 25)]
+    },
+    maskerFilePath_label{allocLabel(
+        @"masker file path:",
+        NSMakeRect(10, 340, 140, 25))
+    },
+    maskerFilePath_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(155, 340, 300, 25)]
+    }
+{
     [view_ setHidden:YES];
     [view_ addSubview:subjectIdLabel];
     [view_ addSubview:subjectId_];
