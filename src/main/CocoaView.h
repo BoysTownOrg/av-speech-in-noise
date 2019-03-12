@@ -168,120 +168,18 @@ class CocoaView : public presentation::View {
     EventListener *listener{};
     ViewActions *actions{[ViewActions alloc]};
 public:
-    CocoaView() {
-        app.mainMenu = [[NSMenu alloc] init];
-        auto appMenu = [[NSMenuItem alloc] init];
-        [app.mainMenu addItem:appMenu];
-        auto fileMenu = [[NSMenuItem alloc] init];
-        [app.mainMenu addItem:fileMenu];
-        auto appSubMenu = [[NSMenu alloc] init];
-        [appSubMenu addItemWithTitle:
-            @"Quit"
-            action:@selector(terminate:)
-            keyEquivalent:@"q"
-        ];
-        [appMenu setSubmenu:appSubMenu];
-        auto fileSubMenu = [[NSMenu alloc] initWithTitle:@"File"];
-        auto newTestItem = [[NSMenuItem alloc] initWithTitle:
-            @"New Test..."
-            action:@selector(newTest)
-            keyEquivalent:@"n"
-        ];
-        newTestItem.target = actions;
-        [fileSubMenu addItem:newTestItem];
-        auto openTestItem = [[NSMenuItem alloc] initWithTitle:
-            @"Open Test..."
-            action:@selector(openTest)
-            keyEquivalent:@"o"
-        ];
-        openTestItem.target = actions;
-        [fileSubMenu addItem:openTestItem];
-        [fileMenu setSubmenu:fileSubMenu];
-        const auto playTrialButton = [NSButton buttonWithTitle:
-            @"Play Next Trial"
-            target:actions
-            action:@selector(playTrial)
-        ];
-        const auto confirmButton = [NSButton buttonWithTitle:
-            @"Confirm"
-            target:actions
-            action:@selector(confirmTestSetup)
-        ];
-        confirmButton.frame = NSMakeRect(0, 0, 130, 40);
-        playTrialButton.frame = NSMakeRect(200, 0, 130, 40);
-        [tbdView addSubview:confirmButton];
-        [tbdView addSubview:playTrialButton];
-        [window.contentView addSubview:tbdView];
-        [window.contentView addSubview:testerView_.view()];
-        [window.contentView addSubview:testSetupView_.view()];
-        actions.controller = this;
-        [window makeKeyAndOrderFront:nil];
-    }
-
-    void confirmTestSetup() {
-        listener->confirmTestSetup();
-    }
-
-    void playTrial() {
-        listener->playTrial();
-    }
-    
-    void newTest() {
-        listener->newTest();
-    }
-    
-    void openTest() {
-        listener->openTest();
-    }
-    
-    void subscribe(EventListener *listener_) override {
-        listener = listener_;
-    }
-    
-    void eventLoop() override {
-        [app run];
-    }
-    
-    TestSetup *testSetup() override {
-        return &testSetupView_;
-    }
-    
-    Tester *tester() override {
-        return &testerView_;
-    }
-    
-    SubjectView *subject() override {
-        return &subjectView_;
-    }
-    
-    DialogResponse showConfirmationDialog() override {
-        const auto alert = [[NSAlert alloc] init];
-        [alert setMessageText:@"Are you sure?"];
-        [alert setInformativeText:@"huehuehue"];
-        [alert addButtonWithTitle:@"Cancel"];
-        [alert addButtonWithTitle:@"No"];
-        [alert addButtonWithTitle:@"Yes"];
-        switch([alert runModal]) {
-            case NSAlertSecondButtonReturn:
-                return DialogResponse::decline;
-            case NSAlertThirdButtonReturn:
-                return DialogResponse::accept;
-            default:
-                return DialogResponse::cancel;
-        }
-    }
-    
-    void showErrorMessage(std::string s) override {
-        auto alert = [[NSAlert alloc] init];
-        [alert setMessageText:@"Error."];
-        auto errorMessage_ = [
-            NSString stringWithCString:s.c_str()
-            encoding:[NSString defaultCStringEncoding]
-        ];
-        [alert setInformativeText:errorMessage_];
-        [alert addButtonWithTitle:@"Ok"];
-        [alert runModal];
-    }
+    CocoaView();
+    void confirmTestSetup();
+    void playTrial();
+    void newTest();
+    void openTest();
+    void subscribe(EventListener *listener_) override;
+    void eventLoop() override;
+    TestSetup *testSetup() override;
+    Tester *tester() override;
+    SubjectView *subject() override;
+    DialogResponse showConfirmationDialog() override;
+    void showErrorMessage(std::string s) override;
 };
 
 #endif /* CocoaView_h */

@@ -91,6 +91,121 @@ std::string CocoaTestSetupView::condition() {
     return "";
 }
 
+CocoaView::CocoaView() {
+    app.mainMenu = [[NSMenu alloc] init];
+    auto appMenu = [[NSMenuItem alloc] init];
+    [app.mainMenu addItem:appMenu];
+    auto fileMenu = [[NSMenuItem alloc] init];
+    [app.mainMenu addItem:fileMenu];
+    auto appSubMenu = [[NSMenu alloc] init];
+    [appSubMenu addItemWithTitle:
+        @"Quit"
+        action:@selector(terminate:)
+        keyEquivalent:@"q"
+    ];
+    [appMenu setSubmenu:appSubMenu];
+    auto fileSubMenu = [[NSMenu alloc] initWithTitle:@"File"];
+    auto newTestItem = [[NSMenuItem alloc] initWithTitle:
+        @"New Test..."
+        action:@selector(newTest)
+        keyEquivalent:@"n"
+    ];
+    newTestItem.target = actions;
+    [fileSubMenu addItem:newTestItem];
+    auto openTestItem = [[NSMenuItem alloc] initWithTitle:
+        @"Open Test..."
+        action:@selector(openTest)
+        keyEquivalent:@"o"
+    ];
+    openTestItem.target = actions;
+    [fileSubMenu addItem:openTestItem];
+    [fileMenu setSubmenu:fileSubMenu];
+    const auto playTrialButton = [NSButton buttonWithTitle:
+        @"Play Next Trial"
+        target:actions
+        action:@selector(playTrial)
+    ];
+    const auto confirmButton = [NSButton buttonWithTitle:
+        @"Confirm"
+        target:actions
+        action:@selector(confirmTestSetup)
+    ];
+    confirmButton.frame = NSMakeRect(0, 0, 130, 40);
+    playTrialButton.frame = NSMakeRect(200, 0, 130, 40);
+    [tbdView addSubview:confirmButton];
+    [tbdView addSubview:playTrialButton];
+    [window.contentView addSubview:tbdView];
+    [window.contentView addSubview:testerView_.view()];
+    [window.contentView addSubview:testSetupView_.view()];
+    actions.controller = this;
+    [window makeKeyAndOrderFront:nil];
+}
+
+void CocoaView::confirmTestSetup() {
+    listener->confirmTestSetup();
+}
+
+void CocoaView::playTrial() {
+    listener->playTrial();
+}
+
+void CocoaView::newTest() {
+    listener->newTest();
+}
+
+void CocoaView::openTest() {
+    listener->openTest();
+}
+
+void CocoaView::subscribe(EventListener *listener_) {
+    listener = listener_;
+}
+
+void CocoaView::eventLoop() {
+    [app run];
+}
+
+auto CocoaView::testSetup() -> TestSetup * {
+    return &testSetupView_;
+}
+
+auto CocoaView::tester() -> Tester * {
+    return &testerView_;
+}
+
+auto CocoaView::subject() -> SubjectView * {
+    return &subjectView_;
+}
+
+auto CocoaView::showConfirmationDialog() -> DialogResponse {
+    const auto alert = [[NSAlert alloc] init];
+    [alert setMessageText:@"Are you sure?"];
+    [alert setInformativeText:@"huehuehue"];
+    [alert addButtonWithTitle:@"Cancel"];
+    [alert addButtonWithTitle:@"No"];
+    [alert addButtonWithTitle:@"Yes"];
+    switch([alert runModal]) {
+        case NSAlertSecondButtonReturn:
+            return DialogResponse::decline;
+        case NSAlertThirdButtonReturn:
+            return DialogResponse::accept;
+        default:
+            return DialogResponse::cancel;
+    }
+}
+
+void CocoaView::showErrorMessage(std::string s) {
+    auto alert = [[NSAlert alloc] init];
+    [alert setMessageText:@"Error."];
+    auto errorMessage_ = [
+        NSString stringWithCString:s.c_str()
+        encoding:[NSString defaultCStringEncoding]
+    ];
+    [alert setInformativeText:errorMessage_];
+    [alert addButtonWithTitle:@"Ok"];
+    [alert runModal];
+}
+
 @implementation ViewActions
 @synthesize controller;
 - (void)newTest {
