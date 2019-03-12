@@ -191,6 +191,10 @@ namespace {
         bool maskerPlayerFadedIn() {
             return maskerPlayer.fadeInCalled();
         }
+        
+        void setListToEmpty() {
+            list.setEmpty();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -238,7 +242,7 @@ namespace {
         RecognitionTestModelTests,
         playTrialDoesNotPlayIfListEmpty
     ) {
-        list.setEmpty();
+        setListToEmpty();
         playTrial();
         EXPECT_FALSE(maskerPlayerFadedIn());
     }
@@ -289,7 +293,7 @@ namespace {
         RecognitionTestModelTests,
         playTrialDoesNotAdvanceListIfEmpty
     ) {
-        list.setEmpty();
+        setListToEmpty();
         playTrial();
         EXPECT_FALSE(list.nextCalled());
     }
@@ -307,7 +311,7 @@ namespace {
         RecognitionTestModelTests,
         testCompleteWhenListEmpty
     ) {
-        list.setEmpty();
+        setListToEmpty();
         EXPECT_TRUE(model.testComplete());
     }
 }
