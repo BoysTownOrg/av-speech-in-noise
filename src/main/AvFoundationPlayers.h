@@ -55,6 +55,7 @@ public:
     int deviceCount() override;
     std::string deviceDescription(int index) override;
     void setDevice(int index) override;
+    bool playing() override;
 };
 
 #endif

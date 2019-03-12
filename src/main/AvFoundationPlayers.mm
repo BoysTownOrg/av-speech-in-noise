@@ -196,3 +196,8 @@ AvFoundationMaskerPlayer::AvFoundationMaskerPlayer() :
 {
 }
 
+bool AvFoundationMaskerPlayer::playing() {
+    return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
+}
+
+
