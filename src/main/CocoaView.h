@@ -41,6 +41,7 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     NSTextField *stimulusListDirectory_;
     NSTextField *maskerFilePath_label;
     NSTextField *maskerFilePath_;
+    NSPopUpButton *conditionMenu;
 public:
     CocoaTestSetupView();
     NSView *view();
@@ -53,6 +54,7 @@ public:
     std::string testerId() override;
     std::string subjectId() override;
     std::string condition() override;
+    void populateConditionMenu(std::vector<std::string> items) override;
 };
 
 class CocoaSubjectView : public presentation::View::SubjectView {

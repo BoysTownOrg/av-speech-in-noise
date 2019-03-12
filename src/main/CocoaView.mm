@@ -100,7 +100,11 @@ CocoaTestSetupView::CocoaTestSetupView() :
     maskerFilePath_{
         [[NSTextField alloc]
             initWithFrame:NSMakeRect(155, 340, 300, 25)]
-    }
+    },
+    conditionMenu{[
+        [NSPopUpButton alloc] initWithFrame:NSMakeRect(155, 310, 150, 25)
+        pullsDown:NO
+    ]}
 {
     [view_ setHidden:YES];
     [view_ addSubview:subjectIdLabel];
@@ -115,6 +119,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [view_ addSubview:stimulusListDirectory_];
     [view_ addSubview:maskerFilePath_label];
     [view_ addSubview:maskerFilePath_];
+    [view_ addSubview:conditionMenu];
     stimulusListDirectory_.stringValue =
         @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
     maskerFilePath_.stringValue =
@@ -158,8 +163,19 @@ std::string CocoaTestSetupView::subjectId() {
 }
 
 std::string CocoaTestSetupView::condition() {
-    return "";
+    return [conditionMenu.titleOfSelectedItem UTF8String];
 }
+
+void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
+    for (auto item : items) {
+        auto title = [NSString stringWithCString:
+            item.c_str()
+            encoding:[NSString defaultCStringEncoding]
+        ];
+        [conditionMenu addItemWithTitle: title];
+    }
+}
+
 
 CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
