@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2614B5A122381D850083987B /* CocoaView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A022381D850083987B /* CocoaView.mm */; };
 		2614B5A222381DF80083987B /* CocoaView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A022381D850083987B /* CocoaView.mm */; };
+		2614B5A4223824960083987B /* AvFoundationPlayers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A3223824960083987B /* AvFoundationPlayers.mm */; };
+		2614B5A5223824FB0083987B /* AvFoundationPlayers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A3223824960083987B /* AvFoundationPlayers.mm */; };
 		2646F83421DFDF5500F378DE /* RandomizedStimulusListTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83321DFDF5500F378DE /* RandomizedStimulusListTests.cpp */; };
 		2646F84021DFEA2300F378DE /* RandomizedStimulusList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedStimulusList.cpp */; };
 		2646F84121DFEA5E00F378DE /* libstimulus-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libstimulus-list.dylib */; };
@@ -48,6 +50,7 @@
 		2614B59E223809B50083987B /* CocoaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CocoaView.h; sourceTree = "<group>"; };
 		2614B59F2238108E0083987B /* AvFoundationPlayers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AvFoundationPlayers.h; sourceTree = "<group>"; };
 		2614B5A022381D850083987B /* CocoaView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaView.mm; sourceTree = "<group>"; };
+		2614B5A3223824960083987B /* AvFoundationPlayers.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AvFoundationPlayers.mm; sourceTree = "<group>"; };
 		2646F83321DFDF5500F378DE /* RandomizedStimulusListTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedStimulusListTests.cpp; sourceTree = "<group>"; };
 		2646F83921DFEA0400F378DE /* libstimulus-list.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libstimulus-list.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2646F83E21DFEA2300F378DE /* RandomizedStimulusList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedStimulusList.cpp; sourceTree = "<group>"; };
@@ -141,6 +144,7 @@
 				2614B59E223809B50083987B /* CocoaView.h */,
 				2614B59F2238108E0083987B /* AvFoundationPlayers.h */,
 				2614B5A022381D850083987B /* CocoaView.mm */,
+				2614B5A3223824960083987B /* AvFoundationPlayers.mm */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -403,6 +407,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2614B5A5223824FB0083987B /* AvFoundationPlayers.mm in Sources */,
 				2614B5A222381DF80083987B /* CocoaView.mm in Sources */,
 				269C91942233204B00A80372 /* main.mm in Sources */,
 			);
@@ -414,6 +419,7 @@
 			files = (
 				2614B5A122381D850083987B /* CocoaView.mm in Sources */,
 				26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */,
+				2614B5A4223824960083987B /* AvFoundationPlayers.mm in Sources */,
 				26A2236C21DD2C75007D6511 /* RecognitionTestModelTests.cpp in Sources */,
 				2646F84021DFEA2300F378DE /* RandomizedStimulusList.cpp in Sources */,
 				2646F83421DFDF5500F378DE /* RandomizedStimulusListTests.cpp in Sources */,

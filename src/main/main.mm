@@ -24,7 +24,7 @@ class MacOsDirectoryReader : public stimulus_list::DirectoryReader {
 };
 
 int main() {
-    CoreAudioMaskerPlayer maskerPlayer;
+    AvFoundationMaskerPlayer maskerPlayer;
     MacOsDirectoryReader reader;
     stimulus_list::FileFilterDecorator filter{&reader, ".mov"};
     MersenneTwisterRandomizer randomizer;

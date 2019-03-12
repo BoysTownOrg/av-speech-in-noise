@@ -1,16 +1,11 @@
-//
-//  AvFoundationPlayers.h
-//  av-coordinated-response-measure
-//
-//  Created by Bashford, Seth on 3/12/19.
-//
-
 #ifndef AvFoundationPlayers_h
 #define AvFoundationPlayers_h
 
+#include <recognition-test/Model.hpp>
 #import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>
 #include <gsl/gsl>
+#include <vector>
 
 class CoreAudioDevice {
     std::vector<AudioObjectID> devices{};
@@ -175,52 +170,18 @@ public:
     }
 };
 
-@implementation StimulusPlayerActions
-@synthesize controller;
-- (void)playbackComplete {
-    controller->playbackComplete();
-}
-@end
-
-class CoreAudioMaskerPlayer : public recognition_test::MaskerPlayer {
+class AvFoundationMaskerPlayer : public recognition_test::MaskerPlayer {
     CoreAudioDevice device{};
     AVPlayer *player{[AVPlayer playerWithPlayerItem:nil]};
     EventListener *listener{};
 public:
-    void subscribe(EventListener *listener_) override {
-        listener = listener_;
-    }
-    
-    void fadeIn() override {
-        [player play];
-        listener->fadeInComplete();
-    }
-    
-    void fadeOut() override {
-        [player pause];
-    }
-    
-    void loadFile(std::string filePath) override {
-        const auto asset = makeAvAsset(filePath);
-        [player replaceCurrentItemWithPlayerItem:
-            [AVPlayerItem playerItemWithAsset:asset]];
-    }
-    
-    int deviceCount() override {
-        return device.deviceCount();
-    }
-    
-    std::string deviceDescription(int index) override {
-        return device.description(index);
-    }
-    
-    void setDevice(int index) override {
-        auto uid_ = device.uid(index);
-        player.audioOutputDeviceUniqueID = [
-            NSString stringWithCString:uid_.c_str()
-            encoding:[NSString defaultCStringEncoding]
-        ];
-    }
+    void subscribe(EventListener *listener_) override;
+    void fadeIn() override;
+    void fadeOut() override;
+    void loadFile(std::string filePath) override;
+    int deviceCount() override;
+    std::string deviceDescription(int index) override;
+    void setDevice(int index) override;
 };
 
-#endif /* AvFoundationPlayers_h */
+#endif
