@@ -3,11 +3,10 @@
 namespace presentation {
     Presenter::Presenter(Model *model, View *view) :
         testSetup{view->testSetup()},
-        tester{view->tester()},
+        tester{model, view->tester()},
         model{model},
         view{view}
     {
-        tester.initialize(model);
         view->subscribe(this);
     }
 
@@ -95,9 +94,10 @@ namespace presentation {
         view->hide();
     }
     
-    Presenter::Tester::Tester(View::Tester *view) :
+    Presenter::Tester::Tester(Model *model, View::Tester *view) :
         view{view}
     {
+        view->populateAudioDeviceMenu(model->audioDevices());
     }
     
     void Presenter::Tester::run() {
@@ -113,9 +113,4 @@ namespace presentation {
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
     }
-    
-    void Presenter::Tester::initialize(Model *m) {
-        view->populateAudioDeviceMenu(m->audioDevices());
-    }
-    
 }

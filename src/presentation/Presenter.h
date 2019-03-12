@@ -108,8 +108,7 @@ namespace presentation {
         
         class Tester {
         public:
-            explicit Tester(View::Tester *);
-            void initialize(Model *);
+            Tester(Model *, View::Tester *);
             void run();
             void submitRequest(Model *);
             void close();
