@@ -5,6 +5,7 @@ public:
     virtual ~VideoPlayer() = default;
     virtual bool playing() = 0;
     virtual void loadFile(std::string) = 0;
+    virtual void setDevice(int index) = 0;
 };
 
 class RandomizedMaskerPlayer : public recognition_test::MaskerPlayer {
@@ -22,7 +23,7 @@ public:
         return {};
     }
     void setDevice(int index) override {
-    
+        player->setDevice(index);
     }
     void fadeIn() override {
     
@@ -43,6 +44,7 @@ public:
 
 class VideoPlayerStub : public VideoPlayer {
     std::string filePath_{};
+    int deviceIndex_{};
     bool playing_{};
 public:
     void setPlaying() {
@@ -57,8 +59,16 @@ public:
         filePath_ = std::move(s);
     }
     
+    void setDevice(int index) override {
+        deviceIndex_ = index;
+    }
+    
     auto filePath() const {
         return filePath_;
+    }
+    
+    auto deviceIndex() const {
+        return deviceIndex_;
     }
 };
 
@@ -76,4 +86,9 @@ TEST_F(RandomizedMaskerPlayerTests, playingWhenVideoPlayerPlaying) {
 TEST_F(RandomizedMaskerPlayerTests, loadFileLoadsVideoFile) {
     player.loadFile("a");
     assertEqual("a", videoPlayer.filePath());
+}
+
+TEST_F(RandomizedMaskerPlayerTests, setDeviceSetsDevice) {
+    player.setDevice(1);
+    EXPECT_EQ(1, videoPlayer.deviceIndex());
 }
