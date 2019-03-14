@@ -22,7 +22,7 @@ public:
         return player->deviceCount();
     }
     std::string deviceDescription(int index) override {
-        return player->deviceDescription(0);
+        return player->deviceDescription(index);
     }
     void setDevice(int index) override {
         player->setDevice(index);
@@ -49,6 +49,7 @@ class VideoPlayerStub : public VideoPlayer {
     std::string deviceDescription_{};
     int deviceIndex_{};
     int deviceCount_{};
+    int deviceDescriptionDeviceIndex_{};
     bool playing_{};
 public:
     void setPlaying() {
@@ -72,6 +73,7 @@ public:
     }
     
     std::string deviceDescription(int index) override {
+        deviceDescriptionDeviceIndex_ = index;
         return deviceDescription_;
     }
     
@@ -89,6 +91,10 @@ public:
     
     void setDeviceDescription(std::string s) {
         deviceDescription_ = std::move(s);
+    }
+    
+    auto deviceDescriptionDeviceIndex() const {
+        return deviceDescriptionDeviceIndex_;
     }
 };
 
@@ -121,4 +127,9 @@ TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceCount) {
 TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceDescription) {
     videoPlayer.setDeviceDescription("a");
     assertEqual("a", player.deviceDescription({}));
+}
+
+TEST_F(RandomizedMaskerPlayerTests, passesDeviceIndexToDeviceDescription) {
+    player.deviceDescription(1);
+    EXPECT_EQ(1, videoPlayer.deviceDescriptionDeviceIndex());
 }
