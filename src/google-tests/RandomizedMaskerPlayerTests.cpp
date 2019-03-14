@@ -1,5 +1,6 @@
 #include <recognition-test/Model.hpp>
 #include <gsl/gsl>
+#include <cmath>
 
 class VideoPlayer {
 public:
@@ -23,6 +24,7 @@ class RandomizedMaskerPlayer :
     public recognition_test::MaskerPlayer,
     public VideoPlayer::EventListener
 {
+    double audioScale{};
     VideoPlayer *player;
 public:
     RandomizedMaskerPlayer(VideoPlayer *player) : player{player}
@@ -62,14 +64,14 @@ public:
         return player->playing();
     }
     
-    void setLevel_dB(double) {
-    
+    void setLevel_dB(double x) {
+        audioScale = std::pow(10, x/20);
     }
     
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override {
         for (auto channel : audio)
             for (auto &x : channel)
-                x *= 10;
+                x *= audioScale;
     }
 };
 
