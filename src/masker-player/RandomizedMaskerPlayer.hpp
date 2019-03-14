@@ -31,52 +31,17 @@ namespace masker_player {
         double audioScale{};
         VideoPlayer *player;
     public:
-        RandomizedMaskerPlayer(VideoPlayer *player) : player{player}
-        {
-            player->subscribe(this);
-        }
-        
-        void subscribe(MaskerPlayer::EventListener *) override {
-        
-        }
-        
-        int deviceCount() override {
-            return player->deviceCount();
-        }
-        
-        std::string deviceDescription(int index) override {
-            return player->deviceDescription(index);
-        }
-        
-        void setDevice(int index) override {
-            player->setDevice(index);
-        }
-        
-        void fadeIn() override {
-            player->play();
-        }
-        
-        void fadeOut() override {
-        
-        }
-        
-        void loadFile(std::string filePath) override {
-            player->loadFile(std::move(filePath));
-        }
-        
-        bool playing() override {
-            return player->playing();
-        }
-        
-        void setLevel_dB(double x) {
-            audioScale = std::pow(10, x/20);
-        }
-        
-        void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override {
-            for (auto channel : audio)
-                for (auto &x : channel)
-                    x *= audioScale;
-        }
+        RandomizedMaskerPlayer(VideoPlayer *);
+        void subscribe(MaskerPlayer::EventListener *) override;
+        int deviceCount() override;
+        std::string deviceDescription(int index) override;
+        void setDevice(int index) override;
+        void fadeIn() override;
+        void fadeOut() override;
+        void loadFile(std::string) override;
+        bool playing() override;
+        void setLevel_dB(double);
+        void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     };
 }
 
