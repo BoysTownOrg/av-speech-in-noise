@@ -23,6 +23,8 @@
 		26A2237921DD354A007D6511 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A2236E21DD34A7007D6511 /* Model.cpp */; };
 		26A2237A21DD3552007D6511 /* librecognition-test.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; };
 		26A86BDE223A972200210C00 /* RandomizedMaskerPlayerTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A86BDD223A972200210C00 /* RandomizedMaskerPlayerTests.cpp */; };
+		26A86BEA223AA74A00210C00 /* RandomizedMaskerPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A86BE8223AA74A00210C00 /* RandomizedMaskerPlayer.cpp */; };
+		26A86BEB223AA74A00210C00 /* RandomizedMaskerPlayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 26A86BE9223AA74A00210C00 /* RandomizedMaskerPlayer.hpp */; };
 		26B81F3721DEB18E00006FCB /* libpresentation.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FC6B1621DAA3D800289A0A /* libpresentation.dylib */; };
 		26B81F3821DEB18E00006FCB /* librecognition-test.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; };
 		26B81F3A21DEB19E00006FCB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B81F1E21DEA46800006FCB /* AVFoundation.framework */; };
@@ -66,6 +68,9 @@
 		26A2236F21DD34A7007D6511 /* Model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Model.hpp; sourceTree = "<group>"; };
 		26A2237521DD3544007D6511 /* librecognition-test.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "librecognition-test.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A86BDD223A972200210C00 /* RandomizedMaskerPlayerTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedMaskerPlayerTests.cpp; sourceTree = "<group>"; };
+		26A86BE3223AA71400210C00 /* libmasker-player.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libmasker-player.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
+		26A86BE8223AA74A00210C00 /* RandomizedMaskerPlayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedMaskerPlayer.cpp; sourceTree = "<group>"; };
+		26A86BE9223AA74A00210C00 /* RandomizedMaskerPlayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomizedMaskerPlayer.hpp; sourceTree = "<group>"; };
 		26B81F1E21DEA46800006FCB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		26B81F2021DEA46F00006FCB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "av-coordinated-response-measure.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +90,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		26A2237321DD3544007D6511 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26A86BE1223AA71400210C00 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -158,9 +170,19 @@
 			path = "recognition-test";
 			sourceTree = "<group>";
 		};
+		26A86BE7223AA72700210C00 /* masker-player */ = {
+			isa = PBXGroup;
+			children = (
+				26A86BE8223AA74A00210C00 /* RandomizedMaskerPlayer.cpp */,
+				26A86BE9223AA74A00210C00 /* RandomizedMaskerPlayer.hpp */,
+			);
+			path = "masker-player";
+			sourceTree = "<group>";
+		};
 		26FC6AF821DA80C900289A0A = {
 			isa = PBXGroup;
 			children = (
+				26A86BE7223AA72700210C00 /* masker-player */,
 				269C919122331FCE00A80372 /* main */,
 				2646F83D21DFEA0B00F378DE /* stimulus-list */,
 				26A2236D21DD3482007D6511 /* recognition-test */,
@@ -179,6 +201,7 @@
 				26A2237521DD3544007D6511 /* librecognition-test.dylib */,
 				26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */,
 				2646F83921DFEA0400F378DE /* libstimulus-list.dylib */,
+				26A86BE3223AA71400210C00 /* libmasker-player.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -234,6 +257,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		26A86BDF223AA71400210C00 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26A86BEB223AA74A00210C00 /* RandomizedMaskerPlayer.hpp in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		26FC6B1221DAA3D800289A0A /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -276,6 +307,23 @@
 			name = "recognition-test";
 			productName = "recognition-test";
 			productReference = 26A2237521DD3544007D6511 /* librecognition-test.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		26A86BE2223AA71400210C00 /* masker-player */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26A86BE4223AA71400210C00 /* Build configuration list for PBXNativeTarget "masker-player" */;
+			buildPhases = (
+				26A86BDF223AA71400210C00 /* Headers */,
+				26A86BE0223AA71400210C00 /* Sources */,
+				26A86BE1223AA71400210C00 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "masker-player";
+			productName = "masker-player";
+			productReference = 26A86BE3223AA71400210C00 /* libmasker-player.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		26B81F2521DEB15700006FCB /* av-coordinated-response-measure */ = {
@@ -343,6 +391,9 @@
 					26A2237421DD3544007D6511 = {
 						CreatedOnToolsVersion = 10.1;
 					};
+					26A86BE2223AA71400210C00 = {
+						CreatedOnToolsVersion = 10.1;
+					};
 					26B81F2521DEB15700006FCB = {
 						CreatedOnToolsVersion = 10.1;
 					};
@@ -372,6 +423,7 @@
 				26A2237421DD3544007D6511 /* recognition-test */,
 				26B81F2521DEB15700006FCB /* av-coordinated-response-measure */,
 				2646F83821DFEA0400F378DE /* stimulus-list */,
+				26A86BE2223AA71400210C00 /* masker-player */,
 			);
 		};
 /* End PBXProject section */
@@ -401,6 +453,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				26A2237921DD354A007D6511 /* Model.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26A86BE0223AA71400210C00 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26A86BEA223AA74A00210C00 /* RandomizedMaskerPlayer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -666,6 +726,129 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		26A86BE5223AA71400210C00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		26A86BE6223AA71400210C00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -1072,6 +1255,15 @@
 			buildConfigurations = (
 				26A2237721DD3544007D6511 /* Debug */,
 				26A2237821DD3544007D6511 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		26A86BE4223AA71400210C00 /* Build configuration list for PBXNativeTarget "masker-player" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26A86BE5223AA71400210C00 /* Debug */,
+				26A86BE6223AA71400210C00 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
