@@ -8,6 +8,7 @@ public:
     virtual void setDevice(int index) = 0;
     virtual int deviceCount() = 0;
     virtual std::string deviceDescription(int index) = 0;
+    virtual void play() = 0;
 };
 
 class RandomizedMaskerPlayer : public recognition_test::MaskerPlayer {
@@ -18,24 +19,31 @@ public:
     void subscribe(EventListener *) override {
     
     }
+    
     int deviceCount() override {
         return player->deviceCount();
     }
+    
     std::string deviceDescription(int index) override {
         return player->deviceDescription(index);
     }
+    
     void setDevice(int index) override {
         player->setDevice(index);
     }
-    void fadeIn() override {
     
+    void fadeIn() override {
+        player->play();
     }
+    
     void fadeOut() override {
     
     }
+    
     void loadFile(std::string filePath) override {
         player->loadFile(std::move(filePath));
     }
+    
     bool playing() override {
         return player->playing();
     }
@@ -51,6 +59,7 @@ class VideoPlayerStub : public VideoPlayer {
     int deviceCount_{};
     int deviceDescriptionDeviceIndex_{};
     bool playing_{};
+    bool played_{};
 public:
     void setPlaying() {
         playing_ = true;
@@ -77,6 +86,10 @@ public:
         return deviceDescription_;
     }
     
+    void play() override {
+        played_ = true;
+    }
+    
     auto filePath() const {
         return filePath_;
     }
@@ -95,6 +108,10 @@ public:
     
     auto deviceDescriptionDeviceIndex() const {
         return deviceDescriptionDeviceIndex_;
+    }
+    
+    auto played() const {
+        return played_;
     }
 };
 
@@ -132,4 +149,9 @@ TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceDescription) {
 TEST_F(RandomizedMaskerPlayerTests, passesDeviceIndexToDeviceDescription) {
     player.deviceDescription(1);
     EXPECT_EQ(1, videoPlayer.deviceDescriptionDeviceIndex());
+}
+
+TEST_F(RandomizedMaskerPlayerTests, fadeInPlaysVideoPlayer) {
+    player.fadeIn();
+    EXPECT_TRUE(videoPlayer.played());
 }
