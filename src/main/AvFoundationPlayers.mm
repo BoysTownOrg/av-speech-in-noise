@@ -156,34 +156,25 @@ void AvFoundationStimulusPlayer::setDevice(int index) {
 }
 @end
 
-void AvFoundationMaskerPlayer::subscribe(EventListener *listener_) {
+void AvFoundationVideoPlayer::subscribe(EventListener *listener_) {
     listener = listener_;
 }
 
-void AvFoundationMaskerPlayer::fadeIn() {
-    [player play];
-    listener->fadeInComplete();
-}
-
-void AvFoundationMaskerPlayer::fadeOut() {
-    [player pause];
-}
-
-void AvFoundationMaskerPlayer::loadFile(std::string filePath) {
+void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     const auto asset = makeAvAsset(filePath);
     [player replaceCurrentItemWithPlayerItem:
         [AVPlayerItem playerItemWithAsset:asset]];
 }
 
-int AvFoundationMaskerPlayer::deviceCount() {
+int AvFoundationVideoPlayer::deviceCount() {
     return device.deviceCount();
 }
 
-std::string AvFoundationMaskerPlayer::deviceDescription(int index) {
+std::string AvFoundationVideoPlayer::deviceDescription(int index) {
     return device.description(index);
 }
 
-void AvFoundationMaskerPlayer::setDevice(int index) {
+void AvFoundationVideoPlayer::setDevice(int index) {
     auto uid_ = device.uid(index);
     player.audioOutputDeviceUniqueID = [
         NSString stringWithCString:uid_.c_str()
@@ -191,13 +182,18 @@ void AvFoundationMaskerPlayer::setDevice(int index) {
     ];
 }
 
-AvFoundationMaskerPlayer::AvFoundationMaskerPlayer() :
+AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
     player{[AVPlayer playerWithPlayerItem:nil]}
 {
 }
 
-bool AvFoundationMaskerPlayer::playing() {
+bool AvFoundationVideoPlayer::playing() {
     return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
 }
+
+void AvFoundationVideoPlayer::play() {
+    [player play];
+}
+
 
 

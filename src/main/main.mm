@@ -3,6 +3,7 @@
 #include "CocoaView.h"
 #include <presentation/Presenter.h>
 #include <recognition-test/Model.hpp>
+#include <masker-player/RandomizedMaskerPlayer.hpp>
 #include <stimulus-list/RandomizedStimulusList.hpp>
 #include <stimulus-list/FileFilterDecorator.hpp>
 
@@ -24,12 +25,13 @@ class MacOsDirectoryReader : public stimulus_list::DirectoryReader {
 };
 
 int main() {
-    AvFoundationMaskerPlayer maskerPlayer;
     MacOsDirectoryReader reader;
     stimulus_list::FileFilterDecorator filter{&reader, ".mov"};
     MersenneTwisterRandomizer randomizer;
     stimulus_list::RandomizedStimulusList list{&filter, &randomizer};
     AvFoundationStimulusPlayer stimulusPlayer;
+    AvFoundationVideoPlayer videoPlayer;
+    masker_player::RandomizedMaskerPlayer maskerPlayer{&videoPlayer};
     recognition_test::Model model{&maskerPlayer, &list, &stimulusPlayer};
     CocoaView view;
     presentation::Presenter presenter{&model, &view};

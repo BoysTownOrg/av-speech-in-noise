@@ -2,6 +2,7 @@
 #define AvFoundationPlayers_h
 
 #include <recognition-test/Model.hpp>
+#include <masker-player/RandomizedMaskerPlayer.hpp>
 #import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>
 #include <vector>
@@ -42,20 +43,19 @@ public:
     void setDevice(int index) override;
 };
 
-class AvFoundationMaskerPlayer : public recognition_test::MaskerPlayer {
+class AvFoundationVideoPlayer : public masker_player::VideoPlayer {
     CoreAudioDevice device{};
     EventListener *listener{};
     AVPlayer *player;
 public:
-    AvFoundationMaskerPlayer();
-    void subscribe(EventListener *listener_) override;
-    void fadeIn() override;
-    void fadeOut() override;
+    AvFoundationVideoPlayer();
+    void subscribe(EventListener *) override;
     void loadFile(std::string filePath) override;
     int deviceCount() override;
     std::string deviceDescription(int index) override;
     void setDevice(int index) override;
     bool playing() override;
+    void play() override;
 };
 
 #endif

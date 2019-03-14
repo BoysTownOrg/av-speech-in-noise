@@ -26,6 +26,7 @@
 		26A86BEA223AA74A00210C00 /* RandomizedMaskerPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A86BE8223AA74A00210C00 /* RandomizedMaskerPlayer.cpp */; };
 		26A86BEB223AA74A00210C00 /* RandomizedMaskerPlayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 26A86BE9223AA74A00210C00 /* RandomizedMaskerPlayer.hpp */; };
 		26A86BEC223AA87B00210C00 /* libmasker-player.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A86BE3223AA71400210C00 /* libmasker-player.dylib */; };
+		26A86BED223AA9E600210C00 /* libmasker-player.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A86BE3223AA71400210C00 /* libmasker-player.dylib */; };
 		26B81F3721DEB18E00006FCB /* libpresentation.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FC6B1621DAA3D800289A0A /* libpresentation.dylib */; };
 		26B81F3821DEB18E00006FCB /* librecognition-test.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; };
 		26B81F3A21DEB19E00006FCB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B81F1E21DEA46800006FCB /* AVFoundation.framework */; };
@@ -108,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26A86BED223AA9E600210C00 /* libmasker-player.dylib in Frameworks */,
 				26955FF92236F21A00664A2C /* CoreAudio.framework in Frameworks */,
 				2646F84321DFEBE000F378DE /* libstimulus-list.dylib in Frameworks */,
 				26B81F3B21DEB1A500006FCB /* Cocoa.framework in Frameworks */,
