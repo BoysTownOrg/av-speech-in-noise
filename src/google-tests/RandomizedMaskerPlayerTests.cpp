@@ -158,8 +158,7 @@ namespace {
         RandomizedMaskerPlayer player{&videoPlayer};
         
         void fillAudioBuffer() {
-            std::vector<gsl::span<float>> audio{ leftChannel };
-            videoPlayer.fillAudioBuffer(audio);
+            videoPlayer.fillAudioBuffer({ leftChannel });
         }
     };
 
@@ -203,5 +202,12 @@ namespace {
         leftChannel = { 1, 2, 3 };
         fillAudioBuffer();
         assertEqual({ 10, 20, 30 }, leftChannel);
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, minusTwentydBDividesSignalByTen) {
+        player.setLevel_dB(-20);
+        leftChannel = { 1, 2, 3 };
+        fillAudioBuffer();
+        assertEqual({ 1/10., 2/10., 3/10. }, leftChannel);
     }
 }
