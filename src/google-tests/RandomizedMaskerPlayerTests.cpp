@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class VideoPlayerStub : public VideoPlayer {
+    class VideoPlayerStub : public masker_player::VideoPlayer {
         std::string filePath_{};
         std::string deviceDescription_{};
         int deviceIndex_{};
@@ -79,7 +79,7 @@ namespace {
     protected:
         std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
-        RandomizedMaskerPlayer player{&videoPlayer};
+        masker_player::RandomizedMaskerPlayer player{&videoPlayer};
         
         void fillAudioBuffer() {
             videoPlayer.fillAudioBuffer({ leftChannel });
