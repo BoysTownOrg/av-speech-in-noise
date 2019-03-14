@@ -6,6 +6,7 @@ public:
     virtual bool playing() = 0;
     virtual void loadFile(std::string) = 0;
     virtual void setDevice(int index) = 0;
+    virtual int deviceCount() = 0;
 };
 
 class RandomizedMaskerPlayer : public recognition_test::MaskerPlayer {
@@ -17,7 +18,7 @@ public:
     
     }
     int deviceCount() override {
-        return {};
+        return player->deviceCount();
     }
     std::string deviceDescription(int index) override {
         return {};
@@ -45,6 +46,7 @@ public:
 class VideoPlayerStub : public VideoPlayer {
     std::string filePath_{};
     int deviceIndex_{};
+    int deviceCount_{};
     bool playing_{};
 public:
     void setPlaying() {
@@ -63,12 +65,20 @@ public:
         deviceIndex_ = index;
     }
     
+    int deviceCount() override {
+        return deviceCount_;
+    }
+    
     auto filePath() const {
         return filePath_;
     }
     
     auto deviceIndex() const {
         return deviceIndex_;
+    }
+    
+    void setDeviceCount(int x) {
+        deviceCount_ = x;
     }
 };
 
@@ -91,4 +101,9 @@ TEST_F(RandomizedMaskerPlayerTests, loadFileLoadsVideoFile) {
 TEST_F(RandomizedMaskerPlayerTests, setDeviceSetsDevice) {
     player.setDevice(1);
     EXPECT_EQ(1, videoPlayer.deviceIndex());
+}
+
+TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceCount) {
+    videoPlayer.setDeviceCount(1);
+    EXPECT_EQ(1, player.deviceCount());
 }
