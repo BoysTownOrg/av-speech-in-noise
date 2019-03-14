@@ -1,6 +1,16 @@
 #include <recognition-test/Model.hpp>
 
+class VideoPlayer {
+public:
+    virtual ~VideoPlayer() = default;
+    virtual bool playing() = 0;
+};
+
 class RandomizedMaskerPlayer : public recognition_test::MaskerPlayer {
+    VideoPlayer *player;
+public:
+    RandomizedMaskerPlayer(VideoPlayer *player) : player{player} {}
+    
     void subscribe(EventListener *) override {
     
     }
@@ -23,17 +33,31 @@ class RandomizedMaskerPlayer : public recognition_test::MaskerPlayer {
     
     }
     bool playing() override {
-        return {};
+        return player->playing();
     }
 };
 
 #include <gtest/gtest.h>
 
-class RandomizedMaskerPlayerTests : public ::testing::Test {
-protected:
-    RandomizedMaskerPlayer player;
+class VideoPlayerStub : public VideoPlayer {
+    bool playing_{};
+public:
+    void setPlaying() {
+        playing_ = true;
+    }
+    
+    bool playing() override {
+        return playing_;
+    }
 };
 
-TEST_F(RandomizedMaskerPlayerTests, tbd) {
+class RandomizedMaskerPlayerTests : public ::testing::Test {
+protected:
+    VideoPlayerStub videoPlayer;
+    RandomizedMaskerPlayer player{&videoPlayer};
+};
 
+TEST_F(RandomizedMaskerPlayerTests, playingWhenVideoPlayerPlaying) {
+    videoPlayer.setPlaying();
+    EXPECT_TRUE(player.playing());
 }
