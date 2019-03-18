@@ -56,13 +56,14 @@ namespace masker_player {
     }
 
     double RandomizedMaskerPlayer::transitionScale() {
-        if (hannCounter == levelTransitionSamples && !fadingOut) {
+        int levelTransitionSamples_ = fadeInOutSeconds * player->sampleRateHz();
+        if (hannCounter == levelTransitionSamples_ && !fadingOut) {
             listener->fadeInComplete();
             return 1;
         }
         
         const auto pi = std::acos(-1);
-        const auto squareRoot = std::sin((pi*hannCounter++) / (2*levelTransitionSamples));
+        const auto squareRoot = std::sin((pi*hannCounter++) / (2*levelTransitionSamples_));
         return squareRoot * squareRoot;
     }
 }
