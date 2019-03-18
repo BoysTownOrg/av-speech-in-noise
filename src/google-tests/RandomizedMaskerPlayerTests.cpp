@@ -94,13 +94,18 @@ namespace {
             videoPlayer.fillAudioBuffer({ leftChannel });
         }
         
-        std::vector<float> halfHannWindowed(std::vector<float> x) {
+        std::vector<float> halfHannWindow(int N) {
             const auto pi = std::acos(-1);
-            int n = 0;
-            auto N = x.size() * 2 - 1;
-            for (auto &x_ : x)
-                x_ *= (1 - std::cos((2 * pi * n++)/(N - 1)))/2;
-            return x;
+            std::vector<float> window;
+            for (int n = 0; n < (N + 1) / 2; ++n)
+                window.push_back((1 - std::cos((2*pi*n)/(N - 1)))/2);
+            return window;
+        }
+        
+        std::vector<float> product(std::vector<float> x, std::vector<float> y) {
+            std::vector<float> result;
+            std::transform(x.begin(), x.end(), y.begin(), std::back_inserter(result), std::multiplies<>());
+            return result;
         }
     };
 
@@ -159,6 +164,15 @@ namespace {
         player.fadeIn();
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
-        assertEqual(halfHannWindowed({ 0, 1, 2, 3, 4, 5, 6 }), leftChannel);
+        assertEqual(product(halfHannWindow(6 / 0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }), leftChannel, 1e-6f);
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, DISABLED_fadesOutAccordingToHannFunction) {
+        player.setFadeInSeconds(0.5);
+        videoPlayer.setSampleRateHz(6 / 0.5);
+        player.fadeOut();
+        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
+        fillAudioBuffer();
+        //assertEqual(halfHannWindowed({ 0, 1, 2, 3, 4, 5, 6 }), leftChannel);
     }
 }
