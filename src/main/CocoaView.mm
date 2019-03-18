@@ -10,8 +10,7 @@ static NSTextField *allocLabel(NSString *label, NSRect frame) {
     return text;
 }
 
-CocoaTesterView::CocoaTesterView(CocoaView *parent_) :
-    parent_{parent_},
+CocoaTesterView::CocoaTesterView() :
     deviceMenu{[
         [NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30)
         pullsDown:NO
@@ -21,6 +20,7 @@ CocoaTesterView::CocoaTesterView(CocoaView *parent_) :
     },
     actions{[TesterViewActions alloc]}
 {
+    actions.controller = this;
     const auto playTrialButton = [NSButton buttonWithTitle:
         @"Play Next Trial"
         target:actions
@@ -68,8 +68,7 @@ void CocoaTesterView::playTrial() {
 }
 @end
 
-CocoaTestSetupView::CocoaTestSetupView(CocoaView *parent_) :
-    parent_{parent_},
+CocoaTestSetupView::CocoaTestSetupView() :
     view_{
         [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
     },
@@ -127,6 +126,7 @@ CocoaTestSetupView::CocoaTestSetupView(CocoaView *parent_) :
     ]},
     actions{[SetupViewActions alloc]}
 {
+    actions.controller = this;
     const auto confirmButton = [NSButton buttonWithTitle:
         @"Confirm"
         target:actions
@@ -257,6 +257,8 @@ CocoaView::CocoaView() :
     },
     actions{[ViewActions alloc]}
 {
+    testerView_.becomeChild(this);
+    testSetupView_.becomeChild(this);
     app.mainMenu = [[NSMenu alloc] init];
     auto appMenu = [[NSMenuItem alloc] init];
     [app.mainMenu addItem:appMenu];
@@ -368,3 +370,13 @@ void CocoaView::showErrorMessage(std::string s) {
 @end
 
 
+
+
+void CocoaTestSetupView::becomeChild(CocoaView *p) {
+    parent_ = p;
+}
+
+
+void CocoaTesterView::becomeChild(CocoaView *p) {
+    parent_ = p;
+}

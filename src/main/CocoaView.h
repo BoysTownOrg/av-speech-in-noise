@@ -32,13 +32,14 @@ class CocoaTesterView : public presentation::View::Tester {
     NSView *view_;
     TesterViewActions *actions;
 public:
-    explicit CocoaTesterView(CocoaView *);
+    CocoaTesterView();
     NSView *view();
     void show() override;
     void hide() override;
     std::string audioDevice() override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
     void playTrial();
+    void becomeChild(CocoaView *);
 };
 
 
@@ -60,7 +61,7 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     NSPopUpButton *conditionMenu;
     SetupViewActions *actions;
 public:
-    explicit CocoaTestSetupView(CocoaView *);
+    CocoaTestSetupView();
     NSView *view();
     void show() override;
     void hide() override;
@@ -73,6 +74,7 @@ public:
     std::string condition() override;
     void populateConditionMenu(std::vector<std::string> items) override;
     void confirm();
+    void becomeChild(CocoaView *);
 };
 
 class CocoaSubjectView : public presentation::View::SubjectView {
@@ -84,8 +86,8 @@ public:
 };
 
 class CocoaView : public presentation::View {
-    CocoaTestSetupView testSetupView_{this};
-    CocoaTesterView testerView_{this};
+    CocoaTestSetupView testSetupView_{};
+    CocoaTesterView testerView_{};
     CocoaSubjectView subjectView_{};
     EventListener *listener{};
     NSApplication *app;
