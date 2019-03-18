@@ -16,6 +16,7 @@
 		2646F84321DFEBE000F378DE /* libstimulus-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libstimulus-list.dylib */; };
 		2646F84A21E017D100F378DE /* FileFilterDecorator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F84821E017D100F378DE /* FileFilterDecorator.cpp */; };
 		2646F84B21E017D100F378DE /* FileFilterDecorator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2646F84921E017D100F378DE /* FileFilterDecorator.hpp */; };
+		2656B62722401D3F0058A23D /* MediaToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2656B62622401D3F0058A23D /* MediaToolbox.framework */; };
 		26955FF92236F21A00664A2C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F84421E003B600F378DE /* CoreAudio.framework */; };
 		269C91942233204B00A80372 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 269C919222331FCE00A80372 /* main.mm */; };
 		269C91962233212B00A80372 /* gtest_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 269C91952233212B00A80372 /* gtest_main.a */; };
@@ -62,6 +63,8 @@
 		2646F84621E003E500F378DE /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2646F84821E017D100F378DE /* FileFilterDecorator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FileFilterDecorator.cpp; sourceTree = "<group>"; };
 		2646F84921E017D100F378DE /* FileFilterDecorator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileFilterDecorator.hpp; sourceTree = "<group>"; };
+		2656B62422401D2C0058A23D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		2656B62622401D3F0058A23D /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
 		26955FF82236A60200664A2C /* assert-utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "assert-utility.h"; sourceTree = "<group>"; };
 		269C919222331FCE00A80372 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		269C91952233212B00A80372 /* gtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = gtest_main.a; path = ../../../../../usr/local/lib/gtest_main.a; sourceTree = "<group>"; };
@@ -109,6 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2656B62722401D3F0058A23D /* MediaToolbox.framework in Frameworks */,
 				26A86BED223AA9E600210C00 /* libmasker-player.dylib in Frameworks */,
 				26955FF92236F21A00664A2C /* CoreAudio.framework in Frameworks */,
 				2646F84321DFEBE000F378DE /* libstimulus-list.dylib in Frameworks */,
@@ -225,6 +229,8 @@
 		26FC6B0B21DA85A400289A0A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2656B62622401D3F0058A23D /* MediaToolbox.framework */,
+				2656B62422401D2C0058A23D /* CoreMedia.framework */,
 				269C91952233212B00A80372 /* gtest_main.a */,
 				2646F84621E003E500F378DE /* AudioToolbox.framework */,
 				2646F84421E003B600F378DE /* CoreAudio.framework */,

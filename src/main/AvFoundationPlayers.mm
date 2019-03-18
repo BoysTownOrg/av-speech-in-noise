@@ -157,7 +157,7 @@ void AvFoundationStimulusPlayer::setDevice(int index) {
 @end
 
 
-void AvFoundationVideoPlayer::init(
+void AvFoundationAudioPlayer::init(
     MTAudioProcessingTapRef,
     void *clientInfo,
     void **tapStorageOut
@@ -165,26 +165,26 @@ void AvFoundationVideoPlayer::init(
     *tapStorageOut = clientInfo;
 }
 
-void AvFoundationVideoPlayer::finalize(MTAudioProcessingTapRef)
+void AvFoundationAudioPlayer::finalize(MTAudioProcessingTapRef)
 {
 }
 
-void AvFoundationVideoPlayer::prepare(
+void AvFoundationAudioPlayer::prepare(
     MTAudioProcessingTapRef tap,
     CMItemCount,
     const AudioStreamBasicDescription *description
 ) {
-    AvFoundationVideoPlayer *self = static_cast<AvFoundationVideoPlayer *>(
+    AvFoundationAudioPlayer *self = static_cast<AvFoundationAudioPlayer *>(
         MTAudioProcessingTapGetStorage(tap)
     );
     self->audio.resize(description->mChannelsPerFrame);
 }
 
-void AvFoundationVideoPlayer::unprepare(MTAudioProcessingTapRef)
+void AvFoundationAudioPlayer::unprepare(MTAudioProcessingTapRef)
 {
 }
 
-void AvFoundationVideoPlayer::process(
+void AvFoundationAudioPlayer::process(
     MTAudioProcessingTapRef tap,
     CMItemCount numberFrames,
     MTAudioProcessingTapFlags,
@@ -201,7 +201,7 @@ void AvFoundationVideoPlayer::process(
         numberFramesOut
     );
 
-    AvFoundationVideoPlayer *self = static_cast<AvFoundationVideoPlayer *>(
+    AvFoundationAudioPlayer *self = static_cast<AvFoundationAudioPlayer *>(
         MTAudioProcessingTapGetStorage(tap)
     );
     if (self->audio.size() != bufferListInOut->mNumberBuffers)
@@ -215,25 +215,33 @@ void AvFoundationVideoPlayer::process(
     self->listener->fillAudioBuffer(self->audio);
 }
 
-void AvFoundationVideoPlayer::subscribe(EventListener *listener_) {
+void AvFoundationAudioPlayer::subscribe(EventListener *listener_) {
     listener = listener_;
 }
 
-void AvFoundationVideoPlayer::loadFile(std::string filePath) {
+void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     const auto asset = makeAvAsset(filePath);
+    const auto processing =
+        [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:
+            [asset tracksWithMediaType:AVMediaTypeAudio].firstObject];
+    processing.audioTapProcessor = tap;
+    const auto audioMix = [AVMutableAudioMix audioMix];
+    audioMix.inputParameters = @[processing];
+    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
+    playerItem.audioMix = audioMix;
     [player replaceCurrentItemWithPlayerItem:
         [AVPlayerItem playerItemWithAsset:asset]];
 }
 
-int AvFoundationVideoPlayer::deviceCount() {
+int AvFoundationAudioPlayer::deviceCount() {
     return device.deviceCount();
 }
 
-std::string AvFoundationVideoPlayer::deviceDescription(int index) {
+std::string AvFoundationAudioPlayer::deviceDescription(int index) {
     return device.description(index);
 }
 
-void AvFoundationVideoPlayer::setDevice(int index) {
+void AvFoundationAudioPlayer::setDevice(int index) {
     auto uid_ = device.uid(index);
     player.audioOutputDeviceUniqueID = [
         NSString stringWithCString:uid_.c_str()
@@ -241,20 +249,39 @@ void AvFoundationVideoPlayer::setDevice(int index) {
     ];
 }
 
-AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
+AvFoundationAudioPlayer::AvFoundationAudioPlayer() :
     player{[AVPlayer playerWithPlayerItem:nil]}
 {
+    MTAudioProcessingTapCallbacks callbacks;
+    callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
+    callbacks.clientInfo = this;
+    callbacks.init = init;
+    callbacks.prepare = prepare;
+    callbacks.process = process;
+    callbacks.unprepare = unprepare;
+    callbacks.finalize = finalize;
+
+    if (
+        MTAudioProcessingTapCreate(
+            kCFAllocatorDefault,
+            &callbacks,
+            kMTAudioProcessingTapCreationFlag_PostEffects,
+            &tap
+        ) ||
+        !tap
+    )
+        throw std::runtime_error{"Unable to create the AudioProcessingTap"};
 }
 
-bool AvFoundationVideoPlayer::playing() {
+bool AvFoundationAudioPlayer::playing() {
     return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
 }
 
-void AvFoundationVideoPlayer::play() {
+void AvFoundationAudioPlayer::play() {
     [player play];
 }
 
-double AvFoundationVideoPlayer::sampleRateHz() { 
+double AvFoundationAudioPlayer::sampleRateHz() { 
     return 0;
 }
 

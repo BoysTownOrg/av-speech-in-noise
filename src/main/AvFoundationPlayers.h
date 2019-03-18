@@ -43,13 +43,14 @@ public:
     void setDevice(int index) override;
 };
 
-class AvFoundationVideoPlayer : public masker_player::AudioPlayer {
+class AvFoundationAudioPlayer : public masker_player::AudioPlayer {
     std::vector<gsl::span<float>> audio;
     CoreAudioDevice device{};
+    MTAudioProcessingTapRef tap{};
     EventListener *listener{};
     AVPlayer *player;
 public:
-    AvFoundationVideoPlayer();
+    AvFoundationAudioPlayer();
     void subscribe(EventListener *) override;
     void loadFile(std::string filePath) override;
     int deviceCount() override;
