@@ -49,6 +49,7 @@ class AvFoundationAudioPlayer : public masker_player::AudioPlayer {
     MTAudioProcessingTapRef tap{};
     EventListener *listener{};
     AVPlayer *player;
+    double sampleRate_{};
 public:
     AvFoundationAudioPlayer();
     void subscribe(EventListener *) override;

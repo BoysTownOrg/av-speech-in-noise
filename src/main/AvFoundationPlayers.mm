@@ -174,10 +174,11 @@ void AvFoundationAudioPlayer::prepare(
     CMItemCount,
     const AudioStreamBasicDescription *description
 ) {
-    AvFoundationAudioPlayer *self = static_cast<AvFoundationAudioPlayer *>(
+    auto self = static_cast<AvFoundationAudioPlayer *>(
         MTAudioProcessingTapGetStorage(tap)
     );
     self->audio.resize(description->mChannelsPerFrame);
+    self->sampleRate_ = description->mSampleRate;
 }
 
 void AvFoundationAudioPlayer::unprepare(MTAudioProcessingTapRef)
@@ -201,7 +202,7 @@ void AvFoundationAudioPlayer::process(
         numberFramesOut
     );
 
-    AvFoundationAudioPlayer *self = static_cast<AvFoundationAudioPlayer *>(
+    auto self = static_cast<AvFoundationAudioPlayer *>(
         MTAudioProcessingTapGetStorage(tap)
     );
     if (self->audio.size() != bufferListInOut->mNumberBuffers)
@@ -282,7 +283,7 @@ void AvFoundationAudioPlayer::play() {
 }
 
 double AvFoundationAudioPlayer::sampleRateHz() { 
-    return 0;
+    return sampleRate_;
 }
 
 
