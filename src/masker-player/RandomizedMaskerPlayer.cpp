@@ -23,14 +23,16 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::fadeIn() {
-        levelTransitionSamples = fadeInOutSeconds * player->sampleRateHz();
         player->play();
     }
 
     void RandomizedMaskerPlayer::fadeOut() {
-        levelTransitionSamples = fadeInOutSeconds * player->sampleRateHz();
-        hannCounter = levelTransitionSamples;
         fadingOut = true;
+        hannCounter = levelTransitionSamples();
+    }
+
+    int RandomizedMaskerPlayer::levelTransitionSamples() {
+        return fadeInOutSeconds * player->sampleRateHz();
     }
 
     void RandomizedMaskerPlayer::loadFile(std::string filePath) {
@@ -54,9 +56,9 @@ namespace masker_player {
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
         fadeInOutSeconds = x;
     }
-
+    
     double RandomizedMaskerPlayer::transitionScale() {
-        int levelTransitionSamples_ = fadeInOutSeconds * player->sampleRateHz();
+        auto levelTransitionSamples_ = levelTransitionSamples();
         if (hannCounter == levelTransitionSamples_ && !fadingOut) {
             listener->fadeInComplete();
             return 1;

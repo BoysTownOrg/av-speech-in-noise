@@ -31,7 +31,6 @@ namespace masker_player {
     {
         double audioScale{1};
         double fadeInOutSeconds{};
-        int levelTransitionSamples{};
         int hannCounter{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
@@ -50,6 +49,7 @@ namespace masker_player {
         void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
         void setFadeInOutSeconds(double);
     private:
+        int levelTransitionSamples();
         double transitionScale();
     };
 }

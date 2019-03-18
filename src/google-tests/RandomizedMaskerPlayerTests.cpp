@@ -201,8 +201,8 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteAccordingToFadeTime) {
         player.setFadeInOutSeconds(0.5);
-        audioPlayer.setSampleRateHz(6 / 0.5);
         player.fadeIn();
+        audioPlayer.setSampleRateHz(6 / 0.5);
         leftChannel = { 0, 1, 2 };
         fillAudioBuffer();
         EXPECT_FALSE(observer.notified());
