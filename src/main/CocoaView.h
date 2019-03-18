@@ -10,8 +10,6 @@ class CocoaView;
 @property CocoaView *controller;
 - (void) newTest;
 - (void) openTest;
-- (void) confirmTestSetup;
-- (void) playTrial;
 @end
 
 class CocoaTestSetupView;
@@ -21,16 +19,26 @@ class CocoaTestSetupView;
 - (void) confirmTestSetup;
 @end
 
+class CocoaTesterView;
+
+@interface TesterViewActions : NSObject
+@property CocoaTesterView *controller;
+- (void) playTrial;
+@end
+
 class CocoaTesterView : public presentation::View::Tester {
+    CocoaView *parent_;
     NSPopUpButton *deviceMenu;
     NSView *view_;
+    TesterViewActions *actions;
 public:
-    CocoaTesterView();
+    explicit CocoaTesterView(CocoaView *);
     NSView *view();
     void show() override;
     void hide() override;
     std::string audioDevice() override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
+    void playTrial();
 };
 
 
@@ -77,12 +85,11 @@ public:
 
 class CocoaView : public presentation::View {
     CocoaTestSetupView testSetupView_{this};
-    CocoaTesterView testerView_{};
+    CocoaTesterView testerView_{this};
     CocoaSubjectView subjectView_{};
     EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
-    NSView *tbdView;
     ViewActions *actions;
 public:
     CocoaView();

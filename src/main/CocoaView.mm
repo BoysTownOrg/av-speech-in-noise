@@ -10,17 +10,25 @@ static NSTextField *allocLabel(NSString *label, NSRect frame) {
     return text;
 }
 
-CocoaTesterView::CocoaTesterView() :
+CocoaTesterView::CocoaTesterView(CocoaView *parent_) :
+    parent_{parent_},
     deviceMenu{[
         [NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30)
         pullsDown:NO
     ]},
     view_{
         [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
-    }
+    },
+    actions{[TesterViewActions alloc]}
 {
+    const auto playTrialButton = [NSButton buttonWithTitle:
+        @"Play Next Trial"
+        target:actions
+        action:@selector(playTrial)
+    ];
     [view_ setHidden:YES];
     [view_ addSubview:deviceMenu];
+    [view_ addSubview:playTrialButton];
 }
 
 NSView *CocoaTesterView::view() {
@@ -48,6 +56,17 @@ void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
         [deviceMenu addItemWithTitle: title];
     }
 }
+
+void CocoaTesterView::playTrial() {
+    parent_->playTrial();
+}
+
+@implementation TesterViewActions
+@synthesize controller;
+- (void)playTrial {
+    controller->playTrial();
+}
+@end
 
 CocoaTestSetupView::CocoaTestSetupView(CocoaView *parent_) :
     parent_{parent_},
@@ -114,7 +133,7 @@ CocoaTestSetupView::CocoaTestSetupView(CocoaView *parent_) :
         action:@selector(confirmTestSetup)
     ];
     [view_ addSubview:confirmButton];
-    [view_ setHidden:YES];
+    [view_ setHidden:NO];
     [view_ addSubview:subjectIdLabel];
     [view_ addSubview:subjectId_];
     [view_ addSubview:testerIdLabel];
@@ -236,9 +255,6 @@ CocoaView::CocoaView() :
             defer:NO
         ]
     },
-    tbdView{
-        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 500, 100)]
-    },
     actions{[ViewActions alloc]}
 {
     app.mainMenu = [[NSMenu alloc] init];
@@ -269,14 +285,6 @@ CocoaView::CocoaView() :
     openTestItem.target = actions;
     [fileSubMenu addItem:openTestItem];
     [fileMenu setSubmenu:fileSubMenu];
-    const auto playTrialButton = [NSButton buttonWithTitle:
-        @"Play Next Trial"
-        target:actions
-        action:@selector(playTrial)
-    ];
-    playTrialButton.frame = NSMakeRect(200, 0, 130, 40);
-    [tbdView addSubview:playTrialButton];
-    [window.contentView addSubview:tbdView];
     [window.contentView addSubview:testerView_.view()];
     [window.contentView addSubview:testSetupView_.view()];
     actions.controller = this;
@@ -356,14 +364,6 @@ void CocoaView::showErrorMessage(std::string s) {
 
 - (void)openTest {
     controller->openTest();
-}
-
-- (void)confirmTestSetup {
-    controller->confirmTestSetup();
-}
-
-- (void)playTrial {
-    controller->playTrial();
 }
 @end
 
