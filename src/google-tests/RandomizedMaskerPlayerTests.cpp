@@ -232,7 +232,7 @@ namespace {
         player.fadeIn();
         auto N = 6/0.5 + 1;
         audioPlayer.setSampleRateHz(N - 1);
-        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
+        leftChannel.resize(7);
         fillAudioBuffer();
         player.fadeIn();
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
