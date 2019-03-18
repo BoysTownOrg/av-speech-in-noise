@@ -190,25 +190,33 @@ namespace {
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
         player.setFadeInOutSeconds(0.5);
         player.fadeIn();
-        audioPlayer.setSampleRateHz(6 / 0.5);
+        audioPlayer.setSampleRateHz(6/0.5);
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
-        assertEqual(product(halfHannWindow(6 / 0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }), leftChannel, 1e-6f);
+        assertEqual(
+            product(halfHannWindow(6/0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }),
+            leftChannel,
+            1e-6f
+        );
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
         player.setFadeInOutSeconds(0.5);
-        audioPlayer.setSampleRateHz(6 / 0.5);
+        audioPlayer.setSampleRateHz(6/0.5);
         player.fadeOut();
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
-        assertEqual(product(backHalfHannWindow(6 / 0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }), leftChannel, 1e-6f);
+        assertEqual(
+            product(backHalfHannWindow(6/0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }),
+            leftChannel,
+            1e-6f
+        );
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
         player.setFadeInOutSeconds(0.5);
         player.fadeIn();
-        audioPlayer.setSampleRateHz(6 / 0.5);
+        audioPlayer.setSampleRateHz(6/0.5);
         leftChannel = { 0, 1, 2 };
         fillAudioBuffer();
         EXPECT_FALSE(observer.notified());
@@ -223,7 +231,7 @@ namespace {
     TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnce) {
         player.setFadeInOutSeconds(0.5);
         player.fadeIn();
-        audioPlayer.setSampleRateHz(6 / 0.5);
+        audioPlayer.setSampleRateHz(6/0.5);
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
         fillAudioBuffer();
