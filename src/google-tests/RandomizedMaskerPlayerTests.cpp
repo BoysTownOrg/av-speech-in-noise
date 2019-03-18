@@ -1,6 +1,7 @@
 #include "assert-utility.h"
 #include <masker-player/RandomizedMaskerPlayer.hpp>
 #include <gtest/gtest.h>
+#include <cmath>
 
 namespace {
     class AudioPlayerStub : public masker_player::AudioPlayer {

@@ -3,7 +3,6 @@
 
 #include <recognition-test/Model.hpp>
 #include <gsl/gsl>
-#include <cmath>
 
 namespace masker_player {
     class AudioPlayer {

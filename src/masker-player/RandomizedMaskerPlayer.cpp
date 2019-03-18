@@ -1,4 +1,5 @@
 #include "RandomizedMaskerPlayer.hpp"
+#include <cmath>
 
 namespace masker_player {
     RandomizedMaskerPlayer::RandomizedMaskerPlayer(AudioPlayer *player)
