@@ -224,6 +224,22 @@ namespace {
         EXPECT_EQ(7, leftChannel.at(7));
     }
 
+    TEST_F(RandomizedMaskerPlayerTests, fadeInTwice) {
+        player.setFadeInOutSeconds(0.5);
+        player.fadeIn();
+        audioPlayer.setSampleRateHz(6/0.5);
+        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
+        fillAudioBuffer();
+        player.fadeIn();
+        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
+        fillAudioBuffer();
+        assertEqual(
+            product(halfHannWindow(6/0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }),
+            leftChannel,
+            1e-6f
+        );
+    }
+
     TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
         player.setFadeInOutSeconds(0.5);
         audioPlayer.setSampleRateHz(6/0.5);

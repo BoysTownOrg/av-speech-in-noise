@@ -25,6 +25,7 @@ namespace masker_player {
 
     void RandomizedMaskerPlayer::fadeIn() {
         fadingIn = true;
+        hannCounter = 0;
         player->play();
     }
 
