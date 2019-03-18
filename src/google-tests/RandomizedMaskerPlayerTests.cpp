@@ -206,11 +206,12 @@ namespace {
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
         player.setFadeInOutSeconds(0.5);
         player.fadeIn();
-        audioPlayer.setSampleRateHz(6/0.5);
+        auto N = 6/0.5 + 1;
+        audioPlayer.setSampleRateHz(N - 1);
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
         assertEqual(
-            product(halfHannWindow(6/0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }),
+            product(halfHannWindow(N), { 0, 1, 2, 3, 4, 5, 6 }),
             leftChannel,
             1e-6f
         );
@@ -219,7 +220,8 @@ namespace {
     TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeIn) {
         player.setFadeInOutSeconds(0.5);
         player.fadeIn();
-        audioPlayer.setSampleRateHz(6/0.5);
+        auto N = 6/0.5 + 1;
+        audioPlayer.setSampleRateHz(N - 1);
         leftChannel = { 0, 1, 2, 3, 4, 5, 6, 7 };
         fillAudioBuffer();
         EXPECT_EQ(7, leftChannel.at(7));
