@@ -23,6 +23,7 @@ namespace masker_player {
         virtual std::string deviceDescription(int index) = 0;
         virtual void play() = 0;
         virtual double sampleRateHz() = 0;
+        virtual void stop() = 0;
     };
 
     class RandomizedMaskerPlayer :

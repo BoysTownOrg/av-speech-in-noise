@@ -13,7 +13,16 @@ namespace {
         EventListener *listener_{};
         bool playing_{};
         bool played_{};
+        bool stopped_{};
     public:
+        void stop() override {
+            stopped_ = true;
+        }
+        
+        auto stopped() const {
+            return stopped_;
+        }
+        
         double sampleRateHz() override {
             return sampleRateHz_;
         }
@@ -251,5 +260,20 @@ namespace {
         fillAudioBuffer();
         fillAudioBuffer();
         EXPECT_EQ(1, observer.notifications());
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
+        player.setFadeInOutSeconds(0.5);
+        audioPlayer.setSampleRateHz(6/0.5);
+        player.fadeOut();
+        leftChannel = { 0, 1, 2 };
+        fillAudioBuffer();
+        EXPECT_FALSE(audioPlayer.stopped());
+        leftChannel = { 3, 4, 5 };
+        fillAudioBuffer();
+        EXPECT_FALSE(audioPlayer.stopped());
+        leftChannel = { 6 };
+        fillAudioBuffer();
+        EXPECT_TRUE(audioPlayer.stopped());
     }
 }

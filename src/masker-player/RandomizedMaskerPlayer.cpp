@@ -67,6 +67,8 @@ namespace masker_player {
     double RandomizedMaskerPlayer::transitionScale() {
         if (hannCounter == levelTransitionSamples())
             fadingIn = false;
+        if (hannCounter == 2*levelTransitionSamples())
+            player->stop();
         if (!fadingIn && !fadingOut)
             return 1;
         
