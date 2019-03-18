@@ -23,6 +23,7 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::fadeIn() {
+        levelTransitionSamples = fadeInSeconds * player->sampleRateHz();
         player->play();
     }
 
@@ -49,7 +50,7 @@ namespace masker_player {
     }
     
     void RandomizedMaskerPlayer::setFadeInSeconds(double x) {
-        levelTransitionSamples = x * player->sampleRateHz();
+        fadeInSeconds = x;
     }
 
     double RandomizedMaskerPlayer::transitionScale() {

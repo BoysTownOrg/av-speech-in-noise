@@ -30,6 +30,7 @@ namespace masker_player {
         public VideoPlayer::EventListener
     {
         double audioScale{1};
+        double fadeInSeconds{};
         int levelTransitionSamples{};
         int hannCounter{};
         VideoPlayer *player;

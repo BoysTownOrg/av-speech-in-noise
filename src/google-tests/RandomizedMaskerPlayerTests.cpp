@@ -154,11 +154,11 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
-        videoPlayer.setSampleRateHz(12);
         player.setFadeInSeconds(0.5);
+        videoPlayer.setSampleRateHz(6 / 0.5);
         player.fadeIn();
-        leftChannel = { 1, 2, 3, 4, 5, 6, 7 };
+        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
-        assertEqual(halfHannWindowed({ 1, 2, 3, 4, 5, 6, 7 }), leftChannel);
+        assertEqual(halfHannWindowed({ 0, 1, 2, 3, 4, 5, 6 }), leftChannel);
     }
 }
