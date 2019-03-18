@@ -85,14 +85,20 @@ namespace {
     };
     
     class MaskerPlayerObserverStub : public recognition_test::MaskerPlayer::EventListener {
+        int notifications_{};
         bool notified_{};
     public:
         void fadeInComplete() override {
             notified_ = true;
+            ++notifications_;
         }
         
         auto notified() const {
             return notified_;
+        }
+        
+        auto notifications() const {
+            return notifications_;
         }
     };
 
@@ -199,7 +205,7 @@ namespace {
         assertEqual(product(backHalfHannWindow(6 / 0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }), leftChannel, 1e-6f);
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteAccordingToFadeTime) {
+    TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
         player.setFadeInOutSeconds(0.5);
         player.fadeIn();
         audioPlayer.setSampleRateHz(6 / 0.5);
@@ -212,5 +218,15 @@ namespace {
         leftChannel = { 6 };
         fillAudioBuffer();
         EXPECT_TRUE(observer.notified());
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnce) {
+        player.setFadeInOutSeconds(0.5);
+        player.fadeIn();
+        audioPlayer.setSampleRateHz(6 / 0.5);
+        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
+        fillAudioBuffer();
+        fillAudioBuffer();
+        EXPECT_EQ(1, observer.notifications());
     }
 }

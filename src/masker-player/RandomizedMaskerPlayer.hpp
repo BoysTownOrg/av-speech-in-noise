@@ -35,6 +35,7 @@ namespace masker_player {
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
         bool fadingOut{};
+        bool fadingIn{};
     public:
         RandomizedMaskerPlayer(AudioPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;

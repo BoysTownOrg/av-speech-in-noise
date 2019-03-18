@@ -1,7 +1,8 @@
 #include "RandomizedMaskerPlayer.hpp"
 
 namespace masker_player {
-    RandomizedMaskerPlayer::RandomizedMaskerPlayer(AudioPlayer *player) : player{player}
+    RandomizedMaskerPlayer::RandomizedMaskerPlayer(AudioPlayer *player)
+        : player{player}
     {
         player->subscribe(this);
     }
@@ -23,6 +24,7 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::fadeIn() {
+        fadingIn = true;
         player->play();
     }
 
@@ -51,6 +53,10 @@ namespace masker_player {
         for (auto channel : audio)
             for (auto &x : channel)
                 x *= transitionScale() * audioScale;
+        if (hannCounter > levelTransitionSamples() && fadingIn) {
+            fadingIn = false;
+            listener->fadeInComplete();
+        }
     }
     
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
@@ -58,12 +64,10 @@ namespace masker_player {
     }
     
     double RandomizedMaskerPlayer::transitionScale() {
-        auto levelTransitionSamples_ = levelTransitionSamples();
-        if (hannCounter == levelTransitionSamples_ && !fadingOut) {
-            listener->fadeInComplete();
+        if (!fadingIn && !fadingOut)
             return 1;
-        }
         
+        auto levelTransitionSamples_ = levelTransitionSamples();
         const auto pi = std::acos(-1);
         const auto squareRoot = std::sin((pi*hannCounter++) / (2*levelTransitionSamples_));
         return squareRoot * squareRoot;
