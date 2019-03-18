@@ -230,8 +230,7 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     audioMix.inputParameters = @[processing];
     const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
     playerItem.audioMix = audioMix;
-    [player replaceCurrentItemWithPlayerItem:
-        [AVPlayerItem playerItemWithAsset:asset]];
+    [player replaceCurrentItemWithPlayerItem:playerItem];
 }
 
 int AvFoundationAudioPlayer::deviceCount() {
