@@ -200,7 +200,7 @@ namespace {
         player.setLevel_dB(-20);
         leftChannel = { 1, 2, 3 };
         fillAudioBuffer();
-        assertEqual({ 1/10., 2/10., 3/10. }, leftChannel);
+        assertEqual({ 0.1, 0.2, 0.3 }, leftChannel);
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
