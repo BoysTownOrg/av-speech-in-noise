@@ -68,17 +68,18 @@ namespace masker_player {
     }
     
     double RandomizedMaskerPlayer::transitionScale() {
-        if (hannCounter == levelTransitionSamples())
-            fadingIn = false;
-        if (fadingOut && hannCounter == 2*levelTransitionSamples()) {
-            fadingOut = false;
-            return 0;
-        }
-        if (!fadingIn && !fadingOut)
-            return 1;
-        
         const auto pi = std::acos(-1);
-        const auto squareRoot = std::sin((pi*hannCounter++) / (2*levelTransitionSamples()));
+        auto halfWindowLength = levelTransitionSamples();
+        const auto squareRoot = halfWindowLength
+            ? std::sin((pi*hannCounter) / (2*halfWindowLength))
+            : 1;
+        
+        if (hannCounter == halfWindowLength)
+            fadingIn = false;
+        if (hannCounter == 2*halfWindowLength)
+            fadingOut = false;
+        if (fadingIn || fadingOut)
+            ++hannCounter;
         return squareRoot * squareRoot;
     }
 }

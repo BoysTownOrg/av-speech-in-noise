@@ -237,6 +237,15 @@ namespace {
         );
     }
 
+    TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeOut) {
+        player.setFadeInOutSeconds(0.5);
+        audioPlayer.setSampleRateHz(6/0.5);
+        player.fadeOut();
+        leftChannel = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        fillAudioBuffer();
+        EXPECT_NEAR(0.f, leftChannel.at(7), 1e-15);
+    }
+
     TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
         player.setFadeInOutSeconds(0.5);
         player.fadeIn();
