@@ -285,6 +285,11 @@ double AvFoundationAudioPlayer::sampleRateHz() {
     return sampleRate_;
 }
 
+void AvFoundationAudioPlayer::stop() { 
+    [player pause];
+}
+
+
 
 
 

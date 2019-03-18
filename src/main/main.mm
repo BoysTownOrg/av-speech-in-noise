@@ -30,8 +30,9 @@ int main() {
     MersenneTwisterRandomizer randomizer;
     stimulus_list::RandomizedStimulusList list{&filter, &randomizer};
     AvFoundationStimulusPlayer stimulusPlayer;
-    AvFoundationAudioPlayer videoPlayer;
-    masker_player::RandomizedMaskerPlayer maskerPlayer{&videoPlayer};
+    AvFoundationAudioPlayer audioPlayer;
+    masker_player::RandomizedMaskerPlayer maskerPlayer{&audioPlayer};
+    maskerPlayer.setFadeInOutSeconds(0.5);
     recognition_test::Model model{&maskerPlayer, &list, &stimulusPlayer};
     CocoaView view;
     presentation::Presenter presenter{&model, &view};

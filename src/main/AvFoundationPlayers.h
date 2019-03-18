@@ -60,6 +60,8 @@ public:
     bool playing() override;
     void play() override;
     double sampleRateHz() override;
+    void stop() override;
+    
 private:
     static void init(MTAudioProcessingTapRef, void *, void **);
     static void finalize(MTAudioProcessingTapRef);
