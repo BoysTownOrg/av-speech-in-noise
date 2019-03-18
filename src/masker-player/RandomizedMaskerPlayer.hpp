@@ -47,7 +47,7 @@ namespace masker_player {
         void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
         void setFadeInSeconds(double);
     private:
-        double getSmoothingScalar(double);
+        double transitionScale();
     };
 }
 
