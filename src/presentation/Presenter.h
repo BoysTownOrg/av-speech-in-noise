@@ -101,8 +101,6 @@ namespace presentation {
         };
         
         virtual void subscribe(EventListener *) = 0;
-        virtual void showConfirmTestSetupButton() = 0;
-        virtual void hideConfirmTestSetupButton() = 0;
         virtual void eventLoop() = 0;
         virtual TestSetup *testSetup() = 0;
         virtual Tester *tester() = 0;

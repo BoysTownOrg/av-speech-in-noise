@@ -26,7 +26,6 @@ namespace presentation {
 
     void Presenter::newTest() {
         testSetup.listen();
-        view->showConfirmTestSetupButton();
     }
 
     void Presenter::openTest() {
@@ -50,7 +49,6 @@ namespace presentation {
     void Presenter::initializeTest_() {
         testSetup.initializeTest();
         testSetup.tuneOut();
-        view->hideConfirmTestSetupButton();
         tester.listen();
     }
     
