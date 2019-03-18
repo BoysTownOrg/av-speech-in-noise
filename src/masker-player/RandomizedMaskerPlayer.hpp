@@ -10,7 +10,8 @@ namespace masker_player {
         class EventListener {
         public:
             virtual ~EventListener() = default;
-            virtual void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) = 0;
+            virtual void fillAudioBuffer(
+                const std::vector<gsl::span<float>> &audio) = 0;
         };
         
         virtual ~AudioPlayer() = default;
@@ -47,7 +48,8 @@ namespace masker_player {
         void loadFile(std::string) override;
         bool playing() override;
         void setLevel_dB(double);
-        void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
+        void fillAudioBuffer(
+            const std::vector<gsl::span<float>> &audio) override;
         void setFadeInOutSeconds(double);
     private:
         int levelTransitionSamples();

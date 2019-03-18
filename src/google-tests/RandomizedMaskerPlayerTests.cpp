@@ -94,7 +94,7 @@ namespace {
         }
     };
     
-    class MaskerPlayerObserverStub : public recognition_test::MaskerPlayer::EventListener {
+    class MaskerPlayerListenerStub : public recognition_test::MaskerPlayer::EventListener {
         int notifications_{};
         bool notified_{};
     public:
@@ -116,11 +116,11 @@ namespace {
     protected:
         std::vector<float> leftChannel{};
         AudioPlayerStub audioPlayer;
-        MaskerPlayerObserverStub observer;
+        MaskerPlayerListenerStub listener;
         masker_player::RandomizedMaskerPlayer player{&audioPlayer};
         
         RandomizedMaskerPlayerTests() {
-            player.subscribe(&observer);
+            player.subscribe(&listener);
         }
         
         void fillAudioBuffer() {
@@ -269,13 +269,13 @@ namespace {
         audioPlayer.setSampleRateHz(6/0.5);
         leftChannel = { 0, 1, 2 };
         fillAudioBuffer();
-        EXPECT_FALSE(observer.notified());
+        EXPECT_FALSE(listener.notified());
         leftChannel = { 3, 4, 5 };
         fillAudioBuffer();
-        EXPECT_FALSE(observer.notified());
+        EXPECT_FALSE(listener.notified());
         leftChannel = { 6 };
         fillAudioBuffer();
-        EXPECT_TRUE(observer.notified());
+        EXPECT_TRUE(listener.notified());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnce) {
@@ -285,7 +285,7 @@ namespace {
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
         fillAudioBuffer();
-        EXPECT_EQ(1, observer.notifications());
+        EXPECT_EQ(1, listener.notifications());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
