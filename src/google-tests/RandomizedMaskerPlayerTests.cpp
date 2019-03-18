@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class VideoPlayerStub : public masker_player::VideoPlayer {
+    class AudioPlayerStub : public masker_player::AudioPlayer {
         std::string filePath_{};
         std::string deviceDescription_{};
         double sampleRateHz_{};
@@ -99,16 +99,16 @@ namespace {
     class RandomizedMaskerPlayerTests : public ::testing::Test {
     protected:
         std::vector<float> leftChannel{};
-        VideoPlayerStub videoPlayer;
+        AudioPlayerStub audioPlayer;
         MaskerPlayerObserverStub observer;
-        masker_player::RandomizedMaskerPlayer player{&videoPlayer};
+        masker_player::RandomizedMaskerPlayer player{&audioPlayer};
         
         RandomizedMaskerPlayerTests() {
             player.subscribe(&observer);
         }
         
         void fillAudioBuffer() {
-            videoPlayer.fillAudioBuffer({ leftChannel });
+            audioPlayer.fillAudioBuffer({ leftChannel });
         }
         
         std::vector<float> halfHannWindow(int N) {
@@ -133,38 +133,38 @@ namespace {
     };
 
     TEST_F(RandomizedMaskerPlayerTests, playingWhenVideoPlayerPlaying) {
-        videoPlayer.setPlaying();
+        audioPlayer.setPlaying();
         EXPECT_TRUE(player.playing());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, loadFileLoadsVideoFile) {
         player.loadFile("a");
-        assertEqual("a", videoPlayer.filePath());
+        assertEqual("a", audioPlayer.filePath());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, setDeviceSetsDevice) {
         player.setDevice(1);
-        EXPECT_EQ(1, videoPlayer.deviceIndex());
+        EXPECT_EQ(1, audioPlayer.deviceIndex());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceCount) {
-        videoPlayer.setDeviceCount(1);
+        audioPlayer.setDeviceCount(1);
         EXPECT_EQ(1, player.deviceCount());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceDescription) {
-        videoPlayer.setDeviceDescription("a");
+        audioPlayer.setDeviceDescription("a");
         assertEqual("a", player.deviceDescription({}));
     }
 
     TEST_F(RandomizedMaskerPlayerTests, passesDeviceIndexToDeviceDescription) {
         player.deviceDescription(1);
-        EXPECT_EQ(1, videoPlayer.deviceDescriptionDeviceIndex());
+        EXPECT_EQ(1, audioPlayer.deviceDescriptionDeviceIndex());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInPlaysVideoPlayer) {
         player.fadeIn();
-        EXPECT_TRUE(videoPlayer.played());
+        EXPECT_TRUE(audioPlayer.played());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, twentydBMultipliesSignalByTen) {
@@ -183,7 +183,7 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
         player.setFadeInOutSeconds(0.5);
-        videoPlayer.setSampleRateHz(6 / 0.5);
+        audioPlayer.setSampleRateHz(6 / 0.5);
         player.fadeIn();
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
@@ -192,7 +192,7 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
         player.setFadeInOutSeconds(0.5);
-        videoPlayer.setSampleRateHz(6 / 0.5);
+        audioPlayer.setSampleRateHz(6 / 0.5);
         player.fadeOut();
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
@@ -201,7 +201,7 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteAccordingToFadeTime) {
         player.setFadeInOutSeconds(0.5);
-        videoPlayer.setSampleRateHz(6 / 0.5);
+        audioPlayer.setSampleRateHz(6 / 0.5);
         player.fadeIn();
         leftChannel = { 0, 1, 2 };
         fillAudioBuffer();

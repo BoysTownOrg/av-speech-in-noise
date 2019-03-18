@@ -6,7 +6,7 @@
 #include <cmath>
 
 namespace masker_player {
-    class VideoPlayer {
+    class AudioPlayer {
     public:
         class EventListener {
         public:
@@ -14,7 +14,7 @@ namespace masker_player {
             virtual void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) = 0;
         };
         
-        virtual ~VideoPlayer() = default;
+        virtual ~AudioPlayer() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual bool playing() = 0;
         virtual void loadFile(std::string) = 0;
@@ -27,17 +27,17 @@ namespace masker_player {
 
     class RandomizedMaskerPlayer :
         public recognition_test::MaskerPlayer,
-        public VideoPlayer::EventListener
+        public AudioPlayer::EventListener
     {
         double audioScale{1};
         double fadeInOutSeconds{};
         int levelTransitionSamples{};
         int hannCounter{};
-        VideoPlayer *player;
+        AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
         bool fadingOut{};
     public:
-        RandomizedMaskerPlayer(VideoPlayer *);
+        RandomizedMaskerPlayer(AudioPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;
         int deviceCount() override;
         std::string deviceDescription(int index) override;

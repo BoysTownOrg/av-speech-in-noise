@@ -156,6 +156,65 @@ void AvFoundationStimulusPlayer::setDevice(int index) {
 }
 @end
 
+
+void AvFoundationVideoPlayer::init(
+    MTAudioProcessingTapRef,
+    void *clientInfo,
+    void **tapStorageOut
+) {
+    *tapStorageOut = clientInfo;
+}
+
+void AvFoundationVideoPlayer::finalize(MTAudioProcessingTapRef)
+{
+}
+
+void AvFoundationVideoPlayer::prepare(
+    MTAudioProcessingTapRef tap,
+    CMItemCount,
+    const AudioStreamBasicDescription *description
+) {
+    AvFoundationVideoPlayer *self = static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap)
+    );
+    self->audio.resize(description->mChannelsPerFrame);
+}
+
+void AvFoundationVideoPlayer::unprepare(MTAudioProcessingTapRef)
+{
+}
+
+void AvFoundationVideoPlayer::process(
+    MTAudioProcessingTapRef tap,
+    CMItemCount numberFrames,
+    MTAudioProcessingTapFlags,
+    AudioBufferList *bufferListInOut,
+    CMItemCount *numberFramesOut,
+    MTAudioProcessingTapFlags *flagsOut
+) {
+    MTAudioProcessingTapGetSourceAudio(
+        tap,
+        numberFrames,
+        bufferListInOut,
+        flagsOut,
+        nullptr,
+        numberFramesOut
+    );
+
+    AvFoundationVideoPlayer *self = static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap)
+    );
+    if (self->audio.size() != bufferListInOut->mNumberBuffers)
+        return;
+    
+    for (UInt32 j = 0; j < bufferListInOut->mNumberBuffers; ++j)
+        self->audio[j] = {
+            static_cast<float *>(bufferListInOut->mBuffers[j].mData),
+            numberFrames
+        };
+    self->listener->fillAudioBuffer(self->audio);
+}
+
 void AvFoundationVideoPlayer::subscribe(EventListener *listener_) {
     listener = listener_;
 }
@@ -194,6 +253,11 @@ bool AvFoundationVideoPlayer::playing() {
 void AvFoundationVideoPlayer::play() {
     [player play];
 }
+
+double AvFoundationVideoPlayer::sampleRateHz() { 
+    return 0;
+}
+
 
 
 

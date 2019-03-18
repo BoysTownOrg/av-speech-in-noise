@@ -43,7 +43,8 @@ public:
     void setDevice(int index) override;
 };
 
-class AvFoundationVideoPlayer : public masker_player::VideoPlayer {
+class AvFoundationVideoPlayer : public masker_player::AudioPlayer {
+    std::vector<gsl::span<float>> audio;
     CoreAudioDevice device{};
     EventListener *listener{};
     AVPlayer *player;
@@ -56,6 +57,24 @@ public:
     void setDevice(int index) override;
     bool playing() override;
     void play() override;
+    double sampleRateHz() override;
+private:
+    static void init(MTAudioProcessingTapRef, void *, void **);
+    static void finalize(MTAudioProcessingTapRef);
+    static void prepare(
+        MTAudioProcessingTapRef,
+        CMItemCount,
+        const AudioStreamBasicDescription *
+    );
+    static void unprepare(MTAudioProcessingTapRef);
+    static void process(
+        MTAudioProcessingTapRef,
+        CMItemCount,
+        MTAudioProcessingTapFlags,
+        AudioBufferList *,
+        CMItemCount *,
+        MTAudioProcessingTapFlags *
+    );
 };
 
 #endif

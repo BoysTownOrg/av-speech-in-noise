@@ -1,7 +1,7 @@
 #include "RandomizedMaskerPlayer.hpp"
 
 namespace masker_player {
-    RandomizedMaskerPlayer::RandomizedMaskerPlayer(VideoPlayer *player) : player{player}
+    RandomizedMaskerPlayer::RandomizedMaskerPlayer(AudioPlayer *player) : player{player}
     {
         player->subscribe(this);
     }
