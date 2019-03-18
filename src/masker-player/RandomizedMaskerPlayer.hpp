@@ -52,7 +52,6 @@ namespace masker_player {
     private:
         int levelTransitionSamples();
         double transitionScale();
-        void notifyIfFadeInComplete();
     };
 }
 

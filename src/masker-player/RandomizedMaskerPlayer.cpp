@@ -59,9 +59,6 @@ namespace masker_player {
         if (wasFadingIn && !fadingIn)
             listener->fadeInComplete();
     }
-
-    void RandomizedMaskerPlayer::notifyIfFadeInComplete() {
-    }
     
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
         fadeInOutSeconds = x;

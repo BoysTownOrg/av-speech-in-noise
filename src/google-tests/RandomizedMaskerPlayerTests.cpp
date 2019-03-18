@@ -121,7 +121,7 @@ namespace {
             const auto pi = std::acos(-1);
             std::vector<float> window;
             for (int n = 0; n < (N + 1) / 2; ++n)
-                window.push_back((1 - std::cos((2*pi*n)/(N - 1)))/2);
+                window.push_back((1 - std::cos((2*pi*n)/(N - 1))) / 2);
             return window;
         }
         
@@ -133,7 +133,13 @@ namespace {
         
         std::vector<float> product(std::vector<float> x, std::vector<float> y) {
             std::vector<float> result;
-            std::transform(x.begin(), x.end(), y.begin(), std::back_inserter(result), std::multiplies<>());
+            std::transform(
+                x.begin(),
+                x.end(),
+                y.begin(),
+                std::back_inserter(result),
+                std::multiplies<>()
+            );
             return result;
         }
     };
