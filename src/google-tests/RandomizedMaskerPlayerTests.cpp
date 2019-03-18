@@ -6,6 +6,7 @@ namespace {
     class VideoPlayerStub : public masker_player::VideoPlayer {
         std::string filePath_{};
         std::string deviceDescription_{};
+        double sampleRateHz_{};
         int deviceIndex_{};
         int deviceCount_{};
         int deviceDescriptionDeviceIndex_{};
@@ -13,6 +14,14 @@ namespace {
         bool playing_{};
         bool played_{};
     public:
+        double sampleRateHz() override {
+            return sampleRateHz_;
+        }
+        
+        void setSampleRateHz(double x) {
+            sampleRateHz_ = x;
+        }
+        
         void setPlaying() {
             playing_ = true;
         }
@@ -84,6 +93,15 @@ namespace {
         void fillAudioBuffer() {
             videoPlayer.fillAudioBuffer({ leftChannel });
         }
+        
+        std::vector<float> halfHannWindowed(std::vector<float> x) {
+            const auto pi = std::acos(-1);
+            int n = 0;
+            auto N = x.size() * 2 - 1;
+            for (auto &x_ : x)
+                x_ *= (1 - std::cos((2 * pi * n++)/(N - 1)))/2;
+            return x;
+        }
     };
 
     TEST_F(RandomizedMaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -133,5 +151,15 @@ namespace {
         leftChannel = { 1, 2, 3 };
         fillAudioBuffer();
         assertEqual({ 1/10., 2/10., 3/10. }, leftChannel);
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
+        player.setLevel_dB(0);
+        videoPlayer.setSampleRateHz(12);
+        player.setFadeInSeconds(0.5);
+        player.fadeIn();
+        leftChannel = { 1, 2, 3, 4, 5, 6, 7 };
+        fillAudioBuffer();
+        assertEqual(halfHannWindowed({ 1, 2, 3, 4, 5, 6, 7 }), leftChannel);
     }
 }

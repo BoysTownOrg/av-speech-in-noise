@@ -45,6 +45,22 @@ namespace masker_player {
     void RandomizedMaskerPlayer::fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
         for (auto channel : audio)
             for (auto &x : channel)
-                x *= audioScale;
+                x *= getSmoothingScalar();
+    }
+    
+    void RandomizedMaskerPlayer::setFadeInSeconds(double x) {
+        levelTransitionSamples = x * player->sampleRateHz();
+    }
+
+    double RandomizedMaskerPlayer::getSmoothingScalar() {
+        if (hannCounter == levelTransitionSamples)
+            return audioScale;
+        
+        const auto pi = std::acos(-1);
+        const auto squareRoot = std::sin((pi*hannCounter++) / (2*levelTransitionSamples));
+        const auto hannSample = squareRoot * squareRoot;
+        const auto scaleDifference = audioScale - 0;
+        const auto scalar = 0 + scaleDifference * hannSample;
+        return scalar;
     }
 }

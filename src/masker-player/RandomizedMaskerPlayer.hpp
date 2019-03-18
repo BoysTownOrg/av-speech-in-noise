@@ -22,6 +22,7 @@ namespace masker_player {
         virtual int deviceCount() = 0;
         virtual std::string deviceDescription(int index) = 0;
         virtual void play() = 0;
+        virtual double sampleRateHz() = 0;
     };
 
     class RandomizedMaskerPlayer :
@@ -29,7 +30,10 @@ namespace masker_player {
         public VideoPlayer::EventListener
     {
         double audioScale{};
+        int levelTransitionSamples{};
+        int hannCounter{};
         VideoPlayer *player;
+        bool smoothingMasker{};
     public:
         RandomizedMaskerPlayer(VideoPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;
@@ -42,6 +46,9 @@ namespace masker_player {
         bool playing() override;
         void setLevel_dB(double);
         void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
+        void setFadeInSeconds(double);
+    private:
+        double getSmoothingScalar();
     };
 }
 
