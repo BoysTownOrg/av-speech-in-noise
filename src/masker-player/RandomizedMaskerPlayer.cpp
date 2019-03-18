@@ -53,11 +53,14 @@ namespace masker_player {
         const std::vector<gsl::span<float>> &audio
     ) {
         bool wasFadingIn = fadingIn;
+        bool wasFadingOut = fadingOut;
         for (auto channel : audio)
             for (auto &x : channel)
                 x *= transitionScale() * audioScale;
         if (wasFadingIn && !fadingIn)
             listener->fadeInComplete();
+        if (wasFadingOut && !fadingOut)
+            player->stop();
     }
     
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
@@ -67,8 +70,10 @@ namespace masker_player {
     double RandomizedMaskerPlayer::transitionScale() {
         if (hannCounter == levelTransitionSamples())
             fadingIn = false;
-        if (hannCounter == 2*levelTransitionSamples())
-            player->stop();
+        if (fadingOut && hannCounter == 2*levelTransitionSamples()) {
+            fadingOut = false;
+            return 0;
+        }
         if (!fadingIn && !fadingOut)
             return 1;
         
