@@ -14,6 +14,13 @@ class CocoaView;
 - (void) playTrial;
 @end
 
+class CocoaTestSetupView;
+
+@interface SetupViewActions : NSObject
+@property CocoaTestSetupView *controller;
+- (void) confirmTestSetup;
+@end
+
 class CocoaTesterView : public presentation::View::Tester {
     NSPopUpButton *deviceMenu;
     NSView *view_;
@@ -28,6 +35,7 @@ public:
 
 
 class CocoaTestSetupView : public presentation::View::TestSetup {
+    CocoaView *parent_;
     NSView *view_;
     NSTextField *subjectIdLabel;
     NSTextField *subjectId_;
@@ -42,8 +50,9 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     NSTextField *maskerFilePath_label;
     NSTextField *maskerFilePath_;
     NSPopUpButton *conditionMenu;
+    SetupViewActions *actions;
 public:
-    CocoaTestSetupView();
+    explicit CocoaTestSetupView(CocoaView *);
     NSView *view();
     void show() override;
     void hide() override;
@@ -55,6 +64,7 @@ public:
     std::string subjectId() override;
     std::string condition() override;
     void populateConditionMenu(std::vector<std::string> items) override;
+    void confirm();
 };
 
 class CocoaSubjectView : public presentation::View::SubjectView {
@@ -66,14 +76,13 @@ public:
 };
 
 class CocoaView : public presentation::View {
-    CocoaTestSetupView testSetupView_{};
+    CocoaTestSetupView testSetupView_{this};
     CocoaTesterView testerView_{};
     CocoaSubjectView subjectView_{};
     EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
     NSView *tbdView;
-    NSView *confirmTestSetupButtonView_;
     ViewActions *actions;
 public:
     CocoaView();
@@ -88,8 +97,6 @@ public:
     SubjectView *subject() override;
     DialogResponse showConfirmationDialog() override;
     void showErrorMessage(std::string) override;
-    void showConfirmTestSetupButton() override;
-    void hideConfirmTestSetupButton() override;
 };
 
 #endif

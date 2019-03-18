@@ -49,7 +49,8 @@ void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
     }
 }
 
-CocoaTestSetupView::CocoaTestSetupView() :
+CocoaTestSetupView::CocoaTestSetupView(CocoaView *parent_) :
+    parent_{parent_},
     view_{
         [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
     },
@@ -104,8 +105,15 @@ CocoaTestSetupView::CocoaTestSetupView() :
     conditionMenu{[
         [NSPopUpButton alloc] initWithFrame:NSMakeRect(155, 310, 150, 25)
         pullsDown:NO
-    ]}
+    ]},
+    actions{[SetupViewActions alloc]}
 {
+    const auto confirmButton = [NSButton buttonWithTitle:
+        @"Confirm"
+        target:actions
+        action:@selector(confirmTestSetup)
+    ];
+    [view_ addSubview:confirmButton];
     [view_ setHidden:YES];
     [view_ addSubview:subjectIdLabel];
     [view_ addSubview:subjectId_];
@@ -176,6 +184,17 @@ void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
     }
 }
 
+void CocoaTestSetupView::confirm() {
+    parent_->confirmTestSetup();
+}
+
+@implementation SetupViewActions
+@synthesize controller;
+- (void)confirmTestSetup {
+    controller->confirm();
+}
+@end
+
 
 CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
@@ -220,9 +239,6 @@ CocoaView::CocoaView() :
     tbdView{
         [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 500, 100)]
     },
-    confirmTestSetupButtonView_{
-        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 500, 100)]
-    },
     actions{[ViewActions alloc]}
 {
     app.mainMenu = [[NSMenu alloc] init];
@@ -258,17 +274,9 @@ CocoaView::CocoaView() :
         target:actions
         action:@selector(playTrial)
     ];
-    const auto confirmButton = [NSButton buttonWithTitle:
-        @"Confirm"
-        target:actions
-        action:@selector(confirmTestSetup)
-    ];
-    confirmButton.frame = NSMakeRect(0, 0, 130, 40);
     playTrialButton.frame = NSMakeRect(200, 0, 130, 40);
-    [confirmTestSetupButtonView_ addSubview:confirmButton];
     [tbdView addSubview:playTrialButton];
     [window.contentView addSubview:tbdView];
-    [window.contentView addSubview:confirmTestSetupButtonView_];
     [window.contentView addSubview:testerView_.view()];
     [window.contentView addSubview:testSetupView_.view()];
     actions.controller = this;
@@ -340,14 +348,6 @@ void CocoaView::showErrorMessage(std::string s) {
     [alert runModal];
 }
 
-void CocoaView::showConfirmTestSetupButton() {
-    [confirmTestSetupButtonView_ setHidden:NO];
-}
-
-void CocoaView::hideConfirmTestSetupButton() {
-    [confirmTestSetupButtonView_ setHidden:YES];
-}
-
 @implementation ViewActions
 @synthesize controller;
 - (void)newTest {
@@ -366,4 +366,5 @@ void CocoaView::hideConfirmTestSetupButton() {
     controller->playTrial();
 }
 @end
+
 
