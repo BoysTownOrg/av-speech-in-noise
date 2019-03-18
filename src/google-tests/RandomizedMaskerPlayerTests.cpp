@@ -102,6 +102,12 @@ namespace {
             return window;
         }
         
+        std::vector<float> backHalfHannWindow(int N) {
+            auto frontHalf = halfHannWindow(N);
+            std::reverse(frontHalf.begin(), frontHalf.end());
+            return frontHalf;
+        }
+        
         std::vector<float> product(std::vector<float> x, std::vector<float> y) {
             std::vector<float> result;
             std::transform(x.begin(), x.end(), y.begin(), std::back_inserter(result), std::multiplies<>());
@@ -159,7 +165,7 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
-        player.setFadeInSeconds(0.5);
+        player.setFadeInOutSeconds(0.5);
         videoPlayer.setSampleRateHz(6 / 0.5);
         player.fadeIn();
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
@@ -167,12 +173,12 @@ namespace {
         assertEqual(product(halfHannWindow(6 / 0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }), leftChannel, 1e-6f);
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, DISABLED_fadesOutAccordingToHannFunction) {
-        player.setFadeInSeconds(0.5);
+    TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
+        player.setFadeInOutSeconds(0.5);
         videoPlayer.setSampleRateHz(6 / 0.5);
         player.fadeOut();
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
-        //assertEqual(halfHannWindowed({ 0, 1, 2, 3, 4, 5, 6 }), leftChannel);
+        assertEqual(product(backHalfHannWindow(6 / 0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }), leftChannel, 1e-6f);
     }
 }

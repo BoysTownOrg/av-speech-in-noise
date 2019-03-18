@@ -30,10 +30,11 @@ namespace masker_player {
         public VideoPlayer::EventListener
     {
         double audioScale{1};
-        double fadeInSeconds{};
+        double fadeInOutSeconds{};
         int levelTransitionSamples{};
         int hannCounter{};
         VideoPlayer *player;
+        bool fadingOut{};
     public:
         RandomizedMaskerPlayer(VideoPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;
@@ -46,7 +47,7 @@ namespace masker_player {
         bool playing() override;
         void setLevel_dB(double);
         void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
-        void setFadeInSeconds(double);
+        void setFadeInOutSeconds(double);
     private:
         double transitionScale();
     };

@@ -23,12 +23,14 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::fadeIn() {
-        levelTransitionSamples = fadeInSeconds * player->sampleRateHz();
+        levelTransitionSamples = fadeInOutSeconds * player->sampleRateHz();
         player->play();
     }
 
     void RandomizedMaskerPlayer::fadeOut() {
-    
+        levelTransitionSamples = fadeInOutSeconds * player->sampleRateHz();
+        hannCounter = levelTransitionSamples;
+        fadingOut = true;
     }
 
     void RandomizedMaskerPlayer::loadFile(std::string filePath) {
@@ -49,12 +51,12 @@ namespace masker_player {
                 x *= transitionScale() * audioScale;
     }
     
-    void RandomizedMaskerPlayer::setFadeInSeconds(double x) {
-        fadeInSeconds = x;
+    void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
+        fadeInOutSeconds = x;
     }
 
     double RandomizedMaskerPlayer::transitionScale() {
-        if (hannCounter == levelTransitionSamples)
+        if (hannCounter == levelTransitionSamples && !fadingOut)
             return 1;
         
         const auto pi = std::acos(-1);
