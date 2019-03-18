@@ -29,11 +29,10 @@ namespace masker_player {
         public recognition_test::MaskerPlayer,
         public VideoPlayer::EventListener
     {
-        double audioScale{};
+        double audioScale{1};
         int levelTransitionSamples{};
         int hannCounter{};
         VideoPlayer *player;
-        bool smoothingMasker{};
     public:
         RandomizedMaskerPlayer(VideoPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;
@@ -48,7 +47,7 @@ namespace masker_player {
         void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
         void setFadeInSeconds(double);
     private:
-        double getSmoothingScalar();
+        double getSmoothingScalar(double);
     };
 }
 

@@ -154,7 +154,6 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
-        player.setLevel_dB(0);
         videoPlayer.setSampleRateHz(12);
         player.setFadeInSeconds(0.5);
         player.fadeIn();
