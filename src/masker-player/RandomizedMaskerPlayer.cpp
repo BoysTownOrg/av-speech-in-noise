@@ -6,8 +6,8 @@ namespace masker_player {
         player->subscribe(this);
     }
 
-    void RandomizedMaskerPlayer::subscribe(MaskerPlayer::EventListener *) {
-    
+    void RandomizedMaskerPlayer::subscribe(MaskerPlayer::EventListener *e) {
+        listener = e;
     }
 
     int RandomizedMaskerPlayer::deviceCount() {
@@ -56,8 +56,10 @@ namespace masker_player {
     }
 
     double RandomizedMaskerPlayer::transitionScale() {
-        if (hannCounter == levelTransitionSamples && !fadingOut)
+        if (hannCounter == levelTransitionSamples && !fadingOut) {
+            listener->fadeInComplete();
             return 1;
+        }
         
         const auto pi = std::acos(-1);
         const auto squareRoot = std::sin((pi*hannCounter++) / (2*levelTransitionSamples));

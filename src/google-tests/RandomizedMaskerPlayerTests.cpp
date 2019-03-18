@@ -83,12 +83,29 @@ namespace {
             listener_->fillAudioBuffer(audio);
         }
     };
+    
+    class MaskerPlayerObserverStub : public recognition_test::MaskerPlayer::EventListener {
+        bool notified_{};
+    public:
+        void fadeInComplete() override {
+            notified_ = true;
+        }
+        
+        auto notified() const {
+            return notified_;
+        }
+    };
 
     class RandomizedMaskerPlayerTests : public ::testing::Test {
     protected:
         std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
+        MaskerPlayerObserverStub observer;
         masker_player::RandomizedMaskerPlayer player{&videoPlayer};
+        
+        RandomizedMaskerPlayerTests() {
+            player.subscribe(&observer);
+        }
         
         void fillAudioBuffer() {
             videoPlayer.fillAudioBuffer({ leftChannel });
@@ -180,5 +197,20 @@ namespace {
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
         assertEqual(product(backHalfHannWindow(6 / 0.5 + 1), { 0, 1, 2, 3, 4, 5, 6 }), leftChannel, 1e-6f);
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteAccordingToFadeTime) {
+        player.setFadeInOutSeconds(0.5);
+        videoPlayer.setSampleRateHz(6 / 0.5);
+        player.fadeIn();
+        leftChannel = { 0, 1, 2 };
+        fillAudioBuffer();
+        EXPECT_FALSE(observer.notified());
+        leftChannel = { 3, 4, 5 };
+        fillAudioBuffer();
+        EXPECT_FALSE(observer.notified());
+        leftChannel = { 6 };
+        fillAudioBuffer();
+        EXPECT_TRUE(observer.notified());
     }
 }

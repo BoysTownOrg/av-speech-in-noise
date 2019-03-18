@@ -34,6 +34,7 @@ namespace masker_player {
         int levelTransitionSamples{};
         int hannCounter{};
         VideoPlayer *player;
+        MaskerPlayer::EventListener *listener{};
         bool fadingOut{};
     public:
         RandomizedMaskerPlayer(VideoPlayer *);
