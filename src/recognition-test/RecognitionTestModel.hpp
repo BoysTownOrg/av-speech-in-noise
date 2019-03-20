@@ -53,7 +53,7 @@ namespace recognition_test {
         virtual std::string next() = 0;
     };
 
-    class Model :
+    class RecognitionTestModel :
         public presentation::Model,
         public StimulusPlayer::EventListener,
         public MaskerPlayer::EventListener
@@ -63,7 +63,7 @@ namespace recognition_test {
         StimulusList *list;
         StimulusPlayer *stimulusPlayer;
     public:
-        Model(
+        RecognitionTestModel(
             MaskerPlayer *,
             StimulusList *,
             StimulusPlayer *

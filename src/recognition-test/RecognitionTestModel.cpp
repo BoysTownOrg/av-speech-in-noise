@@ -1,9 +1,9 @@
-#include "Model.hpp"
+#include "RecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <cmath>
 
 namespace recognition_test {
-    Model::Model(
+    RecognitionTestModel::RecognitionTestModel(
         MaskerPlayer *maskerPlayer,
         StimulusList *list,
         StimulusPlayer *stimulusPlayer
@@ -16,7 +16,7 @@ namespace recognition_test {
         stimulusPlayer->subscribe(this);
     }
     
-    void Model::playTrial(const Trial &trial) {
+    void RecognitionTestModel::playTrial(const Trial &trial) {
         if (list->empty())
             return;
         if (maskerPlayer->playing())
@@ -34,7 +34,7 @@ namespace recognition_test {
         maskerPlayer->fadeIn();
     }
     
-    int Model::findDeviceIndex(const Trial &trial) {
+    int RecognitionTestModel::findDeviceIndex(const Trial &trial) {
         auto devices_ = audioDevices();
         auto deviceIndex = gsl::narrow<int>(
             std::find(
@@ -50,7 +50,7 @@ namespace recognition_test {
         return deviceIndex;
     }
 
-    void Model::initializeTest(const Test &p) {
+    void RecognitionTestModel::initializeTest(const Test &p) {
         maskerPlayer->loadFile(p.maskerFilePath);
         list->loadFromDirectory(p.stimulusListDirectory);
         if (p.condition == Test::Condition::auditoryOnly)
@@ -60,26 +60,26 @@ namespace recognition_test {
         testParameters = p;
     }
 
-    bool Model::testComplete() {
+    bool RecognitionTestModel::testComplete() {
         return list->empty();
     }
     
-    void Model::fadeInComplete() {
+    void RecognitionTestModel::fadeInComplete() {
         stimulusPlayer->play();
     }
     
-    void Model::playbackComplete() {
+    void RecognitionTestModel::playbackComplete() {
         maskerPlayer->fadeOut();
     }
     
-    std::vector<std::string> Model::audioDevices() {
+    std::vector<std::string> RecognitionTestModel::audioDevices() {
         std::vector<std::string> descriptions{};
         for (int i = 0; i < maskerPlayer->deviceCount(); ++i)
             descriptions.push_back(maskerPlayer->deviceDescription(i));
         return descriptions;
     }
     
-    void Model::submitResponse(const SubjectResponse &) { 
+    void RecognitionTestModel::submitResponse(const SubjectResponse &) { 
         ;
     }
 }
