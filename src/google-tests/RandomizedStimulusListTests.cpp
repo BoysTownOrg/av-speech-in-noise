@@ -41,7 +41,7 @@ namespace {
         stimulus_list::RandomizedStimulusList list{&reader, &randomizer};
         
         void initialize(std::string s = {}) {
-            list.initialize(std::move(s));
+            list.loadFromDirectory(std::move(s));
         }
     };
 

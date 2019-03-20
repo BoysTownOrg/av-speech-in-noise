@@ -178,7 +178,7 @@ namespace {
             return directory_;
         }
         
-        void initialize(std::string directory) override {
+        void loadFromDirectory(std::string directory) override {
             directory_ = std::move(directory);
         }
         

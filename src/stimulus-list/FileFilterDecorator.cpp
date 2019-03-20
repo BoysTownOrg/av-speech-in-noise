@@ -30,5 +30,4 @@ namespace stimulus_list {
                     filtered_.push_back(file);
         return filtered_;
     }
-    
 }

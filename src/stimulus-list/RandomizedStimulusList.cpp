@@ -8,7 +8,7 @@ namespace stimulus_list {
         reader{reader},
         randomizer{randomizer} {}
     
-    void RandomizedStimulusList::initialize(std::string directory) {
+    void RandomizedStimulusList::loadFromDirectory(std::string directory) {
         directory_ = std::move(directory);
         files = reader->filesIn(directory_);
         randomizer->shuffle(files.begin(), files.end());

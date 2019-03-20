@@ -48,7 +48,7 @@ namespace recognition_test {
     class StimulusList {
     public:
         virtual ~StimulusList() = default;
-        virtual void initialize(std::string directory) = 0;
+        virtual void loadFromDirectory(std::string directory) = 0;
         virtual bool empty() = 0;
         virtual std::string next() = 0;
     };

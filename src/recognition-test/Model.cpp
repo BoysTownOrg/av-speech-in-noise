@@ -50,7 +50,7 @@ namespace recognition_test {
 
     void Model::initializeTest(const Test &p) {
         maskerPlayer->loadFile(p.maskerFilePath);
-        list->initialize(p.stimulusListDirectory);
+        list->loadFromDirectory(p.stimulusListDirectory);
         if (p.condition == Test::Condition::auditoryOnly)
             stimulusPlayer->hideVideo();
         else
