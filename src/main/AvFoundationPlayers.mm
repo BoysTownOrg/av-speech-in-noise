@@ -149,6 +149,14 @@ void AvFoundationStimulusPlayer::setDevice(int index) {
     ];
 }
 
+void AvFoundationStimulusPlayer::hideVideo() {
+    [videoWindow setIsVisible:NO];
+}
+
+void AvFoundationStimulusPlayer::showVideo() {
+    [videoWindow setIsVisible:YES];
+}
+
 @implementation StimulusPlayerActions
 @synthesize controller;
 - (void)playbackComplete {
@@ -288,8 +296,3 @@ double AvFoundationAudioPlayer::sampleRateHz() {
 void AvFoundationAudioPlayer::stop() { 
     [player pause];
 }
-
-
-
-
-

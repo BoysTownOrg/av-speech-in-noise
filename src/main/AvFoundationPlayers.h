@@ -41,6 +41,8 @@ public:
     void play() override;
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
+    void hideVideo() override;
+    void showVideo() override;
 };
 
 class AvFoundationAudioPlayer : public masker_player::AudioPlayer {
