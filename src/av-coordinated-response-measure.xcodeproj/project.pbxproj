@@ -33,6 +33,9 @@
 		26B81F3A21DEB19E00006FCB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B81F1E21DEA46800006FCB /* AVFoundation.framework */; };
 		26B81F3B21DEB1A500006FCB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B81F2021DEA46F00006FCB /* Cocoa.framework */; };
 		26EE86BB2242CFFB00C08622 /* StimulusPlayerTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BA2242CFFB00C08622 /* StimulusPlayerTests.cpp */; };
+		26EE86C02242E8DE00C08622 /* StimulusPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BE2242E8DE00C08622 /* StimulusPlayerImpl.cpp */; };
+		26EE86C92242E99100C08622 /* StimulusPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BE2242E8DE00C08622 /* StimulusPlayerImpl.cpp */; };
+		26EE86CA2242E99A00C08622 /* libstimulus-player.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26EE86C52242E98600C08622 /* libstimulus-player.dylib */; };
 		26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26FC6B0621DA810C00289A0A /* PresenterTests.cpp */; };
 		26FC6B1B21DAA3F200289A0A /* Presenter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26FC6B1021DAA32500289A0A /* Presenter.cpp */; };
 		26FC6B1C21DAA40800289A0A /* libpresentation.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FC6B1621DAA3D800289A0A /* libpresentation.dylib */; };
@@ -82,6 +85,9 @@
 		26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "av-coordinated-response-measure.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26EE86BA2242CFFB00C08622 /* StimulusPlayerTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StimulusPlayerTests.cpp; sourceTree = "<group>"; };
 		26EE86BC2242E64900C08622 /* Model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
+		26EE86BE2242E8DE00C08622 /* StimulusPlayerImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StimulusPlayerImpl.cpp; sourceTree = "<group>"; };
+		26EE86BF2242E8DE00C08622 /* StimulusPlayerImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StimulusPlayerImpl.hpp; sourceTree = "<group>"; };
+		26EE86C52242E98600C08622 /* libstimulus-player.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libstimulus-player.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FC6B0321DA810C00289A0A /* google-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "google-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FC6B0621DA810C00289A0A /* PresenterTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PresenterTests.cpp; sourceTree = "<group>"; };
 		26FC6B0F21DA8ECA00289A0A /* Presenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Presenter.h; sourceTree = "<group>"; };
@@ -126,10 +132,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		26EE86C32242E98600C08622 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		26FC6B0021DA810C00289A0A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26EE86CA2242E99A00C08622 /* libstimulus-player.dylib in Frameworks */,
 				26A86BEC223AA87B00210C00 /* libmasker-player.dylib in Frameworks */,
 				269C91962233212B00A80372 /* gtest_main.a in Frameworks */,
 				2646F84121DFEA5E00F378DE /* libstimulus-list.dylib in Frameworks */,
@@ -190,9 +204,19 @@
 			path = "masker-player";
 			sourceTree = "<group>";
 		};
+		26EE86BD2242E8CB00C08622 /* stimulus-player */ = {
+			isa = PBXGroup;
+			children = (
+				26EE86BE2242E8DE00C08622 /* StimulusPlayerImpl.cpp */,
+				26EE86BF2242E8DE00C08622 /* StimulusPlayerImpl.hpp */,
+			);
+			path = "stimulus-player";
+			sourceTree = "<group>";
+		};
 		26FC6AF821DA80C900289A0A = {
 			isa = PBXGroup;
 			children = (
+				26EE86BD2242E8CB00C08622 /* stimulus-player */,
 				26A86BE7223AA72700210C00 /* masker-player */,
 				269C919122331FCE00A80372 /* main */,
 				2646F83D21DFEA0B00F378DE /* stimulus-list */,
@@ -213,6 +237,7 @@
 				26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */,
 				2646F83921DFEA0400F378DE /* libstimulus-list.dylib */,
 				26A86BE3223AA71400210C00 /* libmasker-player.dylib */,
+				26EE86C52242E98600C08622 /* libstimulus-player.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -277,6 +302,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				26A86BEB223AA74A00210C00 /* RandomizedMaskerPlayer.hpp in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		26EE86C12242E98600C08622 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -358,6 +390,23 @@
 			productReference = 26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */;
 			productType = "com.apple.product-type.application";
 		};
+		26EE86C42242E98600C08622 /* stimulus-player */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26EE86C62242E98700C08622 /* Build configuration list for PBXNativeTarget "stimulus-player" */;
+			buildPhases = (
+				26EE86C12242E98600C08622 /* Headers */,
+				26EE86C22242E98600C08622 /* Sources */,
+				26EE86C32242E98600C08622 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "stimulus-player";
+			productName = "stimulus-player";
+			productReference = 26EE86C52242E98600C08622 /* libstimulus-player.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		26FC6B0221DA810C00289A0A /* google-tests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 26FC6B0821DA810C00289A0A /* Build configuration list for PBXNativeTarget "google-tests" */;
@@ -412,6 +461,9 @@
 					26B81F2521DEB15700006FCB = {
 						CreatedOnToolsVersion = 10.1;
 					};
+					26EE86C42242E98600C08622 = {
+						CreatedOnToolsVersion = 10.1;
+					};
 					26FC6B0221DA810C00289A0A = {
 						CreatedOnToolsVersion = 10.1;
 					};
@@ -439,6 +491,7 @@
 				26B81F2521DEB15700006FCB /* av-coordinated-response-measure */,
 				2646F83821DFEA0400F378DE /* stimulus-list */,
 				26A86BE2223AA71400210C00 /* masker-player */,
+				26EE86C42242E98600C08622 /* stimulus-player */,
 			);
 		};
 /* End PBXProject section */
@@ -489,11 +542,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		26EE86C22242E98600C08622 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26EE86C92242E99100C08622 /* StimulusPlayerImpl.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		26FC6AFF21DA810C00289A0A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */,
+				26EE86C02242E8DE00C08622 /* StimulusPlayerImpl.cpp in Sources */,
 				26A86BDE223A972200210C00 /* RandomizedMaskerPlayerTests.cpp in Sources */,
 				26A2236C21DD2C75007D6511 /* RecognitionTestModelTests.cpp in Sources */,
 				2646F84021DFEA2300F378DE /* RandomizedStimulusList.cpp in Sources */,
@@ -1002,6 +1064,129 @@
 			};
 			name = Release;
 		};
+		26EE86C72242E98700C08622 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		26EE86C82242E98700C08622 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		26FC6AFD21DA80C900289A0A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1289,6 +1474,15 @@
 			buildConfigurations = (
 				26B81F3521DEB15A00006FCB /* Debug */,
 				26B81F3621DEB15A00006FCB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		26EE86C62242E98700C08622 /* Build configuration list for PBXNativeTarget "stimulus-player" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26EE86C72242E98700C08622 /* Debug */,
+				26EE86C82242E98700C08622 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

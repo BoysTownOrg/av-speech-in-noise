@@ -1,57 +1,7 @@
-#include <recognition-test/RecognitionTestModel.hpp>
-
-namespace stimulus_player {
-    class VideoPlayer {
-    public:
-        virtual ~VideoPlayer() = default;
-        virtual void show() = 0;
-        virtual void hide() = 0;
-        virtual void loadFile(std::string) = 0;
-        virtual void play() = 0;
-        virtual void setDevice(int index) = 0;
-    };
-    
-    class StimulusPlayerImpl : public recognition_test::StimulusPlayer {
-        VideoPlayer *player;
-    public:
-        StimulusPlayerImpl(VideoPlayer *player) : player{player} {}
-        
-        void subscribe(EventListener *) override {
-        
-        }
-        
-        void setDevice(int index) override {
-            player->setDevice(index);
-        }
-        
-        void play() override {
-            player->play();
-        }
-        
-        void loadFile(std::string filePath) override {
-            player->loadFile(filePath);
-        }
-        
-        void hideVideo() override {
-            player->hide();
-        }
-        
-        void showVideo() override {
-            player->show();
-        }
-        
-        double rms() override {
-            return 0;
-        }
-        
-        void setLevel_dB(double) override {
-        
-        }
-    };
-}
-
 #include "assert-utility.h"
+#include <stimulus-player/StimulusPlayerImpl.hpp>
 #include <gtest/gtest.h>
+
 namespace {
     class VideoPlayerStub : public stimulus_player::VideoPlayer {
         std::string filePath_{};
