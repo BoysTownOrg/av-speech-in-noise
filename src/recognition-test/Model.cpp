@@ -45,6 +45,7 @@ namespace recognition_test {
     void Model::initializeTest(const TestParameters &p) {
         maskerPlayer->loadFile(p.maskerFilePath);
         list->initialize(p.stimulusListDirectory);
+        stimulusPlayer->hideVideo();
     }
 
     bool Model::testComplete() {

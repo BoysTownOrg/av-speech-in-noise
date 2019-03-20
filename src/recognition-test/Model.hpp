@@ -19,6 +19,7 @@ namespace recognition_test {
         virtual void setDevice(int index) = 0;
         virtual void play() = 0;
         virtual void loadFile(std::string filePath) = 0;
+        virtual void hideVideo() = 0;
     };
 
     class MaskerPlayer {

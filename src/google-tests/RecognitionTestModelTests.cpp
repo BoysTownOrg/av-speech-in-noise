@@ -89,7 +89,16 @@ namespace {
         int deviceIndex_{};
         EventListener *listener_{};
         bool played_{};
+        bool videoHidden_{};
     public:
+        void hideVideo() override {
+            videoHidden_ = true;
+        }
+        
+        auto videoHidden() const {
+            return videoHidden_;
+        }
+        
         auto deviceIndex() {
             return deviceIndex_;
         }
@@ -217,6 +226,11 @@ namespace {
             playTrial();
             assertListNotAdvanced();
         }
+        
+        void setAuditoryOnly() {
+            testParameters.condition =
+                recognition_test::Model::TestParameters::Condition::auditoryOnly;
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -289,6 +303,15 @@ namespace {
         testParameters.maskerFilePath = "a";
         initializeTest();
         assertEqual("a", maskerPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestHidesStimulusVideoWhenAuditoryOnly
+    ) {
+        setAuditoryOnly();
+        initializeTest();
+        EXPECT_TRUE(stimulusPlayer.videoHidden());
     }
 
     TEST_F(
