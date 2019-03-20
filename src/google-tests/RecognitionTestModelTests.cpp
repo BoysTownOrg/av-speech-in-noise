@@ -90,7 +90,16 @@ namespace {
         EventListener *listener_{};
         bool played_{};
         bool videoHidden_{};
+        bool videoShown_{};
     public:
+        void showVideo() override {
+            videoShown_ = true;
+        }
+        
+        auto videoShown() const {
+            return videoShown_;
+        }
+        
         void hideVideo() override {
             videoHidden_ = true;
         }
@@ -231,6 +240,11 @@ namespace {
             testParameters.condition =
                 recognition_test::Model::TestParameters::Condition::auditoryOnly;
         }
+        
+        void setAudioVisual() {
+            testParameters.condition =
+                recognition_test::Model::TestParameters::Condition::audioVisual;
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -312,6 +326,16 @@ namespace {
         setAuditoryOnly();
         initializeTest();
         EXPECT_TRUE(stimulusPlayer.videoHidden());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestShowsStimulusVideoWhenAudioVisual
+    ) {
+        setAudioVisual();
+        initializeTest();
+        EXPECT_FALSE(stimulusPlayer.videoHidden());
+        EXPECT_TRUE(stimulusPlayer.videoShown());
     }
 
     TEST_F(
