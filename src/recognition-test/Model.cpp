@@ -44,7 +44,9 @@ namespace recognition_test {
             ) - devices_.begin()
         );
         if (deviceIndex == maskerPlayer->deviceCount())
-            throw RequestFailure{"'" + trial.audioDevice + "' is not a valid audio device."};
+            throw RequestFailure{
+                "'" + trial.audioDevice + "' is not a valid audio device."
+            };
         return deviceIndex;
     }
 

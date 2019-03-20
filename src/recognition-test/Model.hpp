@@ -1,7 +1,7 @@
 #ifndef recognition_test_Model_hpp
 #define recognition_test_Model_hpp
 
-#include <presentation/Presenter.h>
+#include <presentation/Model.h>
 #include <vector>
 
 namespace recognition_test {
