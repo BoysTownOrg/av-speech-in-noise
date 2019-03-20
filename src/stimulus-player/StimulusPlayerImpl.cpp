@@ -1,10 +1,3 @@
-//
-//  StimulusPlayerImpl.cpp
-//  google-tests
-//
-//  Created by Bashford, Seth on 3/20/19.
-//
-
 #include "StimulusPlayerImpl.hpp"
 
 namespace stimulus_player {

@@ -3,6 +3,7 @@
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <masker-player/RandomizedMaskerPlayer.hpp>
+#include <stimulus-player/StimulusPlayerImpl.hpp>
 #import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>
 #include <vector>
@@ -20,29 +21,27 @@ public:
     std::string uid(int device);
 };
 
-class AvFoundationStimulusPlayer;
+class AvFoundationVideoPlayer;
 
 @interface StimulusPlayerActions : NSObject
-@property AvFoundationStimulusPlayer *controller;
+@property AvFoundationVideoPlayer *controller;
 - (void) playbackComplete;
 @end
 
-class AvFoundationStimulusPlayer : public recognition_test::StimulusPlayer {
+class AvFoundationVideoPlayer : public stimulus_player::VideoPlayer {
     CoreAudioDevice device{};
-    EventListener *listener{};
     StimulusPlayerActions *actions;
     NSWindow *videoWindow;
     AVPlayer *player;
     AVPlayerLayer *playerLayer;
 public:
-    AvFoundationStimulusPlayer();
-    void subscribe(EventListener *) override;
+    AvFoundationVideoPlayer();
     void playbackComplete();
     void play() override;
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
-    void hideVideo() override;
-    void showVideo() override;
+    void hide() override;
+    void show() override;
 };
 
 class AvFoundationAudioPlayer : public masker_player::AudioPlayer {

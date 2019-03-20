@@ -95,7 +95,7 @@ static AVURLAsset *makeAvAsset(std::string filePath) {
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
 
-AvFoundationStimulusPlayer::AvFoundationStimulusPlayer() :
+AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
     actions{[StimulusPlayerActions alloc]},
     videoWindow{
         [[NSWindow alloc]
@@ -114,19 +114,14 @@ AvFoundationStimulusPlayer::AvFoundationStimulusPlayer() :
     actions.controller = this;
 }
 
-void AvFoundationStimulusPlayer::subscribe(EventListener *listener_) {
-    listener = listener_;
+void AvFoundationVideoPlayer::playbackComplete() {
 }
 
-void AvFoundationStimulusPlayer::playbackComplete() {
-    listener->playbackComplete();
-}
-
-void AvFoundationStimulusPlayer::play() {
+void AvFoundationVideoPlayer::play() {
     [player play];
 }
 
-void AvFoundationStimulusPlayer::loadFile(std::string filePath) {
+void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     const auto asset = makeAvAsset(filePath);
     [player replaceCurrentItemWithPlayerItem:
         [AVPlayerItem playerItemWithAsset:asset]];
@@ -141,7 +136,7 @@ void AvFoundationStimulusPlayer::loadFile(std::string filePath) {
     ];
 }
 
-void AvFoundationStimulusPlayer::setDevice(int index) {
+void AvFoundationVideoPlayer::setDevice(int index) {
     auto uid_ = device.uid(index);
     player.audioOutputDeviceUniqueID = [
         NSString stringWithCString:uid_.c_str()
@@ -149,11 +144,11 @@ void AvFoundationStimulusPlayer::setDevice(int index) {
     ];
 }
 
-void AvFoundationStimulusPlayer::hideVideo() {
+void AvFoundationVideoPlayer::hide() {
     [videoWindow setIsVisible:NO];
 }
 
-void AvFoundationStimulusPlayer::showVideo() {
+void AvFoundationVideoPlayer::show() {
     [videoWindow setIsVisible:YES];
 }
 

@@ -1,5 +1,5 @@
-#ifndef RandomizedMaskerPlayer_hpp
-#define RandomizedMaskerPlayer_hpp
+#ifndef masker_player_RandomizedMaskerPlayer_hpp
+#define masker_player_RandomizedMaskerPlayer_hpp
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
