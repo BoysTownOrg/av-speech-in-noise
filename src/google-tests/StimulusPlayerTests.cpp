@@ -6,6 +6,7 @@ namespace stimulus_player {
         virtual ~VideoPlayer() = default;
         virtual void show() = 0;
         virtual void hide() = 0;
+        virtual void loadFile(std::string) = 0;
     };
     
     class StimulusPlayerImpl : public recognition_test::StimulusPlayer {
@@ -26,7 +27,7 @@ namespace stimulus_player {
         }
         
         void loadFile(std::string filePath) override {
-        
+            player->loadFile(filePath);
         }
         
         void hideVideo() override {
@@ -47,12 +48,22 @@ namespace stimulus_player {
     };
 }
 
+#include "assert-utility.h"
 #include <gtest/gtest.h>
 
 class VideoPlayerStub : public stimulus_player::VideoPlayer {
+    std::string filePath_{};
     bool shown_{};
     bool hidden_{};
 public:
+    void loadFile(std::string f) override {
+        filePath_ = std::move(f);
+    }
+    
+    auto filePath() const {
+        return filePath_;
+    }
+    
     void hide() override {
         hidden_ = true;
     }
@@ -84,4 +95,9 @@ TEST_F(StimulusPlayerTests, showVideoShowsVideo) {
 TEST_F(StimulusPlayerTests, hideVideoHidesVideo) {
     player.hideVideo();
     EXPECT_TRUE(videoPlayer.hidden());
+}
+
+TEST_F(StimulusPlayerTests, loadFileLoadsFile) {
+    player.loadFile("a");
+    assertEqual("a", videoPlayer.filePath());
 }
