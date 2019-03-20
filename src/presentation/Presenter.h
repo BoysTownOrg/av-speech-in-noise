@@ -29,6 +29,7 @@ namespace presentation {
             std::string maskerFilePath;
             int maskerLevel_dB_SPL;
             int signalLevel_dB_SPL;
+            int fullScaleLevel_dB_SPL;
             Condition condition;
         };
         virtual void initializeTest(const TestParameters &) = 0;

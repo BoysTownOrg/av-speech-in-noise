@@ -21,6 +21,8 @@ namespace recognition_test {
         virtual void loadFile(std::string filePath) = 0;
         virtual void hideVideo() = 0;
         virtual void showVideo() = 0;
+        virtual double rms() = 0;
+        virtual void setLevel_dB(double) = 0;
     };
 
     class MaskerPlayer {
@@ -56,6 +58,7 @@ namespace recognition_test {
         public StimulusPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
+        TestParameters testParameters{};
         MaskerPlayer *maskerPlayer;
         StimulusList *list;
         StimulusPlayer *stimulusPlayer;

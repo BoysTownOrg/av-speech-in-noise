@@ -2,6 +2,7 @@
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
+#include <cmath>
 
 namespace {
     class MaskerPlayerStub : public recognition_test::MaskerPlayer {
@@ -86,12 +87,22 @@ namespace {
 
     class StimulusPlayerStub : public recognition_test::StimulusPlayer {
         std::string filePath_{};
+        double rms_{};
+        double level_dB_{};
         int deviceIndex_{};
         EventListener *listener_{};
         bool played_{};
         bool videoHidden_{};
         bool videoShown_{};
     public:
+        auto level_dB() const {
+            return level_dB_;
+        }
+        
+        void setRms(double x) {
+            rms_ = x;
+        }
+        
         void showVideo() override {
             videoShown_ = true;
         }
@@ -130,6 +141,14 @@ namespace {
         
         void setDevice(int index) override {
             deviceIndex_ = index;
+        }
+        
+        double rms() override {
+            return rms_;
+        }
+        
+        void setLevel_dB(double x) override {
+            level_dB_ = x;
         }
         
         void playbackComplete() {
@@ -331,6 +350,18 @@ namespace {
         testParameters.maskerFilePath = "a";
         initializeTest();
         assertEqual("a", maskerPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialSetsStimulusPlayerLevel
+    ) {
+        testParameters.signalLevel_dB_SPL = 5;
+        testParameters.fullScaleLevel_dB_SPL = 11;
+        initializeTest();
+        stimulusPlayer.setRms(7);
+        playTrial();
+        EXPECT_EQ(20 * std::log10(1.0/7) - 5 + 11, stimulusPlayer.level_dB());
     }
 
     TEST_F(

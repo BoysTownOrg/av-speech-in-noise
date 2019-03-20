@@ -1,5 +1,6 @@
 #include "Model.hpp"
 #include <gsl/gsl>
+#include <cmath>
 
 namespace recognition_test {
     Model::Model(
@@ -25,6 +26,11 @@ namespace recognition_test {
         maskerPlayer->setDevice(deviceIndex);
         stimulusPlayer->setDevice(deviceIndex);
         stimulusPlayer->loadFile(list->next());
+        stimulusPlayer->setLevel_dB(
+            20 * std::log10(1.0/stimulusPlayer->rms()) -
+            testParameters.signalLevel_dB_SPL +
+            testParameters.fullScaleLevel_dB_SPL
+        );
         maskerPlayer->fadeIn();
     }
     
@@ -49,6 +55,7 @@ namespace recognition_test {
             stimulusPlayer->hideVideo();
         else
             stimulusPlayer->showVideo();
+        testParameters = p;
     }
 
     bool Model::testComplete() {
