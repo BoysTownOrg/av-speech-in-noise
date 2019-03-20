@@ -325,7 +325,7 @@ auto CocoaView::tester() -> Tester * {
     return &testerView_;
 }
 
-auto CocoaView::subject() -> SubjectView * {
+auto CocoaView::subject() -> Subject * {
     return &subjectView_;
 }
 

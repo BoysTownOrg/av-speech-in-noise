@@ -1,7 +1,7 @@
 #include "Presenter.h"
 
 namespace presentation {
-    std::string conditionName(Model::AudioVisualTest::Condition c) {
+    std::string conditionName(Model::Test::Condition c) {
         using condition_type = decltype(c);
         switch (c) {
         case condition_type::auditoryOnly:
@@ -71,8 +71,8 @@ namespace presentation {
         view{view}
     {
         view->populateConditionMenu({
-            conditionName(Model::AudioVisualTest::Condition::auditoryOnly),
-            conditionName(Model::AudioVisualTest::Condition::audioVisual)
+            conditionName(Model::Test::Condition::auditoryOnly),
+            conditionName(Model::Test::Condition::audioVisual)
         });
     }
     
@@ -84,8 +84,8 @@ namespace presentation {
         model->initializeTest(testParameters());
     }
     
-    Model::AudioVisualTest Presenter::TestSetup::testParameters() {
-        Model::AudioVisualTest p;
+    Model::Test Presenter::TestSetup::testParameters() {
+        Model::Test p;
         p.maskerLevel_dB_SPL =
             readInteger(view->maskerLevel_dB_SPL(), "masker level");
         p.signalLevel_dB_SPL =
@@ -95,9 +95,9 @@ namespace presentation {
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.condition =
-            view->condition() == conditionName(Model::AudioVisualTest::Condition::auditoryOnly)
-            ? Model::AudioVisualTest::Condition::auditoryOnly
-            : Model::AudioVisualTest::Condition::audioVisual;
+            view->condition() == conditionName(Model::Test::Condition::auditoryOnly)
+            ? Model::Test::Condition::auditoryOnly
+            : Model::Test::Condition::audioVisual;
         return p;
     }
     

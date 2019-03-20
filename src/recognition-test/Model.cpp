@@ -48,10 +48,10 @@ namespace recognition_test {
         return deviceIndex;
     }
 
-    void Model::initializeTest(const AudioVisualTest &p) {
+    void Model::initializeTest(const Test &p) {
         maskerPlayer->loadFile(p.maskerFilePath);
         list->initialize(p.stimulusListDirectory);
-        if (p.condition == AudioVisualTest::Condition::auditoryOnly)
+        if (p.condition == Test::Condition::auditoryOnly)
             stimulusPlayer->hideVideo();
         else
             stimulusPlayer->showVideo();

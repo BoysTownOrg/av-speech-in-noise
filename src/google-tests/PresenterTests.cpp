@@ -15,7 +15,7 @@ namespace {
     };
     
     class ModelStub : public presentation::Model {
-        AudioVisualTest testParameters_{};
+        Test testParameters_{};
         Trial trialParameters_{};
         SubjectResponse responseParameters_{};
         std::vector<std::string> audioDevices_{};
@@ -47,7 +47,7 @@ namespace {
             trialPlayed_ = true;
         }
         
-        void initializeTest(const AudioVisualTest &p) override {
+        void initializeTest(const Test &p) override {
             testParameters_ = p;
         }
         
@@ -74,14 +74,14 @@ namespace {
         EventListener *listener_{};
         TestSetup *setupView_;
         Tester *testerView_;
-        SubjectView *subjectView_;
+        Subject *subjectView_;
         bool eventLoopCalled_{};
         bool confirmationDialogShown_{};
     public:
         ViewStub(
             TestSetup *setupView,
             Tester *testerView,
-            SubjectView *subjectView
+            Subject *subjectView
         ) :
             setupView_{setupView},
             testerView_{testerView},
@@ -132,7 +132,7 @@ namespace {
             return dialogResponse_;
         }
         
-        SubjectView *subject() override {
+        Subject *subject() override {
             return subjectView_;
         }
         
@@ -292,7 +292,7 @@ namespace {
             }
         };
         
-        class SubjectViewStub : public SubjectView {
+        class SubjectViewStub : public Subject {
             int numberResponse_{};
             bool greenResponse_{};
         public:
@@ -343,13 +343,13 @@ namespace {
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
-                presentation::Model::AudioVisualTest::Condition::auditoryOnly
+                presentation::Model::Test::Condition::auditoryOnly
             );
         }
         
         std::string audioVisualConditionName() {
             return conditionName(
-                presentation::Model::AudioVisualTest::Condition::audioVisual
+                presentation::Model::Test::Condition::audioVisual
             );
         }
         
@@ -460,7 +460,7 @@ namespace {
         setupView.setCondition(audioVisualConditionName());
         confirmTestSetup();
         EXPECT_EQ(
-            presentation::Model::AudioVisualTest::Condition::audioVisual,
+            presentation::Model::Test::Condition::audioVisual,
             model.testParameters().condition
         );
     }
@@ -469,7 +469,7 @@ namespace {
         setupView.setCondition(auditoryOnlyConditionName());
         confirmTestSetup();
         EXPECT_EQ(
-            presentation::Model::AudioVisualTest::Condition::auditoryOnly,
+            presentation::Model::Test::Condition::auditoryOnly,
             model.testParameters().condition
         );
     }
@@ -558,7 +558,7 @@ namespace {
             errorMessage = std::move(s);
         }
         
-        void initializeTest(const AudioVisualTest &) override {
+        void initializeTest(const Test &) override {
             throw RequestFailure{errorMessage};
         }
         

@@ -58,7 +58,7 @@ namespace recognition_test {
         public StimulusPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        AudioVisualTest testParameters{};
+        Test testParameters{};
         MaskerPlayer *maskerPlayer;
         StimulusList *list;
         StimulusPlayer *stimulusPlayer;
@@ -68,7 +68,7 @@ namespace recognition_test {
             StimulusList *,
             StimulusPlayer *
         );
-        void initializeTest(const AudioVisualTest &) override;
+        void initializeTest(const Test &) override;
         void playTrial(const Trial &) override;
         void submitResponse(const SubjectResponse &) override;
         bool testComplete() override;

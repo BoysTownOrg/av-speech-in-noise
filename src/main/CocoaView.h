@@ -77,7 +77,7 @@ public:
     void becomeChild(CocoaView *);
 };
 
-class CocoaSubjectView : public presentation::View::SubjectView {
+class CocoaSubjectView : public presentation::View::Subject {
     NSWindow *window;
 public:
     CocoaSubjectView();
@@ -103,7 +103,7 @@ public:
     void eventLoop() override;
     TestSetup *testSetup() override;
     Tester *tester() override;
-    SubjectView *subject() override;
+    Subject *subject() override;
     DialogResponse showConfirmationDialog() override;
     void showErrorMessage(std::string) override;
 };
