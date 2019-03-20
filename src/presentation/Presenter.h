@@ -78,6 +78,7 @@ namespace presentation {
             void tuneOut();
         private:
             int readInteger(std::string x, std::string identifier);
+            bool auditoryOnly();
             Model::Test testParameters();
             
             Model *model;

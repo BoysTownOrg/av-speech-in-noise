@@ -2,11 +2,10 @@
 
 namespace presentation {
     std::string conditionName(Model::Test::Condition c) {
-        using condition_type = decltype(c);
         switch (c) {
-        case condition_type::auditoryOnly:
+        case Model::Test::Condition::auditoryOnly:
             return "auditory-only";
-        case condition_type::audioVisual:
+        case Model::Test::Condition::audioVisual:
             return "audio-visual";
         }
     }
@@ -63,8 +62,6 @@ namespace presentation {
         p.number = view->subject()->numberResponse();
         model->submitResponse(p);
     }
-    
-    
 
     Presenter::TestSetup::TestSetup(Model *model, View::TestSetup *view) :
         model{model},
@@ -94,8 +91,7 @@ namespace presentation {
         p.stimulusListDirectory = view->stimulusListDirectory();
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
-        p.condition =
-            view->condition() == conditionName(Model::Test::Condition::auditoryOnly)
+        p.condition = auditoryOnly()
             ? Model::Test::Condition::auditoryOnly
             : Model::Test::Condition::audioVisual;
         return p;
@@ -110,10 +106,15 @@ namespace presentation {
         }
     }
     
+    bool Presenter::TestSetup::auditoryOnly() {
+        return view->condition() == conditionName(
+            Model::Test::Condition::auditoryOnly
+        );
+    }
+    
     void Presenter::TestSetup::tuneOut() {
         view->hide();
     }
-    
     
     Presenter::Tester::Tester(Model *model, View::Tester *view) :
         model{model},
