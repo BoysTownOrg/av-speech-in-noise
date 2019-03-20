@@ -7,6 +7,7 @@ namespace stimulus_player {
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void loadFile(std::string) = 0;
+        virtual void play() = 0;
     };
     
     class StimulusPlayerImpl : public recognition_test::StimulusPlayer {
@@ -23,7 +24,7 @@ namespace stimulus_player {
         }
         
         void play() override {
-        
+            player->play();
         }
         
         void loadFile(std::string filePath) override {
@@ -55,7 +56,16 @@ class VideoPlayerStub : public stimulus_player::VideoPlayer {
     std::string filePath_{};
     bool shown_{};
     bool hidden_{};
+    bool played_{};
 public:
+    void play() override {
+        played_ = true;
+    }
+    
+    auto played() const {
+        return played_;
+    }
+    
     void loadFile(std::string f) override {
         filePath_ = std::move(f);
     }
@@ -86,6 +96,11 @@ protected:
     VideoPlayerStub videoPlayer;
     stimulus_player::StimulusPlayerImpl player{&videoPlayer};
 };
+
+TEST_F(StimulusPlayerTests, playPlaysVideo) {
+    player.play();
+    EXPECT_TRUE(videoPlayer.played());
+}
 
 TEST_F(StimulusPlayerTests, showVideoShowsVideo) {
     player.showVideo();
