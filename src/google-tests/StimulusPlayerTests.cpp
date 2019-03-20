@@ -8,6 +8,7 @@ namespace stimulus_player {
         virtual void hide() = 0;
         virtual void loadFile(std::string) = 0;
         virtual void play() = 0;
+        virtual void setDevice(int index) = 0;
     };
     
     class StimulusPlayerImpl : public recognition_test::StimulusPlayer {
@@ -20,7 +21,7 @@ namespace stimulus_player {
         }
         
         void setDevice(int index) override {
-        
+            player->setDevice(index);
         }
         
         void play() override {
@@ -54,10 +55,19 @@ namespace stimulus_player {
 
 class VideoPlayerStub : public stimulus_player::VideoPlayer {
     std::string filePath_{};
+    int deviceIndex_{};
     bool shown_{};
     bool hidden_{};
     bool played_{};
 public:
+    void setDevice(int index) override {
+        deviceIndex_ = index;
+    }
+    
+    auto deviceIndex() const {
+        return deviceIndex_;
+    }
+    
     void play() override {
         played_ = true;
     }
@@ -115,4 +125,9 @@ TEST_F(StimulusPlayerTests, hideVideoHidesVideo) {
 TEST_F(StimulusPlayerTests, loadFileLoadsFile) {
     player.loadFile("a");
     assertEqual("a", videoPlayer.filePath());
+}
+
+TEST_F(StimulusPlayerTests, setDeviceSetsVideoPlayerDevice) {
+    player.setDevice(1);
+    EXPECT_EQ(1, videoPlayer.deviceIndex());
 }
