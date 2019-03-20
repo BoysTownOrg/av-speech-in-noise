@@ -2,7 +2,7 @@
 #include "AvFoundationPlayers.h"
 #include "CocoaView.h"
 #include <presentation/Presenter.h>
-#include <recognition-test/Model.hpp>
+#include <recognition-test/RecognitionTestModel.hpp>
 #include <masker-player/RandomizedMaskerPlayer.hpp>
 #include <stimulus-list/RandomizedStimulusList.hpp>
 #include <stimulus-list/FileFilterDecorator.hpp>
@@ -33,7 +33,7 @@ int main() {
     AvFoundationAudioPlayer audioPlayer;
     masker_player::RandomizedMaskerPlayer maskerPlayer{&audioPlayer};
     maskerPlayer.setFadeInOutSeconds(0.5);
-    recognition_test::Model model{&maskerPlayer, &list, &stimulusPlayer};
+    recognition_test::RecognitionTestModel model{&maskerPlayer, &list, &stimulusPlayer};
     CocoaView view;
     presentation::Presenter presenter{&model, &view};
     presenter.run();

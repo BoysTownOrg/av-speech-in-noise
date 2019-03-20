@@ -1,5 +1,5 @@
-#ifndef Model_h
-#define Model_h
+#ifndef presentation_Model_h
+#define presentation_Model_h
 
 #include <stdexcept>
 #include <string>

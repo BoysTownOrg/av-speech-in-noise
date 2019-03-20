@@ -1,7 +1,7 @@
 #ifndef RandomizedMaskerPlayer_hpp
 #define RandomizedMaskerPlayer_hpp
 
-#include <recognition-test/Model.hpp>
+#include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
 
 namespace masker_player {

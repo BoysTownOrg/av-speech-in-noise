@@ -1,7 +1,7 @@
 #ifndef AvFoundationPlayers_h
 #define AvFoundationPlayers_h
 
-#include <recognition-test/Model.hpp>
+#include <recognition-test/RecognitionTestModel.hpp>
 #include <masker-player/RandomizedMaskerPlayer.hpp>
 #import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>

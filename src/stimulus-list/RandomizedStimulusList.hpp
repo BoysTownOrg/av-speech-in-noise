@@ -1,7 +1,7 @@
 #ifndef stimulus_list_RandomizedStimulusList_hpp
 #define stimulus_list_RandomizedStimulusList_hpp
 
-#include <recognition-test/Model.hpp>
+#include <recognition-test/RecognitionTestModel.hpp>
 #include <vector>
 #include <string>
 

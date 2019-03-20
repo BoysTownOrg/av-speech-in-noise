@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <recognition-test/Model.hpp>
+#include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <cmath>
@@ -201,12 +201,12 @@ namespace {
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
-        recognition_test::Model::Test testParameters;
-        recognition_test::Model::Trial trialParameters;
+        recognition_test::RecognitionTestModel::Test testParameters;
+        recognition_test::RecognitionTestModel::Trial trialParameters;
         StimulusPlayerStub stimulusPlayer{};
         MaskerPlayerStub maskerPlayer{};
         StimulusListStub list{};
-        recognition_test::Model model{&maskerPlayer, &list, &stimulusPlayer};
+        recognition_test::RecognitionTestModel model{&maskerPlayer, &list, &stimulusPlayer};
         
         RecognitionTestModelTests() {
             setAudioDeviceDescriptions({"valid"});
@@ -257,12 +257,12 @@ namespace {
         
         void setAuditoryOnly() {
             testParameters.condition =
-                recognition_test::Model::Test::Condition::auditoryOnly;
+                recognition_test::RecognitionTestModel::Test::Condition::auditoryOnly;
         }
         
         void setAudioVisual() {
             testParameters.condition =
-                recognition_test::Model::Test::Condition::audioVisual;
+                recognition_test::RecognitionTestModel::Test::Condition::audioVisual;
         }
         
         void assertStimulusVideoOnlyHidden() {
@@ -279,7 +279,7 @@ namespace {
             try {
                 playTrial();
                 FAIL() << "Expected 'recognition_test::Model::RequestFailure'.";
-            } catch (const recognition_test::Model::RequestFailure &e) {
+            } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
                 assertEqual(std::move(what), e.what());
             }
         }

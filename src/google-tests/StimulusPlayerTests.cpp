@@ -1,4 +1,4 @@
-#include <recognition-test/Model.hpp>
+#include <recognition-test/RecognitionTestModel.hpp>
 
 namespace stimulus_player {
     class VideoPlayer {
