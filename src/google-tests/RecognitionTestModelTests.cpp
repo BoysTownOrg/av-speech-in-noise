@@ -245,6 +245,16 @@ namespace {
             testParameters.condition =
                 recognition_test::Model::TestParameters::Condition::audioVisual;
         }
+        
+        void assertStimulusVideoOnlyHidden() {
+            EXPECT_TRUE(stimulusPlayer.videoHidden());
+            EXPECT_FALSE(stimulusPlayer.videoShown());
+        }
+        
+        void assertStimulusVideoOnlyShown() {
+            EXPECT_FALSE(stimulusPlayer.videoHidden());
+            EXPECT_TRUE(stimulusPlayer.videoShown());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -325,7 +335,7 @@ namespace {
     ) {
         setAuditoryOnly();
         initializeTest();
-        EXPECT_TRUE(stimulusPlayer.videoHidden());
+        assertStimulusVideoOnlyHidden();
     }
 
     TEST_F(
@@ -334,8 +344,7 @@ namespace {
     ) {
         setAudioVisual();
         initializeTest();
-        EXPECT_FALSE(stimulusPlayer.videoHidden());
-        EXPECT_TRUE(stimulusPlayer.videoShown());
+        assertStimulusVideoOnlyShown();
     }
 
     TEST_F(
