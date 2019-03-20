@@ -5,6 +5,7 @@ namespace stimulus_player {
     public:
         virtual ~VideoPlayer() = default;
         virtual void show() = 0;
+        virtual void hide() = 0;
     };
     
     class StimulusPlayerImpl : public recognition_test::StimulusPlayer {
@@ -29,7 +30,7 @@ namespace stimulus_player {
         }
         
         void hideVideo() override {
-        
+            player->hide();
         }
         
         void showVideo() override {
@@ -50,7 +51,16 @@ namespace stimulus_player {
 
 class VideoPlayerStub : public stimulus_player::VideoPlayer {
     bool shown_{};
+    bool hidden_{};
 public:
+    void hide() override {
+        hidden_ = true;
+    }
+    
+    auto hidden() const {
+        return hidden_;
+    }
+    
     auto shown() const {
         return shown_;
     }
@@ -69,4 +79,9 @@ protected:
 TEST_F(StimulusPlayerTests, showVideoShowsVideo) {
     player.showVideo();
     EXPECT_TRUE(videoPlayer.shown());
+}
+
+TEST_F(StimulusPlayerTests, hideVideoHidesVideo) {
+    player.hideVideo();
+    EXPECT_TRUE(videoPlayer.hidden());
 }
