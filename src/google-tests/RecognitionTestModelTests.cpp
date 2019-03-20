@@ -255,6 +255,15 @@ namespace {
             EXPECT_FALSE(stimulusPlayer.videoHidden());
             EXPECT_TRUE(stimulusPlayer.videoShown());
         }
+        
+        void assertPlayTrialThrowsRequestFailure(std::string what) {
+            try {
+                playTrial();
+                FAIL() << "Expected 'recognition_test::Model::RequestFailure'.";
+            } catch (const recognition_test::Model::RequestFailure &e) {
+                assertEqual(std::move(what), e.what());
+            }
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -273,12 +282,7 @@ namespace {
     TEST_F(RecognitionTestModelTests, playTrialWithInvalidAudioDeviceThrowsRequestFailure) {
         setAudioDeviceDescriptions({"a", "b", "c"});
         trialParameters.audioDevice = "d";
-        try {
-            playTrial();
-            FAIL() << "Expected 'recognition_test::Model::RequestFailure'.";
-        } catch (const recognition_test::Model::RequestFailure &e) {
-            assertEqual("'d' is not a valid audio device.", e.what());
-        }
+        assertPlayTrialThrowsRequestFailure("'d' is not a valid audio device.");
     }
 
     TEST_F(RecognitionTestModelTests, audioDevicesReturnsDescriptions) {
