@@ -16,7 +16,7 @@ namespace recognition_test {
         stimulusPlayer->subscribe(this);
     }
     
-    void Model::playTrial(const TrialParameters &trial) {
+    void Model::playTrial(const Trial &trial) {
         if (list->empty())
             return;
         if (maskerPlayer->playing())
@@ -34,7 +34,7 @@ namespace recognition_test {
         maskerPlayer->fadeIn();
     }
     
-    int Model::findDeviceIndex(const TrialParameters &trial) {
+    int Model::findDeviceIndex(const Trial &trial) {
         auto devices_ = audioDevices();
         auto deviceIndex = gsl::narrow<int>(
             std::find(
@@ -48,10 +48,10 @@ namespace recognition_test {
         return deviceIndex;
     }
 
-    void Model::initializeTest(const TestParameters &p) {
+    void Model::initializeTest(const AudioVisualTest &p) {
         maskerPlayer->loadFile(p.maskerFilePath);
         list->initialize(p.stimulusListDirectory);
-        if (p.condition == TestParameters::Condition::auditoryOnly)
+        if (p.condition == AudioVisualTest::Condition::auditoryOnly)
             stimulusPlayer->hideVideo();
         else
             stimulusPlayer->showVideo();
@@ -77,7 +77,7 @@ namespace recognition_test {
         return descriptions;
     }
     
-    void Model::submitResponse(const ResponseParameters &) { 
+    void Model::submitResponse(const SubjectResponse &) { 
         ;
     }
 }

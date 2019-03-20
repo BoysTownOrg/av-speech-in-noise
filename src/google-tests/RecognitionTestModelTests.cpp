@@ -201,8 +201,8 @@ namespace {
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
-        recognition_test::Model::TestParameters testParameters;
-        recognition_test::Model::TrialParameters trialParameters;
+        recognition_test::Model::AudioVisualTest testParameters;
+        recognition_test::Model::Trial trialParameters;
         StimulusPlayerStub stimulusPlayer{};
         MaskerPlayerStub maskerPlayer{};
         StimulusListStub list{};
@@ -257,12 +257,12 @@ namespace {
         
         void setAuditoryOnly() {
             testParameters.condition =
-                recognition_test::Model::TestParameters::Condition::auditoryOnly;
+                recognition_test::Model::AudioVisualTest::Condition::auditoryOnly;
         }
         
         void setAudioVisual() {
             testParameters.condition =
-                recognition_test::Model::TestParameters::Condition::audioVisual;
+                recognition_test::Model::AudioVisualTest::Condition::audioVisual;
         }
         
         void assertStimulusVideoOnlyHidden() {

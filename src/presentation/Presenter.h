@@ -18,7 +18,7 @@ namespace presentation {
         virtual ~Model() = default;
         RUNTIME_ERROR(RequestFailure)
         
-        struct TestParameters {
+        struct AudioVisualTest {
             enum class Condition {
                 auditoryOnly,
                 audioVisual
@@ -32,14 +32,14 @@ namespace presentation {
             int fullScaleLevel_dB_SPL;
             Condition condition;
         };
-        virtual void initializeTest(const TestParameters &) = 0;
+        virtual void initializeTest(const AudioVisualTest &) = 0;
         
-        struct TrialParameters {
+        struct Trial {
             std::string audioDevice;
         };
-        virtual void playTrial(const TrialParameters &) = 0;
+        virtual void playTrial(const Trial &) = 0;
         
-        struct ResponseParameters {
+        struct SubjectResponse {
             enum class Color {
                 green
             };
@@ -47,13 +47,13 @@ namespace presentation {
             int number;
             Color color;
         };
-        virtual void submitResponse(const ResponseParameters &) = 0;
+        virtual void submitResponse(const SubjectResponse &) = 0;
         
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
     };
     
-    std::string conditionName(Model::TestParameters::Condition);
+    std::string conditionName(Model::AudioVisualTest::Condition);
 
     class View {
     public:
@@ -125,7 +125,7 @@ namespace presentation {
             void tuneOut();
         private:
             int readInteger(std::string x, std::string identifier);
-            Model::TestParameters testParameters();
+            Model::AudioVisualTest testParameters();
             
             Model *model;
             View::TestSetup *view;

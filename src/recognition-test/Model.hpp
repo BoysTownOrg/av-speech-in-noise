@@ -58,7 +58,7 @@ namespace recognition_test {
         public StimulusPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        TestParameters testParameters{};
+        AudioVisualTest testParameters{};
         MaskerPlayer *maskerPlayer;
         StimulusList *list;
         StimulusPlayer *stimulusPlayer;
@@ -68,15 +68,15 @@ namespace recognition_test {
             StimulusList *,
             StimulusPlayer *
         );
-        void initializeTest(const TestParameters &) override;
-        void playTrial(const TrialParameters &) override;
-        void submitResponse(const ResponseParameters &) override;
+        void initializeTest(const AudioVisualTest &) override;
+        void playTrial(const Trial &) override;
+        void submitResponse(const SubjectResponse &) override;
         bool testComplete() override;
         std::vector<std::string> audioDevices() override;
         void fadeInComplete() override;
         void playbackComplete() override;
     private:
-        int findDeviceIndex(const TrialParameters &trial);
+        int findDeviceIndex(const Trial &trial);
     };
 }
 #endif

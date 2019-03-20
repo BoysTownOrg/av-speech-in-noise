@@ -1,7 +1,7 @@
 #include "Presenter.h"
 
 namespace presentation {
-    std::string conditionName(Model::TestParameters::Condition c) {
+    std::string conditionName(Model::AudioVisualTest::Condition c) {
         using condition_type = decltype(c);
         switch (c) {
         case condition_type::auditoryOnly:
@@ -57,9 +57,9 @@ namespace presentation {
     }
     
     void Presenter::submitResponse() { 
-        Model::ResponseParameters p;
+        Model::SubjectResponse p;
         if (view->subject()->greenResponse())
-            p.color = Model::ResponseParameters::Color::green;
+            p.color = Model::SubjectResponse::Color::green;
         p.number = view->subject()->numberResponse();
         model->submitResponse(p);
     }
@@ -71,8 +71,8 @@ namespace presentation {
         view{view}
     {
         view->populateConditionMenu({
-            conditionName(Model::TestParameters::Condition::auditoryOnly),
-            conditionName(Model::TestParameters::Condition::audioVisual)
+            conditionName(Model::AudioVisualTest::Condition::auditoryOnly),
+            conditionName(Model::AudioVisualTest::Condition::audioVisual)
         });
     }
     
@@ -84,8 +84,8 @@ namespace presentation {
         model->initializeTest(testParameters());
     }
     
-    Model::TestParameters Presenter::TestSetup::testParameters() {
-        Model::TestParameters p;
+    Model::AudioVisualTest Presenter::TestSetup::testParameters() {
+        Model::AudioVisualTest p;
         p.maskerLevel_dB_SPL =
             readInteger(view->maskerLevel_dB_SPL(), "masker level");
         p.signalLevel_dB_SPL =
@@ -95,9 +95,9 @@ namespace presentation {
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.condition =
-            view->condition() == conditionName(Model::TestParameters::Condition::auditoryOnly)
-            ? Model::TestParameters::Condition::auditoryOnly
-            : Model::TestParameters::Condition::audioVisual;
+            view->condition() == conditionName(Model::AudioVisualTest::Condition::auditoryOnly)
+            ? Model::AudioVisualTest::Condition::auditoryOnly
+            : Model::AudioVisualTest::Condition::audioVisual;
         return p;
     }
     
@@ -127,7 +127,7 @@ namespace presentation {
     }
     
     void Presenter::Tester::playTrial() {
-        Model::TrialParameters p;
+        Model::Trial p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
     }
