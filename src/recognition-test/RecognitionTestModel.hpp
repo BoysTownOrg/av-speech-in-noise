@@ -18,7 +18,6 @@ namespace recognition_test {
         };
         
         virtual void subscribe(EventListener *) = 0;
-        virtual void setDevice(int index) = 0;
         virtual void setAudioDevice(std::string) = 0;
         virtual void play() = 0;
         virtual void loadFile(std::string filePath) = 0;

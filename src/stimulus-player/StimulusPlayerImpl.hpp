@@ -37,7 +37,6 @@ namespace stimulus_player {
     public:
         StimulusPlayerImpl(VideoPlayer *);
         void subscribe(StimulusPlayer::EventListener *) override;
-        void setDevice(int index) override;
         void play() override;
         void loadFile(std::string filePath) override;
         void hideVideo() override;

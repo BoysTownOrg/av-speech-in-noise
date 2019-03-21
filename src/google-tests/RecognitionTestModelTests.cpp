@@ -167,10 +167,6 @@ namespace {
             filePath_ = filePath;
         }
         
-        void setDevice(int index) override {
-            deviceIndex_ = index;
-        }
-        
         double rms() override {
             return rms_;
         }

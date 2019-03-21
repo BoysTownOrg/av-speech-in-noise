@@ -131,11 +131,6 @@ namespace {
         assertEqual("a", videoPlayer.filePath());
     }
 
-    TEST_F(StimulusPlayerTests, setDeviceSetsVideoPlayerDevice) {
-        player.setDevice(1);
-        EXPECT_EQ(1, videoPlayer.deviceIndex());
-    }
-
     TEST_F(StimulusPlayerTests, videoPlaybackCompleteNotifiesSubscriber) {
         videoPlayer.playbackComplete();
         EXPECT_TRUE(listener.notified());

@@ -12,10 +12,6 @@ namespace stimulus_player {
         listener_ = e;
     }
 
-    void StimulusPlayerImpl::setDevice(int index) {
-        player->setDevice(index);
-    }
-
     void StimulusPlayerImpl::play() {
         player->play();
     }
