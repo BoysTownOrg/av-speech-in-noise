@@ -94,7 +94,9 @@ namespace {
         }
     };
     
-    class MaskerPlayerListenerStub : public recognition_test::MaskerPlayer::EventListener {
+    class MaskerPlayerListenerStub :
+        public recognition_test::MaskerPlayer::EventListener
+    {
         int notifications_{};
         bool notified_{};
     public:

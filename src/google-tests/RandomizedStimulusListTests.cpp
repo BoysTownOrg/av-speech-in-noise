@@ -40,16 +40,16 @@ namespace {
         RandomizerStub randomizer{};
         stimulus_list::RandomizedStimulusList list{&reader, &randomizer};
         
-        void initialize(std::string s = {}) {
+        void loadFromDirectory(std::string s = {}) {
             list.loadFromDirectory(std::move(s));
         }
     };
 
     TEST_F(
         RandomizedStimulusListTests,
-        initializePassesDirectoryToDirectoryReader
+        loadFromDirectoryPassesDirectoryToDirectoryReader
     ) {
-        initialize("a");
+        loadFromDirectory("a");
         assertEqual("a", reader.directory());
     }
 
@@ -58,7 +58,7 @@ namespace {
         testCompleteWhenStimulusFilesExhausted
     ) {
         reader.setFileNames({ "a", "b", "c" });
-        initialize();
+        loadFromDirectory();
         EXPECT_FALSE(list.empty());
         list.next();
         EXPECT_FALSE(list.empty());
@@ -73,7 +73,7 @@ namespace {
         nextReturnsFullPathToFileAtFront
     ) {
         reader.setFileNames({ "a", "b", "c" });
-        initialize("C:");
+        loadFromDirectory("C:");
         assertEqual("C:/a", list.next());
         assertEqual("C:/b", list.next());
         assertEqual("C:/c", list.next());
@@ -81,10 +81,10 @@ namespace {
 
     TEST_F(
         RandomizedStimulusListTests,
-        initializeShufflesFileNames
+        loadFromDirectoryShufflesFileNames
     ) {
         reader.setFileNames({ "a", "b", "c" });
-        initialize();
+        loadFromDirectory();
         assertEqual({ "a", "b", "c" }, randomizer.toShuffle());
     }
     
