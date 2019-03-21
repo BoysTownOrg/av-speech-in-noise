@@ -6,7 +6,14 @@
 namespace stimulus_player {
     class VideoPlayer {
     public:
+        class EventListener {
+        public:
+            virtual ~EventListener() = default;
+            virtual void playbackComplete() = 0;
+        };
+        
         virtual ~VideoPlayer() = default;
+        virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void loadFile(std::string) = 0;
@@ -14,11 +21,15 @@ namespace stimulus_player {
         virtual void setDevice(int index) = 0;
     };
     
-    class StimulusPlayerImpl : public recognition_test::StimulusPlayer {
+    class StimulusPlayerImpl :
+        public recognition_test::StimulusPlayer,
+        public VideoPlayer::EventListener
+    {
         VideoPlayer *player;
+        StimulusPlayer::EventListener *listener_{};
     public:
         StimulusPlayerImpl(VideoPlayer *);
-        void subscribe(EventListener *) override;
+        void subscribe(StimulusPlayer::EventListener *) override;
         void setDevice(int index) override;
         void play() override;
         void loadFile(std::string filePath) override;
@@ -26,6 +37,7 @@ namespace stimulus_player {
         void showVideo() override;
         double rms() override;
         void setLevel_dB(double) override;
+        void playbackComplete() override;
     };
 }
 

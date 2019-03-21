@@ -2,10 +2,13 @@
 
 namespace stimulus_player {
     StimulusPlayerImpl::StimulusPlayerImpl(VideoPlayer *player) :
-        player{player} {}
+        player{player}
+    {
+        player->subscribe(this);
+    }
 
-    void StimulusPlayerImpl::subscribe(EventListener *) {
-    
+    void StimulusPlayerImpl::subscribe(StimulusPlayer::EventListener *e) {
+        listener_ = e;
     }
 
     void StimulusPlayerImpl::setDevice(int index) {
@@ -35,4 +38,9 @@ namespace stimulus_player {
     void StimulusPlayerImpl::setLevel_dB(double) {
     
     }
+    
+    void StimulusPlayerImpl::playbackComplete() { 
+        listener_->playbackComplete();
+    }
+    
 }
