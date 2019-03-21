@@ -161,7 +161,10 @@ static void process(
 }
 
 template<typename T>
-static void createAudioProcessingTap(void* CM_NULLABLE clientInfo, MTAudioProcessingTapRef tap) {
+static void createAudioProcessingTap(
+    void* CM_NULLABLE clientInfo,
+    MTAudioProcessingTapRef tap
+) {
     MTAudioProcessingTapCallbacks callbacks;
     callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
     callbacks.clientInfo = clientInfo;
@@ -183,7 +186,7 @@ static void createAudioProcessingTap(void* CM_NULLABLE clientInfo, MTAudioProces
         throw std::runtime_error{"Unable to create the AudioProcessingTap"};
 }
 
-static void loadItemFromFile(
+static void loadItemFromFileWithAudioProcessing(
     std::string filePath,
     AVPlayer *player,
     MTAudioProcessingTapRef tap
@@ -229,7 +232,7 @@ void AvFoundationVideoPlayer::play() {
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
-    loadItemFromFile(filePath, player, tap);
+    loadItemFromFileWithAudioProcessing(filePath, player, tap);
     auto asset = [[player currentItem] asset];
     [videoWindow setContentSize:NSSizeFromCGSize(
         [asset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize)];
@@ -274,7 +277,7 @@ void AvFoundationAudioPlayer::subscribe(EventListener *e) {
 }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
-    loadItemFromFile(filePath, player, tap);
+    loadItemFromFileWithAudioProcessing(filePath, player, tap);
 }
 
 int AvFoundationAudioPlayer::deviceCount() {
