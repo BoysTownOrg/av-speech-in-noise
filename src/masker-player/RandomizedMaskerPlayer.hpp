@@ -56,5 +56,4 @@ namespace masker_player {
     };
 }
 
-
 #endif

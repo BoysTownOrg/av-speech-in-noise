@@ -83,4 +83,5 @@ namespace recognition_test {
         int findDeviceIndex(const Trial &);
     };
 }
+
 #endif

@@ -32,6 +32,4 @@ namespace stimulus_list {
     };
 }
 
-
-
 #endif
