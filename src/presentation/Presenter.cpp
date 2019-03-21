@@ -83,8 +83,6 @@ namespace presentation {
     
     Model::Test Presenter::TestSetup::testParameters() {
         Model::Test p;
-        p.maskerLevel_dB_SPL =
-            readInteger(view->maskerLevel_dB_SPL(), "masker level");
         p.startingSnr_dB =
             readInteger(view->startingSnr_dB(), "SNR");
         p.signalLevel_dB_SPL =

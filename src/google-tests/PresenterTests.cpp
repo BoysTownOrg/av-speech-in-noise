@@ -217,10 +217,6 @@ namespace {
                 signalLevel_ = std::move(s);
             }
             
-            void setMaskerLevel(std::string s) {
-                maskerLevel_ = std::move(s);
-            }
-            
             void setCondition(std::string s) {
                 condition_ = std::move(s);
             }
@@ -375,7 +371,7 @@ namespace {
         }
         
         void confirmTestSetupWithInvalidInput() {
-            setupView.setMaskerLevel("?");
+            setupView.setStartingSnr("?");
             confirmTestSetup();
         }
         
@@ -483,10 +479,10 @@ namespace {
         );
     }
 
-    TEST_F(PresenterTests, confirmTestSetupWithInvalidLevelShowsErrorMessage) {
-        setupView.setMaskerLevel("a");
+    TEST_F(PresenterTests, confirmTestSetupWithInvalidSignalLevelShowsErrorMessage) {
+        setupView.setSignalLevel("a");
         confirmTestSetup();
-        assertEqual("'a' is not a valid masker level.", view.errorMessage());
+        assertEqual("'a' is not a valid signal level.", view.errorMessage());
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
