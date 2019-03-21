@@ -62,10 +62,7 @@ namespace recognition_test {
     }
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {
-        std::vector<std::string> descriptions{};
-        for (int i = 0; i < maskerPlayer->deviceCount(); ++i)
-            descriptions.push_back(maskerPlayer->deviceDescription(i));
-        return descriptions;
+        return maskerPlayer->audioDeviceDescriptions();
     }
     
     void RecognitionTestModel::submitResponse(const SubjectResponse &) { 

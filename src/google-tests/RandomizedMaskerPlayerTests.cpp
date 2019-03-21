@@ -322,6 +322,6 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, audioDevicesReturnsDescriptions) {
         setAudioDeviceDescriptions({"a", "b", "c"});
-        assertEqual({"a", "b", "c"}, player.audioDevices());
+        assertEqual({"a", "b", "c"}, player.audioDeviceDescriptions());
     }
 }

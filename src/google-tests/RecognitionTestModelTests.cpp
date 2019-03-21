@@ -84,6 +84,10 @@ namespace {
             setDeviceCalled_ = true;
         }
         
+        std::vector<std::string> audioDeviceDescriptions() override {
+            return audioDeviceDescriptions_;
+        }
+        
         auto listener() const {
             return listener_;
         }
