@@ -26,6 +26,7 @@ namespace presentation {
             std::string testerId;
             std::string maskerFilePath;
             int maskerLevel_dB_SPL;
+            int startingSnr_dB;
             int signalLevel_dB_SPL;
             int fullScaleLevel_dB_SPL;
             Condition condition;

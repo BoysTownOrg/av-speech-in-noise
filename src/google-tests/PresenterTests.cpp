@@ -169,9 +169,14 @@ namespace {
             std::string stimulusList_{};
             std::string subjectId_{};
             std::string testerId_{};
+            std::string startingSnr_{"0"};
             bool shown_{};
             bool hidden_{};
         public:
+            std::string startingSnr_dB() override {
+                return startingSnr_;
+            }
+            
             void populateConditionMenu(std::vector<std::string> items) override {
                 conditions_ = std::move(items);
             }
@@ -202,6 +207,10 @@ namespace {
             
             auto hidden() const {
                 return hidden_;
+            }
+            
+            void setStartingSnr(std::string s) {
+                startingSnr_ = std::move(s);
             }
             
             void setSignalLevel(std::string s) {
@@ -441,14 +450,14 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
-        setupView.setMaskerLevel("1");
+        setupView.setStartingSnr("1");
         setupView.setSignalLevel("2");
         setupView.setStimulusList("a");
         setupView.setSubjectId("b");
         setupView.setTesterId("c");
         setupView.setMasker("d");
         confirmTestSetup();
-        EXPECT_EQ(1, model.testParameters().maskerLevel_dB_SPL);
+        EXPECT_EQ(1, model.testParameters().startingSnr_dB);
         EXPECT_EQ(2, model.testParameters().signalLevel_dB_SPL);
         assertEqual("a", model.testParameters().stimulusListDirectory);
         assertEqual("b", model.testParameters().subjectId);
