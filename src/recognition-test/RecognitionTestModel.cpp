@@ -42,7 +42,7 @@ namespace recognition_test {
     
     double RecognitionTestModel::signalLevel_dB() {
         return
-            20 * std::log10(1.0/stimulusPlayer->rms()) -
+            -20 * std::log10(stimulusPlayer->rms()) -
             testParameters.signalLevel_dB_SPL +
             testParameters.fullScaleLevel_dB_SPL;
     }
