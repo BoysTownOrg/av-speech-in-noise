@@ -84,4 +84,23 @@ namespace masker_player {
             ++hannCounter;
         return squareRoot * squareRoot;
     }
+    
+    void RandomizedMaskerPlayer::setAudioDevice(std::string device) {
+        auto devices_ = audioDevices();
+        auto deviceIndex = gsl::narrow<int>(
+            std::find(
+                devices_.begin(),
+                devices_.end(),
+                device
+            ) - devices_.begin()
+        );
+        player->setDevice(deviceIndex);
+    }
+    
+    std::vector<std::string> RandomizedMaskerPlayer::audioDevices() {
+        std::vector<std::string> descriptions{};
+        for (int i = 0; i < player->deviceCount(); ++i)
+            descriptions.push_back(player->deviceDescription(i));
+        return descriptions;
+    }
 }

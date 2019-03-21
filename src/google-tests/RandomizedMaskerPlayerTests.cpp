@@ -5,6 +5,7 @@
 
 namespace {
     class AudioPlayerStub : public masker_player::AudioPlayer {
+        std::vector<std::string> audioDeviceDescriptions_{10};
         std::string filePath_{};
         std::string deviceDescription_{};
         double sampleRateHz_{};
@@ -16,6 +17,10 @@ namespace {
         bool played_{};
         bool stopped_{};
     public:
+        void setAudioDeviceDescriptions(std::vector<std::string> v) {
+            audioDeviceDescriptions_ = std::move(v);
+        }
+        
         void stop() override {
             stopped_ = true;
         }
@@ -49,12 +54,12 @@ namespace {
         }
         
         int deviceCount() override {
-            return deviceCount_;
+            return gsl::narrow<int>(audioDeviceDescriptions_.size());
         }
         
         std::string deviceDescription(int index) override {
             deviceDescriptionDeviceIndex_ = index;
-            return deviceDescription_;
+            return audioDeviceDescriptions_.at(index);
         }
         
         void play() override {
@@ -71,14 +76,6 @@ namespace {
         
         auto deviceIndex() const {
             return deviceIndex_;
-        }
-        
-        void setDeviceCount(int x) {
-            deviceCount_ = x;
-        }
-        
-        void setDeviceDescription(std::string s) {
-            deviceDescription_ = std::move(s);
         }
         
         auto deviceDescriptionDeviceIndex() const {
@@ -154,6 +151,10 @@ namespace {
             );
             return result;
         }
+        
+        void setAudioDeviceDescriptions(std::vector<std::string> v) {
+            audioPlayer.setAudioDeviceDescriptions(std::move(v));
+        }
     };
 
     TEST_F(RandomizedMaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -172,13 +173,13 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceCount) {
-        audioPlayer.setDeviceCount(1);
-        EXPECT_EQ(1, player.deviceCount());
+        setAudioDeviceDescriptions({"first", "second", "third"});
+        EXPECT_EQ(3, player.deviceCount());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceDescription) {
-        audioPlayer.setDeviceDescription("a");
-        assertEqual("a", player.deviceDescription({}));
+        setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
+        assertEqual("second", player.deviceDescription(2));
     }
 
     TEST_F(RandomizedMaskerPlayerTests, passesDeviceIndexToDeviceDescription) {
@@ -311,5 +312,11 @@ namespace {
         leftChannel = { 6 };
         fillAudioBuffer();
         EXPECT_TRUE(audioPlayer.stopped());
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceFindsIndex) {
+        setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
+        player.setAudioDevice("second");
+        EXPECT_EQ(2, audioPlayer.deviceIndex());
     }
 }
