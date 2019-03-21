@@ -51,4 +51,23 @@ namespace stimulus_player {
             for (auto &x : channel)
                 x *= audioScale;
     }
+    
+    void StimulusPlayerImpl::setAudioDevice(std::string device) {
+        auto devices_ = audioDevices();
+        auto deviceIndex = gsl::narrow<int>(
+            std::find(
+                devices_.begin(),
+                devices_.end(),
+                device
+            ) - devices_.begin()
+        );
+        player->setDevice(deviceIndex);
+    }
+    
+    std::vector<std::string> StimulusPlayerImpl::audioDevices() {
+        std::vector<std::string> descriptions{};
+        for (int i = 0; i < player->deviceCount(); ++i)
+            descriptions.push_back(player->deviceDescription(i));
+        return descriptions;
+    }
 }

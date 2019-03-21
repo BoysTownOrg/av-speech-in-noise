@@ -18,6 +18,8 @@ namespace stimulus_player {
         
         virtual ~VideoPlayer() = default;
         virtual void subscribe(EventListener *) = 0;
+        virtual int deviceCount() = 0;
+        virtual std::string deviceDescription(int index) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void loadFile(std::string) = 0;
@@ -45,6 +47,8 @@ namespace stimulus_player {
         void playbackComplete() override;
         void fillAudioBuffer(
             const std::vector<gsl::span<float> > &audio) override;
+        void setAudioDevice(std::string);
+        std::vector<std::string> audioDevices();
     };
 }
 

@@ -4,6 +4,7 @@
 
 namespace {
     class VideoPlayerStub : public stimulus_player::VideoPlayer {
+        std::vector<std::string> audioDeviceDescriptions_{};
         std::string filePath_{};
         int deviceIndex_{};
         EventListener *listener_{};
@@ -11,6 +12,18 @@ namespace {
         bool hidden_{};
         bool played_{};
     public:
+        int deviceCount() override {
+            return gsl::narrow<int>(audioDeviceDescriptions_.size());
+        }
+        
+        std::string deviceDescription(int index) override {
+            return audioDeviceDescriptions_.at(index);
+        }
+        
+        void setAudioDeviceDescriptions(std::vector<std::string> v) {
+            audioDeviceDescriptions_ = std::move(v);
+        }
+        
         void playbackComplete() {
             listener_->playbackComplete();
         }
@@ -92,6 +105,10 @@ namespace {
         void fillAudioBuffer() {
             videoPlayer.fillAudioBuffer({ leftChannel });
         }
+        
+        void setAudioDeviceDescriptions(std::vector<std::string> v) {
+            videoPlayer.setAudioDeviceDescriptions(std::move(v));
+        }
     };
 
     TEST_F(StimulusPlayerTests, playPlaysVideo) {
@@ -129,5 +146,11 @@ namespace {
         leftChannel = { 1, 2, 3 };
         fillAudioBuffer();
         assertEqual({ 10, 20, 30 }, leftChannel);
+    }
+
+    TEST_F(StimulusPlayerTests, setAudioDeviceFindsIndex) {
+        setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
+        player.setAudioDevice("second");
+        EXPECT_EQ(2, videoPlayer.deviceIndex());
     }
 }
