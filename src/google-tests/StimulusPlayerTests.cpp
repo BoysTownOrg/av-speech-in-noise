@@ -59,6 +59,9 @@ namespace {
             listener_ = e;
         }
         
+        void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
+            listener_->fillAudioBuffer(audio);
+        }
     };
     
     class StimulusPlayerListenerStub :
@@ -77,12 +80,17 @@ namespace {
 
     class StimulusPlayerTests : public ::testing::Test {
     protected:
+        std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
         StimulusPlayerListenerStub listener;
         stimulus_player::StimulusPlayerImpl player{&videoPlayer};
         
         StimulusPlayerTests() {
             player.subscribe(&listener);
+        }
+        
+        void fillAudioBuffer() {
+            videoPlayer.fillAudioBuffer({ leftChannel });
         }
     };
 
@@ -114,5 +122,12 @@ namespace {
     TEST_F(StimulusPlayerTests, videoPlaybackCompleteNotifiesSubscriber) {
         videoPlayer.playbackComplete();
         EXPECT_TRUE(listener.notified());
+    }
+
+    TEST_F(StimulusPlayerTests, twentydBMultipliesSignalByTen) {
+        player.setLevel_dB(20);
+        leftChannel = { 1, 2, 3 };
+        fillAudioBuffer();
+        assertEqual({ 10, 20, 30 }, leftChannel);
     }
 }

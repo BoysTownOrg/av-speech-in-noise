@@ -1,4 +1,5 @@
 #include "StimulusPlayerImpl.hpp"
+#include <cmath>
 
 namespace stimulus_player {
     StimulusPlayerImpl::StimulusPlayerImpl(VideoPlayer *player) :
@@ -35,12 +36,19 @@ namespace stimulus_player {
         return 0;
     }
 
-    void StimulusPlayerImpl::setLevel_dB(double) {
-    
+    void StimulusPlayerImpl::setLevel_dB(double x) {
+        audioScale = std::pow(10, x/20);
     }
     
     void StimulusPlayerImpl::playbackComplete() { 
         listener_->playbackComplete();
     }
     
+    void StimulusPlayerImpl::fillAudioBuffer(
+        const std::vector<gsl::span<float>> &audio
+    ) {
+        for (auto channel : audio)
+            for (auto &x : channel)
+                x *= audioScale;
+    }
 }

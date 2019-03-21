@@ -2,6 +2,8 @@
 #define stimulus_player_StimulusPlayerImpl_hpp
 
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <gsl/gsl>
+#include <vector>
 
 namespace stimulus_player {
     class VideoPlayer {
@@ -10,6 +12,8 @@ namespace stimulus_player {
         public:
             virtual ~EventListener() = default;
             virtual void playbackComplete() = 0;
+            virtual void fillAudioBuffer(
+                const std::vector<gsl::span<float>> &audio) = 0;
         };
         
         virtual ~VideoPlayer() = default;
@@ -25,6 +29,7 @@ namespace stimulus_player {
         public recognition_test::StimulusPlayer,
         public VideoPlayer::EventListener
     {
+        double audioScale{};
         VideoPlayer *player;
         StimulusPlayer::EventListener *listener_{};
     public:
@@ -38,6 +43,8 @@ namespace stimulus_player {
         double rms() override;
         void setLevel_dB(double) override;
         void playbackComplete() override;
+        void fillAudioBuffer(
+            const std::vector<gsl::span<float> > &audio) override;
     };
 }
 
