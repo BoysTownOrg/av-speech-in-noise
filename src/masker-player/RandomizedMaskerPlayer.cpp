@@ -12,10 +12,6 @@ namespace masker_player {
         listener = e;
     }
 
-    void RandomizedMaskerPlayer::setDevice(int index) {
-        player->setDevice(index);
-    }
-
     void RandomizedMaskerPlayer::fadeIn() {
         fadingIn = true;
         hannCounter = 0;

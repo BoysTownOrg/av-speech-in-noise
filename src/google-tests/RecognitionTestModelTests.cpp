@@ -71,11 +71,6 @@ namespace {
             filePath_ = filePath;
         }
         
-        void setDevice(int index) override {
-            deviceIndex_ = index;
-            setDeviceCalled_ = true;
-        }
-        
         std::vector<std::string> audioDeviceDescriptions() override {
             return audioDeviceDescriptions_;
         }

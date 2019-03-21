@@ -163,11 +163,6 @@ namespace {
         assertEqual("a", audioPlayer.filePath());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, setDeviceSetsDevice) {
-        player.setDevice(1);
-        EXPECT_EQ(1, audioPlayer.deviceIndex());
-    }
-
     TEST_F(RandomizedMaskerPlayerTests, fadeInPlaysVideoPlayer) {
         player.fadeIn();
         EXPECT_TRUE(audioPlayer.played());

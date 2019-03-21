@@ -40,7 +40,6 @@ namespace masker_player {
     public:
         RandomizedMaskerPlayer(AudioPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;
-        void setDevice(int index) override;
         void fadeIn() override;
         void fadeOut() override;
         void loadFile(std::string) override;
