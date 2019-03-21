@@ -24,7 +24,7 @@ namespace recognition_test {
         
         try {
             maskerPlayer->setDevice_(trial.audioDevice);
-        } catch (const MaskerPlayer::InvalidAudioDevice &) {
+        } catch (const InvalidAudioDevice &) {
             throw RequestFailure{
                 "'" + trial.audioDevice + "' is not a valid audio device."
             };

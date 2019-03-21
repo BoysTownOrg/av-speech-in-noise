@@ -5,6 +5,8 @@
 #include <vector>
 
 namespace recognition_test {
+    class InvalidAudioDevice {};
+    
     class StimulusPlayer {
     public:
         virtual ~StimulusPlayer() = default;
@@ -41,7 +43,6 @@ namespace recognition_test {
         virtual std::string deviceDescription(int index) = 0;
         virtual void setDevice(int index) = 0;
         virtual void setDevice_(std::string) = 0;
-        class InvalidAudioDevice {};
         virtual void fadeIn() = 0;
         virtual void fadeOut() = 0;
         virtual void loadFile(std::string filePath) = 0;

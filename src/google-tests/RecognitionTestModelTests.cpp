@@ -23,7 +23,7 @@ namespace {
         
         void setDevice_(std::string s) override {
             if (throwInvalidAudioDeviceWhenDeviceSet_)
-                throw InvalidAudioDevice{};
+                throw recognition_test::InvalidAudioDevice{};
             device_ = std::move(s);
         }
         
@@ -107,8 +107,15 @@ namespace {
         bool played_{};
         bool videoHidden_{};
         bool videoShown_{};
+        bool throwInvalidAudioDeviceWhenDeviceSet_{};
     public:
+        void throwInvalidAudioDeviceWhenDeviceSet() {
+            throwInvalidAudioDeviceWhenDeviceSet_ = true;
+        }
+        
         void setDevice_(std::string s) override {
+            if (throwInvalidAudioDeviceWhenDeviceSet_)
+                throw recognition_test::InvalidAudioDevice{};
             device_ = std::move(s);
         }
         
@@ -314,8 +321,12 @@ namespace {
         assertEqual("a", stimulusPlayer.device());
     }
 
-    TEST_F(RecognitionTestModelTests, playTrialWithInvalidAudioDeviceThrowsRequestFailure) {
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialWithInvalidMaskerAudioDeviceThrowsRequestFailure
+    ) {
         maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+        stimulusPlayer.throwInvalidAudioDeviceWhenDeviceSet();
         trialParameters.audioDevice = "d";
         assertPlayTrialThrowsRequestFailure("'d' is not a valid audio device.");
     }
