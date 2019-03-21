@@ -163,7 +163,6 @@ namespace {
         class TestSetupViewStub : public TestSetup {
             Collection<std::string> conditions_{};
             std::string signalLevel_{"0"};
-            std::string maskerLevel_{"0"};
             std::string condition_{};
             std::string masker_{};
             std::string stimulusList_{};
@@ -195,10 +194,6 @@ namespace {
             
             void hide() override {
                 hidden_ = true;
-            }
-            
-            std::string maskerLevel_dB_SPL() override {
-                return maskerLevel_;
             }
             
             std::string signalLevel_dB_SPL() override {
