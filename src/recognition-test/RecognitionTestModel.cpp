@@ -38,22 +38,6 @@ namespace recognition_test {
         );
         maskerPlayer->fadeIn();
     }
-    
-    int RecognitionTestModel::findDeviceIndex(const Trial &trial) {
-        auto devices_ = audioDevices();
-        auto deviceIndex = gsl::narrow<int>(
-            std::find(
-                devices_.begin(),
-                devices_.end(),
-                trial.audioDevice
-            ) - devices_.begin()
-        );
-        if (deviceIndex == maskerPlayer->deviceCount())
-            throw RequestFailure{
-                "'" + trial.audioDevice + "' is not a valid audio device."
-            };
-        return deviceIndex;
-    }
 
     void RecognitionTestModel::initializeTest(const Test &p) {
         maskerPlayer->loadFile(p.maskerFilePath);
