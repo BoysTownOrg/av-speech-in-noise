@@ -319,4 +319,9 @@ namespace {
         player.setAudioDevice("second");
         EXPECT_EQ(2, audioPlayer.deviceIndex());
     }
+
+    TEST_F(RandomizedMaskerPlayerTests, audioDevicesReturnsDescriptions) {
+        setAudioDeviceDescriptions({"a", "b", "c"});
+        assertEqual({"a", "b", "c"}, player.audioDevices());
+    }
 }

@@ -153,4 +153,9 @@ namespace {
         player.setAudioDevice("second");
         EXPECT_EQ(2, videoPlayer.deviceIndex());
     }
+
+    TEST_F(StimulusPlayerTests, audioDevicesReturnsDescriptions) {
+        setAudioDeviceDescriptions({"a", "b", "c"});
+        assertEqual({"a", "b", "c"}, player.audioDevices());
+    }
 }
