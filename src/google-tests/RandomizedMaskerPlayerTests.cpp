@@ -78,10 +78,6 @@ namespace {
             return deviceIndex_;
         }
         
-        auto deviceDescriptionDeviceIndex() const {
-            return deviceDescriptionDeviceIndex_;
-        }
-        
         auto played() const {
             return played_;
         }
@@ -170,16 +166,6 @@ namespace {
     TEST_F(RandomizedMaskerPlayerTests, setDeviceSetsDevice) {
         player.setDevice(1);
         EXPECT_EQ(1, audioPlayer.deviceIndex());
-    }
-
-    TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceDescription) {
-        setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
-        assertEqual("second", player.deviceDescription(2));
-    }
-
-    TEST_F(RandomizedMaskerPlayerTests, passesDeviceIndexToDeviceDescription) {
-        player.deviceDescription(1);
-        EXPECT_EQ(1, audioPlayer.deviceDescriptionDeviceIndex());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInPlaysVideoPlayer) {
