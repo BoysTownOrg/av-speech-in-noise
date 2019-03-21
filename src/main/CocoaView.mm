@@ -219,18 +219,39 @@ CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
     window{
         [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(600, 400, 400, 400)
+            initWithContentRect: NSMakeRect(600, 400, 1200, 400)
             styleMask:NSWindowStyleMaskBorderless
             backing:NSBackingStoreBuffered
             defer:YES
         ]
     }
 {
-    const auto greenButton = [NSButton buttonWithTitle:@"hello" target:nil action:nil];
-    greenButton.bordered = false;
-    greenButton.wantsLayer = true;
-    [[greenButton layer] setBackgroundColor:[[NSColor systemGreenColor] CGColor]];
-    [window.contentView addSubview:greenButton];
+    for (int i = 0; i < 8; ++i) {
+        auto title = [NSString stringWithCString:
+            std::to_string(i+1).c_str()
+            encoding:[NSString defaultCStringEncoding]
+        ];
+        const auto greenButton = [NSButton buttonWithTitle:title target:nil action:nil];
+        greenButton.bordered = false;
+        greenButton.wantsLayer = true;
+        [[greenButton layer] setBackgroundColor:[[NSColor blackColor] CGColor]];
+        [greenButton setFrame:NSMakeRect(70*i, 0, 70, 50)];
+        NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+        [style setAlignment:NSTextAlignmentCenter];
+        NSDictionary *attrsDictionary = [
+            NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor systemGreenColor],
+            NSForegroundColorAttributeName,
+            style,
+            NSParagraphStyleAttributeName,
+            [NSFont fontWithName:@"Courier" size:20],
+            NSFontAttributeName,
+            nil
+        ];
+        NSAttributedString *attrString = [[NSAttributedString alloc]initWithString:title attributes:attrsDictionary];
+        [greenButton setAttributedTitle:attrString];
+        [window.contentView addSubview:greenButton];
+    }
     [window makeKeyAndOrderFront:nil];
 }
 
