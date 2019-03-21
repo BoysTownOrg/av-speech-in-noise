@@ -12,10 +12,6 @@ namespace masker_player {
         listener = e;
     }
 
-    int RandomizedMaskerPlayer::deviceCount() {
-        return player->deviceCount();
-    }
-
     std::string RandomizedMaskerPlayer::deviceDescription(int index) {
         return player->deviceDescription(index);
     }

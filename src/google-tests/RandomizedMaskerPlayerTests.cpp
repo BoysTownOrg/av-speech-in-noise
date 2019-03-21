@@ -172,11 +172,6 @@ namespace {
         EXPECT_EQ(1, audioPlayer.deviceIndex());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceCount) {
-        setAudioDeviceDescriptions({"first", "second", "third"});
-        EXPECT_EQ(3, player.deviceCount());
-    }
-
     TEST_F(RandomizedMaskerPlayerTests, returnsVideoPlayerDeviceDescription) {
         setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
         assertEqual("second", player.deviceDescription(2));

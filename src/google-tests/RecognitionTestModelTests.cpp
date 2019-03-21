@@ -71,10 +71,6 @@ namespace {
             filePath_ = filePath;
         }
         
-        int deviceCount() override {
-            return gsl::narrow<int>(audioDeviceDescriptions_.size());
-        }
-        
         std::string deviceDescription(int index) override {
             return audioDeviceDescriptions_.at(index);
         }

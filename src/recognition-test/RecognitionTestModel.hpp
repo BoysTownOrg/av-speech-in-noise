@@ -38,7 +38,6 @@ namespace recognition_test {
         };
         
         virtual void subscribe(EventListener *) = 0;
-        virtual int deviceCount() = 0;
         virtual std::vector<std::string> audioDeviceDescriptions() = 0;
         virtual std::string deviceDescription(int index) = 0;
         virtual void setDevice(int index) = 0;
