@@ -49,6 +49,8 @@ public:
     void hide() override;
     void show() override;
     void subscribe(EventListener *) override;
+    int deviceCount() override;
+    std::string deviceDescription(int index) override;
 };
 
 class AvFoundationAudioPlayer : public masker_player::AudioPlayer {

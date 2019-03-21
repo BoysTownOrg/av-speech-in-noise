@@ -265,6 +265,14 @@ void AvFoundationVideoPlayer::subscribe(EventListener *e) {
     listener_ = e;
 }
 
+int AvFoundationVideoPlayer::deviceCount() {
+    return device.deviceCount();
+}
+
+std::string AvFoundationVideoPlayer::deviceDescription(int index) {
+    return device.description(index);
+}
+
 @implementation StimulusPlayerActions
 @synthesize controller;
 - (void)playbackComplete {
