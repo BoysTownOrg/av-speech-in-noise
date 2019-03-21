@@ -489,6 +489,12 @@ namespace {
         assertEqual("'a' is not a valid masker level.", view.errorMessage());
     }
 
+    TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
+        setupView.setStartingSnr("a");
+        confirmTestSetup();
+        assertEqual("'a' is not a valid SNR.", view.errorMessage());
+    }
+
     TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotHideSetupView) {
         confirmTestSetupWithInvalidInput();
         assertSetupViewNotHidden();

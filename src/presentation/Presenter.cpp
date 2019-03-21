@@ -86,7 +86,7 @@ namespace presentation {
         p.maskerLevel_dB_SPL =
             readInteger(view->maskerLevel_dB_SPL(), "masker level");
         p.startingSnr_dB =
-            readInteger(view->startingSnr_dB(), "");
+            readInteger(view->startingSnr_dB(), "SNR");
         p.signalLevel_dB_SPL =
             readInteger(view->signalLevel_dB_SPL(), "signal level");
         p.maskerFilePath = view->maskerFilePath();
