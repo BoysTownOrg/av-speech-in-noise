@@ -161,7 +161,7 @@ static void process(
 }
 
 template<typename T>
-static void something(void* CM_NULLABLE clientInfo, MTAudioProcessingTapRef tap) {
+static void createAudioProcessingTap(void* CM_NULLABLE clientInfo, MTAudioProcessingTapRef tap) {
     MTAudioProcessingTapCallbacks callbacks;
     callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
     callbacks.clientInfo = clientInfo;
@@ -183,6 +183,23 @@ static void something(void* CM_NULLABLE clientInfo, MTAudioProcessingTapRef tap)
         throw std::runtime_error{"Unable to create the AudioProcessingTap"};
 }
 
+static void loadItemFromFile(
+    std::string filePath,
+    AVPlayer *player,
+    MTAudioProcessingTapRef tap
+) {
+    const auto asset = makeAvAsset(filePath);
+    const auto processing =
+        [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:
+            [asset tracksWithMediaType:AVMediaTypeAudio].firstObject];
+    processing.audioTapProcessor = tap;
+    const auto audioMix = [AVMutableAudioMix audioMix];
+    audioMix.inputParameters = @[processing];
+    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
+    playerItem.audioMix = audioMix;
+    [player replaceCurrentItemWithPlayerItem: playerItem];
+}
+
 AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
     actions{[StimulusPlayerActions alloc]},
     videoWindow{
@@ -196,8 +213,7 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
     player{[AVPlayer playerWithPlayerItem:nil]},
     playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}
 {
-    something<AvFoundationVideoPlayer>(this, tap);
-    
+    createAudioProcessingTap<AvFoundationVideoPlayer>(this, tap);
     [videoWindow.contentView setWantsLayer:YES];
     [videoWindow.contentView.layer addSublayer:playerLayer];
     [videoWindow makeKeyAndOrderFront:nil];
@@ -213,16 +229,8 @@ void AvFoundationVideoPlayer::play() {
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
-    const auto asset = makeAvAsset(filePath);
-    const auto processing =
-        [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:
-            [asset tracksWithMediaType:AVMediaTypeAudio].firstObject];
-    processing.audioTapProcessor = tap;
-    const auto audioMix = [AVMutableAudioMix audioMix];
-    audioMix.inputParameters = @[processing];
-    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
-    playerItem.audioMix = audioMix;
-    [player replaceCurrentItemWithPlayerItem: playerItem];
+    loadItemFromFile(filePath, player, tap);
+    auto asset = [[player currentItem] asset];
     [videoWindow setContentSize:NSSizeFromCGSize(
         [asset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
@@ -266,16 +274,7 @@ void AvFoundationAudioPlayer::subscribe(EventListener *e) {
 }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
-    const auto asset = makeAvAsset(filePath);
-    const auto processing =
-        [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:
-            [asset tracksWithMediaType:AVMediaTypeAudio].firstObject];
-    processing.audioTapProcessor = tap;
-    const auto audioMix = [AVMutableAudioMix audioMix];
-    audioMix.inputParameters = @[processing];
-    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
-    playerItem.audioMix = audioMix;
-    [player replaceCurrentItemWithPlayerItem:playerItem];
+    loadItemFromFile(filePath, player, tap);
 }
 
 int AvFoundationAudioPlayer::deviceCount() {
@@ -297,7 +296,7 @@ void AvFoundationAudioPlayer::setDevice(int index) {
 AvFoundationAudioPlayer::AvFoundationAudioPlayer() :
     player{[AVPlayer playerWithPlayerItem:nil]}
 {
-    something<AvFoundationAudioPlayer>(this, tap);
+    createAudioProcessingTap<AvFoundationAudioPlayer>(this, tap);
 }
 
 bool AvFoundationAudioPlayer::playing() {
