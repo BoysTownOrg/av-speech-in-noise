@@ -29,7 +29,7 @@ class AvFoundationVideoPlayer;
 @end
 
 class AvFoundationVideoPlayer : public stimulus_player::VideoPlayer {
-    std::vector<gsl::span<float>> audio;
+    std::vector<gsl::span<float>> audio_;
     MTAudioProcessingTapRef tap{};
     CoreAudioDevice device{};
     StimulusPlayerActions *actions;
@@ -39,7 +39,10 @@ class AvFoundationVideoPlayer : public stimulus_player::VideoPlayer {
     EventListener *listener_{};
 public:
     AvFoundationVideoPlayer();
+    void setSampleRate(double x) {}
+    std::vector<gsl::span<float>> &audio() { return audio_; }
     void playbackComplete();
+    void fillAudioBuffer() { listener_->fillAudioBuffer(audio_); }
     void play() override;
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
