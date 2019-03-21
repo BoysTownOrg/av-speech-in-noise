@@ -103,4 +103,8 @@ namespace masker_player {
             descriptions.push_back(player->deviceDescription(i));
         return descriptions;
     }
+    
+    void RandomizedMaskerPlayer::setDevice_(std::string) { 
+        ;
+    }
 }

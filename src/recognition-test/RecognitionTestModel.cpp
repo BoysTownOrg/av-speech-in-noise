@@ -22,9 +22,14 @@ namespace recognition_test {
         if (maskerPlayer->playing())
             return;
         
-        int deviceIndex = findDeviceIndex(trial);
-        maskerPlayer->setDevice(deviceIndex);
-        stimulusPlayer->setDevice(deviceIndex);
+        try {
+            maskerPlayer->setDevice_(trial.audioDevice);
+        } catch (const MaskerPlayer::InvalidAudioDevice &) {
+            throw RequestFailure{
+                "'" + trial.audioDevice + "' is not a valid audio device."
+            };
+        }
+        stimulusPlayer->setDevice_(trial.audioDevice);
         stimulusPlayer->loadFile(list->next());
         stimulusPlayer->setLevel_dB(
             20 * std::log10(1.0/stimulusPlayer->rms()) -

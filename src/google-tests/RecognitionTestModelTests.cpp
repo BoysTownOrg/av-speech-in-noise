@@ -8,13 +8,29 @@ namespace {
     class MaskerPlayerStub : public recognition_test::MaskerPlayer {
         std::vector<std::string> audioDeviceDescriptions_{};
         std::string filePath_{};
+        std::string device_{};
         int deviceIndex_{};
         EventListener *listener_{};
         bool fadeInCalled_{};
         bool fadeOutCalled_{};
         bool playing_{};
         bool setDeviceCalled_{};
+        bool throwInvalidAudioDeviceWhenDeviceSet_{};
     public:
+        void throwInvalidAudioDeviceWhenDeviceSet() {
+            throwInvalidAudioDeviceWhenDeviceSet_ = true;
+        }
+        
+        void setDevice_(std::string s) override {
+            if (throwInvalidAudioDeviceWhenDeviceSet_)
+                throw InvalidAudioDevice{};
+            device_ = std::move(s);
+        }
+        
+        auto device() const {
+            return device_;
+        }
+        
         auto setDeviceCalled() const {
             return setDeviceCalled_;
         }
@@ -29,10 +45,6 @@ namespace {
         
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
             audioDeviceDescriptions_ = std::move(v);
-        }
-        
-        auto deviceIndex() {
-            return deviceIndex_;
         }
         
         auto fadeInCalled() const {
@@ -87,6 +99,7 @@ namespace {
 
     class StimulusPlayerStub : public recognition_test::StimulusPlayer {
         std::string filePath_{};
+        std::string device_{};
         double rms_{};
         double level_dB_{};
         int deviceIndex_{};
@@ -95,6 +108,14 @@ namespace {
         bool videoHidden_{};
         bool videoShown_{};
     public:
+        void setDevice_(std::string s) override {
+            device_ = std::move(s);
+        }
+        
+        auto device() const {
+            return device_;
+        }
+        
         auto level_dB() const {
             return level_dB_;
         }
@@ -117,10 +138,6 @@ namespace {
         
         auto videoHidden() const {
             return videoHidden_;
-        }
-        
-        auto deviceIndex() {
-            return deviceIndex_;
         }
         
         auto played() const {
@@ -290,16 +307,15 @@ namespace {
         EXPECT_EQ(&model, maskerPlayer.listener());
     }
 
-    TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceIndexToPlayers) {
-        setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
-        trialParameters.audioDevice = "second";
+    TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToPlayers) {
+        trialParameters.audioDevice = "a";
         playTrial();
-        EXPECT_EQ(2, maskerPlayer.deviceIndex());
-        EXPECT_EQ(2, stimulusPlayer.deviceIndex());
+        assertEqual("a", maskerPlayer.device());
+        assertEqual("a", stimulusPlayer.device());
     }
 
     TEST_F(RecognitionTestModelTests, playTrialWithInvalidAudioDeviceThrowsRequestFailure) {
-        setAudioDeviceDescriptions({"a", "b", "c"});
+        maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
         trialParameters.audioDevice = "d";
         assertPlayTrialThrowsRequestFailure("'d' is not a valid audio device.");
     }

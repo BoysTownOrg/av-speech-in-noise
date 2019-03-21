@@ -44,6 +44,7 @@ namespace stimulus_player {
         void showVideo() override;
         double rms() override;
         void setLevel_dB(double) override;
+        void setDevice_(std::string) override;
         void playbackComplete() override;
         void fillAudioBuffer(
             const std::vector<gsl::span<float> > &audio) override;

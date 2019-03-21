@@ -17,6 +17,7 @@ namespace recognition_test {
         
         virtual void subscribe(EventListener *) = 0;
         virtual void setDevice(int index) = 0;
+        virtual void setDevice_(std::string) = 0;
         virtual void play() = 0;
         virtual void loadFile(std::string filePath) = 0;
         virtual void hideVideo() = 0;
@@ -39,6 +40,8 @@ namespace recognition_test {
         virtual int deviceCount() = 0;
         virtual std::string deviceDescription(int index) = 0;
         virtual void setDevice(int index) = 0;
+        virtual void setDevice_(std::string) = 0;
+        class InvalidAudioDevice {};
         virtual void fadeIn() = 0;
         virtual void fadeOut() = 0;
         virtual void loadFile(std::string filePath) = 0;
