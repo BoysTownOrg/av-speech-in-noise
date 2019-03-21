@@ -21,7 +21,7 @@ namespace {
             throwInvalidAudioDeviceWhenDeviceSet_ = true;
         }
         
-        void setDevice_(std::string s) override {
+        void setAudioDevice(std::string s) override {
             if (throwInvalidAudioDeviceWhenDeviceSet_)
                 throw recognition_test::InvalidAudioDevice{};
             device_ = std::move(s);
@@ -113,7 +113,7 @@ namespace {
             throwInvalidAudioDeviceWhenDeviceSet_ = true;
         }
         
-        void setDevice_(std::string s) override {
+        void setAudioDevice(std::string s) override {
             if (throwInvalidAudioDeviceWhenDeviceSet_)
                 throw recognition_test::InvalidAudioDevice{};
             device_ = std::move(s);

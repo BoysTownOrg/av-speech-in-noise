@@ -23,13 +23,13 @@ namespace recognition_test {
             return;
         
         try {
-            maskerPlayer->setDevice_(trial.audioDevice);
+            maskerPlayer->setAudioDevice(trial.audioDevice);
+            stimulusPlayer->setAudioDevice(trial.audioDevice);
         } catch (const InvalidAudioDevice &) {
             throw RequestFailure{
                 "'" + trial.audioDevice + "' is not a valid audio device."
             };
         }
-        stimulusPlayer->setDevice_(trial.audioDevice);
         stimulusPlayer->loadFile(list->next());
         stimulusPlayer->setLevel_dB(
             20 * std::log10(1.0/stimulusPlayer->rms()) -

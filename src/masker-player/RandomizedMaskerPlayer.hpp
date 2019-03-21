@@ -47,12 +47,11 @@ namespace masker_player {
         void fadeOut() override;
         void loadFile(std::string) override;
         bool playing() override;
-        void setDevice_(std::string) override;
+        void setAudioDevice(std::string) override;
         void setLevel_dB(double);
         void fillAudioBuffer(
             const std::vector<gsl::span<float>> &audio) override;
         void setFadeInOutSeconds(double);
-        void setAudioDevice(std::string);
         std::vector<std::string> audioDevices();
     private:
         int levelTransitionSamples();
