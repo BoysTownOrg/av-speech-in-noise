@@ -46,15 +46,19 @@ namespace recognition_test {
             testParameters.signalLevel_dB_SPL +
             testParameters.fullScaleLevel_dB_SPL;
     }
-
+    
     void RecognitionTestModel::initializeTest(const Test &p) {
         maskerPlayer->loadFile(p.maskerFilePath);
         list->loadFromDirectory(p.stimulusListDirectory);
+        prepareVideo(p);
+        testParameters = p;
+    }
+
+    void RecognitionTestModel::prepareVideo(const Test &p) {
         if (p.condition == Test::Condition::auditoryOnly)
             stimulusPlayer->hideVideo();
         else
             stimulusPlayer->showVideo();
-        testParameters = p;
     }
 
     bool RecognitionTestModel::testComplete() {
