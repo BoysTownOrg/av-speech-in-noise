@@ -96,11 +96,11 @@ CocoaTestSetupView::CocoaTestSetupView() :
         [[NSTextField alloc]
             initWithFrame:NSMakeRect(155, 430, 150, 25)]
     },
-    maskerLevel_dB_SPL_label{allocLabel(
-        @"masker level (dB SPL):",
+    startingSnr_dB_label{allocLabel(
+        @"starting SNR (dB):",
         NSMakeRect(10, 400, 140, 25))
     },
-    maskerLevel_dB_SPL_{
+    startingSnr_dB_{
         [[NSTextField alloc]
             initWithFrame:NSMakeRect(155, 400, 150, 25)]
     },
@@ -140,8 +140,8 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [view_ addSubview:testerId_];
     [view_ addSubview:signalLevel_dB_SPL_label];
     [view_ addSubview:signalLevel_dB_SPL_];
-    [view_ addSubview:maskerLevel_dB_SPL_label];
-    [view_ addSubview:maskerLevel_dB_SPL_];
+    [view_ addSubview:startingSnr_dB_label];
+    [view_ addSubview:startingSnr_dB_];
     [view_ addSubview:stimulusListDirectoryLabel];
     [view_ addSubview:stimulusListDirectory_];
     [view_ addSubview:maskerFilePath_label];
@@ -165,8 +165,8 @@ void CocoaTestSetupView::hide() {
     [view_ setHidden:YES];
 }
 
-std::string CocoaTestSetupView::maskerLevel_dB_SPL() {
-    return [maskerLevel_dB_SPL_.stringValue UTF8String];
+std::string CocoaTestSetupView::startingSnr_dB() {
+    return [startingSnr_dB_.stringValue UTF8String];
 }
 
 std::string CocoaTestSetupView::signalLevel_dB_SPL() {

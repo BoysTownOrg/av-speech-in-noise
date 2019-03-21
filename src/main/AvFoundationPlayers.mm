@@ -108,6 +108,26 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
     player{[AVPlayer playerWithPlayerItem:nil]},
     playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}
 {
+    MTAudioProcessingTapCallbacks callbacks;
+    callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
+    callbacks.clientInfo = this;
+    callbacks.init = init;
+    callbacks.prepare = prepare;
+    callbacks.process = process;
+    callbacks.unprepare = unprepare;
+    callbacks.finalize = finalize;
+
+    if (
+        MTAudioProcessingTapCreate(
+            kCFAllocatorDefault,
+            &callbacks,
+            kMTAudioProcessingTapCreationFlag_PostEffects,
+            &tap
+        ) ||
+        !tap
+    )
+        throw std::runtime_error{"Unable to create the AudioProcessingTap"};
+    
     [videoWindow.contentView setWantsLayer:YES];
     [videoWindow.contentView.layer addSublayer:playerLayer];
     [videoWindow makeKeyAndOrderFront:nil];
@@ -115,6 +135,7 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
 }
 
 void AvFoundationVideoPlayer::playbackComplete() {
+    listener_->playbackComplete();
 }
 
 void AvFoundationVideoPlayer::play() {
@@ -123,8 +144,15 @@ void AvFoundationVideoPlayer::play() {
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     const auto asset = makeAvAsset(filePath);
-    [player replaceCurrentItemWithPlayerItem:
-        [AVPlayerItem playerItemWithAsset:asset]];
+    const auto processing =
+        [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:
+            [asset tracksWithMediaType:AVMediaTypeAudio].firstObject];
+    processing.audioTapProcessor = tap;
+    const auto audioMix = [AVMutableAudioMix audioMix];
+    audioMix.inputParameters = @[processing];
+    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
+    playerItem.audioMix = audioMix;
+    [player replaceCurrentItemWithPlayerItem: playerItem];
     [videoWindow setContentSize:NSSizeFromCGSize(
         [asset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
@@ -150,6 +178,68 @@ void AvFoundationVideoPlayer::hide() {
 
 void AvFoundationVideoPlayer::show() {
     [videoWindow setIsVisible:YES];
+}
+
+void AvFoundationVideoPlayer::subscribe(EventListener *e) {
+    listener_ = e;
+}
+
+void AvFoundationVideoPlayer::init(
+    MTAudioProcessingTapRef,
+    void *clientInfo,
+    void **tapStorageOut
+) {
+    *tapStorageOut = clientInfo;
+}
+
+void AvFoundationVideoPlayer::finalize(MTAudioProcessingTapRef)
+{
+}
+
+void AvFoundationVideoPlayer::prepare(
+    MTAudioProcessingTapRef tap,
+    CMItemCount,
+    const AudioStreamBasicDescription *description
+) {
+    auto self = static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap)
+    );
+    self->audio.resize(description->mChannelsPerFrame);
+}
+
+void AvFoundationVideoPlayer::unprepare(MTAudioProcessingTapRef)
+{
+}
+
+void AvFoundationVideoPlayer::process(
+    MTAudioProcessingTapRef tap,
+    CMItemCount numberFrames,
+    MTAudioProcessingTapFlags,
+    AudioBufferList *bufferListInOut,
+    CMItemCount *numberFramesOut,
+    MTAudioProcessingTapFlags *flagsOut
+) {
+    MTAudioProcessingTapGetSourceAudio(
+        tap,
+        numberFrames,
+        bufferListInOut,
+        flagsOut,
+        nullptr,
+        numberFramesOut
+    );
+
+    auto self = static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap)
+    );
+    if (self->audio.size() != bufferListInOut->mNumberBuffers)
+        return;
+    
+    for (UInt32 j = 0; j < bufferListInOut->mNumberBuffers; ++j)
+        self->audio[j] = {
+            static_cast<float *>(bufferListInOut->mBuffers[j].mData),
+            numberFrames
+        };
+    self->listener_->fillAudioBuffer(self->audio);
 }
 
 @implementation StimulusPlayerActions

@@ -29,11 +29,14 @@ class AvFoundationVideoPlayer;
 @end
 
 class AvFoundationVideoPlayer : public stimulus_player::VideoPlayer {
+    std::vector<gsl::span<float>> audio;
+    MTAudioProcessingTapRef tap{};
     CoreAudioDevice device{};
     StimulusPlayerActions *actions;
     NSWindow *videoWindow;
     AVPlayer *player;
     AVPlayerLayer *playerLayer;
+    EventListener *listener_{};
 public:
     AvFoundationVideoPlayer();
     void playbackComplete();
@@ -42,6 +45,25 @@ public:
     void setDevice(int index) override;
     void hide() override;
     void show() override;
+    void subscribe(EventListener *) override;
+    
+private:
+    static void init(MTAudioProcessingTapRef, void *, void **);
+    static void finalize(MTAudioProcessingTapRef);
+    static void prepare(
+        MTAudioProcessingTapRef,
+        CMItemCount,
+        const AudioStreamBasicDescription *
+    );
+    static void unprepare(MTAudioProcessingTapRef);
+    static void process(
+        MTAudioProcessingTapRef,
+        CMItemCount,
+        MTAudioProcessingTapFlags,
+        AudioBufferList *,
+        CMItemCount *,
+        MTAudioProcessingTapFlags *
+    );
 };
 
 class AvFoundationAudioPlayer : public masker_player::AudioPlayer {
