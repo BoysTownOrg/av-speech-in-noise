@@ -39,9 +39,9 @@ class AvFoundationVideoPlayer : public stimulus_player::VideoPlayer {
     EventListener *listener_{};
 public:
     AvFoundationVideoPlayer();
+    void playbackComplete();
     void setSampleRate(double x) {}
     std::vector<gsl::span<float>> &audio() { return audio_; }
-    void playbackComplete();
     void fillAudioBuffer() { listener_->fillAudioBuffer(audio_); }
     void play() override;
     void loadFile(std::string filePath) override;
@@ -49,35 +49,20 @@ public:
     void hide() override;
     void show() override;
     void subscribe(EventListener *) override;
-    
-private:
-    static void init(MTAudioProcessingTapRef, void *, void **);
-    static void finalize(MTAudioProcessingTapRef);
-    static void prepare(
-        MTAudioProcessingTapRef,
-        CMItemCount,
-        const AudioStreamBasicDescription *
-    );
-    static void unprepare(MTAudioProcessingTapRef);
-    static void process(
-        MTAudioProcessingTapRef,
-        CMItemCount,
-        MTAudioProcessingTapFlags,
-        AudioBufferList *,
-        CMItemCount *,
-        MTAudioProcessingTapFlags *
-    );
 };
 
 class AvFoundationAudioPlayer : public masker_player::AudioPlayer {
-    std::vector<gsl::span<float>> audio;
+    std::vector<gsl::span<float>> audio_;
     CoreAudioDevice device{};
     MTAudioProcessingTapRef tap{};
-    EventListener *listener{};
+    EventListener *listener_{};
     AVPlayer *player;
     double sampleRate_{};
 public:
     AvFoundationAudioPlayer();
+    void setSampleRate(double x) { sampleRate_ = x;}
+    std::vector<gsl::span<float>> &audio() { return audio_; }
+    void fillAudioBuffer() { listener_->fillAudioBuffer(audio_); }
     void subscribe(EventListener *) override;
     void loadFile(std::string filePath) override;
     int deviceCount() override;
@@ -87,24 +72,6 @@ public:
     void play() override;
     double sampleRateHz() override;
     void stop() override;
-    
-private:
-    static void init(MTAudioProcessingTapRef, void *, void **);
-    static void finalize(MTAudioProcessingTapRef);
-    static void prepare(
-        MTAudioProcessingTapRef,
-        CMItemCount,
-        const AudioStreamBasicDescription *
-    );
-    static void unprepare(MTAudioProcessingTapRef);
-    static void process(
-        MTAudioProcessingTapRef,
-        CMItemCount,
-        MTAudioProcessingTapFlags,
-        AudioBufferList *,
-        CMItemCount *,
-        MTAudioProcessingTapFlags *
-    );
 };
 
 #endif

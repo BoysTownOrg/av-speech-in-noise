@@ -261,68 +261,8 @@ void AvFoundationVideoPlayer::subscribe(EventListener *e) {
 }
 @end
 
-
-void AvFoundationAudioPlayer::init(
-    MTAudioProcessingTapRef,
-    void *clientInfo,
-    void **tapStorageOut
-) {
-    *tapStorageOut = clientInfo;
-}
-
-void AvFoundationAudioPlayer::finalize(MTAudioProcessingTapRef)
-{
-}
-
-void AvFoundationAudioPlayer::prepare(
-    MTAudioProcessingTapRef tap,
-    CMItemCount,
-    const AudioStreamBasicDescription *description
-) {
-    auto self = static_cast<AvFoundationAudioPlayer *>(
-        MTAudioProcessingTapGetStorage(tap)
-    );
-    self->audio.resize(description->mChannelsPerFrame);
-    self->sampleRate_ = description->mSampleRate;
-}
-
-void AvFoundationAudioPlayer::unprepare(MTAudioProcessingTapRef)
-{
-}
-
-void AvFoundationAudioPlayer::process(
-    MTAudioProcessingTapRef tap,
-    CMItemCount numberFrames,
-    MTAudioProcessingTapFlags,
-    AudioBufferList *bufferListInOut,
-    CMItemCount *numberFramesOut,
-    MTAudioProcessingTapFlags *flagsOut
-) {
-    MTAudioProcessingTapGetSourceAudio(
-        tap,
-        numberFrames,
-        bufferListInOut,
-        flagsOut,
-        nullptr,
-        numberFramesOut
-    );
-
-    auto self = static_cast<AvFoundationAudioPlayer *>(
-        MTAudioProcessingTapGetStorage(tap)
-    );
-    if (self->audio.size() != bufferListInOut->mNumberBuffers)
-        return;
-    
-    for (UInt32 j = 0; j < bufferListInOut->mNumberBuffers; ++j)
-        self->audio[j] = {
-            static_cast<float *>(bufferListInOut->mBuffers[j].mData),
-            numberFrames
-        };
-    self->listener->fillAudioBuffer(self->audio);
-}
-
-void AvFoundationAudioPlayer::subscribe(EventListener *listener_) {
-    listener = listener_;
+void AvFoundationAudioPlayer::subscribe(EventListener *e) {
+    listener_ = e;
 }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
@@ -357,25 +297,7 @@ void AvFoundationAudioPlayer::setDevice(int index) {
 AvFoundationAudioPlayer::AvFoundationAudioPlayer() :
     player{[AVPlayer playerWithPlayerItem:nil]}
 {
-    MTAudioProcessingTapCallbacks callbacks;
-    callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
-    callbacks.clientInfo = this;
-    callbacks.init = init;
-    callbacks.prepare = prepare;
-    callbacks.process = process;
-    callbacks.unprepare = unprepare;
-    callbacks.finalize = finalize;
-
-    if (
-        MTAudioProcessingTapCreate(
-            kCFAllocatorDefault,
-            &callbacks,
-            kMTAudioProcessingTapCreationFlag_PostEffects,
-            &tap
-        ) ||
-        !tap
-    )
-        throw std::runtime_error{"Unable to create the AudioProcessingTap"};
+    something<AvFoundationAudioPlayer>(this, tap);
 }
 
 bool AvFoundationAudioPlayer::playing() {
