@@ -77,6 +77,8 @@ namespace recognition_test {
         void fadeInComplete() override;
         void playbackComplete() override;
     private:
+        double signalLevel_dB();
+        void setAudioDevices(const Trial &trial);
         int findDeviceIndex(const Trial &trial);
     };
 }

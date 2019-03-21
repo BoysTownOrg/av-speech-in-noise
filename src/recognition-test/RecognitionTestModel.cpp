@@ -22,21 +22,29 @@ namespace recognition_test {
         if (maskerPlayer->playing())
             return;
         
+        setAudioDevices(trial);
+        stimulusPlayer->loadFile(list->next());
+        stimulusPlayer->setLevel_dB(signalLevel_dB());
+        maskerPlayer->fadeIn();
+    }
+    
+    void RecognitionTestModel::setAudioDevices(const Trial &trial) {
+        auto device = trial.audioDevice;
         try {
-            maskerPlayer->setAudioDevice(trial.audioDevice);
-            stimulusPlayer->setAudioDevice(trial.audioDevice);
+            maskerPlayer->setAudioDevice(device);
+            stimulusPlayer->setAudioDevice(device);
         } catch (const InvalidAudioDevice &) {
             throw RequestFailure{
-                "'" + trial.audioDevice + "' is not a valid audio device."
+                "'" + device + "' is not a valid audio device."
             };
         }
-        stimulusPlayer->loadFile(list->next());
-        stimulusPlayer->setLevel_dB(
+    }
+    
+    double RecognitionTestModel::signalLevel_dB() {
+        return
             20 * std::log10(1.0/stimulusPlayer->rms()) -
             testParameters.signalLevel_dB_SPL +
-            testParameters.fullScaleLevel_dB_SPL
-        );
-        maskerPlayer->fadeIn();
+            testParameters.fullScaleLevel_dB_SPL;
     }
 
     void RecognitionTestModel::initializeTest(const Test &p) {
