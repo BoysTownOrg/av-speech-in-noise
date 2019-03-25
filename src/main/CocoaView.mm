@@ -254,7 +254,7 @@ CocoaSubjectView::CocoaSubjectView() :
     [window makeKeyAndOrderFront:nil];
 }
 
-int CocoaSubjectView::numberResponse() {
+std::string CocoaSubjectView::numberResponse() {
     return [[lastButtonPressed title] UTF8String];
 }
 
@@ -264,6 +264,7 @@ bool CocoaSubjectView::greenResponse() {
 
 void CocoaSubjectView::respond(id sender) {
     lastButtonPressed = sender;
+    parent_->submitResponse();
 }
 
 @implementation SubjectViewActions
@@ -290,6 +291,7 @@ CocoaView::CocoaView() :
 {
     testerView_.becomeChild(this);
     testSetupView_.becomeChild(this);
+    subjectView_.becomeChild(this);
     app.mainMenu = [[NSMenu alloc] init];
     auto appMenu = [[NSMenuItem alloc] init];
     [app.mainMenu addItem:appMenu];
@@ -400,14 +402,18 @@ void CocoaView::showErrorMessage(std::string s) {
 }
 @end
 
-
-
-
 void CocoaTestSetupView::becomeChild(CocoaView *p) {
     parent_ = p;
 }
 
-
 void CocoaTesterView::becomeChild(CocoaView *p) {
+    parent_ = p;
+}
+
+void CocoaView::submitResponse() { 
+    listener->submitResponse();
+}
+
+void CocoaSubjectView::becomeChild(CocoaView *p) {
     parent_ = p;
 }

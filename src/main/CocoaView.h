@@ -85,14 +85,16 @@ public:
 };
 
 class CocoaSubjectView : public presentation::View::Subject {
+    CocoaView *parent_;
     NSWindow *window;
     NSButton *lastButtonPressed;
     SubjectViewActions *actions;
 public:
     CocoaSubjectView();
     void respond(id sender);
-    int numberResponse() override;
+    std::string numberResponse() override;
     bool greenResponse() override;
+    void becomeChild(CocoaView *);
 };
 
 class CocoaView : public presentation::View {
@@ -109,6 +111,7 @@ public:
     void playTrial();
     void newTest();
     void openTest();
+    void submitResponse();
     void subscribe(EventListener *) override;
     void eventLoop() override;
     TestSetup *testSetup() override;
