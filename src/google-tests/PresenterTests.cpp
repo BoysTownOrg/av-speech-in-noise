@@ -293,18 +293,18 @@ namespace {
         };
         
         class SubjectViewStub : public Subject {
-            int numberResponse_{};
+            std::string numberResponse_{};
             bool greenResponse_{};
         public:
             void setGreenResponse() {
                 greenResponse_ = true;
             }
             
-            void setNumberResponse(int n) {
-                numberResponse_ = n;
+            void setNumberResponse(std::string s) {
+                numberResponse_ = s;
             }
             
-            int numberResponse() override {
+            std::string numberResponse() override {
                 return numberResponse_;
             }
             
@@ -525,7 +525,7 @@ namespace {
 
     TEST_F(PresenterTests, subjectResponsePassesCoordinates) {
         subjectView.setGreenResponse();
-        subjectView.setNumberResponse(1);
+        subjectView.setNumberResponse("1");
         submitResponse();
         EXPECT_EQ(
             presentation::Model::SubjectResponse::Color::green,

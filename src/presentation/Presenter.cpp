@@ -59,7 +59,7 @@ namespace presentation {
         Model::SubjectResponse p;
         if (view->subject()->greenResponse())
             p.color = Model::SubjectResponse::Color::green;
-        p.number = view->subject()->numberResponse();
+        p.number = std::stoi(view->subject()->numberResponse());
         model->submitResponse(p);
     }
 

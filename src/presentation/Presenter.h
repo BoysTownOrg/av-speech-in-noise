@@ -26,7 +26,7 @@ namespace presentation {
         class Subject {
         public:
             virtual ~Subject() = default;
-            virtual int numberResponse() = 0;
+            virtual std::string numberResponse() = 0;
             virtual bool greenResponse() = 0;
         };
 

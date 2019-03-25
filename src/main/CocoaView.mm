@@ -255,7 +255,7 @@ CocoaSubjectView::CocoaSubjectView() :
 }
 
 int CocoaSubjectView::numberResponse() {
-    return [lastButtonPressed title];
+    return [[lastButtonPressed title] UTF8String];
 }
 
 bool CocoaSubjectView::greenResponse() {
