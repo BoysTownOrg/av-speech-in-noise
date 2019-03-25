@@ -26,6 +26,13 @@ class CocoaTesterView;
 - (void) playTrial;
 @end
 
+class CocoaSubjectView;
+
+@interface SubjectViewActions : NSObject
+@property CocoaSubjectView *controller;
+- (void) respond:(id)sender;
+@end
+
 class CocoaTesterView : public presentation::View::Tester {
     CocoaView *parent_;
     NSPopUpButton *deviceMenu;
@@ -79,8 +86,11 @@ public:
 
 class CocoaSubjectView : public presentation::View::Subject {
     NSWindow *window;
+    NSButton *lastButtonPressed;
+    SubjectViewActions *actions;
 public:
     CocoaSubjectView();
+    void respond(id sender);
     int numberResponse() override;
     bool greenResponse() override;
 };

@@ -224,17 +224,16 @@ CocoaSubjectView::CocoaSubjectView() :
             backing:NSBackingStoreBuffered
             defer:YES
         ]
-    }
+    },
+    actions{[SubjectViewActions alloc]}
 {
+    actions.controller = this;
     for (int i = 0; i < 8; ++i) {
         auto title = [NSString stringWithCString:
             std::to_string(i+1).c_str()
             encoding:[NSString defaultCStringEncoding]
         ];
-        const auto greenButton = [NSButton buttonWithTitle:title target:nil action:nil];
-        greenButton.bordered = false;
-        greenButton.wantsLayer = true;
-        [[greenButton layer] setBackgroundColor:[[NSColor blackColor] CGColor]];
+        const auto greenButton = [NSButton buttonWithTitle:title target:actions action:@selector(respond:)];
         [greenButton setFrame:NSMakeRect(70*i, 0, 70, 50)];
         NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
         [style setAlignment:NSTextAlignmentCenter];
@@ -256,12 +255,23 @@ CocoaSubjectView::CocoaSubjectView() :
 }
 
 int CocoaSubjectView::numberResponse() {
-    return 0;
+    return [lastButtonPressed title];
 }
 
 bool CocoaSubjectView::greenResponse() {
-    return true;
+    return [[lastButtonPressed attributedTitle] attribute:NSForegroundColorAttributeName atIndex:0 effectiveRange:nil] == [NSColor systemGreenColor];
 }
+
+void CocoaSubjectView::respond(id sender) {
+    lastButtonPressed = sender;
+}
+
+@implementation SubjectViewActions
+@synthesize controller;
+- (void)respond:(id)sender {
+    controller->respond(sender);
+}
+@end
 
 CocoaView::CocoaView() :
     app{[NSApplication sharedApplication]},
