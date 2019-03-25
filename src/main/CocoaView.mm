@@ -259,7 +259,11 @@ std::string CocoaSubjectView::numberResponse() {
 }
 
 bool CocoaSubjectView::greenResponse() {
-    return [[lastButtonPressed attributedTitle] attribute:NSForegroundColorAttributeName atIndex:0 effectiveRange:nil] == [NSColor systemGreenColor];
+    return [[lastButtonPressed attributedTitle]
+        attribute:NSForegroundColorAttributeName
+        atIndex:0
+        effectiveRange:nil
+    ] == [NSColor systemGreenColor];
 }
 
 void CocoaSubjectView::respond(id sender) {
