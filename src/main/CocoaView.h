@@ -82,6 +82,7 @@ public:
     std::string condition() override;
     void populateConditionMenu(std::vector<std::string> items) override;
     void setStimulusList(std::string) override;
+    void setMasker(std::string) override;
     void confirm();
     void browseForStimulusList();
     void becomeChild(CocoaView *);
@@ -128,6 +129,7 @@ public:
     void showErrorMessage(std::string) override;
     std::string browseForDirectory() override;
     bool browseCancelled() override;
+    std::string browseForOpeningFile() override;
 };
 
 #endif

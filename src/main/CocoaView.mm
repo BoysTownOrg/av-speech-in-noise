@@ -455,6 +455,13 @@ void CocoaTestSetupView::setStimulusList(std::string s) {
     [stimulusListDirectory_ setStringValue:value];
 }
 
+void CocoaTestSetupView::setMasker(std::string s) {
+    auto value = [NSString stringWithCString:
+        s.c_str()
+        encoding:[NSString defaultCStringEncoding]
+    ];
+    [maskerFilePath_ setStringValue:value];
+}
 
 std::string CocoaView::browseForDirectory() {
     auto panel = [NSOpenPanel openPanel];
@@ -481,4 +488,19 @@ void CocoaTestSetupView::browseForStimulusList() {
 
 void CocoaView::browseForStimulusList() { 
     listener->browseForStimulusList();
+}
+
+std::string CocoaView::browseForOpeningFile() {
+    auto panel = [NSOpenPanel openPanel];
+    panel.canChooseDirectories = false;
+    panel.canChooseFiles = true;
+    switch([panel runModal]) {
+        case NSModalResponseOK:
+            browseCancelled_ = false;
+            break;
+        default:
+            browseCancelled_ = true;
+    }
+    auto url = [[panel URLs] lastObject];
+    return [url.path UTF8String];
 }
