@@ -1,11 +1,11 @@
 #include "Presenter.h"
 
 namespace presentation {
-    std::string conditionName(av_coordinated_response_measure::Model::Test::Condition c) {
+    std::string conditionName(av_coordinated_response_measure::Condition c) {
         switch (c) {
-            case av_coordinated_response_measure::Model::Test::Condition::auditoryOnly:
+        case av_coordinated_response_measure::Condition::auditoryOnly:
             return "auditory-only";
-            case av_coordinated_response_measure::Model::Test::Condition::audioVisual:
+        case av_coordinated_response_measure::Condition::audioVisual:
             return "audio-visual";
         }
     }
@@ -80,8 +80,8 @@ namespace presentation {
         view{view}
     {
         view->populateConditionMenu({
-            conditionName(av_coordinated_response_measure::Model::Test::Condition::auditoryOnly),
-            conditionName(av_coordinated_response_measure::Model::Test::Condition::audioVisual)
+            conditionName(av_coordinated_response_measure::Condition::auditoryOnly),
+            conditionName(av_coordinated_response_measure::Condition::audioVisual)
         });
     }
     
@@ -104,8 +104,8 @@ namespace presentation {
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.condition = auditoryOnly()
-        ? av_coordinated_response_measure::Model::Test::Condition::auditoryOnly
-        : av_coordinated_response_measure::Model::Test::Condition::audioVisual;
+        ? av_coordinated_response_measure::Condition::auditoryOnly
+        : av_coordinated_response_measure::Condition::audioVisual;
         p.fullScaleLevel_dB_SPL = 119;
         return p;
     }
@@ -121,7 +121,7 @@ namespace presentation {
     
     bool Presenter::TestSetup::auditoryOnly() {
         return view->condition() == conditionName(
-            av_coordinated_response_measure::Model::Test::Condition::auditoryOnly
+            av_coordinated_response_measure::Condition::auditoryOnly
         );
     }
     

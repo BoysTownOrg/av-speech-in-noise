@@ -16,16 +16,17 @@ namespace av_coordinated_response_measure {
         red
     };
     
+    enum class Condition {
+        auditoryOnly,
+        audioVisual
+    };
+    
     class Model {
     public:
         virtual ~Model() = default;
         RUNTIME_ERROR(RequestFailure)
         
         struct Test {
-            enum class Condition {
-                auditoryOnly,
-                audioVisual
-            };
             std::string stimulusListDirectory;
             std::string subjectId;
             std::string testerId;

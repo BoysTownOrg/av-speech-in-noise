@@ -55,7 +55,7 @@ namespace recognition_test {
     }
 
     void RecognitionTestModel::prepareVideo(const Test &p) {
-        if (p.condition == Test::Condition::auditoryOnly)
+        if (p.condition == av_coordinated_response_measure::Condition::auditoryOnly)
             stimulusPlayer->hideVideo();
         else
             stimulusPlayer->showVideo();

@@ -268,12 +268,12 @@ namespace {
         
         void setAuditoryOnly() {
             testParameters.condition =
-                recognition_test::RecognitionTestModel::Test::Condition::auditoryOnly;
+                av_coordinated_response_measure::Condition::auditoryOnly;
         }
         
         void setAudioVisual() {
             testParameters.condition =
-                recognition_test::RecognitionTestModel::Test::Condition::audioVisual;
+                av_coordinated_response_measure::Condition::audioVisual;
         }
         
         void assertStimulusVideoOnlyHidden() {

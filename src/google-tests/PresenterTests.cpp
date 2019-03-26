@@ -426,13 +426,13 @@ namespace {
         
         std::string auditoryOnlyConditionName() {
             return presentation::conditionName(
-                av_coordinated_response_measure::Model::Test::Condition::auditoryOnly
+                av_coordinated_response_measure::Condition::auditoryOnly
             );
         }
         
         std::string audioVisualConditionName() {
             return presentation::conditionName(
-                av_coordinated_response_measure::Model::Test::Condition::audioVisual
+                av_coordinated_response_measure::Condition::audioVisual
             );
         }
         
@@ -563,7 +563,7 @@ namespace {
         setupView.setCondition(audioVisualConditionName());
         confirmTestSetup();
         EXPECT_EQ(
-            av_coordinated_response_measure::Model::Test::Condition::audioVisual,
+            av_coordinated_response_measure::Condition::audioVisual,
             model.testParameters().condition
         );
     }
@@ -572,7 +572,7 @@ namespace {
         setupView.setCondition(auditoryOnlyConditionName());
         confirmTestSetup();
         EXPECT_EQ(
-            av_coordinated_response_measure::Model::Test::Condition::auditoryOnly,
+            av_coordinated_response_measure::Condition::auditoryOnly,
             model.testParameters().condition
         );
     }
