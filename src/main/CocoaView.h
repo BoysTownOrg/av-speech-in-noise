@@ -95,6 +95,8 @@ public:
     std::string numberResponse() override;
     bool greenResponse() override;
     void becomeChild(CocoaView *);
+private:
+    void addButtonRow(NSColor *color, int row);
 };
 
 class CocoaView : public presentation::View {

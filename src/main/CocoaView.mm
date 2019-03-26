@@ -70,7 +70,7 @@ void CocoaTesterView::playTrial() {
 
 CocoaTestSetupView::CocoaTestSetupView() :
     view_{
-        [[NSView alloc] initWithFrame:NSMakeRect(100, 100, 500, 600)]
+        [[NSView alloc] initWithFrame:NSMakeRect(15, 15, 500, 600)]
     },
     subjectIdLabel{allocLabel(
         @"subject id:",
@@ -215,11 +215,44 @@ void CocoaTestSetupView::confirm() {
 @end
 
 
+void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
+    for (int i = 0; i < 8; ++i) {
+        auto title = [NSString stringWithCString: std::to_string(i+1).c_str()
+            encoding:[NSString defaultCStringEncoding]
+        ];
+        const auto button = [NSButton
+            buttonWithTitle:title
+            target:actions
+            action:@selector(respond:)
+        ];
+        [button setFrame:NSMakeRect(80*i, 80*row, 80, 80)];
+        [button setBezelStyle:NSBezelStyleTexturedSquare];
+        NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+        [style setAlignment:NSTextAlignmentCenter];
+        NSDictionary *attrsDictionary = [
+             NSDictionary dictionaryWithObjectsAndKeys:
+             color,
+             NSForegroundColorAttributeName,
+             style,
+             NSParagraphStyleAttributeName,
+             [NSFont fontWithName:@"Courier" size:36],
+             NSFontAttributeName,
+             nil
+        ];
+        NSAttributedString *attrString = [[NSAttributedString alloc]
+            initWithString:title
+            attributes:attrsDictionary
+        ];
+        [button setAttributedTitle:attrString];
+        [window.contentView addSubview:button];
+    }
+}
+
 CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
     window{
         [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(600, 400, 1200, 400)
+            initWithContentRect: NSMakeRect(1200, 400, 800, 400)
             styleMask:NSWindowStyleMaskBorderless
             backing:NSBackingStoreBuffered
             defer:YES
@@ -228,29 +261,10 @@ CocoaSubjectView::CocoaSubjectView() :
     actions{[SubjectViewActions alloc]}
 {
     actions.controller = this;
-    for (int i = 0; i < 8; ++i) {
-        auto title = [NSString stringWithCString:
-            std::to_string(i+1).c_str()
-            encoding:[NSString defaultCStringEncoding]
-        ];
-        const auto greenButton = [NSButton buttonWithTitle:title target:actions action:@selector(respond:)];
-        [greenButton setFrame:NSMakeRect(70*i, 0, 70, 50)];
-        NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
-        [style setAlignment:NSTextAlignmentCenter];
-        NSDictionary *attrsDictionary = [
-            NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor systemGreenColor],
-            NSForegroundColorAttributeName,
-            style,
-            NSParagraphStyleAttributeName,
-            [NSFont fontWithName:@"Courier" size:20],
-            NSFontAttributeName,
-            nil
-        ];
-        NSAttributedString *attrString = [[NSAttributedString alloc]initWithString:title attributes:attrsDictionary];
-        [greenButton setAttributedTitle:attrString];
-        [window.contentView addSubview:greenButton];
-    }
+    addButtonRow([NSColor blueColor], 0);
+    addButtonRow([NSColor greenColor], 1);
+    addButtonRow([NSColor lightGrayColor], 2);
+    addButtonRow([NSColor redColor], 3);
     [window makeKeyAndOrderFront:nil];
 }
 
@@ -282,7 +296,7 @@ CocoaView::CocoaView() :
     app{[NSApplication sharedApplication]},
     window{
         [[NSWindow alloc] initWithContentRect:
-            NSMakeRect(300, 500, 900, 800)
+            NSMakeRect(200, 500, 700, 600)
             styleMask:
                 NSWindowStyleMaskClosable |
                 NSWindowStyleMaskResizable |
