@@ -1,16 +1,16 @@
 #include "Presenter.h"
 
 namespace presentation {
-    std::string conditionName(Model::Test::Condition c) {
+    std::string conditionName(av_coordinated_response_measure::Model::Test::Condition c) {
         switch (c) {
-        case Model::Test::Condition::auditoryOnly:
+            case av_coordinated_response_measure::Model::Test::Condition::auditoryOnly:
             return "auditory-only";
-        case Model::Test::Condition::audioVisual:
+            case av_coordinated_response_measure::Model::Test::Condition::audioVisual:
             return "audio-visual";
         }
     }
     
-    Presenter::Presenter(Model *model, View *view) :
+    Presenter::Presenter(av_coordinated_response_measure::Model *model, View *view) :
         testSetup{model, view->testSetup()},
         tester{model, view->tester()},
         model{model},
@@ -56,9 +56,9 @@ namespace presentation {
     }
     
     void Presenter::submitResponse() { 
-        Model::SubjectResponse p;
+        av_coordinated_response_measure::Model::SubjectResponse p;
         if (view->subject()->greenResponse())
-            p.color = Model::SubjectResponse::Color::green;
+            p.color = av_coordinated_response_measure::Color::green;
         p.number = std::stoi(view->subject()->numberResponse());
         model->submitResponse(p);
     }
@@ -75,13 +75,13 @@ namespace presentation {
             view->testSetup()->setMasker(result);
     }
 
-    Presenter::TestSetup::TestSetup(Model *model, View::TestSetup *view) :
+    Presenter::TestSetup::TestSetup(av_coordinated_response_measure::Model *model, View::TestSetup *view) :
         model{model},
         view{view}
     {
         view->populateConditionMenu({
-            conditionName(Model::Test::Condition::auditoryOnly),
-            conditionName(Model::Test::Condition::audioVisual)
+            conditionName(av_coordinated_response_measure::Model::Test::Condition::auditoryOnly),
+            conditionName(av_coordinated_response_measure::Model::Test::Condition::audioVisual)
         });
     }
     
@@ -93,8 +93,8 @@ namespace presentation {
         model->initializeTest(testParameters());
     }
     
-    Model::Test Presenter::TestSetup::testParameters() {
-        Model::Test p;
+    av_coordinated_response_measure::Model::Test Presenter::TestSetup::testParameters() {
+        av_coordinated_response_measure::Model::Test p;
         p.startingSnr_dB =
             readInteger(view->startingSnr_dB(), "SNR");
         p.signalLevel_dB_SPL =
@@ -104,8 +104,8 @@ namespace presentation {
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.condition = auditoryOnly()
-            ? Model::Test::Condition::auditoryOnly
-            : Model::Test::Condition::audioVisual;
+        ? av_coordinated_response_measure::Model::Test::Condition::auditoryOnly
+        : av_coordinated_response_measure::Model::Test::Condition::audioVisual;
         p.fullScaleLevel_dB_SPL = 119;
         return p;
     }
@@ -121,7 +121,7 @@ namespace presentation {
     
     bool Presenter::TestSetup::auditoryOnly() {
         return view->condition() == conditionName(
-            Model::Test::Condition::auditoryOnly
+            av_coordinated_response_measure::Model::Test::Condition::auditoryOnly
         );
     }
     
@@ -129,7 +129,7 @@ namespace presentation {
         view->hide();
     }
     
-    Presenter::Tester::Tester(Model *model, View::Tester *view) :
+    Presenter::Tester::Tester(av_coordinated_response_measure::Model *model, View::Tester *view) :
         model{model},
         view{view}
     {
@@ -141,7 +141,7 @@ namespace presentation {
     }
     
     void Presenter::Tester::playTrial() {
-        Model::Trial p;
+        av_coordinated_response_measure::Model::Trial p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
     }

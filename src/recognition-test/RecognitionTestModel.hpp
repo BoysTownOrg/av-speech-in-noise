@@ -1,7 +1,7 @@
 #ifndef recognition_test_Model_hpp
 #define recognition_test_Model_hpp
 
-#include <presentation/Model.h>
+#include <av-coordinated-response-measure/Model.h>
 #include <vector>
 
 namespace recognition_test {
@@ -55,7 +55,7 @@ namespace recognition_test {
     };
 
     class RecognitionTestModel :
-        public presentation::Model,
+        public av_coordinated_response_measure::Model,
         public StimulusPlayer::EventListener,
         public MaskerPlayer::EventListener
     {

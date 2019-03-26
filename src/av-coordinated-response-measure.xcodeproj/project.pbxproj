@@ -40,6 +40,7 @@
 		26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26FC6B0621DA810C00289A0A /* PresenterTests.cpp */; };
 		26FC6B1B21DAA3F200289A0A /* Presenter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26FC6B1021DAA32500289A0A /* Presenter.cpp */; };
 		26FC6B1C21DAA40800289A0A /* libpresentation.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FC6B1621DAA3D800289A0A /* libpresentation.dylib */; };
+		26FDD2D6224AC0840090BDD5 /* OutputFileTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26FDD2D5224AC0840090BDD5 /* OutputFileTests.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -94,6 +95,7 @@
 		26FC6B0F21DA8ECA00289A0A /* Presenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Presenter.h; sourceTree = "<group>"; };
 		26FC6B1021DAA32500289A0A /* Presenter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Presenter.cpp; sourceTree = "<group>"; };
 		26FC6B1621DAA3D800289A0A /* libpresentation.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libpresentation.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		26FDD2D5224AC0840090BDD5 /* OutputFileTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutputFileTests.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,6 +220,7 @@
 		26FC6AF821DA80C900289A0A = {
 			isa = PBXGroup;
 			children = (
+				26FDD2D7224AC3100090BDD5 /* av-coordinated-response-measure */,
 				26EE86BD2242E8CB00C08622 /* stimulus-player */,
 				26A86BE7223AA72700210C00 /* masker-player */,
 				269C919122331FCE00A80372 /* main */,
@@ -253,6 +256,7 @@
 				26955FF82236A60200664A2C /* assert-utility.h */,
 				26A86BDD223A972200210C00 /* RandomizedMaskerPlayerTests.cpp */,
 				26EE86BA2242CFFB00C08622 /* StimulusPlayerTests.cpp */,
+				26FDD2D5224AC0840090BDD5 /* OutputFileTests.cpp */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";
@@ -276,9 +280,16 @@
 			children = (
 				26FC6B0F21DA8ECA00289A0A /* Presenter.h */,
 				26FC6B1021DAA32500289A0A /* Presenter.cpp */,
-				26EE86BC2242E64900C08622 /* Model.h */,
 			);
 			path = presentation;
+			sourceTree = "<group>";
+		};
+		26FDD2D7224AC3100090BDD5 /* av-coordinated-response-measure */ = {
+			isa = PBXGroup;
+			children = (
+				26EE86BC2242E64900C08622 /* Model.h */,
+			);
+			path = "av-coordinated-response-measure";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -556,6 +567,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26FDD2D6224AC0840090BDD5 /* OutputFileTests.cpp in Sources */,
 				26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */,
 				26EE86C02242E8DE00C08622 /* StimulusPlayerImpl.cpp in Sources */,
 				26A86BDE223A972200210C00 /* RandomizedMaskerPlayerTests.cpp in Sources */,

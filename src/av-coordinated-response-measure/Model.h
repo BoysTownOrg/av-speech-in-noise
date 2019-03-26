@@ -1,5 +1,5 @@
-#ifndef presentation_Model_h
-#define presentation_Model_h
+#ifndef av_coordinated_response_measure_Model_h
+#define av_coordinated_response_measure_Model_h
 
 #include <stdexcept>
 #include <string>
@@ -10,7 +10,12 @@
         explicit class_name(std::string s) : std::runtime_error{ s } {}\
 };
 
-namespace presentation {
+namespace av_coordinated_response_measure {
+    enum class Color {
+        green,
+        red
+    };
+    
     class Model {
     public:
         virtual ~Model() = default;
@@ -38,10 +43,6 @@ namespace presentation {
         virtual void playTrial(const Trial &) = 0;
         
         struct SubjectResponse {
-            enum class Color {
-                green
-            };
-            
             int number;
             Color color;
         };
@@ -49,6 +50,15 @@ namespace presentation {
         
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
+    };
+    
+    struct Trial {
+        int SNR_dB;
+        int correctNumber;
+        int subjectNumber;
+        Color correctColor;
+        Color subjectColor;
+        int reversals;
     };
 }
 

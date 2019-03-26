@@ -1,12 +1,12 @@
 #ifndef presentation_Presenter_h
 #define presentation_Presenter_h
 
-#include "Model.h"
+#include <av-coordinated-response-measure/Model.h>
 #include <vector>
 #include <string>
 
 namespace presentation {
-    std::string conditionName(Model::Test::Condition);
+    std::string conditionName(av_coordinated_response_measure::Model::Test::Condition);
 
     class View {
     public:
@@ -79,31 +79,31 @@ namespace presentation {
     public:
         class TestSetup {
         public:
-            TestSetup(Model *model, View::TestSetup *);
+            TestSetup(av_coordinated_response_measure::Model *model, View::TestSetup *);
             void listen();
             void initializeTest();
             void tuneOut();
         private:
             int readInteger(std::string x, std::string identifier);
             bool auditoryOnly();
-            Model::Test testParameters();
+            av_coordinated_response_measure::Model::Test testParameters();
             
-            Model *model;
+            av_coordinated_response_measure::Model *model;
             View::TestSetup *view;
         };
         
         class Tester {
         public:
-            Tester(Model *, View::Tester *);
+            Tester(av_coordinated_response_measure::Model *, View::Tester *);
             void listen();
             void playTrial();
             void tuneOut();
         private:
-            Model *model;
+            av_coordinated_response_measure::Model *model;
             View::Tester *view;
         };
         
-        Presenter(Model *, View *);
+        Presenter(av_coordinated_response_measure::Model *, View *);
         void run();
         void playTrial() override;
         void newTest() override;
@@ -120,7 +120,7 @@ namespace presentation {
         
         TestSetup testSetup;
         Tester tester;
-        Model *model;
+        av_coordinated_response_measure::Model *model;
         View *view;
     };
 }

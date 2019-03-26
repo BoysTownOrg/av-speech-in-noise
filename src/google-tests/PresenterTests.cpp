@@ -14,7 +14,7 @@ namespace {
         }
     };
     
-    class ModelStub : public presentation::Model {
+    class ModelStub : public av_coordinated_response_measure::Model {
         Test testParameters_{};
         Trial trialParameters_{};
         SubjectResponse responseParameters_{};
@@ -425,14 +425,14 @@ namespace {
         BrowsingForMasker browinsgForMasker{};
         
         std::string auditoryOnlyConditionName() {
-            return conditionName(
-                presentation::Model::Test::Condition::auditoryOnly
+            return presentation::conditionName(
+                av_coordinated_response_measure::Model::Test::Condition::auditoryOnly
             );
         }
         
         std::string audioVisualConditionName() {
-            return conditionName(
-                presentation::Model::Test::Condition::audioVisual
+            return presentation::conditionName(
+                av_coordinated_response_measure::Model::Test::Condition::audioVisual
             );
         }
         
@@ -563,7 +563,7 @@ namespace {
         setupView.setCondition(audioVisualConditionName());
         confirmTestSetup();
         EXPECT_EQ(
-            presentation::Model::Test::Condition::audioVisual,
+            av_coordinated_response_measure::Model::Test::Condition::audioVisual,
             model.testParameters().condition
         );
     }
@@ -572,7 +572,7 @@ namespace {
         setupView.setCondition(auditoryOnlyConditionName());
         confirmTestSetup();
         EXPECT_EQ(
-            presentation::Model::Test::Condition::auditoryOnly,
+            av_coordinated_response_measure::Model::Test::Condition::auditoryOnly,
             model.testParameters().condition
         );
     }
@@ -631,7 +631,7 @@ namespace {
         subjectView.setNumberResponse("1");
         submitResponse();
         EXPECT_EQ(
-            presentation::Model::SubjectResponse::Color::green,
+            av_coordinated_response_measure::Color::green,
             model.responseParameters().color
         );
         EXPECT_EQ(1, model.responseParameters().number);
@@ -676,7 +676,7 @@ namespace {
         assertCancellingBrowseDoesNotChangePath(&browinsgForMasker);
     }
 
-    class RequestFailingModel : public presentation::Model {
+    class RequestFailingModel : public av_coordinated_response_measure::Model {
         std::string errorMessage{};
     public:
         void setErrorMessage(std::string s) {
@@ -703,7 +703,7 @@ namespace {
     protected:
         RequestFailingModel failure{};
         ModelStub defaultModel{};
-        presentation::Model *model{&defaultModel};
+        av_coordinated_response_measure::Model *model{&defaultModel};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub view{&setupView, &testerView, nullptr};
