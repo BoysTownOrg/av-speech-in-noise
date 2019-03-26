@@ -29,7 +29,7 @@ namespace stimulus_player {
     }
 
     double StimulusPlayerImpl::rms() {
-        return 0;
+        return 1;
     }
 
     void StimulusPlayerImpl::setLevel_dB(double x) {

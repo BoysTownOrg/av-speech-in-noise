@@ -375,7 +375,7 @@ namespace {
         initializeTest();
         stimulusPlayer.setRms(7);
         playTrial();
-        EXPECT_EQ(20 * std::log10(1.0/7) - 5 + 11, stimulusPlayer.level_dB());
+        EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, stimulusPlayer.level_dB());
     }
 
     TEST_F(
