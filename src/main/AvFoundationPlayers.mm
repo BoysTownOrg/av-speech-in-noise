@@ -163,7 +163,7 @@ static void process(
 template<typename T>
 static void createAudioProcessingTap(
     void* CM_NULLABLE clientInfo,
-    MTAudioProcessingTapRef tap
+    MTAudioProcessingTapRef *tap
 ) {
     MTAudioProcessingTapCallbacks callbacks;
     callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
@@ -179,9 +179,9 @@ static void createAudioProcessingTap(
             kCFAllocatorDefault,
             &callbacks,
             kMTAudioProcessingTapCreationFlag_PostEffects,
-            &tap
+            tap
         ) ||
-        !tap
+        !*tap
     )
         throw std::runtime_error{"Unable to create the AudioProcessingTap"};
 }
@@ -216,7 +216,7 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
     player{[AVPlayer playerWithPlayerItem:nil]},
     playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}
 {
-    createAudioProcessingTap<AvFoundationVideoPlayer>(this, tap);
+    createAudioProcessingTap<AvFoundationVideoPlayer>(this, &tap);
     [videoWindow.contentView setWantsLayer:YES];
     [videoWindow.contentView.layer addSublayer:playerLayer];
     [videoWindow makeKeyAndOrderFront:nil];
@@ -307,7 +307,7 @@ void AvFoundationAudioPlayer::setDevice(int index) {
 AvFoundationAudioPlayer::AvFoundationAudioPlayer() :
     player{[AVPlayer playerWithPlayerItem:nil]}
 {
-    createAudioProcessingTap<AvFoundationAudioPlayer>(this, tap);
+    createAudioProcessingTap<AvFoundationAudioPlayer>(this, &tap);
 }
 
 bool AvFoundationAudioPlayer::playing() {

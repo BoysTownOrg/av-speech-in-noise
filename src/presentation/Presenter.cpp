@@ -100,6 +100,7 @@ namespace presentation {
         p.condition = auditoryOnly()
             ? Model::Test::Condition::auditoryOnly
             : Model::Test::Condition::audioVisual;
+        p.fullScaleLevel_dB_SPL = 119;
         return p;
     }
     
