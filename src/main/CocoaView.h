@@ -18,6 +18,7 @@ class CocoaTestSetupView;
 @property CocoaTestSetupView *controller;
 - (void) confirmTestSetup;
 - (void) browseForStimulusList;
+- (void) browseForMasker;
 @end
 
 class CocoaTesterView;
@@ -85,6 +86,7 @@ public:
     void setMasker(std::string) override;
     void confirm();
     void browseForStimulusList();
+    void browseForMasker();
     void becomeChild(CocoaView *);
 };
 
@@ -116,6 +118,7 @@ public:
     CocoaView();
     void confirmTestSetup();
     void browseForStimulusList();
+    void browseForMasker();
     void playTrial();
     void newTest();
     void openTest();

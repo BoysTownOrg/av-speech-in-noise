@@ -119,7 +119,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
     },
     maskerFilePath_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 340, 300, 25)]
+            initWithFrame:NSMakeRect(145, 340, 400, 25)]
     },
     conditionMenu{[
         [NSPopUpButton alloc] initWithFrame:NSMakeRect(145, 310, 150, 25)
@@ -134,11 +134,18 @@ CocoaTestSetupView::CocoaTestSetupView() :
         action:@selector(browseForStimulusList)
     ];
     [browseForStimulusListButton setFrame:NSMakeRect(400 + 145 + 10, 370, 100, 25)];
+    const auto browseForMaskerButton = [NSButton buttonWithTitle:
+        @"browse"
+        target:actions
+        action:@selector(browseForMasker)
+    ];
+    [browseForMaskerButton setFrame:NSMakeRect(400 + 145 + 10, 340, 100, 25)];
     const auto confirmButton = [NSButton buttonWithTitle:
         @"Confirm"
         target:actions
         action:@selector(confirmTestSetup)
     ];
+    [view_ addSubview:browseForMaskerButton];
     [view_ addSubview:browseForStimulusListButton];
     [view_ addSubview:confirmButton];
     [view_ addSubview:subjectIdLabel];
@@ -223,6 +230,10 @@ void CocoaTestSetupView::confirm() {
 - (void)browseForStimulusList { 
     controller->browseForStimulusList();
 }
+- (void)browseForMasker { 
+    controller->browseForMasker();
+}
+
 @end
 
 
@@ -503,4 +514,12 @@ std::string CocoaView::browseForOpeningFile() {
     }
     auto url = [[panel URLs] lastObject];
     return [url.path UTF8String];
+}
+
+void CocoaView::browseForMasker() {
+    listener->browseForMasker();
+}
+
+void CocoaTestSetupView::browseForMasker() {
+    parent_->browseForMasker();
 }
