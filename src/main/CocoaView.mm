@@ -468,7 +468,7 @@ std::string CocoaView::browseForDirectory() {
             browseCancelled_ = true;
     }
     auto url = [[panel URLs] lastObject];
-    return [url.absoluteString UTF8String];
+    return [url.path UTF8String];
 }
 
 bool CocoaView::browseCancelled() { 
