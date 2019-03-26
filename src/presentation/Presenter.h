@@ -21,6 +21,7 @@ namespace presentation {
             virtual void confirmTestSetup() = 0;
             virtual void playTrial() = 0;
             virtual void submitResponse() = 0;
+            virtual void browseForStimulusList() = 0;
         };
         
         class Subject {
@@ -48,6 +49,7 @@ namespace presentation {
             virtual std::string startingSnr_dB() = 0;
             virtual std::string maskerFilePath() = 0;
             virtual std::string stimulusListDirectory() = 0;
+            virtual void setStimulusList(std::string) = 0;
             virtual std::string testerId() = 0;
             virtual std::string subjectId() = 0;
             virtual std::string condition() = 0;
@@ -59,6 +61,7 @@ namespace presentation {
         virtual TestSetup *testSetup() = 0;
         virtual Tester *tester() = 0;
         virtual Subject *subject() = 0;
+        virtual std::string browseForDirectory() = 0;
         virtual void showErrorMessage(std::string) = 0;
         enum class DialogResponse {
             decline,
@@ -104,6 +107,7 @@ namespace presentation {
         void closeTest() override;
         void confirmTestSetup() override;
         void submitResponse() override;
+        void browseForStimulusList() override;
         
     private:
         RUNTIME_ERROR(BadInput)

@@ -62,6 +62,11 @@ namespace presentation {
         p.number = std::stoi(view->subject()->numberResponse());
         model->submitResponse(p);
     }
+    
+    void Presenter::browseForStimulusList() {
+        auto result = view->browseForDirectory();
+        view->testSetup()->setStimulusList(result);
+    }
 
     Presenter::TestSetup::TestSetup(Model *model, View::TestSetup *view) :
         model{model},

@@ -70,6 +70,7 @@ namespace {
 
     class ViewStub : public presentation::View {
         std::string errorMessage_{};
+        std::string browseForDirectoryResult_{};
         DialogResponse dialogResponse_{};
         EventListener *listener_{};
         TestSetup *setupView_;
@@ -136,6 +137,10 @@ namespace {
             return subjectView_;
         }
         
+        std::string browseForDirectory() override {
+            return browseForDirectoryResult_;
+        }
+        
         auto eventLoopCalled() const {
             return eventLoopCalled_;
         }
@@ -158,6 +163,10 @@ namespace {
         
         void setDialogResponse(DialogResponse response) {
             dialogResponse_ = response;
+        }
+        
+        void setBrowseForDirectoryResult(std::string s) {
+            browseForDirectoryResult_ = std::move(s);
         }
 
         class TestSetupViewStub : public TestSetup {
@@ -220,7 +229,7 @@ namespace {
                 masker_ = std::move(s);
             }
             
-            void setStimulusList(std::string s) {
+            void setStimulusList(std::string s) override {
                 stimulusList_ = std::move(s);
             }
             
@@ -313,6 +322,37 @@ namespace {
             }
         };
     };
+    
+    class UseCase {
+    public:
+        virtual ~UseCase() = default;
+        virtual void run(presentation::View::EventListener *) = 0;
+    };
+
+    class BrowsingUseCase : public UseCase {
+    public:
+        virtual void setResult(ViewStub &, std::string) = 0;
+    };
+
+    class BrowsingEnteredPathUseCase : public BrowsingUseCase {
+    public:
+        virtual std::string entry(ViewStub &) = 0;
+    };
+
+    class BrowsingForStimulusList : public BrowsingEnteredPathUseCase {
+    public:
+        void run(presentation::View::EventListener *listener) override {
+            listener->browseForStimulusList();
+        }
+
+        void setResult(ViewStub &view, std::string s) override {
+            return view.setBrowseForDirectoryResult(s);
+        }
+        
+        std::string entry(ViewStub &view) override {
+            return view.testSetup()->stimulusListDirectory();
+        }
+    };
 
     class PresenterConstructionTests : public ::testing::Test {
     protected:
@@ -340,6 +380,7 @@ namespace {
         ViewStub::SubjectViewStub subjectView{};
         ViewStub view{&setupView, &testerView, &subjectView};
         presentation::Presenter presenter{&model, &view};
+        BrowsingForStimulusList browsingForStimulusList{};
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
@@ -412,6 +453,16 @@ namespace {
         
         void assertSetupViewNotHidden() {
             EXPECT_FALSE(setupViewHidden());
+        }
+
+        void runUseCase(UseCase *useCase) {
+            useCase->run(&presenter);
+        }
+
+        void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase *useCase) {
+            useCase->setResult(view, "a");
+            runUseCase(useCase);
+            assertEqual("a", useCase->entry(view));
         }
     };
 
@@ -555,6 +606,10 @@ namespace {
         view.setDialogResponse(presentation::View::DialogResponse::cancel);
         view.close();
         assertTesterViewNotHidden();
+    }
+
+    TEST_F(PresenterTests, browseForStimulusListUpdatesStimulusList) {
+        assertBrowseResultPassedToEntry(&browsingForStimulusList);
     }
 
     class RequestFailingModel : public presentation::Model {
