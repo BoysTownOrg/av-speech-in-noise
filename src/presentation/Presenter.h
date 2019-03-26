@@ -22,6 +22,7 @@ namespace presentation {
             virtual void playTrial() = 0;
             virtual void submitResponse() = 0;
             virtual void browseForStimulusList() = 0;
+            virtual void browseForMasker() = 0;
         };
         
         class Subject {
@@ -48,6 +49,7 @@ namespace presentation {
             virtual std::string signalLevel_dB_SPL() = 0;
             virtual std::string startingSnr_dB() = 0;
             virtual std::string maskerFilePath() = 0;
+            virtual void setMasker(std::string) = 0;
             virtual std::string stimulusListDirectory() = 0;
             virtual void setStimulusList(std::string) = 0;
             virtual std::string testerId() = 0;
@@ -62,6 +64,7 @@ namespace presentation {
         virtual Tester *tester() = 0;
         virtual Subject *subject() = 0;
         virtual std::string browseForDirectory() = 0;
+        virtual std::string browseForOpeningFile() = 0;
         virtual bool browseCancelled() = 0;
         virtual void showErrorMessage(std::string) = 0;
         enum class DialogResponse {
@@ -109,6 +112,7 @@ namespace presentation {
         void confirmTestSetup() override;
         void submitResponse() override;
         void browseForStimulusList() override;
+        void browseForMasker() override;
         
     private:
         RUNTIME_ERROR(BadInput)

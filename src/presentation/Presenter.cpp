@@ -68,6 +68,12 @@ namespace presentation {
         if (!view->browseCancelled())
             view->testSetup()->setStimulusList(result);
     }
+    
+    void Presenter::browseForMasker() {
+        auto result = view->browseForOpeningFile();
+        if (!view->browseCancelled())
+            view->testSetup()->setMasker(result);
+    }
 
     Presenter::TestSetup::TestSetup(Model *model, View::TestSetup *view) :
         model{model},

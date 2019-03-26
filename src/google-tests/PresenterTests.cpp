@@ -71,6 +71,7 @@ namespace {
     class ViewStub : public presentation::View {
         std::string errorMessage_{};
         std::string browseForDirectoryResult_{};
+        std::string browseForOpeningFileResult_{};
         DialogResponse dialogResponse_{};
         EventListener *listener_{};
         TestSetup *setupView_;
@@ -120,7 +121,6 @@ namespace {
         void eventLoop() override {
             eventLoopCalled_ = true;
         }
-        
         TestSetup *testSetup() override {
             return setupView_;
         }
@@ -144,6 +144,10 @@ namespace {
         
         bool browseCancelled() override {
             return browseCancelled_;
+        }
+        
+        std::string browseForOpeningFile() override {
+            return browseForOpeningFileResult_;
         }
         
         auto eventLoopCalled() const {
@@ -172,6 +176,10 @@ namespace {
         
         void setBrowseForDirectoryResult(std::string s) {
             browseForDirectoryResult_ = std::move(s);
+        }
+        
+        void setBrowseForOpeningFileResult(std::string s) {
+            browseForOpeningFileResult_ = std::move(s);
         }
         
         void setBrowseCancelled() {
@@ -234,7 +242,7 @@ namespace {
                 condition_ = std::move(s);
             }
 
-            void setMasker(std::string s) {
+            void setMasker(std::string s) override {
                 masker_ = std::move(s);
             }
             
@@ -346,7 +354,26 @@ namespace {
     class BrowsingEnteredPathUseCase : public BrowsingUseCase {
     public:
         virtual std::string entry(ViewStub &) = 0;
-        virtual void setEntry(ViewStub &, std::string) = 0;
+        virtual void setEntry(ViewStub::TestSetupViewStub &, std::string) = 0;
+    };
+    
+    class BrowsingForMasker : public BrowsingEnteredPathUseCase {
+    public:
+        std::string entry(ViewStub &view) override {
+            return view.testSetup()->maskerFilePath();
+        }
+        
+        void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
+            view.setMasker(s);
+        }
+        
+        void setResult(ViewStub &view, std::string s) override {
+            return view.setBrowseForOpeningFileResult(s);
+        }
+        
+        void run(presentation::View::EventListener *listener) override {
+            listener->browseForMasker();
+        }
     };
 
     class BrowsingForStimulusList : public BrowsingEnteredPathUseCase {
@@ -356,15 +383,15 @@ namespace {
         }
 
         void setResult(ViewStub &view, std::string s) override {
-            return view.setBrowseForDirectoryResult(s);
+            view.setBrowseForDirectoryResult(s);
         }
         
         std::string entry(ViewStub &view) override {
             return view.testSetup()->stimulusListDirectory();
         }
         
-        void setEntry(ViewStub &view, std::string s) override {
-            view.testSetup()->setStimulusList(s);
+        void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
+            view.setStimulusList(s);
         }
     };
 
@@ -395,6 +422,7 @@ namespace {
         ViewStub view{&setupView, &testerView, &subjectView};
         presentation::Presenter presenter{&model, &view};
         BrowsingForStimulusList browsingForStimulusList{};
+        BrowsingForMasker browinsgForMasker{};
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
@@ -482,7 +510,7 @@ namespace {
         void assertCancellingBrowseDoesNotChangePath(
             BrowsingEnteredPathUseCase *useCase
         ) {
-            useCase->setEntry(view, "a");
+            useCase->setEntry(setupView, "a");
             useCase->setResult(view, "b");
             view.setBrowseCancelled();
             runUseCase(useCase);
@@ -634,6 +662,10 @@ namespace {
 
     TEST_F(PresenterTests, browseForStimulusListUpdatesStimulusList) {
         assertBrowseResultPassedToEntry(&browsingForStimulusList);
+    }
+
+    TEST_F(PresenterTests, browseForMaskerUpdatesMasker) {
+        assertBrowseResultPassedToEntry(&browinsgForMasker);
     }
 
     TEST_F(PresenterTests, browseForStimulusListCancelDoesNotChangeStimulusList) {
