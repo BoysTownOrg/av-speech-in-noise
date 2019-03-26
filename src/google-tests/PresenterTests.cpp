@@ -672,6 +672,10 @@ namespace {
         assertCancellingBrowseDoesNotChangePath(&browsingForStimulusList);
     }
 
+    TEST_F(PresenterTests, browseForMaskerCancelDoesNotChangeMasker) {
+        assertCancellingBrowseDoesNotChangePath(&browinsgForMasker);
+    }
+
     class RequestFailingModel : public presentation::Model {
         std::string errorMessage{};
     public:
