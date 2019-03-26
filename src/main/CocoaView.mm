@@ -7,6 +7,7 @@ static NSTextField *allocLabel(NSString *label, NSRect frame) {
     [text setDrawsBackground:NO];
     [text setEditable:NO];
     [text setSelectable:NO];
+    [text setAlignment:NSTextAlignmentRight];
     return text;
 }
 
@@ -74,54 +75,54 @@ CocoaTestSetupView::CocoaTestSetupView() :
     },
     subjectIdLabel{allocLabel(
         @"subject id:",
-        NSMakeRect(10, 490, 140, 25)
+        NSMakeRect(0, 490, 140, 25)
     )},
     subjectId_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 490, 150, 25)]
+            initWithFrame:NSMakeRect(145, 490, 150, 25)]
     },
     testerIdLabel{allocLabel(
         @"tester id:",
-        NSMakeRect(10, 460, 140, 25))
+        NSMakeRect(0, 460, 140, 25))
     },
     testerId_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 460, 150, 25)]
+            initWithFrame:NSMakeRect(145, 460, 150, 25)]
     },
     signalLevel_dB_SPL_label{allocLabel(
         @"signal level (dB SPL):",
-        NSMakeRect(10, 430, 140, 25))
+        NSMakeRect(0, 430, 140, 25))
     },
     signalLevel_dB_SPL_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 430, 150, 25)]
+            initWithFrame:NSMakeRect(145, 430, 150, 25)]
     },
     startingSnr_dB_label{allocLabel(
         @"starting SNR (dB):",
-        NSMakeRect(10, 400, 140, 25))
+        NSMakeRect(0, 400, 140, 25))
     },
     startingSnr_dB_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 400, 150, 25)]
+            initWithFrame:NSMakeRect(145, 400, 150, 25)]
     },
     stimulusListDirectoryLabel{allocLabel(
         @"stimulus directory:",
-        NSMakeRect(10, 370, 140, 25))
+        NSMakeRect(0, 370, 140, 25))
     },
     stimulusListDirectory_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 370, 300, 25)]
+            initWithFrame:NSMakeRect(145, 370, 400, 25)]
     },
     maskerFilePath_label{allocLabel(
         @"masker file path:",
-        NSMakeRect(10, 340, 140, 25))
+        NSMakeRect(0, 340, 140, 25))
     },
     maskerFilePath_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(155, 340, 300, 25)]
+            initWithFrame:NSMakeRect(145, 340, 300, 25)]
     },
     conditionMenu{[
-        [NSPopUpButton alloc] initWithFrame:NSMakeRect(155, 310, 150, 25)
+        [NSPopUpButton alloc] initWithFrame:NSMakeRect(145, 310, 150, 25)
         pullsDown:NO
     ]},
     actions{[SetupViewActions alloc]}
@@ -132,7 +133,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
         target:actions
         action:@selector(browseForStimulusList)
     ];
-    [browseForStimulusListButton setFrame:NSMakeRect(300 + 155 + 10, 370, 100, 25)];
+    [browseForStimulusListButton setFrame:NSMakeRect(400 + 145 + 10, 370, 100, 25)];
     const auto confirmButton = [NSButton buttonWithTitle:
         @"Confirm"
         target:actions
@@ -466,7 +467,7 @@ std::string CocoaView::browseForDirectory() {
         default:
             browseCancelled_ = true;
     }
-    auto url = [[panel URLs] objectAtIndex:0];
+    auto url = [[panel URLs] lastObject];
     return [url.absoluteString UTF8String];
 }
 
