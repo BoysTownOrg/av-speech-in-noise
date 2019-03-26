@@ -479,7 +479,9 @@ namespace {
             assertEqual("a", useCase->entry(view));
         }
 
-        void assertCancellingBrowseDoesNotChangePath(BrowsingEnteredPathUseCase *useCase) {
+        void assertCancellingBrowseDoesNotChangePath(
+            BrowsingEnteredPathUseCase *useCase
+        ) {
             useCase->setEntry(view, "a");
             useCase->setResult(view, "b");
             view.setBrowseCancelled();
