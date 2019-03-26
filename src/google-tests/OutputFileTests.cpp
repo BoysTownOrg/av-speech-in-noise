@@ -7,24 +7,41 @@ public:
     virtual void write(std::string) = 0;
 };
 
+class TrialStream {
+    std::stringstream stream;
+public:
+    template<typename T>
+    void insert(T item) {
+        stream << item;
+    }
+    
+    void insertCommaAndSpace() {
+        stream << ", ";
+    }
+    
+    auto str() const {
+        return stream.str();
+    }
+};
+
 class OutputFile {
     Writer *writer;
 public:
     OutputFile(Writer *writer) : writer{writer} {}
     void writeTrial(av_coordinated_response_measure::Trial trial) {
-        std::stringstream stream;
-        stream << trial.SNR_dB;
-        stream << ", ";
-        stream << trial.correctNumber;
-        stream << ", ";
-        stream << trial.subjectNumber;
-        stream << ", ";
-        stream << colorName(trial.correctColor);
-        stream << ", ";
-        stream << colorName(trial.subjectColor);
-        stream << ", ";
-        stream << trial.reversals;
-        stream << "\n";
+        TrialStream stream;
+        stream.insert(trial.SNR_dB);
+        stream.insertCommaAndSpace();
+        stream.insert(trial.correctNumber);
+        stream.insertCommaAndSpace();
+        stream.insert(trial.subjectNumber);
+        stream.insertCommaAndSpace();
+        stream.insert(colorName(trial.correctColor));
+        stream.insertCommaAndSpace();
+        stream.insert(colorName(trial.subjectColor));
+        stream.insertCommaAndSpace();
+        stream.insert(trial.reversals);
+        stream.insert("\n");
         writer->write(stream.str());
     }
     
