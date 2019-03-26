@@ -19,6 +19,10 @@ public:
         stream << ", ";
     }
     
+    void insertNewLine() {
+        stream << "\n";
+    }
+    
     auto str() const {
         return stream.str();
     }
@@ -28,7 +32,7 @@ class OutputFile {
     Writer *writer;
 public:
     OutputFile(Writer *writer) : writer{writer} {}
-    void writeTrial(av_coordinated_response_measure::Trial trial) {
+    void writeTrial(const av_coordinated_response_measure::Trial &trial) {
         TrialStream stream;
         stream.insert(trial.SNR_dB);
         stream.insertCommaAndSpace();
@@ -41,7 +45,7 @@ public:
         stream.insert(colorName(trial.subjectColor));
         stream.insertCommaAndSpace();
         stream.insert(trial.reversals);
-        stream.insert("\n");
+        stream.insertNewLine();
         writer->write(stream.str());
     }
     
