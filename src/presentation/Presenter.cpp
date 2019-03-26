@@ -65,7 +65,8 @@ namespace presentation {
     
     void Presenter::browseForStimulusList() {
         auto result = view->browseForDirectory();
-        view->testSetup()->setStimulusList(result);
+        if (!view->browseCancelled())
+            view->testSetup()->setStimulusList(result);
     }
 
     Presenter::TestSetup::TestSetup(Model *model, View::TestSetup *view) :

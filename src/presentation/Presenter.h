@@ -62,6 +62,7 @@ namespace presentation {
         virtual Tester *tester() = 0;
         virtual Subject *subject() = 0;
         virtual std::string browseForDirectory() = 0;
+        virtual bool browseCancelled() = 0;
         virtual void showErrorMessage(std::string) = 0;
         enum class DialogResponse {
             decline,

@@ -78,6 +78,7 @@ namespace {
         Subject *subjectView_;
         bool eventLoopCalled_{};
         bool confirmationDialogShown_{};
+        bool browseCancelled_{};
     public:
         ViewStub(
             TestSetup *setupView,
@@ -141,6 +142,10 @@ namespace {
             return browseForDirectoryResult_;
         }
         
+        bool browseCancelled() override {
+            return browseCancelled_;
+        }
+        
         auto eventLoopCalled() const {
             return eventLoopCalled_;
         }
@@ -167,6 +172,10 @@ namespace {
         
         void setBrowseForDirectoryResult(std::string s) {
             browseForDirectoryResult_ = std::move(s);
+        }
+        
+        void setBrowseCancelled() {
+            browseCancelled_ = true;
         }
 
         class TestSetupViewStub : public TestSetup {
@@ -337,6 +346,7 @@ namespace {
     class BrowsingEnteredPathUseCase : public BrowsingUseCase {
     public:
         virtual std::string entry(ViewStub &) = 0;
+        virtual void setEntry(ViewStub &, std::string) = 0;
     };
 
     class BrowsingForStimulusList : public BrowsingEnteredPathUseCase {
@@ -351,6 +361,10 @@ namespace {
         
         std::string entry(ViewStub &view) override {
             return view.testSetup()->stimulusListDirectory();
+        }
+        
+        void setEntry(ViewStub &view, std::string s) override {
+            view.testSetup()->setStimulusList(s);
         }
     };
 
@@ -461,6 +475,14 @@ namespace {
 
         void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase *useCase) {
             useCase->setResult(view, "a");
+            runUseCase(useCase);
+            assertEqual("a", useCase->entry(view));
+        }
+
+        void assertCancellingBrowseDoesNotChangePath(BrowsingEnteredPathUseCase *useCase) {
+            useCase->setEntry(view, "a");
+            useCase->setResult(view, "b");
+            view.setBrowseCancelled();
             runUseCase(useCase);
             assertEqual("a", useCase->entry(view));
         }
@@ -610,6 +632,10 @@ namespace {
 
     TEST_F(PresenterTests, browseForStimulusListUpdatesStimulusList) {
         assertBrowseResultPassedToEntry(&browsingForStimulusList);
+    }
+
+    TEST_F(PresenterTests, browseForStimulusListCancelDoesNotChangeStimulusList) {
+        assertCancellingBrowseDoesNotChangePath(&browsingForStimulusList);
     }
 
     class RequestFailingModel : public presentation::Model {
