@@ -70,7 +70,7 @@ void CocoaTesterView::playTrial() {
 
 CocoaTestSetupView::CocoaTestSetupView() :
     view_{
-        [[NSView alloc] initWithFrame:NSMakeRect(15, 15, 500, 600)]
+        [[NSView alloc] initWithFrame:NSMakeRect(15, 15, 700 - 15 * 2, 600 - 15 * 2)]
     },
     subjectIdLabel{allocLabel(
         @"subject id:",
@@ -127,13 +127,19 @@ CocoaTestSetupView::CocoaTestSetupView() :
     actions{[SetupViewActions alloc]}
 {
     actions.controller = this;
+    const auto browseForStimulusListButton = [NSButton buttonWithTitle:
+        @"browse"
+        target:actions
+        action:@selector(browseForStimulusList)
+    ];
+    [browseForStimulusListButton setFrame:NSMakeRect(300 + 155 + 10, 370, 100, 25)];
     const auto confirmButton = [NSButton buttonWithTitle:
         @"Confirm"
         target:actions
         action:@selector(confirmTestSetup)
     ];
+    [view_ addSubview:browseForStimulusListButton];
     [view_ addSubview:confirmButton];
-    [view_ setHidden:NO];
     [view_ addSubview:subjectIdLabel];
     [view_ addSubview:subjectId_];
     [view_ addSubview:testerIdLabel];
@@ -151,6 +157,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
         @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
     maskerFilePath_.stringValue =
         @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
+    [view_ setHidden:NO];
 }
 
 NSView *CocoaTestSetupView::view() {
@@ -211,6 +218,9 @@ void CocoaTestSetupView::confirm() {
 @synthesize controller;
 - (void)confirmTestSetup {
     controller->confirm();
+}
+- (void)browseForStimulusList { 
+    controller->browseForStimulusList();
 }
 @end
 
@@ -434,4 +444,40 @@ void CocoaView::submitResponse() {
 
 void CocoaSubjectView::becomeChild(CocoaView *p) {
     parent_ = p;
+}
+
+void CocoaTestSetupView::setStimulusList(std::string s) {
+    auto value = [NSString stringWithCString:
+        s.c_str()
+        encoding:[NSString defaultCStringEncoding]
+    ];
+    [stimulusListDirectory_ setStringValue:value];
+}
+
+
+std::string CocoaView::browseForDirectory() {
+    auto panel = [NSOpenPanel openPanel];
+    panel.canChooseDirectories = true;
+    panel.canChooseFiles = false;
+    switch([panel runModal]) {
+        case NSModalResponseOK:
+            browseCancelled_ = false;
+            break;
+        default:
+            browseCancelled_ = true;
+    }
+    auto url = [[panel URLs] objectAtIndex:0];
+    return [url.absoluteString UTF8String];
+}
+
+bool CocoaView::browseCancelled() { 
+    return browseCancelled_;
+}
+
+void CocoaTestSetupView::browseForStimulusList() { 
+    parent_->browseForStimulusList();
+}
+
+void CocoaView::browseForStimulusList() { 
+    listener->browseForStimulusList();
 }

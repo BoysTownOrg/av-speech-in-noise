@@ -17,6 +17,7 @@ class CocoaTestSetupView;
 @interface SetupViewActions : NSObject
 @property CocoaTestSetupView *controller;
 - (void) confirmTestSetup;
+- (void) browseForStimulusList;
 @end
 
 class CocoaTesterView;
@@ -80,7 +81,9 @@ public:
     std::string subjectId() override;
     std::string condition() override;
     void populateConditionMenu(std::vector<std::string> items) override;
+    void setStimulusList(std::string) override;
     void confirm();
+    void browseForStimulusList();
     void becomeChild(CocoaView *);
 };
 
@@ -107,9 +110,11 @@ class CocoaView : public presentation::View {
     NSApplication *app;
     NSWindow *window;
     ViewActions *actions;
+    bool browseCancelled_{};
 public:
     CocoaView();
     void confirmTestSetup();
+    void browseForStimulusList();
     void playTrial();
     void newTest();
     void openTest();
@@ -121,6 +126,8 @@ public:
     Subject *subject() override;
     DialogResponse showConfirmationDialog() override;
     void showErrorMessage(std::string) override;
+    std::string browseForDirectory() override;
+    bool browseCancelled() override;
 };
 
 #endif
