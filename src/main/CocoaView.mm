@@ -263,7 +263,7 @@ CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
     window{
         [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(1200, 400, 800, 400)
+            initWithContentRect: NSMakeRect(1200, 15, 800, 400)
             styleMask:NSWindowStyleMaskBorderless
             backing:NSBackingStoreBuffered
             defer:YES
@@ -307,7 +307,7 @@ CocoaView::CocoaView() :
     app{[NSApplication sharedApplication]},
     window{
         [[NSWindow alloc] initWithContentRect:
-            NSMakeRect(200, 500, 700, 600)
+            NSMakeRect(15, 15, 700, 600)
             styleMask:
                 NSWindowStyleMaskClosable |
                 NSWindowStyleMaskResizable |
