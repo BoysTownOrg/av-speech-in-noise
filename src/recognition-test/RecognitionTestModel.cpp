@@ -6,11 +6,13 @@ namespace recognition_test {
     RecognitionTestModel::RecognitionTestModel(
         MaskerPlayer *maskerPlayer,
         StimulusList *list,
-        StimulusPlayer *stimulusPlayer
+        StimulusPlayer *stimulusPlayer,
+        OutputFile *outputFile
     ) :
         maskerPlayer{maskerPlayer},
         list{list},
-        stimulusPlayer{stimulusPlayer}
+        stimulusPlayer{stimulusPlayer},
+        outputFile{outputFile}
     {
         maskerPlayer->subscribe(this);
         stimulusPlayer->subscribe(this);
@@ -77,8 +79,11 @@ namespace recognition_test {
         return maskerPlayer->audioDeviceDescriptions();
     }
     
-    void RecognitionTestModel::submitResponse(const SubjectResponse &) { 
-        ;
+    void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
+        av_coordinated_response_measure::Trial trial;
+        trial.subjectColor = response.color;
+        trial.subjectNumber = response.number;
+        outputFile->writeTrial(trial);
     }
 }
 

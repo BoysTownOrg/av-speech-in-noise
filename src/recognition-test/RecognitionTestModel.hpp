@@ -53,6 +53,12 @@ namespace recognition_test {
         virtual bool empty() = 0;
         virtual std::string next() = 0;
     };
+    
+    class OutputFile {
+    public:
+        virtual ~OutputFile() = default;
+        virtual void writeTrial(const av_coordinated_response_measure::Trial &) = 0;
+    };
 
     class RecognitionTestModel :
         public av_coordinated_response_measure::Model,
@@ -63,11 +69,13 @@ namespace recognition_test {
         MaskerPlayer *maskerPlayer;
         StimulusList *list;
         StimulusPlayer *stimulusPlayer;
+        OutputFile *outputFile;
     public:
         RecognitionTestModel(
             MaskerPlayer *,
             StimulusList *,
-            StimulusPlayer *
+            StimulusPlayer *,
+            OutputFile *
         );
         void initializeTest(const Test &) override;
         void playTrial(const Trial &) override;

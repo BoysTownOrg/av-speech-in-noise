@@ -209,15 +209,34 @@ namespace {
             next_ = std::move(s);
         }
     };
+    
+    class OutputFileStub : public recognition_test::OutputFile {
+        av_coordinated_response_measure::Trial trialWritten_{};
+    public:
+        auto &trialWritten() const {
+            return trialWritten_;
+        }
+        
+        void writeTrial(const av_coordinated_response_measure::Trial &trial) override {
+            trialWritten_ = trial;
+        }
+    };
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
         recognition_test::RecognitionTestModel::Test testParameters;
         recognition_test::RecognitionTestModel::Trial trialParameters;
+        recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
         StimulusPlayerStub stimulusPlayer{};
         MaskerPlayerStub maskerPlayer{};
         StimulusListStub list{};
-        recognition_test::RecognitionTestModel model{&maskerPlayer, &list, &stimulusPlayer};
+        OutputFileStub outputFile{};
+        recognition_test::RecognitionTestModel model{
+            &maskerPlayer,
+            &list,
+            &stimulusPlayer,
+            &outputFile
+        };
         
         RecognitionTestModelTests() {
             setAudioDeviceDescriptions({"valid"});
@@ -230,6 +249,10 @@ namespace {
         
         void playTrial() {
             model.playTrial(trialParameters);
+        }
+        
+        void submitResponse() {
+            model.submitResponse(subjectResponse);
         }
         
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
@@ -428,6 +451,17 @@ namespace {
     ) {
         setMaskerIsPlaying();
         assertListNotAdvancedAfterPlayingTrial();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseWritesTrial
+    ) {
+        subjectResponse.color = av_coordinated_response_measure::Color::green;
+        subjectResponse.number = 1;
+        submitResponse();
+        EXPECT_EQ(1, outputFile.trialWritten().subjectNumber);
+        EXPECT_EQ(av_coordinated_response_measure::Color::green, outputFile.trialWritten().subjectColor);
     }
 
     TEST_F(
