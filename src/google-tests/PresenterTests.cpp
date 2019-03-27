@@ -328,10 +328,19 @@ namespace {
         };
         
         class SubjectViewStub : public Subject {
-            std::string numberResponse_{};
+            std::string numberResponse_{"0"};
             bool greenResponse_{};
             bool responseButtonsShown_{};
+            bool nextTrialButtonShown_{};
         public:
+            void showNextTrialButton() override {
+                nextTrialButtonShown_ = true;
+            }
+            
+            auto nextTrialButtonShown() const {
+                return nextTrialButtonShown_;
+            }
+            
             auto responseButtonsShown() const {
                 return responseButtonsShown_;
             }
@@ -542,6 +551,10 @@ namespace {
         void assertResponseButtonsShown() {
             EXPECT_TRUE(subjectView.responseButtonsShown());
         }
+        
+        void assertNextTrialButtonShown() {
+            EXPECT_TRUE(subjectView.nextTrialButtonShown());
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -705,6 +718,11 @@ namespace {
     TEST_F(PresenterTests, trialCompleteShowsResponseButtons) {
         completeTrial();
         assertResponseButtonsShown();
+    }
+
+    TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
+        submitResponse();
+        assertNextTrialButtonShown();
     }
 
     class RequestFailingModel : public av_coordinated_response_measure::Model {

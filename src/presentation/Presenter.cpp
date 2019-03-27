@@ -62,6 +62,7 @@ namespace presentation {
             p.color = av_coordinated_response_measure::Color::green;
         p.number = std::stoi(view->subject()->numberResponse());
         model->submitResponse(p);
+        view->subject()->showNextTrialButton();
     }
     
     void Presenter::browseForStimulusList() {

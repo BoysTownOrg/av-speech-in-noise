@@ -17,8 +17,8 @@ class MacOsDirectoryReader : public stimulus_list::DirectoryReader {
             directory.c_str()
             encoding:[NSString defaultCStringEncoding]
         ];
-        const auto contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:
-            path
+        const auto contents = [[NSFileManager defaultManager]
+            contentsOfDirectoryAtPath: path
             error: nil
         ];
         for (id thing in contents)
@@ -45,7 +45,7 @@ int main() {
     AvFoundationAudioPlayer audioPlayer;
     masker_player::RandomizedMaskerPlayer maskerPlayer{&audioPlayer};
     maskerPlayer.setFadeInOutSeconds(0.5);
-    FileWriter writer{};
+    FileWriter writer;
     recognition_test::OutputFileImpl outputFile{&writer};
     recognition_test::RecognitionTestModel model{
         &maskerPlayer,
