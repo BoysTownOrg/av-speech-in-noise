@@ -33,6 +33,7 @@ namespace presentation {
             virtual void showResponseButtons() = 0;
             virtual void hideResponseButtons() = 0;
             virtual void showNextTrialButton() = 0;
+            virtual void hideNextTrialButton() = 0;
         };
 
         class Tester {

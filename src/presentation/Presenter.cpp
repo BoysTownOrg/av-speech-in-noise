@@ -54,6 +54,7 @@ namespace presentation {
     }
     
     void Presenter::playTrial() {
+        view->subject()->hideNextTrialButton();
         tester.playTrial();
     }
     

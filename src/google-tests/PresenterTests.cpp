@@ -333,7 +333,16 @@ namespace {
             bool responseButtonsShown_{};
             bool nextTrialButtonShown_{};
             bool responseButtonsHidden_{};
+            bool nextTrialButtonHidden_{};
         public:
+            void hideNextTrialButton() override {
+                nextTrialButtonHidden_ = true;
+            }
+            
+            auto nextTrialButtonHidden() const {
+                return nextTrialButtonHidden_;
+            }
+            
             void hideResponseButtons() override {
                 responseButtonsHidden_ = true;
             }
@@ -568,6 +577,10 @@ namespace {
         void assertResponseButtonsHidden() {
             EXPECT_TRUE(subjectView.responseButtonsHidden());
         }
+        
+        void assertNextTrialButtonHidden() {
+            EXPECT_TRUE(subjectView.nextTrialButtonHidden());
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -675,6 +688,11 @@ namespace {
     TEST_F(PresenterTests, playingTrialPlaysTrial) {
         playTrial();
         EXPECT_TRUE(model.trialPlayed());
+    }
+
+    TEST_F(PresenterTests, playingTrialHidesNextTrialButton) {
+        playTrial();
+        assertNextTrialButtonHidden();
     }
 
     TEST_F(PresenterTests, playingTrialPassesAudioDevice) {
