@@ -91,19 +91,24 @@ namespace {
         public recognition_test::MaskerPlayer::EventListener
     {
         int notifications_{};
-        bool notified_{};
+        bool fadeInCompleted_{};
+        bool fadeOutCompleted_{};
     public:
         void fadeInComplete() override {
-            notified_ = true;
+            fadeInCompleted_ = true;
             ++notifications_;
         }
         
         void fadeOutComplete() override {
-            
+            fadeOutCompleted_ = true;
         }
         
-        auto notified() const {
-            return notified_;
+        auto fadeInCompleted() const {
+            return fadeInCompleted_;
+        }
+        
+        auto fadeOutCompleted() const {
+            return fadeOutCompleted_;
         }
         
         auto notifications() const {
@@ -258,13 +263,13 @@ namespace {
         audioPlayer.setSampleRateHz(N - 1);
         leftChannel = { 0, 1, 2 };
         fillAudioBuffer();
-        EXPECT_FALSE(listener.notified());
+        EXPECT_FALSE(listener.fadeInCompleted());
         leftChannel = { 3, 4, 5 };
         fillAudioBuffer();
-        EXPECT_FALSE(listener.notified());
+        EXPECT_FALSE(listener.fadeInCompleted());
         leftChannel = { 6 };
         fillAudioBuffer();
-        EXPECT_TRUE(listener.notified());
+        EXPECT_TRUE(listener.fadeInCompleted());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnce) {
@@ -276,6 +281,22 @@ namespace {
         fillAudioBuffer();
         fillAudioBuffer();
         EXPECT_EQ(1, listener.notifications());
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
+        player.setFadeInOutSeconds(0.5);
+        auto N = 6/0.5 + 1;
+        audioPlayer.setSampleRateHz(N - 1);
+        player.fadeOut();
+        leftChannel = { 0, 1, 2 };
+        fillAudioBuffer();
+        EXPECT_FALSE(listener.fadeOutCompleted());
+        leftChannel = { 3, 4, 5 };
+        fillAudioBuffer();
+        EXPECT_FALSE(listener.fadeOutCompleted());
+        leftChannel = { 6 };
+        fillAudioBuffer();
+        EXPECT_TRUE(listener.fadeOutCompleted());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {

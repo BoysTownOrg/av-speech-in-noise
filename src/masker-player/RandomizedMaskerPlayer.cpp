@@ -49,8 +49,10 @@ namespace masker_player {
                 x *= transitionScale() * audioScale;
         if (wasFadingIn && !fadingIn)
             listener->fadeInComplete();
-        if (wasFadingOut && !fadingOut)
+        if (wasFadingOut && !fadingOut) {
+            listener->fadeOutComplete();
             player->stop();
+        }
     }
     
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
