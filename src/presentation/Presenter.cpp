@@ -17,6 +17,7 @@ namespace presentation {
         view{view}
     {
         view->subscribe(this);
+        model->subscribe(this);
     }
 
     void Presenter::run() {
@@ -74,6 +75,11 @@ namespace presentation {
         if (!view->browseCancelled())
             view->testSetup()->setMasker(result);
     }
+    
+    void Presenter::trialComplete() { 
+        view->subject()->showResponseButtons();
+    }
+    
 
     Presenter::TestSetup::TestSetup(av_coordinated_response_measure::Model *model, View::TestSetup *view) :
         model{model},

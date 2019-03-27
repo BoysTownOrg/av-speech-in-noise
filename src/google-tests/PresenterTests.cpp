@@ -19,9 +19,14 @@ namespace {
         Trial trialParameters_{};
         SubjectResponse responseParameters_{};
         std::vector<std::string> audioDevices_{};
+        EventListener *listener_{};
         bool testComplete_{};
         bool trialPlayed_{};
     public:
+        void completeTrial() {
+            listener_->trialComplete();
+        }
+        
         void setAudioDevices(std::vector<std::string> v) {
             audioDevices_ = std::move(v);
         }
@@ -57,6 +62,10 @@ namespace {
         
         void submitResponse(const SubjectResponse &p) override {
             responseParameters_ = p;
+        }
+        
+        void subscribe(EventListener *listener) override {
+            listener_ = listener;
         }
         
         auto trialPlayed() const {
@@ -321,7 +330,12 @@ namespace {
         class SubjectViewStub : public Subject {
             std::string numberResponse_{};
             bool greenResponse_{};
+            bool responseButtonsShown_{};
         public:
+            auto responseButtonsShown() const {
+                return responseButtonsShown_;
+            }
+            
             void setGreenResponse() {
                 greenResponse_ = true;
             }
@@ -336,6 +350,10 @@ namespace {
             
             bool greenResponse() override {
                 return greenResponse_;
+            }
+            
+            void showResponseButtons() override {
+                responseButtonsShown_ = true;
             }
         };
     };
@@ -516,6 +534,14 @@ namespace {
             runUseCase(useCase);
             assertEqual("a", useCase->entry(view));
         }
+        
+        void completeTrial() {
+            model.completeTrial();
+        }
+        
+        void assertResponseButtonsShown() {
+            EXPECT_TRUE(subjectView.responseButtonsShown());
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -676,6 +702,11 @@ namespace {
         assertCancellingBrowseDoesNotChangePath(&browinsgForMasker);
     }
 
+    TEST_F(PresenterTests, trialCompleteShowsResponseButtons) {
+        completeTrial();
+        assertResponseButtonsShown();
+    }
+
     class RequestFailingModel : public av_coordinated_response_measure::Model {
         std::string errorMessage{};
     public:
@@ -697,6 +728,7 @@ namespace {
         
         bool testComplete() override { return {}; }
         std::vector<std::string> audioDevices() override { return {}; }
+        void subscribe(EventListener *) override {}
     };
 
     class PresenterFailureTests : public ::testing::Test {

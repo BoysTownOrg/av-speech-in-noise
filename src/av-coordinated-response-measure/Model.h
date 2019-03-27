@@ -23,7 +23,14 @@ namespace av_coordinated_response_measure {
     
     class Model {
     public:
+        class EventListener {
+        public:
+            virtual ~EventListener() = default;
+            virtual void trialComplete() = 0;
+        };
+        
         virtual ~Model() = default;
+        virtual void subscribe(EventListener *) = 0;
         RUNTIME_ERROR(RequestFailure)
         
         struct Test {

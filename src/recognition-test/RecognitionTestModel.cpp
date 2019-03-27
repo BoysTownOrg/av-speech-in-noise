@@ -85,5 +85,10 @@ namespace recognition_test {
         trial.subjectNumber = response.number;
         outputFile->writeTrial(trial);
     }
+    
+    void RecognitionTestModel::subscribe(Model::EventListener *) { 
+        ;
+    }
+    
 }
 

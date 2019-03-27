@@ -30,6 +30,7 @@ namespace presentation {
             virtual ~Subject() = default;
             virtual std::string numberResponse() = 0;
             virtual bool greenResponse() = 0;
+            virtual void showResponseButtons() = 0;
         };
 
         class Tester {
@@ -75,7 +76,10 @@ namespace presentation {
         virtual DialogResponse showConfirmationDialog() = 0;
     };
 
-    class Presenter : public View::EventListener {
+    class Presenter :
+        public View::EventListener,
+        public av_coordinated_response_measure::Model::EventListener
+    {
     public:
         class TestSetup {
         public:
@@ -113,6 +117,7 @@ namespace presentation {
         void submitResponse() override;
         void browseForStimulusList() override;
         void browseForMasker() override;
+        void trialComplete() override;
         
     private:
         RUNTIME_ERROR(BadInput)

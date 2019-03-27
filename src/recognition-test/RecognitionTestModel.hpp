@@ -82,6 +82,7 @@ namespace recognition_test {
         void submitResponse(const SubjectResponse &) override;
         bool testComplete() override;
         std::vector<std::string> audioDevices() override;
+        void subscribe(Model::EventListener *) override;
         void fadeInComplete() override;
         void playbackComplete() override;
     private:
