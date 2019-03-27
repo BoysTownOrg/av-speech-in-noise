@@ -31,7 +31,7 @@ namespace stimulus_player {
         public recognition_test::StimulusPlayer,
         public VideoPlayer::EventListener
     {
-        double audioScale{};
+        std::atomic<double> audioScale{};
         VideoPlayer *player;
         StimulusPlayer::EventListener *listener_{};
     public:

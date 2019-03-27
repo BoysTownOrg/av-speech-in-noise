@@ -33,7 +33,7 @@ namespace stimulus_player {
     }
 
     void StimulusPlayerImpl::setLevel_dB(double x) {
-        audioScale = std::pow(10, x/20);
+        audioScale.store(std::pow(10, x/20));
     }
     
     void StimulusPlayerImpl::playbackComplete() { 
@@ -43,9 +43,10 @@ namespace stimulus_player {
     void StimulusPlayerImpl::fillAudioBuffer(
         const std::vector<gsl::span<float>> &audio
     ) {
+        auto scale = audioScale.load();
         for (auto channel : audio)
             for (auto &x : channel)
-                x *= audioScale;
+                x *= scale;
     }
     
     void StimulusPlayerImpl::setAudioDevice(std::string device) {
