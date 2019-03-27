@@ -3,10 +3,12 @@
 #include "CocoaView.h"
 #include <presentation/Presenter.h>
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/OutputFileImpl.hpp>
 #include <masker-player/RandomizedMaskerPlayer.hpp>
 #include <stimulus-list/RandomizedStimulusList.hpp>
 #include <stimulus-list/FileFilterDecorator.hpp>
 #include <stimulus-player/StimulusPlayerImpl.hpp>
+#include <fstream>
 
 class MacOsDirectoryReader : public stimulus_list::DirectoryReader {
     std::vector<std::string> filesIn(std::string directory) override {
@@ -25,6 +27,14 @@ class MacOsDirectoryReader : public stimulus_list::DirectoryReader {
     }
 };
 
+class FileWriter : public recognition_test::Writer {
+    std::ofstream file{};
+public:
+    void write(std::string s) override {
+        file << s;
+    }
+};
+
 int main() {
     MacOsDirectoryReader reader;
     stimulus_list::FileFilterDecorator filter{&reader, ".mov"};
@@ -35,7 +45,14 @@ int main() {
     AvFoundationAudioPlayer audioPlayer;
     masker_player::RandomizedMaskerPlayer maskerPlayer{&audioPlayer};
     maskerPlayer.setFadeInOutSeconds(0.5);
-    recognition_test::RecognitionTestModel model{&maskerPlayer, &list, &stimulusPlayer};
+    FileWriter writer{};
+    recognition_test::OutputFileImpl outputFile{&writer};
+    recognition_test::RecognitionTestModel model{
+        &maskerPlayer,
+        &list,
+        &stimulusPlayer,
+        &outputFile
+    };
     CocoaView view;
     presentation::Presenter presenter{&model, &view};
     presenter.run();

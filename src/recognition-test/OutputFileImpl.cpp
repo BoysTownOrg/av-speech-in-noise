@@ -71,5 +71,4 @@ namespace recognition_test {
         stream.insertNewLine();
         writer->write(stream.str());
     }
-    
 }
