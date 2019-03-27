@@ -35,7 +35,7 @@ namespace masker_player {
         int hannCounter{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
-        bool fadingOut{};
+        std::atomic<bool> fadingOut{};
         bool fadingIn{};
     public:
         RandomizedMaskerPlayer(AudioPlayer *);
