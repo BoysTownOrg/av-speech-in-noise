@@ -14,7 +14,8 @@ namespace recognition_test {
         Writer *writer;
     public:
         OutputFileImpl(Writer *);
-        void writeTrial(const av_coordinated_response_measure::Trial &);
+        void writeTrial(const av_coordinated_response_measure::Trial &) override;
+        void writeTrialHeading();
     private:
         std::string colorName(av_coordinated_response_measure::Color);
     };

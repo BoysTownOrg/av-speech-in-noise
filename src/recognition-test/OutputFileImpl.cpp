@@ -54,4 +54,22 @@ namespace recognition_test {
             return "red";
         }
     }
+    
+    void OutputFileImpl::writeTrialHeading() {
+        TrialStream stream;
+        stream.insert("SNR (dB)");
+        stream.insertCommaAndSpace();
+        stream.insert("correct number");
+        stream.insertCommaAndSpace();
+        stream.insert("subject number");
+        stream.insertCommaAndSpace();
+        stream.insert("correct color");
+        stream.insertCommaAndSpace();
+        stream.insert("subject color");
+        stream.insertCommaAndSpace();
+        stream.insert("reversals");
+        stream.insertNewLine();
+        writer->write(stream.str());
+    }
+    
 }
