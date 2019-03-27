@@ -198,14 +198,15 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
-        player.setFadeInOutSeconds(0.5);
+        player.setFadeInOutSeconds(2);
         player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
+        audioPlayer.setSampleRateHz(3);
+        auto halfWindowLength = 2 * 3 + 1;
+        leftChannel.resize(halfWindowLength);
+        std::iota(leftChannel.begin(), leftChannel.end(), 1);
         fillAudioBuffer();
         assertEqual(
-            product(halfHannWindow(N), { 0, 1, 2, 3, 4, 5, 6 }),
+            product(halfHannWindow(2*halfWindowLength-1), { 1, 2, 3, 4, 5, 6, 7 }),
             leftChannel,
             1e-6f
         );
