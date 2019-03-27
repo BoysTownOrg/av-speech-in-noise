@@ -32,11 +32,11 @@ namespace masker_player {
     {
         std::atomic<double> audioScale{1};
         double fadeInOutSeconds{};
-        int hannCounter{};
+        std::atomic<int> hannCounter{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
         std::atomic<bool> fadingOut{};
-        bool fadingIn{};
+        std::atomic<bool> fadingIn{};
     public:
         RandomizedMaskerPlayer(AudioPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;

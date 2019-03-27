@@ -13,8 +13,10 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::fadeIn() {
-        fadingIn = true;
-        hannCounter = 0;
+        auto expected = false;
+        while (fadingIn.compare_exchange_weak(expected, true))
+            ;
+        hannCounter.store(0);
         player->play();
         //player->scheduleCallbackAfterSeconds(0.1);
     }
@@ -23,7 +25,7 @@ namespace masker_player {
         auto expected = false;
         while (fadingOut.compare_exchange_weak(expected, true))
             ;
-        hannCounter = levelTransitionSamples();
+        hannCounter.store(levelTransitionSamples());
         //player->scheduleCallbackAfterSeconds(0.1);
     }
 
@@ -72,19 +74,20 @@ namespace masker_player {
     
     double RandomizedMaskerPlayer::transitionScale() {
         const auto pi = std::acos(-1);
+        auto counter = hannCounter.load();
         auto halfWindowLength = levelTransitionSamples();
         const auto squareRoot = halfWindowLength
-            ? std::sin((pi*hannCounter) / (2*halfWindowLength))
+            ? std::sin((pi*counter) / (2*halfWindowLength))
             : 1;
         
-        if (hannCounter == halfWindowLength)
+        if (counter == halfWindowLength)
         //  fadeInComplete.store(true);
-            fadingIn = false;
-        if (hannCounter == 2*halfWindowLength)
+            fadingIn.store(false);
+        if (counter == 2*halfWindowLength)
         //  fadeOutComplete.store(true);
             fadingOut.store(false);
         if (fadingIn || fadingOut)
-            ++hannCounter;
+            hannCounter.store(counter+1);
         return squareRoot * squareRoot;
     }
     
