@@ -63,6 +63,7 @@ namespace presentation {
         p.number = std::stoi(view->subject()->numberResponse());
         model->submitResponse(p);
         view->subject()->showNextTrialButton();
+        view->subject()->hideResponseButtons();
     }
     
     void Presenter::browseForStimulusList() {

@@ -332,7 +332,16 @@ namespace {
             bool greenResponse_{};
             bool responseButtonsShown_{};
             bool nextTrialButtonShown_{};
+            bool responseButtonsHidden_{};
         public:
+            void hideResponseButtons() override {
+                responseButtonsHidden_ = true;
+            }
+            
+            auto responseButtonsHidden() const {
+                return responseButtonsHidden_;
+            }
+            
             void showNextTrialButton() override {
                 nextTrialButtonShown_ = true;
             }
@@ -555,6 +564,10 @@ namespace {
         void assertNextTrialButtonShown() {
             EXPECT_TRUE(subjectView.nextTrialButtonShown());
         }
+        
+        void assertResponseButtonsHidden() {
+            EXPECT_TRUE(subjectView.responseButtonsHidden());
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -723,6 +736,11 @@ namespace {
     TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
         submitResponse();
         assertNextTrialButtonShown();
+    }
+
+    TEST_F(PresenterTests, subjectResponseHidesResponseButtons) {
+        submitResponse();
+        assertResponseButtonsHidden();
     }
 
     class RequestFailingModel : public av_coordinated_response_measure::Model {
