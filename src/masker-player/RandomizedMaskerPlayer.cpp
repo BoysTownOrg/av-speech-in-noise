@@ -16,11 +16,13 @@ namespace masker_player {
         fadingIn = true;
         hannCounter = 0;
         player->play();
+        //player->scheduleCallbackAfterSeconds(0.1);
     }
 
     void RandomizedMaskerPlayer::fadeOut() {
         fadingOut = true;
         hannCounter = levelTransitionSamples();
+        //player->scheduleCallbackAfterSeconds(0.1);
     }
 
     int RandomizedMaskerPlayer::levelTransitionSamples() {
@@ -55,6 +57,20 @@ namespace masker_player {
             player->stop();
         }
     }
+    
+    /*
+    // low priority thread
+    void RandomizedMaskerPlayer::timerCallback() {
+        if (fadeInComplete.compare_exchange_strong(false, true))
+            listener->fadeInComplete();
+        else if (fadeOutComplete.compare_exchange_strong(false, true)) {
+            listener->fadeOutComplete();
+            player->stop();
+        }
+        else
+            player->scheduleCallbackAfterSeconds(0.1);
+    }
+    */
     
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
         fadeInOutSeconds = x;
