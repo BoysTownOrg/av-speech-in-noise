@@ -98,6 +98,10 @@ namespace {
             ++notifications_;
         }
         
+        void fadeOutComplete() override {
+            
+        }
+        
         auto notified() const {
             return notified_;
         }

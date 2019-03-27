@@ -35,6 +35,7 @@ namespace recognition_test {
         public:
             virtual ~EventListener() = default;
             virtual void fadeInComplete() = 0;
+            virtual void fadeOutComplete() = 0;
         };
         
         virtual void subscribe(EventListener *) = 0;
@@ -70,6 +71,7 @@ namespace recognition_test {
         StimulusList *list;
         StimulusPlayer *stimulusPlayer;
         OutputFile *outputFile;
+        Model::EventListener *listener_{};
     public:
         RecognitionTestModel(
             MaskerPlayer *,
@@ -84,6 +86,7 @@ namespace recognition_test {
         std::vector<std::string> audioDevices() override;
         void subscribe(Model::EventListener *) override;
         void fadeInComplete() override;
+        void fadeOutComplete() override;
         void playbackComplete() override;
     private:
         void prepareVideo(const Test &);

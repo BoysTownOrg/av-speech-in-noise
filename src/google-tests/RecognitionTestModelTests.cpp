@@ -17,6 +17,10 @@ namespace {
         bool setDeviceCalled_{};
         bool throwInvalidAudioDeviceWhenDeviceSet_{};
     public:
+        void fadeOutComplete() {
+            listener_->fadeOutComplete();
+        }
+        
         void throwInvalidAudioDeviceWhenDeviceSet() {
             throwInvalidAudioDeviceWhenDeviceSet_ = true;
         }
@@ -221,6 +225,18 @@ namespace {
             trialWritten_ = trial;
         }
     };
+    
+    class EventListenerStub : public av_coordinated_response_measure::Model::EventListener {
+        bool notified_{};
+    public:
+        void trialComplete() override {
+            notified_ = true;
+        }
+        
+        auto notified() const {
+            return notified_;
+        }
+    };
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
@@ -237,8 +253,10 @@ namespace {
             &stimulusPlayer,
             &outputFile
         };
+        EventListenerStub listener{};
         
         RecognitionTestModelTests() {
+            model.subscribe(&listener);
             setAudioDeviceDescriptions({"valid"});
             trialParameters.audioDevice = "valid";
         }
@@ -378,6 +396,11 @@ namespace {
     TEST_F(RecognitionTestModelTests, stimulusPlaybackCompleteFadesOutMasker) {
         stimulusPlayer.playbackComplete();
         EXPECT_TRUE(maskerPlayer.fadeOutCalled());
+    }
+
+    TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
+        maskerPlayer.fadeOutComplete();
+        EXPECT_TRUE(listener.notified());
     }
 
     TEST_F(

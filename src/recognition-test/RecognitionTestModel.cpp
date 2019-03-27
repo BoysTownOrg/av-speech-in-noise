@@ -86,9 +86,12 @@ namespace recognition_test {
         outputFile->writeTrial(trial);
     }
     
-    void RecognitionTestModel::subscribe(Model::EventListener *) { 
-        ;
+    void RecognitionTestModel::subscribe(Model::EventListener *listener) {
+        listener_ = listener;
     }
     
+    void RecognitionTestModel::fadeOutComplete() { 
+        listener_->trialComplete();
+    }
 }
 
