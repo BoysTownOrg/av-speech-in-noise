@@ -2,30 +2,34 @@
 #include <sstream>
 
 namespace recognition_test {
-    class TrialStream {
-        std::stringstream stream;
-    public:
-        template<typename T>
-        void insert(T item) {
-            stream << item;
-        }
-        
-        void insertCommaAndSpace() {
-            stream << ", ";
-        }
-        
-        void insertNewLine() {
-            stream << "\n";
-        }
-        
-        auto str() const {
-            return stream.str();
-        }
-    };
+    namespace {
+        class TrialStream {
+            std::stringstream stream;
+        public:
+            template<typename T>
+            void insert(T item) {
+                stream << item;
+            }
+            
+            void insertCommaAndSpace() {
+                stream << ", ";
+            }
+            
+            void insertNewLine() {
+                stream << "\n";
+            }
+            
+            auto str() const {
+                return stream.str();
+            }
+        };
+    }
     
     OutputFileImpl::OutputFileImpl(Writer *writer) : writer{writer} {}
 
-    void OutputFileImpl::writeTrial(const av_coordinated_response_measure::Trial &trial) {
+    void OutputFileImpl::writeTrial(
+        const av_coordinated_response_measure::Trial &trial
+    ) {
         TrialStream stream;
         stream.insert(trial.SNR_dB);
         stream.insertCommaAndSpace();
