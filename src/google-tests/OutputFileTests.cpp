@@ -1,69 +1,8 @@
-#include <av-coordinated-response-measure/Model.h>
-#include <sstream>
-
-class Writer {
-public:
-    virtual ~Writer() = default;
-    virtual void write(std::string) = 0;
-};
-
-class TrialStream {
-    std::stringstream stream;
-public:
-    template<typename T>
-    void insert(T item) {
-        stream << item;
-    }
-    
-    void insertCommaAndSpace() {
-        stream << ", ";
-    }
-    
-    void insertNewLine() {
-        stream << "\n";
-    }
-    
-    auto str() const {
-        return stream.str();
-    }
-};
-
-class OutputFile {
-    Writer *writer;
-public:
-    OutputFile(Writer *writer) : writer{writer} {}
-    void writeTrial(const av_coordinated_response_measure::Trial &trial) {
-        TrialStream stream;
-        stream.insert(trial.SNR_dB);
-        stream.insertCommaAndSpace();
-        stream.insert(trial.correctNumber);
-        stream.insertCommaAndSpace();
-        stream.insert(trial.subjectNumber);
-        stream.insertCommaAndSpace();
-        stream.insert(colorName(trial.correctColor));
-        stream.insertCommaAndSpace();
-        stream.insert(colorName(trial.subjectColor));
-        stream.insertCommaAndSpace();
-        stream.insert(trial.reversals);
-        stream.insertNewLine();
-        writer->write(stream.str());
-    }
-    
-private:
-    std::string colorName(av_coordinated_response_measure::Color c) {
-        switch (c) {
-        case av_coordinated_response_measure::Color::green:
-            return "green";
-        case av_coordinated_response_measure::Color::red:
-            return "red";
-        }
-    }
-};
-
 #include "assert-utility.h"
+#include <recognition-test/OutputFileImpl.hpp>
 #include <gtest/gtest.h>
 
-class WriterStub : public Writer {
+class WriterStub : public recognition_test::Writer {
     std::string written_{};
 public:
     auto written() const {
@@ -78,7 +17,7 @@ public:
 class OutputFileTests : public ::testing::Test {
 protected:
     WriterStub writer{};
-    OutputFile file{&writer};
+    recognition_test::OutputFileImpl file{&writer};
     av_coordinated_response_measure::Trial trial{};
 };
 

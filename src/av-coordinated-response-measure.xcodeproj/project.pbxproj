@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2614B5A222381DF80083987B /* CocoaView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A022381D850083987B /* CocoaView.mm */; };
 		2614B5A5223824FB0083987B /* AvFoundationPlayers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A3223824960083987B /* AvFoundationPlayers.mm */; };
+		2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2623A153224BD037007C99F2 /* OutputFileImpl.cpp */; };
+		2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2623A154224BD037007C99F2 /* OutputFileImpl.hpp */; };
 		2646F83421DFDF5500F378DE /* RandomizedStimulusListTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83321DFDF5500F378DE /* RandomizedStimulusListTests.cpp */; };
 		2646F84021DFEA2300F378DE /* RandomizedStimulusList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedStimulusList.cpp */; };
 		2646F84121DFEA5E00F378DE /* libstimulus-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libstimulus-list.dylib */; };
@@ -61,6 +63,8 @@
 		2614B59F2238108E0083987B /* AvFoundationPlayers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AvFoundationPlayers.h; sourceTree = "<group>"; };
 		2614B5A022381D850083987B /* CocoaView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaView.mm; sourceTree = "<group>"; };
 		2614B5A3223824960083987B /* AvFoundationPlayers.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AvFoundationPlayers.mm; sourceTree = "<group>"; };
+		2623A153224BD037007C99F2 /* OutputFileImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutputFileImpl.cpp; sourceTree = "<group>"; };
+		2623A154224BD037007C99F2 /* OutputFileImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFileImpl.hpp; sourceTree = "<group>"; };
 		2646F83321DFDF5500F378DE /* RandomizedStimulusListTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedStimulusListTests.cpp; sourceTree = "<group>"; };
 		2646F83921DFEA0400F378DE /* libstimulus-list.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libstimulus-list.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2646F83E21DFEA2300F378DE /* RandomizedStimulusList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedStimulusList.cpp; sourceTree = "<group>"; };
@@ -195,6 +199,8 @@
 			children = (
 				26A2236E21DD34A7007D6511 /* RecognitionTestModel.cpp */,
 				26A2236F21DD34A7007D6511 /* RecognitionTestModel.hpp */,
+				2623A153224BD037007C99F2 /* OutputFileImpl.cpp */,
+				2623A154224BD037007C99F2 /* OutputFileImpl.hpp */,
 			);
 			path = "recognition-test";
 			sourceTree = "<group>";
@@ -307,6 +313,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -533,6 +540,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */,
 				26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
