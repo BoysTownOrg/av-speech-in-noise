@@ -50,6 +50,7 @@ namespace presentation {
         testSetup.initializeTest();
         testSetup.tuneOut();
         tester.listen();
+        view->subject()->showNextTrialButton();
     }
     
     void Presenter::playTrial() {

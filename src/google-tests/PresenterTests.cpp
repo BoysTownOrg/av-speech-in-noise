@@ -656,6 +656,11 @@ namespace {
         assertTesterViewShown();
     }
 
+    TEST_F(PresenterTests, confirmTestSetupShowsNextTrialButton) {
+        confirmTestSetup();
+        assertNextTrialButtonShown();
+    }
+
     TEST_F(PresenterTests, openTestShowsTesterView) {
         view.openTest();
         assertTesterViewShown();
