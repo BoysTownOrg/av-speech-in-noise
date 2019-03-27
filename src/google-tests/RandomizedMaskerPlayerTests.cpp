@@ -90,16 +90,18 @@ namespace {
     class MaskerPlayerListenerStub :
         public recognition_test::MaskerPlayer::EventListener
     {
-        int notifications_{};
+        int fadeInCompletions_{};
+        int fadeOutCompletions_{};
         bool fadeInCompleted_{};
         bool fadeOutCompleted_{};
     public:
         void fadeInComplete() override {
             fadeInCompleted_ = true;
-            ++notifications_;
+            ++fadeInCompletions_;
         }
         
         void fadeOutComplete() override {
+            ++fadeOutCompletions_;
             fadeOutCompleted_ = true;
         }
         
@@ -111,8 +113,12 @@ namespace {
             return fadeOutCompleted_;
         }
         
-        auto notifications() const {
-            return notifications_;
+        auto fadeInCompletions() const {
+            return fadeInCompletions_;
+        }
+        
+        auto fadeOutCompletions() const {
+            return fadeOutCompletions_;
         }
     };
 
@@ -280,7 +286,7 @@ namespace {
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
         fillAudioBuffer();
-        EXPECT_EQ(1, listener.notifications());
+        EXPECT_EQ(1, listener.fadeInCompletions());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
@@ -297,6 +303,17 @@ namespace {
         leftChannel = { 6 };
         fillAudioBuffer();
         EXPECT_TRUE(listener.fadeOutCompleted());
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnceForFadeOut) {
+        player.setFadeInOutSeconds(0.5);
+        auto N = 6/0.5 + 1;
+        audioPlayer.setSampleRateHz(N - 1);
+        player.fadeOut();
+        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
+        fillAudioBuffer();
+        fillAudioBuffer();
+        EXPECT_EQ(1, listener.fadeOutCompletions());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
