@@ -30,7 +30,7 @@ namespace masker_player {
         public recognition_test::MaskerPlayer,
         public AudioPlayer::EventListener
     {
-        double audioScale{1};
+        std::atomic<double> audioScale{1};
         double fadeInOutSeconds{};
         int hannCounter{};
         AudioPlayer *player;

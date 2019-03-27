@@ -36,17 +36,18 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::setLevel_dB(double x) {
-        audioScale = std::pow(10, x/20);
+        audioScale.store(std::pow(10, x/20));
     }
     
     void RandomizedMaskerPlayer::fillAudioBuffer(
         const std::vector<gsl::span<float>> &audio
     ) {
+        auto scale = audioScale.load();
         bool wasFadingIn = fadingIn;
         bool wasFadingOut = fadingOut;
         for (auto channel : audio)
             for (auto &x : channel)
-                x *= transitionScale() * audioScale;
+                x *= transitionScale() * scale;
         if (wasFadingIn && !fadingIn)
             listener->fadeInComplete();
         if (wasFadingOut && !fadingOut) {
