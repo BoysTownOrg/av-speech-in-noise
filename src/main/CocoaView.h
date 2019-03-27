@@ -93,6 +93,7 @@ public:
 class CocoaSubjectView : public presentation::View::Subject {
     CocoaView *parent_;
     NSWindow *window;
+    NSView *responseButtons;
     NSButton *lastButtonPressed;
     SubjectViewActions *actions;
 public:
@@ -100,6 +101,7 @@ public:
     void respond(id sender);
     std::string numberResponse() override;
     bool greenResponse() override;
+    void showResponseButtons() override;
     void becomeChild(CocoaView *);
 private:
     void addButtonRow(NSColor *color, int row);

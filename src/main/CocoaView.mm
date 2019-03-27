@@ -266,7 +266,7 @@ void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
             attributes:attrsDictionary
         ];
         [button setAttributedTitle:attrString];
-        [window.contentView addSubview:button];
+        [responseButtons addSubview:button];
     }
 }
 
@@ -280,6 +280,9 @@ CocoaSubjectView::CocoaSubjectView() :
             defer:YES
         ]
     },
+    responseButtons{
+        [[NSView alloc] initWithFrame:NSMakeRect(1200, 15, 800, 400)]
+    },
     actions{[SubjectViewActions alloc]}
 {
     actions.controller = this;
@@ -287,6 +290,7 @@ CocoaSubjectView::CocoaSubjectView() :
     addButtonRow([NSColor greenColor], 1);
     addButtonRow([NSColor lightGrayColor], 2);
     addButtonRow([NSColor redColor], 3);
+    [window.contentView addSubview:responseButtons];
     [window makeKeyAndOrderFront:nil];
 }
 
@@ -305,6 +309,10 @@ bool CocoaSubjectView::greenResponse() {
 void CocoaSubjectView::respond(id sender) {
     lastButtonPressed = sender;
     parent_->submitResponse();
+}
+
+void CocoaSubjectView::showResponseButtons() {
+    [responseButtons setHidden:NO];
 }
 
 @implementation SubjectViewActions
