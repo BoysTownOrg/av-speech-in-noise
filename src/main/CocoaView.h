@@ -33,6 +33,7 @@ class CocoaSubjectView;
 @interface SubjectViewActions : NSObject
 @property CocoaSubjectView *controller;
 - (void) respond:(id)sender;
+- (void) playTrial;
 @end
 
 class CocoaTesterView : public presentation::View::Tester {
@@ -94,14 +95,19 @@ class CocoaSubjectView : public presentation::View::Subject {
     CocoaView *parent_;
     NSWindow *window;
     NSView *responseButtons;
+    NSView *nextTrialButton;
     NSButton *lastButtonPressed;
     SubjectViewActions *actions;
 public:
     CocoaSubjectView();
     void respond(id sender);
+    void playTrial();
     std::string numberResponse() override;
     bool greenResponse() override;
     void showResponseButtons() override;
+    void hideResponseButtons() override;
+    void showNextTrialButton() override;
+    void hideNextTrialButton() override;
     void becomeChild(CocoaView *);
 private:
     void addButtonRow(NSColor *color, int row);

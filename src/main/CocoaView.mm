@@ -281,7 +281,10 @@ CocoaSubjectView::CocoaSubjectView() :
         ]
     },
     responseButtons{
-        [[NSView alloc] initWithFrame:NSMakeRect(1200, 15, 800, 400)]
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 800, 400)]
+    },
+    nextTrialButton{
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 800, 400)]
     },
     actions{[SubjectViewActions alloc]}
 {
@@ -290,7 +293,17 @@ CocoaSubjectView::CocoaSubjectView() :
     addButtonRow([NSColor greenColor], 1);
     addButtonRow([NSColor lightGrayColor], 2);
     addButtonRow([NSColor redColor], 3);
+    const auto button = [NSButton
+        buttonWithTitle:@"Press when ready"
+        target:actions
+        action:@selector(playTrial)
+    ];
+    [button setFrame:NSMakeRect(80*1, 80*1, 80, 80)];
+    [nextTrialButton addSubview:button];
+    [window.contentView addSubview:nextTrialButton];
     [window.contentView addSubview:responseButtons];
+    hideResponseButtons();
+    hideNextTrialButton();
     [window makeKeyAndOrderFront:nil];
 }
 
@@ -315,10 +328,33 @@ void CocoaSubjectView::showResponseButtons() {
     [responseButtons setHidden:NO];
 }
 
+void CocoaTestSetupView::browseForMasker() {
+    parent_->browseForMasker();
+}
+
+void CocoaSubjectView::hideResponseButtons() {
+    [responseButtons setHidden:YES];
+}
+
+void CocoaSubjectView::showNextTrialButton() {
+    [nextTrialButton setHidden:NO];
+}
+
+void CocoaSubjectView::hideNextTrialButton() {
+    [nextTrialButton setHidden:YES];
+}
+
+void CocoaSubjectView::playTrial() {
+    parent_->playTrial();
+}
+
 @implementation SubjectViewActions
 @synthesize controller;
 - (void)respond:(id)sender {
     controller->respond(sender);
+}
+- (void)playTrial { 
+    controller->playTrial();
 }
 @end
 
@@ -528,6 +564,3 @@ void CocoaView::browseForMasker() {
     listener->browseForMasker();
 }
 
-void CocoaTestSetupView::browseForMasker() {
-    parent_->browseForMasker();
-}
