@@ -205,6 +205,10 @@ namespace {
             leftChannel.resize(n);
             rightChannel.resize(n);
         }
+        
+        void timerCallback() {
+            audioPlayer.timerCallback();
+        }
     };
 
     TEST_F(RandomizedMaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -310,20 +314,20 @@ namespace {
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBufferMono();
-            audioPlayer.timerCallback();
+            timerCallback();
             EXPECT_FALSE(listener.fadeInCompleted());
         }
         fillAudioBufferMono();
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_TRUE(listener.fadeInCompleted());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnceForFadeIn) {
         fadeInToFullLevel();
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_EQ(1, listener.fadeInCompletions());
         fillAudioBufferMono();
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_EQ(1, listener.fadeInCompletions());
     }
 
@@ -336,11 +340,11 @@ namespace {
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBufferMono();
-            audioPlayer.timerCallback();
+            timerCallback();
             EXPECT_FALSE(listener.fadeOutCompleted());
         }
         fillAudioBufferMono();
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_TRUE(listener.fadeOutCompleted());
     }
 
@@ -349,10 +353,10 @@ namespace {
         audioPlayer.timerCallback();
         
         fadeOutToSilence();
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_EQ(1, listener.fadeOutCompletions());
         fillAudioBufferMono();
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_EQ(1, listener.fadeOutCompletions());
     }
 
@@ -365,11 +369,11 @@ namespace {
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBufferMono();
-            audioPlayer.timerCallback();
+            timerCallback();
             EXPECT_FALSE(audioPlayer.stopped());
         }
         fillAudioBufferMono();
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_TRUE(audioPlayer.stopped());
     }
 
@@ -384,7 +388,7 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, callbackSchedulesAdditionalCallback) {
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_TRUE(audioPlayer.callbackScheduled());
     }
 
@@ -392,17 +396,17 @@ namespace {
         fadeInToFullLevel();
         audioPlayer.clearCallbackCount();
         
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_FALSE(audioPlayer.callbackScheduled());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
         fadeInToFullLevel();
-        audioPlayer.timerCallback();
+        timerCallback();
         fadeOutToSilence();
         audioPlayer.clearCallbackCount();
         
-        audioPlayer.timerCallback();
+        timerCallback();
         EXPECT_FALSE(audioPlayer.callbackScheduled());
     }
 
