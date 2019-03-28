@@ -209,6 +209,14 @@ namespace {
         void timerCallback() {
             audioPlayer.timerCallback();
         }
+        
+        void assertCallbackScheduled() {
+            EXPECT_TRUE(audioPlayer.callbackScheduled());
+        }
+        
+        void assertCallbackNotScheduled() {
+            EXPECT_FALSE(audioPlayer.callbackScheduled());
+        }
     };
 
     TEST_F(RandomizedMaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -379,17 +387,17 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInSchedulesCallback) {
         fadeIn();
-        EXPECT_TRUE(audioPlayer.callbackScheduled());
+        assertCallbackScheduled();
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeOutSchedulesCallback) {
         fadeOut();
-        EXPECT_TRUE(audioPlayer.callbackScheduled());
+        assertCallbackScheduled();
     }
 
     TEST_F(RandomizedMaskerPlayerTests, callbackSchedulesAdditionalCallback) {
         timerCallback();
-        EXPECT_TRUE(audioPlayer.callbackScheduled());
+        assertCallbackScheduled();
     }
 
     TEST_F(RandomizedMaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
@@ -397,7 +405,7 @@ namespace {
         audioPlayer.clearCallbackCount();
         
         timerCallback();
-        EXPECT_FALSE(audioPlayer.callbackScheduled());
+        assertCallbackNotScheduled();
     }
 
     TEST_F(RandomizedMaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
@@ -407,7 +415,7 @@ namespace {
         audioPlayer.clearCallbackCount();
         
         timerCallback();
-        EXPECT_FALSE(audioPlayer.callbackScheduled());
+        assertCallbackNotScheduled();
     }
 
     TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceFindsIndex) {
