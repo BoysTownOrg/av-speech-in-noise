@@ -270,14 +270,10 @@ namespace {
         EXPECT_TRUE(listener.fadeInCompleted());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnce) {
-        player.setFadeInOutSeconds(0.5);
-        player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
-        fillAudioBuffer();
+    TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnceForFadeIn) {
+        fadeInToFullLevel();
         audioPlayer.timerCallback();
+        EXPECT_EQ(1, listener.fadeInCompletions());
         fillAudioBuffer();
         audioPlayer.timerCallback();
         EXPECT_EQ(1, listener.fadeInCompletions());
