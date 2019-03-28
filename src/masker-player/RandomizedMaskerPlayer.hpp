@@ -59,16 +59,18 @@ namespace masker_player {
         std::vector<std::string> audioDeviceDescriptions() override;
         void timerCallback() override;
     private:
+        void updateWindowLength();
         void checkForFadeIn();
         void checkForFadeOut();
         int levelTransitionSamples();
         void scaleAudio(const std::vector<gsl::span<float>> &);
+        bool doneFadingIn();
         void checkForFadeInComplete();
+        bool doneFadingOut();
         void checkForFadeOutComplete();
-        void advanceCounterIfFading();
-        void updateState();
-        double transitionScale();
-        double nextScale();
+        void advanceCounterIfStillFading();
+        void updateFadeState();
+        double fadeScalar();
     };
 }
 
