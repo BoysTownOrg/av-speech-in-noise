@@ -256,18 +256,15 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
         player.setFadeInOutSeconds(0.5);
+        audioPlayer.setSampleRateHz(12);
+        
         player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel = { 0, 1, 2 };
-        fillAudioBuffer();
-        audioPlayer.timerCallback();
-        EXPECT_FALSE(listener.fadeInCompleted());
-        leftChannel = { 3, 4, 5 };
-        fillAudioBuffer();
-        audioPlayer.timerCallback();
-        EXPECT_FALSE(listener.fadeInCompleted());
-        leftChannel = { 6 };
+        leftChannel.resize(1);
+        for (int i = 0; i < 0.5 * 12; ++i) {
+            fillAudioBuffer();
+            audioPlayer.timerCallback();
+            EXPECT_FALSE(listener.fadeInCompleted());
+        }
         fillAudioBuffer();
         audioPlayer.timerCallback();
         EXPECT_TRUE(listener.fadeInCompleted());
