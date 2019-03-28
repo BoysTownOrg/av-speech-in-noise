@@ -36,7 +36,7 @@ namespace masker_player {
     }
     
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
-        fadeInOutSeconds = x;
+        fadeInOutSeconds.store(x);
     }
     
     void RandomizedMaskerPlayer::setAudioDevice(std::string device) {
@@ -60,7 +60,6 @@ namespace masker_player {
     
     void RandomizedMaskerPlayer::timerCallback() {
         auto expectedFadeInComplete = true;
-        auto expectedFadeOutComplete = true;
         if (fadeInComplete.compare_exchange_strong(
             expectedFadeInComplete,
             false
@@ -68,6 +67,8 @@ namespace masker_player {
             listener->fadeInComplete();
             return;
         }
+        
+        auto expectedFadeOutComplete = true;
         if (fadeOutComplete.compare_exchange_strong(
             expectedFadeOutComplete,
             false
@@ -76,6 +77,7 @@ namespace masker_player {
             player->stop();
             return;
         }
+        
         player->scheduleCallbackAfterSeconds(0.1);
     }
     
@@ -85,11 +87,7 @@ namespace masker_player {
     ) {
         checkForFadeIn();
         checkForFadeOut();
-        
-        auto scale = audioScale.load();
-        for (auto channel : audio)
-            for (auto &x : channel)
-                x *= transitionScale() * scale;
+        scaleAudio(audio);
     }
     
     // high priority thread
@@ -117,11 +115,18 @@ namespace masker_player {
     }
     
     // high priority thread
+    void RandomizedMaskerPlayer::scaleAudio(
+        const std::vector<gsl::span<float>> &audio
+    ) {
+        auto scale = audioScale.load();
+        for (auto channel : audio)
+            for (auto &x : channel)
+                x *= transitionScale() * scale;
+    }
+    
+    // high priority thread
     double RandomizedMaskerPlayer::transitionScale() {
-        const auto pi = std::acos(-1);
-        const auto squareRoot = halfWindowLength
-            ? std::sin((pi*hannCounter) / (2*halfWindowLength))
-            : 1;
+        auto scale = nextScale();
         
         if (hannCounter == halfWindowLength && fadingIn) {
             fadeInComplete.store(true);
@@ -133,6 +138,15 @@ namespace masker_player {
         }
         if (fadingIn || fadingOut)
             ++hannCounter;
+        return scale;
+    }
+    
+    // high priority thread
+    double RandomizedMaskerPlayer::nextScale() {
+        const auto pi = std::acos(-1);
+        const auto squareRoot = halfWindowLength
+            ? std::sin((pi*hannCounter) / (2*halfWindowLength))
+            : 1;
         return squareRoot * squareRoot;
     }
 }

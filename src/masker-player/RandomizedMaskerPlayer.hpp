@@ -33,7 +33,7 @@ namespace masker_player {
         public AudioPlayer::EventListener
     {
         std::atomic<double> audioScale{1};
-        double fadeInOutSeconds{};
+        std::atomic<double> fadeInOutSeconds{};
         int hannCounter{};
         int halfWindowLength{};
         AudioPlayer *player;
@@ -62,7 +62,9 @@ namespace masker_player {
         void checkForFadeIn();
         void checkForFadeOut();
         int levelTransitionSamples();
+        void scaleAudio(const std::vector<gsl::span<float>> &);
         double transitionScale();
+        double nextScale();
     };
 }
 
