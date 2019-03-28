@@ -23,12 +23,9 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::fadeOut() {
-        if (hasBegunFadingOut || !hasBegunFadingIn)
-            return;
-        
         pleaseFadeOut.store(true);
         hasBegunFadingOut = true;
-        //player->scheduleCallbackAfterSeconds(0.1);
+        player->scheduleCallbackAfterSeconds(0.1);
     }
 
     void RandomizedMaskerPlayer::loadFile(std::string filePath) {

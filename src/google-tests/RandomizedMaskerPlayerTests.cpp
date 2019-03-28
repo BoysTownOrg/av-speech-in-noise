@@ -337,6 +337,11 @@ namespace {
         EXPECT_TRUE(audioPlayer.callbackScheduled());
     }
 
+    TEST_F(RandomizedMaskerPlayerTests, fadeOutSchedulesCallback) {
+        player.fadeOut();
+        EXPECT_TRUE(audioPlayer.callbackScheduled());
+    }
+
     TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceFindsIndex) {
         setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
         player.setAudioDevice("second");
