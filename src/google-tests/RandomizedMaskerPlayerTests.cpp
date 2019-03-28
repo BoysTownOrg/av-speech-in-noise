@@ -214,13 +214,15 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeIn) {
-        player.setFadeInOutSeconds(0.5);
+        player.setFadeInOutSeconds(4);
+        audioPlayer.setSampleRateHz(5);
+        
         player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        leftChannel.resize(4 * 5 + 1);
         fillAudioBuffer();
-        EXPECT_EQ(7, leftChannel.at(7));
+        leftChannel = { 1, 2, 3 };
+        fillAudioBuffer();
+        assertEqual({ 1, 2, 3 }, leftChannel);
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInTwice) {
