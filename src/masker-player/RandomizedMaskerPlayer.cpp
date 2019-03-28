@@ -127,17 +127,7 @@ namespace masker_player {
     // high priority thread
     double RandomizedMaskerPlayer::transitionScale() {
         auto scale = nextScale();
-        
-        if (hannCounter == halfWindowLength && fadingIn) {
-            fadeInComplete.store(true);
-            fadingIn = false;
-        }
-        if (hannCounter == 2*halfWindowLength && fadingOut) {
-            fadeOutComplete.store(true);
-            fadingOut = false;
-        }
-        if (fadingIn || fadingOut)
-            ++hannCounter;
+        updateState();
         return scale;
     }
     
@@ -148,5 +138,29 @@ namespace masker_player {
             ? std::sin((pi*hannCounter) / (2*halfWindowLength))
             : 1;
         return squareRoot * squareRoot;
+    }
+    
+    // high priority thread
+    void RandomizedMaskerPlayer::updateState() {
+        checkForFadeInComplete();
+        checkForFadeOutComplete();
+        if (fadingIn || fadingOut)
+            ++hannCounter;
+    }
+    
+    // high priority thread
+    void RandomizedMaskerPlayer::checkForFadeInComplete() {
+        if (hannCounter == halfWindowLength && fadingIn) {
+            fadeInComplete.store(true);
+            fadingIn = false;
+        }
+    }
+    
+    // high priority thread
+    void RandomizedMaskerPlayer::checkForFadeOutComplete() {
+        if (hannCounter == 2*halfWindowLength && fadingOut) {
+            fadeOutComplete.store(true);
+            fadingOut = false;
+        }
     }
 }
