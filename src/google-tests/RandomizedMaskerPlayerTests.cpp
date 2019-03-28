@@ -18,6 +18,10 @@ namespace {
         bool stopped_{};
         bool callbackScheduled_{};
     public:
+        void clearCallbackCount() {
+            callbackScheduled_ = false;
+        }
+        
         auto callbackScheduled() const {
             return callbackScheduled_;
         }
@@ -307,6 +311,8 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnceForFadeOut) {
         fadeInToFullLevel();
+        audioPlayer.timerCallback();
+        
         fadeOutToSilence();
         audioPlayer.timerCallback();
         EXPECT_EQ(1, listener.fadeOutCompletions());
@@ -345,6 +351,14 @@ namespace {
     TEST_F(RandomizedMaskerPlayerTests, callbackSchedulesAdditionalCallback) {
         audioPlayer.timerCallback();
         EXPECT_TRUE(audioPlayer.callbackScheduled());
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
+        fadeInToFullLevel();
+        audioPlayer.clearCallbackCount();
+        
+        audioPlayer.timerCallback();
+        EXPECT_FALSE(audioPlayer.callbackScheduled());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceFindsIndex) {
