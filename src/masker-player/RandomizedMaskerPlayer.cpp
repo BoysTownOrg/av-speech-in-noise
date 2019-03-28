@@ -80,8 +80,7 @@ namespace masker_player {
             hasBegunFadingIn = false;
             hasBegunFadingOut = false;
         }
-        else
-            ;//player->scheduleCallbackAfterSeconds(0.1);
+        player->scheduleCallbackAfterSeconds(0.1);
     }
     
     // high priority thread

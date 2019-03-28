@@ -342,6 +342,11 @@ namespace {
         EXPECT_TRUE(audioPlayer.callbackScheduled());
     }
 
+    TEST_F(RandomizedMaskerPlayerTests, callbackSchedulesAdditionalCallback) {
+        audioPlayer.timerCallback();
+        EXPECT_TRUE(audioPlayer.callbackScheduled());
+    }
+
     TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceFindsIndex) {
         setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
         player.setAudioDevice("second");
