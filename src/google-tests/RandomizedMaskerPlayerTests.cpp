@@ -227,12 +227,10 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
+        fadeInToFullLevel();
         player.setFadeInOutSeconds(5);
         audioPlayer.setSampleRateHz(6);
         auto window = backHalfHannWindow(2 * 5 * 6 + 1);
-        player.fadeIn();
-        leftChannel.resize(5 * 6 + 1);
-        fillAudioBuffer();
         
         player.fadeOut();
         leftChannel = { 7, 8, 9 };

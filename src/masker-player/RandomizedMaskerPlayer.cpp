@@ -103,8 +103,10 @@ namespace masker_player {
         else if (pleaseFadeOut.compare_exchange_strong(
             expectedPleaseFadeOut,
             false
-        ))
+        )) {
+            hannCounter = levelTransitionSamples();
             fadingOut = true;
+        }
         auto scale = audioScale.load();
         for (auto channel : audio)
             for (auto &x : channel)
