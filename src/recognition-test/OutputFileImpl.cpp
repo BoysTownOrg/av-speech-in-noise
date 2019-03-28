@@ -53,6 +53,7 @@ namespace recognition_test {
         case av_coordinated_response_measure::Color::red:
             return "red";
         }
+        return "unknown";
     }
     
     void OutputFileImpl::writeTrialHeading() {

@@ -43,4 +43,9 @@ namespace {
             writer.written()
         );
     }
+
+    TEST_F(OutputFileTests, colorNameUninitializedColorDefined) {
+        av_coordinated_response_measure::Trial uninitialized;
+        file.writeTrial(uninitialized);
+    }
 }
