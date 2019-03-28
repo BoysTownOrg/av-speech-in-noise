@@ -361,6 +361,16 @@ namespace {
         EXPECT_FALSE(audioPlayer.callbackScheduled());
     }
 
+    TEST_F(RandomizedMaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
+        fadeInToFullLevel();
+        audioPlayer.timerCallback();
+        fadeOutToSilence();
+        audioPlayer.clearCallbackCount();
+        
+        audioPlayer.timerCallback();
+        EXPECT_FALSE(audioPlayer.callbackScheduled());
+    }
+
     TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceFindsIndex) {
         setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
         player.setAudioDevice("second");

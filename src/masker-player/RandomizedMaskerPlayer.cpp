@@ -81,6 +81,7 @@ namespace masker_player {
             player->stop();
             hasBegunFadingIn = false;
             hasBegunFadingOut = false;
+            return;
         }
         player->scheduleCallbackAfterSeconds(0.1);
     }
