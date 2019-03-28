@@ -119,9 +119,11 @@ namespace masker_player {
         const std::vector<gsl::span<float>> &audio
     ) {
         auto scale = audioScale.load();
-        for (auto channel : audio)
-            for (auto &x : channel)
-                x *= transitionScale() * scale;
+        for (int i = 0; i < audio.front().size(); ++i) {
+            auto transitionScale_ = transitionScale();
+            for (size_t j = 0; j < audio.size(); ++j)
+                audio.at(j).at(i) *= transitionScale_ * scale;
+        }
     }
     
     // high priority thread

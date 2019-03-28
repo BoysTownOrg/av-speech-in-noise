@@ -141,7 +141,8 @@ namespace {
 
     class RandomizedMaskerPlayerTests : public ::testing::Test {
     protected:
-        std::vector<float> leftChannel{};
+        std::vector<float> leftChannel{1};
+        std::vector<float> rightChannel{1};
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
         masker_player::RandomizedMaskerPlayer player{&audioPlayer};
@@ -176,7 +177,7 @@ namespace {
             player.setFadeInOutSeconds(2);
             audioPlayer.setSampleRateHz(3);
             player.fadeIn();
-            leftChannel.resize(2 * 3 + 1);
+            resizeChannels(2 * 3 + 1);
             fillAudioBuffer();
         }
         
@@ -184,8 +185,13 @@ namespace {
             player.setFadeInOutSeconds(2);
             audioPlayer.setSampleRateHz(3);
             player.fadeOut();
-            leftChannel.resize(2 * 3 + 1);
+            resizeChannels(2 * 3 + 1);
             fillAudioBuffer();
+        }
+        
+        void resizeChannels(int n) {
+            leftChannel.resize(n);
+            rightChannel.resize(n);
         }
     };
 
@@ -208,7 +214,7 @@ namespace {
         player.setFadeInOutSeconds(5);
         audioPlayer.setSampleRateHz(6);
         auto window = halfHannWindow(2 * 5 * 6 + 1);
-        
+    
         player.fadeIn();
         leftChannel = { 7, 8, 9 };
         fillAudioBuffer();
@@ -220,6 +226,32 @@ namespace {
         EXPECT_NEAR(window.at(3) * 7, leftChannel.at(0), 1e-6);
         EXPECT_NEAR(window.at(4) * 8, leftChannel.at(1), 1e-6);
         EXPECT_NEAR(window.at(5) * 9, leftChannel.at(2), 1e-6);
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunctionStereo) {
+        player.setFadeInOutSeconds(5);
+        audioPlayer.setSampleRateHz(6);
+        auto window = halfHannWindow(2 * 5 * 6 + 1);
+    
+        player.fadeIn();
+        leftChannel = { 1, 2, 3 };
+        rightChannel = { 7, 8, 9 };
+        audioPlayer.fillAudioBuffer({ leftChannel, rightChannel });
+        EXPECT_NEAR(window.at(0) * 1, leftChannel.at(0), 1e-6);
+        EXPECT_NEAR(window.at(1) * 2, leftChannel.at(1), 1e-6);
+        EXPECT_NEAR(window.at(2) * 3, leftChannel.at(2), 1e-6);
+        EXPECT_NEAR(window.at(0) * 7, rightChannel.at(0), 1e-6);
+        EXPECT_NEAR(window.at(1) * 8, rightChannel.at(1), 1e-6);
+        EXPECT_NEAR(window.at(2) * 9, rightChannel.at(2), 1e-6);
+        leftChannel = { 1, 2, 3 };
+        rightChannel = { 7, 8, 9 };
+        audioPlayer.fillAudioBuffer({ leftChannel, rightChannel });
+        EXPECT_NEAR(window.at(3) * 1, leftChannel.at(0), 1e-6);
+        EXPECT_NEAR(window.at(4) * 2, leftChannel.at(1), 1e-6);
+        EXPECT_NEAR(window.at(5) * 3, leftChannel.at(2), 1e-6);
+        EXPECT_NEAR(window.at(3) * 7, rightChannel.at(0), 1e-6);
+        EXPECT_NEAR(window.at(4) * 8, rightChannel.at(1), 1e-6);
+        EXPECT_NEAR(window.at(5) * 9, rightChannel.at(2), 1e-6);
     }
 
     TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeIn) {
@@ -263,7 +295,7 @@ namespace {
         audioPlayer.setSampleRateHz(4);
         
         player.fadeIn();
-        leftChannel.resize(1);
+        resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBuffer();
             audioPlayer.timerCallback();
@@ -289,7 +321,7 @@ namespace {
         audioPlayer.setSampleRateHz(4);
         
         player.fadeOut();
-        leftChannel.resize(1);
+        resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBuffer();
             audioPlayer.timerCallback();
@@ -318,7 +350,7 @@ namespace {
         audioPlayer.setSampleRateHz(4);
         
         player.fadeOut();
-        leftChannel.resize(1);
+        resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBuffer();
             audioPlayer.timerCallback();
