@@ -178,17 +178,17 @@ namespace {
         }
         
         void fadeInToFullLevel() {
-            completeFadeCycle(&RandomizedMaskerPlayerTests::fadeIn);
+            completeOneFadeCycle(&RandomizedMaskerPlayerTests::fadeIn);
         }
         
         void fadeOutToSilence() {
-            completeFadeCycle(&RandomizedMaskerPlayerTests::fadeOut);
+            completeOneFadeCycle(&RandomizedMaskerPlayerTests::fadeOut);
         }
         
-        void completeFadeCycle(void (RandomizedMaskerPlayerTests::*f)()) {
+        void completeOneFadeCycle(void (RandomizedMaskerPlayerTests::*fade)()) {
             player.setFadeInOutSeconds(2);
             audioPlayer.setSampleRateHz(3);
-            (this->*f)();
+            (this->*fade)();
             resizeChannels(2 * 3 + 1);
             fillAudioBufferMono();
         }
