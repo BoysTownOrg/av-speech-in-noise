@@ -65,6 +65,7 @@ namespace masker_player {
         void scaleAudio(const std::vector<gsl::span<float>> &);
         void checkForFadeInComplete();
         void checkForFadeOutComplete();
+        void advanceCounterIfFading();
         void updateState();
         double transitionScale();
         double nextScale();

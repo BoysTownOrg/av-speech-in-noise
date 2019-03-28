@@ -146,8 +146,7 @@ namespace masker_player {
     void RandomizedMaskerPlayer::updateState() {
         checkForFadeInComplete();
         checkForFadeOutComplete();
-        if (fadingIn || fadingOut)
-            ++hannCounter;
+        advanceCounterIfFading();
     }
     
     // high priority thread
@@ -164,5 +163,11 @@ namespace masker_player {
             fadeOutComplete.store(true);
             fadingOut = false;
         }
+    }
+    
+    // high priority thread
+    void RandomizedMaskerPlayer::advanceCounterIfFading() {
+        if (fadingIn || fadingOut)
+            ++hannCounter;
     }
 }
