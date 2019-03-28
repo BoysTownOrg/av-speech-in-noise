@@ -158,6 +158,22 @@ namespace {
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
             audioPlayer.setAudioDeviceDescriptions(std::move(v));
         }
+        
+        void fadeInToFullLevel() {
+            player.setFadeInOutSeconds(2);
+            audioPlayer.setSampleRateHz(3);
+            player.fadeIn();
+            leftChannel.resize(2 * 3 + 1);
+            fillAudioBuffer();
+        }
+        
+        void fadeOutToSilence() {
+            player.setFadeInOutSeconds(2);
+            audioPlayer.setSampleRateHz(3);
+            player.fadeOut();
+            leftChannel.resize(2 * 3 + 1);
+            fillAudioBuffer();
+        }
     };
 
     TEST_F(RandomizedMaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -194,24 +210,16 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeIn) {
-        player.setFadeInOutSeconds(4);
-        audioPlayer.setSampleRateHz(5);
+        fadeInToFullLevel();
         
-        player.fadeIn();
-        leftChannel.resize(4 * 5 + 1);
-        fillAudioBuffer();
         leftChannel = { 1, 2, 3 };
         fillAudioBuffer();
         assertEqual({ 1, 2, 3 }, leftChannel);
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInTwiceIgnored) {
-        player.setFadeInOutSeconds(0.5);
-        audioPlayer.setSampleRateHz(12);
+        fadeInToFullLevel();
         
-        player.fadeIn();
-        leftChannel.resize(12 * 0.5 + 1);
-        fillAudioBuffer();
         player.fadeIn();
         leftChannel = { 1, 2, 3 };
         fillAudioBuffer();
@@ -240,16 +248,12 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeOut) {
-        player.setFadeInOutSeconds(0.5);
-        player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel.resize(7);
+        fadeInToFullLevel();
+        fadeOutToSilence();
+        
+        leftChannel = { 1, 2, 3 };
         fillAudioBuffer();
-        player.fadeOut();
-        leftChannel = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        fillAudioBuffer();
-        EXPECT_NEAR(0.f, leftChannel.at(7), 1e-15);
+        assertEqual({ 0, 0, 0 }, leftChannel, 1e-15f);
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
