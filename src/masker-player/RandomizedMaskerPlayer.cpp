@@ -32,7 +32,7 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::setLevel_dB(double x) {
-        audioScale.store(std::pow(10, x/20));
+        levelScalar.store(std::pow(10, x/20));
     }
     
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
@@ -93,11 +93,15 @@ namespace masker_player {
     // high priority thread
     void RandomizedMaskerPlayer::checkForFadeIn() {
         auto expected = true;
-        if (pleaseFadeIn.compare_exchange_strong(expected, false)) {
-            updateWindowLength();
-            hannCounter = 0;
-            fadingIn = true;
-        }
+        if (pleaseFadeIn.compare_exchange_strong(expected, false))
+            prepareToFadeIn();
+    }
+    
+    // high priority thread
+    void RandomizedMaskerPlayer::prepareToFadeIn() {
+        updateWindowLength();
+        hannCounter = 0;
+        fadingIn = true;
     }
     
     // high priority thread
@@ -108,11 +112,15 @@ namespace masker_player {
     // high priority thread
     void RandomizedMaskerPlayer::checkForFadeOut() {
         auto expected = true;
-        if (pleaseFadeOut.compare_exchange_strong(expected, false)) {
-            updateWindowLength();
-            hannCounter = halfWindowLength;
-            fadingOut = true;
-        }
+        if (pleaseFadeOut.compare_exchange_strong(expected, false))
+            prepareToFadeOut();
+    }
+    
+    // high priority thread
+    void RandomizedMaskerPlayer::prepareToFadeOut() {
+        updateWindowLength();
+        hannCounter = halfWindowLength;
+        fadingOut = true;
     }
 
     // high priority thread
@@ -124,12 +132,12 @@ namespace masker_player {
     void RandomizedMaskerPlayer::scaleAudio(
         const std::vector<gsl::span<float>> &audio
     ) {
-        auto scale = audioScale.load();
+        auto levelScalar_ = levelScalar.load();
         for (int i = 0; i < audio.front().size(); ++i) {
             auto fadeScalar_ = fadeScalar();
             updateFadeState();
             for (size_t j = 0; j < audio.size(); ++j)
-                audio.at(j).at(i) *= fadeScalar_ * scale;
+                audio.at(j).at(i) *= fadeScalar_ * levelScalar_;
         }
     }
     
