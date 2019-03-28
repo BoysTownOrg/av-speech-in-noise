@@ -218,7 +218,7 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInPlaysVideoPlayer) {
-        player.fadeIn();
+        fadeIn();
         EXPECT_TRUE(audioPlayer.played());
     }
 
@@ -227,7 +227,7 @@ namespace {
         audioPlayer.setSampleRateHz(6);
         auto window = halfHannWindow(2 * 5 * 6 + 1);
     
-        player.fadeIn();
+        fadeIn();
         leftChannel = { 7, 8, 9 };
         fillAudioBufferMono();
         EXPECT_NEAR(window.at(0) * 7, leftChannel.at(0), 1e-6);
@@ -245,7 +245,7 @@ namespace {
         audioPlayer.setSampleRateHz(6);
         auto window = halfHannWindow(2 * 5 * 6 + 1);
     
-        player.fadeIn();
+        fadeIn();
         leftChannel = { 1, 2, 3 };
         rightChannel = { 7, 8, 9 };
         fillAudioBufferStereo();
@@ -280,7 +280,7 @@ namespace {
         audioPlayer.setSampleRateHz(6);
         auto window = backHalfHannWindow(2 * 5 * 6 + 1);
         
-        player.fadeOut();
+        fadeOut();
         leftChannel = { 7, 8, 9 };
         fillAudioBufferMono();
         EXPECT_NEAR(window.at(0) * 7, leftChannel.at(0), 1e-6);
@@ -306,7 +306,7 @@ namespace {
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
-        player.fadeIn();
+        fadeIn();
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBufferMono();
@@ -332,7 +332,7 @@ namespace {
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
-        player.fadeOut();
+        fadeOut();
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBufferMono();
@@ -361,7 +361,7 @@ namespace {
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
-        player.fadeOut();
+        fadeOut();
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBufferMono();
@@ -374,12 +374,12 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInSchedulesCallback) {
-        player.fadeIn();
+        fadeIn();
         EXPECT_TRUE(audioPlayer.callbackScheduled());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeOutSchedulesCallback) {
-        player.fadeOut();
+        fadeOut();
         EXPECT_TRUE(audioPlayer.callbackScheduled());
     }
 
