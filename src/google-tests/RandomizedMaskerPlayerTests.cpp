@@ -230,15 +230,6 @@ namespace {
         assertEqual({ 1, 2, 3 }, leftChannel);
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadeInTwiceIgnored) {
-        fadeInToFullLevel();
-        
-        player.fadeIn();
-        leftChannel = { 1, 2, 3 };
-        fillAudioBuffer();
-        assertEqual({ 1, 2, 3 }, leftChannel);
-    }
-
     TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
         fadeInToFullLevel();
         player.setFadeInOutSeconds(5);

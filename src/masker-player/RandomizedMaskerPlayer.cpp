@@ -13,18 +13,13 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::fadeIn() {
-        if (hasBegunFadingIn)
-            return;
-        
         pleaseFadeIn.store(true);
-        hasBegunFadingIn = true;
         player->play();
         player->scheduleCallbackAfterSeconds(0.1);
     }
 
     void RandomizedMaskerPlayer::fadeOut() {
         pleaseFadeOut.store(true);
-        hasBegunFadingOut = true;
         player->scheduleCallbackAfterSeconds(0.1);
     }
 
@@ -79,8 +74,6 @@ namespace masker_player {
         )) {
             listener->fadeOutComplete();
             player->stop();
-            hasBegunFadingIn = false;
-            hasBegunFadingOut = false;
             return;
         }
         player->scheduleCallbackAfterSeconds(0.1);

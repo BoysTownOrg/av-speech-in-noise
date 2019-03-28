@@ -43,8 +43,6 @@ namespace masker_player {
         std::atomic<bool> fadeInComplete{};
         std::atomic<bool> pleaseFadeOut{};
         std::atomic<bool> pleaseFadeIn{};
-        bool hasBegunFadingOut{};
-        bool hasBegunFadingIn{};
     public:
         RandomizedMaskerPlayer(AudioPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;
