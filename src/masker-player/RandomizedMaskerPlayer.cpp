@@ -74,7 +74,7 @@ namespace masker_player {
             false
         ))
             listener->fadeInComplete();
-        else if (fadeOutComplete.compare_exchange_strong(
+        if (fadeOutComplete.compare_exchange_strong(
             expectedFadeOutComplete,
             false
         )) {

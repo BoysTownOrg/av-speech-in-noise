@@ -255,12 +255,12 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
-        player.setFadeInOutSeconds(0.5);
-        audioPlayer.setSampleRateHz(12);
+        player.setFadeInOutSeconds(3);
+        audioPlayer.setSampleRateHz(4);
         
         player.fadeIn();
         leftChannel.resize(1);
-        for (int i = 0; i < 0.5 * 12; ++i) {
+        for (int i = 0; i < 3 * 4; ++i) {
             fillAudioBuffer();
             audioPlayer.timerCallback();
             EXPECT_FALSE(listener.fadeInCompleted());
@@ -280,59 +280,44 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
-        player.setFadeInOutSeconds(0.5);
-        player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel.resize(7);
-        fillAudioBuffer();
+        fadeInToFullLevel();
+        player.setFadeInOutSeconds(3);
+        audioPlayer.setSampleRateHz(4);
+        
         player.fadeOut();
-        leftChannel = { 0, 1, 2 };
-        fillAudioBuffer();
-        audioPlayer.timerCallback();
-        EXPECT_FALSE(listener.fadeOutCompleted());
-        leftChannel = { 3, 4, 5 };
-        fillAudioBuffer();
-        audioPlayer.timerCallback();
-        EXPECT_FALSE(listener.fadeOutCompleted());
-        leftChannel = { 6 };
+        leftChannel.resize(1);
+        for (int i = 0; i < 3 * 4; ++i) {
+            fillAudioBuffer();
+            audioPlayer.timerCallback();
+            EXPECT_FALSE(listener.fadeOutCompleted());
+        }
         fillAudioBuffer();
         audioPlayer.timerCallback();
         EXPECT_TRUE(listener.fadeOutCompleted());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnceForFadeOut) {
-        player.setFadeInOutSeconds(0.5);
-        player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel.resize(7);
-        fillAudioBuffer();
-        player.fadeOut();
-        fillAudioBuffer();
+        fadeInToFullLevel();
+        fadeOutToSilence();
         audioPlayer.timerCallback();
+        EXPECT_EQ(1, listener.fadeOutCompletions());
         fillAudioBuffer();
         audioPlayer.timerCallback();
         EXPECT_EQ(1, listener.fadeOutCompletions());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
-        player.setFadeInOutSeconds(0.5);
-        player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel.resize(7);
-        fillAudioBuffer();
+        fadeInToFullLevel();
+        player.setFadeInOutSeconds(3);
+        audioPlayer.setSampleRateHz(4);
+        
         player.fadeOut();
-        leftChannel = { 0, 1, 2 };
-        fillAudioBuffer();
-        audioPlayer.timerCallback();
-        EXPECT_FALSE(audioPlayer.stopped());
-        leftChannel = { 3, 4, 5 };
-        fillAudioBuffer();
-        audioPlayer.timerCallback();
-        EXPECT_FALSE(audioPlayer.stopped());
-        leftChannel = { 6 };
+        leftChannel.resize(1);
+        for (int i = 0; i < 3 * 4; ++i) {
+            fillAudioBuffer();
+            audioPlayer.timerCallback();
+            EXPECT_FALSE(audioPlayer.stopped());
+        }
         fillAudioBuffer();
         audioPlayer.timerCallback();
         EXPECT_TRUE(audioPlayer.stopped());
