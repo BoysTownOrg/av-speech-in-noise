@@ -305,8 +305,10 @@ void AvFoundationAudioPlayer::setDevice(int index) {
 }
 
 AvFoundationAudioPlayer::AvFoundationAudioPlayer() :
-    player{[AVPlayer playerWithPlayerItem:nil]}
+    player{[AVPlayer playerWithPlayerItem:nil]},
+    scheduler{[CallbackScheduler alloc]}
 {
+    scheduler.controller = this;
     createAudioProcessingTap<AvFoundationAudioPlayer>(this, &tap);
 }
 
@@ -325,3 +327,30 @@ double AvFoundationAudioPlayer::sampleRateHz() {
 void AvFoundationAudioPlayer::stop() { 
     [player pause];
 }
+
+void AvFoundationAudioPlayer::scheduleCallbackAfterSeconds(double x) {
+    [scheduler scheduleCallbackAfterSeconds:x];
+}
+
+void AvFoundationAudioPlayer::timerCallback() {
+    listener_->timerCallback();
+}
+
+@implementation CallbackScheduler
+@synthesize controller;
+
+- (void)scheduleCallbackAfterSeconds:(double)x {
+    [NSTimer scheduledTimerWithTimeInterval:
+        x
+        target:self
+        selector: @selector(timerCallback)
+        userInfo:nil
+        repeats:NO
+    ];
+}
+
+- (void)timerCallback {
+    controller->timerCallback();
+}
+@end
+
