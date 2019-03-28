@@ -17,6 +17,10 @@ namespace {
         bool played_{};
         bool stopped_{};
     public:
+        void timerCallback() {
+            listener_->timerCallback();
+        }
+        
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
             audioDeviceDescriptions_ = std::move(v);
         }
@@ -237,7 +241,7 @@ namespace {
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
         assertEqual(
-            product(halfHannWindow(N), { 0, 1, 2, 3, 4, 5, 6 }),
+            { 0, 1, 2, 3, 4, 5, 6 },
             leftChannel,
             1e-6f
         );
@@ -245,8 +249,11 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
         player.setFadeInOutSeconds(0.5);
+        player.fadeIn();
         auto N = 6/0.5 + 1;
         audioPlayer.setSampleRateHz(N - 1);
+        leftChannel.resize(7);
+        fillAudioBuffer();
         player.fadeOut();
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
@@ -259,8 +266,11 @@ namespace {
 
     TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeOut) {
         player.setFadeInOutSeconds(0.5);
+        player.fadeIn();
         auto N = 6/0.5 + 1;
         audioPlayer.setSampleRateHz(N - 1);
+        leftChannel.resize(7);
+        fillAudioBuffer();
         player.fadeOut();
         leftChannel = { 0, 1, 2, 3, 4, 5, 6, 7 };
         fillAudioBuffer();
@@ -274,12 +284,15 @@ namespace {
         audioPlayer.setSampleRateHz(N - 1);
         leftChannel = { 0, 1, 2 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_FALSE(listener.fadeInCompleted());
         leftChannel = { 3, 4, 5 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_FALSE(listener.fadeInCompleted());
         leftChannel = { 6 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_TRUE(listener.fadeInCompleted());
     }
 
@@ -290,50 +303,68 @@ namespace {
         audioPlayer.setSampleRateHz(N - 1);
         leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_EQ(1, listener.fadeInCompletions());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
         player.setFadeInOutSeconds(0.5);
+        player.fadeIn();
         auto N = 6/0.5 + 1;
         audioPlayer.setSampleRateHz(N - 1);
+        leftChannel.resize(7);
+        fillAudioBuffer();
         player.fadeOut();
         leftChannel = { 0, 1, 2 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_FALSE(listener.fadeOutCompleted());
         leftChannel = { 3, 4, 5 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_FALSE(listener.fadeOutCompleted());
         leftChannel = { 6 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_TRUE(listener.fadeOutCompleted());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnceForFadeOut) {
         player.setFadeInOutSeconds(0.5);
+        player.fadeIn();
         auto N = 6/0.5 + 1;
         audioPlayer.setSampleRateHz(N - 1);
+        leftChannel.resize(7);
+        fillAudioBuffer();
         player.fadeOut();
-        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_EQ(1, listener.fadeOutCompletions());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
         player.setFadeInOutSeconds(0.5);
+        player.fadeIn();
         auto N = 6/0.5 + 1;
         audioPlayer.setSampleRateHz(N - 1);
+        leftChannel.resize(7);
+        fillAudioBuffer();
         player.fadeOut();
         leftChannel = { 0, 1, 2 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_FALSE(audioPlayer.stopped());
         leftChannel = { 3, 4, 5 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_FALSE(audioPlayer.stopped());
         leftChannel = { 6 };
         fillAudioBuffer();
+        audioPlayer.timerCallback();
         EXPECT_TRUE(audioPlayer.stopped());
     }
 

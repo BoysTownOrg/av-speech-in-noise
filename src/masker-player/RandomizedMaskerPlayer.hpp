@@ -12,6 +12,7 @@ namespace masker_player {
             virtual ~EventListener() = default;
             virtual void fillAudioBuffer(
                 const std::vector<gsl::span<float>> &audio) = 0;
+            virtual void timerCallback() = 0;
         };
         
         virtual ~AudioPlayer() = default;
@@ -56,7 +57,7 @@ namespace masker_player {
             const std::vector<gsl::span<float>> &audio) override;
         void setFadeInOutSeconds(double);
         std::vector<std::string> audioDeviceDescriptions() override;
-        void timerCallback();
+        void timerCallback() override;
     private:
         int levelTransitionSamples();
         double transitionScale();
