@@ -83,22 +83,9 @@ namespace masker_player {
     void RandomizedMaskerPlayer::fillAudioBuffer(
         const std::vector<gsl::span<float>> &audio
     ) {
-        auto expectedPleaseFadeOut = true;
-        auto expectedPleaseFadeIn = true;
-        if (pleaseFadeIn.compare_exchange_strong(
-            expectedPleaseFadeIn,
-            false
-        )) {
-            hannCounter = 0;
-            fadingIn = true;
-        }
-        else if (pleaseFadeOut.compare_exchange_strong(
-            expectedPleaseFadeOut,
-            false
-        )) {
-            hannCounter = levelTransitionSamples();
-            fadingOut = true;
-        }
+        checkForFadeIn();
+        checkForFadeOut();
+        
         auto scale = audioScale.load();
         for (auto channel : audio)
             for (auto &x : channel)
@@ -106,9 +93,32 @@ namespace masker_player {
     }
     
     // high priority thread
+    void RandomizedMaskerPlayer::checkForFadeIn() {
+        auto expected = true;
+        if (pleaseFadeIn.compare_exchange_strong(expected, false)) {
+            hannCounter = 0;
+            halfWindowLength = levelTransitionSamples();
+            fadingIn = true;
+        }
+    }
+    
+    // high priority thread
+    void RandomizedMaskerPlayer::checkForFadeOut() {
+        auto expected = true;
+        if (pleaseFadeOut.compare_exchange_strong(expected, false)) {
+            hannCounter = halfWindowLength = levelTransitionSamples();
+            fadingOut = true;
+        }
+    }
+
+    // high priority thread
+    int RandomizedMaskerPlayer::levelTransitionSamples() {
+        return fadeInOutSeconds * player->sampleRateHz();
+    }
+    
+    // high priority thread
     double RandomizedMaskerPlayer::transitionScale() {
         const auto pi = std::acos(-1);
-        auto halfWindowLength = levelTransitionSamples();
         const auto squareRoot = halfWindowLength
             ? std::sin((pi*hannCounter) / (2*halfWindowLength))
             : 1;
@@ -124,10 +134,5 @@ namespace masker_player {
         if (fadingIn || fadingOut)
             ++hannCounter;
         return squareRoot * squareRoot;
-    }
-
-    // high priority thread
-    int RandomizedMaskerPlayer::levelTransitionSamples() {
-        return fadeInOutSeconds * player->sampleRateHz();
     }
 }

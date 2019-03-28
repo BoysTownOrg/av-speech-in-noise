@@ -35,6 +35,7 @@ namespace masker_player {
         std::atomic<double> audioScale{1};
         double fadeInOutSeconds{};
         int hannCounter{};
+        int halfWindowLength{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
         bool fadingOut{};
@@ -58,6 +59,8 @@ namespace masker_player {
         std::vector<std::string> audioDeviceDescriptions() override;
         void timerCallback() override;
     private:
+        void checkForFadeIn();
+        void checkForFadeOut();
         int levelTransitionSamples();
         double transitionScale();
     };
