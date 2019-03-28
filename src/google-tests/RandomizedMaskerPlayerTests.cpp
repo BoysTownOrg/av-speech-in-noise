@@ -149,14 +149,6 @@ namespace {
             return window;
         }
         
-        std::vector<float> hannWindow(int N) {
-            const auto pi = std::acos(-1);
-            std::vector<float> window;
-            for (int n = 0; n < N; ++n)
-                window.push_back((1 - std::cos((2*pi*n)/(N - 1))) / 2);
-            return window;
-        }
-        
         std::vector<float> backHalfHannWindow(int N) {
             auto frontHalf = halfHannWindow(N);
             std::reverse(frontHalf.begin(), frontHalf.end());
@@ -198,7 +190,7 @@ namespace {
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
         player.setFadeInOutSeconds(5);
         audioPlayer.setSampleRateHz(6);
-        auto window = hannWindow(2 * 5 * 6 + 1);
+        auto window = halfHannWindow(2 * 5 * 6 + 1);
         
         player.fadeIn();
         leftChannel = { 7, 8, 9 };
@@ -225,21 +217,17 @@ namespace {
         assertEqual({ 1, 2, 3 }, leftChannel);
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadeInTwice) {
+    TEST_F(RandomizedMaskerPlayerTests, fadeInTwiceIgnored) {
         player.setFadeInOutSeconds(0.5);
+        audioPlayer.setSampleRateHz(12);
+        
         player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel.resize(7);
+        leftChannel.resize(12 * 0.5 + 1);
         fillAudioBuffer();
         player.fadeIn();
-        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
+        leftChannel = { 1, 2, 3 };
         fillAudioBuffer();
-        assertEqual(
-            { 0, 1, 2, 3, 4, 5, 6 },
-            leftChannel,
-            1e-6f
-        );
+        assertEqual({ 1, 2, 3 }, leftChannel);
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
