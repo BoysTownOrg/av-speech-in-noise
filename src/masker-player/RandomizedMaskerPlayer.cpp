@@ -19,7 +19,7 @@ namespace masker_player {
         pleaseFadeIn.store(true);
         hasBegunFadingIn = true;
         player->play();
-        //player->scheduleCallbackAfterSeconds(0.1);
+        player->scheduleCallbackAfterSeconds(0.1);
     }
 
     void RandomizedMaskerPlayer::fadeOut() {

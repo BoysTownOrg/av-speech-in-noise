@@ -16,7 +16,12 @@ namespace {
         bool playing_{};
         bool played_{};
         bool stopped_{};
+        bool callbackScheduled_{};
     public:
+        auto callbackScheduled() const {
+            return callbackScheduled_;
+        }
+        
         void timerCallback() {
             listener_->timerCallback();
         }
@@ -72,6 +77,10 @@ namespace {
         
         void subscribe(EventListener * listener) override {
             listener_ = listener;
+        }
+        
+        void scheduleCallbackAfterSeconds(double) override {
+            callbackScheduled_ = true;
         }
         
         auto filePath() const {
@@ -321,6 +330,11 @@ namespace {
         fillAudioBuffer();
         audioPlayer.timerCallback();
         EXPECT_TRUE(audioPlayer.stopped());
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, fadeInSchedulesCallback) {
+        player.fadeIn();
+        EXPECT_TRUE(audioPlayer.callbackScheduled());
     }
 
     TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceFindsIndex) {

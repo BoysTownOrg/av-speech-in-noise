@@ -25,6 +25,7 @@ namespace masker_player {
         virtual void play() = 0;
         virtual double sampleRateHz() = 0;
         virtual void stop() = 0;
+        virtual void scheduleCallbackAfterSeconds(double) = 0;
     };
 
     class RandomizedMaskerPlayer :
