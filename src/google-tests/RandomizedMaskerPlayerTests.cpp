@@ -149,6 +149,14 @@ namespace {
             return window;
         }
         
+        std::vector<float> hannWindow(int N) {
+            const auto pi = std::acos(-1);
+            std::vector<float> window;
+            for (int n = 0; n < N; ++n)
+                window.push_back((1 - std::cos((2*pi*n)/(N - 1))) / 2);
+            return window;
+        }
+        
         std::vector<float> backHalfHannWindow(int N) {
             auto frontHalf = halfHannWindow(N);
             std::reverse(frontHalf.begin(), frontHalf.end());
@@ -187,37 +195,22 @@ namespace {
         EXPECT_TRUE(audioPlayer.played());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, twentydBMultipliesSignalByTen) {
-        player.setLevel_dB(20);
-        leftChannel = { 1, 2, 3 };
-        fillAudioBuffer();
-        assertEqual({ 10, 20, 30 }, leftChannel);
-    }
-
-    TEST_F(RandomizedMaskerPlayerTests, minusTwentydBDividesSignalByTen) {
-        player.setLevel_dB(-20);
-        leftChannel = { 1, 2, 3 };
-        fillAudioBuffer();
-        assertEqual({ 0.1, 0.2, 0.3 }, leftChannel);
-    }
-
     TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
-        player.setFadeInOutSeconds(3);
-        audioPlayer.setSampleRateHz(5);
-        leftChannel = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
-        auto halfWindowLength = 3 * 5 + 1;
-        EXPECT_EQ(halfWindowLength, leftChannel.size());
+        player.setFadeInOutSeconds(5);
+        audioPlayer.setSampleRateHz(6);
+        auto window = hannWindow(2 * 5 * 6 + 1);
         
         player.fadeIn();
+        leftChannel = { 7, 8, 9 };
         fillAudioBuffer();
-        assertEqual(
-            product(
-                halfHannWindow(2*halfWindowLength-1),
-                { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }
-            ),
-            leftChannel,
-            1e-6f
-        );
+        EXPECT_NEAR(window.at(0) * 7, leftChannel.at(0), 1e-6);
+        EXPECT_NEAR(window.at(1) * 8, leftChannel.at(1), 1e-6);
+        EXPECT_NEAR(window.at(2) * 9, leftChannel.at(2), 1e-6);
+        leftChannel = { 7, 8, 9 };
+        fillAudioBuffer();
+        EXPECT_NEAR(window.at(3) * 7, leftChannel.at(0), 1e-6);
+        EXPECT_NEAR(window.at(4) * 8, leftChannel.at(1), 1e-6);
+        EXPECT_NEAR(window.at(5) * 9, leftChannel.at(2), 1e-6);
     }
 
     TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeIn) {

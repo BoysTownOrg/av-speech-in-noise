@@ -31,10 +31,6 @@ namespace masker_player {
         //player->scheduleCallbackAfterSeconds(0.1);
     }
 
-    int RandomizedMaskerPlayer::levelTransitionSamples() {
-        return fadeInOutSeconds * player->sampleRateHz();
-    }
-
     void RandomizedMaskerPlayer::loadFile(std::string filePath) {
         player->loadFile(std::move(filePath));
     }
@@ -47,61 +43,8 @@ namespace masker_player {
         audioScale.store(std::pow(10, x/20));
     }
     
-    void RandomizedMaskerPlayer::fillAudioBuffer(
-        const std::vector<gsl::span<float>> &audio
-    ) {
-        auto expectedPleaseFadeOut = true;
-        auto expectedPleaseFadeIn = true;
-        if (pleaseFadeIn.compare_exchange_strong(expectedPleaseFadeIn, false)) {
-            hannCounter = 0;
-            fadingIn = true;
-        }
-        else if (pleaseFadeOut.compare_exchange_strong(expectedPleaseFadeOut, false))
-            fadingOut = true;
-        auto scale = audioScale.load();
-        for (auto channel : audio)
-            for (auto &x : channel)
-                x *= transitionScale() * scale;
-    }
-    
-    // low priority thread
-    void RandomizedMaskerPlayer::timerCallback() {
-        auto expectedFadeInComplete = true;
-        auto expectedFadeOutComplete = true;
-        if (fadeInComplete.compare_exchange_strong(expectedFadeInComplete, false))
-            listener->fadeInComplete();
-        else if (fadeOutComplete.compare_exchange_strong(expectedFadeOutComplete, false)) {
-            listener->fadeOutComplete();
-            player->stop();
-            hasBegunFadingIn = false;
-            hasBegunFadingOut = false;
-        }
-        else
-            ;//player->scheduleCallbackAfterSeconds(0.1);
-    }
-    
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
         fadeInOutSeconds = x;
-    }
-    
-    double RandomizedMaskerPlayer::transitionScale() {
-        const auto pi = std::acos(-1);
-        auto halfWindowLength = levelTransitionSamples();
-        const auto squareRoot = halfWindowLength
-            ? std::sin((pi*hannCounter) / (2*halfWindowLength))
-            : 1;
-        
-        if (hannCounter == halfWindowLength && fadingIn) {
-            fadeInComplete.store(true);
-            fadingIn = false;
-        }
-        if (hannCounter == 2*halfWindowLength && fadingOut) {
-            fadeOutComplete.store(true);
-            fadingOut = false;
-        }
-        if (fadingIn || fadingOut)
-            ++hannCounter;
-        return squareRoot * squareRoot;
     }
     
     void RandomizedMaskerPlayer::setAudioDevice(std::string device) {
@@ -121,5 +64,76 @@ namespace masker_player {
         for (int i = 0; i < player->deviceCount(); ++i)
             descriptions.push_back(player->deviceDescription(i));
         return descriptions;
+    }
+    
+    void RandomizedMaskerPlayer::timerCallback() {
+        auto expectedFadeInComplete = true;
+        auto expectedFadeOutComplete = true;
+        if (fadeInComplete.compare_exchange_strong(
+            expectedFadeInComplete,
+            false
+        ))
+            listener->fadeInComplete();
+        else if (fadeOutComplete.compare_exchange_strong(
+            expectedFadeOutComplete,
+            false
+        )) {
+            listener->fadeOutComplete();
+            player->stop();
+            hasBegunFadingIn = false;
+            hasBegunFadingOut = false;
+        }
+        else
+            ;//player->scheduleCallbackAfterSeconds(0.1);
+    }
+    
+    // high priority thread
+    void RandomizedMaskerPlayer::fillAudioBuffer(
+        const std::vector<gsl::span<float>> &audio
+    ) {
+        auto expectedPleaseFadeOut = true;
+        auto expectedPleaseFadeIn = true;
+        if (pleaseFadeIn.compare_exchange_strong(
+            expectedPleaseFadeIn,
+            false
+        )) {
+            hannCounter = 0;
+            fadingIn = true;
+        }
+        else if (pleaseFadeOut.compare_exchange_strong(
+            expectedPleaseFadeOut,
+            false
+        ))
+            fadingOut = true;
+        auto scale = audioScale.load();
+        for (auto channel : audio)
+            for (auto &x : channel)
+                x *= transitionScale() * scale;
+    }
+    
+    // high priority thread
+    double RandomizedMaskerPlayer::transitionScale() {
+        const auto pi = std::acos(-1);
+        auto halfWindowLength = levelTransitionSamples();
+        const auto squareRoot = halfWindowLength
+            ? std::sin((pi*hannCounter) / (2*halfWindowLength))
+            : 1;
+        
+        if (hannCounter == halfWindowLength && fadingIn) {
+            fadeInComplete.store(true);
+            fadingIn = false;
+        }
+        if (hannCounter == 2*halfWindowLength && fadingOut) {
+            fadeOutComplete.store(true);
+            fadingOut = false;
+        }
+        if (fadingIn || fadingOut)
+            ++hannCounter;
+        return squareRoot * squareRoot;
+    }
+
+    // high priority thread
+    int RandomizedMaskerPlayer::levelTransitionSamples() {
+        return fadeInOutSeconds * player->sampleRateHz();
     }
 }
