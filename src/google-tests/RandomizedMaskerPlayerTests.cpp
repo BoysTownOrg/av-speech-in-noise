@@ -155,18 +155,6 @@ namespace {
             return frontHalf;
         }
         
-        std::vector<float> product(std::vector<float> x, std::vector<float> y) {
-            std::vector<float> result;
-            std::transform(
-                x.begin(),
-                x.end(),
-                y.begin(),
-                std::back_inserter(result),
-                std::multiplies<>()
-            );
-            return result;
-        }
-        
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
             audioPlayer.setAudioDeviceDescriptions(std::move(v));
         }
@@ -231,20 +219,24 @@ namespace {
     }
 
     TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
-        player.setFadeInOutSeconds(0.5);
+        player.setFadeInOutSeconds(5);
+        audioPlayer.setSampleRateHz(6);
+        auto window = backHalfHannWindow(2 * 5 * 6 + 1);
         player.fadeIn();
-        auto N = 6/0.5 + 1;
-        audioPlayer.setSampleRateHz(N - 1);
-        leftChannel.resize(7);
+        leftChannel.resize(5 * 6 + 1);
         fillAudioBuffer();
+        
         player.fadeOut();
-        leftChannel = { 0, 1, 2, 3, 4, 5, 6 };
+        leftChannel = { 7, 8, 9 };
         fillAudioBuffer();
-        assertEqual(
-            product(backHalfHannWindow(N), { 0, 1, 2, 3, 4, 5, 6 }),
-            leftChannel,
-            1e-6f
-        );
+        EXPECT_NEAR(window.at(0) * 7, leftChannel.at(0), 1e-6);
+        EXPECT_NEAR(window.at(1) * 8, leftChannel.at(1), 1e-6);
+        EXPECT_NEAR(window.at(2) * 9, leftChannel.at(2), 1e-6);
+        leftChannel = { 7, 8, 9 };
+        fillAudioBuffer();
+        EXPECT_NEAR(window.at(3) * 7, leftChannel.at(0), 1e-6);
+        EXPECT_NEAR(window.at(4) * 8, leftChannel.at(1), 1e-6);
+        EXPECT_NEAR(window.at(5) * 9, leftChannel.at(2), 1e-6);
     }
 
     TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeOut) {
