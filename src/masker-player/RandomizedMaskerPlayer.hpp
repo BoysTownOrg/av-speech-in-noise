@@ -32,11 +32,17 @@ namespace masker_player {
     {
         std::atomic<double> audioScale{1};
         double fadeInOutSeconds{};
-        std::atomic<int> hannCounter{};
+        int hannCounter{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
-        std::atomic<bool> fadingOut{};
-        std::atomic<bool> fadingIn{};
+        bool fadingOut{};
+        bool fadingIn{};
+        std::atomic<bool> fadeOutComplete{};
+        std::atomic<bool> fadeInComplete{};
+        std::atomic<bool> pleaseFadeOut{};
+        std::atomic<bool> pleaseFadeIn{};
+        bool hasBegunFadingOut{};
+        bool hasBegunFadingIn{};
     public:
         RandomizedMaskerPlayer(AudioPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;
@@ -50,6 +56,7 @@ namespace masker_player {
             const std::vector<gsl::span<float>> &audio) override;
         void setFadeInOutSeconds(double);
         std::vector<std::string> audioDeviceDescriptions() override;
+        void timerCallback();
     private:
         int levelTransitionSamples();
         double transitionScale();

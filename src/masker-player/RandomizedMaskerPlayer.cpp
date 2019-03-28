@@ -13,19 +13,21 @@ namespace masker_player {
     }
 
     void RandomizedMaskerPlayer::fadeIn() {
-        auto expected = false;
-        while (fadingIn.compare_exchange_weak(expected, true))
-            ;
-        hannCounter.store(0);
+        if (hasBegunFadingIn)
+            return;
+        
+        pleaseFadeIn.store(true);
+        hasBegunFadingIn = true;
         player->play();
         //player->scheduleCallbackAfterSeconds(0.1);
     }
 
     void RandomizedMaskerPlayer::fadeOut() {
-        auto expected = false;
-        while (fadingOut.compare_exchange_weak(expected, true))
-            ;
-        hannCounter.store(levelTransitionSamples());
+        if (hasBegunFadingOut || !hasBegunFadingIn)
+            return;
+        
+        pleaseFadeOut.store(true);
+        hasBegunFadingOut = true;
         //player->scheduleCallbackAfterSeconds(0.1);
     }
 
@@ -48,25 +50,35 @@ namespace masker_player {
     void RandomizedMaskerPlayer::fillAudioBuffer(
         const std::vector<gsl::span<float>> &audio
     ) {
+        auto expectedPleaseFadeOut = true;
+        auto expectedPleaseFadeIn = true;
+        if (pleaseFadeIn.compare_exchange_strong(expectedPleaseFadeIn, false)) {
+            hannCounter = 0;
+            fadingIn = true;
+        }
+        else if (pleaseFadeOut.compare_exchange_strong(expectedPleaseFadeOut, false))
+            fadingOut = true;
         auto scale = audioScale.load();
         for (auto channel : audio)
             for (auto &x : channel)
                 x *= transitionScale() * scale;
     }
     
-    /*
     // low priority thread
     void RandomizedMaskerPlayer::timerCallback() {
-        if (fadeInComplete.compare_exchange_strong(true, false))
+        auto expectedFadeInComplete = true;
+        auto expectedFadeOutComplete = true;
+        if (fadeInComplete.compare_exchange_strong(expectedFadeInComplete, false))
             listener->fadeInComplete();
-        else if (fadeOutComplete.compare_exchange_strong(true, false)) {
+        else if (fadeOutComplete.compare_exchange_strong(expectedFadeOutComplete, false)) {
             listener->fadeOutComplete();
             player->stop();
+            hasBegunFadingIn = false;
+            hasBegunFadingOut = false;
         }
         else
-            player->scheduleCallbackAfterSeconds(0.1);
+            ;//player->scheduleCallbackAfterSeconds(0.1);
     }
-    */
     
     void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
         fadeInOutSeconds = x;
@@ -74,20 +86,21 @@ namespace masker_player {
     
     double RandomizedMaskerPlayer::transitionScale() {
         const auto pi = std::acos(-1);
-        auto counter = hannCounter.load();
         auto halfWindowLength = levelTransitionSamples();
         const auto squareRoot = halfWindowLength
-            ? std::sin((pi*counter) / (2*halfWindowLength))
+            ? std::sin((pi*hannCounter) / (2*halfWindowLength))
             : 1;
         
-        if (counter == halfWindowLength)
-        //  fadeInComplete.store(true);
-            fadingIn.store(false);
-        if (counter == 2*halfWindowLength)
-        //  fadeOutComplete.store(true);
-            fadingOut.store(false);
+        if (hannCounter == halfWindowLength && fadingIn) {
+            fadeInComplete.store(true);
+            fadingIn = false;
+        }
+        if (hannCounter == 2*halfWindowLength && fadingOut) {
+            fadeOutComplete.store(true);
+            fadingOut = false;
+        }
         if (fadingIn || fadingOut)
-            hannCounter.store(counter+1);
+            ++hannCounter;
         return squareRoot * squareRoot;
     }
     
