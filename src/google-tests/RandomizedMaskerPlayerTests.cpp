@@ -141,8 +141,8 @@ namespace {
 
     class RandomizedMaskerPlayerTests : public ::testing::Test {
     protected:
-        std::vector<float> leftChannel{1};
-        std::vector<float> rightChannel{1};
+        std::vector<float> leftChannel{};
+        std::vector<float> rightChannel{};
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
         masker_player::RandomizedMaskerPlayer player{&audioPlayer};
@@ -151,8 +151,12 @@ namespace {
             player.subscribe(&listener);
         }
         
-        void fillAudioBuffer() {
+        void fillAudioBufferMono() {
             audioPlayer.fillAudioBuffer({ leftChannel });
+        }
+        
+        void fillAudioBufferStereo() {
+            audioPlayer.fillAudioBuffer({ leftChannel, rightChannel });
         }
         
         std::vector<float> halfHannWindow(int N) {
@@ -174,19 +178,27 @@ namespace {
         }
         
         void fadeInToFullLevel() {
-            player.setFadeInOutSeconds(2);
-            audioPlayer.setSampleRateHz(3);
-            player.fadeIn();
-            resizeChannels(2 * 3 + 1);
-            fillAudioBuffer();
+            completeFadeCycle(&RandomizedMaskerPlayerTests::fadeIn);
         }
         
         void fadeOutToSilence() {
+            completeFadeCycle(&RandomizedMaskerPlayerTests::fadeOut);
+        }
+        
+        void completeFadeCycle(void (RandomizedMaskerPlayerTests::*f)()) {
             player.setFadeInOutSeconds(2);
             audioPlayer.setSampleRateHz(3);
-            player.fadeOut();
+            (this->*f)();
             resizeChannels(2 * 3 + 1);
-            fillAudioBuffer();
+            fillAudioBufferMono();
+        }
+        
+        void fadeIn() {
+            player.fadeIn();
+        }
+        
+        void fadeOut() {
+            player.fadeOut();
         }
         
         void resizeChannels(int n) {
@@ -217,12 +229,12 @@ namespace {
     
         player.fadeIn();
         leftChannel = { 7, 8, 9 };
-        fillAudioBuffer();
+        fillAudioBufferMono();
         EXPECT_NEAR(window.at(0) * 7, leftChannel.at(0), 1e-6);
         EXPECT_NEAR(window.at(1) * 8, leftChannel.at(1), 1e-6);
         EXPECT_NEAR(window.at(2) * 9, leftChannel.at(2), 1e-6);
         leftChannel = { 7, 8, 9 };
-        fillAudioBuffer();
+        fillAudioBufferMono();
         EXPECT_NEAR(window.at(3) * 7, leftChannel.at(0), 1e-6);
         EXPECT_NEAR(window.at(4) * 8, leftChannel.at(1), 1e-6);
         EXPECT_NEAR(window.at(5) * 9, leftChannel.at(2), 1e-6);
@@ -236,7 +248,7 @@ namespace {
         player.fadeIn();
         leftChannel = { 1, 2, 3 };
         rightChannel = { 7, 8, 9 };
-        audioPlayer.fillAudioBuffer({ leftChannel, rightChannel });
+        fillAudioBufferStereo();
         EXPECT_NEAR(window.at(0) * 1, leftChannel.at(0), 1e-6);
         EXPECT_NEAR(window.at(1) * 2, leftChannel.at(1), 1e-6);
         EXPECT_NEAR(window.at(2) * 3, leftChannel.at(2), 1e-6);
@@ -245,7 +257,7 @@ namespace {
         EXPECT_NEAR(window.at(2) * 9, rightChannel.at(2), 1e-6);
         leftChannel = { 1, 2, 3 };
         rightChannel = { 7, 8, 9 };
-        audioPlayer.fillAudioBuffer({ leftChannel, rightChannel });
+        fillAudioBufferStereo();
         EXPECT_NEAR(window.at(3) * 1, leftChannel.at(0), 1e-6);
         EXPECT_NEAR(window.at(4) * 2, leftChannel.at(1), 1e-6);
         EXPECT_NEAR(window.at(5) * 3, leftChannel.at(2), 1e-6);
@@ -258,7 +270,7 @@ namespace {
         fadeInToFullLevel();
         
         leftChannel = { 1, 2, 3 };
-        fillAudioBuffer();
+        fillAudioBufferMono();
         assertEqual({ 1, 2, 3 }, leftChannel);
     }
 
@@ -270,12 +282,12 @@ namespace {
         
         player.fadeOut();
         leftChannel = { 7, 8, 9 };
-        fillAudioBuffer();
+        fillAudioBufferMono();
         EXPECT_NEAR(window.at(0) * 7, leftChannel.at(0), 1e-6);
         EXPECT_NEAR(window.at(1) * 8, leftChannel.at(1), 1e-6);
         EXPECT_NEAR(window.at(2) * 9, leftChannel.at(2), 1e-6);
         leftChannel = { 7, 8, 9 };
-        fillAudioBuffer();
+        fillAudioBufferMono();
         EXPECT_NEAR(window.at(3) * 7, leftChannel.at(0), 1e-6);
         EXPECT_NEAR(window.at(4) * 8, leftChannel.at(1), 1e-6);
         EXPECT_NEAR(window.at(5) * 9, leftChannel.at(2), 1e-6);
@@ -286,7 +298,7 @@ namespace {
         fadeOutToSilence();
         
         leftChannel = { 1, 2, 3 };
-        fillAudioBuffer();
+        fillAudioBufferMono();
         assertEqual({ 0, 0, 0 }, leftChannel, 1e-15f);
     }
 
@@ -297,11 +309,11 @@ namespace {
         player.fadeIn();
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
-            fillAudioBuffer();
+            fillAudioBufferMono();
             audioPlayer.timerCallback();
             EXPECT_FALSE(listener.fadeInCompleted());
         }
-        fillAudioBuffer();
+        fillAudioBufferMono();
         audioPlayer.timerCallback();
         EXPECT_TRUE(listener.fadeInCompleted());
     }
@@ -310,7 +322,7 @@ namespace {
         fadeInToFullLevel();
         audioPlayer.timerCallback();
         EXPECT_EQ(1, listener.fadeInCompletions());
-        fillAudioBuffer();
+        fillAudioBufferMono();
         audioPlayer.timerCallback();
         EXPECT_EQ(1, listener.fadeInCompletions());
     }
@@ -323,11 +335,11 @@ namespace {
         player.fadeOut();
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
-            fillAudioBuffer();
+            fillAudioBufferMono();
             audioPlayer.timerCallback();
             EXPECT_FALSE(listener.fadeOutCompleted());
         }
-        fillAudioBuffer();
+        fillAudioBufferMono();
         audioPlayer.timerCallback();
         EXPECT_TRUE(listener.fadeOutCompleted());
     }
@@ -339,7 +351,7 @@ namespace {
         fadeOutToSilence();
         audioPlayer.timerCallback();
         EXPECT_EQ(1, listener.fadeOutCompletions());
-        fillAudioBuffer();
+        fillAudioBufferMono();
         audioPlayer.timerCallback();
         EXPECT_EQ(1, listener.fadeOutCompletions());
     }
@@ -352,11 +364,11 @@ namespace {
         player.fadeOut();
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
-            fillAudioBuffer();
+            fillAudioBufferMono();
             audioPlayer.timerCallback();
             EXPECT_FALSE(audioPlayer.stopped());
         }
-        fillAudioBuffer();
+        fillAudioBufferMono();
         audioPlayer.timerCallback();
         EXPECT_TRUE(audioPlayer.stopped());
     }
