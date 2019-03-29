@@ -1,6 +1,7 @@
 #ifndef recognition_test_OutputFilePathImpl_hpp
 #define recognition_test_OutputFilePathImpl_hpp
 
+#include "OutputFileImpl.hpp"
 #include <av-coordinated-response-measure/Model.h>
 
 namespace recognition_test {
@@ -22,15 +23,15 @@ namespace recognition_test {
         virtual std::string homeDirectory() = 0;
     };
 
-    class OutputFilePathImpl {
+    class OutputFilePathImpl : public OutputFilePath {
         TimeStamp *timeStamp;
         FileSystemPath *systemPath;
     public:
         OutputFilePathImpl(TimeStamp *, FileSystemPath *);
         std::string generateFileName(
             const av_coordinated_response_measure::Model::Test &
-        );
-        std::string homeDirectory();
+        ) override;
+        std::string homeDirectory() override;
     };
 }
 #endif
