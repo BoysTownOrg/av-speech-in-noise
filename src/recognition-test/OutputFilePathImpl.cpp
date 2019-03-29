@@ -13,14 +13,22 @@ namespace recognition_test {
         const av_coordinated_response_measure::Model::Test &test
     ) {
         std::stringstream stream;
+        stream << formatTestInformation(test);
+        stream << "_";
+        stream << formatTimeStamp();
+        return stream.str();
+    }
+    
+    std::string OutputFilePathImpl::formatTestInformation(
+        const av_coordinated_response_measure::Model::Test &test
+    ) {
+        std::stringstream stream;
         stream << "Subject_";
         stream << test.subjectId;
         stream << "_Session_";
         stream << test.session;
         stream << "_Experimenter_";
         stream << test.testerId;
-        stream << "_";
-        stream << formatTimeStamp();
         return stream.str();
     }
     

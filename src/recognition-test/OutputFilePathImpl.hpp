@@ -33,6 +33,9 @@ namespace recognition_test {
         ) override;
         std::string homeDirectory() override;
     private:
+        std::string formatTestInformation(
+            const av_coordinated_response_measure::Model::Test &
+        );
         std::string formatTimeStamp();
     };
 }
