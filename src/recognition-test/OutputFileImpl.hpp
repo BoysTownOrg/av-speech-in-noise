@@ -27,10 +27,13 @@ namespace recognition_test {
     public:
         OutputFileImpl(Writer *, OutputFilePath *);
         void writeTrial(const av_coordinated_response_measure::Trial &) override;
+        
         void writeTrialHeading();
         void openNewFile(const av_coordinated_response_measure::Model::Test &) override;
         class OpenFailure {};
     private:
+        std::string formatTrial(const av_coordinated_response_measure::Trial &);
+        std::string formatTrialHeading();
         std::string colorName(av_coordinated_response_measure::Color);
     };
 }

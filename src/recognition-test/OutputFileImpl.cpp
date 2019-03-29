@@ -28,8 +28,14 @@ namespace recognition_test {
     OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path) :
         writer{writer},
         path{path} {}
-
+    
     void OutputFileImpl::writeTrial(
+        const av_coordinated_response_measure::Trial &trial
+    ) {
+        writer->write(formatTrial(trial));
+    }
+
+    std::string OutputFileImpl::formatTrial(
         const av_coordinated_response_measure::Trial &trial
     ) {
         TrialStream stream;
@@ -45,7 +51,7 @@ namespace recognition_test {
         stream.insertCommaAndSpace();
         stream.insert(trial.reversals);
         stream.insertNewLine();
-        writer->write(stream.str());
+        return stream.str();
     }
 
     std::string OutputFileImpl::colorName(av_coordinated_response_measure::Color c) {
@@ -59,6 +65,10 @@ namespace recognition_test {
     }
     
     void OutputFileImpl::writeTrialHeading() {
+        writer->write(formatTrialHeading());
+    }
+    
+    std::string OutputFileImpl::formatTrialHeading() {
         TrialStream stream;
         stream.insert("SNR (dB)");
         stream.insertCommaAndSpace();
@@ -72,7 +82,7 @@ namespace recognition_test {
         stream.insertCommaAndSpace();
         stream.insert("reversals");
         stream.insertNewLine();
-        writer->write(stream.str());
+        return stream.str();
     }
     
     void OutputFileImpl::openNewFile(
