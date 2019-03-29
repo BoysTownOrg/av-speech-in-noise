@@ -1,18 +1,45 @@
 #include <av-coordinated-response-measure/Model.h>
+#include <sstream>
 
 class TimeStamp {
 public:
     virtual ~TimeStamp() = default;
+    virtual int year() = 0;
+    virtual int month() = 0;
+    virtual int dayOfMonth() = 0;
+    virtual int hour() = 0;
+    virtual int minute() = 0;
+    virtual int second() = 0;
 };
 
 class OutputFilePath {
+    TimeStamp *timeStamp;
 public:
-    OutputFilePath(TimeStamp *) {}
+    OutputFilePath(TimeStamp *timeStamp) : timeStamp{timeStamp} {}
     
     std::string generateFileName(
-        const av_coordinated_response_measure::Model::Test &
+        const av_coordinated_response_measure::Model::Test &test
     ) {
-        return "Subject_a_Session_b_Experimenter_c_1-2-3-4-5-6";
+        std::stringstream stream;
+        stream << "Subject_";
+        stream << test.subject;
+        stream << "_Session_";
+        stream << test.session;
+        stream << "_Experimenter_";
+        stream << test.experimenter;
+        stream << "_";
+        stream << timeStamp->year();
+        stream << "-";
+        stream << timeStamp->month();
+        stream << "-";
+        stream << timeStamp->dayOfMonth();
+        stream << "-";
+        stream << timeStamp->hour();
+        stream << "-";
+        stream << timeStamp->minute();
+        stream << "-";
+        stream << timeStamp->second();
+        return stream.str();
     }
 };
 
@@ -45,6 +72,30 @@ public:
     void setSecond(int y) {
         second_ = y;
     }
+    int year() override {
+        return year_;
+    }
+    
+    int month() override {
+        return month_;
+    }
+    
+    int dayOfMonth() override {
+        return dayOfMonth_;
+    }
+    
+    int hour() override {
+        return hour_;
+    }
+    
+    int minute() override {
+        return minute_;
+    }
+    
+    int second() override {
+        return second_;
+    }
+    
 };
 
 class OutputFilePathTests : public ::testing::Test {
