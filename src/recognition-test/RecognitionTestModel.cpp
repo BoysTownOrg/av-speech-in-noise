@@ -19,9 +19,7 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::playTrial(const Trial &trial) {
-        if (noMoreTrials())
-            return;
-        if (trialInProgress())
+        if (noMoreTrials() || trialInProgress())
             return;
         
         preparePlayers(trial);
@@ -37,21 +35,29 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::preparePlayers(const Trial &trial) {
-        setAudioDevices(trial);
-        stimulusPlayer->loadFile(list->next());
-        stimulusPlayer->setLevel_dB(signalLevel_dB());
+        trySettingAudioDevices(trial);
+        loadNextStimulus();
     }
     
-    void RecognitionTestModel::setAudioDevices(const Trial &trial) {
+    void RecognitionTestModel::trySettingAudioDevices(const Trial &trial) {
         auto device = trial.audioDevice;
         try {
-            maskerPlayer->setAudioDevice(device);
-            stimulusPlayer->setAudioDevice(device);
+            setAudioDevices(device);
         } catch (const InvalidAudioDevice &) {
             throw RequestFailure{
                 "'" + device + "' is not a valid audio device."
             };
         }
+    }
+    
+    void RecognitionTestModel::setAudioDevices(const std::string &device) {
+        maskerPlayer->setAudioDevice(device);
+        stimulusPlayer->setAudioDevice(device);
+    }
+    
+    void RecognitionTestModel::loadNextStimulus() {
+        stimulusPlayer->loadFile(list->next());
+        stimulusPlayer->setLevel_dB(signalLevel_dB());
     }
     
     void RecognitionTestModel::startTrial() {
@@ -66,11 +72,19 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::initializeTest(const Test &p) {
-        maskerPlayer->loadFile(p.maskerFilePath);
-        list->loadFromDirectory(p.stimulusListDirectory);
+        loadMaskerFile(p);
+        loadStimulusList(p);
         prepareVideo(p);
         outputFile->openNewFile(p);
         test = p;
+    }
+    
+    void RecognitionTestModel::loadMaskerFile(const Test &p) {
+        maskerPlayer->loadFile(p.maskerFilePath);
+    }
+    
+    void RecognitionTestModel::loadStimulusList(const Test &p) {
+        list->loadFromDirectory(p.stimulusListDirectory);
     }
     
     void RecognitionTestModel::prepareVideo(const Test &p) {

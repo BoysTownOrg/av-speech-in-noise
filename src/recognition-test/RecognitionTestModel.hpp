@@ -94,14 +94,18 @@ namespace recognition_test {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void loadStimulusList(const Test &);
+        void loadMaskerFile(const Test &p);
         bool noMoreTrials();
         bool trialInProgress();
+        void loadNextStimulus();
         void preparePlayers(const Trial &);
         void startTrial();
         bool auditoryOnly(const Test &);
         void prepareVideo(const Test &);
         double signalLevel_dB();
-        void setAudioDevices(const Trial &);
+        void setAudioDevices(const std::string &);
+        void trySettingAudioDevices(const Trial &);
         int findDeviceIndex(const Trial &);
     };
 }
