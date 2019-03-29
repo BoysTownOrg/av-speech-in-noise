@@ -96,6 +96,8 @@ namespace recognition_test {
     private:
         bool noMoreTrials();
         bool trialInProgress();
+        void preparePlayers(const Trial &);
+        void startTrial();
         bool auditoryOnly(const Test &);
         void prepareVideo(const Test &);
         double signalLevel_dB();

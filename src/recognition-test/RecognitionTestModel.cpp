@@ -24,10 +24,8 @@ namespace recognition_test {
         if (trialInProgress())
             return;
         
-        setAudioDevices(trial);
-        stimulusPlayer->loadFile(list->next());
-        stimulusPlayer->setLevel_dB(signalLevel_dB());
-        maskerPlayer->fadeIn();
+        preparePlayers(trial);
+        startTrial();
     }
     
     bool RecognitionTestModel::noMoreTrials() {
@@ -36,6 +34,12 @@ namespace recognition_test {
     
     bool RecognitionTestModel::trialInProgress() {
         return maskerPlayer->playing();
+    }
+    
+    void RecognitionTestModel::preparePlayers(const Trial &trial) {
+        setAudioDevices(trial);
+        stimulusPlayer->loadFile(list->next());
+        stimulusPlayer->setLevel_dB(signalLevel_dB());
     }
     
     void RecognitionTestModel::setAudioDevices(const Trial &trial) {
@@ -48,6 +52,10 @@ namespace recognition_test {
                 "'" + device + "' is not a valid audio device."
             };
         }
+    }
+    
+    void RecognitionTestModel::startTrial() {
+        maskerPlayer->fadeIn();
     }
     
     double RecognitionTestModel::signalLevel_dB() {
