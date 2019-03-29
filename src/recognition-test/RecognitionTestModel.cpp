@@ -19,15 +19,23 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::playTrial(const Trial &trial) {
-        if (list->empty())
+        if (noMoreTrials())
             return;
-        if (maskerPlayer->playing())
+        if (trialInProgress())
             return;
         
         setAudioDevices(trial);
         stimulusPlayer->loadFile(list->next());
         stimulusPlayer->setLevel_dB(signalLevel_dB());
         maskerPlayer->fadeIn();
+    }
+    
+    bool RecognitionTestModel::noMoreTrials() {
+        return list->empty();
+    }
+    
+    bool RecognitionTestModel::trialInProgress() {
+        return maskerPlayer->playing();
     }
     
     void RecognitionTestModel::setAudioDevices(const Trial &trial) {

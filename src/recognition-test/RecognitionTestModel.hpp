@@ -94,6 +94,8 @@ namespace recognition_test {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        bool noMoreTrials();
+        bool trialInProgress();
         bool auditoryOnly(const Test &);
         void prepareVideo(const Test &);
         double signalLevel_dB();
