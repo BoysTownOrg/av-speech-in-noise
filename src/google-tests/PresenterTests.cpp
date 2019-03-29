@@ -330,11 +330,16 @@ namespace {
         class SubjectViewStub : public Subject {
             std::string numberResponse_{"0"};
             bool greenResponse_{};
+            bool redResponse_{};
             bool responseButtonsShown_{};
             bool nextTrialButtonShown_{};
             bool responseButtonsHidden_{};
             bool nextTrialButtonHidden_{};
         public:
+            void setRedResponse() {
+                redResponse_ = true;
+            }
+            
             void hideNextTrialButton() override {
                 nextTrialButtonHidden_ = true;
             }
@@ -701,15 +706,28 @@ namespace {
         assertEqual("a", model.trialParameters().audioDevice);
     }
 
-    TEST_F(PresenterTests, subjectResponsePassesCoordinates) {
-        subjectView.setGreenResponse();
+    TEST_F(PresenterTests, subjectResponsePassesNumberResponse) {
         subjectView.setNumberResponse("1");
+        submitResponse();
+        EXPECT_EQ(1, model.responseParameters().number);
+    }
+
+    TEST_F(PresenterTests, subjectResponsePassesGreenColor) {
+        subjectView.setGreenResponse();
         submitResponse();
         EXPECT_EQ(
             av_coordinated_response_measure::Color::green,
             model.responseParameters().color
         );
-        EXPECT_EQ(1, model.responseParameters().number);
+    }
+
+    TEST_F(PresenterTests, subjectResponsePassesRedColor) {
+        subjectView.setRedResponse();
+        submitResponse();
+        EXPECT_EQ(
+            av_coordinated_response_measure::Color::red,
+            model.responseParameters().color
+        );
     }
 
     TEST_F(PresenterTests, closingTestPromptsTesterToSave) {
