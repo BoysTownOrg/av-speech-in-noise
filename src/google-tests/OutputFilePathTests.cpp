@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class TimeStampStub : public TimeStamp {
+    class TimeStampStub : public recognition_test::TimeStamp {
         int year_{};
         int month_{};
         int dayOfMonth_{};
@@ -63,7 +63,7 @@ namespace {
     class OutputFilePathTests : public ::testing::Test {
     protected:
         TimeStampStub timeStamp;
-        OutputFilePath path{&timeStamp};
+        recognition_test::OutputFilePath path{&timeStamp};
         av_coordinated_response_measure::Model::Test test{};
         
         std::string generateFileName() {
