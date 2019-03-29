@@ -81,6 +81,7 @@
 		264E7E4A224E6467008A595F /* OutputFilePathTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutputFilePathTests.cpp; sourceTree = "<group>"; };
 		264E7E4C224E6F30008A595F /* OutputFilePathImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutputFilePathImpl.cpp; sourceTree = "<group>"; };
 		264E7E4D224E6F30008A595F /* OutputFilePathImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFilePathImpl.hpp; sourceTree = "<group>"; };
+		264E7E50224E7065008A595F /* LogString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogString.h; sourceTree = "<group>"; };
 		2656B62422401D2C0058A23D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		2656B62622401D3F0058A23D /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
 		26955FF82236A60200664A2C /* assert-utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "assert-utility.h"; sourceTree = "<group>"; };
@@ -275,6 +276,7 @@
 				26FDD2D5224AC0840090BDD5 /* OutputFileTests.cpp */,
 				264E7E48224E62DA008A595F /* LearningGetEnvTests.cpp */,
 				264E7E4A224E6467008A595F /* OutputFilePathTests.cpp */,
+				264E7E50224E7065008A595F /* LogString.h */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";

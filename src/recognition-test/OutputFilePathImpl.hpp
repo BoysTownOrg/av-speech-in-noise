@@ -13,12 +13,13 @@ namespace recognition_test {
         virtual int hour() = 0;
         virtual int minute() = 0;
         virtual int second() = 0;
+        virtual void capture() = 0;
     };
 
-    class OutputFilePath {
+    class OutputFilePathImpl {
         TimeStamp *timeStamp;
     public:
-        OutputFilePath(TimeStamp *);
+        OutputFilePathImpl(TimeStamp *);
         std::string generateFileName(
             const av_coordinated_response_measure::Model::Test &
         );

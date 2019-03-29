@@ -2,11 +2,13 @@
 #include <sstream>
 
 namespace recognition_test {
-    OutputFilePath::OutputFilePath(TimeStamp *timeStamp) : timeStamp{timeStamp} {}
+    OutputFilePathImpl::OutputFilePathImpl(TimeStamp *timeStamp) :
+        timeStamp{timeStamp} {}
     
-    std::string OutputFilePath::generateFileName(
+    std::string OutputFilePathImpl::generateFileName(
         const av_coordinated_response_measure::Model::Test &test
     ) {
+        timeStamp->capture();
         std::stringstream stream;
         stream << "Subject_";
         stream << test.subject;
