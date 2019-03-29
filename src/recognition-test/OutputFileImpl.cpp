@@ -78,7 +78,7 @@ namespace recognition_test {
     void OutputFileImpl::openNewFile(
         const av_coordinated_response_measure::Model::Test &test
     ) {
-        auto fileName = path->generateFileName({});
+        auto fileName = path->generateFileName(test);
         auto homeDirectory = path->homeDirectory();
         writer->open(homeDirectory + "/" + fileName + ".txt");
         if (writer->failed())

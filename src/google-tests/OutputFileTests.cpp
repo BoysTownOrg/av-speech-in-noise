@@ -29,6 +29,7 @@ namespace {
     };
     
     class OutputFilePathStub : public ::recognition_test::OutputFilePath {
+        av_coordinated_response_measure::Model::Test testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
     public:
@@ -41,13 +42,18 @@ namespace {
         }
         
         std::string generateFileName(
-            const av_coordinated_response_measure::Model::Test &
+            const av_coordinated_response_measure::Model::Test &p
         ) override {
+            testParameters_ = p;
             return fileName_;
         }
         
         std::string homeDirectory() override {
             return homeDirectory_;
+        }
+        
+        auto &testParameters() const {
+            return testParameters_;
         }
     };
 
@@ -99,6 +105,15 @@ namespace {
         path.setHomeDirectory("b");
         openNewFile();
         assertEqual("b/a.txt", writer.filePath());
+    }
+
+    TEST_F(
+        OutputFileTests,
+        openPassesTestParameters
+    ) {
+        test.experimenter = "a";
+        openNewFile();
+        assertEqual("a", path.testParameters().experimenter);
     }
     
     class FailingWriter : public recognition_test::Writer {
