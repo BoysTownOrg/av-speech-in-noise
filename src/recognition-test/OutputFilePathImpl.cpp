@@ -12,7 +12,6 @@ namespace recognition_test {
     std::string OutputFilePathImpl::generateFileName(
         const av_coordinated_response_measure::Model::Test &test
     ) {
-        timeStamp->capture();
         std::stringstream stream;
         stream << "Subject_";
         stream << test.subjectId;
@@ -21,6 +20,13 @@ namespace recognition_test {
         stream << "_Experimenter_";
         stream << test.testerId;
         stream << "_";
+        stream << formatTimeStamp();
+        return stream.str();
+    }
+    
+    std::string OutputFilePathImpl::formatTimeStamp() {
+        timeStamp->capture();
+        std::stringstream stream;
         stream << timeStamp->year();
         stream << "-";
         stream << timeStamp->month();
