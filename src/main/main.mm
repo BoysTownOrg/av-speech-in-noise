@@ -55,7 +55,7 @@ class TimeStampImpl : public recognition_test::TimeStamp {
     tm *time{&dummyTime};
 public:
     int year() override {
-        return time->tm_year;
+        return time->tm_year + 1900;
     }
     
     int month() override {
