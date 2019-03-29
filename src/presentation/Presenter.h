@@ -31,6 +31,7 @@ namespace presentation {
             virtual std::string numberResponse() = 0;
             virtual bool greenResponse() = 0;
             virtual bool blueResponse() = 0;
+            virtual bool grayResponse() = 0;
             virtual void showResponseButtons() = 0;
             virtual void hideResponseButtons() = 0;
             virtual void showNextTrialButton() = 0;

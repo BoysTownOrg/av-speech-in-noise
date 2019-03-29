@@ -332,11 +332,20 @@ namespace {
             bool greenResponse_{};
             bool redResponse_{};
             bool blueResponse_{};
+            bool grayResponse_{};
             bool responseButtonsShown_{};
             bool nextTrialButtonShown_{};
             bool responseButtonsHidden_{};
             bool nextTrialButtonHidden_{};
         public:
+            bool grayResponse() override {
+                return grayResponse_;
+            }
+            
+            void setGrayResponse() {
+                grayResponse_ = true;
+            }
+            
             bool blueResponse() override {
                 return blueResponse_;
             }
@@ -744,6 +753,15 @@ namespace {
         submitResponse();
         EXPECT_EQ(
             av_coordinated_response_measure::Color::blue,
+            model.responseParameters().color
+        );
+    }
+
+    TEST_F(PresenterTests, subjectResponsePassesGrayColor) {
+        subjectView.setGrayResponse();
+        submitResponse();
+        EXPECT_EQ(
+            av_coordinated_response_measure::Color::gray,
             model.responseParameters().color
         );
     }

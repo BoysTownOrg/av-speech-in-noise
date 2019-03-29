@@ -62,6 +62,8 @@ namespace recognition_test {
             return "red";
         case av_coordinated_response_measure::Color::blue:
             return "blue";
+        case av_coordinated_response_measure::Color::gray:
+            return "gray";
         }
         return "unknown";
     }
