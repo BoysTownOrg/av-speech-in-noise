@@ -455,9 +455,9 @@ namespace {
         RecognitionTestModelTests,
         initializeTestOpensNewOutputFile
     ) {
-        test.experimenter = "a";
+        test.testerId = "a";
         initializeTest();
-        assertEqual("a", outputFile.newFileParameters().experimenter);
+        assertEqual("a", outputFile.newFileParameters().testerId);
     }
 
     TEST_F(

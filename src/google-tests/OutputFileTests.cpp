@@ -111,9 +111,9 @@ namespace {
         OutputFileTests,
         openPassesTestParameters
     ) {
-        test.experimenter = "a";
+        test.testerId = "a";
         openNewFile();
-        assertEqual("a", path.testParameters().experimenter);
+        assertEqual("a", path.testParameters().testerId);
     }
     
     class FailingWriter : public recognition_test::Writer {

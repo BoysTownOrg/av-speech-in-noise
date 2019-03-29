@@ -38,9 +38,7 @@ namespace av_coordinated_response_measure {
             std::string subjectId;
             std::string testerId;
             std::string maskerFilePath;
-            std::string subject;
             std::string session;
-            std::string experimenter;
             int startingSnr_dB;
             int signalLevel_dB_SPL;
             int fullScaleLevel_dB_SPL;

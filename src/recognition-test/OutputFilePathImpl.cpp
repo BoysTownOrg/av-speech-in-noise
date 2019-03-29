@@ -15,11 +15,11 @@ namespace recognition_test {
         timeStamp->capture();
         std::stringstream stream;
         stream << "Subject_";
-        stream << test.subject;
+        stream << test.subjectId;
         stream << "_Session_";
         stream << test.session;
         stream << "_Experimenter_";
-        stream << test.experimenter;
+        stream << test.testerId;
         stream << "_";
         stream << timeStamp->year();
         stream << "-";

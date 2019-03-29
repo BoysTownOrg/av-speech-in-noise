@@ -101,9 +101,9 @@ namespace {
     };
 
     TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
-        test.subject = "a";
+        test.subjectId = "a";
         test.session = "b";
-        test.experimenter = "c";
+        test.testerId = "c";
         timeStamp.setYear(1);
         timeStamp.setMonth(2);
         timeStamp.setDayOfMonth(3);
