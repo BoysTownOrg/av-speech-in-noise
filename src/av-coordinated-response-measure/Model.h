@@ -21,6 +21,15 @@ namespace av_coordinated_response_measure {
         audioVisual
     };
     
+    struct Trial {
+        int SNR_dB;
+        int correctNumber;
+        int subjectNumber;
+        Color correctColor;
+        Color subjectColor;
+        int reversals;
+    };
+    
     class Model {
     public:
         class EventListener {
@@ -59,15 +68,6 @@ namespace av_coordinated_response_measure {
         
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
-    };
-    
-    struct Trial {
-        int SNR_dB;
-        int correctNumber;
-        int subjectNumber;
-        Color correctColor;
-        Color subjectColor;
-        int reversals;
     };
 }
 

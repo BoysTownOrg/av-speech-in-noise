@@ -59,6 +59,7 @@ namespace masker_player {
         std::vector<std::string> audioDeviceDescriptions() override;
         void timerCallback() override;
     private:
+        int findDeviceIndex(const std::string &device);
         void updateWindowLength();
         void prepareToFadeIn();
         void checkForFadeIn();

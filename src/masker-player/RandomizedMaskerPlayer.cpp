@@ -40,6 +40,10 @@ namespace masker_player {
     }
     
     void RandomizedMaskerPlayer::setAudioDevice(std::string device) {
+        player->setDevice(findDeviceIndex(device));
+    }
+    
+    int RandomizedMaskerPlayer::findDeviceIndex(const std::string &device) {
         auto devices_ = audioDeviceDescriptions();
         auto deviceIndex = gsl::narrow<int>(
             std::find(
@@ -48,7 +52,7 @@ namespace masker_player {
                 device
             ) - devices_.begin()
         );
-        player->setDevice(deviceIndex);
+        return deviceIndex;
     }
     
     std::vector<std::string> RandomizedMaskerPlayer::audioDeviceDescriptions() {
