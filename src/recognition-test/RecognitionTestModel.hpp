@@ -85,7 +85,7 @@ namespace recognition_test {
             OutputFile *
         );
         void initializeTest(const Test &) override;
-        void playTrial(const Trial &) override;
+        void playTrial(const AudioSettings &) override;
         void submitResponse(const SubjectResponse &) override;
         bool testComplete() override;
         std::vector<std::string> audioDevices() override;
@@ -95,18 +95,18 @@ namespace recognition_test {
         void playbackComplete() override;
     private:
         void loadStimulusList(const Test &);
-        void loadMaskerFile(const Test &p);
+        void loadMaskerFile(const Test &);
         bool noMoreTrials();
         bool trialInProgress();
         void loadNextStimulus();
-        void preparePlayers(const Trial &);
+        void preparePlayers(const AudioSettings &);
         void startTrial();
         bool auditoryOnly(const Test &);
         void prepareVideo(const Test &);
         double signalLevel_dB();
         void setAudioDevices(const std::string &);
-        void trySettingAudioDevices(const Trial &);
-        int findDeviceIndex(const Trial &);
+        void trySettingAudioDevices(const AudioSettings &);
+        int findDeviceIndex(const AudioSettings &);
     };
 }
 

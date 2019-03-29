@@ -18,7 +18,7 @@ namespace recognition_test {
         stimulusPlayer->subscribe(this);
     }
     
-    void RecognitionTestModel::playTrial(const Trial &trial) {
+    void RecognitionTestModel::playTrial(const AudioSettings &trial) {
         if (noMoreTrials() || trialInProgress())
             return;
         
@@ -34,12 +34,12 @@ namespace recognition_test {
         return maskerPlayer->playing();
     }
     
-    void RecognitionTestModel::preparePlayers(const Trial &trial) {
+    void RecognitionTestModel::preparePlayers(const AudioSettings &trial) {
         trySettingAudioDevices(trial);
         loadNextStimulus();
     }
     
-    void RecognitionTestModel::trySettingAudioDevices(const Trial &trial) {
+    void RecognitionTestModel::trySettingAudioDevices(const AudioSettings &trial) {
         auto device = trial.audioDevice;
         try {
             setAudioDevices(device);

@@ -250,7 +250,7 @@ namespace {
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
         recognition_test::RecognitionTestModel::Test test;
-        recognition_test::RecognitionTestModel::Trial trial;
+        recognition_test::RecognitionTestModel::AudioSettings trial;
         recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
         StimulusPlayerStub stimulusPlayer{};
         MaskerPlayerStub maskerPlayer{};

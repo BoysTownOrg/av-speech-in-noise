@@ -46,10 +46,10 @@ namespace av_coordinated_response_measure {
         };
         virtual void initializeTest(const Test &) = 0;
         
-        struct Trial {
+        struct AudioSettings {
             std::string audioDevice;
         };
-        virtual void playTrial(const Trial &) = 0;
+        virtual void playTrial(const AudioSettings &) = 0;
         
         struct SubjectResponse {
             int number;
