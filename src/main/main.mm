@@ -4,6 +4,7 @@
 #include <presentation/Presenter.h>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFileImpl.hpp>
+#include <recognition-test/OutputFilePathImpl.hpp>
 #include <masker-player/RandomizedMaskerPlayer.hpp>
 #include <stimulus-list/RandomizedStimulusList.hpp>
 #include <stimulus-list/FileFilterDecorator.hpp>
@@ -33,6 +34,56 @@ public:
     void write(std::string s) override {
         file << s;
     }
+    
+    void open(std::string s) override {
+        file.open(s);
+    }
+    
+    bool failed() override {
+        return file.fail();
+    }
+};
+
+class UnixFileSystemPath : public recognition_test::FileSystemPath {
+    std::string homeDirectory() override {
+        return std::getenv("HOME");
+    }
+};
+
+class TimeStampImpl : public recognition_test::TimeStamp {
+    tm dummyTime{};
+    tm *time{&dummyTime};
+public:
+    int year() override {
+        return time->tm_year;
+    }
+    
+    int month() override {
+        return time->tm_mon;
+    }
+    
+    int dayOfMonth() override {
+        return time->tm_mday;
+    }
+    
+    int hour() override {
+        return time->tm_hour;
+    }
+    
+    int minute() override {
+        return time->tm_min;
+    }
+    
+    int second() override {
+        return time->tm_sec;
+    }
+    
+    void capture() override {
+        auto now = std::time(nullptr);
+        time = std::localtime(&now);
+        if (time == nullptr)
+            time = &dummyTime;
+    }
 };
 
 int main() {
@@ -46,7 +97,10 @@ int main() {
     masker_player::RandomizedMaskerPlayer maskerPlayer{&audioPlayer};
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
-    recognition_test::OutputFileImpl outputFile{&writer};
+    TimeStampImpl timeStamp;
+    UnixFileSystemPath systemPath;
+    recognition_test::OutputFilePathImpl path{&timeStamp, &systemPath};
+    recognition_test::OutputFileImpl outputFile{&writer, &path};
     recognition_test::RecognitionTestModel model{
         &maskerPlayer,
         &list,
