@@ -88,10 +88,16 @@ namespace recognition_test {
     void OutputFileImpl::openNewFile(
         const av_coordinated_response_measure::Model::Test &test
     ) {
-        auto fileName = path->generateFileName(test);
-        auto homeDirectory = path->homeDirectory();
-        writer->open(homeDirectory + "/" + fileName + ".txt");
+        writer->open(generateNewFilePath(test));
         if (writer->failed())
             throw OpenFailure{};
+    }
+    
+    std::string OutputFileImpl::generateNewFilePath(
+        const av_coordinated_response_measure::Model::Test &test
+    ) {
+        auto fileName = path->generateFileName(test);
+        auto homeDirectory = path->homeDirectory();
+        return homeDirectory + "/" + fileName + ".txt";
     }
 }
