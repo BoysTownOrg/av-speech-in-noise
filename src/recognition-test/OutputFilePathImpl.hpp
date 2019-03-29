@@ -15,14 +15,22 @@ namespace recognition_test {
         virtual int second() = 0;
         virtual void capture() = 0;
     };
+    
+    class FileSystemPath {
+    public:
+        virtual ~FileSystemPath() = default;
+        virtual std::string homeDirectory() = 0;
+    };
 
     class OutputFilePathImpl {
         TimeStamp *timeStamp;
+        FileSystemPath *systemPath;
     public:
-        OutputFilePathImpl(TimeStamp *);
+        OutputFilePathImpl(TimeStamp *, FileSystemPath *);
         std::string generateFileName(
             const av_coordinated_response_measure::Model::Test &
         );
+        std::string homeDirectory();
     };
 }
 #endif

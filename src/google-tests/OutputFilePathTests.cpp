@@ -75,11 +75,24 @@ namespace {
             return second_;
         }
     };
+    
+    class FileSystemPathStub : public recognition_test::FileSystemPath {
+        std::string homeDirectory_{};
+    public:
+        void setHomeDirectory(std::string s) {
+            homeDirectory_ = s;
+        }
+        
+        std::string homeDirectory() override {
+            return homeDirectory_;
+        }
+    };
 
     class OutputFilePathTests : public ::testing::Test {
     protected:
         TimeStampStub timeStamp;
-        recognition_test::OutputFilePathImpl path{&timeStamp};
+        FileSystemPathStub systemPath;
+        recognition_test::OutputFilePathImpl path{&timeStamp, &systemPath};
         av_coordinated_response_measure::Model::Test test{};
         
         std::string generateFileName() {
@@ -106,5 +119,10 @@ namespace {
     TEST_F(OutputFilePathTests, generateFileNameCapturesTimePriorToQueries) {
         generateFileName();
         EXPECT_TRUE(timeStamp.log().beginsWith("capture"));
+    }
+
+    TEST_F(OutputFilePathTests, homeDirectoryReturnsFromSystem) {
+        systemPath.setHomeDirectory("a");
+        assertEqual("a", path.homeDirectory());
     }
 }

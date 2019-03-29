@@ -2,8 +2,12 @@
 #include <sstream>
 
 namespace recognition_test {
-    OutputFilePathImpl::OutputFilePathImpl(TimeStamp *timeStamp) :
-        timeStamp{timeStamp} {}
+    OutputFilePathImpl::OutputFilePathImpl(
+        TimeStamp *timeStamp,
+        FileSystemPath *systemPath
+    ) :
+        timeStamp{timeStamp},
+        systemPath{systemPath} {}
     
     std::string OutputFilePathImpl::generateFileName(
         const av_coordinated_response_measure::Model::Test &test
@@ -29,5 +33,9 @@ namespace recognition_test {
         stream << "-";
         stream << timeStamp->second();
         return stream.str();
+    }
+    
+    std::string OutputFilePathImpl::homeDirectory() { 
+        return systemPath->homeDirectory();
     }
 }

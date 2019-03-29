@@ -41,7 +41,8 @@ namespace {
         }
         
         std::string generateFileName(
-        const av_coordinated_response_measure::Model::Test &) override {
+            const av_coordinated_response_measure::Model::Test &
+        ) override {
             return fileName_;
         }
         
