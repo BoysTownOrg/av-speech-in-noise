@@ -60,7 +60,7 @@ namespace {
         av_coordinated_response_measure::Model::Test test{};
         
         void openNewFile() {
-            file.open(test);
+            file.openNewFile(test);
         }
     };
 
@@ -125,7 +125,7 @@ namespace {
         OutputFilePathStub path{};
         recognition_test::OutputFileImpl file{&writer, &path};
         try {
-            file.open({});
+            file.openNewFile({});
             FAIL() << "Expected OutputFileImpl::OpenFailure";
         }
         catch (const recognition_test::OutputFileImpl::OpenFailure &) {

@@ -75,7 +75,7 @@ namespace recognition_test {
         writer->write(stream.str());
     }
     
-    void OutputFileImpl::open(
+    void OutputFileImpl::openNewFile(
         const av_coordinated_response_measure::Model::Test &test
     ) {
         auto fileName = path->generateFileName({});

@@ -53,6 +53,7 @@ namespace recognition_test {
         maskerPlayer->loadFile(p.maskerFilePath);
         list->loadFromDirectory(p.stimulusListDirectory);
         prepareVideo(p);
+        outputFile->openNewFile(p);
         testParameters = p;
     }
     

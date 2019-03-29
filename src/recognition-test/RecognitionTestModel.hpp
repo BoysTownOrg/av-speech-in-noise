@@ -58,6 +58,7 @@ namespace recognition_test {
     class OutputFile {
     public:
         virtual ~OutputFile() = default;
+        virtual void openNewFile(const av_coordinated_response_measure::Model::Test &) = 0;
         virtual void writeTrial(const av_coordinated_response_measure::Trial &) = 0;
     };
 

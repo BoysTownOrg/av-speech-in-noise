@@ -81,6 +81,7 @@ public:
     void capture() override {
         auto now = std::time(nullptr);
         time = std::localtime(&now);
+        // Add fail method?
         if (time == nullptr)
             time = &dummyTime;
     }

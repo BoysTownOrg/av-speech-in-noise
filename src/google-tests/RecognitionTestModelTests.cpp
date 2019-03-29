@@ -216,6 +216,7 @@ namespace {
     
     class OutputFileStub : public recognition_test::OutputFile {
         av_coordinated_response_measure::Trial trialWritten_{};
+        av_coordinated_response_measure::Model::Test newFileParameters_{};
     public:
         auto &trialWritten() const {
             return trialWritten_;
@@ -223,6 +224,14 @@ namespace {
         
         void writeTrial(const av_coordinated_response_measure::Trial &trial) override {
             trialWritten_ = trial;
+        }
+        
+        void openNewFile(const av_coordinated_response_measure::Model::Test &p) override {
+            newFileParameters_ = p;
+        }
+        
+        auto newFileParameters() const {
+            return newFileParameters_;
         }
     };
     
@@ -440,6 +449,15 @@ namespace {
         setAudioVisual();
         initializeTest();
         assertStimulusVideoOnlyShown();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestOpensNewOutputFile
+    ) {
+        testParameters.experimenter = "a";
+        initializeTest();
+        assertEqual("a", outputFile.newFileParameters().experimenter);
     }
 
     TEST_F(
