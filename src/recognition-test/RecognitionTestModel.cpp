@@ -55,12 +55,17 @@ namespace recognition_test {
         prepareVideo(p);
         testParameters = p;
     }
-
+    
     void RecognitionTestModel::prepareVideo(const Test &p) {
-        if (p.condition == av_coordinated_response_measure::Condition::auditoryOnly)
+        if (auditoryOnly(p))
             stimulusPlayer->hideVideo();
         else
             stimulusPlayer->showVideo();
+    }
+
+    bool RecognitionTestModel::auditoryOnly(const Test &p) {
+        return p.condition ==
+            av_coordinated_response_measure::Condition::auditoryOnly;
     }
 
     bool RecognitionTestModel::testComplete() {

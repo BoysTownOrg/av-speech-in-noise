@@ -89,6 +89,7 @@ namespace recognition_test {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        bool auditoryOnly(const Test &);
         void prepareVideo(const Test &);
         double signalLevel_dB();
         void setAudioDevices(const Trial &);
