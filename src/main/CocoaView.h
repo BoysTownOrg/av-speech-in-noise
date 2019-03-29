@@ -104,6 +104,8 @@ public:
     void playTrial();
     std::string numberResponse() override;
     bool greenResponse() override;
+    bool blueResponse() override;
+    bool grayResponse() override;
     void showResponseButtons() override;
     void hideResponseButtons() override;
     void showNextTrialButton() override;

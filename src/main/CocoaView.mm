@@ -270,6 +270,11 @@ void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
     }
 }
 
+static auto greenColor = [NSColor greenColor];
+static auto redColor = [NSColor redColor];
+static auto blueColor = [NSColor blueColor];
+static auto grayColor = [NSColor lightGrayColor];
+
 CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
     window{
@@ -289,10 +294,10 @@ CocoaSubjectView::CocoaSubjectView() :
     actions{[SubjectViewActions alloc]}
 {
     actions.controller = this;
-    addButtonRow([NSColor blueColor], 0);
-    addButtonRow([NSColor greenColor], 1);
-    addButtonRow([NSColor lightGrayColor], 2);
-    addButtonRow([NSColor redColor], 3);
+    addButtonRow(blueColor, 0);
+    addButtonRow(greenColor, 1);
+    addButtonRow(grayColor, 2);
+    addButtonRow(redColor, 3);
     const auto button = [NSButton
         buttonWithTitle:@"Press when ready"
         target:actions
@@ -316,7 +321,23 @@ bool CocoaSubjectView::greenResponse() {
         attribute:NSForegroundColorAttributeName
         atIndex:0
         effectiveRange:nil
-    ] == [NSColor systemGreenColor];
+    ] == greenColor;
+}
+
+bool CocoaSubjectView::blueResponse() {
+    return [[lastButtonPressed attributedTitle]
+        attribute:NSForegroundColorAttributeName
+        atIndex:0
+        effectiveRange:nil
+    ] == blueColor;
+}
+
+bool CocoaSubjectView::grayResponse() {
+    return [[lastButtonPressed attributedTitle]
+        attribute:NSForegroundColorAttributeName
+        atIndex:0
+        effectiveRange:nil
+    ] == grayColor;
 }
 
 void CocoaSubjectView::respond(id sender) {
@@ -563,4 +584,3 @@ std::string CocoaView::browseForOpeningFile() {
 void CocoaView::browseForMasker() {
     listener->browseForMasker();
 }
-
