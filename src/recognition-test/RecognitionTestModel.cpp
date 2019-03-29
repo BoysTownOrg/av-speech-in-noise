@@ -45,8 +45,8 @@ namespace recognition_test {
     double RecognitionTestModel::signalLevel_dB() {
         return
             -20 * std::log10(stimulusPlayer->rms()) +
-            testParameters.signalLevel_dB_SPL -
-            testParameters.fullScaleLevel_dB_SPL;
+            test.signalLevel_dB_SPL -
+            test.fullScaleLevel_dB_SPL;
     }
     
     void RecognitionTestModel::initializeTest(const Test &p) {
@@ -54,7 +54,7 @@ namespace recognition_test {
         list->loadFromDirectory(p.stimulusListDirectory);
         prepareVideo(p);
         outputFile->openNewFile(p);
-        testParameters = p;
+        test = p;
     }
     
     void RecognitionTestModel::prepareVideo(const Test &p) {

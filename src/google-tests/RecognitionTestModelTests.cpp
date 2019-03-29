@@ -230,7 +230,7 @@ namespace {
             newFileParameters_ = p;
         }
         
-        auto newFileParameters() const {
+        auto &newFileParameters() const {
             return newFileParameters_;
         }
     };
@@ -249,8 +249,8 @@ namespace {
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
-        recognition_test::RecognitionTestModel::Test testParameters;
-        recognition_test::RecognitionTestModel::Trial trialParameters;
+        recognition_test::RecognitionTestModel::Test test;
+        recognition_test::RecognitionTestModel::Trial trial;
         recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
         StimulusPlayerStub stimulusPlayer{};
         MaskerPlayerStub maskerPlayer{};
@@ -267,15 +267,15 @@ namespace {
         RecognitionTestModelTests() {
             model.subscribe(&listener);
             setAudioDeviceDescriptions({"valid"});
-            trialParameters.audioDevice = "valid";
+            trial.audioDevice = "valid";
         }
         
         void initializeTest() {
-            model.initializeTest(testParameters);
+            model.initializeTest(test);
         }
         
         void playTrial() {
-            model.playTrial(trialParameters);
+            model.playTrial(trial);
         }
         
         void submitResponse() {
@@ -317,12 +317,12 @@ namespace {
         }
         
         void setAuditoryOnly() {
-            testParameters.condition =
+            test.condition =
                 av_coordinated_response_measure::Condition::auditoryOnly;
         }
         
         void setAudioVisual() {
-            testParameters.condition =
+            test.condition =
                 av_coordinated_response_measure::Condition::audioVisual;
         }
         
@@ -352,7 +352,7 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToPlayers) {
-        trialParameters.audioDevice = "a";
+        trial.audioDevice = "a";
         playTrial();
         assertEqual("a", maskerPlayer.device());
         assertEqual("a", stimulusPlayer.device());
@@ -364,7 +364,7 @@ namespace {
     ) {
         maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
         stimulusPlayer.throwInvalidAudioDeviceWhenDeviceSet();
-        trialParameters.audioDevice = "d";
+        trial.audioDevice = "d";
         assertPlayTrialThrowsRequestFailure("'d' is not a valid audio device.");
     }
 
@@ -416,7 +416,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestPassesMaskerFilePathToMaskerPlayer
     ) {
-        testParameters.maskerFilePath = "a";
+        test.maskerFilePath = "a";
         initializeTest();
         assertEqual("a", maskerPlayer.filePath());
     }
@@ -425,8 +425,8 @@ namespace {
         RecognitionTestModelTests,
         playTrialSetsStimulusPlayerLevel
     ) {
-        testParameters.signalLevel_dB_SPL = 5;
-        testParameters.fullScaleLevel_dB_SPL = 11;
+        test.signalLevel_dB_SPL = 5;
+        test.fullScaleLevel_dB_SPL = 11;
         initializeTest();
         stimulusPlayer.setRms(7);
         playTrial();
@@ -455,7 +455,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestOpensNewOutputFile
     ) {
-        testParameters.experimenter = "a";
+        test.experimenter = "a";
         initializeTest();
         assertEqual("a", outputFile.newFileParameters().experimenter);
     }
@@ -464,7 +464,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestPassesStimulusListDirectoryToStimulusList
     ) {
-        testParameters.stimulusListDirectory = "a";
+        test.stimulusListDirectory = "a";
         initializeTest();
         assertEqual("a", list.directory());
     }
