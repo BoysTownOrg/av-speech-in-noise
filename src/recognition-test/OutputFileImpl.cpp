@@ -25,7 +25,9 @@ namespace recognition_test {
         };
     }
     
-    OutputFileImpl::OutputFileImpl(Writer *writer) : writer{writer} {}
+    OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path) :
+        writer{writer},
+        path{path} {}
 
     void OutputFileImpl::writeTrial(
         const av_coordinated_response_measure::Trial &trial
@@ -73,8 +75,12 @@ namespace recognition_test {
         writer->write(stream.str());
     }
     
-    void OutputFileImpl::open(std::string filePath) {
-        writer->open(filePath);
+    void OutputFileImpl::open(
+        const av_coordinated_response_measure::Model::Test &test
+    ) {
+        auto fileName = path->generateFileName({});
+        auto homeDirectory = path->homeDirectory();
+        writer->open(homeDirectory + "/" + fileName + ".txt");
         if (writer->failed())
             throw OpenFailure{};
     }

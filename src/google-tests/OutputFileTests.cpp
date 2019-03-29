@@ -27,12 +27,40 @@ namespace {
             return {};
         }
     };
+    
+    class OutputFilePathStub : public ::recognition_test::OutputFilePath {
+        std::string fileName_{};
+        std::string homeDirectory_{};
+    public:
+        void setFileName(std::string s) {
+            fileName_ = s;
+        }
+        
+        void setHomeDirectory(std::string s) {
+            homeDirectory_ = s;
+        }
+        
+        std::string generateFileName(
+        const av_coordinated_response_measure::Model::Test &) override {
+            return fileName_;
+        }
+        
+        std::string homeDirectory() override {
+            return homeDirectory_;
+        }
+    };
 
     class OutputFileTests : public ::testing::Test {
     protected:
         WriterStub writer{};
-        recognition_test::OutputFileImpl file{&writer};
+        OutputFilePathStub path{};
+        recognition_test::OutputFileImpl file{&writer, &path};
         av_coordinated_response_measure::Trial trial{};
+        av_coordinated_response_measure::Model::Test test{};
+        
+        void openNewFile() {
+            file.open(test);
+        }
     };
 
     TEST_F(OutputFileTests, writeTrial) {
@@ -64,10 +92,12 @@ namespace {
 
     TEST_F(
         OutputFileTests,
-        openPassesFilePath
+        openPassesFormattedFilePath
     ) {
-        file.open("a");
-        assertEqual("a", writer.filePath());
+        path.setFileName("a");
+        path.setHomeDirectory("b");
+        openNewFile();
+        assertEqual("b/a.txt", writer.filePath());
     }
     
     class FailingWriter : public recognition_test::Writer {
@@ -91,7 +121,8 @@ namespace {
         openThrowsOpenFailureWhenWriterFails
     ) {
         FailingWriter writer{};
-        recognition_test::OutputFileImpl file{&writer};
+        OutputFilePathStub path{};
+        recognition_test::OutputFileImpl file{&writer, &path};
         try {
             file.open({});
             FAIL() << "Expected OutputFileImpl::OpenFailure";
