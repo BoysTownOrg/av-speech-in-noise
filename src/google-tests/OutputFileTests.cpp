@@ -22,6 +22,10 @@ namespace {
         void write(std::string s) override {
             written_ = std::move(s);
         }
+        
+        bool failed() override {
+            return {};
+        }
     };
 
     class OutputFileTests : public ::testing::Test {
@@ -65,21 +69,34 @@ namespace {
         file.open("a");
         assertEqual("a", writer.filePath());
     }
-/*
-    TEST(
-        TestDocumenterWithInitializationFailingWriter,
-        initializeTestThrowsInitializationFailureWhenDocumenterFailsToInitialize
-    ) {
-        InitializationFailingWriter writer{};
-        writer.setErrorMessage("error.");
-        TestDocumenterImpl documenter{ &writer };
-        try {
-            documenter.initialize({});
-            FAIL() << "Expected TestDocumenter::InitializationFailure";
+    
+    class FailingWriter : public recognition_test::Writer {
+        bool failed_{};
+    public:
+        void write(std::string) override {
+        
         }
-        catch (const TestDocumenter::InitializationFailure &e) {
-            assertEqual(std::string{ "error." }, e.what());
+        
+        void open(std::string) override {
+            failed_ = true;
+        }
+        
+        bool failed() override {
+            return failed_;
+        }
+    };
+    
+    TEST(
+        FailingOutputFileTests,
+        openThrowsOpenFailureWhenWriterFails
+    ) {
+        FailingWriter writer{};
+        recognition_test::OutputFileImpl file{&writer};
+        try {
+            file.open({});
+            FAIL() << "Expected OutputFileImpl::OpenFailure";
+        }
+        catch (const recognition_test::OutputFileImpl::OpenFailure &) {
         }
     }
-    */
 }

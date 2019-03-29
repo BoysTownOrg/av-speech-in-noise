@@ -9,6 +9,7 @@ namespace recognition_test {
         virtual ~Writer() = default;
         virtual void write(std::string) = 0;
         virtual void open(std::string) = 0;
+        virtual bool failed() = 0;
     };
 
     class OutputFileImpl : public OutputFile {
@@ -18,6 +19,7 @@ namespace recognition_test {
         void writeTrial(const av_coordinated_response_measure::Trial &) override;
         void writeTrialHeading();
         void open(std::string);
+        class OpenFailure {};
     private:
         std::string colorName(av_coordinated_response_measure::Color);
     };

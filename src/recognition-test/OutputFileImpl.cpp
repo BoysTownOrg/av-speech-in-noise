@@ -75,5 +75,7 @@ namespace recognition_test {
     
     void OutputFileImpl::open(std::string filePath) {
         writer->open(filePath);
+        if (writer->failed())
+            throw OpenFailure{};
     }
 }
