@@ -19,15 +19,18 @@ namespace stimulus_list {
     ) {
         std::vector<std::string> filtered_{};
         for (auto &file : files)
-            if (file.length() >= filter.length())
-                if (0 ==
-                    file.compare(
-                        file.length() - filter.length(),
-                        filter.length(),
-                        filter
-                    )
-                )
-                    filtered_.push_back(file);
+            if (endMatchesFilter(file))
+                filtered_.push_back(file);
         return filtered_;
+    }
+    
+    bool FileFilterDecorator::endMatchesFilter(const std::string &file) {
+        return
+            file.length() >= filter.length() &&
+            0 == file.compare(
+                file.length() - filter.length(),
+                filter.length(),
+                filter
+            );
     }
 }

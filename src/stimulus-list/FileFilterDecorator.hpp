@@ -11,6 +11,7 @@ namespace stimulus_list {
         FileFilterDecorator(DirectoryReader *reader, std::string filter);
         std::vector<std::string> filesIn(std::string directory) override;
     private:
+        bool endMatchesFilter(const std::string &);
         std::vector<std::string> filtered(std::vector<std::string>);
     };
 }
