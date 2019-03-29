@@ -114,8 +114,8 @@ namespace presentation {
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.condition = auditoryOnly()
-        ? av_coordinated_response_measure::Condition::auditoryOnly
-        : av_coordinated_response_measure::Condition::audioVisual;
+            ? av_coordinated_response_measure::Condition::auditoryOnly
+            : av_coordinated_response_measure::Condition::audioVisual;
         p.fullScaleLevel_dB_SPL = 119;
         return p;
     }
