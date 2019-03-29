@@ -32,7 +32,7 @@ class FileWriter : public recognition_test::Writer {
     std::ofstream file{};
 public:
     void write(std::string s) override {
-        file << s;
+        file << std::move(s);
     }
     
     void open(std::string s) override {

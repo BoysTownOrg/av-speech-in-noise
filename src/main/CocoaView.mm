@@ -317,27 +317,23 @@ std::string CocoaSubjectView::numberResponse() {
 }
 
 bool CocoaSubjectView::greenResponse() {
+    return lastPressedColor() == greenColor;
+}
+
+id CocoaSubjectView::lastPressedColor() {
     return [[lastButtonPressed attributedTitle]
         attribute:NSForegroundColorAttributeName
         atIndex:0
         effectiveRange:nil
-    ] == greenColor;
+    ];
 }
 
 bool CocoaSubjectView::blueResponse() {
-    return [[lastButtonPressed attributedTitle]
-        attribute:NSForegroundColorAttributeName
-        atIndex:0
-        effectiveRange:nil
-    ] == blueColor;
+    return lastPressedColor() == blueColor;
 }
 
 bool CocoaSubjectView::grayResponse() {
-    return [[lastButtonPressed attributedTitle]
-        attribute:NSForegroundColorAttributeName
-        atIndex:0
-        effectiveRange:nil
-    ] == grayColor;
+    return lastPressedColor() == grayColor;
 }
 
 void CocoaSubjectView::respond(id sender) {

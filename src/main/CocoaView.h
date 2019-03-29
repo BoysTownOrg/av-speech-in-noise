@@ -7,7 +7,7 @@
 class CocoaView;
 
 @interface ViewActions : NSObject
-@property CocoaView *controller;
+@property CocoaView * controller;
 - (void) newTest;
 - (void) openTest;
 @end
@@ -112,6 +112,7 @@ public:
     void hideNextTrialButton() override;
     void becomeChild(CocoaView *);
 private:
+    id lastPressedColor();
     void addButtonRow(NSColor *color, int row);
 };
 

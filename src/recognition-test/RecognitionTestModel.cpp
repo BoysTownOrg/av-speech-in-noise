@@ -116,7 +116,7 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
-        av_coordinated_response_measure::Trial trial;
+        av_coordinated_response_measure::Trial trial{};
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
         outputFile->writeTrial(trial);
