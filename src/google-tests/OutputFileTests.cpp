@@ -5,7 +5,16 @@
 namespace {
     class WriterStub : public recognition_test::Writer {
         std::string written_{};
+        std::string filePath_{};
     public:
+        void open(std::string f) override {
+            filePath_ = std::move(f);
+        }
+        
+        auto filePath() const {
+            return filePath_;
+        }
+        
         auto written() const {
             return written_;
         }
@@ -48,4 +57,29 @@ namespace {
         av_coordinated_response_measure::Trial uninitialized;
         file.writeTrial(uninitialized);
     }
+
+    TEST_F(
+        OutputFileTests,
+        openPassesFilePath
+    ) {
+        file.open("a");
+        assertEqual("a", writer.filePath());
+    }
+/*
+    TEST(
+        TestDocumenterWithInitializationFailingWriter,
+        initializeTestThrowsInitializationFailureWhenDocumenterFailsToInitialize
+    ) {
+        InitializationFailingWriter writer{};
+        writer.setErrorMessage("error.");
+        TestDocumenterImpl documenter{ &writer };
+        try {
+            documenter.initialize({});
+            FAIL() << "Expected TestDocumenter::InitializationFailure";
+        }
+        catch (const TestDocumenter::InitializationFailure &e) {
+            assertEqual(std::string{ "error." }, e.what());
+        }
+    }
+    */
 }

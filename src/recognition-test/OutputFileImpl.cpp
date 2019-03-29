@@ -72,4 +72,8 @@ namespace recognition_test {
         stream.insertNewLine();
         writer->write(stream.str());
     }
+    
+    void OutputFileImpl::open(std::string filePath) {
+        writer->open(filePath);
+    }
 }
