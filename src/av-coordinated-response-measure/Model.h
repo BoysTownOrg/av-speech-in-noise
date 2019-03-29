@@ -13,7 +13,8 @@
 namespace av_coordinated_response_measure {
     enum class Color {
         green,
-        red
+        red,
+        blue
     };
     
     enum class Condition {

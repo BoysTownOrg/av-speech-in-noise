@@ -62,6 +62,8 @@ namespace presentation {
         av_coordinated_response_measure::Model::SubjectResponse p;
         if (view->subject()->greenResponse())
             p.color = av_coordinated_response_measure::Color::green;
+        else if (view->subject()->blueResponse())
+            p.color = av_coordinated_response_measure::Color::blue;
         p.number = std::stoi(view->subject()->numberResponse());
         model->submitResponse(p);
         view->subject()->showNextTrialButton();

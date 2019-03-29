@@ -331,11 +331,20 @@ namespace {
             std::string numberResponse_{"0"};
             bool greenResponse_{};
             bool redResponse_{};
+            bool blueResponse_{};
             bool responseButtonsShown_{};
             bool nextTrialButtonShown_{};
             bool responseButtonsHidden_{};
             bool nextTrialButtonHidden_{};
         public:
+            bool blueResponse() override {
+                return blueResponse_;
+            }
+            
+            void setBlueResponse() {
+                blueResponse_ = true;
+            }
+            
             void setRedResponse() {
                 redResponse_ = true;
             }
@@ -726,6 +735,15 @@ namespace {
         submitResponse();
         EXPECT_EQ(
             av_coordinated_response_measure::Color::red,
+            model.responseParameters().color
+        );
+    }
+
+    TEST_F(PresenterTests, subjectResponsePassesBlueColor) {
+        subjectView.setBlueResponse();
+        submitResponse();
+        EXPECT_EQ(
+            av_coordinated_response_measure::Color::blue,
             model.responseParameters().color
         );
     }
