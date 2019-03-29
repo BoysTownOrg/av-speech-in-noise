@@ -401,7 +401,7 @@ CocoaView::CocoaView() :
     auto appSubMenu = [[NSMenu alloc] init];
     [appSubMenu addItemWithTitle:
         @"Quit"
-        action:@selector(terminate:)
+        action:@selector(stop:)
         keyEquivalent:@"q"
     ];
     [appMenu setSubmenu:appSubMenu];
