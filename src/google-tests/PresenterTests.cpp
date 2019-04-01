@@ -742,6 +742,12 @@ namespace {
         assertTesterViewHidden();
     }
 
+    TEST_F(PresenterTests, playingTrialShowsSetupViewWhenTestComplete) {
+        model.setTestComplete();
+        playTrial();
+        assertSetupViewShown();
+    }
+
     TEST_F(PresenterTests, playingTrialPlaysTrial) {
         playTrial();
         EXPECT_TRUE(model.trialPlayed());
