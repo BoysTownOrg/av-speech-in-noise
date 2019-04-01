@@ -9,7 +9,7 @@ namespace {
     public:
         Collection(std::vector<T> items = {}) : items{std::move(items)} {}
         
-        bool contains(T item) {
+        bool contains(T item) const {
             return std::find(items.begin(), items.end(), item) != items.end();
         }
     };
@@ -216,7 +216,7 @@ namespace {
                 conditions_ = std::move(items);
             }
             
-            auto conditions() const {
+            auto &conditions() const {
                 return conditions_;
             }
             
@@ -605,6 +605,10 @@ namespace {
         void assertNextTrialButtonHidden() {
             EXPECT_TRUE(subjectView.nextTrialButtonHidden());
         }
+        
+        void assertSetupViewConditionsContains(std::string s) {
+            EXPECT_TRUE(setupView.conditions().contains(std::move(s)));
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -612,9 +616,8 @@ namespace {
     }
 
     TEST_F(PresenterTests, populatesConditionMenu) {
-        auto actual = setupView.conditions();
-        EXPECT_TRUE(actual.contains(auditoryOnlyConditionName()));
-        EXPECT_TRUE(actual.contains(audioVisualConditionName()));
+        assertSetupViewConditionsContains(auditoryOnlyConditionName());
+        assertSetupViewConditionsContains(audioVisualConditionName());
     }
 
     TEST_F(PresenterTests, callsEventLoopWhenRun) {
