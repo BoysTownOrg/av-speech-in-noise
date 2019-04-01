@@ -260,9 +260,9 @@ namespace {
         recognition_test::RecognitionTestModel::Test test;
         recognition_test::RecognitionTestModel::AudioSettings trial;
         recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
+        TargetListStub targetList{};
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
-        TargetListStub targetList{};
         OutputFileStub outputFile{};
         recognition_test::RecognitionTestModel model{
             &targetList,
@@ -400,7 +400,7 @@ namespace {
     ) {
         throwInvalidAudioDeviceWhenSet();
         playTrialIgnoringFailure();
-        EXPECT_FALSE(targetList.nextCalled());
+        assertListNotAdvanced();
     }
 
     TEST_F(RecognitionTestModelTests, audioDevicesReturnsOutputAudioDeviceDescriptions) {
