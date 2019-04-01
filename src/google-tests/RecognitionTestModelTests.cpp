@@ -344,17 +344,16 @@ namespace {
         }
         
         void assertPlayTrialThrowsRequestFailure(std::string what) {
-            try {
-                playTrial();
-                FAIL() << "Expected 'recognition_test::Model::RequestFailure'.";
-            } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
-                assertEqual(std::move(what), e.what());
-            }
+            assertCallThrowsRequestFailure(&RecognitionTestModelTests::playTrial, std::move(what));
         }
         
         void assertInitializeTestThrowsRequestFailure(std::string what) {
+            assertCallThrowsRequestFailure(&RecognitionTestModelTests::initializeTest, std::move(what));
+        }
+        
+        void assertCallThrowsRequestFailure(void(RecognitionTestModelTests::*f)(), std::string what) {
             try {
-                initializeTest();
+                (this->*f)();
                 FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";
             } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
                 assertEqual(std::move(what), e.what());
@@ -546,7 +545,10 @@ namespace {
         subjectResponse.number = 1;
         submitResponse();
         EXPECT_EQ(1, outputFile.trialWritten().subjectNumber);
-        EXPECT_EQ(av_coordinated_response_measure::Color::green, outputFile.trialWritten().subjectColor);
+        EXPECT_EQ(
+            av_coordinated_response_measure::Color::green,
+            outputFile.trialWritten().subjectColor
+        );
     }
 
     TEST_F(
