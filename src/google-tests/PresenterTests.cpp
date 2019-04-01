@@ -633,6 +633,10 @@ namespace {
         void setDialogResponse(presentation::View::DialogResponse r) {
             view.setDialogResponse(r);
         }
+        
+        const av_coordinated_response_measure::Model::Test &modelTestParameters() {
+            return model.testParameters();
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -667,12 +671,12 @@ namespace {
         setupView.setTesterId("c");
         setupView.setMasker("d");
         confirmTestSetup();
-        EXPECT_EQ(1, model.testParameters().startingSnr_dB);
-        EXPECT_EQ(2, model.testParameters().signalLevel_dB_SPL);
-        assertEqual("a", model.testParameters().stimulusListDirectory);
-        assertEqual("b", model.testParameters().subjectId);
-        assertEqual("c", model.testParameters().testerId);
-        assertEqual("d", model.testParameters().maskerFilePath);
+        EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
+        EXPECT_EQ(2, modelTestParameters().signalLevel_dB_SPL);
+        assertEqual("a", modelTestParameters().stimulusListDirectory);
+        assertEqual("b", modelTestParameters().subjectId);
+        assertEqual("c", modelTestParameters().testerId);
+        assertEqual("d", modelTestParameters().maskerFilePath);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
@@ -680,7 +684,7 @@ namespace {
         confirmTestSetup();
         EXPECT_EQ(
             av_coordinated_response_measure::Condition::audioVisual,
-            model.testParameters().condition
+            modelTestParameters().condition
         );
     }
 
@@ -689,7 +693,7 @@ namespace {
         confirmTestSetup();
         EXPECT_EQ(
             av_coordinated_response_measure::Condition::auditoryOnly,
-            model.testParameters().condition
+            modelTestParameters().condition
         );
     }
 
