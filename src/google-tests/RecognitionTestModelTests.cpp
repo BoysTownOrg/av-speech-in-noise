@@ -206,6 +206,7 @@ namespace {
         }
         
         std::string next() override {
+            nextCalled_ = true;
             return next_;
         }
         
@@ -343,6 +344,13 @@ namespace {
                 assertEqual(std::move(what), e.what());
             }
         }
+        
+        void playTrialIgnoringFailure() {
+            try {
+                playTrial();
+            } catch (const recognition_test::RecognitionTestModel::RequestFailure &) {
+            }
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -365,6 +373,17 @@ namespace {
         stimulusPlayer.throwInvalidAudioDeviceWhenDeviceSet();
         trial.audioDevice = "d";
         assertPlayTrialThrowsRequestFailure("'d' is not a valid audio device.");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialWithInvalidMaskerAudioDeviceDoesNotAdvanceStimulus
+    ) {
+        maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+        stimulusPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+        trial.audioDevice = "d";
+        playTrialIgnoringFailure();
+        EXPECT_FALSE(list.nextCalled());
     }
 
     TEST_F(RecognitionTestModelTests, audioDevicesReturnsOutputAudioDeviceDescriptions) {
