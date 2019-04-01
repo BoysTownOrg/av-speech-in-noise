@@ -59,5 +59,6 @@ namespace recognition_test {
     
     void OutputFilePathImpl::setRelativeOutputDirectory(std::string s) {
         relativePath_ = std::move(s);
+        systemPath->createDirectory(systemPath->homeDirectory() + "/" + relativePath_);
     }
 }

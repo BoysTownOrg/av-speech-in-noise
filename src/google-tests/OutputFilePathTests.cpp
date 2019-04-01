@@ -78,6 +78,7 @@ namespace {
     
     class FileSystemPathStub : public recognition_test::FileSystemPath {
         std::string homeDirectory_{};
+        std::string directoryCreated_{};
     public:
         void setHomeDirectory(std::string s) {
             homeDirectory_ = s;
@@ -85,6 +86,14 @@ namespace {
         
         std::string homeDirectory() override {
             return homeDirectory_;
+        }
+        
+        auto directoryCreated() const {
+            return directoryCreated_;
+        }
+        
+        void createDirectory(std::string s) override {
+            directoryCreated_ = s;
         }
     };
 
@@ -125,5 +134,11 @@ namespace {
         systemPath.setHomeDirectory("a");
         path.setRelativeOutputDirectory("b");
         assertEqual("a/b", path.outputDirectory());
+    }
+
+    TEST_F(OutputFilePathTests, setRelativeOutputDirectoryCreatesDirectory) {
+        systemPath.setHomeDirectory("a");
+        path.setRelativeOutputDirectory("b");
+        assertEqual("a/b", systemPath.directoryCreated());
     }
 }

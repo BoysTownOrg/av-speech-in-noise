@@ -21,6 +21,7 @@ namespace recognition_test {
     public:
         virtual ~FileSystemPath() = default;
         virtual std::string homeDirectory() = 0;
+        virtual void createDirectory(std::string) = 0;
     };
 
     class OutputFilePathImpl : public OutputFilePath {
