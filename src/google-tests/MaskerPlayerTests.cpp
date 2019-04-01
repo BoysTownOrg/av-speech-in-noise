@@ -148,7 +148,7 @@ namespace {
         }
     };
 
-    class RandomizedMaskerPlayerTests : public ::testing::Test {
+    class MaskerPlayerTests : public ::testing::Test {
     protected:
         std::vector<float> leftChannel{};
         std::vector<float> rightChannel{};
@@ -156,7 +156,7 @@ namespace {
         MaskerPlayerListenerStub listener;
         masker_player::RandomizedMaskerPlayer player{&audioPlayer};
         
-        RandomizedMaskerPlayerTests() {
+        MaskerPlayerTests() {
             player.subscribe(&listener);
         }
         
@@ -191,14 +191,14 @@ namespace {
         }
         
         void fadeInToFullLevel() {
-            completeOneFadeCycle(&RandomizedMaskerPlayerTests::fadeIn);
+            completeOneFadeCycle(&MaskerPlayerTests::fadeIn);
         }
         
         void fadeOutToSilence() {
-            completeOneFadeCycle(&RandomizedMaskerPlayerTests::fadeOut);
+            completeOneFadeCycle(&MaskerPlayerTests::fadeOut);
         }
         
-        void completeOneFadeCycle(void (RandomizedMaskerPlayerTests::*fade)()) {
+        void completeOneFadeCycle(void (MaskerPlayerTests::*fade)()) {
             player.setFadeInOutSeconds(2);
             audioPlayer.setSampleRateHz(3);
             (this->*fade)();
@@ -232,22 +232,22 @@ namespace {
         }
     };
 
-    TEST_F(RandomizedMaskerPlayerTests, playingWhenVideoPlayerPlaying) {
+    TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
         audioPlayer.setPlaying();
         EXPECT_TRUE(player.playing());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, loadFileLoadsVideoFile) {
+    TEST_F(MaskerPlayerTests, loadFileLoadsVideoFile) {
         player.loadFile("a");
         assertEqual("a", audioPlayer.filePath());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadeInPlaysVideoPlayer) {
+    TEST_F(MaskerPlayerTests, fadeInPlaysVideoPlayer) {
         fadeIn();
         EXPECT_TRUE(audioPlayer.played());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunction) {
+    TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunction) {
         player.setFadeInOutSeconds(5);
         audioPlayer.setSampleRateHz(6);
         auto window = halfHannWindow(2 * 5 * 6 + 1);
@@ -265,7 +265,7 @@ namespace {
         EXPECT_NEAR(window.at(5) * 9, leftChannel.at(2), 1e-6);
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadesInAccordingToHannFunctionStereo) {
+    TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereo) {
         player.setFadeInOutSeconds(5);
         audioPlayer.setSampleRateHz(6);
         auto window = halfHannWindow(2 * 5 * 6 + 1);
@@ -291,7 +291,7 @@ namespace {
         EXPECT_NEAR(window.at(5) * 9, rightChannel.at(2), 1e-6);
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeIn) {
+    TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeIn) {
         fadeInToFullLevel();
         
         leftChannel = { 1, 2, 3 };
@@ -299,7 +299,7 @@ namespace {
         assertEqual({ 1, 2, 3 }, leftChannel);
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadesOutAccordingToHannFunction) {
+    TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunction) {
         fadeInToFullLevel();
         player.setFadeInOutSeconds(5);
         audioPlayer.setSampleRateHz(6);
@@ -318,7 +318,7 @@ namespace {
         EXPECT_NEAR(window.at(5) * 9, leftChannel.at(2), 1e-6);
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, steadyLevelFollowingFadeOut) {
+    TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {
         fadeInToFullLevel();
         fadeOutToSilence();
         
@@ -327,7 +327,7 @@ namespace {
         assertEqual({ 0, 0, 0 }, leftChannel, 1e-15f);
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
+    TEST_F(MaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
@@ -343,7 +343,7 @@ namespace {
         EXPECT_TRUE(listener.fadeInCompleted());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnceForFadeIn) {
+    TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeIn) {
         fadeInToFullLevel();
         timerCallback();
         EXPECT_EQ(1, listener.fadeInCompletions());
@@ -352,7 +352,7 @@ namespace {
         EXPECT_EQ(1, listener.fadeInCompletions());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
+    TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
         fadeInToFullLevel();
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
@@ -369,7 +369,7 @@ namespace {
         EXPECT_TRUE(listener.fadeOutCompleted());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, observerNotifiedOnceForFadeOut) {
+    TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeOut) {
         fadeInToFullLevel();
         audioPlayer.timerCallback();
         
@@ -381,7 +381,7 @@ namespace {
         EXPECT_EQ(1, listener.fadeOutCompletions());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
+    TEST_F(MaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
         fadeInToFullLevel();
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
@@ -398,22 +398,22 @@ namespace {
         EXPECT_TRUE(audioPlayer.stopped());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadeInSchedulesCallback) {
+    TEST_F(MaskerPlayerTests, fadeInSchedulesCallback) {
         fadeIn();
         assertCallbackScheduled();
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, fadeOutSchedulesCallback) {
+    TEST_F(MaskerPlayerTests, fadeOutSchedulesCallback) {
         fadeOut();
         assertCallbackScheduled();
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, callbackSchedulesAdditionalCallback) {
+    TEST_F(MaskerPlayerTests, callbackSchedulesAdditionalCallback) {
         timerCallback();
         assertCallbackScheduled();
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
+    TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
         fadeInToFullLevel();
         audioPlayer.clearCallbackCount();
         
@@ -421,7 +421,7 @@ namespace {
         assertCallbackNotScheduled();
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
+    TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
         fadeInToFullLevel();
         timerCallback();
         fadeOutToSilence();
@@ -431,13 +431,13 @@ namespace {
         assertCallbackNotScheduled();
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceFindsIndex) {
+    TEST_F(MaskerPlayerTests, setAudioDeviceFindsIndex) {
         setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
         player.setAudioDevice("second");
         EXPECT_EQ(2, audioPlayer.deviceIndex());
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
+    TEST_F(MaskerPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
         setAudioDeviceDescriptions({"zeroth", "first", "second"});
         try {
             player.setAudioDevice("third");
@@ -447,7 +447,7 @@ namespace {
         }
     }
 
-    TEST_F(RandomizedMaskerPlayerTests, outputAudioDevicesReturnsDescriptions) {
+    TEST_F(MaskerPlayerTests, outputAudioDevicesReturnsDescriptions) {
         setAudioDeviceDescriptions({"a", "b", "c"});
         setAsOutputDevice(0);
         setAsOutputDevice(2);
