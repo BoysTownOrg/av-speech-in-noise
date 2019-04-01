@@ -7,9 +7,9 @@
 namespace recognition_test {
     class InvalidAudioDevice {};
     
-    class StimulusPlayer {
+    class TargetPlayer {
     public:
-        virtual ~StimulusPlayer() = default;
+        virtual ~TargetPlayer() = default;
         
         class EventListener {
         public:
@@ -47,9 +47,9 @@ namespace recognition_test {
         virtual bool playing() = 0;
     };
 
-    class StimulusList {
+    class TargetList {
     public:
-        virtual ~StimulusList() = default;
+        virtual ~TargetList() = default;
         virtual void loadFromDirectory(std::string directory) = 0;
         virtual bool empty() = 0;
         virtual std::string next() = 0;
@@ -69,20 +69,20 @@ namespace recognition_test {
 
     class RecognitionTestModel :
         public av_coordinated_response_measure::Model,
-        public StimulusPlayer::EventListener,
+        public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
         Test test{};
         MaskerPlayer *maskerPlayer;
-        StimulusList *list;
-        StimulusPlayer *stimulusPlayer;
+        TargetList *targetList;
+        TargetPlayer *targetPlayer;
         OutputFile *outputFile;
         Model::EventListener *listener_{};
     public:
         RecognitionTestModel(
             MaskerPlayer *,
-            StimulusList *,
-            StimulusPlayer *,
+            TargetList *,
+            TargetPlayer *,
             OutputFile *
         );
         void initializeTest(const Test &) override;

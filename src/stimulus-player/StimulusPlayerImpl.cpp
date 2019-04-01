@@ -8,7 +8,7 @@ namespace stimulus_player {
         player->subscribe(this);
     }
 
-    void StimulusPlayerImpl::subscribe(StimulusPlayer::EventListener *e) {
+    void StimulusPlayerImpl::subscribe(TargetPlayer::EventListener *e) {
         listener_ = e;
     }
 

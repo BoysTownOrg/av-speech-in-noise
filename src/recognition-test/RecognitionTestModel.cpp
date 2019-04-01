@@ -5,13 +5,13 @@
 namespace recognition_test {
     RecognitionTestModel::RecognitionTestModel(
         MaskerPlayer *maskerPlayer,
-        StimulusList *list,
-        StimulusPlayer *stimulusPlayer,
+        TargetList *list,
+        TargetPlayer *stimulusPlayer,
         OutputFile *outputFile
     ) :
         maskerPlayer{maskerPlayer},
-        list{list},
-        stimulusPlayer{stimulusPlayer},
+        targetList{list},
+        targetPlayer{stimulusPlayer},
         outputFile{outputFile}
     {
         maskerPlayer->subscribe(this);
@@ -27,7 +27,7 @@ namespace recognition_test {
     }
     
     bool RecognitionTestModel::noMoreTrials() {
-        return list->empty();
+        return targetList->empty();
     }
     
     bool RecognitionTestModel::trialInProgress() {
@@ -52,12 +52,12 @@ namespace recognition_test {
     
     void RecognitionTestModel::setAudioDevices(const std::string &device) {
         maskerPlayer->setAudioDevice(device);
-        stimulusPlayer->setAudioDevice(device);
+        targetPlayer->setAudioDevice(device);
     }
     
     void RecognitionTestModel::loadNextStimulus() {
-        stimulusPlayer->loadFile(list->next());
-        stimulusPlayer->setLevel_dB(signalLevel_dB());
+        targetPlayer->loadFile(targetList->next());
+        targetPlayer->setLevel_dB(signalLevel_dB());
     }
     
     void RecognitionTestModel::startTrial() {
@@ -66,7 +66,7 @@ namespace recognition_test {
     
     double RecognitionTestModel::signalLevel_dB() {
         return
-            -20 * std::log10(stimulusPlayer->rms()) +
+            -20 * std::log10(targetPlayer->rms()) +
             test.signalLevel_dB_SPL -
             test.fullScaleLevel_dB_SPL;
     }
@@ -92,14 +92,14 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::loadStimulusList(const Test &p) {
-        list->loadFromDirectory(p.stimulusListDirectory);
+        targetList->loadFromDirectory(p.stimulusListDirectory);
     }
     
     void RecognitionTestModel::prepareVideo(const Test &p) {
         if (auditoryOnly(p))
-            stimulusPlayer->hideVideo();
+            targetPlayer->hideVideo();
         else
-            stimulusPlayer->showVideo();
+            targetPlayer->showVideo();
     }
 
     bool RecognitionTestModel::auditoryOnly(const Test &p) {
@@ -108,11 +108,11 @@ namespace recognition_test {
     }
 
     bool RecognitionTestModel::testComplete() {
-        return list->empty();
+        return targetList->empty();
     }
     
     void RecognitionTestModel::fadeInComplete() {
-        stimulusPlayer->play();
+        targetPlayer->play();
     }
     
     void RecognitionTestModel::playbackComplete() {

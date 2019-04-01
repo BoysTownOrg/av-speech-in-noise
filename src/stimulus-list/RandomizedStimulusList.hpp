@@ -19,7 +19,7 @@ namespace stimulus_list {
         virtual void shuffle(shuffle_iterator begin, shuffle_iterator end) = 0;
     };
 
-    class RandomizedStimulusList : public recognition_test::StimulusList {
+    class RandomizedStimulusList : public recognition_test::TargetList {
         std::vector<std::string> files{};
         std::string directory_{};
         DirectoryReader *reader;

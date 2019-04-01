@@ -78,7 +78,7 @@ namespace {
     };
     
     class StimulusPlayerListenerStub :
-        public recognition_test::StimulusPlayer::EventListener
+        public recognition_test::TargetPlayer::EventListener
     {
         bool notified_{};
     public:

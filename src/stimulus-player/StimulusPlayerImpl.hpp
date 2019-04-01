@@ -28,15 +28,15 @@ namespace stimulus_player {
     };
     
     class StimulusPlayerImpl :
-        public recognition_test::StimulusPlayer,
+        public recognition_test::TargetPlayer,
         public VideoPlayer::EventListener
     {
         std::atomic<double> audioScale{};
         VideoPlayer *player;
-        StimulusPlayer::EventListener *listener_{};
+        TargetPlayer::EventListener *listener_{};
     public:
         StimulusPlayerImpl(VideoPlayer *);
-        void subscribe(StimulusPlayer::EventListener *) override;
+        void subscribe(TargetPlayer::EventListener *) override;
         void play() override;
         void loadFile(std::string filePath) override;
         void hideVideo() override;

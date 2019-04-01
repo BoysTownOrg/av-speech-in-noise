@@ -92,7 +92,7 @@ namespace {
         }
     };
 
-    class StimulusPlayerStub : public recognition_test::StimulusPlayer {
+    class StimulusPlayerStub : public recognition_test::TargetPlayer {
         std::string filePath_{};
         std::string device_{};
         double rms_{};
@@ -179,7 +179,7 @@ namespace {
         }
     };
 
-    class StimulusListStub : public recognition_test::StimulusList {
+    class StimulusListStub : public recognition_test::TargetList {
         std::string directory_{};
         std::string next_{};
         bool empty_{};
@@ -229,9 +229,9 @@ namespace {
         }
         
         void openNewFile(const av_coordinated_response_measure::Model::Test &p) override {
-            newFileParameters_ = p;
             if (throwOnOpen_)
                 throw OpenFailure{};
+            newFileParameters_ = p;
         }
         
         auto &newFileParameters() const {
