@@ -56,14 +56,6 @@ namespace presentation {
     void Presenter::playTrial() {
         view->subject()->hideNextTrialButton();
         tester.playTrial();
-        switchToSetupIfTestComplete();
-    }
-    
-    void Presenter::switchToSetupIfTestComplete() {
-        if (model->testComplete()) {
-            tester.tuneOut();
-            testSetup.listen();
-        }
     }
     
     void Presenter::submitResponse() { 
@@ -80,6 +72,14 @@ namespace presentation {
         model->submitResponse(p);
         view->subject()->showNextTrialButton();
         view->subject()->hideResponseButtons();
+        switchToSetupIfTestComplete();
+    }
+    
+    void Presenter::switchToSetupIfTestComplete() {
+        if (model->testComplete()) {
+            tester.tuneOut();
+            testSetup.listen();
+        }
     }
     
     void Presenter::browseForStimulusList() {

@@ -8,7 +8,7 @@
 #include <masker-player/RandomizedMaskerPlayer.hpp>
 #include <stimulus-list/RandomizedStimulusList.hpp>
 #include <stimulus-list/FileFilterDecorator.hpp>
-#include <stimulus-player/TargetPlayerImpl.hpp>
+#include <target-player/TargetPlayerImpl.hpp>
 #include <fstream>
 #include <sys/stat.h>
 
@@ -109,9 +109,9 @@ int main() {
     path.setRelativeOutputDirectory("Documents/AVCoordinatedResponseMeasureResults");
     recognition_test::OutputFileImpl outputFile{&writer, &path};
     recognition_test::RecognitionTestModel model{
-        &maskerPlayer,
         &list,
         &stimulusPlayer,
+        &maskerPlayer,
         &outputFile
     };
     CocoaView view;

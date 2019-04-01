@@ -734,21 +734,21 @@ namespace {
         assertTesterViewShown();
     }
 
-    TEST_F(PresenterTests, playingTrialDoesNotHideViewWhileTestInProgress) {
+    TEST_F(PresenterTests, submitResponseDoesNotHideTesterViewWhileTestInProgress) {
         model.setTestIncomplete();
-        playTrial();
+        submitResponse();
         assertTesterViewNotHidden();
     }
 
-    TEST_F(PresenterTests, playingTrialHidesViewWhenTestComplete) {
+    TEST_F(PresenterTests, submitResponseHidesTesterViewWhenTestComplete) {
         model.setTestComplete();
-        playTrial();
+        submitResponse();
         assertTesterViewHidden();
     }
 
-    TEST_F(PresenterTests, playingTrialShowsSetupViewWhenTestComplete) {
+    TEST_F(PresenterTests, submitResponseShowsSetupViewWhenTestComplete) {
         model.setTestComplete();
-        playTrial();
+        submitResponse();
         assertSetupViewShown();
     }
 

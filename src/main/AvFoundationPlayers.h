@@ -3,7 +3,7 @@
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <masker-player/RandomizedMaskerPlayer.hpp>
-#include <stimulus-player/TargetPlayerImpl.hpp>
+#include <target-player/TargetPlayerImpl.hpp>
 #import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>
 #include <vector>
