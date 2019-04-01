@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <masker-player/RandomizedMaskerPlayer.hpp>
+#include <masker-player/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 
@@ -154,7 +154,7 @@ namespace {
         std::vector<float> rightChannel{};
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
-        masker_player::RandomizedMaskerPlayer player{&audioPlayer};
+        masker_player::MaskerPlayerImpl player{&audioPlayer};
         
         MaskerPlayerTests() {
             player.subscribe(&listener);

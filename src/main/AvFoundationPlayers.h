@@ -2,7 +2,7 @@
 #define AvFoundationPlayers_h
 
 #include <recognition-test/RecognitionTestModel.hpp>
-#include <masker-player/RandomizedMaskerPlayer.hpp>
+#include <masker-player/MaskerPlayerImpl.hpp>
 #include <target-player/TargetPlayerImpl.hpp>
 #import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>

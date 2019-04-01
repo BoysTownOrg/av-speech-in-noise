@@ -29,7 +29,7 @@ namespace masker_player {
         virtual bool outputDevice(int index) = 0;
     };
 
-    class RandomizedMaskerPlayer :
+    class MaskerPlayerImpl :
         public recognition_test::MaskerPlayer,
         public AudioPlayer::EventListener
     {
@@ -46,7 +46,7 @@ namespace masker_player {
         std::atomic<bool> pleaseFadeOut{};
         std::atomic<bool> pleaseFadeIn{};
     public:
-        RandomizedMaskerPlayer(AudioPlayer *);
+        MaskerPlayerImpl(AudioPlayer *);
         void subscribe(MaskerPlayer::EventListener *) override;
         void fadeIn() override;
         void fadeOut() override;

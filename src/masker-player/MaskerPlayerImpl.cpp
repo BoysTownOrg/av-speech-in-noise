@@ -1,49 +1,49 @@
-#include "RandomizedMaskerPlayer.hpp"
+#include "MaskerPlayerImpl.hpp"
 #include <cmath>
 
 namespace masker_player {
-    RandomizedMaskerPlayer::RandomizedMaskerPlayer(AudioPlayer *player)
+    MaskerPlayerImpl::MaskerPlayerImpl(AudioPlayer *player)
         : player{player}
     {
         player->subscribe(this);
     }
 
-    void RandomizedMaskerPlayer::subscribe(MaskerPlayer::EventListener *e) {
+    void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
         listener = e;
     }
 
-    void RandomizedMaskerPlayer::fadeIn() {
+    void MaskerPlayerImpl::fadeIn() {
         pleaseFadeIn.store(true);
         player->play();
         player->scheduleCallbackAfterSeconds(0.1);
     }
 
-    void RandomizedMaskerPlayer::fadeOut() {
+    void MaskerPlayerImpl::fadeOut() {
         pleaseFadeOut.store(true);
         player->scheduleCallbackAfterSeconds(0.1);
     }
 
-    void RandomizedMaskerPlayer::loadFile(std::string filePath) {
+    void MaskerPlayerImpl::loadFile(std::string filePath) {
         player->loadFile(std::move(filePath));
     }
 
-    bool RandomizedMaskerPlayer::playing() {
+    bool MaskerPlayerImpl::playing() {
         return player->playing();
     }
 
-    void RandomizedMaskerPlayer::setLevel_dB(double x) {
+    void MaskerPlayerImpl::setLevel_dB(double x) {
         levelScalar.store(std::pow(10, x/20));
     }
     
-    void RandomizedMaskerPlayer::setFadeInOutSeconds(double x) {
+    void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
         fadeInOutSeconds.store(x);
     }
     
-    void RandomizedMaskerPlayer::setAudioDevice(std::string device) {
+    void MaskerPlayerImpl::setAudioDevice(std::string device) {
         player->setDevice(findDeviceIndex(device));
     }
     
-    int RandomizedMaskerPlayer::findDeviceIndex(const std::string &device) {
+    int MaskerPlayerImpl::findDeviceIndex(const std::string &device) {
         auto devices_ = audioDeviceDescriptions_();
         auto found = std::find(
             devices_.begin(),
@@ -55,14 +55,14 @@ namespace masker_player {
         return gsl::narrow<int>(found - devices_.begin());
     }
     
-    std::vector<std::string> RandomizedMaskerPlayer::audioDeviceDescriptions_() {
+    std::vector<std::string> MaskerPlayerImpl::audioDeviceDescriptions_() {
         std::vector<std::string> descriptions{};
         for (int i = 0; i < player->deviceCount(); ++i)
             descriptions.push_back(player->deviceDescription(i));
         return descriptions;
     }
     
-    std::vector<std::string> RandomizedMaskerPlayer::outputAudioDeviceDescriptions() {
+    std::vector<std::string> MaskerPlayerImpl::outputAudioDeviceDescriptions() {
         std::vector<std::string> descriptions{};
         for (int i = 0; i < player->deviceCount(); ++i)
             if (player->outputDevice(i))
@@ -70,7 +70,7 @@ namespace masker_player {
         return descriptions;
     }
     
-    void RandomizedMaskerPlayer::timerCallback() {
+    void MaskerPlayerImpl::timerCallback() {
         auto expectedFadeInComplete = true;
         if (fadeInComplete.compare_exchange_strong(
             expectedFadeInComplete,
@@ -94,7 +94,7 @@ namespace masker_player {
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::fillAudioBuffer(
+    void MaskerPlayerImpl::fillAudioBuffer(
         const std::vector<gsl::span<float>> &audio
     ) {
         checkForFadeIn();
@@ -103,45 +103,45 @@ namespace masker_player {
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::checkForFadeIn() {
+    void MaskerPlayerImpl::checkForFadeIn() {
         auto expected = true;
         if (pleaseFadeIn.compare_exchange_strong(expected, false))
             prepareToFadeIn();
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::prepareToFadeIn() {
+    void MaskerPlayerImpl::prepareToFadeIn() {
         updateWindowLength();
         hannCounter = 0;
         fadingIn = true;
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::updateWindowLength() {
+    void MaskerPlayerImpl::updateWindowLength() {
         halfWindowLength = levelTransitionSamples();
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::checkForFadeOut() {
+    void MaskerPlayerImpl::checkForFadeOut() {
         auto expected = true;
         if (pleaseFadeOut.compare_exchange_strong(expected, false))
             prepareToFadeOut();
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::prepareToFadeOut() {
+    void MaskerPlayerImpl::prepareToFadeOut() {
         updateWindowLength();
         hannCounter = halfWindowLength;
         fadingOut = true;
     }
 
     // high priority thread
-    int RandomizedMaskerPlayer::levelTransitionSamples() {
+    int MaskerPlayerImpl::levelTransitionSamples() {
         return fadeInOutSeconds * player->sampleRateHz();
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::scaleAudio(
+    void MaskerPlayerImpl::scaleAudio(
         const std::vector<gsl::span<float>> &audio
     ) {
         auto levelScalar_ = levelScalar.load();
@@ -156,7 +156,7 @@ namespace masker_player {
     static const auto pi = std::acos(-1);
     
     // high priority thread
-    double RandomizedMaskerPlayer::fadeScalar() {
+    double MaskerPlayerImpl::fadeScalar() {
         const auto squareRoot = halfWindowLength
             ? std::sin((pi*hannCounter) / (2*halfWindowLength))
             : 1;
@@ -164,14 +164,14 @@ namespace masker_player {
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::updateFadeState() {
+    void MaskerPlayerImpl::updateFadeState() {
         checkForFadeInComplete();
         checkForFadeOutComplete();
         advanceCounterIfStillFading();
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::checkForFadeInComplete() {
+    void MaskerPlayerImpl::checkForFadeInComplete() {
         if (doneFadingIn()) {
             fadeInComplete.store(true);
             fadingIn = false;
@@ -179,12 +179,12 @@ namespace masker_player {
     }
     
     // high priority thread
-    bool RandomizedMaskerPlayer::doneFadingIn() {
+    bool MaskerPlayerImpl::doneFadingIn() {
         return fadingIn && hannCounter == halfWindowLength;
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::checkForFadeOutComplete() {
+    void MaskerPlayerImpl::checkForFadeOutComplete() {
         if (doneFadingOut()) {
             fadeOutComplete.store(true);
             fadingOut = false;
@@ -192,12 +192,12 @@ namespace masker_player {
     }
     
     // high priority thread
-    bool RandomizedMaskerPlayer::doneFadingOut() {
+    bool MaskerPlayerImpl::doneFadingOut() {
         return fadingOut && hannCounter == 2*halfWindowLength;
     }
     
     // high priority thread
-    void RandomizedMaskerPlayer::advanceCounterIfStillFading() {
+    void MaskerPlayerImpl::advanceCounterIfStillFading() {
         if (fadingIn || fadingOut)
             ++hannCounter;
     }

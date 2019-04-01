@@ -5,7 +5,7 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
-#include <masker-player/RandomizedMaskerPlayer.hpp>
+#include <masker-player/MaskerPlayerImpl.hpp>
 #include <stimulus-list/RandomizedTargetList.hpp>
 #include <stimulus-list/FileFilterDecorator.hpp>
 #include <target-player/TargetPlayerImpl.hpp>
@@ -100,7 +100,7 @@ int main() {
     AvFoundationVideoPlayer videoPlayer;
     target_player::TargetPlayerImpl stimulusPlayer{&videoPlayer};
     AvFoundationAudioPlayer audioPlayer;
-    masker_player::RandomizedMaskerPlayer maskerPlayer{&audioPlayer};
+    masker_player::MaskerPlayerImpl maskerPlayer{&audioPlayer};
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
     TimeStampImpl timeStamp;
