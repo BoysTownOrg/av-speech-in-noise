@@ -10,6 +10,7 @@
 #include <stimulus-list/FileFilterDecorator.hpp>
 #include <stimulus-player/StimulusPlayerImpl.hpp>
 #include <fstream>
+#include <sys/stat.h>
 
 class MacOsDirectoryReader : public stimulus_list::DirectoryReader {
     std::vector<std::string> filesIn(std::string directory) override {
@@ -47,6 +48,10 @@ public:
 class UnixFileSystemPath : public recognition_test::FileSystemPath {
     std::string homeDirectory() override {
         return std::getenv("HOME");
+    }
+    
+    void createDirectory(std::string s) override {
+        mkdir(s.c_str(), ACCESSPERMS);
     }
 };
 
@@ -101,6 +106,7 @@ int main() {
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
     recognition_test::OutputFilePathImpl path{&timeStamp, &systemPath};
+    path.setRelativeOutputDirectory("Documents/AVCoordinatedResponseMeasureResults");
     recognition_test::OutputFileImpl outputFile{&writer, &path};
     recognition_test::RecognitionTestModel model{
         &maskerPlayer,
