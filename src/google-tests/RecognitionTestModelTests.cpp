@@ -6,7 +6,6 @@
 
 namespace {
     class MaskerPlayerStub : public recognition_test::MaskerPlayer {
-        std::vector<std::string> audioDeviceDescriptions_{};
         std::vector<std::string> outputAudioDeviceDescriptions_{};
         std::string filePath_{};
         std::string device_{};
@@ -46,10 +45,6 @@ namespace {
         
         void setPlaying() {
             playing_ = true;
-        }
-        
-        void setAudioDeviceDescriptions(std::vector<std::string> v) {
-            audioDeviceDescriptions_ = std::move(v);
         }
         
         void setOutputAudioDeviceDescriptions(std::vector<std::string> v) {
@@ -271,7 +266,6 @@ namespace {
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
-            setAudioDeviceDescriptions({"valid"});
             trial.audioDevice = "valid";
         }
         
@@ -285,10 +279,6 @@ namespace {
         
         void submitResponse() {
             model.submitResponse(subjectResponse);
-        }
-        
-        void setAudioDeviceDescriptions(std::vector<std::string> v) {
-            maskerPlayer.setAudioDeviceDescriptions(std::move(v));
         }
         
         void setOutputAudioDeviceDescriptions(std::vector<std::string> v) {
