@@ -12,9 +12,9 @@
 		2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2623A153224BD037007C99F2 /* OutputFileImpl.cpp */; };
 		2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2623A154224BD037007C99F2 /* OutputFileImpl.hpp */; };
 		2646F83421DFDF5500F378DE /* RandomizedStimulusListTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83321DFDF5500F378DE /* RandomizedStimulusListTests.cpp */; };
-		2646F84021DFEA2300F378DE /* RandomizedStimulusList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedStimulusList.cpp */; };
+		2646F84021DFEA2300F378DE /* RandomizedTargetList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */; };
 		2646F84121DFEA5E00F378DE /* libstimulus-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libstimulus-list.dylib */; };
-		2646F84221DFEA7300F378DE /* RandomizedStimulusList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedStimulusList.cpp */; };
+		2646F84221DFEA7300F378DE /* RandomizedTargetList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */; };
 		2646F84321DFEBE000F378DE /* libstimulus-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libstimulus-list.dylib */; };
 		2646F84A21E017D100F378DE /* FileFilterDecorator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F84821E017D100F378DE /* FileFilterDecorator.cpp */; };
 		2646F84B21E017D100F378DE /* FileFilterDecorator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2646F84921E017D100F378DE /* FileFilterDecorator.hpp */; };
@@ -70,8 +70,8 @@
 		2623A154224BD037007C99F2 /* OutputFileImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFileImpl.hpp; sourceTree = "<group>"; };
 		2646F83321DFDF5500F378DE /* RandomizedStimulusListTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedStimulusListTests.cpp; sourceTree = "<group>"; };
 		2646F83921DFEA0400F378DE /* libstimulus-list.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libstimulus-list.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2646F83E21DFEA2300F378DE /* RandomizedStimulusList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedStimulusList.cpp; sourceTree = "<group>"; };
-		2646F83F21DFEA2300F378DE /* RandomizedStimulusList.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomizedStimulusList.hpp; sourceTree = "<group>"; };
+		2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedTargetList.cpp; sourceTree = "<group>"; };
+		2646F83F21DFEA2300F378DE /* RandomizedTargetList.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomizedTargetList.hpp; sourceTree = "<group>"; };
 		2646F84421E003B600F378DE /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		2646F84621E003E500F378DE /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2646F84821E017D100F378DE /* FileFilterDecorator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FileFilterDecorator.cpp; sourceTree = "<group>"; };
@@ -177,15 +177,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2646F83D21DFEA0B00F378DE /* stimulus-list */ = {
+		2646F83D21DFEA0B00F378DE /* target-list */ = {
 			isa = PBXGroup;
 			children = (
-				2646F83E21DFEA2300F378DE /* RandomizedStimulusList.cpp */,
-				2646F83F21DFEA2300F378DE /* RandomizedStimulusList.hpp */,
+				2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */,
+				2646F83F21DFEA2300F378DE /* RandomizedTargetList.hpp */,
 				2646F84821E017D100F378DE /* FileFilterDecorator.cpp */,
 				2646F84921E017D100F378DE /* FileFilterDecorator.hpp */,
 			);
-			path = "stimulus-list";
+			path = "target-list";
 			sourceTree = "<group>";
 		};
 		269C919122331FCE00A80372 /* main */ = {
@@ -239,7 +239,7 @@
 				26EE86BD2242E8CB00C08622 /* target-player */,
 				26A86BE7223AA72700210C00 /* masker-player */,
 				269C919122331FCE00A80372 /* main */,
-				2646F83D21DFEA0B00F378DE /* stimulus-list */,
+				2646F83D21DFEA0B00F378DE /* target-list */,
 				26A2236D21DD3482007D6511 /* recognition-test */,
 				26FC6B1A21DAA3DF00289A0A /* presentation */,
 				26FC6B0521DA810C00289A0A /* google-tests */,
@@ -543,7 +543,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2646F84221DFEA7300F378DE /* RandomizedStimulusList.cpp in Sources */,
+				2646F84221DFEA7300F378DE /* RandomizedTargetList.cpp in Sources */,
 				2646F84A21E017D100F378DE /* FileFilterDecorator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -594,7 +594,7 @@
 				26A86BDE223A972200210C00 /* RandomizedMaskerPlayerTests.cpp in Sources */,
 				26A2236C21DD2C75007D6511 /* RecognitionTestModelTests.cpp in Sources */,
 				264E7E4B224E6467008A595F /* OutputFilePathTests.cpp in Sources */,
-				2646F84021DFEA2300F378DE /* RandomizedStimulusList.cpp in Sources */,
+				2646F84021DFEA2300F378DE /* RandomizedTargetList.cpp in Sources */,
 				26EE86BB2242CFFB00C08622 /* TargetPlayerTests.cpp in Sources */,
 				2646F83421DFDF5500F378DE /* RandomizedStimulusListTests.cpp in Sources */,
 			);

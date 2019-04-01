@@ -1,24 +1,24 @@
-#include "RandomizedStimulusList.hpp"
+#include "RandomizedTargetList.hpp"
 
 namespace stimulus_list {
-    RandomizedStimulusList::RandomizedStimulusList(
+    RandomizedTargetList::RandomizedTargetList(
         DirectoryReader *reader,
         Randomizer *randomizer
     ) :
         reader{reader},
         randomizer{randomizer} {}
     
-    void RandomizedStimulusList::loadFromDirectory(std::string directory) {
+    void RandomizedTargetList::loadFromDirectory(std::string directory) {
         directory_ = std::move(directory);
         files = reader->filesIn(directory_);
         randomizer->shuffle(files.begin(), files.end());
     }
     
-    bool RandomizedStimulusList::empty() {
+    bool RandomizedTargetList::empty() {
         return files.empty();
     }
     
-    std::string RandomizedStimulusList::next() {
+    std::string RandomizedTargetList::next() {
         auto next_ = files.front();
         files.erase(files.begin());
         return directory_ + "/" + next_;

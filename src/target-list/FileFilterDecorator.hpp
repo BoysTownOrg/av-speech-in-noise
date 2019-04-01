@@ -1,7 +1,7 @@
 #ifndef stimulus_list_FileFilterDecorator_hpp
 #define stimulus_list_FileFilterDecorator_hpp
 
-#include <stimulus-list/RandomizedStimulusList.hpp>
+#include <target-list/RandomizedTargetList.hpp>
 
 namespace stimulus_list {
     class FileFilterDecorator : public DirectoryReader {

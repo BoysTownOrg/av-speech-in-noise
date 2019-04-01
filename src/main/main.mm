@@ -6,7 +6,7 @@
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
 #include <masker-player/RandomizedMaskerPlayer.hpp>
-#include <stimulus-list/RandomizedStimulusList.hpp>
+#include <stimulus-list/RandomizedTargetList.hpp>
 #include <stimulus-list/FileFilterDecorator.hpp>
 #include <target-player/TargetPlayerImpl.hpp>
 #include <fstream>
@@ -96,7 +96,7 @@ int main() {
     MacOsDirectoryReader reader;
     stimulus_list::FileFilterDecorator filter{&reader, ".mov"};
     MersenneTwisterRandomizer randomizer;
-    stimulus_list::RandomizedStimulusList list{&filter, &randomizer};
+    stimulus_list::RandomizedTargetList list{&filter, &randomizer};
     AvFoundationVideoPlayer videoPlayer;
     target_player::TargetPlayerImpl stimulusPlayer{&videoPlayer};
     AvFoundationAudioPlayer audioPlayer;

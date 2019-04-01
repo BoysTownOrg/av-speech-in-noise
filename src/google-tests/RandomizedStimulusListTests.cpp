@@ -1,6 +1,6 @@
 #include "assert-utility.h"
-#include <stimulus-list/RandomizedStimulusList.hpp>
-#include <stimulus-list/FileFilterDecorator.hpp>
+#include <target-list/RandomizedTargetList.hpp>
+#include <target-list/FileFilterDecorator.hpp>
 #include <gtest/gtest.h>
 
 namespace {
@@ -38,7 +38,7 @@ namespace {
     protected:
         DirectoryReaderStub reader{};
         RandomizerStub randomizer{};
-        stimulus_list::RandomizedStimulusList list{&reader, &randomizer};
+        stimulus_list::RandomizedTargetList list{&reader, &randomizer};
         
         void loadFromDirectory(std::string s = {}) {
             list.loadFromDirectory(std::move(s));

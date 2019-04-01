@@ -19,13 +19,13 @@ namespace stimulus_list {
         virtual void shuffle(shuffle_iterator begin, shuffle_iterator end) = 0;
     };
 
-    class RandomizedStimulusList : public recognition_test::TargetList {
+    class RandomizedTargetList : public recognition_test::TargetList {
         std::vector<std::string> files{};
         std::string directory_{};
         DirectoryReader *reader;
         Randomizer *randomizer;
     public:
-        RandomizedStimulusList(DirectoryReader *, Randomizer *);
+        RandomizedTargetList(DirectoryReader *, Randomizer *);
         void loadFromDirectory(std::string) override;
         bool empty() override;
         std::string next() override;
