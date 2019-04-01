@@ -13,11 +13,11 @@ static NSTextField *allocLabel(NSString *label, NSRect frame) {
 
 CocoaTesterView::CocoaTesterView() :
     deviceMenu{[
-        [NSPopUpButton alloc] initWithFrame:NSMakeRect(50, 50, 140, 30)
+        [NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 140, 30)
         pullsDown:NO
     ]},
     view_{
-        [[NSView alloc] initWithFrame:NSMakeRect(50, 50, 500, 600)]
+        [[NSView alloc] initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)]
     },
     actions{[TesterViewActions alloc]}
 {
