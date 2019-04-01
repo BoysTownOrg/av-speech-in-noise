@@ -130,6 +130,7 @@ namespace {
         void eventLoop() override {
             eventLoopCalled_ = true;
         }
+        
         TestSetup *testSetup() override {
             return setupView_;
         }
@@ -198,12 +199,12 @@ namespace {
         class TestSetupViewStub : public TestSetup {
             Collection<std::string> conditions_{};
             std::string signalLevel_{"0"};
+            std::string startingSnr_{"0"};
             std::string condition_{};
             std::string masker_{};
             std::string stimulusList_{};
             std::string subjectId_{};
             std::string testerId_{};
-            std::string startingSnr_{"0"};
             bool shown_{};
             bool hidden_{};
         public:
@@ -421,14 +422,14 @@ namespace {
 
     class BrowsingEnteredPathUseCase : public BrowsingUseCase {
     public:
-        virtual std::string entry(ViewStub &) = 0;
+        virtual std::string entry(ViewStub::TestSetupViewStub &) = 0;
         virtual void setEntry(ViewStub::TestSetupViewStub &, std::string) = 0;
     };
     
     class BrowsingForMasker : public BrowsingEnteredPathUseCase {
     public:
-        std::string entry(ViewStub &view) override {
-            return view.testSetup()->maskerFilePath();
+        std::string entry(ViewStub::TestSetupViewStub &view) override {
+            return view.maskerFilePath();
         }
         
         void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
@@ -454,8 +455,8 @@ namespace {
             view.setBrowseForDirectoryResult(s);
         }
         
-        std::string entry(ViewStub &view) override {
-            return view.testSetup()->stimulusListDirectory();
+        std::string entry(ViewStub::TestSetupViewStub &view) override {
+            return view.stimulusListDirectory();
         }
         
         void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
@@ -572,7 +573,7 @@ namespace {
         void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase *useCase) {
             useCase->setResult(view, "a");
             runUseCase(useCase);
-            assertEqual("a", useCase->entry(view));
+            assertEqual("a", useCase->entry(setupView));
         }
 
         void assertCancellingBrowseDoesNotChangePath(
@@ -582,7 +583,7 @@ namespace {
             useCase->setResult(view, "b");
             view.setBrowseCancelled();
             runUseCase(useCase);
-            assertEqual("a", useCase->entry(view));
+            assertEqual("a", useCase->entry(setupView));
         }
         
         void completeTrial() {
