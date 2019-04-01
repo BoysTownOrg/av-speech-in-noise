@@ -437,6 +437,16 @@ namespace {
         EXPECT_EQ(2, audioPlayer.deviceIndex());
     }
 
+    TEST_F(RandomizedMaskerPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
+        setAudioDeviceDescriptions({"zeroth", "first", "second"});
+        try {
+            player.setAudioDevice("third");
+            FAIL() << "Expected recognition_test::InvalidAudioDevice";
+        } catch(const recognition_test::InvalidAudioDevice &) {
+        
+        }
+    }
+
     TEST_F(RandomizedMaskerPlayerTests, outputAudioDevicesReturnsDescriptions) {
         setAudioDeviceDescriptions({"a", "b", "c"});
         setAsOutputDevice(0);

@@ -45,14 +45,14 @@ namespace masker_player {
     
     int RandomizedMaskerPlayer::findDeviceIndex(const std::string &device) {
         auto devices_ = audioDeviceDescriptions_();
-        auto deviceIndex = gsl::narrow<int>(
-            std::find(
-                devices_.begin(),
-                devices_.end(),
-                device
-            ) - devices_.begin()
+        auto found = std::find(
+            devices_.begin(),
+            devices_.end(),
+            device
         );
-        return deviceIndex;
+        if (found == devices_.end())
+            throw recognition_test::InvalidAudioDevice{};
+        return gsl::narrow<int>(found - devices_.begin());
     }
     
     std::vector<std::string> RandomizedMaskerPlayer::audioDeviceDescriptions_() {
