@@ -230,7 +230,7 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
     actions{[StimulusPlayerActions alloc]},
     videoWindow{
         [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(1000, 400, 0, 0)
+            initWithContentRect: NSMakeRect(400, 450, 0, 0)
             styleMask:NSWindowStyleMaskBorderless
             backing:NSBackingStoreBuffered
             defer:YES

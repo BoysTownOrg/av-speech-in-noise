@@ -276,17 +276,17 @@ CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
     window{
         [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(1200, 15, 800, 400)
+            initWithContentRect: NSMakeRect(1150, 15, 750, 400)
             styleMask:NSWindowStyleMaskBorderless
             backing:NSBackingStoreBuffered
             defer:YES
         ]
     },
     responseButtons{
-        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 800, 400)]
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 750, 400)]
     },
     nextTrialButton{
-        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 800, 400)]
+        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 750, 400)]
     },
     actions{[SubjectViewActions alloc]}
 {
