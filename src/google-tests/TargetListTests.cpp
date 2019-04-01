@@ -34,7 +34,7 @@ namespace {
         }
     };
 
-    class RandomizedStimulusListTests : public ::testing::Test {
+    class TargetListTests : public ::testing::Test {
     protected:
         DirectoryReaderStub reader{};
         RandomizerStub randomizer{};
@@ -46,7 +46,7 @@ namespace {
     };
 
     TEST_F(
-        RandomizedStimulusListTests,
+        TargetListTests,
         loadFromDirectoryPassesDirectoryToDirectoryReader
     ) {
         loadFromDirectory("a");
@@ -54,7 +54,7 @@ namespace {
     }
 
     TEST_F(
-        RandomizedStimulusListTests,
+        TargetListTests,
         testCompleteWhenStimulusFilesExhausted
     ) {
         reader.setFileNames({ "a", "b", "c" });
@@ -69,7 +69,7 @@ namespace {
     }
 
     TEST_F(
-        RandomizedStimulusListTests,
+        TargetListTests,
         nextReturnsFullPathToFileAtFront
     ) {
         reader.setFileNames({ "a", "b", "c" });
@@ -80,7 +80,7 @@ namespace {
     }
 
     TEST_F(
-        RandomizedStimulusListTests,
+        TargetListTests,
         loadFromDirectoryShufflesFileNames
     ) {
         reader.setFileNames({ "a", "b", "c" });
