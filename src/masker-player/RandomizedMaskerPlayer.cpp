@@ -55,10 +55,6 @@ namespace masker_player {
         return deviceIndex;
     }
     
-    std::vector<std::string> RandomizedMaskerPlayer::audioDeviceDescriptions() {
-        return audioDeviceDescriptions_();
-    }
-    
     std::vector<std::string> RandomizedMaskerPlayer::audioDeviceDescriptions_() {
         std::vector<std::string> descriptions{};
         for (int i = 0; i < player->deviceCount(); ++i)
