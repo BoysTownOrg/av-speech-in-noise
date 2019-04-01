@@ -367,6 +367,11 @@ namespace {
             } catch (const recognition_test::RecognitionTestModel::RequestFailure &) {
             }
         }
+        
+        void throwInvalidAudioDeviceWhenSet() {
+            maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+            stimulusPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -385,8 +390,7 @@ namespace {
         RecognitionTestModelTests,
         playTrialWithInvalidMaskerAudioDeviceThrowsRequestFailure
     ) {
-        maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
-        stimulusPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+        throwInvalidAudioDeviceWhenSet();
         trial.audioDevice = "d";
         assertPlayTrialThrowsRequestFailure("'d' is not a valid audio device.");
     }
@@ -395,9 +399,7 @@ namespace {
         RecognitionTestModelTests,
         playTrialWithInvalidMaskerAudioDeviceDoesNotAdvanceStimulus
     ) {
-        maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
-        stimulusPlayer.throwInvalidAudioDeviceWhenDeviceSet();
-        trial.audioDevice = "d";
+        throwInvalidAudioDeviceWhenSet();
         playTrialIgnoringFailure();
         EXPECT_FALSE(list.nextCalled());
     }
