@@ -149,6 +149,16 @@ namespace {
         EXPECT_EQ(2, videoPlayer.deviceIndex());
     }
 
+    TEST_F(StimulusPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
+        setAudioDeviceDescriptions({"zeroth", "first", "second"});
+        try {
+            player.setAudioDevice("third");
+            FAIL() << "Expected recognition_test::InvalidAudioDevice";
+        } catch(const recognition_test::InvalidAudioDevice &) {
+        
+        }
+    }
+
     TEST_F(StimulusPlayerTests, audioDevicesReturnsDescriptions) {
         setAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, player.audioDevices());

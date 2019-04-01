@@ -51,13 +51,14 @@ namespace stimulus_player {
     
     void StimulusPlayerImpl::setAudioDevice(std::string device) {
         auto devices_ = audioDevices();
-        auto deviceIndex = gsl::narrow<int>(
-            std::find(
-                devices_.begin(),
-                devices_.end(),
-                device
-            ) - devices_.begin()
+        auto found = std::find(
+            devices_.begin(),
+            devices_.end(),
+            device
         );
+        if (found == devices_.end())
+            throw recognition_test::InvalidAudioDevice{};
+        auto deviceIndex = gsl::narrow<int>(found - devices_.begin());
         player->setDevice(deviceIndex);
     }
     
