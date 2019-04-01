@@ -70,9 +70,14 @@ namespace presentation {
             p.color = av_coordinated_response_measure::Color::red;
         p.number = std::stoi(view->subject()->numberResponse());
         model->submitResponse(p);
-        view->subject()->showNextTrialButton();
         view->subject()->hideResponseButtons();
-        switchToSetupIfTestComplete();
+        if (model->testComplete()) {
+            tester.tuneOut();
+            testSetup.listen();
+        }
+        else {
+            view->subject()->showNextTrialButton();
+        }
     }
     
     void Presenter::switchToSetupIfTestComplete() {

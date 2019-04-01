@@ -602,6 +602,10 @@ namespace {
             EXPECT_TRUE(subjectView.nextTrialButtonShown());
         }
         
+        void assertNextTrialButtonNotShown() {
+            EXPECT_FALSE(subjectView.nextTrialButtonShown());
+        }
+        
         void assertResponseButtonsHidden() {
             EXPECT_TRUE(subjectView.responseButtonsHidden());
         }
@@ -651,6 +655,11 @@ namespace {
     TEST_F(PresenterTests, callsEventLoopWhenRun) {
         presenter.run();
         EXPECT_TRUE(view.eventLoopCalled());
+    }
+
+    TEST_F(PresenterTests, openTestShowsTesterView) {
+        view.openTest();
+        assertTesterViewShown();
     }
 
     TEST_F(PresenterTests, newTestShowsTestSetupView) {
@@ -729,29 +738,6 @@ namespace {
         assertNextTrialButtonShown();
     }
 
-    TEST_F(PresenterTests, openTestShowsTesterView) {
-        view.openTest();
-        assertTesterViewShown();
-    }
-
-    TEST_F(PresenterTests, submitResponseDoesNotHideTesterViewWhileTestInProgress) {
-        model.setTestIncomplete();
-        submitResponse();
-        assertTesterViewNotHidden();
-    }
-
-    TEST_F(PresenterTests, submitResponseHidesTesterViewWhenTestComplete) {
-        model.setTestComplete();
-        submitResponse();
-        assertTesterViewHidden();
-    }
-
-    TEST_F(PresenterTests, submitResponseShowsSetupViewWhenTestComplete) {
-        model.setTestComplete();
-        submitResponse();
-        assertSetupViewShown();
-    }
-
     TEST_F(PresenterTests, playingTrialPlaysTrial) {
         playTrial();
         EXPECT_TRUE(model.trialPlayed());
@@ -798,6 +784,40 @@ namespace {
         assertModelPassedCondition(av_coordinated_response_measure::Color::gray);
     }
 
+    TEST_F(PresenterTests, submitResponseDoesNotHideTesterViewWhileTestInProgress) {
+        model.setTestIncomplete();
+        submitResponse();
+        assertTesterViewNotHidden();
+    }
+
+    TEST_F(PresenterTests, submitResponseHidesTesterViewWhenTestComplete) {
+        model.setTestComplete();
+        submitResponse();
+        assertTesterViewHidden();
+    }
+
+    TEST_F(PresenterTests, submitResponseShowsSetupViewWhenTestComplete) {
+        model.setTestComplete();
+        submitResponse();
+        assertSetupViewShown();
+    }
+
+    TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
+        submitResponse();
+        assertNextTrialButtonShown();
+    }
+
+    TEST_F(PresenterTests, subjectResponseDoesNotShowNextTrialButtonWhenTestComplete) {
+        model.setTestComplete();
+        submitResponse();
+        assertNextTrialButtonNotShown();
+    }
+
+    TEST_F(PresenterTests, subjectResponseHidesResponseButtons) {
+        submitResponse();
+        assertResponseButtonsHidden();
+    }
+
     TEST_F(PresenterTests, closingTestPromptsTesterToSave) {
         close();
         EXPECT_TRUE(view.confirmationDialogShown());
@@ -840,16 +860,6 @@ namespace {
     TEST_F(PresenterTests, trialCompleteShowsResponseButtons) {
         completeTrial();
         assertResponseButtonsShown();
-    }
-
-    TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
-        submitResponse();
-        assertNextTrialButtonShown();
-    }
-
-    TEST_F(PresenterTests, subjectResponseHidesResponseButtons) {
-        submitResponse();
-        assertResponseButtonsHidden();
     }
 
     class RequestFailingModel : public av_coordinated_response_measure::Model {
