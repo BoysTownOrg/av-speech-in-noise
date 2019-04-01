@@ -127,6 +127,7 @@ namespace presentation {
     private:
         RUNTIME_ERROR(BadInput)
         void initializeTest_();
+        void switchToSetupIfTestComplete();
         
         TestSetup testSetup;
         Tester tester;
