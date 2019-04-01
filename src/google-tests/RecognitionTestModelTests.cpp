@@ -7,6 +7,7 @@
 namespace {
     class MaskerPlayerStub : public recognition_test::MaskerPlayer {
         std::vector<std::string> audioDeviceDescriptions_{};
+        std::vector<std::string> outputAudioDeviceDescriptions_{};
         std::string filePath_{};
         std::string device_{};
         int deviceIndex_{};
@@ -51,6 +52,10 @@ namespace {
             audioDeviceDescriptions_ = std::move(v);
         }
         
+        void setOutputAudioDeviceDescriptions(std::vector<std::string> v) {
+            outputAudioDeviceDescriptions_ = std::move(v);
+        }
+        
         auto fadeInCalled() const {
             return fadeInCalled_;
         }
@@ -77,6 +82,10 @@ namespace {
         
         std::vector<std::string> audioDeviceDescriptions() override {
             return audioDeviceDescriptions_;
+        }
+        
+        std::vector<std::string> outputAudioDeviceDescriptions() override {
+            return outputAudioDeviceDescriptions_;
         }
         
         auto listener() const {
@@ -286,6 +295,10 @@ namespace {
             maskerPlayer.setAudioDeviceDescriptions(std::move(v));
         }
         
+        void setOutputAudioDeviceDescriptions(std::vector<std::string> v) {
+            maskerPlayer.setOutputAudioDeviceDescriptions(std::move(v));
+        }
+        
         bool maskerPlayerFadedIn() {
             return maskerPlayer.fadeInCalled();
         }
@@ -368,8 +381,8 @@ namespace {
         assertPlayTrialThrowsRequestFailure("'d' is not a valid audio device.");
     }
 
-    TEST_F(RecognitionTestModelTests, audioDevicesReturnsDescriptions) {
-        setAudioDeviceDescriptions({"a", "b", "c"});
+    TEST_F(RecognitionTestModelTests, audioDevicesReturnsOutputAudioDeviceDescriptions) {
+        setOutputAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, model.audioDevices());
     }
 

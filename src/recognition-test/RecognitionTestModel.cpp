@@ -112,7 +112,7 @@ namespace recognition_test {
     }
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {
-        return maskerPlayer->audioDeviceDescriptions();
+        return maskerPlayer->outputAudioDeviceDescriptions();
     }
     
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
