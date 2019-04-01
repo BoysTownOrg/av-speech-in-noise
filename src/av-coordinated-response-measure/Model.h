@@ -45,7 +45,7 @@ namespace av_coordinated_response_measure {
         RUNTIME_ERROR(RequestFailure)
         
         struct Test {
-            std::string stimulusListDirectory;
+            std::string targetListDirectory;
             std::string subjectId;
             std::string testerId;
             std::string maskerFilePath;

@@ -499,7 +499,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestPassesTargetListDirectoryToTargetList
     ) {
-        test.stimulusListDirectory = "a";
+        test.targetListDirectory = "a";
         initializeTest();
         assertEqual("a", targetList.directory());
     }

@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <stimulus-player/StimulusPlayerImpl.hpp>
+#include <stimulus-player/TargetPlayerImpl.hpp>
 #include <gtest/gtest.h>
 
 namespace {
@@ -96,7 +96,7 @@ namespace {
         std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
         StimulusPlayerListenerStub listener;
-        stimulus_player::StimulusPlayerImpl player{&videoPlayer};
+        stimulus_player::TargetPlayerImpl player{&videoPlayer};
         
         StimulusPlayerTests() {
             player.subscribe(&listener);

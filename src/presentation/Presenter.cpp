@@ -124,7 +124,7 @@ namespace presentation {
         p.signalLevel_dB_SPL =
             readInteger(view->signalLevel_dB_SPL(), "signal level");
         p.maskerFilePath = view->maskerFilePath();
-        p.stimulusListDirectory = view->stimulusListDirectory();
+        p.targetListDirectory = view->stimulusListDirectory();
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.condition = auditoryOnly()

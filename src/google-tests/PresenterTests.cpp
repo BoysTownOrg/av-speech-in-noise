@@ -673,7 +673,7 @@ namespace {
         confirmTestSetup();
         EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
         EXPECT_EQ(2, modelTestParameters().signalLevel_dB_SPL);
-        assertEqual("a", modelTestParameters().stimulusListDirectory);
+        assertEqual("a", modelTestParameters().targetListDirectory);
         assertEqual("b", modelTestParameters().subjectId);
         assertEqual("c", modelTestParameters().testerId);
         assertEqual("d", modelTestParameters().maskerFilePath);

@@ -1,46 +1,46 @@
-#include "StimulusPlayerImpl.hpp"
+#include "TargetPlayerImpl.hpp"
 #include <cmath>
 
 namespace stimulus_player {
-    StimulusPlayerImpl::StimulusPlayerImpl(VideoPlayer *player) :
+    TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player) :
         player{player}
     {
         player->subscribe(this);
     }
 
-    void StimulusPlayerImpl::subscribe(TargetPlayer::EventListener *e) {
+    void TargetPlayerImpl::subscribe(TargetPlayer::EventListener *e) {
         listener_ = e;
     }
 
-    void StimulusPlayerImpl::play() {
+    void TargetPlayerImpl::play() {
         player->play();
     }
 
-    void StimulusPlayerImpl::loadFile(std::string filePath) {
+    void TargetPlayerImpl::loadFile(std::string filePath) {
         player->loadFile(filePath);
     }
 
-    void StimulusPlayerImpl::hideVideo() {
+    void TargetPlayerImpl::hideVideo() {
         player->hide();
     }
 
-    void StimulusPlayerImpl::showVideo() {
+    void TargetPlayerImpl::showVideo() {
         player->show();
     }
 
-    double StimulusPlayerImpl::rms() {
+    double TargetPlayerImpl::rms() {
         return 1;
     }
 
-    void StimulusPlayerImpl::setLevel_dB(double x) {
+    void TargetPlayerImpl::setLevel_dB(double x) {
         audioScale.store(std::pow(10, x/20));
     }
     
-    void StimulusPlayerImpl::playbackComplete() { 
+    void TargetPlayerImpl::playbackComplete() { 
         listener_->playbackComplete();
     }
     
-    void StimulusPlayerImpl::fillAudioBuffer(
+    void TargetPlayerImpl::fillAudioBuffer(
         const std::vector<gsl::span<float>> &audio
     ) {
         auto scale = audioScale.load();
@@ -49,7 +49,7 @@ namespace stimulus_player {
                 x *= scale;
     }
     
-    void StimulusPlayerImpl::setAudioDevice(std::string device) {
+    void TargetPlayerImpl::setAudioDevice(std::string device) {
         auto devices_ = audioDevices();
         auto found = std::find(
             devices_.begin(),
@@ -62,7 +62,7 @@ namespace stimulus_player {
         player->setDevice(deviceIndex);
     }
     
-    std::vector<std::string> StimulusPlayerImpl::audioDevices() {
+    std::vector<std::string> TargetPlayerImpl::audioDevices() {
         std::vector<std::string> descriptions{};
         for (int i = 0; i < player->deviceCount(); ++i)
             descriptions.push_back(player->deviceDescription(i));

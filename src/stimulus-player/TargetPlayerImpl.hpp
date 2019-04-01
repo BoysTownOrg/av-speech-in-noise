@@ -27,7 +27,7 @@ namespace stimulus_player {
         virtual void setDevice(int index) = 0;
     };
     
-    class StimulusPlayerImpl :
+    class TargetPlayerImpl :
         public recognition_test::TargetPlayer,
         public VideoPlayer::EventListener
     {
@@ -35,7 +35,7 @@ namespace stimulus_player {
         VideoPlayer *player;
         TargetPlayer::EventListener *listener_{};
     public:
-        StimulusPlayerImpl(VideoPlayer *);
+        TargetPlayerImpl(VideoPlayer *);
         void subscribe(TargetPlayer::EventListener *) override;
         void play() override;
         void loadFile(std::string filePath) override;

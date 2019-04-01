@@ -8,7 +8,7 @@
 #include <masker-player/RandomizedMaskerPlayer.hpp>
 #include <stimulus-list/RandomizedStimulusList.hpp>
 #include <stimulus-list/FileFilterDecorator.hpp>
-#include <stimulus-player/StimulusPlayerImpl.hpp>
+#include <stimulus-player/TargetPlayerImpl.hpp>
 #include <fstream>
 #include <sys/stat.h>
 
@@ -98,7 +98,7 @@ int main() {
     MersenneTwisterRandomizer randomizer;
     stimulus_list::RandomizedStimulusList list{&filter, &randomizer};
     AvFoundationVideoPlayer videoPlayer;
-    stimulus_player::StimulusPlayerImpl stimulusPlayer{&videoPlayer};
+    stimulus_player::TargetPlayerImpl stimulusPlayer{&videoPlayer};
     AvFoundationAudioPlayer audioPlayer;
     masker_player::RandomizedMaskerPlayer maskerPlayer{&audioPlayer};
     maskerPlayer.setFadeInOutSeconds(0.5);

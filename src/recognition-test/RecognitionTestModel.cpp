@@ -92,7 +92,7 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::loadStimulusList(const Test &p) {
-        targetList->loadFromDirectory(p.stimulusListDirectory);
+        targetList->loadFromDirectory(p.targetListDirectory);
     }
     
     void RecognitionTestModel::prepareVideo(const Test &p) {
