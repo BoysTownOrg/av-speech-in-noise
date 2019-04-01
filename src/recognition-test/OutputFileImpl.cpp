@@ -101,7 +101,6 @@ namespace recognition_test {
         const av_coordinated_response_measure::Model::Test &test
     ) {
         auto fileName = path->generateFileName(test);
-        auto homeDirectory = path->homeDirectory();
-        return homeDirectory + "/" + fileName + ".txt";
+        return path->outputDirectory() + "/" + fileName + ".txt";
     }
 }

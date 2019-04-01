@@ -32,13 +32,18 @@ namespace {
         av_coordinated_response_measure::Model::Test testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
+        std::string outputDirectory_{};
     public:
-        void setFileName(std::string s) {
-            fileName_ = s;
+        std::string outputDirectory() override {
+            return outputDirectory_;
         }
         
-        void setHomeDirectory(std::string s) {
-            homeDirectory_ = s;
+        void setOutputDirectory(std::string s) {
+            outputDirectory_ = std::move(s);
+        }
+        
+        void setFileName(std::string s) {
+            fileName_ = s;
         }
         
         std::string generateFileName(
@@ -102,7 +107,7 @@ namespace {
         openPassesFormattedFilePath
     ) {
         path.setFileName("a");
-        path.setHomeDirectory("b");
+        path.setOutputDirectory("b");
         openNewFile();
         assertEqual("b/a.txt", writer.filePath());
     }

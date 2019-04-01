@@ -52,4 +52,8 @@ namespace recognition_test {
     std::string OutputFilePathImpl::homeDirectory() { 
         return systemPath->homeDirectory();
     }
+    
+    std::string OutputFilePathImpl::outputDirectory() { 
+        return {};
+    }
 }

@@ -32,6 +32,7 @@ namespace recognition_test {
             const av_coordinated_response_measure::Model::Test &
         ) override;
         std::string homeDirectory() override;
+        std::string outputDirectory() override;
     private:
         std::string formatTestInformation(
             const av_coordinated_response_measure::Model::Test &

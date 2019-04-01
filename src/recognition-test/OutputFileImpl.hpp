@@ -19,6 +19,7 @@ namespace recognition_test {
             const av_coordinated_response_measure::Model::Test &
         ) = 0;
         virtual std::string homeDirectory() = 0;
+        virtual std::string outputDirectory() = 0;
     };
 
     class OutputFileImpl : public OutputFile {
