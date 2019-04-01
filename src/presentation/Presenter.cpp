@@ -72,16 +72,22 @@ namespace presentation {
     
     av_coordinated_response_measure::Model::SubjectResponse Presenter::subjectResponse() {
         av_coordinated_response_measure::Model::SubjectResponse p;
-        if (view->subject()->greenResponse())
-            p.color = av_coordinated_response_measure::Color::green;
-        else if (view->subject()->blueResponse())
-            p.color = av_coordinated_response_measure::Color::blue;
-        else if (view->subject()->grayResponse())
-            p.color = av_coordinated_response_measure::Color::gray;
-        else
-            p.color = av_coordinated_response_measure::Color::red;
+        p.color = colorResponse();
         p.number = std::stoi(view->subject()->numberResponse());
         return p;
+    }
+    
+    av_coordinated_response_measure::Color Presenter::colorResponse() {
+        av_coordinated_response_measure::Color color;
+        if (view->subject()->greenResponse())
+            color = av_coordinated_response_measure::Color::green;
+        else if (view->subject()->blueResponse())
+            color = av_coordinated_response_measure::Color::blue;
+        else if (view->subject()->grayResponse())
+            color = av_coordinated_response_measure::Color::gray;
+        else
+            color = av_coordinated_response_measure::Color::red;
+        return color;
     }
     
     void Presenter::switchToSetupIfTestComplete() {
