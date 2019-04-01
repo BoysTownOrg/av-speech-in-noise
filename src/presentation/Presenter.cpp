@@ -90,13 +90,6 @@ namespace presentation {
         return color;
     }
     
-    void Presenter::switchToSetupIfTestComplete() {
-        if (model->testComplete()) {
-            tester.tuneOut();
-            testSetup.listen();
-        }
-    }
-    
     void Presenter::browseForStimulusList() {
         auto result = view->browseForDirectory();
         if (!view->browseCancelled())
