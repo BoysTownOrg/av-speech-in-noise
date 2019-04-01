@@ -53,12 +53,16 @@ namespace recognition_test {
         return systemPath->homeDirectory();
     }
     
-    std::string OutputFilePathImpl::outputDirectory() { 
+    std::string OutputFilePathImpl::outputDirectory() {
+        return outputDirectory_();
+    }
+    
+    std::string OutputFilePathImpl::outputDirectory_() {
         return systemPath->homeDirectory() + "/" + relativePath_;
     }
     
     void OutputFilePathImpl::setRelativeOutputDirectory(std::string s) {
         relativePath_ = std::move(s);
-        systemPath->createDirectory(systemPath->homeDirectory() + "/" + relativePath_);
+        systemPath->createDirectory(outputDirectory_());
     }
 }

@@ -37,6 +37,7 @@ namespace recognition_test {
         std::string outputDirectory() override;
         void setRelativeOutputDirectory(std::string);
     private:
+        std::string outputDirectory_();
         std::string formatTestInformation(
             const av_coordinated_response_measure::Model::Test &
         );
