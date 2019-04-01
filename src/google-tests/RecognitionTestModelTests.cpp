@@ -352,6 +352,15 @@ namespace {
             }
         }
         
+        void assertInitializeTestThrowsRequestFailure(std::string what) {
+            try {
+                initializeTest();
+                FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";
+            } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
+                assertEqual(std::move(what), e.what());
+            }
+        }
+        
         void playTrialIgnoringFailure() {
             try {
                 playTrial();
@@ -499,12 +508,7 @@ namespace {
         initializeTestThrowsRequestFailureIfFileFailsToOpen
     ) {
         outputFile.throwOnOpen();
-        try {
-            initializeTest();
-            FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";
-        } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
-            assertEqual("Unable to open output file.", e.what());
-        }
+        assertInitializeTestThrowsRequestFailure("Unable to open output file.");
     }
 
     TEST_F(
