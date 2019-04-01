@@ -265,9 +265,9 @@ namespace {
         StimulusListStub list{};
         OutputFileStub outputFile{};
         recognition_test::RecognitionTestModel model{
-            &maskerPlayer,
             &list,
             &stimulusPlayer,
+            &maskerPlayer,
             &outputFile
         };
         EventListenerStub listener{};

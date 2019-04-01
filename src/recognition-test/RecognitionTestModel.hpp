@@ -80,9 +80,9 @@ namespace recognition_test {
         Model::EventListener *listener_{};
     public:
         RecognitionTestModel(
-            MaskerPlayer *,
             TargetList *,
             TargetPlayer *,
+            MaskerPlayer *,
             OutputFile *
         );
         void initializeTest(const Test &) override;

@@ -4,9 +4,9 @@
 
 namespace recognition_test {
     RecognitionTestModel::RecognitionTestModel(
-        MaskerPlayer *maskerPlayer,
         TargetList *list,
         TargetPlayer *stimulusPlayer,
+        MaskerPlayer *maskerPlayer,
         OutputFile *outputFile
     ) :
         maskerPlayer{maskerPlayer},
