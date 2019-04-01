@@ -1,11 +1,11 @@
-#ifndef stimulus_player_StimulusPlayerImpl_hpp
-#define stimulus_player_StimulusPlayerImpl_hpp
+#ifndef target_player_StimulusPlayerImpl_hpp
+#define target_player_StimulusPlayerImpl_hpp
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
 #include <vector>
 
-namespace stimulus_player {
+namespace target_player {
     class VideoPlayer {
     public:
         class EventListener {

@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class VideoPlayerStub : public stimulus_player::VideoPlayer {
+    class VideoPlayerStub : public target_player::VideoPlayer {
         std::vector<std::string> audioDeviceDescriptions_{};
         std::string filePath_{};
         int deviceIndex_{};
@@ -96,7 +96,7 @@ namespace {
         std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
         TargetPlayerListenerStub listener;
-        stimulus_player::TargetPlayerImpl player{&videoPlayer};
+        target_player::TargetPlayerImpl player{&videoPlayer};
         
         TargetPlayerTests() {
             player.subscribe(&listener);

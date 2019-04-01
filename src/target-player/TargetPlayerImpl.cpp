@@ -1,7 +1,7 @@
 #include "TargetPlayerImpl.hpp"
 #include <cmath>
 
-namespace stimulus_player {
+namespace target_player {
     TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player) :
         player{player}
     {
