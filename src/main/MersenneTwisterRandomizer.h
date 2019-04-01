@@ -1,7 +1,7 @@
 #ifndef MersenneTwisterRandomizer_h
 #define MersenneTwisterRandomizer_h
 
-#include <stimulus-list/RandomizedTargetList.hpp>
+#include <target-list/RandomizedTargetList.hpp>
 #include <random>
 
 class MersenneTwisterRandomizer : public target_list::Randomizer {

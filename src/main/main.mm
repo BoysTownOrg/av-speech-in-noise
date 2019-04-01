@@ -6,8 +6,8 @@
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
 #include <masker-player/MaskerPlayerImpl.hpp>
-#include <stimulus-list/RandomizedTargetList.hpp>
-#include <stimulus-list/FileFilterDecorator.hpp>
+#include <target-list/RandomizedTargetList.hpp>
+#include <target-list/FileFilterDecorator.hpp>
 #include <target-player/TargetPlayerImpl.hpp>
 #include <fstream>
 #include <sys/stat.h>
