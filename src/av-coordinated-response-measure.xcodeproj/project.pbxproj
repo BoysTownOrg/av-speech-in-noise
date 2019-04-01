@@ -13,9 +13,9 @@
 		2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2623A154224BD037007C99F2 /* OutputFileImpl.hpp */; };
 		2646F83421DFDF5500F378DE /* TargetListTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83321DFDF5500F378DE /* TargetListTests.cpp */; };
 		2646F84021DFEA2300F378DE /* RandomizedTargetList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */; };
-		2646F84121DFEA5E00F378DE /* libstimulus-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libstimulus-list.dylib */; };
+		2646F84121DFEA5E00F378DE /* libtarget-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libtarget-list.dylib */; };
 		2646F84221DFEA7300F378DE /* RandomizedTargetList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */; };
-		2646F84321DFEBE000F378DE /* libstimulus-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libstimulus-list.dylib */; };
+		2646F84321DFEBE000F378DE /* libtarget-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libtarget-list.dylib */; };
 		2646F84A21E017D100F378DE /* FileFilterDecorator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F84821E017D100F378DE /* FileFilterDecorator.cpp */; };
 		2646F84B21E017D100F378DE /* FileFilterDecorator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2646F84921E017D100F378DE /* FileFilterDecorator.hpp */; };
 		264E7E4B224E6467008A595F /* OutputFilePathTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264E7E4A224E6467008A595F /* OutputFilePathTests.cpp */; };
@@ -69,7 +69,7 @@
 		2623A153224BD037007C99F2 /* OutputFileImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutputFileImpl.cpp; sourceTree = "<group>"; };
 		2623A154224BD037007C99F2 /* OutputFileImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFileImpl.hpp; sourceTree = "<group>"; };
 		2646F83321DFDF5500F378DE /* TargetListTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetListTests.cpp; sourceTree = "<group>"; };
-		2646F83921DFEA0400F378DE /* libstimulus-list.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libstimulus-list.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2646F83921DFEA0400F378DE /* libtarget-list.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libtarget-list.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedTargetList.cpp; sourceTree = "<group>"; };
 		2646F83F21DFEA2300F378DE /* RandomizedTargetList.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomizedTargetList.hpp; sourceTree = "<group>"; };
 		2646F84421E003B600F378DE /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -139,7 +139,7 @@
 				2656B62722401D3F0058A23D /* MediaToolbox.framework in Frameworks */,
 				26A86BED223AA9E600210C00 /* libmasker-player.dylib in Frameworks */,
 				26955FF92236F21A00664A2C /* CoreAudio.framework in Frameworks */,
-				2646F84321DFEBE000F378DE /* libstimulus-list.dylib in Frameworks */,
+				2646F84321DFEBE000F378DE /* libtarget-list.dylib in Frameworks */,
 				26B81F3B21DEB1A500006FCB /* Cocoa.framework in Frameworks */,
 				26B81F3A21DEB19E00006FCB /* AVFoundation.framework in Frameworks */,
 				26B81F3721DEB18E00006FCB /* libpresentation.dylib in Frameworks */,
@@ -161,7 +161,7 @@
 				26EE86CA2242E99A00C08622 /* libtarget-player.dylib in Frameworks */,
 				26A86BEC223AA87B00210C00 /* libmasker-player.dylib in Frameworks */,
 				269C91962233212B00A80372 /* gtest_main.a in Frameworks */,
-				2646F84121DFEA5E00F378DE /* libstimulus-list.dylib in Frameworks */,
+				2646F84121DFEA5E00F378DE /* libtarget-list.dylib in Frameworks */,
 				26A2237A21DD3552007D6511 /* librecognition-test.dylib in Frameworks */,
 				26FC6B1C21DAA40800289A0A /* libpresentation.dylib in Frameworks */,
 			);
@@ -255,7 +255,7 @@
 				26FC6B1621DAA3D800289A0A /* libpresentation.dylib */,
 				26A2237521DD3544007D6511 /* librecognition-test.dylib */,
 				26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */,
-				2646F83921DFEA0400F378DE /* libstimulus-list.dylib */,
+				2646F83921DFEA0400F378DE /* libtarget-list.dylib */,
 				26A86BE3223AA71400210C00 /* libmasker-player.dylib */,
 				26EE86C52242E98600C08622 /* libtarget-player.dylib */,
 			);
@@ -354,9 +354,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		2646F83821DFEA0400F378DE /* stimulus-list */ = {
+		2646F83821DFEA0400F378DE /* target-list */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2646F83A21DFEA0400F378DE /* Build configuration list for PBXNativeTarget "stimulus-list" */;
+			buildConfigurationList = 2646F83A21DFEA0400F378DE /* Build configuration list for PBXNativeTarget "target-list" */;
 			buildPhases = (
 				2646F83521DFEA0400F378DE /* Headers */,
 				2646F83621DFEA0400F378DE /* Sources */,
@@ -366,9 +366,9 @@
 			);
 			dependencies = (
 			);
-			name = "stimulus-list";
+			name = "target-list";
 			productName = "stimulus-list";
-			productReference = 2646F83921DFEA0400F378DE /* libstimulus-list.dylib */;
+			productReference = 2646F83921DFEA0400F378DE /* libtarget-list.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		26A2237421DD3544007D6511 /* recognition-test */ = {
@@ -521,7 +521,7 @@
 				26FC6B1521DAA3D800289A0A /* presentation */,
 				26A2237421DD3544007D6511 /* recognition-test */,
 				26B81F2521DEB15700006FCB /* av-coordinated-response-measure */,
-				2646F83821DFEA0400F378DE /* stimulus-list */,
+				2646F83821DFEA0400F378DE /* target-list */,
 				26A86BE2223AA71400210C00 /* masker-player */,
 				26EE86C42242E98600C08622 /* target-player */,
 			);
@@ -1478,7 +1478,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2646F83A21DFEA0400F378DE /* Build configuration list for PBXNativeTarget "stimulus-list" */ = {
+		2646F83A21DFEA0400F378DE /* Build configuration list for PBXNativeTarget "target-list" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2646F83B21DFEA0400F378DE /* Debug */,
