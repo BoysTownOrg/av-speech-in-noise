@@ -333,12 +333,12 @@ namespace {
                 av_coordinated_response_measure::Condition::audioVisual;
         }
         
-        void assertStimulusVideoOnlyHidden() {
+        void assertTargetVideoOnlyHidden() {
             EXPECT_TRUE(targetPlayer.videoHidden());
             EXPECT_FALSE(targetPlayer.videoShown());
         }
         
-        void assertStimulusVideoOnlyShown() {
+        void assertTargetVideoOnlyShown() {
             EXPECT_FALSE(targetPlayer.videoHidden());
             EXPECT_TRUE(targetPlayer.videoShown());
         }
@@ -396,7 +396,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialWithInvalidMaskerAudioDeviceDoesNotAdvanceStimulus
+        playTrialWithInvalidMaskerAudioDeviceDoesNotAdvanceTarget
     ) {
         throwInvalidAudioDeviceWhenSet();
         playTrialIgnoringFailure();
@@ -432,12 +432,12 @@ namespace {
         EXPECT_TRUE(maskerPlayerFadedIn());
     }
 
-    TEST_F(RecognitionTestModelTests, fadeInCompletePlaysStimulus) {
+    TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
         maskerPlayer.fadeInComplete();
         EXPECT_TRUE(targetPlayer.played());
     }
 
-    TEST_F(RecognitionTestModelTests, stimulusPlaybackCompleteFadesOutMasker) {
+    TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
         targetPlayer.playbackComplete();
         EXPECT_TRUE(maskerPlayer.fadeOutCalled());
     }
@@ -458,7 +458,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSetsStimulusPlayerLevel
+        playTrialSetsTargetPlayerLevel
     ) {
         test.signalLevel_dB_SPL = 5;
         test.fullScaleLevel_dB_SPL = 11;
@@ -470,20 +470,20 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestHidesStimulusVideoWhenAuditoryOnly
+        initializeTestHidesTargetVideoWhenAuditoryOnly
     ) {
         setAuditoryOnly();
         initializeTest();
-        assertStimulusVideoOnlyHidden();
+        assertTargetVideoOnlyHidden();
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestShowsStimulusVideoWhenAudioVisual
+        initializeTestShowsTargetVideoWhenAudioVisual
     ) {
         setAudioVisual();
         initializeTest();
-        assertStimulusVideoOnlyShown();
+        assertTargetVideoOnlyShown();
     }
 
     TEST_F(
@@ -497,7 +497,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestPassesStimulusListDirectoryToStimulusList
+        initializeTestPassesTargetListDirectoryToTargetList
     ) {
         test.stimulusListDirectory = "a";
         initializeTest();
@@ -514,7 +514,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialPassesNextStimulusToStimulusPlayer
+        playTrialPassesNextTargetToTargetPlayer
     ) {
         targetList.setNext("a");
         playTrial();
