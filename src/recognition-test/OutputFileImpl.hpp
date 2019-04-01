@@ -30,7 +30,6 @@ namespace recognition_test {
         void writeTrial(const av_coordinated_response_measure::Trial &) override;
         void writeTrialHeading();
         void openNewFile(const av_coordinated_response_measure::Model::Test &) override;
-        class OpenFailure {};
     private:
         std::string formatTrial(const av_coordinated_response_measure::Trial &);
         std::string formatTrialHeading();

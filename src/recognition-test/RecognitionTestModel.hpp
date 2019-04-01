@@ -61,6 +61,7 @@ namespace recognition_test {
         virtual void openNewFile(
             const av_coordinated_response_measure::Model::Test &
         ) = 0;
+        class OpenFailure {};
         virtual void writeTrial(
             const av_coordinated_response_measure::Trial &
         ) = 0;

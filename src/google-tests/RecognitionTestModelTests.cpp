@@ -218,6 +218,7 @@ namespace {
     class OutputFileStub : public recognition_test::OutputFile {
         av_coordinated_response_measure::Trial trialWritten_{};
         av_coordinated_response_measure::Model::Test newFileParameters_{};
+        bool throwOnOpen_{};
     public:
         auto &trialWritten() const {
             return trialWritten_;
@@ -229,10 +230,16 @@ namespace {
         
         void openNewFile(const av_coordinated_response_measure::Model::Test &p) override {
             newFileParameters_ = p;
+            if (throwOnOpen_)
+                throw OpenFailure{};
         }
         
         auto &newFileParameters() const {
             return newFileParameters_;
+        }
+        
+        void throwOnOpen() {
+            throwOnOpen_ = true;
         }
     };
     
@@ -485,6 +492,19 @@ namespace {
         test.stimulusListDirectory = "a";
         initializeTest();
         assertEqual("a", list.directory());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestThrowsRequestFailureIfFileFailsToOpen
+    ) {
+        outputFile.throwOnOpen();
+        try {
+            initializeTest();
+            FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";
+        } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
+            assertEqual("Unable to open output file.", e.what());
+        }
     }
 
     TEST_F(

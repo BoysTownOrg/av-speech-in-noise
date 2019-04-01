@@ -75,7 +75,11 @@ namespace recognition_test {
         loadMaskerFile(p);
         loadStimulusList(p);
         prepareVideo(p);
-        outputFile->openNewFile(p);
+        try {
+            outputFile->openNewFile(p);
+        } catch (const OutputFile::OpenFailure &) {
+            throw RequestFailure{"Unable to open output file."};
+        }
         test = p;
     }
     
