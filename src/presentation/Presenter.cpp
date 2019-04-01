@@ -96,8 +96,8 @@ namespace presentation {
         view{view}
     {
         view->populateConditionMenu({
-            conditionName(av_coordinated_response_measure::Condition::auditoryOnly),
-            conditionName(av_coordinated_response_measure::Condition::audioVisual)
+            conditionName(av_coordinated_response_measure::Condition::audioVisual),
+            conditionName(av_coordinated_response_measure::Condition::auditoryOnly)
         });
     }
     
