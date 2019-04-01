@@ -22,14 +22,8 @@ CocoaTesterView::CocoaTesterView() :
     actions{[TesterViewActions alloc]}
 {
     actions.controller = this;
-    const auto playTrialButton = [NSButton buttonWithTitle:
-        @"Play Next Trial"
-        target:actions
-        action:@selector(playTrial)
-    ];
     [view_ setHidden:YES];
     [view_ addSubview:deviceMenu];
-    [view_ addSubview:playTrialButton];
 }
 
 NSView *CocoaTesterView::view() {
@@ -71,58 +65,58 @@ void CocoaTesterView::playTrial() {
 
 CocoaTestSetupView::CocoaTestSetupView() :
     view_{
-        [[NSView alloc] initWithFrame:NSMakeRect(15, 15, 700 - 15 * 2, 600 - 15 * 2)]
+        [[NSView alloc] initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)]
     },
     subjectIdLabel{allocLabel(
         @"subject id:",
-        NSMakeRect(0, 490, 140, 25)
+        NSMakeRect(0, 240, 140, 25)
     )},
     subjectId_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 490, 150, 25)]
+            initWithFrame:NSMakeRect(145, 240, 150, 25)]
     },
     testerIdLabel{allocLabel(
         @"tester id:",
-        NSMakeRect(0, 460, 140, 25))
+        NSMakeRect(0, 210, 140, 25))
     },
     testerId_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 460, 150, 25)]
+            initWithFrame:NSMakeRect(145, 210, 150, 25)]
     },
     signalLevel_dB_SPL_label{allocLabel(
         @"signal level (dB SPL):",
-        NSMakeRect(0, 430, 140, 25))
+        NSMakeRect(0, 180, 140, 25))
     },
     signalLevel_dB_SPL_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 430, 150, 25)]
+            initWithFrame:NSMakeRect(145, 180, 150, 25)]
     },
     startingSnr_dB_label{allocLabel(
         @"starting SNR (dB):",
-        NSMakeRect(0, 400, 140, 25))
+        NSMakeRect(0, 150, 140, 25))
     },
     startingSnr_dB_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 400, 150, 25)]
+            initWithFrame:NSMakeRect(145, 150, 150, 25)]
     },
     stimulusListDirectoryLabel{allocLabel(
         @"stimulus directory:",
-        NSMakeRect(0, 370, 140, 25))
+        NSMakeRect(0, 120, 140, 25))
     },
     stimulusListDirectory_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 370, 400, 25)]
+            initWithFrame:NSMakeRect(145, 120, 500, 25)]
     },
     maskerFilePath_label{allocLabel(
         @"masker file path:",
-        NSMakeRect(0, 340, 140, 25))
+        NSMakeRect(0, 90, 140, 25))
     },
     maskerFilePath_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 340, 400, 25)]
+            initWithFrame:NSMakeRect(145, 90, 500, 25)]
     },
     conditionMenu{[
-        [NSPopUpButton alloc] initWithFrame:NSMakeRect(145, 310, 150, 25)
+        [NSPopUpButton alloc] initWithFrame:NSMakeRect(145, 60, 150, 25)
         pullsDown:NO
     ]},
     actions{[SetupViewActions alloc]}
@@ -133,18 +127,19 @@ CocoaTestSetupView::CocoaTestSetupView() :
         target:actions
         action:@selector(browseForStimulusList)
     ];
-    [browseForStimulusListButton setFrame:NSMakeRect(400 + 145 + 10, 370, 100, 25)];
+    [browseForStimulusListButton setFrame:NSMakeRect(500 + 145 + 10, 120, 100, 25)];
     const auto browseForMaskerButton = [NSButton buttonWithTitle:
         @"browse"
         target:actions
         action:@selector(browseForMasker)
     ];
-    [browseForMaskerButton setFrame:NSMakeRect(400 + 145 + 10, 340, 100, 25)];
+    [browseForMaskerButton setFrame:NSMakeRect(500 + 145 + 10, 90, 100, 25)];
     const auto confirmButton = [NSButton buttonWithTitle:
         @"Confirm"
         target:actions
         action:@selector(confirmTestSetup)
     ];
+    [confirmButton setFrame:NSMakeRect(900 - 100 - 2*15, 15, 100, 25)];
     [view_ addSubview:browseForMaskerButton];
     [view_ addSubview:browseForStimulusListButton];
     [view_ addSubview:confirmButton];
@@ -381,7 +376,7 @@ CocoaView::CocoaView() :
     app{[NSApplication sharedApplication]},
     window{
         [[NSWindow alloc] initWithContentRect:
-            NSMakeRect(15, 15, 700, 600)
+            NSMakeRect(15, 15, 900, 400)
             styleMask:
                 NSWindowStyleMaskClosable |
                 NSWindowStyleMaskResizable |
