@@ -95,6 +95,7 @@ namespace recognition_test {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void tryOpeningOutputFile(const Test &);
         void loadStimulusList(const Test &);
         void loadMaskerFile(const Test &);
         bool noMoreTrials();

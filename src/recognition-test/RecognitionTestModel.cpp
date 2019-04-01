@@ -72,15 +72,19 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::initializeTest(const Test &p) {
+        tryOpeningOutputFile(p);
         loadMaskerFile(p);
         loadStimulusList(p);
         prepareVideo(p);
+        test = p;
+    }
+    
+    void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {
         try {
             outputFile->openNewFile(p);
         } catch (const OutputFile::OpenFailure &) {
             throw RequestFailure{"Unable to open output file."};
         }
-        test = p;
     }
     
     void RecognitionTestModel::loadMaskerFile(const Test &p) {
