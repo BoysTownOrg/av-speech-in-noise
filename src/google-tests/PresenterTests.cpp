@@ -43,6 +43,10 @@ namespace {
             testComplete_ = false;
         }
         
+        void setTestComplete() {
+            testComplete_ = true;
+        }
+        
         bool testComplete() override {
             return testComplete_;
         }
@@ -621,6 +625,14 @@ namespace {
         void assertModelPassedCondition(av_coordinated_response_measure::Color c) {
             EXPECT_EQ(c, model.responseParameters().color);
         }
+        
+        void close() {
+            view.close();
+        }
+        
+        void setDialogResponse(presentation::View::DialogResponse r) {
+            view.setDialogResponse(r);
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -724,6 +736,12 @@ namespace {
         assertTesterViewNotHidden();
     }
 
+    TEST_F(PresenterTests, playingTrialHidesViewWhenTestComplete) {
+        model.setTestComplete();
+        playTrial();
+        assertTesterViewHidden();
+    }
+
     TEST_F(PresenterTests, playingTrialPlaysTrial) {
         playTrial();
         EXPECT_TRUE(model.trialPlayed());
@@ -767,32 +785,29 @@ namespace {
     TEST_F(PresenterTests, subjectResponsePassesGrayColor) {
         subjectView.setGrayResponse();
         submitResponse();
-        EXPECT_EQ(
-            av_coordinated_response_measure::Color::gray,
-            model.responseParameters().color
-        );
+        assertModelPassedCondition(av_coordinated_response_measure::Color::gray);
     }
 
     TEST_F(PresenterTests, closingTestPromptsTesterToSave) {
-        view.close();
+        close();
         EXPECT_TRUE(view.confirmationDialogShown());
     }
 
     TEST_F(PresenterTests, closingTestHidesTesterViewIfUserDeclinesSaving) {
-        view.setDialogResponse(presentation::View::DialogResponse::decline);
-        view.close();
+        setDialogResponse(presentation::View::DialogResponse::decline);
+        close();
         assertTesterViewHidden();
     }
 
     TEST_F(PresenterTests, closingTestHidesTesterViewIfUserAcceptsSaving) {
-        view.setDialogResponse(presentation::View::DialogResponse::accept);
-        view.close();
+        setDialogResponse(presentation::View::DialogResponse::accept);
+        close();
         assertTesterViewHidden();
     }
 
     TEST_F(PresenterTests, closingTestDoesNotHideTesterViewIfUserCancels) {
-        view.setDialogResponse(presentation::View::DialogResponse::cancel);
-        view.close();
+        setDialogResponse(presentation::View::DialogResponse::cancel);
+        close();
         assertTesterViewNotHidden();
     }
 

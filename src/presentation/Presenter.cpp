@@ -56,6 +56,8 @@ namespace presentation {
     void Presenter::playTrial() {
         view->subject()->hideNextTrialButton();
         tester.playTrial();
+        if (model->testComplete())
+            tester.tuneOut();
     }
     
     void Presenter::submitResponse() { 
