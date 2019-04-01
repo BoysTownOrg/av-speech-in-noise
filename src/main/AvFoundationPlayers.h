@@ -19,6 +19,7 @@ public:
     std::string stringProperty(AudioObjectPropertySelector, int device);
     AudioObjectID objectId(int device);
     std::string uid(int device);
+    bool outputDevice(int device);
 };
 
 class AvFoundationVideoPlayer;
@@ -85,6 +86,7 @@ public:
     void stop() override;
     void scheduleCallbackAfterSeconds(double) override;
     void timerCallback();
+    bool outputDevice(int index) override;
 };
 
 #endif

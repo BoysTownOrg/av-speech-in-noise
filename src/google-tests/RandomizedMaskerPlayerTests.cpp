@@ -8,6 +8,7 @@ namespace {
         std::vector<std::string> audioDeviceDescriptions_{10};
         std::string filePath_{};
         std::string deviceDescription_{};
+        std::map<int, bool> outputDevices{};
         double sampleRateHz_{};
         int deviceIndex_{};
         int deviceCount_{};
@@ -18,6 +19,10 @@ namespace {
         bool stopped_{};
         bool callbackScheduled_{};
     public:
+        bool outputDevice(int index) override {
+            return outputDevices[index];
+        }
+        
         void clearCallbackCount() {
             callbackScheduled_ = false;
         }
@@ -32,6 +37,10 @@ namespace {
         
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
             audioDeviceDescriptions_ = std::move(v);
+        }
+        
+        void setAsOutputDevice(int index) {
+            outputDevices[index] = true;
         }
         
         void stop() override {
@@ -175,6 +184,10 @@ namespace {
         
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
             audioPlayer.setAudioDeviceDescriptions(std::move(v));
+        }
+        
+        void setAsOutputDevice(int i) {
+            audioPlayer.setAsOutputDevice(i);
         }
         
         void fadeInToFullLevel() {
@@ -427,5 +440,12 @@ namespace {
     TEST_F(RandomizedMaskerPlayerTests, audioDevicesReturnsDescriptions) {
         setAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, player.audioDeviceDescriptions());
+    }
+
+    TEST_F(RandomizedMaskerPlayerTests, outputAudioDevicesReturnsDescriptions) {
+        setAudioDeviceDescriptions({"a", "b", "c"});
+        setAsOutputDevice(0);
+        setAsOutputDevice(2);
+        assertEqual({"a", "c"}, player.outputAudioDeviceDescriptions());
     }
 }

@@ -26,6 +26,7 @@ namespace masker_player {
         virtual double sampleRateHz() = 0;
         virtual void stop() = 0;
         virtual void scheduleCallbackAfterSeconds(double) = 0;
+        virtual bool outputDevice(int index) { return false; }
     };
 
     class RandomizedMaskerPlayer :
@@ -57,8 +58,10 @@ namespace masker_player {
             const std::vector<gsl::span<float>> &audio) override;
         void setFadeInOutSeconds(double);
         std::vector<std::string> audioDeviceDescriptions() override;
+        std::vector<std::string> outputAudioDeviceDescriptions();
         void timerCallback() override;
     private:
+        std::vector<std::string> audioDeviceDescriptions_();
         int findDeviceIndex(const std::string &device);
         void updateWindowLength();
         void prepareToFadeIn();

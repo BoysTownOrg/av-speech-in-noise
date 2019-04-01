@@ -82,6 +82,29 @@ std::string CoreAudioDevice::uid(int device) {
     return stringProperty(kAudioDevicePropertyDeviceUID, device);
 }
 
+bool CoreAudioDevice::outputDevice(int device) {
+    AudioObjectPropertyAddress address {
+        kAudioDevicePropertyStreamConfiguration,
+        kAudioObjectPropertyScopeOutput,
+        kAudioObjectPropertyElementMaster
+    };
+    AudioBufferList bufferList{};
+    UInt32 dataSize = sizeof(AudioBufferList);
+    if (kAudioHardwareNoError !=
+        AudioObjectGetPropertyData(
+            objectId(device),
+            &address,
+            0,
+            nullptr,
+            &dataSize,
+            &bufferList
+        )
+    )
+        throw std::runtime_error{"Cannot do something..."};
+    return bufferList.mNumberBuffers != 0;
+}
+
+
 static AVURLAsset *makeAvAsset(std::string filePath) {
     const auto url = [NSURL URLWithString:
         [NSString stringWithFormat:@"file://%@/",
@@ -354,3 +377,6 @@ void AvFoundationAudioPlayer::timerCallback() {
 }
 @end
 
+bool AvFoundationAudioPlayer::outputDevice(int index) { 
+    return device.outputDevice(index);
+}
