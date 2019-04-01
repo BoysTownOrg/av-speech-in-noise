@@ -121,8 +121,9 @@ namespace {
         EXPECT_TRUE(timeStamp.log().beginsWith("capture"));
     }
 
-    TEST_F(OutputFilePathTests, homeDirectoryReturnsFromSystem) {
+    TEST_F(OutputFilePathTests, outputDirectoryReturnsFullPath) {
         systemPath.setHomeDirectory("a");
-        assertEqual("a", path.homeDirectory());
+        path.setRelativeOutputDirectory("b");
+        assertEqual("a/b", path.outputDirectory());
     }
 }

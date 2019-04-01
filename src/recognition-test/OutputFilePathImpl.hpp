@@ -24,6 +24,7 @@ namespace recognition_test {
     };
 
     class OutputFilePathImpl : public OutputFilePath {
+        std::string relativePath_{};
         TimeStamp *timeStamp;
         FileSystemPath *systemPath;
     public:
@@ -33,6 +34,7 @@ namespace recognition_test {
         ) override;
         std::string homeDirectory() override;
         std::string outputDirectory() override;
+        void setRelativeOutputDirectory(std::string);
     private:
         std::string formatTestInformation(
             const av_coordinated_response_measure::Model::Test &
