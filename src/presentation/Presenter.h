@@ -128,6 +128,7 @@ namespace presentation {
         RUNTIME_ERROR(BadInput)
         void initializeTest_();
         void switchToSetupIfTestComplete();
+        av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
         
         TestSetup testSetup;
         Tester tester;

@@ -58,7 +58,19 @@ namespace presentation {
         tester.playTrial();
     }
     
-    void Presenter::submitResponse() { 
+    void Presenter::submitResponse() {
+        model->submitResponse(subjectResponse());
+        view->subject()->hideResponseButtons();
+        if (model->testComplete()) {
+            tester.tuneOut();
+            testSetup.listen();
+        }
+        else {
+            view->subject()->showNextTrialButton();
+        }
+    }
+    
+    av_coordinated_response_measure::Model::SubjectResponse Presenter::subjectResponse() {
         av_coordinated_response_measure::Model::SubjectResponse p;
         if (view->subject()->greenResponse())
             p.color = av_coordinated_response_measure::Color::green;
@@ -69,15 +81,7 @@ namespace presentation {
         else
             p.color = av_coordinated_response_measure::Color::red;
         p.number = std::stoi(view->subject()->numberResponse());
-        model->submitResponse(p);
-        view->subject()->hideResponseButtons();
-        if (model->testComplete()) {
-            tester.tuneOut();
-            testSetup.listen();
-        }
-        else {
-            view->subject()->showNextTrialButton();
-        }
+        return p;
     }
     
     void Presenter::switchToSetupIfTestComplete() {
