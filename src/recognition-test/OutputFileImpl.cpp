@@ -100,7 +100,8 @@ namespace recognition_test {
     std::string OutputFileImpl::generateNewFilePath(
         const av_coordinated_response_measure::Model::Test &test
     ) {
-        auto fileName = path->generateFileName(test);
-        return path->outputDirectory() + "/" + fileName + ".txt";
+        return
+            path->outputDirectory() + "/" +
+            path->generateFileName(test) + ".txt";
     }
 }

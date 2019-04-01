@@ -44,4 +44,5 @@ namespace recognition_test {
         std::string formatTimeStamp();
     };
 }
+
 #endif

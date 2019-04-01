@@ -17,7 +17,7 @@ namespace target_player {
     }
 
     void TargetPlayerImpl::loadFile(std::string filePath) {
-        player->loadFile(filePath);
+        player->loadFile(std::move(filePath));
     }
 
     void TargetPlayerImpl::hideVideo() {
@@ -54,7 +54,7 @@ namespace target_player {
         auto found = std::find(
             devices_.begin(),
             devices_.end(),
-            device
+            std::move(device)
         );
         if (found == devices_.end())
             throw recognition_test::InvalidAudioDevice{};
