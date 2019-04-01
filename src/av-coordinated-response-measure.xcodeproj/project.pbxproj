@@ -37,7 +37,7 @@
 		26B81F3821DEB18E00006FCB /* librecognition-test.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; };
 		26B81F3A21DEB19E00006FCB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B81F1E21DEA46800006FCB /* AVFoundation.framework */; };
 		26B81F3B21DEB1A500006FCB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B81F2021DEA46F00006FCB /* Cocoa.framework */; };
-		26EE86BB2242CFFB00C08622 /* StimulusPlayerTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BA2242CFFB00C08622 /* StimulusPlayerTests.cpp */; };
+		26EE86BB2242CFFB00C08622 /* TargetPlayerTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BA2242CFFB00C08622 /* TargetPlayerTests.cpp */; };
 		26EE86C02242E8DE00C08622 /* TargetPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */; };
 		26EE86C92242E99100C08622 /* TargetPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */; };
 		26EE86CA2242E99A00C08622 /* libstimulus-player.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26EE86C52242E98600C08622 /* libstimulus-player.dylib */; };
@@ -96,7 +96,7 @@
 		26B81F1E21DEA46800006FCB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		26B81F2021DEA46F00006FCB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "av-coordinated-response-measure.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		26EE86BA2242CFFB00C08622 /* StimulusPlayerTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StimulusPlayerTests.cpp; sourceTree = "<group>"; };
+		26EE86BA2242CFFB00C08622 /* TargetPlayerTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetPlayerTests.cpp; sourceTree = "<group>"; };
 		26EE86BC2242E64900C08622 /* Model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
 		26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetPlayerImpl.cpp; sourceTree = "<group>"; };
 		26EE86BF2242E8DE00C08622 /* TargetPlayerImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TargetPlayerImpl.hpp; sourceTree = "<group>"; };
@@ -270,7 +270,7 @@
 				2646F83321DFDF5500F378DE /* RandomizedStimulusListTests.cpp */,
 				26955FF82236A60200664A2C /* assert-utility.h */,
 				26A86BDD223A972200210C00 /* RandomizedMaskerPlayerTests.cpp */,
-				26EE86BA2242CFFB00C08622 /* StimulusPlayerTests.cpp */,
+				26EE86BA2242CFFB00C08622 /* TargetPlayerTests.cpp */,
 				26FDD2D5224AC0840090BDD5 /* OutputFileTests.cpp */,
 				264E7E4A224E6467008A595F /* OutputFilePathTests.cpp */,
 				264E7E50224E7065008A595F /* LogString.h */,
@@ -595,7 +595,7 @@
 				26A2236C21DD2C75007D6511 /* RecognitionTestModelTests.cpp in Sources */,
 				264E7E4B224E6467008A595F /* OutputFilePathTests.cpp in Sources */,
 				2646F84021DFEA2300F378DE /* RandomizedStimulusList.cpp in Sources */,
-				26EE86BB2242CFFB00C08622 /* StimulusPlayerTests.cpp in Sources */,
+				26EE86BB2242CFFB00C08622 /* TargetPlayerTests.cpp in Sources */,
 				2646F83421DFDF5500F378DE /* RandomizedStimulusListTests.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

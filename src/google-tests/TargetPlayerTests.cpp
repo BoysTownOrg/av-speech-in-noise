@@ -77,7 +77,7 @@ namespace {
         }
     };
     
-    class StimulusPlayerListenerStub :
+    class TargetPlayerListenerStub :
         public recognition_test::TargetPlayer::EventListener
     {
         bool notified_{};
@@ -91,14 +91,14 @@ namespace {
         }
     };
 
-    class StimulusPlayerTests : public ::testing::Test {
+    class TargetPlayerTests : public ::testing::Test {
     protected:
         std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
-        StimulusPlayerListenerStub listener;
+        TargetPlayerListenerStub listener;
         stimulus_player::TargetPlayerImpl player{&videoPlayer};
         
-        StimulusPlayerTests() {
+        TargetPlayerTests() {
             player.subscribe(&listener);
         }
         
@@ -111,45 +111,45 @@ namespace {
         }
     };
 
-    TEST_F(StimulusPlayerTests, playPlaysVideo) {
+    TEST_F(TargetPlayerTests, playPlaysVideo) {
         player.play();
         EXPECT_TRUE(videoPlayer.played());
     }
 
-    TEST_F(StimulusPlayerTests, showVideoShowsVideo) {
+    TEST_F(TargetPlayerTests, showVideoShowsVideo) {
         player.showVideo();
         EXPECT_TRUE(videoPlayer.shown());
     }
 
-    TEST_F(StimulusPlayerTests, hideVideoHidesVideo) {
+    TEST_F(TargetPlayerTests, hideVideoHidesVideo) {
         player.hideVideo();
         EXPECT_TRUE(videoPlayer.hidden());
     }
 
-    TEST_F(StimulusPlayerTests, loadFileLoadsFile) {
+    TEST_F(TargetPlayerTests, loadFileLoadsFile) {
         player.loadFile("a");
         assertEqual("a", videoPlayer.filePath());
     }
 
-    TEST_F(StimulusPlayerTests, videoPlaybackCompleteNotifiesSubscriber) {
+    TEST_F(TargetPlayerTests, videoPlaybackCompleteNotifiesSubscriber) {
         videoPlayer.playbackComplete();
         EXPECT_TRUE(listener.notified());
     }
 
-    TEST_F(StimulusPlayerTests, twentydBMultipliesSignalByTen) {
+    TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen) {
         player.setLevel_dB(20);
         leftChannel = { 1, 2, 3 };
         fillAudioBuffer();
         assertEqual({ 10, 20, 30 }, leftChannel);
     }
 
-    TEST_F(StimulusPlayerTests, setAudioDeviceFindsIndex) {
+    TEST_F(TargetPlayerTests, setAudioDeviceFindsIndex) {
         setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
         player.setAudioDevice("second");
         EXPECT_EQ(2, videoPlayer.deviceIndex());
     }
 
-    TEST_F(StimulusPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
+    TEST_F(TargetPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
         setAudioDeviceDescriptions({"zeroth", "first", "second"});
         try {
             player.setAudioDevice("third");
@@ -159,7 +159,7 @@ namespace {
         }
     }
 
-    TEST_F(StimulusPlayerTests, audioDevicesReturnsDescriptions) {
+    TEST_F(TargetPlayerTests, audioDevicesReturnsDescriptions) {
         setAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, player.audioDevices());
     }
