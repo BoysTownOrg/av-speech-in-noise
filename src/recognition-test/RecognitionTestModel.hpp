@@ -100,7 +100,7 @@ namespace recognition_test {
         void loadMaskerFile(const Test &);
         bool noMoreTrials();
         bool trialInProgress();
-        void loadNextStimulus();
+        void loadNextTarget();
         void preparePlayers(const AudioSettings &);
         void startTrial();
         bool auditoryOnly(const Test &);
