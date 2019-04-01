@@ -617,6 +617,10 @@ namespace {
         std::string errorMessage() {
             return view.errorMessage();
         }
+        
+        void assertModelPassedCondition(av_coordinated_response_measure::Color c) {
+            EXPECT_EQ(c, model.responseParameters().color);
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -745,28 +749,19 @@ namespace {
     TEST_F(PresenterTests, subjectResponsePassesGreenColor) {
         subjectView.setGreenResponse();
         submitResponse();
-        EXPECT_EQ(
-            av_coordinated_response_measure::Color::green,
-            model.responseParameters().color
-        );
+        assertModelPassedCondition(av_coordinated_response_measure::Color::green);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesRedColor) {
         subjectView.setRedResponse();
         submitResponse();
-        EXPECT_EQ(
-            av_coordinated_response_measure::Color::red,
-            model.responseParameters().color
-        );
+        assertModelPassedCondition(av_coordinated_response_measure::Color::red);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesBlueColor) {
         subjectView.setBlueResponse();
         submitResponse();
-        EXPECT_EQ(
-            av_coordinated_response_measure::Color::blue,
-            model.responseParameters().color
-        );
+        assertModelPassedCondition(av_coordinated_response_measure::Color::blue);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesGrayColor) {
