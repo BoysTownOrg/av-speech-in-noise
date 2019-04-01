@@ -92,7 +92,7 @@ namespace {
         }
     };
 
-    class StimulusPlayerStub : public recognition_test::TargetPlayer {
+    class TargetPlayerStub : public recognition_test::TargetPlayer {
         std::string filePath_{};
         std::string device_{};
         double rms_{};
@@ -179,7 +179,7 @@ namespace {
         }
     };
 
-    class StimulusListStub : public recognition_test::TargetList {
+    class TargetListStub : public recognition_test::TargetList {
         std::string directory_{};
         std::string next_{};
         bool empty_{};
@@ -260,13 +260,13 @@ namespace {
         recognition_test::RecognitionTestModel::Test test;
         recognition_test::RecognitionTestModel::AudioSettings trial;
         recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
-        StimulusPlayerStub stimulusPlayer{};
+        TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
-        StimulusListStub list{};
+        TargetListStub targetList{};
         OutputFileStub outputFile{};
         recognition_test::RecognitionTestModel model{
-            &list,
-            &stimulusPlayer,
+            &targetList,
+            &targetPlayer,
             &maskerPlayer,
             &outputFile
         };
@@ -298,7 +298,7 @@ namespace {
         }
         
         void setListToEmpty() {
-            list.setEmpty();
+            targetList.setEmpty();
         }
         
         void assertMaskerPlayerNotPlayed() {
@@ -306,7 +306,7 @@ namespace {
         }
         
         void assertListNotAdvanced() {
-            EXPECT_FALSE(list.nextCalled());
+            EXPECT_FALSE(targetList.nextCalled());
         }
         
         void setMaskerIsPlaying() {
@@ -334,13 +334,13 @@ namespace {
         }
         
         void assertStimulusVideoOnlyHidden() {
-            EXPECT_TRUE(stimulusPlayer.videoHidden());
-            EXPECT_FALSE(stimulusPlayer.videoShown());
+            EXPECT_TRUE(targetPlayer.videoHidden());
+            EXPECT_FALSE(targetPlayer.videoShown());
         }
         
         void assertStimulusVideoOnlyShown() {
-            EXPECT_FALSE(stimulusPlayer.videoHidden());
-            EXPECT_TRUE(stimulusPlayer.videoShown());
+            EXPECT_FALSE(targetPlayer.videoHidden());
+            EXPECT_TRUE(targetPlayer.videoShown());
         }
         
         void assertPlayTrialThrowsRequestFailure(std::string what) {
@@ -369,12 +369,12 @@ namespace {
         
         void throwInvalidAudioDeviceWhenSet() {
             maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
-            stimulusPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+            targetPlayer.throwInvalidAudioDeviceWhenDeviceSet();
         }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
-        EXPECT_EQ(&model, stimulusPlayer.listener());
+        EXPECT_EQ(&model, targetPlayer.listener());
         EXPECT_EQ(&model, maskerPlayer.listener());
     }
 
@@ -382,7 +382,7 @@ namespace {
         trial.audioDevice = "a";
         playTrial();
         assertEqual("a", maskerPlayer.device());
-        assertEqual("a", stimulusPlayer.device());
+        assertEqual("a", targetPlayer.device());
     }
 
     TEST_F(
@@ -400,7 +400,7 @@ namespace {
     ) {
         throwInvalidAudioDeviceWhenSet();
         playTrialIgnoringFailure();
-        EXPECT_FALSE(list.nextCalled());
+        EXPECT_FALSE(targetList.nextCalled());
     }
 
     TEST_F(RecognitionTestModelTests, audioDevicesReturnsOutputAudioDeviceDescriptions) {
@@ -434,11 +434,11 @@ namespace {
 
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysStimulus) {
         maskerPlayer.fadeInComplete();
-        EXPECT_TRUE(stimulusPlayer.played());
+        EXPECT_TRUE(targetPlayer.played());
     }
 
     TEST_F(RecognitionTestModelTests, stimulusPlaybackCompleteFadesOutMasker) {
-        stimulusPlayer.playbackComplete();
+        targetPlayer.playbackComplete();
         EXPECT_TRUE(maskerPlayer.fadeOutCalled());
     }
 
@@ -463,9 +463,9 @@ namespace {
         test.signalLevel_dB_SPL = 5;
         test.fullScaleLevel_dB_SPL = 11;
         initializeTest();
-        stimulusPlayer.setRms(7);
+        targetPlayer.setRms(7);
         playTrial();
-        EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, stimulusPlayer.level_dB());
+        EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, targetPlayer.level_dB());
     }
 
     TEST_F(
@@ -501,7 +501,7 @@ namespace {
     ) {
         test.stimulusListDirectory = "a";
         initializeTest();
-        assertEqual("a", list.directory());
+        assertEqual("a", targetList.directory());
     }
 
     TEST_F(
@@ -516,9 +516,9 @@ namespace {
         RecognitionTestModelTests,
         playTrialPassesNextStimulusToStimulusPlayer
     ) {
-        list.setNext("a");
+        targetList.setNext("a");
         playTrial();
-        assertEqual("a", stimulusPlayer.filePath());
+        assertEqual("a", targetPlayer.filePath());
     }
 
     TEST_F(
