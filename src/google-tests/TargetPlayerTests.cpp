@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <stimulus-player/TargetPlayerImpl.hpp>
+#include <target-player/TargetPlayerImpl.hpp>
 #include <gtest/gtest.h>
 
 namespace {
