@@ -609,6 +609,14 @@ namespace {
         void assertSetupViewConditionsContains(std::string s) {
             EXPECT_TRUE(setupView.conditions().contains(std::move(s)));
         }
+        
+        void setCondition(std::string s) {
+            setupView.setCondition(std::move(s));
+        }
+        
+        std::string errorMessage() {
+            return view.errorMessage();
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -652,7 +660,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
-        setupView.setCondition(audioVisualConditionName());
+        setCondition(audioVisualConditionName());
         confirmTestSetup();
         EXPECT_EQ(
             av_coordinated_response_measure::Condition::audioVisual,
@@ -661,7 +669,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAuditoryOnlyCondition) {
-        setupView.setCondition(auditoryOnlyConditionName());
+        setCondition(auditoryOnlyConditionName());
         confirmTestSetup();
         EXPECT_EQ(
             av_coordinated_response_measure::Condition::auditoryOnly,
@@ -672,13 +680,13 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSignalLevelShowsErrorMessage) {
         setupView.setSignalLevel("a");
         confirmTestSetup();
-        assertEqual("'a' is not a valid signal level.", view.errorMessage());
+        assertEqual("'a' is not a valid signal level.", errorMessage());
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
         setupView.setStartingSnr("a");
         confirmTestSetup();
-        assertEqual("'a' is not a valid SNR.", view.errorMessage());
+        assertEqual("'a' is not a valid SNR.", errorMessage());
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotHideSetupView) {
