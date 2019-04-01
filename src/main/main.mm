@@ -12,7 +12,7 @@
 #include <fstream>
 #include <sys/stat.h>
 
-class MacOsDirectoryReader : public stimulus_list::DirectoryReader {
+class MacOsDirectoryReader : public target_list::DirectoryReader {
     std::vector<std::string> filesIn(std::string directory) override {
         std::vector<std::string> files{};
         const auto path = [NSString stringWithCString:
@@ -94,9 +94,9 @@ public:
 
 int main() {
     MacOsDirectoryReader reader;
-    stimulus_list::FileFilterDecorator filter{&reader, ".mov"};
+    target_list::FileFilterDecorator filter{&reader, ".mov"};
     MersenneTwisterRandomizer randomizer;
-    stimulus_list::RandomizedTargetList list{&filter, &randomizer};
+    target_list::RandomizedTargetList list{&filter, &randomizer};
     AvFoundationVideoPlayer videoPlayer;
     target_player::TargetPlayerImpl stimulusPlayer{&videoPlayer};
     AvFoundationAudioPlayer audioPlayer;

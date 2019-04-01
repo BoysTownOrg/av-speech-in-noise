@@ -1,6 +1,6 @@
 #include "FileFilterDecorator.hpp"
 
-namespace stimulus_list {
+namespace target_list {
     FileFilterDecorator::FileFilterDecorator(
         DirectoryReader *reader,
         std::string filter

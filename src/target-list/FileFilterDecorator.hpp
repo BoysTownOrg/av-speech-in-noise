@@ -1,9 +1,9 @@
-#ifndef stimulus_list_FileFilterDecorator_hpp
-#define stimulus_list_FileFilterDecorator_hpp
+#ifndef target_list_FileFilterDecorator_hpp
+#define target_list_FileFilterDecorator_hpp
 
 #include <target-list/RandomizedTargetList.hpp>
 
-namespace stimulus_list {
+namespace target_list {
     class FileFilterDecorator : public DirectoryReader {
         std::string filter;
         DirectoryReader *reader;

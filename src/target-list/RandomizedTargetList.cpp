@@ -1,6 +1,6 @@
 #include "RandomizedTargetList.hpp"
 
-namespace stimulus_list {
+namespace target_list {
     RandomizedTargetList::RandomizedTargetList(
         DirectoryReader *reader,
         Randomizer *randomizer

@@ -4,7 +4,7 @@
 #include <stimulus-list/RandomizedTargetList.hpp>
 #include <random>
 
-class MersenneTwisterRandomizer : public stimulus_list::Randomizer {
+class MersenneTwisterRandomizer : public target_list::Randomizer {
     std::mt19937 engine{std::random_device{}()};
 public:
     void shuffle(shuffle_iterator begin, shuffle_iterator end) override {

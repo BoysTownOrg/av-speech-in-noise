@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class DirectoryReaderStub : public stimulus_list::DirectoryReader {
+    class DirectoryReaderStub : public target_list::DirectoryReader {
         std::vector<std::string> fileNames_{};
         std::string directory_{};
     public:
@@ -22,7 +22,7 @@ namespace {
         }
     };
 
-    class RandomizerStub : public stimulus_list::Randomizer {
+    class RandomizerStub : public target_list::Randomizer {
         std::vector<std::string> toShuffle_;
     public:
         auto toShuffle() const {
@@ -38,7 +38,7 @@ namespace {
     protected:
         DirectoryReaderStub reader{};
         RandomizerStub randomizer{};
-        stimulus_list::RandomizedTargetList list{&reader, &randomizer};
+        target_list::RandomizedTargetList list{&reader, &randomizer};
         
         void loadFromDirectory(std::string s = {}) {
             list.loadFromDirectory(std::move(s));
@@ -92,7 +92,7 @@ namespace {
     protected:
         DirectoryReaderStub reader{};
         
-        stimulus_list::FileFilterDecorator construct(std::string filter = {}) {
+        target_list::FileFilterDecorator construct(std::string filter = {}) {
             return {&reader, std::move(filter)};
         }
     };
