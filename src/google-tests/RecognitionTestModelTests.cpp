@@ -80,10 +80,6 @@ namespace {
             filePath_ = filePath;
         }
         
-        std::vector<std::string> audioDeviceDescriptions() override {
-            return audioDeviceDescriptions_;
-        }
-        
         std::vector<std::string> outputAudioDeviceDescriptions() override {
             return outputAudioDeviceDescriptions_;
         }
