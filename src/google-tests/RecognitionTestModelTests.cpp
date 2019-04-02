@@ -237,7 +237,12 @@ namespace {
         av_coordinated_response_measure::Trial trialWritten_{};
         av_coordinated_response_measure::Model::Test newFileParameters_{};
         bool throwOnOpen_{};
+        bool headingWritten_{};
     public:
+        auto headingWritten() const {
+            return headingWritten_;
+        }
+        
         auto &trialWritten() const {
             return trialWritten_;
         }
@@ -250,6 +255,10 @@ namespace {
             if (throwOnOpen_)
                 throw OpenFailure{};
             newFileParameters_ = p;
+        }
+        
+        void writeTrialHeading() override {
+            headingWritten_ = true;
         }
         
         auto &newFileParameters() const {
@@ -523,6 +532,14 @@ namespace {
         test.testerId = "a";
         initializeTest();
         assertEqual("a", outputFile.newFileParameters().testerId);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestWritesTrialHeading
+    ) {
+        initializeTest();
+        EXPECT_TRUE(outputFile.headingWritten());
     }
 
     TEST_F(

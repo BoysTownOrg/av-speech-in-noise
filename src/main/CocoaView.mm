@@ -160,7 +160,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
         @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
     maskerFilePath_.stringValue =
         @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
-    signalLevel_dB_SPL_.stringValue = @"119";
+    signalLevel_dB_SPL_.stringValue = @"65";
     startingSnr_dB_.stringValue = @"0";
     [view_ setHidden:NO];
 }
