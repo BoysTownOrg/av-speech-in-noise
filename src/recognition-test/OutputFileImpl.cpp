@@ -106,14 +106,30 @@ namespace recognition_test {
     }
     
     void OutputFileImpl::writeTest(
-        const av_coordinated_response_measure::Model::Test &
-    ) { 
-        writer->write("subject: c\n"
-            "tester: e\n"
-            "session: b\n"
-            "masker: a\n"
-            "targets: d\n"
-            "signal level (dB SPL): 1\n"
-            "starting SNR (dB): 2\n");
+        const av_coordinated_response_measure::Model::Test &test
+    ) {
+        writer->write(formatTest(test));
+    }
+    
+    template<typename T>
+    static void writeLabeledLine(std::stringstream &stream, std::string label, T thing) {
+        stream << label;
+        stream << ": ";
+        stream << thing;
+        stream << '\n';
+    }
+    
+    std::string OutputFileImpl::formatTest(
+        const av_coordinated_response_measure::Model::Test &test
+    ) {
+        std::stringstream stream;
+        writeLabeledLine(stream, "subject", test.subjectId);
+        writeLabeledLine(stream, "tester", test.testerId);
+        writeLabeledLine(stream, "session", test.session);
+        writeLabeledLine(stream, "masker", test.maskerFilePath);
+        writeLabeledLine(stream, "targets", test.targetListDirectory);
+        writeLabeledLine(stream, "signal level (dB SPL)", test.signalLevel_dB_SPL);
+        writeLabeledLine(stream, "starting SNR (dB)", test.startingSnr_dB);
+        return stream.str();
     }
 }
