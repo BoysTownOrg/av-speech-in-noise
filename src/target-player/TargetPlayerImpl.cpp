@@ -29,7 +29,16 @@ namespace target_player {
     }
 
     double TargetPlayerImpl::rms() {
-        return 1;
+        auto audio = player->readAudio({});
+        auto channel = audio.front();
+        return std::sqrt(
+            std::accumulate(
+                channel.begin(),
+                channel.end(),
+                0.0,
+                [](float a, float b) { return a += b * b; }
+            ) / channel.size()
+        );
     }
 
     void TargetPlayerImpl::setLevel_dB(double x) {

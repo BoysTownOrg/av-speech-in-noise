@@ -1,10 +1,12 @@
 #include "assert-utility.h"
 #include <target-player/TargetPlayerImpl.hpp>
 #include <gtest/gtest.h>
+#include <cmath>
 
 namespace {
     class VideoPlayerStub : public target_player::VideoPlayer {
         std::vector<std::string> audioDeviceDescriptions_{};
+        std::vector<std::vector<float>> audioRead_{};
         std::string filePath_{};
         int deviceIndex_{};
         EventListener *listener_{};
@@ -12,6 +14,10 @@ namespace {
         bool hidden_{};
         bool played_{};
     public:
+        void setAudioRead(std::vector<std::vector<float>> x) {
+            audioRead_ = std::move(x);
+        }
+        
         int deviceCount() override {
             return gsl::narrow<int>(audioDeviceDescriptions_.size());
         }
@@ -71,6 +77,11 @@ namespace {
         void subscribe(EventListener *e) override {
             listener_ = e;
         }
+        
+        std::vector<std::vector<float>> readAudio(std::string filePath) override {
+            return audioRead_;
+        }
+        
         
         void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
             listener_->fillAudioBuffer(audio);
@@ -162,5 +173,14 @@ namespace {
     TEST_F(TargetPlayerTests, audioDevicesReturnsDescriptions) {
         setAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, player.audioDevices());
+    }
+
+    TEST_F(TargetPlayerTests, rmsComputesFirstChannel) {
+        videoPlayer.setAudioRead({
+            { 1, 2, 3 },
+            { 4, 5, 6 },
+            { 7, 8, 9 }
+        });
+        EXPECT_EQ(std::sqrt((1*1 + 2*2 + 3*3)/3.), player.rms());
     }
 }
