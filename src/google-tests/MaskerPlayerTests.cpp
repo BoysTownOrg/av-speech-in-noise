@@ -5,6 +5,7 @@
 
 namespace {
     class AudioPlayerStub : public masker_player::AudioPlayer {
+        std::vector<std::vector<float>> audioRead_{};
         std::vector<std::string> audioDeviceDescriptions_{10};
         std::string filePath_{};
         std::string deviceDescription_{};
@@ -19,6 +20,10 @@ namespace {
         bool stopped_{};
         bool callbackScheduled_{};
     public:
+        void setAudioRead(std::vector<std::vector<float>> x) {
+            audioRead_ = std::move(x);
+        }
+        
         bool outputDevice(int index) override {
             return outputDevices[index];
         }
@@ -94,6 +99,10 @@ namespace {
         
         void scheduleCallbackAfterSeconds(double) override {
             callbackScheduled_ = true;
+        }
+        
+        std::vector<std::vector<float> > readAudio(std::string filePath) override {
+            return audioRead_;
         }
         
         auto filePath() const {
@@ -453,4 +462,21 @@ namespace {
         setAsOutputDevice(2);
         assertEqual({"a", "c"}, player.outputAudioDeviceDescriptions());
     }
+
+    TEST_F(MaskerPlayerTests, rmsComputesFirstChannel) {
+        audioPlayer.setAudioRead({
+            { 1, 2, 3 },
+            { 4, 5, 6 },
+            { 7, 8, 9 }
+        });
+        EXPECT_EQ(std::sqrt((1*1 + 2*2 + 3*3)/3.), player.rms());
+    }
+
+/*
+    TEST_F(MaskerPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
+        player.loadFile("a");
+        player.rms();
+        assertEqual("a", audioPlayer.audioFilePath());
+    }
+    */
 }

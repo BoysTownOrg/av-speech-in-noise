@@ -27,6 +27,7 @@ namespace masker_player {
         virtual void stop() = 0;
         virtual void scheduleCallbackAfterSeconds(double) = 0;
         virtual bool outputDevice(int index) = 0;
+        virtual std::vector<std::vector<float>> readAudio(std::string filePath) = 0;
     };
 
     class MaskerPlayerImpl :

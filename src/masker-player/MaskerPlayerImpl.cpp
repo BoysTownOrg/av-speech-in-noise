@@ -56,7 +56,18 @@ namespace masker_player {
     }
     
     double MaskerPlayerImpl::rms() {
-        return 1;
+        auto audio = player->readAudio({});
+        if (audio.size() == 0)
+            return 0;
+        auto channel = audio.front();
+        return std::sqrt(
+            std::accumulate(
+                channel.begin(),
+                channel.end(),
+                0.0,
+                [](float a, float b) { return a += b * b; }
+            ) / channel.size()
+        );
     }
     
     std::vector<std::string> MaskerPlayerImpl::audioDeviceDescriptions_() {
