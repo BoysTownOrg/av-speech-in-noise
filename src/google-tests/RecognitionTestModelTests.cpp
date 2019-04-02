@@ -34,9 +34,9 @@ namespace {
         }
         
         void setAudioDevice(std::string s) override {
+            device_ = std::move(s);
             if (throwInvalidAudioDeviceWhenDeviceSet_)
                 throw recognition_test::InvalidAudioDevice{};
-            device_ = std::move(s);
         }
         
         auto device() const {
@@ -140,9 +140,9 @@ namespace {
         }
         
         void setAudioDevice(std::string s) override {
+            device_ = std::move(s);
             if (throwInvalidAudioDeviceWhenDeviceSet_)
                 throw recognition_test::InvalidAudioDevice{};
-            device_ = std::move(s);
         }
         
         auto device() const {
@@ -272,16 +272,20 @@ namespace {
             return trialWritten_;
         }
         
-        void writeTrial(const av_coordinated_response_measure::Trial &trial) override {
+        void writeTrial(
+            const av_coordinated_response_measure::Trial &trial
+        ) override {
             log_.insert("writeTrial ");
             trialWritten_ = trial;
         }
         
-        void openNewFile(const av_coordinated_response_measure::Model::Test &p) override {
+        void openNewFile(
+            const av_coordinated_response_measure::Model::Test &p
+        ) override {
             log_.insert("openNewFile ");
+            newFileParameters_ = p;
             if (throwOnOpen_)
                 throw OpenFailure{};
-            newFileParameters_ = p;
         }
         
         void writeTrialHeading() override {
@@ -289,7 +293,9 @@ namespace {
             headingWritten_ = true;
         }
         
-        void writeTest(const av_coordinated_response_measure::Model::Test &test) override {
+        void writeTest(
+            const av_coordinated_response_measure::Model::Test &test
+        ) override {
             log_.insert("writeTest ");
             testWritten_ = test;
         }
@@ -303,7 +309,9 @@ namespace {
         }
     };
     
-    class EventListenerStub : public av_coordinated_response_measure::Model::EventListener {
+    class ModelEventListenerStub :
+        public av_coordinated_response_measure::Model::EventListener
+    {
         bool notified_{};
     public:
         void trialComplete() override {
@@ -330,7 +338,7 @@ namespace {
             &maskerPlayer,
             &outputFile
         };
-        EventListenerStub listener{};
+        ModelEventListenerStub listener{};
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
@@ -404,14 +412,23 @@ namespace {
         }
         
         void assertPlayTrialThrowsRequestFailure(std::string what) {
-            assertCallThrowsRequestFailure(&RecognitionTestModelTests::playTrial, std::move(what));
+            assertCallThrowsRequestFailure(
+                &RecognitionTestModelTests::playTrial,
+                std::move(what)
+            );
         }
         
         void assertInitializeTestThrowsRequestFailure(std::string what) {
-            assertCallThrowsRequestFailure(&RecognitionTestModelTests::initializeTest, std::move(what));
+            assertCallThrowsRequestFailure(
+                &RecognitionTestModelTests::initializeTest,
+                std::move(what)
+            );
         }
         
-        void assertCallThrowsRequestFailure(void(RecognitionTestModelTests::*f)(), std::string what) {
+        void assertCallThrowsRequestFailure(
+            void(RecognitionTestModelTests::*f)(),
+            std::string what
+        ) {
             try {
                 (this->*f)();
                 FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";

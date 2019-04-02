@@ -43,6 +43,22 @@ namespace {
         void loadFromDirectory(std::string s = {}) {
             list.loadFromDirectory(std::move(s));
         }
+        
+        void assertListNotEmpty() {
+            EXPECT_FALSE(list.empty());
+        }
+        
+        void assertListEmpty() {
+            EXPECT_TRUE(list.empty());
+        }
+        
+        auto next() {
+            return list.next();
+        }
+        
+        void setFileNames(std::vector<std::string> v) {
+            reader.setFileNames(std::move(v));
+        }
     };
 
     TEST_F(
@@ -57,33 +73,33 @@ namespace {
         TargetListTests,
         testCompleteWhenStimulusFilesExhausted
     ) {
-        reader.setFileNames({ "a", "b", "c" });
+        setFileNames({ "a", "b", "c" });
         loadFromDirectory();
-        EXPECT_FALSE(list.empty());
-        list.next();
-        EXPECT_FALSE(list.empty());
-        list.next();
-        EXPECT_FALSE(list.empty());
-        list.next();
-        EXPECT_TRUE(list.empty());
+        assertListNotEmpty();
+        next();
+        assertListNotEmpty();
+        next();
+        assertListNotEmpty();
+        next();
+        assertListEmpty();
     }
 
     TEST_F(
         TargetListTests,
         nextReturnsFullPathToFileAtFront
     ) {
-        reader.setFileNames({ "a", "b", "c" });
+        setFileNames({ "a", "b", "c" });
         loadFromDirectory("C:");
-        assertEqual("C:/a", list.next());
-        assertEqual("C:/b", list.next());
-        assertEqual("C:/c", list.next());
+        assertEqual("C:/a", next());
+        assertEqual("C:/b", next());
+        assertEqual("C:/c", next());
     }
 
     TEST_F(
         TargetListTests,
         loadFromDirectoryShufflesFileNames
     ) {
-        reader.setFileNames({ "a", "b", "c" });
+        setFileNames({ "a", "b", "c" });
         loadFromDirectory();
         assertEqual({ "a", "b", "c" }, randomizer.toShuffle());
     }
