@@ -82,7 +82,9 @@ namespace presentation {
         }
     }
     
-    av_coordinated_response_measure::Model::SubjectResponse Presenter::subjectResponse() {
+    av_coordinated_response_measure::Model::SubjectResponse
+        Presenter::subjectResponse()
+    {
         av_coordinated_response_measure::Model::SubjectResponse p;
         p.color = colorResponse();
         p.number = std::stoi(view->subject()->numberResponse());
@@ -119,13 +121,17 @@ namespace presentation {
     }
     
 
-    Presenter::TestSetup::TestSetup(av_coordinated_response_measure::Model *model, View::TestSetup *view) :
+    Presenter::TestSetup::TestSetup(
+        av_coordinated_response_measure::Model *model,
+        View::TestSetup *view
+    ) :
         model{model},
         view{view}
     {
+        using av_coordinated_response_measure::Condition;
         view->populateConditionMenu({
-            conditionName(av_coordinated_response_measure::Condition::audioVisual),
-            conditionName(av_coordinated_response_measure::Condition::auditoryOnly)
+            conditionName(Condition::audioVisual),
+            conditionName(Condition::auditoryOnly)
         });
     }
     
@@ -137,7 +143,9 @@ namespace presentation {
         model->initializeTest(testParameters());
     }
     
-    av_coordinated_response_measure::Model::Test Presenter::TestSetup::testParameters() {
+    av_coordinated_response_measure::Model::Test
+        Presenter::TestSetup::testParameters()
+    {
         av_coordinated_response_measure::Model::Test p;
         p.startingSnr_dB =
             readInteger(view->startingSnr_dB(), "SNR");
@@ -173,7 +181,10 @@ namespace presentation {
         view->hide();
     }
     
-    Presenter::Tester::Tester(av_coordinated_response_measure::Model *model, View::Tester *view) :
+    Presenter::Tester::Tester(
+        av_coordinated_response_measure::Model *model,
+        View::Tester *view
+    ) :
         model{model},
         view{view}
     {
