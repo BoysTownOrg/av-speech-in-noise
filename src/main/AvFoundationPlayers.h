@@ -89,4 +89,6 @@ public:
     bool outputDevice(int index) override;
 };
 
+std::vector<std::vector<float>> tbd(std::string filePath);
+
 #endif

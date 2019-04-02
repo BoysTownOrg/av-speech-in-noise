@@ -1,5 +1,6 @@
 #include "AvFoundationPlayers.h"
 #include <gsl/gsl>
+#include <limits>
 
 CoreAudioDevice::CoreAudioDevice() {
     auto count = deviceCount_();
@@ -122,7 +123,7 @@ static AVURLAsset *makeAvAsset(std::string filePath) {
 }
 
 //https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
-static std::vector<std::vector<float>> tbd(std::string filePath) {
+std::vector<std::vector<float>> tbd(std::string filePath) {
     const auto asset = makeAvAsset(filePath);
     auto reader = [[AVAssetReader alloc]
         initWithAsset:asset
@@ -160,8 +161,11 @@ static std::vector<std::vector<float>> tbd(std::string filePath) {
     std::vector<std::vector<float>> audio_(audioBufferList.mNumberBuffers);
     for (UInt32 bufferCount{}; bufferCount < audioBufferList.mNumberBuffers; ++bufferCount) {
         auto data = static_cast<SInt16 *>(audioBufferList.mBuffers[bufferCount].mData);
-        for (int i{}; i < numSamplesInBuffer; ++i)
-            audio_.at(i).push_back(data[i]);
+        constexpr auto minSample = std::numeric_limits<SInt16>::min();
+        for (int i{}; i < numSamplesInBuffer; ++i) {
+            float x = data[i];
+            audio_.at(bufferCount).push_back(-x/minSample);
+        }
     }
     //
     CFRelease(buffer);
