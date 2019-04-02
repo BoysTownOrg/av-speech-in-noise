@@ -126,6 +126,8 @@ namespace presentation {
         
     private:
         RUNTIME_ERROR(BadInput)
+        void proceedToNextTrial();
+        bool userCancels();
         void initializeTest_();
         av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
         av_coordinated_response_measure::Color colorResponse();

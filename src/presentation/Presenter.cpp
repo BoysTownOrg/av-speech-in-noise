@@ -10,14 +10,17 @@ namespace presentation {
         }
     }
     
-    Presenter::Presenter(av_coordinated_response_measure::Model *model, View *view) :
+    Presenter::Presenter(
+        av_coordinated_response_measure::Model *model,
+        View *view
+    ) :
         testSetup{model, view->testSetup()},
         tester{model, view->tester()},
         model{model},
         view{view}
     {
-        view->subscribe(this);
         model->subscribe(this);
+        view->subscribe(this);
     }
 
     void Presenter::run() {
@@ -31,11 +34,16 @@ namespace presentation {
     void Presenter::openTest() {
         tester.listen();
     }
-
+    
     void Presenter::closeTest() {
-        if (view->showConfirmationDialog() == View::DialogResponse::cancel)
+        if (userCancels())
             return;
+        
         tester.tuneOut();
+    }
+
+    bool Presenter::userCancels() {
+        return view->showConfirmationDialog() == View::DialogResponse::cancel;
     }
     
     void Presenter::confirmTestSetup() {
@@ -61,6 +69,10 @@ namespace presentation {
     void Presenter::submitResponse() {
         model->submitResponse(subjectResponse());
         view->subject()->hideResponseButtons();
+        proceedToNextTrial();
+    }
+    
+    void Presenter::proceedToNextTrial() {
         if (model->testComplete()) {
             tester.tuneOut();
             testSetup.listen();
