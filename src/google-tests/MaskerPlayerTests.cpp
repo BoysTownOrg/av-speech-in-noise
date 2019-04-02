@@ -9,6 +9,7 @@ namespace {
         std::vector<std::string> audioDeviceDescriptions_{10};
         std::string filePath_{};
         std::string deviceDescription_{};
+        std::string audioFilePath_{};
         std::map<int, bool> outputDevices{};
         double sampleRateHz_{};
         int deviceIndex_{};
@@ -20,6 +21,10 @@ namespace {
         bool stopped_{};
         bool callbackScheduled_{};
     public:
+        auto audioFilePath() const {
+            return audioFilePath_;
+        }
+        
         void setAudioRead(std::vector<std::vector<float>> x) {
             audioRead_ = std::move(x);
         }
@@ -102,6 +107,7 @@ namespace {
         }
         
         std::vector<std::vector<float> > readAudio(std::string filePath) override {
+            audioFilePath_ = filePath;
             return audioRead_;
         }
         
@@ -472,11 +478,9 @@ namespace {
         EXPECT_EQ(std::sqrt((1*1 + 2*2 + 3*3)/3.), player.rms());
     }
 
-/*
     TEST_F(MaskerPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
         player.loadFile("a");
         player.rms();
         assertEqual("a", audioPlayer.audioFilePath());
     }
-    */
 }

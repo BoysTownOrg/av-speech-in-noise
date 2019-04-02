@@ -24,6 +24,7 @@ namespace masker_player {
     }
 
     void MaskerPlayerImpl::loadFile(std::string filePath) {
+        filePath_ = filePath;
         player->loadFile(std::move(filePath));
     }
 
@@ -56,7 +57,7 @@ namespace masker_player {
     }
     
     double MaskerPlayerImpl::rms() {
-        auto audio = player->readAudio({});
+        auto audio = player->readAudio(filePath_);
         if (audio.size() == 0)
             return 0;
         auto channel = audio.front();

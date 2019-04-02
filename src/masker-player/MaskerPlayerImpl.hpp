@@ -34,6 +34,7 @@ namespace masker_player {
         public recognition_test::MaskerPlayer,
         public AudioPlayer::EventListener
     {
+        std::string filePath_{};
         std::atomic<double> levelScalar{1};
         std::atomic<double> fadeInOutSeconds{};
         int hannCounter{};
