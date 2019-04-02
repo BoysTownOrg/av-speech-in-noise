@@ -32,6 +32,7 @@ namespace target_player {
         public recognition_test::TargetPlayer,
         public VideoPlayer::EventListener
     {
+        std::string filePath_{};
         std::atomic<double> audioScale{};
         VideoPlayer *player;
         TargetPlayer::EventListener *listener_{};

@@ -8,12 +8,17 @@ namespace {
         std::vector<std::string> audioDeviceDescriptions_{};
         std::vector<std::vector<float>> audioRead_{};
         std::string filePath_{};
+        std::string audioFilePath_{};
         int deviceIndex_{};
         EventListener *listener_{};
         bool shown_{};
         bool hidden_{};
         bool played_{};
     public:
+        auto audioFilePath() const {
+            return audioFilePath_;
+        }
+        
         void setAudioRead(std::vector<std::vector<float>> x) {
             audioRead_ = std::move(x);
         }
@@ -79,6 +84,7 @@ namespace {
         }
         
         std::vector<std::vector<float>> readAudio(std::string filePath) override {
+            audioFilePath_ = filePath;
             return audioRead_;
         }
         
@@ -182,5 +188,11 @@ namespace {
             { 7, 8, 9 }
         });
         EXPECT_EQ(std::sqrt((1*1 + 2*2 + 3*3)/3.), player.rms());
+    }
+
+    TEST_F(TargetPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
+        player.loadFile("a");
+        player.rms();
+        assertEqual("a", videoPlayer.audioFilePath());
     }
 }

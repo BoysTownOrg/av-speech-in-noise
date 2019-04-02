@@ -17,6 +17,7 @@ namespace target_player {
     }
 
     void TargetPlayerImpl::loadFile(std::string filePath) {
+        filePath_ = filePath;
         player->loadFile(std::move(filePath));
     }
 
@@ -29,7 +30,9 @@ namespace target_player {
     }
 
     double TargetPlayerImpl::rms() {
-        auto audio = player->readAudio({});
+        auto audio = player->readAudio(filePath_);
+        if (audio.size() == 0)
+            return 0;
         auto channel = audio.front();
         return std::sqrt(
             std::accumulate(
