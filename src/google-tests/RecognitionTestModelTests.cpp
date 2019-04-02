@@ -8,6 +8,7 @@
 namespace {
     class MaskerPlayerStub : public recognition_test::MaskerPlayer {
         std::vector<std::string> outputAudioDeviceDescriptions_{};
+        LogString log_{};
         std::string filePath_{};
         std::string device_{};
         double rms_{};
@@ -20,6 +21,10 @@ namespace {
         bool setDeviceCalled_{};
         bool throwInvalidAudioDeviceWhenDeviceSet_{};
     public:
+        auto &log() const {
+            return log_;
+        }
+        
         void fadeOutComplete() {
             listener_->fadeOutComplete();
         }
@@ -75,6 +80,7 @@ namespace {
         }
         
         void loadFile(std::string filePath) override {
+            log_.insert("loadFile ");
             filePath_ = filePath;
         }
         
@@ -103,6 +109,7 @@ namespace {
         }
         
         double rms() override {
+            log_.insert("rms ");
             return rms_;
         }
         
@@ -578,6 +585,17 @@ namespace {
         assertEqual(
             "openNewFile writeTest writeTrialHeading ",
             outputFile.log()
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestQueriesMaskerRmsAfterLoadingFile
+    ) {
+        initializeTest();
+        assertEqual(
+            "loadFile rms ",
+            maskerPlayer.log()
         );
     }
 
