@@ -89,6 +89,27 @@ namespace {
         );
     }
 
+    TEST_F(OutputFileTests, writeTest) {
+        test.maskerFilePath = "a";
+        test.session = "b";
+        test.subjectId = "c";
+        test.targetListDirectory = "d";
+        test.testerId = "e";
+        test.signalLevel_dB_SPL = 1;
+        test.startingSnr_dB = 2;
+        file.writeTest(test);
+        assertEqual(
+            "subject: c\n"
+            "tester: e\n"
+            "session: b\n"
+            "masker: a\n"
+            "targets: d\n"
+            "signal level (dB SPL): 1\n"
+            "starting SNR (dB): 2\n",
+            writer.written()
+        );
+    }
+
     TEST_F(OutputFileTests, writeTrialHeading) {
         file.writeTrialHeading();
         assertEqual(

@@ -104,4 +104,16 @@ namespace recognition_test {
             path->outputDirectory() + "/" +
             path->generateFileName(test) + ".txt";
     }
+    
+    void OutputFileImpl::writeTest(
+        const av_coordinated_response_measure::Model::Test &
+    ) { 
+        writer->write("subject: c\n"
+            "tester: e\n"
+            "session: b\n"
+            "masker: a\n"
+            "targets: d\n"
+            "signal level (dB SPL): 1\n"
+            "starting SNR (dB): 2\n");
+    }
 }
