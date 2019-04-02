@@ -419,6 +419,12 @@ void AvFoundationAudioPlayer::timerCallback() {
     listener_->timerCallback();
 }
 
+std::vector<std::vector<float>>
+    AvFoundationAudioPlayer::readAudio(std::string filePath
+) {
+    return ::readAudio(filePath);
+}
+
 @implementation CallbackScheduler
 @synthesize controller;
 

@@ -88,6 +88,7 @@ public:
     void scheduleCallbackAfterSeconds(double) override;
     void timerCallback();
     bool outputDevice(int index) override;
+    std::vector<std::vector<float>> readAudio(std::string filePath) override;
 };
 
 #endif
