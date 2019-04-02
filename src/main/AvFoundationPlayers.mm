@@ -123,54 +123,55 @@ static AVURLAsset *makeAvAsset(std::string filePath) {
 }
 
 //https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
-std::vector<std::vector<float>> tbd(std::string filePath) {
+static std::vector<std::vector<float>> readAudio(std::string filePath) {
     const auto asset = makeAvAsset(filePath);
     auto reader = [[AVAssetReader alloc]
         initWithAsset:asset
         error:nil
     ];
     auto track = [
-        [asset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0
+        [asset tracksWithMediaType:AVMediaTypeAudio] firstObject
     ];
-    auto settings = @{
-        AVFormatIDKey : [NSNumber numberWithInt:kAudioFormatLinearPCM]
-    };
-    auto readerOutput = [AVAssetReaderTrackOutput
+    auto trackOutput = [AVAssetReaderTrackOutput
         assetReaderTrackOutputWithTrack:track
-        outputSettings:settings
-    ];
-    [reader addOutput:readerOutput];
-    [reader startReading];
-    CMSampleBufferRef sample = [readerOutput copyNextSampleBuffer];
-    //sample = [readerOutput copyNextSampleBuffer];
-
-    auto numSamplesInBuffer = CMSampleBufferGetNumSamples(sample);
-    AudioBufferList audioBufferList;
-    auto buffer = CMSampleBufferGetDataBuffer(sample);
-    CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
-        sample,
-        nullptr,
-        &audioBufferList,
-        sizeof(audioBufferList),
-        nullptr,
-        nullptr,
-        kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
-        &buffer
-    );
-
-    std::vector<std::vector<float>> audio_(audioBufferList.mNumberBuffers);
-    for (UInt32 bufferCount{}; bufferCount < audioBufferList.mNumberBuffers; ++bufferCount) {
-        auto data = static_cast<SInt16 *>(audioBufferList.mBuffers[bufferCount].mData);
-        constexpr auto minSample = std::numeric_limits<SInt16>::min();
-        for (int i{}; i < numSamplesInBuffer; ++i) {
-            float x = data[i];
-            audio_.at(bufferCount).push_back(-x/minSample);
+        outputSettings:@{
+            AVFormatIDKey : [NSNumber numberWithInt:kAudioFormatLinearPCM]
         }
+    ];
+    [reader addOutput:trackOutput];
+    [reader startReading];
+    auto sampleBuffer = [trackOutput copyNextSampleBuffer];
+    std::vector<std::vector<float>> audio{};
+    while (sampleBuffer) {
+        auto frames = CMSampleBufferGetNumSamples(sampleBuffer);
+        AudioBufferList audioBufferList;
+        CMBlockBufferRef blockBuffer{};
+        CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+            sampleBuffer,
+            nullptr,
+            &audioBufferList,
+            sizeof(audioBufferList),
+            nullptr,
+            nullptr,
+            kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
+            &blockBuffer
+        );
+
+        audio.resize(audioBufferList.mNumberBuffers);
+        for (UInt32 channel{}; channel < audioBufferList.mNumberBuffers; ++channel) {
+            auto data = static_cast<SInt16 *>(audioBufferList.mBuffers[channel].mData);
+            constexpr auto minSample = std::numeric_limits<SInt16>::min();
+            for (int i{}; i < frames; ++i) {
+                float x = data[i];
+                audio.at(channel).push_back(-x/minSample);
+            }
+        }
+        
+        CFRelease(blockBuffer);
+        CFRelease(sampleBuffer);
+        sampleBuffer = [trackOutput copyNextSampleBuffer];
     }
-    //
-    CFRelease(buffer);
-    CFRelease(sample);
-    return audio_;
+    return audio;
 }
 
 

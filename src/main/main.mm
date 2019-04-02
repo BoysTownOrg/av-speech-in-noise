@@ -93,7 +93,6 @@ public:
 };
 
 int main() {
-    tbd("/Users/basset/Documents/maxdetection/Stimuli/Video/List_1/List1E01AVLNST.mov");
     MacOsDirectoryReader reader;
     target_list::FileFilterDecorator filter{&reader, ".mov"};
     MersenneTwisterRandomizer randomizer;
