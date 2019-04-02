@@ -105,7 +105,7 @@ namespace {
             "masker: a\n"
             "targets: d\n"
             "signal level (dB SPL): 1\n"
-            "starting SNR (dB): 2\n",
+            "starting SNR (dB): 2\n\n",
             writer.written()
         );
     }

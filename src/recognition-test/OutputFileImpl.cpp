@@ -111,25 +111,40 @@ namespace recognition_test {
         writer->write(formatTest(test));
     }
     
-    template<typename T>
-    static void writeLabeledLine(std::stringstream &stream, std::string label, T thing) {
-        stream << label;
-        stream << ": ";
-        stream << thing;
-        stream << '\n';
+    namespace {
+        class TestStream {
+            std::stringstream stream{};
+        public:
+            template<typename T>
+            void writeLabeledLine(std::string label, T thing) {
+                stream << label;
+                stream << ": ";
+                stream << thing;
+                stream << '\n';
+            }
+            
+            auto str() const {
+                return stream.str();
+            }
+            
+            void insertNewLine() {
+                stream << "\n";
+            }
+        };
     }
     
     std::string OutputFileImpl::formatTest(
         const av_coordinated_response_measure::Model::Test &test
     ) {
-        std::stringstream stream;
-        writeLabeledLine(stream, "subject", test.subjectId);
-        writeLabeledLine(stream, "tester", test.testerId);
-        writeLabeledLine(stream, "session", test.session);
-        writeLabeledLine(stream, "masker", test.maskerFilePath);
-        writeLabeledLine(stream, "targets", test.targetListDirectory);
-        writeLabeledLine(stream, "signal level (dB SPL)", test.signalLevel_dB_SPL);
-        writeLabeledLine(stream, "starting SNR (dB)", test.startingSnr_dB);
+        TestStream stream;
+        stream.writeLabeledLine("subject", test.subjectId);
+        stream.writeLabeledLine("tester", test.testerId);
+        stream.writeLabeledLine("session", test.session);
+        stream.writeLabeledLine("masker", test.maskerFilePath);
+        stream.writeLabeledLine("targets", test.targetListDirectory);
+        stream.writeLabeledLine("signal level (dB SPL)", test.signalLevel_dB_SPL);
+        stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
+        stream.insertNewLine();
         return stream.str();
     }
 }
