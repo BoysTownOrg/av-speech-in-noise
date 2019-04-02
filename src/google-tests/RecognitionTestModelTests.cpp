@@ -119,6 +119,7 @@ namespace {
     };
 
     class TargetPlayerStub : public recognition_test::TargetPlayer {
+        LogString log_{};
         std::string filePath_{};
         std::string device_{};
         double rms_{};
@@ -130,6 +131,10 @@ namespace {
         bool videoShown_{};
         bool throwInvalidAudioDeviceWhenDeviceSet_{};
     public:
+        auto &log() const {
+            return log_;
+        }
+        
         void throwInvalidAudioDeviceWhenDeviceSet() {
             throwInvalidAudioDeviceWhenDeviceSet_ = true;
         }
@@ -181,10 +186,12 @@ namespace {
         }
         
         void loadFile(std::string filePath) override {
+            log_.insert("loadFile ");
             filePath_ = filePath;
         }
         
         double rms() override {
+            log_.insert("rms ");
             return rms_;
         }
         
@@ -483,6 +490,17 @@ namespace {
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
         playTrial();
         EXPECT_TRUE(maskerPlayerFadedIn());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialQueriesTargetRmsAfterLoadingFile
+    ) {
+        playTrial();
+        assertEqual(
+            "loadFile rms ",
+            targetPlayer.log()
+        );
     }
 
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
