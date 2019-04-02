@@ -111,6 +111,7 @@ namespace recognition_test {
         void startTrial();
         bool auditoryOnly(const Test &);
         void prepareVideo(const Test &);
+        int desiredSignalLevel_dB();
         double signalLevel_dB();
         double maskerLevel_dB();
         void setAudioDevices(const std::string &);

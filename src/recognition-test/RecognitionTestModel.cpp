@@ -64,9 +64,18 @@ namespace recognition_test {
         maskerPlayer->fadeIn();
     }
     
+    static double dB(double x) {
+        return 20 * std::log10(x);
+    }
+    
     double RecognitionTestModel::signalLevel_dB() {
         return
-            -20 * std::log10(targetPlayer->rms()) +
+            desiredSignalLevel_dB() -
+            dB(targetPlayer->rms());
+    }
+    
+    int RecognitionTestModel::desiredSignalLevel_dB() {
+        return
             test.signalLevel_dB_SPL -
             test.fullScaleLevel_dB_SPL;
     }
@@ -84,10 +93,9 @@ namespace recognition_test {
     
     double RecognitionTestModel::maskerLevel_dB() {
         return
-            -20 * std::log10(maskerPlayer->rms()) +
-            test.signalLevel_dB_SPL -
-            test.startingSnr_dB -
-            test.fullScaleLevel_dB_SPL;
+            desiredSignalLevel_dB() -
+            dB(maskerPlayer->rms()) -
+            test.startingSnr_dB;
     }
     
     void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {
