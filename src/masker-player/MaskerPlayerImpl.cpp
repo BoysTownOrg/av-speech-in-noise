@@ -55,6 +55,10 @@ namespace masker_player {
         return gsl::narrow<int>(found - devices_.begin());
     }
     
+    double MaskerPlayerImpl::rms() {
+        return 1;
+    }
+    
     std::vector<std::string> MaskerPlayerImpl::audioDeviceDescriptions_() {
         std::vector<std::string> descriptions{};
         for (int i = 0; i < player->deviceCount(); ++i)

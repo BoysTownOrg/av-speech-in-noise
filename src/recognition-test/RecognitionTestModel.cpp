@@ -72,11 +72,20 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::initializeTest(const Test &p) {
+        test = p;
         tryOpeningOutputFile(p);
         loadMaskerFile(p);
+        maskerPlayer->setLevel_dB(maskerLevel_dB());
         loadStimulusList(p);
         prepareVideo(p);
-        test = p;
+    }
+    
+    double RecognitionTestModel::maskerLevel_dB() {
+        return
+            -20 * std::log10(maskerPlayer->rms()) +
+            test.signalLevel_dB_SPL -
+            test.startingSnr_dB -
+            test.fullScaleLevel_dB_SPL;
     }
     
     void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {

@@ -45,6 +45,8 @@ namespace recognition_test {
         virtual void fadeOut() = 0;
         virtual void loadFile(std::string filePath) = 0;
         virtual bool playing() = 0;
+        virtual double rms() = 0;
+        virtual void setLevel_dB(double) = 0;
     };
 
     class TargetList {
@@ -106,6 +108,7 @@ namespace recognition_test {
         bool auditoryOnly(const Test &);
         void prepareVideo(const Test &);
         double signalLevel_dB();
+        double maskerLevel_dB();
         void setAudioDevices(const std::string &);
         void trySettingAudioDevices(const AudioSettings &);
         int findDeviceIndex(const AudioSettings &);

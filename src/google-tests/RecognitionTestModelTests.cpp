@@ -9,6 +9,8 @@ namespace {
         std::vector<std::string> outputAudioDeviceDescriptions_{};
         std::string filePath_{};
         std::string device_{};
+        double rms_{};
+        double level_dB_{};
         int deviceIndex_{};
         EventListener *listener_{};
         bool fadeInCalled_{};
@@ -89,6 +91,22 @@ namespace {
         
         auto filePath() const {
             return filePath_;
+        }
+        
+        void setRms(double x) {
+            rms_ = x;
+        }
+        
+        auto level_dB() const {
+            return level_dB_;
+        }
+        
+        double rms() override {
+            return rms_;
+        }
+        
+        void setLevel_dB(double x) override {
+            level_dB_ = x;
         }
     };
 
@@ -466,6 +484,18 @@ namespace {
         targetPlayer.setRms(7);
         playTrial();
         EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, targetPlayer.level_dB());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestSetsMaskerPlayerLevel
+    ) {
+        test.startingSnr_dB = 5;
+        test.signalLevel_dB_SPL = 13;
+        test.fullScaleLevel_dB_SPL = 11;
+        maskerPlayer.setRms(7);
+        initializeTest();
+        EXPECT_EQ(20 * std::log10(1.0/7) + 13 - 5 - 11, maskerPlayer.level_dB());
     }
 
     TEST_F(
