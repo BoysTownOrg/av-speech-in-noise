@@ -91,6 +91,7 @@ namespace recognition_test {
             MaskerPlayer *,
             OutputFile *
         );
+        
         void initializeTest(const Test &) override;
         void playTrial(const AudioSettings &) override;
         void submitResponse(const SubjectResponse &) override;
@@ -101,6 +102,8 @@ namespace recognition_test {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void prepareMasker(const Test &);
+        void prepareOutputFile(const Test &);
         void tryOpeningOutputFile(const Test &);
         void loadStimulusList(const Test &);
         void loadMaskerFile(const Test &);

@@ -5,17 +5,17 @@
 namespace recognition_test {
     RecognitionTestModel::RecognitionTestModel(
         TargetList *targetList,
-        TargetPlayer *stimulusPlayer,
+        TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
         OutputFile *outputFile
     ) :
         maskerPlayer{maskerPlayer},
         targetList{targetList},
-        targetPlayer{stimulusPlayer},
+        targetPlayer{targetPlayer},
         outputFile{outputFile}
     {
+        targetPlayer->subscribe(this);
         maskerPlayer->subscribe(this);
-        stimulusPlayer->subscribe(this);
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &trial) {
@@ -39,7 +39,9 @@ namespace recognition_test {
         loadNextTarget();
     }
     
-    void RecognitionTestModel::trySettingAudioDevices(const AudioSettings &trial) {
+    void RecognitionTestModel::trySettingAudioDevices(
+        const AudioSettings &trial
+    ) {
         auto device = trial.audioDevice;
         try {
             setAudioDevices(device);
@@ -82,13 +84,22 @@ namespace recognition_test {
     
     void RecognitionTestModel::initializeTest(const Test &p) {
         test = p;
+        
+        prepareOutputFile(p);
+        prepareMasker(p);
+        loadStimulusList(p);
+        prepareVideo(p);
+    }
+    
+    void RecognitionTestModel::prepareOutputFile(const Test &p) {
         tryOpeningOutputFile(p);
         outputFile->writeTest(p);
         outputFile->writeTrialHeading();
+    }
+    
+    void RecognitionTestModel::prepareMasker(const Test &p) {
         loadMaskerFile(p);
         maskerPlayer->setLevel_dB(maskerLevel_dB());
-        loadStimulusList(p);
-        prepareVideo(p);
     }
     
     double RecognitionTestModel::maskerLevel_dB() {
