@@ -235,12 +235,17 @@ namespace {
     
     class OutputFileStub : public recognition_test::OutputFile {
         av_coordinated_response_measure::Trial trialWritten_{};
+        av_coordinated_response_measure::Model::Test testWritten_{};
         av_coordinated_response_measure::Model::Test newFileParameters_{};
         bool throwOnOpen_{};
         bool headingWritten_{};
     public:
         auto headingWritten() const {
             return headingWritten_;
+        }
+        
+        auto &testWritten() const {
+            return testWritten_;
         }
         
         auto &trialWritten() const {
@@ -259,6 +264,10 @@ namespace {
         
         void writeTrialHeading() override {
             headingWritten_ = true;
+        }
+        
+        void writeTest(const av_coordinated_response_measure::Model::Test &test) override {
+            testWritten_ = test;
         }
         
         auto &newFileParameters() const {
@@ -540,6 +549,15 @@ namespace {
     ) {
         initializeTest();
         EXPECT_TRUE(outputFile.headingWritten());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestWritesTest
+    ) {
+        test.testerId = "a";
+        initializeTest();
+        assertEqual("a", outputFile.testWritten().testerId);
     }
 
     TEST_F(

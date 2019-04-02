@@ -27,7 +27,7 @@ namespace recognition_test {
         OutputFilePath *path;
     public:
         OutputFileImpl(Writer *, OutputFilePath *);
-        void writeTest(const av_coordinated_response_measure::Model::Test &);
+        void writeTest(const av_coordinated_response_measure::Model::Test &) override;
         void writeTrial(const av_coordinated_response_measure::Trial &) override;
         void writeTrialHeading() override;
         void openNewFile(const av_coordinated_response_measure::Model::Test &) override;

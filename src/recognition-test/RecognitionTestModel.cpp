@@ -74,6 +74,7 @@ namespace recognition_test {
     void RecognitionTestModel::initializeTest(const Test &p) {
         test = p;
         tryOpeningOutputFile(p);
+        outputFile->writeTest(p);
         outputFile->writeTrialHeading();
         loadMaskerFile(p);
         maskerPlayer->setLevel_dB(maskerLevel_dB());

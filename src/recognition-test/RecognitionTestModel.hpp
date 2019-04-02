@@ -67,6 +67,9 @@ namespace recognition_test {
         virtual void writeTrial(
             const av_coordinated_response_measure::Trial &
         ) = 0;
+        virtual void writeTest(
+            const av_coordinated_response_measure::Model::Test &
+        ) = 0;
         virtual void writeTrialHeading() = 0;
     };
 
