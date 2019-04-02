@@ -121,6 +121,57 @@ static AVURLAsset *makeAvAsset(std::string filePath) {
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
 
+//https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
+static void tbd(std::string filePath) {
+    const auto asset = makeAvAsset(filePath);
+    auto reader = [[AVAssetReader alloc]
+        initWithAsset:asset
+        error:nil
+    ];
+    auto track = [
+        [asset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0
+    ];
+    auto settings = @{
+        AVFormatIDKey : [NSNumber numberWithInt:kAudioFormatLinearPCM]
+    };
+    auto readerOutput = [AVAssetReaderTrackOutput
+        assetReaderTrackOutputWithTrack:track
+        outputSettings:settings
+    ];
+    [reader addOutput:readerOutput];
+    [reader startReading];
+    CMSampleBufferRef sample = [readerOutput copyNextSampleBuffer];
+    while (sample) {
+        sample = [readerOutput copyNextSampleBuffer];
+        if (!sample)
+           continue;
+
+        auto numSamplesInBuffer = CMSampleBufferGetNumSamples(sample);
+        AudioBufferList audioBufferList;
+        auto buffer = CMSampleBufferGetDataBuffer(sample);
+        CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+            sample,
+            nullptr,
+            &audioBufferList,
+            sizeof(audioBufferList),
+            nullptr,
+            nullptr,
+            kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
+            &buffer
+        );
+
+        for (UInt32 bufferCount{}; bufferCount < audioBufferList.mNumberBuffers; ++bufferCount) {
+            auto samples = static_cast<SInt16 *>(audioBufferList.mBuffers[bufferCount].mData);
+            for (int i{}; i < numSamplesInBuffer; ++i) {
+            
+            }
+        }
+
+        CFRelease(buffer);
+        CFRelease(sample);
+    }
+}
+
 
 static void init(
     MTAudioProcessingTapRef,
