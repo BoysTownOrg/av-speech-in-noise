@@ -122,7 +122,7 @@ static AVURLAsset *makeAvAsset(std::string filePath) {
 }
 
 //https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
-static void tbd(std::string filePath) {
+static std::vector<std::vector<float>> tbd(std::string filePath) {
     const auto asset = makeAvAsset(filePath);
     auto reader = [[AVAssetReader alloc]
         initWithAsset:asset
@@ -141,35 +141,32 @@ static void tbd(std::string filePath) {
     [reader addOutput:readerOutput];
     [reader startReading];
     CMSampleBufferRef sample = [readerOutput copyNextSampleBuffer];
-    while (sample) {
-        sample = [readerOutput copyNextSampleBuffer];
-        if (!sample)
-           continue;
+    //sample = [readerOutput copyNextSampleBuffer];
 
-        auto numSamplesInBuffer = CMSampleBufferGetNumSamples(sample);
-        AudioBufferList audioBufferList;
-        auto buffer = CMSampleBufferGetDataBuffer(sample);
-        CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
-            sample,
-            nullptr,
-            &audioBufferList,
-            sizeof(audioBufferList),
-            nullptr,
-            nullptr,
-            kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
-            &buffer
-        );
+    auto numSamplesInBuffer = CMSampleBufferGetNumSamples(sample);
+    AudioBufferList audioBufferList;
+    auto buffer = CMSampleBufferGetDataBuffer(sample);
+    CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+        sample,
+        nullptr,
+        &audioBufferList,
+        sizeof(audioBufferList),
+        nullptr,
+        nullptr,
+        kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
+        &buffer
+    );
 
-        for (UInt32 bufferCount{}; bufferCount < audioBufferList.mNumberBuffers; ++bufferCount) {
-            auto samples = static_cast<SInt16 *>(audioBufferList.mBuffers[bufferCount].mData);
-            for (int i{}; i < numSamplesInBuffer; ++i) {
-            
-            }
-        }
-
-        CFRelease(buffer);
-        CFRelease(sample);
+    std::vector<std::vector<float>> audio_(audioBufferList.mNumberBuffers);
+    for (UInt32 bufferCount{}; bufferCount < audioBufferList.mNumberBuffers; ++bufferCount) {
+        auto data = static_cast<SInt16 *>(audioBufferList.mBuffers[bufferCount].mData);
+        for (int i{}; i < numSamplesInBuffer; ++i)
+            audio_.at(i).push_back(data[i]);
     }
+    //
+    CFRelease(buffer);
+    CFRelease(sample);
+    return audio_;
 }
 
 
