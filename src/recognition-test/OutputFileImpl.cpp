@@ -32,7 +32,11 @@ namespace recognition_test {
     void OutputFileImpl::writeTrial(
         const av_coordinated_response_measure::Trial &trial
     ) {
-        writer->write(formatTrial(trial));
+        write(formatTrial(trial));
+    }
+    
+    void OutputFileImpl::write(std::string s) {
+        writer->write(std::move(s));
     }
 
     std::string OutputFileImpl::formatTrial(
@@ -69,7 +73,7 @@ namespace recognition_test {
     }
     
     void OutputFileImpl::writeTrialHeading() {
-        writer->write(formatTrialHeading());
+        write(formatTrialHeading());
     }
     
     std::string OutputFileImpl::formatTrialHeading() {
@@ -105,12 +109,6 @@ namespace recognition_test {
             path->generateFileName(test) + ".txt";
     }
     
-    void OutputFileImpl::writeTest(
-        const av_coordinated_response_measure::Model::Test &test
-    ) {
-        writer->write(formatTest(test));
-    }
-    
     namespace {
         class TestStream {
             std::stringstream stream{};
@@ -131,6 +129,12 @@ namespace recognition_test {
                 stream << "\n";
             }
         };
+    }
+    
+    void OutputFileImpl::writeTest(
+        const av_coordinated_response_measure::Model::Test &test
+    ) {
+        write(formatTest(test));
     }
     
     std::string OutputFileImpl::formatTest(

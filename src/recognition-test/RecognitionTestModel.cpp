@@ -34,15 +34,15 @@ namespace recognition_test {
         return maskerPlayer->playing();
     }
     
-    void RecognitionTestModel::preparePlayers(const AudioSettings &trial) {
-        trySettingAudioDevices(trial);
+    void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
+        trySettingAudioDevices(p);
         loadNextTarget();
     }
     
     void RecognitionTestModel::trySettingAudioDevices(
-        const AudioSettings &trial
+        const AudioSettings &p
     ) {
-        auto device = trial.audioDevice;
+        auto device = p.audioDevice;
         try {
             setAudioDevices(device);
         } catch (const InvalidAudioDevice &) {

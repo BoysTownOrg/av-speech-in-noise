@@ -73,8 +73,7 @@ namespace masker_player {
         if (audio.size() == 0)
             return 0;
         
-        auto channel = audio.front();
-        return ::masker_player::rms(channel);
+        return ::masker_player::rms(audio.front());
     }
     
     std::vector<std::string> MaskerPlayerImpl::audioDeviceDescriptions_() {
