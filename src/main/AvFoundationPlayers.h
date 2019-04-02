@@ -52,6 +52,7 @@ public:
     void subscribe(EventListener *) override;
     int deviceCount() override;
     std::string deviceDescription(int index) override;
+    std::vector<std::vector<float>> readAudio(std::string filePath) override;
 };
 
 class AvFoundationAudioPlayer;

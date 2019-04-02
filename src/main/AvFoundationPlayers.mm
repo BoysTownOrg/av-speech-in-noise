@@ -349,6 +349,13 @@ std::string AvFoundationVideoPlayer::deviceDescription(int index) {
     return device.description(index);
 }
 
+
+std::vector<std::vector<float>>
+    AvFoundationVideoPlayer::readAudio(std::string filePath
+) {
+    return ::readAudio(filePath);
+}
+
 @implementation StimulusPlayerActions
 @synthesize controller;
 - (void)playbackComplete {
