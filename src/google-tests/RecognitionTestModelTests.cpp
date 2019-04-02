@@ -1,3 +1,4 @@
+#include "LogString.h"
 #include "assert-utility.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
@@ -237,9 +238,14 @@ namespace {
         av_coordinated_response_measure::Trial trialWritten_{};
         av_coordinated_response_measure::Model::Test testWritten_{};
         av_coordinated_response_measure::Model::Test newFileParameters_{};
+        LogString log_{};
         bool throwOnOpen_{};
         bool headingWritten_{};
     public:
+        auto &log() const {
+            return log_;
+        }
+        
         auto headingWritten() const {
             return headingWritten_;
         }
@@ -253,20 +259,24 @@ namespace {
         }
         
         void writeTrial(const av_coordinated_response_measure::Trial &trial) override {
+            log_.insert("writeTrial ");
             trialWritten_ = trial;
         }
         
         void openNewFile(const av_coordinated_response_measure::Model::Test &p) override {
+            log_.insert("openNewFile ");
             if (throwOnOpen_)
                 throw OpenFailure{};
             newFileParameters_ = p;
         }
         
         void writeTrialHeading() override {
+            log_.insert("writeTrialHeading ");
             headingWritten_ = true;
         }
         
         void writeTest(const av_coordinated_response_measure::Model::Test &test) override {
+            log_.insert("writeTest ");
             testWritten_ = test;
         }
         
@@ -558,6 +568,17 @@ namespace {
         test.testerId = "a";
         initializeTest();
         assertEqual("a", outputFile.testWritten().testerId);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestOpensOutputFileWritesTestAndWritesTrialHeadingInOrder
+    ) {
+        initializeTest();
+        assertEqual(
+            "openNewFile writeTest writeTrialHeading ",
+            outputFile.log()
+        );
     }
 
     TEST_F(
