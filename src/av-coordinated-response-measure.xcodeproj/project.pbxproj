@@ -1244,6 +1244,7 @@
 					"-Wno-unused-private-field",
 					"-Wno-objc-messaging-id",
 					"-Wno-direct-ivar-access",
+					"-Wno-double-promotion",
 				);
 			};
 			name = Debug;
@@ -1267,6 +1268,7 @@
 					"-Wno-unused-private-field",
 					"-Wno-objc-messaging-id",
 					"-Wno-direct-ivar-access",
+					"-Wno-double-promotion",
 				);
 			};
 			name = Release;

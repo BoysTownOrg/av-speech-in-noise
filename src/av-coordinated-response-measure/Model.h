@@ -27,9 +27,9 @@ namespace av_coordinated_response_measure {
         int SNR_dB;
         int correctNumber;
         int subjectNumber;
+        int reversals;
         Color correctColor;
         Color subjectColor;
-        int reversals;
     };
     
     class Model {
