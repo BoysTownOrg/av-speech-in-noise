@@ -56,19 +56,25 @@ namespace masker_player {
         return gsl::narrow<int>(found - devices_.begin());
     }
     
+    template<typename T>
+    T rms(const std::vector<T> &x) {
+        return std::sqrt(
+            std::accumulate(
+                x.begin(),
+                x.end(),
+                T{ 0 },
+                [](T a, T b) { return a += b * b; }
+            ) / x.size()
+        );
+    }
+
     double MaskerPlayerImpl::rms() {
         auto audio = player->readAudio(filePath_);
         if (audio.size() == 0)
             return 0;
+        
         auto channel = audio.front();
-        return std::sqrt(
-            std::accumulate(
-                channel.begin(),
-                channel.end(),
-                0.0,
-                [](float a, float b) { return a += b * b; }
-            ) / channel.size()
-        );
+        return ::masker_player::rms(channel);
     }
     
     std::vector<std::string> MaskerPlayerImpl::audioDeviceDescriptions_() {

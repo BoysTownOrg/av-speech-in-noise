@@ -475,7 +475,7 @@ namespace {
             { 4, 5, 6 },
             { 7, 8, 9 }
         });
-        EXPECT_EQ(std::sqrt((1*1 + 2*2 + 3*3)/3.), player.rms());
+        EXPECT_EQ(std::sqrt((1*1 + 2*2 + 3*3)/3.f), player.rms());
     }
 
     TEST_F(MaskerPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
