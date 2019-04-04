@@ -64,86 +64,79 @@ void CocoaTesterView::playTrial() {
 @end
 
 CocoaTestSetupView::CocoaTestSetupView() :
-    view_{
-        [[NSView alloc] initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)]
-    },
+    view_{[[NSView alloc]
+        initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)
+    ]},
     subjectIdLabel{allocLabel(
         @"subject id:",
         NSMakeRect(0, 270, 140, 25)
     )},
-    subjectId_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 270, 150, 25)]
-    },
+    subjectId_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(145, 270, 150, 25)
+    ]},
     testerIdLabel{allocLabel(
         @"tester id:",
-        NSMakeRect(0, 240, 140, 25))
-    },
-    testerId_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 240, 150, 25)]
-    },
+        NSMakeRect(0, 240, 140, 25)
+    )},
+    testerId_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(145, 240, 150, 25)
+    ]},
     sessionLabel{allocLabel(
         @"session:",
-        NSMakeRect(0, 210, 140, 25))
-    },
-    session_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 210, 150, 25)]
-    },
+        NSMakeRect(0, 210, 140, 25)
+    )},
+    session_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(145, 210, 150, 25)
+    ]},
     signalLevel_dB_SPL_label{allocLabel(
         @"signal level (dB SPL):",
-        NSMakeRect(0, 180, 140, 25))
-    },
-    signalLevel_dB_SPL_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 180, 150, 25)]
-    },
+        NSMakeRect(0, 180, 140, 25)
+    )},
+    signalLevel_dB_SPL_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(145, 180, 150, 25)
+    ]},
     startingSnr_dB_label{allocLabel(
         @"starting SNR (dB):",
-        NSMakeRect(0, 150, 140, 25))
-    },
-    startingSnr_dB_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 150, 150, 25)]
-    },
+        NSMakeRect(0, 150, 140, 25)
+    )},
+    startingSnr_dB_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(145, 150, 150, 25)
+    ]},
     stimulusListDirectoryLabel{allocLabel(
         @"stimulus directory:",
-        NSMakeRect(0, 120, 140, 25))
-    },
-    stimulusListDirectory_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 120, 500, 25)]
-    },
+        NSMakeRect(0, 120, 140, 25)
+    )},
+    stimulusListDirectory_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(145, 120, 500, 25)
+    ]},
     maskerFilePath_label{allocLabel(
         @"masker file path:",
-        NSMakeRect(0, 90, 140, 25))
-    },
-    maskerFilePath_{
-        [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 90, 500, 25)]
-    },
-    conditionMenu{[
-        [NSPopUpButton alloc] initWithFrame:NSMakeRect(145, 60, 150, 25)
+        NSMakeRect(0, 90, 140, 25)
+    )},
+    maskerFilePath_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(145, 90, 500, 25)
+    ]},
+    conditionMenu{[[NSPopUpButton alloc]
+        initWithFrame:NSMakeRect(145, 60, 150, 25)
         pullsDown:NO
     ]},
     actions{[SetupViewActions alloc]}
 {
     actions.controller = this;
-    const auto browseForStimulusListButton = [NSButton buttonWithTitle:
-        @"browse"
+    const auto browseForStimulusListButton = [NSButton
+        buttonWithTitle:@"browse"
         target:actions
         action:@selector(browseForStimulusList)
     ];
     [browseForStimulusListButton setFrame:NSMakeRect(500 + 145 + 10, 120, 100, 25)];
-    const auto browseForMaskerButton = [NSButton buttonWithTitle:
-        @"browse"
+    const auto browseForMaskerButton = [NSButton
+        buttonWithTitle:@"browse"
         target:actions
         action:@selector(browseForMasker)
     ];
     [browseForMaskerButton setFrame:NSMakeRect(500 + 145 + 10, 90, 100, 25)];
-    const auto confirmButton = [NSButton buttonWithTitle:
-        @"Confirm"
+    const auto confirmButton = [NSButton
+        buttonWithTitle:@"Confirm"
         target:actions
         action:@selector(confirmTestSetup)
     ];
