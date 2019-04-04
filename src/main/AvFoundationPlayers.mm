@@ -276,7 +276,7 @@ static void loadItemFromFileWithAudioProcessing(
 }
 
 AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
-    actions{[StimulusPlayerActions alloc]},
+    actions{[VideoPlayerActions alloc]},
     videoWindow{[[NSWindow alloc]
         initWithContentRect: NSMakeRect(400, 450, 0, 0)
         styleMask:NSWindowStyleMaskBorderless
@@ -307,8 +307,8 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     [videoWindow setContentSize:NSSizeFromCGSize(
         [asset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
-    [NSNotificationCenter.defaultCenter addObserver:
-        actions
+    [NSNotificationCenter.defaultCenter
+        addObserver:actions
         selector:@selector(playbackComplete)
         name:AVPlayerItemDidPlayToEndTimeNotification
         object:player.currentItem
@@ -339,19 +339,27 @@ std::string AvFoundationVideoPlayer::deviceDescription(int index) {
     return device.description(index);
 }
 
-
 std::vector<std::vector<float>>
     AvFoundationVideoPlayer::readAudio(std::string filePath
 ) {
     return ::readAudio(filePath);
 }
 
-@implementation StimulusPlayerActions
+@implementation VideoPlayerActions
 @synthesize controller;
 - (void)playbackComplete {
     controller->playbackComplete();
 }
 @end
+
+
+AvFoundationAudioPlayer::AvFoundationAudioPlayer() :
+    player{[AVPlayer playerWithPlayerItem:nil]},
+    scheduler{[CallbackScheduler alloc]}
+{
+    scheduler.controller = this;
+    createAudioProcessingTap<AvFoundationAudioPlayer>(this, &tap);
+}
 
 void AvFoundationAudioPlayer::subscribe(EventListener *e) {
     listener_ = e;
@@ -370,19 +378,7 @@ std::string AvFoundationAudioPlayer::deviceDescription(int index) {
 }
 
 void AvFoundationAudioPlayer::setDevice(int index) {
-    auto uid_ = device.uid(index);
-    player.audioOutputDeviceUniqueID = [
-        NSString stringWithCString:uid_.c_str()
-        encoding:[NSString defaultCStringEncoding]
-    ];
-}
-
-AvFoundationAudioPlayer::AvFoundationAudioPlayer() :
-    player{[AVPlayer playerWithPlayerItem:nil]},
-    scheduler{[CallbackScheduler alloc]}
-{
-    scheduler.controller = this;
-    createAudioProcessingTap<AvFoundationAudioPlayer>(this, &tap);
+    player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
 }
 
 bool AvFoundationAudioPlayer::playing() {
@@ -412,15 +408,19 @@ void AvFoundationAudioPlayer::timerCallback() {
 std::vector<std::vector<float>>
     AvFoundationAudioPlayer::readAudio(std::string filePath
 ) {
-    return ::readAudio(filePath);
+    return ::readAudio(std::move(filePath));
+}
+
+bool AvFoundationAudioPlayer::outputDevice(int index) {
+    return device.outputDevice(index);
 }
 
 @implementation CallbackScheduler
 @synthesize controller;
 
 - (void)scheduleCallbackAfterSeconds:(double)x {
-    [NSTimer scheduledTimerWithTimeInterval:
-        x
+    [NSTimer
+        scheduledTimerWithTimeInterval:x
         target:self
         selector: @selector(timerCallback)
         userInfo:nil
@@ -432,7 +432,3 @@ std::vector<std::vector<float>>
     controller->timerCallback();
 }
 @end
-
-bool AvFoundationAudioPlayer::outputDevice(int index) { 
-    return device.outputDevice(index);
-}

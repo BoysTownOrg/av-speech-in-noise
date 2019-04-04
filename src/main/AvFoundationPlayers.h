@@ -25,7 +25,7 @@ public:
 
 class AvFoundationVideoPlayer;
 
-@interface StimulusPlayerActions : NSObject
+@interface VideoPlayerActions : NSObject
 @property AvFoundationVideoPlayer *controller;
 - (void) playbackComplete;
 @end
@@ -34,7 +34,7 @@ class AvFoundationVideoPlayer : public target_player::VideoPlayer {
     std::vector<gsl::span<float>> audio_;
     MTAudioProcessingTapRef tap{};
     CoreAudioDevice device{};
-    StimulusPlayerActions *actions;
+    VideoPlayerActions *actions;
     NSWindow *videoWindow;
     AVPlayer *player;
     AVPlayerLayer *playerLayer;
