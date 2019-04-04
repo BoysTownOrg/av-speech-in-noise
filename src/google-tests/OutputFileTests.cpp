@@ -74,6 +74,13 @@ namespace {
         void openNewFile() {
             file.openNewFile(test);
         }
+        
+        void assertWriterContainsConditionName(av_coordinated_response_measure::Condition c) {
+            test.condition = c;
+            file.writeTest(test);
+            std::string name = conditionName(c);
+            EXPECT_TRUE(writer.written().contains("condition: " + name + "\n"));
+        }
     };
 
     TEST_F(OutputFileTests, writeTrial) {
@@ -110,21 +117,15 @@ namespace {
     }
 
     TEST_F(OutputFileTests, writeTestWithAvCondition) {
-        test.condition = av_coordinated_response_measure::Condition::audioVisual;
-        file.writeTest(test);
-        std::string name = conditionName(
+        assertWriterContainsConditionName(
             av_coordinated_response_measure::Condition::audioVisual
         );
-        EXPECT_TRUE(writer.written().contains("condition: " + name + "\n"));
     }
 
     TEST_F(OutputFileTests, writeTestWithAuditoryOnlyCondition) {
-        test.condition = av_coordinated_response_measure::Condition::auditoryOnly;
-        file.writeTest(test);
-        std::string name = conditionName(
+        assertWriterContainsConditionName(
             av_coordinated_response_measure::Condition::auditoryOnly
         );
-        EXPECT_TRUE(writer.written().contains("condition: " + name + "\n"));
     }
 
     TEST_F(OutputFileTests, writeTrialHeading) {
