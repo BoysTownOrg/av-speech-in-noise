@@ -60,6 +60,8 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     NSTextField *subjectId_;
     NSTextField *testerIdLabel;
     NSTextField *testerId_;
+    NSTextField *sessionLabel;
+    NSTextField *session_;
     NSTextField *signalLevel_dB_SPL_label;
     NSTextField *signalLevel_dB_SPL_;
     NSTextField *startingSnr_dB_label;
@@ -85,6 +87,7 @@ public:
     void populateConditionMenu(std::vector<std::string> items) override;
     void setStimulusList(std::string) override;
     void setMasker(std::string) override;
+    std::string session() override;
     void confirm();
     void browseForStimulusList();
     void browseForMasker();

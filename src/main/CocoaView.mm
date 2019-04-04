@@ -69,17 +69,25 @@ CocoaTestSetupView::CocoaTestSetupView() :
     },
     subjectIdLabel{allocLabel(
         @"subject id:",
-        NSMakeRect(0, 240, 140, 25)
+        NSMakeRect(0, 270, 140, 25)
     )},
     subjectId_{
         [[NSTextField alloc]
-            initWithFrame:NSMakeRect(145, 240, 150, 25)]
+            initWithFrame:NSMakeRect(145, 270, 150, 25)]
     },
     testerIdLabel{allocLabel(
         @"tester id:",
-        NSMakeRect(0, 210, 140, 25))
+        NSMakeRect(0, 240, 140, 25))
     },
     testerId_{
+        [[NSTextField alloc]
+            initWithFrame:NSMakeRect(145, 240, 150, 25)]
+    },
+    sessionLabel{allocLabel(
+        @"session:",
+        NSMakeRect(0, 210, 140, 25))
+    },
+    session_{
         [[NSTextField alloc]
             initWithFrame:NSMakeRect(145, 210, 150, 25)]
     },
@@ -147,6 +155,8 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [view_ addSubview:subjectId_];
     [view_ addSubview:testerIdLabel];
     [view_ addSubview:testerId_];
+    [view_ addSubview:sessionLabel];
+    [view_ addSubview:session_];
     [view_ addSubview:signalLevel_dB_SPL_label];
     [view_ addSubview:signalLevel_dB_SPL_];
     [view_ addSubview:startingSnr_dB_label];
@@ -203,6 +213,10 @@ std::string CocoaTestSetupView::subjectId() {
 
 std::string CocoaTestSetupView::condition() {
     return [conditionMenu.titleOfSelectedItem UTF8String];
+}
+
+std::string CocoaTestSetupView::session() {
+    return [session_.stringValue UTF8String];
 }
 
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
