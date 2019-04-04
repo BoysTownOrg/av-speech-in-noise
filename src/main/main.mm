@@ -43,6 +43,10 @@ public:
     bool failed() override {
         return file.fail();
     }
+    
+    void close() override {
+        file.close();
+    }
 };
 
 class UnixFileSystemPath : public recognition_test::FileSystemPath {
