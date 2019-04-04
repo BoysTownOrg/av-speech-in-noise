@@ -53,11 +53,19 @@ namespace recognition_test {
         stream.insertCommaAndSpace();
         stream.insert(colorName(trial.subjectColor));
         stream.insertCommaAndSpace();
-        stream.insert("incorrect");
+        stream.insert(evaluation(trial));
         stream.insertCommaAndSpace();
         stream.insert(trial.reversals);
         stream.insertNewLine();
         return stream.str();
+    }
+    
+    std::string OutputFileImpl::evaluation(
+        const av_coordinated_response_measure::Trial &trial
+    ) {
+        return trial.correctColor == trial.subjectColor && trial.correctNumber == trial.subjectNumber
+            ? "correct"
+            : "incorrect";
     }
 
     std::string OutputFileImpl::colorName(av_coordinated_response_measure::Color c) {
