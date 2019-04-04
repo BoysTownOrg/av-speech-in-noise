@@ -4,27 +4,27 @@
 #include <sstream>
 
 class LogString {
-    std::stringstream s{};
+    std::stringstream log{};
 public:
     void insert(std::string s_) {
-        s << std::move(s_);
+        log << std::move(s_);
     }
 
     bool isEmpty() const {
-        return s.str().empty();
+        return log.str().empty();
     }
 
     bool beginsWith(std::string const &beginning) const {
-        if (s.str().length() >= beginning.length())
-            return 0 == s.str().compare(0, beginning.length(), beginning);
+        if (log.str().length() >= beginning.length())
+            return 0 == log.str().compare(0, beginning.length(), beginning);
         else
             return false;
     }
 
     bool endsWith(std::string const &ending) const {
-        if (s.str().length() >= ending.length())
-            return 0 == s.str().compare(
-                s.str().length() - ending.length(),
+        if (log.str().length() >= ending.length())
+            return 0 == log.str().compare(
+                log.str().length() - ending.length(),
                 ending.length(),
                 ending);
         else
@@ -32,10 +32,10 @@ public:
     }
 
     bool contains(std::string s2) const {
-        return s.str().find(std::move(s2)) != std::string::npos;
+        return log.str().find(std::move(s2)) != std::string::npos;
     }
     
-    operator std::string() const { return s.str(); }
+    operator std::string() const { return log.str(); }
 };
 
 #endif
