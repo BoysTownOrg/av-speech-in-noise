@@ -44,10 +44,8 @@ std::string CocoaTesterView::audioDevice() {
 }
 
 void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
-    for (auto item : items) {
-        auto title = asNsString(item);
-        [deviceMenu addItemWithTitle: title];
-    }
+    for (auto item : items)
+        [deviceMenu addItemWithTitle: asNsString(item)];
 }
 
 void CocoaTesterView::playTrial() {
@@ -56,6 +54,7 @@ void CocoaTesterView::playTrial() {
 
 @implementation TesterViewActions
 @synthesize controller;
+
 - (void)playTrial {
     controller->playTrial();
 }
@@ -211,10 +210,8 @@ std::string CocoaTestSetupView::session() {
 }
 
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
-    for (auto item : items) {
-        auto title = asNsString(item);
-        [conditionMenu addItemWithTitle: title];
-    }
+    for (auto item : items)
+        [conditionMenu addItemWithTitle: asNsString(item)];
 }
 
 void CocoaTestSetupView::confirm() {
@@ -252,13 +249,10 @@ void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
         [style setAlignment:NSTextAlignmentCenter];
         auto attrsDictionary = [NSDictionary
             dictionaryWithObjectsAndKeys:
-             color,
-             NSForegroundColorAttributeName,
-             style,
-             NSParagraphStyleAttributeName,
-             [NSFont fontWithName:@"Courier" size:36],
-             NSFontAttributeName,
-             nil
+                color, NSForegroundColorAttributeName,
+                style, NSParagraphStyleAttributeName,
+                [NSFont fontWithName:@"Courier" size:36], NSFontAttributeName,
+                nil
         ];
         auto attrString = [[NSAttributedString alloc]
             initWithString:title
@@ -364,9 +358,11 @@ void CocoaSubjectView::playTrial() {
 
 @implementation SubjectViewActions
 @synthesize controller;
+
 - (void)respond:(id)sender {
     controller->respond(sender);
 }
+
 - (void)playTrial { 
     controller->playTrial();
 }
@@ -403,15 +399,15 @@ CocoaView::CocoaView() :
     
     auto fileMenu = [[NSMenuItem alloc] init];
     auto fileSubMenu = [[NSMenu alloc] initWithTitle:@"File"];
-    auto newTestItem = [[NSMenuItem alloc] initWithTitle:
-        @"New Test..."
+    auto newTestItem = [[NSMenuItem alloc]
+        initWithTitle:@"New Test..."
         action:@selector(newTest)
         keyEquivalent:@"n"
     ];
     newTestItem.target = actions;
     [fileSubMenu addItem:newTestItem];
-    auto openTestItem = [[NSMenuItem alloc] initWithTitle:
-        @"Open Test..."
+    auto openTestItem = [[NSMenuItem alloc]
+        initWithTitle:@"Open Test..."
         action:@selector(openTest)
         keyEquivalent:@"o"
     ];
@@ -422,8 +418,8 @@ CocoaView::CocoaView() :
     
     [window.contentView addSubview:testerView_.view()];
     [window.contentView addSubview:testSetupView_.view()];
-    actions.controller = this;
     [window makeKeyAndOrderFront:nil];
+    actions.controller = this;
 }
 
 void CocoaView::confirmTestSetup() {
