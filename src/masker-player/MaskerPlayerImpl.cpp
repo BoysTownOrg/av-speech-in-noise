@@ -114,7 +114,7 @@ namespace masker_player {
         player->scheduleCallbackAfterSeconds(0.1);
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::fillAudioBuffer(
         const std::vector<gsl::span<float>> &audio
     ) {
@@ -123,45 +123,45 @@ namespace masker_player {
         scaleAudio(audio);
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::checkForFadeIn() {
         auto expected = true;
         if (pleaseFadeIn.compare_exchange_strong(expected, false))
             prepareToFadeIn();
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::prepareToFadeIn() {
         updateWindowLength();
         hannCounter = 0;
         fadingIn = true;
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::updateWindowLength() {
         halfWindowLength = levelTransitionSamples();
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::checkForFadeOut() {
         auto expected = true;
         if (pleaseFadeOut.compare_exchange_strong(expected, false))
             prepareToFadeOut();
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::prepareToFadeOut() {
         updateWindowLength();
         hannCounter = halfWindowLength;
         fadingOut = true;
     }
 
-    // high priority thread
+    // real-time audio thread
     int MaskerPlayerImpl::levelTransitionSamples() {
         return fadeInOutSeconds * player->sampleRateHz();
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::scaleAudio(
         const std::vector<gsl::span<float>> &audio
     ) {
@@ -180,7 +180,7 @@ namespace masker_player {
     
     static const auto pi = std::acos(-1);
     
-    // high priority thread
+    // real-time audio thread
     double MaskerPlayerImpl::fadeScalar() {
         const auto squareRoot = halfWindowLength
             ? std::sin((pi*hannCounter) / (2*halfWindowLength))
@@ -188,14 +188,14 @@ namespace masker_player {
         return squareRoot * squareRoot;
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::updateFadeState() {
         checkForFadeInComplete();
         checkForFadeOutComplete();
         advanceCounterIfStillFading();
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::checkForFadeInComplete() {
         if (doneFadingIn()) {
             fadeInComplete.store(true);
@@ -203,12 +203,12 @@ namespace masker_player {
         }
     }
     
-    // high priority thread
+    // real-time audio thread
     bool MaskerPlayerImpl::doneFadingIn() {
         return fadingIn && hannCounter == halfWindowLength;
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::checkForFadeOutComplete() {
         if (doneFadingOut()) {
             fadeOutComplete.store(true);
@@ -216,12 +216,12 @@ namespace masker_player {
         }
     }
     
-    // high priority thread
+    // real-time audio thread
     bool MaskerPlayerImpl::doneFadingOut() {
         return fadingOut && hannCounter == 2*halfWindowLength;
     }
     
-    // high priority thread
+    // real-time audio thread
     void MaskerPlayerImpl::advanceCounterIfStillFading() {
         if (fadingIn || fadingOut)
             ++hannCounter;

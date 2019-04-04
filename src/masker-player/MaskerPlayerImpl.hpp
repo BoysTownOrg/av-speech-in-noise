@@ -17,16 +17,16 @@ namespace masker_player {
         
         virtual ~AudioPlayer() = default;
         virtual void subscribe(EventListener *) = 0;
+        virtual void play() = 0;
+        virtual void stop() = 0;
         virtual bool playing() = 0;
         virtual void loadFile(std::string) = 0;
-        virtual void setDevice(int index) = 0;
         virtual int deviceCount() = 0;
         virtual std::string deviceDescription(int index) = 0;
-        virtual void play() = 0;
-        virtual double sampleRateHz() = 0;
-        virtual void stop() = 0;
-        virtual void scheduleCallbackAfterSeconds(double) = 0;
         virtual bool outputDevice(int index) = 0;
+        virtual void setDevice(int index) = 0;
+        virtual double sampleRateHz() = 0;
+        virtual void scheduleCallbackAfterSeconds(double) = 0;
         virtual std::vector<std::vector<float>> readAudio(std::string filePath) = 0;
     };
 
