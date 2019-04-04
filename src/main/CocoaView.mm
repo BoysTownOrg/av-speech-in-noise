@@ -284,20 +284,18 @@ static auto grayColor = NSColor.lightGrayColor;
 
 CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
-    window{
-        [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(1150, 15, 750, 400)
-            styleMask:NSWindowStyleMaskBorderless
-            backing:NSBackingStoreBuffered
-            defer:YES
-        ]
-    },
-    responseButtons{
-        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 750, 400)]
-    },
-    nextTrialButton{
-        [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 750, 400)]
-    },
+    window{[[NSWindow alloc]
+        initWithContentRect: NSMakeRect(1150, 15, 750, 400)
+        styleMask:NSWindowStyleMaskBorderless
+        backing:NSBackingStoreBuffered
+        defer:YES
+    ]},
+    responseButtons{[[NSView alloc]
+        initWithFrame:NSMakeRect(0, 0, 750, 400)
+    ]},
+    nextTrialButton{[[NSView alloc]
+        initWithFrame:NSMakeRect(0, 0, 750, 400)
+    ]},
     actions{[SubjectViewActions alloc]}
 {
     actions.controller = this;
@@ -320,7 +318,7 @@ CocoaSubjectView::CocoaSubjectView() :
 }
 
 std::string CocoaSubjectView::numberResponse() {
-    return [[lastButtonPressed title] UTF8String];
+    return lastButtonPressed.title.UTF8String;
 }
 
 bool CocoaSubjectView::greenResponse() {
@@ -328,7 +326,7 @@ bool CocoaSubjectView::greenResponse() {
 }
 
 id CocoaSubjectView::lastPressedColor() {
-    return [[lastButtonPressed attributedTitle]
+    return [lastButtonPressed.attributedTitle
         attribute:NSForegroundColorAttributeName
         atIndex:0
         effectiveRange:nil
@@ -384,27 +382,24 @@ void CocoaSubjectView::playTrial() {
 
 CocoaView::CocoaView() :
     app{[NSApplication sharedApplication]},
-    window{
-        [[NSWindow alloc] initWithContentRect:
-            NSMakeRect(15, 15, 900, 400)
-            styleMask:
-                NSWindowStyleMaskClosable |
-                NSWindowStyleMaskResizable |
-                NSWindowStyleMaskTitled
-            backing:NSBackingStoreBuffered
-            defer:NO
-        ]
-    },
+    window{[[NSWindow alloc]
+        initWithContentRect:NSMakeRect(15, 15, 900, 400)
+        styleMask:
+            NSWindowStyleMaskClosable |
+            NSWindowStyleMaskResizable |
+            NSWindowStyleMaskTitled
+        backing:NSBackingStoreBuffered
+        defer:NO
+    ]},
     actions{[ViewActions alloc]}
 {
     testerView_.becomeChild(this);
     testSetupView_.becomeChild(this);
     subjectView_.becomeChild(this);
+    
     app.mainMenu = [[NSMenu alloc] init];
+    
     auto appMenu = [[NSMenuItem alloc] init];
-    [app.mainMenu addItem:appMenu];
-    auto fileMenu = [[NSMenuItem alloc] init];
-    [app.mainMenu addItem:fileMenu];
     auto appSubMenu = [[NSMenu alloc] init];
     [appSubMenu addItemWithTitle:
         @"Quit"
@@ -412,6 +407,9 @@ CocoaView::CocoaView() :
         keyEquivalent:@"q"
     ];
     [appMenu setSubmenu:appSubMenu];
+    [app.mainMenu addItem:appMenu];
+    
+    auto fileMenu = [[NSMenuItem alloc] init];
     auto fileSubMenu = [[NSMenu alloc] initWithTitle:@"File"];
     auto newTestItem = [[NSMenuItem alloc] initWithTitle:
         @"New Test..."
@@ -428,6 +426,8 @@ CocoaView::CocoaView() :
     openTestItem.target = actions;
     [fileSubMenu addItem:openTestItem];
     [fileMenu setSubmenu:fileSubMenu];
+    [app.mainMenu addItem:fileMenu];
+    
     [window.contentView addSubview:testerView_.view()];
     [window.contentView addSubview:testSetupView_.view()];
     actions.controller = this;
@@ -490,9 +490,9 @@ auto CocoaView::showConfirmationDialog() -> DialogResponse {
 void CocoaView::showErrorMessage(std::string s) {
     auto alert = [[NSAlert alloc] init];
     [alert setMessageText:@"Error."];
-    auto errorMessage_ = [
-        NSString stringWithCString:s.c_str()
-        encoding:[NSString defaultCStringEncoding]
+    auto errorMessage_ = [NSString
+        stringWithCString:s.c_str()
+        encoding:NSString.defaultCStringEncoding
     ];
     [alert setInformativeText:errorMessage_];
     [alert addButtonWithTitle:@"Ok"];
@@ -527,17 +527,17 @@ void CocoaSubjectView::becomeChild(CocoaView *p) {
 }
 
 void CocoaTestSetupView::setStimulusList(std::string s) {
-    auto value = [NSString stringWithCString:
-        s.c_str()
-        encoding:[NSString defaultCStringEncoding]
+    auto value = [NSString
+        stringWithCString:s.c_str()
+        encoding:NSString.defaultCStringEncoding
     ];
     [stimulusListDirectory_ setStringValue:value];
 }
 
 void CocoaTestSetupView::setMasker(std::string s) {
-    auto value = [NSString stringWithCString:
-        s.c_str()
-        encoding:[NSString defaultCStringEncoding]
+    auto value = [NSString
+        stringWithCString:s.c_str()
+        encoding:NSString.defaultCStringEncoding
     ];
     [maskerFilePath_ setStringValue:value];
 }
@@ -553,8 +553,8 @@ std::string CocoaView::browseForDirectory() {
         default:
             browseCancelled_ = true;
     }
-    auto url = [[panel URLs] lastObject];
-    return [url.path UTF8String];
+    auto url = panel.URLs.lastObject;
+    return url.path.UTF8String;
 }
 
 bool CocoaView::browseCancelled() { 
@@ -580,8 +580,8 @@ std::string CocoaView::browseForOpeningFile() {
         default:
             browseCancelled_ = true;
     }
-    auto url = [[panel URLs] lastObject];
-    return [url.path UTF8String];
+    auto url = panel.URLs.lastObject;
+    return url.path.UTF8String;
 }
 
 void CocoaView::browseForMasker() {
