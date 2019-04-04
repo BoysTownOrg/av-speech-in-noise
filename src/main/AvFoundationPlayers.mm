@@ -108,13 +108,16 @@ bool CoreAudioDevice::outputDevice(int device) {
     return bufferList.mNumberBuffers != 0;
 }
 
-static AVURLAsset *makeAvAsset(std::string filePath) {
-    const auto asNsString = [NSString
+static NSString *asNsString(std::string s) {
+    return [NSString
         stringWithCString:
-            filePath.c_str()
+            s.c_str()
         encoding:[NSString defaultCStringEncoding]
     ];
-    const auto withPercents = [asNsString
+}
+
+static AVURLAsset *makeAvAsset(std::string filePath) {
+    const auto withPercents = [asNsString(std::move(filePath))
         stringByAddingPercentEncodingWithAllowedCharacters:
             [NSCharacterSet URLQueryAllowedCharacterSet]
     ];
@@ -176,7 +179,6 @@ static std::vector<std::vector<float>> readAudio(std::string filePath) {
     return audio;
 }
 
-
 static void init(
     MTAudioProcessingTapRef,
     void *clientInfo,
@@ -185,9 +187,7 @@ static void init(
     *tapStorageOut = clientInfo;
 }
 
-static void finalize(MTAudioProcessingTapRef)
-{
-}
+static void finalize(MTAudioProcessingTapRef) {}
 
 template<typename T>
 static void prepare(
@@ -202,9 +202,7 @@ static void prepare(
     self->setSampleRate(description->mSampleRate);
 }
 
-static void unprepare(MTAudioProcessingTapRef)
-{
-}
+static void unprepare(MTAudioProcessingTapRef) {}
 
 template<typename T>
 static void process(
@@ -252,16 +250,12 @@ static void createAudioProcessingTap(
     callbacks.unprepare = unprepare;
     callbacks.finalize = finalize;
 
-    if (
-        MTAudioProcessingTapCreate(
-            kCFAllocatorDefault,
-            &callbacks,
-            kMTAudioProcessingTapCreationFlag_PostEffects,
-            tap
-        ) ||
-        !*tap
-    )
-        throw std::runtime_error{"Unable to create the AudioProcessingTap"};
+    MTAudioProcessingTapCreate(
+        kCFAllocatorDefault,
+        &callbacks,
+        kMTAudioProcessingTapCreationFlag_PostEffects,
+        tap
+    );
 }
 
 static void loadItemFromFileWithAudioProcessing(
@@ -283,14 +277,12 @@ static void loadItemFromFileWithAudioProcessing(
 
 AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
     actions{[StimulusPlayerActions alloc]},
-    videoWindow{
-        [[NSWindow alloc]
-            initWithContentRect: NSMakeRect(400, 450, 0, 0)
-            styleMask:NSWindowStyleMaskBorderless
-            backing:NSBackingStoreBuffered
-            defer:YES
-        ]
-    },
+    videoWindow{[[NSWindow alloc]
+        initWithContentRect: NSMakeRect(400, 450, 0, 0)
+        styleMask:NSWindowStyleMaskBorderless
+        backing:NSBackingStoreBuffered
+        defer:YES
+    ]},
     player{[AVPlayer playerWithPlayerItem:nil]},
     playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}
 {
@@ -310,7 +302,7 @@ void AvFoundationVideoPlayer::play() {
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
-    loadItemFromFileWithAudioProcessing(filePath, player, tap);
+    loadItemFromFileWithAudioProcessing(std::move(filePath), player, tap);
     auto asset = [[player currentItem] asset];
     [videoWindow setContentSize:NSSizeFromCGSize(
         [asset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize)];
@@ -324,11 +316,7 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
 }
 
 void AvFoundationVideoPlayer::setDevice(int index) {
-    auto uid_ = device.uid(index);
-    player.audioOutputDeviceUniqueID = [
-        NSString stringWithCString:uid_.c_str()
-        encoding:[NSString defaultCStringEncoding]
-    ];
+    player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
 }
 
 void AvFoundationVideoPlayer::hide() {
