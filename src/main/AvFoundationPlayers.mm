@@ -110,16 +110,15 @@ bool CoreAudioDevice::outputDevice(int device) {
 
 static NSString *asNsString(std::string s) {
     return [NSString
-        stringWithCString:
-            s.c_str()
-        encoding:[NSString defaultCStringEncoding]
+        stringWithCString:s.c_str()
+        encoding:NSString.defaultCStringEncoding
     ];
 }
 
 static AVURLAsset *makeAvAsset(std::string filePath) {
     const auto withPercents = [asNsString(std::move(filePath))
         stringByAddingPercentEncodingWithAllowedCharacters:
-            [NSCharacterSet URLQueryAllowedCharacterSet]
+            NSCharacterSet.URLQueryAllowedCharacterSet
     ];
     const auto url = [NSURL URLWithString:
         [NSString stringWithFormat:@"file://%@/", withPercents]
@@ -127,16 +126,33 @@ static AVURLAsset *makeAvAsset(std::string filePath) {
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
 
+class AvAsset {
+    AVURLAsset *asset;
+public:
+    explicit AvAsset(std::string filePath) :
+        asset{makeAvAsset(std::move(filePath))} {}
+    
+    AVAssetTrack *audioTrack() {
+        return [asset tracksWithMediaType:AVMediaTypeAudio].firstObject;
+    }
+    
+    AVAssetTrack *videoTrack() {
+        return [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
+    }
+    
+    AVURLAsset *get() {
+        return asset;
+    }
+};
+
 //https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
 static std::vector<std::vector<float>> readAudio(std::string filePath) {
-    const auto asset = makeAvAsset(filePath);
+    AvAsset asset{std::move(filePath)};
     auto reader = [[AVAssetReader alloc]
-        initWithAsset:asset
+        initWithAsset:asset.get()
         error:nil
     ];
-    auto track = [
-        [asset tracksWithMediaType:AVMediaTypeAudio] firstObject
-    ];
+    auto track = asset.audioTrack();
     auto trackOutput = [AVAssetReaderTrackOutput
         assetReaderTrackOutputWithTrack:track
         outputSettings:@{
@@ -284,7 +300,7 @@ static void loadItemFromFileWithAudioProcessing(
         std::move(filePath),
         tap
     );
-    [player replaceCurrentItemWithPlayerItem: playerItem];
+    [player replaceCurrentItemWithPlayerItem:playerItem];
 }
 
 AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
