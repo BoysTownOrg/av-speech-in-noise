@@ -112,7 +112,10 @@ namespace {
     TEST_F(OutputFileTests, writeTestWithAvCondition) {
         test.condition = av_coordinated_response_measure::Condition::audioVisual;
         file.writeTest(test);
-        EXPECT_TRUE(writer.written().contains("condition: audio-visual\n"));
+        std::string name = conditionName(
+            av_coordinated_response_measure::Condition::audioVisual
+        );
+        EXPECT_TRUE(writer.written().contains("condition: " + name + "\n"));
     }
 
     TEST_F(OutputFileTests, writeTrialHeading) {
