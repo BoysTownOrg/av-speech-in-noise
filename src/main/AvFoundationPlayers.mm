@@ -262,10 +262,10 @@ static AVPlayerItem *playerItemWithAudioProcessing(
     std::string filePath,
     MTAudioProcessingTapRef tap
 ) {
-    const auto asset = makeAvAsset(filePath);
+    const auto asset = makeAvAsset(std::move(filePath));
     const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
     const auto audioMix = [AVMutableAudioMix audioMix];
-    auto audioTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
+    auto audioTrack = [asset tracksWithMediaType:AVMediaTypeAudio].firstObject;
     const auto processing = [AVMutableAudioMixInputParameters
         audioMixInputParametersWithTrack:audioTrack
     ];
@@ -280,7 +280,10 @@ static void loadItemFromFileWithAudioProcessing(
     AVPlayer *player,
     MTAudioProcessingTapRef tap
 ) {
-    const auto playerItem = playerItemWithAudioProcessing(filePath, tap);
+    const auto playerItem = playerItemWithAudioProcessing(
+        std::move(filePath),
+        tap
+    );
     [player replaceCurrentItemWithPlayerItem: playerItem];
 }
 
@@ -322,8 +325,8 @@ void AvFoundationVideoPlayer::prepareVideo() {
 
 void AvFoundationVideoPlayer::resizeVideo() {
     auto asset = player.currentItem.asset;
-    auto audioTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
-    [videoWindow setContentSize:NSSizeFromCGSize(audioTrack.naturalSize)];
+    auto videoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
+    [videoWindow setContentSize:NSSizeFromCGSize(videoTrack.naturalSize)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
 }
 
