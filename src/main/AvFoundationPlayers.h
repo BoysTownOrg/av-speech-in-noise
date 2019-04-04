@@ -12,8 +12,9 @@ class CoreAudioDevice {
     std::vector<AudioObjectID> devices{};
 public:
     CoreAudioDevice();
+    void loadDevices();
     UInt32 deviceCount_();
-    AudioObjectPropertyAddress propertyAddress(AudioObjectPropertySelector);
+    AudioObjectPropertyAddress globalAddress(AudioObjectPropertySelector);
     int deviceCount();
     std::string description(int device);
     std::string stringProperty(AudioObjectPropertySelector, int device);

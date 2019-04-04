@@ -3,40 +3,40 @@
 #include <limits>
 
 CoreAudioDevice::CoreAudioDevice() {
+    loadDevices();
+}
+
+void CoreAudioDevice::loadDevices() {
     auto count = deviceCount_();
     devices.resize(count);
     UInt32 dataSize = count * sizeof(AudioDeviceID);
-    auto address = propertyAddress(kAudioHardwarePropertyDevices);
-    if (kAudioHardwareNoError !=
-        AudioObjectGetPropertyData(
-            kAudioObjectSystemObject,
-            &address,
-            0,
-            nullptr,
-            &dataSize,
-            &devices[0]
-        )
-    )
-        throw std::runtime_error{"Cannot determine audio device IDs."};
+    auto address = globalAddress(kAudioHardwarePropertyDevices);
+    AudioObjectGetPropertyData(
+        kAudioObjectSystemObject,
+        &address,
+        0,
+        nullptr,
+        &dataSize,
+        &devices[0]
+    );
 }
 
 UInt32 CoreAudioDevice::deviceCount_() {
-    auto address = propertyAddress(kAudioHardwarePropertyDevices);
+    auto address = globalAddress(kAudioHardwarePropertyDevices);
     UInt32 dataSize{};
-    if (kAudioHardwareNoError !=
-        AudioObjectGetPropertyDataSize(
-            kAudioObjectSystemObject,
-            &address,
-            0,
-            nullptr,
-            &dataSize
-        )
-    )
-        throw std::runtime_error{"Cannot determine number of audio devices."};
+    AudioObjectGetPropertyDataSize(
+        kAudioObjectSystemObject,
+        &address,
+        0,
+        nullptr,
+        &dataSize
+    );
     return dataSize / sizeof(AudioDeviceID);
 }
 
-AudioObjectPropertyAddress CoreAudioDevice::propertyAddress(AudioObjectPropertySelector s) {
+AudioObjectPropertyAddress CoreAudioDevice::globalAddress(
+    AudioObjectPropertySelector s
+) {
     return {
         s,
         kAudioObjectPropertyScopeGlobal,
@@ -52,31 +52,37 @@ std::string CoreAudioDevice::description(int device) {
     return stringProperty(kAudioObjectPropertyName, device);
 }
 
+static std::string toString(CFStringRef deviceName) {
+    char buffer[128];
+    CFStringGetCString(
+        deviceName,
+        buffer,
+        sizeof(buffer),
+        kCFStringEncodingUTF8
+    );
+    return buffer;
+}
+
 std::string CoreAudioDevice::stringProperty(
     AudioObjectPropertySelector s,
     int device
 ) {
-    auto address = propertyAddress(s);
+    auto address = globalAddress(s);
     CFStringRef deviceName{};
     UInt32 dataSize = sizeof(CFStringRef);
-    if (kAudioHardwareNoError !=
-        AudioObjectGetPropertyData(
-            objectId(device),
-            &address,
-            0,
-            nullptr,
-            &dataSize,
-            &deviceName
-        )
-    )
-        throw std::runtime_error{"Cannot do something..."};
-    char buffer[128];
-    CFStringGetCString(deviceName, buffer, sizeof(buffer), kCFStringEncodingUTF8);
-    return buffer;
+    AudioObjectGetPropertyData(
+        objectId(device),
+        &address,
+        0,
+        nullptr,
+        &dataSize,
+        &deviceName
+    );
+    return toString(deviceName);
 }
 
 AudioObjectID CoreAudioDevice::objectId(int device) {
-    return devices.at(gsl::narrow<decltype(devices)::size_type>(device));
+    return devices[device];
 }
 
 std::string CoreAudioDevice::uid(int device) {
@@ -91,17 +97,14 @@ bool CoreAudioDevice::outputDevice(int device) {
     };
     AudioBufferList bufferList{};
     UInt32 dataSize = sizeof(AudioBufferList);
-    if (kAudioHardwareNoError !=
-        AudioObjectGetPropertyData(
-            objectId(device),
-            &address,
-            0,
-            nullptr,
-            &dataSize,
-            &bufferList
-        )
-    )
-        throw std::runtime_error{"Cannot do something..."};
+    AudioObjectGetPropertyData(
+        objectId(device),
+        &address,
+        0,
+        nullptr,
+        &dataSize,
+        &bufferList
+    );
     return bufferList.mNumberBuffers != 0;
 }
 
