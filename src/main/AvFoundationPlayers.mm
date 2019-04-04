@@ -108,19 +108,18 @@ bool CoreAudioDevice::outputDevice(int device) {
     return bufferList.mNumberBuffers != 0;
 }
 
-
 static AVURLAsset *makeAvAsset(std::string filePath) {
+    const auto asNsString = [NSString
+        stringWithCString:
+            filePath.c_str()
+        encoding:[NSString defaultCStringEncoding]
+    ];
+    const auto withPercents = [asNsString
+        stringByAddingPercentEncodingWithAllowedCharacters:
+            [NSCharacterSet URLQueryAllowedCharacterSet]
+    ];
     const auto url = [NSURL URLWithString:
-        [NSString stringWithFormat:@"file://%@/",
-            [
-                [NSString stringWithCString:
-                    filePath.c_str()
-                    encoding:[NSString defaultCStringEncoding]
-                ]
-                stringByAddingPercentEncodingWithAllowedCharacters:
-                    [NSCharacterSet URLQueryAllowedCharacterSet]
-            ]
-        ]
+        [NSString stringWithFormat:@"file://%@/", withPercents]
     ];
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
