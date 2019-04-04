@@ -154,4 +154,8 @@ namespace recognition_test {
         stream.insertNewLine();
         return stream.str();
     }
+    
+    void OutputFileImpl::close() { 
+        ;
+    }
 }

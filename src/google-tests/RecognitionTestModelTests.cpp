@@ -300,6 +300,10 @@ namespace {
             testWritten_ = test;
         }
         
+        void close() override {
+            log_.insert("close ");
+        }
+        
         auto &newFileParameters() const {
             return newFileParameters_;
         }
@@ -614,11 +618,11 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestOpensOutputFileWritesTestAndWritesTrialHeadingInOrder
+        initializeTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
     ) {
         initializeTest();
         assertEqual(
-            "openNewFile writeTest writeTrialHeading ",
+            "close openNewFile writeTest writeTrialHeading ",
             outputFile.log()
         );
     }

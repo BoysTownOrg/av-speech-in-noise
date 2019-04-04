@@ -71,6 +71,7 @@ namespace recognition_test {
             const av_coordinated_response_measure::Model::Test &
         ) = 0;
         virtual void writeTrialHeading() = 0;
+        virtual void close() = 0;
     };
 
     class RecognitionTestModel :

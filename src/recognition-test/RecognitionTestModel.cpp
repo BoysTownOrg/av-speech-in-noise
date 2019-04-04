@@ -92,6 +92,7 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::prepareOutputFile(const Test &p) {
+        outputFile->close();
         tryOpeningOutputFile(p);
         outputFile->writeTest(p);
         outputFile->writeTrialHeading();
