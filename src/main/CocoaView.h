@@ -146,6 +146,8 @@ public:
     void showErrorMessage(std::string) override;
     std::string browseForDirectory() override;
     bool browseCancelled() override;
+    std::string browseModal(NSOpenPanel *panel);
+    
     std::string browseForOpeningFile() override;
 };
 

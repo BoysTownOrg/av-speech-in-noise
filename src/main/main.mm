@@ -1,6 +1,7 @@
 #include "MersenneTwisterRandomizer.h"
 #include "AvFoundationPlayers.h"
 #include "CocoaView.h"
+#include "common-objc.h"
 #include <presentation/Presenter.h>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFileImpl.hpp>
@@ -9,18 +10,14 @@
 #include <target-list/RandomizedTargetList.hpp>
 #include <target-list/FileFilterDecorator.hpp>
 #include <target-player/TargetPlayerImpl.hpp>
-#include <fstream>
 #include <sys/stat.h>
+#include <fstream>
 
 class MacOsDirectoryReader : public target_list::DirectoryReader {
     std::vector<std::string> filesIn(std::string directory) override {
         std::vector<std::string> files{};
-        const auto path = [NSString stringWithCString:
-            directory.c_str()
-            encoding:[NSString defaultCStringEncoding]
-        ];
         const auto contents = [[NSFileManager defaultManager]
-            contentsOfDirectoryAtPath: path
+            contentsOfDirectoryAtPath: asNsString(directory)
             error: nil
         ];
         for (id thing in contents)
@@ -102,7 +99,7 @@ int main() {
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetList list{&filter, &randomizer};
     AvFoundationVideoPlayer videoPlayer;
-    target_player::TargetPlayerImpl stimulusPlayer{&videoPlayer};
+    target_player::TargetPlayerImpl targetPlayer{&videoPlayer};
     AvFoundationAudioPlayer audioPlayer;
     masker_player::MaskerPlayerImpl maskerPlayer{&audioPlayer};
     maskerPlayer.setFadeInOutSeconds(0.5);
@@ -114,7 +111,7 @@ int main() {
     recognition_test::OutputFileImpl outputFile{&writer, &path};
     recognition_test::RecognitionTestModel model{
         &list,
-        &stimulusPlayer,
+        &targetPlayer,
         &maskerPlayer,
         &outputFile
     };

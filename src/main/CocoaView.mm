@@ -45,7 +45,7 @@ std::string CocoaTesterView::audioDevice() {
 
 void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (auto item : items)
-        [deviceMenu addItemWithTitle: asNsString(item)];
+        [deviceMenu addItemWithTitle:asNsString(item)];
 }
 
 void CocoaTesterView::playTrial() {
@@ -211,7 +211,7 @@ std::string CocoaTestSetupView::session() {
 
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
     for (auto item : items)
-        [conditionMenu addItemWithTitle: asNsString(item)];
+        [conditionMenu addItemWithTitle:asNsString(item)];
 }
 
 void CocoaTestSetupView::confirm() {
@@ -525,15 +525,7 @@ std::string CocoaView::browseForDirectory() {
     auto panel = [NSOpenPanel openPanel];
     panel.canChooseDirectories = true;
     panel.canChooseFiles = false;
-    switch([panel runModal]) {
-        case NSModalResponseOK:
-            browseCancelled_ = false;
-            break;
-        default:
-            browseCancelled_ = true;
-    }
-    auto url = panel.URLs.lastObject;
-    return url.path.UTF8String;
+    return browseModal(panel);
 }
 
 bool CocoaView::browseCancelled() { 
@@ -552,6 +544,10 @@ std::string CocoaView::browseForOpeningFile() {
     auto panel = [NSOpenPanel openPanel];
     panel.canChooseDirectories = false;
     panel.canChooseFiles = true;
+    return browseModal(panel);
+}
+
+std::string CocoaView::browseModal(NSOpenPanel *panel) {
     switch([panel runModal]) {
         case NSModalResponseOK:
             browseCancelled_ = false;
