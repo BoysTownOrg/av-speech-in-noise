@@ -311,7 +311,7 @@ bool CocoaSubjectView::greenResponse() {
     return lastPressedColor() == greenColor;
 }
 
-id CocoaSubjectView::lastPressedColor() {
+NSColor *CocoaSubjectView::lastPressedColor() {
     return [lastButtonPressed.attributedTitle
         attribute:NSForegroundColorAttributeName
         atIndex:0

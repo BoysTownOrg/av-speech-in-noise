@@ -117,7 +117,7 @@ public:
     void hideNextTrialButton() override;
     void becomeChild(CocoaView *);
 private:
-    id lastPressedColor();
+    NSColor *lastPressedColor();
     void addButtonRow(NSColor *color, int row);
 };
 
@@ -148,9 +148,9 @@ public:
     void showErrorMessage(std::string) override;
     std::string browseForDirectory() override;
     bool browseCancelled() override;
-    std::string browseModal(NSOpenPanel *panel);
-    
     std::string browseForOpeningFile() override;
+private:
+    std::string browseModal(NSOpenPanel *panel);
 };
 
 #endif
