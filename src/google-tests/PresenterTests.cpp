@@ -498,13 +498,13 @@ namespace {
         BrowsingForMasker browinsgForMasker{};
         
         std::string auditoryOnlyConditionName() {
-            return presentation::conditionName(
+            return conditionName(
                 av_coordinated_response_measure::Condition::auditoryOnly
             );
         }
         
         std::string audioVisualConditionName() {
-            return presentation::conditionName(
+            return conditionName(
                 av_coordinated_response_measure::Condition::audioVisual
             );
         }

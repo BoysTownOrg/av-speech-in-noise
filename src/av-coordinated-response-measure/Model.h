@@ -32,6 +32,15 @@ namespace av_coordinated_response_measure {
         Color subjectColor;
     };
     
+    constexpr const char *conditionName(Condition c) {
+        switch (c) {
+        case Condition::auditoryOnly:
+            return "auditory-only";
+        case Condition::audioVisual:
+            return "audio-visual";
+        }
+    }
+    
     class Model {
     public:
         class EventListener {

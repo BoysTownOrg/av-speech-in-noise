@@ -148,7 +148,7 @@ namespace recognition_test {
         stream.writeLabeledLine("targets", test.targetListDirectory);
         stream.writeLabeledLine("signal level (dB SPL)", test.signalLevel_dB_SPL);
         stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
-        stream.writeLabeledLine("condition", "audio-visual");
+        stream.writeLabeledLine("condition", conditionName(test.condition));
         stream.insertNewLine();
         return stream.str();
     }

@@ -6,8 +6,6 @@
 #include <string>
 
 namespace presentation {
-    std::string conditionName(av_coordinated_response_measure::Condition);
-
     class View {
     public:
         virtual ~View() = default;

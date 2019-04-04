@@ -1,15 +1,6 @@
 #include "Presenter.h"
 
 namespace presentation {
-    std::string conditionName(av_coordinated_response_measure::Condition c) {
-        switch (c) {
-        case av_coordinated_response_measure::Condition::auditoryOnly:
-            return "auditory-only";
-        case av_coordinated_response_measure::Condition::audioVisual:
-            return "audio-visual";
-        }
-    }
-    
     Presenter::Presenter(
         av_coordinated_response_measure::Model *model,
         View *view
