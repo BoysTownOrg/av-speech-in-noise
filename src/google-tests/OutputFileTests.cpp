@@ -118,6 +118,15 @@ namespace {
         EXPECT_TRUE(writer.written().contains("condition: " + name + "\n"));
     }
 
+    TEST_F(OutputFileTests, writeTestWithAuditoryOnlyCondition) {
+        test.condition = av_coordinated_response_measure::Condition::auditoryOnly;
+        file.writeTest(test);
+        std::string name = conditionName(
+            av_coordinated_response_measure::Condition::auditoryOnly
+        );
+        EXPECT_TRUE(writer.written().contains("condition: " + name + "\n"));
+    }
+
     TEST_F(OutputFileTests, writeTrialHeading) {
         file.writeTrialHeading();
         assertEqual(
