@@ -146,6 +146,7 @@ namespace presentation {
         p.targetListDirectory = view->stimulusListDirectory();
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
+        p.session = view->session();
         p.condition = auditoryOnly()
             ? av_coordinated_response_measure::Condition::auditoryOnly
             : av_coordinated_response_measure::Condition::audioVisual;

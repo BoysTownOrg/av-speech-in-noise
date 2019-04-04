@@ -59,6 +59,7 @@ namespace presentation {
             virtual std::string testerId() = 0;
             virtual std::string subjectId() = 0;
             virtual std::string condition() = 0;
+            virtual std::string session() = 0;
             virtual void populateConditionMenu(std::vector<std::string> items) = 0;
         };
         

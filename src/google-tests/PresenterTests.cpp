@@ -209,9 +209,14 @@ namespace {
             std::string stimulusList_{};
             std::string subjectId_{};
             std::string testerId_{};
+            std::string session_{};
             bool shown_{};
             bool hidden_{};
         public:
+            std::string session() override {
+                return session_;
+            }
+            
             std::string startingSnr_dB() override {
                 return startingSnr_;
             }
@@ -258,6 +263,10 @@ namespace {
 
             void setMasker(std::string s) override {
                 masker_ = std::move(s);
+            }
+            
+            void setSession(std::string s) {
+                session_ = std::move(s);
             }
             
             void setStimulusList(std::string s) override {
@@ -679,6 +688,7 @@ namespace {
         setupView.setSubjectId("b");
         setupView.setTesterId("c");
         setupView.setMasker("d");
+        setupView.setSession("e");
         confirmTestSetup();
         EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
         EXPECT_EQ(2, modelTestParameters().signalLevel_dB_SPL);
@@ -686,6 +696,7 @@ namespace {
         assertEqual("b", modelTestParameters().subjectId);
         assertEqual("c", modelTestParameters().testerId);
         assertEqual("d", modelTestParameters().maskerFilePath);
+        assertEqual("e", modelTestParameters().session);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
