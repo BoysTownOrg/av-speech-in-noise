@@ -165,12 +165,16 @@ namespace masker_player {
     void MaskerPlayerImpl::scaleAudio(
         const std::vector<gsl::span<float>> &audio
     ) {
+        if (audio.size() == 0)
+            return;
+        
+        auto firstChannel = audio.front();
         auto levelScalar_ = levelScalar.load();
-        for (int i = 0; i < audio.front().size(); ++i) {
+        for (int i = 0; i < firstChannel.size(); ++i) {
             auto fadeScalar_ = fadeScalar();
             updateFadeState();
-            for (size_t j = 0; j < audio.size(); ++j)
-                audio.at(j).at(i) *= fadeScalar_ * levelScalar_;
+            for (size_t channel = 0; channel < audio.size(); ++channel)
+                audio.at(channel).at(i) *= fadeScalar_ * levelScalar_;
         }
     }
     
