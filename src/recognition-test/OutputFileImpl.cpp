@@ -53,6 +53,8 @@ namespace recognition_test {
         stream.insertCommaAndSpace();
         stream.insert(colorName(trial.subjectColor));
         stream.insertCommaAndSpace();
+        stream.insert("incorrect");
+        stream.insertCommaAndSpace();
         stream.insert(trial.reversals);
         stream.insertNewLine();
         return stream.str();
@@ -87,6 +89,8 @@ namespace recognition_test {
         stream.insert("correct color");
         stream.insertCommaAndSpace();
         stream.insert("subject color");
+        stream.insertCommaAndSpace();
+        stream.insert("evaluation");
         stream.insertCommaAndSpace();
         stream.insert("reversals");
         stream.insertNewLine();

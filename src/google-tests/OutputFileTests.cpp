@@ -92,9 +92,18 @@ namespace {
         trial.reversals = 4;
         file.writeTrial(trial);
         assertEqual(
-            "1, 2, 3, green, red, 4\n",
+            "1, 2, 3, green, red, incorrect, 4\n",
             writer.written()
         );
+    }
+
+    TEST_F(OutputFileTests, writeTrialRightNumberButWrongColor) {
+        trial.correctNumber = 1;
+        trial.subjectNumber = 1;
+        trial.correctColor = av_coordinated_response_measure::Color::green;
+        trial.subjectColor = av_coordinated_response_measure::Color::red;
+        file.writeTrial(trial);
+        EXPECT_TRUE(writer.written().contains(" incorrect, "));
     }
 
     TEST_F(OutputFileTests, writeTest) {
@@ -131,7 +140,7 @@ namespace {
     TEST_F(OutputFileTests, writeTrialHeading) {
         file.writeTrialHeading();
         assertEqual(
-            "SNR (dB), correct number, subject number, correct color, subject color, reversals\n",
+            "SNR (dB), correct number, subject number, correct color, subject color, evaluation, reversals\n",
             writer.written()
         );
     }
