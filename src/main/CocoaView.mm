@@ -1,4 +1,5 @@
 #include "CocoaView.h"
+#include "common-objc.h"
 
 static NSTextField *allocLabel(NSString *label, NSRect frame) {
     const auto text = [[NSTextField alloc] initWithFrame:frame];
@@ -44,10 +45,7 @@ std::string CocoaTesterView::audioDevice() {
 
 void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (auto item : items) {
-        auto title = [NSString
-            stringWithCString:item.c_str()
-            encoding:NSString.defaultCStringEncoding
-        ];
+        auto title = asNsString(item);
         [deviceMenu addItemWithTitle: title];
     }
 }
@@ -214,10 +212,7 @@ std::string CocoaTestSetupView::session() {
 
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
     for (auto item : items) {
-        auto title = [NSString
-            stringWithCString:item.c_str()
-            encoding:NSString.defaultCStringEncoding
-        ];
+        auto title = asNsString(item);
         [conditionMenu addItemWithTitle: title];
     }
 }
@@ -245,10 +240,7 @@ void CocoaTestSetupView::confirm() {
 
 void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
     for (int i = 0; i < 8; ++i) {
-        auto title = [NSString
-            stringWithCString: std::to_string(i+1).c_str()
-            encoding:NSString.defaultCStringEncoding
-        ];
+        auto title = asNsString(std::to_string(i+1));
         const auto button = [NSButton
             buttonWithTitle:title
             target:actions
@@ -490,10 +482,7 @@ auto CocoaView::showConfirmationDialog() -> DialogResponse {
 void CocoaView::showErrorMessage(std::string s) {
     auto alert = [[NSAlert alloc] init];
     [alert setMessageText:@"Error."];
-    auto errorMessage_ = [NSString
-        stringWithCString:s.c_str()
-        encoding:NSString.defaultCStringEncoding
-    ];
+    auto errorMessage_ = asNsString(s);
     [alert setInformativeText:errorMessage_];
     [alert addButtonWithTitle:@"Ok"];
     [alert runModal];
@@ -527,18 +516,12 @@ void CocoaSubjectView::becomeChild(CocoaView *p) {
 }
 
 void CocoaTestSetupView::setStimulusList(std::string s) {
-    auto value = [NSString
-        stringWithCString:s.c_str()
-        encoding:NSString.defaultCStringEncoding
-    ];
+    auto value = asNsString(s);
     [stimulusListDirectory_ setStringValue:value];
 }
 
 void CocoaTestSetupView::setMasker(std::string s) {
-    auto value = [NSString
-        stringWithCString:s.c_str()
-        encoding:NSString.defaultCStringEncoding
-    ];
+    auto value = asNsString(s);
     [maskerFilePath_ setStringValue:value];
 }
 

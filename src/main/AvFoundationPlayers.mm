@@ -1,4 +1,5 @@
 #include "AvFoundationPlayers.h"
+#include "common-objc.h"
 #include <gsl/gsl>
 #include <limits>
 
@@ -106,13 +107,6 @@ bool CoreAudioDevices::outputDevice(int device) {
         &bufferList
     );
     return bufferList.mNumberBuffers != 0;
-}
-
-static NSString *asNsString(std::string s) {
-    return [NSString
-        stringWithCString:s.c_str()
-        encoding:NSString.defaultCStringEncoding
-    ];
 }
 
 class AvAssetFacade {

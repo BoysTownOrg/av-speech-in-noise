@@ -69,6 +69,7 @@
 		2614B5A3223824960083987B /* AvFoundationPlayers.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AvFoundationPlayers.mm; sourceTree = "<group>"; };
 		2623A153224BD037007C99F2 /* OutputFileImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutputFileImpl.cpp; sourceTree = "<group>"; };
 		2623A154224BD037007C99F2 /* OutputFileImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFileImpl.hpp; sourceTree = "<group>"; };
+		2628CFE52256A51300AE5284 /* common-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "common-objc.h"; sourceTree = "<group>"; };
 		2646F83321DFDF5500F378DE /* TargetListTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetListTests.cpp; sourceTree = "<group>"; };
 		2646F83921DFEA0400F378DE /* libtarget-list.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libtarget-list.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedTargetList.cpp; sourceTree = "<group>"; };
@@ -199,6 +200,7 @@
 				2614B59F2238108E0083987B /* AvFoundationPlayers.h */,
 				2614B5A022381D850083987B /* CocoaView.mm */,
 				2614B5A3223824960083987B /* AvFoundationPlayers.mm */,
+				2628CFE52256A51300AE5284 /* common-objc.h */,
 			);
 			path = main;
 			sourceTree = "<group>";
