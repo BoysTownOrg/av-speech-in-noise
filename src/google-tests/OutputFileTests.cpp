@@ -7,13 +7,22 @@ namespace {
     class WriterStub : public recognition_test::Writer {
         LogString written_{};
         std::string filePath_{};
+        bool closed_{};
     public:
+        void close() override {
+            closed_ = true;
+        }
+        
         void open(std::string f) override {
             filePath_ = std::move(f);
         }
         
         auto filePath() const {
             return filePath_;
+        }
+        
+        auto closed() const {
+            return closed_;
         }
         
         auto &written() const {
@@ -180,6 +189,14 @@ namespace {
 
     TEST_F(
         OutputFileTests,
+        closeClosesWriter
+    ) {
+        file.close();
+        EXPECT_TRUE(writer.closed());
+    }
+
+    TEST_F(
+        OutputFileTests,
         openPassesTestParameters
     ) {
         test.testerId = "a";
@@ -201,6 +218,8 @@ namespace {
         bool failed() override {
             return failed_;
         }
+        
+        void close() override {}
     };
     
     TEST(

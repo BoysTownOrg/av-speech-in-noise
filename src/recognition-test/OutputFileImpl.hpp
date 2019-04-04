@@ -10,6 +10,7 @@ namespace recognition_test {
         virtual void write(std::string) = 0;
         virtual void open(std::string) = 0;
         virtual bool failed() = 0;
+        virtual void close() = 0;
     };
     
     class OutputFilePath {

@@ -156,6 +156,6 @@ namespace recognition_test {
     }
     
     void OutputFileImpl::close() { 
-        ;
+        writer->close();
     }
 }
