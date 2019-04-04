@@ -106,6 +106,15 @@ namespace {
         EXPECT_TRUE(writer.written().contains(" incorrect, "));
     }
 
+    TEST_F(OutputFileTests, writeTrialRightColorButWrongNumber) {
+        trial.correctNumber = 1;
+        trial.subjectNumber = 2;
+        trial.correctColor = av_coordinated_response_measure::Color::green;
+        trial.subjectColor = av_coordinated_response_measure::Color::green;
+        file.writeTrial(trial);
+        EXPECT_TRUE(writer.written().contains(" incorrect, "));
+    }
+
     TEST_F(OutputFileTests, writeTest) {
         test.maskerFilePath = "a";
         test.session = "b";
