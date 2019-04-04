@@ -46,6 +46,7 @@ public:
     std::vector<gsl::span<float>> &audio() { return audio_; }
     void fillAudioBuffer() { listener_->fillAudioBuffer(audio_); }
     void play() override;
+    void prepareVideo();
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
     void hide() override;

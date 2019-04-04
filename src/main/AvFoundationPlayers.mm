@@ -303,9 +303,13 @@ void AvFoundationVideoPlayer::play() {
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     loadItemFromFileWithAudioProcessing(std::move(filePath), player, tap);
-    auto asset = [[player currentItem] asset];
-    [videoWindow setContentSize:NSSizeFromCGSize(
-        [asset tracksWithMediaType:AVMediaTypeVideo].firstObject.naturalSize)];
+    prepareVideo();
+}
+
+void AvFoundationVideoPlayer::prepareVideo() {
+    auto asset = player.currentItem.asset;
+    auto audioTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
+    [videoWindow setContentSize:NSSizeFromCGSize(audioTrack.naturalSize)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
     [NSNotificationCenter.defaultCenter
         addObserver:actions
