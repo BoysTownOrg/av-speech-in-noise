@@ -1,10 +1,11 @@
+#include "LogString.h"
 #include "assert-utility.h"
 #include <recognition-test/OutputFileImpl.hpp>
 #include <gtest/gtest.h>
 
 namespace {
     class WriterStub : public recognition_test::Writer {
-        std::string written_{};
+        LogString written_{};
         std::string filePath_{};
     public:
         void open(std::string f) override {
@@ -15,12 +16,12 @@ namespace {
             return filePath_;
         }
         
-        auto written() const {
+        auto &written() const {
             return written_;
         }
         
         void write(std::string s) override {
-            written_ = std::move(s);
+            written_.insert(std::move(s));
         }
         
         bool failed() override {
@@ -98,16 +99,20 @@ namespace {
         test.signalLevel_dB_SPL = 1;
         test.startingSnr_dB = 2;
         file.writeTest(test);
-        assertEqual(
-            "subject: c\n"
-            "tester: e\n"
-            "session: b\n"
-            "masker: a\n"
-            "targets: d\n"
-            "signal level (dB SPL): 1\n"
-            "starting SNR (dB): 2\n\n",
-            writer.written()
-        );
+        EXPECT_TRUE(writer.written().contains("subject: c\n"));
+        EXPECT_TRUE(writer.written().contains("tester: e\n"));
+        EXPECT_TRUE(writer.written().contains("session: b\n"));
+        EXPECT_TRUE(writer.written().contains("masker: a\n"));
+        EXPECT_TRUE(writer.written().contains("targets: d\n"));
+        EXPECT_TRUE(writer.written().contains("signal level (dB SPL): 1\n"));
+        EXPECT_TRUE(writer.written().contains("starting SNR (dB): 2\n"));
+        EXPECT_TRUE(writer.written().endsWith("\n\n"));
+    }
+
+    TEST_F(OutputFileTests, writeTestWithAvCondition) {
+        test.condition = av_coordinated_response_measure::Condition::audioVisual;
+        file.writeTest(test);
+        EXPECT_TRUE(writer.written().contains("condition: audio-visual\n"));
     }
 
     TEST_F(OutputFileTests, writeTrialHeading) {
