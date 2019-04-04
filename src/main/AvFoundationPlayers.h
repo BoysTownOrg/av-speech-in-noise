@@ -8,10 +8,10 @@
 #import <AVFoundation/AVFoundation.h>
 #include <vector>
 
-class CoreAudioDevice {
+class CoreAudioDevices {
     std::vector<AudioObjectID> devices{};
 public:
-    CoreAudioDevice();
+    CoreAudioDevices();
     void loadDevices();
     UInt32 deviceCount_();
     AudioObjectPropertyAddress globalAddress(AudioObjectPropertySelector);
@@ -33,7 +33,7 @@ class AvFoundationVideoPlayer;
 class AvFoundationVideoPlayer : public target_player::VideoPlayer {
     std::vector<gsl::span<float>> audio_;
     MTAudioProcessingTapRef tap{};
-    CoreAudioDevice device{};
+    CoreAudioDevices device{};
     VideoPlayerActions *actions;
     NSWindow *videoWindow;
     AVPlayer *player;
@@ -70,7 +70,7 @@ class AvFoundationAudioPlayer;
 
 class AvFoundationAudioPlayer : public masker_player::AudioPlayer {
     std::vector<gsl::span<float>> audio_;
-    CoreAudioDevice device{};
+    CoreAudioDevices device{};
     MTAudioProcessingTapRef tap{};
     EventListener *listener_{};
     AVPlayer *player;

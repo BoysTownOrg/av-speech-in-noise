@@ -2,11 +2,11 @@
 #include <gsl/gsl>
 #include <limits>
 
-CoreAudioDevice::CoreAudioDevice() {
+CoreAudioDevices::CoreAudioDevices() {
     loadDevices();
 }
 
-void CoreAudioDevice::loadDevices() {
+void CoreAudioDevices::loadDevices() {
     auto count = deviceCount_();
     devices.resize(count);
     UInt32 dataSize = count * sizeof(AudioDeviceID);
@@ -21,7 +21,7 @@ void CoreAudioDevice::loadDevices() {
     );
 }
 
-UInt32 CoreAudioDevice::deviceCount_() {
+UInt32 CoreAudioDevices::deviceCount_() {
     auto address = globalAddress(kAudioHardwarePropertyDevices);
     UInt32 dataSize{};
     AudioObjectGetPropertyDataSize(
@@ -34,7 +34,7 @@ UInt32 CoreAudioDevice::deviceCount_() {
     return dataSize / sizeof(AudioDeviceID);
 }
 
-AudioObjectPropertyAddress CoreAudioDevice::globalAddress(
+AudioObjectPropertyAddress CoreAudioDevices::globalAddress(
     AudioObjectPropertySelector s
 ) {
     return {
@@ -44,11 +44,11 @@ AudioObjectPropertyAddress CoreAudioDevice::globalAddress(
     };
 }
 
-int CoreAudioDevice::deviceCount() {
+int CoreAudioDevices::deviceCount() {
     return gsl::narrow<int>(devices.size());
 }
 
-std::string CoreAudioDevice::description(int device) {
+std::string CoreAudioDevices::description(int device) {
     return stringProperty(kAudioObjectPropertyName, device);
 }
 
@@ -63,7 +63,7 @@ static std::string toString(CFStringRef deviceName) {
     return buffer;
 }
 
-std::string CoreAudioDevice::stringProperty(
+std::string CoreAudioDevices::stringProperty(
     AudioObjectPropertySelector s,
     int device
 ) {
@@ -81,15 +81,15 @@ std::string CoreAudioDevice::stringProperty(
     return toString(deviceName);
 }
 
-AudioObjectID CoreAudioDevice::objectId(int device) {
+AudioObjectID CoreAudioDevices::objectId(int device) {
     return devices[device];
 }
 
-std::string CoreAudioDevice::uid(int device) {
+std::string CoreAudioDevices::uid(int device) {
     return stringProperty(kAudioDevicePropertyDeviceUID, device);
 }
 
-bool CoreAudioDevice::outputDevice(int device) {
+bool CoreAudioDevices::outputDevice(int device) {
     AudioObjectPropertyAddress address {
         kAudioDevicePropertyStreamConfiguration,
         kAudioObjectPropertyScopeOutput,

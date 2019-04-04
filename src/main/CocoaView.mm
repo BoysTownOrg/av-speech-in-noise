@@ -12,12 +12,12 @@ static NSTextField *allocLabel(NSString *label, NSRect frame) {
 }
 
 CocoaTesterView::CocoaTesterView() :
-    deviceMenu{[
-        [NSPopUpButton alloc] initWithFrame:NSMakeRect(0, 0, 140, 30)
+    deviceMenu{[[NSPopUpButton alloc]
+        initWithFrame:NSMakeRect(0, 0, 140, 30)
         pullsDown:NO
     ]},
-    view_{
-        [[NSView alloc] initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)]
+    view_{[[NSView alloc]
+        initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)]
     },
     actions{[TesterViewActions alloc]}
 {
@@ -39,14 +39,14 @@ void CocoaTesterView::hide() {
 }
 
 std::string CocoaTesterView::audioDevice() {
-    return [deviceMenu.titleOfSelectedItem UTF8String];
+    return deviceMenu.titleOfSelectedItem.UTF8String;
 }
 
 void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (auto item : items) {
-        auto title = [NSString stringWithCString:
-            item.c_str()
-            encoding:[NSString defaultCStringEncoding]
+        auto title = [NSString
+            stringWithCString:item.c_str()
+            encoding:NSString.defaultCStringEncoding
         ];
         [deviceMenu addItemWithTitle: title];
     }
