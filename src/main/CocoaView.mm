@@ -181,42 +181,42 @@ void CocoaTestSetupView::hide() {
 }
 
 std::string CocoaTestSetupView::startingSnr_dB() {
-    return [startingSnr_dB_.stringValue UTF8String];
+    return startingSnr_dB_.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::signalLevel_dB_SPL() {
-    return [signalLevel_dB_SPL_.stringValue UTF8String];
+    return signalLevel_dB_SPL_.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::maskerFilePath() {
-    return [maskerFilePath_.stringValue UTF8String];
+    return maskerFilePath_.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::stimulusListDirectory() {
-    return [stimulusListDirectory_.stringValue UTF8String];
+    return stimulusListDirectory_.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::testerId() {
-    return [testerId_.stringValue UTF8String];
+    return testerId_.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::subjectId() {
-    return [subjectId_.stringValue UTF8String];
+    return subjectId_.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::condition() {
-    return [conditionMenu.titleOfSelectedItem UTF8String];
+    return conditionMenu.titleOfSelectedItem.UTF8String;
 }
 
 std::string CocoaTestSetupView::session() {
-    return [session_.stringValue UTF8String];
+    return session_.stringValue.UTF8String;
 }
 
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
     for (auto item : items) {
-        auto title = [NSString stringWithCString:
-            item.c_str()
-            encoding:[NSString defaultCStringEncoding]
+        auto title = [NSString
+            stringWithCString:item.c_str()
+            encoding:NSString.defaultCStringEncoding
         ];
         [conditionMenu addItemWithTitle: title];
     }
@@ -228,23 +228,26 @@ void CocoaTestSetupView::confirm() {
 
 @implementation SetupViewActions
 @synthesize controller;
+
 - (void)confirmTestSetup {
     controller->confirm();
 }
+
 - (void)browseForStimulusList { 
     controller->browseForStimulusList();
 }
+
 - (void)browseForMasker { 
     controller->browseForMasker();
 }
-
 @end
 
 
 void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
     for (int i = 0; i < 8; ++i) {
-        auto title = [NSString stringWithCString: std::to_string(i+1).c_str()
-            encoding:[NSString defaultCStringEncoding]
+        auto title = [NSString
+            stringWithCString: std::to_string(i+1).c_str()
+            encoding:NSString.defaultCStringEncoding
         ];
         const auto button = [NSButton
             buttonWithTitle:title
@@ -253,10 +256,10 @@ void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
         ];
         [button setFrame:NSMakeRect(80*i, 80*row, 80, 80)];
         [button setBezelStyle:NSBezelStyleTexturedSquare];
-        NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+        auto style = [[NSMutableParagraphStyle alloc] init];
         [style setAlignment:NSTextAlignmentCenter];
-        NSDictionary *attrsDictionary = [
-             NSDictionary dictionaryWithObjectsAndKeys:
+        auto attrsDictionary = [NSDictionary
+            dictionaryWithObjectsAndKeys:
              color,
              NSForegroundColorAttributeName,
              style,
@@ -265,7 +268,7 @@ void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
              NSFontAttributeName,
              nil
         ];
-        NSAttributedString *attrString = [[NSAttributedString alloc]
+        auto attrString = [[NSAttributedString alloc]
             initWithString:title
             attributes:attrsDictionary
         ];
@@ -274,10 +277,10 @@ void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
     }
 }
 
-static auto greenColor = [NSColor greenColor];
-static auto redColor = [NSColor redColor];
-static auto blueColor = [NSColor blueColor];
-static auto grayColor = [NSColor lightGrayColor];
+static auto greenColor = NSColor.greenColor;
+static auto redColor = NSColor.redColor;
+static auto blueColor = NSColor.blueColor;
+static auto grayColor = NSColor.lightGrayColor;
 
 CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
