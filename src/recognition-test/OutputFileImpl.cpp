@@ -3,9 +3,17 @@
 
 namespace recognition_test {
     namespace {
-        class TrialStream {
+        class FormattedStream {
             std::stringstream stream;
         public:
+            template<typename T>
+            void writeLabeledLine(std::string label, T thing) {
+                stream << label;
+                stream << ": ";
+                stream << thing;
+                stream << '\n';
+            }
+            
             template<typename T>
             void insert(T item) {
                 stream << item;
@@ -16,7 +24,7 @@ namespace recognition_test {
             }
             
             void insertNewLine() {
-                stream << "\n";
+                stream << '\n';
             }
             
             auto str() const {
@@ -42,7 +50,7 @@ namespace recognition_test {
     std::string OutputFileImpl::formatTrial(
         const av_coordinated_response_measure::Trial &trial
     ) {
-        TrialStream stream;
+        FormattedStream stream;
         stream.insert(trial.SNR_dB);
         stream.insertCommaAndSpace();
         stream.insert(trial.correctNumber);
@@ -63,12 +71,16 @@ namespace recognition_test {
     std::string OutputFileImpl::evaluation(
         const av_coordinated_response_measure::Trial &trial
     ) {
-        return trial.correctColor == trial.subjectColor && trial.correctNumber == trial.subjectNumber
+        return
+            trial.correctColor == trial.subjectColor &&
+                trial.correctNumber == trial.subjectNumber
             ? "correct"
             : "incorrect";
     }
 
-    std::string OutputFileImpl::colorName(av_coordinated_response_measure::Color c) {
+    std::string OutputFileImpl::colorName(
+        av_coordinated_response_measure::Color c
+    ) {
         switch (c) {
         case av_coordinated_response_measure::Color::green:
             return "green";
@@ -87,7 +99,7 @@ namespace recognition_test {
     }
     
     std::string OutputFileImpl::formatTrialHeading() {
-        TrialStream stream;
+        FormattedStream stream;
         stream.insert("SNR (dB)");
         stream.insertCommaAndSpace();
         stream.insert("correct number");
@@ -121,28 +133,6 @@ namespace recognition_test {
             path->generateFileName(test) + ".txt";
     }
     
-    namespace {
-        class TestStream {
-            std::stringstream stream{};
-        public:
-            template<typename T>
-            void writeLabeledLine(std::string label, T thing) {
-                stream << label;
-                stream << ": ";
-                stream << thing;
-                stream << '\n';
-            }
-            
-            auto str() const {
-                return stream.str();
-            }
-            
-            void insertNewLine() {
-                stream << "\n";
-            }
-        };
-    }
-    
     void OutputFileImpl::writeTest(
         const av_coordinated_response_measure::Model::Test &test
     ) {
@@ -152,7 +142,7 @@ namespace recognition_test {
     std::string OutputFileImpl::formatTest(
         const av_coordinated_response_measure::Model::Test &test
     ) {
-        TestStream stream;
+        FormattedStream stream;
         stream.writeLabeledLine("subject", test.subjectId);
         stream.writeLabeledLine("tester", test.testerId);
         stream.writeLabeledLine("session", test.session);
