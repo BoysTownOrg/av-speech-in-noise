@@ -46,7 +46,6 @@ public:
     std::vector<gsl::span<float>> &audio() { return audio_; }
     void fillAudioBuffer() { listener_->fillAudioBuffer(audio_); }
     void play() override;
-    void prepareVideo();
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
     void hide() override;
@@ -55,6 +54,10 @@ public:
     int deviceCount() override;
     std::string deviceDescription(int index) override;
     std::vector<std::vector<float>> readAudio(std::string filePath) override;
+private:
+    void schedulePlaybackCompletion();
+    void resizeVideo();
+    void prepareVideo();
 };
 
 class AvFoundationAudioPlayer;

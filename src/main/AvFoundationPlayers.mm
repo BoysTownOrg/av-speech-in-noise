@@ -258,20 +258,29 @@ static void createAudioProcessingTap(
     );
 }
 
+static AVPlayerItem *playerItemWithAudioProcessing(
+    std::string filePath,
+    MTAudioProcessingTapRef tap
+) {
+    const auto asset = makeAvAsset(filePath);
+    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
+    const auto audioMix = [AVMutableAudioMix audioMix];
+    auto audioTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
+    const auto processing = [AVMutableAudioMixInputParameters
+        audioMixInputParametersWithTrack:audioTrack
+    ];
+    processing.audioTapProcessor = tap;
+    audioMix.inputParameters = @[processing];
+    playerItem.audioMix = audioMix;
+    return playerItem;
+}
+
 static void loadItemFromFileWithAudioProcessing(
     std::string filePath,
     AVPlayer *player,
     MTAudioProcessingTapRef tap
 ) {
-    const auto asset = makeAvAsset(filePath);
-    const auto processing =
-        [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:
-            [asset tracksWithMediaType:AVMediaTypeAudio].firstObject];
-    processing.audioTapProcessor = tap;
-    const auto audioMix = [AVMutableAudioMix audioMix];
-    audioMix.inputParameters = @[processing];
-    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
-    playerItem.audioMix = audioMix;
+    const auto playerItem = playerItemWithAudioProcessing(filePath, tap);
     [player replaceCurrentItemWithPlayerItem: playerItem];
 }
 
@@ -293,8 +302,8 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
     actions.controller = this;
 }
 
-void AvFoundationVideoPlayer::playbackComplete() {
-    listener_->playbackComplete();
+void AvFoundationVideoPlayer::subscribe(EventListener *e) {
+    listener_ = e;
 }
 
 void AvFoundationVideoPlayer::play() {
@@ -307,16 +316,28 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
 }
 
 void AvFoundationVideoPlayer::prepareVideo() {
+    resizeVideo();
+    schedulePlaybackCompletion();
+}
+
+void AvFoundationVideoPlayer::resizeVideo() {
     auto asset = player.currentItem.asset;
     auto audioTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     [videoWindow setContentSize:NSSizeFromCGSize(audioTrack.naturalSize)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
+}
+
+void AvFoundationVideoPlayer::schedulePlaybackCompletion() {
     [NSNotificationCenter.defaultCenter
         addObserver:actions
         selector:@selector(playbackComplete)
         name:AVPlayerItemDidPlayToEndTimeNotification
         object:player.currentItem
     ];
+}
+
+void AvFoundationVideoPlayer::playbackComplete() {
+    listener_->playbackComplete();
 }
 
 void AvFoundationVideoPlayer::setDevice(int index) {
@@ -329,10 +350,6 @@ void AvFoundationVideoPlayer::hide() {
 
 void AvFoundationVideoPlayer::show() {
     [videoWindow setIsVisible:YES];
-}
-
-void AvFoundationVideoPlayer::subscribe(EventListener *e) {
-    listener_ = e;
 }
 
 int AvFoundationVideoPlayer::deviceCount() {
