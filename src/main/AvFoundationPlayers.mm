@@ -115,22 +115,13 @@ static NSString *asNsString(std::string s) {
     ];
 }
 
-static AVURLAsset *makeAvAsset(std::string filePath) {
-    const auto withPercents = [asNsString(std::move(filePath))
-        stringByAddingPercentEncodingWithAllowedCharacters:
-            NSCharacterSet.URLQueryAllowedCharacterSet
-    ];
-    const auto url = [NSURL URLWithString:
-        [NSString stringWithFormat:@"file://%@/", withPercents]
-    ];
-    return [AVURLAsset URLAssetWithURL:url options:nil];
-}
-
-class AvAsset {
-    AVURLAsset *asset;
+class AvAssetFacade {
+    AVAsset *asset;
 public:
-    explicit AvAsset(std::string filePath) :
+    explicit AvAssetFacade(std::string filePath) :
         asset{makeAvAsset(std::move(filePath))} {}
+    
+    explicit AvAssetFacade(AVAsset *asset) : asset{asset} {}
     
     AVAssetTrack *audioTrack() {
         return [asset tracksWithMediaType:AVMediaTypeAudio].firstObject;
@@ -140,14 +131,26 @@ public:
         return [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     }
     
-    AVURLAsset *get() {
+    AVAsset *get() {
         return asset;
+    }
+    
+private:
+    AVURLAsset *makeAvAsset(std::string filePath) {
+        const auto withPercents = [asNsString(std::move(filePath))
+            stringByAddingPercentEncodingWithAllowedCharacters:
+                NSCharacterSet.URLQueryAllowedCharacterSet
+        ];
+        const auto url = [NSURL URLWithString:
+            [NSString stringWithFormat:@"file://%@/", withPercents]
+        ];
+        return [AVURLAsset URLAssetWithURL:url options:nil];
     }
 };
 
 //https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
 static std::vector<std::vector<float>> readAudio(std::string filePath) {
-    AvAsset asset{std::move(filePath)};
+    AvAssetFacade asset{std::move(filePath)};
     auto reader = [[AVAssetReader alloc]
         initWithAsset:asset.get()
         error:nil
@@ -278,12 +281,11 @@ static AVPlayerItem *playerItemWithAudioProcessing(
     std::string filePath,
     MTAudioProcessingTapRef tap
 ) {
-    const auto asset = makeAvAsset(std::move(filePath));
-    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset];
+    AvAssetFacade asset{std::move(filePath)};
+    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset.get()];
     const auto audioMix = [AVMutableAudioMix audioMix];
-    auto audioTrack = [asset tracksWithMediaType:AVMediaTypeAudio].firstObject;
     const auto processing = [AVMutableAudioMixInputParameters
-        audioMixInputParametersWithTrack:audioTrack
+        audioMixInputParametersWithTrack:asset.audioTrack()
     ];
     processing.audioTapProcessor = tap;
     audioMix.inputParameters = @[processing];
@@ -340,9 +342,8 @@ void AvFoundationVideoPlayer::prepareVideo() {
 }
 
 void AvFoundationVideoPlayer::resizeVideo() {
-    auto asset = player.currentItem.asset;
-    auto videoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
-    [videoWindow setContentSize:NSSizeFromCGSize(videoTrack.naturalSize)];
+    AvAssetFacade asset{player.currentItem.asset};
+    [videoWindow setContentSize:NSSizeFromCGSize(asset.videoTrack().naturalSize)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
 }
 
