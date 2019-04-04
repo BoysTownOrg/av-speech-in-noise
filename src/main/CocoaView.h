@@ -92,6 +92,8 @@ public:
     void browseForStimulusList();
     void browseForMasker();
     void becomeChild(CocoaView *);
+private:
+    NSTextField *allocLabel(NSString *label, NSRect frame);
 };
 
 class CocoaSubjectView : public presentation::View::Subject {

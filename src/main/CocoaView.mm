@@ -1,17 +1,6 @@
 #include "CocoaView.h"
 #include "common-objc.h"
 
-static NSTextField *allocLabel(NSString *label, NSRect frame) {
-    const auto text = [[NSTextField alloc] initWithFrame:frame];
-    [text setStringValue:label];
-    [text setBezeled:NO];
-    [text setDrawsBackground:NO];
-    [text setEditable:NO];
-    [text setSelectable:NO];
-    [text setAlignment:NSTextAlignmentRight];
-    return text;
-}
-
 CocoaTesterView::CocoaTesterView() :
     deviceMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(0, 0, 140, 30)
@@ -165,6 +154,17 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [view_ setHidden:NO];
 }
 
+NSTextField *CocoaTestSetupView::allocLabel(NSString *label, NSRect frame) {
+    const auto text = [[NSTextField alloc] initWithFrame:frame];
+    [text setStringValue:label];
+    [text setBezeled:NO];
+    [text setDrawsBackground:NO];
+    [text setEditable:NO];
+    [text setSelectable:NO];
+    [text setAlignment:NSTextAlignmentRight];
+    return text;
+}
+
 NSView *CocoaTestSetupView::view() {
     return view_;
 }
@@ -271,7 +271,7 @@ static auto grayColor = NSColor.lightGrayColor;
 CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
     window{[[NSWindow alloc]
-        initWithContentRect: NSMakeRect(1150, 15, 750, 400)
+        initWithContentRect:NSMakeRect(1150, 15, 750, 400)
         styleMask:NSWindowStyleMaskBorderless
         backing:NSBackingStoreBuffered
         defer:YES
@@ -478,8 +478,7 @@ auto CocoaView::showConfirmationDialog() -> DialogResponse {
 void CocoaView::showErrorMessage(std::string s) {
     auto alert = [[NSAlert alloc] init];
     [alert setMessageText:@"Error."];
-    auto errorMessage_ = asNsString(s);
-    [alert setInformativeText:errorMessage_];
+    [alert setInformativeText:asNsString(std::move(s))];
     [alert addButtonWithTitle:@"Ok"];
     [alert runModal];
 }
@@ -512,13 +511,11 @@ void CocoaSubjectView::becomeChild(CocoaView *p) {
 }
 
 void CocoaTestSetupView::setStimulusList(std::string s) {
-    auto value = asNsString(s);
-    [stimulusListDirectory_ setStringValue:value];
+    [stimulusListDirectory_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaTestSetupView::setMasker(std::string s) {
-    auto value = asNsString(s);
-    [maskerFilePath_ setStringValue:value];
+    [maskerFilePath_ setStringValue:asNsString(std::move(s))];
 }
 
 std::string CocoaView::browseForDirectory() {
