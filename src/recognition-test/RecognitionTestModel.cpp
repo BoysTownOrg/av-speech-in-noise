@@ -18,11 +18,11 @@ namespace recognition_test {
         maskerPlayer->subscribe(this);
     }
     
-    void RecognitionTestModel::playTrial(const AudioSettings &trial) {
+    void RecognitionTestModel::playTrial(const AudioSettings &settings) {
         if (noMoreTrials() || trialInProgress())
             return;
         
-        preparePlayers(trial);
+        preparePlayers(settings);
         startTrial();
     }
     

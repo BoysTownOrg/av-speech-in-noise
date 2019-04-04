@@ -14,7 +14,7 @@ namespace recognition_test {
     ) {
         std::stringstream stream;
         stream << formatTestInformation(test);
-        stream << "_";
+        stream << '_';
         stream << formatTimeStamp();
         return stream.str();
     }
@@ -36,15 +36,15 @@ namespace recognition_test {
         timeStamp->capture();
         std::stringstream stream;
         stream << timeStamp->year();
-        stream << "-";
+        stream << '-';
         stream << timeStamp->month();
-        stream << "-";
+        stream << '-';
         stream << timeStamp->dayOfMonth();
-        stream << "-";
+        stream << '-';
         stream << timeStamp->hour();
-        stream << "-";
+        stream << '-';
         stream << timeStamp->minute();
-        stream << "-";
+        stream << '-';
         stream << timeStamp->second();
         return stream.str();
     }

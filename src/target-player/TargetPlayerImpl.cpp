@@ -46,7 +46,8 @@ namespace target_player {
         if (audio.size() == 0)
             return 0;
         
-        return ::target_player::rms(audio.front());
+        auto firstChannel = audio.front();
+        return ::target_player::rms(firstChannel);
     }
 
     void TargetPlayerImpl::setLevel_dB(double x) {
