@@ -89,7 +89,7 @@ public:
     std::string calibrationFilePath() override;
     void subscribe(EventListener *) override;
     void confirm();
-    void browseForStimulusList();
+    void browseForTargetList();
     void browseForMasker();
 private:
     NSTextField *allocLabel(NSString *label, NSRect frame);

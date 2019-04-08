@@ -229,7 +229,7 @@ void CocoaTestSetupView::subscribe(EventListener *listener) {
 }
 
 - (void)browseForStimulusList { 
-    controller->browseForStimulusList();
+    controller->browseForTargetList();
 }
 
 - (void)browseForMasker { 
@@ -523,12 +523,8 @@ bool CocoaView::browseCancelled() {
     return browseCancelled_;
 }
 
-void CocoaTestSetupView::browseForStimulusList() { 
-    listener_->browseForStimulusList();
-}
-
-void CocoaView::browseForStimulusList() { 
-    listener->browseForTargetList();
+void CocoaTestSetupView::browseForTargetList() { 
+    listener_->browseForTargetList();
 }
 
 std::string CocoaView::browseForOpeningFile() {
@@ -548,10 +544,6 @@ std::string CocoaView::browseModal(NSOpenPanel *panel) {
     }
     auto url = panel.URLs.lastObject;
     return url.path.UTF8String;
-}
-
-void CocoaView::browseForMasker() {
-    listener->browseForMasker();
 }
 
 std::string CocoaView::audioDevice() {
