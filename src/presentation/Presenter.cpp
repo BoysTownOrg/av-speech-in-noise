@@ -4,12 +4,13 @@ namespace presentation {
     Presenter::Presenter(
         av_coordinated_response_measure::Model *model,
         View *view,
-        TestSetup *testSetup
+        TestSetup *testSetup,
+        Tester *tester
     ) :
-        tester{model, view->tester(), view},
         model{model},
         view{view},
-        testSetup{testSetup}
+        testSetup{testSetup},
+        tester{tester}
     {
         model->subscribe(this);
         view->subscribe(this);
@@ -64,7 +65,7 @@ namespace presentation {
     }
     
     void Presenter::showTesterView() {
-        tester.listen();
+        tester->listen();
     }
     
     void Presenter::showNextTrialButton() {
@@ -73,7 +74,9 @@ namespace presentation {
     
     void Presenter::playTrial() {
         hideNextTrialButton();
-        tester.playTrial();
+        av_coordinated_response_measure::Model::AudioSettings p;
+        p.audioDevice = view->audioDevice();
+        model->playTrial(p);
     }
     
     void Presenter::hideNextTrialButton() {
@@ -101,7 +104,7 @@ namespace presentation {
     }
     
     void Presenter::hideTesterView() {
-        tester.tuneOut();
+        tester->tuneOut();
     }
     
     void Presenter::showTestSetup() {
@@ -161,9 +164,7 @@ namespace presentation {
     }
     
 
-    Presenter::TestSetup::TestSetup(
-        View::TestSetup *view
-    ) :
+    Presenter::TestSetup::TestSetup(View::TestSetup *view) :
         view{view}
     {
         using av_coordinated_response_measure::Condition;
@@ -258,25 +259,13 @@ namespace presentation {
     }
     
     
-    Presenter::Tester::Tester(
-        av_coordinated_response_measure::Model *model,
-        View::Tester *view,
-        View *parentView
-    ) :
-        model{model},
-        view{view},
-        parentView{parentView}
+    Presenter::Tester::Tester(View::Tester *view) :
+        view{view}
     {
     }
     
     void Presenter::Tester::listen() {
         view->show();
-    }
-    
-    void Presenter::Tester::playTrial() {
-        av_coordinated_response_measure::Model::AudioSettings p;
-        p.audioDevice = parentView->audioDevice();
-        model->playTrial(p);
     }
 
     void Presenter::Tester::tuneOut() {

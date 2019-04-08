@@ -59,13 +59,13 @@ namespace presentation {
             virtual std::string startingSnr_dB() = 0;
             virtual std::string maskerFilePath() = 0;
             virtual std::string calibrationFilePath() = 0;
-            virtual void setMasker(std::string) = 0;
             virtual std::string targetListDirectory() = 0;
-            virtual void setStimulusList(std::string) = 0;
             virtual std::string testerId() = 0;
             virtual std::string subjectId() = 0;
             virtual std::string condition() = 0;
             virtual std::string session() = 0;
+            virtual void setMasker(std::string) = 0;
+            virtual void setStimulusList(std::string) = 0;
             virtual void populateConditionMenu(std::vector<std::string> items) = 0;
         };
         
@@ -94,19 +94,16 @@ namespace presentation {
     public:
         class TestSetup : public View::TestSetup::EventListener {
         public:
-            TestSetup(
-                View::TestSetup *
-            );
-            void listen();
-            void initializeTest();
+            TestSetup(View::TestSetup *);
             void playCalibration() override;
-            void tuneOut();
+            void browseForTargetList() override;
+            void browseForMasker() override;
             void confirmTestSetup() override;
+            void listen();
+            void tuneOut();
             void becomeChild(Presenter *parent);
             void setMasker(std::string);
             void setStimulusList(std::string);
-            void browseForTargetList() override;
-            void browseForMasker() override;
             av_coordinated_response_measure::Model::Test testParameters();
             av_coordinated_response_measure::Model::Calibration calibrationParameters();
         private:
@@ -120,34 +117,28 @@ namespace presentation {
         
         class Tester {
         public:
-            Tester(
-                av_coordinated_response_measure::Model *,
-                View::Tester *,
-                View *
-            );
+            Tester(View::Tester *);
             void listen();
-            void playTrial();
             void tuneOut();
         private:
-            av_coordinated_response_measure::Model *model;
             View::Tester *view;
-            View *parentView;
         };
         
         Presenter(
             av_coordinated_response_measure::Model *,
             View *,
-            TestSetup *
+            TestSetup *,
+            Tester *
         );
-        void run();
         void playTrial() override;
         void newTest() override;
         void openTest() override;
         void closeTest() override;
         void submitResponse() override;
+        void trialComplete() override;
+        void run();
         void browseForTargetList();
         void browseForMasker();
-        void trialComplete() override;
         void confirmTestSetup();
         void playCalibration();
         
@@ -168,10 +159,10 @@ namespace presentation {
         av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
         av_coordinated_response_measure::Color colorResponse();
         
-        Tester tester;
         av_coordinated_response_measure::Model *model;
         View *view;
         TestSetup *testSetup;
+        Tester *tester;
     };
 }
 
