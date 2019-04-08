@@ -100,6 +100,12 @@ CocoaTestSetupView::CocoaTestSetupView() :
         action:@selector(browseForMasker)
     ];
     [browseForMaskerButton setFrame:NSMakeRect(500 + 145 + 10, 90, 100, 25)];
+    const auto browseForCalibrationButton = [NSButton
+        buttonWithTitle:@"browse"
+        target:actions
+        action:@selector(browseForCalibration)
+    ];
+    [browseForCalibrationButton setFrame:NSMakeRect(500 + 145 + 10, 60, 100, 25)];
     const auto confirmButton = [NSButton
         buttonWithTitle:@"Confirm"
         target:actions
@@ -108,6 +114,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [confirmButton setFrame:NSMakeRect(900 - 100 - 2*15, 15, 100, 25)];
     [view_ addSubview:browseForMaskerButton];
     [view_ addSubview:browseForStimulusListButton];
+    [view_ addSubview:browseForCalibrationButton];
     [view_ addSubview:confirmButton];
     [view_ addSubview:subjectIdLabel];
     [view_ addSubview:subjectId_];
@@ -198,6 +205,10 @@ void CocoaTestSetupView::setStimulusList(std::string s) {
     [stimulusListDirectory_ setStringValue:asNsString(std::move(s))];
 }
 
+void CocoaTestSetupView::setCalibrationFilePath(std::string s) {
+    [calibrationFilePath_ setStringValue:asNsString(std::move(s))];
+}
+
 void CocoaTestSetupView::setMasker(std::string s) {
     [maskerFilePath_ setStringValue:asNsString(std::move(s))];
 }
@@ -223,6 +234,10 @@ void CocoaTestSetupView::browseForTargetList() {
     listener_->browseForTargetList();
 }
 
+void CocoaTestSetupView::browseForCalibration() {
+    listener_->browseForCalibration();
+}
+
 @implementation SetupViewActions
 @synthesize controller;
 
@@ -236,6 +251,10 @@ void CocoaTestSetupView::browseForTargetList() {
 
 - (void)browseForMasker { 
     controller->browseForMasker();
+}
+
+- (void)browseForCalibration {
+    controller->browseForCalibration();
 }
 @end
 

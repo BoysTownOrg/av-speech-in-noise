@@ -19,6 +19,7 @@ class CocoaTestSetupView;
 - (void) confirmTestSetup;
 - (void) browseForStimulusList;
 - (void) browseForMasker;
+- (void) browseForCalibration;
 @end
 
 class CocoaSubjectView;
@@ -73,6 +74,7 @@ public:
     void populateConditionMenu(std::vector<std::string> items) override;
     void setStimulusList(std::string) override;
     void setMasker(std::string) override;
+    void setCalibrationFilePath(std::string) override;
     std::string session() override;
     std::string calibrationFilePath() override;
     void subscribe(EventListener *) override;
@@ -80,6 +82,7 @@ public:
     void confirm();
     void browseForTargetList();
     void browseForMasker();
+    void browseForCalibration();
 private:
     NSTextField *allocLabel(NSString *label, NSRect frame);
 };
