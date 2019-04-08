@@ -152,7 +152,9 @@ namespace presentation {
     
     void Presenter::playCalibration() {
         try {
-            model->playCalibration(testSetup->calibrationParameters());
+            auto p = testSetup->calibrationParameters();
+            p.audioDevice = view->audioDevice();
+            model->playCalibration(p);
         } catch (const std::runtime_error &e) {
             showErrorMessage(e.what());
         }
@@ -160,11 +162,9 @@ namespace presentation {
     
 
     Presenter::TestSetup::TestSetup(
-        View::TestSetup *view,
-        View *parentView
+        View::TestSetup *view
     ) :
-        view{view},
-        parentView{parentView}
+        view{view}
     {
         using av_coordinated_response_measure::Condition;
         view->populateConditionMenu({
@@ -226,7 +226,6 @@ namespace presentation {
         av_coordinated_response_measure::Model::Calibration p;
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readSignalLevel();
-        p.audioDevice = parentView->audioDevice();
         return p;
     }
     

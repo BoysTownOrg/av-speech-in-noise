@@ -524,7 +524,7 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub view{&setupView, &testerView, nullptr};
-        presentation::Presenter::TestSetup testSetup{&setupView, &view};
+        presentation::Presenter::TestSetup testSetup{&setupView};
         
         presentation::Presenter construct() {
             return {&model, &view, &testSetup};
@@ -544,7 +544,7 @@ namespace {
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
         ViewStub view{&setupView, &testerView, &subjectView};
-        presentation::Presenter::TestSetup testSetup{&setupView, &view};
+        presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter presenter{&model, &view, &testSetup};
         BrowsingForStimulusList browsingForStimulusList{};
         BrowsingForMasker browsingForMasker{};
@@ -981,7 +981,7 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub view{&setupView, &testerView, nullptr};
-        presentation::Presenter::TestSetup testSetup{&setupView, &view};
+        presentation::Presenter::TestSetup testSetup{&setupView};
         
         void useFailingModel(std::string s = {}) {
             failure.setErrorMessage(std::move(s));

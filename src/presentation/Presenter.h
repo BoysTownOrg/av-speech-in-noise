@@ -95,8 +95,7 @@ namespace presentation {
         class TestSetup : public View::TestSetup::EventListener {
         public:
             TestSetup(
-                View::TestSetup *,
-                View *
+                View::TestSetup *
             );
             void listen();
             void initializeTest();
@@ -115,9 +114,7 @@ namespace presentation {
             int readInteger(std::string x, std::string identifier);
             bool auditoryOnly();
             
-            av_coordinated_response_measure::Model *model;
             View::TestSetup *view;
-            View *parentView;
             Presenter *parent;
         };
         
