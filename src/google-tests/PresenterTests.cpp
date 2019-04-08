@@ -975,6 +975,10 @@ namespace {
         assertCancellingBrowseDoesNotChangePath(browsingForMasker);
     }
 
+    TEST_F(PresenterTests, browseForCalibrationCancelDoesNotChangeCalibrationFilePath) {
+        assertCancellingBrowseDoesNotChangePath(browsingForCalibration);
+    }
+
     TEST_F(PresenterTests, trialCompleteShowsResponseButtons) {
         completeTrial();
         assertResponseButtonsShown();
