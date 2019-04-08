@@ -464,6 +464,20 @@ namespace {
             maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
             targetPlayer.throwInvalidAudioDeviceWhenDeviceSet();
         }
+        
+        void assertPlayTrialPassesDeviceToTargetPlayer() {
+            assertDevicePassedToTargetPlayer(trial.audioDevice, &RecognitionTestModelTests::playTrial);
+        }
+        
+        void assertPlayCalibrationPassesDeviceToTargetPlayer() {
+            assertDevicePassedToTargetPlayer(calibration.audioDevice, &RecognitionTestModelTests::playCalibration);
+        }
+        
+        void assertDevicePassedToTargetPlayer(std::string &device, void(RecognitionTestModelTests::*f)()) {
+            device = "a";
+            (this->*f)();
+            assertEqual("a", targetPlayer.device());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -472,15 +486,11 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToTargetPlayer) {
-        trial.audioDevice = "a";
-        playTrial();
-        assertEqual("a", targetPlayer.device());
+        assertPlayTrialPassesDeviceToTargetPlayer();
     }
 
     TEST_F(RecognitionTestModelTests, playCalibrationPassesAudioDeviceToTargetPlayer) {
-        calibration.audioDevice = "a";
-        playCalibration();
-        assertEqual("a", targetPlayer.device());
+        assertPlayCalibrationPassesDeviceToTargetPlayer();
     }
 
     TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToMaskerPlayer) {
