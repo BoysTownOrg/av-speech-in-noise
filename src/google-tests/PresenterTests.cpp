@@ -450,8 +450,14 @@ namespace {
         virtual ~UseCase() = default;
         virtual void run(presentation::View::EventListener &) = 0;
     };
+    
+    class TestSetupUseCase {
+    public:
+        virtual ~TestSetupUseCase() = default;
+        virtual void run(presentation::View::TestSetup::EventListener &) = 0;
+    };
 
-    class BrowsingUseCase : public UseCase {
+    class BrowsingUseCase : public TestSetupUseCase {
     public:
         virtual void setResult(ViewStub &, std::string) = 0;
     };
@@ -476,14 +482,14 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(presentation::View::EventListener &listener) override {
+        void run(presentation::View::TestSetup::EventListener &listener) override {
             listener.browseForMasker();
         }
     };
 
     class BrowsingForStimulusList : public BrowsingEnteredPathUseCase {
     public:
-        void run(presentation::View::EventListener &listener) override {
+        void run(presentation::View::TestSetup::EventListener &listener) override {
             listener.browseForTargetList();
         }
 
@@ -498,12 +504,6 @@ namespace {
         void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
             view.setStimulusList(s);
         }
-    };
-    
-    class TestSetupUseCase {
-    public:
-        virtual ~TestSetupUseCase() = default;
-        virtual void run(presentation::View::TestSetup::EventListener &) = 0;
     };
     
     class ConfirmingTestSetup : public TestSetupUseCase {
@@ -628,8 +628,8 @@ namespace {
             EXPECT_FALSE(setupViewHidden());
         }
 
-        void runUseCase(UseCase &useCase) {
-            useCase.run(presenter);
+        void runUseCase(TestSetupUseCase &useCase) {
+            useCase.run(testSetup);
         }
 
         void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase &useCase) {

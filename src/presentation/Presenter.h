@@ -18,8 +18,6 @@ namespace presentation {
             virtual void closeTest() = 0;
             virtual void playTrial() = 0;
             virtual void submitResponse() = 0;
-            virtual void browseForTargetList() = 0;
-            virtual void browseForMasker() = 0;
         };
         
         class Subject {
@@ -49,6 +47,8 @@ namespace presentation {
                 virtual ~EventListener() = default;
                 virtual void confirmTestSetup() = 0;
                 virtual void playCalibration() = 0;
+                virtual void browseForTargetList() = 0;
+                virtual void browseForMasker() = 0;
             };
             
             virtual ~TestSetup() = default;
@@ -106,6 +106,8 @@ namespace presentation {
             void becomeChild(Presenter *parent);
             void setMasker(std::string);
             void setStimulusList(std::string);
+            void browseForTargetList() override;
+            void browseForMasker() override;
             av_coordinated_response_measure::Model::Test testParameters();
             av_coordinated_response_measure::Model::Calibration calibrationParameters();
         private:
@@ -146,8 +148,8 @@ namespace presentation {
         void openTest() override;
         void closeTest() override;
         void submitResponse() override;
-        void browseForTargetList() override;
-        void browseForMasker() override;
+        void browseForTargetList();
+        void browseForMasker();
         void trialComplete() override;
         void confirmTestSetup();
         void playCalibration();

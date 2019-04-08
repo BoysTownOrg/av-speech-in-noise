@@ -250,6 +250,14 @@ namespace presentation {
         view->setStimulusList(std::move(s));
     }
     
+    void Presenter::TestSetup::browseForTargetList() { 
+        parent->browseForTargetList();
+    }
+    
+    void Presenter::TestSetup::browseForMasker() { 
+        parent->browseForMasker();
+    }
+    
     
     Presenter::Tester::Tester(
         av_coordinated_response_measure::Model *model,
