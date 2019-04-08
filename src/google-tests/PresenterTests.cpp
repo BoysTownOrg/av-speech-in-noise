@@ -98,7 +98,6 @@ namespace {
         std::string audioDevice_{};
         DialogResponse dialogResponse_{};
         EventListener *listener_{};
-        TestSetup *setupView_;
         Tester *testerView_;
         Subject *subjectView_;
         bool eventLoopCalled_{};
@@ -106,11 +105,9 @@ namespace {
         bool browseCancelled_{};
     public:
         ViewStub(
-            TestSetup *setupView,
             Tester *testerView,
             Subject *subjectView
         ) :
-            setupView_{setupView},
             testerView_{testerView},
             subjectView_{subjectView} {}
         
@@ -523,7 +520,7 @@ namespace {
         ModelStub model{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
-        ViewStub view{&setupView, &testerView, nullptr};
+        ViewStub view{&testerView, nullptr};
         presentation::Presenter::TestSetup testSetup{&setupView};
         
         presentation::Presenter construct() {
@@ -543,7 +540,7 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        ViewStub view{&setupView, &testerView, &subjectView};
+        ViewStub view{&testerView, &subjectView};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter presenter{&model, &view, &testSetup};
         BrowsingForStimulusList browsingForStimulusList{};
@@ -980,7 +977,7 @@ namespace {
         av_coordinated_response_measure::Model *model{&defaultModel};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
-        ViewStub view{&setupView, &testerView, nullptr};
+        ViewStub view{&testerView, nullptr};
         presentation::Presenter::TestSetup testSetup{&setupView};
         
         void useFailingModel(std::string s = {}) {
