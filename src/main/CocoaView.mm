@@ -422,7 +422,6 @@ CocoaView::CocoaView() :
     [fileMenu setSubmenu:fileSubMenu];
     [app.mainMenu addItem:fileMenu];
     
-    [window.contentView addSubview:testerView_.view()];
     [window.contentView addSubview:deviceMenu];
     [window makeKeyAndOrderFront:nil];
     actions.controller = this;
@@ -442,10 +441,6 @@ void CocoaView::subscribe(EventListener *listener_) {
 
 void CocoaView::eventLoop() {
     [app run];
-}
-
-auto CocoaView::subject() -> Subject * {
-    return &subjectView_;
 }
 
 auto CocoaView::showConfirmationDialog() -> DialogResponse {

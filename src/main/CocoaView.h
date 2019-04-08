@@ -110,8 +110,6 @@ private:
 };
 
 class CocoaView : public presentation::View {
-    CocoaTesterView testerView_{};
-    CocoaSubjectView subjectView_{};
     EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
@@ -122,7 +120,6 @@ public:
     CocoaView();
     void subscribe(EventListener *) override;
     void eventLoop() override;
-    Subject *subject() override;
     DialogResponse showConfirmationDialog() override;
     void showErrorMessage(std::string) override;
     std::string browseForDirectory() override;
