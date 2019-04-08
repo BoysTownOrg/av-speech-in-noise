@@ -98,16 +98,10 @@ namespace {
         std::string audioDevice_{};
         DialogResponse dialogResponse_{};
         EventListener *listener_{};
-        Subject *subjectView_;
         bool eventLoopCalled_{};
         bool confirmationDialogShown_{};
         bool browseCancelled_{};
     public:
-        ViewStub(
-            Subject *subjectView
-        ) :
-            subjectView_{subjectView} {}
-        
         void setAudioDevice(std::string s) {
             audioDevice_ = std::move(s);
         }
@@ -135,10 +129,6 @@ namespace {
         DialogResponse showConfirmationDialog() override {
             confirmationDialogShown_ = true;
             return dialogResponse_;
-        }
-        
-        Subject *subject() override {
-            return subjectView_;
         }
         
         std::string browseForDirectory() override {
@@ -519,7 +509,7 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        ViewStub view{nullptr};
+        ViewStub view{};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
         presentation::Presenter::Subject subject{&subjectView};
@@ -541,7 +531,7 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        ViewStub view{&subjectView};
+        ViewStub view{};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
         presentation::Presenter::Subject subject{&subjectView};
@@ -981,7 +971,7 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        ViewStub view{nullptr};
+        ViewStub view{};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
         presentation::Presenter::Subject subject{&subjectView};

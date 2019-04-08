@@ -77,7 +77,6 @@ namespace presentation {
         
         virtual void subscribe(EventListener *) = 0;
         virtual void eventLoop() = 0;
-        virtual Subject *subject() = 0;
         virtual std::string browseForDirectory() = 0;
         virtual std::string browseForOpeningFile() = 0;
         virtual std::string audioDevice() = 0;
