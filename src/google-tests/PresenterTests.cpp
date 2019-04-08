@@ -447,7 +447,7 @@ namespace {
     class UseCase {
     public:
         virtual ~UseCase() = default;
-        virtual void run(presentation::View::EventListener *) = 0;
+        virtual void run(presentation::View::EventListener &) = 0;
     };
 
     class BrowsingUseCase : public UseCase {
@@ -475,15 +475,15 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(presentation::View::EventListener *listener) override {
-            listener->browseForMasker();
+        void run(presentation::View::EventListener &listener) override {
+            listener.browseForMasker();
         }
     };
 
     class BrowsingForStimulusList : public BrowsingEnteredPathUseCase {
     public:
-        void run(presentation::View::EventListener *listener) override {
-            listener->browseForStimulusList();
+        void run(presentation::View::EventListener &listener) override {
+            listener.browseForStimulusList();
         }
 
         void setResult(ViewStub &view, std::string s) override {
@@ -500,14 +500,14 @@ namespace {
     };
     
     class ConfirmingTestSetup : public UseCase {
-        void run(presentation::View::EventListener *listener) override {
-            listener->confirmTestSetup();
+        void run(presentation::View::EventListener &listener) override {
+            listener.confirmTestSetup();
         }
     };
     
     class PlayingCalibration : public UseCase {
-        void run(presentation::View::EventListener *listener) override {
-            listener->playCalibration();
+        void run(presentation::View::EventListener &listener) override {
+            listener.playCalibration();
         }
     };
 
@@ -619,13 +619,13 @@ namespace {
             EXPECT_FALSE(setupViewHidden());
         }
 
-        void runUseCase(UseCase *useCase) {
-            useCase->run(&presenter);
+        void runUseCase(UseCase &useCase) {
+            useCase.run(presenter);
         }
 
         void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase &useCase) {
             useCase.setResult(view, "a");
-            runUseCase(&useCase);
+            runUseCase(useCase);
             assertEqual("a", useCase.entry(setupView));
         }
 
@@ -635,7 +635,7 @@ namespace {
             useCase.setEntry(setupView, "a");
             useCase.setResult(view, "b");
             view.setBrowseCancelled();
-            runUseCase(&useCase);
+            runUseCase(useCase);
             assertEqual("a", useCase.entry(setupView));
         }
         
@@ -697,7 +697,7 @@ namespace {
         
         void assertInvalidSignalLevelShowsErrorMessageFollowing(UseCase &useCase) {
             setupView.setSignalLevel("a");
-            runUseCase(&useCase);
+            runUseCase(useCase);
             assertEqual("'a' is not a valid signal level.", errorMessage());
         }
     };
