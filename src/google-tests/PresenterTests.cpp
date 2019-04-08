@@ -680,6 +680,20 @@ namespace {
         const av_coordinated_response_measure::Model::Calibration &modelCalibrationParameters() {
             return model.calibrationParameters();
         }
+        
+        void assertInvalidSignalLevelShowsErrorMessageFollowingConfirmTestSetup() {
+            assertInvalidSignalLevelShowsErrorMessageFollowing(&PresenterTests::confirmTestSetup);
+        }
+        
+        void assertInvalidSignalLevelShowsErrorMessageFollowingCalibration() {
+            assertInvalidSignalLevelShowsErrorMessageFollowing(&PresenterTests::playCalibration);
+        }
+        
+        void assertInvalidSignalLevelShowsErrorMessageFollowing(void(PresenterTests::*f)()) {
+            setupView.setSignalLevel("a");
+            (this->*f)();
+            assertEqual("'a' is not a valid signal level.", errorMessage());
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -756,15 +770,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSignalLevelShowsErrorMessage) {
-        setupView.setSignalLevel("a");
-        confirmTestSetup();
-        assertEqual("'a' is not a valid signal level.", errorMessage());
+        assertInvalidSignalLevelShowsErrorMessageFollowingConfirmTestSetup();
     }
 
     TEST_F(PresenterTests, playCalibrationWithInvalidSignalLevelShowsErrorMessage) {
-        setupView.setSignalLevel("a");
-        playCalibration();
-        assertEqual("'a' is not a valid signal level.", errorMessage());
+        assertInvalidSignalLevelShowsErrorMessageFollowingCalibration();
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
