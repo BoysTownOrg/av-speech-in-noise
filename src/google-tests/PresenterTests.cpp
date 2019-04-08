@@ -91,6 +91,7 @@ namespace {
     };
 
     class ViewStub : public presentation::View {
+        std::vector<std::string> audioDevices_{};
         std::string errorMessage_{};
         std::string browseForDirectoryResult_{};
         std::string browseForOpeningFileResult_{};
@@ -221,6 +222,14 @@ namespace {
         void setBrowseCancelled() {
             browseCancelled_ = true;
         }
+        
+        void populateAudioDeviceMenu(std::vector<std::string> v) override {
+            audioDevices_ = std::move(v);
+        }
+        
+        auto audioDevices() const {
+            return audioDevices_;
+        }
 
         class TestSetupViewStub : public TestSetup {
             Collection<std::string> conditions_{};
@@ -334,14 +343,9 @@ namespace {
         };
         
         class TesterViewStub : public Tester {
-            std::vector<std::string> audioDevices_{};
             bool shown_{};
             bool hidden_{};
         public:
-            auto audioDevices() const {
-                return audioDevices_;
-            }
-            
             auto shown() const {
                 return shown_;
             }
@@ -352,10 +356,6 @@ namespace {
             
             void hide() override {
                 hidden_ = true;
-            }
-            
-            void populateAudioDeviceMenu(std::vector<std::string> v) override {
-                audioDevices_ = std::move(v);
             }
             
             auto hidden() const {
@@ -526,7 +526,7 @@ namespace {
     TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
         model.setAudioDevices({"a", "b", "c"});
         auto presenter = construct();
-        assertEqual({"a", "b", "c"}, testerView.audioDevices());
+        assertEqual({"a", "b", "c"}, view.audioDevices());
     }
 
     class PresenterTests : public ::testing::Test {

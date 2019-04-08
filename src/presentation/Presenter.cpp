@@ -12,6 +12,7 @@ namespace presentation {
     {
         model->subscribe(this);
         view->subscribe(this);
+        view->populateAudioDeviceMenu(model->audioDevices());
     }
 
     void Presenter::run() {
@@ -240,7 +241,6 @@ namespace presentation {
         view{view},
         parentView{parentView}
     {
-        view->populateAudioDeviceMenu(model->audioDevices());
     }
     
     void Presenter::Tester::listen() {
