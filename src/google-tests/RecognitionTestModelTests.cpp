@@ -130,9 +130,23 @@ namespace {
         bool videoHidden_{};
         bool videoShown_{};
         bool throwInvalidAudioDeviceWhenDeviceSet_{};
+        bool setDeviceCalled_{};
+        bool playing_{};
     public:
+        bool playing() override {
+            return playing_;
+        }
+        
         auto &log() const {
             return log_;
+        }
+        
+        void setPlaying() {
+            playing_ = true;
+        }
+        
+        auto setDeviceCalled() const {
+            return setDeviceCalled_;
         }
         
         void throwInvalidAudioDeviceWhenDeviceSet() {
@@ -140,6 +154,7 @@ namespace {
         }
         
         void setAudioDevice(std::string s) override {
+            setDeviceCalled_ = true;
             device_ = std::move(s);
             if (throwInvalidAudioDeviceWhenDeviceSet_)
                 throw recognition_test::InvalidAudioDevice{};
@@ -423,6 +438,10 @@ namespace {
             maskerPlayer.setPlaying();
         }
         
+        void setTargetIsPlaying() {
+            targetPlayer.setPlaying();
+        }
+        
         void assertMaskerPlayerNotPlayedAfterPlayingTrial() {
             playTrial();
             assertMaskerPlayerNotPlayed();
@@ -562,15 +581,30 @@ namespace {
         assertListNotAdvanced();
     }
 
-    TEST_F(RecognitionTestModelTests, audioDevicesReturnsOutputAudioDeviceDescriptions) {
+    TEST_F(
+        RecognitionTestModelTests,
+        audioDevicesReturnsOutputAudioDeviceDescriptions
+    ) {
         setOutputAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, model.audioDevices());
     }
 
-    TEST_F(RecognitionTestModelTests, playTrialDoesChangeAudioDeviceWhenMaskerPlaying) {
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialDoesNotChangeAudioDeviceWhenMaskerPlaying
+    ) {
         setMaskerIsPlaying();
         playTrial();
         EXPECT_FALSE(maskerPlayer.setDeviceCalled());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationDoesNotChangeAudioDeviceWhenTargetPlaying
+    ) {
+        setTargetIsPlaying();
+        playingCalibration.run(model);
+        EXPECT_FALSE(targetPlayer.setDeviceCalled());
     }
 
     TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfMaskerAlreadyPlaying) {

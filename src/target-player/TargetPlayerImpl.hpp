@@ -46,6 +46,7 @@ namespace target_player {
         double rms() override;
         void setLevel_dB(double) override;
         void setAudioDevice(std::string) override;
+        bool playing() override;
         void playbackComplete() override;
         void fillAudioBuffer(
             const std::vector<gsl::span<float> > &audio) override;

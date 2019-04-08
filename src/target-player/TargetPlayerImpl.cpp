@@ -86,4 +86,8 @@ namespace target_player {
             descriptions.push_back(player->deviceDescription(i));
         return descriptions;
     }
+    
+    bool TargetPlayerImpl::playing() { 
+        return false;
+    }
 }

@@ -20,6 +20,7 @@ namespace recognition_test {
         virtual void subscribe(EventListener *) = 0;
         virtual void setAudioDevice(std::string) = 0;
         virtual void play() = 0;
+        virtual bool playing() = 0;
         virtual void loadFile(std::string filePath) = 0;
         virtual void hideVideo() = 0;
         virtual void showVideo() = 0;

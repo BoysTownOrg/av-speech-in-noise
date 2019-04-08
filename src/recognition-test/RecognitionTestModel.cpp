@@ -170,6 +170,9 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
+        if (targetPlayer->playing())
+            return;
+            
         auto device = p.audioDevice;
         try {
             targetPlayer->setAudioDevice(device);
