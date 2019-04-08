@@ -151,7 +151,7 @@ namespace presentation {
         try {
             testSetup.playCalibration();
         } catch (const std::runtime_error &e) {
-            view->showErrorMessage(e.what());
+            showErrorMessage(e.what());
         }
     }
     
