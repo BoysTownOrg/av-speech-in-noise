@@ -395,10 +395,6 @@ namespace {
             model.playTrial(trial);
         }
         
-        void playCalibration() {
-            model.playCalibration(calibration);
-        }
-        
         void submitResponse() {
             model.submitResponse(subjectResponse);
         }
@@ -457,20 +453,6 @@ namespace {
             EXPECT_TRUE(targetPlayer.videoShown());
         }
         
-        void assertPlayTrialThrowsRequestFailure(std::string what) {
-            assertCallThrowsRequestFailure(
-                &RecognitionTestModelTests::playTrial,
-                std::move(what)
-            );
-        }
-        
-        void assertCalibrationThrowsRequestFailure(std::string what) {
-            assertCallThrowsRequestFailure(
-                &RecognitionTestModelTests::playCalibration,
-                std::move(what)
-            );
-        }
-        
         void assertInitializeTestThrowsRequestFailure(std::string what) {
             assertCallThrowsRequestFailure(
                 &RecognitionTestModelTests::initializeTest,
@@ -484,6 +466,18 @@ namespace {
         ) {
             try {
                 (this->*f)();
+                FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";
+            } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
+                assertEqual(std::move(what), e.what());
+            }
+        }
+        
+        void assertCallThrowsRequestFailure(
+            UseCase &useCase,
+            std::string what
+        ) {
+            try {
+                useCase.run(model);
                 FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";
             } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
                 assertEqual(std::move(what), e.what());
@@ -506,6 +500,12 @@ namespace {
             useCase.setAudioDevice("a");
             useCase.run(model);
             assertEqual("a", targetPlayer.device());
+        }
+        
+        void assertThrowsRequestFailureWhenInvalidAudioDevice(AudioDeviceUseCase &useCase) {
+            throwInvalidAudioDeviceWhenSet();
+            useCase.setAudioDevice("d");
+            assertCallThrowsRequestFailure(useCase, "'d' is not a valid audio device.");
         }
     };
 
@@ -532,18 +532,14 @@ namespace {
         RecognitionTestModelTests,
         playTrialWithInvalidAudioDeviceThrowsRequestFailure
     ) {
-        throwInvalidAudioDeviceWhenSet();
-        trial.audioDevice = "d";
-        assertPlayTrialThrowsRequestFailure("'d' is not a valid audio device.");
+        assertThrowsRequestFailureWhenInvalidAudioDevice(playingTrial);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationWithInvalidAudioDeviceThrowsRequestFailure
     ) {
-        throwInvalidAudioDeviceWhenSet();
-        calibration.audioDevice = "d";
-        assertCalibrationThrowsRequestFailure("'d' is not a valid audio device.");
+        assertThrowsRequestFailureWhenInvalidAudioDevice(playingCalibration);
     }
 
     TEST_F(
