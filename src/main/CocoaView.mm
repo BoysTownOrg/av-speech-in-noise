@@ -2,10 +2,6 @@
 #include "common-objc.h"
 
 CocoaTesterView::CocoaTesterView() :
-    deviceMenu{[[NSPopUpButton alloc]
-        initWithFrame:NSMakeRect(0, 0, 140, 30)
-        pullsDown:NO
-    ]},
     view_{[[NSView alloc]
         initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)]
     },
@@ -13,7 +9,6 @@ CocoaTesterView::CocoaTesterView() :
 {
     actions.controller = this;
     [view_ setHidden:YES];
-    [view_ addSubview:deviceMenu];
 }
 
 NSView *CocoaTesterView::view() {
@@ -26,11 +21,6 @@ void CocoaTesterView::show() {
 
 void CocoaTesterView::hide() {
     [view_ setHidden:YES];
-}
-
-void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
-    for (auto item : items)
-        [deviceMenu addItemWithTitle:asNsString(item)];
 }
 
 void CocoaTesterView::playTrial() {
@@ -576,4 +566,9 @@ void CocoaView::browseForMasker() {
 
 std::string CocoaView::audioDevice() {
     return deviceMenu.titleOfSelectedItem.UTF8String;
+}
+
+void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
+    for (auto item : items)
+        [deviceMenu addItemWithTitle:asNsString(item)];
 }

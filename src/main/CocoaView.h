@@ -38,7 +38,6 @@ class CocoaSubjectView;
 
 class CocoaTesterView : public presentation::View::Tester {
     CocoaView *parent_;
-    NSPopUpButton *deviceMenu;
     NSView *view_;
     TesterViewActions *actions;
 public:
@@ -46,7 +45,6 @@ public:
     NSView *view();
     void show() override;
     void hide() override;
-    void populateAudioDeviceMenu(std::vector<std::string>) override;
     void playTrial();
     void becomeChild(CocoaView *);
 };
@@ -153,6 +151,7 @@ public:
     bool browseCancelled() override;
     std::string browseForOpeningFile() override;
     std::string audioDevice() override;
+    void populateAudioDeviceMenu(std::vector<std::string>) override;
     
 private:
     std::string browseModal(NSOpenPanel *panel);
