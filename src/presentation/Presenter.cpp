@@ -19,18 +19,18 @@ namespace presentation {
     }
 
     void Presenter::newTest() {
-        testSetup.listen();
+        showTestSetup();
     }
 
     void Presenter::openTest() {
-        tester.listen();
+        showTesterView();
     }
     
     void Presenter::closeTest() {
         if (userCancels())
             return;
         
-        tester.tuneOut();
+        hideTesterView();
     }
 
     bool Presenter::userCancels() {
@@ -41,15 +41,27 @@ namespace presentation {
         try {
             initializeTest_();
         } catch (const std::runtime_error &e) {
-            view->showErrorMessage(e.what());
+            showErrorMessage(e.what());
         }
+    }
+    
+    void Presenter::showErrorMessage(std::string e) {
+        view->showErrorMessage(std::move(e));
     }
     
     void Presenter::initializeTest_() {
         testSetup.initializeTest();
-        testSetup.tuneOut();
-        tester.listen();
+        hideTestSetup();
+        showTesterView();
         view->subject()->showNextTrialButton();
+    }
+    
+    void Presenter::hideTestSetup() {
+        testSetup.tuneOut();
+    }
+    
+    void Presenter::showTesterView() {
+        tester.listen();
     }
     
     void Presenter::playTrial() {
@@ -65,12 +77,20 @@ namespace presentation {
     
     void Presenter::proceedToNextTrial() {
         if (model->testComplete()) {
-            tester.tuneOut();
-            testSetup.listen();
+            hideTesterView();
+            showTestSetup();
         }
         else {
             view->subject()->showNextTrialButton();
         }
+    }
+    
+    void Presenter::hideTesterView() {
+        tester.tuneOut();
+    }
+    
+    void Presenter::showTestSetup() {
+        testSetup.listen();
     }
     
     av_coordinated_response_measure::Model::SubjectResponse
@@ -148,8 +168,7 @@ namespace presentation {
         av_coordinated_response_measure::Model::Test p;
         p.startingSnr_dB =
             readInteger(view->startingSnr_dB(), "SNR");
-        p.signalLevel_dB_SPL =
-            readInteger(view->signalLevel_dB_SPL(), "signal level");
+        p.signalLevel_dB_SPL = readSignalLevel();
         p.maskerFilePath = view->maskerFilePath();
         p.targetListDirectory = view->stimulusListDirectory();
         p.subjectId = view->subjectId();
@@ -181,12 +200,15 @@ namespace presentation {
         view->hide();
     }
     
-    void Presenter::TestSetup::playCalibration() { 
+    void Presenter::TestSetup::playCalibration() {
         av_coordinated_response_measure::Model::Calibration p;
         p.filePath = view->calibrationFilePath();
-        p.level_dB_SPL =
-            readInteger(view->signalLevel_dB_SPL(), "signal level");
+        p.level_dB_SPL = readSignalLevel();
         model->playCalibration(p);
+    }
+    
+    int Presenter::TestSetup::readSignalLevel() {
+        return readInteger(view->signalLevel_dB_SPL(), "signal level");
     }
     
     

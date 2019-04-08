@@ -89,12 +89,16 @@ namespace presentation {
     public:
         class TestSetup {
         public:
-            TestSetup(av_coordinated_response_measure::Model *model, View::TestSetup *);
+            TestSetup(
+                av_coordinated_response_measure::Model *,
+                View::TestSetup *
+            );
             void listen();
             void initializeTest();
             void playCalibration();
             void tuneOut();
         private:
+            int readSignalLevel();
             int readInteger(std::string x, std::string identifier);
             bool auditoryOnly();
             av_coordinated_response_measure::Model::Test testParameters();
@@ -128,9 +132,14 @@ namespace presentation {
         void trialComplete() override;
         
     private:
+        void showErrorMessage(std::string);
         RUNTIME_ERROR(BadInput)
+        void hideTesterView();
+        void showTestSetup();
         void proceedToNextTrial();
         bool userCancels();
+        void hideTestSetup();
+        void showTesterView();
         void initializeTest_();
         av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
         av_coordinated_response_measure::Color colorResponse();
