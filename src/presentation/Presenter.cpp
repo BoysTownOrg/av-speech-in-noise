@@ -111,6 +111,10 @@ namespace presentation {
         view->subject()->showResponseButtons();
     }
     
+    void Presenter::playCalibration() {
+        testSetup.playCalibration();
+    }
+    
 
     Presenter::TestSetup::TestSetup(
         av_coordinated_response_measure::Model *model,
@@ -172,6 +176,16 @@ namespace presentation {
     void Presenter::TestSetup::tuneOut() {
         view->hide();
     }
+    
+    void Presenter::TestSetup::playCalibration() { 
+        
+        av_coordinated_response_measure::Model::Calibration p;
+        p.filePath = view->calibrationFilePath();
+        p.level_dB_SPL =
+            readInteger(view->signalLevel_dB_SPL(), "calibration level");
+        model->playCalibration(p);
+    }
+    
     
     Presenter::Tester::Tester(
         av_coordinated_response_measure::Model *model,

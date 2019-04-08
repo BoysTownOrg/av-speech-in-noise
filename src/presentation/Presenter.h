@@ -17,6 +17,7 @@ namespace presentation {
             virtual void openTest() = 0;
             virtual void closeTest() = 0;
             virtual void confirmTestSetup() = 0;
+            virtual void playCalibration() = 0;
             virtual void playTrial() = 0;
             virtual void submitResponse() = 0;
             virtual void browseForStimulusList() = 0;
@@ -53,6 +54,7 @@ namespace presentation {
             virtual std::string signalLevel_dB_SPL() = 0;
             virtual std::string startingSnr_dB() = 0;
             virtual std::string maskerFilePath() = 0;
+            virtual std::string calibrationFilePath() = 0;
             virtual void setMasker(std::string) = 0;
             virtual std::string stimulusListDirectory() = 0;
             virtual void setStimulusList(std::string) = 0;
@@ -90,6 +92,7 @@ namespace presentation {
             TestSetup(av_coordinated_response_measure::Model *model, View::TestSetup *);
             void listen();
             void initializeTest();
+            void playCalibration();
             void tuneOut();
         private:
             int readInteger(std::string x, std::string identifier);
@@ -121,6 +124,7 @@ namespace presentation {
         void submitResponse() override;
         void browseForStimulusList() override;
         void browseForMasker() override;
+        void playCalibration() override;
         void trialComplete() override;
         
     private:

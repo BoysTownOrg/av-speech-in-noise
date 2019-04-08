@@ -66,6 +66,12 @@ namespace av_coordinated_response_measure {
         };
         virtual void initializeTest(const Test &) = 0;
         
+        struct Calibration {
+            std::string filePath;
+            int level_dB_SPL;
+        };
+        virtual void playCalibration(const Calibration &) = 0;
+        
         struct AudioSettings {
             std::string audioDevice;
         };

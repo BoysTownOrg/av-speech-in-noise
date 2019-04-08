@@ -16,6 +16,7 @@ namespace {
     
     class ModelStub : public av_coordinated_response_measure::Model {
         Test testParameters_{};
+        Calibration calibrationParameters_{};
         AudioSettings trialParameters_{};
         SubjectResponse responseParameters_{};
         std::vector<std::string> audioDevices_{};
@@ -72,12 +73,20 @@ namespace {
             listener_ = listener;
         }
         
+        void playCalibration(const Calibration &p) override {
+            calibrationParameters_ = p;
+        }
+        
         auto trialPlayed() const {
             return trialPlayed_;
         }
         
         auto &testParameters() const {
             return testParameters_;
+        }
+        
+        auto &calibrationParameters() const {
+            return calibrationParameters_;
         }
     };
 
@@ -113,6 +122,10 @@ namespace {
         
         void confirmTestSetup() {
             listener_->confirmTestSetup();
+        }
+        
+        void playCalibration() {
+            listener_->playCalibration();
         }
         
         void showErrorMessage(std::string s) override {
@@ -210,6 +223,7 @@ namespace {
             std::string subjectId_{};
             std::string testerId_{};
             std::string session_{};
+            std::string calibrationFilePath_{};
             bool shown_{};
             bool hidden_{};
         public:
@@ -257,6 +271,10 @@ namespace {
                 signalLevel_ = std::move(s);
             }
             
+            void setCalibrationFilePath(std::string s) {
+                calibrationFilePath_ = std::move(s);
+            }
+            
             void setCondition(std::string s) {
                 condition_ = std::move(s);
             }
@@ -299,6 +317,10 @@ namespace {
 
             std::string condition() override {
                 return condition_;
+            }
+            
+            std::string calibrationFilePath() override {
+                return calibrationFilePath_;
             }
         };
         
@@ -530,6 +552,10 @@ namespace {
             view.confirmTestSetup();
         }
         
+        void playCalibration() {
+            view.playCalibration();
+        }
+        
         void confirmTestSetupWithInvalidInput() {
             setupView.setStartingSnr("?");
             confirmTestSetup();
@@ -650,6 +676,10 @@ namespace {
         const av_coordinated_response_measure::Model::Test &modelTestParameters() {
             return model.testParameters();
         }
+        
+        const av_coordinated_response_measure::Model::Calibration &modelCalibrationParameters() {
+            return model.calibrationParameters();
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -697,6 +727,14 @@ namespace {
         assertEqual("c", modelTestParameters().testerId);
         assertEqual("d", modelTestParameters().maskerFilePath);
         assertEqual("e", modelTestParameters().session);
+    }
+
+    TEST_F(PresenterTests, playCalibrationPassesParametersToModel) {
+        setupView.setSignalLevel("1");
+        setupView.setCalibrationFilePath("a");
+        playCalibration();
+        EXPECT_EQ(1, modelCalibrationParameters().level_dB_SPL);
+        assertEqual("a", modelCalibrationParameters().filePath);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
@@ -895,6 +933,7 @@ namespace {
         bool testComplete() override { return {}; }
         std::vector<std::string> audioDevices() override { return {}; }
         void subscribe(EventListener *) override {}
+        void playCalibration(const Calibration &) override {}
     };
 
     class PresenterFailureTests : public ::testing::Test {

@@ -168,5 +168,9 @@ namespace recognition_test {
     void RecognitionTestModel::fadeOutComplete() { 
         listener_->trialComplete();
     }
+    
+    void RecognitionTestModel::playCalibration(const Calibration &) { 
+        ;
+    }
 }
 
