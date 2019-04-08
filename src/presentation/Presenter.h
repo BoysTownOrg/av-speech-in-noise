@@ -55,6 +55,7 @@ namespace presentation {
                 virtual void playCalibration() = 0;
                 virtual void browseForTargetList() = 0;
                 virtual void browseForMasker() = 0;
+                virtual void browseForCalibration() = 0;
             };
             
             virtual ~TestSetup() = default;
@@ -72,6 +73,7 @@ namespace presentation {
             virtual std::string session() = 0;
             virtual void setMasker(std::string) = 0;
             virtual void setStimulusList(std::string) = 0;
+            virtual void setCalibrationFilePath(std::string) = 0;
             virtual void populateConditionMenu(std::vector<std::string> items) = 0;
         };
         
@@ -103,11 +105,13 @@ namespace presentation {
             void browseForTargetList() override;
             void browseForMasker() override;
             void confirmTestSetup() override;
+            void browseForCalibration() override;
             void show();
             void hide();
             void becomeChild(Presenter *parent);
             void setMasker(std::string);
             void setStimulusList(std::string);
+            void setCalibrationFilePath(std::string);
             av_coordinated_response_measure::Model::Test testParameters();
             av_coordinated_response_measure::Model::Calibration calibrationParameters();
         private:
@@ -162,6 +166,7 @@ namespace presentation {
         void playTrial();
         void submitResponse();
         void browseForMasker();
+        void browseForCalibration();
         void confirmTestSetup();
         void playCalibration();
         

@@ -258,7 +258,7 @@ namespace {
                 signalLevel_ = std::move(s);
             }
             
-            void setCalibrationFilePath(std::string s) {
+            void setCalibrationFilePath(std::string s) override {
                 calibrationFilePath_ = std::move(s);
             }
             
@@ -491,6 +491,25 @@ namespace {
         }
     };
     
+    class BrowsingForCalibration : public BrowsingEnteredPathUseCase {
+    public:
+        std::string entry(ViewStub::TestSetupViewStub &view) override {
+            return view.calibrationFilePath();
+        }
+        
+        void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
+            view.setCalibrationFilePath(std::move(s));
+        }
+        
+        void setResult(ViewStub &view, std::string s) override {
+            return view.setBrowseForOpeningFileResult(s);
+        }
+        
+        void run(presentation::View::TestSetup::EventListener &listener) override {
+            listener.browseForCalibration();
+        }
+    };
+    
     class ConfirmingTestSetup : public TestSetupUseCase {
         void run(presentation::View::TestSetup::EventListener &listener) override {
             listener.confirmTestSetup();
@@ -544,6 +563,7 @@ namespace {
         };
         BrowsingForTargetList browsingForTargetList{};
         BrowsingForMasker browsingForMasker{};
+        BrowsingForCalibration browsingForCalibration{};
         ConfirmingTestSetup confirmingTestSetup{};
         PlayingCalibration playingCalibration{};
         
@@ -935,12 +955,16 @@ namespace {
         assertTesterViewNotHidden();
     }
 
-    TEST_F(PresenterTests, browseForStimulusListUpdatesStimulusList) {
+    TEST_F(PresenterTests, browseForTargetListUpdatesTargetList) {
         assertBrowseResultPassedToEntry(browsingForTargetList);
     }
 
     TEST_F(PresenterTests, browseForMaskerUpdatesMasker) {
         assertBrowseResultPassedToEntry(browsingForMasker);
+    }
+
+    TEST_F(PresenterTests, browseForCalibrationUpdatesCalibrationFilePaths) {
+        assertBrowseResultPassedToEntry(browsingForCalibration);
     }
 
     TEST_F(PresenterTests, browseForTargetListCancelDoesNotChangeTargetList) {

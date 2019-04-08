@@ -144,6 +144,12 @@ namespace presentation {
         }
     }
     
+    void Presenter::browseForCalibration() {
+        auto result = view->browseForOpeningFile();
+        if (!view->browseCancelled())
+            testSetup->setCalibrationFilePath(result);
+    }
+    
 
     Presenter::TestSetup::TestSetup(View::TestSetup *view) :
         view{view}
@@ -237,6 +243,14 @@ namespace presentation {
     
     void Presenter::TestSetup::browseForMasker() { 
         parent->browseForMasker();
+    }
+    
+    void Presenter::TestSetup::browseForCalibration() {
+        parent->browseForCalibration();
+    }
+    
+    void Presenter::TestSetup::setCalibrationFilePath(std::string s) { 
+        view->setCalibrationFilePath(std::move(s));
     }
     
     
