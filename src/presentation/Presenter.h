@@ -16,8 +16,6 @@ namespace presentation {
             virtual void newTest() = 0;
             virtual void openTest() = 0;
             virtual void closeTest() = 0;
-            virtual void confirmTestSetup() = 0;
-            virtual void playCalibration() = 0;
             virtual void playTrial() = 0;
             virtual void submitResponse() = 0;
             virtual void browseForTargetList() = 0;
@@ -46,7 +44,15 @@ namespace presentation {
 
         class TestSetup {
         public:
+            class EventListener {
+            public:
+                virtual ~EventListener() = default;
+                virtual void confirmTestSetup() = 0;
+                virtual void playCalibration() = 0;
+            };
+            
             virtual ~TestSetup() = default;
+            virtual void subscribe(EventListener *) = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
             virtual std::string signalLevel_dB_SPL() = 0;
@@ -87,26 +93,29 @@ namespace presentation {
         public av_coordinated_response_measure::Model::EventListener
     {
     public:
-        class TestSetup {
+        class TestSetup : public View::TestSetup::EventListener {
         public:
             TestSetup(
-                av_coordinated_response_measure::Model *,
                 View::TestSetup *,
                 View *
             );
             void listen();
             void initializeTest();
-            void playCalibration();
+            void playCalibration() override;
             void tuneOut();
+            void confirmTestSetup() override;
+            void becomeChild(Presenter *parent);
+            av_coordinated_response_measure::Model::Test testParameters();
+            av_coordinated_response_measure::Model::Calibration calibrationParameters();
         private:
             int readSignalLevel();
             int readInteger(std::string x, std::string identifier);
             bool auditoryOnly();
-            av_coordinated_response_measure::Model::Test testParameters();
             
             av_coordinated_response_measure::Model *model;
             View::TestSetup *view;
             View *parentView;
+            Presenter *parent;
         };
         
         class Tester {
@@ -125,18 +134,22 @@ namespace presentation {
             View *parentView;
         };
         
-        Presenter(av_coordinated_response_measure::Model *, View *);
+        Presenter(
+            av_coordinated_response_measure::Model *,
+            View *,
+            TestSetup *
+        );
         void run();
         void playTrial() override;
         void newTest() override;
         void openTest() override;
         void closeTest() override;
-        void confirmTestSetup() override;
         void submitResponse() override;
         void browseForTargetList() override;
         void browseForMasker() override;
-        void playCalibration() override;
         void trialComplete() override;
+        void confirmTestSetup();
+        void playCalibration();
         
     private:
         void showErrorMessage(std::string);
@@ -155,10 +168,10 @@ namespace presentation {
         av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
         av_coordinated_response_measure::Color colorResponse();
         
-        TestSetup testSetup;
         Tester tester;
         av_coordinated_response_measure::Model *model;
         View *view;
+        TestSetup *testSetup;
     };
 }
 

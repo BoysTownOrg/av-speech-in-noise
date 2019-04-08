@@ -126,14 +126,6 @@ namespace {
             listener_->playTrial();
         }
         
-        void confirmTestSetup() {
-            listener_->confirmTestSetup();
-        }
-        
-        void playCalibration() {
-            listener_->playCalibration();
-        }
-        
         void showErrorMessage(std::string s) override {
             errorMessage_ = std::move(s);
         }
@@ -242,9 +234,18 @@ namespace {
             std::string testerId_{};
             std::string session_{};
             std::string calibrationFilePath_{};
+            EventListener *listener_{};
             bool shown_{};
             bool hidden_{};
         public:
+            void confirmTestSetup() {
+                listener_->confirmTestSetup();
+            }
+            
+            void playCalibration() {
+                listener_->playCalibration();
+            }
+            
             std::string session() override {
                 return session_;
             }
@@ -339,6 +340,10 @@ namespace {
             
             std::string calibrationFilePath() override {
                 return calibrationFilePath_;
+            }
+            
+            void subscribe(EventListener *listener) override {
+                listener_ = listener;
             }
         };
         
@@ -499,14 +504,20 @@ namespace {
         }
     };
     
-    class ConfirmingTestSetup : public UseCase {
-        void run(presentation::View::EventListener &listener) override {
+    class TestSetupUseCase {
+    public:
+        virtual ~TestSetupUseCase() = default;
+        virtual void run(presentation::View::TestSetup::EventListener &) = 0;
+    };
+    
+    class ConfirmingTestSetup : public TestSetupUseCase {
+        void run(presentation::View::TestSetup::EventListener &listener) override {
             listener.confirmTestSetup();
         }
     };
     
-    class PlayingCalibration : public UseCase {
-        void run(presentation::View::EventListener &listener) override {
+    class PlayingCalibration : public TestSetupUseCase {
+        void run(presentation::View::TestSetup::EventListener &listener) override {
             listener.playCalibration();
         }
     };
@@ -517,9 +528,10 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub view{&setupView, &testerView, nullptr};
+        presentation::Presenter::TestSetup testSetup{&setupView, &view};
         
         presentation::Presenter construct() {
-            return {&model, &view};
+            return {&model, &view, &testSetup};
         }
     };
     
@@ -536,7 +548,8 @@ namespace {
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
         ViewStub view{&setupView, &testerView, &subjectView};
-        presentation::Presenter presenter{&model, &view};
+        presentation::Presenter::TestSetup testSetup{&setupView, &view};
+        presentation::Presenter presenter{&model, &view, &testSetup};
         BrowsingForStimulusList browsingForStimulusList{};
         BrowsingForMasker browsingForMasker{};
         ConfirmingTestSetup confirmingTestSetup{};
@@ -563,11 +576,11 @@ namespace {
         }
         
         void confirmTestSetup() {
-            view.confirmTestSetup();
+            setupView.confirmTestSetup();
         }
         
         void playCalibration() {
-            view.playCalibration();
+            setupView.playCalibration();
         }
         
         void confirmTestSetupWithInvalidInput() {
@@ -695,9 +708,9 @@ namespace {
             return model.calibrationParameters();
         }
         
-        void assertInvalidSignalLevelShowsErrorMessageFollowing(UseCase &useCase) {
+        void assertInvalidSignalLevelShowsErrorMessageFollowing(TestSetupUseCase &useCase) {
             setupView.setSignalLevel("a");
-            runUseCase(useCase);
+            useCase.run(testSetup);
             assertEqual("'a' is not a valid signal level.", errorMessage());
         }
         
@@ -972,6 +985,7 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub view{&setupView, &testerView, nullptr};
+        presentation::Presenter::TestSetup testSetup{&setupView, &view};
         
         void useFailingModel(std::string s = {}) {
             failure.setErrorMessage(std::move(s));
@@ -979,8 +993,8 @@ namespace {
         }
         
         void confirmTestSetup() {
-            presentation::Presenter presenter{model, &view};
-            view.confirmTestSetup();
+            presentation::Presenter presenter{model, &view, &testSetup};
+            setupView.confirmTestSetup();
         }
         
         void assertConfirmTestSetupShowsErrorMessage(std::string s) {

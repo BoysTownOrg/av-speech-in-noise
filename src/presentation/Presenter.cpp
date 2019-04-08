@@ -3,16 +3,18 @@
 namespace presentation {
     Presenter::Presenter(
         av_coordinated_response_measure::Model *model,
-        View *view
+        View *view,
+        TestSetup *testSetup
     ) :
-        testSetup{model, view->testSetup(), view},
         tester{model, view->tester(), view},
         model{model},
-        view{view}
+        view{view},
+        testSetup{testSetup}
     {
         model->subscribe(this);
         view->subscribe(this);
         view->populateAudioDeviceMenu(model->audioDevices());
+        testSetup->becomeChild(this);
     }
 
     void Presenter::run() {
@@ -51,14 +53,14 @@ namespace presentation {
     }
     
     void Presenter::initializeTest_() {
-        testSetup.initializeTest();
+        model->initializeTest(testSetup->testParameters());
         hideTestSetup();
         showTesterView();
         showNextTrialButton();
     }
     
     void Presenter::hideTestSetup() {
-        testSetup.tuneOut();
+        testSetup->tuneOut();
     }
     
     void Presenter::showTesterView() {
@@ -103,7 +105,7 @@ namespace presentation {
     }
     
     void Presenter::showTestSetup() {
-        testSetup.listen();
+        testSetup->listen();
     }
     
     av_coordinated_response_measure::Model::SubjectResponse
@@ -150,7 +152,7 @@ namespace presentation {
     
     void Presenter::playCalibration() {
         try {
-            testSetup.playCalibration();
+            model->playCalibration(testSetup->calibrationParameters());
         } catch (const std::runtime_error &e) {
             showErrorMessage(e.what());
         }
@@ -158,11 +160,9 @@ namespace presentation {
     
 
     Presenter::TestSetup::TestSetup(
-        av_coordinated_response_measure::Model *model,
         View::TestSetup *view,
         View *parentView
     ) :
-        model{model},
         view{view},
         parentView{parentView}
     {
@@ -171,14 +171,11 @@ namespace presentation {
             conditionName(Condition::audioVisual),
             conditionName(Condition::auditoryOnly)
         });
+        view->subscribe(this);
     }
     
     void Presenter::TestSetup::listen() {
         view->show();
-    }
-    
-    void Presenter::TestSetup::initializeTest() {
-        model->initializeTest(testParameters());
     }
     
     av_coordinated_response_measure::Model::Test
@@ -220,16 +217,31 @@ namespace presentation {
     }
     
     void Presenter::TestSetup::playCalibration() {
+        parent->playCalibration();
+    }
+    
+    av_coordinated_response_measure::Model::Calibration
+        Presenter::TestSetup::calibrationParameters()
+    {
         av_coordinated_response_measure::Model::Calibration p;
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readSignalLevel();
         p.audioDevice = parentView->audioDevice();
-        model->playCalibration(p);
+        return p;
     }
     
     int Presenter::TestSetup::readSignalLevel() {
         return readInteger(view->signalLevel_dB_SPL(), "signal level");
     }
+    
+    void Presenter::TestSetup::confirmTestSetup() { 
+        parent->confirmTestSetup();
+    }
+    
+    void Presenter::TestSetup::becomeChild(Presenter *p) {
+        parent = p;
+    }
+    
     
     
     Presenter::Tester::Tester(
