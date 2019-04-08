@@ -274,7 +274,7 @@ namespace {
                 session_ = std::move(s);
             }
             
-            void setStimulusList(std::string s) override {
+            void setTargetListDirectory(std::string s) override {
                 stimulusList_ = std::move(s);
             }
             
@@ -487,7 +487,7 @@ namespace {
         }
         
         void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
-            view.setStimulusList(s);
+            view.setTargetListDirectory(s);
         }
     };
     
@@ -775,7 +775,7 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
         setupView.setStartingSnr("1");
         setSignalLevel("2");
-        setupView.setStimulusList("a");
+        setupView.setTargetListDirectory("a");
         setupView.setSubjectId("b");
         setupView.setTesterId("c");
         setupView.setMasker("d");

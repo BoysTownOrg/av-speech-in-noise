@@ -17,7 +17,7 @@ class CocoaTestSetupView;
 @interface SetupViewActions : NSObject
 @property CocoaTestSetupView *controller;
 - (void) confirmTestSetup;
-- (void) browseForStimulusList;
+- (void) browseForTargetList;
 - (void) browseForMasker;
 - (void) browseForCalibration;
 @end
@@ -52,7 +52,7 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     NSTextField *startingSnr_dB_label;
     NSTextField *startingSnr_dB_;
     NSTextField *stimulusListDirectoryLabel;
-    NSTextField *stimulusListDirectory_;
+    NSTextField *targetListDirectory_;
     NSTextField *maskerFilePath_label;
     NSTextField *maskerFilePath_;
     NSTextField *calibrationFilePath_label;
@@ -72,7 +72,7 @@ public:
     std::string subjectId() override;
     std::string condition() override;
     void populateConditionMenu(std::vector<std::string> items) override;
-    void setStimulusList(std::string) override;
+    void setTargetListDirectory(std::string) override;
     void setMasker(std::string) override;
     void setCalibrationFilePath(std::string) override;
     std::string session() override;

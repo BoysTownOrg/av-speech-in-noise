@@ -64,7 +64,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
         @"stimulus directory:",
         NSMakeRect(0, 120, 140, 25)
     )},
-    stimulusListDirectory_{[[NSTextField alloc]
+    targetListDirectory_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(145, 120, 500, 25)
     ]},
     maskerFilePath_label{allocLabel(
@@ -91,7 +91,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
     const auto browseForStimulusListButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
-        action:@selector(browseForStimulusList)
+        action:@selector(browseForTargetList)
     ];
     [browseForStimulusListButton setFrame:NSMakeRect(500 + 145 + 10, 120, 100, 25)];
     const auto browseForMaskerButton = [NSButton
@@ -127,13 +127,13 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [view_ addSubview:startingSnr_dB_label];
     [view_ addSubview:startingSnr_dB_];
     [view_ addSubview:stimulusListDirectoryLabel];
-    [view_ addSubview:stimulusListDirectory_];
+    [view_ addSubview:targetListDirectory_];
     [view_ addSubview:maskerFilePath_label];
     [view_ addSubview:maskerFilePath_];
     [view_ addSubview:calibrationFilePath_label];
     [view_ addSubview:calibrationFilePath_];
     [view_ addSubview:conditionMenu];
-    stimulusListDirectory_.stringValue =
+    targetListDirectory_.stringValue =
         @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
     maskerFilePath_.stringValue =
         @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
@@ -182,7 +182,7 @@ std::string CocoaTestSetupView::calibrationFilePath() {
 }
 
 std::string CocoaTestSetupView::targetListDirectory() {
-    return stimulusListDirectory_.stringValue.UTF8String;
+    return targetListDirectory_.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::testerId() {
@@ -201,8 +201,8 @@ std::string CocoaTestSetupView::session() {
     return session_.stringValue.UTF8String;
 }
 
-void CocoaTestSetupView::setStimulusList(std::string s) {
-    [stimulusListDirectory_ setStringValue:asNsString(std::move(s))];
+void CocoaTestSetupView::setTargetListDirectory(std::string s) {
+    [targetListDirectory_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaTestSetupView::setCalibrationFilePath(std::string s) {
@@ -245,7 +245,7 @@ void CocoaTestSetupView::browseForCalibration() {
     controller->confirm();
 }
 
-- (void)browseForStimulusList { 
+- (void)browseForTargetList { 
     controller->browseForTargetList();
 }
 

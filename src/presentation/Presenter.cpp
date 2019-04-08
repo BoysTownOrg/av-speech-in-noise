@@ -234,7 +234,7 @@ namespace presentation {
     }
     
     void Presenter::TestSetup::setStimulusList(std::string s) {
-        view->setStimulusList(std::move(s));
+        view->setTargetListDirectory(std::move(s));
     }
     
     void Presenter::TestSetup::browseForTargetList() { 
@@ -249,7 +249,7 @@ namespace presentation {
         parent->browseForCalibration();
     }
     
-    void Presenter::TestSetup::setCalibrationFilePath(std::string s) { 
+    void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
         view->setCalibrationFilePath(std::move(s));
     }
     

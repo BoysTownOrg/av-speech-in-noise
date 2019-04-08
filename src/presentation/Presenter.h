@@ -72,7 +72,7 @@ namespace presentation {
             virtual std::string condition() = 0;
             virtual std::string session() = 0;
             virtual void setMasker(std::string) = 0;
-            virtual void setStimulusList(std::string) = 0;
+            virtual void setTargetListDirectory(std::string) = 0;
             virtual void setCalibrationFilePath(std::string) = 0;
             virtual void populateConditionMenu(std::vector<std::string> items) = 0;
         };
