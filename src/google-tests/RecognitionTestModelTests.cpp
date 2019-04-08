@@ -330,6 +330,7 @@ namespace {
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
         recognition_test::RecognitionTestModel::Test test;
+        recognition_test::RecognitionTestModel::Calibration calibration;
         recognition_test::RecognitionTestModel::AudioSettings trial;
         recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
         TargetListStub targetList{};
@@ -355,6 +356,10 @@ namespace {
         
         void playTrial() {
             model.playTrial(trial);
+        }
+        
+        void playCalibration() {
+            model.playCalibration(calibration);
         }
         
         void submitResponse() {
@@ -463,6 +468,12 @@ namespace {
         trial.audioDevice = "a";
         playTrial();
         assertEqual("a", maskerPlayer.device());
+        assertEqual("a", targetPlayer.device());
+    }
+
+    TEST_F(RecognitionTestModelTests, playCalibrationPassesAudioDeviceToTargetPlayer) {
+        calibration.audioDevice = "a";
+        playCalibration();
         assertEqual("a", targetPlayer.device());
     }
 

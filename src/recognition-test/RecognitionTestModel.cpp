@@ -169,8 +169,8 @@ namespace recognition_test {
         listener_->trialComplete();
     }
     
-    void RecognitionTestModel::playCalibration(const Calibration &) { 
-        ;
+    void RecognitionTestModel::playCalibration(const Calibration &p) {
+        targetPlayer->setAudioDevice(p.audioDevice);
     }
 }
 
