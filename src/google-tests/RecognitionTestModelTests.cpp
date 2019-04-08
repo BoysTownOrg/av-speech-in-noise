@@ -427,6 +427,13 @@ namespace {
             );
         }
         
+        void assertCalibrationThrowsRequestFailure(std::string what) {
+            assertCallThrowsRequestFailure(
+                &RecognitionTestModelTests::playCalibration,
+                std::move(what)
+            );
+        }
+        
         void assertInitializeTestThrowsRequestFailure(std::string what) {
             assertCallThrowsRequestFailure(
                 &RecognitionTestModelTests::initializeTest,
@@ -479,11 +486,20 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialWithInvalidMaskerAudioDeviceThrowsRequestFailure
+        playTrialWithInvalidAudioDeviceThrowsRequestFailure
     ) {
         throwInvalidAudioDeviceWhenSet();
         trial.audioDevice = "d";
         assertPlayTrialThrowsRequestFailure("'d' is not a valid audio device.");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationWithInvalidAudioDeviceThrowsRequestFailure
+    ) {
+        throwInvalidAudioDeviceWhenSet();
+        calibration.audioDevice = "d";
+        assertCalibrationThrowsRequestFailure("'d' is not a valid audio device.");
     }
 
     TEST_F(
