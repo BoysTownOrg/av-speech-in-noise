@@ -116,7 +116,8 @@ int main() {
         &outputFile
     };
     CocoaTestSetupView testSetupView{};
-    CocoaView view{&testSetupView};
+    CocoaView view{};
+    view.addSubview(testSetupView.view());
     presentation::Presenter::TestSetup testSetup{&testSetupView, &view};
     presentation::Presenter presenter{&model, &view, &testSetup};
     presenter.run();

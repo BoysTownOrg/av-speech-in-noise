@@ -49,9 +49,7 @@ public:
     void becomeChild(CocoaView *);
 };
 
-
 class CocoaTestSetupView : public presentation::View::TestSetup {
-    CocoaView *parent_;
     NSView *view_;
     NSTextField *subjectIdLabel;
     NSTextField *subjectId_;
@@ -93,7 +91,6 @@ public:
     void confirm();
     void browseForStimulusList();
     void browseForMasker();
-    void becomeChild(CocoaView *);
 private:
     NSTextField *allocLabel(NSString *label, NSRect frame);
 };
@@ -126,7 +123,6 @@ private:
 class CocoaView : public presentation::View {
     CocoaTesterView testerView_{};
     CocoaSubjectView subjectView_{};
-    CocoaTestSetupView *testSetupView_{};
     EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
@@ -134,7 +130,7 @@ class CocoaView : public presentation::View {
     ViewActions *actions;
     bool browseCancelled_{};
 public:
-    CocoaView(CocoaTestSetupView *);
+    CocoaView();
     void browseForStimulusList();
     void browseForMasker();
     void playTrial();
@@ -152,6 +148,7 @@ public:
     std::string browseForOpeningFile() override;
     std::string audioDevice() override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
+    void addSubview(NSView *);
     
 private:
     std::string browseModal(NSOpenPanel *panel);

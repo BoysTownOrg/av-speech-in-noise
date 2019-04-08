@@ -340,7 +340,7 @@ void CocoaSubjectView::showResponseButtons() {
 }
 
 void CocoaTestSetupView::browseForMasker() {
-    parent_->browseForMasker();
+    listener_->browseForMasker();
 }
 
 void CocoaSubjectView::hideResponseButtons() {
@@ -371,8 +371,7 @@ void CocoaSubjectView::playTrial() {
 }
 @end
 
-CocoaView::CocoaView(CocoaTestSetupView *testSetupView) :
-    testSetupView_{testSetupView},
+CocoaView::CocoaView() :
     app{[NSApplication sharedApplication]},
     window{[[NSWindow alloc]
         initWithContentRect:NSMakeRect(15, 15, 900, 400)
@@ -390,7 +389,6 @@ CocoaView::CocoaView(CocoaTestSetupView *testSetupView) :
     actions{[ViewActions alloc]}
 {
     testerView_.becomeChild(this);
-    testSetupView_->becomeChild(this);
     subjectView_.becomeChild(this);
     
     app.mainMenu = [[NSMenu alloc] init];
@@ -425,7 +423,6 @@ CocoaView::CocoaView(CocoaTestSetupView *testSetupView) :
     [app.mainMenu addItem:fileMenu];
     
     [window.contentView addSubview:testerView_.view()];
-    [window.contentView addSubview:testSetupView_->view()];
     [window.contentView addSubview:deviceMenu];
     [window makeKeyAndOrderFront:nil];
     actions.controller = this;
@@ -495,10 +492,6 @@ void CocoaView::showErrorMessage(std::string s) {
 }
 @end
 
-void CocoaTestSetupView::becomeChild(CocoaView *p) {
-    parent_ = p;
-}
-
 void CocoaTesterView::becomeChild(CocoaView *p) {
     parent_ = p;
 }
@@ -531,7 +524,7 @@ bool CocoaView::browseCancelled() {
 }
 
 void CocoaTestSetupView::browseForStimulusList() { 
-    parent_->browseForStimulusList();
+    listener_->browseForStimulusList();
 }
 
 void CocoaView::browseForStimulusList() { 
@@ -568,4 +561,8 @@ std::string CocoaView::audioDevice() {
 void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (auto item : items)
         [deviceMenu addItemWithTitle:asNsString(item)];
+}
+
+void CocoaView::addSubview(NSView *view) {
+    [window.contentView addSubview:view];
 }
