@@ -98,17 +98,14 @@ namespace {
         std::string audioDevice_{};
         DialogResponse dialogResponse_{};
         EventListener *listener_{};
-        Tester *testerView_;
         Subject *subjectView_;
         bool eventLoopCalled_{};
         bool confirmationDialogShown_{};
         bool browseCancelled_{};
     public:
         ViewStub(
-            Tester *testerView,
             Subject *subjectView
         ) :
-            testerView_{testerView},
             subjectView_{subjectView} {}
         
         void setAudioDevice(std::string s) {
@@ -141,10 +138,6 @@ namespace {
         
         void eventLoop() override {
             eventLoopCalled_ = true;
-        }
-        
-        Tester *tester() override {
-            return testerView_;
         }
         
         DialogResponse showConfirmationDialog() override {
@@ -520,7 +513,7 @@ namespace {
         ModelStub model{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
-        ViewStub view{&testerView, nullptr};
+        ViewStub view{nullptr};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
         
@@ -541,7 +534,7 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        ViewStub view{&testerView, &subjectView};
+        ViewStub view{&subjectView};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
         presentation::Presenter presenter{&model, &view, &testSetup, &tester};
@@ -979,7 +972,7 @@ namespace {
         av_coordinated_response_measure::Model *model{&defaultModel};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
-        ViewStub view{&testerView, nullptr};
+        ViewStub view{nullptr};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
         
