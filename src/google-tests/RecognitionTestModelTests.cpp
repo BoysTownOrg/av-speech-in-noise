@@ -326,6 +326,41 @@ namespace {
             return notified_;
         }
     };
+    
+    class UseCase {
+    public:
+        virtual ~UseCase() = default;
+        virtual void run(recognition_test::RecognitionTestModel &) = 0;
+    };
+    
+    class AudioDeviceUseCase : public UseCase {
+    public:
+        virtual void setAudioDevice(std::string) = 0;
+    };
+    
+    class PlayingTrial : public AudioDeviceUseCase {
+        recognition_test::RecognitionTestModel::AudioSettings trial;
+    public:
+        void setAudioDevice(std::string s) override {
+            trial.audioDevice = std::move(s);
+        }
+        
+        void run(recognition_test::RecognitionTestModel &m) override {
+            m.playTrial(trial);
+        }
+    };
+    
+    class PlayingCalibration : public AudioDeviceUseCase {
+        recognition_test::RecognitionTestModel::Calibration calibration;
+    public:
+        void setAudioDevice(std::string s) override {
+            calibration.audioDevice = std::move(s);
+        }
+        
+        void run(recognition_test::RecognitionTestModel &m) override {
+            m.playCalibration(calibration);
+        }
+    };
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
@@ -344,6 +379,8 @@ namespace {
             &outputFile
         };
         ModelEventListenerStub listener{};
+        PlayingTrial playingTrial{};
+        PlayingCalibration playingCalibration{};
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
@@ -465,17 +502,9 @@ namespace {
             targetPlayer.throwInvalidAudioDeviceWhenDeviceSet();
         }
         
-        void assertPlayTrialPassesDeviceToTargetPlayer() {
-            assertDevicePassedToTargetPlayer(trial.audioDevice, &RecognitionTestModelTests::playTrial);
-        }
-        
-        void assertPlayCalibrationPassesDeviceToTargetPlayer() {
-            assertDevicePassedToTargetPlayer(calibration.audioDevice, &RecognitionTestModelTests::playCalibration);
-        }
-        
-        void assertDevicePassedToTargetPlayer(std::string &device, void(RecognitionTestModelTests::*f)()) {
-            device = "a";
-            (this->*f)();
+        void assertDevicePassedToTargetPlayer(AudioDeviceUseCase &useCase) {
+            useCase.setAudioDevice("a");
+            useCase.run(model);
             assertEqual("a", targetPlayer.device());
         }
     };
@@ -486,11 +515,11 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToTargetPlayer) {
-        assertPlayTrialPassesDeviceToTargetPlayer();
+        assertDevicePassedToTargetPlayer(playingTrial);
     }
 
     TEST_F(RecognitionTestModelTests, playCalibrationPassesAudioDeviceToTargetPlayer) {
-        assertPlayCalibrationPassesDeviceToTargetPlayer();
+        assertDevicePassedToTargetPlayer(playingCalibration);
     }
 
     TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToMaskerPlayer) {
