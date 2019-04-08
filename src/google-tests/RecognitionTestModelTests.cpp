@@ -502,10 +502,15 @@ namespace {
             assertEqual("a", targetPlayer.device());
         }
         
-        void assertThrowsRequestFailureWhenInvalidAudioDevice(AudioDeviceUseCase &useCase) {
+        void assertThrowsRequestFailureWhenInvalidAudioDevice(
+            AudioDeviceUseCase &useCase
+        ) {
             throwInvalidAudioDeviceWhenSet();
-            useCase.setAudioDevice("d");
-            assertCallThrowsRequestFailure(useCase, "'d' is not a valid audio device.");
+            useCase.setAudioDevice("a");
+            assertCallThrowsRequestFailure(
+                useCase,
+                "'a' is not a valid audio device."
+            );
         }
     };
 
@@ -514,11 +519,17 @@ namespace {
         EXPECT_EQ(&model, maskerPlayer.listener());
     }
 
-    TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToTargetPlayer) {
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialPassesAudioDeviceToTargetPlayer
+    ) {
         assertDevicePassedToTargetPlayer(playingTrial);
     }
 
-    TEST_F(RecognitionTestModelTests, playCalibrationPassesAudioDeviceToTargetPlayer) {
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationPassesAudioDeviceToTargetPlayer
+    ) {
         assertDevicePassedToTargetPlayer(playingCalibration);
     }
 
