@@ -471,10 +471,9 @@ namespace {
         EXPECT_EQ(&model, maskerPlayer.listener());
     }
 
-    TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToPlayers) {
+    TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToTargetPlayer) {
         trial.audioDevice = "a";
         playTrial();
-        assertEqual("a", maskerPlayer.device());
         assertEqual("a", targetPlayer.device());
     }
 
@@ -482,6 +481,12 @@ namespace {
         calibration.audioDevice = "a";
         playCalibration();
         assertEqual("a", targetPlayer.device());
+    }
+
+    TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToMaskerPlayer) {
+        trial.audioDevice = "a";
+        playTrial();
+        assertEqual("a", maskerPlayer.device());
     }
 
     TEST_F(
