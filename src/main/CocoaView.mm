@@ -189,7 +189,7 @@ std::string CocoaTestSetupView::maskerFilePath() {
     return maskerFilePath_.stringValue.UTF8String;
 }
 
-std::string CocoaTestSetupView::stimulusListDirectory() {
+std::string CocoaTestSetupView::targetListDirectory() {
     return stimulusListDirectory_.stringValue.UTF8String;
 }
 
@@ -534,7 +534,7 @@ void CocoaTestSetupView::browseForStimulusList() {
 }
 
 void CocoaView::browseForStimulusList() { 
-    listener->browseForStimulusList();
+    listener->browseForTargetList();
 }
 
 std::string CocoaView::browseForOpeningFile() {

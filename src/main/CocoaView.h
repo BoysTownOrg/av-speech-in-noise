@@ -80,7 +80,7 @@ public:
     std::string signalLevel_dB_SPL() override;
     std::string maskerFilePath() override;
     std::string startingSnr_dB() override;
-    std::string stimulusListDirectory() override;
+    std::string targetListDirectory() override;
     std::string testerId() override;
     std::string subjectId() override;
     std::string condition() override;

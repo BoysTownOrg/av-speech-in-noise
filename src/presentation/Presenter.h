@@ -20,7 +20,7 @@ namespace presentation {
             virtual void playCalibration() = 0;
             virtual void playTrial() = 0;
             virtual void submitResponse() = 0;
-            virtual void browseForStimulusList() = 0;
+            virtual void browseForTargetList() = 0;
             virtual void browseForMasker() = 0;
         };
         
@@ -56,7 +56,7 @@ namespace presentation {
             virtual std::string maskerFilePath() = 0;
             virtual std::string calibrationFilePath() = 0;
             virtual void setMasker(std::string) = 0;
-            virtual std::string stimulusListDirectory() = 0;
+            virtual std::string targetListDirectory() = 0;
             virtual void setStimulusList(std::string) = 0;
             virtual std::string testerId() = 0;
             virtual std::string subjectId() = 0;
@@ -126,7 +126,7 @@ namespace presentation {
         void closeTest() override;
         void confirmTestSetup() override;
         void submitResponse() override;
-        void browseForStimulusList() override;
+        void browseForTargetList() override;
         void browseForMasker() override;
         void playCalibration() override;
         void trialComplete() override;
@@ -143,6 +143,7 @@ namespace presentation {
         void hideResponseButtons();
         void showNextTrialButton();
         void hideNextTrialButton();
+        void showResponseButtons();
         void initializeTest_();
         av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
         av_coordinated_response_measure::Color colorResponse();

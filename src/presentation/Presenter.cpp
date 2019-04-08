@@ -127,7 +127,7 @@ namespace presentation {
         return color;
     }
     
-    void Presenter::browseForStimulusList() {
+    void Presenter::browseForTargetList() {
         auto result = view->browseForDirectory();
         if (!view->browseCancelled())
             view->testSetup()->setStimulusList(result);
@@ -139,7 +139,11 @@ namespace presentation {
             view->testSetup()->setMasker(result);
     }
     
-    void Presenter::trialComplete() { 
+    void Presenter::trialComplete() {
+        showResponseButtons();
+    }
+    
+    void Presenter::showResponseButtons() {
         view->subject()->showResponseButtons();
     }
     
@@ -182,7 +186,7 @@ namespace presentation {
             readInteger(view->startingSnr_dB(), "SNR");
         p.signalLevel_dB_SPL = readSignalLevel();
         p.maskerFilePath = view->maskerFilePath();
-        p.targetListDirectory = view->stimulusListDirectory();
+        p.targetListDirectory = view->targetListDirectory();
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.session = view->session();

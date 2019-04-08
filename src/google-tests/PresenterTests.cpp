@@ -303,7 +303,7 @@ namespace {
                 return masker_;
             }
 
-            std::string stimulusListDirectory() override {
+            std::string targetListDirectory() override {
                 return stimulusList_;
             }
 
@@ -483,7 +483,7 @@ namespace {
     class BrowsingForStimulusList : public BrowsingEnteredPathUseCase {
     public:
         void run(presentation::View::EventListener &listener) override {
-            listener.browseForStimulusList();
+            listener.browseForTargetList();
         }
 
         void setResult(ViewStub &view, std::string s) override {
@@ -491,7 +491,7 @@ namespace {
         }
         
         std::string entry(ViewStub::TestSetupViewStub &view) override {
-            return view.stimulusListDirectory();
+            return view.targetListDirectory();
         }
         
         void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
