@@ -102,6 +102,13 @@ CocoaTestSetupView::CocoaTestSetupView() :
     maskerFilePath_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(145, 90, 500, 25)
     ]},
+    calibrationFilePath_label{allocLabel(
+        @"calibration file path:",
+        NSMakeRect(500, 90, 140, 25)
+    )},
+    calibrationFilePath_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(645, 90, 500, 25)
+    ]},
     conditionMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(145, 60, 150, 25)
         pullsDown:NO
@@ -144,6 +151,8 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [view_ addSubview:stimulusListDirectory_];
     [view_ addSubview:maskerFilePath_label];
     [view_ addSubview:maskerFilePath_];
+    [view_ addSubview:calibrationFilePath_label];
+    [view_ addSubview:calibrationFilePath_];
     [view_ addSubview:conditionMenu];
     stimulusListDirectory_.stringValue =
         @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
@@ -187,6 +196,10 @@ std::string CocoaTestSetupView::signalLevel_dB_SPL() {
 
 std::string CocoaTestSetupView::maskerFilePath() {
     return maskerFilePath_.stringValue.UTF8String;
+}
+
+std::string CocoaTestSetupView::calibrationFilePath() {
+    return calibrationFilePath_.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::targetListDirectory() {
@@ -379,6 +392,10 @@ CocoaView::CocoaView() :
         backing:NSBackingStoreBuffered
         defer:NO
     ]},
+    deviceMenu{[[NSPopUpButton alloc]
+        initWithFrame:NSMakeRect(0, 0, 140, 30)
+        pullsDown:NO
+    ]},
     actions{[ViewActions alloc]}
 {
     testerView_.becomeChild(this);
@@ -418,6 +435,7 @@ CocoaView::CocoaView() :
     
     [window.contentView addSubview:testerView_.view()];
     [window.contentView addSubview:testSetupView_.view()];
+    [window.contentView addSubview:deviceMenu];
     [window makeKeyAndOrderFront:nil];
     actions.controller = this;
 }
@@ -558,4 +576,8 @@ std::string CocoaView::browseModal(NSOpenPanel *panel) {
 
 void CocoaView::browseForMasker() {
     listener->browseForMasker();
+}
+
+std::string CocoaView::audioDevice() {
+    return deviceMenu.titleOfSelectedItem.UTF8String;
 }

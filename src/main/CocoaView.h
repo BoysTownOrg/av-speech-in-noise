@@ -70,6 +70,8 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     NSTextField *stimulusListDirectory_;
     NSTextField *maskerFilePath_label;
     NSTextField *maskerFilePath_;
+    NSTextField *calibrationFilePath_label;
+    NSTextField *calibrationFilePath_;
     NSPopUpButton *conditionMenu;
     SetupViewActions *actions;
 public:
@@ -88,6 +90,7 @@ public:
     void setStimulusList(std::string) override;
     void setMasker(std::string) override;
     std::string session() override;
+    std::string calibrationFilePath() override;
     void confirm();
     void browseForStimulusList();
     void browseForMasker();
@@ -128,6 +131,7 @@ class CocoaView : public presentation::View {
     EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
+    NSPopUpButton *deviceMenu;
     ViewActions *actions;
     bool browseCancelled_{};
 public:
@@ -149,6 +153,8 @@ public:
     std::string browseForDirectory() override;
     bool browseCancelled() override;
     std::string browseForOpeningFile() override;
+    std::string audioDevice() override;
+    
 private:
     std::string browseModal(NSOpenPanel *panel);
 };
