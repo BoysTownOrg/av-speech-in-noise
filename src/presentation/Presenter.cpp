@@ -133,13 +133,13 @@ namespace presentation {
     void Presenter::browseForTargetList() {
         auto result = view->browseForDirectory();
         if (!view->browseCancelled())
-            view->testSetup()->setStimulusList(result);
+            testSetup->setStimulusList(result);
     }
     
     void Presenter::browseForMasker() {
         auto result = view->browseForOpeningFile();
         if (!view->browseCancelled())
-            view->testSetup()->setMasker(result);
+            testSetup->setMasker(result);
     }
     
     void Presenter::trialComplete() {
@@ -242,6 +242,13 @@ namespace presentation {
         parent = p;
     }
     
+    void Presenter::TestSetup::setMasker(std::string s) {
+        view->setMasker(std::move(s));
+    }
+    
+    void Presenter::TestSetup::setStimulusList(std::string s) {
+        view->setStimulusList(std::move(s));
+    }
     
     
     Presenter::Tester::Tester(

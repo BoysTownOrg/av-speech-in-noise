@@ -146,10 +146,6 @@ namespace {
             eventLoopCalled_ = true;
         }
         
-        TestSetup *testSetup() override {
-            return setupView_;
-        }
-        
         Tester *tester() override {
             return testerView_;
         }

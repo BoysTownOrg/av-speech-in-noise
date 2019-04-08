@@ -214,7 +214,11 @@ void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
 }
 
 void CocoaTestSetupView::confirm() {
-    parent_->confirmTestSetup();
+    listener_->confirmTestSetup();
+}
+
+void CocoaTestSetupView::subscribe(EventListener *listener) {
+    listener_ = listener;
 }
 
 @implementation SetupViewActions
@@ -367,7 +371,8 @@ void CocoaSubjectView::playTrial() {
 }
 @end
 
-CocoaView::CocoaView() :
+CocoaView::CocoaView(CocoaTestSetupView *testSetupView) :
+    testSetupView_{testSetupView},
     app{[NSApplication sharedApplication]},
     window{[[NSWindow alloc]
         initWithContentRect:NSMakeRect(15, 15, 900, 400)
@@ -385,7 +390,7 @@ CocoaView::CocoaView() :
     actions{[ViewActions alloc]}
 {
     testerView_.becomeChild(this);
-    testSetupView_.becomeChild(this);
+    testSetupView_->becomeChild(this);
     subjectView_.becomeChild(this);
     
     app.mainMenu = [[NSMenu alloc] init];
@@ -420,14 +425,10 @@ CocoaView::CocoaView() :
     [app.mainMenu addItem:fileMenu];
     
     [window.contentView addSubview:testerView_.view()];
-    [window.contentView addSubview:testSetupView_.view()];
+    [window.contentView addSubview:testSetupView_->view()];
     [window.contentView addSubview:deviceMenu];
     [window makeKeyAndOrderFront:nil];
     actions.controller = this;
-}
-
-void CocoaView::confirmTestSetup() {
-    listener->confirmTestSetup();
 }
 
 void CocoaView::playTrial() {
@@ -448,10 +449,6 @@ void CocoaView::subscribe(EventListener *listener_) {
 
 void CocoaView::eventLoop() {
     [app run];
-}
-
-auto CocoaView::testSetup() -> TestSetup * {
-    return &testSetupView_;
 }
 
 auto CocoaView::tester() -> Tester * {

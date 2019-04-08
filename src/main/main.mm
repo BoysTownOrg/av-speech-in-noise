@@ -115,7 +115,9 @@ int main() {
         &maskerPlayer,
         &outputFile
     };
-    CocoaView view;
-    presentation::Presenter presenter{&model, &view};
+    CocoaTestSetupView testSetupView{};
+    CocoaView view{&testSetupView};
+    presentation::Presenter::TestSetup testSetup{&testSetupView, &view};
+    presentation::Presenter presenter{&model, &view, &testSetup};
     presenter.run();
 }

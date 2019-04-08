@@ -71,7 +71,6 @@ namespace presentation {
         
         virtual void subscribe(EventListener *) = 0;
         virtual void eventLoop() = 0;
-        virtual TestSetup *testSetup() = 0;
         virtual Tester *tester() = 0;
         virtual Subject *subject() = 0;
         virtual std::string browseForDirectory() = 0;
@@ -105,6 +104,8 @@ namespace presentation {
             void tuneOut();
             void confirmTestSetup() override;
             void becomeChild(Presenter *parent);
+            void setMasker(std::string);
+            void setStimulusList(std::string);
             av_coordinated_response_measure::Model::Test testParameters();
             av_coordinated_response_measure::Model::Calibration calibrationParameters();
         private:

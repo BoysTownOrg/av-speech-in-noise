@@ -71,6 +71,7 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     NSTextField *calibrationFilePath_;
     NSPopUpButton *conditionMenu;
     SetupViewActions *actions;
+    EventListener *listener_{};
 public:
     CocoaTestSetupView();
     NSView *view();
@@ -88,6 +89,7 @@ public:
     void setMasker(std::string) override;
     std::string session() override;
     std::string calibrationFilePath() override;
+    void subscribe(EventListener *) override;
     void confirm();
     void browseForStimulusList();
     void browseForMasker();
@@ -122,9 +124,9 @@ private:
 };
 
 class CocoaView : public presentation::View {
-    CocoaTestSetupView testSetupView_{};
     CocoaTesterView testerView_{};
     CocoaSubjectView subjectView_{};
+    CocoaTestSetupView *testSetupView_{};
     EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
@@ -132,8 +134,7 @@ class CocoaView : public presentation::View {
     ViewActions *actions;
     bool browseCancelled_{};
 public:
-    CocoaView();
-    void confirmTestSetup();
+    CocoaView(CocoaTestSetupView *);
     void browseForStimulusList();
     void browseForMasker();
     void playTrial();
@@ -142,7 +143,6 @@ public:
     void submitResponse();
     void subscribe(EventListener *) override;
     void eventLoop() override;
-    TestSetup *testSetup() override;
     Tester *tester() override;
     Subject *subject() override;
     DialogResponse showConfirmationDialog() override;
