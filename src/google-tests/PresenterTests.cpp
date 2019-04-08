@@ -761,6 +761,12 @@ namespace {
         assertEqual("'a' is not a valid signal level.", errorMessage());
     }
 
+    TEST_F(PresenterTests, playCalibrationWithInvalidSignalLevelShowsErrorMessage) {
+        setupView.setSignalLevel("a");
+        playCalibration();
+        assertEqual("'a' is not a valid signal level.", errorMessage());
+    }
+
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
         setupView.setStartingSnr("a");
         confirmTestSetup();

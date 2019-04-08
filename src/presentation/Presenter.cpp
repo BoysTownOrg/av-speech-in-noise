@@ -112,7 +112,11 @@ namespace presentation {
     }
     
     void Presenter::playCalibration() {
-        testSetup.playCalibration();
+        try {
+            testSetup.playCalibration();
+        } catch (const std::runtime_error &e) {
+            view->showErrorMessage(e.what());
+        }
     }
     
 
@@ -178,11 +182,10 @@ namespace presentation {
     }
     
     void Presenter::TestSetup::playCalibration() { 
-        
         av_coordinated_response_measure::Model::Calibration p;
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL =
-            readInteger(view->signalLevel_dB_SPL(), "calibration level");
+            readInteger(view->signalLevel_dB_SPL(), "signal level");
         model->playCalibration(p);
     }
     
