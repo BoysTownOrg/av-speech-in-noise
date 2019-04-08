@@ -528,14 +528,20 @@ namespace {
     class PresenterTests : public ::testing::Test {
     protected:
         ModelStub model{};
+        ViewStub view{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        ViewStub view{};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
         presentation::Presenter::Subject subject{&subjectView};
-        presentation::Presenter presenter{&model, &view, &testSetup, &tester, &subject};
+        presentation::Presenter presenter{
+            &model,
+            &view,
+            &testSetup,
+            &tester,
+            &subject
+        };
         BrowsingForStimulusList browsingForStimulusList{};
         BrowsingForMasker browsingForMasker{};
         ConfirmingTestSetup confirmingTestSetup{};
@@ -622,7 +628,9 @@ namespace {
             useCase.run(testSetup);
         }
 
-        void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase &useCase) {
+        void assertBrowseResultPassedToEntry(
+            BrowsingEnteredPathUseCase &useCase
+        ) {
             useCase.setResult(view, "a");
             runUseCase(useCase);
             assertEqual("a", useCase.entry(setupView));
@@ -686,15 +694,21 @@ namespace {
             view.setDialogResponse(r);
         }
         
-        const av_coordinated_response_measure::Model::Test &modelTestParameters() {
+        const av_coordinated_response_measure::Model::Test &
+            modelTestParameters()
+        {
             return model.testParameters();
         }
         
-        const av_coordinated_response_measure::Model::Calibration &modelCalibrationParameters() {
+        const av_coordinated_response_measure::Model::Calibration &
+            modelCalibrationParameters()
+        {
             return model.calibrationParameters();
         }
         
-        void assertInvalidSignalLevelShowsErrorMessageFollowing(TestSetupUseCase &useCase) {
+        void assertInvalidSignalLevelShowsErrorMessageFollowing(
+            TestSetupUseCase &useCase
+        ) {
             setupView.setSignalLevel("a");
             useCase.run(testSetup);
             assertEqual("'a' is not a valid signal level.", errorMessage());
@@ -702,6 +716,10 @@ namespace {
         
         void setAudioDevice(std::string s) {
             view.setAudioDevice(std::move(s));
+        }
+        
+        void setSignalLevel(std::string s) {
+            setupView.setSignalLevel(std::move(s));
         }
     };
 
@@ -736,7 +754,7 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
         setupView.setStartingSnr("1");
-        setupView.setSignalLevel("2");
+        setSignalLevel("2");
         setupView.setStimulusList("a");
         setupView.setSubjectId("b");
         setupView.setTesterId("c");
@@ -753,7 +771,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, playCalibrationPassesParametersToModel) {
-        setupView.setSignalLevel("1");
+        setSignalLevel("1");
         setupView.setCalibrationFilePath("a");
         setAudioDevice("b");
         playCalibration();
