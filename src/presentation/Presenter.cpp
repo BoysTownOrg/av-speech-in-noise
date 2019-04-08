@@ -118,28 +118,6 @@ namespace presentation {
         testSetup->show();
     }
     
-    av_coordinated_response_measure::Model::SubjectResponse
-        Presenter::Subject::subjectResponse()
-    {
-        av_coordinated_response_measure::Model::SubjectResponse p;
-        p.color = colorResponse();
-        p.number = std::stoi(view->numberResponse());
-        return p;
-    }
-    
-    av_coordinated_response_measure::Color Presenter::Subject::colorResponse() {
-        av_coordinated_response_measure::Color color;
-        if (view->greenResponse())
-            color = av_coordinated_response_measure::Color::green;
-        else if (view->blueResponse())
-            color = av_coordinated_response_measure::Color::blue;
-        else if (view->grayResponse())
-            color = av_coordinated_response_measure::Color::gray;
-        else
-            color = av_coordinated_response_measure::Color::red;
-        return color;
-    }
-    
     void Presenter::browseForTargetList() {
         auto result = view->browseForDirectory();
         if (!view->browseCancelled())
@@ -307,5 +285,27 @@ namespace presentation {
     
     void Presenter::Subject::showResponseButtons() {
         view->showResponseButtons();
+    }
+    
+    av_coordinated_response_measure::Model::SubjectResponse
+        Presenter::Subject::subjectResponse()
+    {
+        av_coordinated_response_measure::Model::SubjectResponse p;
+        p.color = colorResponse();
+        p.number = std::stoi(view->numberResponse());
+        return p;
+    }
+    
+    av_coordinated_response_measure::Color Presenter::Subject::colorResponse() {
+        av_coordinated_response_measure::Color color;
+        if (view->greenResponse())
+            color = av_coordinated_response_measure::Color::green;
+        else if (view->blueResponse())
+            color = av_coordinated_response_measure::Color::blue;
+        else if (view->grayResponse())
+            color = av_coordinated_response_measure::Color::gray;
+        else
+            color = av_coordinated_response_measure::Color::red;
+        return color;
     }
 }
