@@ -33,9 +33,9 @@ class CocoaTesterView : public presentation::View::Tester {
     NSView *view_;
 public:
     CocoaTesterView();
-    NSView *view();
     void show() override;
     void hide() override;
+    NSView *view();
 };
 
 class CocoaTestSetupView : public presentation::View::TestSetup {
@@ -61,7 +61,6 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     EventListener *listener_{};
 public:
     CocoaTestSetupView();
-    NSView *view();
     void show() override;
     void hide() override;
     std::string signalLevel_dB_SPL() override;
@@ -77,6 +76,7 @@ public:
     std::string session() override;
     std::string calibrationFilePath() override;
     void subscribe(EventListener *) override;
+    NSView *view();
     void confirm();
     void browseForTargetList();
     void browseForMasker();
@@ -93,8 +93,6 @@ class CocoaSubjectView : public presentation::View::Subject {
     EventListener *listener_{};
 public:
     CocoaSubjectView();
-    void respond(id sender);
-    void playTrial();
     std::string numberResponse() override;
     bool greenResponse() override;
     bool blueResponse() override;
@@ -104,6 +102,8 @@ public:
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
     void subscribe(EventListener *) override;
+    void respond(id sender);
+    void playTrial();
 private:
     NSColor *lastPressedColor();
     void addButtonRow(NSColor *color, int row);
@@ -120,12 +120,6 @@ class CocoaView : public presentation::View {
     bool browseCancelled_{};
 public:
     CocoaView();
-    void browseForStimulusList();
-    void browseForMasker();
-    void playTrial();
-    void newTest();
-    void openTest();
-    void submitResponse();
     void subscribe(EventListener *) override;
     void eventLoop() override;
     Subject *subject() override;
@@ -136,6 +130,8 @@ public:
     std::string browseForOpeningFile() override;
     std::string audioDevice() override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
+    void newTest();
+    void openTest();
     void addSubview(NSView *);
     
 private:

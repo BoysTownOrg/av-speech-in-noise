@@ -194,6 +194,14 @@ std::string CocoaTestSetupView::session() {
     return session_.stringValue.UTF8String;
 }
 
+void CocoaTestSetupView::setStimulusList(std::string s) {
+    [stimulusListDirectory_ setStringValue:asNsString(std::move(s))];
+}
+
+void CocoaTestSetupView::setMasker(std::string s) {
+    [maskerFilePath_ setStringValue:asNsString(std::move(s))];
+}
+
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
     for (auto item : items)
         [conditionMenu addItemWithTitle:asNsString(item)];
@@ -209,6 +217,10 @@ void CocoaTestSetupView::subscribe(EventListener *listener) {
 
 void CocoaTestSetupView::browseForMasker() {
     listener_->browseForMasker();
+}
+
+void CocoaTestSetupView::browseForTargetList() {
+    listener_->browseForTargetList();
 }
 
 @implementation SetupViewActions
@@ -461,25 +473,6 @@ void CocoaView::showErrorMessage(std::string s) {
     [alert runModal];
 }
 
-@implementation ViewActions
-@synthesize controller;
-- (void)newTest {
-    controller->newTest();
-}
-
-- (void)openTest {
-    controller->openTest();
-}
-@end
-
-void CocoaTestSetupView::setStimulusList(std::string s) {
-    [stimulusListDirectory_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setMasker(std::string s) {
-    [maskerFilePath_ setStringValue:asNsString(std::move(s))];
-}
-
 std::string CocoaView::browseForDirectory() {
     auto panel = [NSOpenPanel openPanel];
     panel.canChooseDirectories = true;
@@ -489,10 +482,6 @@ std::string CocoaView::browseForDirectory() {
 
 bool CocoaView::browseCancelled() { 
     return browseCancelled_;
-}
-
-void CocoaTestSetupView::browseForTargetList() { 
-    listener_->browseForTargetList();
 }
 
 std::string CocoaView::browseForOpeningFile() {
@@ -526,3 +515,14 @@ void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
 void CocoaView::addSubview(NSView *view) {
     [window.contentView addSubview:view];
 }
+
+@implementation ViewActions
+@synthesize controller;
+- (void)newTest {
+    controller->newTest();
+}
+
+- (void)openTest {
+    controller->openTest();
+}
+@end
