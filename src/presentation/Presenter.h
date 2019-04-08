@@ -16,13 +16,19 @@ namespace presentation {
             virtual void newTest() = 0;
             virtual void openTest() = 0;
             virtual void closeTest() = 0;
-            virtual void playTrial() = 0;
-            virtual void submitResponse() = 0;
         };
         
         class Subject {
         public:
+            class EventListener {
+            public:
+                virtual ~EventListener() = default;
+                virtual void playTrial() = 0;
+                virtual void submitResponse() = 0;
+            };
+            
             virtual ~Subject() = default;
+            virtual void subscribe(EventListener *) = 0;
             virtual std::string numberResponse() = 0;
             virtual bool greenResponse() = 0;
             virtual bool blueResponse() = 0;
@@ -123,20 +129,32 @@ namespace presentation {
             View::Tester *view;
         };
         
+        class Subject : public View::Subject::EventListener {
+        public:
+            Subject(View::Subject *);
+            void playTrial() override;
+            void submitResponse() override;
+            void becomeChild(Presenter *parent);
+        private:
+            View::Subject *view;
+            Presenter *parent;
+        };
+        
         Presenter(
             av_coordinated_response_measure::Model *,
             View *,
             TestSetup *,
-            Tester *
+            Tester *,
+            Subject *
         );
-        void playTrial() override;
         void newTest() override;
         void openTest() override;
         void closeTest() override;
-        void submitResponse() override;
         void trialComplete() override;
         void run();
         void browseForTargetList();
+        void playTrial();
+        void submitResponse();
         void browseForMasker();
         void confirmTestSetup();
         void playCalibration();
@@ -162,6 +180,7 @@ namespace presentation {
         View *view;
         TestSetup *testSetup;
         Tester *tester;
+        Subject *subject;
     };
 }
 

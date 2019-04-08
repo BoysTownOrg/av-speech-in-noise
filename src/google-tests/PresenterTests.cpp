@@ -112,14 +112,6 @@ namespace {
             audioDevice_ = std::move(s);
         }
         
-        void submitResponse() {
-            listener_->submitResponse();
-        }
-        
-        void playTrial() {
-            listener_->playTrial();
-        }
-        
         void showErrorMessage(std::string s) override {
             errorMessage_ = std::move(s);
         }
@@ -356,6 +348,7 @@ namespace {
         
         class SubjectViewStub : public Subject {
             std::string numberResponse_{"0"};
+            EventListener *listener_{};
             bool greenResponse_{};
             bool redResponse_{};
             bool blueResponse_{};
@@ -431,6 +424,18 @@ namespace {
             
             void showResponseButtons() override {
                 responseButtonsShown_ = true;
+            }
+            
+            void subscribe(EventListener *e) override {
+                listener_ = e;
+            }
+        
+            void submitResponse() {
+                listener_->submitResponse();
+            }
+            
+            void playTrial() {
+                listener_->playTrial();
             }
         };
     };
@@ -513,12 +518,14 @@ namespace {
         ModelStub model{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
+        ViewStub::SubjectViewStub subjectView{};
         ViewStub view{nullptr};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
+        presentation::Presenter::Subject subject{&subjectView};
         
         presentation::Presenter construct() {
-            return {&model, &view, &testSetup, &tester};
+            return {&model, &view, &testSetup, &tester, &subject};
         }
     };
     
@@ -537,7 +544,8 @@ namespace {
         ViewStub view{&subjectView};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
-        presentation::Presenter presenter{&model, &view, &testSetup, &tester};
+        presentation::Presenter::Subject subject{&subjectView};
+        presentation::Presenter presenter{&model, &view, &testSetup, &tester, &subject};
         BrowsingForStimulusList browsingForStimulusList{};
         BrowsingForMasker browsingForMasker{};
         ConfirmingTestSetup confirmingTestSetup{};
@@ -556,11 +564,11 @@ namespace {
         }
         
         void submitResponse() {
-            view.submitResponse();
+            subjectView.submitResponse();
         }
         
         void playTrial() {
-            view.playTrial();
+            subjectView.playTrial();
         }
         
         void confirmTestSetup() {
@@ -972,9 +980,11 @@ namespace {
         av_coordinated_response_measure::Model *model{&defaultModel};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
+        ViewStub::SubjectViewStub subjectView{};
         ViewStub view{nullptr};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
+        presentation::Presenter::Subject subject{&subjectView};
         
         void useFailingModel(std::string s = {}) {
             failure.setErrorMessage(std::move(s));
@@ -982,7 +992,7 @@ namespace {
         }
         
         void confirmTestSetup() {
-            presentation::Presenter presenter{model, &view, &testSetup, &tester};
+            presentation::Presenter presenter{model, &view, &testSetup, &tester, &subject};
             setupView.confirmTestSetup();
         }
         

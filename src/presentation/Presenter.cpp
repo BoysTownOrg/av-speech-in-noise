@@ -5,17 +5,20 @@ namespace presentation {
         av_coordinated_response_measure::Model *model,
         View *view,
         TestSetup *testSetup,
-        Tester *tester
+        Tester *tester,
+        Subject *subject
     ) :
         model{model},
         view{view},
         testSetup{testSetup},
-        tester{tester}
+        tester{tester},
+        subject{subject}
     {
         model->subscribe(this);
         view->subscribe(this);
         view->populateAudioDeviceMenu(model->audioDevices());
         testSetup->becomeChild(this);
+        subject->becomeChild(this);
     }
 
     void Presenter::run() {
@@ -270,5 +273,23 @@ namespace presentation {
 
     void Presenter::Tester::tuneOut() {
         view->hide();
+    }
+
+    Presenter::Subject::Subject(View::Subject *view) :
+        view{view}
+    {
+        view->subscribe(this);
+    }
+
+    void Presenter::Subject::playTrial() {
+        parent->playTrial();
+    }
+
+    void Presenter::Subject::submitResponse() {
+        parent->submitResponse();
+    }
+    
+    void Presenter::Subject::becomeChild(Presenter *p) {
+        parent = p;
     }
 }
