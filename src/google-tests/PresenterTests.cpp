@@ -538,7 +538,7 @@ namespace {
         ViewStub view{&setupView, &testerView, &subjectView};
         presentation::Presenter presenter{&model, &view};
         BrowsingForStimulusList browsingForStimulusList{};
-        BrowsingForMasker browinsgForMasker{};
+        BrowsingForMasker browsingForMasker{};
         ConfirmingTestSetup confirmingTestSetup{};
         PlayingCalibration playingCalibration{};
         
@@ -623,20 +623,20 @@ namespace {
             useCase->run(&presenter);
         }
 
-        void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase *useCase) {
-            useCase->setResult(view, "a");
-            runUseCase(useCase);
-            assertEqual("a", useCase->entry(setupView));
+        void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase &useCase) {
+            useCase.setResult(view, "a");
+            runUseCase(&useCase);
+            assertEqual("a", useCase.entry(setupView));
         }
 
         void assertCancellingBrowseDoesNotChangePath(
-            BrowsingEnteredPathUseCase *useCase
+            BrowsingEnteredPathUseCase &useCase
         ) {
-            useCase->setEntry(setupView, "a");
-            useCase->setResult(view, "b");
+            useCase.setEntry(setupView, "a");
+            useCase.setResult(view, "b");
             view.setBrowseCancelled();
-            runUseCase(useCase);
-            assertEqual("a", useCase->entry(setupView));
+            runUseCase(&useCase);
+            assertEqual("a", useCase.entry(setupView));
         }
         
         void completeTrial() {
@@ -695,9 +695,9 @@ namespace {
             return model.calibrationParameters();
         }
         
-        void assertInvalidSignalLevelShowsErrorMessageFollowing(UseCase *useCase) {
+        void assertInvalidSignalLevelShowsErrorMessageFollowing(UseCase &useCase) {
             setupView.setSignalLevel("a");
-            runUseCase(useCase);
+            runUseCase(&useCase);
             assertEqual("'a' is not a valid signal level.", errorMessage());
         }
     };
@@ -776,11 +776,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSignalLevelShowsErrorMessage) {
-        assertInvalidSignalLevelShowsErrorMessageFollowing(&confirmingTestSetup);
+        assertInvalidSignalLevelShowsErrorMessageFollowing(confirmingTestSetup);
     }
 
     TEST_F(PresenterTests, playCalibrationWithInvalidSignalLevelShowsErrorMessage) {
-        assertInvalidSignalLevelShowsErrorMessageFollowing(&playingCalibration);
+        assertInvalidSignalLevelShowsErrorMessageFollowing(playingCalibration);
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
@@ -913,19 +913,19 @@ namespace {
     }
 
     TEST_F(PresenterTests, browseForStimulusListUpdatesStimulusList) {
-        assertBrowseResultPassedToEntry(&browsingForStimulusList);
+        assertBrowseResultPassedToEntry(browsingForStimulusList);
     }
 
     TEST_F(PresenterTests, browseForMaskerUpdatesMasker) {
-        assertBrowseResultPassedToEntry(&browinsgForMasker);
+        assertBrowseResultPassedToEntry(browsingForMasker);
     }
 
     TEST_F(PresenterTests, browseForStimulusListCancelDoesNotChangeStimulusList) {
-        assertCancellingBrowseDoesNotChangePath(&browsingForStimulusList);
+        assertCancellingBrowseDoesNotChangePath(browsingForStimulusList);
     }
 
     TEST_F(PresenterTests, browseForMaskerCancelDoesNotChangeMasker) {
-        assertCancellingBrowseDoesNotChangePath(&browinsgForMasker);
+        assertCancellingBrowseDoesNotChangePath(browsingForMasker);
     }
 
     TEST_F(PresenterTests, trialCompleteShowsResponseButtons) {
