@@ -53,7 +53,7 @@ namespace presentation {
         testSetup.initializeTest();
         hideTestSetup();
         showTesterView();
-        view->subject()->showNextTrialButton();
+        showNextTrialButton();
     }
     
     void Presenter::hideTestSetup() {
@@ -64,15 +64,27 @@ namespace presentation {
         tester.listen();
     }
     
+    void Presenter::showNextTrialButton() {
+        view->subject()->showNextTrialButton();
+    }
+    
     void Presenter::playTrial() {
-        view->subject()->hideNextTrialButton();
+        hideNextTrialButton();
         tester.playTrial();
+    }
+    
+    void Presenter::hideNextTrialButton() {
+        view->subject()->hideNextTrialButton();
     }
     
     void Presenter::submitResponse() {
         model->submitResponse(subjectResponse());
-        view->subject()->hideResponseButtons();
+        hideResponseButtons();
         proceedToNextTrial();
+    }
+    
+    void Presenter::hideResponseButtons() {
+        view->subject()->hideResponseButtons();
     }
     
     void Presenter::proceedToNextTrial() {
@@ -81,7 +93,7 @@ namespace presentation {
             showTestSetup();
         }
         else {
-            view->subject()->showNextTrialButton();
+            showNextTrialButton();
         }
     }
     

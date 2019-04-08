@@ -140,6 +140,9 @@ namespace presentation {
         bool userCancels();
         void hideTestSetup();
         void showTesterView();
+        void hideResponseButtons();
+        void showNextTrialButton();
+        void hideNextTrialButton();
         void initializeTest_();
         av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
         av_coordinated_response_measure::Color colorResponse();
