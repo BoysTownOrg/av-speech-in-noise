@@ -472,7 +472,7 @@ namespace {
         }
     };
 
-    class BrowsingForStimulusList : public BrowsingEnteredPathUseCase {
+    class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
     public:
         void run(presentation::View::TestSetup::EventListener &listener) override {
             listener.browseForTargetList();
@@ -542,7 +542,7 @@ namespace {
             &tester,
             &subject
         };
-        BrowsingForStimulusList browsingForStimulusList{};
+        BrowsingForTargetList browsingForTargetList{};
         BrowsingForMasker browsingForMasker{};
         ConfirmingTestSetup confirmingTestSetup{};
         PlayingCalibration playingCalibration{};
@@ -936,15 +936,15 @@ namespace {
     }
 
     TEST_F(PresenterTests, browseForStimulusListUpdatesStimulusList) {
-        assertBrowseResultPassedToEntry(browsingForStimulusList);
+        assertBrowseResultPassedToEntry(browsingForTargetList);
     }
 
     TEST_F(PresenterTests, browseForMaskerUpdatesMasker) {
         assertBrowseResultPassedToEntry(browsingForMasker);
     }
 
-    TEST_F(PresenterTests, browseForStimulusListCancelDoesNotChangeStimulusList) {
-        assertCancellingBrowseDoesNotChangePath(browsingForStimulusList);
+    TEST_F(PresenterTests, browseForTargetListCancelDoesNotChangeTargetList) {
+        assertCancellingBrowseDoesNotChangePath(browsingForTargetList);
     }
 
     TEST_F(PresenterTests, browseForMaskerCancelDoesNotChangeMasker) {
@@ -975,10 +975,13 @@ namespace {
             throw RequestFailure{errorMessage};
         }
         
+        void playCalibration(const Calibration &) override {
+            throw RequestFailure{errorMessage};
+        }
+        
         bool testComplete() override { return {}; }
         std::vector<std::string> audioDevices() override { return {}; }
         void subscribe(EventListener *) override {}
-        void playCalibration(const Calibration &) override {}
     };
 
     class PresenterFailureTests : public ::testing::Test {
@@ -986,10 +989,10 @@ namespace {
         RequestFailingModel failure{};
         ModelStub defaultModel{};
         av_coordinated_response_measure::Model *model{&defaultModel};
+        ViewStub view{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        ViewStub view{};
         presentation::Presenter::TestSetup testSetup{&setupView};
         presentation::Presenter::Tester tester{&testerView};
         presentation::Presenter::Subject subject{&subjectView};
@@ -1000,7 +1003,13 @@ namespace {
         }
         
         void confirmTestSetup() {
-            presentation::Presenter presenter{model, &view, &testSetup, &tester, &subject};
+            presentation::Presenter presenter{
+                model,
+                &view,
+                &testSetup,
+                &tester,
+                &subject
+            };
             setupView.confirmTestSetup();
         }
         
