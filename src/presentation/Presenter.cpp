@@ -105,9 +105,8 @@ namespace presentation {
             hideTesterView();
             showTestSetup();
         }
-        else {
+        else
             showNextTrialButton();
-        }
     }
     
     void Presenter::hideTesterView() {
@@ -130,24 +129,28 @@ namespace presentation {
             testSetup->setMasker(result);
     }
     
+    void Presenter::browseForCalibration() {
+        auto result = view->browseForOpeningFile();
+        if (!view->browseCancelled())
+            testSetup->setCalibrationFilePath(result);
+    }
+    
     void Presenter::trialComplete() {
         showResponseButtons();
     }
     
     void Presenter::playCalibration() {
         try {
-            auto p = testSetup->calibrationParameters();
-            p.audioDevice = view->audioDevice();
-            model->playCalibration(p);
+            playCalibration_();
         } catch (const std::runtime_error &e) {
             showErrorMessage(e.what());
         }
     }
     
-    void Presenter::browseForCalibration() {
-        auto result = view->browseForOpeningFile();
-        if (!view->browseCancelled())
-            testSetup->setCalibrationFilePath(result);
+    void Presenter::playCalibration_() {
+        auto p = testSetup->calibrationParameters();
+        p.audioDevice = view->audioDevice();
+        model->playCalibration(p);
     }
     
 

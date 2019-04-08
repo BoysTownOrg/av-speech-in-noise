@@ -173,6 +173,7 @@ namespace presentation {
     private:
         void showErrorMessage(std::string);
         RUNTIME_ERROR(BadInput)
+        void playCalibration_();
         void hideTesterView();
         void showTestSetup();
         void proceedToNextTrial();
