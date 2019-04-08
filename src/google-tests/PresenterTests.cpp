@@ -94,6 +94,7 @@ namespace {
         std::string errorMessage_{};
         std::string browseForDirectoryResult_{};
         std::string browseForOpeningFileResult_{};
+        std::string audioDevice_{};
         DialogResponse dialogResponse_{};
         EventListener *listener_{};
         TestSetup *setupView_;
@@ -111,6 +112,10 @@ namespace {
             setupView_{setupView},
             testerView_{testerView},
             subjectView_{subjectView} {}
+        
+        void setAudioDevice(std::string s) {
+            audioDevice_ = std::move(s);
+        }
         
         void submitResponse() {
             listener_->submitResponse();
@@ -175,6 +180,10 @@ namespace {
         
         std::string browseForOpeningFile() override {
             return browseForOpeningFileResult_;
+        }
+        
+        std::string audioDevice() override {
+            return audioDevice_;
         }
         
         auto eventLoopCalled() const {
@@ -700,6 +709,10 @@ namespace {
             runUseCase(useCase);
             assertEqual("'a' is not a valid signal level.", errorMessage());
         }
+        
+        void setAudioDevice(std::string s) {
+            view.setAudioDevice(std::move(s));
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -752,9 +765,11 @@ namespace {
     TEST_F(PresenterTests, playCalibrationPassesParametersToModel) {
         setupView.setSignalLevel("1");
         setupView.setCalibrationFilePath("a");
+        setAudioDevice("b");
         playCalibration();
         EXPECT_EQ(1, modelCalibrationParameters().level_dB_SPL);
         assertEqual("a", modelCalibrationParameters().filePath);
+        assertEqual("b", modelCalibrationParameters().audioDevice);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {

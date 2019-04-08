@@ -72,6 +72,7 @@ namespace presentation {
         virtual Subject *subject() = 0;
         virtual std::string browseForDirectory() = 0;
         virtual std::string browseForOpeningFile() = 0;
+        virtual std::string audioDevice() = 0;
         virtual bool browseCancelled() = 0;
         virtual void showErrorMessage(std::string) = 0;
         enum class DialogResponse {
@@ -91,7 +92,8 @@ namespace presentation {
         public:
             TestSetup(
                 av_coordinated_response_measure::Model *,
-                View::TestSetup *
+                View::TestSetup *,
+                View *
             );
             void listen();
             void initializeTest();
@@ -105,6 +107,7 @@ namespace presentation {
             
             av_coordinated_response_measure::Model *model;
             View::TestSetup *view;
+            View *parentView;
         };
         
         class Tester {

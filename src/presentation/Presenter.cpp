@@ -5,7 +5,7 @@ namespace presentation {
         av_coordinated_response_measure::Model *model,
         View *view
     ) :
-        testSetup{model, view->testSetup()},
+        testSetup{model, view->testSetup(), view},
         tester{model, view->tester()},
         model{model},
         view{view}
@@ -158,10 +158,12 @@ namespace presentation {
 
     Presenter::TestSetup::TestSetup(
         av_coordinated_response_measure::Model *model,
-        View::TestSetup *view
+        View::TestSetup *view,
+        View *parentView
     ) :
         model{model},
-        view{view}
+        view{view},
+        parentView{parentView}
     {
         using av_coordinated_response_measure::Condition;
         view->populateConditionMenu({
@@ -220,6 +222,7 @@ namespace presentation {
         av_coordinated_response_measure::Model::Calibration p;
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readSignalLevel();
+        p.audioDevice = parentView->audioDevice();
         model->playCalibration(p);
     }
     
