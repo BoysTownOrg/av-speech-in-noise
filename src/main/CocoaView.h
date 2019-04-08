@@ -21,13 +21,6 @@ class CocoaTestSetupView;
 - (void) browseForMasker;
 @end
 
-class CocoaTesterView;
-
-@interface TesterViewActions : NSObject
-@property CocoaTesterView *controller;
-- (void) playTrial;
-@end
-
 class CocoaSubjectView;
 
 @interface SubjectViewActions : NSObject
@@ -37,16 +30,12 @@ class CocoaSubjectView;
 @end
 
 class CocoaTesterView : public presentation::View::Tester {
-    CocoaView *parent_;
     NSView *view_;
-    TesterViewActions *actions;
 public:
     CocoaTesterView();
     NSView *view();
     void show() override;
     void hide() override;
-    void playTrial();
-    void becomeChild(CocoaView *);
 };
 
 class CocoaTestSetupView : public presentation::View::TestSetup {
@@ -96,12 +85,12 @@ private:
 };
 
 class CocoaSubjectView : public presentation::View::Subject {
-    CocoaView *parent_;
     NSWindow *window;
     NSView *responseButtons;
     NSView *nextTrialButton;
     NSButton *lastButtonPressed;
     SubjectViewActions *actions;
+    EventListener *listener_{};
 public:
     CocoaSubjectView();
     void respond(id sender);
@@ -114,7 +103,7 @@ public:
     void hideResponseButtons() override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
-    void becomeChild(CocoaView *);
+    void subscribe(EventListener *) override;
 private:
     NSColor *lastPressedColor();
     void addButtonRow(NSColor *color, int row);
@@ -139,7 +128,6 @@ public:
     void submitResponse();
     void subscribe(EventListener *) override;
     void eventLoop() override;
-    Tester *tester() override;
     Subject *subject() override;
     DialogResponse showConfirmationDialog() override;
     void showErrorMessage(std::string) override;

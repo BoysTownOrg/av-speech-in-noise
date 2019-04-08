@@ -4,10 +4,8 @@
 CocoaTesterView::CocoaTesterView() :
     view_{[[NSView alloc]
         initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)]
-    },
-    actions{[TesterViewActions alloc]}
+    }
 {
-    actions.controller = this;
     [view_ setHidden:YES];
 }
 
@@ -22,18 +20,6 @@ void CocoaTesterView::show() {
 void CocoaTesterView::hide() {
     [view_ setHidden:YES];
 }
-
-void CocoaTesterView::playTrial() {
-    parent_->playTrial();
-}
-
-@implementation TesterViewActions
-@synthesize controller;
-
-- (void)playTrial {
-    controller->playTrial();
-}
-@end
 
 CocoaTestSetupView::CocoaTestSetupView() :
     view_{[[NSView alloc]
@@ -221,6 +207,10 @@ void CocoaTestSetupView::subscribe(EventListener *listener) {
     listener_ = listener;
 }
 
+void CocoaTestSetupView::browseForMasker() {
+    listener_->browseForMasker();
+}
+
 @implementation SetupViewActions
 @synthesize controller;
 
@@ -332,19 +322,11 @@ bool CocoaSubjectView::grayResponse() {
 
 void CocoaSubjectView::respond(id sender) {
     lastButtonPressed = sender;
-    parent_->submitResponse();
+    listener_->submitResponse();
 }
 
 void CocoaSubjectView::showResponseButtons() {
     [responseButtons setHidden:NO];
-}
-
-void CocoaTestSetupView::browseForMasker() {
-    listener_->browseForMasker();
-}
-
-void CocoaSubjectView::hideResponseButtons() {
-    [responseButtons setHidden:YES];
 }
 
 void CocoaSubjectView::showNextTrialButton() {
@@ -356,7 +338,16 @@ void CocoaSubjectView::hideNextTrialButton() {
 }
 
 void CocoaSubjectView::playTrial() {
-    parent_->playTrial();
+    listener_->playTrial();
+}
+
+void CocoaSubjectView::hideResponseButtons() {
+    [responseButtons setHidden:YES];
+}
+
+
+void CocoaSubjectView::subscribe(EventListener *e) {
+    listener_ = e;
 }
 
 @implementation SubjectViewActions
@@ -388,9 +379,6 @@ CocoaView::CocoaView() :
     ]},
     actions{[ViewActions alloc]}
 {
-    testerView_.becomeChild(this);
-    subjectView_.becomeChild(this);
-    
     app.mainMenu = [[NSMenu alloc] init];
     
     auto appMenu = [[NSMenuItem alloc] init];
@@ -428,10 +416,6 @@ CocoaView::CocoaView() :
     actions.controller = this;
 }
 
-void CocoaView::playTrial() {
-    listener->playTrial();
-}
-
 void CocoaView::newTest() {
     listener->newTest();
 }
@@ -446,10 +430,6 @@ void CocoaView::subscribe(EventListener *listener_) {
 
 void CocoaView::eventLoop() {
     [app run];
-}
-
-auto CocoaView::tester() -> Tester * {
-    return &testerView_;
 }
 
 auto CocoaView::subject() -> Subject * {
@@ -491,18 +471,6 @@ void CocoaView::showErrorMessage(std::string s) {
     controller->openTest();
 }
 @end
-
-void CocoaTesterView::becomeChild(CocoaView *p) {
-    parent_ = p;
-}
-
-void CocoaView::submitResponse() { 
-    listener->submitResponse();
-}
-
-void CocoaSubjectView::becomeChild(CocoaView *p) {
-    parent_ = p;
-}
 
 void CocoaTestSetupView::setStimulusList(std::string s) {
     [stimulusListDirectory_ setStringValue:asNsString(std::move(s))];
