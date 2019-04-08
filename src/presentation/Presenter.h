@@ -135,6 +135,8 @@ namespace presentation {
             void playTrial() override;
             void submitResponse() override;
             void becomeChild(Presenter *parent);
+            av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
+            av_coordinated_response_measure::Color colorResponse();
         private:
             View::Subject *view;
             Presenter *parent;
@@ -173,8 +175,6 @@ namespace presentation {
         void hideNextTrialButton();
         void showResponseButtons();
         void initializeTest_();
-        av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
-        av_coordinated_response_measure::Color colorResponse();
         
         av_coordinated_response_measure::Model *model;
         View *view;

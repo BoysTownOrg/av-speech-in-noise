@@ -16,9 +16,9 @@ namespace presentation {
     {
         model->subscribe(this);
         view->subscribe(this);
-        view->populateAudioDeviceMenu(model->audioDevices());
         testSetup->becomeChild(this);
         subject->becomeChild(this);
+        view->populateAudioDeviceMenu(model->audioDevices());
     }
 
     void Presenter::run() {
@@ -87,7 +87,7 @@ namespace presentation {
     }
     
     void Presenter::submitResponse() {
-        model->submitResponse(subjectResponse());
+        model->submitResponse(subject->subjectResponse());
         hideResponseButtons();
         proceedToNextTrial();
     }
@@ -115,21 +115,21 @@ namespace presentation {
     }
     
     av_coordinated_response_measure::Model::SubjectResponse
-        Presenter::subjectResponse()
+        Presenter::Subject::subjectResponse()
     {
         av_coordinated_response_measure::Model::SubjectResponse p;
         p.color = colorResponse();
-        p.number = std::stoi(view->subject()->numberResponse());
+        p.number = std::stoi(view->numberResponse());
         return p;
     }
     
-    av_coordinated_response_measure::Color Presenter::colorResponse() {
+    av_coordinated_response_measure::Color Presenter::Subject::colorResponse() {
         av_coordinated_response_measure::Color color;
-        if (view->subject()->greenResponse())
+        if (view->greenResponse())
             color = av_coordinated_response_measure::Color::green;
-        else if (view->subject()->blueResponse())
+        else if (view->blueResponse())
             color = av_coordinated_response_measure::Color::blue;
-        else if (view->subject()->grayResponse())
+        else if (view->grayResponse())
             color = av_coordinated_response_measure::Color::gray;
         else
             color = av_coordinated_response_measure::Color::red;
