@@ -104,8 +104,8 @@ namespace presentation {
             void browseForTargetList() override;
             void browseForMasker() override;
             void confirmTestSetup() override;
-            void listen();
-            void tuneOut();
+            void show();
+            void hide();
             void becomeChild(Presenter *parent);
             void setMasker(std::string);
             void setStimulusList(std::string);
@@ -123,8 +123,8 @@ namespace presentation {
         class Tester {
         public:
             Tester(View::Tester *);
-            void listen();
-            void tuneOut();
+            void show();
+            void hide();
         private:
             View::Tester *view;
         };
@@ -135,9 +135,14 @@ namespace presentation {
             void playTrial() override;
             void submitResponse() override;
             void becomeChild(Presenter *parent);
+            void hideResponseButtons();
+            void showNextTrialButton();
+            void hideNextTrialButton();
+            void showResponseButtons();
             av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
-            av_coordinated_response_measure::Color colorResponse();
         private:
+            av_coordinated_response_measure::Color colorResponse();
+            
             View::Subject *view;
             Presenter *parent;
         };

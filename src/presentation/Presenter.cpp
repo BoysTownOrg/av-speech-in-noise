@@ -64,15 +64,11 @@ namespace presentation {
     }
     
     void Presenter::hideTestSetup() {
-        testSetup->tuneOut();
+        testSetup->hide();
     }
     
     void Presenter::showTesterView() {
-        tester->listen();
-    }
-    
-    void Presenter::showNextTrialButton() {
-        view->subject()->showNextTrialButton();
+        tester->show();
     }
     
     void Presenter::playTrial() {
@@ -82,18 +78,26 @@ namespace presentation {
         model->playTrial(p);
     }
     
+    void Presenter::showNextTrialButton() {
+        subject->showNextTrialButton();
+    }
+    
     void Presenter::hideNextTrialButton() {
-        view->subject()->hideNextTrialButton();
+        subject->hideNextTrialButton();
+    }
+    
+    void Presenter::hideResponseButtons() {
+        subject->hideResponseButtons();
+    }
+    
+    void Presenter::showResponseButtons() {
+        subject->showResponseButtons();
     }
     
     void Presenter::submitResponse() {
         model->submitResponse(subject->subjectResponse());
         hideResponseButtons();
         proceedToNextTrial();
-    }
-    
-    void Presenter::hideResponseButtons() {
-        view->subject()->hideResponseButtons();
     }
     
     void Presenter::proceedToNextTrial() {
@@ -107,11 +111,11 @@ namespace presentation {
     }
     
     void Presenter::hideTesterView() {
-        tester->tuneOut();
+        tester->hide();
     }
     
     void Presenter::showTestSetup() {
-        testSetup->listen();
+        testSetup->show();
     }
     
     av_coordinated_response_measure::Model::SubjectResponse
@@ -152,10 +156,6 @@ namespace presentation {
         showResponseButtons();
     }
     
-    void Presenter::showResponseButtons() {
-        view->subject()->showResponseButtons();
-    }
-    
     void Presenter::playCalibration() {
         try {
             auto p = testSetup->calibrationParameters();
@@ -178,7 +178,7 @@ namespace presentation {
         view->subscribe(this);
     }
     
-    void Presenter::TestSetup::listen() {
+    void Presenter::TestSetup::show() {
         view->show();
     }
     
@@ -216,7 +216,7 @@ namespace presentation {
         );
     }
     
-    void Presenter::TestSetup::tuneOut() {
+    void Presenter::TestSetup::hide() {
         view->hide();
     }
     
@@ -267,11 +267,11 @@ namespace presentation {
     {
     }
     
-    void Presenter::Tester::listen() {
+    void Presenter::Tester::show() {
         view->show();
     }
 
-    void Presenter::Tester::tuneOut() {
+    void Presenter::Tester::hide() {
         view->hide();
     }
 
@@ -291,5 +291,21 @@ namespace presentation {
     
     void Presenter::Subject::becomeChild(Presenter *p) {
         parent = p;
+    }
+    
+    void Presenter::Subject::showNextTrialButton() {
+        view->showNextTrialButton();
+    }
+    
+    void Presenter::Subject::hideNextTrialButton() {
+        view->hideNextTrialButton();
+    }
+    
+    void Presenter::Subject::hideResponseButtons() {
+        view->hideResponseButtons();
+    }
+    
+    void Presenter::Subject::showResponseButtons() {
+        view->showResponseButtons();
     }
 }
