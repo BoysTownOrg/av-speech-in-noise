@@ -6,7 +6,7 @@ namespace presentation {
         View *view
     ) :
         testSetup{model, view->testSetup(), view},
-        tester{model, view->tester()},
+        tester{model, view->tester(), view},
         model{model},
         view{view}
     {
@@ -233,10 +233,12 @@ namespace presentation {
     
     Presenter::Tester::Tester(
         av_coordinated_response_measure::Model *model,
-        View::Tester *view
+        View::Tester *view,
+        View *parentView
     ) :
         model{model},
-        view{view}
+        view{view},
+        parentView{parentView}
     {
         view->populateAudioDeviceMenu(model->audioDevices());
     }
@@ -247,7 +249,7 @@ namespace presentation {
     
     void Presenter::Tester::playTrial() {
         av_coordinated_response_measure::Model::AudioSettings p;
-        p.audioDevice = view->audioDevice();
+        p.audioDevice = parentView->audioDevice();
         model->playTrial(p);
     }
 

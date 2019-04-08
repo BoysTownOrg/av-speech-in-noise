@@ -335,16 +335,11 @@ namespace {
         
         class TesterViewStub : public Tester {
             std::vector<std::string> audioDevices_{};
-            std::string audioDevice_{};
             bool shown_{};
             bool hidden_{};
         public:
             auto audioDevices() const {
                 return audioDevices_;
-            }
-            
-            std::string audioDevice() override {
-                return audioDevice_;
             }
             
             auto shown() const {
@@ -365,10 +360,6 @@ namespace {
             
             auto hidden() const {
                 return hidden_;
-            }
-            
-            void setAudioDevice(std::string s) {
-                audioDevice_ = std::move(s);
             }
         };
         
@@ -835,7 +826,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, playingTrialPassesAudioDevice) {
-        testerView.setAudioDevice("a");
+        setAudioDevice("a");
         playTrial();
         assertEqual("a", model.trialParameters().audioDevice);
     }

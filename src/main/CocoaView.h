@@ -46,7 +46,6 @@ public:
     NSView *view();
     void show() override;
     void hide() override;
-    std::string audioDevice() override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
     void playTrial();
     void becomeChild(CocoaView *);

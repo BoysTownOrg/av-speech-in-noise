@@ -28,10 +28,6 @@ void CocoaTesterView::hide() {
     [view_ setHidden:YES];
 }
 
-std::string CocoaTesterView::audioDevice() {
-    return deviceMenu.titleOfSelectedItem.UTF8String;
-}
-
 void CocoaTesterView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (auto item : items)
         [deviceMenu addItemWithTitle:asNsString(item)];

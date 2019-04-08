@@ -42,7 +42,6 @@ namespace presentation {
             virtual ~Tester() = default;
             virtual void show() = 0;
             virtual void hide() = 0;
-            virtual std::string audioDevice() = 0;
             virtual void populateAudioDeviceMenu(std::vector<std::string>) = 0;
         };
 
@@ -112,13 +111,17 @@ namespace presentation {
         
         class Tester {
         public:
-            Tester(av_coordinated_response_measure::Model *, View::Tester *);
+            Tester(
+                av_coordinated_response_measure::Model *,
+                View::Tester *,
+                View *parentView);
             void listen();
             void playTrial();
             void tuneOut();
         private:
             av_coordinated_response_measure::Model *model;
             View::Tester *view;
+            View *parentView;
         };
         
         Presenter(av_coordinated_response_measure::Model *, View *);
