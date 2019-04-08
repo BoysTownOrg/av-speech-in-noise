@@ -498,6 +498,18 @@ namespace {
             view.setStimulusList(s);
         }
     };
+    
+    class ConfirmingTestSetup : public UseCase {
+        void run(presentation::View::EventListener *listener) override {
+            listener->confirmTestSetup();
+        }
+    };
+    
+    class PlayingCalibration : public UseCase {
+        void run(presentation::View::EventListener *listener) override {
+            listener->playCalibration();
+        }
+    };
 
     class PresenterConstructionTests : public ::testing::Test {
     protected:
@@ -527,6 +539,8 @@ namespace {
         presentation::Presenter presenter{&model, &view};
         BrowsingForStimulusList browsingForStimulusList{};
         BrowsingForMasker browinsgForMasker{};
+        ConfirmingTestSetup confirmingTestSetup{};
+        PlayingCalibration playingCalibration{};
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
@@ -681,17 +695,9 @@ namespace {
             return model.calibrationParameters();
         }
         
-        void assertInvalidSignalLevelShowsErrorMessageFollowingConfirmTestSetup() {
-            assertInvalidSignalLevelShowsErrorMessageFollowing(&PresenterTests::confirmTestSetup);
-        }
-        
-        void assertInvalidSignalLevelShowsErrorMessageFollowingCalibration() {
-            assertInvalidSignalLevelShowsErrorMessageFollowing(&PresenterTests::playCalibration);
-        }
-        
-        void assertInvalidSignalLevelShowsErrorMessageFollowing(void(PresenterTests::*f)()) {
+        void assertInvalidSignalLevelShowsErrorMessageFollowing(UseCase *useCase) {
             setupView.setSignalLevel("a");
-            (this->*f)();
+            runUseCase(useCase);
             assertEqual("'a' is not a valid signal level.", errorMessage());
         }
     };
@@ -770,11 +776,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSignalLevelShowsErrorMessage) {
-        assertInvalidSignalLevelShowsErrorMessageFollowingConfirmTestSetup();
+        assertInvalidSignalLevelShowsErrorMessageFollowing(&confirmingTestSetup);
     }
 
     TEST_F(PresenterTests, playCalibrationWithInvalidSignalLevelShowsErrorMessage) {
-        assertInvalidSignalLevelShowsErrorMessageFollowingCalibration();
+        assertInvalidSignalLevelShowsErrorMessageFollowing(&playingCalibration);
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
