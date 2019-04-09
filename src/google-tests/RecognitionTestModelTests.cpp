@@ -348,6 +348,14 @@ namespace {
         virtual void run(recognition_test::RecognitionTestModel &) = 0;
     };
     
+    class InitializingTest : public UseCase {
+        recognition_test::RecognitionTestModel::Test test{};
+    public:
+        void run(recognition_test::RecognitionTestModel &m) override {
+            m.initializeTest(test);
+        }
+    };
+    
     class AudioDeviceUseCase : public UseCase {
     public:
         virtual void setAudioDevice(std::string) = 0;
@@ -394,6 +402,7 @@ namespace {
             &outputFile
         };
         ModelEventListenerStub listener{};
+        InitializingTest initializingTest{};
         PlayingTrial playingTrial{};
         PlayingCalibration playingCalibration{};
         
@@ -651,6 +660,17 @@ namespace {
         playTrialQueriesTargetRmsAfterLoadingFile
     ) {
         playTrial();
+        assertEqual(
+            "loadFile rms ",
+            targetPlayer.log()
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationQueriesTargetRmsAfterLoadingFile
+    ) {
+        playingCalibration.run(model);
         assertEqual(
             "loadFile rms ",
             targetPlayer.log()

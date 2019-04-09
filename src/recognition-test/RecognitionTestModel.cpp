@@ -190,6 +190,8 @@ namespace recognition_test {
             &RecognitionTestModel::setTargetPlayerDevice,
             p.audioDevice
         );
+        targetPlayer->loadFile({});
+        targetPlayer->rms();
     }
 }
 
