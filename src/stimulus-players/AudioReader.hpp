@@ -5,9 +5,9 @@
 #include <vector>
 
 namespace stimulus_players {
-    class AudioFileReader {
+    class BufferedAudioReader {
     public:
-        virtual ~AudioFileReader() = default;
+        virtual ~BufferedAudioReader() = default;
         virtual void loadFile(std::string) = 0;
         virtual bool failed() = 0;
         virtual std::vector<int> readNextBuffer() = 0;
@@ -15,9 +15,9 @@ namespace stimulus_players {
     };
 
     class AudioReader {
-        AudioFileReader *reader;
+        BufferedAudioReader *reader;
     public:
-        AudioReader(AudioFileReader *);
+        AudioReader(BufferedAudioReader *);
         class InvalidFile {};
         std::vector<float> read(std::string filePath);
     private:

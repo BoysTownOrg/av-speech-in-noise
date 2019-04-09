@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class AudioFileReaderStub : public stimulus_players::AudioFileReader {
+    class BufferedAudioReaderStub : public stimulus_players::BufferedAudioReader {
         std::vector<std::vector<int>> buffers{};
         std::string file_{};
         int minimumPossibleSample_{};
@@ -52,17 +52,17 @@ namespace {
 
     class AudioReaderTests : public ::testing::Test {
     protected:
-        AudioFileReaderStub fileReader{};
-        stimulus_players::AudioReader reader{&fileReader};
+        BufferedAudioReaderStub bufferedReader{};
+        stimulus_players::AudioReader reader{&bufferedReader};
     };
     
     TEST_F(AudioReaderTests, loadsFile) {
         reader.read("a");
-        assertEqual("a", fileReader.file());
+        assertEqual("a", bufferedReader.file());
     }
     
     TEST_F(AudioReaderTests, readThrowsInvalidFileOnFailure) {
-        fileReader.failOnLoad();
+        bufferedReader.failOnLoad();
         try {
             reader.read({});
             FAIL() << "Expected stimulus_players::AudioReader::InvalidFile";
@@ -71,11 +71,11 @@ namespace {
     }
     
     TEST_F(AudioReaderTests, readConcatenatesNormalizedBuffers) {
-        fileReader.setBuffers({
+        bufferedReader.setBuffers({
             { 0, 1, 2 },
             { -1, -2, -3 }
         });
-        fileReader.setMinimumPossibleSample(-3);
+        bufferedReader.setMinimumPossibleSample(-3);
         assertEqual(
             { 0.f/-3, 1.f/-3, 2.f/-3, -1.f/-3, -2.f/-3, -3.f/-3 },
             reader.read({})

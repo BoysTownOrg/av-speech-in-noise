@@ -1,7 +1,7 @@
 #include "AudioReader.hpp"
 
 namespace stimulus_players {
-    AudioReader::AudioReader(AudioFileReader *reader)  : reader{reader} {}
+    AudioReader::AudioReader(BufferedAudioReader *reader)  : reader{reader} {}
     
     std::vector<float> AudioReader::read(std::string filePath) {
         loadFile(std::move(filePath));
