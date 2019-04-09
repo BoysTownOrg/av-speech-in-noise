@@ -555,6 +555,15 @@ namespace {
                 "'a' is not a valid audio device."
             );
         }
+        
+        void assertTargetFileLoadedPriorToRmsQuery(UseCase &useCase) {
+            run(useCase);
+            assertEqual("loadFile rms ", targetPlayer.log());
+        }
+        
+        void run(UseCase &useCase) {
+            useCase.run(model);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -659,22 +668,14 @@ namespace {
         RecognitionTestModelTests,
         playTrialQueriesTargetRmsAfterLoadingFile
     ) {
-        playTrial();
-        assertEqual(
-            "loadFile rms ",
-            targetPlayer.log()
-        );
+        assertTargetFileLoadedPriorToRmsQuery(playingTrial);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationQueriesTargetRmsAfterLoadingFile
     ) {
-        playingCalibration.run(model);
-        assertEqual(
-            "loadFile rms ",
-            targetPlayer.log()
-        );
+        assertTargetFileLoadedPriorToRmsQuery(playingCalibration);
     }
 
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
