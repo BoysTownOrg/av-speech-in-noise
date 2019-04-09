@@ -112,10 +112,17 @@ CocoaTestSetupView::CocoaTestSetupView() :
         action:@selector(confirmTestSetup)
     ];
     [confirmButton setFrame:NSMakeRect(900 - 100 - 2*15, 15, 100, 25)];
+    const auto playCalibrationButton = [NSButton
+        buttonWithTitle:@"play"
+        target:actions
+        action:@selector(playCalibration)
+    ];
+    [playCalibrationButton setFrame:NSMakeRect(500 + 145 + 10, 30, 100, 25)];
     [view_ addSubview:browseForMaskerButton];
     [view_ addSubview:browseForStimulusListButton];
     [view_ addSubview:browseForCalibrationButton];
     [view_ addSubview:confirmButton];
+    [view_ addSubview:playCalibrationButton];
     [view_ addSubview:subjectIdLabel];
     [view_ addSubview:subjectId_];
     [view_ addSubview:testerIdLabel];
@@ -238,6 +245,10 @@ void CocoaTestSetupView::browseForCalibration() {
     listener_->browseForCalibration();
 }
 
+void CocoaTestSetupView::playCalibration() {
+    listener_->playCalibration();
+}
+
 @implementation SetupViewActions
 @synthesize controller;
 
@@ -255,6 +266,10 @@ void CocoaTestSetupView::browseForCalibration() {
 
 - (void)browseForCalibration {
     controller->browseForCalibration();
+}
+
+- (void)playCalibration { 
+    controller->playCalibration();
 }
 @end
 

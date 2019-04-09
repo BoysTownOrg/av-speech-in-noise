@@ -20,6 +20,7 @@ class CocoaTestSetupView;
 - (void) browseForTargetList;
 - (void) browseForMasker;
 - (void) browseForCalibration;
+- (void) playCalibration;
 @end
 
 class CocoaSubjectView;
@@ -83,6 +84,7 @@ public:
     void browseForTargetList();
     void browseForMasker();
     void browseForCalibration();
+    void playCalibration();
 private:
     NSTextField *allocLabel(NSString *label, NSRect frame);
 };
