@@ -120,9 +120,14 @@ namespace recognition_test {
         int desiredSignalLevel_dB();
         double signalLevel_dB();
         double maskerLevel_dB();
+        void setTargetPlayerDevice(const std::string &);
         void setAudioDevices(const std::string &);
         void trySettingAudioDevices(const AudioSettings &);
         int findDeviceIndex(const AudioSettings &);
+        void throwInvalidAudioDeviceOnErrorSettingDevice(
+            void(RecognitionTestModel::*f)(const std::string &),
+            const std::string &
+        );
     };
 }
 

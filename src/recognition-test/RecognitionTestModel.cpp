@@ -42,18 +42,18 @@ namespace recognition_test {
     void RecognitionTestModel::trySettingAudioDevices(
         const AudioSettings &p
     ) {
-        auto device = p.audioDevice;
-        try {
-            setAudioDevices(device);
-        } catch (const InvalidAudioDevice &) {
-            throw RequestFailure{
-                "'" + device + "' is not a valid audio device."
-            };
-        }
+        throwInvalidAudioDeviceOnErrorSettingDevice(
+            &RecognitionTestModel::setAudioDevices,
+            p.audioDevice
+        );
     }
     
     void RecognitionTestModel::setAudioDevices(const std::string &device) {
         maskerPlayer->setAudioDevice(device);
+        setTargetPlayerDevice(device);
+    }
+    
+    void RecognitionTestModel::setTargetPlayerDevice(const std::string &device) {
         targetPlayer->setAudioDevice(device);
     }
     
@@ -172,10 +172,19 @@ namespace recognition_test {
     void RecognitionTestModel::playCalibration(const Calibration &p) {
         if (targetPlayer->playing())
             return;
-            
-        auto device = p.audioDevice;
+        
+        throwInvalidAudioDeviceOnErrorSettingDevice(
+            &RecognitionTestModel::setTargetPlayerDevice,
+            p.audioDevice
+        );
+    }
+    
+    void RecognitionTestModel::throwInvalidAudioDeviceOnErrorSettingDevice(
+        void (RecognitionTestModel::*f)(const std::string &),
+        const std::string &device
+    ) {
         try {
-            targetPlayer->setAudioDevice(device);
+            (this->*f)(device);
         } catch (const InvalidAudioDevice &) {
             throw RequestFailure{
                 "'" + device + "' is not a valid audio device."
