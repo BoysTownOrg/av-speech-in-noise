@@ -685,6 +685,40 @@ namespace {
         assertTargetFileLoadedPriorToRmsQuery(playingCalibration);
     }
 
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialPassesNextTargetToTargetPlayer
+    ) {
+        targetList.setNext("a");
+        playTrial();
+        assertEqual("a", targetPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationPassesAudioFileToTargetPlayer
+    ) {
+        calibration.filePath = "a";
+        model.playCalibration(calibration);
+        assertEqual("a", targetPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialDoesNotAdvanceListIfEmpty
+    ) {
+        setListToEmpty();
+        assertListNotAdvancedAfterPlayingTrial();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialDoesNotAdvanceListIfMaskerIsPlaying
+    ) {
+        setMaskerIsPlaying();
+        assertListNotAdvancedAfterPlayingTrial();
+    }
+
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
         maskerPlayer.fadeInComplete();
         EXPECT_TRUE(targetPlayer.played());
@@ -825,31 +859,6 @@ namespace {
     ) {
         outputFile.throwOnOpen();
         assertInitializeTestThrowsRequestFailure("Unable to open output file.");
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialPassesNextTargetToTargetPlayer
-    ) {
-        targetList.setNext("a");
-        playTrial();
-        assertEqual("a", targetPlayer.filePath());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialDoesNotAdvanceListIfEmpty
-    ) {
-        setListToEmpty();
-        assertListNotAdvancedAfterPlayingTrial();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialDoesNotAdvanceListIfMaskerIsPlaying
-    ) {
-        setMaskerIsPlaying();
-        assertListNotAdvancedAfterPlayingTrial();
     }
 
     TEST_F(

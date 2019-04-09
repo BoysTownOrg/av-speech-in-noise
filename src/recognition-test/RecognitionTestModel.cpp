@@ -186,7 +186,7 @@ namespace recognition_test {
             &RecognitionTestModel::setTargetPlayerDevice,
             p.audioDevice
         );
-        loadTargetFile({});
+        loadTargetFile(p.filePath);
         setTargetLevel_dB(
             p.level_dB_SPL -
             p.fullScaleLevel_dB_SPL -
