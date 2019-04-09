@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <masker-player/MaskerPlayerImpl.hpp>
+#include <players/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 

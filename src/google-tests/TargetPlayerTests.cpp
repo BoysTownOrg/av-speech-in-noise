@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <target-player/TargetPlayerImpl.hpp>
+#include <players/TargetPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 
