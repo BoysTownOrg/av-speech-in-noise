@@ -61,7 +61,7 @@ namespace {
         assertEqual("a", fileReader.file());
     }
     
-    TEST_F(AudioReaderTests, throwsInvalidFileOnFailure) {
+    TEST_F(AudioReaderTests, loadFileThrowsInvalidFileOnFailure) {
         fileReader.failOnLoad();
         try {
             reader.loadFile({});
@@ -70,12 +70,15 @@ namespace {
         }
     }
     
-    TEST_F(AudioReaderTests, concatenatesNormalizedBuffers) {
+    TEST_F(AudioReaderTests, readConcatenatesNormalizedBuffers) {
         fileReader.setBuffers({
             { 0, 1, 2 },
             { -1, -2, -3 }
         });
         fileReader.setMinimumPossibleSample(-3);
-        assertEqual({ 0.f/-3, 1.f/-3, 2.f/-3, -1.f/-3, -2.f/-3, -3.f/-3 }, reader.read());
+        assertEqual(
+            { 0.f/-3, 1.f/-3, 2.f/-3, -1.f/-3, -2.f/-3, -3.f/-3 },
+            reader.read()
+        );
     }
 }
