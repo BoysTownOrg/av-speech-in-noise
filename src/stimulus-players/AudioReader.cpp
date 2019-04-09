@@ -5,5 +5,7 @@ namespace stimulus_players {
     
     void AudioReader::loadFile(std::string filePath) {
         reader->loadFile(std::move(filePath));
+        if (reader->failed())
+            throw InvalidFile{};
     }
 }

@@ -8,6 +8,7 @@ namespace stimulus_players {
     public:
         virtual ~AudioFileReader() = default;
         virtual void loadFile(std::string) = 0;
+        virtual bool failed() = 0;
     };
 
     class AudioReader {
@@ -15,6 +16,7 @@ namespace stimulus_players {
     public:
         AudioReader(AudioFileReader *);
         void loadFile(std::string filePath);
+        class InvalidFile {};
     };
 }
 
