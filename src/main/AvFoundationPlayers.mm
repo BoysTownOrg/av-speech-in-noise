@@ -332,13 +332,16 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
 
 void AvFoundationVideoPlayer::prepareVideo() {
     resizeVideo();
-    schedulePlaybackCompletion();
 }
 
 void AvFoundationVideoPlayer::resizeVideo() {
     AvAssetFacade asset{player.currentItem.asset};
     [videoWindow setContentSize:NSSizeFromCGSize(asset.videoTrack().naturalSize)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
+}
+
+void AvFoundationVideoPlayer::subscribeToPlaybackCompletion() {
+    schedulePlaybackCompletion();
 }
 
 void AvFoundationVideoPlayer::schedulePlaybackCompletion() {

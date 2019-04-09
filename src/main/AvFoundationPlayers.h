@@ -55,6 +55,7 @@ public:
     std::string deviceDescription(int index) override;
     std::vector<std::vector<float>> readAudio(std::string filePath) override;
     bool playing() override;
+    void subscribeToPlaybackCompletion() override;
     
 private:
     void schedulePlaybackCompletion();
