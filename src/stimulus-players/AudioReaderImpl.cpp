@@ -1,21 +1,20 @@
 #include "AudioReaderImpl.hpp"
 
 namespace stimulus_players {
-    AudioReaderImpl::AudioReaderImpl(BufferedAudioReader *reader)  : reader{reader} {}
+    AudioReaderImpl::AudioReaderImpl(BufferedAudioReader *reader) :
+        reader{reader} {}
     
     std::vector<float> AudioReaderImpl::read(std::string filePath) {
         loadFile(std::move(filePath));
         std::vector<float> audio{};
+        float minimumSample = reader->minimumPossibleSample();
         for (
             auto buffer = reader->readNextBuffer();
             !buffer.empty();
             buffer = reader->readNextBuffer()
-        ) {
-            float minimumSample = reader->minimumPossibleSample();
-            for (auto x : buffer) {
+        )
+            for (auto x : buffer)
                 audio.push_back(x/minimumSample);
-            }
-        }
         return audio;
     }
     
