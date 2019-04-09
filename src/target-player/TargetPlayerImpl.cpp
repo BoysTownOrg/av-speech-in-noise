@@ -92,6 +92,6 @@ namespace target_player {
     }
     
     void TargetPlayerImpl::subscribeToPlaybackCompletion() { 
-        ;
+        player->subscribeToPlaybackCompletion();
     }
 }

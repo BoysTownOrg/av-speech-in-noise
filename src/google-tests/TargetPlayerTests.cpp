@@ -15,13 +15,22 @@ namespace {
         bool hidden_{};
         bool played_{};
         bool playing_{};
+        bool playbackCompletionSubscribedTo_{};
     public:
+        void subscribeToPlaybackCompletion() override {
+            playbackCompletionSubscribedTo_ = true;
+        }
+        
         bool playing() override {
             return playing_;
         }
         
         auto audioFilePath() const {
             return audioFilePath_;
+        }
+        
+        auto playbackCompletionSubscribedTo() const {
+            return playbackCompletionSubscribedTo_;
         }
         
         void setAudioRead(std::vector<std::vector<float>> x) {
@@ -208,5 +217,13 @@ namespace {
         player.loadFile("a");
         player.rms();
         assertEqual("a", videoPlayer.audioFilePath());
+    }
+
+    TEST_F(
+        TargetPlayerTests,
+        subscribesToTargetPlaybackCompletionNotification
+    ) {
+        player.subscribeToPlaybackCompletion();
+        EXPECT_TRUE(videoPlayer.playbackCompletionSubscribedTo());
     }
 }

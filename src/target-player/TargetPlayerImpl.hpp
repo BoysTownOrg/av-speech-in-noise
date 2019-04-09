@@ -25,6 +25,7 @@ namespace target_player {
         virtual void loadFile(std::string) = 0;
         virtual void play() = 0;
         virtual bool playing() = 0;
+        virtual void subscribeToPlaybackCompletion() = 0;
         virtual void setDevice(int index) = 0;
         virtual std::vector<std::vector<float>> readAudio(std::string filePath) = 0;
     };
