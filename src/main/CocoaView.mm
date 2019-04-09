@@ -60,29 +60,29 @@ CocoaTestSetupView::CocoaTestSetupView() :
     startingSnr_dB_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(145, 150, 150, 25)
     ]},
-    stimulusListDirectoryLabel{allocLabel(
-        @"stimulus directory:",
+    targetListDirectoryLabel{allocLabel(
+        @"target list:",
         NSMakeRect(0, 120, 140, 25)
     )},
     targetListDirectory_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(145, 120, 500, 25)
     ]},
     maskerFilePath_label{allocLabel(
-        @"masker file path:",
+        @"masker:",
         NSMakeRect(0, 90, 140, 25)
     )},
     maskerFilePath_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(145, 90, 500, 25)
     ]},
     calibrationFilePath_label{allocLabel(
-        @"calibration file path:",
-        NSMakeRect(500, 90, 140, 25)
+        @"calibration:",
+        NSMakeRect(0, 60, 140, 25)
     )},
     calibrationFilePath_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(645, 90, 500, 25)
+        initWithFrame:NSMakeRect(145, 60, 500, 25)
     ]},
     conditionMenu{[[NSPopUpButton alloc]
-        initWithFrame:NSMakeRect(145, 60, 150, 25)
+        initWithFrame:NSMakeRect(145, 30, 150, 25)
         pullsDown:NO
     ]},
     actions{[SetupViewActions alloc]}
@@ -126,7 +126,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [view_ addSubview:signalLevel_dB_SPL_];
     [view_ addSubview:startingSnr_dB_label];
     [view_ addSubview:startingSnr_dB_];
-    [view_ addSubview:stimulusListDirectoryLabel];
+    [view_ addSubview:targetListDirectoryLabel];
     [view_ addSubview:targetListDirectory_];
     [view_ addSubview:maskerFilePath_label];
     [view_ addSubview:maskerFilePath_];

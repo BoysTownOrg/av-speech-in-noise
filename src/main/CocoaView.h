@@ -51,7 +51,7 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     NSTextField *signalLevel_dB_SPL_;
     NSTextField *startingSnr_dB_label;
     NSTextField *startingSnr_dB_;
-    NSTextField *stimulusListDirectoryLabel;
+    NSTextField *targetListDirectoryLabel;
     NSTextField *targetListDirectory_;
     NSTextField *maskerFilePath_label;
     NSTextField *maskerFilePath_;
