@@ -1,7 +1,7 @@
 #include "TargetPlayerImpl.hpp"
 #include <cmath>
 
-namespace target_player {
+namespace players {
     TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player) :
         player{player}
     {
@@ -47,7 +47,7 @@ namespace target_player {
             return 0;
         
         auto firstChannel = audio.front();
-        return ::target_player::rms(firstChannel);
+        return ::players::rms(firstChannel);
     }
 
     void TargetPlayerImpl::setLevel_dB(double x) {

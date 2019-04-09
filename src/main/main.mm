@@ -99,7 +99,7 @@ int main() {
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetList list{&filter, &randomizer};
     AvFoundationVideoPlayer videoPlayer;
-    target_player::TargetPlayerImpl targetPlayer{&videoPlayer};
+    players::TargetPlayerImpl targetPlayer{&videoPlayer};
     AvFoundationAudioPlayer audioPlayer;
     masker_player::MaskerPlayerImpl maskerPlayer{&audioPlayer};
     maskerPlayer.setFadeInOutSeconds(0.5);

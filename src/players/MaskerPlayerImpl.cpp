@@ -1,7 +1,7 @@
 #include "MaskerPlayerImpl.hpp"
 #include <cmath>
 
-namespace masker_player {
+namespace players {
     MaskerPlayerImpl::MaskerPlayerImpl(AudioPlayer *player)
         : player{player}
     {
@@ -74,7 +74,7 @@ namespace masker_player {
             return 0;
         
         auto firstChannel = audio.front();
-        return ::masker_player::rms(firstChannel);
+        return ::players::rms(firstChannel);
     }
     
     std::vector<std::string> MaskerPlayerImpl::audioDeviceDescriptions_() {

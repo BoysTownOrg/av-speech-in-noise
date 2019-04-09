@@ -1,10 +1,10 @@
-#ifndef masker_player_RandomizedMaskerPlayer_hpp
-#define masker_player_RandomizedMaskerPlayer_hpp
+#ifndef players_RandomizedMaskerPlayer_hpp
+#define players_RandomizedMaskerPlayer_hpp
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
 
-namespace masker_player {
+namespace players {
     class AudioPlayer {
     public:
         class EventListener {

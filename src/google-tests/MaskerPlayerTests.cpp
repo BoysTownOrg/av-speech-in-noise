@@ -4,7 +4,7 @@
 #include <cmath>
 
 namespace {
-    class AudioPlayerStub : public masker_player::AudioPlayer {
+    class AudioPlayerStub : public players::AudioPlayer {
         std::vector<std::vector<float>> audioRead_{};
         std::vector<std::string> audioDeviceDescriptions_{10};
         std::string filePath_{};
@@ -169,7 +169,7 @@ namespace {
         std::vector<float> rightChannel{};
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
-        masker_player::MaskerPlayerImpl player{&audioPlayer};
+        players::MaskerPlayerImpl player{&audioPlayer};
         
         MaskerPlayerTests() {
             player.subscribe(&listener);

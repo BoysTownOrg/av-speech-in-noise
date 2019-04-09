@@ -4,7 +4,7 @@
 #include <cmath>
 
 namespace {
-    class VideoPlayerStub : public target_player::VideoPlayer {
+    class VideoPlayerStub : public players::VideoPlayer {
         std::vector<std::string> audioDeviceDescriptions_{};
         std::vector<std::vector<float>> audioRead_{};
         std::string filePath_{};
@@ -131,7 +131,7 @@ namespace {
         std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
         TargetPlayerListenerStub listener;
-        target_player::TargetPlayerImpl player{&videoPlayer};
+        players::TargetPlayerImpl player{&videoPlayer};
         
         TargetPlayerTests() {
             player.subscribe(&listener);

@@ -30,7 +30,7 @@ class AvFoundationVideoPlayer;
 - (void) playbackComplete;
 @end
 
-class AvFoundationVideoPlayer : public target_player::VideoPlayer {
+class AvFoundationVideoPlayer : public players::VideoPlayer {
     std::vector<gsl::span<float>> audio_;
     MTAudioProcessingTapRef tap{};
     CoreAudioDevices device{};
