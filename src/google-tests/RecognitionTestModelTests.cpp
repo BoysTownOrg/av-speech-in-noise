@@ -521,6 +521,12 @@ namespace {
             assertEqual("a", targetPlayer.device());
         }
         
+        void assertDevicePassedToMaskerPlayer(AudioDeviceUseCase &useCase) {
+            useCase.setAudioDevice("a");
+            useCase.run(model);
+            assertEqual("a", maskerPlayer.device());
+        }
+        
         void assertThrowsRequestFailureWhenInvalidAudioDevice(
             AudioDeviceUseCase &useCase
         ) {
@@ -553,9 +559,7 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToMaskerPlayer) {
-        trial.audioDevice = "a";
-        playTrial();
-        assertEqual("a", maskerPlayer.device());
+        assertDevicePassedToMaskerPlayer(playingTrial);
     }
 
     TEST_F(
