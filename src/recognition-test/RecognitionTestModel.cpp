@@ -18,6 +18,70 @@ namespace recognition_test {
         maskerPlayer->subscribe(this);
     }
     
+    void RecognitionTestModel::subscribe(Model::EventListener *listener) {
+        listener_ = listener;
+    }
+    
+    void RecognitionTestModel::initializeTest(const Test &p) {
+        test = p;
+        
+        prepareOutputFile(p);
+        prepareMasker(p);
+        loadStimulusList(p);
+        prepareVideo(p);
+    }
+    
+    void RecognitionTestModel::prepareOutputFile(const Test &p) {
+        outputFile->close();
+        tryOpeningOutputFile(p);
+        outputFile->writeTest(p);
+        outputFile->writeTrialHeading();
+    }
+    
+    void RecognitionTestModel::prepareMasker(const Test &p) {
+        loadMaskerFile(p);
+        maskerPlayer->setLevel_dB(maskerLevel_dB());
+    }
+    
+    static double dB(double x) {
+        return 20 * std::log10(x);
+    }
+    
+    double RecognitionTestModel::maskerLevel_dB() {
+        return
+            desiredSignalLevel_dB() -
+            dB(maskerPlayer->rms()) -
+            test.startingSnr_dB;
+    }
+    
+    void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {
+        try {
+            outputFile->openNewFile(p);
+        } catch (const OutputFile::OpenFailure &) {
+            throw RequestFailure{"Unable to open output file."};
+        }
+    }
+    
+    void RecognitionTestModel::loadMaskerFile(const Test &p) {
+        maskerPlayer->loadFile(p.maskerFilePath);
+    }
+    
+    void RecognitionTestModel::loadStimulusList(const Test &p) {
+        targetList->loadFromDirectory(p.targetListDirectory);
+    }
+    
+    void RecognitionTestModel::prepareVideo(const Test &p) {
+        if (auditoryOnly(p))
+            targetPlayer->hideVideo();
+        else
+            targetPlayer->showVideo();
+    }
+
+    bool RecognitionTestModel::auditoryOnly(const Test &p) {
+        return p.condition ==
+            av_coordinated_response_measure::Condition::auditoryOnly;
+    }
+    
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
         if (noMoreTrials() || trialInProgress())
             return;
@@ -79,10 +143,6 @@ namespace recognition_test {
         maskerPlayer->fadeIn();
     }
     
-    static double dB(double x) {
-        return 20 * std::log10(x);
-    }
-    
     double RecognitionTestModel::signalLevel_dB() {
         return
             desiredSignalLevel_dB() -
@@ -95,66 +155,6 @@ namespace recognition_test {
             test.fullScaleLevel_dB_SPL;
     }
     
-    void RecognitionTestModel::initializeTest(const Test &p) {
-        test = p;
-        
-        prepareOutputFile(p);
-        prepareMasker(p);
-        loadStimulusList(p);
-        prepareVideo(p);
-    }
-    
-    void RecognitionTestModel::prepareOutputFile(const Test &p) {
-        outputFile->close();
-        tryOpeningOutputFile(p);
-        outputFile->writeTest(p);
-        outputFile->writeTrialHeading();
-    }
-    
-    void RecognitionTestModel::prepareMasker(const Test &p) {
-        loadMaskerFile(p);
-        maskerPlayer->setLevel_dB(maskerLevel_dB());
-    }
-    
-    double RecognitionTestModel::maskerLevel_dB() {
-        return
-            desiredSignalLevel_dB() -
-            dB(maskerPlayer->rms()) -
-            test.startingSnr_dB;
-    }
-    
-    void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {
-        try {
-            outputFile->openNewFile(p);
-        } catch (const OutputFile::OpenFailure &) {
-            throw RequestFailure{"Unable to open output file."};
-        }
-    }
-    
-    void RecognitionTestModel::loadMaskerFile(const Test &p) {
-        maskerPlayer->loadFile(p.maskerFilePath);
-    }
-    
-    void RecognitionTestModel::loadStimulusList(const Test &p) {
-        targetList->loadFromDirectory(p.targetListDirectory);
-    }
-    
-    void RecognitionTestModel::prepareVideo(const Test &p) {
-        if (auditoryOnly(p))
-            targetPlayer->hideVideo();
-        else
-            targetPlayer->showVideo();
-    }
-
-    bool RecognitionTestModel::auditoryOnly(const Test &p) {
-        return p.condition ==
-            av_coordinated_response_measure::Condition::auditoryOnly;
-    }
-
-    bool RecognitionTestModel::testComplete() {
-        return targetList->empty();
-    }
-    
     void RecognitionTestModel::fadeInComplete() {
         targetPlayer->play();
     }
@@ -163,19 +163,11 @@ namespace recognition_test {
         maskerPlayer->fadeOut();
     }
     
-    std::vector<std::string> RecognitionTestModel::audioDevices() {
-        return maskerPlayer->outputAudioDeviceDescriptions();
-    }
-    
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
         av_coordinated_response_measure::Trial trial{};
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
         outputFile->writeTrial(trial);
-    }
-    
-    void RecognitionTestModel::subscribe(Model::EventListener *listener) {
-        listener_ = listener;
     }
     
     void RecognitionTestModel::fadeOutComplete() { 
@@ -209,6 +201,14 @@ namespace recognition_test {
     
     void RecognitionTestModel::setTargetLevel_dB(double x) {
         targetPlayer->setLevel_dB(x);
+    }
+
+    bool RecognitionTestModel::testComplete() {
+        return targetList->empty();
+    }
+    
+    std::vector<std::string> RecognitionTestModel::audioDevices() {
+        return maskerPlayer->outputAudioDeviceDescriptions();
     }
 }
 
