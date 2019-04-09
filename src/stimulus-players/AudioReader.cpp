@@ -8,4 +8,19 @@ namespace stimulus_players {
         if (reader->failed())
             throw InvalidFile{};
     }
+    
+    std::vector<float> AudioReader::read() {
+        std::vector<float> audio{};
+        for (
+            auto buffer = reader->readNextBuffer();
+            !buffer.empty();
+            buffer = reader->readNextBuffer()
+        ) {
+            float minimumSample = reader->minimumPossibleSample();
+            for (auto x : buffer) {
+                audio.push_back(x/minimumSample);
+            }
+        }
+        return audio;
+    }
 }
