@@ -90,4 +90,8 @@ namespace target_player {
     bool TargetPlayerImpl::playing() { 
         return player->playing();
     }
+    
+    void TargetPlayerImpl::subscribeToPlaybackCompletion() { 
+        ;
+    }
 }

@@ -26,6 +26,7 @@ namespace recognition_test {
         virtual void showVideo() = 0;
         virtual double rms() = 0;
         virtual void setLevel_dB(double) = 0;
+        virtual void subscribeToPlaybackCompletion() = 0;
     };
 
     class MaskerPlayer {

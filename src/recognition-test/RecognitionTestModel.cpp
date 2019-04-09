@@ -137,6 +137,7 @@ namespace recognition_test {
     void RecognitionTestModel::loadNextTarget() {
         loadTargetFile(targetList->next());
         setTargetLevel_dB(signalLevel_dB());
+        targetPlayer->subscribeToPlaybackCompletion();
     }
     
     void RecognitionTestModel::startTrial() {

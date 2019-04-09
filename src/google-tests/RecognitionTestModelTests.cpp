@@ -132,7 +132,12 @@ namespace {
         bool throwInvalidAudioDeviceWhenDeviceSet_{};
         bool setDeviceCalled_{};
         bool playing_{};
+        bool playbackCompletionSubscribedTo_{};
     public:
+        void subscribeToPlaybackCompletion() override {
+            playbackCompletionSubscribedTo_ = true;
+        }
+        
         bool playing() override {
             return playing_;
         }
@@ -224,6 +229,10 @@ namespace {
         
         auto filePath() const {
             return filePath_;
+        }
+        
+        auto playbackCompletionSubscribedTo() const {
+            return playbackCompletionSubscribedTo_;
         }
     };
 
@@ -701,6 +710,14 @@ namespace {
         calibration.filePath = "a";
         model.playCalibration(calibration);
         assertEqual("a", targetPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        playTrial();
+        EXPECT_TRUE(targetPlayer.playbackCompletionSubscribedTo());
     }
 
     TEST_F(
