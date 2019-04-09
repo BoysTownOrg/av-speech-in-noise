@@ -191,7 +191,11 @@ namespace recognition_test {
             p.audioDevice
         );
         targetPlayer->loadFile({});
-        targetPlayer->rms();
+        targetPlayer->setLevel_dB(
+            p.level_dB_SPL -
+            p.fullScaleLevel_dB_SPL -
+            dB(targetPlayer->rms())
+        );
         targetPlayer->play();
     }
 }

@@ -723,6 +723,17 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        playCalibrationSetsTargetPlayerLevel
+    ) {
+        calibration.level_dB_SPL = 5;
+        calibration.fullScaleLevel_dB_SPL = 11;
+        targetPlayer.setRms(7);
+        model.playCalibration(calibration);
+        EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, targetPlayer.level_dB());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestSetsMaskerPlayerLevel
     ) {
         test.startingSnr_dB = 5;

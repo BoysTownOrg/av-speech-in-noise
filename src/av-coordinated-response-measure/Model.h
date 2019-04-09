@@ -70,6 +70,7 @@ namespace av_coordinated_response_measure {
             std::string filePath;
             std::string audioDevice;
             int level_dB_SPL;
+            int fullScaleLevel_dB_SPL;
         };
         virtual void playCalibration(const Calibration &) = 0;
         
