@@ -192,6 +192,7 @@ namespace recognition_test {
         );
         targetPlayer->loadFile({});
         targetPlayer->rms();
+        targetPlayer->play();
     }
 }
 

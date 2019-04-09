@@ -514,11 +514,15 @@ namespace {
             std::string what
         ) {
             try {
-                useCase.run(model);
+                run(useCase);
                 FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";
             } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
                 assertEqual(std::move(what), e.what());
             }
+        }
+        
+        void run(UseCase &useCase) {
+            useCase.run(model);
         }
         
         void playTrialIgnoringFailure() {
@@ -528,20 +532,15 @@ namespace {
             }
         }
         
-        void throwInvalidAudioDeviceWhenSet() {
-            maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
-            targetPlayer.throwInvalidAudioDeviceWhenDeviceSet();
-        }
-        
         void assertDevicePassedToTargetPlayer(AudioDeviceUseCase &useCase) {
             useCase.setAudioDevice("a");
-            useCase.run(model);
+            run(useCase);
             assertEqual("a", targetPlayer.device());
         }
         
         void assertDevicePassedToMaskerPlayer(AudioDeviceUseCase &useCase) {
             useCase.setAudioDevice("a");
-            useCase.run(model);
+            run(useCase);
             assertEqual("a", maskerPlayer.device());
         }
         
@@ -556,13 +555,14 @@ namespace {
             );
         }
         
+        void throwInvalidAudioDeviceWhenSet() {
+            maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+            targetPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+        }
+        
         void assertTargetFileLoadedPriorToRmsQuery(UseCase &useCase) {
             run(useCase);
             assertEqual("loadFile rms ", targetPlayer.log());
-        }
-        
-        void run(UseCase &useCase) {
-            useCase.run(model);
         }
     };
 
@@ -634,7 +634,7 @@ namespace {
         playCalibrationDoesNotChangeAudioDeviceWhenTargetPlaying
     ) {
         setTargetIsPlaying();
-        playingCalibration.run(model);
+        run(playingCalibration);
         EXPECT_FALSE(targetPlayer.setDeviceCalled());
     }
 
@@ -662,6 +662,11 @@ namespace {
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
         playTrial();
         EXPECT_TRUE(maskerPlayerFadedIn());
+    }
+
+    TEST_F(RecognitionTestModelTests, playCalibrationPlaysTarget) {
+        run(playingCalibration);
+        EXPECT_TRUE(targetPlayer.played());
     }
 
     TEST_F(
