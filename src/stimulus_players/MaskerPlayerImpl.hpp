@@ -4,7 +4,7 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
 
-namespace players {
+namespace stimulus_players {
     class AudioPlayer {
     public:
         class EventListener {

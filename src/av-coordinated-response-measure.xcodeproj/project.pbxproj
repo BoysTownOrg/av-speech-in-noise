@@ -40,8 +40,8 @@
 		26EE86BB2242CFFB00C08622 /* TargetPlayerTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BA2242CFFB00C08622 /* TargetPlayerTests.cpp */; };
 		26EE86C02242E8DE00C08622 /* TargetPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */; };
 		26EE86C92242E99100C08622 /* TargetPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */; };
-		26EE86CA2242E99A00C08622 /* libplayers.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26EE86C52242E98600C08622 /* libplayers.dylib */; };
-		26EE86CB2242EBBE00C08622 /* libplayers.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26EE86C52242E98600C08622 /* libplayers.dylib */; };
+		26EE86CA2242E99A00C08622 /* libstimulus_players.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26EE86C52242E98600C08622 /* libstimulus_players.dylib */; };
+		26EE86CB2242EBBE00C08622 /* libstimulus_players.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26EE86C52242E98600C08622 /* libstimulus_players.dylib */; };
 		26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26FC6B0621DA810C00289A0A /* PresenterTests.cpp */; };
 		26FC6B1B21DAA3F200289A0A /* Presenter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26FC6B1021DAA32500289A0A /* Presenter.cpp */; };
 		26FC6B1C21DAA40800289A0A /* libpresentation.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FC6B1621DAA3D800289A0A /* libpresentation.dylib */; };
@@ -101,7 +101,7 @@
 		26EE86BC2242E64900C08622 /* Model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
 		26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetPlayerImpl.cpp; sourceTree = "<group>"; };
 		26EE86BF2242E8DE00C08622 /* TargetPlayerImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TargetPlayerImpl.hpp; sourceTree = "<group>"; };
-		26EE86C52242E98600C08622 /* libplayers.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libplayers.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		26EE86C52242E98600C08622 /* libstimulus_players.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libstimulus_players.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FC6B0321DA810C00289A0A /* google-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "google-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26FC6B0621DA810C00289A0A /* PresenterTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PresenterTests.cpp; sourceTree = "<group>"; };
 		26FC6B0F21DA8ECA00289A0A /* Presenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Presenter.h; sourceTree = "<group>"; };
@@ -130,7 +130,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				269C4C7D2253B8A00059AD5F /* CoreMedia.framework in Frameworks */,
-				26EE86CB2242EBBE00C08622 /* libplayers.dylib in Frameworks */,
+				26EE86CB2242EBBE00C08622 /* libstimulus_players.dylib in Frameworks */,
 				2656B62722401D3F0058A23D /* MediaToolbox.framework in Frameworks */,
 				26955FF92236F21A00664A2C /* CoreAudio.framework in Frameworks */,
 				2646F84321DFEBE000F378DE /* libtarget-list.dylib in Frameworks */,
@@ -152,7 +152,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26EE86CA2242E99A00C08622 /* libplayers.dylib in Frameworks */,
+				26EE86CA2242E99A00C08622 /* libstimulus_players.dylib in Frameworks */,
 				269C91962233212B00A80372 /* gtest_main.a in Frameworks */,
 				2646F84121DFEA5E00F378DE /* libtarget-list.dylib in Frameworks */,
 				26A2237A21DD3552007D6511 /* librecognition-test.dylib in Frameworks */,
@@ -208,7 +208,7 @@
 			path = "recognition-test";
 			sourceTree = "<group>";
 		};
-		26EE86BD2242E8CB00C08622 /* players */ = {
+		26EE86BD2242E8CB00C08622 /* stimulus_players */ = {
 			isa = PBXGroup;
 			children = (
 				26A86BE9223AA74A00210C00 /* MaskerPlayerImpl.hpp */,
@@ -216,14 +216,14 @@
 				26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */,
 				26EE86BF2242E8DE00C08622 /* TargetPlayerImpl.hpp */,
 			);
-			path = players;
+			path = stimulus_players;
 			sourceTree = "<group>";
 		};
 		26FC6AF821DA80C900289A0A = {
 			isa = PBXGroup;
 			children = (
 				26FDD2D7224AC3100090BDD5 /* av-coordinated-response-measure */,
-				26EE86BD2242E8CB00C08622 /* players */,
+				26EE86BD2242E8CB00C08622 /* stimulus_players */,
 				269C919122331FCE00A80372 /* main */,
 				2646F83D21DFEA0B00F378DE /* target-list */,
 				26A2236D21DD3482007D6511 /* recognition-test */,
@@ -242,7 +242,7 @@
 				26A2237521DD3544007D6511 /* librecognition-test.dylib */,
 				26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */,
 				2646F83921DFEA0400F378DE /* libtarget-list.dylib */,
-				26EE86C52242E98600C08622 /* libplayers.dylib */,
+				26EE86C52242E98600C08622 /* libstimulus_players.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -383,9 +383,9 @@
 			productReference = 26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */;
 			productType = "com.apple.product-type.application";
 		};
-		26EE86C42242E98600C08622 /* players */ = {
+		26EE86C42242E98600C08622 /* stimulus_players */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 26EE86C62242E98700C08622 /* Build configuration list for PBXNativeTarget "players" */;
+			buildConfigurationList = 26EE86C62242E98700C08622 /* Build configuration list for PBXNativeTarget "stimulus_players" */;
 			buildPhases = (
 				26EE86C12242E98600C08622 /* Headers */,
 				26EE86C22242E98600C08622 /* Sources */,
@@ -395,9 +395,9 @@
 			);
 			dependencies = (
 			);
-			name = players;
+			name = stimulus_players;
 			productName = "stimulus-player";
-			productReference = 26EE86C52242E98600C08622 /* libplayers.dylib */;
+			productReference = 26EE86C52242E98600C08622 /* libstimulus_players.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		26FC6B0221DA810C00289A0A /* google-tests */ = {
@@ -480,7 +480,7 @@
 				26A2237421DD3544007D6511 /* recognition-test */,
 				26B81F2521DEB15700006FCB /* av-coordinated-response-measure */,
 				2646F83821DFEA0400F378DE /* target-list */,
-				26EE86C42242E98600C08622 /* players */,
+				26EE86C42242E98600C08622 /* stimulus_players */,
 			);
 		};
 /* End PBXProject section */
@@ -1336,7 +1336,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		26EE86C62242E98700C08622 /* Build configuration list for PBXNativeTarget "players" */ = {
+		26EE86C62242E98700C08622 /* Build configuration list for PBXNativeTarget "stimulus_players" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26EE86C72242E98700C08622 /* Debug */,

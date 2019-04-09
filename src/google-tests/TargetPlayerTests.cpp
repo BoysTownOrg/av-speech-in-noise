@@ -1,10 +1,10 @@
 #include "assert-utility.h"
-#include <players/TargetPlayerImpl.hpp>
+#include <stimulus_players/TargetPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 
 namespace {
-    class VideoPlayerStub : public players::VideoPlayer {
+    class VideoPlayerStub : public stimulus_players::VideoPlayer {
         std::vector<std::string> audioDeviceDescriptions_{};
         std::vector<std::vector<float>> audioRead_{};
         std::string filePath_{};
@@ -131,7 +131,7 @@ namespace {
         std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
         TargetPlayerListenerStub listener;
-        players::TargetPlayerImpl player{&videoPlayer};
+        stimulus_players::TargetPlayerImpl player{&videoPlayer};
         
         TargetPlayerTests() {
             player.subscribe(&listener);

@@ -1,11 +1,11 @@
-#ifndef players_StimulusPlayerImpl_hpp
-#define players_StimulusPlayerImpl_hpp
+#ifndef stimulus_players_StimulusPlayerImpl_hpp
+#define stimulus_players_StimulusPlayerImpl_hpp
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
 #include <vector>
 
-namespace players {
+namespace stimulus_players {
     class VideoPlayer {
     public:
         class EventListener {
@@ -18,14 +18,14 @@ namespace players {
         
         virtual ~VideoPlayer() = default;
         virtual void subscribe(EventListener *) = 0;
-        virtual int deviceCount() = 0;
-        virtual std::string deviceDescription(int index) = 0;
+        virtual void subscribeToPlaybackCompletion() = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void loadFile(std::string) = 0;
         virtual void play() = 0;
         virtual bool playing() = 0;
-        virtual void subscribeToPlaybackCompletion() = 0;
+        virtual int deviceCount() = 0;
+        virtual std::string deviceDescription(int index) = 0;
         virtual void setDevice(int index) = 0;
         virtual std::vector<std::vector<float>> readAudio(std::string filePath) = 0;
     };

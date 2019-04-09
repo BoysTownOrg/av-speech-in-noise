@@ -1,10 +1,10 @@
 #include "assert-utility.h"
-#include <players/MaskerPlayerImpl.hpp>
+#include <stimulus_players/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 
 namespace {
-    class AudioPlayerStub : public players::AudioPlayer {
+    class AudioPlayerStub : public stimulus_players::AudioPlayer {
         std::vector<std::vector<float>> audioRead_{};
         std::vector<std::string> audioDeviceDescriptions_{10};
         std::string filePath_{};
@@ -169,7 +169,7 @@ namespace {
         std::vector<float> rightChannel{};
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
-        players::MaskerPlayerImpl player{&audioPlayer};
+        stimulus_players::MaskerPlayerImpl player{&audioPlayer};
         
         MaskerPlayerTests() {
             player.subscribe(&listener);
