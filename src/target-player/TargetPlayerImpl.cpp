@@ -88,6 +88,6 @@ namespace target_player {
     }
     
     bool TargetPlayerImpl::playing() { 
-        return false;
+        return player->playing();
     }
 }

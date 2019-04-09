@@ -14,7 +14,12 @@ namespace {
         bool shown_{};
         bool hidden_{};
         bool played_{};
+        bool playing_{};
     public:
+        bool playing() override {
+            return playing_;
+        }
+        
         auto audioFilePath() const {
             return audioFilePath_;
         }
@@ -75,6 +80,10 @@ namespace {
             return shown_;
         }
         
+        void setPlaying() {
+            playing_ = true;
+        }
+        
         void show() override {
             shown_ = true;
         }
@@ -127,6 +136,11 @@ namespace {
             videoPlayer.setAudioDeviceDescriptions(std::move(v));
         }
     };
+
+    TEST_F(TargetPlayerTests, playingWhenVideoPlayerPlaying) {
+        videoPlayer.setPlaying();
+        EXPECT_TRUE(player.playing());
+    }
 
     TEST_F(TargetPlayerTests, playPlaysVideo) {
         player.play();
