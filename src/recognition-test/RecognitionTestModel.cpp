@@ -186,6 +186,10 @@ namespace recognition_test {
         if (targetPlayer->playing())
             return;
         
+        playCalibration_(p);
+    }
+    
+    void RecognitionTestModel::playCalibration_(const Calibration &p) {
         throwInvalidAudioDeviceOnErrorSettingDevice(
             &RecognitionTestModel::setTargetPlayerDevice,
             p.audioDevice
