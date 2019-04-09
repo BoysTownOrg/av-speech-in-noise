@@ -380,8 +380,12 @@ std::vector<std::vector<float>>
     return ::readAudio(filePath);
 }
 
-bool AvFoundationVideoPlayer::playing() {
+static bool playing(AVPlayer *player) {
     return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
+}
+
+bool AvFoundationVideoPlayer::playing() {
+    return ::playing(player);
 }
 
 @implementation VideoPlayerActions
@@ -421,7 +425,7 @@ void AvFoundationAudioPlayer::setDevice(int index) {
 }
 
 bool AvFoundationAudioPlayer::playing() {
-    return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
+    return ::playing(player);
 }
 
 void AvFoundationAudioPlayer::play() {
