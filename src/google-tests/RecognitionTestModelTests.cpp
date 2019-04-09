@@ -389,7 +389,6 @@ namespace {
     protected:
         recognition_test::RecognitionTestModel::Test test;
         recognition_test::RecognitionTestModel::Calibration calibration;
-        recognition_test::RecognitionTestModel::AudioSettings trial;
         recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
         TargetListStub targetList{};
         TargetPlayerStub targetPlayer{};
@@ -408,15 +407,10 @@ namespace {
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
-            trial.audioDevice = "valid";
         }
         
         void initializeTest() {
             model.initializeTest(test);
-        }
-        
-        void playTrial() {
-            model.playTrial(trial);
         }
         
         void submitResponse() {
@@ -456,7 +450,7 @@ namespace {
         }
         
         void assertMaskerPlayerNotPlayedAfterPlayingTrial() {
-            playTrial();
+            run(playingTrial);
             assertMaskerPlayerNotPlayed();
         }
         
@@ -466,7 +460,7 @@ namespace {
         }
         
         void assertListNotAdvancedAfterPlayingTrial() {
-            playTrial();
+            run(playingTrial);
             assertListNotAdvanced();
         }
         
@@ -527,7 +521,7 @@ namespace {
         
         void playTrialIgnoringFailure() {
             try {
-                playTrial();
+                run(playingTrial);
             } catch (const recognition_test::RecognitionTestModel::RequestFailure &) {
             }
         }
@@ -625,7 +619,7 @@ namespace {
         playTrialDoesNotChangeAudioDeviceWhenMaskerPlaying
     ) {
         setMaskerIsPlaying();
-        playTrial();
+        run(playingTrial);
         EXPECT_FALSE(maskerPlayer.setDeviceCalled());
     }
 
@@ -660,7 +654,7 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
-        playTrial();
+        run(playingTrial);
         EXPECT_TRUE(maskerPlayerFadedIn());
     }
 
@@ -715,7 +709,7 @@ namespace {
         test.fullScaleLevel_dB_SPL = 11;
         initializeTest();
         targetPlayer.setRms(7);
-        playTrial();
+        run(playingTrial);
         EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, targetPlayer.level_dB());
     }
 
@@ -819,7 +813,7 @@ namespace {
         playTrialPassesNextTargetToTargetPlayer
     ) {
         targetList.setNext("a");
-        playTrial();
+        run(playingTrial);
         assertEqual("a", targetPlayer.filePath());
     }
 
