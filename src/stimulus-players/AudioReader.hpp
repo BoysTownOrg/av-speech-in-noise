@@ -18,9 +18,10 @@ namespace stimulus_players {
         AudioFileReader *reader;
     public:
         AudioReader(AudioFileReader *);
-        void loadFile(std::string filePath);
         class InvalidFile {};
-        std::vector<float> read();
+        std::vector<float> read(std::string filePath);
+    private:
+        void loadFile(std::string filePath);
     };
 }
 

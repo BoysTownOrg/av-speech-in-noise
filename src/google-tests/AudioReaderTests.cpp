@@ -57,14 +57,14 @@ namespace {
     };
     
     TEST_F(AudioReaderTests, loadsFile) {
-        reader.loadFile("a");
+        reader.read("a");
         assertEqual("a", fileReader.file());
     }
     
-    TEST_F(AudioReaderTests, loadFileThrowsInvalidFileOnFailure) {
+    TEST_F(AudioReaderTests, readThrowsInvalidFileOnFailure) {
         fileReader.failOnLoad();
         try {
-            reader.loadFile({});
+            reader.read({});
             FAIL() << "Expected stimulus_players::AudioReader::InvalidFile";
         } catch (const stimulus_players::AudioReader::InvalidFile &) {
         }
@@ -78,7 +78,7 @@ namespace {
         fileReader.setMinimumPossibleSample(-3);
         assertEqual(
             { 0.f/-3, 1.f/-3, 2.f/-3, -1.f/-3, -2.f/-3, -3.f/-3 },
-            reader.read()
+            reader.read({})
         );
     }
 }
