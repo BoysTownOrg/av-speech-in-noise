@@ -13,11 +13,8 @@ namespace stimulus_players {
     class AudioReader {
         AudioFileReader *reader;
     public:
-        AudioReader(AudioFileReader *reader) : reader{reader} {}
-        
-        void loadFile(std::string filePath) {
-            reader->loadFile(std::move(filePath));
-        }
+        AudioReader(AudioFileReader *);
+        void loadFile(std::string filePath);
     };
 }
 
