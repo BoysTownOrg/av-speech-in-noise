@@ -128,6 +128,8 @@ namespace recognition_test {
             void(RecognitionTestModel::*f)(const std::string &),
             const std::string &
         );
+        void loadTargetFile(std::string);
+        void setTargetLevel_dB(double);
     };
 }
 

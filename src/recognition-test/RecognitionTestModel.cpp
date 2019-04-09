@@ -71,8 +71,8 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::loadNextTarget() {
-        targetPlayer->loadFile(targetList->next());
-        targetPlayer->setLevel_dB(signalLevel_dB());
+        loadTargetFile(targetList->next());
+        setTargetLevel_dB(signalLevel_dB());
     }
     
     void RecognitionTestModel::startTrial() {
@@ -190,13 +190,21 @@ namespace recognition_test {
             &RecognitionTestModel::setTargetPlayerDevice,
             p.audioDevice
         );
-        targetPlayer->loadFile({});
-        targetPlayer->setLevel_dB(
+        loadTargetFile({});
+        setTargetLevel_dB(
             p.level_dB_SPL -
             p.fullScaleLevel_dB_SPL -
             dB(targetPlayer->rms())
         );
         targetPlayer->play();
+    }
+    
+    void RecognitionTestModel::loadTargetFile(std::string s) {
+        targetPlayer->loadFile(std::move(s));;
+    }
+    
+    void RecognitionTestModel::setTargetLevel_dB(double x) {
+        targetPlayer->setLevel_dB(x);
     }
 }
 
