@@ -1,26 +1,9 @@
-#include <string>
-
-class AudioFileReader {
-public:
-    virtual ~AudioFileReader() = default;
-    virtual void loadFile(std::string) = 0;
-};
-
-class AudioReader {
-    AudioFileReader *reader;
-public:
-    AudioReader(AudioFileReader *reader) : reader{reader} {}
-    
-    void loadFile(std::string filePath) {
-        reader->loadFile(std::move(filePath));
-    }
-};
-
 #include "assert-utility.h"
+#include <stimulus-players/AudioReader.hpp>
 #include <gtest/gtest.h>
 
 namespace {
-    class AudioFileReaderStub : public AudioFileReader {
+    class AudioFileReaderStub : public stimulus_players::AudioFileReader {
         std::string file_{};
     public:
         auto file() const {
@@ -35,7 +18,7 @@ namespace {
     class AudioReaderTests : public ::testing::Test {
     protected:
         AudioFileReaderStub fileReader{};
-        AudioReader reader{&fileReader};
+        stimulus_players::AudioReader reader{&fileReader};
     };
     
     TEST_F(AudioReaderTests, loadsFile) {

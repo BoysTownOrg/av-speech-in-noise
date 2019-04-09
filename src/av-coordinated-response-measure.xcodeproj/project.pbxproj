@@ -37,6 +37,8 @@
 		26C2A325225D050E00E2919D /* AudioReaderTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26C2A324225D050E00E2919D /* AudioReaderTests.cpp */; };
 		26C2A326225D0B3400E2919D /* MaskerPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A86BE8223AA74A00210C00 /* MaskerPlayerImpl.cpp */; };
 		26C2A327225D0B3500E2919D /* MaskerPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A86BE8223AA74A00210C00 /* MaskerPlayerImpl.cpp */; };
+		26C2A32A225D0CD000E2919D /* AudioReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26C2A328225D0CD000E2919D /* AudioReader.cpp */; };
+		26C2A32B225D0CD000E2919D /* AudioReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 26C2A329225D0CD000E2919D /* AudioReader.hpp */; };
 		26EE86BB2242CFFB00C08622 /* TargetPlayerTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BA2242CFFB00C08622 /* TargetPlayerTests.cpp */; };
 		26EE86C02242E8DE00C08622 /* TargetPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */; };
 		26EE86C92242E99100C08622 /* TargetPlayerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */; };
@@ -97,6 +99,8 @@
 		26B81F2021DEA46F00006FCB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "av-coordinated-response-measure.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26C2A324225D050E00E2919D /* AudioReaderTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioReaderTests.cpp; sourceTree = "<group>"; };
+		26C2A328225D0CD000E2919D /* AudioReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioReader.cpp; sourceTree = "<group>"; };
+		26C2A329225D0CD000E2919D /* AudioReader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AudioReader.hpp; sourceTree = "<group>"; };
 		26EE86BA2242CFFB00C08622 /* TargetPlayerTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetPlayerTests.cpp; sourceTree = "<group>"; };
 		26EE86BC2242E64900C08622 /* Model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
 		26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetPlayerImpl.cpp; sourceTree = "<group>"; };
@@ -208,22 +212,24 @@
 			path = "recognition-test";
 			sourceTree = "<group>";
 		};
-		26EE86BD2242E8CB00C08622 /* stimulus_players */ = {
+		26EE86BD2242E8CB00C08622 /* stimulus-players */ = {
 			isa = PBXGroup;
 			children = (
 				26A86BE9223AA74A00210C00 /* MaskerPlayerImpl.hpp */,
 				26A86BE8223AA74A00210C00 /* MaskerPlayerImpl.cpp */,
 				26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */,
 				26EE86BF2242E8DE00C08622 /* TargetPlayerImpl.hpp */,
+				26C2A328225D0CD000E2919D /* AudioReader.cpp */,
+				26C2A329225D0CD000E2919D /* AudioReader.hpp */,
 			);
-			path = stimulus_players;
+			path = "stimulus-players";
 			sourceTree = "<group>";
 		};
 		26FC6AF821DA80C900289A0A = {
 			isa = PBXGroup;
 			children = (
 				26FDD2D7224AC3100090BDD5 /* av-coordinated-response-measure */,
-				26EE86BD2242E8CB00C08622 /* stimulus_players */,
+				26EE86BD2242E8CB00C08622 /* stimulus-players */,
 				269C919122331FCE00A80372 /* main */,
 				2646F83D21DFEA0B00F378DE /* target-list */,
 				26A2236D21DD3482007D6511 /* recognition-test */,
@@ -319,6 +325,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26C2A32B225D0CD000E2919D /* AudioReader.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -531,6 +538,7 @@
 			files = (
 				26EE86C92242E99100C08622 /* TargetPlayerImpl.cpp in Sources */,
 				26C2A327225D0B3500E2919D /* MaskerPlayerImpl.cpp in Sources */,
+				26C2A32A225D0CD000E2919D /* AudioReader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

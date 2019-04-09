@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <stimulus_players/MaskerPlayerImpl.hpp>
+#include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 
