@@ -54,6 +54,8 @@ public:
     int deviceCount() override;
     std::string deviceDescription(int index) override;
     std::vector<std::vector<float>> readAudio(std::string filePath) override;
+    bool playing() override;
+    
 private:
     void schedulePlaybackCompletion();
     void resizeVideo();

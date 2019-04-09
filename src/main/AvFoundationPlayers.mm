@@ -380,6 +380,10 @@ std::vector<std::vector<float>>
     return ::readAudio(filePath);
 }
 
+bool AvFoundationVideoPlayer::playing() {
+    return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
+}
+
 @implementation VideoPlayerActions
 @synthesize controller;
 - (void)playbackComplete {
