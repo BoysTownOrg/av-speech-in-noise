@@ -450,17 +450,29 @@ namespace {
         }
         
         void assertMaskerPlayerNotPlayedAfterPlayingTrial() {
-            run(playingTrial);
+            playTrial();
             assertMaskerPlayerNotPlayed();
         }
         
+        void playTrial() {
+            run(playingTrial);
+        }
+        
+        void run(UseCase &useCase) {
+            useCase.run(model);
+        }
+        
         void assertTargetPlayerNotPlayedAfterPlayingCalibration() {
-            playingCalibration.run(model);
+            playCalibration();
             assertTargetPlayerNotPlayed();
         }
         
+        void playCalibration() {
+            run(playingCalibration);
+        }
+        
         void assertListNotAdvancedAfterPlayingTrial() {
-            run(playingTrial);
+            playTrial();
             assertListNotAdvanced();
         }
         
@@ -515,13 +527,9 @@ namespace {
             }
         }
         
-        void run(UseCase &useCase) {
-            useCase.run(model);
-        }
-        
         void playTrialIgnoringFailure() {
             try {
-                run(playingTrial);
+                playTrial();
             } catch (const recognition_test::RecognitionTestModel::RequestFailure &) {
             }
         }
@@ -619,7 +627,7 @@ namespace {
         playTrialDoesNotChangeAudioDeviceWhenMaskerPlaying
     ) {
         setMaskerIsPlaying();
-        run(playingTrial);
+        playTrial();
         EXPECT_FALSE(maskerPlayer.setDeviceCalled());
     }
 
@@ -628,7 +636,7 @@ namespace {
         playCalibrationDoesNotChangeAudioDeviceWhenTargetPlaying
     ) {
         setTargetIsPlaying();
-        run(playingCalibration);
+        playCalibration();
         EXPECT_FALSE(targetPlayer.setDeviceCalled());
     }
 
@@ -654,12 +662,12 @@ namespace {
     }
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
-        run(playingTrial);
+        playTrial();
         EXPECT_TRUE(maskerPlayerFadedIn());
     }
 
     TEST_F(RecognitionTestModelTests, playCalibrationPlaysTarget) {
-        run(playingCalibration);
+        playCalibration();
         EXPECT_TRUE(targetPlayer.played());
     }
 
@@ -709,7 +717,7 @@ namespace {
         test.fullScaleLevel_dB_SPL = 11;
         initializeTest();
         targetPlayer.setRms(7);
-        run(playingTrial);
+        playTrial();
         EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, targetPlayer.level_dB());
     }
 
@@ -813,7 +821,7 @@ namespace {
         playTrialPassesNextTargetToTargetPlayer
     ) {
         targetList.setNext("a");
-        run(playingTrial);
+        playTrial();
         assertEqual("a", targetPlayer.filePath());
     }
 
