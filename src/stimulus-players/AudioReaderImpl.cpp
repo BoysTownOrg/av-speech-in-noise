@@ -1,9 +1,9 @@
-#include "AudioReader.hpp"
+#include "AudioReaderImpl.hpp"
 
 namespace stimulus_players {
-    AudioReader::AudioReader(BufferedAudioReader *reader)  : reader{reader} {}
+    AudioReaderImpl::AudioReaderImpl(BufferedAudioReader *reader)  : reader{reader} {}
     
-    std::vector<float> AudioReader::read(std::string filePath) {
+    std::vector<float> AudioReaderImpl::read(std::string filePath) {
         loadFile(std::move(filePath));
         std::vector<float> audio{};
         for (
@@ -19,7 +19,7 @@ namespace stimulus_players {
         return audio;
     }
     
-    void AudioReader::loadFile(std::string filePath) {
+    void AudioReaderImpl::loadFile(std::string filePath) {
         reader->loadFile(std::move(filePath));
         if (reader->failed())
             throw InvalidFile{};

@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <stimulus-players/AudioReader.hpp>
+#include <stimulus-players/AudioReaderImpl.hpp>
 #include <gtest/gtest.h>
 
 namespace {
@@ -53,7 +53,7 @@ namespace {
     class AudioReaderTests : public ::testing::Test {
     protected:
         BufferedAudioReaderStub bufferedReader{};
-        stimulus_players::AudioReader reader{&bufferedReader};
+        stimulus_players::AudioReaderImpl reader{&bufferedReader};
     };
     
     TEST_F(AudioReaderTests, loadsFile) {
@@ -66,7 +66,7 @@ namespace {
         try {
             reader.read({});
             FAIL() << "Expected stimulus_players::AudioReader::InvalidFile";
-        } catch (const stimulus_players::AudioReader::InvalidFile &) {
+        } catch (const stimulus_players::AudioReaderImpl::InvalidFile &) {
         }
     }
     
