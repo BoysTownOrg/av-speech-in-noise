@@ -169,6 +169,7 @@ namespace presentation {
         void browseForCalibration();
         void confirmTestSetup();
         void playCalibration();
+        static int fullScaleLevel_dB_SPL;
         
     private:
         void showErrorMessage(std::string);

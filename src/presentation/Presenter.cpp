@@ -1,6 +1,8 @@
 #include "Presenter.h"
 
 namespace presentation {
+    int Presenter::fullScaleLevel_dB_SPL = 119;
+    
     Presenter::Presenter(
         av_coordinated_response_measure::Model *model,
         View *view,
@@ -184,7 +186,7 @@ namespace presentation {
         p.condition = auditoryOnly()
             ? av_coordinated_response_measure::Condition::auditoryOnly
             : av_coordinated_response_measure::Condition::audioVisual;
-        p.fullScaleLevel_dB_SPL = 119;
+        p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         return p;
     }
     
@@ -217,6 +219,7 @@ namespace presentation {
         av_coordinated_response_measure::Model::Calibration p;
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readSignalLevel();
+        p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         return p;
     }
     

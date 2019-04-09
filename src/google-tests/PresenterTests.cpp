@@ -783,6 +783,10 @@ namespace {
         confirmTestSetup();
         EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
         EXPECT_EQ(2, modelTestParameters().signalLevel_dB_SPL);
+        EXPECT_EQ(
+            presentation::Presenter::fullScaleLevel_dB_SPL,
+            modelTestParameters().fullScaleLevel_dB_SPL
+        );
         assertEqual("a", modelTestParameters().targetListDirectory);
         assertEqual("b", modelTestParameters().subjectId);
         assertEqual("c", modelTestParameters().testerId);
@@ -796,6 +800,10 @@ namespace {
         setAudioDevice("b");
         playCalibration();
         EXPECT_EQ(1, modelCalibrationParameters().level_dB_SPL);
+        EXPECT_EQ(
+            presentation::Presenter::fullScaleLevel_dB_SPL,
+            modelCalibrationParameters().fullScaleLevel_dB_SPL
+        );
         assertEqual("a", modelCalibrationParameters().filePath);
         assertEqual("b", modelCalibrationParameters().audioDevice);
     }
