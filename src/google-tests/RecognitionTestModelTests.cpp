@@ -430,6 +430,10 @@ namespace {
             EXPECT_FALSE(maskerPlayerFadedIn());
         }
         
+        void assertTargetPlayerNotPlayed() {
+            EXPECT_FALSE(targetPlayer.played());
+        }
+        
         void assertListNotAdvanced() {
             EXPECT_FALSE(targetList.nextCalled());
         }
@@ -445,6 +449,11 @@ namespace {
         void assertMaskerPlayerNotPlayedAfterPlayingTrial() {
             playTrial();
             assertMaskerPlayerNotPlayed();
+        }
+        
+        void assertTargetPlayerNotPlayedAfterPlayingCalibration() {
+            playingCalibration.run(model);
+            assertTargetPlayerNotPlayed();
         }
         
         void assertListNotAdvancedAfterPlayingTrial() {
@@ -614,6 +623,14 @@ namespace {
     TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfMaskerAlreadyPlaying) {
         setMaskerIsPlaying();
         assertMaskerPlayerNotPlayedAfterPlayingTrial();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationDoesNotPlayIfTargetAlreadyPlaying
+    ) {
+        setTargetIsPlaying();
+        assertTargetPlayerNotPlayedAfterPlayingCalibration();
     }
 
     TEST_F(
