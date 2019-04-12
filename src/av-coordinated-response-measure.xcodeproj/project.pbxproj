@@ -30,6 +30,7 @@
 		26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A2236E21DD34A7007D6511 /* RecognitionTestModel.cpp */; };
 		26A2237A21DD3552007D6511 /* librecognition-test.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; };
 		26A86BDE223A972200210C00 /* MaskerPlayerTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A86BDD223A972200210C00 /* MaskerPlayerTests.cpp */; };
+		26B22D352260EE6400D528F1 /* AdaptiveTrackTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26B22D342260EE6400D528F1 /* AdaptiveTrackTests.cpp */; };
 		26B81F3721DEB18E00006FCB /* libpresentation.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FC6B1621DAA3D800289A0A /* libpresentation.dylib */; };
 		26B81F3821DEB18E00006FCB /* librecognition-test.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; };
 		26B81F3A21DEB19E00006FCB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B81F1E21DEA46800006FCB /* AVFoundation.framework */; };
@@ -95,6 +96,7 @@
 		26A86BDD223A972200210C00 /* MaskerPlayerTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaskerPlayerTests.cpp; sourceTree = "<group>"; };
 		26A86BE8223AA74A00210C00 /* MaskerPlayerImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaskerPlayerImpl.cpp; sourceTree = "<group>"; };
 		26A86BE9223AA74A00210C00 /* MaskerPlayerImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MaskerPlayerImpl.hpp; sourceTree = "<group>"; };
+		26B22D342260EE6400D528F1 /* AdaptiveTrackTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AdaptiveTrackTests.cpp; sourceTree = "<group>"; };
 		26B81F1E21DEA46800006FCB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		26B81F2021DEA46F00006FCB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "av-coordinated-response-measure.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -266,6 +268,7 @@
 				264E7E4A224E6467008A595F /* OutputFilePathTests.cpp */,
 				264E7E50224E7065008A595F /* LogString.h */,
 				26C2A324225D050E00E2919D /* AudioReaderTests.cpp */,
+				26B22D342260EE6400D528F1 /* AdaptiveTrackTests.cpp */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";
@@ -547,6 +550,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26FDD2D6224AC0840090BDD5 /* OutputFileTests.cpp in Sources */,
+				26B22D352260EE6400D528F1 /* AdaptiveTrackTests.cpp in Sources */,
 				26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */,
 				26EE86C02242E8DE00C08622 /* TargetPlayerImpl.cpp in Sources */,
 				26C2A325225D050E00E2919D /* AudioReaderTests.cpp in Sources */,
