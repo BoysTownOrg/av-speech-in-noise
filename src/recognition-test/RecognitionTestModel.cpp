@@ -150,12 +150,6 @@ namespace recognition_test {
             test.startingSnr_dB;
     }
     
-    int RecognitionTestModel::desiredSignalLevel_dB() {
-        return
-            test.signalLevel_dB_SPL -
-            test.fullScaleLevel_dB_SPL;
-    }
-    
     int RecognitionTestModel::desiredMaskerLevel_dB() {
         return
             test.maskerLevel_dB_SPL -

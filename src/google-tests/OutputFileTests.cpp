@@ -139,7 +139,7 @@ namespace {
         test.subjectId = "c";
         test.targetListDirectory = "d";
         test.testerId = "e";
-        test.signalLevel_dB_SPL = 1;
+        test.maskerLevel_dB_SPL = 1;
         test.startingSnr_dB = 2;
         file.writeTest(test);
         EXPECT_TRUE(writer.written().contains("subject: c\n"));
@@ -147,7 +147,7 @@ namespace {
         EXPECT_TRUE(writer.written().contains("session: b\n"));
         EXPECT_TRUE(writer.written().contains("masker: a\n"));
         EXPECT_TRUE(writer.written().contains("targets: d\n"));
-        EXPECT_TRUE(writer.written().contains("signal level (dB SPL): 1\n"));
+        EXPECT_TRUE(writer.written().contains("masker level (dB SPL): 1\n"));
         EXPECT_TRUE(writer.written().contains("starting SNR (dB): 2\n"));
         EXPECT_TRUE(writer.written().endsWith("\n\n"));
     }
