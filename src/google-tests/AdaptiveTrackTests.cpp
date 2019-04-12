@@ -16,9 +16,9 @@ public:
     virtual void reset(const Parameters &) = 0;
     virtual void pushDown() = 0;
     virtual void pushUp() = 0;
-    virtual int x() const = 0;
-    virtual bool complete() const = 0;
-    virtual int reversals() const = 0;
+    virtual int x() = 0;
+    virtual bool complete() = 0;
+    virtual int reversals() = 0;
 };
 
 class AdaptiveTrack : public Track {
@@ -32,38 +32,38 @@ class AdaptiveTrack : public Track {
         rise,
         fall
     };
-    std::vector<int> runCounts;
-    std::vector<int> stepSizes;
-    std::vector<int> up;
-    std::vector<int> down;
-    std::size_t sequenceIndex;
-    int _x;
-    int sameDirectionConsecutiveCount;
-    int runCounter;
-    int _reversals;
-    Direction previousDirection;
-    Step previousStep;
+    std::vector<int> runCounts{};
+    std::vector<int> stepSizes{};
+    std::vector<int> up{};
+    std::vector<int> down{};
+    std::size_t sequenceIndex{};
+    int x_{};
+    int sameDirectionConsecutiveCount{};
+    int runCounter{};
+    int reversals_{};
+    Direction previousDirection{Direction::undefined};
+    Step previousStep{Step::undefined};
 public:
-    int x() const override;
+    int x() override;
     void pushUp() override;
     void pushDown() override;
-    bool complete() const override;
-    int reversals() const override;
+    bool complete() override;
+    int reversals() override;
     void reset(const Parameters &) override;
     
 private:
     void updateConsecutiveCount(AdaptiveTrack::Direction);
     void updateReversals(AdaptiveTrack::Step);
     void reversal();
-    bool _complete() const;
+    bool complete_() const;
 };
 
 void AdaptiveTrack::reset(const Parameters &p) {
     sequenceIndex = 0;
-    _x = p.startingX;
+    x_ = p.startingX;
     sameDirectionConsecutiveCount = 0;
     runCounter = 0;
-    _reversals = 0;
+    reversals_ = 0;
     previousDirection = Direction::undefined;
     previousStep = Step::undefined;
     stepSizes.clear();
@@ -76,17 +76,13 @@ void AdaptiveTrack::reset(const Parameters &p) {
     stepSizes.push_back(0);
 }
 
-int AdaptiveTrack::x() const {
-    return _x;
-}
-
 void AdaptiveTrack::pushUp() {
-    if (_complete())
+    if (complete_())
         return;
     updateConsecutiveCount(Direction::up);
     if (sameDirectionConsecutiveCount == up[sequenceIndex]) {
         updateReversals(Step::fall);
-        _x += stepSizes[sequenceIndex];
+        x_ += stepSizes[sequenceIndex];
         sameDirectionConsecutiveCount = 0;
         previousStep = Step::rise;
     }
@@ -107,7 +103,7 @@ void AdaptiveTrack::updateReversals(AdaptiveTrack::Step step) {
 }
 
 void AdaptiveTrack::reversal() {
-    ++_reversals;
+    ++reversals_;
     if (++runCounter == runCounts[sequenceIndex]) {
         runCounter = 0;
         ++sequenceIndex;
@@ -115,28 +111,32 @@ void AdaptiveTrack::reversal() {
 }
 
 void AdaptiveTrack::pushDown() {
-    if (_complete())
+    if (complete_())
         return;
     updateConsecutiveCount(Direction::down);
     if (sameDirectionConsecutiveCount == down[sequenceIndex]) {
         updateReversals(Step::rise);
-        _x -= stepSizes[sequenceIndex];
+        x_ -= stepSizes[sequenceIndex];
         sameDirectionConsecutiveCount = 0;
         previousStep = Step::fall;
     }
     previousDirection = Direction::down;
 }
 
-bool AdaptiveTrack::complete() const {
-    return _complete();
+int AdaptiveTrack::x() {
+    return x_;
 }
 
-bool AdaptiveTrack::_complete() const {
+bool AdaptiveTrack::complete() {
+    return complete_();
+}
+
+bool AdaptiveTrack::complete_() const {
     return sequenceIndex == runCounts.size();
 }
 
-int AdaptiveTrack::reversals() const {
-    return _reversals;
+int AdaptiveTrack::reversals() {
+    return reversals_;
 }
 
 #include <gtest/gtest.h>
@@ -145,6 +145,7 @@ namespace {
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
         AdaptiveTrack::Parameters parameters{};
+        AdaptiveTrack::Parameters::RunSequence sequence{};
         AdaptiveTrack track{};
         
         void reset() {
@@ -179,7 +180,6 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
         parameters.startingX = 5;
-        AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 3;
         sequence.stepSize = 4;
         sequence.up = 1;
@@ -206,7 +206,6 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
         parameters.startingX = 5;
-        AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 3;
         sequence.stepSize = 4;
         sequence.up = 1;
@@ -231,7 +230,6 @@ namespace {
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure4) {
         parameters.startingX = 0;
-        AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 8;
         sequence.stepSize = 1;
         sequence.down = 1;
@@ -245,7 +243,6 @@ namespace {
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure5) {
         parameters.startingX = 0;
-        AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 5;
         sequence.stepSize = 1;
         sequence.down = 2;
@@ -258,16 +255,16 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, twoSequences) {
         parameters.startingX = 65;
-        std::vector<AdaptiveTrack::Parameters::RunSequence> sequences(2);
-        sequences[0].runCount = 2;
-        sequences[0].stepSize = 8;
-        sequences[0].down = 2;
-        sequences[0].up = 1;
-        sequences[1].runCount = 1;
-        sequences[1].stepSize = 4;
-        sequences[1].down = 2;
-        sequences[1].up = 1;
-        parameters.runSequences = sequences;
+        sequence.runCount = 2;
+        sequence.stepSize = 8;
+        sequence.down = 2;
+        sequence.up = 1;
+        parameters.runSequences.push_back(sequence);
+        sequence.runCount = 1;
+        sequence.stepSize = 4;
+        sequence.down = 2;
+        sequence.up = 1;
+        parameters.runSequences.push_back(sequence);
         reset();
         track.pushDown();
         EXPECT_EQ(65, track.x());
