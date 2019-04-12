@@ -13,6 +13,7 @@ public:
         std::vector<RunSequence> runSequences;
         int startingX;
     };
+    virtual void reset(const Parameters &) = 0;
     virtual void pushDown() = 0;
     virtual void pushUp() = 0;
     virtual int x() const = 0;
@@ -49,6 +50,8 @@ public:
     void pushDown() override;
     bool complete() const override;
     int reversals() const override;
+    void reset(const Parameters &) override;
+    
 private:
     void updateConsecutiveCount(AdaptiveTrack::Direction);
     void updateReversals(AdaptiveTrack::Step);
@@ -65,6 +68,24 @@ AdaptiveTrack::AdaptiveTrack(AdaptiveTrack::Parameters p) :
     previousDirection{Direction::undefined},
     previousStep{Step::undefined}
 {
+    for (const auto &sequence : p.runSequences) {
+        stepSizes.push_back(sequence.stepSize);
+        runCounts.push_back(sequence.runCount);
+        up.push_back(sequence.up);
+        down.push_back(sequence.down);
+    }
+    stepSizes.push_back(0);
+}
+
+void AdaptiveTrack::reset(const Parameters &p) {
+    sequenceIndex = 0;
+    _x = p.startingX;
+    sameDirectionConsecutiveCount = 0;
+    runCounter = 0;
+    _reversals = 0;
+    previousDirection = Direction::undefined;
+    previousStep = Step::undefined;
+    stepSizes.clear();
     for (const auto &sequence : p.runSequences) {
         stepSizes.push_back(sequence.stepSize);
         runCounts.push_back(sequence.runCount);
@@ -174,18 +195,22 @@ namespace {
     };
 
     class AdaptiveTrackTests : public ::testing::Test {
-
+    protected:
+        AdaptiveTrack::Parameters parameters{};
+        AdaptiveTrack track{parameters};
+        
+        void reset() {
+            track.reset(parameters);
+        }
     };
 
-    TEST(AdaptiveTrackTests, xEqualToStartingX) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
         parameters.startingX = 1;
-        AdaptiveTrack track{parameters};
+        reset();
         EXPECT_EQ(1, track.x());
     }
 
-    TEST(AdaptiveTrackTests, noRunSequencesMeansNoStepChanges) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoStepChanges) {
         parameters.startingX = 5;
         AdaptiveTrack track{parameters};
         track.pushDown();
@@ -196,8 +221,7 @@ namespace {
         EXPECT_EQ(5, track.x());
     }
 
-    TEST(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
         parameters.startingX = 5;
         AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 3;
@@ -224,8 +248,7 @@ namespace {
         EXPECT_EQ(5 - 4 + 4 - 4, track.x());
     }
 
-    TEST(AdaptiveTrackTests, completeWhenExhausted) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
         parameters.startingX = 5;
         AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 3;
@@ -250,8 +273,7 @@ namespace {
     }
 
     // see https://doi.org/10.1121/1.1912375
-    TEST(AdaptiveTrackTests, LevittFigure4) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, LevittFigure4) {
         parameters.startingX = 0;
         AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 8;
@@ -265,8 +287,7 @@ namespace {
     }
 
     // see https://doi.org/10.1121/1.1912375
-    TEST(AdaptiveTrackTests, LevittFigure5) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, LevittFigure5) {
         parameters.startingX = 0;
         AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 5;
@@ -279,8 +300,7 @@ namespace {
         EXPECT_EQ(1, track.x());
     }
 
-    TEST(AdaptiveTrackTests, twoSequences) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, twoSequences) {
         parameters.startingX = 65;
         std::vector<AdaptiveTrack::Parameters::RunSequence> sequences(2);
         sequences[0].runCount = 2;
@@ -317,8 +337,7 @@ namespace {
         EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4 - 4, track.x());
     }
 
-    TEST(AdaptiveTrackTests, threeSequences) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, threeSequences) {
         parameters.startingX = 0;
         std::vector<AdaptiveTrack::Parameters::RunSequence> sequences(3);
         sequences[0].runCount = 1;
@@ -339,8 +358,7 @@ namespace {
         EXPECT_EQ(3, track.x());
     }
 
-    TEST(AdaptiveTrackTests, varyingDownUpRule) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
         parameters.startingX = 65;
         std::vector<AdaptiveTrack::Parameters::RunSequence> sequences(2);
         sequences[0].runCount = 2;
@@ -376,8 +394,7 @@ namespace {
         track.pushUp();
         EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4 - 4, track.x());
     }
-    TEST(AdaptiveTrackTests, reversals) {
-        AdaptiveTrack::Parameters parameters{};
+    TEST_F(AdaptiveTrackTests, reversals) {
         parameters.startingX = 0;
         AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 1000;
