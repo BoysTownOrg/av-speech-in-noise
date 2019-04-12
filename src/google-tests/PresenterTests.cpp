@@ -264,10 +264,6 @@ namespace {
                 startingSnr_ = std::move(s);
             }
             
-            void setSignalLevel(std::string s) {
-                signalLevel_ = std::move(s);
-            }
-            
             void setCalibrationLevel(std::string s) {
                 calibrationLevel_ = std::move(s);
             }
@@ -744,14 +740,6 @@ namespace {
             return model.calibrationParameters();
         }
         
-        void assertInvalidSignalLevelShowsErrorMessageFollowing(
-            TestSetupUseCase &useCase
-        ) {
-            setSignalLevel("a");
-            useCase.run(testSetup);
-            assertEqual("'a' is not a valid signal level.", errorMessage());
-        }
-        
         void assertInvalidCalibrationLevelShowsErrorMessageFollowing(
             TestSetupUseCase &useCase
         ) {
@@ -771,10 +759,6 @@ namespace {
         
         void setAudioDevice(std::string s) {
             view.setAudioDevice(std::move(s));
-        }
-        
-        void setSignalLevel(std::string s) {
-            setupView.setSignalLevel(std::move(s));
         }
         
         void setCalibrationLevel(std::string s) {
@@ -867,10 +851,6 @@ namespace {
             av_coordinated_response_measure::Condition::auditoryOnly,
             modelTestParameters().condition
         );
-    }
-
-    TEST_F(PresenterTests, confirmTestSetupWithInvalidSignalLevelShowsErrorMessage) {
-        assertInvalidSignalLevelShowsErrorMessageFollowing(confirmingTestSetup);
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidMaskerLevelShowsErrorMessage) {
