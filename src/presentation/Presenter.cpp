@@ -219,13 +219,17 @@ namespace presentation {
     {
         av_coordinated_response_measure::Model::Calibration p;
         p.filePath = view->calibrationFilePath();
-        p.level_dB_SPL = readSignalLevel();
+        p.level_dB_SPL = readCalibrationLevel();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         return p;
     }
     
     int Presenter::TestSetup::readSignalLevel() {
         return readInteger(view->signalLevel_dB_SPL(), "signal level");
+    }
+    
+    int Presenter::TestSetup::readCalibrationLevel() {
+        return readInteger(view->calibrationLevel_dB_SPL(), "calibration level");
     }
     
     int Presenter::TestSetup::readMaskerLevel() {

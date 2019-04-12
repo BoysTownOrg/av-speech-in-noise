@@ -64,6 +64,7 @@ namespace presentation {
             virtual void hide() = 0;
             virtual std::string signalLevel_dB_SPL() = 0;
             virtual std::string maskerLevel_dB_SPL() = 0;
+            virtual std::string calibrationLevel_dB_SPL() = 0;
             virtual std::string startingSnr_dB() = 0;
             virtual std::string maskerFilePath() = 0;
             virtual std::string calibrationFilePath() = 0;
@@ -118,6 +119,7 @@ namespace presentation {
         private:
             int readSignalLevel();
             int readMaskerLevel();
+            int readCalibrationLevel();
             int readInteger(std::string x, std::string identifier);
             bool auditoryOnly();
             

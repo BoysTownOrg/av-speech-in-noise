@@ -194,6 +194,7 @@ namespace {
         class TestSetupViewStub : public TestSetup {
             Collection<std::string> conditions_{};
             std::string signalLevel_{"0"};
+            std::string calibrationLevel_{"0"};
             std::string startingSnr_{"0"};
             std::string maskerLevel_{"0"};
             std::string masker_{};
@@ -207,6 +208,10 @@ namespace {
             bool shown_{};
             bool hidden_{};
         public:
+            std::string calibrationLevel_dB_SPL() override {
+                return calibrationLevel_;
+            }
+            
             std::string maskerLevel_dB_SPL() override {
                 return maskerLevel_;
             }
@@ -261,6 +266,10 @@ namespace {
             
             void setSignalLevel(std::string s) {
                 signalLevel_ = std::move(s);
+            }
+            
+            void setCalibrationLevel(std::string s) {
+                calibrationLevel_ = std::move(s);
             }
             
             void setMaskerLevel(std::string s) {
@@ -738,9 +747,26 @@ namespace {
         void assertInvalidSignalLevelShowsErrorMessageFollowing(
             TestSetupUseCase &useCase
         ) {
-            setupView.setSignalLevel("a");
+            setSignalLevel("a");
             useCase.run(testSetup);
             assertEqual("'a' is not a valid signal level.", errorMessage());
+        }
+        
+        void assertInvalidCalibrationLevelShowsErrorMessageFollowing(
+            TestSetupUseCase &useCase
+        ) {
+            setCalibrationLevel("a");
+            useCase.run(testSetup);
+            assertEqual("'a' is not a valid calibration level.", errorMessage());
+        }
+        
+        
+        void assertInvalidMaskerLevelShowsErrorMessageFollowing(
+            TestSetupUseCase &useCase
+        ) {
+            setMaskerLevel("a");
+            useCase.run(testSetup);
+            assertEqual("'a' is not a valid masker level.", errorMessage());
         }
         
         void setAudioDevice(std::string s) {
@@ -749,6 +775,10 @@ namespace {
         
         void setSignalLevel(std::string s) {
             setupView.setSignalLevel(std::move(s));
+        }
+        
+        void setCalibrationLevel(std::string s) {
+            setupView.setCalibrationLevel(std::move(s));
         }
         
         void setMaskerLevel(std::string s) {
@@ -787,7 +817,6 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
         setupView.setStartingSnr("1");
-        setSignalLevel("2");
         setMaskerLevel("2");
         setupView.setTargetListDirectory("a");
         setupView.setSubjectId("b");
@@ -796,7 +825,6 @@ namespace {
         setupView.setSession("e");
         confirmTestSetup();
         EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
-        EXPECT_EQ(2, modelTestParameters().signalLevel_dB_SPL);
         EXPECT_EQ(2, modelTestParameters().maskerLevel_dB_SPL);
         EXPECT_EQ(
             presentation::Presenter::fullScaleLevel_dB_SPL,
@@ -810,7 +838,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, playCalibrationPassesParametersToModel) {
-        setSignalLevel("1");
+        setCalibrationLevel("1");
         setupView.setCalibrationFilePath("a");
         setAudioDevice("b");
         playCalibration();
@@ -845,8 +873,12 @@ namespace {
         assertInvalidSignalLevelShowsErrorMessageFollowing(confirmingTestSetup);
     }
 
-    TEST_F(PresenterTests, playCalibrationWithInvalidSignalLevelShowsErrorMessage) {
-        assertInvalidSignalLevelShowsErrorMessageFollowing(playingCalibration);
+    TEST_F(PresenterTests, confirmTestSetupWithInvalidMaskerLevelShowsErrorMessage) {
+        assertInvalidMaskerLevelShowsErrorMessageFollowing(confirmingTestSetup);
+    }
+
+    TEST_F(PresenterTests, playCalibrationWithInvalidLevelShowsErrorMessage) {
+        assertInvalidCalibrationLevelShowsErrorMessageFollowing(playingCalibration);
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
