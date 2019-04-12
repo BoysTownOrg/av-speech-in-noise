@@ -292,20 +292,21 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, threeSequences) {
         parameters.startingX = 0;
-        std::vector<AdaptiveTrack::Parameters::RunSequence> sequences(3);
-        sequences[0].runCount = 1;
-        sequences[0].stepSize = 10;
-        sequences[0].down = 3;
-        sequences[0].up = 1;
-        sequences[1].runCount = 1;
-        sequences[1].stepSize = 5;
-        sequences[1].down = 3;
-        sequences[1].up = 1;
-        sequences[2].runCount = 6;
-        sequences[2].stepSize = 2;
-        sequences[2].down = 3;
-        sequences[2].up = 1;
-        parameters.runSequences = sequences;
+        sequence.runCount = 1;
+        sequence.stepSize = 10;
+        sequence.down = 3;
+        sequence.up = 1;
+        parameters.runSequences.push_back(sequence);
+        sequence.runCount = 1;
+        sequence.stepSize = 5;
+        sequence.down = 3;
+        sequence.up = 1;
+        parameters.runSequences.push_back(sequence);
+        sequence.runCount = 6;
+        sequence.stepSize = 2;
+        sequence.down = 3;
+        sequence.up = 1;
+        parameters.runSequences.push_back(sequence);
         reset();
         push("ddudddudddddudddddduddd");
         EXPECT_EQ(3, track.x());
@@ -313,16 +314,16 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
         parameters.startingX = 65;
-        std::vector<AdaptiveTrack::Parameters::RunSequence> sequences(2);
-        sequences[0].runCount = 2;
-        sequences[0].stepSize = 8;
-        sequences[0].up = 1;
-        sequences[0].down = 2;
-        sequences[1].runCount = 1;
-        sequences[1].stepSize = 4;
-        sequences[1].up = 2;
-        sequences[1].down = 1;
-        parameters.runSequences = sequences;
+        sequence.runCount = 2;
+        sequence.stepSize = 8;
+        sequence.up = 1;
+        sequence.down = 2;
+        parameters.runSequences.push_back(sequence);
+        sequence.runCount = 1;
+        sequence.stepSize = 4;
+        sequence.up = 2;
+        sequence.down = 1;
+        parameters.runSequences.push_back(sequence);
         reset();
         track.pushDown();
         EXPECT_EQ(65, track.x());
@@ -349,7 +350,6 @@ namespace {
     }
     TEST_F(AdaptiveTrackTests, reversals) {
         parameters.startingX = 0;
-        AdaptiveTrack::Parameters::RunSequence sequence{};
         sequence.runCount = 1000;
         sequence.down = 2;
         sequence.up = 1;
