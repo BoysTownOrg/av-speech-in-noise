@@ -178,6 +178,7 @@ namespace presentation {
         p.startingSnr_dB =
             readInteger(view->startingSnr_dB(), "SNR");
         p.signalLevel_dB_SPL = readSignalLevel();
+        p.maskerLevel_dB_SPL = readMaskerLevel();
         p.maskerFilePath = view->maskerFilePath();
         p.targetListDirectory = view->targetListDirectory();
         p.subjectId = view->subjectId();
@@ -225,6 +226,10 @@ namespace presentation {
     
     int Presenter::TestSetup::readSignalLevel() {
         return readInteger(view->signalLevel_dB_SPL(), "signal level");
+    }
+    
+    int Presenter::TestSetup::readMaskerLevel() {
+        return readInteger(view->maskerLevel_dB_SPL(), "masker level");
     }
     
     void Presenter::TestSetup::confirmTestSetup() { 

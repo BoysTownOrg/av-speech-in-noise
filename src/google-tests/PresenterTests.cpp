@@ -195,8 +195,9 @@ namespace {
             Collection<std::string> conditions_{};
             std::string signalLevel_{"0"};
             std::string startingSnr_{"0"};
-            std::string condition_{};
+            std::string maskerLevel_{"0"};
             std::string masker_{};
+            std::string condition_{};
             std::string stimulusList_{};
             std::string subjectId_{};
             std::string testerId_{};
@@ -206,6 +207,10 @@ namespace {
             bool shown_{};
             bool hidden_{};
         public:
+            std::string maskerLevel_dB_SPL() override {
+                return maskerLevel_;
+            }
+            
             void confirmTestSetup() {
                 listener_->confirmTestSetup();
             }
@@ -256,6 +261,10 @@ namespace {
             
             void setSignalLevel(std::string s) {
                 signalLevel_ = std::move(s);
+            }
+            
+            void setMaskerLevel(std::string s) {
+                maskerLevel_ = std::move(s);
             }
             
             void setCalibrationFilePath(std::string s) override {
@@ -741,6 +750,10 @@ namespace {
         void setSignalLevel(std::string s) {
             setupView.setSignalLevel(std::move(s));
         }
+        
+        void setMaskerLevel(std::string s) {
+            setupView.setMaskerLevel(std::move(s));
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -775,6 +788,7 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
         setupView.setStartingSnr("1");
         setSignalLevel("2");
+        setMaskerLevel("2");
         setupView.setTargetListDirectory("a");
         setupView.setSubjectId("b");
         setupView.setTesterId("c");
@@ -783,6 +797,7 @@ namespace {
         confirmTestSetup();
         EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
         EXPECT_EQ(2, modelTestParameters().signalLevel_dB_SPL);
+        EXPECT_EQ(2, modelTestParameters().maskerLevel_dB_SPL);
         EXPECT_EQ(
             presentation::Presenter::fullScaleLevel_dB_SPL,
             modelTestParameters().fullScaleLevel_dB_SPL

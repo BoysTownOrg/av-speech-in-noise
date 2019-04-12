@@ -1,5 +1,5 @@
-#ifndef AdaptiveTrack_hpp
-#define AdaptiveTrack_hpp
+#ifndef recognition_test_AdaptiveTrack_hpp
+#define recognition_test_AdaptiveTrack_hpp
 
 #include <vector>
 
@@ -23,7 +23,6 @@ public:
     virtual bool complete() = 0;
     virtual int reversals() = 0;
 };
-
 
 namespace recognition_test {
     class AdaptiveTrack : public Track {
@@ -63,4 +62,5 @@ namespace recognition_test {
         bool complete_() const;
     };
 }
+
 #endif
