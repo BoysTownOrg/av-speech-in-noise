@@ -2,8 +2,8 @@
 #define AvFoundationPlayers_h
 
 #include <recognition-test/RecognitionTestModel.hpp>
-#include <masker-player/MaskerPlayerImpl.hpp>
-#include <target-player/TargetPlayerImpl.hpp>
+#include <stimulus-players/MaskerPlayerImpl.hpp>
+#include <stimulus-players/TargetPlayerImpl.hpp>
 #import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>
 #include <vector>
@@ -30,7 +30,7 @@ class AvFoundationVideoPlayer;
 - (void) playbackComplete;
 @end
 
-class AvFoundationVideoPlayer : public players::VideoPlayer {
+class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     std::vector<gsl::span<float>> audio_;
     MTAudioProcessingTapRef tap{};
     CoreAudioDevices device{};
@@ -71,7 +71,7 @@ class AvFoundationAudioPlayer;
 - (void) timerCallback;
 @end
 
-class AvFoundationAudioPlayer : public masker_player::AudioPlayer {
+class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     std::vector<gsl::span<float>> audio_;
     CoreAudioDevices device{};
     MTAudioProcessingTapRef tap{};

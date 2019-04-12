@@ -6,10 +6,10 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
-#include <masker-player/MaskerPlayerImpl.hpp>
+#include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <target-list/RandomizedTargetList.hpp>
 #include <target-list/FileFilterDecorator.hpp>
-#include <target-player/TargetPlayerImpl.hpp>
+#include <stimulus-players/TargetPlayerImpl.hpp>
 #include <sys/stat.h>
 #include <fstream>
 
@@ -99,9 +99,9 @@ int main() {
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetList list{&filter, &randomizer};
     AvFoundationVideoPlayer videoPlayer;
-    players::TargetPlayerImpl targetPlayer{&videoPlayer};
+    stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer};
     AvFoundationAudioPlayer audioPlayer;
-    masker_player::MaskerPlayerImpl maskerPlayer{&audioPlayer};
+    stimulus_players::MaskerPlayerImpl maskerPlayer{&audioPlayer};
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
     TimeStampImpl timeStamp;
