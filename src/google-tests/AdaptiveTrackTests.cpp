@@ -161,16 +161,13 @@ int AdaptiveTrack::reversals() const {
 #include <gtest/gtest.h>
 
 namespace {
-    class AdaptiveTrackFacade {
-        AdaptiveTrack track;
-    public:
-        explicit AdaptiveTrackFacade(
-            AdaptiveTrack::Parameters p
-        ) :
-            track{std::move(p)} {}
+    class AdaptiveTrackTests : public ::testing::Test {
+    protected:
+        AdaptiveTrack::Parameters parameters{};
+        AdaptiveTrack track{parameters};
         
-        int x() const {
-            return track.x();
+        void reset() {
+            track.reset(parameters);
         }
         
         void push(std::string directions) {
@@ -179,28 +176,6 @@ namespace {
                     track.pushDown();
                 else if (c == 'u')
                     track.pushUp();
-        }
-        
-        void pushDown() {
-            track.pushDown();
-        }
-        
-        void pushUp() {
-            track.pushUp();
-        }
-        
-        int reversals() {
-            return track.reversals();
-        }
-    };
-
-    class AdaptiveTrackTests : public ::testing::Test {
-    protected:
-        AdaptiveTrack::Parameters parameters{};
-        AdaptiveTrack track{parameters};
-        
-        void reset() {
-            track.reset(parameters);
         }
     };
 
@@ -212,7 +187,7 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoStepChanges) {
         parameters.startingX = 5;
-        AdaptiveTrack track{parameters};
+        reset();
         track.pushDown();
         EXPECT_EQ(5, track.x());
         track.pushDown();
@@ -229,7 +204,7 @@ namespace {
         sequence.up = 1;
         sequence.down = 2;
         parameters.runSequences.push_back(sequence);
-        AdaptiveTrack track{parameters};
+        reset();
         track.pushDown();
         EXPECT_EQ(5, track.x());
         track.pushDown();
@@ -256,7 +231,7 @@ namespace {
         sequence.up = 1;
         sequence.down = 2;
         parameters.runSequences.push_back(sequence);
-        AdaptiveTrack track{parameters};
+        reset();
         EXPECT_FALSE(track.complete());
         track.pushDown();
         EXPECT_FALSE(track.complete());
@@ -281,8 +256,8 @@ namespace {
         sequence.down = 1;
         sequence.up = 1;
         parameters.runSequences.push_back(sequence);
-        AdaptiveTrackFacade track{parameters};
-        track.push("dduuuudduuuddddduuudduu");
+        reset();
+        push("dduuuudduuuddddduuudduu");
         EXPECT_EQ(1, track.x());
     }
 
@@ -295,8 +270,8 @@ namespace {
         sequence.down = 2;
         sequence.up = 1;
         parameters.runSequences.push_back(sequence);
-        AdaptiveTrackFacade track{parameters};
-        track.push("dddduduududdddduuuddddd");
+        reset();
+        push("dddduduududdddduuuddddd");
         EXPECT_EQ(1, track.x());
     }
 
@@ -312,7 +287,7 @@ namespace {
         sequences[1].down = 2;
         sequences[1].up = 1;
         parameters.runSequences = sequences;
-        AdaptiveTrackFacade track{parameters};
+        reset();
         track.pushDown();
         EXPECT_EQ(65, track.x());
         track.pushDown();
@@ -353,8 +328,8 @@ namespace {
         sequences[2].down = 3;
         sequences[2].up = 1;
         parameters.runSequences = sequences;
-        AdaptiveTrackFacade track{parameters};
-        track.push("ddudddudddddudddddduddd");
+        reset();
+        push("ddudddudddddudddddduddd");
         EXPECT_EQ(3, track.x());
     }
 
@@ -370,7 +345,7 @@ namespace {
         sequences[1].up = 2;
         sequences[1].down = 1;
         parameters.runSequences = sequences;
-        AdaptiveTrackFacade track{parameters};
+        reset();
         track.pushDown();
         EXPECT_EQ(65, track.x());
         track.pushDown();
@@ -401,7 +376,7 @@ namespace {
         sequence.down = 2;
         sequence.up = 1;
         parameters.runSequences.push_back(sequence);
-        AdaptiveTrackFacade track{parameters};
+        reset();
         EXPECT_EQ(int{0}, track.reversals());
         track.pushUp();
         EXPECT_EQ(int{0}, track.reversals());
