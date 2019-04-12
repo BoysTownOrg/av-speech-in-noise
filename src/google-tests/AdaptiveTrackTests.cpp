@@ -44,7 +44,6 @@ class AdaptiveTrack : public Track {
     Direction previousDirection;
     Step previousStep;
 public:
-    explicit AdaptiveTrack(Parameters);
     int x() const override;
     void pushUp() override;
     void pushDown() override;
@@ -58,24 +57,6 @@ private:
     void reversal();
     bool _complete() const;
 };
-
-AdaptiveTrack::AdaptiveTrack(AdaptiveTrack::Parameters p) :
-    sequenceIndex{0},
-    _x{p.startingX},
-    sameDirectionConsecutiveCount{0},
-    runCounter{0},
-    _reversals{0},
-    previousDirection{Direction::undefined},
-    previousStep{Step::undefined}
-{
-    for (const auto &sequence : p.runSequences) {
-        stepSizes.push_back(sequence.stepSize);
-        runCounts.push_back(sequence.runCount);
-        up.push_back(sequence.up);
-        down.push_back(sequence.down);
-    }
-    stepSizes.push_back(0);
-}
 
 void AdaptiveTrack::reset(const Parameters &p) {
     sequenceIndex = 0;
@@ -164,7 +145,7 @@ namespace {
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
         AdaptiveTrack::Parameters parameters{};
-        AdaptiveTrack track{parameters};
+        AdaptiveTrack track{};
         
         void reset() {
             track.reset(parameters);
