@@ -760,12 +760,13 @@ namespace {
         RecognitionTestModelTests,
         playTrialSetsTargetPlayerLevel
     ) {
-        test.signalLevel_dB_SPL = 5;
+        test.maskerLevel_dB_SPL = 5;
         test.fullScaleLevel_dB_SPL = 11;
+        test.startingSnr_dB = 13;
         initializeTest();
         targetPlayer.setRms(7);
         playTrial();
-        EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, targetPlayer.level_dB());
+        EXPECT_EQ(20 * std::log10(1.0/7) + 13 + 5 - 11, targetPlayer.level_dB());
     }
 
     TEST_F(
@@ -781,13 +782,12 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSetsMaskerPlayerLevel
+        initializeTestSetsInitialMaskerPlayerLevel
     ) {
         test.maskerLevel_dB_SPL = 5;
         test.fullScaleLevel_dB_SPL = 11;
-        initializeTest();
         maskerPlayer.setRms(7);
-        playTrial();
+        initializeTest();
         EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, maskerPlayer.level_dB());
     }
 

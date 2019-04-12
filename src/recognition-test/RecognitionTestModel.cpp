@@ -40,6 +40,7 @@ namespace recognition_test {
     
     void RecognitionTestModel::prepareMasker(const Test &p) {
         loadMaskerFile(p);
+        maskerPlayer->setLevel_dB(maskerLevel_dB());
     }
     
     static double dB(double x) {
@@ -135,7 +136,6 @@ namespace recognition_test {
     void RecognitionTestModel::loadNextTarget() {
         loadTargetFile(targetList->next());
         setTargetLevel_dB(signalLevel_dB());
-        maskerPlayer->setLevel_dB(maskerLevel_dB());
         targetPlayer->subscribeToPlaybackCompletion();
     }
     
@@ -145,8 +145,9 @@ namespace recognition_test {
     
     double RecognitionTestModel::signalLevel_dB() {
         return
-            desiredSignalLevel_dB() -
-            dB(targetPlayer->rms());
+            desiredMaskerLevel_dB() -
+            dB(targetPlayer->rms()) +
+            test.startingSnr_dB;
     }
     
     int RecognitionTestModel::desiredSignalLevel_dB() {
