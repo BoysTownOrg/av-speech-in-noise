@@ -787,12 +787,11 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSetsMaskerPlayerLevel
     ) {
-        test.startingSnr_dB = 5;
-        test.signalLevel_dB_SPL = 13;
+        test.maskerLevel_dB_SPL = 5;
         test.fullScaleLevel_dB_SPL = 11;
         maskerPlayer.setRms(7);
         initializeTest();
-        EXPECT_EQ(20 * std::log10(1.0/7) + 13 - 5 - 11, maskerPlayer.level_dB());
+        EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, maskerPlayer.level_dB());
     }
 
     TEST_F(
