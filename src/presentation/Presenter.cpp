@@ -177,7 +177,6 @@ namespace presentation {
         av_coordinated_response_measure::Model::Test p;
         p.startingSnr_dB =
             readInteger(view->startingSnr_dB(), "SNR");
-        p.signalLevel_dB_SPL = readSignalLevel();
         p.maskerLevel_dB_SPL = readMaskerLevel();
         p.maskerFilePath = view->maskerFilePath();
         p.targetListDirectory = view->targetListDirectory();
@@ -222,10 +221,6 @@ namespace presentation {
         p.level_dB_SPL = readCalibrationLevel();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         return p;
-    }
-    
-    int Presenter::TestSetup::readSignalLevel() {
-        return readInteger(view->signalLevel_dB_SPL(), "signal level");
     }
     
     int Presenter::TestSetup::readCalibrationLevel() {

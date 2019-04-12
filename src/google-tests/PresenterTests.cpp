@@ -252,10 +252,6 @@ namespace {
                 hidden_ = true;
             }
             
-            std::string signalLevel_dB_SPL() override {
-                return signalLevel_;
-            }
-            
             auto hidden() const {
                 return hidden_;
             }

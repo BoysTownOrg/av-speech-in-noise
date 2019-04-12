@@ -62,7 +62,6 @@ namespace presentation {
             virtual void subscribe(EventListener *) = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
-            virtual std::string signalLevel_dB_SPL() = 0;
             virtual std::string maskerLevel_dB_SPL() = 0;
             virtual std::string calibrationLevel_dB_SPL() = 0;
             virtual std::string startingSnr_dB() = 0;
@@ -117,7 +116,6 @@ namespace presentation {
             av_coordinated_response_measure::Model::Test testParameters();
             av_coordinated_response_measure::Model::Calibration calibrationParameters();
         private:
-            int readSignalLevel();
             int readMaskerLevel();
             int readCalibrationLevel();
             int readInteger(std::string x, std::string identifier);
