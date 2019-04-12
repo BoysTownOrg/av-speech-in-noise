@@ -21,10 +21,6 @@ namespace {
         bool setDeviceCalled_{};
         bool throwInvalidAudioDeviceWhenDeviceSet_{};
     public:
-        auto &log() const {
-            return log_;
-        }
-        
         void fadeOutComplete() {
             listener_->fadeOutComplete();
         }
@@ -785,12 +781,13 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestSetsMaskerPlayerLevel
+        playTrialSetsMaskerPlayerLevel
     ) {
         test.maskerLevel_dB_SPL = 5;
         test.fullScaleLevel_dB_SPL = 11;
-        maskerPlayer.setRms(7);
         initializeTest();
+        maskerPlayer.setRms(7);
+        playTrial();
         EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, maskerPlayer.level_dB());
     }
 
@@ -846,17 +843,6 @@ namespace {
         assertEqual(
             "close openNewFile writeTest writeTrialHeading ",
             outputFile.log()
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestQueriesMaskerRmsAfterLoadingFile
-    ) {
-        initializeTest();
-        assertEqual(
-            "loadFile rms ",
-            maskerPlayer.log()
         );
     }
 
