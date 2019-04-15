@@ -135,6 +135,7 @@ namespace av_coordinate_response_measure {
         void playbackComplete() override;
     private:
         void writeTrial(const SubjectResponse &);
+        bool correct(const SubjectResponse &);
         void updateSnr(const SubjectResponse &);
         void prepareSnrTrack();
         void playTarget();

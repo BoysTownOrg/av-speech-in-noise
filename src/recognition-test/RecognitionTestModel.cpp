@@ -200,10 +200,14 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::updateSnr(const SubjectResponse &response) {
-        if (evaluator->correct(targetList->current(), response))
+        if (correct(response))
             snrTrack->pushDown();
         else
             snrTrack->pushUp();
+    }
+    
+    bool RecognitionTestModel::correct(const SubjectResponse &response) {
+        return evaluator->correct(targetList->current(), response);
     }
     
     void RecognitionTestModel::writeTrial(const SubjectResponse &response) {
