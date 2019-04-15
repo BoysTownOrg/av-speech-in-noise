@@ -26,7 +26,9 @@ public:
 
 class CoreAudioBuffer : public stimulus_players::AudioBuffer {
     AudioBufferList audioBufferList;
+    CMItemCount frames{};
 public:
+    void set(CMSampleBufferRef);
     int channels() override;
     std::vector<int> channel(int) override;
     bool empty() override;

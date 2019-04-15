@@ -206,8 +206,24 @@ std::vector<int> CoreAudioBuffer::channel(int n) {
 }
 
 bool CoreAudioBuffer::empty() {
-    <#code#>;
+    return frames == 0;
 }
+
+void CoreAudioBuffer::set(CMSampleBufferRef sampleBuffer) {
+    frames = CMSampleBufferGetNumSamples(sampleBuffer);
+    CMBlockBufferRef blockBuffer{};
+    CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+        sampleBuffer,
+        nullptr,
+        &audioBufferList,
+        sizeof(audioBufferList),
+        nullptr,
+        nullptr,
+        kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
+        &blockBuffer
+    );
+}
+
 
 void CoreAudioBufferedReader::loadFile(std::string filePath) {
     AvAssetFacade asset{std::move(filePath)};
@@ -227,23 +243,11 @@ void CoreAudioBufferedReader::loadFile(std::string filePath) {
 }
 
 bool CoreAudioBufferedReader::failed() {
-    <#code#>;
+    return false;
 }
 
 stimulus_players::AudioBuffer *CoreAudioBufferedReader::readNextBuffer() {
-    auto sampleBuffer = [trackOutput copyNextSampleBuffer];
-    AudioBufferList audioBufferList;
-    CMBlockBufferRef blockBuffer{};
-    CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
-        sampleBuffer,
-        nullptr,
-        &audioBufferList,
-        sizeof(audioBufferList),
-        nullptr,
-        nullptr,
-        kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
-        &blockBuffer
-    );
+    buffer.set([trackOutput copyNextSampleBuffer]);
     return &buffer;
 }
 

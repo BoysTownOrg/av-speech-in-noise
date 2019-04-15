@@ -8,9 +8,10 @@
 #include <recognition-test/OutputFilePathImpl.hpp>
 #include <recognition-test/AdaptiveTrack.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
+#include <stimulus-players/TargetPlayerImpl.hpp>
+#include <stimulus-players/AudioReaderImpl.hpp>
 #include <target-list/RandomizedTargetList.hpp>
 #include <target-list/FileFilterDecorator.hpp>
-#include <stimulus-players/TargetPlayerImpl.hpp>
 #include <sys/stat.h>
 #include <fstream>
 
@@ -100,9 +101,11 @@ int main() {
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetList list{&filter, &randomizer};
     AvFoundationVideoPlayer videoPlayer;
-    stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer};
+    CoreAudioBufferedReader bufferedReader;
+    stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
+    stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
     AvFoundationAudioPlayer audioPlayer;
-    stimulus_players::MaskerPlayerImpl maskerPlayer{&audioPlayer};
+    stimulus_players::MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader};
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
     TimeStampImpl timeStamp;
