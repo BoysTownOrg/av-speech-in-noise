@@ -352,6 +352,7 @@ namespace {
         int x_{};
         bool pushedDown_{};
         bool pushedUp_{};
+        bool complete_{};
     public:
         auto pushedUp() const {
             return pushedUp_;
@@ -386,11 +387,15 @@ namespace {
         }
         
         bool complete() override {
-            return {};
+            return complete_;
         }
         
         int reversals() override {
             return {};
+        }
+        
+        void setComplete() {
+            complete_ = true;
         }
     };
     
@@ -1030,9 +1035,9 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        testCompleteWhenListEmpty
+        testCompleteWhenTrackComplete
     ) {
-        setListToEmpty();
+        snrTrack.setComplete();
         EXPECT_TRUE(model.testComplete());
     }
 }

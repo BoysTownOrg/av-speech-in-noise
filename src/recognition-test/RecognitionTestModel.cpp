@@ -231,7 +231,7 @@ namespace av_coordinate_response_measure {
     }
 
     bool RecognitionTestModel::testComplete() {
-        return targetList->empty();
+        return snrTrack->complete();
     }
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {
