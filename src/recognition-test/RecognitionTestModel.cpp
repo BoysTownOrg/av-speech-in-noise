@@ -27,38 +27,42 @@ namespace recognition_test {
     void RecognitionTestModel::initializeTest(const Test &p) {
         test = p;
         
-        av_coordinated_response_measure::Track::Parameters trackSettings;
-        trackSettings.rule = p.targetLevelRule;
-        trackSettings.startingX = p.startingSnr_dB;
-        snrTrack->reset(trackSettings);
-        prepareOutputFile(p);
-        prepareMasker(p);
-        loadStimulusList(p);
-        prepareVideo(p);
+        prepareSnrTrack();
+        prepareOutputFile();
+        prepareMasker();
+        loadStimulusList();
+        prepareVideo();
     }
     
-    void RecognitionTestModel::prepareOutputFile(const Test &p) {
+    void RecognitionTestModel::prepareSnrTrack() {
+        av_coordinated_response_measure::Track::Parameters trackSettings;
+        trackSettings.rule = test.targetLevelRule;
+        trackSettings.startingX = test.startingSnr_dB;
+        snrTrack->reset(trackSettings);
+    }
+    
+    void RecognitionTestModel::prepareOutputFile() {
         outputFile->close();
-        tryOpeningOutputFile(p);
-        outputFile->writeTest(p);
+        tryOpeningOutputFile();
+        outputFile->writeTest(test);
         outputFile->writeTrialHeading();
     }
     
-    void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {
+    void RecognitionTestModel::tryOpeningOutputFile() {
         try {
-            outputFile->openNewFile(p);
+            outputFile->openNewFile(test);
         } catch (const OutputFile::OpenFailure &) {
             throw RequestFailure{"Unable to open output file."};
         }
     }
     
-    void RecognitionTestModel::prepareMasker(const Test &p) {
-        loadMaskerFile(p);
+    void RecognitionTestModel::prepareMasker() {
+        loadMaskerFile();
         maskerPlayer->setLevel_dB(maskerLevel_dB());
     }
     
-    void RecognitionTestModel::loadMaskerFile(const Test &p) {
-        maskerPlayer->loadFile(p.maskerFilePath);
+    void RecognitionTestModel::loadMaskerFile() {
+        maskerPlayer->loadFile(test.maskerFilePath);
     }
     
     static double dB(double x) {
@@ -77,19 +81,19 @@ namespace recognition_test {
             test.fullScaleLevel_dB_SPL;
     }
     
-    void RecognitionTestModel::loadStimulusList(const Test &p) {
-        targetList->loadFromDirectory(p.targetListDirectory);
+    void RecognitionTestModel::loadStimulusList() {
+        targetList->loadFromDirectory(test.targetListDirectory);
     }
     
-    void RecognitionTestModel::prepareVideo(const Test &p) {
-        if (auditoryOnly(p))
+    void RecognitionTestModel::prepareVideo() {
+        if (auditoryOnly())
             targetPlayer->hideVideo();
         else
             targetPlayer->showVideo();
     }
 
-    bool RecognitionTestModel::auditoryOnly(const Test &p) {
-        return p.condition ==
+    bool RecognitionTestModel::auditoryOnly() {
+        return test.condition ==
             av_coordinated_response_measure::Condition::auditoryOnly;
     }
     

@@ -96,7 +96,6 @@ namespace recognition_test {
             av_coordinated_response_measure::Track *,
             OutputFile *
         );
-        
         void initializeTest(const Test &) override;
         void playTrial(const AudioSettings &) override;
         void submitResponse(const SubjectResponse &) override;
@@ -108,20 +107,21 @@ namespace recognition_test {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void prepareSnrTrack();
         void playTarget();
         void playCalibration_(const Calibration &);
-        void prepareMasker(const Test &);
-        void prepareOutputFile(const Test &);
-        void tryOpeningOutputFile(const Test &);
-        void loadStimulusList(const Test &);
-        void loadMaskerFile(const Test &);
+        void prepareMasker();
+        void prepareOutputFile();
+        void tryOpeningOutputFile();
+        void loadStimulusList();
+        void loadMaskerFile();
         bool noMoreTrials();
         bool trialInProgress();
         void loadNextTarget();
         void preparePlayers(const AudioSettings &);
         void startTrial();
-        bool auditoryOnly(const Test &);
-        void prepareVideo(const Test &);
+        bool auditoryOnly();
+        void prepareVideo();
         int desiredMaskerLevel_dB();
         double unalteredTargetLevel_dB();
         double targetLevel_dB();
