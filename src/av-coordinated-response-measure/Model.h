@@ -62,6 +62,11 @@ namespace av_coordinated_response_measure {
         int fullScaleLevel_dB_SPL;
     };
     
+    struct SubjectResponse {
+        int number;
+        Color color;
+    };
+    
     class Model {
     public:
         class EventListener {
@@ -80,11 +85,6 @@ namespace av_coordinated_response_measure {
             std::string audioDevice;
         };
         virtual void playTrial(const AudioSettings &) = 0;
-        
-        struct SubjectResponse {
-            int number;
-            Color color;
-        };
         virtual void submitResponse(const SubjectResponse &) = 0;
         
         virtual bool testComplete() = 0;

@@ -407,7 +407,7 @@ namespace {
         
         bool correct(
             std::string filePath,
-            const av_coordinated_response_measure::Model::SubjectResponse &
+            const av_coordinated_response_measure::SubjectResponse &
         ) override {
             return correct_;
         }
@@ -510,7 +510,7 @@ namespace {
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
         av_coordinated_response_measure::Calibration calibration;
-        recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
+        av_coordinated_response_measure::SubjectResponse subjectResponse;
         TargetListStub targetList{};
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};

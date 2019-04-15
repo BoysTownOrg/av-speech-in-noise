@@ -318,10 +318,10 @@ namespace presentation {
         view->showResponseButtons();
     }
     
-    av_coordinated_response_measure::Model::SubjectResponse
+    av_coordinated_response_measure::SubjectResponse
         Presenter::Subject::subjectResponse()
     {
-        av_coordinated_response_measure::Model::SubjectResponse p;
+        av_coordinated_response_measure::SubjectResponse p;
         p.color = colorResponse();
         p.number = std::stoi(view->numberResponse());
         return p;

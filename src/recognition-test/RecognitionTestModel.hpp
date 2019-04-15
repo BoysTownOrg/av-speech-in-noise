@@ -64,7 +64,7 @@ namespace recognition_test {
         virtual ~ResponseEvaluator() = default;
         virtual bool correct(
             std::string filePath,
-            const av_coordinated_response_measure::Model::SubjectResponse &
+            const av_coordinated_response_measure::SubjectResponse &
         ) = 0;
     };
     
@@ -109,7 +109,7 @@ namespace recognition_test {
         );
         void initializeTest(const av_coordinated_response_measure::Test &) override;
         void playTrial(const AudioSettings &) override;
-        void submitResponse(const SubjectResponse &) override;
+        void submitResponse(const av_coordinated_response_measure::SubjectResponse &) override;
         bool testComplete() override;
         std::vector<std::string> audioDevices() override;
         void subscribe(Model::EventListener *) override;

@@ -194,7 +194,7 @@ namespace recognition_test {
         maskerPlayer->fadeOut();
     }
     
-    void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
+    void RecognitionTestModel::submitResponse(const av_coordinated_response_measure::SubjectResponse &response) {
         if (evaluator->correct({}, {}))
             snrTrack->pushDown();
         else

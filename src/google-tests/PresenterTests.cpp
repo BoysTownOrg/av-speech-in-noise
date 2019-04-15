@@ -18,7 +18,7 @@ namespace {
         av_coordinated_response_measure::Test testParameters_{};
         av_coordinated_response_measure::Calibration calibrationParameters_{};
         AudioSettings trialParameters_{};
-        SubjectResponse responseParameters_{};
+        av_coordinated_response_measure::SubjectResponse responseParameters_{};
         std::vector<std::string> audioDevices_{};
         EventListener *listener_{};
         bool testComplete_{};
@@ -65,7 +65,7 @@ namespace {
             return audioDevices_;
         }
         
-        void submitResponse(const SubjectResponse &p) override {
+        void submitResponse(const av_coordinated_response_measure::SubjectResponse &p) override {
             responseParameters_ = p;
         }
         
@@ -1039,7 +1039,7 @@ namespace {
             throw RequestFailure{errorMessage};
         }
         
-        void submitResponse(const SubjectResponse &) override {
+        void submitResponse(const av_coordinated_response_measure::SubjectResponse &) override {
             throw RequestFailure{errorMessage};
         }
         

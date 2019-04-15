@@ -144,7 +144,7 @@ namespace presentation {
             void showNextTrialButton();
             void hideNextTrialButton();
             void showResponseButtons();
-            av_coordinated_response_measure::Model::SubjectResponse subjectResponse();
+            av_coordinated_response_measure::SubjectResponse subjectResponse();
         private:
             av_coordinated_response_measure::Color colorResponse();
             
