@@ -62,6 +62,10 @@ namespace recognition_test {
     class ResponseEvaluator {
     public:
         virtual ~ResponseEvaluator() = default;
+        virtual bool correct(
+            std::string filePath,
+            const av_coordinated_response_measure::Model::SubjectResponse &
+        ) = 0;
     };
     
     class OutputFile {

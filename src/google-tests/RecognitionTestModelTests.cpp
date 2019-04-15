@@ -351,7 +351,12 @@ namespace {
         Settings settings_{};
         int x_{};
         bool pushedDown_{};
+        bool pushedUp_{};
     public:
+        auto pushedUp() const {
+            return pushedUp_;
+        }
+        
         auto pushedDown() const {
             return pushedDown_;
         }
@@ -373,7 +378,7 @@ namespace {
         }
         
         void pushUp() override {
-            
+            pushedUp_ = true;
         }
         
         int x() override {
@@ -395,6 +400,18 @@ namespace {
         void setCorrect() {
             correct_ = true;
         }
+        
+        void setIncorrect() {
+            correct_ = false;
+        }
+        
+        bool correct(
+            std::string filePath,
+            const av_coordinated_response_measure::Model::SubjectResponse &
+        ) override {
+            return correct_;
+        }
+        
     };
     
     class UseCase {
@@ -998,6 +1015,17 @@ namespace {
         evaluator.setCorrect();
         submitResponse();
         EXPECT_TRUE(snrTrack.pushedDown());
+        EXPECT_FALSE(snrTrack.pushedUp());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitIncorrectResponsePushesSnrUp
+    ) {
+        evaluator.setIncorrect();
+        submitResponse();
+        EXPECT_TRUE(snrTrack.pushedUp());
+        EXPECT_FALSE(snrTrack.pushedDown());
     }
 
     TEST_F(

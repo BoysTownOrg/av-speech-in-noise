@@ -193,7 +193,10 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
-        snrTrack->pushDown();
+        if (evaluator->correct({}, {}))
+            snrTrack->pushDown();
+        else
+            snrTrack->pushUp();
         av_coordinated_response_measure::Trial trial{};
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
