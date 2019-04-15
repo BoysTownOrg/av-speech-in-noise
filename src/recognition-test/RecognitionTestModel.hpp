@@ -72,14 +72,14 @@ namespace recognition_test {
     public:
         virtual ~OutputFile() = default;
         virtual void openNewFile(
-            const av_coordinated_response_measure::Model::Test &
+            const av_coordinated_response_measure::Test &
         ) = 0;
         class OpenFailure {};
         virtual void writeTrial(
             const av_coordinated_response_measure::Trial &
         ) = 0;
         virtual void writeTest(
-            const av_coordinated_response_measure::Model::Test &
+            const av_coordinated_response_measure::Test &
         ) = 0;
         virtual void writeTrialHeading() = 0;
         virtual void close() = 0;
@@ -90,7 +90,7 @@ namespace recognition_test {
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        Test test{};
+        av_coordinated_response_measure::Test test{};
         MaskerPlayer *maskerPlayer;
         TargetList *targetList;
         TargetPlayer *targetPlayer;
@@ -107,7 +107,7 @@ namespace recognition_test {
             ResponseEvaluator *,
             OutputFile *
         );
-        void initializeTest(const Test &) override;
+        void initializeTest(const av_coordinated_response_measure::Test &) override;
         void playTrial(const AudioSettings &) override;
         void submitResponse(const SubjectResponse &) override;
         bool testComplete() override;

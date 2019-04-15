@@ -42,6 +42,19 @@ namespace av_coordinated_response_measure {
         }
     }
     
+    struct Test {
+        std::string targetListDirectory;
+        std::string subjectId;
+        std::string testerId;
+        std::string maskerFilePath;
+        std::string session;
+        int startingSnr_dB;
+        int maskerLevel_dB_SPL;
+        int fullScaleLevel_dB_SPL;
+        Condition condition;
+        const Track::Settings::Rule *targetLevelRule;
+    };
+    
     class Model {
     public:
         class EventListener {
@@ -53,19 +66,6 @@ namespace av_coordinated_response_measure {
         virtual ~Model() = default;
         virtual void subscribe(EventListener *) = 0;
         RUNTIME_ERROR(RequestFailure)
-        
-        struct Test {
-            std::string targetListDirectory;
-            std::string subjectId;
-            std::string testerId;
-            std::string maskerFilePath;
-            std::string session;
-            int startingSnr_dB;
-            int maskerLevel_dB_SPL;
-            int fullScaleLevel_dB_SPL;
-            Condition condition;
-            const Track::Settings::Rule *targetLevelRule;
-        };
         virtual void initializeTest(const Test &) = 0;
         
         struct Calibration {

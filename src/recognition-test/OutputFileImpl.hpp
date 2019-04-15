@@ -17,7 +17,7 @@ namespace recognition_test {
     public:
         virtual ~OutputFilePath() = default;
         virtual std::string generateFileName(
-            const av_coordinated_response_measure::Model::Test &
+            const av_coordinated_response_measure::Test &
         ) = 0;
         virtual std::string homeDirectory() = 0;
         virtual std::string outputDirectory() = 0;
@@ -28,19 +28,19 @@ namespace recognition_test {
         OutputFilePath *path;
     public:
         OutputFileImpl(Writer *, OutputFilePath *);
-        void writeTest(const av_coordinated_response_measure::Model::Test &) override;
+        void writeTest(const av_coordinated_response_measure::Test &) override;
         void writeTrial(const av_coordinated_response_measure::Trial &) override;
         void writeTrialHeading() override;
-        void openNewFile(const av_coordinated_response_measure::Model::Test &) override;
+        void openNewFile(const av_coordinated_response_measure::Test &) override;
         void close() override;
         
     private:
         void write(std::string);
         std::string evaluation(const av_coordinated_response_measure::Trial &);
-        std::string formatTest(const av_coordinated_response_measure::Model::Test &);
+        std::string formatTest(const av_coordinated_response_measure::Test &);
         std::string formatTrial(const av_coordinated_response_measure::Trial &);
         std::string formatTrialHeading();
-        std::string generateNewFilePath(const av_coordinated_response_measure::Model::Test &);
+        std::string generateNewFilePath(const av_coordinated_response_measure::Test &);
         std::string colorName(av_coordinated_response_measure::Color);
     };
 }

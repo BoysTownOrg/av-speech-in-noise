@@ -15,7 +15,7 @@ namespace {
     };
     
     class ModelStub : public av_coordinated_response_measure::Model {
-        Test testParameters_{};
+        av_coordinated_response_measure::Test testParameters_{};
         Calibration calibrationParameters_{};
         AudioSettings trialParameters_{};
         SubjectResponse responseParameters_{};
@@ -57,7 +57,7 @@ namespace {
             trialPlayed_ = true;
         }
         
-        void initializeTest(const Test &p) override {
+        void initializeTest(const av_coordinated_response_measure::Test &p) override {
             testParameters_ = p;
         }
         
@@ -724,7 +724,7 @@ namespace {
             view.setDialogResponse(r);
         }
         
-        const av_coordinated_response_measure::Model::Test &
+        const av_coordinated_response_measure::Test &
             modelTestParameters()
         {
             return model.testParameters();
@@ -1031,7 +1031,7 @@ namespace {
             errorMessage = std::move(s);
         }
         
-        void initializeTest(const Test &) override {
+        void initializeTest(const av_coordinated_response_measure::Test &) override {
             throw RequestFailure{errorMessage};
         }
         

@@ -31,7 +31,7 @@ namespace recognition_test {
     public:
         OutputFilePathImpl(TimeStamp *, FileSystemPath *);
         std::string generateFileName(
-            const av_coordinated_response_measure::Model::Test &
+            const av_coordinated_response_measure::Test &
         ) override;
         std::string homeDirectory() override;
         std::string outputDirectory() override;
@@ -39,7 +39,7 @@ namespace recognition_test {
     private:
         std::string outputDirectory_();
         std::string formatTestInformation(
-            const av_coordinated_response_measure::Model::Test &
+            const av_coordinated_response_measure::Test &
         );
         std::string formatTimeStamp();
     };

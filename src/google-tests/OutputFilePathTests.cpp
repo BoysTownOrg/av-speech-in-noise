@@ -102,7 +102,7 @@ namespace {
         TimeStampStub timeStamp;
         FileSystemPathStub systemPath;
         recognition_test::OutputFilePathImpl path{&timeStamp, &systemPath};
-        av_coordinated_response_measure::Model::Test test{};
+        av_coordinated_response_measure::Test test{};
         
         std::string generateFileName() {
             return path.generateFileName(test);

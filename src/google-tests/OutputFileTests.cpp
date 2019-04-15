@@ -39,7 +39,7 @@ namespace {
     };
     
     class OutputFilePathStub : public ::recognition_test::OutputFilePath {
-        av_coordinated_response_measure::Model::Test testParameters_{};
+        av_coordinated_response_measure::Test testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
         std::string outputDirectory_{};
@@ -57,7 +57,7 @@ namespace {
         }
         
         std::string generateFileName(
-            const av_coordinated_response_measure::Model::Test &p
+            const av_coordinated_response_measure::Test &p
         ) override {
             testParameters_ = p;
             return fileName_;
@@ -78,7 +78,7 @@ namespace {
         OutputFilePathStub path{};
         recognition_test::OutputFileImpl file{&writer, &path};
         av_coordinated_response_measure::Trial trial{};
-        av_coordinated_response_measure::Model::Test test{};
+        av_coordinated_response_measure::Test test{};
         
         void openNewFile() {
             file.openNewFile(test);

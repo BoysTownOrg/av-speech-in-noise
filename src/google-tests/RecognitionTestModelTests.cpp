@@ -270,8 +270,8 @@ namespace {
     
     class OutputFileStub : public recognition_test::OutputFile {
         av_coordinated_response_measure::Trial trialWritten_{};
-        av_coordinated_response_measure::Model::Test testWritten_{};
-        av_coordinated_response_measure::Model::Test newFileParameters_{};
+        av_coordinated_response_measure::Test testWritten_{};
+        av_coordinated_response_measure::Test newFileParameters_{};
         LogString log_{};
         bool throwOnOpen_{};
         bool headingWritten_{};
@@ -300,7 +300,7 @@ namespace {
         }
         
         void openNewFile(
-            const av_coordinated_response_measure::Model::Test &p
+            const av_coordinated_response_measure::Test &p
         ) override {
             log_.insert("openNewFile ");
             newFileParameters_ = p;
@@ -314,7 +314,7 @@ namespace {
         }
         
         void writeTest(
-            const av_coordinated_response_measure::Model::Test &test
+            const av_coordinated_response_measure::Test &test
         ) override {
             log_.insert("writeTest ");
             testWritten_ = test;
@@ -421,7 +421,7 @@ namespace {
     };
     
     class InitializingTest : public UseCase {
-        recognition_test::RecognitionTestModel::Test test{};
+        av_coordinated_response_measure::Test test{};
     public:
         void setTesterId(std::string s) {
             test.testerId = std::move(s);

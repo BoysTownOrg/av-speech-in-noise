@@ -10,7 +10,7 @@ namespace recognition_test {
         systemPath{systemPath} {}
     
     std::string OutputFilePathImpl::generateFileName(
-        const av_coordinated_response_measure::Model::Test &test
+        const av_coordinated_response_measure::Test &test
     ) {
         std::stringstream stream;
         stream << formatTestInformation(test);
@@ -20,7 +20,7 @@ namespace recognition_test {
     }
     
     std::string OutputFilePathImpl::formatTestInformation(
-        const av_coordinated_response_measure::Model::Test &test
+        const av_coordinated_response_measure::Test &test
     ) {
         std::stringstream stream;
         stream << "Subject_";

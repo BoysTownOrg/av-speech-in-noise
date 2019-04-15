@@ -26,7 +26,9 @@ namespace recognition_test {
         listener_ = listener;
     }
     
-    void RecognitionTestModel::initializeTest(const Test &p) {
+    void RecognitionTestModel::initializeTest(
+        const av_coordinated_response_measure::Test &p
+    ) {
         test = p;
         
         prepareSnrTrack();

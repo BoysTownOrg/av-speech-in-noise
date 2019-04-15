@@ -118,7 +118,7 @@ namespace recognition_test {
     }
     
     void OutputFileImpl::openNewFile(
-        const av_coordinated_response_measure::Model::Test &test
+        const av_coordinated_response_measure::Test &test
     ) {
         writer->open(generateNewFilePath(test));
         if (writer->failed())
@@ -126,7 +126,7 @@ namespace recognition_test {
     }
     
     std::string OutputFileImpl::generateNewFilePath(
-        const av_coordinated_response_measure::Model::Test &test
+        const av_coordinated_response_measure::Test &test
     ) {
         return
             path->outputDirectory() + "/" +
@@ -134,13 +134,13 @@ namespace recognition_test {
     }
     
     void OutputFileImpl::writeTest(
-        const av_coordinated_response_measure::Model::Test &test
+        const av_coordinated_response_measure::Test &test
     ) {
         write(formatTest(test));
     }
     
     std::string OutputFileImpl::formatTest(
-        const av_coordinated_response_measure::Model::Test &test
+        const av_coordinated_response_measure::Test &test
     ) {
         FormattedStream stream;
         stream.writeLabeledLine("subject", test.subjectId);

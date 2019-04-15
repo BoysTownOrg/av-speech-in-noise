@@ -177,10 +177,10 @@ namespace presentation {
         view->show();
     }
     
-    av_coordinated_response_measure::Model::Test
+    av_coordinated_response_measure::Test
         Presenter::TestSetup::testParameters()
     {
-        av_coordinated_response_measure::Model::Test p;
+        av_coordinated_response_measure::Test p;
         p.startingSnr_dB =
             readInteger(view->startingSnr_dB(), "SNR");
         p.maskerLevel_dB_SPL = readMaskerLevel();
