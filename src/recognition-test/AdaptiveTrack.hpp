@@ -1,31 +1,10 @@
 #ifndef recognition_test_AdaptiveTrack_hpp
 #define recognition_test_AdaptiveTrack_hpp
 
-#include <vector>
-
-class Track {
-public:
-    virtual ~Track() = default;
-    struct Parameters {
-        struct RunSequence {
-            int runCount;
-            int stepSize;
-            int down;
-            int up;
-        };
-        std::vector<RunSequence> runSequences;
-        int startingX;
-    };
-    virtual void reset(const Parameters &) = 0;
-    virtual void pushDown() = 0;
-    virtual void pushUp() = 0;
-    virtual int x() = 0;
-    virtual bool complete() = 0;
-    virtual int reversals() = 0;
-};
+#include <av-coordinated-response-measure/Track.h>
 
 namespace recognition_test {
-    class AdaptiveTrack : public Track {
+    class AdaptiveTrack : public av_coordinated_response_measure::Track {
         enum class Direction {
             undefined,
             up,

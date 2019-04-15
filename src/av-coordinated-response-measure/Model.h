@@ -1,6 +1,7 @@
 #ifndef av_coordinated_response_measure_Model_h
 #define av_coordinated_response_measure_Model_h
 
+#include "Track.h"
 #include <stdexcept>
 #include <string>
 
@@ -54,6 +55,7 @@ namespace av_coordinated_response_measure {
         RUNTIME_ERROR(RequestFailure)
         
         struct Test {
+            Track::Parameters::Rule targetLevelRule;
             std::string targetListDirectory;
             std::string subjectId;
             std::string testerId;

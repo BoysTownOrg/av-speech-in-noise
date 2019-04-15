@@ -817,6 +817,15 @@ namespace {
         assertEqual("e", modelTestParameters().session);
     }
 
+    TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRunSequencesToModel) {
+        confirmTestSetup();
+        // sufficient comparision for equality?
+        EXPECT_EQ(
+            presentation::Presenter::targetLevelRule.at(0).down,
+            modelTestParameters().targetLevelRule.at(0).down
+        );
+    }
+
     TEST_F(PresenterTests, playCalibrationPassesParametersToModel) {
         setCalibrationLevel("1");
         setupView.setCalibrationFilePath("a");

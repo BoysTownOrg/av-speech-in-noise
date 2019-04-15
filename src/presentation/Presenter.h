@@ -172,6 +172,8 @@ namespace presentation {
         void confirmTestSetup();
         void playCalibration();
         static int fullScaleLevel_dB_SPL;
+        static av_coordinated_response_measure::Track::Parameters::Rule
+            targetLevelRule;
         
     private:
         void showErrorMessage(std::string);
