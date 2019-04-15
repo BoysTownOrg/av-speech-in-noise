@@ -1,9 +1,9 @@
-#ifndef recognition_test_OutputFileImpl_hpp
-#define recognition_test_OutputFileImpl_hpp
+#ifndef av_coordinated_response_measure_OutputFileImpl_hpp
+#define av_coordinated_response_measure_OutputFileImpl_hpp
 
 #include "RecognitionTestModel.hpp"
 
-namespace recognition_test {
+namespace av_coordinated_response_measure {
     class Writer {
     public:
         virtual ~Writer() = default;

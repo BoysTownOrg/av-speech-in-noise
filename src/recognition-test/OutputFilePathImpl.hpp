@@ -1,10 +1,10 @@
-#ifndef recognition_test_OutputFilePathImpl_hpp
-#define recognition_test_OutputFilePathImpl_hpp
+#ifndef av_coordinated_response_measure_OutputFilePathImpl_hpp
+#define av_coordinated_response_measure_OutputFilePathImpl_hpp
 
 #include "OutputFileImpl.hpp"
 #include <av-coordinated-response-measure/Model.h>
 
-namespace recognition_test {
+namespace av_coordinated_response_measure {
     class TimeStamp {
     public:
         virtual ~TimeStamp() = default;

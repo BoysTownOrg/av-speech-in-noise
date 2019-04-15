@@ -6,7 +6,7 @@
 #include <cmath>
 
 namespace {
-    class MaskerPlayerStub : public recognition_test::MaskerPlayer {
+    class MaskerPlayerStub : public av_coordinated_response_measure::MaskerPlayer {
         std::vector<std::string> outputAudioDeviceDescriptions_{};
         LogString log_{};
         std::string filePath_{};
@@ -32,7 +32,7 @@ namespace {
         void setAudioDevice(std::string s) override {
             device_ = std::move(s);
             if (throwInvalidAudioDeviceWhenDeviceSet_)
-                throw recognition_test::InvalidAudioDevice{};
+                throw av_coordinated_response_measure::InvalidAudioDevice{};
         }
         
         auto device() const {
@@ -114,7 +114,7 @@ namespace {
         }
     };
 
-    class TargetPlayerStub : public recognition_test::TargetPlayer {
+    class TargetPlayerStub : public av_coordinated_response_measure::TargetPlayer {
         LogString log_{};
         std::string filePath_{};
         std::string device_{};
@@ -158,7 +158,7 @@ namespace {
             setDeviceCalled_ = true;
             device_ = std::move(s);
             if (throwInvalidAudioDeviceWhenDeviceSet_)
-                throw recognition_test::InvalidAudioDevice{};
+                throw av_coordinated_response_measure::InvalidAudioDevice{};
         }
         
         auto device() const {
@@ -232,7 +232,7 @@ namespace {
         }
     };
 
-    class TargetListStub : public recognition_test::TargetList {
+    class TargetListStub : public av_coordinated_response_measure::TargetList {
         std::string directory_{};
         std::string next_{};
         bool empty_{};
@@ -268,7 +268,7 @@ namespace {
         }
     };
     
-    class OutputFileStub : public recognition_test::OutputFile {
+    class OutputFileStub : public av_coordinated_response_measure::OutputFile {
         av_coordinated_response_measure::Trial trialWritten_{};
         av_coordinated_response_measure::Test testWritten_{};
         av_coordinated_response_measure::Test newFileParameters_{};
@@ -347,7 +347,7 @@ namespace {
         }
     };
     
-    class TrackStub : public recognition_test::Track {
+    class TrackStub : public av_coordinated_response_measure::Track {
         Settings settings_{};
         int x_{};
         bool pushedDown_{};
@@ -394,7 +394,7 @@ namespace {
         }
     };
     
-    class ResponseEvaluatorStub : public recognition_test::ResponseEvaluator {
+    class ResponseEvaluatorStub : public av_coordinated_response_measure::ResponseEvaluator {
         bool correct_{};
     public:
         void setCorrect() {
@@ -417,7 +417,7 @@ namespace {
     class UseCase {
     public:
         virtual ~UseCase() = default;
-        virtual void run(recognition_test::RecognitionTestModel &) = 0;
+        virtual void run(av_coordinated_response_measure::RecognitionTestModel &) = 0;
     };
     
     class InitializingTest : public UseCase {
@@ -435,7 +435,7 @@ namespace {
             test.maskerFilePath = std::move(s);
         }
         
-        void run(recognition_test::RecognitionTestModel &m) override {
+        void run(av_coordinated_response_measure::RecognitionTestModel &m) override {
             m.initializeTest(test);
         }
         
@@ -478,7 +478,7 @@ namespace {
             trial.audioDevice = std::move(s);
         }
         
-        void run(recognition_test::RecognitionTestModel &m) override {
+        void run(av_coordinated_response_measure::RecognitionTestModel &m) override {
             m.playTrial(trial);
         }
     };
@@ -490,7 +490,7 @@ namespace {
             calibration.audioDevice = std::move(s);
         }
         
-        void run(recognition_test::RecognitionTestModel &m) override {
+        void run(av_coordinated_response_measure::RecognitionTestModel &m) override {
             m.playCalibration(calibration);
         }
         
@@ -517,7 +517,7 @@ namespace {
         OutputFileStub outputFile{};
         TrackStub snrTrack{};
         ResponseEvaluatorStub evaluator{};
-        recognition_test::RecognitionTestModel model{
+        av_coordinated_response_measure::RecognitionTestModel model{
             &targetList,
             &targetPlayer,
             &maskerPlayer,
@@ -625,7 +625,7 @@ namespace {
                     "Expected "
                     "recognition_test::RecognitionTestModel::RequestFailure";
             } catch (
-                const recognition_test::RecognitionTestModel::RequestFailure &e
+                const av_coordinated_response_measure::RecognitionTestModel::RequestFailure &e
             ) {
                 assertEqual(std::move(what), e.what());
             }
@@ -635,7 +635,7 @@ namespace {
             try {
                 playTrial();
             } catch (const
-                recognition_test::RecognitionTestModel::RequestFailure &
+                av_coordinated_response_measure::RecognitionTestModel::RequestFailure &
             ) {
             }
         }

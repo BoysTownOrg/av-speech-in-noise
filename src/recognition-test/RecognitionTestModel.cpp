@@ -2,7 +2,7 @@
 #include <gsl/gsl>
 #include <cmath>
 
-namespace recognition_test {
+namespace av_coordinated_response_measure {
     RecognitionTestModel::RecognitionTestModel(
         TargetList *targetList,
         TargetPlayer *targetPlayer,
@@ -27,7 +27,7 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::initializeTest(
-        const av_coordinated_response_measure::Test &p
+        const Test &p
     ) {
         test = p;
         
@@ -98,10 +98,10 @@ namespace recognition_test {
 
     bool RecognitionTestModel::auditoryOnly() {
         return test.condition ==
-            av_coordinated_response_measure::Condition::auditoryOnly;
+            Condition::auditoryOnly;
     }
     
-    void RecognitionTestModel::playTrial(const av_coordinated_response_measure::AudioSettings &settings) {
+    void RecognitionTestModel::playTrial(const AudioSettings &settings) {
         if (noMoreTrials() || trialInProgress())
             return;
         
@@ -117,13 +117,13 @@ namespace recognition_test {
         return maskerPlayer->playing();
     }
     
-    void RecognitionTestModel::preparePlayers(const av_coordinated_response_measure::AudioSettings &p) {
+    void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
         trySettingAudioDevices(p);
         loadNextTarget();
     }
     
     void RecognitionTestModel::trySettingAudioDevices(
-        const av_coordinated_response_measure::AudioSettings &p
+        const AudioSettings &p
     ) {
         throwInvalidAudioDeviceOnErrorSettingDevice(
             &RecognitionTestModel::setAudioDevices,
@@ -194,12 +194,12 @@ namespace recognition_test {
         maskerPlayer->fadeOut();
     }
     
-    void RecognitionTestModel::submitResponse(const av_coordinated_response_measure::SubjectResponse &response) {
+    void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
         if (evaluator->correct({}, {}))
             snrTrack->pushDown();
         else
             snrTrack->pushUp();
-        av_coordinated_response_measure::Trial trial{};
+        Trial trial{};
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
         outputFile->writeTrial(trial);
@@ -209,14 +209,14 @@ namespace recognition_test {
         listener_->trialComplete();
     }
     
-    void RecognitionTestModel::playCalibration(const av_coordinated_response_measure::Calibration &p) {
+    void RecognitionTestModel::playCalibration(const Calibration &p) {
         if (targetPlayer->playing())
             return;
         
         playCalibration_(p);
     }
     
-    void RecognitionTestModel::playCalibration_(const av_coordinated_response_measure::Calibration &p) {
+    void RecognitionTestModel::playCalibration_(const Calibration &p) {
         throwInvalidAudioDeviceOnErrorSettingDevice(
             &RecognitionTestModel::setTargetPlayerDevice,
             p.audioDevice

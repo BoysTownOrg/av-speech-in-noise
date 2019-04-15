@@ -1,7 +1,7 @@
 #include "OutputFilePathImpl.hpp"
 #include <sstream>
 
-namespace recognition_test {
+namespace av_coordinated_response_measure {
     OutputFilePathImpl::OutputFilePathImpl(
         TimeStamp *timeStamp,
         FileSystemPath *systemPath

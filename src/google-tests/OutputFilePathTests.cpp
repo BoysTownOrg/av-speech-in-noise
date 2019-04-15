@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class TimeStampStub : public recognition_test::TimeStamp {
+    class TimeStampStub : public av_coordinated_response_measure::TimeStamp {
         LogString log_{};
         int year_{};
         int month_{};
@@ -76,7 +76,7 @@ namespace {
         }
     };
     
-    class FileSystemPathStub : public recognition_test::FileSystemPath {
+    class FileSystemPathStub : public av_coordinated_response_measure::FileSystemPath {
         std::string homeDirectory_{};
         std::string directoryCreated_{};
     public:
@@ -101,7 +101,7 @@ namespace {
     protected:
         TimeStampStub timeStamp;
         FileSystemPathStub systemPath;
-        recognition_test::OutputFilePathImpl path{&timeStamp, &systemPath};
+        av_coordinated_response_measure::OutputFilePathImpl path{&timeStamp, &systemPath};
         av_coordinated_response_measure::Test test{};
         
         std::string generateFileName() {

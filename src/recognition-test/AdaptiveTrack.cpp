@@ -1,6 +1,6 @@
 #include "AdaptiveTrack.hpp"
 
-namespace recognition_test {
+namespace av_coordinated_response_measure {
     void AdaptiveTrack::reset(const Settings &p) {
         sequenceIndex = 0;
         x_ = p.startingX;

@@ -1,10 +1,10 @@
-#ifndef recognition_test_Model_hpp
-#define recognition_test_Model_hpp
+#ifndef av_coordinated_response_measure_RecognitionTestModel_hpp
+#define av_coordinated_response_measure_RecognitionTestModel_hpp
 
 #include <av-coordinated-response-measure/Model.h>
 #include <vector>
 
-namespace recognition_test {
+namespace av_coordinated_response_measure {
     class InvalidAudioDevice {};
     
     class TargetPlayer {
@@ -55,7 +55,7 @@ namespace recognition_test {
     public:
         virtual ~Track() = default;
         struct Settings {
-            const av_coordinated_response_measure::Rule *rule;
+            const Rule *rule;
             int startingX;
         };
         virtual void reset(const Settings &) = 0;
@@ -79,7 +79,7 @@ namespace recognition_test {
         virtual ~ResponseEvaluator() = default;
         virtual bool correct(
             std::string filePath,
-            const av_coordinated_response_measure::SubjectResponse &
+            const SubjectResponse &
         ) = 0;
     };
     
@@ -87,25 +87,25 @@ namespace recognition_test {
     public:
         virtual ~OutputFile() = default;
         virtual void openNewFile(
-            const av_coordinated_response_measure::Test &
+            const Test &
         ) = 0;
         class OpenFailure {};
         virtual void writeTrial(
-            const av_coordinated_response_measure::Trial &
+            const Trial &
         ) = 0;
         virtual void writeTest(
-            const av_coordinated_response_measure::Test &
+            const Test &
         ) = 0;
         virtual void writeTrialHeading() = 0;
         virtual void close() = 0;
     };
 
     class RecognitionTestModel :
-        public av_coordinated_response_measure::Model,
+        public Model,
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        av_coordinated_response_measure::Test test{};
+        Test test{};
         MaskerPlayer *maskerPlayer;
         TargetList *targetList;
         TargetPlayer *targetPlayer;
@@ -122,20 +122,20 @@ namespace recognition_test {
             ResponseEvaluator *,
             OutputFile *
         );
-        void initializeTest(const av_coordinated_response_measure::Test &) override;
-        void playTrial(const av_coordinated_response_measure::AudioSettings &) override;
-        void submitResponse(const av_coordinated_response_measure::SubjectResponse &) override;
+        void initializeTest(const Test &) override;
+        void playTrial(const AudioSettings &) override;
+        void submitResponse(const SubjectResponse &) override;
         bool testComplete() override;
         std::vector<std::string> audioDevices() override;
         void subscribe(Model::EventListener *) override;
-        void playCalibration(const av_coordinated_response_measure::Calibration &) override;
+        void playCalibration(const Calibration &) override;
         void fadeInComplete() override;
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
         void prepareSnrTrack();
         void playTarget();
-        void playCalibration_(const av_coordinated_response_measure::Calibration &);
+        void playCalibration_(const Calibration &);
         void prepareMasker();
         void prepareOutputFile();
         void tryOpeningOutputFile();
@@ -144,7 +144,7 @@ namespace recognition_test {
         bool noMoreTrials();
         bool trialInProgress();
         void loadNextTarget();
-        void preparePlayers(const av_coordinated_response_measure::AudioSettings &);
+        void preparePlayers(const AudioSettings &);
         void startTrial();
         bool auditoryOnly();
         void prepareVideo();
@@ -154,8 +154,8 @@ namespace recognition_test {
         double maskerLevel_dB();
         void setTargetPlayerDevice(const std::string &);
         void setAudioDevices(const std::string &);
-        void trySettingAudioDevices(const av_coordinated_response_measure::AudioSettings &);
-        int findDeviceIndex(const av_coordinated_response_measure::AudioSettings &);
+        void trySettingAudioDevices(const AudioSettings &);
+        int findDeviceIndex(const AudioSettings &);
         void throwInvalidAudioDeviceOnErrorSettingDevice(
             void(RecognitionTestModel::*f)(const std::string &),
             const std::string &

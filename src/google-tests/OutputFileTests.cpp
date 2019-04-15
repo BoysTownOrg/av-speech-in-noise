@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class WriterStub : public recognition_test::Writer {
+    class WriterStub : public av_coordinated_response_measure::Writer {
         LogString written_{};
         std::string filePath_{};
         bool closed_{};
@@ -38,7 +38,7 @@ namespace {
         }
     };
     
-    class OutputFilePathStub : public ::recognition_test::OutputFilePath {
+    class OutputFilePathStub : public av_coordinated_response_measure::OutputFilePath {
         av_coordinated_response_measure::Test testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
@@ -76,7 +76,7 @@ namespace {
     protected:
         WriterStub writer{};
         OutputFilePathStub path{};
-        recognition_test::OutputFileImpl file{&writer, &path};
+        av_coordinated_response_measure::OutputFileImpl file{&writer, &path};
         av_coordinated_response_measure::Trial trial{};
         av_coordinated_response_measure::Test test{};
         
@@ -204,7 +204,7 @@ namespace {
         assertEqual("a", path.testParameters().testerId);
     }
     
-    class FailingWriter : public recognition_test::Writer {
+    class FailingWriter : public av_coordinated_response_measure::Writer {
         bool failed_{};
     public:
         void write(std::string) override {
@@ -228,12 +228,12 @@ namespace {
     ) {
         FailingWriter writer{};
         OutputFilePathStub path{};
-        recognition_test::OutputFileImpl file{&writer, &path};
+        av_coordinated_response_measure::OutputFileImpl file{&writer, &path};
         try {
             file.openNewFile({});
             FAIL() << "Expected OutputFileImpl::OpenFailure";
         }
-        catch (const recognition_test::OutputFileImpl::OpenFailure &) {
+        catch (const av_coordinated_response_measure::OutputFileImpl::OpenFailure &) {
         }
     }
 }
