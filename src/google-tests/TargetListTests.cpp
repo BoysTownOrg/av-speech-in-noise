@@ -82,15 +82,6 @@ namespace {
 
     TEST_F(
         TargetListTests,
-        nextReturnsFullPathToFile
-    ) {
-        setFileNames({ "a" });
-        loadFromDirectory("C:");
-        assertEqual("C:/a", next());
-    }
-
-    TEST_F(
-        TargetListTests,
         nextReplacesSecondToLastTarget
     ) {
         setFileNames({ "a", "b", "c", "d", "e" });
@@ -98,6 +89,27 @@ namespace {
         next();
         next();
         assertEqual({ "c", "d", "e", "a" }, randomizer.toShuffle());
+    }
+
+    TEST_F(
+        TargetListTests,
+        nextReturnsFullPathToFile
+    ) {
+        setFileNames({ "a", "b", "c" });
+        loadFromDirectory("C:");
+        assertEqual("C:/a", next());
+        assertEqual("C:/b", next());
+        assertEqual("C:/c", next());
+    }
+
+    TEST_F(
+        TargetListTests,
+        currentReturnsFullPathToFile
+    ) {
+        setFileNames({ "a", "b", "c" });
+        loadFromDirectory("C:");
+        next();
+        assertEqual("C:/a", list.current());
     }
     
     class FileFilterDecoratorTests : public ::testing::Test {

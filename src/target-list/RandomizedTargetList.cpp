@@ -31,7 +31,7 @@ namespace target_list {
     }
     
     std::string RandomizedTargetList::current() { 
-        return {};
+        return directory_ + "/" + current_;
     }
     
 }
