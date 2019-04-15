@@ -1,7 +1,7 @@
 #ifndef presentation_Presenter_h
 #define presentation_Presenter_h
 
-#include <av-coordinated-response-measure/Model.h>
+#include <av-coordinate-response-measure/Model.h>
 #include <vector>
 #include <string>
 
@@ -96,7 +96,7 @@ namespace presentation {
 
     class Presenter :
         public View::EventListener,
-        public av_coordinated_response_measure::Model::EventListener
+        public av_coordinate_response_measure::Model::EventListener
     {
     public:
         class TestSetup : public View::TestSetup::EventListener {
@@ -113,8 +113,8 @@ namespace presentation {
             void setMasker(std::string);
             void setStimulusList(std::string);
             void setCalibrationFilePath(std::string);
-            av_coordinated_response_measure::Test testParameters();
-            av_coordinated_response_measure::Calibration calibrationParameters();
+            av_coordinate_response_measure::Test testParameters();
+            av_coordinate_response_measure::Calibration calibrationParameters();
         private:
             int readMaskerLevel();
             int readCalibrationLevel();
@@ -144,16 +144,16 @@ namespace presentation {
             void showNextTrialButton();
             void hideNextTrialButton();
             void showResponseButtons();
-            av_coordinated_response_measure::SubjectResponse subjectResponse();
+            av_coordinate_response_measure::SubjectResponse subjectResponse();
         private:
-            av_coordinated_response_measure::Color colorResponse();
+            av_coordinate_response_measure::Color colorResponse();
             
             View::Subject *view;
             Presenter *parent;
         };
         
         Presenter(
-            av_coordinated_response_measure::Model *,
+            av_coordinate_response_measure::Model *,
             View *,
             TestSetup *,
             Tester *,
@@ -172,7 +172,7 @@ namespace presentation {
         void confirmTestSetup();
         void playCalibration();
         static int fullScaleLevel_dB_SPL;
-        static av_coordinated_response_measure::Rule targetLevelRule;
+        static av_coordinate_response_measure::Rule targetLevelRule;
         
     private:
         void showErrorMessage(std::string);
@@ -190,7 +190,7 @@ namespace presentation {
         void showResponseButtons();
         void initializeTest_();
         
-        av_coordinated_response_measure::Model *model;
+        av_coordinate_response_measure::Model *model;
         View *view;
         TestSetup *testSetup;
         Tester *tester;

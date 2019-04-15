@@ -1,7 +1,7 @@
 #include "OutputFileImpl.hpp"
 #include <sstream>
 
-namespace av_coordinated_response_measure {
+namespace av_coordinate_response_measure {
     namespace {
         class FormattedStream {
             std::stringstream stream;
@@ -38,7 +38,7 @@ namespace av_coordinated_response_measure {
         path{path} {}
     
     void OutputFileImpl::writeTrial(
-        const av_coordinated_response_measure::Trial &trial
+        const av_coordinate_response_measure::Trial &trial
     ) {
         write(formatTrial(trial));
     }
@@ -48,7 +48,7 @@ namespace av_coordinated_response_measure {
     }
 
     std::string OutputFileImpl::formatTrial(
-        const av_coordinated_response_measure::Trial &trial
+        const av_coordinate_response_measure::Trial &trial
     ) {
         FormattedStream stream;
         stream.insert(trial.SNR_dB);
@@ -69,7 +69,7 @@ namespace av_coordinated_response_measure {
     }
     
     std::string OutputFileImpl::evaluation(
-        const av_coordinated_response_measure::Trial &trial
+        const av_coordinate_response_measure::Trial &trial
     ) {
         return
             trial.correctColor == trial.subjectColor &&
@@ -79,16 +79,16 @@ namespace av_coordinated_response_measure {
     }
 
     std::string OutputFileImpl::colorName(
-        av_coordinated_response_measure::Color c
+        av_coordinate_response_measure::Color c
     ) {
         switch (c) {
-        case av_coordinated_response_measure::Color::green:
+        case av_coordinate_response_measure::Color::green:
             return "green";
-        case av_coordinated_response_measure::Color::red:
+        case av_coordinate_response_measure::Color::red:
             return "red";
-        case av_coordinated_response_measure::Color::blue:
+        case av_coordinate_response_measure::Color::blue:
             return "blue";
-        case av_coordinated_response_measure::Color::gray:
+        case av_coordinate_response_measure::Color::gray:
             return "gray";
         }
         return "unknown";
@@ -118,7 +118,7 @@ namespace av_coordinated_response_measure {
     }
     
     void OutputFileImpl::openNewFile(
-        const av_coordinated_response_measure::Test &test
+        const av_coordinate_response_measure::Test &test
     ) {
         writer->open(generateNewFilePath(test));
         if (writer->failed())
@@ -126,7 +126,7 @@ namespace av_coordinated_response_measure {
     }
     
     std::string OutputFileImpl::generateNewFilePath(
-        const av_coordinated_response_measure::Test &test
+        const av_coordinate_response_measure::Test &test
     ) {
         return
             path->outputDirectory() + "/" +
@@ -134,13 +134,13 @@ namespace av_coordinated_response_measure {
     }
     
     void OutputFileImpl::writeTest(
-        const av_coordinated_response_measure::Test &test
+        const av_coordinate_response_measure::Test &test
     ) {
         write(formatTest(test));
     }
     
     std::string OutputFileImpl::formatTest(
-        const av_coordinated_response_measure::Test &test
+        const av_coordinate_response_measure::Test &test
     ) {
         FormattedStream stream;
         stream.writeLabeledLine("subject", test.subjectId);

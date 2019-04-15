@@ -1,7 +1,7 @@
 #include "OutputFilePathImpl.hpp"
 #include <sstream>
 
-namespace av_coordinated_response_measure {
+namespace av_coordinate_response_measure {
     OutputFilePathImpl::OutputFilePathImpl(
         TimeStamp *timeStamp,
         FileSystemPath *systemPath
@@ -10,7 +10,7 @@ namespace av_coordinated_response_measure {
         systemPath{systemPath} {}
     
     std::string OutputFilePathImpl::generateFileName(
-        const av_coordinated_response_measure::Test &test
+        const av_coordinate_response_measure::Test &test
     ) {
         std::stringstream stream;
         stream << formatTestInformation(test);
@@ -20,7 +20,7 @@ namespace av_coordinated_response_measure {
     }
     
     std::string OutputFilePathImpl::formatTestInformation(
-        const av_coordinated_response_measure::Test &test
+        const av_coordinate_response_measure::Test &test
     ) {
         std::stringstream stream;
         stream << "Subject_";

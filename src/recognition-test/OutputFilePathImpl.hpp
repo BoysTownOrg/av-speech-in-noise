@@ -1,10 +1,10 @@
-#ifndef av_coordinated_response_measure_OutputFilePathImpl_hpp
-#define av_coordinated_response_measure_OutputFilePathImpl_hpp
+#ifndef av_coordinate_response_measure_OutputFilePathImpl_hpp
+#define av_coordinate_response_measure_OutputFilePathImpl_hpp
 
 #include "OutputFileImpl.hpp"
-#include <av-coordinated-response-measure/Model.h>
+#include <av-coordinate-response-measure/Model.h>
 
-namespace av_coordinated_response_measure {
+namespace av_coordinate_response_measure {
     class TimeStamp {
     public:
         virtual ~TimeStamp() = default;
@@ -31,7 +31,7 @@ namespace av_coordinated_response_measure {
     public:
         OutputFilePathImpl(TimeStamp *, FileSystemPath *);
         std::string generateFileName(
-            const av_coordinated_response_measure::Test &
+            const av_coordinate_response_measure::Test &
         ) override;
         std::string homeDirectory() override;
         std::string outputDirectory() override;
@@ -39,7 +39,7 @@ namespace av_coordinated_response_measure {
     private:
         std::string outputDirectory_();
         std::string formatTestInformation(
-            const av_coordinated_response_measure::Test &
+            const av_coordinate_response_measure::Test &
         );
         std::string formatTimeStamp();
     };

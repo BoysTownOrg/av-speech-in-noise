@@ -236,15 +236,15 @@
 		26FC6AF821DA80C900289A0A = {
 			isa = PBXGroup;
 			children = (
-				26FDD2D7224AC3100090BDD5 /* av-coordinated-response-measure */,
-				26EE86BD2242E8CB00C08622 /* stimulus-players */,
-				269C919122331FCE00A80372 /* main */,
-				2646F83D21DFEA0B00F378DE /* target-list */,
-				26A2236D21DD3482007D6511 /* recognition-test */,
-				26FC6B1A21DAA3DF00289A0A /* presentation */,
-				26FC6B0521DA810C00289A0A /* google-tests */,
-				26FC6B0421DA810C00289A0A /* Products */,
+				26FDD2D7224AC3100090BDD5 /* av-coordinate-response-measure */,
 				26FC6B0B21DA85A400289A0A /* Frameworks */,
+				26FC6B0521DA810C00289A0A /* google-tests */,
+				269C919122331FCE00A80372 /* main */,
+				26FC6B1A21DAA3DF00289A0A /* presentation */,
+				26FC6B0421DA810C00289A0A /* Products */,
+				26A2236D21DD3482007D6511 /* recognition-test */,
+				26EE86BD2242E8CB00C08622 /* stimulus-players */,
+				2646F83D21DFEA0B00F378DE /* target-list */,
 			);
 			sourceTree = "<group>";
 		};
@@ -302,12 +302,12 @@
 			path = presentation;
 			sourceTree = "<group>";
 		};
-		26FDD2D7224AC3100090BDD5 /* av-coordinated-response-measure */ = {
+		26FDD2D7224AC3100090BDD5 /* av-coordinate-response-measure */ = {
 			isa = PBXGroup;
 			children = (
 				26EE86BC2242E64900C08622 /* Model.h */,
 			);
-			path = "av-coordinated-response-measure";
+			path = "av-coordinate-response-measure";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -383,9 +383,9 @@
 			productReference = 26A2237521DD3544007D6511 /* librecognition-test.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		26B81F2521DEB15700006FCB /* av-coordinated-response-measure */ = {
+		26B81F2521DEB15700006FCB /* av-coordinate-response-measure */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 26B81F3421DEB15A00006FCB /* Build configuration list for PBXNativeTarget "av-coordinated-response-measure" */;
+			buildConfigurationList = 26B81F3421DEB15A00006FCB /* Build configuration list for PBXNativeTarget "av-coordinate-response-measure" */;
 			buildPhases = (
 				26B81F2221DEB15700006FCB /* Sources */,
 				26B81F2321DEB15700006FCB /* Frameworks */,
@@ -395,7 +395,7 @@
 			);
 			dependencies = (
 			);
-			name = "av-coordinated-response-measure";
+			name = "av-coordinate-response-measure";
 			productName = "experimental-recognition-experiment";
 			productReference = 26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */;
 			productType = "com.apple.product-type.application";
@@ -479,7 +479,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 26FC6AFC21DA80C900289A0A /* Build configuration list for PBXProject "av-coordinated-response-measure" */;
+			buildConfigurationList = 26FC6AFC21DA80C900289A0A /* Build configuration list for PBXProject "av-coordinate-response-measure" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -495,7 +495,7 @@
 				26FC6B0221DA810C00289A0A /* google-tests */,
 				26FC6B1521DAA3D800289A0A /* presentation */,
 				26A2237421DD3544007D6511 /* recognition-test */,
-				26B81F2521DEB15700006FCB /* av-coordinated-response-measure */,
+				26B81F2521DEB15700006FCB /* av-coordinate-response-measure */,
 				2646F83821DFEA0400F378DE /* target-list */,
 				26EE86C42242E98600C08622 /* stimulus_players */,
 			);
@@ -1347,7 +1347,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		26B81F3421DEB15A00006FCB /* Build configuration list for PBXNativeTarget "av-coordinated-response-measure" */ = {
+		26B81F3421DEB15A00006FCB /* Build configuration list for PBXNativeTarget "av-coordinate-response-measure" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26B81F3521DEB15A00006FCB /* Debug */,
@@ -1365,7 +1365,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		26FC6AFC21DA80C900289A0A /* Build configuration list for PBXProject "av-coordinated-response-measure" */ = {
+		26FC6AFC21DA80C900289A0A /* Build configuration list for PBXProject "av-coordinate-response-measure" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26FC6AFD21DA80C900289A0A /* Debug */,

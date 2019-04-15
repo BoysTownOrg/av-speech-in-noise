@@ -31,7 +31,7 @@ namespace stimulus_players {
     };
 
     class MaskerPlayerImpl :
-        public av_coordinated_response_measure::MaskerPlayer,
+        public av_coordinate_response_measure::MaskerPlayer,
         public AudioPlayer::EventListener
     {
         std::string filePath_{};

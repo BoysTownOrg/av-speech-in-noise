@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "26B81F2521DEB15700006FCB"
                BuildableName = "av-coordinated-response-measure.app"
-               BlueprintName = "av-coordinated-response-measure"
+               BlueprintName = "av-coordinate-response-measure"
                ReferencedContainer = "container:av-coordinated-response-measure.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -34,7 +34,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "26B81F2521DEB15700006FCB"
             BuildableName = "av-coordinated-response-measure.app"
-            BlueprintName = "av-coordinated-response-measure"
+            BlueprintName = "av-coordinate-response-measure"
             ReferencedContainer = "container:av-coordinated-response-measure.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -57,7 +57,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "26B81F2521DEB15700006FCB"
             BuildableName = "av-coordinated-response-measure.app"
-            BlueprintName = "av-coordinated-response-measure"
+            BlueprintName = "av-coordinate-response-measure"
             ReferencedContainer = "container:av-coordinated-response-measure.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -76,7 +76,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "26B81F2521DEB15700006FCB"
             BuildableName = "av-coordinated-response-measure.app"
-            BlueprintName = "av-coordinated-response-measure"
+            BlueprintName = "av-coordinate-response-measure"
             ReferencedContainer = "container:av-coordinated-response-measure.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

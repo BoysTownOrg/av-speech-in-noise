@@ -1,9 +1,9 @@
-#ifndef av_coordinated_response_measure_AdaptiveTrack_hpp
-#define av_coordinated_response_measure_AdaptiveTrack_hpp
+#ifndef av_coordinate_response_measure_AdaptiveTrack_hpp
+#define av_coordinate_response_measure_AdaptiveTrack_hpp
 
 #include <recognition-test/RecognitionTestModel.hpp>
 
-namespace av_coordinated_response_measure {
+namespace av_coordinate_response_measure {
     class AdaptiveTrack : public Track {
         enum class Direction {
             undefined,

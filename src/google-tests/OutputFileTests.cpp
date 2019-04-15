@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class WriterStub : public av_coordinated_response_measure::Writer {
+    class WriterStub : public av_coordinate_response_measure::Writer {
         LogString written_{};
         std::string filePath_{};
         bool closed_{};
@@ -38,8 +38,8 @@ namespace {
         }
     };
     
-    class OutputFilePathStub : public av_coordinated_response_measure::OutputFilePath {
-        av_coordinated_response_measure::Test testParameters_{};
+    class OutputFilePathStub : public av_coordinate_response_measure::OutputFilePath {
+        av_coordinate_response_measure::Test testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
         std::string outputDirectory_{};
@@ -57,7 +57,7 @@ namespace {
         }
         
         std::string generateFileName(
-            const av_coordinated_response_measure::Test &p
+            const av_coordinate_response_measure::Test &p
         ) override {
             testParameters_ = p;
             return fileName_;
@@ -76,15 +76,15 @@ namespace {
     protected:
         WriterStub writer{};
         OutputFilePathStub path{};
-        av_coordinated_response_measure::OutputFileImpl file{&writer, &path};
-        av_coordinated_response_measure::Trial trial{};
-        av_coordinated_response_measure::Test test{};
+        av_coordinate_response_measure::OutputFileImpl file{&writer, &path};
+        av_coordinate_response_measure::Trial trial{};
+        av_coordinate_response_measure::Test test{};
         
         void openNewFile() {
             file.openNewFile(test);
         }
         
-        void assertWriterContainsConditionName(av_coordinated_response_measure::Condition c) {
+        void assertWriterContainsConditionName(av_coordinate_response_measure::Condition c) {
             test.condition = c;
             file.writeTest(test);
             std::string name = conditionName(c);
@@ -96,8 +96,8 @@ namespace {
         trial.SNR_dB = 1;
         trial.correctNumber = 2;
         trial.subjectNumber = 3;
-        trial.correctColor = av_coordinated_response_measure::Color::green;
-        trial.subjectColor = av_coordinated_response_measure::Color::red;
+        trial.correctColor = av_coordinate_response_measure::Color::green;
+        trial.subjectColor = av_coordinate_response_measure::Color::red;
         trial.reversals = 4;
         file.writeTrial(trial);
         assertEqual(
@@ -109,8 +109,8 @@ namespace {
     TEST_F(OutputFileTests, writeTrialRightNumberButWrongColor) {
         trial.correctNumber = 1;
         trial.subjectNumber = 1;
-        trial.correctColor = av_coordinated_response_measure::Color::green;
-        trial.subjectColor = av_coordinated_response_measure::Color::red;
+        trial.correctColor = av_coordinate_response_measure::Color::green;
+        trial.subjectColor = av_coordinate_response_measure::Color::red;
         file.writeTrial(trial);
         EXPECT_TRUE(writer.written().contains(" incorrect, "));
     }
@@ -118,8 +118,8 @@ namespace {
     TEST_F(OutputFileTests, writeTrialRightColorButWrongNumber) {
         trial.correctNumber = 1;
         trial.subjectNumber = 2;
-        trial.correctColor = av_coordinated_response_measure::Color::green;
-        trial.subjectColor = av_coordinated_response_measure::Color::green;
+        trial.correctColor = av_coordinate_response_measure::Color::green;
+        trial.subjectColor = av_coordinate_response_measure::Color::green;
         file.writeTrial(trial);
         EXPECT_TRUE(writer.written().contains(" incorrect, "));
     }
@@ -127,8 +127,8 @@ namespace {
     TEST_F(OutputFileTests, writeTrialCorrect) {
         trial.correctNumber = 1;
         trial.subjectNumber = 1;
-        trial.correctColor = av_coordinated_response_measure::Color::green;
-        trial.subjectColor = av_coordinated_response_measure::Color::green;
+        trial.correctColor = av_coordinate_response_measure::Color::green;
+        trial.subjectColor = av_coordinate_response_measure::Color::green;
         file.writeTrial(trial);
         EXPECT_TRUE(writer.written().contains(" correct, "));
     }
@@ -154,13 +154,13 @@ namespace {
 
     TEST_F(OutputFileTests, writeTestWithAvCondition) {
         assertWriterContainsConditionName(
-            av_coordinated_response_measure::Condition::audioVisual
+            av_coordinate_response_measure::Condition::audioVisual
         );
     }
 
     TEST_F(OutputFileTests, writeTestWithAuditoryOnlyCondition) {
         assertWriterContainsConditionName(
-            av_coordinated_response_measure::Condition::auditoryOnly
+            av_coordinate_response_measure::Condition::auditoryOnly
         );
     }
 
@@ -173,7 +173,7 @@ namespace {
     }
 
     TEST_F(OutputFileTests, colorNameUninitializedColorDefined) {
-        av_coordinated_response_measure::Trial uninitialized;
+        av_coordinate_response_measure::Trial uninitialized;
         file.writeTrial(uninitialized);
     }
 
@@ -204,7 +204,7 @@ namespace {
         assertEqual("a", path.testParameters().testerId);
     }
     
-    class FailingWriter : public av_coordinated_response_measure::Writer {
+    class FailingWriter : public av_coordinate_response_measure::Writer {
         bool failed_{};
     public:
         void write(std::string) override {
@@ -228,12 +228,12 @@ namespace {
     ) {
         FailingWriter writer{};
         OutputFilePathStub path{};
-        av_coordinated_response_measure::OutputFileImpl file{&writer, &path};
+        av_coordinate_response_measure::OutputFileImpl file{&writer, &path};
         try {
             file.openNewFile({});
             FAIL() << "Expected OutputFileImpl::OpenFailure";
         }
-        catch (const av_coordinated_response_measure::OutputFileImpl::OpenFailure &) {
+        catch (const av_coordinate_response_measure::OutputFileImpl::OpenFailure &) {
         }
     }
 }

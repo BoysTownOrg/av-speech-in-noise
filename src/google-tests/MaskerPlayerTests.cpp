@@ -129,7 +129,7 @@ namespace {
     };
     
     class MaskerPlayerListenerStub :
-        public av_coordinated_response_measure::MaskerPlayer::EventListener
+        public av_coordinate_response_measure::MaskerPlayer::EventListener
     {
         int fadeInCompletions_{};
         int fadeOutCompletions_{};
@@ -457,7 +457,7 @@ namespace {
         try {
             player.setAudioDevice("third");
             FAIL() << "Expected recognition_test::InvalidAudioDevice";
-        } catch(const av_coordinated_response_measure::InvalidAudioDevice &) {
+        } catch(const av_coordinate_response_measure::InvalidAudioDevice &) {
         
         }
     }

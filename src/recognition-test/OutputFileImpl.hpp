@@ -1,9 +1,9 @@
-#ifndef av_coordinated_response_measure_OutputFileImpl_hpp
-#define av_coordinated_response_measure_OutputFileImpl_hpp
+#ifndef av_coordinate_response_measure_OutputFileImpl_hpp
+#define av_coordinate_response_measure_OutputFileImpl_hpp
 
 #include "RecognitionTestModel.hpp"
 
-namespace av_coordinated_response_measure {
+namespace av_coordinate_response_measure {
     class Writer {
     public:
         virtual ~Writer() = default;
@@ -17,7 +17,7 @@ namespace av_coordinated_response_measure {
     public:
         virtual ~OutputFilePath() = default;
         virtual std::string generateFileName(
-            const av_coordinated_response_measure::Test &
+            const av_coordinate_response_measure::Test &
         ) = 0;
         virtual std::string homeDirectory() = 0;
         virtual std::string outputDirectory() = 0;
@@ -28,20 +28,20 @@ namespace av_coordinated_response_measure {
         OutputFilePath *path;
     public:
         OutputFileImpl(Writer *, OutputFilePath *);
-        void writeTest(const av_coordinated_response_measure::Test &) override;
-        void writeTrial(const av_coordinated_response_measure::Trial &) override;
+        void writeTest(const av_coordinate_response_measure::Test &) override;
+        void writeTrial(const av_coordinate_response_measure::Trial &) override;
         void writeTrialHeading() override;
-        void openNewFile(const av_coordinated_response_measure::Test &) override;
+        void openNewFile(const av_coordinate_response_measure::Test &) override;
         void close() override;
         
     private:
         void write(std::string);
-        std::string evaluation(const av_coordinated_response_measure::Trial &);
-        std::string formatTest(const av_coordinated_response_measure::Test &);
-        std::string formatTrial(const av_coordinated_response_measure::Trial &);
+        std::string evaluation(const av_coordinate_response_measure::Trial &);
+        std::string formatTest(const av_coordinate_response_measure::Test &);
+        std::string formatTrial(const av_coordinate_response_measure::Trial &);
         std::string formatTrialHeading();
-        std::string generateNewFilePath(const av_coordinated_response_measure::Test &);
-        std::string colorName(av_coordinated_response_measure::Color);
+        std::string generateNewFilePath(const av_coordinate_response_measure::Test &);
+        std::string colorName(av_coordinate_response_measure::Color);
     };
 }
 

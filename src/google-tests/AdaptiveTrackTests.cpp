@@ -4,9 +4,9 @@
 namespace {
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
-        av_coordinated_response_measure::AdaptiveTrack::Settings parameters{};
-        av_coordinated_response_measure::Rule rule;
-        av_coordinated_response_measure::AdaptiveTrack track{};
+        av_coordinate_response_measure::AdaptiveTrack::Settings parameters{};
+        av_coordinate_response_measure::Rule rule;
+        av_coordinate_response_measure::AdaptiveTrack track{};
         
         AdaptiveTrackTests() {
             rule.resize(3);

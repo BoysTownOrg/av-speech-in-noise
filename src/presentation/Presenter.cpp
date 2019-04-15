@@ -3,14 +3,14 @@
 namespace presentation {
     int Presenter::fullScaleLevel_dB_SPL = 119;
     
-    av_coordinated_response_measure::Rule
+    av_coordinate_response_measure::Rule
         Presenter::targetLevelRule = {
             { 2, 4, 1, 1 },
             { 6, 2, 1, 1 }
         };
     
     Presenter::Presenter(
-        av_coordinated_response_measure::Model *model,
+        av_coordinate_response_measure::Model *model,
         View *view,
         TestSetup *testSetup,
         Tester *tester,
@@ -81,7 +81,7 @@ namespace presentation {
     
     void Presenter::playTrial() {
         hideNextTrialButton();
-        av_coordinated_response_measure::AudioSettings p;
+        av_coordinate_response_measure::AudioSettings p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
     }
@@ -165,7 +165,7 @@ namespace presentation {
     Presenter::TestSetup::TestSetup(View::TestSetup *view) :
         view{view}
     {
-        using av_coordinated_response_measure::Condition;
+        using av_coordinate_response_measure::Condition;
         view->populateConditionMenu({
             conditionName(Condition::audioVisual),
             conditionName(Condition::auditoryOnly)
@@ -177,10 +177,10 @@ namespace presentation {
         view->show();
     }
     
-    av_coordinated_response_measure::Test
+    av_coordinate_response_measure::Test
         Presenter::TestSetup::testParameters()
     {
-        av_coordinated_response_measure::Test p;
+        av_coordinate_response_measure::Test p;
         p.startingSnr_dB =
             readInteger(view->startingSnr_dB(), "SNR");
         p.maskerLevel_dB_SPL = readMaskerLevel();
@@ -190,8 +190,8 @@ namespace presentation {
         p.testerId = view->testerId();
         p.session = view->session();
         p.condition = auditoryOnly()
-            ? av_coordinated_response_measure::Condition::auditoryOnly
-            : av_coordinated_response_measure::Condition::audioVisual;
+            ? av_coordinate_response_measure::Condition::auditoryOnly
+            : av_coordinate_response_measure::Condition::audioVisual;
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         p.targetLevelRule = &targetLevelRule;
         return p;
@@ -208,7 +208,7 @@ namespace presentation {
     
     bool Presenter::TestSetup::auditoryOnly() {
         return view->condition() == conditionName(
-            av_coordinated_response_measure::Condition::auditoryOnly
+            av_coordinate_response_measure::Condition::auditoryOnly
         );
     }
     
@@ -220,10 +220,10 @@ namespace presentation {
         parent->playCalibration();
     }
     
-    av_coordinated_response_measure::Calibration
+    av_coordinate_response_measure::Calibration
         Presenter::TestSetup::calibrationParameters()
     {
-        av_coordinated_response_measure::Calibration p;
+        av_coordinate_response_measure::Calibration p;
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readCalibrationLevel();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
@@ -318,25 +318,25 @@ namespace presentation {
         view->showResponseButtons();
     }
     
-    av_coordinated_response_measure::SubjectResponse
+    av_coordinate_response_measure::SubjectResponse
         Presenter::Subject::subjectResponse()
     {
-        av_coordinated_response_measure::SubjectResponse p;
+        av_coordinate_response_measure::SubjectResponse p;
         p.color = colorResponse();
         p.number = std::stoi(view->numberResponse());
         return p;
     }
     
-    av_coordinated_response_measure::Color Presenter::Subject::colorResponse() {
-        av_coordinated_response_measure::Color color;
+    av_coordinate_response_measure::Color Presenter::Subject::colorResponse() {
+        av_coordinate_response_measure::Color color;
         if (view->greenResponse())
-            color = av_coordinated_response_measure::Color::green;
+            color = av_coordinate_response_measure::Color::green;
         else if (view->blueResponse())
-            color = av_coordinated_response_measure::Color::blue;
+            color = av_coordinate_response_measure::Color::blue;
         else if (view->grayResponse())
-            color = av_coordinated_response_measure::Color::gray;
+            color = av_coordinate_response_measure::Color::gray;
         else
-            color = av_coordinated_response_measure::Color::red;
+            color = av_coordinate_response_measure::Color::red;
         return color;
     }
 }

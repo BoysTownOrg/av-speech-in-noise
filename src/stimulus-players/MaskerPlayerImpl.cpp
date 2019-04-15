@@ -52,7 +52,7 @@ namespace stimulus_players {
             device
         );
         if (found == devices_.end())
-            throw av_coordinated_response_measure::InvalidAudioDevice{};
+            throw av_coordinate_response_measure::InvalidAudioDevice{};
         return gsl::narrow<int>(found - devices_.begin());
     }
     

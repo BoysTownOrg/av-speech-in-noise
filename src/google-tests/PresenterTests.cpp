@@ -14,11 +14,11 @@ namespace {
         }
     };
     
-    class ModelStub : public av_coordinated_response_measure::Model {
-        av_coordinated_response_measure::Test testParameters_{};
-        av_coordinated_response_measure::Calibration calibrationParameters_{};
-        av_coordinated_response_measure::AudioSettings trialParameters_{};
-        av_coordinated_response_measure::SubjectResponse responseParameters_{};
+    class ModelStub : public av_coordinate_response_measure::Model {
+        av_coordinate_response_measure::Test testParameters_{};
+        av_coordinate_response_measure::Calibration calibrationParameters_{};
+        av_coordinate_response_measure::AudioSettings trialParameters_{};
+        av_coordinate_response_measure::SubjectResponse responseParameters_{};
         std::vector<std::string> audioDevices_{};
         EventListener *listener_{};
         bool testComplete_{};
@@ -52,12 +52,12 @@ namespace {
             return testComplete_;
         }
         
-        void playTrial(const av_coordinated_response_measure::AudioSettings &p) override {
+        void playTrial(const av_coordinate_response_measure::AudioSettings &p) override {
             trialParameters_ = p;
             trialPlayed_ = true;
         }
         
-        void initializeTest(const av_coordinated_response_measure::Test &p) override {
+        void initializeTest(const av_coordinate_response_measure::Test &p) override {
             testParameters_ = p;
         }
         
@@ -65,7 +65,7 @@ namespace {
             return audioDevices_;
         }
         
-        void submitResponse(const av_coordinated_response_measure::SubjectResponse &p) override {
+        void submitResponse(const av_coordinate_response_measure::SubjectResponse &p) override {
             responseParameters_ = p;
         }
         
@@ -73,7 +73,7 @@ namespace {
             listener_ = listener;
         }
         
-        void playCalibration(const av_coordinated_response_measure::Calibration &p) override {
+        void playCalibration(const av_coordinate_response_measure::Calibration &p) override {
             calibrationParameters_ = p;
         }
         
@@ -579,13 +579,13 @@ namespace {
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
-                av_coordinated_response_measure::Condition::auditoryOnly
+                av_coordinate_response_measure::Condition::auditoryOnly
             );
         }
         
         std::string audioVisualConditionName() {
             return conditionName(
-                av_coordinated_response_measure::Condition::audioVisual
+                av_coordinate_response_measure::Condition::audioVisual
             );
         }
         
@@ -712,7 +712,7 @@ namespace {
             return view.errorMessage();
         }
         
-        void assertModelPassedCondition(av_coordinated_response_measure::Color c) {
+        void assertModelPassedCondition(av_coordinate_response_measure::Color c) {
             EXPECT_EQ(c, model.responseParameters().color);
         }
         
@@ -724,13 +724,13 @@ namespace {
             view.setDialogResponse(r);
         }
         
-        const av_coordinated_response_measure::Test &
+        const av_coordinate_response_measure::Test &
             modelTestParameters()
         {
             return model.testParameters();
         }
         
-        const av_coordinated_response_measure::Calibration &
+        const av_coordinate_response_measure::Calibration &
             modelCalibrationParameters()
         {
             return model.calibrationParameters();
@@ -844,7 +844,7 @@ namespace {
         setCondition(audioVisualConditionName());
         confirmTestSetup();
         EXPECT_EQ(
-            av_coordinated_response_measure::Condition::audioVisual,
+            av_coordinate_response_measure::Condition::audioVisual,
             modelTestParameters().condition
         );
     }
@@ -853,7 +853,7 @@ namespace {
         setCondition(auditoryOnlyConditionName());
         confirmTestSetup();
         EXPECT_EQ(
-            av_coordinated_response_measure::Condition::auditoryOnly,
+            av_coordinate_response_measure::Condition::auditoryOnly,
             modelTestParameters().condition
         );
     }
@@ -917,25 +917,25 @@ namespace {
     TEST_F(PresenterTests, subjectResponsePassesGreenColor) {
         subjectView.setGreenResponse();
         submitResponse();
-        assertModelPassedCondition(av_coordinated_response_measure::Color::green);
+        assertModelPassedCondition(av_coordinate_response_measure::Color::green);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesRedColor) {
         subjectView.setRedResponse();
         submitResponse();
-        assertModelPassedCondition(av_coordinated_response_measure::Color::red);
+        assertModelPassedCondition(av_coordinate_response_measure::Color::red);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesBlueColor) {
         subjectView.setBlueResponse();
         submitResponse();
-        assertModelPassedCondition(av_coordinated_response_measure::Color::blue);
+        assertModelPassedCondition(av_coordinate_response_measure::Color::blue);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesGrayColor) {
         subjectView.setGrayResponse();
         submitResponse();
-        assertModelPassedCondition(av_coordinated_response_measure::Color::gray);
+        assertModelPassedCondition(av_coordinate_response_measure::Color::gray);
     }
 
     TEST_F(PresenterTests, submitResponseDoesNotHideTesterViewWhileTestInProgress) {
@@ -1024,26 +1024,26 @@ namespace {
         assertResponseButtonsShown();
     }
 
-    class RequestFailingModel : public av_coordinated_response_measure::Model {
+    class RequestFailingModel : public av_coordinate_response_measure::Model {
         std::string errorMessage{};
     public:
         void setErrorMessage(std::string s) {
             errorMessage = std::move(s);
         }
         
-        void initializeTest(const av_coordinated_response_measure::Test &) override {
+        void initializeTest(const av_coordinate_response_measure::Test &) override {
             throw RequestFailure{errorMessage};
         }
         
-        void playTrial(const av_coordinated_response_measure::AudioSettings &) override {
+        void playTrial(const av_coordinate_response_measure::AudioSettings &) override {
             throw RequestFailure{errorMessage};
         }
         
-        void submitResponse(const av_coordinated_response_measure::SubjectResponse &) override {
+        void submitResponse(const av_coordinate_response_measure::SubjectResponse &) override {
             throw RequestFailure{errorMessage};
         }
         
-        void playCalibration(const av_coordinated_response_measure::Calibration &) override {
+        void playCalibration(const av_coordinate_response_measure::Calibration &) override {
             throw RequestFailure{errorMessage};
         }
         
@@ -1056,7 +1056,7 @@ namespace {
     protected:
         RequestFailingModel failure{};
         ModelStub defaultModel{};
-        av_coordinated_response_measure::Model *model{&defaultModel};
+        av_coordinate_response_measure::Model *model{&defaultModel};
         ViewStub view{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};

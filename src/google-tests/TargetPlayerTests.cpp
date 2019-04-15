@@ -113,7 +113,7 @@ namespace {
     };
     
     class TargetPlayerListenerStub :
-        public av_coordinated_response_measure::TargetPlayer::EventListener
+        public av_coordinate_response_measure::TargetPlayer::EventListener
     {
         bool notified_{};
     public:
@@ -194,7 +194,7 @@ namespace {
         try {
             player.setAudioDevice("third");
             FAIL() << "Expected recognition_test::InvalidAudioDevice";
-        } catch(const av_coordinated_response_measure::InvalidAudioDevice &) {
+        } catch(const av_coordinate_response_measure::InvalidAudioDevice &) {
         
         }
     }

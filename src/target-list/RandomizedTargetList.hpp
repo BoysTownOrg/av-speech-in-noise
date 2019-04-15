@@ -19,7 +19,7 @@ namespace target_list {
         virtual void shuffle(shuffle_iterator begin, shuffle_iterator end) = 0;
     };
 
-    class RandomizedTargetList : public av_coordinated_response_measure::TargetList {
+    class RandomizedTargetList : public av_coordinate_response_measure::TargetList {
         std::vector<std::string> files{};
         std::string directory_{};
         DirectoryReader *reader;

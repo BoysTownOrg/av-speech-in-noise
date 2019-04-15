@@ -1,10 +1,10 @@
-#ifndef av_coordinated_response_measure_RecognitionTestModel_hpp
-#define av_coordinated_response_measure_RecognitionTestModel_hpp
+#ifndef av_coordinate_response_measure_RecognitionTestModel_hpp
+#define av_coordinate_response_measure_RecognitionTestModel_hpp
 
-#include <av-coordinated-response-measure/Model.h>
+#include <av-coordinate-response-measure/Model.h>
 #include <vector>
 
-namespace av_coordinated_response_measure {
+namespace av_coordinate_response_measure {
     class InvalidAudioDevice {};
     
     class TargetPlayer {

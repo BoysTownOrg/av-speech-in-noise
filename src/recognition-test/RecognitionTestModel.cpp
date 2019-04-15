@@ -2,7 +2,7 @@
 #include <gsl/gsl>
 #include <cmath>
 
-namespace av_coordinated_response_measure {
+namespace av_coordinate_response_measure {
     RecognitionTestModel::RecognitionTestModel(
         TargetList *targetList,
         TargetPlayer *targetPlayer,

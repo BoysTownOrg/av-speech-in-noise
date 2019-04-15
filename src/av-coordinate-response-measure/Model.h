@@ -10,7 +10,7 @@
         explicit class_name(std::string s) : std::runtime_error{ s } {}\
 };
 
-namespace av_coordinated_response_measure {
+namespace av_coordinate_response_measure {
     enum class Color {
         green,
         red,
