@@ -480,12 +480,12 @@ namespace {
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
         OutputFileStub outputFile{};
-        TrackStub track{};
+        TrackStub snrTrack{};
         recognition_test::RecognitionTestModel model{
             &targetList,
             &targetPlayer,
             &maskerPlayer,
-            &track,
+            &snrTrack,
             &outputFile
         };
         ModelEventListenerStub listener{};
@@ -859,13 +859,22 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestResetsSnrTrack
+        initializeTestResetsSnrTrackWithTargetLevelRule
     ) {
         initializeTest();
         EXPECT_EQ(
             initializingTest.targetLevelRule(),
-            track.settings().rule
+            snrTrack.settings().rule
         );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestResetsSnrTrackWithStartingSnr
+    ) {
+        initializingTest.setStartingSnr_dB(1);
+        initializeTest();
+        EXPECT_EQ(1, snrTrack.settings().startingX);
     }
 
     TEST_F(
