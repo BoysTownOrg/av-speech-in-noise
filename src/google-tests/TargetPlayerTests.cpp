@@ -25,16 +25,8 @@ namespace {
             return playing_;
         }
         
-        auto audioFilePath() const {
-            return audioFilePath_;
-        }
-        
         auto playbackCompletionSubscribedTo() const {
             return playbackCompletionSubscribedTo_;
-        }
-        
-        void setAudioRead(std::vector<std::vector<float>> x) {
-            audioRead_ = std::move(x);
         }
         
         int deviceCount() override {
@@ -125,13 +117,30 @@ namespace {
             return notified_;
         }
     };
+    
+    class AudioReaderStub : public stimulus_players::AudioReader {
+        std::vector<std::vector<float>> toRead_{};
+        std::string filePath_{};
+    public:
+        void set(std::vector<std::vector<float>> x) {
+            toRead_ = std::move(x);
+        }
+        std::vector<std::vector<float> > read(std::string filePath) override {
+            filePath_ = std::move(filePath);
+            return toRead_;
+        }
+        auto filePath() const {
+            return filePath_;
+        }
+    };
 
     class TargetPlayerTests : public ::testing::Test {
     protected:
         std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
         TargetPlayerListenerStub listener;
-        stimulus_players::TargetPlayerImpl player{&videoPlayer};
+        AudioReaderStub audioReader{};
+        stimulus_players::TargetPlayerImpl player{&videoPlayer, &audioReader};
         
         TargetPlayerTests() {
             player.subscribe(&listener);
@@ -205,7 +214,7 @@ namespace {
     }
 
     TEST_F(TargetPlayerTests, rmsComputesFirstChannel) {
-        videoPlayer.setAudioRead({
+        audioReader.set({
             { 1, 2, 3 },
             { 4, 5, 6 },
             { 7, 8, 9 }
@@ -216,7 +225,7 @@ namespace {
     TEST_F(TargetPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
         player.loadFile("a");
         player.rms();
-        assertEqual("a", videoPlayer.audioFilePath());
+        assertEqual("a", audioReader.filePath());
     }
 
     TEST_F(

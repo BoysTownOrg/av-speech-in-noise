@@ -1,6 +1,7 @@
 #ifndef stimulus_players_StimulusPlayerImpl_hpp
 #define stimulus_players_StimulusPlayerImpl_hpp
 
+#include "AudioReader.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
 #include <vector>
@@ -37,9 +38,10 @@ namespace stimulus_players {
         std::string filePath_{};
         std::atomic<double> audioScale{};
         VideoPlayer *player;
+        AudioReader *reader;
         TargetPlayer::EventListener *listener_{};
     public:
-        TargetPlayerImpl(VideoPlayer *);
+        TargetPlayerImpl(VideoPlayer *, AudioReader *);
         void subscribe(TargetPlayer::EventListener *) override;
         void play() override;
         void loadFile(std::string filePath) override;
