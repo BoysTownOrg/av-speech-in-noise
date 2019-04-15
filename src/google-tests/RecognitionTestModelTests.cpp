@@ -388,6 +388,10 @@ namespace {
         void run(recognition_test::RecognitionTestModel &m) override {
             m.playCalibration(calibration);
         }
+        
+        void setFilePath(std::string s) {
+            calibration.filePath = std::move(s);
+        }
     };
 
     class RecognitionTestModelTests : public ::testing::Test {
@@ -703,8 +707,8 @@ namespace {
         RecognitionTestModelTests,
         playCalibrationPassesAudioFileToTargetPlayer
     ) {
-        calibration.filePath = "a";
-        model.playCalibration(calibration);
+        playingCalibration.setFilePath("a");
+        playCalibration();
         assertEqual("a", targetPlayer.filePath());
     }
 
