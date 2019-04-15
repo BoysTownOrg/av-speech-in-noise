@@ -21,6 +21,7 @@ namespace target_list {
     std::string RandomizedTargetList::next() {
         auto next_ = files.front();
         files.erase(files.begin());
+        randomizer->shuffle(files.begin(), files.end());
         return directory_ + "/" + next_;
     }
     

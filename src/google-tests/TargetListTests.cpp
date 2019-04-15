@@ -44,14 +44,6 @@ namespace {
             list.loadFromDirectory(std::move(s));
         }
         
-        void assertListNotEmpty() {
-            EXPECT_FALSE(list.empty());
-        }
-        
-        void assertListEmpty() {
-            EXPECT_TRUE(list.empty());
-        }
-        
         auto next() {
             return list.next();
         }
@@ -71,17 +63,21 @@ namespace {
 
     TEST_F(
         TargetListTests,
-        testCompleteWhenStimulusFilesExhausted
+        loadFromDirectoryShufflesFileNames
     ) {
         setFileNames({ "a", "b", "c" });
         loadFromDirectory();
-        assertListNotEmpty();
+        assertEqual({ "a", "b", "c" }, randomizer.toShuffle());
+    }
+
+    TEST_F(
+        TargetListTests,
+        nextShufflesNextSetNotIncludingCurrent
+    ) {
+        setFileNames({ "a", "b", "c", "d" });
+        loadFromDirectory();
         next();
-        assertListNotEmpty();
-        next();
-        assertListNotEmpty();
-        next();
-        assertListEmpty();
+        assertEqual({ "b", "c", "d" }, randomizer.toShuffle());
     }
 
     TEST_F(
@@ -93,15 +89,6 @@ namespace {
         assertEqual("C:/a", next());
         assertEqual("C:/b", next());
         assertEqual("C:/c", next());
-    }
-
-    TEST_F(
-        TargetListTests,
-        loadFromDirectoryShufflesFileNames
-    ) {
-        setFileNames({ "a", "b", "c" });
-        loadFromDirectory();
-        assertEqual({ "a", "b", "c" }, randomizer.toShuffle());
     }
     
     class FileFilterDecoratorTests : public ::testing::Test {
