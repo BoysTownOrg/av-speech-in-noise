@@ -38,9 +38,21 @@ namespace recognition_test {
         outputFile->writeTrialHeading();
     }
     
+    void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {
+        try {
+            outputFile->openNewFile(p);
+        } catch (const OutputFile::OpenFailure &) {
+            throw RequestFailure{"Unable to open output file."};
+        }
+    }
+    
     void RecognitionTestModel::prepareMasker(const Test &p) {
         loadMaskerFile(p);
         maskerPlayer->setLevel_dB(maskerLevel_dB());
+    }
+    
+    void RecognitionTestModel::loadMaskerFile(const Test &p) {
+        maskerPlayer->loadFile(p.maskerFilePath);
     }
     
     static double dB(double x) {
@@ -53,16 +65,10 @@ namespace recognition_test {
             dB(maskerPlayer->rms());
     }
     
-    void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {
-        try {
-            outputFile->openNewFile(p);
-        } catch (const OutputFile::OpenFailure &) {
-            throw RequestFailure{"Unable to open output file."};
-        }
-    }
-    
-    void RecognitionTestModel::loadMaskerFile(const Test &p) {
-        maskerPlayer->loadFile(p.maskerFilePath);
+    int RecognitionTestModel::desiredMaskerLevel_dB() {
+        return
+            test.maskerLevel_dB_SPL -
+            test.fullScaleLevel_dB_SPL;
     }
     
     void RecognitionTestModel::loadStimulusList(const Test &p) {
@@ -135,25 +141,27 @@ namespace recognition_test {
     
     void RecognitionTestModel::loadNextTarget() {
         loadTargetFile(targetList->next());
-        setTargetLevel_dB(signalLevel_dB());
+        setTargetLevel_dB(targetLevel_dB());
         targetPlayer->subscribeToPlaybackCompletion();
+    }
+    
+    void RecognitionTestModel::loadTargetFile(std::string s) {
+        targetPlayer->loadFile(std::move(s));;
+    }
+    
+    void RecognitionTestModel::setTargetLevel_dB(double x) {
+        targetPlayer->setLevel_dB(x);
+    }
+    
+    double RecognitionTestModel::targetLevel_dB() {
+        return
+            desiredMaskerLevel_dB() +
+            test.startingSnr_dB -
+            dB(targetPlayer->rms());
     }
     
     void RecognitionTestModel::startTrial() {
         maskerPlayer->fadeIn();
-    }
-    
-    double RecognitionTestModel::signalLevel_dB() {
-        return
-            desiredMaskerLevel_dB() -
-            dB(targetPlayer->rms()) +
-            test.startingSnr_dB;
-    }
-    
-    int RecognitionTestModel::desiredMaskerLevel_dB() {
-        return
-            test.maskerLevel_dB_SPL -
-            test.fullScaleLevel_dB_SPL;
     }
     
     void RecognitionTestModel::fadeInComplete() {
@@ -194,14 +202,6 @@ namespace recognition_test {
             dB(targetPlayer->rms())
         );
         targetPlayer->play();
-    }
-    
-    void RecognitionTestModel::loadTargetFile(std::string s) {
-        targetPlayer->loadFile(std::move(s));;
-    }
-    
-    void RecognitionTestModel::setTargetLevel_dB(double x) {
-        targetPlayer->setLevel_dB(x);
     }
 
     bool RecognitionTestModel::testComplete() {

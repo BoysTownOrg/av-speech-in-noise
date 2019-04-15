@@ -120,7 +120,7 @@ namespace recognition_test {
         bool auditoryOnly(const Test &);
         void prepareVideo(const Test &);
         int desiredMaskerLevel_dB();
-        double signalLevel_dB();
+        double targetLevel_dB();
         double maskerLevel_dB();
         void setTargetPlayerDevice(const std::string &);
         void setAudioDevices(const std::string &);
