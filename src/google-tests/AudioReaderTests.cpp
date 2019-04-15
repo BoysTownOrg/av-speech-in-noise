@@ -93,7 +93,7 @@ namespace {
         }
     }
     
-    TEST_F(AudioReaderTests, readConcatenatesNormalizedBuffersPartTwo) {
+    TEST_F(AudioReaderTests, readConcatenatesNormalizedBuffers) {
         bufferedReader.setBuffers({{
             { 1, 2, 3 },
             { 4, 5, 6 },
@@ -108,12 +108,11 @@ namespace {
             { 25, 26, 27 }
         }});
         bufferedReader.setMinimumPossibleSample(-3);
-        std::vector<std::vector<float>> x = {
-            { 1.f/-3, 2.f/-3, 3.f/-3, 10.f/-3, 11.f/-3, 12.f/-3, 19.f/-3, 20.f/-3, 21.f/-3 },
-            { 4.f/-3, 5.f/-3, 6.f/-3, 13.f/-3, 14.f/-3, 15.f/-3, 22.f/-3, 23.f/-3, 24.f/-3 },
-            { 7.f/-3, 8.f/-3, 9.f/-3, 16.f/-3, 17.f/-3, 18.f/-3, 25.f/-3, 26.f/-3, 27.f/-3 }
-        };
-        assertEqual(x,
+        assertEqual({
+                { 1.f/-3, 2.f/-3, 3.f/-3, 10.f/-3, 11.f/-3, 12.f/-3, 19.f/-3, 20.f/-3, 21.f/-3 },
+                { 4.f/-3, 5.f/-3, 6.f/-3, 13.f/-3, 14.f/-3, 15.f/-3, 22.f/-3, 23.f/-3, 24.f/-3 },
+                { 7.f/-3, 8.f/-3, 9.f/-3, 16.f/-3, 17.f/-3, 18.f/-3, 25.f/-3, 26.f/-3, 27.f/-3 }
+            },
             reader.read({})
         );
     }
