@@ -1,6 +1,7 @@
 #ifndef players_RandomizedMaskerPlayer_hpp
 #define players_RandomizedMaskerPlayer_hpp
 
+#include "AudioReader.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
 
@@ -40,6 +41,7 @@ namespace stimulus_players {
         int hannCounter{};
         int halfWindowLength{};
         AudioPlayer *player;
+        AudioReader *reader;
         MaskerPlayer::EventListener *listener{};
         bool fadingOut{};
         bool fadingIn{};
@@ -48,7 +50,7 @@ namespace stimulus_players {
         std::atomic<bool> pleaseFadeOut{};
         std::atomic<bool> pleaseFadeIn{};
     public:
-        MaskerPlayerImpl(AudioPlayer *);
+        MaskerPlayerImpl(AudioPlayer *, AudioReader *);
         void subscribe(MaskerPlayer::EventListener *) override;
         void fadeIn() override;
         void fadeOut() override;

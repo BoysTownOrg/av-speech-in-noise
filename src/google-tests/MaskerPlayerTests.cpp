@@ -1,3 +1,4 @@
+#include "AudioReaderStub.h"
 #include "assert-utility.h"
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
@@ -21,14 +22,6 @@ namespace {
         bool stopped_{};
         bool callbackScheduled_{};
     public:
-        auto audioFilePath() const {
-            return audioFilePath_;
-        }
-        
-        void setAudioRead(std::vector<std::vector<float>> x) {
-            audioRead_ = std::move(x);
-        }
-        
         bool outputDevice(int index) override {
             return outputDevices[index];
         }
@@ -169,7 +162,8 @@ namespace {
         std::vector<float> rightChannel{};
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
-        stimulus_players::MaskerPlayerImpl player{&audioPlayer};
+        AudioReaderStub audioReader;
+        stimulus_players::MaskerPlayerImpl player{&audioPlayer, &audioReader};
         
         MaskerPlayerTests() {
             player.subscribe(&listener);
@@ -470,7 +464,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, rmsComputesFirstChannel) {
-        audioPlayer.setAudioRead({
+        audioReader.set({
             { 1, 2, 3 },
             { 4, 5, 6 },
             { 7, 8, 9 }
@@ -481,6 +475,6 @@ namespace {
     TEST_F(MaskerPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
         player.loadFile("a");
         player.rms();
-        assertEqual("a", audioPlayer.audioFilePath());
+        assertEqual("a", audioReader.filePath());
     }
 }

@@ -1,3 +1,4 @@
+#include "AudioReaderStub.h"
 #include "assert-utility.h"
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <gtest/gtest.h>
@@ -115,22 +116,6 @@ namespace {
         
         auto notified() const {
             return notified_;
-        }
-    };
-    
-    class AudioReaderStub : public stimulus_players::AudioReader {
-        std::vector<std::vector<float>> toRead_{};
-        std::string filePath_{};
-    public:
-        void set(std::vector<std::vector<float>> x) {
-            toRead_ = std::move(x);
-        }
-        std::vector<std::vector<float> > read(std::string filePath) override {
-            filePath_ = std::move(filePath);
-            return toRead_;
-        }
-        auto filePath() const {
-            return filePath_;
         }
     };
 

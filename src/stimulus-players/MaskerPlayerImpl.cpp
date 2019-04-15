@@ -2,8 +2,13 @@
 #include <cmath>
 
 namespace stimulus_players {
-    MaskerPlayerImpl::MaskerPlayerImpl(AudioPlayer *player)
-        : player{player}
+    MaskerPlayerImpl::MaskerPlayerImpl(
+        AudioPlayer *player,
+        AudioReader *reader
+    ) :
+        player{player},
+        reader{reader}
+    
     {
         player->subscribe(this);
     }
@@ -69,7 +74,7 @@ namespace stimulus_players {
     }
 
     double MaskerPlayerImpl::rms() {
-        auto audio = player->readAudio(filePath_);
+        auto audio = reader->read(filePath_);
         if (audio.size() == 0)
             return 0;
         
