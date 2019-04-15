@@ -386,6 +386,10 @@ namespace {
             test.maskerLevel_dB_SPL = x;
         }
         
+        void setStartingSnr_dB(int x) {
+            test.startingSnr_dB = x;
+        }
+        
         void setFullScaleLevel_dB_SPL(int x) {
             test.fullScaleLevel_dB_SPL = x;
         }
@@ -434,7 +438,6 @@ namespace {
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
-        recognition_test::RecognitionTestModel::Test test;
         recognition_test::RecognitionTestModel::Calibration calibration;
         recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
         TargetListStub targetList{};
@@ -820,9 +823,9 @@ namespace {
         RecognitionTestModelTests,
         playTrialSetsTargetPlayerLevel
     ) {
-        test.startingSnr_dB = 1;
-        test.maskerLevel_dB_SPL = 2;
-        test.fullScaleLevel_dB_SPL = 3;
+        initializingTest.setStartingSnr_dB(1);
+        initializingTest.setMaskerLevel_dB_SPL(2);
+        initializingTest.setFullScaleLevel_dB_SPL(3);
         targetPlayer.setRms(4);
         initializeTest();
         playTrial();
