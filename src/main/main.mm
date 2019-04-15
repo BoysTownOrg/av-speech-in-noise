@@ -6,6 +6,7 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
+#include <recognition-test/AdaptiveTrack.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <target-list/RandomizedTargetList.hpp>
 #include <target-list/FileFilterDecorator.hpp>
@@ -26,7 +27,7 @@ class MacOsDirectoryReader : public target_list::DirectoryReader {
     }
 };
 
-class FileWriter : public recognition_test::Writer {
+class FileWriter : public av_coordinate_response_measure::Writer {
     std::ofstream file{};
 public:
     void write(std::string s) override {
@@ -46,7 +47,7 @@ public:
     }
 };
 
-class UnixFileSystemPath : public recognition_test::FileSystemPath {
+class UnixFileSystemPath : public av_coordinate_response_measure::FileSystemPath {
     std::string homeDirectory() override {
         return std::getenv("HOME");
     }
@@ -56,7 +57,7 @@ class UnixFileSystemPath : public recognition_test::FileSystemPath {
     }
 };
 
-class TimeStampImpl : public recognition_test::TimeStamp {
+class TimeStampImpl : public av_coordinate_response_measure::TimeStamp {
     tm dummyTime{};
     tm *time{&dummyTime};
 public:
@@ -106,13 +107,15 @@ int main() {
     FileWriter writer;
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
-    recognition_test::OutputFilePathImpl path{&timeStamp, &systemPath};
+    av_coordinate_response_measure::OutputFilePathImpl path{&timeStamp, &systemPath};
     path.setRelativeOutputDirectory("Documents/AVCoordinatedResponseMeasureResults");
-    recognition_test::OutputFileImpl outputFile{&writer, &path};
-    recognition_test::RecognitionTestModel model{
+    av_coordinate_response_measure::OutputFileImpl outputFile{&writer, &path};
+    av_coordinate_response_measure::AdaptiveTrack snrTrack{};
+    av_coordinate_response_measure::RecognitionTestModel model{
         &list,
         &targetPlayer,
         &maskerPlayer,
+        &snrTrack,
         &outputFile
     };
     CocoaTestSetupView testSetupView{};

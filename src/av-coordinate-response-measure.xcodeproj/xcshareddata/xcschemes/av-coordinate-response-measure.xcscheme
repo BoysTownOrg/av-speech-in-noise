@@ -35,7 +35,7 @@
             BlueprintIdentifier = "26B81F2521DEB15700006FCB"
             BuildableName = "av-coordinated-response-measure.app"
             BlueprintName = "av-coordinate-response-measure"
-            ReferencedContainer = "container:av-coordinated-response-measure.xcodeproj">
+            ReferencedContainer = "container:av-coordinate-response-measure.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -58,7 +58,7 @@
             BlueprintIdentifier = "26B81F2521DEB15700006FCB"
             BuildableName = "av-coordinated-response-measure.app"
             BlueprintName = "av-coordinate-response-measure"
-            ReferencedContainer = "container:av-coordinated-response-measure.xcodeproj">
+            ReferencedContainer = "container:av-coordinate-response-measure.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
