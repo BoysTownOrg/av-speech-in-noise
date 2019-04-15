@@ -15,7 +15,7 @@ namespace av_coordinated_response_measure {
                 int up;
             };
             using Rule = typename std::vector<RunSequence>;
-            Rule runSequences;
+            const Rule *rule;
             int startingX;
         };
         virtual void reset(const Parameters &) = 0;

@@ -347,6 +347,38 @@ namespace {
         }
     };
     
+    class TrackStub : public av_coordinated_response_measure::Track {
+        Parameters settings_{};
+    public:
+        auto &settings() const {
+            return settings_;
+        }
+        
+        void reset(const Parameters &p) override {
+            settings_ = p;
+        }
+        
+        void pushDown() override {
+        
+        }
+        
+        void pushUp() override {
+            
+        }
+        
+        int x() override {
+            return {};
+        }
+        
+        bool complete() override {
+            return {};
+        }
+        
+        int reversals() override {
+            return {};
+        }
+    };
+    
     class UseCase {
     public:
         virtual ~UseCase() = default;
@@ -392,6 +424,10 @@ namespace {
         
         void setFullScaleLevel_dB_SPL(int x) {
             test.fullScaleLevel_dB_SPL = x;
+        }
+        
+        auto &targetLevelRule() const {
+            return test.targetLevelRule;
         }
     };
     
@@ -444,10 +480,12 @@ namespace {
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
         OutputFileStub outputFile{};
+        TrackStub track{};
         recognition_test::RecognitionTestModel model{
             &targetList,
             &targetPlayer,
             &maskerPlayer,
+            &track,
             &outputFile
         };
         ModelEventListenerStub listener{};
@@ -817,6 +855,17 @@ namespace {
     TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
         maskerPlayer.fadeOutComplete();
         EXPECT_TRUE(listener.notified());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestResetsSnrTrack
+    ) {
+        initializeTest();
+        EXPECT_EQ(
+            &initializingTest.targetLevelRule(),
+            track.settings().rule
+        );
     }
 
     TEST_F(

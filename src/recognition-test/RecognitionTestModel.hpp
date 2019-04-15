@@ -85,6 +85,7 @@ namespace recognition_test {
         MaskerPlayer *maskerPlayer;
         TargetList *targetList;
         TargetPlayer *targetPlayer;
+        av_coordinated_response_measure::Track *snrTrack;
         OutputFile *outputFile;
         Model::EventListener *listener_{};
     public:
@@ -92,6 +93,7 @@ namespace recognition_test {
             TargetList *,
             TargetPlayer *,
             MaskerPlayer *,
+            av_coordinated_response_measure::Track *,
             OutputFile *
         );
         

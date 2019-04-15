@@ -10,11 +10,13 @@ namespace recognition_test {
         previousDirection = Direction::undefined;
         previousStep = Step::undefined;
         stepSizes.clear();
-        for (const auto &sequence : p.runSequences) {
-            stepSizes.push_back(sequence.stepSize);
-            runCounts.push_back(sequence.runCount);
-            up.push_back(sequence.up);
-            down.push_back(sequence.down);
+        for (const auto &sequence : *p.rule) {
+            if (sequence.runCount) {
+                stepSizes.push_back(sequence.stepSize);
+                runCounts.push_back(sequence.runCount);
+                up.push_back(sequence.up);
+                down.push_back(sequence.down);
+            }
         }
         stepSizes.push_back(0);
     }

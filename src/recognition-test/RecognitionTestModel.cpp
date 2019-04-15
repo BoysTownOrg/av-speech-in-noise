@@ -7,11 +7,13 @@ namespace recognition_test {
         TargetList *targetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
+        av_coordinated_response_measure::Track *snrTrack,
         OutputFile *outputFile
     ) :
         maskerPlayer{maskerPlayer},
         targetList{targetList},
         targetPlayer{targetPlayer},
+        snrTrack{snrTrack},
         outputFile{outputFile}
     {
         targetPlayer->subscribe(this);
@@ -25,6 +27,9 @@ namespace recognition_test {
     void RecognitionTestModel::initializeTest(const Test &p) {
         test = p;
         
+        av_coordinated_response_measure::Track::Parameters trackSettings;
+        trackSettings.rule = &p.targetLevelRule;
+        snrTrack->reset(trackSettings);
         prepareOutputFile(p);
         prepareMasker(p);
         loadStimulusList(p);

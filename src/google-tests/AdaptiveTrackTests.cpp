@@ -5,10 +5,17 @@ namespace {
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
         recognition_test::AdaptiveTrack::Parameters parameters{};
-        recognition_test::AdaptiveTrack::Parameters::RunSequence sequence{};
+        recognition_test::AdaptiveTrack::Parameters::Rule rule;
         recognition_test::AdaptiveTrack track{};
         
+        AdaptiveTrackTests() {
+            rule.resize(3);
+            for (auto &sequence : rule)
+                sequence.runCount = 0;
+        }
+        
         void reset() {
+            parameters.rule = &rule;
             track.reset(parameters);
         }
         
@@ -40,11 +47,10 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
         parameters.startingX = 5;
-        sequence.runCount = 3;
-        sequence.stepSize = 4;
-        sequence.up = 1;
-        sequence.down = 2;
-        parameters.runSequences.push_back(sequence);
+        rule.at(0).runCount = 3;
+        rule.at(0).stepSize = 4;
+        rule.at(0).up = 1;
+        rule.at(0).down = 2;
         reset();
         track.pushDown();
         EXPECT_EQ(5, track.x());
@@ -66,11 +72,10 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
         parameters.startingX = 5;
-        sequence.runCount = 3;
-        sequence.stepSize = 4;
-        sequence.up = 1;
-        sequence.down = 2;
-        parameters.runSequences.push_back(sequence);
+        rule.at(0).runCount = 3;
+        rule.at(0).stepSize = 4;
+        rule.at(0).up = 1;
+        rule.at(0).down = 2;
         reset();
         EXPECT_FALSE(track.complete());
         track.pushDown();
@@ -90,11 +95,10 @@ namespace {
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure4) {
         parameters.startingX = 0;
-        sequence.runCount = 8;
-        sequence.stepSize = 1;
-        sequence.down = 1;
-        sequence.up = 1;
-        parameters.runSequences.push_back(sequence);
+        rule.at(0).runCount = 8;
+        rule.at(0).stepSize = 1;
+        rule.at(0).down = 1;
+        rule.at(0).up = 1;
         reset();
         push("dduuuudduuuddddduuudduu");
         EXPECT_EQ(1, track.x());
@@ -103,11 +107,10 @@ namespace {
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure5) {
         parameters.startingX = 0;
-        sequence.runCount = 5;
-        sequence.stepSize = 1;
-        sequence.down = 2;
-        sequence.up = 1;
-        parameters.runSequences.push_back(sequence);
+        rule.at(0).runCount = 5;
+        rule.at(0).stepSize = 1;
+        rule.at(0).down = 2;
+        rule.at(0).up = 1;
         reset();
         push("dddduduududdddduuuddddd");
         EXPECT_EQ(1, track.x());
@@ -115,16 +118,14 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, twoSequences) {
         parameters.startingX = 65;
-        sequence.runCount = 2;
-        sequence.stepSize = 8;
-        sequence.down = 2;
-        sequence.up = 1;
-        parameters.runSequences.push_back(sequence);
-        sequence.runCount = 1;
-        sequence.stepSize = 4;
-        sequence.down = 2;
-        sequence.up = 1;
-        parameters.runSequences.push_back(sequence);
+        rule.at(0).runCount = 2;
+        rule.at(0).stepSize = 8;
+        rule.at(0).down = 2;
+        rule.at(0).up = 1;
+        rule.at(1).runCount = 1;
+        rule.at(1).stepSize = 4;
+        rule.at(1).down = 2;
+        rule.at(1).up = 1;
         reset();
         track.pushDown();
         EXPECT_EQ(65, track.x());
@@ -152,21 +153,18 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, threeSequences) {
         parameters.startingX = 0;
-        sequence.runCount = 1;
-        sequence.stepSize = 10;
-        sequence.down = 3;
-        sequence.up = 1;
-        parameters.runSequences.push_back(sequence);
-        sequence.runCount = 1;
-        sequence.stepSize = 5;
-        sequence.down = 3;
-        sequence.up = 1;
-        parameters.runSequences.push_back(sequence);
-        sequence.runCount = 6;
-        sequence.stepSize = 2;
-        sequence.down = 3;
-        sequence.up = 1;
-        parameters.runSequences.push_back(sequence);
+        rule.at(0).runCount = 1;
+        rule.at(0).stepSize = 10;
+        rule.at(0).down = 3;
+        rule.at(0).up = 1;
+        rule.at(1).runCount = 1;
+        rule.at(1).stepSize = 5;
+        rule.at(1).down = 3;
+        rule.at(1).up = 1;
+        rule.at(2).runCount = 6;
+        rule.at(2).stepSize = 2;
+        rule.at(2).down = 3;
+        rule.at(2).up = 1;
         reset();
         push("ddudddudddddudddddduddd");
         EXPECT_EQ(3, track.x());
@@ -174,16 +172,14 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
         parameters.startingX = 65;
-        sequence.runCount = 2;
-        sequence.stepSize = 8;
-        sequence.up = 1;
-        sequence.down = 2;
-        parameters.runSequences.push_back(sequence);
-        sequence.runCount = 1;
-        sequence.stepSize = 4;
-        sequence.up = 2;
-        sequence.down = 1;
-        parameters.runSequences.push_back(sequence);
+        rule.at(0).runCount = 2;
+        rule.at(0).stepSize = 8;
+        rule.at(0).up = 1;
+        rule.at(0).down = 2;
+        rule.at(1).runCount = 1;
+        rule.at(1).stepSize = 4;
+        rule.at(1).up = 2;
+        rule.at(1).down = 1;
         reset();
         track.pushDown();
         EXPECT_EQ(65, track.x());
@@ -211,10 +207,9 @@ namespace {
     
     TEST_F(AdaptiveTrackTests, reversals) {
         parameters.startingX = 0;
-        sequence.runCount = 1000;
-        sequence.down = 2;
-        sequence.up = 1;
-        parameters.runSequences.push_back(sequence);
+        rule.at(0).runCount = 1000;
+        rule.at(0).down = 2;
+        rule.at(0).up = 1;
         reset();
         EXPECT_EQ(int{0}, track.reversals());
         track.pushUp();
