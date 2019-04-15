@@ -356,8 +356,38 @@ namespace {
     class InitializingTest : public UseCase {
         recognition_test::RecognitionTestModel::Test test{};
     public:
+        void setTesterId(std::string s) {
+            test.testerId = std::move(s);
+        }
+        
+        void setTargetListDirectory(std::string s) {
+            test.targetListDirectory = std::move(s);
+        }
+        
+        void setMaskerFilePath(std::string s) {
+            test.maskerFilePath = std::move(s);
+        }
+        
         void run(recognition_test::RecognitionTestModel &m) override {
             m.initializeTest(test);
+        }
+        
+        void setAudioVisual() {
+            test.condition =
+                av_coordinated_response_measure::Condition::audioVisual;
+        }
+        
+        void setAuditoryOnly() {
+            test.condition =
+                av_coordinated_response_measure::Condition::auditoryOnly;
+        }
+        
+        void setMaskerLevel_dB_SPL(int x) {
+            test.maskerLevel_dB_SPL = x;
+        }
+        
+        void setFullScaleLevel_dB_SPL(int x) {
+            test.fullScaleLevel_dB_SPL = x;
         }
     };
     
@@ -427,7 +457,7 @@ namespace {
         }
         
         void initializeTest() {
-            model.initializeTest(test);
+            run(initializingTest);
         }
         
         void submitResponse() {
@@ -493,16 +523,6 @@ namespace {
             assertListNotAdvanced();
         }
         
-        void setAuditoryOnly() {
-            test.condition =
-                av_coordinated_response_measure::Condition::auditoryOnly;
-        }
-        
-        void setAudioVisual() {
-            test.condition =
-                av_coordinated_response_measure::Condition::audioVisual;
-        }
-        
         void assertTargetVideoOnlyHidden() {
             EXPECT_TRUE(targetPlayer.videoHidden());
             EXPECT_FALSE(targetPlayer.videoShown());
@@ -514,22 +534,7 @@ namespace {
         }
         
         void assertInitializeTestThrowsRequestFailure(std::string what) {
-            assertCallThrowsRequestFailure(
-                &RecognitionTestModelTests::initializeTest,
-                std::move(what)
-            );
-        }
-        
-        void assertCallThrowsRequestFailure(
-            void(RecognitionTestModelTests::*f)(),
-            std::string what
-        ) {
-            try {
-                (this->*f)();
-                FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";
-            } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
-                assertEqual(std::move(what), e.what());
-            }
+            assertCallThrowsRequestFailure(initializingTest, std::move(what));
         }
         
         void assertCallThrowsRequestFailure(
@@ -538,8 +543,12 @@ namespace {
         ) {
             try {
                 run(useCase);
-                FAIL() << "Expected recognition_test::RecognitionTestModel::RequestFailure";
-            } catch (const recognition_test::RecognitionTestModel::RequestFailure &e) {
+                FAIL() <<
+                    "Expected "
+                    "recognition_test::RecognitionTestModel::RequestFailure";
+            } catch (
+                const recognition_test::RecognitionTestModel::RequestFailure &e
+            ) {
                 assertEqual(std::move(what), e.what());
             }
         }
@@ -547,12 +556,17 @@ namespace {
         void playTrialIgnoringFailure() {
             try {
                 playTrial();
-            } catch (const recognition_test::RecognitionTestModel::RequestFailure &) {
+            } catch (const
+                recognition_test::RecognitionTestModel::RequestFailure &
+            ) {
             }
         }
         
         template<typename T>
-        void assertDevicePassedToPlayer(const T &player, AudioDeviceUseCase &useCase) {
+        void assertDevicePassedToPlayer(
+            const T &player,
+            AudioDeviceUseCase &useCase
+        ) {
             useCase.setAudioDevice("a");
             run(useCase);
             assertEqual("a", player.device());
@@ -731,9 +745,36 @@ namespace {
         RecognitionTestModelTests,
         initializeTestPassesMaskerFilePathToMaskerPlayer
     ) {
-        test.maskerFilePath = "a";
+        initializingTest.setMaskerFilePath("a");
         initializeTest();
         assertEqual("a", maskerPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestOpensNewOutputFile
+    ) {
+        initializingTest.setTesterId("a");
+        initializeTest();
+        assertEqual("a", outputFile.newFileParameters().testerId);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestWritesTest
+    ) {
+        initializingTest.setTesterId("a");
+        initializeTest();
+        assertEqual("a", outputFile.testWritten().testerId);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestPassesTargetListDirectoryToTargetList
+    ) {
+        initializingTest.setTargetListDirectory("a");
+        initializeTest();
+        assertEqual("a", targetList.directory());
     }
 
     TEST_F(
@@ -803,8 +844,8 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSetsInitialMaskerPlayerLevel
     ) {
-        test.maskerLevel_dB_SPL = 1;
-        test.fullScaleLevel_dB_SPL = 2;
+        initializingTest.setMaskerLevel_dB_SPL(1);
+        initializingTest.setFullScaleLevel_dB_SPL(2);
         maskerPlayer.setRms(3);
         initializeTest();
         EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
@@ -814,7 +855,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestHidesTargetVideoWhenAuditoryOnly
     ) {
-        setAuditoryOnly();
+        initializingTest.setAuditoryOnly();
         initializeTest();
         assertTargetVideoOnlyHidden();
     }
@@ -823,18 +864,9 @@ namespace {
         RecognitionTestModelTests,
         initializeTestShowsTargetVideoWhenAudioVisual
     ) {
-        setAudioVisual();
+        initializingTest.setAudioVisual();
         initializeTest();
         assertTargetVideoOnlyShown();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestOpensNewOutputFile
-    ) {
-        test.testerId = "a";
-        initializeTest();
-        assertEqual("a", outputFile.newFileParameters().testerId);
     }
 
     TEST_F(
@@ -843,24 +875,6 @@ namespace {
     ) {
         initializeTest();
         EXPECT_TRUE(outputFile.headingWritten());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestWritesTest
-    ) {
-        test.testerId = "a";
-        initializeTest();
-        assertEqual("a", outputFile.testWritten().testerId);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestPassesTargetListDirectoryToTargetList
-    ) {
-        test.targetListDirectory = "a";
-        initializeTest();
-        assertEqual("a", targetList.directory());
     }
 
     TEST_F(
