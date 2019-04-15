@@ -50,6 +50,21 @@ namespace recognition_test {
         virtual double rms() = 0;
         virtual void setLevel_dB(double) = 0;
     };
+    
+    class Track {
+    public:
+        virtual ~Track() = default;
+        struct Settings {
+            const av_coordinated_response_measure::Rule *rule;
+            int startingX;
+        };
+        virtual void reset(const Settings &) = 0;
+        virtual void pushDown() = 0;
+        virtual void pushUp() = 0;
+        virtual int x() = 0;
+        virtual bool complete() = 0;
+        virtual int reversals() = 0;
+    };
 
     class TargetList {
     public:
@@ -94,7 +109,7 @@ namespace recognition_test {
         MaskerPlayer *maskerPlayer;
         TargetList *targetList;
         TargetPlayer *targetPlayer;
-        av_coordinated_response_measure::Track *snrTrack;
+        Track *snrTrack;
         ResponseEvaluator *evaluator;
         OutputFile *outputFile;
         Model::EventListener *listener_{};
@@ -103,7 +118,7 @@ namespace recognition_test {
             TargetList *,
             TargetPlayer *,
             MaskerPlayer *,
-            av_coordinated_response_measure::Track *,
+            Track *,
             ResponseEvaluator *,
             OutputFile *
         );

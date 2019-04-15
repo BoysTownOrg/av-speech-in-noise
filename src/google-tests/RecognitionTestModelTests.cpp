@@ -347,7 +347,7 @@ namespace {
         }
     };
     
-    class TrackStub : public av_coordinated_response_measure::Track {
+    class TrackStub : public recognition_test::Track {
         Settings settings_{};
         int x_{};
         bool pushedDown_{};

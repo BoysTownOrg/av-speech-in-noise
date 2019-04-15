@@ -5,7 +5,7 @@ namespace {
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
         recognition_test::AdaptiveTrack::Settings parameters{};
-        recognition_test::AdaptiveTrack::Settings::Rule rule;
+        av_coordinated_response_measure::Rule rule;
         recognition_test::AdaptiveTrack track{};
         
         AdaptiveTrackTests() {

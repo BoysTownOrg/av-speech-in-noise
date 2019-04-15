@@ -7,7 +7,7 @@ namespace recognition_test {
         TargetList *targetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
-        av_coordinated_response_measure::Track *snrTrack,
+        Track *snrTrack,
         ResponseEvaluator *evaluator,
         OutputFile *outputFile
     ) :
@@ -39,7 +39,7 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::prepareSnrTrack() {
-        av_coordinated_response_measure::Track::Settings s;
+        Track::Settings s;
         s.rule = test.targetLevelRule;
         s.startingX = test.startingSnr_dB;
         snrTrack->reset(s);

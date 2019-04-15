@@ -3,7 +3,7 @@
 namespace presentation {
     int Presenter::fullScaleLevel_dB_SPL = 119;
     
-    av_coordinated_response_measure::Track::Settings::Rule
+    av_coordinated_response_measure::Rule
         Presenter::targetLevelRule = {
             { 2, 4, 1, 1 },
             { 6, 2, 1, 1 }

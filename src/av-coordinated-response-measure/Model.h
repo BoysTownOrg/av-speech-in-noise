@@ -1,7 +1,6 @@
 #ifndef av_coordinated_response_measure_Model_h
 #define av_coordinated_response_measure_Model_h
 
-#include "Track.h"
 #include <stdexcept>
 #include <string>
 
@@ -42,6 +41,15 @@ namespace av_coordinated_response_measure {
         }
     }
     
+    struct RunSequence {
+        int runCount;
+        int stepSize;
+        int down;
+        int up;
+    };
+    
+    using Rule = typename std::vector<RunSequence>;
+    
     struct Test {
         std::string targetListDirectory;
         std::string subjectId;
@@ -52,7 +60,7 @@ namespace av_coordinated_response_measure {
         int maskerLevel_dB_SPL;
         int fullScaleLevel_dB_SPL;
         Condition condition;
-        const Track::Settings::Rule *targetLevelRule;
+        const Rule *targetLevelRule;
     };
     
     struct Calibration {
