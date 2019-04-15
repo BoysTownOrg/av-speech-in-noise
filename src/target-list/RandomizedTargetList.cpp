@@ -20,18 +20,22 @@ namespace target_list {
     }
     
     std::string RandomizedTargetList::next() {
-        auto next_ = files.front();
+        auto nextFile_ = files.front();
         files.erase(files.begin());
         if (!first)
-            files.push_back(current_);
+            files.push_back(currentFile_);
         first = false;
         randomizer->shuffle(files.begin(), files.end());
-        current_ = next_;
-        return directory_ + "/" + next_;
+        currentFile_ = nextFile_;
+        return current_();
     }
     
-    std::string RandomizedTargetList::current() { 
-        return directory_ + "/" + current_;
+    std::string RandomizedTargetList::current_() {
+        return directory_ + "/" + currentFile_;
+    }
+    
+    std::string RandomizedTargetList::current() {
+        return current_();
     }
     
 }
