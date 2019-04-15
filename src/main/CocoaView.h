@@ -48,8 +48,10 @@ class CocoaTestSetupView : public presentation::View::TestSetup {
     NSTextField *testerId_;
     NSTextField *sessionLabel;
     NSTextField *session_;
-    NSTextField *signalLevel_dB_SPL_label;
-    NSTextField *signalLevel_dB_SPL_;
+    NSTextField *maskerLevel_dB_SPL_label;
+    NSTextField *maskerLevel_dB_SPL_;
+    NSTextField *calibrationLevel_dB_SPL_label;
+    NSTextField *calibrationLevel_dB_SPL_;
     NSTextField *startingSnr_dB_label;
     NSTextField *startingSnr_dB_;
     NSTextField *targetListDirectoryLabel;
@@ -65,7 +67,8 @@ public:
     CocoaTestSetupView();
     void show() override;
     void hide() override;
-    std::string signalLevel_dB_SPL() override;
+    std::string maskerLevel_dB_SPL() override;
+    std::string calibrationLevel_dB_SPL() override;
     std::string maskerFilePath() override;
     std::string startingSnr_dB() override;
     std::string targetListDirectory() override;

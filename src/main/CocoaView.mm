@@ -46,12 +46,19 @@ CocoaTestSetupView::CocoaTestSetupView() :
     session_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(145, 210, 150, 25)
     ]},
-    signalLevel_dB_SPL_label{allocLabel(
-        @"signal level (dB SPL):",
+    maskerLevel_dB_SPL_label{allocLabel(
+        @"masker level (dB SPL):",
         NSMakeRect(0, 180, 140, 25)
     )},
-    signalLevel_dB_SPL_{[[NSTextField alloc]
+    maskerLevel_dB_SPL_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(145, 180, 150, 25)
+    ]},
+    calibrationLevel_dB_SPL_label{allocLabel(
+        @"calibration level (dB SPL):",
+        NSMakeRect(350, 30, 150, 25)
+    )},
+    calibrationLevel_dB_SPL_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(505, 30, 80, 25)
     ]},
     startingSnr_dB_label{allocLabel(
         @"starting SNR (dB):",
@@ -129,8 +136,10 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [view_ addSubview:testerId_];
     [view_ addSubview:sessionLabel];
     [view_ addSubview:session_];
-    [view_ addSubview:signalLevel_dB_SPL_label];
-    [view_ addSubview:signalLevel_dB_SPL_];
+    [view_ addSubview:maskerLevel_dB_SPL_label];
+    [view_ addSubview:maskerLevel_dB_SPL_];
+    [view_ addSubview:calibrationLevel_dB_SPL_label];
+    [view_ addSubview:calibrationLevel_dB_SPL_];
     [view_ addSubview:startingSnr_dB_label];
     [view_ addSubview:startingSnr_dB_];
     [view_ addSubview:targetListDirectoryLabel];
@@ -144,7 +153,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
         @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
     maskerFilePath_.stringValue =
         @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
-    signalLevel_dB_SPL_.stringValue = @"65";
+    maskerLevel_dB_SPL_.stringValue = @"65";
     startingSnr_dB_.stringValue = @"0";
     [view_ setHidden:NO];
 }
@@ -176,8 +185,12 @@ std::string CocoaTestSetupView::startingSnr_dB() {
     return startingSnr_dB_.stringValue.UTF8String;
 }
 
-std::string CocoaTestSetupView::signalLevel_dB_SPL() {
-    return signalLevel_dB_SPL_.stringValue.UTF8String;
+std::string CocoaTestSetupView::maskerLevel_dB_SPL() {
+    return maskerLevel_dB_SPL_.stringValue.UTF8String;
+}
+
+std::string CocoaTestSetupView::calibrationLevel_dB_SPL() {
+    return calibrationLevel_dB_SPL_.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::maskerFilePath() {
@@ -555,3 +568,4 @@ void CocoaView::addSubview(NSView *view) {
     controller->openTest();
 }
 @end
+
