@@ -400,8 +400,13 @@ namespace {
     };
     
     class ResponseEvaluatorStub : public av_coordinate_response_measure::ResponseEvaluator {
+        const av_coordinate_response_measure::SubjectResponse *response_{};
         bool correct_{};
     public:
+        auto response() const {
+            return response_;
+        }
+        
         void setCorrect() {
             correct_ = true;
         }
@@ -412,8 +417,9 @@ namespace {
         
         bool correct(
             std::string filePath,
-            const av_coordinate_response_measure::SubjectResponse &
+            const av_coordinate_response_measure::SubjectResponse &p
         ) override {
+            response_ = &p;
             return correct_;
         }
         
@@ -1031,6 +1037,14 @@ namespace {
         submitResponse();
         EXPECT_TRUE(snrTrack.pushedUp());
         EXPECT_FALSE(snrTrack.pushedDown());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponsePassesSubjectResponseToEvaluator
+    ) {
+        submitResponse();
+        EXPECT_EQ(&subjectResponse, evaluator.response());
     }
 
     TEST_F(
