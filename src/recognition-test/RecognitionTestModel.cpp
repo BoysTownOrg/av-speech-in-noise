@@ -195,10 +195,18 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
+        updateSnr(response);
+        writeTrial(response);
+    }
+    
+    void RecognitionTestModel::updateSnr(const SubjectResponse &response) {
         if (evaluator->correct(targetList->current(), response))
             snrTrack->pushDown();
         else
             snrTrack->pushUp();
+    }
+    
+    void RecognitionTestModel::writeTrial(const SubjectResponse &response) {
         Trial trial{};
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
