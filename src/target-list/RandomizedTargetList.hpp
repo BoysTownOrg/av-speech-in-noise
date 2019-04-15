@@ -29,6 +29,7 @@ namespace target_list {
         void loadFromDirectory(std::string) override;
         bool empty() override;
         std::string next() override;
+        std::string current() override;
     };
 }
 

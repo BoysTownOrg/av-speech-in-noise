@@ -235,9 +235,18 @@ namespace {
     class TargetListStub : public av_coordinate_response_measure::TargetList {
         std::string directory_{};
         std::string next_{};
+        std::string current_{};
         bool empty_{};
         bool nextCalled_{};
     public:
+        std::string current() override {
+            return current_;
+        }
+        
+        void setCurrent(std::string s) {
+            current_ = std::move(s);
+        }
+        
         auto nextCalled() const {
             return nextCalled_;
         }
@@ -400,9 +409,13 @@ namespace {
     };
     
     class ResponseEvaluatorStub : public av_coordinate_response_measure::ResponseEvaluator {
+        std::string target_{};
         const av_coordinate_response_measure::SubjectResponse *response_{};
         bool correct_{};
     public:
+        auto target() const {
+            return target_;
+        }
         auto response() const {
             return response_;
         }
@@ -416,9 +429,10 @@ namespace {
         }
         
         bool correct(
-            std::string filePath,
+            std::string target,
             const av_coordinate_response_measure::SubjectResponse &p
         ) override {
+            target_ = std::move(target);
             response_ = &p;
             return correct_;
         }
@@ -1045,6 +1059,15 @@ namespace {
     ) {
         submitResponse();
         EXPECT_EQ(&subjectResponse, evaluator.response());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponsePassesTargetToEvaluator
+    ) {
+        targetList.setCurrent("a");
+        submitResponse();
+        assertEqual("a", evaluator.target());
     }
 
     TEST_F(

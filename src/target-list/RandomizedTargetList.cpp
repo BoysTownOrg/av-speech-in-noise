@@ -23,4 +23,9 @@ namespace target_list {
         files.erase(files.begin());
         return directory_ + "/" + next_;
     }
+    
+    std::string RandomizedTargetList::current() { 
+        return {};
+    }
+    
 }

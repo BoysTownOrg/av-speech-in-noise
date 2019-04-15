@@ -72,6 +72,7 @@ namespace av_coordinate_response_measure {
         virtual void loadFromDirectory(std::string directory) = 0;
         virtual bool empty() = 0;
         virtual std::string next() = 0;
+        virtual std::string current() = 0;
     };
     
     class ResponseEvaluator {
