@@ -348,7 +348,7 @@ namespace {
     };
     
     class TrackStub : public av_coordinated_response_measure::Track {
-        Parameters settings_{};
+        Settings settings_{};
         int x_{};
     public:
         auto &settings() const {
@@ -359,7 +359,7 @@ namespace {
             x_ = x;
         }
         
-        void reset(const Parameters &p) override {
+        void reset(const Settings &p) override {
             settings_ = p;
         }
         

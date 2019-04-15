@@ -32,7 +32,7 @@ namespace recognition_test {
         void pushDown() override;
         bool complete() override;
         int reversals() override;
-        void reset(const Parameters &) override;
+        void reset(const Settings &) override;
         
     private:
         void updateConsecutiveCount(Direction);

@@ -64,7 +64,7 @@ namespace av_coordinated_response_measure {
             int maskerLevel_dB_SPL;
             int fullScaleLevel_dB_SPL;
             Condition condition;
-            const Track::Parameters::Rule *targetLevelRule;
+            const Track::Settings::Rule *targetLevelRule;
         };
         virtual void initializeTest(const Test &) = 0;
         

@@ -1,7 +1,7 @@
 #include "AdaptiveTrack.hpp"
 
 namespace recognition_test {
-    void AdaptiveTrack::reset(const Parameters &p) {
+    void AdaptiveTrack::reset(const Settings &p) {
         sequenceIndex = 0;
         x_ = p.startingX;
         sameDirectionConsecutiveCount = 0;

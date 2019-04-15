@@ -30,15 +30,15 @@ namespace recognition_test {
         prepareSnrTrack();
         prepareOutputFile();
         prepareMasker();
-        loadStimulusList();
+        prepareTargets();
         prepareVideo();
     }
     
     void RecognitionTestModel::prepareSnrTrack() {
-        av_coordinated_response_measure::Track::Parameters trackSettings;
-        trackSettings.rule = test.targetLevelRule;
-        trackSettings.startingX = test.startingSnr_dB;
-        snrTrack->reset(trackSettings);
+        av_coordinated_response_measure::Track::Settings s;
+        s.rule = test.targetLevelRule;
+        s.startingX = test.startingSnr_dB;
+        snrTrack->reset(s);
     }
     
     void RecognitionTestModel::prepareOutputFile() {
@@ -81,7 +81,7 @@ namespace recognition_test {
             test.fullScaleLevel_dB_SPL;
     }
     
-    void RecognitionTestModel::loadStimulusList() {
+    void RecognitionTestModel::prepareTargets() {
         targetList->loadFromDirectory(test.targetListDirectory);
     }
     

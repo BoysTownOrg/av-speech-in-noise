@@ -7,7 +7,7 @@ namespace av_coordinated_response_measure {
     class Track {
     public:
         virtual ~Track() = default;
-        struct Parameters {
+        struct Settings {
             struct RunSequence {
                 int runCount;
                 int stepSize;
@@ -18,7 +18,7 @@ namespace av_coordinated_response_measure {
             const Rule *rule;
             int startingX;
         };
-        virtual void reset(const Parameters &) = 0;
+        virtual void reset(const Settings &) = 0;
         virtual void pushDown() = 0;
         virtual void pushUp() = 0;
         virtual int x() = 0;

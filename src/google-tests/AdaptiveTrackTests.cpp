@@ -4,8 +4,8 @@
 namespace {
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
-        recognition_test::AdaptiveTrack::Parameters parameters{};
-        recognition_test::AdaptiveTrack::Parameters::Rule rule;
+        recognition_test::AdaptiveTrack::Settings parameters{};
+        recognition_test::AdaptiveTrack::Settings::Rule rule;
         recognition_test::AdaptiveTrack track{};
         
         AdaptiveTrackTests() {

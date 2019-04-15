@@ -113,7 +113,7 @@ namespace recognition_test {
         void prepareMasker();
         void prepareOutputFile();
         void tryOpeningOutputFile();
-        void loadStimulusList();
+        void prepareTargets();
         void loadMaskerFile();
         bool noMoreTrials();
         bool trialInProgress();
