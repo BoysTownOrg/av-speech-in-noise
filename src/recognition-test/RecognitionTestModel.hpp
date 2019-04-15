@@ -59,6 +59,11 @@ namespace recognition_test {
         virtual std::string next() = 0;
     };
     
+    class ResponseEvaluator {
+    public:
+        virtual ~ResponseEvaluator() = default;
+    };
+    
     class OutputFile {
     public:
         virtual ~OutputFile() = default;
@@ -86,6 +91,7 @@ namespace recognition_test {
         TargetList *targetList;
         TargetPlayer *targetPlayer;
         av_coordinated_response_measure::Track *snrTrack;
+        ResponseEvaluator *evaluator;
         OutputFile *outputFile;
         Model::EventListener *listener_{};
     public:
@@ -94,6 +100,7 @@ namespace recognition_test {
             TargetPlayer *,
             MaskerPlayer *,
             av_coordinated_response_measure::Track *,
+            ResponseEvaluator *,
             OutputFile *
         );
         void initializeTest(const Test &) override;

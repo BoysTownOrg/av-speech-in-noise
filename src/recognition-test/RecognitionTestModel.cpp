@@ -8,12 +8,14 @@ namespace recognition_test {
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
         av_coordinated_response_measure::Track *snrTrack,
+        ResponseEvaluator *evaluator,
         OutputFile *outputFile
     ) :
         maskerPlayer{maskerPlayer},
         targetList{targetList},
         targetPlayer{targetPlayer},
         snrTrack{snrTrack},
+        evaluator{evaluator},
         outputFile{outputFile}
     {
         targetPlayer->subscribe(this);
@@ -191,6 +193,7 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
+        snrTrack->pushDown();
         av_coordinated_response_measure::Trial trial{};
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;

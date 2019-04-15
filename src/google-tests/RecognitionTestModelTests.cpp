@@ -350,7 +350,12 @@ namespace {
     class TrackStub : public av_coordinated_response_measure::Track {
         Settings settings_{};
         int x_{};
+        bool pushedDown_{};
     public:
+        auto pushedDown() const {
+            return pushedDown_;
+        }
+        
         auto &settings() const {
             return settings_;
         }
@@ -364,7 +369,7 @@ namespace {
         }
         
         void pushDown() override {
-        
+            pushedDown_ = true;
         }
         
         void pushUp() override {
@@ -381,6 +386,14 @@ namespace {
         
         int reversals() override {
             return {};
+        }
+    };
+    
+    class ResponseEvaluatorStub : public recognition_test::ResponseEvaluator {
+        bool correct_{};
+    public:
+        void setCorrect() {
+            correct_ = true;
         }
     };
     
@@ -486,11 +499,13 @@ namespace {
         MaskerPlayerStub maskerPlayer{};
         OutputFileStub outputFile{};
         TrackStub snrTrack{};
+        ResponseEvaluatorStub evaluator{};
         recognition_test::RecognitionTestModel model{
             &targetList,
             &targetPlayer,
             &maskerPlayer,
             &snrTrack,
+            &evaluator,
             &outputFile
         };
         ModelEventListenerStub listener{};
@@ -974,6 +989,15 @@ namespace {
             av_coordinated_response_measure::Color::green,
             outputFile.trialWritten().subjectColor
         );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCorrectResponsePushesSnrDown
+    ) {
+        evaluator.setCorrect();
+        submitResponse();
+        EXPECT_TRUE(snrTrack.pushedDown());
     }
 
     TEST_F(
