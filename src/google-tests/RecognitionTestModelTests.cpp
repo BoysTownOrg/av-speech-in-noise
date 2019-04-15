@@ -484,7 +484,7 @@ namespace {
     };
     
     class PlayingCalibration : public AudioDeviceUseCase {
-        recognition_test::RecognitionTestModel::Calibration calibration;
+        av_coordinated_response_measure::Calibration calibration;
     public:
         void setAudioDevice(std::string s) override {
             calibration.audioDevice = std::move(s);
@@ -509,7 +509,7 @@ namespace {
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
-        recognition_test::RecognitionTestModel::Calibration calibration;
+        av_coordinated_response_measure::Calibration calibration;
         recognition_test::RecognitionTestModel::SubjectResponse subjectResponse;
         TargetListStub targetList{};
         TargetPlayerStub targetPlayer{};

@@ -114,7 +114,7 @@ namespace presentation {
             void setStimulusList(std::string);
             void setCalibrationFilePath(std::string);
             av_coordinated_response_measure::Test testParameters();
-            av_coordinated_response_measure::Model::Calibration calibrationParameters();
+            av_coordinated_response_measure::Calibration calibrationParameters();
         private:
             int readMaskerLevel();
             int readCalibrationLevel();

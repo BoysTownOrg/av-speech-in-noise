@@ -209,14 +209,14 @@ namespace recognition_test {
         listener_->trialComplete();
     }
     
-    void RecognitionTestModel::playCalibration(const Calibration &p) {
+    void RecognitionTestModel::playCalibration(const av_coordinated_response_measure::Calibration &p) {
         if (targetPlayer->playing())
             return;
         
         playCalibration_(p);
     }
     
-    void RecognitionTestModel::playCalibration_(const Calibration &p) {
+    void RecognitionTestModel::playCalibration_(const av_coordinated_response_measure::Calibration &p) {
         throwInvalidAudioDeviceOnErrorSettingDevice(
             &RecognitionTestModel::setTargetPlayerDevice,
             p.audioDevice

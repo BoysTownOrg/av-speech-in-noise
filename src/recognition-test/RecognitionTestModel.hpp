@@ -113,14 +113,14 @@ namespace recognition_test {
         bool testComplete() override;
         std::vector<std::string> audioDevices() override;
         void subscribe(Model::EventListener *) override;
-        void playCalibration(const Calibration &) override;
+        void playCalibration(const av_coordinated_response_measure::Calibration &) override;
         void fadeInComplete() override;
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
         void prepareSnrTrack();
         void playTarget();
-        void playCalibration_(const Calibration &);
+        void playCalibration_(const av_coordinated_response_measure::Calibration &);
         void prepareMasker();
         void prepareOutputFile();
         void tryOpeningOutputFile();

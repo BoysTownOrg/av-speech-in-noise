@@ -220,10 +220,10 @@ namespace presentation {
         parent->playCalibration();
     }
     
-    av_coordinated_response_measure::Model::Calibration
+    av_coordinated_response_measure::Calibration
         Presenter::TestSetup::calibrationParameters()
     {
-        av_coordinated_response_measure::Model::Calibration p;
+        av_coordinated_response_measure::Calibration p;
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readCalibrationLevel();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;

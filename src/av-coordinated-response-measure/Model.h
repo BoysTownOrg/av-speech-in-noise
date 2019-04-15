@@ -55,6 +55,13 @@ namespace av_coordinated_response_measure {
         const Track::Settings::Rule *targetLevelRule;
     };
     
+    struct Calibration {
+        std::string filePath;
+        std::string audioDevice;
+        int level_dB_SPL;
+        int fullScaleLevel_dB_SPL;
+    };
+    
     class Model {
     public:
         class EventListener {
@@ -67,13 +74,6 @@ namespace av_coordinated_response_measure {
         virtual void subscribe(EventListener *) = 0;
         RUNTIME_ERROR(RequestFailure)
         virtual void initializeTest(const Test &) = 0;
-        
-        struct Calibration {
-            std::string filePath;
-            std::string audioDevice;
-            int level_dB_SPL;
-            int fullScaleLevel_dB_SPL;
-        };
         virtual void playCalibration(const Calibration &) = 0;
         
         struct AudioSettings {
