@@ -143,7 +143,7 @@ private:
 };
 
 //https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
-static std::vector<std::vector<float>> readAudio(std::string filePath) {
+/*static std::vector<std::vector<float>> readAudio(std::string filePath) {
     AvAssetFacade asset{std::move(filePath)};
     auto reader = [[AVAssetReader alloc]
         initWithAsset:asset.get()
@@ -190,6 +190,65 @@ static std::vector<std::vector<float>> readAudio(std::string filePath) {
         sampleBuffer = [trackOutput copyNextSampleBuffer];
     }
     return audio;
+}*/
+
+
+int CoreAudioBuffer::channels() {
+    return audioBufferList.mNumberBuffers;
+}
+
+std::vector<int> CoreAudioBuffer::channel(int n) {
+    std::vector<int> channel_{};
+    auto data = static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData);
+    for (int i{}; i < frames; ++i)
+        channel_.push_back(data[i]);
+    return channel_;
+}
+
+bool CoreAudioBuffer::empty() {
+    <#code#>;
+}
+
+void CoreAudioBufferedReader::loadFile(std::string filePath) {
+    AvAssetFacade asset{std::move(filePath)};
+    auto reader = [[AVAssetReader alloc]
+        initWithAsset:asset.get()
+        error:nil
+    ];
+    auto track = asset.audioTrack();
+    trackOutput = [AVAssetReaderTrackOutput
+        assetReaderTrackOutputWithTrack:track
+        outputSettings:@{
+            AVFormatIDKey : [NSNumber numberWithInt:kAudioFormatLinearPCM]
+        }
+    ];
+    [reader addOutput:trackOutput];
+    [reader startReading];
+}
+
+bool CoreAudioBufferedReader::failed() {
+    <#code#>;
+}
+
+stimulus_players::AudioBuffer *CoreAudioBufferedReader::readNextBuffer() {
+    auto sampleBuffer = [trackOutput copyNextSampleBuffer];
+    AudioBufferList audioBufferList;
+    CMBlockBufferRef blockBuffer{};
+    CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+        sampleBuffer,
+        nullptr,
+        &audioBufferList,
+        sizeof(audioBufferList),
+        nullptr,
+        nullptr,
+        kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
+        &blockBuffer
+    );
+    return &buffer;
+}
+
+int CoreAudioBufferedReader::minimumPossibleSample() {
+    return std::numeric_limits<SInt16>::min();
 }
 
 static void init(
@@ -377,12 +436,6 @@ std::string AvFoundationVideoPlayer::deviceDescription(int index) {
     return device.description(index);
 }
 
-std::vector<std::vector<float>>
-    AvFoundationVideoPlayer::readAudio(std::string filePath
-) {
-    return ::readAudio(filePath);
-}
-
 static bool playing(AVPlayer *player) {
     return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
 }
@@ -449,12 +502,6 @@ void AvFoundationAudioPlayer::scheduleCallbackAfterSeconds(double x) {
 
 void AvFoundationAudioPlayer::timerCallback() {
     listener_->timerCallback();
-}
-
-std::vector<std::vector<float>>
-    AvFoundationAudioPlayer::readAudio(std::string filePath
-) {
-    return ::readAudio(std::move(filePath));
 }
 
 bool AvFoundationAudioPlayer::outputDevice(int index) {

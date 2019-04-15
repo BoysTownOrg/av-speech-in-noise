@@ -4,6 +4,7 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
+#include <stimulus-players/AudioReaderImpl.hpp>
 #import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>
 #include <vector>
@@ -21,6 +22,24 @@ public:
     AudioObjectID objectId(int device);
     std::string uid(int device);
     bool outputDevice(int device);
+};
+
+class CoreAudioBuffer : public stimulus_players::AudioBuffer {
+    AudioBufferList audioBufferList;
+public:
+    int channels() override;
+    std::vector<int> channel(int) override;
+    bool empty() override;
+};
+
+class CoreAudioBufferedReader : public stimulus_players::BufferedAudioReader {
+    CoreAudioBuffer buffer{};
+    AVAssetReaderTrackOutput *trackOutput{};
+public:
+    void loadFile(std::string) override;
+    bool failed() override;
+    stimulus_players::AudioBuffer *readNextBuffer() override;
+    int minimumPossibleSample() override;
 };
 
 class AvFoundationVideoPlayer;
@@ -53,7 +72,6 @@ public:
     void subscribe(EventListener *) override;
     int deviceCount() override;
     std::string deviceDescription(int index) override;
-    std::vector<std::vector<float>> readAudio(std::string filePath) override;
     bool playing() override;
     void subscribeToPlaybackCompletion() override;
     
@@ -96,7 +114,6 @@ public:
     void scheduleCallbackAfterSeconds(double) override;
     void timerCallback();
     bool outputDevice(int index) override;
-    std::vector<std::vector<float>> readAudio(std::string filePath) override;
 };
 
 #endif

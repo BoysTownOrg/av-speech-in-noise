@@ -1,6 +1,7 @@
 #ifndef stimulus_players_AudioReaderImpl_hpp
 #define stimulus_players_AudioReaderImpl_hpp
 
+#include "AudioReader.h"
 #include <string>
 #include <vector>
 
@@ -22,12 +23,12 @@ namespace stimulus_players {
         virtual int minimumPossibleSample() = 0;
     };
 
-    class AudioReaderImpl {
+    class AudioReaderImpl : public AudioReader {
         BufferedAudioReader *reader;
     public:
         AudioReaderImpl(BufferedAudioReader *);
         class InvalidFile {};
-        std::vector<std::vector<float>> read(std::string filePath);
+        std::vector<std::vector<float>> read(std::string filePath) override;
     private:
         void loadFile(std::string filePath);
     };
