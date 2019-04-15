@@ -106,6 +106,7 @@ namespace recognition_test {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void playTarget();
         void playCalibration_(const Calibration &);
         void prepareMasker(const Test &);
         void prepareOutputFile(const Test &);
@@ -120,6 +121,7 @@ namespace recognition_test {
         bool auditoryOnly(const Test &);
         void prepareVideo(const Test &);
         int desiredMaskerLevel_dB();
+        double unalteredTargetLevel_dB();
         double targetLevel_dB();
         double maskerLevel_dB();
         void setTargetPlayerDevice(const std::string &);

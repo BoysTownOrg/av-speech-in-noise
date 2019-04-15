@@ -153,11 +153,15 @@ namespace recognition_test {
         targetPlayer->setLevel_dB(x);
     }
     
+    double RecognitionTestModel::unalteredTargetLevel_dB() {
+        return dB(targetPlayer->rms());
+    }
+    
     double RecognitionTestModel::targetLevel_dB() {
         return
             desiredMaskerLevel_dB() +
             test.startingSnr_dB -
-            dB(targetPlayer->rms());
+            unalteredTargetLevel_dB();
     }
     
     void RecognitionTestModel::startTrial() {
@@ -165,6 +169,10 @@ namespace recognition_test {
     }
     
     void RecognitionTestModel::fadeInComplete() {
+        playTarget();
+    }
+    
+    void RecognitionTestModel::playTarget() {
         targetPlayer->play();
     }
     
@@ -199,9 +207,9 @@ namespace recognition_test {
         setTargetLevel_dB(
             p.level_dB_SPL -
             p.fullScaleLevel_dB_SPL -
-            dB(targetPlayer->rms())
+            unalteredTargetLevel_dB()
         );
-        targetPlayer->play();
+        playTarget();
     }
 
     bool RecognitionTestModel::testComplete() {
