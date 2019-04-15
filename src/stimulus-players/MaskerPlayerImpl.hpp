@@ -28,7 +28,6 @@ namespace stimulus_players {
         virtual void setDevice(int index) = 0;
         virtual double sampleRateHz() = 0;
         virtual void scheduleCallbackAfterSeconds(double) = 0;
-        virtual std::vector<std::vector<float>> readAudio(std::string filePath) = 0;
     };
 
     class MaskerPlayerImpl :

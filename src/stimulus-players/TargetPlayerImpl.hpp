@@ -28,7 +28,6 @@ namespace stimulus_players {
         virtual int deviceCount() = 0;
         virtual std::string deviceDescription(int index) = 0;
         virtual void setDevice(int index) = 0;
-        virtual std::vector<std::vector<float>> readAudio(std::string filePath) = 0;
     };
     
     class TargetPlayerImpl :

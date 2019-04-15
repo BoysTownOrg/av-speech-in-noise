@@ -94,12 +94,6 @@ namespace {
             listener_ = e;
         }
         
-        std::vector<std::vector<float>> readAudio(std::string filePath) override {
-            audioFilePath_ = filePath;
-            return audioRead_;
-        }
-        
-        
         void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
             listener_->fillAudioBuffer(audio);
         }

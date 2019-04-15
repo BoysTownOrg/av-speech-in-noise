@@ -99,11 +99,6 @@ namespace {
             callbackScheduled_ = true;
         }
         
-        std::vector<std::vector<float> > readAudio(std::string filePath) override {
-            audioFilePath_ = filePath;
-            return audioRead_;
-        }
-        
         auto filePath() const {
             return filePath_;
         }
