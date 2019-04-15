@@ -55,7 +55,6 @@ namespace av_coordinated_response_measure {
         RUNTIME_ERROR(RequestFailure)
         
         struct Test {
-            Track::Parameters::Rule targetLevelRule;
             std::string targetListDirectory;
             std::string subjectId;
             std::string testerId;
@@ -65,6 +64,7 @@ namespace av_coordinated_response_measure {
             int maskerLevel_dB_SPL;
             int fullScaleLevel_dB_SPL;
             Condition condition;
+            const Track::Parameters::Rule *targetLevelRule;
         };
         virtual void initializeTest(const Test &) = 0;
         

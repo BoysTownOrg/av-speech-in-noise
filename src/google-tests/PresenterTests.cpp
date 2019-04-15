@@ -821,8 +821,8 @@ namespace {
         confirmTestSetup();
         // sufficient comparision for equality?
         EXPECT_EQ(
-            presentation::Presenter::targetLevelRule.at(0).down,
-            modelTestParameters().targetLevelRule.at(0).down
+            &presentation::Presenter::targetLevelRule,
+            modelTestParameters().targetLevelRule
         );
     }
 

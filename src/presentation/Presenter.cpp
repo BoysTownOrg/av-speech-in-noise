@@ -193,7 +193,7 @@ namespace presentation {
             ? av_coordinated_response_measure::Condition::auditoryOnly
             : av_coordinated_response_measure::Condition::audioVisual;
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
-        p.targetLevelRule = targetLevelRule;
+        p.targetLevelRule = &targetLevelRule;
         return p;
     }
     

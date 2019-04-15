@@ -28,7 +28,7 @@ namespace recognition_test {
         test = p;
         
         av_coordinated_response_measure::Track::Parameters trackSettings;
-        trackSettings.rule = &p.targetLevelRule;
+        trackSettings.rule = p.targetLevelRule;
         snrTrack->reset(trackSettings);
         prepareOutputFile(p);
         prepareMasker(p);

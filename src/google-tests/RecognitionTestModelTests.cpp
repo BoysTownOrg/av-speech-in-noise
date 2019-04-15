@@ -426,7 +426,7 @@ namespace {
             test.fullScaleLevel_dB_SPL = x;
         }
         
-        auto &targetLevelRule() const {
+        auto targetLevelRule() const {
             return test.targetLevelRule;
         }
     };
@@ -863,7 +863,7 @@ namespace {
     ) {
         initializeTest();
         EXPECT_EQ(
-            &initializingTest.targetLevelRule(),
+            initializingTest.targetLevelRule(),
             track.settings().rule
         );
     }
