@@ -392,6 +392,14 @@ namespace {
         void setFilePath(std::string s) {
             calibration.filePath = std::move(s);
         }
+        
+        void setLevel_dB_SPL(int x) {
+            calibration.level_dB_SPL = x;
+        }
+        
+        void setFullScaleLevel_dB_SPL(int x) {
+            calibration.fullScaleLevel_dB_SPL = x;
+        }
     };
 
     class RecognitionTestModelTests : public ::testing::Test {
@@ -543,16 +551,19 @@ namespace {
             }
         }
         
-        void assertDevicePassedToTargetPlayer(AudioDeviceUseCase &useCase) {
+        template<typename T>
+        void assertDevicePassedToPlayer(const T &player, AudioDeviceUseCase &useCase) {
             useCase.setAudioDevice("a");
             run(useCase);
-            assertEqual("a", targetPlayer.device());
+            assertEqual("a", player.device());
+        }
+        
+        void assertDevicePassedToTargetPlayer(AudioDeviceUseCase &useCase) {
+            assertDevicePassedToPlayer(targetPlayer, useCase);
         }
         
         void assertDevicePassedToMaskerPlayer(AudioDeviceUseCase &useCase) {
-            useCase.setAudioDevice("a");
-            run(useCase);
-            assertEqual("a", maskerPlayer.device());
+            assertDevicePassedToPlayer(maskerPlayer, useCase);
         }
         
         void assertThrowsRequestFailureWhenInvalidAudioDevice(
@@ -574,6 +585,10 @@ namespace {
         void assertTargetFileLoadedPriorToRmsQuery(UseCase &useCase) {
             run(useCase);
             assertEqual("loadFile rms ", targetPlayer.log());
+        }
+    
+        double dB(double x) {
+            return 20 * std::log10(x);
         }
     };
 
@@ -714,6 +729,15 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeTestPassesMaskerFilePathToMaskerPlayer
+    ) {
+        test.maskerFilePath = "a";
+        initializeTest();
+        assertEqual("a", maskerPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         playTrialSubscribesToTargetPlaybackCompletionNotification
     ) {
         playTrial();
@@ -753,46 +777,37 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestPassesMaskerFilePathToMaskerPlayer
-    ) {
-        test.maskerFilePath = "a";
-        initializeTest();
-        assertEqual("a", maskerPlayer.filePath());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         playTrialSetsTargetPlayerLevel
     ) {
-        test.maskerLevel_dB_SPL = 5;
-        test.fullScaleLevel_dB_SPL = 11;
-        test.startingSnr_dB = 13;
+        test.startingSnr_dB = 1;
+        test.maskerLevel_dB_SPL = 2;
+        test.fullScaleLevel_dB_SPL = 3;
+        targetPlayer.setRms(4);
         initializeTest();
-        targetPlayer.setRms(7);
         playTrial();
-        EXPECT_EQ(20 * std::log10(1.0/7) + 13 + 5 - 11, targetPlayer.level_dB());
+        EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayer.level_dB());
     }
 
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationSetsTargetPlayerLevel
     ) {
-        calibration.level_dB_SPL = 5;
-        calibration.fullScaleLevel_dB_SPL = 11;
-        targetPlayer.setRms(7);
-        model.playCalibration(calibration);
-        EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, targetPlayer.level_dB());
+        playingCalibration.setLevel_dB_SPL(1);
+        playingCalibration.setFullScaleLevel_dB_SPL(2);
+        targetPlayer.setRms(3);
+        playCalibration();
+        EXPECT_EQ(1 - 2 - dB(3), targetPlayer.level_dB());
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeTestSetsInitialMaskerPlayerLevel
     ) {
-        test.maskerLevel_dB_SPL = 5;
-        test.fullScaleLevel_dB_SPL = 11;
-        maskerPlayer.setRms(7);
+        test.maskerLevel_dB_SPL = 1;
+        test.fullScaleLevel_dB_SPL = 2;
+        maskerPlayer.setRms(3);
         initializeTest();
-        EXPECT_EQ(20 * std::log10(1.0/7) + 5 - 11, maskerPlayer.level_dB());
+        EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
     }
 
     TEST_F(
@@ -841,6 +856,15 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeTestPassesTargetListDirectoryToTargetList
+    ) {
+        test.targetListDirectory = "a";
+        initializeTest();
+        assertEqual("a", targetList.directory());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
     ) {
         initializeTest();
@@ -848,15 +872,6 @@ namespace {
             "close openNewFile writeTest writeTrialHeading ",
             outputFile.log()
         );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestPassesTargetListDirectoryToTargetList
-    ) {
-        test.targetListDirectory = "a";
-        initializeTest();
-        assertEqual("a", targetList.directory());
     }
 
     TEST_F(
