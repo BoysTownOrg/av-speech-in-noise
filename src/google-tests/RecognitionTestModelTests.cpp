@@ -349,9 +349,14 @@ namespace {
     
     class TrackStub : public av_coordinated_response_measure::Track {
         Parameters settings_{};
+        int x_{};
     public:
         auto &settings() const {
             return settings_;
+        }
+        
+        void setX(int x) {
+            x_ = x;
         }
         
         void reset(const Parameters &p) override {
@@ -367,7 +372,7 @@ namespace {
         }
         
         int x() override {
-            return {};
+            return x_;
         }
         
         bool complete() override {
@@ -881,7 +886,7 @@ namespace {
         RecognitionTestModelTests,
         playTrialSetsTargetPlayerLevel
     ) {
-        initializingTest.setStartingSnr_dB(1);
+        snrTrack.setX(1);
         initializingTest.setMaskerLevel_dB_SPL(2);
         initializingTest.setFullScaleLevel_dB_SPL(3);
         targetPlayer.setRms(4);

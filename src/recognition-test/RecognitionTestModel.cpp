@@ -170,7 +170,7 @@ namespace recognition_test {
     double RecognitionTestModel::targetLevel_dB() {
         return
             desiredMaskerLevel_dB() +
-            test.startingSnr_dB -
+            snrTrack->x() -
             unalteredTargetLevel_dB();
     }
     
