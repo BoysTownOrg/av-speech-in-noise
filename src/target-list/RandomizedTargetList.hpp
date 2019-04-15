@@ -22,8 +22,10 @@ namespace target_list {
     class RandomizedTargetList : public av_coordinate_response_measure::TargetList {
         std::vector<std::string> files{};
         std::string directory_{};
+        std::string current_{};
         DirectoryReader *reader;
         Randomizer *randomizer;
+        bool first{};
     public:
         RandomizedTargetList(DirectoryReader *, Randomizer *);
         void loadFromDirectory(std::string) override;

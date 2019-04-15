@@ -12,6 +12,7 @@ namespace target_list {
         directory_ = std::move(directory);
         files = reader->filesIn(directory_);
         randomizer->shuffle(files.begin(), files.end());
+        first = true;
     }
     
     bool RandomizedTargetList::empty() {
@@ -21,7 +22,11 @@ namespace target_list {
     std::string RandomizedTargetList::next() {
         auto next_ = files.front();
         files.erase(files.begin());
+        if (!first)
+            files.push_back(current_);
+        first = false;
         randomizer->shuffle(files.begin(), files.end());
+        current_ = next_;
         return directory_ + "/" + next_;
     }
     

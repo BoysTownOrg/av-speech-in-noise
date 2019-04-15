@@ -82,13 +82,22 @@ namespace {
 
     TEST_F(
         TargetListTests,
-        nextReturnsFullPathToFileAtFront
+        nextReturnsFullPathToFile
     ) {
-        setFileNames({ "a", "b", "c" });
+        setFileNames({ "a" });
         loadFromDirectory("C:");
         assertEqual("C:/a", next());
-        assertEqual("C:/b", next());
-        assertEqual("C:/c", next());
+    }
+
+    TEST_F(
+        TargetListTests,
+        nextReplacesSecondToLastTarget
+    ) {
+        setFileNames({ "a", "b", "c", "d", "e" });
+        loadFromDirectory();
+        next();
+        next();
+        assertEqual({ "c", "d", "e", "a" }, randomizer.toShuffle());
     }
     
     class FileFilterDecoratorTests : public ::testing::Test {
