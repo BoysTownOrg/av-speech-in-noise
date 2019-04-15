@@ -27,7 +27,7 @@ namespace target_list {
     public:
         RandomizedTargetList(DirectoryReader *, Randomizer *);
         void loadFromDirectory(std::string) override;
-        bool empty() override;
+        bool empty();
         std::string next() override;
         std::string current() override;
     };

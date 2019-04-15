@@ -110,7 +110,7 @@ namespace av_coordinate_response_measure {
     }
     
     bool RecognitionTestModel::noMoreTrials() {
-        return targetList->empty();
+        return snrTrack->complete();
     }
     
     bool RecognitionTestModel::trialInProgress() {

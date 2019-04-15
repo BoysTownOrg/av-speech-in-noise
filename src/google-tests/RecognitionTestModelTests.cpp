@@ -259,14 +259,6 @@ namespace {
             directory_ = std::move(directory);
         }
         
-        bool empty() override {
-            return empty_;
-        }
-        
-        void setEmpty() {
-            empty_ = true;
-        }
-        
         std::string next() override {
             nextCalled_ = true;
             return next_;
@@ -575,10 +567,6 @@ namespace {
             return maskerPlayer.fadeInCalled();
         }
         
-        void setListToEmpty() {
-            targetList.setEmpty();
-        }
-        
         void assertMaskerPlayerNotPlayed() {
             EXPECT_FALSE(maskerPlayerFadedIn());
         }
@@ -794,14 +782,6 @@ namespace {
         assertTargetPlayerNotPlayedAfterPlayingCalibration();
     }
 
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialDoesNotPlayIfListEmpty
-    ) {
-        setListToEmpty();
-        assertMaskerPlayerNotPlayedAfterPlayingTrial();
-    }
-
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
         playTrial();
         EXPECT_TRUE(maskerPlayerFadedIn());
@@ -886,14 +866,6 @@ namespace {
     ) {
         playTrial();
         EXPECT_TRUE(targetPlayer.playbackCompletionSubscribedTo());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialDoesNotAdvanceListIfEmpty
-    ) {
-        setListToEmpty();
-        assertListNotAdvancedAfterPlayingTrial();
     }
 
     TEST_F(
