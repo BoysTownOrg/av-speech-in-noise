@@ -123,7 +123,7 @@ namespace recognition_test {
             OutputFile *
         );
         void initializeTest(const av_coordinated_response_measure::Test &) override;
-        void playTrial(const AudioSettings &) override;
+        void playTrial(const av_coordinated_response_measure::AudioSettings &) override;
         void submitResponse(const av_coordinated_response_measure::SubjectResponse &) override;
         bool testComplete() override;
         std::vector<std::string> audioDevices() override;
@@ -144,7 +144,7 @@ namespace recognition_test {
         bool noMoreTrials();
         bool trialInProgress();
         void loadNextTarget();
-        void preparePlayers(const AudioSettings &);
+        void preparePlayers(const av_coordinated_response_measure::AudioSettings &);
         void startTrial();
         bool auditoryOnly();
         void prepareVideo();
@@ -154,8 +154,8 @@ namespace recognition_test {
         double maskerLevel_dB();
         void setTargetPlayerDevice(const std::string &);
         void setAudioDevices(const std::string &);
-        void trySettingAudioDevices(const AudioSettings &);
-        int findDeviceIndex(const AudioSettings &);
+        void trySettingAudioDevices(const av_coordinated_response_measure::AudioSettings &);
+        int findDeviceIndex(const av_coordinated_response_measure::AudioSettings &);
         void throwInvalidAudioDeviceOnErrorSettingDevice(
             void(RecognitionTestModel::*f)(const std::string &),
             const std::string &

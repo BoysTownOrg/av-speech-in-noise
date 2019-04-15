@@ -101,7 +101,7 @@ namespace recognition_test {
             av_coordinated_response_measure::Condition::auditoryOnly;
     }
     
-    void RecognitionTestModel::playTrial(const AudioSettings &settings) {
+    void RecognitionTestModel::playTrial(const av_coordinated_response_measure::AudioSettings &settings) {
         if (noMoreTrials() || trialInProgress())
             return;
         
@@ -117,13 +117,13 @@ namespace recognition_test {
         return maskerPlayer->playing();
     }
     
-    void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
+    void RecognitionTestModel::preparePlayers(const av_coordinated_response_measure::AudioSettings &p) {
         trySettingAudioDevices(p);
         loadNextTarget();
     }
     
     void RecognitionTestModel::trySettingAudioDevices(
-        const AudioSettings &p
+        const av_coordinated_response_measure::AudioSettings &p
     ) {
         throwInvalidAudioDeviceOnErrorSettingDevice(
             &RecognitionTestModel::setAudioDevices,

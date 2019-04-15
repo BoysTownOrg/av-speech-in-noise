@@ -63,6 +63,10 @@ namespace av_coordinated_response_measure {
         const Rule *targetLevelRule;
     };
     
+    struct AudioSettings {
+        std::string audioDevice;
+    };
+    
     struct Calibration {
         std::string filePath;
         std::string audioDevice;
@@ -88,13 +92,8 @@ namespace av_coordinated_response_measure {
         RUNTIME_ERROR(RequestFailure)
         virtual void initializeTest(const Test &) = 0;
         virtual void playCalibration(const Calibration &) = 0;
-        
-        struct AudioSettings {
-            std::string audioDevice;
-        };
         virtual void playTrial(const AudioSettings &) = 0;
         virtual void submitResponse(const SubjectResponse &) = 0;
-        
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
     };

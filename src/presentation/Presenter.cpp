@@ -81,7 +81,7 @@ namespace presentation {
     
     void Presenter::playTrial() {
         hideNextTrialButton();
-        av_coordinated_response_measure::Model::AudioSettings p;
+        av_coordinated_response_measure::AudioSettings p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
     }

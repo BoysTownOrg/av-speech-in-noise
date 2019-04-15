@@ -472,7 +472,7 @@ namespace {
     };
     
     class PlayingTrial : public AudioDeviceUseCase {
-        recognition_test::RecognitionTestModel::AudioSettings trial;
+        av_coordinated_response_measure::AudioSettings trial;
     public:
         void setAudioDevice(std::string s) override {
             trial.audioDevice = std::move(s);

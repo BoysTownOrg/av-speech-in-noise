@@ -17,7 +17,7 @@ namespace {
     class ModelStub : public av_coordinated_response_measure::Model {
         av_coordinated_response_measure::Test testParameters_{};
         av_coordinated_response_measure::Calibration calibrationParameters_{};
-        AudioSettings trialParameters_{};
+        av_coordinated_response_measure::AudioSettings trialParameters_{};
         av_coordinated_response_measure::SubjectResponse responseParameters_{};
         std::vector<std::string> audioDevices_{};
         EventListener *listener_{};
@@ -52,7 +52,7 @@ namespace {
             return testComplete_;
         }
         
-        void playTrial(const AudioSettings &p) override {
+        void playTrial(const av_coordinated_response_measure::AudioSettings &p) override {
             trialParameters_ = p;
             trialPlayed_ = true;
         }
@@ -1035,7 +1035,7 @@ namespace {
             throw RequestFailure{errorMessage};
         }
         
-        void playTrial(const AudioSettings &) override {
+        void playTrial(const av_coordinated_response_measure::AudioSettings &) override {
             throw RequestFailure{errorMessage};
         }
         
