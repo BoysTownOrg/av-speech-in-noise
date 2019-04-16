@@ -259,6 +259,13 @@ namespace {
         std::vector<float> subvector(const std::vector<float> &v, int b, int e) {
             return {v.begin() + b, v.begin() + e};
         }
+        
+        std::vector<float> oneToN(int N) {
+            std::vector<float> result;
+            result.resize(N);
+            std::iota(result.begin(), result.end(), 1);
+            return result;
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -305,15 +312,15 @@ namespace {
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
-        auto window = halfHannWindowHalf(3 * 4 + 1);
+        auto halfWindowLength = 3 * 4 + 1;
     
         fadeIn();
-        leftChannel = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+        leftChannel = oneToN(halfWindowLength);
         fillAudioBufferMono();
         assertEqual(
             elementWiseProduct(
-                window,
-                { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 }
+                halfHannWindowHalf(halfWindowLength),
+                oneToN(halfWindowLength)
             ),
             leftChannel,
             1e-6f
