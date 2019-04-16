@@ -180,6 +180,15 @@ namespace {
             return window;
         }
         
+        std::vector<float> halfHannWindowHalf(int halfN) {
+            auto N = 2 * halfN - 1;
+            const auto pi = std::acos(-1);
+            std::vector<float> window;
+            for (int n = 0; n < halfN; ++n)
+                window.push_back((1 - std::cos((2*pi*n)/(N - 1))) / 2);
+            return window;
+        }
+        
         std::vector<float> backHalfHannWindow(int N) {
             auto frontHalf = halfHannWindow(N);
             std::reverse(frontHalf.begin(), frontHalf.end());
@@ -252,21 +261,47 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunction) {
-        player.setFadeInOutSeconds(5);
-        audioPlayer.setSampleRateHz(6);
-        auto window = halfHannWindow(2 * 5 * 6 + 1);
+        player.setFadeInOutSeconds(3);
+        audioPlayer.setSampleRateHz(4);
+        auto window = halfHannWindowHalf(3 * 4 + 1);
     
         fadeIn();
+        for (int i = 0; i < 4; ++i) {
+            leftChannel = { 7, 8, 9 };
+            fillAudioBufferMono();
+            auto offset = i * 3;
+            EXPECT_NEAR(window.at(offset) * 7, leftChannel.at(0), 1e-6);
+            EXPECT_NEAR(window.at(offset+1) * 8, leftChannel.at(1), 1e-6);
+            EXPECT_NEAR(window.at(offset+2) * 9, leftChannel.at(2), 1e-6);
+        }
         leftChannel = { 7, 8, 9 };
         fillAudioBufferMono();
-        EXPECT_NEAR(window.at(0) * 7, leftChannel.at(0), 1e-6);
-        EXPECT_NEAR(window.at(1) * 8, leftChannel.at(1), 1e-6);
-        EXPECT_NEAR(window.at(2) * 9, leftChannel.at(2), 1e-6);
-        leftChannel = { 7, 8, 9 };
+        EXPECT_NEAR(window.at(12) * 7, leftChannel.at(0), 1e-6);
+        EXPECT_NEAR(1 * 8, leftChannel.at(1), 1e-6);
+        EXPECT_NEAR(1 * 9, leftChannel.at(2), 1e-6);
+    }
+
+    TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
+        player.setFadeInOutSeconds(3);
+        audioPlayer.setSampleRateHz(4);
+        auto window = halfHannWindowHalf(3 * 4 + 1);
+    
+        fadeIn();
+        leftChannel = { 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.1, 2.2, 2.3, 2.4 };
         fillAudioBufferMono();
-        EXPECT_NEAR(window.at(3) * 7, leftChannel.at(0), 1e-6);
-        EXPECT_NEAR(window.at(4) * 8, leftChannel.at(1), 1e-6);
-        EXPECT_NEAR(window.at(5) * 9, leftChannel.at(2), 1e-6);
+        EXPECT_NEAR(window.at(0) * 1.1, leftChannel.at(0), 1e-6);
+        EXPECT_NEAR(window.at(1) * 1.2, leftChannel.at(1), 1e-6);
+        EXPECT_NEAR(window.at(2) * 1.3, leftChannel.at(2), 1e-6);
+        EXPECT_NEAR(window.at(3) * 1.4, leftChannel.at(3), 1e-6);
+        EXPECT_NEAR(window.at(4) * 1.5, leftChannel.at(4), 1e-6);
+        EXPECT_NEAR(window.at(5) * 1.6, leftChannel.at(5), 1e-6);
+        EXPECT_NEAR(window.at(6) * 1.7, leftChannel.at(6), 1e-6);
+        EXPECT_NEAR(window.at(7) * 1.8, leftChannel.at(7), 1e-6);
+        EXPECT_NEAR(window.at(8) * 1.9, leftChannel.at(8), 1e-6);
+        EXPECT_NEAR(window.at(9) * 2.1, leftChannel.at(9), 1e-6);
+        EXPECT_NEAR(window.at(10) * 2.2, leftChannel.at(10), 1e-6);
+        EXPECT_NEAR(window.at(11) * 2.3, leftChannel.at(11), 1e-6);
+        EXPECT_NEAR(window.at(12) * 2.4, leftChannel.at(12), 1e-6);
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereo) {
