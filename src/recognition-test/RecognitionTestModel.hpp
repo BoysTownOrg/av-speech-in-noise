@@ -6,6 +6,7 @@
 
 namespace av_coordinate_response_measure {
     class InvalidAudioDevice {};
+    class InvalidAudioFile {};
     
     class TargetPlayer {
     public:

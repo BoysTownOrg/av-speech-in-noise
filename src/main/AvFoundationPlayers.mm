@@ -187,7 +187,7 @@ void CoreAudioBufferedReader::loadFile(std::string filePath) {
         error:nil
     ];
     auto track = asset.audioTrack();
-    trackOutput = [AVAssetReaderTrackOutput
+    trackOutput = track == nil ? nil : [AVAssetReaderTrackOutput
         assetReaderTrackOutputWithTrack:track
         outputSettings:@{
             AVFormatIDKey : [NSNumber numberWithInt:kAudioFormatLinearPCM]

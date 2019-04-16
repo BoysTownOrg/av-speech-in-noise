@@ -44,14 +44,22 @@ namespace stimulus_players {
             ) / x.size()
         );
     }
-
+    
     double TargetPlayerImpl::rms() {
-        auto audio = reader->read(filePath_);
+        auto audio = readAudio_();
         if (audio.size() == 0)
             return 0;
         
         auto firstChannel = audio.front();
         return ::stimulus_players::rms(firstChannel);
+    }
+
+    std::vector<std::vector<float>> TargetPlayerImpl::readAudio_() {
+        try {
+            return reader->read(filePath_);
+        } catch (const AudioReader::InvalidFile &) {
+            throw av_coordinate_response_measure::InvalidAudioFile{};
+        }
     }
 
     void TargetPlayerImpl::setLevel_dB(double x) {

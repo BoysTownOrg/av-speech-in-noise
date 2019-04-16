@@ -55,6 +55,8 @@ namespace stimulus_players {
         void fillAudioBuffer(
             const std::vector<gsl::span<float> > &audio) override;
         std::vector<std::string> audioDevices();
+    private:
+        std::vector<std::vector<float>> readAudio_();
     };
 }
 

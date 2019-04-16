@@ -181,7 +181,7 @@ namespace {
         setAudioDeviceDescriptions({"zeroth", "first", "second"});
         try {
             player.setAudioDevice("third");
-            FAIL() << "Expected recognition_test::InvalidAudioDevice";
+            FAIL() << "Expected av_coordinate_response_measure::InvalidAudioDevice";
         } catch(const av_coordinate_response_measure::InvalidAudioDevice &) {
         
         }
@@ -213,5 +213,15 @@ namespace {
     ) {
         player.subscribeToPlaybackCompletion();
         EXPECT_TRUE(videoPlayer.playbackCompletionSubscribedTo());
+    }
+
+    TEST_F(TargetPlayerTests, rmsThrowsInvalidAudioFileWhenAudioReaderThrows) {
+        audioReader.throwOnRead();
+        try {
+            player.rms();
+            FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
+        } catch(const av_coordinate_response_measure::InvalidAudioFile &) {
+        
+        }
     }
 }

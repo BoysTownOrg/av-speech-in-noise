@@ -8,6 +8,7 @@ namespace stimulus_players {
     public:
         virtual ~AudioReader() = default;
         virtual std::vector<std::vector<float>> read(std::string filePath) = 0;
+        class InvalidFile {};
     };
 }
 
