@@ -278,16 +278,10 @@ namespace {
             int framesPerBuffer
         ) {
             for (int i = 0; i < buffers; ++i) {
-                leftChannel = oneToN(framesPerBuffer);
-                fillAudioBufferMono();
                 auto offset = i * framesPerBuffer;
-                assertEqual(
-                    elementWiseProduct(
-                        subvector(compare, offset, offset + framesPerBuffer),
-                        oneToN(framesPerBuffer)
-                    ),
-                    leftChannel,
-                    1e-6f
+                assertFillingLeftChannelMultipliesBy(
+                    subvector(compare, offset, offset + framesPerBuffer),
+                    framesPerBuffer
                 );
             }
         }
