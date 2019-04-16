@@ -195,6 +195,18 @@ namespace {
             return frontHalf;
         }
         
+        std::vector<float> elementWiseProduct(std::vector<float> x, std::vector<float> y) {
+            std::vector<float> product;
+            std::transform(
+                x.begin(),
+                x.end(),
+                y.begin(),
+                std::back_inserter(product),
+                std::multiplies<float>()
+            );
+            return product;
+        }
+        
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
             audioPlayer.setAudioDeviceDescriptions(std::move(v));
         }
@@ -270,9 +282,16 @@ namespace {
             leftChannel = { 7, 8, 9 };
             fillAudioBufferMono();
             auto offset = i * 3;
-            EXPECT_NEAR(window.at(offset) * 7, leftChannel.at(0), 1e-6);
-            EXPECT_NEAR(window.at(offset+1) * 8, leftChannel.at(1), 1e-6);
-            EXPECT_NEAR(window.at(offset+2) * 9, leftChannel.at(2), 1e-6);
+            std::vector<float> windowPiece = {window.begin() + offset, window.begin() + offset + 3};
+            
+            assertEqual(
+                elementWiseProduct(
+                    windowPiece,
+                    { 7, 8, 9 }
+                ),
+                leftChannel,
+                1e-6f
+            );
         }
         leftChannel = { 7, 8, 9 };
         fillAudioBufferMono();
@@ -287,21 +306,16 @@ namespace {
         auto window = halfHannWindowHalf(3 * 4 + 1);
     
         fadeIn();
-        leftChannel = { 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.1, 2.2, 2.3, 2.4 };
+        leftChannel = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
         fillAudioBufferMono();
-        EXPECT_NEAR(window.at(0) * 1.1, leftChannel.at(0), 1e-6);
-        EXPECT_NEAR(window.at(1) * 1.2, leftChannel.at(1), 1e-6);
-        EXPECT_NEAR(window.at(2) * 1.3, leftChannel.at(2), 1e-6);
-        EXPECT_NEAR(window.at(3) * 1.4, leftChannel.at(3), 1e-6);
-        EXPECT_NEAR(window.at(4) * 1.5, leftChannel.at(4), 1e-6);
-        EXPECT_NEAR(window.at(5) * 1.6, leftChannel.at(5), 1e-6);
-        EXPECT_NEAR(window.at(6) * 1.7, leftChannel.at(6), 1e-6);
-        EXPECT_NEAR(window.at(7) * 1.8, leftChannel.at(7), 1e-6);
-        EXPECT_NEAR(window.at(8) * 1.9, leftChannel.at(8), 1e-6);
-        EXPECT_NEAR(window.at(9) * 2.1, leftChannel.at(9), 1e-6);
-        EXPECT_NEAR(window.at(10) * 2.2, leftChannel.at(10), 1e-6);
-        EXPECT_NEAR(window.at(11) * 2.3, leftChannel.at(11), 1e-6);
-        EXPECT_NEAR(window.at(12) * 2.4, leftChannel.at(12), 1e-6);
+        assertEqual(
+            elementWiseProduct(
+                window,
+                { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 }
+            ),
+            leftChannel,
+            1e-6f
+        );
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereo) {
