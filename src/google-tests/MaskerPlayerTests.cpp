@@ -286,17 +286,19 @@ namespace {
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
-        auto window = halfHannWindowHalf(3 * 5 + 1);
-    
+        auto halfWindowLength = 3 * 5 + 1;
+        auto window = halfHannWindowHalf(halfWindowLength);
+        auto framesPerBuffer = 4;
+        
         fadeIn();
-        for (int i = 0; i < 4; ++i) {
-            leftChannel = { 7, 8, 9, 10 };
+        for (int i = 0; i < halfWindowLength/framesPerBuffer; ++i) {
+            leftChannel = oneToN(framesPerBuffer);
             fillAudioBufferMono();
-            auto offset = i * 4;
+            auto offset = i * framesPerBuffer;
             assertEqual(
                 elementWiseProduct(
-                    subvector(window, offset, offset + 4),
-                    { 7, 8, 9, 10 }
+                    subvector(window, offset, offset + framesPerBuffer),
+                    oneToN(framesPerBuffer)
                 ),
                 leftChannel,
                 1e-6f
