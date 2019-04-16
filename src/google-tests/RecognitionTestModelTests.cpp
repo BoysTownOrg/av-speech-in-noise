@@ -717,6 +717,14 @@ namespace {
         void setTargetPlayerRms(T &&x) {
             targetPlayer.setRms(std::forward<T>(x));
         }
+        
+        auto snrTrackPushedDown() {
+            return snrTrack.pushedDown();
+        }
+        
+        auto snrTrackPushedUp() {
+            return snrTrack.pushedUp();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1049,8 +1057,8 @@ namespace {
     ) {
         evaluator.setCorrect();
         submitResponse();
-        EXPECT_TRUE(snrTrack.pushedDown());
-        EXPECT_FALSE(snrTrack.pushedUp());
+        EXPECT_TRUE(snrTrackPushedDown());
+        EXPECT_FALSE(snrTrackPushedUp());
     }
 
     TEST_F(
@@ -1059,8 +1067,8 @@ namespace {
     ) {
         evaluator.setIncorrect();
         submitResponse();
-        EXPECT_TRUE(snrTrack.pushedUp());
-        EXPECT_FALSE(snrTrack.pushedDown());
+        EXPECT_TRUE(snrTrackPushedUp());
+        EXPECT_FALSE(snrTrackPushedDown());
     }
 
     TEST_F(
