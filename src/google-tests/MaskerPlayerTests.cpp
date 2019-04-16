@@ -273,30 +273,27 @@ namespace {
         }
         
         void assertFillingLeftChannelMultipliesBy_Buffered(
-            std::vector<float> compare,
+            std::vector<float> multiplicand,
             int buffers,
             int framesPerBuffer
         ) {
             for (int i = 0; i < buffers; ++i) {
                 auto offset = i * framesPerBuffer;
                 assertFillingLeftChannelMultipliesBy(
-                    subvector(compare, offset, offset + framesPerBuffer),
+                    subvector(multiplicand, offset, offset + framesPerBuffer),
                     framesPerBuffer
                 );
             }
         }
         
         void assertFillingLeftChannelMultipliesBy(
-            std::vector<float> compare,
+            std::vector<float> multiplicand,
             int framesPerBuffer
         ) {
             leftChannel = oneToN(framesPerBuffer);
             fillAudioBufferMono();
             assertEqual(
-                elementWiseProduct(
-                    compare,
-                    oneToN(framesPerBuffer)
-                ),
+                elementWiseProduct(multiplicand, oneToN(framesPerBuffer)),
                 leftChannel,
                 1e-6f
             );
