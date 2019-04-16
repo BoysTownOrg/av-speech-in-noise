@@ -64,6 +64,7 @@ namespace stimulus_players {
         double rms() override;
         void timerCallback() override;
     private:
+        std::vector<std::vector<float>> readAudio_();
         std::vector<std::string> audioDeviceDescriptions_();
         int findDeviceIndex(const std::string &device);
         void updateWindowLength();

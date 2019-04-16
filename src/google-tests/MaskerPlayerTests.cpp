@@ -472,4 +472,14 @@ namespace {
         player.rms();
         assertEqual("a", audioReader.filePath());
     }
+
+    TEST_F(MaskerPlayerTests, rmsThrowsInvalidAudioFileWhenAudioReaderThrows) {
+        audioReader.throwOnRead();
+        try {
+            player.rms();
+            FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
+        } catch(const av_coordinate_response_measure::InvalidAudioFile &) {
+        
+        }
+    }
 }

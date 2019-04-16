@@ -74,12 +74,20 @@ namespace stimulus_players {
     }
 
     double MaskerPlayerImpl::rms() {
-        auto audio = reader->read(filePath_);
+        auto audio = readAudio_();
         if (audio.size() == 0)
             return 0;
         
         auto firstChannel = audio.front();
         return ::stimulus_players::rms(firstChannel);
+    }
+
+    std::vector<std::vector<float>> MaskerPlayerImpl::readAudio_() {
+        try {
+            return reader->read(filePath_);
+        } catch (const AudioReader::InvalidFile &) {
+            throw av_coordinate_response_measure::InvalidAudioFile{};
+        }
     }
     
     std::vector<std::string> MaskerPlayerImpl::audioDeviceDescriptions_() {
