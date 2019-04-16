@@ -157,9 +157,7 @@ namespace {
     public:
         VectorFacade(std::vector<T> v) : v{std::move(v)} {}
         
-        std::vector<T> elementWiseProduct(
-            std::vector<T> y
-        ) {
+        std::vector<T> elementWiseProduct(std::vector<T> y) {
             std::vector<T> product;
             std::transform(
                 v.begin(),
@@ -320,6 +318,9 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
+        // For this test:
+        // halfWindowLength is determined by fade time and sample rate...
+        // but must be divisible by framesPerBuffer.
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
         auto halfWindowLength = 3 * 5 + 1;
@@ -380,6 +381,9 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionMultipleFills) {
+        // For this test:
+        // halfWindowLength is determined by fade time and sample rate...
+        // but must be divisible by framesPerBuffer.
         fadeInToFullLevel();
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
