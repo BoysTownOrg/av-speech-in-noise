@@ -4,6 +4,7 @@
 #include "AudioReader.h"
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace stimulus_players {
     class AudioBuffer {
@@ -19,7 +20,7 @@ namespace stimulus_players {
         virtual ~BufferedAudioReader() = default;
         virtual void loadFile(std::string) = 0;
         virtual bool failed() = 0;
-        virtual AudioBuffer *readNextBuffer() = 0;
+        virtual std::shared_ptr<AudioBuffer> readNextBuffer() = 0;
         virtual int minimumPossibleSample() = 0;
     };
 

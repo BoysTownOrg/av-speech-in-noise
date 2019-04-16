@@ -243,7 +243,7 @@ void CoreAudioBufferedReader::loadFile(std::string filePath) {
 }
 
 bool CoreAudioBufferedReader::failed() {
-    return false;
+    return trackOutput == nil;
 }
 
 stimulus_players::AudioBuffer *CoreAudioBufferedReader::readNextBuffer() {

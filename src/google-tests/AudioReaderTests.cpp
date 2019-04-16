@@ -26,7 +26,8 @@ namespace {
     
     class BufferedAudioReaderStub : public stimulus_players::BufferedAudioReader {
         std::vector<std::vector<std::vector<int>>> buffersPartTwo_{};
-        AudioBufferStub buffer{};
+        std::shared_ptr<AudioBufferStub> buffer =
+            std::make_shared<AudioBufferStub>();
         std::string file_{};
         int minimumPossibleSample_{};
         bool failOnLoad_{};
@@ -40,14 +41,14 @@ namespace {
             return file_;
         }
         
-        stimulus_players::AudioBuffer *readNextBuffer() override {
+        std::shared_ptr<stimulus_players::AudioBuffer> readNextBuffer() override {
             std::vector<std::vector<int>> next{};
             if (buffersPartTwo_.size()) {
                 next = buffersPartTwo_.front();
                 buffersPartTwo_.erase(buffersPartTwo_.begin());
             }
-            buffer.setAudio(next);
-            return &buffer;
+            buffer->setAudio(next);
+            return buffer;
         }
         
         void loadFile(std::string s) override {
