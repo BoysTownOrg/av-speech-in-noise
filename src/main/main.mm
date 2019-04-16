@@ -141,9 +141,9 @@ int main() {
     view.addSubview(testSetupView.view());
     view.addSubview(testerView.view());
     CocoaSubjectView subjectView{};
-    presentation::Presenter::Tester tester{&testerView};
-    presentation::Presenter::Subject subject{&subjectView};
-    presentation::Presenter::TestSetup testSetup{&testSetupView};
-    presentation::Presenter presenter{&model, &view, &testSetup, &tester, &subject};
+    av_coordinate_response_measure::Presenter::Tester tester{&testerView};
+    av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
+    av_coordinate_response_measure::Presenter::TestSetup testSetup{&testSetupView};
+    av_coordinate_response_measure::Presenter presenter{&model, &view, &testSetup, &tester, &subject};
     presenter.run();
 }

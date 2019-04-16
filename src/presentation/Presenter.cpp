@@ -1,16 +1,16 @@
 #include "Presenter.h"
 
-namespace presentation {
+namespace av_coordinate_response_measure {
     int Presenter::fullScaleLevel_dB_SPL = 119;
     
-    av_coordinate_response_measure::Rule
+    Rule
         Presenter::targetLevelRule = {
             { 2, 4, 1, 1 },
             { 6, 2, 1, 1 }
         };
     
     Presenter::Presenter(
-        av_coordinate_response_measure::Model *model,
+        Model *model,
         View *view,
         TestSetup *testSetup,
         Tester *tester,
@@ -81,7 +81,7 @@ namespace presentation {
     
     void Presenter::playTrial() {
         hideNextTrialButton();
-        av_coordinate_response_measure::AudioSettings p;
+        AudioSettings p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
     }
@@ -165,7 +165,6 @@ namespace presentation {
     Presenter::TestSetup::TestSetup(View::TestSetup *view) :
         view{view}
     {
-        using av_coordinate_response_measure::Condition;
         view->populateConditionMenu({
             conditionName(Condition::audioVisual),
             conditionName(Condition::auditoryOnly)
@@ -177,10 +176,10 @@ namespace presentation {
         view->show();
     }
     
-    av_coordinate_response_measure::Test
+    Test
         Presenter::TestSetup::testParameters()
     {
-        av_coordinate_response_measure::Test p;
+        Test p;
         p.startingSnr_dB =
             readInteger(view->startingSnr_dB(), "SNR");
         p.maskerLevel_dB_SPL = readMaskerLevel();
@@ -190,8 +189,8 @@ namespace presentation {
         p.testerId = view->testerId();
         p.session = view->session();
         p.condition = auditoryOnly()
-            ? av_coordinate_response_measure::Condition::auditoryOnly
-            : av_coordinate_response_measure::Condition::audioVisual;
+            ? Condition::auditoryOnly
+            : Condition::audioVisual;
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         p.targetLevelRule = &targetLevelRule;
         return p;
@@ -208,7 +207,7 @@ namespace presentation {
     
     bool Presenter::TestSetup::auditoryOnly() {
         return view->condition() == conditionName(
-            av_coordinate_response_measure::Condition::auditoryOnly
+            Condition::auditoryOnly
         );
     }
     
@@ -220,10 +219,10 @@ namespace presentation {
         parent->playCalibration();
     }
     
-    av_coordinate_response_measure::Calibration
+    Calibration
         Presenter::TestSetup::calibrationParameters()
     {
-        av_coordinate_response_measure::Calibration p;
+        Calibration p;
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readCalibrationLevel();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
@@ -318,25 +317,25 @@ namespace presentation {
         view->showResponseButtons();
     }
     
-    av_coordinate_response_measure::SubjectResponse
+    SubjectResponse
         Presenter::Subject::subjectResponse()
     {
-        av_coordinate_response_measure::SubjectResponse p;
+        SubjectResponse p;
         p.color = colorResponse();
         p.number = std::stoi(view->numberResponse());
         return p;
     }
     
-    av_coordinate_response_measure::Color Presenter::Subject::colorResponse() {
-        av_coordinate_response_measure::Color color;
+    Color Presenter::Subject::colorResponse() {
+        Color color;
         if (view->greenResponse())
-            color = av_coordinate_response_measure::Color::green;
+            color = Color::green;
         else if (view->blueResponse())
-            color = av_coordinate_response_measure::Color::blue;
+            color = Color::blue;
         else if (view->whiteResponse())
-            color = av_coordinate_response_measure::Color::white;
+            color = Color::white;
         else
-            color = av_coordinate_response_measure::Color::red;
+            color = Color::red;
         return color;
     }
 }

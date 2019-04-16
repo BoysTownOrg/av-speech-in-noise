@@ -90,7 +90,7 @@ namespace {
         }
     };
 
-    class ViewStub : public presentation::View {
+    class ViewStub : public av_coordinate_response_measure::View {
         std::vector<std::string> audioDevices_{};
         std::string errorMessage_{};
         std::string browseForDirectoryResult_{};
@@ -443,13 +443,13 @@ namespace {
     class UseCase {
     public:
         virtual ~UseCase() = default;
-        virtual void run(presentation::View::EventListener &) = 0;
+        virtual void run(av_coordinate_response_measure::View::EventListener &) = 0;
     };
     
     class TestSetupUseCase {
     public:
         virtual ~TestSetupUseCase() = default;
-        virtual void run(presentation::View::TestSetup::EventListener &) = 0;
+        virtual void run(av_coordinate_response_measure::View::TestSetup::EventListener &) = 0;
     };
 
     class BrowsingUseCase : public TestSetupUseCase {
@@ -477,14 +477,14 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(presentation::View::TestSetup::EventListener &listener) override {
+        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
             listener.browseForMasker();
         }
     };
 
     class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
     public:
-        void run(presentation::View::TestSetup::EventListener &listener) override {
+        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
             listener.browseForTargetList();
         }
 
@@ -515,19 +515,19 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(presentation::View::TestSetup::EventListener &listener) override {
+        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
             listener.browseForCalibration();
         }
     };
     
     class ConfirmingTestSetup : public TestSetupUseCase {
-        void run(presentation::View::TestSetup::EventListener &listener) override {
+        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
             listener.confirmTestSetup();
         }
     };
     
     class PlayingCalibration : public TestSetupUseCase {
-        void run(presentation::View::TestSetup::EventListener &listener) override {
+        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
             listener.playCalibration();
         }
     };
@@ -539,11 +539,11 @@ namespace {
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
         ViewStub view{};
-        presentation::Presenter::TestSetup testSetup{&setupView};
-        presentation::Presenter::Tester tester{&testerView};
-        presentation::Presenter::Subject subject{&subjectView};
+        av_coordinate_response_measure::Presenter::TestSetup testSetup{&setupView};
+        av_coordinate_response_measure::Presenter::Tester tester{&testerView};
+        av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
         
-        presentation::Presenter construct() {
+        av_coordinate_response_measure::Presenter construct() {
             return {&model, &view, &testSetup, &tester, &subject};
         }
     };
@@ -561,10 +561,10 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        presentation::Presenter::TestSetup testSetup{&setupView};
-        presentation::Presenter::Tester tester{&testerView};
-        presentation::Presenter::Subject subject{&subjectView};
-        presentation::Presenter presenter{
+        av_coordinate_response_measure::Presenter::TestSetup testSetup{&setupView};
+        av_coordinate_response_measure::Presenter::Tester tester{&testerView};
+        av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
+        av_coordinate_response_measure::Presenter presenter{
             &model,
             &view,
             &testSetup,
@@ -720,7 +720,7 @@ namespace {
             view.close();
         }
         
-        void setDialogResponse(presentation::View::DialogResponse r) {
+        void setDialogResponse(av_coordinate_response_measure::View::DialogResponse r) {
             view.setDialogResponse(r);
         }
         
@@ -807,7 +807,7 @@ namespace {
         EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
         EXPECT_EQ(2, modelTestParameters().maskerLevel_dB_SPL);
         EXPECT_EQ(
-            presentation::Presenter::fullScaleLevel_dB_SPL,
+            av_coordinate_response_measure::Presenter::fullScaleLevel_dB_SPL,
             modelTestParameters().fullScaleLevel_dB_SPL
         );
         assertEqual("a", modelTestParameters().targetListDirectory);
@@ -820,7 +820,7 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRunSequencesToModel) {
         confirmTestSetup();
         EXPECT_EQ(
-            &presentation::Presenter::targetLevelRule,
+            &av_coordinate_response_measure::Presenter::targetLevelRule,
             modelTestParameters().targetLevelRule
         );
     }
@@ -832,7 +832,7 @@ namespace {
         playCalibration();
         EXPECT_EQ(1, modelCalibrationParameters().level_dB_SPL);
         EXPECT_EQ(
-            presentation::Presenter::fullScaleLevel_dB_SPL,
+            av_coordinate_response_measure::Presenter::fullScaleLevel_dB_SPL,
             modelCalibrationParameters().fullScaleLevel_dB_SPL
         );
         assertEqual("a", modelCalibrationParameters().filePath);
@@ -977,19 +977,19 @@ namespace {
     }
 
     TEST_F(PresenterTests, closingTestHidesTesterViewIfUserDeclinesSaving) {
-        setDialogResponse(presentation::View::DialogResponse::decline);
+        setDialogResponse(av_coordinate_response_measure::View::DialogResponse::decline);
         close();
         assertTesterViewHidden();
     }
 
     TEST_F(PresenterTests, closingTestHidesTesterViewIfUserAcceptsSaving) {
-        setDialogResponse(presentation::View::DialogResponse::accept);
+        setDialogResponse(av_coordinate_response_measure::View::DialogResponse::accept);
         close();
         assertTesterViewHidden();
     }
 
     TEST_F(PresenterTests, closingTestDoesNotHideTesterViewIfUserCancels) {
-        setDialogResponse(presentation::View::DialogResponse::cancel);
+        setDialogResponse(av_coordinate_response_measure::View::DialogResponse::cancel);
         close();
         assertTesterViewNotHidden();
     }
@@ -1060,9 +1060,9 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
-        presentation::Presenter::TestSetup testSetup{&setupView};
-        presentation::Presenter::Tester tester{&testerView};
-        presentation::Presenter::Subject subject{&subjectView};
+        av_coordinate_response_measure::Presenter::TestSetup testSetup{&setupView};
+        av_coordinate_response_measure::Presenter::Tester tester{&testerView};
+        av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
         
         void useFailingModel(std::string s = {}) {
             failure.setErrorMessage(std::move(s));
@@ -1070,7 +1070,7 @@ namespace {
         }
         
         void confirmTestSetup() {
-            presentation::Presenter presenter{
+            av_coordinate_response_measure::Presenter presenter{
                 model,
                 &view,
                 &testSetup,

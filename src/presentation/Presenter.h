@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-namespace presentation {
+namespace av_coordinate_response_measure {
     class View {
     public:
         virtual ~View() = default;
@@ -96,7 +96,7 @@ namespace presentation {
 
     class Presenter :
         public View::EventListener,
-        public av_coordinate_response_measure::Model::EventListener
+        public Model::EventListener
     {
     public:
         class TestSetup : public View::TestSetup::EventListener {
@@ -113,8 +113,8 @@ namespace presentation {
             void setMasker(std::string);
             void setStimulusList(std::string);
             void setCalibrationFilePath(std::string);
-            av_coordinate_response_measure::Test testParameters();
-            av_coordinate_response_measure::Calibration calibrationParameters();
+            Test testParameters();
+            Calibration calibrationParameters();
         private:
             int readMaskerLevel();
             int readCalibrationLevel();
@@ -144,16 +144,16 @@ namespace presentation {
             void showNextTrialButton();
             void hideNextTrialButton();
             void showResponseButtons();
-            av_coordinate_response_measure::SubjectResponse subjectResponse();
+            SubjectResponse subjectResponse();
         private:
-            av_coordinate_response_measure::Color colorResponse();
+            Color colorResponse();
             
             View::Subject *view;
             Presenter *parent;
         };
         
         Presenter(
-            av_coordinate_response_measure::Model *,
+            Model *,
             View *,
             TestSetup *,
             Tester *,
@@ -172,7 +172,7 @@ namespace presentation {
         void confirmTestSetup();
         void playCalibration();
         static int fullScaleLevel_dB_SPL;
-        static av_coordinate_response_measure::Rule targetLevelRule;
+        static Rule targetLevelRule;
         
     private:
         void showErrorMessage(std::string);
@@ -190,7 +190,7 @@ namespace presentation {
         void showResponseButtons();
         void initializeTest_();
         
-        av_coordinate_response_measure::Model *model;
+        Model *model;
         View *view;
         TestSetup *testSetup;
         Tester *tester;

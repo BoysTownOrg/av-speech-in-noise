@@ -31,7 +31,7 @@ class CocoaSubjectView;
 - (void) playTrial;
 @end
 
-class CocoaTesterView : public presentation::View::Tester {
+class CocoaTesterView : public av_coordinate_response_measure::View::Tester {
     NSView *view_;
 public:
     CocoaTesterView();
@@ -40,7 +40,7 @@ public:
     NSView *view();
 };
 
-class CocoaTestSetupView : public presentation::View::TestSetup {
+class CocoaTestSetupView : public av_coordinate_response_measure::View::TestSetup {
     NSView *view_;
     NSTextField *subjectIdLabel;
     NSTextField *subjectId_;
@@ -92,7 +92,7 @@ private:
     NSTextField *allocLabel(NSString *label, NSRect frame);
 };
 
-class CocoaSubjectView : public presentation::View::Subject {
+class CocoaSubjectView : public av_coordinate_response_measure::View::Subject {
     NSWindow *window;
     NSView *responseButtons;
     NSView *nextTrialButton;
@@ -117,7 +117,7 @@ private:
     void addButtonRow(NSColor *color, int row);
 };
 
-class CocoaView : public presentation::View {
+class CocoaView : public av_coordinate_response_measure::View {
     EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
