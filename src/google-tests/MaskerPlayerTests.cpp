@@ -255,6 +255,10 @@ namespace {
         void assertCallbackNotScheduled() {
             EXPECT_FALSE(audioPlayer.callbackScheduled());
         }
+        
+        std::vector<float> subvector(const std::vector<float> &v, int b, int e) {
+            return {v.begin() + b, v.begin() + e};
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -282,11 +286,9 @@ namespace {
             leftChannel = { 7, 8, 9 };
             fillAudioBufferMono();
             auto offset = i * 3;
-            std::vector<float> windowPiece = {window.begin() + offset, window.begin() + offset + 3};
-            
             assertEqual(
                 elementWiseProduct(
-                    windowPiece,
+                    subvector(window, offset, offset + 3),
                     { 7, 8, 9 }
                 ),
                 leftChannel,
