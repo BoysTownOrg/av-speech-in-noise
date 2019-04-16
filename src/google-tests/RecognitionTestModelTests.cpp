@@ -126,6 +126,7 @@ namespace {
         bool videoHidden_{};
         bool videoShown_{};
         bool throwInvalidAudioDeviceWhenDeviceSet_{};
+        bool throwInvalidAudioFileOnRms_{};
         bool setDeviceCalled_{};
         bool playing_{};
         bool playbackCompletionSubscribedTo_{};
@@ -208,6 +209,8 @@ namespace {
         
         double rms() override {
             log_.insert("rms ");
+            if (throwInvalidAudioFileOnRms_)
+                throw av_coordinate_response_measure::InvalidAudioFile{};
             return rms_;
         }
         
@@ -229,6 +232,10 @@ namespace {
         
         auto playbackCompletionSubscribedTo() const {
             return playbackCompletionSubscribedTo_;
+        }
+        
+        void throwInvalidAudioFileOnRms() {
+            throwInvalidAudioFileOnRms_ = true;
         }
     };
 
@@ -1048,6 +1055,15 @@ namespace {
     ) {
         snrTrack.setComplete();
         EXPECT_TRUE(model.testComplete());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile
+    ) {
+        playingCalibration.setFilePath("a");
+        targetPlayer.throwInvalidAudioFileOnRms();
+        assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
     }
 }
 

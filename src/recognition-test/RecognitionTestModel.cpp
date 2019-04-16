@@ -234,11 +234,15 @@ namespace av_coordinate_response_measure {
             p.audioDevice
         );
         loadTargetFile(p.filePath);
-        setTargetLevel_dB(
-            p.level_dB_SPL -
-            p.fullScaleLevel_dB_SPL -
-            unalteredTargetLevel_dB()
-        );
+        try {
+            setTargetLevel_dB(
+                p.level_dB_SPL -
+                p.fullScaleLevel_dB_SPL -
+                unalteredTargetLevel_dB()
+            );
+        } catch (const InvalidAudioFile &) {
+            throw RequestFailure{"unable to read " + p.filePath};
+        }
         playTarget();
     }
 
