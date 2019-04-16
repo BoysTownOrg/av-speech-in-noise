@@ -867,7 +867,7 @@ namespace {
         );
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRunSequencesToModel) {
+    TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRule) {
         confirmTestSetup();
         EXPECT_EQ(
             &av_coordinate_response_measure::Presenter::targetLevelRule,
@@ -875,18 +875,30 @@ namespace {
         );
     }
 
-    TEST_F(PresenterTests, playCalibrationPassesParametersToModel) {
+    TEST_F(PresenterTests, playCalibrationPassesLevel) {
         setCalibrationLevel("1");
-        setupView.setCalibrationFilePath("a");
-        setAudioDevice("b");
         playCalibration();
         EXPECT_EQ(1, modelCalibrationParameters().level_dB_SPL);
+    }
+
+    TEST_F(PresenterTests, playCalibrationPassesFilePath) {
+        setupView.setCalibrationFilePath("a");
+        playCalibration();
+        assertEqual("a", modelCalibrationParameters().filePath);
+    }
+
+    TEST_F(PresenterTests, playCalibrationPassesAudioDevice) {
+        setAudioDevice("b");
+        playCalibration();
+        assertEqual("b", modelCalibrationParameters().audioDevice);
+    }
+
+    TEST_F(PresenterTests, playCalibrationPassesFullScaleLevel) {
+        playCalibration();
         EXPECT_EQ(
             av_coordinate_response_measure::Presenter::fullScaleLevel_dB_SPL,
             modelCalibrationParameters().fullScaleLevel_dB_SPL
         );
-        assertEqual("a", modelCalibrationParameters().filePath);
-        assertEqual("b", modelCalibrationParameters().audioDevice);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
