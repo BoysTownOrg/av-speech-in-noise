@@ -537,12 +537,11 @@ std::string CocoaView::browseModal(NSOpenPanel *panel) {
     switch([panel runModal]) {
         case NSModalResponseOK:
             browseCancelled_ = false;
-            break;
+            return panel.URLs.lastObject.path.UTF8String;
         default:
             browseCancelled_ = true;
+            return {};
     }
-    auto url = panel.URLs.lastObject;
-    return url.path.UTF8String;
 }
 
 std::string CocoaView::audioDevice() {
