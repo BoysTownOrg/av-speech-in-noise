@@ -150,6 +150,31 @@ namespace {
             return fadeOutCompletions_;
         }
     };
+    
+    template<typename T>
+    class VectorFacade {
+        std::vector<T> v;
+    public:
+        VectorFacade(std::vector<T> v) : v{std::move(v)} {}
+        
+        std::vector<T> elementWiseProduct(
+            std::vector<T> y
+        ) {
+            std::vector<T> product;
+            std::transform(
+                v.begin(),
+                v.end(),
+                y.begin(),
+                std::back_inserter(product),
+                std::multiplies<T>()
+            );
+            return product;
+        }
+        
+        VectorFacade<T> subvector(int b, int e) {
+            return std::vector<T>{v.begin() + b, v.begin() + e};
+        }
+    };
 
     class MaskerPlayerTests : public ::testing::Test {
     protected:
@@ -193,27 +218,6 @@ namespace {
             auto frontHalf = halfHannWindowHalf(length);
             std::reverse(frontHalf.begin(), frontHalf.end());
             return frontHalf;
-        }
-        
-        template<typename T>
-        std::vector<T> elementWiseProduct(
-            std::vector<T> x,
-            std::vector<T> y
-        ) {
-            std::vector<T> product;
-            std::transform(
-                x.begin(),
-                x.end(),
-                y.begin(),
-                std::back_inserter(product),
-                std::multiplies<T>()
-            );
-            return product;
-        }
-        
-        template<typename T>
-        std::vector<T> subvector(const std::vector<T> &v, int b, int e) {
-            return {v.begin() + b, v.begin() + e};
         }
         
         std::vector<float> oneToN(int N) {
@@ -273,27 +277,27 @@ namespace {
         }
         
         void assertFillingLeftChannelMultipliesBy_Buffered(
-            std::vector<float> multiplicand,
+            VectorFacade<float> multiplicand,
             int buffers,
             int framesPerBuffer
         ) {
             for (int i = 0; i < buffers; ++i) {
                 auto offset = i * framesPerBuffer;
                 assertFillingLeftChannelMultipliesBy(
-                    subvector(multiplicand, offset, offset + framesPerBuffer),
+                    multiplicand.subvector(offset, offset + framesPerBuffer),
                     framesPerBuffer
                 );
             }
         }
         
         void assertFillingLeftChannelMultipliesBy(
-            std::vector<float> multiplicand,
+            VectorFacade<float> multiplicand,
             int framesPerBuffer
         ) {
             leftChannel = oneToN(framesPerBuffer);
             fillAudioBufferMono();
             assertEqual(
-                elementWiseProduct(multiplicand, oneToN(framesPerBuffer)),
+                multiplicand.elementWiseProduct(oneToN(framesPerBuffer)),
                 leftChannel,
                 1e-6f
             );
