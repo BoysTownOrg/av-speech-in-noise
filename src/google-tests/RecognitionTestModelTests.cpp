@@ -358,10 +358,15 @@ namespace {
     class TrackStub : public av_coordinate_response_measure::Track {
         Settings settings_{};
         int x_{};
+        int reversals_{};
         bool pushedDown_{};
         bool pushedUp_{};
         bool complete_{};
     public:
+        void setReversals(int x) {
+            reversals_ = x;
+        }
+        
         auto pushedUp() const {
             return pushedUp_;
         }
@@ -399,7 +404,7 @@ namespace {
         }
         
         int reversals() override {
-            return {};
+            return reversals_;
         }
         
         void setComplete() {
@@ -1010,16 +1015,32 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseWritesTrial
+        submitResponseWritesColor
     ) {
         subjectResponse.color = av_coordinate_response_measure::Color::green;
-        subjectResponse.number = 1;
         submitResponse();
-        EXPECT_EQ(1, outputFile.trialWritten().subjectNumber);
         EXPECT_EQ(
             av_coordinate_response_measure::Color::green,
             outputFile.trialWritten().subjectColor
         );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseWritesNumber
+    ) {
+        subjectResponse.number = 1;
+        submitResponse();
+        EXPECT_EQ(1, outputFile.trialWritten().subjectNumber);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseWritesReversals
+    ) {
+        snrTrack.setReversals(1);
+        submitResponse();
+        EXPECT_EQ(1, outputFile.trialWritten().reversals);
     }
 
     TEST_F(

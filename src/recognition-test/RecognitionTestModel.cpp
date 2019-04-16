@@ -214,6 +214,7 @@ namespace av_coordinate_response_measure {
         Trial trial{};
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
+        trial.reversals = snrTrack->reversals();
         outputFile->writeTrial(trial);
     }
     
