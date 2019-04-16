@@ -919,7 +919,10 @@ namespace {
         );
     }
 
-    TEST_F(PresenterTests, confirmTestSetupWithInvalidMaskerLevelShowsErrorMessage) {
+    TEST_F(
+        PresenterTests,
+        confirmTestSetupWithInvalidMaskerLevelShowsErrorMessage
+    ) {
         assertInvalidMaskerLevelShowsErrorMessageFollowing(confirmingTestSetup);
     }
 

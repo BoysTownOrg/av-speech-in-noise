@@ -415,6 +415,7 @@ namespace {
         auto target() const {
             return target_;
         }
+        
         auto response() const {
             return response_;
         }
@@ -702,6 +703,15 @@ namespace {
         double dB(double x) {
             return 20 * std::log10(x);
         }
+        
+        auto targetPlayerLevel_dB() {
+            return targetPlayer.level_dB();
+        }
+        
+        template<typename T>
+        void setTargetPlayerRms(T &&x) {
+            targetPlayer.setRms(std::forward<T>(x));
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -925,10 +935,10 @@ namespace {
         snrTrack.setX(1);
         initializingTest.setMaskerLevel_dB_SPL(2);
         initializingTest.setFullScaleLevel_dB_SPL(3);
-        targetPlayer.setRms(4);
+        setTargetPlayerRms(4);
         initializeTest();
         playTrial();
-        EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayer.level_dB());
+        EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
     }
 
     TEST_F(
@@ -937,9 +947,9 @@ namespace {
     ) {
         playingCalibration.setLevel_dB_SPL(1);
         playingCalibration.setFullScaleLevel_dB_SPL(2);
-        targetPlayer.setRms(3);
+        setTargetPlayerRms(3);
         playCalibration();
-        EXPECT_EQ(1 - 2 - dB(3), targetPlayer.level_dB());
+        EXPECT_EQ(1 - 2 - dB(3), targetPlayerLevel_dB());
     }
 
     TEST_F(
