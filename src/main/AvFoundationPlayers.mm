@@ -160,6 +160,8 @@ CoreAudioBuffer::CoreAudioBuffer(AVAssetReaderTrackOutput *trackOutput) :
 }
 
 CoreAudioBuffer::~CoreAudioBuffer() {
+    if (blockBuffer)
+        CFRelease(blockBuffer);
     if (sampleBuffer)
         CFRelease(sampleBuffer);
 }

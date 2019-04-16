@@ -25,10 +25,11 @@ public:
 };
 
 class CoreAudioBuffer : public stimulus_players::AudioBuffer {
-    AudioBufferList audioBufferList;
+    AudioBufferList audioBufferList{};
     CMItemCount frames{};
     CMSampleBufferRef sampleBuffer;
-    CMBlockBufferRef blockBuffer;
+    // possibly critical: initialize blockBuffer to null
+    CMBlockBufferRef blockBuffer{};
 public:
     explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);
     ~CoreAudioBuffer() override;
