@@ -51,6 +51,14 @@ namespace {
         void setFileNames(std::vector<std::string> v) {
             reader.setFileNames(std::move(v));
         }
+        
+        auto shuffled() {
+            return randomizer.toShuffle();
+        }
+        
+        void assertHasBeenShuffled(std::vector<std::string> v) {
+            assertEqual(std::move(v), shuffled());
+        }
     };
 
     TEST_F(
@@ -67,7 +75,7 @@ namespace {
     ) {
         setFileNames({ "a", "b", "c" });
         loadFromDirectory();
-        assertEqual({ "a", "b", "c" }, randomizer.toShuffle());
+        assertHasBeenShuffled({ "a", "b", "c" });
     }
 
     TEST_F(
@@ -77,7 +85,7 @@ namespace {
         setFileNames({ "a", "b", "c", "d" });
         loadFromDirectory();
         next();
-        assertEqual({ "b", "c", "d" }, randomizer.toShuffle());
+        assertHasBeenShuffled({ "b", "c", "d" });
     }
 
     TEST_F(
@@ -88,7 +96,7 @@ namespace {
         loadFromDirectory();
         next();
         next();
-        assertEqual({ "c", "d", "e", "a" }, randomizer.toShuffle());
+        assertHasBeenShuffled({ "c", "d", "e", "a" });
     }
 
     TEST_F(
