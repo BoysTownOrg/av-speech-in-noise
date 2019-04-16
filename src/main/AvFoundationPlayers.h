@@ -27,7 +27,11 @@ public:
 class CoreAudioBuffer : public stimulus_players::AudioBuffer {
     AudioBufferList audioBufferList;
     CMItemCount frames{};
+    CMSampleBufferRef sampleBuffer;
+    CMBlockBufferRef blockBuffer;
 public:
+    explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);
+    ~CoreAudioBuffer() override;
     void set(CMSampleBufferRef);
     int channels() override;
     std::vector<int> channel(int) override;
@@ -35,12 +39,11 @@ public:
 };
 
 class CoreAudioBufferedReader : public stimulus_players::BufferedAudioReader {
-    CoreAudioBuffer buffer{};
     AVAssetReaderTrackOutput *trackOutput{};
 public:
     void loadFile(std::string) override;
     bool failed() override;
-    stimulus_players::AudioBuffer *readNextBuffer() override;
+    std::shared_ptr<stimulus_players::AudioBuffer> readNextBuffer() override;
     int minimumPossibleSample() override;
 };
 
