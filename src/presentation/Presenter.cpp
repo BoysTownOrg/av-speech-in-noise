@@ -3,11 +3,10 @@
 namespace av_coordinate_response_measure {
     int Presenter::fullScaleLevel_dB_SPL = 119;
     
-    Rule
-        Presenter::targetLevelRule = {
-            { 2, 4, 1, 1 },
-            { 6, 2, 1, 1 }
-        };
+    Rule Presenter::targetLevelRule = {
+        { 2, 4, 1, 1 },
+        { 6, 2, 1, 1 }
+    };
     
     Presenter::Presenter(
         Model *model,
