@@ -180,11 +180,11 @@ namespace {
             return window;
         }
         
-        std::vector<float> halfHannWindowHalf(int halfN) {
-            auto N = 2 * halfN - 1;
+        std::vector<float> halfHannWindowHalf(int length) {
+            auto N = 2 * length - 1;
             const auto pi = std::acos(-1);
             std::vector<float> window;
-            for (int n = 0; n < halfN; ++n)
+            for (int n = 0; n < length; ++n)
                 window.push_back((1 - std::cos((2*pi*n)/(N - 1))) / 2);
             return window;
         }
@@ -283,36 +283,31 @@ namespace {
         EXPECT_TRUE(audioPlayer.played());
     }
 
-    TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunction) {
+    TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
         player.setFadeInOutSeconds(3);
-        audioPlayer.setSampleRateHz(4);
-        auto window = halfHannWindowHalf(3 * 4 + 1);
+        audioPlayer.setSampleRateHz(5);
+        auto window = halfHannWindowHalf(3 * 5 + 1);
     
         fadeIn();
         for (int i = 0; i < 4; ++i) {
-            leftChannel = { 7, 8, 9 };
+            leftChannel = { 7, 8, 9, 10 };
             fillAudioBufferMono();
-            auto offset = i * 3;
+            auto offset = i * 4;
             assertEqual(
                 elementWiseProduct(
-                    subvector(window, offset, offset + 3),
-                    { 7, 8, 9 }
+                    subvector(window, offset, offset + 4),
+                    { 7, 8, 9, 10 }
                 ),
                 leftChannel,
                 1e-6f
             );
         }
-        leftChannel = { 7, 8, 9 };
-        fillAudioBufferMono();
-        EXPECT_NEAR(window.at(12) * 7, leftChannel.at(0), 1e-6);
-        EXPECT_NEAR(1 * 8, leftChannel.at(1), 1e-6);
-        EXPECT_NEAR(1 * 9, leftChannel.at(2), 1e-6);
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
-        player.setFadeInOutSeconds(3);
-        audioPlayer.setSampleRateHz(4);
-        auto halfWindowLength = 3 * 4 + 1;
+        player.setFadeInOutSeconds(2);
+        audioPlayer.setSampleRateHz(3);
+        auto halfWindowLength = 2 * 3 + 1;
     
         fadeIn();
         leftChannel = oneToN(halfWindowLength);
