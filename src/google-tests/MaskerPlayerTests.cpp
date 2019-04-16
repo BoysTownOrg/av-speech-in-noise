@@ -291,6 +291,22 @@ namespace {
                 );
             }
         }
+        
+        void assertFillingLeftChannelMultipliesBy(
+            std::vector<float> compare,
+            int framesPerBuffer
+        ) {
+            leftChannel = oneToN(framesPerBuffer);
+            fillAudioBufferMono();
+            assertEqual(
+                elementWiseProduct(
+                    compare,
+                    oneToN(framesPerBuffer)
+                ),
+                leftChannel,
+                1e-6f
+            );
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -328,15 +344,9 @@ namespace {
         auto halfWindowLength = 2 * 3 + 1;
     
         fadeIn();
-        leftChannel = oneToN(halfWindowLength);
-        fillAudioBufferMono();
-        assertEqual(
-            elementWiseProduct(
-                halfHannWindowHalf(halfWindowLength),
-                oneToN(halfWindowLength)
-            ),
-            leftChannel,
-            1e-6f
+        assertFillingLeftChannelMultipliesBy(
+            halfHannWindowHalf(halfWindowLength),
+            halfWindowLength
         );
     }
 
@@ -396,15 +406,9 @@ namespace {
         auto halfWindowLength = 2 * 3 + 1;
     
         fadeOut();
-        leftChannel = oneToN(halfWindowLength);
-        fillAudioBufferMono();
-        assertEqual(
-            elementWiseProduct(
-                backHalfHannWindowHalf(halfWindowLength),
-                oneToN(halfWindowLength)
-            ),
-            leftChannel,
-            1e-6f
+        assertFillingLeftChannelMultipliesBy(
+            backHalfHannWindowHalf(halfWindowLength),
+            halfWindowLength
         );
     }
 
