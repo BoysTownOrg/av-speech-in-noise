@@ -195,16 +195,32 @@ namespace {
             return frontHalf;
         }
         
-        std::vector<float> elementWiseProduct(std::vector<float> x, std::vector<float> y) {
-            std::vector<float> product;
+        template<typename T>
+        std::vector<T> elementWiseProduct(
+            std::vector<T> x,
+            std::vector<T> y
+        ) {
+            std::vector<T> product;
             std::transform(
                 x.begin(),
                 x.end(),
                 y.begin(),
                 std::back_inserter(product),
-                std::multiplies<float>()
+                std::multiplies<T>()
             );
             return product;
+        }
+        
+        template<typename T>
+        std::vector<T> subvector(const std::vector<T> &v, int b, int e) {
+            return {v.begin() + b, v.begin() + e};
+        }
+        
+        std::vector<float> oneToN(int N) {
+            std::vector<float> result;
+            result.resize(N);
+            std::iota(result.begin(), result.end(), 1);
+            return result;
         }
         
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
@@ -256,15 +272,24 @@ namespace {
             EXPECT_FALSE(audioPlayer.callbackScheduled());
         }
         
-        std::vector<float> subvector(const std::vector<float> &v, int b, int e) {
-            return {v.begin() + b, v.begin() + e};
-        }
-        
-        std::vector<float> oneToN(int N) {
-            std::vector<float> result;
-            result.resize(N);
-            std::iota(result.begin(), result.end(), 1);
-            return result;
+        void assertFillingLeftChannelMultipliesBy_Buffered(
+            std::vector<float> compare,
+            int buffers,
+            int framesPerBuffer
+        ) {
+            for (int i = 0; i < buffers; ++i) {
+                leftChannel = oneToN(framesPerBuffer);
+                fillAudioBufferMono();
+                auto offset = i * framesPerBuffer;
+                assertEqual(
+                    elementWiseProduct(
+                        subvector(compare, offset, offset + framesPerBuffer),
+                        oneToN(framesPerBuffer)
+                    ),
+                    leftChannel,
+                    1e-6f
+                );
+            }
         }
     };
 
@@ -287,23 +312,14 @@ namespace {
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
         auto halfWindowLength = 3 * 5 + 1;
-        auto window = halfHannWindowHalf(halfWindowLength);
         auto framesPerBuffer = 4;
         
         fadeIn();
-        for (int i = 0; i < halfWindowLength/framesPerBuffer; ++i) {
-            leftChannel = oneToN(framesPerBuffer);
-            fillAudioBufferMono();
-            auto offset = i * framesPerBuffer;
-            assertEqual(
-                elementWiseProduct(
-                    subvector(window, offset, offset + framesPerBuffer),
-                    oneToN(framesPerBuffer)
-                ),
-                leftChannel,
-                1e-6f
-            );
-        }
+        assertFillingLeftChannelMultipliesBy_Buffered(
+            halfHannWindowHalf(halfWindowLength),
+            halfWindowLength/framesPerBuffer,
+            framesPerBuffer
+        );
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
@@ -363,23 +379,14 @@ namespace {
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
         auto halfWindowLength = 3 * 5 + 1;
-        auto window = backHalfHannWindowHalf(halfWindowLength);
         auto framesPerBuffer = 4;
         
         fadeOut();
-        for (int i = 0; i < halfWindowLength/framesPerBuffer; ++i) {
-            leftChannel = oneToN(framesPerBuffer);
-            fillAudioBufferMono();
-            auto offset = i * framesPerBuffer;
-            assertEqual(
-                elementWiseProduct(
-                    subvector(window, offset, offset + framesPerBuffer),
-                    oneToN(framesPerBuffer)
-                ),
-                leftChannel,
-                1e-6f
-            );
-        }
+        assertFillingLeftChannelMultipliesBy_Buffered(
+            backHalfHannWindowHalf(halfWindowLength),
+            halfWindowLength/framesPerBuffer,
+            framesPerBuffer
+        );
     }
 
     TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
