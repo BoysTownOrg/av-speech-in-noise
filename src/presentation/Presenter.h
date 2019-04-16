@@ -172,7 +172,7 @@ namespace av_coordinate_response_measure {
         void confirmTestSetup();
         void playCalibration();
         static int fullScaleLevel_dB_SPL;
-        static Rule targetLevelRule;
+        static TrackingRule targetLevelRule;
         
     private:
         void showErrorMessage(std::string);

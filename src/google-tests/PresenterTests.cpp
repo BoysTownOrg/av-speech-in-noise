@@ -52,12 +52,16 @@ namespace {
             return testComplete_;
         }
         
-        void playTrial(const av_coordinate_response_measure::AudioSettings &p) override {
+        void playTrial(
+            const av_coordinate_response_measure::AudioSettings &p
+        ) override {
             trialParameters_ = p;
             trialPlayed_ = true;
         }
         
-        void initializeTest(const av_coordinate_response_measure::Test &p) override {
+        void initializeTest(
+            const av_coordinate_response_measure::Test &p
+        ) override {
             testParameters_ = p;
         }
         
@@ -65,7 +69,9 @@ namespace {
             return audioDevices_;
         }
         
-        void submitResponse(const av_coordinate_response_measure::SubjectResponse &p) override {
+        void submitResponse(
+            const av_coordinate_response_measure::SubjectResponse &p
+        ) override {
             responseParameters_ = p;
         }
         
@@ -73,7 +79,9 @@ namespace {
             listener_ = listener;
         }
         
-        void playCalibration(const av_coordinate_response_measure::Calibration &p) override {
+        void playCalibration(
+            const av_coordinate_response_measure::Calibration &p
+        ) override {
             calibrationParameters_ = p;
         }
         
@@ -443,13 +451,17 @@ namespace {
     class UseCase {
     public:
         virtual ~UseCase() = default;
-        virtual void run(av_coordinate_response_measure::View::EventListener &) = 0;
+        virtual void run(
+            av_coordinate_response_measure::View::EventListener &
+        ) = 0;
     };
     
     class TestSetupUseCase {
     public:
         virtual ~TestSetupUseCase() = default;
-        virtual void run(av_coordinate_response_measure::View::TestSetup::EventListener &) = 0;
+        virtual void run(
+            av_coordinate_response_measure::View::TestSetup::EventListener &
+        ) = 0;
     };
 
     class BrowsingUseCase : public TestSetupUseCase {
@@ -477,14 +489,18 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
+        void run(
+            av_coordinate_response_measure::View::TestSetup::EventListener &listener
+        ) override {
             listener.browseForMasker();
         }
     };
 
     class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
     public:
-        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
+        void run(
+            av_coordinate_response_measure::View::TestSetup::EventListener &listener
+        ) override {
             listener.browseForTargetList();
         }
 
@@ -515,19 +531,25 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
+        void run(
+            av_coordinate_response_measure::View::TestSetup::EventListener &listener
+        ) override {
             listener.browseForCalibration();
         }
     };
     
     class ConfirmingTestSetup : public TestSetupUseCase {
-        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
+        void run(
+            av_coordinate_response_measure::View::TestSetup::EventListener &listener
+        ) override {
             listener.confirmTestSetup();
         }
     };
     
     class PlayingCalibration : public TestSetupUseCase {
-        void run(av_coordinate_response_measure::View::TestSetup::EventListener &listener) override {
+        void run(
+            av_coordinate_response_measure::View::TestSetup::EventListener &listener
+        ) override {
             listener.playCalibration();
         }
     };
@@ -654,7 +676,7 @@ namespace {
             EXPECT_FALSE(setupViewHidden());
         }
 
-        void runUseCase(TestSetupUseCase &useCase) {
+        void run(TestSetupUseCase &useCase) {
             useCase.run(testSetup);
         }
 
@@ -662,7 +684,7 @@ namespace {
             BrowsingEnteredPathUseCase &useCase
         ) {
             useCase.setResult(view, "a");
-            runUseCase(useCase);
+            run(useCase);
             assertEqual("a", useCase.entry(setupView));
         }
 
@@ -672,7 +694,7 @@ namespace {
             useCase.setEntry(setupView, "a");
             useCase.setResult(view, "b");
             view.setBrowseCancelled();
-            runUseCase(useCase);
+            run(useCase);
             assertEqual("a", useCase.entry(setupView));
         }
         
@@ -720,13 +742,13 @@ namespace {
             view.close();
         }
         
-        void setDialogResponse(av_coordinate_response_measure::View::DialogResponse r) {
+        void setDialogResponse(
+            av_coordinate_response_measure::View::DialogResponse r
+        ) {
             view.setDialogResponse(r);
         }
         
-        const av_coordinate_response_measure::Test &
-            modelTestParameters()
-        {
+        const av_coordinate_response_measure::Test &modelTestParameters() {
             return model.testParameters();
         }
         
@@ -740,7 +762,7 @@ namespace {
             TestSetupUseCase &useCase
         ) {
             setCalibrationLevel("a");
-            useCase.run(testSetup);
+            run(useCase);
             assertEqual("'a' is not a valid calibration level.", errorMessage());
         }
         
@@ -749,7 +771,7 @@ namespace {
             TestSetupUseCase &useCase
         ) {
             setMaskerLevel("a");
-            useCase.run(testSetup);
+            run(useCase);
             assertEqual("'a' is not a valid masker level.", errorMessage());
         }
         
@@ -795,26 +817,54 @@ namespace {
         assertSetupViewHidden();
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesParametersToModel) {
+    TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {
         setupView.setStartingSnr("1");
-        setMaskerLevel("2");
-        setupView.setTargetListDirectory("a");
-        setupView.setSubjectId("b");
-        setupView.setTesterId("c");
-        setupView.setMasker("d");
-        setupView.setSession("e");
         confirmTestSetup();
         EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupPassesMaskerLevel) {
+        setMaskerLevel("2");
+        confirmTestSetup();
         EXPECT_EQ(2, modelTestParameters().maskerLevel_dB_SPL);
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupPassesTargetList) {
+        setupView.setTargetListDirectory("a");
+        confirmTestSetup();
+        assertEqual("a", modelTestParameters().targetListDirectory);
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupPassesSubjectId) {
+        setupView.setSubjectId("b");
+        confirmTestSetup();
+        assertEqual("b", modelTestParameters().subjectId);
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupPassesTesterId) {
+        setupView.setTesterId("c");
+        confirmTestSetup();
+        assertEqual("c", modelTestParameters().testerId);
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupPassesMasker) {
+        setupView.setMasker("d");
+        confirmTestSetup();
+        assertEqual("d", modelTestParameters().maskerFilePath);
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupPassesSession) {
+        setupView.setSession("e");
+        confirmTestSetup();
+        assertEqual("e", modelTestParameters().session);
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupPassesFullScaleLevel) {
+        confirmTestSetup();
         EXPECT_EQ(
             av_coordinate_response_measure::Presenter::fullScaleLevel_dB_SPL,
             modelTestParameters().fullScaleLevel_dB_SPL
         );
-        assertEqual("a", modelTestParameters().targetListDirectory);
-        assertEqual("b", modelTestParameters().subjectId);
-        assertEqual("c", modelTestParameters().testerId);
-        assertEqual("d", modelTestParameters().maskerFilePath);
-        assertEqual("e", modelTestParameters().session);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRunSequencesToModel) {

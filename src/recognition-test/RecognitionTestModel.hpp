@@ -56,7 +56,7 @@ namespace av_coordinate_response_measure {
     public:
         virtual ~Track() = default;
         struct Settings {
-            const Rule *rule;
+            const TrackingRule *rule;
             int startingX;
         };
         virtual void reset(const Settings &) = 0;

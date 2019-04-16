@@ -41,14 +41,14 @@ namespace av_coordinate_response_measure {
         }
     }
     
-    struct RunSequence {
+    struct TrackingSequence {
         int runCount;
         int stepSize;
         int down;
         int up;
     };
     
-    using Rule = typename std::vector<RunSequence>;
+    using TrackingRule = typename std::vector<TrackingSequence>;
     
     struct Test {
         std::string targetListDirectory;
@@ -60,7 +60,7 @@ namespace av_coordinate_response_measure {
         int maskerLevel_dB_SPL;
         int fullScaleLevel_dB_SPL;
         Condition condition;
-        const Rule *targetLevelRule;
+        const TrackingRule *targetLevelRule;
     };
     
     struct AudioSettings {
