@@ -15,7 +15,7 @@ namespace av_coordinate_response_measure {
         green,
         red,
         blue,
-        gray
+        white
     };
     
     enum class Condition {

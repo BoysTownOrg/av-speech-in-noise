@@ -358,7 +358,7 @@ namespace {
             bool responseButtonsHidden_{};
             bool nextTrialButtonHidden_{};
         public:
-            bool grayResponse() override {
+            bool whiteResponse() override {
                 return grayResponse_;
             }
             
@@ -819,7 +819,6 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRunSequencesToModel) {
         confirmTestSetup();
-        // sufficient comparision for equality?
         EXPECT_EQ(
             &presentation::Presenter::targetLevelRule,
             modelTestParameters().targetLevelRule
@@ -932,10 +931,10 @@ namespace {
         assertModelPassedCondition(av_coordinate_response_measure::Color::blue);
     }
 
-    TEST_F(PresenterTests, subjectResponsePassesGrayColor) {
+    TEST_F(PresenterTests, subjectResponsePassesWhiteColor) {
         subjectView.setGrayResponse();
         submitResponse();
-        assertModelPassedCondition(av_coordinate_response_measure::Color::gray);
+        assertModelPassedCondition(av_coordinate_response_measure::Color::white);
     }
 
     TEST_F(PresenterTests, submitResponseDoesNotHideTesterViewWhileTestInProgress) {

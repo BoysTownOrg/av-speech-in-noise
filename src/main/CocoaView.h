@@ -104,7 +104,7 @@ public:
     std::string numberResponse() override;
     bool greenResponse() override;
     bool blueResponse() override;
-    bool grayResponse() override;
+    bool whiteResponse() override;
     void showResponseButtons() override;
     void hideResponseButtons() override;
     void showNextTrialButton() override;

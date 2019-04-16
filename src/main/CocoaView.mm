@@ -318,7 +318,7 @@ void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
 static auto greenColor = NSColor.greenColor;
 static auto redColor = NSColor.redColor;
 static auto blueColor = NSColor.blueColor;
-static auto grayColor = NSColor.lightGrayColor;
+static auto whiteColor = NSColor.whiteColor;
 
 CocoaSubjectView::CocoaSubjectView() :
     // Defer may be critical here...
@@ -339,7 +339,7 @@ CocoaSubjectView::CocoaSubjectView() :
     actions.controller = this;
     addButtonRow(blueColor, 0);
     addButtonRow(greenColor, 1);
-    addButtonRow(grayColor, 2);
+    addButtonRow(whiteColor, 2);
     addButtonRow(redColor, 3);
     const auto button = [NSButton
         buttonWithTitle:@"Press when ready"
@@ -375,8 +375,8 @@ bool CocoaSubjectView::blueResponse() {
     return lastPressedColor() == blueColor;
 }
 
-bool CocoaSubjectView::grayResponse() {
-    return lastPressedColor() == grayColor;
+bool CocoaSubjectView::whiteResponse() {
+    return lastPressedColor() == whiteColor;
 }
 
 void CocoaSubjectView::respond(id sender) {

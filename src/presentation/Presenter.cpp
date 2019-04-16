@@ -333,8 +333,8 @@ namespace presentation {
             color = av_coordinate_response_measure::Color::green;
         else if (view->blueResponse())
             color = av_coordinate_response_measure::Color::blue;
-        else if (view->grayResponse())
-            color = av_coordinate_response_measure::Color::gray;
+        else if (view->whiteResponse())
+            color = av_coordinate_response_measure::Color::white;
         else
             color = av_coordinate_response_measure::Color::red;
         return color;

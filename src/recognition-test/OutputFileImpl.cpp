@@ -88,7 +88,7 @@ namespace av_coordinate_response_measure {
             return "red";
         case av_coordinate_response_measure::Color::blue:
             return "blue";
-        case av_coordinate_response_measure::Color::gray:
+        case av_coordinate_response_measure::Color::white:
             return "gray";
         }
         return "unknown";
