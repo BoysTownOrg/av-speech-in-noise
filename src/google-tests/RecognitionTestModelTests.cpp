@@ -414,6 +414,8 @@ namespace {
     
     class ResponseEvaluatorStub : public av_coordinate_response_measure::ResponseEvaluator {
         std::string target_{};
+        std::string correctNumberFilePath_{};
+        std::string correctColorFilePath_{};
         const av_coordinate_response_measure::SubjectResponse *response_{};
         int correctNumber_{};
         av_coordinate_response_measure::Color correctColor_{};
@@ -427,7 +429,15 @@ namespace {
             correctColor_ = c;
         }
         
-        auto target() const {
+        auto correctNumberFilePath() const {
+            return correctNumberFilePath_;
+        }
+        
+        auto correctColorFilePath() const {
+            return correctColorFilePath_;
+        }
+        
+        auto correctFilePath() const {
             return target_;
         }
         
@@ -453,10 +463,12 @@ namespace {
         }
         
         av_coordinate_response_measure::Color correctColor(const std::string &filePath) override {
+            correctColorFilePath_ = filePath;
             return correctColor_;
         }
         
         int correctNumber(const std::string &filePath) override {
+            correctNumberFilePath_ = filePath;
             return correctNumber_;
         }
     };
@@ -1091,6 +1103,16 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitResponsePassesTargetToEvaluatorForNumberAndColor
+    ) {
+        targetList.setCurrent("a");
+        submitResponse();
+        assertEqual("a", evaluator.correctColorFilePath());
+        assertEqual("a", evaluator.correctNumberFilePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitCorrectResponsePushesSnrDown
     ) {
         evaluator.setCorrect();
@@ -1123,7 +1145,7 @@ namespace {
     ) {
         targetList.setCurrent("a");
         submitResponse();
-        assertEqual("a", evaluator.target());
+        assertEqual("a", evaluator.correctFilePath());
     }
 
     TEST_F(
