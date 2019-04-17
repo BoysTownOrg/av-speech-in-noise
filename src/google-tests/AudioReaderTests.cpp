@@ -78,6 +78,12 @@ namespace {
     protected:
         BufferedAudioReaderStub bufferedReader{};
         stimulus_players::AudioReaderImpl reader{&bufferedReader};
+        
+        template<typename T>
+        std::vector<T> dividedBy(std::vector<T> x, T c) {
+            std::for_each(x.begin(), x.end(), [&](T &x_) { x_ /= c; });
+            return x;
+        }
     };
     
     TEST_F(AudioReaderTests, loadsFile) {
@@ -110,9 +116,9 @@ namespace {
         }});
         bufferedReader.setMinimumPossibleSample(-3);
         assertEqual({
-                { 1.f/-3, 2.f/-3, 3.f/-3, 10.f/-3, 11.f/-3, 12.f/-3, 19.f/-3, 20.f/-3, 21.f/-3 },
-                { 4.f/-3, 5.f/-3, 6.f/-3, 13.f/-3, 14.f/-3, 15.f/-3, 22.f/-3, 23.f/-3, 24.f/-3 },
-                { 7.f/-3, 8.f/-3, 9.f/-3, 16.f/-3, 17.f/-3, 18.f/-3, 25.f/-3, 26.f/-3, 27.f/-3 }
+                dividedBy({ 1, 2, 3, 10, 11, 12, 19, 20, 21 }, -3.f),
+                dividedBy({ 4, 5, 6, 13, 14, 15, 22, 23, 24 }, -3.f),
+                dividedBy({ 7, 8, 9, 16, 17, 18, 25, 26, 27 }, -3.f)
             },
             reader.read({})
         );

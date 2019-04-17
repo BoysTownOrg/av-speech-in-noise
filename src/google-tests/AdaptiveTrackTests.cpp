@@ -4,7 +4,7 @@
 namespace {
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
-        av_coordinate_response_measure::AdaptiveTrack::Settings parameters{};
+        av_coordinate_response_measure::AdaptiveTrack::Settings settings{};
         av_coordinate_response_measure::TrackingRule rule;
         av_coordinate_response_measure::AdaptiveTrack track{};
         
@@ -15,8 +15,8 @@ namespace {
         }
         
         void reset() {
-            parameters.rule = &rule;
-            track.reset(parameters);
+            settings.rule = &rule;
+            track.reset(settings);
         }
         
         void push(std::string directions) {
@@ -29,13 +29,13 @@ namespace {
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
-        parameters.startingX = 1;
+        settings.startingX = 1;
         reset();
         EXPECT_EQ(1, track.x());
     }
 
     TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoStepChanges) {
-        parameters.startingX = 5;
+        settings.startingX = 5;
         reset();
         track.pushDown();
         EXPECT_EQ(5, track.x());
@@ -46,7 +46,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
-        parameters.startingX = 5;
+        settings.startingX = 5;
         rule.at(0).runCount = 3;
         rule.at(0).stepSize = 4;
         rule.at(0).up = 1;
@@ -71,7 +71,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
-        parameters.startingX = 5;
+        settings.startingX = 5;
         rule.at(0).runCount = 3;
         rule.at(0).stepSize = 4;
         rule.at(0).up = 1;
@@ -94,7 +94,7 @@ namespace {
 
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure4) {
-        parameters.startingX = 0;
+        settings.startingX = 0;
         rule.at(0).runCount = 8;
         rule.at(0).stepSize = 1;
         rule.at(0).down = 1;
@@ -106,7 +106,7 @@ namespace {
 
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure5) {
-        parameters.startingX = 0;
+        settings.startingX = 0;
         rule.at(0).runCount = 5;
         rule.at(0).stepSize = 1;
         rule.at(0).down = 2;
@@ -117,7 +117,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, twoSequences) {
-        parameters.startingX = 65;
+        settings.startingX = 65;
         rule.at(0).runCount = 2;
         rule.at(0).stepSize = 8;
         rule.at(0).down = 2;
@@ -152,7 +152,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, threeSequences) {
-        parameters.startingX = 0;
+        settings.startingX = 0;
         rule.at(0).runCount = 1;
         rule.at(0).stepSize = 10;
         rule.at(0).down = 3;
@@ -171,7 +171,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
-        parameters.startingX = 65;
+        settings.startingX = 65;
         rule.at(0).runCount = 2;
         rule.at(0).stepSize = 8;
         rule.at(0).up = 1;
@@ -206,7 +206,7 @@ namespace {
     }
     
     TEST_F(AdaptiveTrackTests, reversals) {
-        parameters.startingX = 0;
+        settings.startingX = 0;
         rule.at(0).runCount = 1000;
         rule.at(0).down = 2;
         rule.at(0).up = 1;
