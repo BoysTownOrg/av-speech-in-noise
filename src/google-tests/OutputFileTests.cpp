@@ -38,7 +38,9 @@ namespace {
         }
     };
     
-    class OutputFilePathStub : public av_coordinate_response_measure::OutputFilePath {
+    class OutputFilePathStub :
+        public av_coordinate_response_measure::OutputFilePath
+    {
         av_coordinate_response_measure::Test testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
@@ -84,7 +86,9 @@ namespace {
             file.openNewFile(test);
         }
         
-        void assertWriterContainsConditionName(av_coordinate_response_measure::Condition c) {
+        void assertWriterContainsConditionName(
+            av_coordinate_response_measure::Condition c
+        ) {
             test.condition = c;
             file.writeTest(test);
             std::string name = conditionName(c);
@@ -153,7 +157,8 @@ namespace {
     TEST_F(OutputFileTests, writeTrialHeading) {
         file.writeTrialHeading();
         assertEqual(
-            "SNR (dB), correct number, subject number, correct color, subject color, evaluation, reversals\n",
+            "SNR (dB), correct number, subject number, "
+            "correct color, subject color, evaluation, reversals\n",
             writer.written()
         );
     }
@@ -219,7 +224,11 @@ namespace {
             file.openNewFile({});
             FAIL() << "Expected OutputFileImpl::OpenFailure";
         }
-        catch (const av_coordinate_response_measure::OutputFileImpl::OpenFailure &) {
+        catch (
+            const av_coordinate_response_measure::
+            OutputFileImpl::
+            OpenFailure &
+        ) {
         }
     }
 }
