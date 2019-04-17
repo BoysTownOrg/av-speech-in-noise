@@ -30,17 +30,13 @@ namespace av_coordinate_response_measure {
         FileSystemPath *systemPath;
     public:
         OutputFilePathImpl(TimeStamp *, FileSystemPath *);
-        std::string generateFileName(
-            const av_coordinate_response_measure::Test &
-        ) override;
+        std::string generateFileName(const Test &) override;
         std::string homeDirectory() override;
         std::string outputDirectory() override;
         void setRelativeOutputDirectory(std::string);
     private:
         std::string outputDirectory_();
-        std::string formatTestInformation(
-            const av_coordinate_response_measure::Test &
-        );
+        std::string formatTestInformation(const Test &);
         std::string formatTimeStamp();
     };
 }

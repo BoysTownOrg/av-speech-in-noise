@@ -9,9 +9,7 @@ namespace av_coordinate_response_measure {
         timeStamp{timeStamp},
         systemPath{systemPath} {}
     
-    std::string OutputFilePathImpl::generateFileName(
-        const av_coordinate_response_measure::Test &test
-    ) {
+    std::string OutputFilePathImpl::generateFileName(const Test &test) {
         std::stringstream stream;
         stream << formatTestInformation(test);
         stream << '_';
@@ -19,9 +17,7 @@ namespace av_coordinate_response_measure {
         return stream.str();
     }
     
-    std::string OutputFilePathImpl::formatTestInformation(
-        const av_coordinate_response_measure::Test &test
-    ) {
+    std::string OutputFilePathImpl::formatTestInformation(const Test &test) {
         std::stringstream stream;
         stream << "Subject_";
         stream << test.subjectId;
