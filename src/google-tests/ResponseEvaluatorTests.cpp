@@ -27,8 +27,10 @@ public:
             return av_coordinate_response_measure::Color::green;
         else if (colorName == "blue")
             return av_coordinate_response_measure::Color::blue;
-        else
+        else if (colorName == "red")
             return av_coordinate_response_measure::Color::red;
+        else
+            return av_coordinate_response_measure::Color::white;
     }
 };
 
@@ -56,6 +58,16 @@ namespace {
             {
                 1,
                 av_coordinate_response_measure::Color::red
+            }
+        ));
+    }
+    
+    TEST_F(ResponseEvaluatorTests, tbd3) {
+        EXPECT_TRUE(evaluator.correct(
+            "white1.mov",
+            {
+                1,
+                av_coordinate_response_measure::Color::white
             }
         ));
     }
