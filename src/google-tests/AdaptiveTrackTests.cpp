@@ -46,23 +46,28 @@ namespace {
         auto reversals() {
             return track.reversals();
         }
+        
+        template<typename T>
+        void assertXEquals(T expected) {
+            EXPECT_EQ(expected, x());
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
         settings.startingX = 1;
         reset();
-        EXPECT_EQ(1, x());
+        assertXEquals(1);
     }
 
     TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoStepChanges) {
         settings.startingX = 5;
         reset();
         pushDown();
-        EXPECT_EQ(5, x());
+        assertXEquals(5);
         pushDown();
-        EXPECT_EQ(5, x());
+        assertXEquals(5);
         pushUp();
-        EXPECT_EQ(5, x());
+        assertXEquals(5);
     }
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
@@ -73,21 +78,21 @@ namespace {
         rule.at(0).down = 2;
         reset();
         pushDown();
-        EXPECT_EQ(5, x());
+        assertXEquals(5);
         pushDown();
-        EXPECT_EQ(5 - 4, x());
+        assertXEquals(5 - 4);
         pushUp();
-        EXPECT_EQ(5 - 4 + 4, x());
+        assertXEquals(5 - 4 + 4);
         pushDown();
-        EXPECT_EQ(5 - 4 + 4, x());
+        assertXEquals(5 - 4 + 4);
         pushDown();
-        EXPECT_EQ(5 - 4 + 4 - 4, x());
+        assertXEquals(5 - 4 + 4 - 4);
         pushUp();
-        EXPECT_EQ(5 - 4 + 4 - 4, x());
+        assertXEquals(5 - 4 + 4 - 4);
         pushDown();
-        EXPECT_EQ(5 - 4 + 4 - 4, x());
+        assertXEquals(5 - 4 + 4 - 4);
         pushDown();
-        EXPECT_EQ(5 - 4 + 4 - 4, x());
+        assertXEquals(5 - 4 + 4 - 4);
     }
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
@@ -121,7 +126,7 @@ namespace {
         rule.at(0).up = 1;
         reset();
         push("dduuuudduuuddddduuudduu");
-        EXPECT_EQ(1, x());
+        assertXEquals(1);
     }
 
     // see https://doi.org/10.1121/1.1912375
@@ -133,7 +138,7 @@ namespace {
         rule.at(0).up = 1;
         reset();
         push("dddduduududdddduuuddddd");
-        EXPECT_EQ(1, x());
+        assertXEquals(1);
     }
 
     TEST_F(AdaptiveTrackTests, twoSequences) {
@@ -148,27 +153,27 @@ namespace {
         rule.at(1).up = 1;
         reset();
         pushDown();
-        EXPECT_EQ(65, x());
+        assertXEquals(65);
         pushDown();
-        EXPECT_EQ(65 - 8, x());
+        assertXEquals(65 - 8);
         pushDown();
-        EXPECT_EQ(65 - 8, x());
+        assertXEquals(65 - 8);
         pushDown();
-        EXPECT_EQ(65 - 8 - 8, x());
+        assertXEquals(65 - 8 - 8);
         pushUp();
-        EXPECT_EQ(65 - 8 - 8 + 8, x());
+        assertXEquals(65 - 8 - 8 + 8);
         pushUp();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8);
         pushDown();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8);
         pushDown();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8 - 4);
         pushDown();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8 - 4);
         pushDown();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4 - 4, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
         pushUp();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4 - 4, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
     }
 
     TEST_F(AdaptiveTrackTests, threeSequences) {
@@ -187,7 +192,7 @@ namespace {
         rule.at(2).up = 1;
         reset();
         push("ddudddudddddudddddduddd");
-        EXPECT_EQ(3, x());
+        assertXEquals(3);
     }
 
     TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
@@ -202,27 +207,27 @@ namespace {
         rule.at(1).down = 1;
         reset();
         pushDown();
-        EXPECT_EQ(65, x());
+        assertXEquals(65);
         pushDown();
-        EXPECT_EQ(65 - 8, x());
+        assertXEquals(65 - 8);
         pushDown();
-        EXPECT_EQ(65 - 8, x());
+        assertXEquals(65 - 8);
         pushDown();
-        EXPECT_EQ(65 - 8 - 8, x());
+        assertXEquals(65 - 8 - 8);
         pushUp();
-        EXPECT_EQ(65 - 8 - 8 + 8, x());
+        assertXEquals(65 - 8 - 8 + 8);
         pushUp();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8);
         pushDown();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8);
         pushDown();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8 - 4);
         pushDown();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4 - 4, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
         pushUp();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4 - 4, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
         pushUp();
-        EXPECT_EQ(65 - 8 - 8 + 8 + 8 - 4 - 4, x());
+        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
     }
     
     TEST_F(AdaptiveTrackTests, reversals) {
