@@ -415,8 +415,12 @@ namespace {
     class ResponseEvaluatorStub : public av_coordinate_response_measure::ResponseEvaluator {
         std::string target_{};
         const av_coordinate_response_measure::SubjectResponse *response_{};
+        av_coordinate_response_measure::Color correctColor_{};
         bool correct_{};
     public:
+        void setCorrectColor(av_coordinate_response_measure::Color c) {
+            correctColor_ = c;
+        }
         auto target() const {
             return target_;
         }
@@ -442,6 +446,9 @@ namespace {
             return correct_;
         }
         
+        av_coordinate_response_measure::Color correctColor(const std::string &filePath) override {
+            return correctColor_;
+        }
     };
     
     class UseCase {
@@ -1049,6 +1056,18 @@ namespace {
         snrTrack.setReversals(1);
         submitResponse();
         EXPECT_EQ(1, outputFile.trialWritten().reversals);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseWritesCorrectColor
+    ) {
+        evaluator.setCorrectColor(av_coordinate_response_measure::Color::blue);
+        submitResponse();
+        EXPECT_EQ(
+            av_coordinate_response_measure::Color::blue,
+            outputFile.trialWritten().correctColor
+        );
     }
 
     TEST_F(

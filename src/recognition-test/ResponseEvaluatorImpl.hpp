@@ -12,7 +12,7 @@ namespace av_coordinate_response_measure {
         ) override;
     private:
         int correctNumber(const std::string &filePath);
-        Color correctColor(const std::string &filePath);
+        Color correctColor(const std::string &filePath) override;
     };
 }
 
