@@ -1119,6 +1119,24 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        correctEvaluationPassedToWrite
+    ) {
+        evaluator.setCorrect();
+        submitResponse();
+        EXPECT_TRUE(outputFile.trialWritten().correct);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        incorrectEvaluationPassedToWrite
+    ) {
+        evaluator.setIncorrect();
+        submitResponse();
+        EXPECT_FALSE(outputFile.trialWritten().correct);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitResponsePassesTargetToEvaluatorForNumberAndColor
     ) {
         targetList.setCurrent("a");

@@ -222,6 +222,7 @@ namespace av_coordinate_response_measure {
         trial.correctColor = evaluator->correctColor(currentTarget());
         trial.correctNumber = evaluator->correctNumber(currentTarget());
         trial.SNR_dB = snrTrack->x();
+        trial.correct = correct(response);
         outputFile->writeTrial(trial);
     }
     
