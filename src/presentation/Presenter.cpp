@@ -125,21 +125,29 @@ namespace av_coordinate_response_measure {
     }
     
     void Presenter::browseForTargetList() {
-        auto result = view->browseForDirectory();
+        applyIfBrowseNotCancelled(
+            view->browseForDirectory(),
+            &TestSetup::setStimulusList
+        );
+    }
+
+    void Presenter::applyIfBrowseNotCancelled(std::string s, void(TestSetup::*f)(std::string)) {
         if (!view->browseCancelled())
-            testSetup->setStimulusList(result);
+            (testSetup->*f)(std::move(s));
     }
     
     void Presenter::browseForMasker() {
-        auto result = view->browseForOpeningFile();
-        if (!view->browseCancelled())
-            testSetup->setMasker(result);
+        applyIfBrowseNotCancelled(
+            view->browseForOpeningFile(),
+            &TestSetup::setMasker
+        );
     }
     
     void Presenter::browseForCalibration() {
-        auto result = view->browseForOpeningFile();
-        if (!view->browseCancelled())
-            testSetup->setCalibrationFilePath(result);
+        applyIfBrowseNotCancelled(
+            view->browseForOpeningFile(),
+            &TestSetup::setCalibrationFilePath
+        );
     }
     
     void Presenter::trialComplete() {

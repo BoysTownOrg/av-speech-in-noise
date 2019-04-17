@@ -189,6 +189,10 @@ namespace av_coordinate_response_measure {
         void hideNextTrialButton();
         void showResponseButtons();
         void initializeTest_();
+        void applyIfBrowseNotCancelled(
+            std::string s,
+            void(TestSetup::*f)(std::string)
+        );
         
         Model *model;
         View *view;
