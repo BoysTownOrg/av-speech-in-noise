@@ -415,12 +415,18 @@ namespace {
     class ResponseEvaluatorStub : public av_coordinate_response_measure::ResponseEvaluator {
         std::string target_{};
         const av_coordinate_response_measure::SubjectResponse *response_{};
+        int correctNumber_{};
         av_coordinate_response_measure::Color correctColor_{};
         bool correct_{};
     public:
+        void setCorrectNumber(int x) {
+            correctNumber_ = x;
+        }
+        
         void setCorrectColor(av_coordinate_response_measure::Color c) {
             correctColor_ = c;
         }
+        
         auto target() const {
             return target_;
         }
@@ -448,6 +454,10 @@ namespace {
         
         av_coordinate_response_measure::Color correctColor(const std::string &filePath) override {
             return correctColor_;
+        }
+        
+        int correctNumber(const std::string &filePath) override {
+            return correctNumber_;
         }
     };
     
@@ -1068,6 +1078,15 @@ namespace {
             av_coordinate_response_measure::Color::blue,
             outputFile.trialWritten().correctColor
         );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseWritesCorrectNumber
+    ) {
+        evaluator.setCorrectNumber(1);
+        submitResponse();
+        EXPECT_EQ(1, outputFile.trialWritten().correctNumber);
     }
 
     TEST_F(

@@ -10,8 +10,7 @@ namespace av_coordinate_response_measure {
             std::string filePath,
             const SubjectResponse &r
         ) override;
-    private:
-        int correctNumber(const std::string &filePath);
+        int correctNumber(const std::string &filePath) override;
         Color correctColor(const std::string &filePath) override;
     };
 }

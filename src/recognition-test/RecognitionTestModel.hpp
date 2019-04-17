@@ -83,6 +83,7 @@ namespace av_coordinate_response_measure {
             const SubjectResponse &
         ) = 0;
         virtual Color correctColor(const std::string &filePath) = 0;
+        virtual int correctNumber(const std::string &filePath) = 0;
     };
     
     class OutputFile {
