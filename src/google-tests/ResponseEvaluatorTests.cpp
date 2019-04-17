@@ -17,8 +17,9 @@ public:
     }
     
     av_coordinate_response_measure::Color correctColor(std::string filePath) {
-        auto found = filePath.find(".");
-        auto colorName = filePath.substr(0, found-1);
+        auto fileSeparator = filePath.find_last_of("/");
+        auto extension = filePath.find(".");
+        auto colorName = filePath.substr(fileSeparator+1, extension-1-fileSeparator-1);
         if (colorName == "green")
             return av_coordinate_response_measure::Color::green;
         else
@@ -60,6 +61,26 @@ namespace {
             {
                 1,
                 av_coordinate_response_measure::Color::blue
+            }
+        ));
+    }
+    
+    TEST_F(ResponseEvaluatorTests, wrongNumberWrongColor) {
+        EXPECT_FALSE(evaluator.correct(
+            "green2.mov",
+            {
+                1,
+                av_coordinate_response_measure::Color::blue
+            }
+        ));
+    }
+    
+    TEST_F(ResponseEvaluatorTests, ignoresLeadingPath) {
+        EXPECT_TRUE(evaluator.correct(
+            "a/green1.mov",
+            {
+                1,
+                av_coordinate_response_measure::Color::green
             }
         ));
     }
