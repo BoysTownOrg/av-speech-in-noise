@@ -195,7 +195,7 @@ namespace {
             audioPlayer.fillAudioBuffer({ leftChannel, rightChannel });
         }
         
-        std::vector<float> halfHannWindowHalf(int length) {
+        std::vector<float> halfHannWindow(int length) {
             auto N = 2 * length - 1;
             const auto pi = std::acos(-1);
             std::vector<float> window;
@@ -204,8 +204,8 @@ namespace {
             return window;
         }
         
-        std::vector<float> backHalfHannWindowHalf(int length) {
-            auto frontHalf = halfHannWindowHalf(length);
+        std::vector<float> backHalfHannWindow(int length) {
+            auto frontHalf = halfHannWindow(length);
             std::reverse(frontHalf.begin(), frontHalf.end());
             return frontHalf;
         }
@@ -306,11 +306,13 @@ namespace {
         ) {
             leftChannel = oneToN(framesPerBuffer);
             fillAudioBufferMono();
-            assertEqual(
-                multiplicand.elementWiseProduct(oneToN(framesPerBuffer)),
-                leftChannel,
-                1e-6f
+            assertLeftChannelEquals(
+                multiplicand.elementWiseProduct(oneToN(framesPerBuffer))
             );
+        }
+        
+        void assertLeftChannelEquals(std::vector<float> x) {
+            assertEqual(x, leftChannel, 1e-6f);
         }
         
         void assertFillingStereoChannelsMultipliesBy(
@@ -320,16 +322,16 @@ namespace {
             leftChannel = oneToN(framesPerBuffer);
             rightChannel = NtoOne(framesPerBuffer);
             fillAudioBufferStereo();
-            assertEqual(
-                multiplicand.elementWiseProduct(oneToN(framesPerBuffer)),
-                leftChannel,
-                1e-6f
+            assertLeftChannelEquals(
+                multiplicand.elementWiseProduct(oneToN(framesPerBuffer))
             );
-            assertEqual(
-                multiplicand.elementWiseProduct(NtoOne(framesPerBuffer)),
-                rightChannel,
-                1e-6f
+            assertRightChannelEquals(
+                multiplicand.elementWiseProduct(NtoOne(framesPerBuffer))
             );
+        }
+        
+        void assertRightChannelEquals(std::vector<float> x) {
+            assertEqual(x, rightChannel, 1e-6f);
         }
     };
 
@@ -366,7 +368,7 @@ namespace {
         
         fadeIn();
         assertFillingLeftChannelMultipliesBy_Buffered(
-            halfHannWindowHalf(halfWindowLength),
+            halfHannWindow(halfWindowLength),
             halfWindowLength/framesPerBuffer,
             framesPerBuffer
         );
@@ -379,7 +381,7 @@ namespace {
     
         fadeIn();
         assertFillingLeftChannelMultipliesBy(
-            halfHannWindowHalf(halfWindowLength),
+            halfHannWindow(halfWindowLength),
             halfWindowLength
         );
     }
@@ -395,7 +397,7 @@ namespace {
         
         fadeIn();
         assertFillingStereoChannelsMultipliesBy_Buffered(
-            halfHannWindowHalf(halfWindowLength),
+            halfHannWindow(halfWindowLength),
             halfWindowLength/framesPerBuffer,
             framesPerBuffer
         );
@@ -408,7 +410,7 @@ namespace {
     
         fadeIn();
         assertFillingStereoChannelsMultipliesBy(
-            halfHannWindowHalf(halfWindowLength),
+            halfHannWindow(halfWindowLength),
             halfWindowLength
         );
     }
@@ -433,7 +435,7 @@ namespace {
         
         fadeOut();
         assertFillingLeftChannelMultipliesBy_Buffered(
-            backHalfHannWindowHalf(halfWindowLength),
+            backHalfHannWindow(halfWindowLength),
             halfWindowLength/framesPerBuffer,
             framesPerBuffer
         );
@@ -447,7 +449,7 @@ namespace {
     
         fadeOut();
         assertFillingLeftChannelMultipliesBy(
-            backHalfHannWindowHalf(halfWindowLength),
+            backHalfHannWindow(halfWindowLength),
             halfWindowLength
         );
     }
