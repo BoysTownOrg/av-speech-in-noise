@@ -207,7 +207,11 @@ namespace av_coordinate_response_measure {
     }
     
     bool RecognitionTestModel::correct(const SubjectResponse &response) {
-        return evaluator->correct(targetList->current(), response);
+        return evaluator->correct(currentTarget(), response);
+    }
+    
+    std::string RecognitionTestModel::currentTarget() {
+        return targetList->current();
     }
     
     void RecognitionTestModel::writeTrial(const SubjectResponse &response) {
@@ -215,8 +219,8 @@ namespace av_coordinate_response_measure {
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
         trial.reversals = snrTrack->reversals();
-        trial.correctColor = evaluator->correctColor(targetList->current());
-        trial.correctNumber = evaluator->correctNumber(targetList->current());
+        trial.correctColor = evaluator->correctColor(currentTarget());
+        trial.correctNumber = evaluator->correctNumber(currentTarget());
         outputFile->writeTrial(trial);
     }
     
