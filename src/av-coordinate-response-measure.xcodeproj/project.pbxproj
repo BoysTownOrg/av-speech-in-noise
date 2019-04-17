@@ -11,6 +11,7 @@
 		2614B5A5223824FB0083987B /* AvFoundationPlayers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A3223824960083987B /* AvFoundationPlayers.mm */; };
 		2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2623A153224BD037007C99F2 /* OutputFileImpl.cpp */; };
 		2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2623A154224BD037007C99F2 /* OutputFileImpl.hpp */; };
+		2645BEC822676AD7002E8C6C /* ResponseEvaluatorTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */; };
 		2646F83421DFDF5500F378DE /* TargetListTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83321DFDF5500F378DE /* TargetListTests.cpp */; };
 		2646F84021DFEA2300F378DE /* RandomizedTargetList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */; };
 		2646F84121DFEA5E00F378DE /* libtarget-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libtarget-list.dylib */; };
@@ -74,6 +75,7 @@
 		2623A153224BD037007C99F2 /* OutputFileImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutputFileImpl.cpp; sourceTree = "<group>"; };
 		2623A154224BD037007C99F2 /* OutputFileImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFileImpl.hpp; sourceTree = "<group>"; };
 		2628CFE52256A51300AE5284 /* common-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "common-objc.h"; sourceTree = "<group>"; };
+		2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ResponseEvaluatorTests.cpp; sourceTree = "<group>"; };
 		2646F83321DFDF5500F378DE /* TargetListTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetListTests.cpp; sourceTree = "<group>"; };
 		2646F83921DFEA0400F378DE /* libtarget-list.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libtarget-list.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedTargetList.cpp; sourceTree = "<group>"; };
@@ -279,6 +281,7 @@
 				26C2A324225D050E00E2919D /* AudioReaderTests.cpp */,
 				26B22D342260EE6400D528F1 /* AdaptiveTrackTests.cpp */,
 				26DE2190226529F3006A3FD0 /* AudioReaderStub.h */,
+				2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";
@@ -564,6 +567,7 @@
 				26FDD2D6224AC0840090BDD5 /* OutputFileTests.cpp in Sources */,
 				26B22D352260EE6400D528F1 /* AdaptiveTrackTests.cpp in Sources */,
 				26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */,
+				2645BEC822676AD7002E8C6C /* ResponseEvaluatorTests.cpp in Sources */,
 				26EE86C02242E8DE00C08622 /* TargetPlayerImpl.cpp in Sources */,
 				26C2A325225D050E00E2919D /* AudioReaderTests.cpp in Sources */,
 				26A86BDE223A972200210C00 /* MaskerPlayerTests.cpp in Sources */,
