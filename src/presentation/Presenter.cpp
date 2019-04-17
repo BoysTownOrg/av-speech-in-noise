@@ -169,9 +169,7 @@ namespace av_coordinate_response_measure {
     }
     
 
-    Presenter::TestSetup::TestSetup(View::TestSetup *view) :
-        view{view}
-    {
+    Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         view->populateConditionMenu({
             conditionName(Condition::audioVisual),
             conditionName(Condition::auditoryOnly)
@@ -183,12 +181,9 @@ namespace av_coordinate_response_measure {
         view->show();
     }
     
-    Test
-        Presenter::TestSetup::testParameters()
-    {
+    Test Presenter::TestSetup::testParameters() {
         Test p;
-        p.startingSnr_dB =
-            readInteger(view->startingSnr_dB(), "SNR");
+        p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
         p.maskerLevel_dB_SPL = readMaskerLevel();
         p.maskerFilePath = view->maskerFilePath();
         p.targetListDirectory = view->targetListDirectory();
@@ -226,9 +221,7 @@ namespace av_coordinate_response_measure {
         parent->playCalibration();
     }
     
-    Calibration
-        Presenter::TestSetup::calibrationParameters()
-    {
+    Calibration Presenter::TestSetup::calibrationParameters() {
         Calibration p;
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readCalibrationLevel();
@@ -277,10 +270,7 @@ namespace av_coordinate_response_measure {
     }
     
     
-    Presenter::Tester::Tester(View::Tester *view) :
-        view{view}
-    {
-    }
+    Presenter::Tester::Tester(View::Tester *view) : view{view} {}
     
     void Presenter::Tester::show() {
         view->show();
@@ -324,9 +314,7 @@ namespace av_coordinate_response_measure {
         view->showResponseButtons();
     }
     
-    SubjectResponse
-        Presenter::Subject::subjectResponse()
-    {
+    SubjectResponse Presenter::Subject::subjectResponse() {
         SubjectResponse p;
         p.color = colorResponse();
         p.number = std::stoi(view->numberResponse());
@@ -334,15 +322,13 @@ namespace av_coordinate_response_measure {
     }
     
     Color Presenter::Subject::colorResponse() {
-        Color color;
         if (view->greenResponse())
-            color = Color::green;
+            return Color::green;
         else if (view->blueResponse())
-            color = Color::blue;
+            return Color::blue;
         else if (view->whiteResponse())
-            color = Color::white;
+            return Color::white;
         else
-            color = Color::red;
-        return color;
+            return Color::red;
     }
 }
