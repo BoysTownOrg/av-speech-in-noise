@@ -1110,6 +1110,15 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitResponseWritesSnr
+    ) {
+        snrTrack.setX(1);
+        submitResponse();
+        EXPECT_EQ(1, outputFile.trialWritten().SNR_dB);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitResponsePassesTargetToEvaluatorForNumberAndColor
     ) {
         targetList.setCurrent("a");
