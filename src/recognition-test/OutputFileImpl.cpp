@@ -37,9 +37,7 @@ namespace av_coordinate_response_measure {
         writer{writer},
         path{path} {}
     
-    void OutputFileImpl::writeTrial(
-        const Trial &trial
-    ) {
+    void OutputFileImpl::writeTrial(const Trial &trial) {
         write(formatTrial(trial));
     }
     
@@ -47,9 +45,7 @@ namespace av_coordinate_response_measure {
         writer->write(std::move(s));
     }
 
-    std::string OutputFileImpl::formatTrial(
-        const Trial &trial
-    ) {
+    std::string OutputFileImpl::formatTrial(const Trial &trial) {
         FormattedStream stream;
         stream.insert(trial.SNR_dB);
         stream.insertCommaAndSpace();
@@ -68,15 +64,11 @@ namespace av_coordinate_response_measure {
         return stream.str();
     }
     
-    std::string OutputFileImpl::evaluation(
-        const Trial &trial
-    ) {
+    std::string OutputFileImpl::evaluation(const Trial &trial) {
         return trial.correct ? "correct" : "incorrect";
     }
 
-    std::string OutputFileImpl::colorName(
-        Color c
-    ) {
+    std::string OutputFileImpl::colorName(Color c) {
         switch (c) {
         case Color::green:
             return "green";
@@ -113,31 +105,23 @@ namespace av_coordinate_response_measure {
         return stream.str();
     }
     
-    void OutputFileImpl::openNewFile(
-        const Test &test
-    ) {
+    void OutputFileImpl::openNewFile(const Test &test) {
         writer->open(generateNewFilePath(test));
         if (writer->failed())
             throw OpenFailure{};
     }
     
-    std::string OutputFileImpl::generateNewFilePath(
-        const Test &test
-    ) {
+    std::string OutputFileImpl::generateNewFilePath(const Test &test) {
         return
             path->outputDirectory() + "/" +
             path->generateFileName(test) + ".txt";
     }
     
-    void OutputFileImpl::writeTest(
-        const Test &test
-    ) {
+    void OutputFileImpl::writeTest(const Test &test) {
         write(formatTest(test));
     }
     
-    std::string OutputFileImpl::formatTest(
-        const Test &test
-    ) {
+    std::string OutputFileImpl::formatTest(const Test &test) {
         FormattedStream stream;
         stream.writeLabeledLine("subject", test.subjectId);
         stream.writeLabeledLine("tester", test.testerId);

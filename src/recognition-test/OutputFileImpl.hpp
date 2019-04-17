@@ -16,9 +16,7 @@ namespace av_coordinate_response_measure {
     class OutputFilePath {
     public:
         virtual ~OutputFilePath() = default;
-        virtual std::string generateFileName(
-            const Test &
-        ) = 0;
+        virtual std::string generateFileName(const Test &) = 0;
         virtual std::string homeDirectory() = 0;
         virtual std::string outputDirectory() = 0;
     };
