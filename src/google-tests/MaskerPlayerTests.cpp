@@ -225,6 +225,12 @@ namespace {
             return result;
         }
         
+        std::vector<float> NtoOne(int N) {
+            auto result = oneToN(N);
+            std::reverse(result.begin(), result.end());
+            return result;
+        }
+        
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
             audioPlayer.setAudioDeviceDescriptions(std::move(v));
         }
@@ -300,6 +306,25 @@ namespace {
                 1e-6f
             );
         }
+        
+        void assertFillingStereoChannelsMultipliesBy(
+            VectorFacade<float> multiplicand,
+            int framesPerBuffer
+        ) {
+            leftChannel = oneToN(framesPerBuffer);
+            rightChannel = NtoOne(framesPerBuffer);
+            fillAudioBufferStereo();
+            assertEqual(
+                multiplicand.elementWiseProduct(oneToN(framesPerBuffer)),
+                leftChannel,
+                1e-6f
+            );
+            assertEqual(
+                multiplicand.elementWiseProduct(NtoOne(framesPerBuffer)),
+                rightChannel,
+                1e-6f
+            );
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -353,7 +378,7 @@ namespace {
         );
     }
 
-    TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereo) {
+    TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoMultipleFills) {
         player.setFadeInOutSeconds(5);
         audioPlayer.setSampleRateHz(6);
         auto window = halfHannWindow(2 * 5 * 6 + 1);
@@ -377,6 +402,18 @@ namespace {
         EXPECT_NEAR(window.at(3) * 7, rightChannel.at(0), 1e-6);
         EXPECT_NEAR(window.at(4) * 8, rightChannel.at(1), 1e-6);
         EXPECT_NEAR(window.at(5) * 9, rightChannel.at(2), 1e-6);
+    }
+
+    TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoOneFill) {
+        player.setFadeInOutSeconds(2);
+        audioPlayer.setSampleRateHz(3);
+        auto halfWindowLength = 2 * 3 + 1;
+    
+        fadeIn();
+        assertFillingStereoChannelsMultipliesBy(
+            halfHannWindowHalf(halfWindowLength),
+            halfWindowLength
+        );
     }
 
     TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeIn) {
