@@ -341,16 +341,29 @@ namespace {
             assertChannelEqual(rightChannel, x);
         }
         
-        void assertFadeInNotCompleteAfterMonoFill() {
-            fillAudioBufferMono();
-            timerCallback();
+        void assertFadeInNotCompletedAfterMonoFill() {
+            callbackAfterMonoFill();
             EXPECT_FALSE(listener.fadeInCompleted());
         }
         
-        void assertFadeInCompleteAfterMonoFill() {
+        void callbackAfterMonoFill() {
             fillAudioBufferMono();
             timerCallback();
+        }
+        
+        void assertFadeInCompletedAfterMonoFill() {
+            callbackAfterMonoFill();
             EXPECT_TRUE(listener.fadeInCompleted());
+        }
+        
+        void assertFadeOutNotCompletedAfterMonoFill() {
+            callbackAfterMonoFill();
+            EXPECT_FALSE(listener.fadeOutCompleted());
+        }
+        
+        void assertFadeOutCompletedAfterMonoFill() {
+            callbackAfterMonoFill();
+            EXPECT_TRUE(listener.fadeOutCompleted());
         }
     };
 
@@ -489,8 +502,8 @@ namespace {
         fadeIn();
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i)
-            assertFadeInNotCompleteAfterMonoFill();
-        assertFadeInCompleteAfterMonoFill();
+            assertFadeInNotCompletedAfterMonoFill();
+        assertFadeInCompletedAfterMonoFill();
     }
 
     TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeIn) {
@@ -509,14 +522,9 @@ namespace {
         
         fadeOut();
         resizeChannels(1);
-        for (int i = 0; i < 3 * 4; ++i) {
-            fillAudioBufferMono();
-            timerCallback();
-            EXPECT_FALSE(listener.fadeOutCompleted());
-        }
-        fillAudioBufferMono();
-        timerCallback();
-        EXPECT_TRUE(listener.fadeOutCompleted());
+        for (int i = 0; i < 3 * 4; ++i)
+            assertFadeOutNotCompletedAfterMonoFill();
+        assertFadeOutCompletedAfterMonoFill();
     }
 
     TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeOut) {
