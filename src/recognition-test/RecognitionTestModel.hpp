@@ -108,7 +108,8 @@ namespace av_coordinate_response_measure {
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        Test test{};
+        int maskerLevel_dB_SPL{};
+        int fullScaleLevel_dB_SPL{};
         MaskerPlayer *maskerPlayer;
         TargetList *targetList;
         TargetPlayer *targetPlayer;
@@ -153,8 +154,8 @@ namespace av_coordinate_response_measure {
         void loadNextTarget();
         void preparePlayers(const AudioSettings &);
         void startTrial();
-        bool auditoryOnly();
-        void prepareVideo();
+        bool auditoryOnly(const Test &);
+        void prepareVideo(const Test &);
         int desiredMaskerLevel_dB();
         double unalteredTargetLevel_dB();
         double targetLevel_dB();

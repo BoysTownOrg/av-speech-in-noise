@@ -27,13 +27,14 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::initializeTest(const Test &p) {
-        test = p;
+        fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
+        maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
         
         prepareSnrTrack(p);
         prepareOutputFile(p);
         prepareMasker(p);
         prepareTargets(p);
-        prepareVideo();
+        prepareVideo(p);
     }
     
     void RecognitionTestModel::prepareSnrTrack(const Test &p) {
@@ -79,24 +80,23 @@ namespace av_coordinate_response_measure {
     
     int RecognitionTestModel::desiredMaskerLevel_dB() {
         return
-            test.maskerLevel_dB_SPL -
-            test.fullScaleLevel_dB_SPL;
+            maskerLevel_dB_SPL -
+            fullScaleLevel_dB_SPL;
     }
     
     void RecognitionTestModel::prepareTargets(const Test &p) {
         targetList->loadFromDirectory(p.targetListDirectory);
     }
     
-    void RecognitionTestModel::prepareVideo() {
-        if (auditoryOnly())
+    void RecognitionTestModel::prepareVideo(const Test &p) {
+        if (auditoryOnly(p))
             targetPlayer->hideVideo();
         else
             targetPlayer->showVideo();
     }
 
-    bool RecognitionTestModel::auditoryOnly() {
-        return test.condition ==
-            Condition::auditoryOnly;
+    bool RecognitionTestModel::auditoryOnly(const Test &p) {
+        return p.condition == Condition::auditoryOnly;
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
