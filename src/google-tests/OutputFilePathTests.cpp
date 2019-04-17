@@ -76,7 +76,9 @@ namespace {
         }
     };
     
-    class FileSystemPathStub : public av_coordinate_response_measure::FileSystemPath {
+    class FileSystemPathStub :
+        public av_coordinate_response_measure::FileSystemPath
+    {
         std::string homeDirectory_{};
         std::string directoryCreated_{};
     public:
@@ -101,11 +103,20 @@ namespace {
     protected:
         TimeStampStub timeStamp;
         FileSystemPathStub systemPath;
-        av_coordinate_response_measure::OutputFilePathImpl path{&timeStamp, &systemPath};
+        av_coordinate_response_measure::OutputFilePathImpl
+            path{&timeStamp, &systemPath};
         av_coordinate_response_measure::Test test{};
         
         std::string generateFileName() {
             return path.generateFileName(test);
+        }
+        
+        void setHomeDirectory(std::string s) {
+            systemPath.setHomeDirectory(std::move(s));
+        }
+        
+        void setRelativeOutputDirectory(std::string s) {
+            path.setRelativeOutputDirectory(std::move(s));
         }
     };
 
@@ -131,14 +142,14 @@ namespace {
     }
 
     TEST_F(OutputFilePathTests, outputDirectoryReturnsFullPath) {
-        systemPath.setHomeDirectory("a");
-        path.setRelativeOutputDirectory("b");
+        setHomeDirectory("a");
+        setRelativeOutputDirectory("b");
         assertEqual("a/b", path.outputDirectory());
     }
 
     TEST_F(OutputFilePathTests, setRelativeOutputDirectoryCreatesDirectory) {
-        systemPath.setHomeDirectory("a");
-        path.setRelativeOutputDirectory("b");
+        setHomeDirectory("a");
+        setRelativeOutputDirectory("b");
         assertEqual("a/b", systemPath.directoryCreated());
     }
 }
