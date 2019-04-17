@@ -3,13 +3,14 @@
 namespace av_coordinate_response_measure {
     void AdaptiveTrack::reset(const Settings &p) {
         sequenceIndex = 0;
-        x_ = p.startingX;
         sameDirectionConsecutiveCount = 0;
         runCounter = 0;
         reversals_ = 0;
         previousDirection = Direction::undefined;
         previousStep = Step::undefined;
         stepSizes.clear();
+        
+        x_ = p.startingX;
         for (const auto &sequence : *p.rule) {
             if (sequence.runCount) {
                 stepSizes.push_back(sequence.stepSize);
@@ -20,18 +21,16 @@ namespace av_coordinate_response_measure {
         }
         stepSizes.push_back(0);
     }
-
+    
     void AdaptiveTrack::pushUp() {
         if (complete_())
             return;
-        updateConsecutiveCount(Direction::up);
-        if (sameDirectionConsecutiveCount == up[sequenceIndex]) {
-            updateReversals(Step::fall);
-            x_ += stepSizes[sequenceIndex];
-            sameDirectionConsecutiveCount = 0;
-            previousStep = Step::rise;
-        }
-        previousDirection = Direction::up;
+        
+        auto direction = Direction::up;
+        updateConsecutiveCount(direction);
+        if (sameDirectionConsecutiveCount == up[sequenceIndex])
+            stepUp();
+        previousDirection = direction;
     }
 
     void AdaptiveTrack::updateConsecutiveCount(Direction direction) {
@@ -39,10 +38,21 @@ namespace av_coordinate_response_measure {
             ? sameDirectionConsecutiveCount + 1
             : 1;
     }
+    
+    void AdaptiveTrack::stepUp() {
+        updateReversals(Step::fall);
+        x_ += stepSize();
+        sameDirectionConsecutiveCount = 0;
+        previousStep = Step::rise;
+    }
 
     void AdaptiveTrack::updateReversals(Step step) {
         if (previousStep == step)
             reversal();
+    }
+
+    int AdaptiveTrack::stepSize() {
+        return stepSizes[sequenceIndex];
     }
 
     void AdaptiveTrack::reversal() {
@@ -52,18 +62,23 @@ namespace av_coordinate_response_measure {
             ++sequenceIndex;
         }
     }
-
+    
     void AdaptiveTrack::pushDown() {
         if (complete_())
             return;
-        updateConsecutiveCount(Direction::down);
-        if (sameDirectionConsecutiveCount == down[sequenceIndex]) {
-            updateReversals(Step::rise);
-            x_ -= stepSizes[sequenceIndex];
-            sameDirectionConsecutiveCount = 0;
-            previousStep = Step::fall;
-        }
-        previousDirection = Direction::down;
+        
+        auto direction = Direction::down;
+        updateConsecutiveCount(direction);
+        if (sameDirectionConsecutiveCount == down[sequenceIndex])
+            stepDown();
+        previousDirection = direction;
+    }
+
+    void AdaptiveTrack::stepDown() {
+        updateReversals(Step::rise);
+        x_ -= stepSize();
+        sameDirectionConsecutiveCount = 0;
+        previousStep = Step::fall;
     }
 
     int AdaptiveTrack::x() {

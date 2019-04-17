@@ -45,7 +45,11 @@ namespace av_coordinate_response_measure {
         return stream.str();
     }
     
-    std::string OutputFilePathImpl::homeDirectory() { 
+    std::string OutputFilePathImpl::homeDirectory() {
+        return homeDirectory_();
+    }
+    
+    std::string OutputFilePathImpl::homeDirectory_() {
         return systemPath->homeDirectory();
     }
     
@@ -54,7 +58,7 @@ namespace av_coordinate_response_measure {
     }
     
     std::string OutputFilePathImpl::outputDirectory_() {
-        return systemPath->homeDirectory() + "/" + relativePath_;
+        return homeDirectory_() + "/" + relativePath_;
     }
     
     void OutputFilePathImpl::setRelativeOutputDirectory(std::string s) {

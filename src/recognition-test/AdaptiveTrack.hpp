@@ -35,6 +35,9 @@ namespace av_coordinate_response_measure {
         void reset(const Settings &) override;
         
     private:
+        void stepDown();
+        void stepUp();
+        int stepSize();
         void updateConsecutiveCount(Direction);
         void updateReversals(Step);
         void reversal();

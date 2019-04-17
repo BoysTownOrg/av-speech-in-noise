@@ -35,6 +35,7 @@ namespace av_coordinate_response_measure {
         std::string outputDirectory() override;
         void setRelativeOutputDirectory(std::string);
     private:
+        std::string homeDirectory_();
         std::string outputDirectory_();
         std::string formatTestInformation(const Test &);
         std::string formatTimeStamp();
