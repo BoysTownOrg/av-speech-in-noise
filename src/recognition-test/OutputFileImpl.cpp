@@ -71,9 +71,7 @@ namespace av_coordinate_response_measure {
     std::string OutputFileImpl::evaluation(
         const av_coordinate_response_measure::Trial &trial
     ) {
-        return
-            trial.correctColor == trial.subjectColor &&
-                trial.correctNumber == trial.subjectNumber
+        return trial.correct
             ? "correct"
             : "incorrect";
     }

@@ -30,6 +30,7 @@ namespace av_coordinate_response_measure {
         int reversals;
         Color correctColor;
         Color subjectColor;
+        bool correct;
     };
     
     constexpr const char *conditionName(Condition c) {

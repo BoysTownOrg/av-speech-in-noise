@@ -99,6 +99,7 @@ namespace {
         trial.correctColor = av_coordinate_response_measure::Color::green;
         trial.subjectColor = av_coordinate_response_measure::Color::red;
         trial.reversals = 4;
+        trial.correct = false;
         file.writeTrial(trial);
         assertEqual(
             "1, 2, 3, green, red, incorrect, 4\n",
@@ -106,29 +107,14 @@ namespace {
         );
     }
 
-    TEST_F(OutputFileTests, writeTrialRightNumberButWrongColor) {
-        trial.correctNumber = 1;
-        trial.subjectNumber = 1;
-        trial.correctColor = av_coordinate_response_measure::Color::green;
-        trial.subjectColor = av_coordinate_response_measure::Color::red;
-        file.writeTrial(trial);
-        EXPECT_TRUE(writer.written().contains(" incorrect, "));
-    }
-
-    TEST_F(OutputFileTests, writeTrialRightColorButWrongNumber) {
-        trial.correctNumber = 1;
-        trial.subjectNumber = 2;
-        trial.correctColor = av_coordinate_response_measure::Color::green;
-        trial.subjectColor = av_coordinate_response_measure::Color::green;
+    TEST_F(OutputFileTests, writeTrialIncorrect) {
+        trial.correct = false;
         file.writeTrial(trial);
         EXPECT_TRUE(writer.written().contains(" incorrect, "));
     }
 
     TEST_F(OutputFileTests, writeTrialCorrect) {
-        trial.correctNumber = 1;
-        trial.subjectNumber = 1;
-        trial.correctColor = av_coordinate_response_measure::Color::green;
-        trial.subjectColor = av_coordinate_response_measure::Color::green;
+        trial.correct = true;
         file.writeTrial(trial);
         EXPECT_TRUE(writer.written().contains(" correct, "));
     }
