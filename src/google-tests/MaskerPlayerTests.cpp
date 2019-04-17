@@ -195,14 +195,6 @@ namespace {
             audioPlayer.fillAudioBuffer({ leftChannel, rightChannel });
         }
         
-        std::vector<float> halfHannWindow(int N) {
-            const auto pi = std::acos(-1);
-            std::vector<float> window;
-            for (int n = 0; n < (N + 1) / 2; ++n)
-                window.push_back((1 - std::cos((2*pi*n)/(N - 1))) / 2);
-            return window;
-        }
-        
         std::vector<float> halfHannWindowHalf(int length) {
             auto N = 2 * length - 1;
             const auto pi = std::acos(-1);
@@ -294,6 +286,20 @@ namespace {
             }
         }
         
+        void assertFillingStereoChannelsMultipliesBy_Buffered(
+            VectorFacade<float> multiplicand,
+            int buffers,
+            int framesPerBuffer
+        ) {
+            for (int i = 0; i < buffers; ++i) {
+                auto offset = i * framesPerBuffer;
+                assertFillingStereoChannelsMultipliesBy(
+                    multiplicand.subvector(offset, offset + framesPerBuffer),
+                    framesPerBuffer
+                );
+            }
+        }
+        
         void assertFillingLeftChannelMultipliesBy(
             VectorFacade<float> multiplicand,
             int framesPerBuffer
@@ -379,29 +385,20 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoMultipleFills) {
-        player.setFadeInOutSeconds(5);
-        audioPlayer.setSampleRateHz(6);
-        auto window = halfHannWindow(2 * 5 * 6 + 1);
-    
+        // For this test:
+        // halfWindowLength is determined by fade time and sample rate...
+        // but must be divisible by framesPerBuffer.
+        player.setFadeInOutSeconds(3);
+        audioPlayer.setSampleRateHz(5);
+        auto halfWindowLength = 3 * 5 + 1;
+        auto framesPerBuffer = 4;
+        
         fadeIn();
-        leftChannel = { 1, 2, 3 };
-        rightChannel = { 7, 8, 9 };
-        fillAudioBufferStereo();
-        EXPECT_NEAR(window.at(0) * 1, leftChannel.at(0), 1e-6);
-        EXPECT_NEAR(window.at(1) * 2, leftChannel.at(1), 1e-6);
-        EXPECT_NEAR(window.at(2) * 3, leftChannel.at(2), 1e-6);
-        EXPECT_NEAR(window.at(0) * 7, rightChannel.at(0), 1e-6);
-        EXPECT_NEAR(window.at(1) * 8, rightChannel.at(1), 1e-6);
-        EXPECT_NEAR(window.at(2) * 9, rightChannel.at(2), 1e-6);
-        leftChannel = { 1, 2, 3 };
-        rightChannel = { 7, 8, 9 };
-        fillAudioBufferStereo();
-        EXPECT_NEAR(window.at(3) * 1, leftChannel.at(0), 1e-6);
-        EXPECT_NEAR(window.at(4) * 2, leftChannel.at(1), 1e-6);
-        EXPECT_NEAR(window.at(5) * 3, leftChannel.at(2), 1e-6);
-        EXPECT_NEAR(window.at(3) * 7, rightChannel.at(0), 1e-6);
-        EXPECT_NEAR(window.at(4) * 8, rightChannel.at(1), 1e-6);
-        EXPECT_NEAR(window.at(5) * 9, rightChannel.at(2), 1e-6);
+        assertFillingStereoChannelsMultipliesBy_Buffered(
+            halfHannWindowHalf(halfWindowLength),
+            halfWindowLength/framesPerBuffer,
+            framesPerBuffer
+        );
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoOneFill) {
