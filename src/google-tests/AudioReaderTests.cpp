@@ -24,11 +24,13 @@ namespace {
         }
     };
     
-    class BufferedAudioReaderStub : public stimulus_players::BufferedAudioReader {
-        std::vector<std::vector<std::vector<int>>> buffersPartTwo_{};
+    class BufferedAudioReaderStub :
+        public stimulus_players::BufferedAudioReader
+    {
+        std::vector<std::vector<std::vector<int>>> buffers_{};
+        std::string file_{};
         std::shared_ptr<AudioBufferStub> buffer =
             std::make_shared<AudioBufferStub>();
-        std::string file_{};
         int minimumPossibleSample_{};
         bool failOnLoad_{};
         bool failed_{};
@@ -41,13 +43,15 @@ namespace {
             return file_;
         }
         
-        std::shared_ptr<stimulus_players::AudioBuffer> readNextBuffer() override {
-            std::vector<std::vector<int>> next{};
-            if (buffersPartTwo_.size()) {
-                next = buffersPartTwo_.front();
-                buffersPartTwo_.erase(buffersPartTwo_.begin());
+        std::shared_ptr<stimulus_players::AudioBuffer>
+            readNextBuffer() override
+        {
+            if (buffers_.size()) {
+                buffer->setAudio(buffers_.front());
+                buffers_.erase(buffers_.begin());
             }
-            buffer->setAudio(next);
+            else
+                buffer->setAudio({});
             return buffer;
         }
         
@@ -70,7 +74,7 @@ namespace {
         }
         
         void setBuffers(std::vector<std::vector<std::vector<int>>> x) {
-            buffersPartTwo_ = std::move(x);
+            buffers_ = std::move(x);
         }
     };
 
@@ -84,17 +88,21 @@ namespace {
             std::for_each(x.begin(), x.end(), [&](T &x_) { x_ /= c; });
             return x;
         }
+        
+        auto read(std::string s = {}) {
+            return reader.read(std::move(s));
+        }
     };
     
     TEST_F(AudioReaderTests, loadsFile) {
-        reader.read("a");
+        read("a");
         assertEqual("a", bufferedReader.file());
     }
     
     TEST_F(AudioReaderTests, readThrowsInvalidFileOnFailure) {
         bufferedReader.failOnLoad();
         try {
-            reader.read({});
+            read();
             FAIL() << "Expected stimulus_players::AudioReader::InvalidFile";
         } catch (const stimulus_players::AudioReaderImpl::InvalidFile &) {
         }
@@ -120,7 +128,7 @@ namespace {
                 dividedBy({ 4, 5, 6, 13, 14, 15, 22, 23, 24 }, -3.f),
                 dividedBy({ 7, 8, 9, 16, 17, 18, 25, 26, 27 }, -3.f)
             },
-            reader.read({})
+            read()
         );
     }
 }
