@@ -413,7 +413,7 @@ namespace {
     };
     
     class ResponseEvaluatorStub : public av_coordinate_response_measure::ResponseEvaluator {
-        std::string target_{};
+        std::string correctTarget_{};
         std::string correctNumberFilePath_{};
         std::string correctColorFilePath_{};
         const av_coordinate_response_measure::SubjectResponse *response_{};
@@ -438,7 +438,7 @@ namespace {
         }
         
         auto correctFilePath() const {
-            return target_;
+            return correctTarget_;
         }
         
         auto response() const {
@@ -457,7 +457,7 @@ namespace {
             std::string target,
             const av_coordinate_response_measure::SubjectResponse &p
         ) override {
-            target_ = std::move(target);
+            correctTarget_ = std::move(target);
             response_ = &p;
             return correct_;
         }
@@ -677,10 +677,13 @@ namespace {
             try {
                 run(useCase);
                 FAIL() <<
-                    "Expected "
-                    "recognition_test::RecognitionTestModel::RequestFailure";
+                    "Expected recognition_test::"
+                    "RecognitionTestModel::"
+                    "RequestFailure";
             } catch (
-                const av_coordinate_response_measure::RecognitionTestModel::RequestFailure &e
+                const av_coordinate_response_measure::
+                RecognitionTestModel::
+                RequestFailure &e
             ) {
                 assertEqual(std::move(what), e.what());
             }
@@ -689,8 +692,10 @@ namespace {
         void playTrialIgnoringFailure() {
             try {
                 playTrial();
-            } catch (const
-                av_coordinate_response_measure::RecognitionTestModel::RequestFailure &
+            } catch (
+                const av_coordinate_response_measure::
+                RecognitionTestModel::
+                RequestFailure &
             ) {
             }
         }
@@ -753,6 +758,14 @@ namespace {
         
         auto snrTrackPushedUp() {
             return snrTrack.pushedUp();
+        }
+        
+        auto targetFilePath() {
+            return targetPlayer.filePath();
+        }
+        
+        auto blueColor() {
+            return av_coordinate_response_measure::Color::blue;
         }
     };
 
@@ -871,7 +884,7 @@ namespace {
     ) {
         targetList.setNext("a");
         playTrial();
-        assertEqual("a", targetPlayer.filePath());
+        assertEqual("a", targetFilePath());
     }
 
     TEST_F(
@@ -880,7 +893,7 @@ namespace {
     ) {
         playingCalibration.setFilePath("a");
         playCalibration();
-        assertEqual("a", targetPlayer.filePath());
+        assertEqual("a", targetFilePath());
     }
 
     TEST_F(
@@ -1054,12 +1067,9 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesColor
     ) {
-        subjectResponse.color = av_coordinate_response_measure::Color::green;
+        subjectResponse.color = blueColor();
         submitResponse();
-        EXPECT_EQ(
-            av_coordinate_response_measure::Color::green,
-            outputFile.trialWritten().subjectColor
-        );
+        EXPECT_EQ(blueColor(), outputFile.trialWritten().subjectColor);
     }
 
     TEST_F(
@@ -1084,12 +1094,9 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesCorrectColor
     ) {
-        evaluator.setCorrectColor(av_coordinate_response_measure::Color::blue);
+        evaluator.setCorrectColor(blueColor());
         submitResponse();
-        EXPECT_EQ(
-            av_coordinate_response_measure::Color::blue,
-            outputFile.trialWritten().correctColor
-        );
+        EXPECT_EQ(blueColor(), outputFile.trialWritten().correctColor);
     }
 
     TEST_F(
@@ -1109,6 +1116,15 @@ namespace {
         submitResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponsePassesTargetToEvaluator
+    ) {
+        targetList.setCurrent("a");
+        submitResponse();
+        assertEqual("a", evaluator.correctFilePath());
     }
 
     TEST_F(
@@ -1137,15 +1153,6 @@ namespace {
     ) {
         submitResponse();
         EXPECT_EQ(&subjectResponse, evaluator.response());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitResponsePassesTargetToEvaluator
-    ) {
-        targetList.setCurrent("a");
-        submitResponse();
-        assertEqual("a", evaluator.correctFilePath());
     }
 
     TEST_F(

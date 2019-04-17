@@ -215,7 +215,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::writeTrial(const SubjectResponse &response) {
-        Trial trial{};
+        Trial trial;
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
         trial.reversals = snrTrack->reversals();
