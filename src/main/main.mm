@@ -98,7 +98,7 @@ public:
 
 int main() {
     MacOsDirectoryReader reader;
-    target_list::FileFilterDecorator filter{&reader, ".mov"};
+    target_list::FileFilterDecorator filter{&reader, {".mov", ".avi", ".wav"}};
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetList list{&filter, &randomizer};
     AvFoundationVideoPlayer videoPlayer;
