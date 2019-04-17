@@ -85,5 +85,26 @@ namespace {
                 av_coordinate_response_measure::Color::green
             }
         ));
+        EXPECT_TRUE(evaluator.correct(
+            "a/b/green1.mov",
+            {
+                1,
+                av_coordinate_response_measure::Color::green
+            }
+        ));
+        EXPECT_FALSE(evaluator.correct(
+            "a/red1.mov",
+            {
+                1,
+                av_coordinate_response_measure::Color::green
+            }
+        ));
+        EXPECT_FALSE(evaluator.correct(
+            "a/b/red1.mov",
+            {
+                1,
+                av_coordinate_response_measure::Color::green
+            }
+        ));
     }
 }
