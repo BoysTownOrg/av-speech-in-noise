@@ -140,7 +140,7 @@ namespace av_coordinate_response_measure {
         std::string currentTarget();
         bool correct(const SubjectResponse &);
         void updateSnr(const SubjectResponse &);
-        void prepareSnrTrack();
+        void prepareSnrTrack(const TrackingRule *);
         void playTarget();
         void playCalibration_(const Calibration &);
         void prepareMasker();

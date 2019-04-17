@@ -26,21 +26,19 @@ namespace av_coordinate_response_measure {
         listener_ = listener;
     }
     
-    void RecognitionTestModel::initializeTest(
-        const Test &p
-    ) {
+    void RecognitionTestModel::initializeTest(const Test &p) {
         test = p;
         
-        prepareSnrTrack();
+        prepareSnrTrack(p.targetLevelRule);
         prepareOutputFile();
         prepareMasker();
         prepareTargets();
         prepareVideo();
     }
     
-    void RecognitionTestModel::prepareSnrTrack() {
+    void RecognitionTestModel::prepareSnrTrack(const TrackingRule *rule) {
         Track::Settings s;
-        s.rule = test.targetLevelRule;
+        s.rule = rule;
         s.startingX = test.startingSnr_dB;
         snrTrack->reset(s);
     }
