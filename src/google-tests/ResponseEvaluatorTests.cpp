@@ -10,7 +10,19 @@ public:
     ) override {
         auto found = filePath.find(".");
         auto correctNumber = std::stoi(filePath.substr(found-1, 1));
-        return correctNumber == r.number;
+        auto correctColor_ = correctColor(filePath);
+        return
+            correctNumber == r.number &&
+            correctColor_ == r.color;
+    }
+    
+    av_coordinate_response_measure::Color correctColor(std::string filePath) {
+        auto found = filePath.find(".");
+        auto colorName = filePath.substr(0, found-1);
+        if (colorName == "green")
+            return av_coordinate_response_measure::Color::green;
+        else
+            return av_coordinate_response_measure::Color::blue;
     }
 };
 
@@ -35,6 +47,16 @@ namespace {
     TEST_F(ResponseEvaluatorTests, rightColorWrongNumber) {
         EXPECT_FALSE(evaluator.correct(
             "blue2.mov",
+            {
+                1,
+                av_coordinate_response_measure::Color::blue
+            }
+        ));
+    }
+    
+    TEST_F(ResponseEvaluatorTests, rightNumberWrongColor) {
+        EXPECT_FALSE(evaluator.correct(
+            "green1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::blue
