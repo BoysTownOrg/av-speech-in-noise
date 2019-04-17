@@ -51,6 +51,18 @@ namespace {
         void assertXEquals(T expected) {
             EXPECT_EQ(expected, x());
         }
+        
+        void assertComplete() {
+            EXPECT_TRUE(complete());
+        }
+        
+        void assertIncomplete() {
+            EXPECT_FALSE(complete());
+        }
+        
+        void assertReversalsEquals(int expected) {
+            EXPECT_EQ(expected, reversals());
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
@@ -102,19 +114,19 @@ namespace {
         rule.at(0).up = 1;
         rule.at(0).down = 2;
         reset();
-        EXPECT_FALSE(complete());
+        assertIncomplete();
         pushDown();
-        EXPECT_FALSE(complete());
+        assertIncomplete();
         pushDown();
-        EXPECT_FALSE(complete());
+        assertIncomplete();
         pushUp();
-        EXPECT_FALSE(complete());
+        assertIncomplete();
         pushDown();
-        EXPECT_FALSE(complete());
+        assertIncomplete();
         pushDown();
-        EXPECT_FALSE(complete());
+        assertIncomplete();
         pushUp();
-        EXPECT_TRUE(complete());
+        assertComplete();
     }
 
     // see https://doi.org/10.1121/1.1912375
@@ -236,18 +248,18 @@ namespace {
         rule.at(0).down = 2;
         rule.at(0).up = 1;
         reset();
-        EXPECT_EQ(int{0}, reversals());
+        assertReversalsEquals(0);
         pushUp();
-        EXPECT_EQ(int{0}, reversals());
+        assertReversalsEquals(0);
         pushDown();
-        EXPECT_EQ(int{0}, reversals());
+        assertReversalsEquals(0);
         pushDown();
-        EXPECT_EQ(1, reversals());
+        assertReversalsEquals(1);
         pushUp();
-        EXPECT_EQ(2, reversals());
+        assertReversalsEquals(2);
         pushDown();
-        EXPECT_EQ(2, reversals());
+        assertReversalsEquals(2);
         pushDown();
-        EXPECT_EQ(3, reversals());
+        assertReversalsEquals(3);
     }
 }
