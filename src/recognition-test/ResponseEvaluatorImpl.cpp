@@ -3,8 +3,8 @@
 namespace av_coordinate_response_measure {
     bool ResponseEvaluatorImpl::correct(
         std::string filePath,
-        const av_coordinate_response_measure::SubjectResponse &r
-    )  {
+        const SubjectResponse &r
+    ) {
         return
             correctNumber(filePath) == r.number &&
             correctColor(filePath) == r.color;
