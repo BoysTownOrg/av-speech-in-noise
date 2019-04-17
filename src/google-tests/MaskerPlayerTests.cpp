@@ -315,7 +315,10 @@ namespace {
             assertChannelEqual(leftChannel, x);
         }
         
-        void assertChannelEqual(const std::vector<float> &channel, std::vector<float> x) {
+        void assertChannelEqual(
+            const std::vector<float> &channel,
+            std::vector<float> x
+        ) {
             assertEqual(x, channel, 1e-6f);
         }
         
@@ -336,6 +339,18 @@ namespace {
         
         void assertRightChannelEquals(std::vector<float> x) {
             assertChannelEqual(rightChannel, x);
+        }
+        
+        void assertFadeInNotCompleteAfterMonoFill() {
+            fillAudioBufferMono();
+            timerCallback();
+            EXPECT_FALSE(listener.fadeInCompleted());
+        }
+        
+        void assertFadeInCompleteAfterMonoFill() {
+            fillAudioBufferMono();
+            timerCallback();
+            EXPECT_TRUE(listener.fadeInCompleted());
         }
     };
 
@@ -473,14 +488,9 @@ namespace {
         
         fadeIn();
         resizeChannels(1);
-        for (int i = 0; i < 3 * 4; ++i) {
-            fillAudioBufferMono();
-            timerCallback();
-            EXPECT_FALSE(listener.fadeInCompleted());
-        }
-        fillAudioBufferMono();
-        timerCallback();
-        EXPECT_TRUE(listener.fadeInCompleted());
+        for (int i = 0; i < 3 * 4; ++i)
+            assertFadeInNotCompleteAfterMonoFill();
+        assertFadeInCompleteAfterMonoFill();
     }
 
     TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeIn) {
