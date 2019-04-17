@@ -317,6 +317,13 @@ namespace {
         EXPECT_TRUE(audioPlayer.played());
     }
 
+    TEST_F(MaskerPlayerTests, twentydBMultipliesSignalByTen) {
+        player.setLevel_dB(20);
+        leftChannel = { 1, 2, 3 };
+        fillAudioBufferMono();
+        assertEqual({ 10, 20, 30 }, leftChannel);
+    }
+
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
         // For this test:
         // halfWindowLength is determined by fade time and sample rate...
