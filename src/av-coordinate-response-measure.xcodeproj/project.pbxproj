@@ -12,6 +12,8 @@
 		2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2623A153224BD037007C99F2 /* OutputFileImpl.cpp */; };
 		2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2623A154224BD037007C99F2 /* OutputFileImpl.hpp */; };
 		2645BEC822676AD7002E8C6C /* ResponseEvaluatorTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */; };
+		2645BECB2267705D002E8C6C /* ResponseEvaluatorImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2645BEC92267705D002E8C6C /* ResponseEvaluatorImpl.cpp */; };
+		2645BECC2267705D002E8C6C /* ResponseEvaluatorImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2645BECA2267705D002E8C6C /* ResponseEvaluatorImpl.hpp */; };
 		2646F83421DFDF5500F378DE /* TargetListTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83321DFDF5500F378DE /* TargetListTests.cpp */; };
 		2646F84021DFEA2300F378DE /* RandomizedTargetList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */; };
 		2646F84121DFEA5E00F378DE /* libtarget-list.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libtarget-list.dylib */; };
@@ -76,6 +78,8 @@
 		2623A154224BD037007C99F2 /* OutputFileImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFileImpl.hpp; sourceTree = "<group>"; };
 		2628CFE52256A51300AE5284 /* common-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "common-objc.h"; sourceTree = "<group>"; };
 		2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ResponseEvaluatorTests.cpp; sourceTree = "<group>"; };
+		2645BEC92267705D002E8C6C /* ResponseEvaluatorImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ResponseEvaluatorImpl.cpp; sourceTree = "<group>"; };
+		2645BECA2267705D002E8C6C /* ResponseEvaluatorImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ResponseEvaluatorImpl.hpp; sourceTree = "<group>"; };
 		2646F83321DFDF5500F378DE /* TargetListTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetListTests.cpp; sourceTree = "<group>"; };
 		2646F83921DFEA0400F378DE /* libtarget-list.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libtarget-list.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RandomizedTargetList.cpp; sourceTree = "<group>"; };
@@ -220,6 +224,8 @@
 				264E7E4D224E6F30008A595F /* OutputFilePathImpl.hpp */,
 				26B22D382260FE4100D528F1 /* AdaptiveTrack.cpp */,
 				26B22D392260FE4100D528F1 /* AdaptiveTrack.hpp */,
+				2645BEC92267705D002E8C6C /* ResponseEvaluatorImpl.cpp */,
+				2645BECA2267705D002E8C6C /* ResponseEvaluatorImpl.hpp */,
 			);
 			path = "recognition-test";
 			sourceTree = "<group>";
@@ -335,6 +341,7 @@
 				26B22D3B2260FE4100D528F1 /* AdaptiveTrack.hpp in Headers */,
 				264E7E4F224E6F30008A595F /* OutputFilePathImpl.hpp in Headers */,
 				2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */,
+				2645BECC2267705D002E8C6C /* ResponseEvaluatorImpl.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,6 +544,7 @@
 				26B22D3A2260FE4100D528F1 /* AdaptiveTrack.cpp in Sources */,
 				26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */,
 				264E7E4E224E6F30008A595F /* OutputFilePathImpl.cpp in Sources */,
+				2645BECB2267705D002E8C6C /* ResponseEvaluatorImpl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
