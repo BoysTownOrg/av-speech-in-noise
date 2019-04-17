@@ -5,106 +5,127 @@ namespace {
     class ResponseEvaluatorTests : public ::testing::Test {
     protected:
         av_coordinate_response_measure::ResponseEvaluatorImpl evaluator{};
+        
+        bool correct(
+            std::string s,
+            av_coordinate_response_measure::SubjectResponse r
+        ) {
+            return evaluator.correct(std::move(s), r);
+        }
+        
+        void assertCorrect(
+            std::string s,
+            av_coordinate_response_measure::SubjectResponse r
+        ) {
+            EXPECT_TRUE(correct(std::move(s), r));
+        }
+        
+        void assertIncorrect(
+            std::string s,
+            av_coordinate_response_measure::SubjectResponse r
+        ) {
+            EXPECT_FALSE(correct(std::move(s), r));
+        }
     };
     
     TEST_F(ResponseEvaluatorTests, blue) {
-        EXPECT_TRUE(evaluator.correct(
+        assertCorrect(
             "blue1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::blue
             }
-        ));
+        );
     }
     
     TEST_F(ResponseEvaluatorTests, red) {
-        EXPECT_TRUE(evaluator.correct(
+        assertCorrect(
             "red1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::red
             }
-        ));
+        );
     }
     
     TEST_F(ResponseEvaluatorTests, white) {
-        EXPECT_TRUE(evaluator.correct(
+        assertCorrect(
             "white1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::white
             }
-        ));
+        );
     }
     
     TEST_F(ResponseEvaluatorTests, green) {
-        EXPECT_TRUE(evaluator.correct(
+        assertCorrect(
             "green1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::green
             }
-        ));
+        );
     }
     
     TEST_F(ResponseEvaluatorTests, rightColorWrongNumber) {
-        EXPECT_FALSE(evaluator.correct(
+        assertIncorrect(
             "blue2.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::blue
             }
-        ));
+        );
     }
     
     TEST_F(ResponseEvaluatorTests, rightNumberWrongColor) {
-        EXPECT_FALSE(evaluator.correct(
+        assertIncorrect(
             "green1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::blue
             }
-        ));
+        );
     }
     
     TEST_F(ResponseEvaluatorTests, wrongNumberWrongColor) {
-        EXPECT_FALSE(evaluator.correct(
+        assertIncorrect(
             "green2.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::blue
             }
-        ));
+        );
     }
     
     TEST_F(ResponseEvaluatorTests, ignoresLeadingPath) {
-        EXPECT_TRUE(evaluator.correct(
+        assertCorrect(
             "a/green1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::green
             }
-        ));
-        EXPECT_TRUE(evaluator.correct(
+        );
+        assertCorrect(
             "a/b/green1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::green
             }
-        ));
-        EXPECT_FALSE(evaluator.correct(
+        );
+        assertIncorrect(
             "a/red1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::green
             }
-        ));
-        EXPECT_FALSE(evaluator.correct(
+        );
+        assertIncorrect(
             "a/b/red1.mov",
             {
                 1,
                 av_coordinate_response_measure::Color::green
             }
-        ));
+        );
     }
 }

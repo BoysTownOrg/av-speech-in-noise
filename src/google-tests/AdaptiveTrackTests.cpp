@@ -63,16 +63,21 @@ namespace {
         void assertReversalsEquals(int expected) {
             EXPECT_EQ(expected, reversals());
         }
+        
+        template<typename T>
+        void setStartingX(T x) {
+            settings.startingX = x;
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
-        settings.startingX = 1;
+        setStartingX(1);
         reset();
         assertXEquals(1);
     }
 
-    TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoStepChanges) {
-        settings.startingX = 5;
+    TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoChanges) {
+        setStartingX(5);
         reset();
         pushDown();
         assertXEquals(5);
@@ -83,7 +88,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
-        settings.startingX = 5;
+        setStartingX(5);
         rule.at(0).runCount = 3;
         rule.at(0).stepSize = 4;
         rule.at(0).up = 1;
@@ -108,7 +113,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
-        settings.startingX = 5;
+        setStartingX(5);
         rule.at(0).runCount = 3;
         rule.at(0).stepSize = 4;
         rule.at(0).up = 1;
@@ -131,7 +136,7 @@ namespace {
 
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure4) {
-        settings.startingX = 0;
+        setStartingX(0);
         rule.at(0).runCount = 8;
         rule.at(0).stepSize = 1;
         rule.at(0).down = 1;
@@ -143,7 +148,7 @@ namespace {
 
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure5) {
-        settings.startingX = 0;
+        setStartingX(0);
         rule.at(0).runCount = 5;
         rule.at(0).stepSize = 1;
         rule.at(0).down = 2;
@@ -154,7 +159,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, twoSequences) {
-        settings.startingX = 65;
+        setStartingX(65);
         rule.at(0).runCount = 2;
         rule.at(0).stepSize = 8;
         rule.at(0).down = 2;
@@ -189,7 +194,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, threeSequences) {
-        settings.startingX = 0;
+        setStartingX(0);
         rule.at(0).runCount = 1;
         rule.at(0).stepSize = 10;
         rule.at(0).down = 3;
@@ -208,7 +213,7 @@ namespace {
     }
 
     TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
-        settings.startingX = 65;
+        setStartingX(65);
         rule.at(0).runCount = 2;
         rule.at(0).stepSize = 8;
         rule.at(0).up = 1;
@@ -243,7 +248,7 @@ namespace {
     }
     
     TEST_F(AdaptiveTrackTests, reversals) {
-        settings.startingX = 0;
+        setStartingX(0);
         rule.at(0).runCount = 1000;
         rule.at(0).down = 2;
         rule.at(0).up = 1;
