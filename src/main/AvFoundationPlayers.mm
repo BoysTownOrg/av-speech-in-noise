@@ -118,11 +118,11 @@ public:
     explicit AvAssetFacade(AVAsset *asset) : asset{asset} {}
     
     AVAssetTrack *audioTrack() {
-        return [asset tracksWithMediaType:AVMediaTypeAudio].firstObject;
+        return firstTrack(AVMediaTypeAudio);
     }
     
     AVAssetTrack *videoTrack() {
-        return [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
+        return firstTrack(AVMediaTypeVideo);
     }
     
     AVAsset *get() {
@@ -130,6 +130,10 @@ public:
     }
     
 private:
+    AVAssetTrack *firstTrack(AVMediaType mediaType) {
+        return [asset tracksWithMediaType:mediaType].firstObject;
+    }
+    
     AVURLAsset *makeAvAsset(std::string filePath) {
         const auto withPercents = [asNsString(std::move(filePath))
             stringByAddingPercentEncodingWithAllowedCharacters:
@@ -159,6 +163,7 @@ CoreAudioBuffer::CoreAudioBuffer(AVAssetReaderTrackOutput *trackOutput) :
     );
 }
 
+// A better design could throw if constructor cannot allocate buffer(s)...
 CoreAudioBuffer::~CoreAudioBuffer() {
     if (blockBuffer)
         CFRelease(blockBuffer);
@@ -189,12 +194,16 @@ void CoreAudioBufferedReader::loadFile(std::string filePath) {
         error:nil
     ];
     auto track = asset.audioTrack();
+    
+    // assetReaderTrackOutputWithTrack throws if track is nil...
+    // I do not handle the error here but by querying failed method.
     trackOutput = track == nil ? nil : [AVAssetReaderTrackOutput
         assetReaderTrackOutputWithTrack:track
         outputSettings:@{
             AVFormatIDKey : [NSNumber numberWithInt:kAudioFormatLinearPCM]
         }
     ];
+    
     [reader addOutput:trackOutput];
     [reader startReading];
 }
