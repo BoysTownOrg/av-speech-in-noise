@@ -141,13 +141,13 @@ namespace av_coordinate_response_measure {
         bool correct(const SubjectResponse &);
         void updateSnr(const SubjectResponse &);
         void prepareSnrTrack(const Test &);
-        void playTarget();
         void playCalibration_(const Calibration &);
-        void prepareMasker();
+        void prepareMasker(const Test &);
         void prepareOutputFile(const Test &);
         void tryOpeningOutputFile(const Test &);
-        void prepareTargets();
-        void loadMaskerFile();
+        void prepareTargets(const Test &);
+        void loadMaskerFile(const Test &);
+        void playTarget();
         bool noMoreTrials();
         bool trialInProgress();
         void loadNextTarget();

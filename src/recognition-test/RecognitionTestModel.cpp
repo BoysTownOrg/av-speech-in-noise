@@ -31,8 +31,8 @@ namespace av_coordinate_response_measure {
         
         prepareSnrTrack(p);
         prepareOutputFile(p);
-        prepareMasker();
-        prepareTargets();
+        prepareMasker(p);
+        prepareTargets(p);
         prepareVideo();
     }
     
@@ -58,13 +58,13 @@ namespace av_coordinate_response_measure {
         }
     }
     
-    void RecognitionTestModel::prepareMasker() {
-        loadMaskerFile();
+    void RecognitionTestModel::prepareMasker(const Test &p) {
+        loadMaskerFile(p);
         maskerPlayer->setLevel_dB(maskerLevel_dB());
     }
     
-    void RecognitionTestModel::loadMaskerFile() {
-        maskerPlayer->loadFile(test.maskerFilePath);
+    void RecognitionTestModel::loadMaskerFile(const Test &p) {
+        maskerPlayer->loadFile(p.maskerFilePath);
     }
     
     static double dB(double x) {
@@ -83,8 +83,8 @@ namespace av_coordinate_response_measure {
             test.fullScaleLevel_dB_SPL;
     }
     
-    void RecognitionTestModel::prepareTargets() {
-        targetList->loadFromDirectory(test.targetListDirectory);
+    void RecognitionTestModel::prepareTargets(const Test &p) {
+        targetList->loadFromDirectory(p.targetListDirectory);
     }
     
     void RecognitionTestModel::prepareVideo() {
