@@ -312,7 +312,11 @@ namespace {
         }
         
         void assertLeftChannelEquals(std::vector<float> x) {
-            assertEqual(x, leftChannel, 1e-6f);
+            assertChannelEqual(leftChannel, x);
+        }
+        
+        void assertChannelEqual(const std::vector<float> &channel, std::vector<float> x) {
+            assertEqual(x, channel, 1e-6f);
         }
         
         void assertFillingStereoChannelsMultipliesBy(
@@ -331,7 +335,7 @@ namespace {
         }
         
         void assertRightChannelEquals(std::vector<float> x) {
-            assertEqual(x, rightChannel, 1e-6f);
+            assertChannelEqual(rightChannel, x);
         }
     };
 
