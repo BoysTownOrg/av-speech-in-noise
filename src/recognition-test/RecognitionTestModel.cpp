@@ -29,30 +29,30 @@ namespace av_coordinate_response_measure {
     void RecognitionTestModel::initializeTest(const Test &p) {
         test = p;
         
-        prepareSnrTrack(p.targetLevelRule);
-        prepareOutputFile();
+        prepareSnrTrack(p);
+        prepareOutputFile(p);
         prepareMasker();
         prepareTargets();
         prepareVideo();
     }
     
-    void RecognitionTestModel::prepareSnrTrack(const TrackingRule *rule) {
+    void RecognitionTestModel::prepareSnrTrack(const Test &p) {
         Track::Settings s;
-        s.rule = rule;
-        s.startingX = test.startingSnr_dB;
+        s.rule = p.targetLevelRule;
+        s.startingX = p.startingSnr_dB;
         snrTrack->reset(s);
     }
     
-    void RecognitionTestModel::prepareOutputFile() {
+    void RecognitionTestModel::prepareOutputFile(const Test &p) {
         outputFile->close();
-        tryOpeningOutputFile();
-        outputFile->writeTest(test);
+        tryOpeningOutputFile(p);
+        outputFile->writeTest(p);
         outputFile->writeTrialHeading();
     }
     
-    void RecognitionTestModel::tryOpeningOutputFile() {
+    void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {
         try {
-            outputFile->openNewFile(test);
+            outputFile->openNewFile(p);
         } catch (const OutputFile::OpenFailure &) {
             throw RequestFailure{"Unable to open output file."};
         }

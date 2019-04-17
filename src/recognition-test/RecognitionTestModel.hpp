@@ -140,12 +140,12 @@ namespace av_coordinate_response_measure {
         std::string currentTarget();
         bool correct(const SubjectResponse &);
         void updateSnr(const SubjectResponse &);
-        void prepareSnrTrack(const TrackingRule *);
+        void prepareSnrTrack(const Test &);
         void playTarget();
         void playCalibration_(const Calibration &);
         void prepareMasker();
-        void prepareOutputFile();
-        void tryOpeningOutputFile();
+        void prepareOutputFile(const Test &);
+        void tryOpeningOutputFile(const Test &);
         void prepareTargets();
         void loadMaskerFile();
         bool noMoreTrials();
