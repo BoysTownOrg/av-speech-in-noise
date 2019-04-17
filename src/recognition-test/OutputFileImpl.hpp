@@ -17,7 +17,7 @@ namespace av_coordinate_response_measure {
     public:
         virtual ~OutputFilePath() = default;
         virtual std::string generateFileName(
-            const av_coordinate_response_measure::Test &
+            const Test &
         ) = 0;
         virtual std::string homeDirectory() = 0;
         virtual std::string outputDirectory() = 0;
@@ -28,20 +28,20 @@ namespace av_coordinate_response_measure {
         OutputFilePath *path;
     public:
         OutputFileImpl(Writer *, OutputFilePath *);
-        void writeTest(const av_coordinate_response_measure::Test &) override;
-        void writeTrial(const av_coordinate_response_measure::Trial &) override;
+        void writeTest(const Test &) override;
+        void writeTrial(const Trial &) override;
         void writeTrialHeading() override;
-        void openNewFile(const av_coordinate_response_measure::Test &) override;
+        void openNewFile(const Test &) override;
         void close() override;
         
     private:
         void write(std::string);
-        std::string evaluation(const av_coordinate_response_measure::Trial &);
-        std::string formatTest(const av_coordinate_response_measure::Test &);
-        std::string formatTrial(const av_coordinate_response_measure::Trial &);
+        std::string evaluation(const Trial &);
+        std::string formatTest(const Test &);
+        std::string formatTrial(const Trial &);
         std::string formatTrialHeading();
-        std::string generateNewFilePath(const av_coordinate_response_measure::Test &);
-        std::string colorName(av_coordinate_response_measure::Color);
+        std::string generateNewFilePath(const Test &);
+        std::string colorName(Color);
     };
 }
 

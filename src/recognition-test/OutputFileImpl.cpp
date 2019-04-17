@@ -38,7 +38,7 @@ namespace av_coordinate_response_measure {
         path{path} {}
     
     void OutputFileImpl::writeTrial(
-        const av_coordinate_response_measure::Trial &trial
+        const Trial &trial
     ) {
         write(formatTrial(trial));
     }
@@ -48,7 +48,7 @@ namespace av_coordinate_response_measure {
     }
 
     std::string OutputFileImpl::formatTrial(
-        const av_coordinate_response_measure::Trial &trial
+        const Trial &trial
     ) {
         FormattedStream stream;
         stream.insert(trial.SNR_dB);
@@ -69,24 +69,22 @@ namespace av_coordinate_response_measure {
     }
     
     std::string OutputFileImpl::evaluation(
-        const av_coordinate_response_measure::Trial &trial
+        const Trial &trial
     ) {
-        return trial.correct
-            ? "correct"
-            : "incorrect";
+        return trial.correct ? "correct" : "incorrect";
     }
 
     std::string OutputFileImpl::colorName(
-        av_coordinate_response_measure::Color c
+        Color c
     ) {
         switch (c) {
-        case av_coordinate_response_measure::Color::green:
+        case Color::green:
             return "green";
-        case av_coordinate_response_measure::Color::red:
+        case Color::red:
             return "red";
-        case av_coordinate_response_measure::Color::blue:
+        case Color::blue:
             return "blue";
-        case av_coordinate_response_measure::Color::white:
+        case Color::white:
             return "gray";
         }
         return "unknown";
@@ -116,7 +114,7 @@ namespace av_coordinate_response_measure {
     }
     
     void OutputFileImpl::openNewFile(
-        const av_coordinate_response_measure::Test &test
+        const Test &test
     ) {
         writer->open(generateNewFilePath(test));
         if (writer->failed())
@@ -124,7 +122,7 @@ namespace av_coordinate_response_measure {
     }
     
     std::string OutputFileImpl::generateNewFilePath(
-        const av_coordinate_response_measure::Test &test
+        const Test &test
     ) {
         return
             path->outputDirectory() + "/" +
@@ -132,13 +130,13 @@ namespace av_coordinate_response_measure {
     }
     
     void OutputFileImpl::writeTest(
-        const av_coordinate_response_measure::Test &test
+        const Test &test
     ) {
         write(formatTest(test));
     }
     
     std::string OutputFileImpl::formatTest(
-        const av_coordinate_response_measure::Test &test
+        const Test &test
     ) {
         FormattedStream stream;
         stream.writeLabeledLine("subject", test.subjectId);
