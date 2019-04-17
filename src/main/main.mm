@@ -7,6 +7,7 @@
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
 #include <recognition-test/AdaptiveTrack.hpp>
+#include <recognition-test/ResponseEvaluatorImpl.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
@@ -95,18 +96,6 @@ public:
     }
 };
 
-class FakeResponseEvaluator : public av_coordinate_response_measure::ResponseEvaluator {
-    bool correct_{};
-public:
-    bool correct(
-        std::string filePath,
-        const av_coordinate_response_measure::SubjectResponse &
-    ) override {
-        return correct_ = !correct_;
-    }
-
-};
-
 int main() {
     MacOsDirectoryReader reader;
     target_list::FileFilterDecorator filter{&reader, ".mov"};
@@ -126,7 +115,7 @@ int main() {
     path.setRelativeOutputDirectory("Documents/AVCoordinatedResponseMeasureResults");
     av_coordinate_response_measure::OutputFileImpl outputFile{&writer, &path};
     av_coordinate_response_measure::AdaptiveTrack snrTrack{};
-    FakeResponseEvaluator responseEvaluator{};
+    av_coordinate_response_measure::ResponseEvaluatorImpl responseEvaluator{};
     av_coordinate_response_measure::RecognitionTestModel model{
         &list,
         &targetPlayer,

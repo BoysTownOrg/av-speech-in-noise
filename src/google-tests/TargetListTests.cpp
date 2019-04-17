@@ -124,8 +124,10 @@ namespace {
     protected:
         DirectoryReaderStub reader{};
         
-        target_list::FileFilterDecorator construct(std::string filter = {}) {
-            return {&reader, std::move(filter)};
+        target_list::FileFilterDecorator construct(
+            std::vector<std::string> filters = {}
+        ) {
+            return {&reader, std::move(filters)};
         }
     };
 
@@ -136,8 +138,8 @@ namespace {
     }
 
     TEST_F(FileFilterDecoratorTests, returnsFilteredFiles) {
-        auto decorator = construct(".c");
+        auto decorator = construct({".c", ".h"});
         reader.setFileNames({ "a", "b.c", "d.e", "f.c", "g.h" });
-        assertEqual({ "b.c", "f.c" }, decorator.filesIn({}));
+        assertEqual({ "b.c", "f.c", "g.h" }, decorator.filesIn({}));
     }
 }

@@ -3,9 +3,9 @@
 namespace target_list {
     FileFilterDecorator::FileFilterDecorator(
         DirectoryReader *reader,
-        std::string filter
+        std::vector<std::string> filters
     ) :
-        filter{filter},
+        filters{std::move(filters)},
         reader{reader} {}
 
     std::vector<std::string> FileFilterDecorator::filesIn(
@@ -19,12 +19,16 @@ namespace target_list {
     ) {
         std::vector<std::string> filtered_{};
         for (const auto &file : files)
-            if (endingMatchesFilter(file))
-                filtered_.push_back(file);
+            for (const auto &filter : filters)
+                if (endingMatchesFilter(file, filter))
+                    filtered_.push_back(file);
         return filtered_;
     }
     
-    bool FileFilterDecorator::endingMatchesFilter(const std::string &file) {
+    bool FileFilterDecorator::endingMatchesFilter(
+        const std::string &file,
+        const std::string &filter
+    ) {
         return
             file.length() >= filter.length() &&
             0 == file.compare(
