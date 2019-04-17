@@ -158,6 +158,7 @@ namespace av_coordinate_response_measure {
         void prepareVideo(const Test &);
         int desiredMaskerLevel_dB();
         double unalteredTargetLevel_dB();
+        int SNR_dB();
         double targetLevel_dB();
         double maskerLevel_dB();
         void setTargetPlayerDevice(const std::string &);

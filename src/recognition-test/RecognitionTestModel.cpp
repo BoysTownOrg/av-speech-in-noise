@@ -73,15 +73,11 @@ namespace av_coordinate_response_measure {
     }
     
     double RecognitionTestModel::maskerLevel_dB() {
-        return
-            desiredMaskerLevel_dB() -
-            dB(maskerPlayer->rms());
+        return desiredMaskerLevel_dB() - dB(maskerPlayer->rms());
     }
     
     int RecognitionTestModel::desiredMaskerLevel_dB() {
-        return
-            maskerLevel_dB_SPL -
-            fullScaleLevel_dB_SPL;
+        return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
     }
     
     void RecognitionTestModel::prepareTargets(const Test &p) {
@@ -120,9 +116,7 @@ namespace av_coordinate_response_measure {
         loadNextTarget();
     }
     
-    void RecognitionTestModel::trySettingAudioDevices(
-        const AudioSettings &p
-    ) {
+    void RecognitionTestModel::trySettingAudioDevices(const AudioSettings &p) {
         throwInvalidAudioDeviceOnErrorSettingDevice(
             &RecognitionTestModel::setAudioDevices,
             p.audioDevice
@@ -172,8 +166,12 @@ namespace av_coordinate_response_measure {
     double RecognitionTestModel::targetLevel_dB() {
         return
             desiredMaskerLevel_dB() +
-            snrTrack->x() -
+            SNR_dB() -
             unalteredTargetLevel_dB();
+    }
+    
+    int RecognitionTestModel::SNR_dB() {
+        return snrTrack->x();
     }
     
     void RecognitionTestModel::startTrial() {
@@ -219,7 +217,7 @@ namespace av_coordinate_response_measure {
         trial.reversals = snrTrack->reversals();
         trial.correctColor = evaluator->correctColor(currentTarget());
         trial.correctNumber = evaluator->correctNumber(currentTarget());
-        trial.SNR_dB = snrTrack->x();
+        trial.SNR_dB = SNR_dB();
         trial.correct = correct(response);
         outputFile->writeTrial(trial);
     }
