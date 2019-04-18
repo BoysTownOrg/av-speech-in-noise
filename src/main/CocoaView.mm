@@ -157,7 +157,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         target:actions
         action:@selector(confirmTestSetup)
     ];
-    [confirmButton setFrame:NSMakeRect(r.size.width - 100, 15, buttonWidth, buttonHeight)];
+    [confirmButton setFrame:NSMakeRect(r.size.width - buttonWidth, 0, buttonWidth, buttonHeight)];
     const auto playCalibrationButton = [NSButton
         buttonWithTitle:@"play"
         target:actions
@@ -205,43 +205,47 @@ void CocoaTestSetupView::hide() {
 }
 
 std::string CocoaTestSetupView::startingSnr_dB() {
-    return startingSnr_dB_.stringValue.UTF8String;
+    return stringValue(startingSnr_dB_);
+}
+
+const char *CocoaTestSetupView::stringValue(NSTextField *field) {
+    return field.stringValue.UTF8String;
 }
 
 std::string CocoaTestSetupView::maskerLevel_dB_SPL() {
-    return maskerLevel_dB_SPL_.stringValue.UTF8String;
+    return stringValue(maskerLevel_dB_SPL_);
 }
 
 std::string CocoaTestSetupView::calibrationLevel_dB_SPL() {
-    return calibrationLevel_dB_SPL_.stringValue.UTF8String;
+    return stringValue(calibrationLevel_dB_SPL_);
 }
 
 std::string CocoaTestSetupView::maskerFilePath() {
-    return maskerFilePath_.stringValue.UTF8String;
+    return stringValue(maskerFilePath_);
 }
 
 std::string CocoaTestSetupView::calibrationFilePath() {
-    return calibrationFilePath_.stringValue.UTF8String;
+    return stringValue(calibrationFilePath_);
 }
 
 std::string CocoaTestSetupView::targetListDirectory() {
-    return targetListDirectory_.stringValue.UTF8String;
+    return stringValue(targetListDirectory_);
 }
 
 std::string CocoaTestSetupView::testerId() {
-    return testerId_.stringValue.UTF8String;
+    return stringValue(testerId_);
 }
 
 std::string CocoaTestSetupView::subjectId() {
-    return subjectId_.stringValue.UTF8String;
+    return stringValue(subjectId_);
+}
+
+std::string CocoaTestSetupView::session() {
+    return stringValue(session_);
 }
 
 std::string CocoaTestSetupView::condition() {
     return conditionMenu.titleOfSelectedItem.UTF8String;
-}
-
-std::string CocoaTestSetupView::session() {
-    return session_.stringValue.UTF8String;
 }
 
 void CocoaTestSetupView::setTargetListDirectory(std::string s) {

@@ -91,6 +91,8 @@ public:
     void playCalibration();
     void setMaskerLevel_dB_SPL(std::string);
     void setStartingSnr_dB(std::string);
+private:
+    const char * stringValue(NSTextField *field);
 };
 
 class CocoaSubjectView : public av_coordinate_response_measure::View::Subject {
