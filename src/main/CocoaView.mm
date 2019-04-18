@@ -189,8 +189,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     [view_ addSubview:calibrationFilePath_];
     [view_ addSubview:condition_label];
     [view_ addSubview:conditionMenu];
-    maskerLevel_dB_SPL_.stringValue = @"65";
-    startingSnr_dB_.stringValue = @"0";
     [view_ setHidden:NO];
 }
 
@@ -256,6 +254,14 @@ void CocoaTestSetupView::setCalibrationFilePath(std::string s) {
 
 void CocoaTestSetupView::setMasker(std::string s) {
     [maskerFilePath_ setStringValue:asNsString(std::move(s))];
+}
+
+void CocoaTestSetupView::setMaskerLevel_dB_SPL(std::string s) {
+    [maskerLevel_dB_SPL_ setStringValue:asNsString(std::move(s))];
+}
+
+void CocoaTestSetupView::setStartingSnr_dB(std::string s) {
+    [startingSnr_dB_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {

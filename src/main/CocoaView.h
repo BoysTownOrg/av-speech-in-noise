@@ -89,6 +89,8 @@ public:
     void browseForMasker();
     void browseForCalibration();
     void playCalibration();
+    void setMaskerLevel_dB_SPL(std::string);
+    void setStartingSnr_dB(std::string);
 };
 
 class CocoaSubjectView : public av_coordinate_response_measure::View::Subject {
