@@ -37,6 +37,8 @@ static constexpr auto textFieldLeadingEdge =
     labelWidth + labelToTextFieldSpacing;
 static constexpr auto normalTextFieldWidth = 150;
 static constexpr auto filePathTextFieldWidth = 500;
+static constexpr auto buttonHeight = 25;
+static constexpr auto buttonWidth = 100;
 
 static NSRect normalTextFieldSizeAtHeight(CGFloat y) {
     return NSMakeRect(
@@ -137,31 +139,31 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         target:actions
         action:@selector(browseForTargetList)
     ];
-    [browseForStimulusListButton setFrame:NSMakeRect(500 + textFieldLeadingEdge + 10, 120, 100, 25)];
+    [browseForStimulusListButton setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 120, buttonWidth, buttonHeight)];
     const auto browseForMaskerButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
         action:@selector(browseForMasker)
     ];
-    [browseForMaskerButton setFrame:NSMakeRect(500 + textFieldLeadingEdge + 10, 90, 100, 25)];
+    [browseForMaskerButton setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 90, buttonWidth, buttonHeight)];
     const auto browseForCalibrationButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
         action:@selector(browseForCalibration)
     ];
-    [browseForCalibrationButton setFrame:NSMakeRect(500 + textFieldLeadingEdge + 10, 60, 100, 25)];
+    [browseForCalibrationButton setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 60, buttonWidth, buttonHeight)];
     const auto confirmButton = [NSButton
         buttonWithTitle:@"Confirm"
         target:actions
         action:@selector(confirmTestSetup)
     ];
-    [confirmButton setFrame:NSMakeRect(900 - 100 - 2*15, 15, 100, 25)];
+    [confirmButton setFrame:NSMakeRect(900 - 100 - 2*15, 15, buttonWidth, buttonHeight)];
     const auto playCalibrationButton = [NSButton
         buttonWithTitle:@"play"
         target:actions
         action:@selector(playCalibration)
     ];
-    [playCalibrationButton setFrame:NSMakeRect(500 + textFieldLeadingEdge + 10, 30, 100, 25)];
+    [playCalibrationButton setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 30, buttonWidth, buttonHeight)];
     [view_ addSubview:browseForMaskerButton];
     [view_ addSubview:browseForStimulusListButton];
     [view_ addSubview:browseForCalibrationButton];
