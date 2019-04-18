@@ -288,35 +288,6 @@ void CocoaTestSetupView::playCalibration() {
 }
 @end
 
-
-void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
-    for (int i = 0; i < 8; ++i) {
-        auto title = asNsString(std::to_string(i+1));
-        const auto button = [NSButton
-            buttonWithTitle:title
-            target:actions
-            action:@selector(respond:)
-        ];
-        [button setFrame:NSMakeRect(80*i, 80*row, 80, 80)];
-        [button setBezelStyle:NSBezelStyleTexturedSquare];
-        auto style = [[NSMutableParagraphStyle alloc] init];
-        [style setAlignment:NSTextAlignmentCenter];
-        auto attrsDictionary = [NSDictionary
-            dictionaryWithObjectsAndKeys:
-                color, NSForegroundColorAttributeName,
-                style, NSParagraphStyleAttributeName,
-                [NSFont fontWithName:@"Courier" size:36], NSFontAttributeName,
-                nil
-        ];
-        auto attrString = [[NSAttributedString alloc]
-            initWithString:title
-            attributes:attrsDictionary
-        ];
-        [button setAttributedTitle:attrString];
-        [responseButtons addSubview:button];
-    }
-}
-
 static auto greenColor = NSColor.greenColor;
 static auto redColor = NSColor.redColor;
 static auto blueColor = NSColor.blueColor;
@@ -343,18 +314,67 @@ CocoaSubjectView::CocoaSubjectView() :
     addButtonRow(greenColor, 1);
     addButtonRow(whiteColor, 2);
     addButtonRow(redColor, 3);
-    const auto button = [NSButton
-        buttonWithTitle:@"Press when ready"
-        target:actions
-        action:@selector(playTrial)
-    ];
-    [button setFrame:NSMakeRect(80*1, 80*1, 80, 80)];
-    [nextTrialButton addSubview:button];
+    addNextTrialButton();
     [window.contentView addSubview:nextTrialButton];
     [window.contentView addSubview:responseButtons];
     hideResponseButtons();
     hideNextTrialButton();
     [window makeKeyAndOrderFront:nil];
+}
+
+void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
+    for (int i = 0; i < 8; ++i)
+        addNumberButton(color, i, row);
+}
+
+void CocoaSubjectView::addNumberButton(NSColor *color, int i, int row) {
+    auto title = asNsString(std::to_string(i+1));
+    const auto button = [NSButton
+        buttonWithTitle:@""
+        target:actions
+        action:@selector(respond:)
+    ];
+    [button setFrame:NSMakeRect(80*i, 80*row, 80, 80)];
+    [button setBezelStyle:NSBezelStyleTexturedSquare];
+    auto style = [[NSMutableParagraphStyle alloc] init];
+    [style setAlignment:NSTextAlignmentCenter];
+    auto attrsDictionary = [NSDictionary
+        dictionaryWithObjectsAndKeys:
+        color, NSForegroundColorAttributeName,
+        style, NSParagraphStyleAttributeName,
+        [NSFont fontWithName:@"Courier" size:36], NSFontAttributeName,
+        nil
+    ];
+    auto attrString = [[NSAttributedString alloc]
+        initWithString:title
+        attributes:attrsDictionary
+    ];
+    [button setAttributedTitle:attrString];
+    [responseButtons addSubview:button];
+}
+
+void CocoaSubjectView::addNextTrialButton() {
+    const auto button = [NSButton
+        buttonWithTitle:@""
+        target:actions
+        action:@selector(playTrial)
+    ];
+    [button setBezelStyle:NSBezelStyleTexturedSquare];
+    auto style = [[NSMutableParagraphStyle alloc] init];
+    [style setAlignment:NSTextAlignmentCenter];
+    auto font = [NSFont fontWithName:@"Courier" size:36];
+    auto attrsDictionary = [NSDictionary
+        dictionaryWithObjectsAndKeys:
+        font, NSFontAttributeName,
+        nil
+    ];
+    auto attrString = [[NSAttributedString alloc]
+        initWithString:@"Press when ready"
+        attributes:attrsDictionary
+    ];
+    [button setAttributedTitle:attrString];
+    [button setFrame:NSMakeRect(150, 175, 400, 100)];
+    [nextTrialButton addSubview:button];
 }
 
 std::string CocoaSubjectView::numberResponse() {

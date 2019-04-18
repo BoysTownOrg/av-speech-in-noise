@@ -112,7 +112,9 @@ public:
     void respond(id sender);
     void playTrial();
 private:
+    void addNextTrialButton();
     NSColor *lastPressedColor();
+    void addNumberButton(NSColor *color, int i, int row);
     void addButtonRow(NSColor *color, int row);
 };
 
