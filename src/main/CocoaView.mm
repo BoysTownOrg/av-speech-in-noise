@@ -30,78 +30,85 @@ void CocoaTesterView::hide() {
     [view_ setHidden:YES];
 }
 
+static constexpr auto labelHeight = 22;
+static constexpr auto labelWidth = 140;
+static constexpr auto labelToTextFieldSpacing = 5;
+static constexpr auto textFieldLeadingEdge =
+    labelWidth + labelToTextFieldSpacing;
+static constexpr auto normalTextFieldWidth = 150;
+static constexpr auto filePathTextFieldWidth = 500;
 
 CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
     subjectIdLabel{allocLabel(
         @"subject:",
-        NSMakeRect(0, 270, 140, 22)
+        NSMakeRect(0, 270, labelWidth, labelHeight)
     )},
     subjectId_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 270, 150, 22)
+        initWithFrame:NSMakeRect(textFieldLeadingEdge, 270, normalTextFieldWidth, labelHeight)
     ]},
     testerIdLabel{allocLabel(
         @"tester:",
-        NSMakeRect(0, 240, 140, 22)
+        NSMakeRect(0, 240, labelWidth, labelHeight)
     )},
     testerId_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 240, 150, 22)
+        initWithFrame:NSMakeRect(textFieldLeadingEdge, 240, normalTextFieldWidth, labelHeight)
     ]},
     sessionLabel{allocLabel(
         @"session:",
-        NSMakeRect(0, 210, 140, 22)
+        NSMakeRect(0, 210, labelWidth, labelHeight)
     )},
     session_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 210, 150, 22)
+        initWithFrame:NSMakeRect(textFieldLeadingEdge, 210, normalTextFieldWidth, labelHeight)
     ]},
     maskerLevel_dB_SPL_label{allocLabel(
         @"masker level (dB SPL):",
-        NSMakeRect(0, 180, 140, 22)
+        NSMakeRect(0, 180, labelWidth, labelHeight)
     )},
     maskerLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 180, 150, 22)
+        initWithFrame:NSMakeRect(textFieldLeadingEdge, 180, normalTextFieldWidth, labelHeight)
     ]},
     calibrationLevel_dB_SPL_label{allocLabel(
         @"calibration level (dB SPL):",
-        NSMakeRect(350, 30, 150, 22)
+        NSMakeRect(350, 30, 150, labelHeight)
     )},
     calibrationLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(505, 30, 80, 22)
+        initWithFrame:NSMakeRect(505, 30, 80, labelHeight)
     ]},
     startingSnr_dB_label{allocLabel(
         @"starting SNR (dB):",
-        NSMakeRect(0, 150, 140, 22)
+        NSMakeRect(0, 150, labelWidth, labelHeight)
     )},
     startingSnr_dB_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 150, 150, 22)
+        initWithFrame:NSMakeRect(textFieldLeadingEdge, 150, normalTextFieldWidth, labelHeight)
     ]},
     targetListDirectoryLabel{allocLabel(
         @"targets:",
-        NSMakeRect(0, 120, 140, 22)
+        NSMakeRect(0, 120, labelWidth, labelHeight)
     )},
     targetListDirectory_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 120, 500, 22)
+        initWithFrame:NSMakeRect(textFieldLeadingEdge, 120, filePathTextFieldWidth, labelHeight)
     ]},
     maskerFilePath_label{allocLabel(
         @"masker:",
-        NSMakeRect(0, 90, 140, 22)
+        NSMakeRect(0, 90, labelWidth, labelHeight)
     )},
     maskerFilePath_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 90, 500, 22)
+        initWithFrame:NSMakeRect(textFieldLeadingEdge, 90, filePathTextFieldWidth, labelHeight)
     ]},
     calibrationFilePath_label{allocLabel(
         @"calibration:",
-        NSMakeRect(0, 60, 140, 22)
+        NSMakeRect(0, 60, labelWidth, labelHeight)
     )},
     calibrationFilePath_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 60, 500, 22)
+        initWithFrame:NSMakeRect(textFieldLeadingEdge, 60, filePathTextFieldWidth, labelHeight)
     ]},
     condition_label{allocLabel(
         @"condition:",
-        NSMakeRect(0, 30, 140, 22)
+        NSMakeRect(0, 30, labelWidth, labelHeight)
     )},
     conditionMenu{[[NSPopUpButton alloc]
-        initWithFrame:NSMakeRect(145, 30, 150, 22)
+        initWithFrame:NSMakeRect(textFieldLeadingEdge, 30, normalTextFieldWidth, labelHeight)
         pullsDown:NO
     ]},
     actions{[SetupViewActions alloc]}
@@ -112,19 +119,19 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         target:actions
         action:@selector(browseForTargetList)
     ];
-    [browseForStimulusListButton setFrame:NSMakeRect(500 + 145 + 10, 120, 100, 25)];
+    [browseForStimulusListButton setFrame:NSMakeRect(500 + textFieldLeadingEdge + 10, 120, 100, 25)];
     const auto browseForMaskerButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
         action:@selector(browseForMasker)
     ];
-    [browseForMaskerButton setFrame:NSMakeRect(500 + 145 + 10, 90, 100, 25)];
+    [browseForMaskerButton setFrame:NSMakeRect(500 + textFieldLeadingEdge + 10, 90, 100, 25)];
     const auto browseForCalibrationButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
         action:@selector(browseForCalibration)
     ];
-    [browseForCalibrationButton setFrame:NSMakeRect(500 + 145 + 10, 60, 100, 25)];
+    [browseForCalibrationButton setFrame:NSMakeRect(500 + textFieldLeadingEdge + 10, 60, 100, 25)];
     const auto confirmButton = [NSButton
         buttonWithTitle:@"Confirm"
         target:actions
@@ -136,7 +143,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         target:actions
         action:@selector(playCalibration)
     ];
-    [playCalibrationButton setFrame:NSMakeRect(500 + 145 + 10, 30, 100, 25)];
+    [playCalibrationButton setFrame:NSMakeRect(500 + textFieldLeadingEdge + 10, 30, 100, 25)];
     [view_ addSubview:browseForMaskerButton];
     [view_ addSubview:browseForStimulusListButton];
     [view_ addSubview:browseForCalibrationButton];
@@ -455,7 +462,7 @@ CocoaView::CocoaView(NSRect r) :
     ]},
     audioDevice_label{allocLabel(
         @"audio output:",
-        NSMakeRect(15, 15, 140, 22)
+        NSMakeRect(15, 15, labelWidth, labelHeight)
     )},
     deviceMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(160, 15, 140, 30)
