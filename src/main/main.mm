@@ -101,7 +101,7 @@ int main() {
     target_list::FileFilterDecorator filter{&reader, {".mov", ".avi", ".wav"}};
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetList list{&filter, &randomizer};
-    AvFoundationVideoPlayer videoPlayer;
+    AvFoundationVideoPlayer videoPlayer{NSMakeRect(400, 450, 0, 0)};
     CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
     stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};

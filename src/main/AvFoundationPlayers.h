@@ -65,11 +65,11 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     AVPlayerLayer *playerLayer;
     EventListener *listener_{};
 public:
-    AvFoundationVideoPlayer();
+    AvFoundationVideoPlayer(NSRect);
     void playbackComplete();
     void setSampleRate(double x) {}
     std::vector<gsl::span<float>> &audio() { return audio_; }
-    void fillAudioBuffer() { listener_->fillAudioBuffer(audio_); }
+    void fillAudioBuffer();
     void play() override;
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
@@ -105,9 +105,9 @@ class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     double sampleRate_{};
 public:
     AvFoundationAudioPlayer();
-    void setSampleRate(double x) { sampleRate_ = x;}
+    void setSampleRate(double x) { sampleRate_ = x; }
     std::vector<gsl::span<float>> &audio() { return audio_; }
-    void fillAudioBuffer() { listener_->fillAudioBuffer(audio_); }
+    void fillAudioBuffer();
     void subscribe(EventListener *) override;
     void loadFile(std::string filePath) override;
     int deviceCount() override;

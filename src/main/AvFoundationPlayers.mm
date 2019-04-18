@@ -3,6 +3,7 @@
 #include <gsl/gsl>
 #include <limits>
 
+// https://stackoverflow.com/questions/4575408/audioobjectgetpropertydata-to-get-a-list-of-input-devices
 CoreAudioDevices::CoreAudioDevices() {
     loadDevices();
 }
@@ -212,7 +213,9 @@ bool CoreAudioBufferedReader::failed() {
     return trackOutput == nil;
 }
 
-std::shared_ptr<stimulus_players::AudioBuffer> CoreAudioBufferedReader::readNextBuffer() {
+std::shared_ptr<stimulus_players::AudioBuffer>
+    CoreAudioBufferedReader::readNextBuffer()
+{
     return std::make_shared<CoreAudioBuffer>(trackOutput);
 }
 
@@ -327,10 +330,10 @@ static void loadItemFromFileWithAudioProcessing(
     [player replaceCurrentItemWithPlayerItem:playerItem];
 }
 
-AvFoundationVideoPlayer::AvFoundationVideoPlayer() :
+AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSRect r) :
     actions{[VideoPlayerActions alloc]},
     videoWindow{[[NSWindow alloc]
-        initWithContentRect: NSMakeRect(400, 450, 0, 0)
+        initWithContentRect: r
         styleMask:NSWindowStyleMaskBorderless
         backing:NSBackingStoreBuffered
         defer:YES
@@ -405,6 +408,10 @@ std::string AvFoundationVideoPlayer::deviceDescription(int index) {
     return device.description(index);
 }
 
+void AvFoundationVideoPlayer::fillAudioBuffer()  {
+    listener_->fillAudioBuffer(audio_);
+}
+
 static bool playing(AVPlayer *player) {
     return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
 }
@@ -475,6 +482,10 @@ void AvFoundationAudioPlayer::timerCallback() {
 
 bool AvFoundationAudioPlayer::outputDevice(int index) {
     return device.outputDevice(index);
+}
+
+void AvFoundationAudioPlayer::fillAudioBuffer() {
+    listener_->fillAudioBuffer(audio_);
 }
 
 @implementation CallbackScheduler
