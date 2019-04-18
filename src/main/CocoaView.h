@@ -92,6 +92,7 @@ public:
     void setMaskerLevel_dB_SPL(std::string);
     void setStartingSnr_dB(std::string);
 private:
+    void addSubview(NSView *subview);
     const char * stringValue(NSTextField *field);
 };
 

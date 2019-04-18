@@ -164,32 +164,37 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         action:@selector(playCalibration)
     ];
     [playCalibrationButton setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 30, buttonWidth, buttonHeight)];
-    [view_ addSubview:browseForMaskerButton];
-    [view_ addSubview:browseForStimulusListButton];
-    [view_ addSubview:browseForCalibrationButton];
-    [view_ addSubview:confirmButton];
-    [view_ addSubview:playCalibrationButton];
-    [view_ addSubview:subjectIdLabel];
-    [view_ addSubview:subjectId_];
-    [view_ addSubview:testerIdLabel];
-    [view_ addSubview:testerId_];
-    [view_ addSubview:sessionLabel];
-    [view_ addSubview:session_];
-    [view_ addSubview:maskerLevel_dB_SPL_label];
-    [view_ addSubview:maskerLevel_dB_SPL_];
-    [view_ addSubview:calibrationLevel_dB_SPL_label];
-    [view_ addSubview:calibrationLevel_dB_SPL_];
-    [view_ addSubview:startingSnr_dB_label];
-    [view_ addSubview:startingSnr_dB_];
-    [view_ addSubview:targetListDirectoryLabel];
-    [view_ addSubview:targetListDirectory_];
-    [view_ addSubview:maskerFilePath_label];
-    [view_ addSubview:maskerFilePath_];
-    [view_ addSubview:calibrationFilePath_label];
-    [view_ addSubview:calibrationFilePath_];
-    [view_ addSubview:condition_label];
-    [view_ addSubview:conditionMenu];
+    addSubview(browseForMaskerButton);
+    addSubview(browseForStimulusListButton);
+    addSubview(browseForCalibrationButton);
+    addSubview(confirmButton);
+    addSubview(playCalibrationButton);
+    addSubview(subjectIdLabel);
+    addSubview(subjectId_);
+    addSubview(testerIdLabel);
+    addSubview(testerId_);
+    addSubview(sessionLabel);
+    addSubview(session_);
+    addSubview(maskerLevel_dB_SPL_label);
+    addSubview(maskerLevel_dB_SPL_);
+    addSubview(calibrationLevel_dB_SPL_label);
+    addSubview(calibrationLevel_dB_SPL_);
+    addSubview(startingSnr_dB_label);
+    addSubview(startingSnr_dB_);
+    addSubview(targetListDirectoryLabel);
+    addSubview(targetListDirectory_);
+    addSubview(maskerFilePath_label);
+    addSubview(maskerFilePath_);
+    addSubview(calibrationFilePath_label);
+    addSubview(calibrationFilePath_);
+    addSubview(condition_label);
+    addSubview(conditionMenu);
+    addSubview(conditionMenu);
     [view_ setHidden:NO];
+}
+
+void CocoaTestSetupView::addSubview(NSView *subview) {
+    [view_ addSubview:subview];
 }
 
 NSView *CocoaTestSetupView::view() {
