@@ -128,7 +128,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         NSMakeRect(0, 30, labelWidth, labelHeight)
     )},
     conditionMenu{[[NSPopUpButton alloc]
-        initWithFrame:NSMakeRect(textFieldLeadingEdge, 30, normalTextFieldWidth, labelHeight)
+        initWithFrame:NSMakeRect(
+            textFieldLeadingEdge,
+            30,
+            normalTextFieldWidth,
+            labelHeight
+        )
         pullsDown:NO
     ]},
     actions{[SetupViewActions alloc]}
@@ -139,31 +144,56 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         target:actions
         action:@selector(browseForTargetList)
     ];
-    [browseForStimulusListButton setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 120, buttonWidth, buttonHeight)];
+    [browseForStimulusListButton setFrame:NSMakeRect(
+        filePathTextFieldWidth + textFieldLeadingEdge + 10,
+        120,
+        buttonWidth,
+        buttonHeight
+    )];
     const auto browseForMaskerButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
         action:@selector(browseForMasker)
     ];
-    [browseForMaskerButton setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 90, buttonWidth, buttonHeight)];
+    [browseForMaskerButton setFrame:NSMakeRect(
+        filePathTextFieldWidth + textFieldLeadingEdge + 10,
+        90,
+        buttonWidth,
+        buttonHeight
+    )];
     const auto browseForCalibrationButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
         action:@selector(browseForCalibration)
     ];
-    [browseForCalibrationButton setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 60, buttonWidth, buttonHeight)];
+    [browseForCalibrationButton setFrame:NSMakeRect(
+        filePathTextFieldWidth + textFieldLeadingEdge + 10,
+        60,
+        buttonWidth,
+        buttonHeight
+    )];
     const auto confirmButton = [NSButton
         buttonWithTitle:@"Confirm"
         target:actions
         action:@selector(confirmTestSetup)
     ];
-    [confirmButton setFrame:NSMakeRect(r.size.width - buttonWidth, 0, buttonWidth, buttonHeight)];
+    [confirmButton setFrame:NSMakeRect(
+        r.size.width - buttonWidth,
+        0,
+        buttonWidth,
+        buttonHeight
+    )];
     const auto playCalibrationButton = [NSButton
         buttonWithTitle:@"play"
         target:actions
         action:@selector(playCalibration)
     ];
-    [playCalibrationButton setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 30, buttonWidth, buttonHeight)];
+    [playCalibrationButton setFrame:NSMakeRect(
+        filePathTextFieldWidth + textFieldLeadingEdge + 10,
+        30,
+        buttonWidth,
+        buttonHeight
+    )];
     addSubview(browseForMaskerButton);
     addSubview(browseForStimulusListButton);
     addSubview(browseForCalibrationButton);

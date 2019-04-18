@@ -112,7 +112,9 @@ int main() {
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
     av_coordinate_response_measure::OutputFilePathImpl path{&timeStamp, &systemPath};
-    path.setRelativeOutputDirectory("Documents/AVCoordinatedResponseMeasureResults");
+    path.setRelativeOutputDirectory(
+        "Documents/AVCoordinatedResponseMeasureResults"
+    );
     av_coordinate_response_measure::OutputFileImpl outputFile{&writer, &path};
     av_coordinate_response_measure::AdaptiveTrack snrTrack{};
     av_coordinate_response_measure::ResponseEvaluatorImpl responseEvaluator{};
@@ -128,8 +130,12 @@ int main() {
     CocoaTestSetupView testSetupView{experimenterRect};
     testSetupView.setMaskerLevel_dB_SPL("65");
     testSetupView.setStartingSnr_dB("0");
-    testSetupView.setMasker("/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav");
-    testSetupView.setTargetListDirectory("/Users/basset/Desktop/Seth Mars Attack");
+    testSetupView.setMasker(
+        "/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav"
+    );
+    testSetupView.setTargetListDirectory(
+        "/Users/basset/Desktop/Seth Mars Attack"
+    );
     CocoaTesterView testerView{experimenterRect};
     CocoaView view{NSMakeRect(15, 15, 900, 400)};
     view.addSubview(testSetupView.view());
