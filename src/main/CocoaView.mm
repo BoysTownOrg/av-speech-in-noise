@@ -1,10 +1,19 @@
 #include "CocoaView.h"
 #include "common-objc.h"
 
-CocoaTesterView::CocoaTesterView() :
-    view_{[[NSView alloc]
-        initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)]
-    }
+static NSTextField *allocLabel(NSString *label, NSRect frame) {
+    const auto text = [[NSTextField alloc] initWithFrame:frame];
+    [text setStringValue:label];
+    [text setBezeled:NO];
+    [text setDrawsBackground:NO];
+    [text setEditable:NO];
+    [text setSelectable:NO];
+    [text setAlignment:NSTextAlignmentRight];
+    return text;
+}
+
+CocoaTesterView::CocoaTesterView(NSRect r) :
+    view_{[[NSView alloc] initWithFrame:r]}
 {
     [view_ setHidden:YES];
 }
@@ -21,75 +30,78 @@ void CocoaTesterView::hide() {
     [view_ setHidden:YES];
 }
 
-CocoaTestSetupView::CocoaTestSetupView() :
-    view_{[[NSView alloc]
-        initWithFrame:NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2)
-    ]},
+
+CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
+    view_{[[NSView alloc] initWithFrame:r]},
     subjectIdLabel{allocLabel(
-        @"subject id:",
-        NSMakeRect(0, 270, 140, 25)
+        @"subject:",
+        NSMakeRect(0, 270, 140, 22)
     )},
     subjectId_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 270, 150, 25)
+        initWithFrame:NSMakeRect(145, 270, 150, 22)
     ]},
     testerIdLabel{allocLabel(
-        @"tester id:",
-        NSMakeRect(0, 240, 140, 25)
+        @"tester:",
+        NSMakeRect(0, 240, 140, 22)
     )},
     testerId_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 240, 150, 25)
+        initWithFrame:NSMakeRect(145, 240, 150, 22)
     ]},
     sessionLabel{allocLabel(
         @"session:",
-        NSMakeRect(0, 210, 140, 25)
+        NSMakeRect(0, 210, 140, 22)
     )},
     session_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 210, 150, 25)
+        initWithFrame:NSMakeRect(145, 210, 150, 22)
     ]},
     maskerLevel_dB_SPL_label{allocLabel(
         @"masker level (dB SPL):",
-        NSMakeRect(0, 180, 140, 25)
+        NSMakeRect(0, 180, 140, 22)
     )},
     maskerLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 180, 150, 25)
+        initWithFrame:NSMakeRect(145, 180, 150, 22)
     ]},
     calibrationLevel_dB_SPL_label{allocLabel(
         @"calibration level (dB SPL):",
-        NSMakeRect(350, 30, 150, 25)
+        NSMakeRect(350, 30, 150, 22)
     )},
     calibrationLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(505, 30, 80, 25)
+        initWithFrame:NSMakeRect(505, 30, 80, 22)
     ]},
     startingSnr_dB_label{allocLabel(
         @"starting SNR (dB):",
-        NSMakeRect(0, 150, 140, 25)
+        NSMakeRect(0, 150, 140, 22)
     )},
     startingSnr_dB_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 150, 150, 25)
+        initWithFrame:NSMakeRect(145, 150, 150, 22)
     ]},
     targetListDirectoryLabel{allocLabel(
-        @"target list:",
-        NSMakeRect(0, 120, 140, 25)
+        @"targets:",
+        NSMakeRect(0, 120, 140, 22)
     )},
     targetListDirectory_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 120, 500, 25)
+        initWithFrame:NSMakeRect(145, 120, 500, 22)
     ]},
     maskerFilePath_label{allocLabel(
         @"masker:",
-        NSMakeRect(0, 90, 140, 25)
+        NSMakeRect(0, 90, 140, 22)
     )},
     maskerFilePath_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 90, 500, 25)
+        initWithFrame:NSMakeRect(145, 90, 500, 22)
     ]},
     calibrationFilePath_label{allocLabel(
         @"calibration:",
-        NSMakeRect(0, 60, 140, 25)
+        NSMakeRect(0, 60, 140, 22)
     )},
     calibrationFilePath_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(145, 60, 500, 25)
+        initWithFrame:NSMakeRect(145, 60, 500, 22)
     ]},
+    condition_label{allocLabel(
+        @"condition:",
+        NSMakeRect(0, 30, 140, 22)
+    )},
     conditionMenu{[[NSPopUpButton alloc]
-        initWithFrame:NSMakeRect(145, 30, 150, 25)
+        initWithFrame:NSMakeRect(145, 30, 150, 22)
         pullsDown:NO
     ]},
     actions{[SetupViewActions alloc]}
@@ -148,6 +160,7 @@ CocoaTestSetupView::CocoaTestSetupView() :
     [view_ addSubview:maskerFilePath_];
     [view_ addSubview:calibrationFilePath_label];
     [view_ addSubview:calibrationFilePath_];
+    [view_ addSubview:condition_label];
     [view_ addSubview:conditionMenu];
     targetListDirectory_.stringValue =
         @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
@@ -156,17 +169,6 @@ CocoaTestSetupView::CocoaTestSetupView() :
     maskerLevel_dB_SPL_.stringValue = @"65";
     startingSnr_dB_.stringValue = @"0";
     [view_ setHidden:NO];
-}
-
-NSTextField *CocoaTestSetupView::allocLabel(NSString *label, NSRect frame) {
-    const auto text = [[NSTextField alloc] initWithFrame:frame];
-    [text setStringValue:label];
-    [text setBezeled:NO];
-    [text setDrawsBackground:NO];
-    [text setEditable:NO];
-    [text setSelectable:NO];
-    [text setAlignment:NSTextAlignmentRight];
-    return text;
 }
 
 NSView *CocoaTestSetupView::view() {
@@ -404,7 +406,6 @@ void CocoaSubjectView::hideResponseButtons() {
     [responseButtons setHidden:YES];
 }
 
-
 void CocoaSubjectView::subscribe(EventListener *e) {
     listener_ = e;
 }
@@ -421,10 +422,10 @@ void CocoaSubjectView::subscribe(EventListener *e) {
 }
 @end
 
-CocoaView::CocoaView() :
+CocoaView::CocoaView(NSRect r) :
     app{[NSApplication sharedApplication]},
     window{[[NSWindow alloc]
-        initWithContentRect:NSMakeRect(15, 15, 900, 400)
+        initWithContentRect:r
         styleMask:
             NSWindowStyleMaskClosable |
             NSWindowStyleMaskResizable |
@@ -432,8 +433,12 @@ CocoaView::CocoaView() :
         backing:NSBackingStoreBuffered
         defer:NO
     ]},
+    audioDevice_label{allocLabel(
+        @"audio output:",
+        NSMakeRect(15, 15, 140, 22)
+    )},
     deviceMenu{[[NSPopUpButton alloc]
-        initWithFrame:NSMakeRect(0, 0, 140, 30)
+        initWithFrame:NSMakeRect(160, 15, 140, 30)
         pullsDown:NO
     ]},
     actions{[ViewActions alloc]}
@@ -469,6 +474,7 @@ CocoaView::CocoaView() :
     [fileMenu setSubmenu:fileSubMenu];
     [app.mainMenu addItem:fileMenu];
     
+    [window.contentView addSubview:audioDevice_label];
     [window.contentView addSubview:deviceMenu];
     [window makeKeyAndOrderFront:nil];
     actions.controller = this;

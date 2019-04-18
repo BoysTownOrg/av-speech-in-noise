@@ -34,7 +34,7 @@ class CocoaSubjectView;
 class CocoaTesterView : public av_coordinate_response_measure::View::Tester {
     NSView *view_;
 public:
-    CocoaTesterView();
+    CocoaTesterView(NSRect);
     void show() override;
     void hide() override;
     NSView *view();
@@ -60,11 +60,12 @@ class CocoaTestSetupView : public av_coordinate_response_measure::View::TestSetu
     NSTextField *maskerFilePath_;
     NSTextField *calibrationFilePath_label;
     NSTextField *calibrationFilePath_;
+    NSTextField *condition_label;
     NSPopUpButton *conditionMenu;
     SetupViewActions *actions;
     EventListener *listener_{};
 public:
-    CocoaTestSetupView();
+    CocoaTestSetupView(NSRect);
     void show() override;
     void hide() override;
     std::string maskerLevel_dB_SPL() override;
@@ -88,8 +89,6 @@ public:
     void browseForMasker();
     void browseForCalibration();
     void playCalibration();
-private:
-    NSTextField *allocLabel(NSString *label, NSRect frame);
 };
 
 class CocoaSubjectView : public av_coordinate_response_measure::View::Subject {
@@ -121,11 +120,12 @@ class CocoaView : public av_coordinate_response_measure::View {
     EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
+    NSTextField *audioDevice_label;
     NSPopUpButton *deviceMenu;
     ViewActions *actions;
     bool browseCancelled_{};
 public:
-    CocoaView();
+    CocoaView(NSRect);
     void subscribe(EventListener *) override;
     void eventLoop() override;
     DialogResponse showConfirmationDialog() override;

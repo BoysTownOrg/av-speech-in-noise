@@ -124,9 +124,10 @@ int main() {
         &responseEvaluator,
         &outputFile
     };
-    CocoaTestSetupView testSetupView{};
-    CocoaTesterView testerView{};
-    CocoaView view{};
+    auto rect = NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2);
+    CocoaTestSetupView testSetupView{rect};
+    CocoaTesterView testerView{rect};
+    CocoaView view{NSMakeRect(15, 15, 900, 400)};
     view.addSubview(testSetupView.view());
     view.addSubview(testerView.view());
     CocoaSubjectView subjectView{};
