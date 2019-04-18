@@ -331,19 +331,19 @@ static auto redColor = NSColor.redColor;
 static auto blueColor = NSColor.blueColor;
 static auto whiteColor = NSColor.whiteColor;
 
-CocoaSubjectView::CocoaSubjectView() :
+CocoaSubjectView::CocoaSubjectView(NSRect r) :
     // Defer may be critical here...
     window{[[NSWindow alloc]
-        initWithContentRect:NSMakeRect(1150, 15, 750, 400)
+        initWithContentRect:r
         styleMask:NSWindowStyleMaskBorderless
         backing:NSBackingStoreBuffered
         defer:YES
     ]},
     responseButtons{[[NSView alloc]
-        initWithFrame:NSMakeRect(0, 0, 750, 400)
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
     ]},
     nextTrialButton{[[NSView alloc]
-        initWithFrame:NSMakeRect(0, 0, 750, 400)
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
     ]},
     actions{[SubjectViewActions alloc]}
 {

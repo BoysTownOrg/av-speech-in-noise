@@ -104,7 +104,7 @@ class CocoaSubjectView : public av_coordinate_response_measure::View::Subject {
     SubjectViewActions *actions;
     EventListener *listener_{};
 public:
-    CocoaSubjectView();
+    CocoaSubjectView(NSRect);
     std::string numberResponse() override;
     bool greenResponse() override;
     bool blueResponse() override;

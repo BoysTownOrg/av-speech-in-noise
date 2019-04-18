@@ -124,17 +124,17 @@ int main() {
         &responseEvaluator,
         &outputFile
     };
-    auto rect = NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2);
-    CocoaTestSetupView testSetupView{rect};
+    auto experimenterRect = NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2);
+    CocoaTestSetupView testSetupView{experimenterRect};
     testSetupView.setMaskerLevel_dB_SPL("65");
     testSetupView.setStartingSnr_dB("0");
     testSetupView.setMasker("/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav");
     testSetupView.setTargetListDirectory("/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection");
-    CocoaTesterView testerView{rect};
+    CocoaTesterView testerView{experimenterRect};
     CocoaView view{NSMakeRect(15, 15, 900, 400)};
     view.addSubview(testSetupView.view());
     view.addSubview(testerView.view());
-    CocoaSubjectView subjectView{};
+    CocoaSubjectView subjectView{NSMakeRect(1150, 15, 750, 400)};
     av_coordinate_response_measure::Presenter::Tester tester{&testerView};
     av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
     av_coordinate_response_measure::Presenter::TestSetup testSetup{&testSetupView};
