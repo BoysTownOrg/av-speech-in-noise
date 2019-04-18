@@ -400,7 +400,9 @@ void CocoaSubjectView::addNextTrialButton() {
         attributes:attrsDictionary
     ];
     [button setAttributedTitle:attrString];
-    [button setFrame:NSMakeRect(150, 175, 400, 100)];
+    constexpr auto height = 100;
+    constexpr auto width = 400;
+    [button setFrame:NSMakeRect((750 - width)/2., (400 - height)/2., width, height)];
     [nextTrialButton addSubview:button];
 }
 
