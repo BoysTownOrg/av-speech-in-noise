@@ -129,7 +129,7 @@ int main() {
     testSetupView.setMaskerLevel_dB_SPL("65");
     testSetupView.setStartingSnr_dB("0");
     testSetupView.setMasker("/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav");
-    testSetupView.setTargetListDirectory("/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection");
+    testSetupView.setTargetListDirectory("/Users/basset/Desktop/Seth Mars Attack");
     CocoaTesterView testerView{experimenterRect};
     CocoaView view{NSMakeRect(15, 15, 900, 400)};
     view.addSubview(testSetupView.view());

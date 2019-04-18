@@ -330,6 +330,8 @@ static auto greenColor = NSColor.greenColor;
 static auto redColor = NSColor.redColor;
 static auto blueColor = NSColor.blueColor;
 static auto whiteColor = NSColor.whiteColor;
+static constexpr auto responseNumbers = 8;
+static constexpr auto responseColors = 4;
 
 CocoaSubjectView::CocoaSubjectView(NSRect r) :
     // Defer may be critical here...
@@ -361,18 +363,25 @@ CocoaSubjectView::CocoaSubjectView(NSRect r) :
 }
 
 void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < responseNumbers; ++i)
         addNumberButton(color, i, row);
 }
 
 void CocoaSubjectView::addNumberButton(NSColor *color, int i, int row) {
     auto title = asNsString(std::to_string(i+1));
     const auto button = [NSButton
-        buttonWithTitle:@""
+        buttonWithTitle:title
         target:actions
         action:@selector(respond:)
     ];
-    [button setFrame:NSMakeRect(80*i, 80*row, 80, 80)];
+    auto responseWidth = responseButtons.frame.size.width/responseNumbers;
+    auto responseHeight = responseButtons.frame.size.height/responseColors;
+    [button setFrame:NSMakeRect(
+        responseWidth*i,
+        responseHeight*row,
+        responseWidth,
+        responseHeight
+    )];
     [button setBezelStyle:NSBezelStyleTexturedSquare];
     auto style = [[NSMutableParagraphStyle alloc] init];
     [style setAlignment:NSTextAlignmentCenter];
@@ -413,7 +422,12 @@ void CocoaSubjectView::addNextTrialButton() {
     [button setAttributedTitle:attrString];
     constexpr auto height = 100;
     constexpr auto width = 400;
-    [button setFrame:NSMakeRect((750 - width)/2., (400 - height)/2., width, height)];
+    [button setFrame:NSMakeRect(
+        (nextTrialButton.frame.size.width - width)/2.,
+        (nextTrialButton.frame.size.height - height)/2.,
+        width,
+        height
+    )];
     [nextTrialButton addSubview:button];
 }
 
