@@ -126,6 +126,8 @@ int main() {
     };
     auto rect = NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2);
     CocoaTestSetupView testSetupView{rect};
+    testSetupView.setMasker("/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav");
+    testSetupView.setTargetListDirectory("/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection");
     CocoaTesterView testerView{rect};
     CocoaView view{NSMakeRect(15, 15, 900, 400)};
     view.addSubview(testSetupView.view());

@@ -157,7 +157,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         target:actions
         action:@selector(confirmTestSetup)
     ];
-    [confirmButton setFrame:NSMakeRect(900 - 100 - 2*15, 15, buttonWidth, buttonHeight)];
+    [confirmButton setFrame:NSMakeRect(r.size.width - 100, 15, buttonWidth, buttonHeight)];
     const auto playCalibrationButton = [NSButton
         buttonWithTitle:@"play"
         target:actions
@@ -189,10 +189,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     [view_ addSubview:calibrationFilePath_];
     [view_ addSubview:condition_label];
     [view_ addSubview:conditionMenu];
-    targetListDirectory_.stringValue =
-        @"/Users/basset/Documents/maxdetection/Stimuli/Video/List_Detection";
-    maskerFilePath_.stringValue =
-        @"/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav";
     maskerLevel_dB_SPL_.stringValue = @"65";
     startingSnr_dB_.stringValue = @"0";
     [view_ setHidden:NO];
