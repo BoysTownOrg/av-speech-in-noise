@@ -38,6 +38,24 @@ static constexpr auto textFieldLeadingEdge =
 static constexpr auto normalTextFieldWidth = 150;
 static constexpr auto filePathTextFieldWidth = 500;
 
+static NSRect normalTextFieldSizeAtHeight(CGFloat y) {
+    return NSMakeRect(
+        textFieldLeadingEdge,
+        y,
+        normalTextFieldWidth,
+        labelHeight
+    );
+}
+
+static NSRect filePathTextFieldSizeAtHeight(CGFloat y) {
+    return NSMakeRect(
+        textFieldLeadingEdge,
+        y,
+        filePathTextFieldWidth,
+        labelHeight
+    );
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
     subjectIdLabel{allocLabel(
@@ -45,28 +63,28 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         NSMakeRect(0, 270, labelWidth, labelHeight)
     )},
     subjectId_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(textFieldLeadingEdge, 270, normalTextFieldWidth, labelHeight)
+        initWithFrame:normalTextFieldSizeAtHeight(270)
     ]},
     testerIdLabel{allocLabel(
         @"tester:",
         NSMakeRect(0, 240, labelWidth, labelHeight)
     )},
     testerId_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(textFieldLeadingEdge, 240, normalTextFieldWidth, labelHeight)
+        initWithFrame:normalTextFieldSizeAtHeight(240)
     ]},
     sessionLabel{allocLabel(
         @"session:",
         NSMakeRect(0, 210, labelWidth, labelHeight)
     )},
     session_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(textFieldLeadingEdge, 210, normalTextFieldWidth, labelHeight)
+        initWithFrame:normalTextFieldSizeAtHeight(210)
     ]},
     maskerLevel_dB_SPL_label{allocLabel(
         @"masker level (dB SPL):",
         NSMakeRect(0, 180, labelWidth, labelHeight)
     )},
     maskerLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(textFieldLeadingEdge, 180, normalTextFieldWidth, labelHeight)
+        initWithFrame:normalTextFieldSizeAtHeight(180)
     ]},
     calibrationLevel_dB_SPL_label{allocLabel(
         @"calibration level (dB SPL):",
@@ -80,28 +98,28 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         NSMakeRect(0, 150, labelWidth, labelHeight)
     )},
     startingSnr_dB_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(textFieldLeadingEdge, 150, normalTextFieldWidth, labelHeight)
+        initWithFrame:normalTextFieldSizeAtHeight(150)
     ]},
     targetListDirectoryLabel{allocLabel(
         @"targets:",
         NSMakeRect(0, 120, labelWidth, labelHeight)
     )},
     targetListDirectory_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(textFieldLeadingEdge, 120, filePathTextFieldWidth, labelHeight)
+        initWithFrame:filePathTextFieldSizeAtHeight(120)
     ]},
     maskerFilePath_label{allocLabel(
         @"masker:",
         NSMakeRect(0, 90, labelWidth, labelHeight)
     )},
     maskerFilePath_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(textFieldLeadingEdge, 90, filePathTextFieldWidth, labelHeight)
+        initWithFrame:filePathTextFieldSizeAtHeight(90)
     ]},
     calibrationFilePath_label{allocLabel(
         @"calibration:",
         NSMakeRect(0, 60, labelWidth, labelHeight)
     )},
     calibrationFilePath_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(textFieldLeadingEdge, 60, filePathTextFieldWidth, labelHeight)
+        initWithFrame:filePathTextFieldSizeAtHeight(60)
     ]},
     condition_label{allocLabel(
         @"condition:",
