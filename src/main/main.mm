@@ -101,7 +101,11 @@ int main() {
     target_list::FileFilterDecorator filter{&reader, {".mov", ".avi", ".wav"}};
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetList list{&filter, &randomizer};
-    AvFoundationVideoPlayer videoPlayer{NSMakeRect(400, 450, 0, 0)};
+    auto subjectScreen = [[NSScreen screens] lastObject];
+    auto subjectScreenFrame = subjectScreen.frame;
+    AvFoundationVideoPlayer videoPlayer{
+        NSMakeRect(subjectScreenFrame.origin.x+1, subjectScreenFrame.origin.y+1, 0, 0)
+    };
     CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
     stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
@@ -134,18 +138,16 @@ int main() {
         "/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav"
     );
     testSetupView.setTargetListDirectory(
-        "/Users/basset/Desktop/Seth Mars Attack"
+        "/Users/basset/Documents/Lalonde/Lalonde-coordinate-response/Seth Mars Attack"
     );
     CocoaTesterView testerView{experimenterRect};
     CocoaView view{NSMakeRect(15, 15, 900, 400)};
     view.addSubview(testSetupView.view());
     view.addSubview(testerView.view());
-    auto subjectScreen = [[NSScreen screens] lastObject];
-    auto subjectScreenFrame = subjectScreen.frame;
     auto subjectViewHeight = subjectScreenFrame.size.height / 4;
-    auto subjectViewWidth = subjectScreenFrame.size.width / 2;
+    auto subjectViewWidth = subjectScreenFrame.size.width / 3;
     auto subjectViewLeadingEdge = subjectScreenFrame.origin.x + (subjectScreenFrame.size.width - subjectViewWidth) / 2;
-    CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge, 0, subjectViewWidth, subjectViewHeight)};
+    CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge, subjectScreenFrame.origin.y, subjectViewWidth, subjectViewHeight)};
     av_coordinate_response_measure::Presenter::Tester tester{&testerView};
     av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
     av_coordinate_response_measure::Presenter::TestSetup testSetup{&testSetupView};

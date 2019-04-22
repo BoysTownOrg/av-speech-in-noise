@@ -368,6 +368,10 @@ void AvFoundationVideoPlayer::prepareVideo() {
 void AvFoundationVideoPlayer::resizeVideo() {
     AvAssetFacade asset{player.currentItem.asset};
     [videoWindow setContentSize:NSSizeFromCGSize(asset.videoTrack().naturalSize)];
+    auto videoScreenFrame = [[videoWindow screen] frame];
+    auto videoLeadingEdge = videoScreenFrame.origin.x + (videoScreenFrame.size.width - videoWindow.frame.size.width) / 2;
+    auto videoBottomEdge = videoScreenFrame.origin.y + (videoScreenFrame.size.height - videoWindow.frame.size.height) / 2;
+    [videoWindow setFrameOrigin:NSMakePoint(videoLeadingEdge, videoBottomEdge)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
 }
 
