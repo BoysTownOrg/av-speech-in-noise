@@ -140,7 +140,12 @@ int main() {
     CocoaView view{NSMakeRect(15, 15, 900, 400)};
     view.addSubview(testSetupView.view());
     view.addSubview(testerView.view());
-    CocoaSubjectView subjectView{NSMakeRect(1150, 15, 750, 400)};
+    auto subjectScreen = [[NSScreen screens] lastObject];
+    auto subjectScreenFrame = subjectScreen.frame;
+    auto subjectViewHeight = subjectScreenFrame.size.height / 4;
+    auto subjectViewWidth = subjectScreenFrame.size.width / 2;
+    auto subjectViewLeadingEdge = subjectScreenFrame.origin.x + (subjectScreenFrame.size.width - subjectViewWidth) / 2;
+    CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge, 0, subjectViewWidth, subjectViewHeight)};
     av_coordinate_response_measure::Presenter::Tester tester{&testerView};
     av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
     av_coordinate_response_measure::Presenter::TestSetup testSetup{&testSetupView};
