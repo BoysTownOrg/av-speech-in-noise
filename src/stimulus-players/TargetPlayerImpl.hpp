@@ -51,6 +51,7 @@ namespace stimulus_players {
         void setAudioDevice(std::string) override;
         bool playing() override;
         void subscribeToPlaybackCompletion() override;
+        double durationSeconds() override;
         void playbackComplete() override;
         void fillAudioBuffer(
             const std::vector<gsl::span<float> > &audio) override;

@@ -16,7 +16,19 @@ namespace stimulus_players {
     void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
         listener = e;
     }
-
+    
+    double MaskerPlayerImpl::durationSeconds() {
+        return 0;
+    }
+    
+    void MaskerPlayerImpl::seekSeconds(double) {
+        ;
+    }
+    
+    double MaskerPlayerImpl::fadeTimeSeconds() {
+        return 0;
+    }
+    
     void MaskerPlayerImpl::fadeIn() {
         pleaseFadeIn.store(true);
         player->play();

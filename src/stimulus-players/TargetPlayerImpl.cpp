@@ -106,4 +106,8 @@ namespace stimulus_players {
     void TargetPlayerImpl::subscribeToPlaybackCompletion() { 
         player->subscribeToPlaybackCompletion();
     }
+    
+    double TargetPlayerImpl::durationSeconds() { 
+        return 0;
+    }
 }

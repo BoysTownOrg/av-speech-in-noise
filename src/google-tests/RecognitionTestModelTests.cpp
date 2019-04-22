@@ -13,6 +13,9 @@ namespace {
         std::string device_{};
         double rms_{};
         double level_dB_{};
+        double fadeTimeSeconds_{};
+        double durationSeconds_{};
+        double secondsSeeked_{};
         int deviceIndex_{};
         EventListener *listener_{};
         bool fadeInCalled_{};
@@ -112,6 +115,26 @@ namespace {
         void setLevel_dB(double x) override {
             level_dB_ = x;
         }
+        
+        double durationSeconds() override {
+            return durationSeconds_;
+        }
+        
+        void seekSeconds(double x) override {
+            secondsSeeked_ = x;
+        }
+        
+        double fadeTimeSeconds() override {
+            return fadeTimeSeconds_;
+        }
+        
+        void setFadeTimeSeconds(double x) {
+            fadeTimeSeconds_ = x;
+        }
+        
+        void setDurationSeconds(double x) {
+            durationSeconds_ = x;
+        }
     };
 
     class TargetPlayerStub : public av_coordinate_response_measure::TargetPlayer {
@@ -120,6 +143,7 @@ namespace {
         std::string device_{};
         double rms_{};
         double level_dB_{};
+        double durationSeconds_{};
         int deviceIndex_{};
         EventListener *listener_{};
         bool played_{};
@@ -218,6 +242,10 @@ namespace {
             level_dB_ = x;
         }
         
+        double durationSeconds() override {
+            return durationSeconds_;
+        }
+        
         void playbackComplete() {
             listener_->playbackComplete();
         }
@@ -232,6 +260,10 @@ namespace {
         
         auto playbackCompletionSubscribedTo() const {
             return playbackCompletionSubscribedTo_;
+        }
+        
+        void setDurationSeconds(double x) {
+            durationSeconds_ = x;
         }
         
         void throwInvalidAudioFileOnRms() {
@@ -473,6 +505,26 @@ namespace {
         }
     };
     
+    class RandomizerStub : public av_coordinate_response_measure::Randomizer {
+        double lowerBound_{};
+        double upperBound_{};
+        double randomFloat_{};
+    public:
+        auto lowerBound() const {
+            return lowerBound_;
+        }
+        
+        auto upperBound() const {
+            return upperBound_;
+        }
+        
+        double randomFloatBetween(double a, double b) override {
+            lowerBound_ = a;
+            upperBound_ = b;
+            return randomFloat_;
+        }
+    };
+    
     class UseCase {
     public:
         virtual ~UseCase() = default;
@@ -576,13 +628,15 @@ namespace {
         OutputFileStub outputFile{};
         TrackStub snrTrack{};
         ResponseEvaluatorStub evaluator{};
+        RandomizerStub randomizer{};
         av_coordinate_response_measure::RecognitionTestModel model{
             &targetList,
             &targetPlayer,
             &maskerPlayer,
             &snrTrack,
             &evaluator,
-            &outputFile
+            &outputFile,
+            &randomizer
         };
         ModelEventListenerStub listener{};
         InitializingTest initializingTest{};
@@ -938,6 +992,18 @@ namespace {
     ) {
         playTrial();
         EXPECT_TRUE(targetPlayer.playbackCompletionSubscribedTo());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        targetPlayer.setDurationSeconds(3);
+        maskerPlayer.setFadeTimeSeconds(4);
+        maskerPlayer.setDurationSeconds(19);
+        playTrial();
+        EXPECT_EQ(0., randomizer.lowerBound());
+        EXPECT_EQ(19 - 4 - 3 - 4, randomizer.upperBound());
     }
 
     TEST_F(

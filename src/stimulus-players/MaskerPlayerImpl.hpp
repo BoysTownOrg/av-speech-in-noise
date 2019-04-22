@@ -62,6 +62,9 @@ namespace stimulus_players {
         void setFadeInOutSeconds(double);
         std::vector<std::string> outputAudioDeviceDescriptions() override;
         double rms() override;
+        double durationSeconds() override;
+        void seekSeconds(double) override;
+        double fadeTimeSeconds() override;
         void timerCallback() override;
     private:
         std::vector<std::vector<float>> readAudio_();

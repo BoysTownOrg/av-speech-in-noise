@@ -28,6 +28,7 @@ namespace av_coordinate_response_measure {
         virtual double rms() = 0;
         virtual void setLevel_dB(double) = 0;
         virtual void subscribeToPlaybackCompletion() = 0;
+        virtual double durationSeconds() = 0;
     };
 
     class MaskerPlayer {
@@ -50,6 +51,9 @@ namespace av_coordinate_response_measure {
         virtual bool playing() = 0;
         virtual double rms() = 0;
         virtual void setLevel_dB(double) = 0;
+        virtual double durationSeconds() = 0;
+        virtual void seekSeconds(double) = 0;
+        virtual double fadeTimeSeconds() = 0;
     };
     
     class Track {
@@ -102,6 +106,12 @@ namespace av_coordinate_response_measure {
         virtual void writeTrialHeading() = 0;
         virtual void close() = 0;
     };
+    
+    class Randomizer {
+    public:
+        virtual ~Randomizer() = default;
+        virtual double randomFloatBetween(double, double) = 0;
+    };
 
     class RecognitionTestModel :
         public Model,
@@ -116,6 +126,7 @@ namespace av_coordinate_response_measure {
         Track *snrTrack;
         ResponseEvaluator *evaluator;
         OutputFile *outputFile;
+        Randomizer *randomizer;
         Model::EventListener *listener_{};
     public:
         RecognitionTestModel(
@@ -124,7 +135,8 @@ namespace av_coordinate_response_measure {
             MaskerPlayer *,
             Track *,
             ResponseEvaluator *,
-            OutputFile *
+            OutputFile *,
+            Randomizer *
         );
         void initializeTest(const Test &) override;
         void playTrial(const AudioSettings &) override;

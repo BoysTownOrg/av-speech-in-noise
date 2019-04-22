@@ -9,14 +9,16 @@ namespace av_coordinate_response_measure {
         MaskerPlayer *maskerPlayer,
         Track *snrTrack,
         ResponseEvaluator *evaluator,
-        OutputFile *outputFile
+        OutputFile *outputFile,
+        Randomizer *randomizer
     ) :
         maskerPlayer{maskerPlayer},
         targetList{targetList},
         targetPlayer{targetPlayer},
         snrTrack{snrTrack},
         evaluator{evaluator},
-        outputFile{outputFile}
+        outputFile{outputFile},
+        randomizer{randomizer}
     {
         targetPlayer->subscribe(this);
         maskerPlayer->subscribe(this);
@@ -114,6 +116,9 @@ namespace av_coordinate_response_measure {
     void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
         trySettingAudioDevices(p);
         loadNextTarget();
+        maskerPlayer->seekSeconds(randomizer->randomFloatBetween(
+            0,
+            maskerPlayer->durationSeconds() - 2 * maskerPlayer->fadeTimeSeconds() - targetPlayer->durationSeconds()));
     }
     
     void RecognitionTestModel::trySettingAudioDevices(const AudioSettings &p) {
