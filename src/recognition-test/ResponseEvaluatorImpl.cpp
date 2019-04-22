@@ -11,6 +11,8 @@ namespace av_coordinate_response_measure {
     }
     int ResponseEvaluatorImpl::correctNumber(const std::string &filePath) {
         auto extension = filePath.find(".");
+        if (extension == std::string::npos)
+            return -1;
         auto number = filePath.substr(extension-1, 1);
         return std::stoi(number);
     }

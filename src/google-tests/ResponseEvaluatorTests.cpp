@@ -128,4 +128,14 @@ namespace {
             }
         );
     }
+    
+    TEST_F(ResponseEvaluatorTests, invalidFormatIsAlwaysIncorrect) {
+        assertIncorrect(
+            "not-valid",
+            {
+                1,
+                av_coordinate_response_measure::Color::blue
+            }
+        );
+    }
 }
