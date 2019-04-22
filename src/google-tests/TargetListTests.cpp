@@ -120,7 +120,7 @@ namespace {
         assertEqual("C:/a", list.current());
     }
     
-    class FileFilterDecoratorTests : public ::testing::Test {
+    class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:
         DirectoryReaderStub reader{};
         
@@ -131,13 +131,13 @@ namespace {
         }
     };
 
-    TEST_F(FileFilterDecoratorTests, passesDirectoryToDecorated) {
+    TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecorated) {
         auto decorator = construct();
         decorator.filesIn({"a"});
         assertEqual("a", reader.directory());
     }
 
-    TEST_F(FileFilterDecoratorTests, returnsFilteredFiles) {
+    TEST_F(FileExtensionFilterDecoratorTests, returnsFilteredFiles) {
         auto decorator = construct({".c", ".h"});
         reader.setFileNames({ "a", "b.c", "d.e", "f.c", "g.h" });
         assertEqual({ "b.c", "f.c", "g.h" }, decorator.filesIn({}));
