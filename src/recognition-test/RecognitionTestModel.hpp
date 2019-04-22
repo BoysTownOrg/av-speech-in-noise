@@ -154,6 +154,9 @@ namespace av_coordinate_response_measure {
         bool correct(const SubjectResponse &);
         void updateSnr(const SubjectResponse &);
         void prepareSnrTrack(const Test &);
+        void setTargetPlayerDevice(const Calibration &);
+        double calibrationLevel_dB(const Calibration &);
+        void trySettingTargetLevel(const Calibration &);
         void playCalibration_(const Calibration &);
         void prepareMasker(const Test &);
         void prepareOutputFile(const Test &);
@@ -164,7 +167,7 @@ namespace av_coordinate_response_measure {
         bool noMoreTrials();
         bool trialInProgress();
         void loadNextTarget();
-        void seekMaskerPosition();
+        void seekRandomMaskerPosition();
         void preparePlayers(const AudioSettings &);
         void startTrial();
         bool auditoryOnly(const Test &);
@@ -174,9 +177,9 @@ namespace av_coordinate_response_measure {
         int SNR_dB();
         double targetLevel_dB();
         double maskerLevel_dB();
-        void setTargetPlayerDevice(const std::string &);
-        void setAudioDevices(const std::string &);
-        void trySettingAudioDevices(const AudioSettings &);
+        void setTargetPlayerDevice_(const std::string &);
+        void setAudioDevices_(const std::string &);
+        void setAudioDevices(const AudioSettings &);
         int findDeviceIndex(const AudioSettings &);
         void throwInvalidAudioDeviceOnErrorSettingDevice(
             void(RecognitionTestModel::*f)(const std::string &),

@@ -114,14 +114,14 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
-        trySettingAudioDevices(p);
+        setAudioDevices(p);
         loadNextTarget();
-        seekMaskerPosition();
+        seekRandomMaskerPosition();
     }
     
-    void RecognitionTestModel::trySettingAudioDevices(const AudioSettings &p) {
+    void RecognitionTestModel::setAudioDevices(const AudioSettings &p) {
         throwInvalidAudioDeviceOnErrorSettingDevice(
-            &RecognitionTestModel::setAudioDevices,
+            &RecognitionTestModel::setAudioDevices_,
             p.audioDevice
         );
     }
@@ -139,12 +139,12 @@ namespace av_coordinate_response_measure {
         }
     }
     
-    void RecognitionTestModel::setAudioDevices(const std::string &device) {
+    void RecognitionTestModel::setAudioDevices_(const std::string &device) {
         maskerPlayer->setAudioDevice(device);
-        setTargetPlayerDevice(device);
+        setTargetPlayerDevice_(device);
     }
     
-    void RecognitionTestModel::setTargetPlayerDevice(const std::string &device) {
+    void RecognitionTestModel::setTargetPlayerDevice_(const std::string &device) {
         targetPlayer->setAudioDevice(device);
     }
     
@@ -177,7 +177,7 @@ namespace av_coordinate_response_measure {
         return dB(targetPlayer->rms());
     }
     
-    void RecognitionTestModel::seekMaskerPosition() {
+    void RecognitionTestModel::seekRandomMaskerPosition() {
         auto upperLimit =
             maskerPlayer->durationSeconds() -
             2 * maskerPlayer->fadeTimeSeconds() -
@@ -201,9 +201,25 @@ namespace av_coordinate_response_measure {
         maskerPlayer->fadeOut();
     }
     
+    void RecognitionTestModel::fadeOutComplete() {
+        listener_->trialComplete();
+    }
+    
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
-        updateSnr(response);
         writeTrial(response);
+        updateSnr(response);
+    }
+    
+    void RecognitionTestModel::writeTrial(const SubjectResponse &response) {
+        Trial trial;
+        trial.subjectColor = response.color;
+        trial.subjectNumber = response.number;
+        trial.reversals = snrTrack->reversals();
+        trial.correctColor = evaluator->correctColor(currentTarget());
+        trial.correctNumber = evaluator->correctNumber(currentTarget());
+        trial.SNR_dB = SNR_dB();
+        trial.correct = correct(response);
+        outputFile->writeTrial(trial);
     }
     
     void RecognitionTestModel::updateSnr(const SubjectResponse &response) {
@@ -221,22 +237,6 @@ namespace av_coordinate_response_measure {
         return targetList->current();
     }
     
-    void RecognitionTestModel::writeTrial(const SubjectResponse &response) {
-        Trial trial;
-        trial.subjectColor = response.color;
-        trial.subjectNumber = response.number;
-        trial.reversals = snrTrack->reversals();
-        trial.correctColor = evaluator->correctColor(currentTarget());
-        trial.correctNumber = evaluator->correctNumber(currentTarget());
-        trial.SNR_dB = SNR_dB();
-        trial.correct = correct(response);
-        outputFile->writeTrial(trial);
-    }
-    
-    void RecognitionTestModel::fadeOutComplete() { 
-        listener_->trialComplete();
-    }
-    
     void RecognitionTestModel::playCalibration(const Calibration &p) {
         if (targetPlayer->playing())
             return;
@@ -245,21 +245,32 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::playCalibration_(const Calibration &p) {
+        setTargetPlayerDevice(p);
+        loadTargetFile(p.filePath);
+        trySettingTargetLevel(p);
+        playTarget();
+    }
+    
+    void RecognitionTestModel::setTargetPlayerDevice(const Calibration &p) {
         throwInvalidAudioDeviceOnErrorSettingDevice(
-            &RecognitionTestModel::setTargetPlayerDevice,
+            &RecognitionTestModel::setTargetPlayerDevice_,
             p.audioDevice
         );
-        loadTargetFile(p.filePath);
+    }
+    
+    void RecognitionTestModel::trySettingTargetLevel(const Calibration &p) {
         try {
-            setTargetLevel_dB(
-                p.level_dB_SPL -
-                p.fullScaleLevel_dB_SPL -
-                unalteredTargetLevel_dB()
-            );
+            setTargetLevel_dB(calibrationLevel_dB(p));
         } catch (const InvalidAudioFile &) {
             throw RequestFailure{"unable to read " + p.filePath};
         }
-        playTarget();
+    }
+    
+    double RecognitionTestModel::calibrationLevel_dB(const Calibration &p) {
+        return
+            p.level_dB_SPL -
+            p.fullScaleLevel_dB_SPL -
+            unalteredTargetLevel_dB();
     }
 
     bool RecognitionTestModel::testComplete() {
