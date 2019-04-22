@@ -86,7 +86,7 @@ namespace stimulus_players {
 
     double MaskerPlayerImpl::rms() {
         auto audio = readAudio_();
-        if (audio.size() == 0)
+        if (audio.empty())
             return 0;
         
         auto firstChannel = audio.front();
