@@ -147,7 +147,7 @@ public:
     void newTest();
     void openTest();
     void addSubview(NSView *);
-    
+    void center();
 private:
     std::string browseModal(NSOpenPanel *panel);
 };

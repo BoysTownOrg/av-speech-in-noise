@@ -135,8 +135,15 @@ int main() {
         &outputFile,
         &randomizer
     };
-    auto experimenterRect = NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2);
-    CocoaTestSetupView testSetupView{experimenterRect};
+    auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
+    auto testerWindowViewMargin = 15;
+    auto testerContentFrame = NSMakeRect(
+        testerWindowViewMargin,
+        testerWindowViewMargin,
+        testerWindowFrame.size.width - testerWindowViewMargin * 2,
+        testerWindowFrame.size.height - testerWindowViewMargin * 2
+    );
+    CocoaTestSetupView testSetupView{testerContentFrame};
     testSetupView.setMaskerLevel_dB_SPL("65");
     testSetupView.setCalibrationLevel_dB_SPL("65");
     testSetupView.setStartingSnr_dB("0");
@@ -149,10 +156,11 @@ int main() {
     testSetupView.setTargetListDirectory(
         "/Users/basset/Documents/Lalonde/Lalonde-coordinate-response/Seth Mars Attack"
     );
-    CocoaTesterView testerView{experimenterRect};
-    CocoaView view{NSMakeRect(15, 15, 900, 400)};
+    CocoaTesterView testerView{testerContentFrame};
+    CocoaView view{testerWindowFrame};
     view.addSubview(testSetupView.view());
     view.addSubview(testerView.view());
+    view.center();
     auto subjectScreenSize = subjectScreenFrame.size;
     auto subjectViewHeight = subjectScreenSize.height / 4;
     auto subjectViewWidth = subjectScreenSize.width / 3;

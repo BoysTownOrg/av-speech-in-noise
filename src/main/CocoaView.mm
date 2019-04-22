@@ -675,6 +675,10 @@ void CocoaView::addSubview(NSView *view) {
     [window.contentView addSubview:view];
 }
 
+void CocoaView::center() {
+    [window center];
+}
+
 @implementation ViewActions
 @synthesize controller;
 - (void)newTest {
