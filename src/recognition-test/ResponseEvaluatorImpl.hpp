@@ -10,6 +10,8 @@ namespace av_coordinate_response_measure {
         static int invalidNumber;
         int correctNumber(const std::string &filePath) override;
         Color correctColor(const std::string &filePath) override;
+    private:
+        Color color(const std::string &colorName);
     };
 }
 

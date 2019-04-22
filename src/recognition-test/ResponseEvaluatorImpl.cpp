@@ -17,7 +17,8 @@ namespace av_coordinate_response_measure {
         auto extension = filePath.find(".");
         if (extension == std::string::npos)
             return invalidNumber;
-        auto number = filePath.substr(extension-1, 1);
+        auto beforeExtension = extension - 1;
+        auto number = filePath.substr(beforeExtension, 1);
         try {
             return std::stoi(number);
         }
@@ -33,6 +34,10 @@ namespace av_coordinate_response_measure {
         auto beforeExtension = extension - 1;
         auto fileNameLength = beforeExtension - fileNameBeginning;
         auto colorName = filePath.substr(fileNameBeginning, fileNameLength);
+        return color(colorName);
+    }
+    
+    Color ResponseEvaluatorImpl::color(const std::string &colorName) {
         if (colorName == "green")
             return Color::green;
         else if (colorName == "blue")
