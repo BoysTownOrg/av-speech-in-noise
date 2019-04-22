@@ -425,8 +425,7 @@ bool AvFoundationVideoPlayer::playing() {
 }
 
 double AvFoundationVideoPlayer::durationSeconds() {
-    auto cmtime = player.currentItem.duration;
-    return cmtime.value * 1.0 / cmtime.timescale;
+    return CMTimeGetSeconds(player.currentItem.asset.duration);
 }
 
 @implementation VideoPlayerActions
@@ -498,13 +497,11 @@ void AvFoundationAudioPlayer::fillAudioBuffer() {
 }
 
 double AvFoundationAudioPlayer::durationSeconds() {
-    auto cmtime = player.currentItem.duration;
-    return cmtime.value * 1.0 / cmtime.timescale;
+    return CMTimeGetSeconds(player.currentItem.asset.duration);
 }
 
 void AvFoundationAudioPlayer::seekSeconds(double x) {
-    auto cmtime = CMTimeMakeWithSeconds(x, 600);
-    [player seekToTime:cmtime];
+    [player seekToTime:CMTimeMakeWithSeconds(x, 600)];
 }
 
 @implementation CallbackScheduler
