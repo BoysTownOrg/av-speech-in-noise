@@ -4,11 +4,11 @@
 #include <target-list/RandomizedTargetList.hpp>
 
 namespace target_list {
-    class FileFilterDecorator : public DirectoryReader {
+    class FileExtensionFilterDecorator : public DirectoryReader {
         std::vector<std::string> filters;
         DirectoryReader *reader;
     public:
-        FileFilterDecorator(DirectoryReader *, std::vector<std::string> filters);
+        FileExtensionFilterDecorator(DirectoryReader *, std::vector<std::string> filters);
         std::vector<std::string> filesIn(std::string directory) override;
     private:
         bool endingMatchesFilter(

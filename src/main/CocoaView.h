@@ -91,6 +91,8 @@ public:
     void playCalibration();
     void setMaskerLevel_dB_SPL(std::string);
     void setStartingSnr_dB(std::string);
+    void setCalibrationLevel_dB_SPL(std::string);
+    void setCalibration(std::string);
 private:
     void addSubview(NSView *subview);
     const char * stringValue(NSTextField *field);

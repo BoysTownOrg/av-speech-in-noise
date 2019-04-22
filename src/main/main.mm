@@ -12,7 +12,7 @@
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
 #include <target-list/RandomizedTargetList.hpp>
-#include <target-list/FileFilterDecorator.hpp>
+#include <target-list/FileExtensionFilterDecorator.hpp>
 #include <sys/stat.h>
 #include <fstream>
 
@@ -98,13 +98,17 @@ public:
 
 int main() {
     MacOsDirectoryReader reader;
-    target_list::FileFilterDecorator filter{&reader, {".mov", ".avi", ".wav"}};
+    target_list::FileExtensionFilterDecorator fileExtensions{
+        &reader,
+        {".mov", ".avi", ".wav"}
+    };
     MersenneTwisterRandomizer randomizer;
-    target_list::RandomizedTargetList list{&filter, &randomizer};
+    target_list::RandomizedTargetList list{&fileExtensions, &randomizer};
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
+    auto subjectScreenOrigin = subjectScreenFrame.origin;
     AvFoundationVideoPlayer videoPlayer{
-        NSMakeRect(subjectScreenFrame.origin.x+1, subjectScreenFrame.origin.y+1, 0, 0)
+        NSMakeRect(subjectScreenOrigin.x+1, subjectScreenOrigin.y+1, 0, 0)
     };
     CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
@@ -134,9 +138,13 @@ int main() {
     auto experimenterRect = NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2);
     CocoaTestSetupView testSetupView{experimenterRect};
     testSetupView.setMaskerLevel_dB_SPL("65");
+    testSetupView.setCalibrationLevel_dB_SPL("65");
     testSetupView.setStartingSnr_dB("0");
     testSetupView.setMasker(
         "/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav"
+    );
+    testSetupView.setCalibration(
+        "/Users/basset/Documents/maxdetection/Stimuli/Video/List_1/List1E01AVLNST.mov"
     );
     testSetupView.setTargetListDirectory(
         "/Users/basset/Documents/Lalonde/Lalonde-coordinate-response/Seth Mars Attack"
@@ -145,13 +153,27 @@ int main() {
     CocoaView view{NSMakeRect(15, 15, 900, 400)};
     view.addSubview(testSetupView.view());
     view.addSubview(testerView.view());
-    auto subjectViewHeight = subjectScreenFrame.size.height / 4;
-    auto subjectViewWidth = subjectScreenFrame.size.width / 3;
-    auto subjectViewLeadingEdge = subjectScreenFrame.origin.x + (subjectScreenFrame.size.width - subjectViewWidth) / 2;
-    CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge, subjectScreenFrame.origin.y, subjectViewWidth, subjectViewHeight)};
+    auto subjectScreenSize = subjectScreenFrame.size;
+    auto subjectViewHeight = subjectScreenSize.height / 4;
+    auto subjectViewWidth = subjectScreenSize.width / 3;
+    auto subjectViewLeadingEdge =
+        subjectScreenOrigin.x +
+        (subjectScreenSize.width - subjectViewWidth) / 2;
+    CocoaSubjectView subjectView{NSMakeRect(
+        subjectViewLeadingEdge,
+        subjectScreenOrigin.y,
+        subjectViewWidth,
+        subjectViewHeight
+    )};
     av_coordinate_response_measure::Presenter::Tester tester{&testerView};
     av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
     av_coordinate_response_measure::Presenter::TestSetup testSetup{&testSetupView};
-    av_coordinate_response_measure::Presenter presenter{&model, &view, &testSetup, &tester, &subject};
+    av_coordinate_response_measure::Presenter presenter{
+        &model,
+        &view,
+        &testSetup,
+        &tester,
+        &subject
+    };
     presenter.run();
 }

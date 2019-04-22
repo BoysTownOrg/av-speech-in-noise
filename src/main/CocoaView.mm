@@ -295,8 +295,16 @@ void CocoaTestSetupView::setMasker(std::string s) {
     [maskerFilePath_ setStringValue:asNsString(std::move(s))];
 }
 
+void CocoaTestSetupView::setCalibration(std::string s) {
+    [calibrationFilePath_ setStringValue:asNsString(std::move(s))];
+}
+
 void CocoaTestSetupView::setMaskerLevel_dB_SPL(std::string s) {
     [maskerLevel_dB_SPL_ setStringValue:asNsString(std::move(s))];
+}
+
+void CocoaTestSetupView::setCalibrationLevel_dB_SPL(std::string s) {
+    [calibrationLevel_dB_SPL_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaTestSetupView::setStartingSnr_dB(std::string s) {

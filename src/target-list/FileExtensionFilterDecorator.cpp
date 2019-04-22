@@ -1,20 +1,20 @@
-#include "FileFilterDecorator.hpp"
+#include "FileExtensionFilterDecorator.hpp"
 
 namespace target_list {
-    FileFilterDecorator::FileFilterDecorator(
+    FileExtensionFilterDecorator::FileExtensionFilterDecorator(
         DirectoryReader *reader,
         std::vector<std::string> filters
     ) :
         filters{std::move(filters)},
         reader{reader} {}
 
-    std::vector<std::string> FileFilterDecorator::filesIn(
+    std::vector<std::string> FileExtensionFilterDecorator::filesIn(
         std::string directory
     ) {
         return filtered(reader->filesIn(std::move(directory)));
     }
     
-    std::vector<std::string> FileFilterDecorator::filtered(
+    std::vector<std::string> FileExtensionFilterDecorator::filtered(
         std::vector<std::string> files
     ) {
         std::vector<std::string> filtered_{};
@@ -25,7 +25,7 @@ namespace target_list {
         return filtered_;
     }
     
-    bool FileFilterDecorator::endingMatchesFilter(
+    bool FileExtensionFilterDecorator::endingMatchesFilter(
         const std::string &file,
         const std::string &filter
     ) {

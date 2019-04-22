@@ -1,6 +1,6 @@
 #include "assert-utility.h"
 #include <target-list/RandomizedTargetList.hpp>
-#include <target-list/FileFilterDecorator.hpp>
+#include <target-list/FileExtensionFilterDecorator.hpp>
 #include <gtest/gtest.h>
 
 namespace {
@@ -124,7 +124,7 @@ namespace {
     protected:
         DirectoryReaderStub reader{};
         
-        target_list::FileFilterDecorator construct(
+        target_list::FileExtensionFilterDecorator construct(
             std::vector<std::string> filters = {}
         ) {
             return {&reader, std::move(filters)};
