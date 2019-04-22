@@ -21,8 +21,8 @@ namespace stimulus_players {
         return player->durationSeconds();
     }
     
-    void MaskerPlayerImpl::seekSeconds(double) {
-        ;
+    void MaskerPlayerImpl::seekSeconds(double x) {
+        player->seekSeconds(x);
     }
     
     double MaskerPlayerImpl::fadeTimeSeconds() {

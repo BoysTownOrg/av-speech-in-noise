@@ -29,6 +29,7 @@ namespace stimulus_players {
         virtual double sampleRateHz() = 0;
         virtual void scheduleCallbackAfterSeconds(double) = 0;
         virtual double durationSeconds() = 0;
+        virtual void seekSeconds(double) = 0;
     };
 
     class MaskerPlayerImpl :

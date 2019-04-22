@@ -14,6 +14,7 @@ namespace {
         std::map<int, bool> outputDevices{};
         double sampleRateHz_{};
         double durationSeconds_{};
+        double secondsSeeked_{};
         int deviceIndex_{};
         int deviceCount_{};
         int deviceDescriptionDeviceIndex_{};
@@ -23,6 +24,10 @@ namespace {
         bool stopped_{};
         bool callbackScheduled_{};
     public:
+        void seekSeconds(double x) override {
+            secondsSeeked_ = x;
+        }
+        
         double durationSeconds() override {
             return durationSeconds_;
         }
@@ -110,6 +115,10 @@ namespace {
         
         auto filePath() const {
             return filePath_;
+        }
+        
+        auto secondsSeeked() const {
+            return secondsSeeked_;
         }
         
         auto deviceIndex() const {
@@ -384,6 +393,11 @@ namespace {
     TEST_F(MaskerPlayerTests, durationReturnsDuration) {
         audioPlayer.setDurationSeconds(1);
         EXPECT_EQ(1, player.durationSeconds());
+    }
+
+    TEST_F(MaskerPlayerTests, seekSeeksAudioPlayer) {
+        player.seekSeconds(1);
+        EXPECT_EQ(1, audioPlayer.secondsSeeked());
     }
 
     TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {
