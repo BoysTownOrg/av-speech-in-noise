@@ -26,7 +26,7 @@ namespace stimulus_players {
     }
     
     double MaskerPlayerImpl::fadeTimeSeconds() {
-        return 0;
+        return fadeInOutSeconds.load();
     }
     
     void MaskerPlayerImpl::fadeIn() {

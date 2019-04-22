@@ -386,6 +386,11 @@ namespace {
         EXPECT_EQ(1, player.durationSeconds());
     }
 
+    TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {
+        player.setFadeInOutSeconds(1);
+        EXPECT_EQ(1, player.fadeTimeSeconds());
+    }
+
     TEST_F(MaskerPlayerTests, loadFileLoadsVideoFile) {
         player.loadFile("a");
         assertEqual("a", audioPlayer.filePath());
