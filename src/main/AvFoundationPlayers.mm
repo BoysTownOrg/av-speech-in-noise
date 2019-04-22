@@ -363,16 +363,27 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
 
 void AvFoundationVideoPlayer::prepareVideo() {
     resizeVideo();
+    centerVideo();
 }
 
 void AvFoundationVideoPlayer::resizeVideo() {
     AvAssetFacade asset{player.currentItem.asset};
     [videoWindow setContentSize:NSSizeFromCGSize(asset.videoTrack().naturalSize)];
-    auto videoScreenFrame = [[videoWindow screen] frame];
-    auto videoLeadingEdge = videoScreenFrame.origin.x + (videoScreenFrame.size.width - videoWindow.frame.size.width) / 2;
-    auto videoBottomEdge = videoScreenFrame.origin.y + (videoScreenFrame.size.height - videoWindow.frame.size.height) / 2;
-    [videoWindow setFrameOrigin:NSMakePoint(videoLeadingEdge, videoBottomEdge)];
     [playerLayer setFrame:videoWindow.contentView.bounds];
+}
+
+void AvFoundationVideoPlayer::centerVideo() {
+    auto screenFrame = [[videoWindow screen] frame];
+    auto screenOrigin = screenFrame.origin;
+    auto screenSize = screenFrame.size;
+    auto windowSize = videoWindow.frame.size;
+    auto videoLeadingEdge =
+        screenOrigin.x +
+        (screenSize.width - windowSize.width) / 2;
+    auto videoBottomEdge =
+        screenOrigin.y +
+        (screenSize.height - windowSize.height) / 2;
+    [videoWindow setFrameOrigin:NSMakePoint(videoLeadingEdge, videoBottomEdge)];
 }
 
 void AvFoundationVideoPlayer::subscribeToPlaybackCompletion() {
@@ -424,8 +435,13 @@ bool AvFoundationVideoPlayer::playing() {
     return ::playing(player);
 }
 
-double AvFoundationVideoPlayer::durationSeconds() {
+// https://stackoverflow.com/questions/19059321/ios-7-avplayer-avplayeritem-duration-incorrect-in-ios-7
+static Float64 durationSeconds_(AVPlayer *player) {
     return CMTimeGetSeconds(player.currentItem.asset.duration);
+}
+
+double AvFoundationVideoPlayer::durationSeconds() {
+    return durationSeconds_(player);
 }
 
 @implementation VideoPlayerActions
@@ -497,9 +513,13 @@ void AvFoundationAudioPlayer::fillAudioBuffer() {
 }
 
 double AvFoundationAudioPlayer::durationSeconds() {
-    return CMTimeGetSeconds(player.currentItem.asset.duration);
+    return durationSeconds_(player);
 }
 
+// https://warrenmoore.net/understanding-cmtime
+// "Apple recommends a timescale of 600 for video,
+// with the explanation that 600 is a multiple of the
+// common video framerates (24, 25, and 30 FPS).
 void AvFoundationAudioPlayer::seekSeconds(double x) {
     [player seekToTime:CMTimeMakeWithSeconds(x, 600)];
 }

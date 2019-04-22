@@ -84,6 +84,7 @@ public:
     
 private:
     void schedulePlaybackCompletion();
+    void centerVideo();
     void resizeVideo();
     void prepareVideo();
 };
