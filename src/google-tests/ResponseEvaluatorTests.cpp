@@ -138,6 +138,13 @@ namespace {
             }
         );
         assertIncorrect(
+            "not-valid",
+            {
+                av_coordinate_response_measure::ResponseEvaluatorImpl::invalidNumber,
+                av_coordinate_response_measure::Color::notAColor
+            }
+        );
+        assertIncorrect(
             "almost.mov",
             {
                 av_coordinate_response_measure::ResponseEvaluatorImpl::invalidNumber,
