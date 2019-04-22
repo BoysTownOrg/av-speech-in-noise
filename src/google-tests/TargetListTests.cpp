@@ -119,6 +119,15 @@ namespace {
         next();
         assertEqual("C:/a", list.current());
     }
+
+    TEST_F(
+        TargetListTests,
+        nextReturnsEmptyIfNoFiles
+    ) {
+        setFileNames({});
+        loadFromDirectory();
+        assertEqual("", next());
+    }
     
     class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:

@@ -20,6 +20,8 @@ namespace target_list {
     }
     
     std::string RandomizedTargetList::next() {
+        if (files.size() == 0)
+            return "";
         auto nextFile_ = files.front();
         files.erase(files.begin());
         if (!first)
