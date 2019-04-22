@@ -342,10 +342,22 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSRect r) :
     playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}
 {
     createAudioProcessingTap<AvFoundationVideoPlayer>(this, &tap);
+    prepareWindow();
+    actions.controller = this;
+}
+
+void AvFoundationVideoPlayer::prepareWindow() {
+    addPlayerLayer();
+    showWindow();
+}
+
+void AvFoundationVideoPlayer::addPlayerLayer() {
     [videoWindow.contentView setWantsLayer:YES];
     [videoWindow.contentView.layer addSublayer:playerLayer];
+}
+
+void AvFoundationVideoPlayer::showWindow() {
     [videoWindow makeKeyAndOrderFront:nil];
-    actions.controller = this;
 }
 
 void AvFoundationVideoPlayer::subscribe(EventListener *e) {
@@ -368,7 +380,9 @@ void AvFoundationVideoPlayer::prepareVideo() {
 
 void AvFoundationVideoPlayer::resizeVideo() {
     AvAssetFacade asset{player.currentItem.asset};
-    [videoWindow setContentSize:NSSizeFromCGSize(asset.videoTrack().naturalSize)];
+    [videoWindow setContentSize:
+        NSSizeFromCGSize(asset.videoTrack().naturalSize)
+    ];
     [playerLayer setFrame:videoWindow.contentView.bounds];
 }
 
@@ -436,6 +450,8 @@ bool AvFoundationVideoPlayer::playing() {
 }
 
 // https://stackoverflow.com/questions/19059321/ios-7-avplayer-avplayeritem-duration-incorrect-in-ios-7
+// "It appears the duration value isn't always immediately available
+// from an AVPlayerItem but it seems to work fine with an AVAsset immediately."
 static Float64 durationSeconds_(AVPlayer *player) {
     return CMTimeGetSeconds(player.currentItem.asset.duration);
 }
@@ -521,7 +537,8 @@ double AvFoundationAudioPlayer::durationSeconds() {
 // with the explanation that 600 is a multiple of the
 // common video framerates (24, 25, and 30 FPS).
 void AvFoundationAudioPlayer::seekSeconds(double x) {
-    [player seekToTime:CMTimeMakeWithSeconds(x, 600)];
+    auto timescale = 600;
+    [player seekToTime:CMTimeMakeWithSeconds(x, timescale)];
 }
 
 @implementation CallbackScheduler

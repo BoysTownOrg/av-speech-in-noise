@@ -83,6 +83,9 @@ public:
     double durationSeconds() override;
     
 private:
+    void addPlayerLayer();
+    void showWindow();
+    void prepareWindow();
     void schedulePlaybackCompletion();
     void centerVideo();
     void resizeVideo();
