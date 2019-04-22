@@ -21,8 +21,7 @@ namespace stimulus_players {
     }
 
     void TargetPlayerImpl::loadFile(std::string filePath) {
-        filePath_ = filePath;
-        player->loadFile(std::move(filePath));
+        player->loadFile(filePath_ = std::move(filePath));
     }
 
     void TargetPlayerImpl::hideVideo() {

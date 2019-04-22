@@ -41,8 +41,7 @@ namespace stimulus_players {
     }
 
     void MaskerPlayerImpl::loadFile(std::string filePath) {
-        filePath_ = filePath;
-        player->loadFile(std::move(filePath));
+        player->loadFile(filePath_ = std::move(filePath));
     }
 
     bool MaskerPlayerImpl::playing() {

@@ -9,8 +9,7 @@ namespace target_list {
         randomizer{randomizer} {}
     
     void RandomizedTargetList::loadFromDirectory(std::string directory) {
-        directory_ = std::move(directory);
-        files = reader->filesIn(directory_);
+        files = reader->filesIn(directory_ = std::move(directory));
         shuffle();
         noFilesGotten = true;
     }
@@ -35,7 +34,7 @@ namespace target_list {
         files.erase(files.begin());
         replaceLastFile();
         shuffle();
-        return fullPath(currentFile_ = nextFile_);
+        return fullPath(currentFile_ = std::move(nextFile_));
     }
     
     void RandomizedTargetList::replaceLastFile() {
