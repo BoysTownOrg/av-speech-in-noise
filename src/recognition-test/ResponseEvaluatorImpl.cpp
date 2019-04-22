@@ -7,7 +7,8 @@ namespace av_coordinate_response_measure {
     ) {
         return
             correctNumber(filePath) == r.number &&
-            correctColor(filePath) == r.color;
+            correctColor(filePath) == r.color &&
+            r.color != Color::notAColor;
     }
     int ResponseEvaluatorImpl::correctNumber(const std::string &filePath) {
         auto extension = filePath.find(".");

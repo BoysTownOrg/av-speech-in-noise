@@ -141,7 +141,7 @@ namespace {
             "almost.mov",
             {
                 -1,
-                av_coordinate_response_measure::Color::white
+                av_coordinate_response_measure::Color::notAColor
             }
         );
     }
