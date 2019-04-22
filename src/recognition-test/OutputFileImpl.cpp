@@ -77,7 +77,7 @@ namespace av_coordinate_response_measure {
         case Color::blue:
             return "blue";
         case Color::white:
-            return "gray";
+            return "white";
         }
         return "unknown";
     }
