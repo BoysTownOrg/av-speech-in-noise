@@ -35,7 +35,9 @@ namespace av_coordinate_response_measure {
             return Color::blue;
         else if (colorName == "red")
             return Color::red;
-        else
+        else if (colorName == "white")
             return Color::white;
+        else
+            return Color::notAColor;
     }
 }

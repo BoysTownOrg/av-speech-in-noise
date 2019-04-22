@@ -140,8 +140,8 @@ namespace {
         assertIncorrect(
             "almost.mov",
             {
-                1,
-                av_coordinate_response_measure::Color::blue
+                -1,
+                av_coordinate_response_measure::Color::white
             }
         );
     }
