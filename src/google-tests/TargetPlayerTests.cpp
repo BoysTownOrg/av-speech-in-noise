@@ -10,6 +10,7 @@ namespace {
         std::vector<std::vector<float>> audioRead_{};
         std::string filePath_{};
         std::string audioFilePath_{};
+        double durationSeconds_{};
         int deviceIndex_{};
         EventListener *listener_{};
         bool shown_{};
@@ -18,6 +19,10 @@ namespace {
         bool playing_{};
         bool playbackCompletionSubscribedTo_{};
     public:
+        double durationSeconds() override {
+            return durationSeconds_;
+        }
+        
         void subscribeToPlaybackCompletion() override {
             playbackCompletionSubscribedTo_ = true;
         }
@@ -86,6 +91,10 @@ namespace {
             playing_ = true;
         }
         
+        void setDurationSeconds(double x) {
+            durationSeconds_ = x;
+        }
+        
         void show() override {
             shown_ = true;
         }
@@ -142,6 +151,11 @@ namespace {
     TEST_F(TargetPlayerTests, playPlaysVideo) {
         player.play();
         EXPECT_TRUE(videoPlayer.played());
+    }
+
+    TEST_F(TargetPlayerTests, durationReturnsDuration) {
+        videoPlayer.setDurationSeconds(1);
+        EXPECT_EQ(1, player.durationSeconds());
     }
 
     TEST_F(TargetPlayerTests, showVideoShowsVideo) {

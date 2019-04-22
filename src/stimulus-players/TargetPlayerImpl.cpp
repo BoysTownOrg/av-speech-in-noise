@@ -107,7 +107,7 @@ namespace stimulus_players {
         player->subscribeToPlaybackCompletion();
     }
     
-    double TargetPlayerImpl::durationSeconds() { 
-        return 0;
+    double TargetPlayerImpl::durationSeconds() {
+        return player->durationSeconds();
     }
 }
