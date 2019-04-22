@@ -128,7 +128,8 @@ int main() {
         &maskerPlayer,
         &snrTrack,
         &responseEvaluator,
-        &outputFile
+        &outputFile,
+        &randomizer
     };
     auto experimenterRect = NSMakeRect(15, 15, 900 - 15 * 2, 400 - 15 * 2);
     CocoaTestSetupView testSetupView{experimenterRect};
