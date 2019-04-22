@@ -164,6 +164,7 @@ namespace av_coordinate_response_measure {
         bool noMoreTrials();
         bool trialInProgress();
         void loadNextTarget();
+        void seekMaskerPosition();
         void preparePlayers(const AudioSettings &);
         void startTrial();
         bool auditoryOnly(const Test &);

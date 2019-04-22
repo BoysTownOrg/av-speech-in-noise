@@ -116,9 +116,7 @@ namespace av_coordinate_response_measure {
     void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
         trySettingAudioDevices(p);
         loadNextTarget();
-        maskerPlayer->seekSeconds(randomizer->randomFloatBetween(
-            0,
-            maskerPlayer->durationSeconds() - 2 * maskerPlayer->fadeTimeSeconds() - targetPlayer->durationSeconds()));
+        seekMaskerPosition();
     }
     
     void RecognitionTestModel::trySettingAudioDevices(const AudioSettings &p) {
@@ -164,10 +162,6 @@ namespace av_coordinate_response_measure {
         targetPlayer->setLevel_dB(x);
     }
     
-    double RecognitionTestModel::unalteredTargetLevel_dB() {
-        return dB(targetPlayer->rms());
-    }
-    
     double RecognitionTestModel::targetLevel_dB() {
         return
             desiredMaskerLevel_dB() +
@@ -177,6 +171,18 @@ namespace av_coordinate_response_measure {
     
     int RecognitionTestModel::SNR_dB() {
         return snrTrack->x();
+    }
+    
+    double RecognitionTestModel::unalteredTargetLevel_dB() {
+        return dB(targetPlayer->rms());
+    }
+    
+    void RecognitionTestModel::seekMaskerPosition() {
+        auto upperLimit =
+            maskerPlayer->durationSeconds() -
+            2 * maskerPlayer->fadeTimeSeconds() -
+            targetPlayer->durationSeconds();
+        maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
     }
     
     void RecognitionTestModel::startTrial() {
