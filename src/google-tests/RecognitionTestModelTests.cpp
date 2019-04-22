@@ -124,6 +124,10 @@ namespace {
             secondsSeeked_ = x;
         }
         
+        auto secondsSeeked() const {
+            return secondsSeeked_;
+        }
+        
         double fadeTimeSeconds() override {
             return fadeTimeSeconds_;
         }
@@ -510,6 +514,10 @@ namespace {
         double upperBound_{};
         double randomFloat_{};
     public:
+        void setRandomFloat(double x) {
+            randomFloat_ = x;
+        }
+        
         auto lowerBound() const {
             return lowerBound_;
         }
@@ -1004,6 +1012,15 @@ namespace {
         playTrial();
         EXPECT_EQ(0., randomizer.lowerBound());
         EXPECT_EQ(19 - 4 - 3 - 4, randomizer.upperBound());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialSeeksToRandomMaskerPosition
+    ) {
+        randomizer.setRandomFloat(1);
+        playTrial();
+        EXPECT_EQ(1, maskerPlayer.secondsSeeked());
     }
 
     TEST_F(
