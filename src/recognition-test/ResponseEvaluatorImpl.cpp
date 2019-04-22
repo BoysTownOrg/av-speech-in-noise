@@ -14,7 +14,12 @@ namespace av_coordinate_response_measure {
         if (extension == std::string::npos)
             return -1;
         auto number = filePath.substr(extension-1, 1);
-        return std::stoi(number);
+        try {
+            return std::stoi(number);
+        }
+        catch (const std::invalid_argument &) {
+            return -1;
+        }
     }
     
     Color ResponseEvaluatorImpl::correctColor(const std::string &filePath) {
