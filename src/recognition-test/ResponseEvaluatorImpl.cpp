@@ -1,6 +1,8 @@
 #include "ResponseEvaluatorImpl.hpp"
 
 namespace av_coordinate_response_measure {
+    int ResponseEvaluatorImpl::invalidNumber = -1;
+    
     bool ResponseEvaluatorImpl::correct(
         std::string filePath,
         const SubjectResponse &r
@@ -9,18 +11,18 @@ namespace av_coordinate_response_measure {
             correctNumber(filePath) == r.number &&
             correctColor(filePath) == r.color &&
             r.color != Color::notAColor &&
-            r.number != -1;
+            r.number != invalidNumber;
     }
     int ResponseEvaluatorImpl::correctNumber(const std::string &filePath) {
         auto extension = filePath.find(".");
         if (extension == std::string::npos)
-            return -1;
+            return invalidNumber;
         auto number = filePath.substr(extension-1, 1);
         try {
             return std::stoi(number);
         }
         catch (const std::invalid_argument &) {
-            return -1;
+            return invalidNumber;
         }
     }
     

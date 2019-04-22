@@ -7,6 +7,7 @@ namespace av_coordinate_response_measure {
     class ResponseEvaluatorImpl : public ResponseEvaluator {
     public:
         bool correct(std::string filePath, const SubjectResponse &r) override;
+        static int invalidNumber;
         int correctNumber(const std::string &filePath) override;
         Color correctColor(const std::string &filePath) override;
     };
