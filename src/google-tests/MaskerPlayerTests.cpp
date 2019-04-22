@@ -13,6 +13,7 @@ namespace {
         std::string audioFilePath_{};
         std::map<int, bool> outputDevices{};
         double sampleRateHz_{};
+        double durationSeconds_{};
         int deviceIndex_{};
         int deviceCount_{};
         int deviceDescriptionDeviceIndex_{};
@@ -22,6 +23,10 @@ namespace {
         bool stopped_{};
         bool callbackScheduled_{};
     public:
+        double durationSeconds() override {
+            return durationSeconds_;
+        }
+        
         bool outputDevice(int index) override {
             return outputDevices[index];
         }
@@ -64,6 +69,10 @@ namespace {
         
         void setPlaying() {
             playing_ = true;
+        }
+        
+        void setDurationSeconds(double x) {
+            durationSeconds_ = x;
         }
         
         bool playing() override {
@@ -370,6 +379,11 @@ namespace {
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
         audioPlayer.setPlaying();
         EXPECT_TRUE(player.playing());
+    }
+
+    TEST_F(MaskerPlayerTests, durationReturnsDuration) {
+        audioPlayer.setDurationSeconds(1);
+        EXPECT_EQ(1, player.durationSeconds());
     }
 
     TEST_F(MaskerPlayerTests, loadFileLoadsVideoFile) {
