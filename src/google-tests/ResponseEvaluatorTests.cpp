@@ -158,5 +158,12 @@ namespace {
                 av_coordinate_response_measure::Color::white
             }
         );
+        assertIncorrect(
+            "/",
+            {
+                av_coordinate_response_measure::ResponseEvaluatorImpl::invalidNumber,
+                av_coordinate_response_measure::Color::notAColor
+            }
+        );
     }
 }
