@@ -25,7 +25,7 @@ namespace target_list {
         std::string currentFile_{};
         DirectoryReader *reader;
         Randomizer *randomizer;
-        bool first{};
+        bool noFilesGotten{};
     public:
         RandomizedTargetList(DirectoryReader *, Randomizer *);
         void loadFromDirectory(std::string) override;

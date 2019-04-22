@@ -12,7 +12,7 @@ namespace target_list {
         directory_ = std::move(directory);
         files = reader->filesIn(directory_);
         shuffle();
-        first = true;
+        noFilesGotten = true;
     }
     
     void RandomizedTargetList::shuffle() {
@@ -39,9 +39,9 @@ namespace target_list {
     }
     
     void RandomizedTargetList::replaceLastFile() {
-        if (!first)
+        if (!noFilesGotten)
             files.push_back(currentFile_);
-        first = false;
+        noFilesGotten = false;
     }
     
     std::string RandomizedTargetList::fullPath(std::string file) {
