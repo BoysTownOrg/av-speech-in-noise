@@ -30,9 +30,13 @@ namespace target_list {
         RandomizedTargetList(DirectoryReader *, Randomizer *);
         void loadFromDirectory(std::string) override;
         bool empty();
-        std::string current_();
         std::string next() override;
         std::string current() override;
+    private:
+        std::string fullPath(std::string file);
+        void shuffle();
+        bool empty_();
+        void replaceLastFile();
     };
 }
 
