@@ -424,6 +424,11 @@ bool AvFoundationVideoPlayer::playing() {
     return ::playing(player);
 }
 
+double AvFoundationVideoPlayer::durationSeconds() {
+    auto cmtime = player.currentItem.duration;
+    return cmtime.value * 1.0 / cmtime.timescale;
+}
+
 @implementation VideoPlayerActions
 @synthesize controller;
 - (void)playbackComplete {
@@ -490,6 +495,16 @@ bool AvFoundationAudioPlayer::outputDevice(int index) {
 
 void AvFoundationAudioPlayer::fillAudioBuffer() {
     listener_->fillAudioBuffer(audio_);
+}
+
+double AvFoundationAudioPlayer::durationSeconds() {
+    auto cmtime = player.currentItem.duration;
+    return cmtime.value * 1.0 / cmtime.timescale;
+}
+
+void AvFoundationAudioPlayer::seekSeconds(double x) {
+    auto cmtime = CMTimeMakeWithSeconds(x, 600);
+    [player seekToTime:cmtime];
 }
 
 @implementation CallbackScheduler

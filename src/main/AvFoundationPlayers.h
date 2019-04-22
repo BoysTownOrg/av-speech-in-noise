@@ -80,6 +80,7 @@ public:
     std::string deviceDescription(int index) override;
     bool playing() override;
     void subscribeToPlaybackCompletion() override;
+    double durationSeconds() override;
     
 private:
     void schedulePlaybackCompletion();
@@ -120,6 +121,8 @@ public:
     void scheduleCallbackAfterSeconds(double) override;
     void timerCallback();
     bool outputDevice(int index) override;
+    double durationSeconds() override;
+    void seekSeconds(double) override;
 };
 
 #endif
