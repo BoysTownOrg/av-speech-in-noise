@@ -683,11 +683,6 @@ namespace {
             maskerPlayer.setPlaying();
         }
         
-        void assertMaskerPlayerNotPlayedAfterPlayingTrial() {
-            playTrial();
-            assertMaskerPlayerNotPlayed();
-        }
-        
         void playTrial() {
             run(playingTrial);
         }
@@ -703,11 +698,6 @@ namespace {
         
         void playCalibration() {
             run(playingCalibration);
-        }
-        
-        void assertListNotAdvancedAfterPlayingTrial() {
-            playTrial();
-            assertListNotAdvanced();
         }
         
         void assertTargetVideoOnlyHidden() {
@@ -734,6 +724,10 @@ namespace {
         
         void assertInitializeTestThrowsRequestFailure(std::string what) {
             assertCallThrowsRequestFailure(initializingTest, std::move(what));
+        }
+        
+        void assertPlayTrialThrowsRequestFailure(std::string what) {
+            assertCallThrowsRequestFailure(playingTrial, std::move(what));
         }
         
         void assertCallThrowsRequestFailure(
@@ -882,7 +876,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialWithInvalidMaskerAudioDeviceDoesNotAdvanceTarget
+        playTrialWithInvalidAudioDeviceDoesNotAdvanceTarget
     ) {
         throwInvalidAudioDeviceWhenSet();
         playTrialIgnoringFailure();
@@ -891,18 +885,10 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        audioDevicesReturnsOutputAudioDeviceDescriptions
-    ) {
-        setOutputAudioDeviceDescriptions({"a", "b", "c"});
-        assertEqual({"a", "b", "c"}, model.audioDevices());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         playTrialDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
         setTrialInProgress();
-        playTrial();
+        playTrialIgnoringFailure();
         EXPECT_FALSE(maskerPlayer.setDeviceCalled());
     }
 
@@ -917,7 +903,8 @@ namespace {
 
     TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfTrialInProgress) {
         setTrialInProgress();
-        assertMaskerPlayerNotPlayedAfterPlayingTrial();
+        playTrialIgnoringFailure();
+        assertMaskerPlayerNotPlayed();
     }
 
     TEST_F(
@@ -934,6 +921,14 @@ namespace {
     ) {
         setTrialInProgress();
         assertInitializeTestThrowsRequestFailure("Trial in progress.");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialThrowsRequestFailureIfTrialInProgress
+    ) {
+        setTrialInProgress();
+        assertPlayTrialThrowsRequestFailure("Trial in progress.");
     }
 
     TEST_F(
@@ -961,7 +956,8 @@ namespace {
         playTrialDoesNotAdvanceListIfTrialInProgress
     ) {
         setTrialInProgress();
-        assertListNotAdvancedAfterPlayingTrial();
+        playTrialIgnoringFailure();
+        assertListNotAdvanced();
     }
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
@@ -1320,6 +1316,14 @@ namespace {
         playingCalibration.setFilePath("a");
         targetPlayer.throwInvalidAudioFileOnRms();
         assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        audioDevicesReturnsOutputAudioDeviceDescriptions
+    ) {
+        setOutputAudioDeviceDescriptions({"a", "b", "c"});
+        assertEqual({"a", "b", "c"}, model.audioDevices());
     }
 }
 

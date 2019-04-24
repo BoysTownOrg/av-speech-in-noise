@@ -105,7 +105,10 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
-        if (noMoreTrials() || trialInProgress())
+        if (trialInProgress())
+            throw RequestFailure{"Trial in progress."};
+        
+        if (noMoreTrials())
             return;
         
         preparePlayers(settings);
