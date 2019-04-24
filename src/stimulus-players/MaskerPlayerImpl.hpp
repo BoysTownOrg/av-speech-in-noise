@@ -77,7 +77,7 @@ namespace stimulus_players {
         class AudioThread {
         public:
             AudioThread(AudioPlayer *);
-            void setParent(MaskerPlayerImpl *);
+            void setSharedAtomics(MaskerPlayerImpl *);
             void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
         private:
             void updateWindowLength();
@@ -97,7 +97,7 @@ namespace stimulus_players {
             
             int hannCounter{};
             int halfWindowLength{};
-            MaskerPlayerImpl *sharedState;
+            MaskerPlayerImpl *sharedAtomics;
             AudioPlayer *player;
             bool fadingOut{};
             bool fadingIn{};
@@ -106,7 +106,7 @@ namespace stimulus_players {
         class MainThread {
         public:
             MainThread(AudioPlayer *, Timer *);
-            void setParent(MaskerPlayerImpl *);
+            void setSharedAtomics(MaskerPlayerImpl *);
             void callback();
             void subscribe(MaskerPlayer::EventListener *);
             void fadeIn();
@@ -114,7 +114,7 @@ namespace stimulus_players {
         private:
             bool fading();
             
-            MaskerPlayerImpl *sharedState;
+            MaskerPlayerImpl *sharedAtomics;
             AudioPlayer *player;
             MaskerPlayer::EventListener *listener{};
             Timer *timer;
