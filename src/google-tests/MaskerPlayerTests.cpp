@@ -454,6 +454,10 @@ namespace {
             fadeOutToSilence();
             timerCallback();
         }
+        
+        void setFadeInOutSeconds(double x) {
+            player.setFadeInOutSeconds(x);
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -497,7 +501,7 @@ namespace {
         // For this test:
         // halfWindowLength is determined by fade time and sample rate...
         // but must be divisible by framesPerBuffer.
-        player.setFadeInOutSeconds(3);
+        setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
         auto halfWindowLength = 3 * 5 + 1;
         auto framesPerBuffer = 4;
@@ -511,7 +515,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
-        player.setFadeInOutSeconds(2);
+        setFadeInOutSeconds(2);
         audioPlayer.setSampleRateHz(3);
         auto halfWindowLength = 2 * 3 + 1;
     
@@ -526,7 +530,7 @@ namespace {
         // For this test:
         // halfWindowLength is determined by fade time and sample rate...
         // but must be divisible by framesPerBuffer.
-        player.setFadeInOutSeconds(3);
+        setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
         auto halfWindowLength = 3 * 5 + 1;
         auto framesPerBuffer = 4;
@@ -540,7 +544,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoOneFill) {
-        player.setFadeInOutSeconds(2);
+        setFadeInOutSeconds(2);
         audioPlayer.setSampleRateHz(3);
         auto halfWindowLength = 2 * 3 + 1;
     
@@ -564,7 +568,7 @@ namespace {
         // halfWindowLength is determined by fade time and sample rate...
         // but must be divisible by framesPerBuffer.
         fadeInCompletely();
-        player.setFadeInOutSeconds(3);
+        setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
         auto halfWindowLength = 3 * 5 + 1;
         auto framesPerBuffer = 4;
@@ -579,7 +583,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
         fadeInCompletely();
-        player.setFadeInOutSeconds(2);
+        setFadeInOutSeconds(2);
         audioPlayer.setSampleRateHz(3);
         auto halfWindowLength = 2 * 3 + 1;
     
@@ -600,7 +604,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
-        player.setFadeInOutSeconds(3);
+        setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
         fadeIn();
@@ -619,7 +623,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
         fadeInCompletely();
-        player.setFadeInOutSeconds(3);
+        setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
         fadeOut();
@@ -640,7 +644,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
         fadeInCompletely();
-        player.setFadeInOutSeconds(3);
+        setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
         fadeOut();
