@@ -92,21 +92,12 @@ private:
     void prepareVideo();
 };
 
-class AvFoundationAudioPlayer;
-
-@interface CallbackScheduler : NSObject
-@property AvFoundationAudioPlayer *controller;
-- (void) scheduleCallbackAfterSeconds: (double) x;
-- (void) timerCallback;
-@end
-
 class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     std::vector<gsl::span<float>> audio_;
     CoreAudioDevices device{};
     MTAudioProcessingTapRef tap{};
     EventListener *listener_{};
     AVPlayer *player;
-    CallbackScheduler *scheduler;
     double sampleRate_{};
 public:
     AvFoundationAudioPlayer();
@@ -122,7 +113,6 @@ public:
     void play() override;
     double sampleRateHz() override;
     void stop() override;
-    void scheduleCallbackAfterSeconds(double) override;
     void timerCallback();
     bool outputDevice(int index) override;
     double durationSeconds() override;

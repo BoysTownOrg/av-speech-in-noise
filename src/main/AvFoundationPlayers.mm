@@ -469,10 +469,8 @@ double AvFoundationVideoPlayer::durationSeconds() {
 
 
 AvFoundationAudioPlayer::AvFoundationAudioPlayer() :
-    player{[AVPlayer playerWithPlayerItem:nil]},
-    scheduler{[CallbackScheduler alloc]}
+    player{[AVPlayer playerWithPlayerItem:nil]}
 {
-    scheduler.controller = this;
     createAudioProcessingTap<AvFoundationAudioPlayer>(this, &tap);
 }
 
@@ -512,14 +510,6 @@ void AvFoundationAudioPlayer::stop() {
     [player pause];
 }
 
-void AvFoundationAudioPlayer::scheduleCallbackAfterSeconds(double x) {
-    [scheduler scheduleCallbackAfterSeconds:x];
-}
-
-void AvFoundationAudioPlayer::timerCallback() {
-    listener_->timerCallback();
-}
-
 bool AvFoundationAudioPlayer::outputDevice(int index) {
     return device.outputDevice(index);
 }
@@ -540,21 +530,3 @@ void AvFoundationAudioPlayer::seekSeconds(double x) {
     auto timescale = 600;
     [player seekToTime:CMTimeMakeWithSeconds(x, timescale)];
 }
-
-@implementation CallbackScheduler
-@synthesize controller;
-
-- (void)scheduleCallbackAfterSeconds:(double)x {
-    [NSTimer
-        scheduledTimerWithTimeInterval:x
-        target:self
-        selector: @selector(timerCallback)
-        userInfo:nil
-        repeats:NO
-    ];
-}
-
-- (void)timerCallback {
-    controller->timerCallback();
-}
-@end

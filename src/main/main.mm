@@ -96,6 +96,53 @@ public:
     }
 };
 
+class TimerImpl;
+
+@interface CallbackScheduler : NSObject
+@property TimerImpl *controller;
+- (void) scheduleCallbackAfterSeconds: (double) x;
+- (void) timerCallback;
+@end
+
+class TimerImpl : public stimulus_players::Timer {
+    EventListener *listener{};
+    CallbackScheduler *scheduler{[CallbackScheduler alloc]};
+public:
+    TimerImpl() {
+        scheduler.controller = this;
+    }
+    
+    void subscribe(EventListener *e) override {
+        listener = e;
+    }
+    
+    void scheduleCallbackAfterSeconds(double x) override{
+        [scheduler scheduleCallbackAfterSeconds:x];
+    }
+    
+    void timerCallback() {
+        listener->callback();
+    }
+};
+
+@implementation CallbackScheduler
+@synthesize controller;
+
+- (void)scheduleCallbackAfterSeconds:(double)x {
+    [NSTimer
+        scheduledTimerWithTimeInterval:x
+        target:self
+        selector: @selector(timerCallback)
+        userInfo:nil
+        repeats:NO
+    ];
+}
+
+- (void)timerCallback {
+    controller->timerCallback();
+}
+@end
+
 int main() {
     MacOsDirectoryReader reader;
     target_list::FileExtensionFilterDecorator fileExtensions{
@@ -114,7 +161,8 @@ int main() {
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
     stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
     AvFoundationAudioPlayer audioPlayer;
-    stimulus_players::MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader};
+    TimerImpl timer;
+    stimulus_players::MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
     TimeStampImpl timeStamp;
