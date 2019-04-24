@@ -52,8 +52,8 @@ namespace stimulus_players {
             int hannCounter{};
             int halfWindowLength{};
             MaskerPlayerImpl *parent;
-            bool fadingOut_realTime{};
-            bool fadingIn_realTime{};
+            bool fadingOut{};
+            bool fadingIn{};
         public:
             void setParent(MaskerPlayerImpl *);
             void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
@@ -106,32 +106,14 @@ namespace stimulus_players {
         std::vector<std::vector<float>> readAudio_();
         std::vector<std::string> audioDeviceDescriptions_();
         int findDeviceIndex(const std::string &device);
-        void updateWindowLength();
-        void prepareToFadeIn();
-        void checkForFadeIn();
-        void prepareToFadeOut();
-        void checkForFadeOut();
-        int levelTransitionSamples();
-        void scaleAudio(const std::vector<gsl::span<float>> &);
-        bool doneFadingIn();
-        void checkForFadeInComplete();
-        bool doneFadingOut();
-        void checkForFadeOutComplete();
-        void advanceCounterIfStillFading();
-        void updateFadeState();
-        double fadeScalar();
         
         std::string filePath_{};
         std::atomic<double> levelScalar{1};
         std::atomic<double> fadeInOutSeconds{};
-        int hannCounter{};
-        int halfWindowLength{};
         AudioPlayer *player;
         AudioReader *reader;
         MaskerPlayer::EventListener *listener{};
         Timer *timer{};
-        bool fadingOut_realTime{};
-        bool fadingIn_realTime{};
         bool fadingIn_lowPriority{};
         bool fadingOut_lowPriority{};
         std::atomic<bool> fadeOutComplete{};
