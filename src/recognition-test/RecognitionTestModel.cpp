@@ -42,16 +42,8 @@ namespace av_coordinate_response_measure {
         prepareVideo(p);
     }
     
-    bool RecognitionTestModel::playing() {
-        return trialInProgress() || calibrating();
-    }
-    
     bool RecognitionTestModel::trialInProgress() {
         return maskerPlayer->playing();
-    }
-    
-    bool RecognitionTestModel::calibrating() {
-        return targetPlayer->playing() && !trialInProgress();
     }
     
     void RecognitionTestModel::prepareSnrTrack(const Test &p) {
