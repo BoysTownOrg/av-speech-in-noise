@@ -24,18 +24,14 @@ namespace stimulus_players {
     ) :
         player{player},
         timer{timer} {}
-    
-    MaskerPlayerImpl::AudioThread::AudioThread(AudioPlayer *player) :
-        player{player}
-    {}
 
     void MaskerPlayerImpl::MainThread::setSharedAtomics(MaskerPlayerImpl *p) {
         sharedAtomics = p;
     }
     
-    void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
-        listener = e;
-    }
+    MaskerPlayerImpl::AudioThread::AudioThread(AudioPlayer *player) :
+        player{player}
+    {}
 
     void MaskerPlayerImpl::AudioThread::setSharedAtomics(MaskerPlayerImpl *p) {
         sharedAtomics = p;
@@ -43,6 +39,10 @@ namespace stimulus_players {
 
     void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
         mainThread.subscribe(e);
+    }
+    
+    void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
+        listener = e;
     }
     
     double MaskerPlayerImpl::durationSeconds() {
@@ -55,41 +55,6 @@ namespace stimulus_players {
     
     double MaskerPlayerImpl::fadeTimeSeconds() {
         return fadeInOutSeconds.load();
-    }
-    
-    void MaskerPlayerImpl::fadeIn() {
-        mainThread.fadeIn();
-    }
-    
-    void MaskerPlayerImpl::MainThread::fadeIn() {
-        if (fading())
-            return;
-        
-        fadingIn = true;
-        sharedAtomics->pleaseFadeIn.store(true);
-        player->play();
-        scheduleCallbackAfterSeconds(0.1);
-    }
-    
-    void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
-        timer->scheduleCallbackAfterSeconds(x);
-    }
-    
-    bool MaskerPlayerImpl::MainThread::fading() {
-        return fadingIn || fadingOut;
-    }
-
-    void MaskerPlayerImpl::fadeOut() {
-        mainThread.fadeOut();
-    }
-
-    void MaskerPlayerImpl::MainThread::fadeOut() {
-        if (fading())
-            return;
-        
-        fadingOut = true;
-        sharedAtomics->pleaseFadeOut.store(true);
-        scheduleCallbackAfterSeconds(0.1);
     }
 
     void MaskerPlayerImpl::loadFile(std::string filePath) {
@@ -166,6 +131,41 @@ namespace stimulus_players {
             if (player->outputDevice(i))
                 descriptions.push_back(player->deviceDescription(i));
         return descriptions;
+    }
+    
+    void MaskerPlayerImpl::fadeIn() {
+        mainThread.fadeIn();
+    }
+    
+    void MaskerPlayerImpl::MainThread::fadeIn() {
+        if (fading())
+            return;
+        
+        fadingIn = true;
+        sharedAtomics->pleaseFadeIn.store(true);
+        player->play();
+        scheduleCallbackAfterSeconds(0.1);
+    }
+    
+    void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
+        timer->scheduleCallbackAfterSeconds(x);
+    }
+    
+    bool MaskerPlayerImpl::MainThread::fading() {
+        return fadingIn || fadingOut;
+    }
+
+    void MaskerPlayerImpl::fadeOut() {
+        mainThread.fadeOut();
+    }
+
+    void MaskerPlayerImpl::MainThread::fadeOut() {
+        if (fading())
+            return;
+        
+        fadingOut = true;
+        sharedAtomics->pleaseFadeOut.store(true);
+        scheduleCallbackAfterSeconds(0.1);
     }
     
     void MaskerPlayerImpl::callback() {
