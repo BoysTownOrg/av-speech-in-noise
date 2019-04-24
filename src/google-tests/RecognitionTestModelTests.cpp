@@ -691,11 +691,6 @@ namespace {
             useCase.run(model);
         }
         
-        void assertTargetPlayerNotPlayedAfterPlayingCalibration() {
-            playCalibration();
-            assertTargetPlayerNotPlayed();
-        }
-        
         void playCalibration() {
             run(playingCalibration);
         }
@@ -730,6 +725,10 @@ namespace {
             assertCallThrowsRequestFailure(playingTrial, std::move(what));
         }
         
+        void assertPlayCalibrationThrowsRequestFailure(std::string what) {
+            assertCallThrowsRequestFailure(playingCalibration, std::move(what));
+        }
+        
         void assertCallThrowsRequestFailure(
             UseCase &useCase,
             std::string what
@@ -751,6 +750,10 @@ namespace {
         
         void playTrialIgnoringFailure() {
             runIgnoringFailure(playingTrial);
+        }
+        
+        void playCalibrationIgnoringFailure() {
+            runIgnoringFailure(playingCalibration);
         }
         
         void runIgnoringFailure(UseCase &useCase) {
@@ -897,7 +900,7 @@ namespace {
         playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
         setTrialInProgress();
-        playCalibration();
+        playCalibrationIgnoringFailure();
         EXPECT_FALSE(targetPlayer.setDeviceCalled());
     }
 
@@ -912,7 +915,8 @@ namespace {
         playCalibrationDoesNotPlayIfTrialInProgress
     ) {
         setTrialInProgress();
-        assertTargetPlayerNotPlayedAfterPlayingCalibration();
+        playCalibrationIgnoringFailure();
+        assertTargetPlayerNotPlayed();
     }
 
     TEST_F(
@@ -929,6 +933,14 @@ namespace {
     ) {
         setTrialInProgress();
         assertPlayTrialThrowsRequestFailure("Trial in progress.");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationThrowsRequestFailureIfTrialInProgress
+    ) {
+        setTrialInProgress();
+        assertPlayCalibrationThrowsRequestFailure("Trial in progress.");
     }
 
     TEST_F(

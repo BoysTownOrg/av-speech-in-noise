@@ -245,7 +245,7 @@ namespace av_coordinate_response_measure {
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
         if (trialInProgress())
-            return;
+            throw RequestFailure{"Trial in progress."};
         
         playCalibration_(p);
     }
