@@ -667,12 +667,12 @@ namespace {
             maskerPlayer.setOutputAudioDeviceDescriptions(std::move(v));
         }
         
-        bool maskerPlayerFadedIn() {
-            return maskerPlayer.fadeInCalled();
-        }
-        
         void assertMaskerPlayerNotPlayed() {
             EXPECT_FALSE(maskerPlayerFadedIn());
+        }
+        
+        bool maskerPlayerFadedIn() {
+            return maskerPlayer.fadeInCalled();
         }
         
         void assertTargetPlayerNotPlayed() {
@@ -719,13 +719,25 @@ namespace {
         }
         
         void assertTargetVideoOnlyHidden() {
-            EXPECT_TRUE(targetPlayer.videoHidden());
-            EXPECT_FALSE(targetPlayer.videoShown());
+            EXPECT_TRUE(targetPlayerVideoHidden());
+            EXPECT_FALSE(targetPlayerVideoShown());
+        }
+        
+        bool targetPlayerVideoHidden() {
+            return targetPlayer.videoHidden();
+        }
+        
+        bool targetPlayerVideoShown() {
+            return targetPlayer.videoShown();
         }
         
         void assertTargetVideoOnlyShown() {
-            EXPECT_FALSE(targetPlayer.videoHidden());
-            EXPECT_TRUE(targetPlayer.videoShown());
+            assertTargetVideoNotHidden();
+            EXPECT_TRUE(targetPlayerVideoShown());
+        }
+        
+        void assertTargetVideoNotHidden() {
+            EXPECT_FALSE(targetPlayerVideoHidden());
         }
         
         void assertInitializeTestThrowsRequestFailure(std::string what) {
@@ -941,7 +953,7 @@ namespace {
         initializingTest.setAuditoryOnly();
         setTargetIsPlaying();
         initializeTest();
-        EXPECT_FALSE(targetPlayer.videoHidden());
+        assertTargetVideoNotHidden();
     }
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
