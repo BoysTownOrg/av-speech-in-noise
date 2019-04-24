@@ -144,6 +144,7 @@ namespace stimulus_players {
             expectedFadeOutComplete,
             false
         )) {
+            fadingOut_lowPriority = false;
             listener->fadeOutComplete();
             player->stop();
             return;
