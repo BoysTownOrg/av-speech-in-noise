@@ -176,7 +176,7 @@ namespace {
     };
     
     class ListenerThreadCallbackStub :
-        public stimulus_players::ListenerThreadCallback
+        public stimulus_players::Timer
     {
         EventListener *listener_{};
         bool callbackScheduled_{};
@@ -194,7 +194,7 @@ namespace {
         }
         
         void timerCallback() {
-            listener_->timerCallback();
+            listener_->callback();
         }
         
         void subscribe(EventListener * listener) override {

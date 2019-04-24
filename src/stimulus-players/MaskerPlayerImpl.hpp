@@ -30,14 +30,14 @@ namespace stimulus_players {
         virtual void seekSeconds(double) = 0;
     };
     
-    class ListenerThreadCallback {
+    class Timer {
     public:
         class EventListener {
         public:
             virtual ~EventListener() = default;
-            virtual void timerCallback() = 0;
+            virtual void callback() = 0;
         };
-        virtual ~ListenerThreadCallback() = default;
+        virtual ~Timer() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void scheduleCallbackAfterSeconds(double) = 0;
     };
@@ -45,7 +45,7 @@ namespace stimulus_players {
     class MaskerPlayerImpl :
         public av_coordinate_response_measure::MaskerPlayer,
         public AudioPlayer::EventListener,
-        public ListenerThreadCallback::EventListener
+        public Timer::EventListener
     {
         std::string filePath_{};
         std::atomic<double> levelScalar{1};
@@ -55,7 +55,7 @@ namespace stimulus_players {
         AudioPlayer *player;
         AudioReader *reader;
         MaskerPlayer::EventListener *listener{};
-        ListenerThreadCallback *listenerThreadCallback{};
+        Timer *timer{};
         bool fadingOut_realTime{};
         bool fadingIn_realTime{};
         bool fadingIn_lowPriority{};
@@ -65,10 +65,18 @@ namespace stimulus_players {
         std::atomic<bool> pleaseFadeOut{};
         std::atomic<bool> pleaseFadeIn{};
     public:
+        class AudioBufferFiller : public AudioPlayer::EventListener {
+            void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
+        };
+        
+        class TimerImpl : public Timer::EventListener {
+            void callback() override;
+        };
+        
         MaskerPlayerImpl(
             AudioPlayer *,
             AudioReader *,
-            ListenerThreadCallback *
+            Timer *
         );
         void subscribe(MaskerPlayer::EventListener *) override;
         void fadeIn() override;
@@ -85,7 +93,7 @@ namespace stimulus_players {
         double durationSeconds() override;
         void seekSeconds(double) override;
         double fadeTimeSeconds() override;
-        void timerCallback() override;
+        void callback() override;
     private:
         bool fading();
         std::vector<std::vector<float>> readAudio_();
