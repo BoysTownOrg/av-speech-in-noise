@@ -1227,14 +1227,6 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        testCompleteWhenTrackComplete
-    ) {
-        snrTrack.setComplete();
-        EXPECT_TRUE(model.testComplete());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile
     ) {
         playingCalibration.setFilePath("a");
@@ -1350,6 +1342,14 @@ namespace {
     ) {
         setOutputAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, model.audioDevices());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        testCompleteWhenTrackComplete
+    ) {
+        snrTrack.setComplete();
+        EXPECT_TRUE(model.testComplete());
     }
 }
 
