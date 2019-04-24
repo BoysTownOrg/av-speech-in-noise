@@ -766,6 +766,17 @@ namespace {
             }
         }
         
+        void initializeTestIgnoringFailure() {
+            try {
+                initializeTest();
+            } catch (
+                const av_coordinate_response_measure::
+                RecognitionTestModel::
+                RequestFailure &
+            ) {
+            }
+        }
+        
         template<typename T>
         void assertDevicePassedToPlayer(
             const T &player,
@@ -922,11 +933,19 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeTestThrowsRequestFailureIfTrialInProgress
+    ) {
+        setTrialInProgress();
+        assertInitializeTestThrowsRequestFailure("Trial in progress.");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestDoesNotLoadMaskerIfTrialInProgress
     ) {
         initializingTest.setMaskerFilePath("a");
         setTrialInProgress();
-        initializeTest();
+        initializeTestIgnoringFailure();
         assertEqual("", maskerPlayer.filePath());
     }
 
@@ -936,8 +955,16 @@ namespace {
     ) {
         initializingTest.setAuditoryOnly();
         setTrialInProgress();
-        initializeTest();
+        initializeTestIgnoringFailure();
         assertTargetVideoNotHidden();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialDoesNotAdvanceListIfTrialInProgress
+    ) {
+        setTrialInProgress();
+        assertListNotAdvancedAfterPlayingTrial();
     }
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
@@ -1045,14 +1072,6 @@ namespace {
         randomizer.setRandomFloat(1);
         playTrial();
         EXPECT_EQ(1, maskerPlayer.secondsSeeked());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialDoesNotAdvanceListIfTrialInProgress
-    ) {
-        setTrialInProgress();
-        assertListNotAdvancedAfterPlayingTrial();
     }
 
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {

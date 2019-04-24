@@ -30,7 +30,7 @@ namespace av_coordinate_response_measure {
     
     void RecognitionTestModel::initializeTest(const Test &p) {
         if (trialInProgress())
-            return;
+            throw RequestFailure{"Trial in progress."};
         
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
