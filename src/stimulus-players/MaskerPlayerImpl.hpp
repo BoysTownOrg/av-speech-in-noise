@@ -78,9 +78,11 @@ namespace stimulus_players {
         
         class MainThread {
             MaskerPlayerImpl *parent;
+            MaskerPlayer::EventListener *listener{};
         public:
             void setParent(MaskerPlayerImpl *);
             void callback();
+            void subscribe(MaskerPlayer::EventListener *);
         };
         
         MaskerPlayerImpl(

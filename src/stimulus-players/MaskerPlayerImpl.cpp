@@ -21,6 +21,7 @@ namespace stimulus_players {
 
     void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
         listener = e;
+        mainThread.subscribe(e);
     }
     
     double MaskerPlayerImpl::durationSeconds() {
@@ -270,6 +271,10 @@ namespace stimulus_players {
 
     void MaskerPlayerImpl::MainThread::setParent(MaskerPlayerImpl *p) {
         parent = p;
+    }
+    
+    void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
+        listener = e;
     }
 
     void MaskerPlayerImpl::AudioThread::setParent(MaskerPlayerImpl *p) {
