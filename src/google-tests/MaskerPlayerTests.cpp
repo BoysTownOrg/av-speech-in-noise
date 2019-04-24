@@ -626,6 +626,16 @@ namespace {
         assertCallbackNotScheduled();
     }
 
+    TEST_F(
+        MaskerPlayerTests,
+        fadeInWhileFadingOutDoesNotScheduleAdditionalCallback
+    ) {
+        fadeOut();
+        audioPlayer.clearCallbackCount();
+        fadeIn();
+        assertCallbackNotScheduled();
+    }
+
     TEST_F(MaskerPlayerTests, callbackSchedulesAdditionalCallback) {
         timerCallback();
         assertCallbackScheduled();

@@ -30,7 +30,7 @@ namespace stimulus_players {
     }
     
     void MaskerPlayerImpl::fadeIn() {
-        if (fadingIn_lowPriority)
+        if (fadingIn_lowPriority || fadingOut_lowPriority)
             return;
         
         fadingIn_lowPriority = true;
