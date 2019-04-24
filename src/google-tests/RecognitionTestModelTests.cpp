@@ -679,7 +679,7 @@ namespace {
             EXPECT_FALSE(targetList.nextCalled());
         }
         
-        void setMaskerIsPlaying() {
+        void setTrialInProgress() {
             maskerPlayer.setPlaying();
         }
         
@@ -891,9 +891,9 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialDoesNotChangeAudioDeviceWhenMaskerPlaying
+        playTrialDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
-        setMaskerIsPlaying();
+        setTrialInProgress();
         playTrial();
         EXPECT_FALSE(maskerPlayer.setDeviceCalled());
     }
@@ -902,13 +902,13 @@ namespace {
         RecognitionTestModelTests,
         playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
-        setMaskerIsPlaying();
+        setTrialInProgress();
         playCalibration();
         EXPECT_FALSE(targetPlayer.setDeviceCalled());
     }
 
-    TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfMaskerAlreadyPlaying) {
-        setMaskerIsPlaying();
+    TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfTrialInProgress) {
+        setTrialInProgress();
         assertMaskerPlayerNotPlayedAfterPlayingTrial();
     }
 
@@ -916,7 +916,7 @@ namespace {
         RecognitionTestModelTests,
         playCalibrationDoesNotPlayIfTrialInProgress
     ) {
-        setMaskerIsPlaying();
+        setTrialInProgress();
         assertTargetPlayerNotPlayedAfterPlayingCalibration();
     }
 
@@ -925,7 +925,7 @@ namespace {
         initializeTestDoesNotLoadMaskerIfTrialInProgress
     ) {
         initializingTest.setMaskerFilePath("a");
-        setMaskerIsPlaying();
+        setTrialInProgress();
         initializeTest();
         assertEqual("", maskerPlayer.filePath());
     }
@@ -935,7 +935,7 @@ namespace {
         initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
     ) {
         initializingTest.setAuditoryOnly();
-        setMaskerIsPlaying();
+        setTrialInProgress();
         initializeTest();
         assertTargetVideoNotHidden();
     }
@@ -1049,9 +1049,9 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialDoesNotAdvanceListIfMaskerIsPlaying
+        playTrialDoesNotAdvanceListIfTrialInProgress
     ) {
-        setMaskerIsPlaying();
+        setTrialInProgress();
         assertListNotAdvancedAfterPlayingTrial();
     }
 
