@@ -7,11 +7,10 @@ namespace stimulus_players {
         AudioReader *reader,
         Timer *timer
     ) :
-        player{player},
-        reader{reader},
-        timer{timer},
         audioThread{player},
-        mainThread{player, timer}
+        mainThread{player, timer},
+        player{player},
+        reader{reader}
     {
         player->subscribe(this);
         timer->subscribe(this);
@@ -48,10 +47,6 @@ namespace stimulus_players {
         parent->pleaseFadeIn.store(true);
         player->play();
         timer->scheduleCallbackAfterSeconds(0.1);
-    }
-    
-    bool MaskerPlayerImpl::fading() {
-        return fadingIn_lowPriority || fadingOut_lowPriority;
     }
     
     bool MaskerPlayerImpl::MainThread::fading() {

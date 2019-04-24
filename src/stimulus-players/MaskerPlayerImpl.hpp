@@ -121,21 +121,18 @@ namespace stimulus_players {
         std::vector<std::string> audioDeviceDescriptions_();
         int findDeviceIndex(const std::string &device);
         
+        AudioThread audioThread;
+        MainThread mainThread;
         std::string filePath_{};
         std::atomic<double> levelScalar{1};
         std::atomic<double> fadeInOutSeconds{};
         AudioPlayer *player;
         AudioReader *reader;
         MaskerPlayer::EventListener *listener{};
-        Timer *timer{};
-        bool fadingIn_lowPriority{};
-        bool fadingOut_lowPriority{};
         std::atomic<bool> fadeOutComplete{};
         std::atomic<bool> fadeInComplete{};
         std::atomic<bool> pleaseFadeOut{};
         std::atomic<bool> pleaseFadeIn{};
-        AudioThread audioThread;
-        MainThread mainThread;
     };
 }
 
