@@ -65,7 +65,11 @@ namespace stimulus_players {
         std::atomic<bool> pleaseFadeOut{};
         std::atomic<bool> pleaseFadeIn{};
     public:
-        MaskerPlayerImpl(AudioPlayer *, AudioReader *, ListenerThreadCallback * = {});
+        MaskerPlayerImpl(
+            AudioPlayer *,
+            AudioReader *,
+            ListenerThreadCallback *
+        );
         void subscribe(MaskerPlayer::EventListener *) override;
         void fadeIn() override;
         void fadeOut() override;

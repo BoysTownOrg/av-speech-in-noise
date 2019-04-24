@@ -399,6 +399,10 @@ namespace {
             fadeInToFullLevel();
             timerCallback();
         }
+        
+        void clearCallbackCount() {
+            listenerThreadCallback.clearCallbackCount();
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -610,7 +614,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeInTwiceDoesNotScheduleAdditionalCallback) {
         fadeIn();
-        listenerThreadCallback.clearCallbackCount();
+        clearCallbackCount();
         fadeIn();
         assertCallbackNotScheduled();
     }
@@ -622,7 +626,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeOutTwiceDoesNotScheduleAdditionalCallback) {
         fadeOut();
-        listenerThreadCallback.clearCallbackCount();
+        clearCallbackCount();
         fadeOut();
         assertCallbackNotScheduled();
     }
@@ -632,7 +636,7 @@ namespace {
         fadeOutWhileFadingInDoesNotScheduleAdditionalCallback
     ) {
         fadeIn();
-        listenerThreadCallback.clearCallbackCount();
+        clearCallbackCount();
         fadeOut();
         assertCallbackNotScheduled();
     }
@@ -642,7 +646,7 @@ namespace {
         fadeInWhileFadingOutDoesNotScheduleAdditionalCallback
     ) {
         fadeOut();
-        listenerThreadCallback.clearCallbackCount();
+        clearCallbackCount();
         fadeIn();
         assertCallbackNotScheduled();
     }
@@ -653,7 +657,7 @@ namespace {
     ) {
         fadeOutToSilence();
         timerCallback();
-        listenerThreadCallback.clearCallbackCount();
+        clearCallbackCount();
         fadeIn();
         assertCallbackScheduled();
     }
@@ -665,7 +669,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
         fadeInToFullLevel();
-        listenerThreadCallback.clearCallbackCount();
+        clearCallbackCount();
         
         timerCallback();
         assertCallbackNotScheduled();
@@ -674,7 +678,7 @@ namespace {
     TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
         fadeInCompletely();
         fadeOutToSilence();
-        listenerThreadCallback.clearCallbackCount();
+        clearCallbackCount();
         
         timerCallback();
         assertCallbackNotScheduled();
