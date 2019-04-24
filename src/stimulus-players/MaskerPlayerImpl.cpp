@@ -30,6 +30,10 @@ namespace stimulus_players {
     }
     
     void MaskerPlayerImpl::fadeIn() {
+        if (fadingIn_lowPriority)
+            return;
+        
+        fadingIn_lowPriority = true;
         pleaseFadeIn.store(true);
         player->play();
         player->scheduleCallbackAfterSeconds(0.1);
@@ -159,7 +163,7 @@ namespace stimulus_players {
     void MaskerPlayerImpl::prepareToFadeIn() {
         updateWindowLength();
         hannCounter = 0;
-        fadingIn = true;
+        fadingIn_realTime = true;
     }
     
     // real-time audio thread
@@ -178,7 +182,7 @@ namespace stimulus_players {
     void MaskerPlayerImpl::prepareToFadeOut() {
         updateWindowLength();
         hannCounter = halfWindowLength;
-        fadingOut = true;
+        fadingOut_realTime = true;
     }
 
     // real-time audio thread
@@ -224,31 +228,31 @@ namespace stimulus_players {
     void MaskerPlayerImpl::checkForFadeInComplete() {
         if (doneFadingIn()) {
             fadeInComplete.store(true);
-            fadingIn = false;
+            fadingIn_realTime = false;
         }
     }
     
     // real-time audio thread
     bool MaskerPlayerImpl::doneFadingIn() {
-        return fadingIn && hannCounter == halfWindowLength;
+        return fadingIn_realTime && hannCounter == halfWindowLength;
     }
     
     // real-time audio thread
     void MaskerPlayerImpl::checkForFadeOutComplete() {
         if (doneFadingOut()) {
             fadeOutComplete.store(true);
-            fadingOut = false;
+            fadingOut_realTime = false;
         }
     }
     
     // real-time audio thread
     bool MaskerPlayerImpl::doneFadingOut() {
-        return fadingOut && hannCounter == 2*halfWindowLength;
+        return fadingOut_realTime && hannCounter == 2*halfWindowLength;
     }
     
     // real-time audio thread
     void MaskerPlayerImpl::advanceCounterIfStillFading() {
-        if (fadingIn || fadingOut)
+        if (fadingIn_realTime || fadingOut_realTime)
             ++hannCounter;
     }
 }

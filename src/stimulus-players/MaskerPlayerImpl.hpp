@@ -44,8 +44,9 @@ namespace stimulus_players {
         AudioPlayer *player;
         AudioReader *reader;
         MaskerPlayer::EventListener *listener{};
-        bool fadingOut{};
-        bool fadingIn{};
+        bool fadingOut_realTime{};
+        bool fadingIn_realTime{};
+        bool fadingIn_lowPriority{};
         std::atomic<bool> fadeOutComplete{};
         std::atomic<bool> fadeInComplete{};
         std::atomic<bool> pleaseFadeOut{};
