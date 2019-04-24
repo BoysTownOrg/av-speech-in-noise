@@ -310,8 +310,8 @@ namespace {
     
     class OutputFileStub : public av_coordinate_response_measure::OutputFile {
         av_coordinate_response_measure::Trial trialWritten_{};
-        av_coordinate_response_measure::Test testWritten_{};
         LogString log_{};
+        const av_coordinate_response_measure::Test *testWritten_{};
         const av_coordinate_response_measure::Test *openNewFileParameters_{};
         bool throwOnOpen_{};
         bool headingWritten_{};
@@ -324,7 +324,7 @@ namespace {
             return headingWritten_;
         }
         
-        auto &testWritten() const {
+        auto testWritten() const {
             return testWritten_;
         }
         
@@ -361,7 +361,7 @@ namespace {
             const av_coordinate_response_measure::Test &test
         ) override {
             log_.insert("writeTest ");
-            testWritten_ = test;
+            testWritten_ = &test;
         }
         
         void close() override {
@@ -538,10 +538,6 @@ namespace {
     class InitializingTest : public UseCase {
         av_coordinate_response_measure::Test test_{};
     public:
-        void setTesterId(std::string s) {
-            test_.testerId = std::move(s);
-        }
-        
         void setTargetListDirectory(std::string s) {
             test_.targetListDirectory = std::move(s);
         }
@@ -947,11 +943,10 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestWritesTesterId
+        initializeTestWritesTestInformation
     ) {
-        initializingTest.setTesterId("a");
         initializeTest();
-        assertEqual("a", outputFile.testWritten().testerId);
+        EXPECT_EQ(outputFile.testWritten(), &initializingTest.test());
     }
 
     TEST_F(
