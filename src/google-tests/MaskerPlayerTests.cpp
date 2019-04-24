@@ -175,9 +175,7 @@ namespace {
         }
     };
     
-    class ListenerThreadCallbackStub :
-        public stimulus_players::Timer
-    {
+    class TimerStub : public stimulus_players::Timer {
         EventListener *listener_{};
         bool callbackScheduled_{};
     public:
@@ -193,7 +191,7 @@ namespace {
             callbackScheduled_ = false;
         }
         
-        void timerCallback() {
+        void callback() {
             listener_->callback();
         }
         
@@ -209,11 +207,11 @@ namespace {
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
         AudioReaderStub audioReader;
-        ListenerThreadCallbackStub listenerThreadCallback;
+        TimerStub timer;
         stimulus_players::MaskerPlayerImpl player{
             &audioPlayer,
             &audioReader,
-            &listenerThreadCallback
+            &timer
         };
         
         MaskerPlayerTests() {
@@ -298,7 +296,7 @@ namespace {
         }
         
         void timerCallback() {
-            listenerThreadCallback.timerCallback();
+            timer.callback();
         }
         
         void assertCallbackScheduled() {
@@ -306,7 +304,7 @@ namespace {
         }
         
         bool callbackScheduled() {
-            return listenerThreadCallback.callbackScheduled();
+            return timer.callbackScheduled();
         }
         
         void assertCallbackNotScheduled() {
@@ -417,7 +415,7 @@ namespace {
         }
         
         void clearCallbackCount() {
-            listenerThreadCallback.clearCallbackCount();
+            timer.clearCallbackCount();
         }
     };
 
