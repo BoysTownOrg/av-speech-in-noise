@@ -756,8 +756,12 @@ namespace {
         }
         
         void playTrialIgnoringFailure() {
+            runIgnoringFailure(playingTrial);
+        }
+        
+        void runIgnoringFailure(UseCase &useCase) {
             try {
-                playTrial();
+                run(useCase);
             } catch (
                 const av_coordinate_response_measure::
                 RecognitionTestModel::
@@ -767,14 +771,7 @@ namespace {
         }
         
         void initializeTestIgnoringFailure() {
-            try {
-                initializeTest();
-            } catch (
-                const av_coordinate_response_measure::
-                RecognitionTestModel::
-                RequestFailure &
-            ) {
-            }
+            runIgnoringFailure(initializingTest);
         }
         
         template<typename T>
