@@ -934,6 +934,16 @@ namespace {
         assertEqual("", maskerPlayer.filePath());
     }
 
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButCalibrating
+    ) {
+        initializingTest.setAuditoryOnly();
+        setTargetIsPlaying();
+        initializeTest();
+        EXPECT_FALSE(targetPlayer.videoHidden());
+    }
+
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
         playTrial();
         EXPECT_TRUE(maskerPlayerFadedIn());
