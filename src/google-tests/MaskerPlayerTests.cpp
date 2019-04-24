@@ -493,6 +493,7 @@ namespace {
         // halfWindowLength is determined by fade time and sample rate...
         // but must be divisible by framesPerBuffer.
         fadeInToFullLevel();
+        timerCallback();
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
         auto halfWindowLength = 3 * 5 + 1;
@@ -508,6 +509,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
         fadeInToFullLevel();
+        timerCallback();
         player.setFadeInOutSeconds(2);
         audioPlayer.setSampleRateHz(3);
         auto halfWindowLength = 2 * 3 + 1;
@@ -521,6 +523,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {
         fadeInToFullLevel();
+        timerCallback();
         fadeOutToSilence();
         
         leftChannel = { 1, 2, 3 };
@@ -550,6 +553,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
         fadeInToFullLevel();
+        timerCallback();
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
@@ -574,6 +578,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
         fadeInToFullLevel();
+        timerCallback();
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
@@ -608,6 +613,16 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeOutTwiceDoesNotScheduleAdditionalCallback) {
         fadeOut();
+        audioPlayer.clearCallbackCount();
+        fadeOut();
+        assertCallbackNotScheduled();
+    }
+
+    TEST_F(
+        MaskerPlayerTests,
+        fadeOutWhileFadingInDoesNotScheduleAdditionalCallback
+    ) {
+        fadeIn();
         audioPlayer.clearCallbackCount();
         fadeOut();
         assertCallbackNotScheduled();
