@@ -237,7 +237,7 @@ namespace stimulus_players {
     }
 
     int MaskerPlayerImpl::AudioThread::levelTransitionSamples() {
-        return sharedAtomics->fadeInOutSeconds * player->sampleRateHz();
+        return sharedAtomics->fadeInOutSeconds.load() * player->sampleRateHz();
     }
     
     void MaskerPlayerImpl::AudioThread::scaleAudio(

@@ -417,6 +417,10 @@ namespace {
         void clearCallbackCount() {
             timer.clearCallbackCount();
         }
+        
+        void setAudioDevice(std::string s) {
+            player.setAudioDevice(std::move(s));
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -700,14 +704,14 @@ namespace {
 
     TEST_F(MaskerPlayerTests, setAudioDeviceFindsIndex) {
         setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
-        player.setAudioDevice("second");
+        setAudioDevice("second");
         EXPECT_EQ(2, audioPlayer.deviceIndex());
     }
 
     TEST_F(MaskerPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
         setAudioDeviceDescriptions({"zeroth", "first", "second"});
         try {
-            player.setAudioDevice("third");
+            setAudioDevice("third");
             FAIL() << "Expected recognition_test::InvalidAudioDevice";
         } catch(const av_coordinate_response_measure::InvalidAudioDevice &) {
         
