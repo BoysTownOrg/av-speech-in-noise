@@ -149,6 +149,7 @@ namespace av_coordinate_response_measure {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void throwIfTrialInProgress();
         void writeTrial(const SubjectResponse &);
         std::string currentTarget();
         bool correct(const SubjectResponse &);

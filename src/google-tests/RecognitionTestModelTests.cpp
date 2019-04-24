@@ -838,6 +838,21 @@ namespace {
         auto blueColor() {
             return av_coordinate_response_measure::Color::blue;
         }
+        
+        void playTrialWhenTrialAlreadyInProgressIgnoringFailure() {
+            setTrialInProgress();
+            playTrialIgnoringFailure();
+        }
+        
+        void playCalibrationWhenTrialAlreadyInProgressIgnoringFailure() {
+            setTrialInProgress();
+            playCalibrationIgnoringFailure();
+        }
+        
+        void initializeTestWhenTrialAlreadyInProgressIgnoringFailure() {
+            setTrialInProgress();
+            initializeTestIgnoringFailure();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -890,8 +905,7 @@ namespace {
         RecognitionTestModelTests,
         playTrialDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
-        setTrialInProgress();
-        playTrialIgnoringFailure();
+        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
         EXPECT_FALSE(maskerPlayer.setDeviceCalled());
     }
 
@@ -899,14 +913,12 @@ namespace {
         RecognitionTestModelTests,
         playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
-        setTrialInProgress();
-        playCalibrationIgnoringFailure();
+        playCalibrationWhenTrialAlreadyInProgressIgnoringFailure();
         EXPECT_FALSE(targetPlayer.setDeviceCalled());
     }
 
     TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfTrialInProgress) {
-        setTrialInProgress();
-        playTrialIgnoringFailure();
+        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
         assertMaskerPlayerNotPlayed();
     }
 
@@ -914,8 +926,7 @@ namespace {
         RecognitionTestModelTests,
         playCalibrationDoesNotPlayIfTrialInProgress
     ) {
-        setTrialInProgress();
-        playCalibrationIgnoringFailure();
+        playCalibrationWhenTrialAlreadyInProgressIgnoringFailure();
         assertTargetPlayerNotPlayed();
     }
 
@@ -948,8 +959,7 @@ namespace {
         initializeTestDoesNotLoadMaskerIfTrialInProgress
     ) {
         initializingTest.setMaskerFilePath("a");
-        setTrialInProgress();
-        initializeTestIgnoringFailure();
+        initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
         assertEqual("", maskerPlayer.filePath());
     }
 
@@ -958,8 +968,7 @@ namespace {
         initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
     ) {
         initializingTest.setAuditoryOnly();
-        setTrialInProgress();
-        initializeTestIgnoringFailure();
+        initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
         assertTargetVideoNotHidden();
     }
 

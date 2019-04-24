@@ -29,8 +29,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::initializeTest(const Test &p) {
-        if (trialInProgress())
-            throw RequestFailure{"Trial in progress."};
+        throwIfTrialInProgress();
         
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
@@ -40,6 +39,11 @@ namespace av_coordinate_response_measure {
         prepareMasker(p);
         prepareTargets(p);
         prepareVideo(p);
+    }
+    
+    void RecognitionTestModel::throwIfTrialInProgress() {
+        if (trialInProgress())
+            throw RequestFailure{"Trial in progress."};
     }
     
     bool RecognitionTestModel::trialInProgress() {
@@ -105,8 +109,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
-        if (trialInProgress())
-            throw RequestFailure{"Trial in progress."};
+        throwIfTrialInProgress();
         
         if (noMoreTrials())
             return;
@@ -244,8 +247,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
-        if (trialInProgress())
-            throw RequestFailure{"Trial in progress."};
+        throwIfTrialInProgress();
         
         playCalibration_(p);
     }
