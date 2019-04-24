@@ -924,6 +924,16 @@ namespace {
         assertTargetPlayerNotPlayedAfterPlayingCalibration();
     }
 
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestDoesNotLoadMaskerIfTrialInProgress
+    ) {
+        initializingTest.setMaskerFilePath("a");
+        setMaskerIsPlaying();
+        initializeTest();
+        assertEqual("", maskerPlayer.filePath());
+    }
+
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
         playTrial();
         EXPECT_TRUE(maskerPlayerFadedIn());
