@@ -29,7 +29,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::initializeTest(const Test &p) {
-        if (playing())
+        if (trialInProgress())
             return;
         
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;

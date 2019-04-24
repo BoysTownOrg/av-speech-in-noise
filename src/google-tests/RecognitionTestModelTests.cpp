@@ -171,10 +171,6 @@ namespace {
             return log_;
         }
         
-        void setPlaying() {
-            playing_ = true;
-        }
-        
         auto setDeviceCalled() const {
             return setDeviceCalled_;
         }
@@ -687,10 +683,6 @@ namespace {
             maskerPlayer.setPlaying();
         }
         
-        void setTargetIsPlaying() {
-            targetPlayer.setPlaying();
-        }
-        
         void assertMaskerPlayerNotPlayedAfterPlayingTrial() {
             playTrial();
             assertMaskerPlayerNotPlayed();
@@ -940,10 +932,10 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButCalibrating
+        initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
     ) {
         initializingTest.setAuditoryOnly();
-        setTargetIsPlaying();
+        setMaskerIsPlaying();
         initializeTest();
         assertTargetVideoNotHidden();
     }
