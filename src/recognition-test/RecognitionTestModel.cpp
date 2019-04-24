@@ -249,7 +249,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
-        if (playing())
+        if (trialInProgress())
             return;
         
         playCalibration_(p);

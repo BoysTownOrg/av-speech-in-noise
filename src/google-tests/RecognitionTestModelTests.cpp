@@ -908,9 +908,9 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playCalibrationDoesNotChangeAudioDeviceWhenTargetPlaying
+        playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
-        setTargetIsPlaying();
+        setMaskerIsPlaying();
         playCalibration();
         EXPECT_FALSE(targetPlayer.setDeviceCalled());
     }
@@ -918,14 +918,6 @@ namespace {
     TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfMaskerAlreadyPlaying) {
         setMaskerIsPlaying();
         assertMaskerPlayerNotPlayedAfterPlayingTrial();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationDoesNotPlayIfTargetAlreadyPlaying
-    ) {
-        setTargetIsPlaying();
-        assertTargetPlayerNotPlayedAfterPlayingCalibration();
     }
 
     TEST_F(
