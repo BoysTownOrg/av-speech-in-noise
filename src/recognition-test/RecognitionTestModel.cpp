@@ -29,7 +29,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::initializeTest(const Test &p) {
-        if (trialInProgress() || targetPlayer->playing())
+        if (trialInProgress() || calibrating())
             return;
         
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
@@ -40,6 +40,14 @@ namespace av_coordinate_response_measure {
         prepareMasker(p);
         prepareTargets(p);
         prepareVideo(p);
+    }
+    
+    bool RecognitionTestModel::trialInProgress() {
+        return maskerPlayer->playing();
+    }
+    
+    bool RecognitionTestModel::calibrating() {
+        return targetPlayer->playing() && !trialInProgress();
     }
     
     void RecognitionTestModel::prepareSnrTrack(const Test &p) {
@@ -110,10 +118,6 @@ namespace av_coordinate_response_measure {
     
     bool RecognitionTestModel::noMoreTrials() {
         return snrTrack->complete();
-    }
-    
-    bool RecognitionTestModel::trialInProgress() {
-        return maskerPlayer->playing();
     }
     
     void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
@@ -241,7 +245,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
-        if (targetPlayer->playing() || trialInProgress())
+        if (calibrating() || trialInProgress())
             return;
         
         playCalibration_(p);
