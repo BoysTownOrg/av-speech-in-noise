@@ -40,6 +40,10 @@ namespace stimulus_players {
     }
 
     void MaskerPlayerImpl::fadeOut() {
+        if (fadingOut_lowPriority)
+            return;
+        
+        fadingOut_lowPriority = true;
         pleaseFadeOut.store(true);
         player->scheduleCallbackAfterSeconds(0.1);
     }

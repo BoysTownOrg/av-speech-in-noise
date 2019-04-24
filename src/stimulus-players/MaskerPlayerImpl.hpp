@@ -47,6 +47,7 @@ namespace stimulus_players {
         bool fadingOut_realTime{};
         bool fadingIn_realTime{};
         bool fadingIn_lowPriority{};
+        bool fadingOut_lowPriority{};
         std::atomic<bool> fadeOutComplete{};
         std::atomic<bool> fadeInComplete{};
         std::atomic<bool> pleaseFadeOut{};
