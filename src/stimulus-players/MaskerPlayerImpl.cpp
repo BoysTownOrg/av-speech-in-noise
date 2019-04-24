@@ -10,8 +10,8 @@ namespace stimulus_players {
         player{player},
         reader{reader},
         timer{timer},
-        audioThread{player}
-    
+        audioThread{player},
+        mainThread{player, timer}
     {
         player->subscribe(this);
         timer->subscribe(this);
@@ -37,11 +37,15 @@ namespace stimulus_players {
     }
     
     void MaskerPlayerImpl::fadeIn() {
+        mainThread.fadeIn();
+    }
+    
+    void MaskerPlayerImpl::MainThread::fadeIn() {
         if (fading())
             return;
         
         fadingIn_lowPriority = true;
-        pleaseFadeIn.store(true);
+        parent->pleaseFadeIn.store(true);
         player->play();
         timer->scheduleCallbackAfterSeconds(0.1);
     }
@@ -49,13 +53,21 @@ namespace stimulus_players {
     bool MaskerPlayerImpl::fading() {
         return fadingIn_lowPriority || fadingOut_lowPriority;
     }
+    
+    bool MaskerPlayerImpl::MainThread::fading() {
+        return fadingIn_lowPriority || fadingOut_lowPriority;
+    }
 
     void MaskerPlayerImpl::fadeOut() {
+        mainThread.fadeOut();
+    }
+
+    void MaskerPlayerImpl::MainThread::fadeOut() {
         if (fading())
             return;
         
         fadingOut_lowPriority = true;
-        pleaseFadeOut.store(true);
+        parent->pleaseFadeOut.store(true);
         timer->scheduleCallbackAfterSeconds(0.1);
     }
 
@@ -136,8 +148,12 @@ namespace stimulus_players {
     }
     
     void MaskerPlayerImpl::callback() {
+        mainThread.callback();
+    }
+
+    void MaskerPlayerImpl::MainThread::callback() {
         auto expectedFadeInComplete = true;
-        if (fadeInComplete.compare_exchange_strong(
+        if (parent->fadeInComplete.compare_exchange_strong(
             expectedFadeInComplete,
             false
         )) {
@@ -147,7 +163,7 @@ namespace stimulus_players {
         }
         
         auto expectedFadeOutComplete = true;
-        if (fadeOutComplete.compare_exchange_strong(
+        if (parent->fadeOutComplete.compare_exchange_strong(
             expectedFadeOutComplete,
             false
         )) {
@@ -158,10 +174,6 @@ namespace stimulus_players {
         }
         
         timer->scheduleCallbackAfterSeconds(0.1);
-    }
-
-    void MaskerPlayerImpl::MainThread::callback() {
-        ;
     }
     
     // real-time audio thread
@@ -276,6 +288,13 @@ namespace stimulus_players {
     void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
         listener = e;
     }
+    
+    MaskerPlayerImpl::MainThread::MainThread(
+        AudioPlayer *player,
+        Timer *timer
+    ) :
+        player{player},
+        timer{timer} {}
 
     void MaskerPlayerImpl::AudioThread::setParent(MaskerPlayerImpl *p) {
         sharedState = p;

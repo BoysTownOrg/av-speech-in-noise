@@ -78,11 +78,20 @@ namespace stimulus_players {
         
         class MainThread {
             MaskerPlayerImpl *parent;
+            AudioPlayer *player;
             MaskerPlayer::EventListener *listener{};
+            Timer *timer;
+            bool fadingIn_lowPriority{};
+            bool fadingOut_lowPriority{};
         public:
+            MainThread(AudioPlayer *, Timer *);
             void setParent(MaskerPlayerImpl *);
             void callback();
             void subscribe(MaskerPlayer::EventListener *);
+            void fadeIn();
+            void fadeOut();
+        private:
+            bool fading();
         };
         
         MaskerPlayerImpl(
@@ -126,7 +135,7 @@ namespace stimulus_players {
         std::atomic<bool> pleaseFadeOut{};
         std::atomic<bool> pleaseFadeIn{};
         AudioThread audioThread;
-        MainThread mainThread{};
+        MainThread mainThread;
     };
 }
 
