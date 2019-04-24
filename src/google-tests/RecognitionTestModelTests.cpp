@@ -311,8 +311,8 @@ namespace {
     class OutputFileStub : public av_coordinate_response_measure::OutputFile {
         av_coordinate_response_measure::Trial trialWritten_{};
         av_coordinate_response_measure::Test testWritten_{};
-        av_coordinate_response_measure::Test newFileParameters_{};
         LogString log_{};
+        const av_coordinate_response_measure::Test *openNewFileParameters_{};
         bool throwOnOpen_{};
         bool headingWritten_{};
     public:
@@ -343,9 +343,13 @@ namespace {
             const av_coordinate_response_measure::Test &p
         ) override {
             log_.insert("openNewFile ");
-            newFileParameters_ = p;
+            openNewFileParameters_ = &p;
             if (throwOnOpen_)
                 throw OpenFailure{};
+        }
+        
+        auto openNewFileParameters() const {
+            return openNewFileParameters_;
         }
         
         void writeTrialHeading() override {
@@ -362,10 +366,6 @@ namespace {
         
         void close() override {
             log_.insert("close ");
-        }
-        
-        auto &newFileParameters() const {
-            return newFileParameters_;
         }
         
         void throwOnOpen() {
@@ -536,48 +536,52 @@ namespace {
     };
     
     class InitializingTest : public UseCase {
-        av_coordinate_response_measure::Test test{};
+        av_coordinate_response_measure::Test test_{};
     public:
         void setTesterId(std::string s) {
-            test.testerId = std::move(s);
+            test_.testerId = std::move(s);
         }
         
         void setTargetListDirectory(std::string s) {
-            test.targetListDirectory = std::move(s);
+            test_.targetListDirectory = std::move(s);
         }
         
         void setMaskerFilePath(std::string s) {
-            test.maskerFilePath = std::move(s);
+            test_.maskerFilePath = std::move(s);
         }
         
         void run(av_coordinate_response_measure::RecognitionTestModel &m) override {
-            m.initializeTest(test);
+            m.initializeTest(test_);
         }
         
         void setAudioVisual() {
-            test.condition =
+            test_.condition =
                 av_coordinate_response_measure::Condition::audioVisual;
         }
         
         void setAuditoryOnly() {
-            test.condition =
+            test_.condition =
                 av_coordinate_response_measure::Condition::auditoryOnly;
         }
         
         void setMaskerLevel_dB_SPL(int x) {
-            test.maskerLevel_dB_SPL = x;
+            test_.maskerLevel_dB_SPL = x;
         }
         
         void setStartingSnr_dB(int x) {
-            test.startingSnr_dB = x;
+            test_.startingSnr_dB = x;
         }
         
         void setFullScaleLevel_dB_SPL(int x) {
-            test.fullScaleLevel_dB_SPL = x;
+            test_.fullScaleLevel_dB_SPL = x;
         }
         
         auto targetLevelRule() const {
-            return test.targetLevelRule;
+            return test_.targetLevelRule;
+        }
+        
+        auto &test() const {
+            return test_;
         }
     };
     
@@ -655,6 +659,18 @@ namespace {
             run(initializingTest);
         }
         
+        void run(UseCase &useCase) {
+            useCase.run(model);
+        }
+        
+        void playTrial() {
+            run(playingTrial);
+        }
+        
+        void playCalibration() {
+            run(playingCalibration);
+        }
+        
         void submitResponse() {
             model.submitResponse(subjectResponse);
         }
@@ -681,18 +697,6 @@ namespace {
         
         void setTrialInProgress() {
             maskerPlayer.setPlaying();
-        }
-        
-        void playTrial() {
-            run(playingTrial);
-        }
-        
-        void run(UseCase &useCase) {
-            useCase.run(model);
-        }
-        
-        void playCalibration() {
-            run(playingCalibration);
         }
         
         void assertTargetVideoOnlyHidden() {
@@ -748,12 +752,8 @@ namespace {
             }
         }
         
-        void playTrialIgnoringFailure() {
-            runIgnoringFailure(playingTrial);
-        }
-        
-        void playCalibrationIgnoringFailure() {
-            runIgnoringFailure(playingCalibration);
+        void initializeTestIgnoringFailure() {
+            runIgnoringFailure(initializingTest);
         }
         
         void runIgnoringFailure(UseCase &useCase) {
@@ -767,8 +767,12 @@ namespace {
             }
         }
         
-        void initializeTestIgnoringFailure() {
-            runIgnoringFailure(initializingTest);
+        void playTrialIgnoringFailure() {
+            runIgnoringFailure(playingTrial);
+        }
+        
+        void playCalibrationIgnoringFailure() {
+            runIgnoringFailure(playingCalibration);
         }
         
         template<typename T>
@@ -853,6 +857,10 @@ namespace {
             setTrialInProgress();
             initializeTestIgnoringFailure();
         }
+        
+        void assertTargetFilePathEquals(std::string what) {
+            assertEqual(std::move(what), targetFilePath());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -876,109 +884,6 @@ namespace {
 
     TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToMaskerPlayer) {
         assertDevicePassedToMaskerPlayer(playingTrial);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialWithInvalidAudioDeviceThrowsRequestFailure
-    ) {
-        assertThrowsRequestFailureWhenInvalidAudioDevice(playingTrial);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationWithInvalidAudioDeviceThrowsRequestFailure
-    ) {
-        assertThrowsRequestFailureWhenInvalidAudioDevice(playingCalibration);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialWithInvalidAudioDeviceDoesNotAdvanceTarget
-    ) {
-        throwInvalidAudioDeviceWhenSet();
-        playTrialIgnoringFailure();
-        assertListNotAdvanced();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialDoesNotChangeAudioDeviceWhenTrialInProgress
-    ) {
-        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
-        EXPECT_FALSE(maskerPlayer.setDeviceCalled());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress
-    ) {
-        playCalibrationWhenTrialAlreadyInProgressIgnoringFailure();
-        EXPECT_FALSE(targetPlayer.setDeviceCalled());
-    }
-
-    TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfTrialInProgress) {
-        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
-        assertMaskerPlayerNotPlayed();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationDoesNotPlayIfTrialInProgress
-    ) {
-        playCalibrationWhenTrialAlreadyInProgressIgnoringFailure();
-        assertTargetPlayerNotPlayed();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestThrowsRequestFailureIfTrialInProgress
-    ) {
-        setTrialInProgress();
-        assertInitializeTestThrowsRequestFailure("Trial in progress.");
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialThrowsRequestFailureIfTrialInProgress
-    ) {
-        setTrialInProgress();
-        assertPlayTrialThrowsRequestFailure("Trial in progress.");
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationThrowsRequestFailureIfTrialInProgress
-    ) {
-        setTrialInProgress();
-        assertPlayCalibrationThrowsRequestFailure("Trial in progress.");
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestDoesNotLoadMaskerIfTrialInProgress
-    ) {
-        initializingTest.setMaskerFilePath("a");
-        initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
-        assertEqual("", maskerPlayer.filePath());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
-    ) {
-        initializingTest.setAuditoryOnly();
-        initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
-        assertTargetVideoNotHidden();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialDoesNotAdvanceListIfTrialInProgress
-    ) {
-        setTrialInProgress();
-        playTrialIgnoringFailure();
-        assertListNotAdvanced();
     }
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
@@ -1011,7 +916,7 @@ namespace {
     ) {
         targetList.setNext("a");
         playTrial();
-        assertEqual("a", targetFilePath());
+        assertTargetFilePathEquals("a");
     }
 
     TEST_F(
@@ -1020,7 +925,7 @@ namespace {
     ) {
         playingCalibration.setFilePath("a");
         playCalibration();
-        assertEqual("a", targetFilePath());
+        assertTargetFilePathEquals("a");
     }
 
     TEST_F(
@@ -1036,14 +941,13 @@ namespace {
         RecognitionTestModelTests,
         initializeTestOpensNewOutputFile
     ) {
-        initializingTest.setTesterId("a");
         initializeTest();
-        assertEqual("a", outputFile.newFileParameters().testerId);
+        EXPECT_EQ(outputFile.openNewFileParameters(), &initializingTest.test());
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestWritesTest
+        initializeTestWritesTesterId
     ) {
         initializingTest.setTesterId("a");
         initializeTest();
@@ -1337,6 +1241,108 @@ namespace {
         playingCalibration.setFilePath("a");
         targetPlayer.throwInvalidAudioFileOnRms();
         assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialWithInvalidAudioDeviceThrowsRequestFailure
+    ) {
+        assertThrowsRequestFailureWhenInvalidAudioDevice(playingTrial);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationWithInvalidAudioDeviceThrowsRequestFailure
+    ) {
+        assertThrowsRequestFailureWhenInvalidAudioDevice(playingCalibration);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialWithInvalidAudioDeviceDoesNotAdvanceTarget
+    ) {
+        throwInvalidAudioDeviceWhenSet();
+        playTrialIgnoringFailure();
+        assertListNotAdvanced();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialDoesNotChangeAudioDeviceWhenTrialInProgress
+    ) {
+        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
+        EXPECT_FALSE(maskerPlayer.setDeviceCalled());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress
+    ) {
+        playCalibrationWhenTrialAlreadyInProgressIgnoringFailure();
+        EXPECT_FALSE(targetPlayer.setDeviceCalled());
+    }
+
+    TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfTrialInProgress) {
+        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
+        assertMaskerPlayerNotPlayed();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationDoesNotPlayIfTrialInProgress
+    ) {
+        playCalibrationWhenTrialAlreadyInProgressIgnoringFailure();
+        assertTargetPlayerNotPlayed();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestThrowsRequestFailureIfTrialInProgress
+    ) {
+        setTrialInProgress();
+        assertInitializeTestThrowsRequestFailure("Trial in progress.");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialThrowsRequestFailureIfTrialInProgress
+    ) {
+        setTrialInProgress();
+        assertPlayTrialThrowsRequestFailure("Trial in progress.");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationThrowsRequestFailureIfTrialInProgress
+    ) {
+        setTrialInProgress();
+        assertPlayCalibrationThrowsRequestFailure("Trial in progress.");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestDoesNotLoadMaskerIfTrialInProgress
+    ) {
+        initializingTest.setMaskerFilePath("a");
+        initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
+        assertEqual("", maskerPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
+    ) {
+        initializingTest.setAuditoryOnly();
+        initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
+        assertTargetVideoNotHidden();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialDoesNotAdvanceListIfTrialInProgress
+    ) {
+        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
+        assertListNotAdvanced();
     }
 
     TEST_F(
