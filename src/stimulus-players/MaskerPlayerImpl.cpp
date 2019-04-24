@@ -9,7 +9,8 @@ namespace stimulus_players {
     ) :
         player{player},
         reader{reader},
-        timer{timer}
+        timer{timer},
+        audioThread{player}
     
     {
         player->subscribe(this);
@@ -157,6 +158,10 @@ namespace stimulus_players {
         
         timer->scheduleCallbackAfterSeconds(0.1);
     }
+
+    void MaskerPlayerImpl::MainThread::callback() {
+        ;
+    }
     
     // real-time audio thread
     void MaskerPlayerImpl::fillAudioBuffer(
@@ -175,7 +180,7 @@ namespace stimulus_players {
     
     void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
         auto expected = true;
-        if (parent->pleaseFadeIn.compare_exchange_strong(expected, false))
+        if (sharedState->pleaseFadeIn.compare_exchange_strong(expected, false))
             prepareToFadeIn();
     }
     
@@ -191,7 +196,7 @@ namespace stimulus_players {
     
     void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
         auto expected = true;
-        if (parent->pleaseFadeOut.compare_exchange_strong(expected, false))
+        if (sharedState->pleaseFadeOut.compare_exchange_strong(expected, false))
             prepareToFadeOut();
     }
     
@@ -202,7 +207,7 @@ namespace stimulus_players {
     }
 
     int MaskerPlayerImpl::AudioThread::levelTransitionSamples() {
-        return parent->fadeInOutSeconds * parent->player->sampleRateHz();
+        return sharedState->fadeInOutSeconds * player->sampleRateHz();
     }
     
     void MaskerPlayerImpl::AudioThread::scaleAudio(
@@ -212,7 +217,7 @@ namespace stimulus_players {
             return;
         
         auto firstChannel = audio.front();
-        auto levelScalar_ = parent->levelScalar.load();
+        auto levelScalar_ = sharedState->levelScalar.load();
         for (int i = 0; i < firstChannel.size(); ++i) {
             auto fadeScalar_ = fadeScalar();
             updateFadeState();
@@ -238,7 +243,7 @@ namespace stimulus_players {
     
     void MaskerPlayerImpl::AudioThread::checkForFadeInComplete() {
         if (doneFadingIn()) {
-            parent->fadeInComplete.store(true);
+            sharedState->fadeInComplete.store(true);
             fadingIn = false;
         }
     }
@@ -253,7 +258,7 @@ namespace stimulus_players {
     
     void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
         if (doneFadingOut()) {
-            parent->fadeOutComplete.store(true);
+            sharedState->fadeOutComplete.store(true);
             fadingOut = false;
         }
     }
@@ -267,11 +272,11 @@ namespace stimulus_players {
         parent = p;
     }
 
-    void MaskerPlayerImpl::MainThread::callback() {
-        ;
-    }
-
     void MaskerPlayerImpl::AudioThread::setParent(MaskerPlayerImpl *p) {
-        parent = p;
+        sharedState = p;
     }
+    
+    MaskerPlayerImpl::AudioThread::AudioThread(AudioPlayer *player) :
+        player{player}
+    {}
 }

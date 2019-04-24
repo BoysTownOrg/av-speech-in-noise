@@ -51,12 +51,15 @@ namespace stimulus_players {
         class AudioThread {
             int hannCounter{};
             int halfWindowLength{};
-            MaskerPlayerImpl *parent;
+            MaskerPlayerImpl *sharedState;
+            AudioPlayer *player;
             bool fadingOut{};
             bool fadingIn{};
         public:
+            AudioThread(AudioPlayer *);
             void setParent(MaskerPlayerImpl *);
             void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
+        private:
             void updateWindowLength();
             void prepareToFadeIn();
             void checkForFadeIn();
@@ -120,7 +123,7 @@ namespace stimulus_players {
         std::atomic<bool> fadeInComplete{};
         std::atomic<bool> pleaseFadeOut{};
         std::atomic<bool> pleaseFadeIn{};
-        AudioThread audioThread{};
+        AudioThread audioThread;
         MainThread mainThread{};
     };
 }
