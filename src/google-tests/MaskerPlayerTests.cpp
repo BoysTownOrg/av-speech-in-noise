@@ -439,6 +439,12 @@ namespace {
         void assertFadeOutDoesNotScheduleAdditionalCallback() {
             assertCallDoesNotScheduleAdditionalCallback(&MaskerPlayerTests::fadeOut);
         }
+        
+        void assertFadeInSchedulesCallback() {
+            clearCallbackCount();
+            fadeIn();
+            assertCallbackScheduled();
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -598,8 +604,7 @@ namespace {
     TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeIn) {
         fadeInCompletely();
         EXPECT_EQ(1, listener.fadeInCompletions());
-        fillAudioBufferMono();
-        timerCallback();
+        callbackAfterMonoFill();
         EXPECT_EQ(1, listener.fadeInCompletions());
     }
 
@@ -621,8 +626,7 @@ namespace {
         fadeOutToSilence();
         timerCallback();
         EXPECT_EQ(1, listener.fadeOutCompletions());
-        fillAudioBufferMono();
-        timerCallback();
+        callbackAfterMonoFill();
         EXPECT_EQ(1, listener.fadeOutCompletions());
     }
 
@@ -634,18 +638,15 @@ namespace {
         fadeOut();
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
-            fillAudioBufferMono();
-            timerCallback();
+            callbackAfterMonoFill();
             EXPECT_FALSE(audioPlayer.stopped());
         }
-        fillAudioBufferMono();
-        timerCallback();
+        callbackAfterMonoFill();
         EXPECT_TRUE(audioPlayer.stopped());
     }
 
     TEST_F(MaskerPlayerTests, fadeInSchedulesCallback) {
-        fadeIn();
-        assertCallbackScheduled();
+        assertFadeInSchedulesCallback();
     }
 
     TEST_F(MaskerPlayerTests, fadeInTwiceDoesNotScheduleAdditionalCallback) {
@@ -685,9 +686,7 @@ namespace {
     ) {
         fadeOutToSilence();
         timerCallback();
-        clearCallbackCount();
-        fadeIn();
-        assertCallbackScheduled();
+        assertFadeInSchedulesCallback();
     }
 
     TEST_F(MaskerPlayerTests, callbackSchedulesAdditionalCallback) {
