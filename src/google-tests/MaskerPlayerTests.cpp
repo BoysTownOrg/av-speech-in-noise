@@ -421,6 +421,12 @@ namespace {
         void setAudioDevice(std::string s) {
             player.setAudioDevice(std::move(s));
         }
+        
+        void assertTimerCallbackDoesNotScheduleAdditionalCallback() {
+            clearCallbackCount();
+            timerCallback();
+            assertCallbackNotScheduled();
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -687,19 +693,13 @@ namespace {
 
     TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
         fadeInToFullLevel();
-        clearCallbackCount();
-        
-        timerCallback();
-        assertCallbackNotScheduled();
+        assertTimerCallbackDoesNotScheduleAdditionalCallback();
     }
 
     TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
         fadeInCompletely();
         fadeOutToSilence();
-        clearCallbackCount();
-        
-        timerCallback();
-        assertCallbackNotScheduled();
+        assertTimerCallbackDoesNotScheduleAdditionalCallback();
     }
 
     TEST_F(MaskerPlayerTests, setAudioDeviceFindsIndex) {
