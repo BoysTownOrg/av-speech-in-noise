@@ -857,11 +857,97 @@ namespace {
         void assertTargetFilePathEquals(std::string what) {
             assertEqual(std::move(what), targetFilePath());
         }
+        
+        auto trialWritten() {
+            return outputFile.trialWritten();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
         EXPECT_EQ(&model, targetPlayer.listener());
         EXPECT_EQ(&model, maskerPlayer.listener());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestHidesTargetVideoWhenAuditoryOnly
+    ) {
+        initializingTest.setAuditoryOnly();
+        initializeTest();
+        assertTargetVideoOnlyHidden();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestShowsTargetVideoWhenAudioVisual
+    ) {
+        initializingTest.setAudioVisual();
+        initializeTest();
+        assertTargetVideoOnlyShown();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestWritesTrialHeading
+    ) {
+        initializeTest();
+        EXPECT_TRUE(outputFile.headingWritten());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
+    ) {
+        initializeTest();
+        assertEqual(
+            "close openNewFile writeTest writeTrialHeading ",
+            outputFile.log()
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestResetsSnrTrackWithTargetLevelRule
+    ) {
+        initializeTest();
+        EXPECT_EQ(
+            initializingTest.targetLevelRule(),
+            snrTrack.settings().rule
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestResetsSnrTrackWithStartingSnr
+    ) {
+        initializingTest.setStartingSnr_dB(1);
+        initializeTest();
+        EXPECT_EQ(1, snrTrack.settings().startingX);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestOpensNewOutputFile
+    ) {
+        initializeTest();
+        EXPECT_EQ(outputFile.openNewFileParameters(), &initializingTest.test());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestWritesTestInformation
+    ) {
+        initializeTest();
+        EXPECT_EQ(outputFile.testWritten(), &initializingTest.test());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestPassesTargetListDirectoryToTargetList
+    ) {
+        initializingTest.setTargetListDirectory("a");
+        initializeTest();
+        assertEqual("a", targetList.directory());
     }
 
     TEST_F(
@@ -935,31 +1021,6 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestOpensNewOutputFile
-    ) {
-        initializeTest();
-        EXPECT_EQ(outputFile.openNewFileParameters(), &initializingTest.test());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestWritesTestInformation
-    ) {
-        initializeTest();
-        EXPECT_EQ(outputFile.testWritten(), &initializingTest.test());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestPassesTargetListDirectoryToTargetList
-    ) {
-        initializingTest.setTargetListDirectory("a");
-        initializeTest();
-        assertEqual("a", targetList.directory());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         playTrialSubscribesToTargetPlaybackCompletionNotification
     ) {
         playTrial();
@@ -970,12 +1031,12 @@ namespace {
         RecognitionTestModelTests,
         playTrialSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
-        targetPlayer.setDurationSeconds(3);
-        maskerPlayer.setFadeTimeSeconds(4);
-        maskerPlayer.setDurationSeconds(19);
+        targetPlayer.setDurationSeconds(1);
+        maskerPlayer.setFadeTimeSeconds(2);
+        maskerPlayer.setDurationSeconds(3);
         playTrial();
         EXPECT_EQ(0., randomizer.lowerBound());
-        EXPECT_EQ(19 - 4 - 3 - 4, randomizer.upperBound());
+        EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperBound());
     }
 
     TEST_F(
@@ -987,39 +1048,15 @@ namespace {
         EXPECT_EQ(1, maskerPlayer.secondsSeeked());
     }
 
-    TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
-        maskerPlayer.fadeInComplete();
-        EXPECT_TRUE(targetPlayer.played());
-    }
-
-    TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
-        targetPlayer.playbackComplete();
-        EXPECT_TRUE(maskerPlayer.fadeOutCalled());
-    }
-
-    TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
-        maskerPlayer.fadeOutComplete();
-        EXPECT_TRUE(listener.notified());
-    }
-
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestResetsSnrTrackWithTargetLevelRule
+        initializeTestSetsInitialMaskerPlayerLevel
     ) {
+        initializingTest.setMaskerLevel_dB_SPL(1);
+        initializingTest.setFullScaleLevel_dB_SPL(2);
+        maskerPlayer.setRms(3);
         initializeTest();
-        EXPECT_EQ(
-            initializingTest.targetLevelRule(),
-            snrTrack.settings().rule
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestResetsSnrTrackWithStartingSnr
-    ) {
-        initializingTest.setStartingSnr_dB(1);
-        initializeTest();
-        EXPECT_EQ(1, snrTrack.settings().startingX);
+        EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
     }
 
     TEST_F(
@@ -1046,60 +1083,19 @@ namespace {
         EXPECT_EQ(1 - 2 - dB(3), targetPlayerLevel_dB());
     }
 
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestSetsInitialMaskerPlayerLevel
-    ) {
-        initializingTest.setMaskerLevel_dB_SPL(1);
-        initializingTest.setFullScaleLevel_dB_SPL(2);
-        maskerPlayer.setRms(3);
-        initializeTest();
-        EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
+    TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
+        maskerPlayer.fadeInComplete();
+        EXPECT_TRUE(targetPlayer.played());
     }
 
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestHidesTargetVideoWhenAuditoryOnly
-    ) {
-        initializingTest.setAuditoryOnly();
-        initializeTest();
-        assertTargetVideoOnlyHidden();
+    TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
+        targetPlayer.playbackComplete();
+        EXPECT_TRUE(maskerPlayer.fadeOutCalled());
     }
 
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestShowsTargetVideoWhenAudioVisual
-    ) {
-        initializingTest.setAudioVisual();
-        initializeTest();
-        assertTargetVideoOnlyShown();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestWritesTrialHeading
-    ) {
-        initializeTest();
-        EXPECT_TRUE(outputFile.headingWritten());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
-    ) {
-        initializeTest();
-        assertEqual(
-            "close openNewFile writeTest writeTrialHeading ",
-            outputFile.log()
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestThrowsRequestFailureIfFileFailsToOpen
-    ) {
-        outputFile.throwOnOpen();
-        assertInitializeTestThrowsRequestFailure("Unable to open output file.");
+    TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
+        maskerPlayer.fadeOutComplete();
+        EXPECT_TRUE(listener.notified());
     }
 
     TEST_F(
@@ -1108,7 +1104,7 @@ namespace {
     ) {
         subjectResponse.color = blueColor();
         submitResponse();
-        EXPECT_EQ(blueColor(), outputFile.trialWritten().subjectColor);
+        EXPECT_EQ(blueColor(), trialWritten().subjectColor);
     }
 
     TEST_F(
@@ -1117,7 +1113,7 @@ namespace {
     ) {
         subjectResponse.number = 1;
         submitResponse();
-        EXPECT_EQ(1, outputFile.trialWritten().subjectNumber);
+        EXPECT_EQ(1, trialWritten().subjectNumber);
     }
 
     TEST_F(
@@ -1126,7 +1122,7 @@ namespace {
     ) {
         snrTrack.setReversals(1);
         submitResponse();
-        EXPECT_EQ(1, outputFile.trialWritten().reversals);
+        EXPECT_EQ(1, trialWritten().reversals);
     }
 
     TEST_F(
@@ -1135,7 +1131,7 @@ namespace {
     ) {
         evaluator.setCorrectColor(blueColor());
         submitResponse();
-        EXPECT_EQ(blueColor(), outputFile.trialWritten().correctColor);
+        EXPECT_EQ(blueColor(), trialWritten().correctColor);
     }
 
     TEST_F(
@@ -1144,7 +1140,7 @@ namespace {
     ) {
         evaluator.setCorrectNumber(1);
         submitResponse();
-        EXPECT_EQ(1, outputFile.trialWritten().correctNumber);
+        EXPECT_EQ(1, trialWritten().correctNumber);
     }
 
     TEST_F(
@@ -1153,7 +1149,7 @@ namespace {
     ) {
         snrTrack.setX(1);
         submitResponse();
-        EXPECT_EQ(1, outputFile.trialWritten().SNR_dB);
+        EXPECT_EQ(1, trialWritten().SNR_dB);
     }
 
     TEST_F(
@@ -1162,7 +1158,7 @@ namespace {
     ) {
         evaluator.setCorrect();
         submitResponse();
-        EXPECT_TRUE(outputFile.trialWritten().correct);
+        EXPECT_TRUE(trialWritten().correct);
     }
 
     TEST_F(
@@ -1171,7 +1167,7 @@ namespace {
     ) {
         evaluator.setIncorrect();
         submitResponse();
-        EXPECT_FALSE(outputFile.trialWritten().correct);
+        EXPECT_FALSE(trialWritten().correct);
     }
 
     TEST_F(
@@ -1219,6 +1215,14 @@ namespace {
     ) {
         submitResponse();
         EXPECT_EQ(&subjectResponse, evaluator.response());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestThrowsRequestFailureIfFileFailsToOpen
+    ) {
+        outputFile.throwOnOpen();
+        assertInitializeTestThrowsRequestFailure("Unable to open output file.");
     }
 
     TEST_F(
