@@ -238,7 +238,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
-        if (targetPlayer->playing())
+        if (targetPlayer->playing() || trialInProgress())
             return;
         
         playCalibration_(p);

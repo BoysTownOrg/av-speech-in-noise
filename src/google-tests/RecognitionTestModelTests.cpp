@@ -916,6 +916,14 @@ namespace {
         assertTargetPlayerNotPlayedAfterPlayingCalibration();
     }
 
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationDoesNotPlayIfTrialInProgress
+    ) {
+        setMaskerIsPlaying();
+        assertTargetPlayerNotPlayedAfterPlayingCalibration();
+    }
+
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
         playTrial();
         EXPECT_TRUE(maskerPlayerFadedIn());

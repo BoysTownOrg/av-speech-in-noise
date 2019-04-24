@@ -535,7 +535,7 @@ double AvFoundationAudioPlayer::durationSeconds() {
 // https://warrenmoore.net/understanding-cmtime
 // "Apple recommends a timescale of 600 for video,
 // with the explanation that 600 is a multiple of the
-// common video framerates (24, 25, and 30 FPS).
+// common video framerates (24, 25, and 30 FPS)."
 void AvFoundationAudioPlayer::seekSeconds(double x) {
     auto timescale = 600;
     [player seekToTime:CMTimeMakeWithSeconds(x, timescale)];
