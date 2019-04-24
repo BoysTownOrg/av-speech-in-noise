@@ -29,7 +29,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::initializeTest(const Test &p) {
-        if (trialInProgress() || calibrating())
+        if (playing())
             return;
         
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
@@ -40,6 +40,10 @@ namespace av_coordinate_response_measure {
         prepareMasker(p);
         prepareTargets(p);
         prepareVideo(p);
+    }
+    
+    bool RecognitionTestModel::playing() {
+        return trialInProgress() || calibrating();
     }
     
     bool RecognitionTestModel::trialInProgress() {
@@ -245,7 +249,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
-        if (calibrating() || trialInProgress())
+        if (playing())
             return;
         
         playCalibration_(p);
