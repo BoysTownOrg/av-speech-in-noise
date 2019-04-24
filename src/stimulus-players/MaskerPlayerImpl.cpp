@@ -14,6 +14,8 @@ namespace stimulus_players {
     {
         player->subscribe(this);
         timer->subscribe(this);
+        mainThread.setParent(this);
+        audioThread.setParent(this);
     }
 
     void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
@@ -160,6 +162,7 @@ namespace stimulus_players {
     void MaskerPlayerImpl::fillAudioBuffer(
         const std::vector<gsl::span<float>> &audio
     ) {
+        audioThread.fillAudioBuffer(audio);
         checkForFadeIn();
         checkForFadeOut();
         scaleAudio(audio);
@@ -258,8 +261,19 @@ namespace stimulus_players {
         }
     }
     
+    void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
+        if (doneFadingOut()) {
+            parent->fadeOutComplete.store(true);
+            fadingOut_realTime = false;
+        }
+    }
+    
     // real-time audio thread
     bool MaskerPlayerImpl::doneFadingOut() {
+        return fadingOut_realTime && hannCounter == 2*halfWindowLength;
+    }
+    
+    bool MaskerPlayerImpl::AudioThread::doneFadingOut() {
         return fadingOut_realTime && hannCounter == 2*halfWindowLength;
     }
     
@@ -267,5 +281,26 @@ namespace stimulus_players {
     void MaskerPlayerImpl::advanceCounterIfStillFading() {
         if (fadingIn_realTime || fadingOut_realTime)
             ++hannCounter;
+    }
+    
+    void MaskerPlayerImpl::AudioThread::advanceCounterIfStillFading() {
+        if (fadingIn_realTime || fadingOut_realTime)
+            ++hannCounter;
+    }
+
+    void MaskerPlayerImpl::MainThread::setParent(MaskerPlayerImpl *p) {
+        parent = p;
+    }
+
+    void MaskerPlayerImpl::MainThread::callback() {
+        ;
+    }
+
+    void MaskerPlayerImpl::AudioThread::setParent(MaskerPlayerImpl *p) {
+        parent = p;
+    }
+
+    void MaskerPlayerImpl::AudioThread::fillAudioBuffer(const std::vector<gsl::span<float> > &audio) {
+        ;
     }
 }

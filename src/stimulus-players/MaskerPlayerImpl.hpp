@@ -47,30 +47,37 @@ namespace stimulus_players {
         public AudioPlayer::EventListener,
         public Timer::EventListener
     {
-        std::string filePath_{};
-        std::atomic<double> levelScalar{1};
-        std::atomic<double> fadeInOutSeconds{};
-        int hannCounter{};
-        int halfWindowLength{};
-        AudioPlayer *player;
-        AudioReader *reader;
-        MaskerPlayer::EventListener *listener{};
-        Timer *timer{};
-        bool fadingOut_realTime{};
-        bool fadingIn_realTime{};
-        bool fadingIn_lowPriority{};
-        bool fadingOut_lowPriority{};
-        std::atomic<bool> fadeOutComplete{};
-        std::atomic<bool> fadeInComplete{};
-        std::atomic<bool> pleaseFadeOut{};
-        std::atomic<bool> pleaseFadeIn{};
     public:
-        class AudioBufferFiller : public AudioPlayer::EventListener {
-            void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
+        class AudioThread {
+            int hannCounter{};
+            int halfWindowLength{};
+            MaskerPlayerImpl *parent;
+            bool fadingOut_realTime{};
+            bool fadingIn_realTime{};
+        public:
+            void setParent(MaskerPlayerImpl *);
+            void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
+            void updateWindowLength();
+            void prepareToFadeIn();
+            void checkForFadeIn();
+            void prepareToFadeOut();
+            void checkForFadeOut();
+            int levelTransitionSamples();
+            void scaleAudio(const std::vector<gsl::span<float>> &);
+            bool doneFadingIn();
+            void checkForFadeInComplete();
+            bool doneFadingOut();
+            void checkForFadeOutComplete();
+            void advanceCounterIfStillFading();
+            void updateFadeState();
+            double fadeScalar();
         };
         
-        class TimerImpl : public Timer::EventListener {
-            void callback() override;
+        class MainThread {
+            MaskerPlayerImpl *parent;
+        public:
+            void setParent(MaskerPlayerImpl *);
+            void callback();
         };
         
         MaskerPlayerImpl(
@@ -113,6 +120,26 @@ namespace stimulus_players {
         void advanceCounterIfStillFading();
         void updateFadeState();
         double fadeScalar();
+        
+        std::string filePath_{};
+        std::atomic<double> levelScalar{1};
+        std::atomic<double> fadeInOutSeconds{};
+        int hannCounter{};
+        int halfWindowLength{};
+        AudioPlayer *player;
+        AudioReader *reader;
+        MaskerPlayer::EventListener *listener{};
+        Timer *timer{};
+        bool fadingOut_realTime{};
+        bool fadingIn_realTime{};
+        bool fadingIn_lowPriority{};
+        bool fadingOut_lowPriority{};
+        std::atomic<bool> fadeOutComplete{};
+        std::atomic<bool> fadeInComplete{};
+        std::atomic<bool> pleaseFadeOut{};
+        std::atomic<bool> pleaseFadeIn{};
+        AudioThread audioThread{};
+        MainThread mainThread{};
     };
 }
 
