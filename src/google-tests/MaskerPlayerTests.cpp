@@ -445,6 +445,15 @@ namespace {
             fadeIn();
             assertCallbackScheduled();
         }
+        
+        bool playerStopped() {
+            return audioPlayer.stopped();
+        }
+        
+        void fadeOutCompletely() {
+            fadeOutToSilence();
+            timerCallback();
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -623,8 +632,7 @@ namespace {
     TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeOut) {
         fadeInCompletely();
         
-        fadeOutToSilence();
-        timerCallback();
+        fadeOutCompletely();
         EXPECT_EQ(1, listener.fadeOutCompletions());
         callbackAfterMonoFill();
         EXPECT_EQ(1, listener.fadeOutCompletions());
@@ -639,10 +647,10 @@ namespace {
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             callbackAfterMonoFill();
-            EXPECT_FALSE(audioPlayer.stopped());
+            EXPECT_FALSE(playerStopped());
         }
         callbackAfterMonoFill();
-        EXPECT_TRUE(audioPlayer.stopped());
+        EXPECT_TRUE(playerStopped());
     }
 
     TEST_F(MaskerPlayerTests, fadeInSchedulesCallback) {
@@ -684,8 +692,7 @@ namespace {
         MaskerPlayerTests,
         fadeInAfterFadingOutSchedulesCallback
     ) {
-        fadeOutToSilence();
-        timerCallback();
+        fadeOutCompletely();
         assertFadeInSchedulesCallback();
     }
 
