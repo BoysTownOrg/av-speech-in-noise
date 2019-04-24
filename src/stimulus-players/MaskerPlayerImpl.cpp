@@ -4,13 +4,16 @@
 namespace stimulus_players {
     MaskerPlayerImpl::MaskerPlayerImpl(
         AudioPlayer *player,
-        AudioReader *reader
+        AudioReader *reader,
+        ListenerThreadCallback *listenerThreadCallback
     ) :
         player{player},
-        reader{reader}
+        reader{reader},
+        listenerThreadCallback{listenerThreadCallback}
     
     {
         player->subscribe(this);
+        listenerThreadCallback->subscribe(this);
     }
 
     void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
@@ -36,7 +39,7 @@ namespace stimulus_players {
         fadingIn_lowPriority = true;
         pleaseFadeIn.store(true);
         player->play();
-        player->scheduleCallbackAfterSeconds(0.1);
+        listenerThreadCallback->scheduleCallbackAfterSeconds(0.1);
     }
     
     bool MaskerPlayerImpl::fading() {
@@ -49,7 +52,7 @@ namespace stimulus_players {
         
         fadingOut_lowPriority = true;
         pleaseFadeOut.store(true);
-        player->scheduleCallbackAfterSeconds(0.1);
+        listenerThreadCallback->scheduleCallbackAfterSeconds(0.1);
     }
 
     void MaskerPlayerImpl::loadFile(std::string filePath) {
@@ -150,7 +153,7 @@ namespace stimulus_players {
             return;
         }
         
-        player->scheduleCallbackAfterSeconds(0.1);
+        listenerThreadCallback->scheduleCallbackAfterSeconds(0.1);
     }
     
     // real-time audio thread

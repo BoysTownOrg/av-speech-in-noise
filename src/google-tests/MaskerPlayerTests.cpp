@@ -22,7 +22,6 @@ namespace {
         bool playing_{};
         bool played_{};
         bool stopped_{};
-        bool callbackScheduled_{};
     public:
         void seekSeconds(double x) override {
             secondsSeeked_ = x;
@@ -34,18 +33,6 @@ namespace {
         
         bool outputDevice(int index) override {
             return outputDevices[index];
-        }
-        
-        void clearCallbackCount() {
-            callbackScheduled_ = false;
-        }
-        
-        auto callbackScheduled() const {
-            return callbackScheduled_;
-        }
-        
-        void timerCallback() {
-            listener_->timerCallback();
         }
         
         void setAudioDeviceDescriptions(std::vector<std::string> v) {
@@ -107,10 +94,6 @@ namespace {
         
         void subscribe(EventListener * listener) override {
             listener_ = listener;
-        }
-        
-        void scheduleCallbackAfterSeconds(double) override {
-            callbackScheduled_ = true;
         }
         
         auto filePath() const {
@@ -191,6 +174,33 @@ namespace {
             return std::vector<T>{v.begin() + b, v.begin() + e};
         }
     };
+    
+    class ListenerThreadCallbackStub :
+        public stimulus_players::ListenerThreadCallback
+    {
+        EventListener *listener_{};
+        bool callbackScheduled_{};
+    public:
+        void scheduleCallbackAfterSeconds(double) override {
+            callbackScheduled_ = true;
+        }
+        
+        auto callbackScheduled() const {
+            return callbackScheduled_;
+        }
+        
+        void clearCallbackCount() {
+            callbackScheduled_ = false;
+        }
+        
+        void timerCallback() {
+            listener_->timerCallback();
+        }
+        
+        void subscribe(EventListener * listener) override {
+            listener_ = listener;
+        }
+    };
 
     class MaskerPlayerTests : public ::testing::Test {
     protected:
@@ -199,7 +209,8 @@ namespace {
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
         AudioReaderStub audioReader;
-        stimulus_players::MaskerPlayerImpl player{&audioPlayer, &audioReader};
+        ListenerThreadCallbackStub listenerThreadCallback;
+        stimulus_players::MaskerPlayerImpl player{&audioPlayer, &audioReader, &listenerThreadCallback};
         
         MaskerPlayerTests() {
             player.subscribe(&listener);
@@ -279,15 +290,15 @@ namespace {
         }
         
         void timerCallback() {
-            audioPlayer.timerCallback();
+            listenerThreadCallback.timerCallback();
         }
         
         void assertCallbackScheduled() {
-            EXPECT_TRUE(audioPlayer.callbackScheduled());
+            EXPECT_TRUE(listenerThreadCallback.callbackScheduled());
         }
         
         void assertCallbackNotScheduled() {
-            EXPECT_FALSE(audioPlayer.callbackScheduled());
+            EXPECT_FALSE(listenerThreadCallback.callbackScheduled());
         }
         
         void assertFillingLeftChannelMultipliesBy_Buffered(
@@ -599,7 +610,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeInTwiceDoesNotScheduleAdditionalCallback) {
         fadeIn();
-        audioPlayer.clearCallbackCount();
+        listenerThreadCallback.clearCallbackCount();
         fadeIn();
         assertCallbackNotScheduled();
     }
@@ -611,7 +622,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeOutTwiceDoesNotScheduleAdditionalCallback) {
         fadeOut();
-        audioPlayer.clearCallbackCount();
+        listenerThreadCallback.clearCallbackCount();
         fadeOut();
         assertCallbackNotScheduled();
     }
@@ -621,7 +632,7 @@ namespace {
         fadeOutWhileFadingInDoesNotScheduleAdditionalCallback
     ) {
         fadeIn();
-        audioPlayer.clearCallbackCount();
+        listenerThreadCallback.clearCallbackCount();
         fadeOut();
         assertCallbackNotScheduled();
     }
@@ -631,7 +642,7 @@ namespace {
         fadeInWhileFadingOutDoesNotScheduleAdditionalCallback
     ) {
         fadeOut();
-        audioPlayer.clearCallbackCount();
+        listenerThreadCallback.clearCallbackCount();
         fadeIn();
         assertCallbackNotScheduled();
     }
@@ -642,7 +653,7 @@ namespace {
     ) {
         fadeOutToSilence();
         timerCallback();
-        audioPlayer.clearCallbackCount();
+        listenerThreadCallback.clearCallbackCount();
         fadeIn();
         assertCallbackScheduled();
     }
@@ -654,7 +665,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
         fadeInToFullLevel();
-        audioPlayer.clearCallbackCount();
+        listenerThreadCallback.clearCallbackCount();
         
         timerCallback();
         assertCallbackNotScheduled();
@@ -663,7 +674,7 @@ namespace {
     TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
         fadeInCompletely();
         fadeOutToSilence();
-        audioPlayer.clearCallbackCount();
+        listenerThreadCallback.clearCallbackCount();
         
         timerCallback();
         assertCallbackNotScheduled();

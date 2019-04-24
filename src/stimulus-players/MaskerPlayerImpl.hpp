@@ -13,7 +13,6 @@ namespace stimulus_players {
             virtual ~EventListener() = default;
             virtual void fillAudioBuffer(
                 const std::vector<gsl::span<float>> &audio) = 0;
-            virtual void timerCallback() = 0;
         };
         
         virtual ~AudioPlayer() = default;
@@ -27,14 +26,26 @@ namespace stimulus_players {
         virtual bool outputDevice(int index) = 0;
         virtual void setDevice(int index) = 0;
         virtual double sampleRateHz() = 0;
-        virtual void scheduleCallbackAfterSeconds(double) = 0;
         virtual double durationSeconds() = 0;
         virtual void seekSeconds(double) = 0;
+    };
+    
+    class ListenerThreadCallback {
+    public:
+        class EventListener {
+        public:
+            virtual ~EventListener() = default;
+            virtual void timerCallback() = 0;
+        };
+        virtual ~ListenerThreadCallback() = default;
+        virtual void subscribe(EventListener *) = 0;
+        virtual void scheduleCallbackAfterSeconds(double) = 0;
     };
 
     class MaskerPlayerImpl :
         public av_coordinate_response_measure::MaskerPlayer,
-        public AudioPlayer::EventListener
+        public AudioPlayer::EventListener,
+        public ListenerThreadCallback::EventListener
     {
         std::string filePath_{};
         std::atomic<double> levelScalar{1};
@@ -44,6 +55,7 @@ namespace stimulus_players {
         AudioPlayer *player;
         AudioReader *reader;
         MaskerPlayer::EventListener *listener{};
+        ListenerThreadCallback *listenerThreadCallback{};
         bool fadingOut_realTime{};
         bool fadingIn_realTime{};
         bool fadingIn_lowPriority{};
@@ -53,7 +65,7 @@ namespace stimulus_players {
         std::atomic<bool> pleaseFadeOut{};
         std::atomic<bool> pleaseFadeIn{};
     public:
-        MaskerPlayerImpl(AudioPlayer *, AudioReader *);
+        MaskerPlayerImpl(AudioPlayer *, AudioReader *, ListenerThreadCallback * = {});
         void subscribe(MaskerPlayer::EventListener *) override;
         void fadeIn() override;
         void fadeOut() override;
