@@ -210,18 +210,26 @@ namespace {
         MaskerPlayerListenerStub listener;
         AudioReaderStub audioReader;
         ListenerThreadCallbackStub listenerThreadCallback;
-        stimulus_players::MaskerPlayerImpl player{&audioPlayer, &audioReader, &listenerThreadCallback};
+        stimulus_players::MaskerPlayerImpl player{
+            &audioPlayer,
+            &audioReader,
+            &listenerThreadCallback
+        };
         
         MaskerPlayerTests() {
             player.subscribe(&listener);
         }
         
+        void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
+            audioPlayer.fillAudioBuffer(audio);
+        }
+        
         void fillAudioBufferMono() {
-            audioPlayer.fillAudioBuffer({ leftChannel });
+            fillAudioBuffer({ leftChannel });
         }
         
         void fillAudioBufferStereo() {
-            audioPlayer.fillAudioBuffer({ leftChannel, rightChannel });
+            fillAudioBuffer({ leftChannel, rightChannel });
         }
         
         std::vector<float> halfHannWindow(int length) {
@@ -294,11 +302,15 @@ namespace {
         }
         
         void assertCallbackScheduled() {
-            EXPECT_TRUE(listenerThreadCallback.callbackScheduled());
+            EXPECT_TRUE(callbackScheduled());
+        }
+        
+        bool callbackScheduled() {
+            return listenerThreadCallback.callbackScheduled();
         }
         
         void assertCallbackNotScheduled() {
-            EXPECT_FALSE(listenerThreadCallback.callbackScheduled());
+            EXPECT_FALSE(callbackScheduled());
         }
         
         void assertFillingLeftChannelMultipliesBy_Buffered(
@@ -387,12 +399,16 @@ namespace {
         
         void assertFadeOutNotCompletedAfterMonoFill() {
             callbackAfterMonoFill();
-            EXPECT_FALSE(listener.fadeOutCompleted());
+            EXPECT_FALSE(fadeOutCompleted());
+        }
+        
+        bool fadeOutCompleted() {
+            return listener.fadeOutCompleted();
         }
         
         void assertFadeOutCompletedAfterMonoFill() {
             callbackAfterMonoFill();
-            EXPECT_TRUE(listener.fadeOutCompleted());
+            EXPECT_TRUE(fadeOutCompleted());
         }
         
         void fadeInCompletely() {
