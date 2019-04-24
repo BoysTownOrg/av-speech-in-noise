@@ -113,6 +113,7 @@ namespace stimulus_players {
             void fadeOut();
         private:
             bool fading();
+            void scheduleCallbackAfterSeconds(double);
             
             MaskerPlayerImpl *sharedAtomics;
             AudioPlayer *player;

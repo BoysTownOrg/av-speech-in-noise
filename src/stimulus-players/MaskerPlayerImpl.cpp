@@ -68,7 +68,11 @@ namespace stimulus_players {
         fadingIn = true;
         sharedAtomics->pleaseFadeIn.store(true);
         player->play();
-        timer->scheduleCallbackAfterSeconds(0.1);
+        scheduleCallbackAfterSeconds(0.1);
+    }
+    
+    void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
+        timer->scheduleCallbackAfterSeconds(x);
     }
     
     bool MaskerPlayerImpl::MainThread::fading() {
@@ -85,7 +89,7 @@ namespace stimulus_players {
         
         fadingOut = true;
         sharedAtomics->pleaseFadeOut.store(true);
-        timer->scheduleCallbackAfterSeconds(0.1);
+        scheduleCallbackAfterSeconds(0.1);
     }
 
     void MaskerPlayerImpl::loadFile(std::string filePath) {
@@ -190,7 +194,7 @@ namespace stimulus_players {
             return;
         }
         
-        timer->scheduleCallbackAfterSeconds(0.1);
+        scheduleCallbackAfterSeconds(0.1);
     }
     
     // real-time audio thread
