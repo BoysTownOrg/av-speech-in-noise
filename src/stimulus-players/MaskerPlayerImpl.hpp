@@ -48,52 +48,6 @@ namespace stimulus_players {
         public Timer::EventListener
     {
     public:
-        class AudioThread {
-            int hannCounter{};
-            int halfWindowLength{};
-            MaskerPlayerImpl *sharedState;
-            AudioPlayer *player;
-            bool fadingOut{};
-            bool fadingIn{};
-        public:
-            AudioThread(AudioPlayer *);
-            void setParent(MaskerPlayerImpl *);
-            void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
-        private:
-            void updateWindowLength();
-            void prepareToFadeIn();
-            void checkForFadeIn();
-            void prepareToFadeOut();
-            void checkForFadeOut();
-            int levelTransitionSamples();
-            void scaleAudio(const std::vector<gsl::span<float>> &);
-            bool doneFadingIn();
-            void checkForFadeInComplete();
-            bool doneFadingOut();
-            void checkForFadeOutComplete();
-            void advanceCounterIfStillFading();
-            void updateFadeState();
-            double fadeScalar();
-        };
-        
-        class MainThread {
-            MaskerPlayerImpl *parent;
-            AudioPlayer *player;
-            MaskerPlayer::EventListener *listener{};
-            Timer *timer;
-            bool fadingIn_lowPriority{};
-            bool fadingOut_lowPriority{};
-        public:
-            MainThread(AudioPlayer *, Timer *);
-            void setParent(MaskerPlayerImpl *);
-            void callback();
-            void subscribe(MaskerPlayer::EventListener *);
-            void fadeIn();
-            void fadeOut();
-        private:
-            bool fading();
-        };
-        
         MaskerPlayerImpl(
             AudioPlayer *,
             AudioReader *,
@@ -116,10 +70,57 @@ namespace stimulus_players {
         double fadeTimeSeconds() override;
         void callback() override;
     private:
-        bool fading();
         std::vector<std::vector<float>> readAudio_();
         std::vector<std::string> audioDeviceDescriptions_();
         int findDeviceIndex(const std::string &device);
+        
+        class AudioThread {
+        public:
+            AudioThread(AudioPlayer *);
+            void setParent(MaskerPlayerImpl *);
+            void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
+        private:
+            void updateWindowLength();
+            void prepareToFadeIn();
+            void checkForFadeIn();
+            void prepareToFadeOut();
+            void checkForFadeOut();
+            int levelTransitionSamples();
+            void scaleAudio(const std::vector<gsl::span<float>> &);
+            bool doneFadingIn();
+            void checkForFadeInComplete();
+            bool doneFadingOut();
+            void checkForFadeOutComplete();
+            void advanceCounterIfStillFading();
+            void updateFadeState();
+            double fadeScalar();
+            
+            int hannCounter{};
+            int halfWindowLength{};
+            MaskerPlayerImpl *sharedState;
+            AudioPlayer *player;
+            bool fadingOut{};
+            bool fadingIn{};
+        };
+        
+        class MainThread {
+        public:
+            MainThread(AudioPlayer *, Timer *);
+            void setParent(MaskerPlayerImpl *);
+            void callback();
+            void subscribe(MaskerPlayer::EventListener *);
+            void fadeIn();
+            void fadeOut();
+        private:
+            bool fading();
+            
+            MaskerPlayerImpl *sharedState;
+            AudioPlayer *player;
+            MaskerPlayer::EventListener *listener{};
+            Timer *timer;
+            bool fadingIn{};
+            bool fadingOut{};
+        };
         
         AudioThread audioThread;
         MainThread mainThread;
@@ -128,7 +129,6 @@ namespace stimulus_players {
         std::atomic<double> fadeInOutSeconds{};
         AudioPlayer *player;
         AudioReader *reader;
-        MaskerPlayer::EventListener *listener{};
         std::atomic<bool> fadeOutComplete{};
         std::atomic<bool> fadeInComplete{};
         std::atomic<bool> pleaseFadeOut{};

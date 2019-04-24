@@ -19,7 +19,6 @@ namespace stimulus_players {
     }
 
     void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
-        listener = e;
         mainThread.subscribe(e);
     }
     
@@ -43,14 +42,14 @@ namespace stimulus_players {
         if (fading())
             return;
         
-        fadingIn_lowPriority = true;
-        parent->pleaseFadeIn.store(true);
+        fadingIn = true;
+        sharedState->pleaseFadeIn.store(true);
         player->play();
         timer->scheduleCallbackAfterSeconds(0.1);
     }
     
     bool MaskerPlayerImpl::MainThread::fading() {
-        return fadingIn_lowPriority || fadingOut_lowPriority;
+        return fadingIn || fadingOut;
     }
 
     void MaskerPlayerImpl::fadeOut() {
@@ -61,8 +60,8 @@ namespace stimulus_players {
         if (fading())
             return;
         
-        fadingOut_lowPriority = true;
-        parent->pleaseFadeOut.store(true);
+        fadingOut = true;
+        sharedState->pleaseFadeOut.store(true);
         timer->scheduleCallbackAfterSeconds(0.1);
     }
 
@@ -148,21 +147,21 @@ namespace stimulus_players {
 
     void MaskerPlayerImpl::MainThread::callback() {
         auto expectedFadeInComplete = true;
-        if (parent->fadeInComplete.compare_exchange_strong(
+        if (sharedState->fadeInComplete.compare_exchange_strong(
             expectedFadeInComplete,
             false
         )) {
-            fadingIn_lowPriority = false;
+            fadingIn = false;
             listener->fadeInComplete();
             return;
         }
         
         auto expectedFadeOutComplete = true;
-        if (parent->fadeOutComplete.compare_exchange_strong(
+        if (sharedState->fadeOutComplete.compare_exchange_strong(
             expectedFadeOutComplete,
             false
         )) {
-            fadingOut_lowPriority = false;
+            fadingOut = false;
             listener->fadeOutComplete();
             player->stop();
             return;
@@ -277,7 +276,7 @@ namespace stimulus_players {
     }
 
     void MaskerPlayerImpl::MainThread::setParent(MaskerPlayerImpl *p) {
-        parent = p;
+        sharedState = p;
     }
     
     void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
