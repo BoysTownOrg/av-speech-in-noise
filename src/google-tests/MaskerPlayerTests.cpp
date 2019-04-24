@@ -383,6 +383,11 @@ namespace {
             callbackAfterMonoFill();
             EXPECT_TRUE(listener.fadeOutCompleted());
         }
+        
+        void fadeInCompletely() {
+            fadeInToFullLevel();
+            timerCallback();
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -492,8 +497,7 @@ namespace {
         // For this test:
         // halfWindowLength is determined by fade time and sample rate...
         // but must be divisible by framesPerBuffer.
-        fadeInToFullLevel();
-        timerCallback();
+        fadeInCompletely();
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(5);
         auto halfWindowLength = 3 * 5 + 1;
@@ -508,8 +512,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
-        fadeInToFullLevel();
-        timerCallback();
+        fadeInCompletely();
         player.setFadeInOutSeconds(2);
         audioPlayer.setSampleRateHz(3);
         auto halfWindowLength = 2 * 3 + 1;
@@ -522,8 +525,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {
-        fadeInToFullLevel();
-        timerCallback();
+        fadeInCompletely();
         fadeOutToSilence();
         
         leftChannel = { 1, 2, 3 };
@@ -543,8 +545,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeIn) {
-        fadeInToFullLevel();
-        timerCallback();
+        fadeInCompletely();
         EXPECT_EQ(1, listener.fadeInCompletions());
         fillAudioBufferMono();
         timerCallback();
@@ -552,8 +553,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
-        fadeInToFullLevel();
-        timerCallback();
+        fadeInCompletely();
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
@@ -565,8 +565,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeOut) {
-        fadeInToFullLevel();
-        audioPlayer.timerCallback();
+        fadeInCompletely();
         
         fadeOutToSilence();
         timerCallback();
@@ -577,8 +576,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
-        fadeInToFullLevel();
-        timerCallback();
+        fadeInCompletely();
         player.setFadeInOutSeconds(3);
         audioPlayer.setSampleRateHz(4);
         
@@ -642,8 +640,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
-        fadeInToFullLevel();
-        timerCallback();
+        fadeInCompletely();
         fadeOutToSilence();
         audioPlayer.clearCallbackCount();
         
