@@ -423,9 +423,21 @@ namespace {
         }
         
         void assertTimerCallbackDoesNotScheduleAdditionalCallback() {
+            assertCallDoesNotScheduleAdditionalCallback(&MaskerPlayerTests::timerCallback);
+        }
+        
+        void assertCallDoesNotScheduleAdditionalCallback(void (MaskerPlayerTests::*f)()) {
             clearCallbackCount();
-            timerCallback();
+            (this->*f)();
             assertCallbackNotScheduled();
+        }
+        
+        void assertFadeInDoesNotScheduleAdditionalCallback() {
+            assertCallDoesNotScheduleAdditionalCallback(&MaskerPlayerTests::fadeIn);
+        }
+        
+        void assertFadeOutDoesNotScheduleAdditionalCallback() {
+            assertCallDoesNotScheduleAdditionalCallback(&MaskerPlayerTests::fadeOut);
         }
     };
 
@@ -638,9 +650,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeInTwiceDoesNotScheduleAdditionalCallback) {
         fadeIn();
-        clearCallbackCount();
-        fadeIn();
-        assertCallbackNotScheduled();
+        assertFadeInDoesNotScheduleAdditionalCallback();
     }
 
     TEST_F(MaskerPlayerTests, fadeOutSchedulesCallback) {
@@ -650,9 +660,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeOutTwiceDoesNotScheduleAdditionalCallback) {
         fadeOut();
-        clearCallbackCount();
-        fadeOut();
-        assertCallbackNotScheduled();
+        assertFadeOutDoesNotScheduleAdditionalCallback();
     }
 
     TEST_F(
@@ -660,9 +668,7 @@ namespace {
         fadeOutWhileFadingInDoesNotScheduleAdditionalCallback
     ) {
         fadeIn();
-        clearCallbackCount();
-        fadeOut();
-        assertCallbackNotScheduled();
+        assertFadeOutDoesNotScheduleAdditionalCallback();
     }
 
     TEST_F(
@@ -670,9 +676,7 @@ namespace {
         fadeInWhileFadingOutDoesNotScheduleAdditionalCallback
     ) {
         fadeOut();
-        clearCallbackCount();
-        fadeIn();
-        assertCallbackNotScheduled();
+        assertFadeInDoesNotScheduleAdditionalCallback();
     }
 
     TEST_F(
@@ -691,12 +695,18 @@ namespace {
         assertCallbackScheduled();
     }
 
-    TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
+    TEST_F(
+        MaskerPlayerTests,
+        callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete
+    ) {
         fadeInToFullLevel();
         assertTimerCallbackDoesNotScheduleAdditionalCallback();
     }
 
-    TEST_F(MaskerPlayerTests, callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
+    TEST_F(
+        MaskerPlayerTests,
+        callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete
+    ) {
         fadeInCompletely();
         fadeOutToSilence();
         assertTimerCallbackDoesNotScheduleAdditionalCallback();
