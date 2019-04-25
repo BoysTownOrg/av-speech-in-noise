@@ -757,7 +757,7 @@ namespace {
             return model.calibrationParameters();
         }
         
-        void assertInvalidCalibrationLevelShowsErrorMessageFollowing(
+        void assertInvalidCalibrationLevelShowsErrorMessage(
             TestSetupUseCase &useCase
         ) {
             setCalibrationLevel("a");
@@ -769,7 +769,7 @@ namespace {
             assertEqual(std::move(s), errorMessage());
         }
         
-        void assertInvalidMaskerLevelShowsErrorMessageFollowing(
+        void assertInvalidMaskerLevelShowsErrorMessage(
             TestSetupUseCase &useCase
         ) {
             setMaskerLevel("a");
@@ -810,6 +810,14 @@ namespace {
                 modelCondition(useCase)
             );
         }
+        
+        void setStartingSnr(std::string s) {
+            setupView.setStartingSnr(std::move(s));
+        }
+        
+        void setTestComplete() {
+            model.setTestComplete();
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -832,7 +840,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {
-        setupView.setStartingSnr("1");
+        setStartingSnr("1");
         confirmTestSetup();
         EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
     }
@@ -841,6 +849,12 @@ namespace {
         setMaskerLevel("2");
         confirmTestSetup();
         EXPECT_EQ(2, modelTestParameters().maskerLevel_dB_SPL);
+    }
+
+    TEST_F(PresenterTests, playCalibrationPassesLevel) {
+        setCalibrationLevel("1");
+        playCalibration();
+        EXPECT_EQ(1, modelCalibrationParameters().level_dB_SPL);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesTargetList) {
@@ -867,6 +881,12 @@ namespace {
         assertEqual("d", modelTestParameters().maskerFilePath);
     }
 
+    TEST_F(PresenterTests, playCalibrationPassesFilePath) {
+        setupView.setCalibrationFilePath("a");
+        playCalibration();
+        assertEqual("a", modelCalibrationParameters().filePath);
+    }
+
     TEST_F(PresenterTests, confirmTestSetupPassesSession) {
         setupView.setSession("e");
         confirmTestSetup();
@@ -881,37 +901,19 @@ namespace {
         );
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRule) {
-        confirmTestSetup();
-        EXPECT_EQ(
-            &av_coordinate_response_measure::Presenter::targetLevelRule,
-            modelTestParameters().targetLevelRule
-        );
-    }
-
-    TEST_F(PresenterTests, playCalibrationPassesLevel) {
-        setCalibrationLevel("1");
-        playCalibration();
-        EXPECT_EQ(1, modelCalibrationParameters().level_dB_SPL);
-    }
-
-    TEST_F(PresenterTests, playCalibrationPassesFilePath) {
-        setupView.setCalibrationFilePath("a");
-        playCalibration();
-        assertEqual("a", modelCalibrationParameters().filePath);
-    }
-
-    TEST_F(PresenterTests, playCalibrationPassesAudioDevice) {
-        setAudioDevice("b");
-        playCalibration();
-        assertEqual("b", modelCalibrationParameters().audioDevice);
-    }
-
     TEST_F(PresenterTests, playCalibrationPassesFullScaleLevel) {
         playCalibration();
         EXPECT_EQ(
             av_coordinate_response_measure::Presenter::fullScaleLevel_dB_SPL,
             modelCalibrationParameters().fullScaleLevel_dB_SPL
+        );
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRule) {
+        confirmTestSetup();
+        EXPECT_EQ(
+            &av_coordinate_response_measure::Presenter::targetLevelRule,
+            modelTestParameters().targetLevelRule
         );
     }
 
@@ -931,33 +933,6 @@ namespace {
         assertAuditoryOnlyConditionPassedToModel(playingCalibration);
     }
 
-    TEST_F(
-        PresenterTests,
-        confirmTestSetupWithInvalidMaskerLevelShowsErrorMessage
-    ) {
-        assertInvalidMaskerLevelShowsErrorMessageFollowing(confirmingTestSetup);
-    }
-
-    TEST_F(PresenterTests, playCalibrationWithInvalidLevelShowsErrorMessage) {
-        assertInvalidCalibrationLevelShowsErrorMessageFollowing(playingCalibration);
-    }
-
-    TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
-        setupView.setStartingSnr("a");
-        confirmTestSetup();
-        assertEqual("'a' is not a valid SNR.", errorMessage());
-    }
-
-    TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotHideSetupView) {
-        confirmTestSetupWithInvalidInput();
-        assertSetupViewNotHidden();
-    }
-
-    TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotShowTesterView) {
-        confirmTestSetupWithInvalidInput();
-        assertTesterViewNotShown();
-    }
-
     TEST_F(PresenterTests, confirmTestSetupShowsTesterView) {
         confirmTestSetup();
         assertTesterViewShown();
@@ -966,6 +941,17 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupShowsNextTrialButton) {
         confirmTestSetup();
         assertNextTrialButtonShown();
+    }
+
+    TEST_F(
+        PresenterTests,
+        confirmTestSetupWithInvalidMaskerLevelShowsErrorMessage
+    ) {
+        assertInvalidMaskerLevelShowsErrorMessage(confirmingTestSetup);
+    }
+
+    TEST_F(PresenterTests, playCalibrationWithInvalidLevelShowsErrorMessage) {
+        assertInvalidCalibrationLevelShowsErrorMessage(playingCalibration);
     }
 
     TEST_F(PresenterTests, playingTrialPlaysTrial) {
@@ -982,6 +968,12 @@ namespace {
         setAudioDevice("a");
         playTrial();
         assertEqual("a", model.trialParameters().audioDevice);
+    }
+
+    TEST_F(PresenterTests, playCalibrationPassesAudioDevice) {
+        setAudioDevice("b");
+        playCalibration();
+        assertEqual("b", modelCalibrationParameters().audioDevice);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesNumberResponse) {
@@ -1021,13 +1013,13 @@ namespace {
     }
 
     TEST_F(PresenterTests, submitResponseHidesTesterViewWhenTestComplete) {
-        model.setTestComplete();
+        setTestComplete();
         submitResponse();
         assertTesterViewHidden();
     }
 
     TEST_F(PresenterTests, submitResponseShowsSetupViewWhenTestComplete) {
-        model.setTestComplete();
+        setTestComplete();
         submitResponse();
         assertSetupViewShown();
     }
@@ -1038,7 +1030,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, subjectResponseDoesNotShowNextTrialButtonWhenTestComplete) {
-        model.setTestComplete();
+        setTestComplete();
         submitResponse();
         assertNextTrialButtonNotShown();
     }
@@ -1075,6 +1067,22 @@ namespace {
     TEST_F(PresenterTests, trialCompleteShowsResponseButtons) {
         completeTrial();
         assertResponseButtonsShown();
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
+        setStartingSnr("a");
+        confirmTestSetup();
+        assertErrorMessageEquals("'a' is not a valid SNR.");
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotHideSetupView) {
+        confirmTestSetupWithInvalidInput();
+        assertSetupViewNotHidden();
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotShowTesterView) {
+        confirmTestSetupWithInvalidInput();
+        assertTesterViewNotShown();
     }
 
     class RequestFailingModel : public av_coordinate_response_measure::Model {
