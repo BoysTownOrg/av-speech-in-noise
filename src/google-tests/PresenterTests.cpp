@@ -509,20 +509,33 @@ namespace {
             listener.browseForCalibration();
         }
     };
+
+    class ConditionUseCase : public TestSetupUseCase {
+    public:
+        virtual av_coordinate_response_measure::Condition condition(ModelStub &) = 0;
+    };
     
-    class ConfirmingTestSetup : public TestSetupUseCase {
+    class ConfirmingTestSetup : public ConditionUseCase {
         void run(
             av_coordinate_response_measure::View::TestSetup::EventListener &listener
         ) override {
             listener.confirmTestSetup();
         }
+        
+        av_coordinate_response_measure::Condition condition(ModelStub &m) override {
+            return m.testParameters().condition;
+        }
     };
     
-    class PlayingCalibration : public TestSetupUseCase {
+    class PlayingCalibration : public ConditionUseCase {
         void run(
             av_coordinate_response_measure::View::TestSetup::EventListener &listener
         ) override {
             listener.playCalibration();
+        }
+        
+        av_coordinate_response_measure::Condition condition(ModelStub &m) override {
+            return m.calibrationParameters().condition;
         }
     };
 
@@ -699,11 +712,15 @@ namespace {
         }
         
         void assertNextTrialButtonShown() {
-            EXPECT_TRUE(subjectView.nextTrialButtonShown());
+            EXPECT_TRUE(nextTrialButtonShown());
+        }
+        
+        bool nextTrialButtonShown() {
+            return subjectView.nextTrialButtonShown();
         }
         
         void assertNextTrialButtonNotShown() {
-            EXPECT_FALSE(subjectView.nextTrialButtonShown());
+            EXPECT_FALSE(nextTrialButtonShown());
         }
         
         void assertResponseButtonsHidden() {
@@ -745,16 +762,19 @@ namespace {
         ) {
             setCalibrationLevel("a");
             run(useCase);
-            assertEqual("'a' is not a valid calibration level.", errorMessage());
+            assertErrorMessageEquals("'a' is not a valid calibration level.");
         }
         
+        void assertErrorMessageEquals(std::string s) {
+            assertEqual(std::move(s), errorMessage());
+        }
         
         void assertInvalidMaskerLevelShowsErrorMessageFollowing(
             TestSetupUseCase &useCase
         ) {
             setMaskerLevel("a");
             run(useCase);
-            assertEqual("'a' is not a valid masker level.", errorMessage());
+            assertErrorMessageEquals("'a' is not a valid masker level.");
         }
         
         void setAudioDevice(std::string s) {
@@ -767,6 +787,19 @@ namespace {
         
         void setMaskerLevel(std::string s) {
             setupView.setMaskerLevel(std::move(s));
+        }
+        
+        void assertAudioVisualConditionPassedToModel(ConditionUseCase &useCase) {
+            setCondition(audioVisualConditionName());
+            run(useCase);
+            EXPECT_EQ(
+                av_coordinate_response_measure::Condition::audioVisual,
+                modelCondition(useCase)
+            );
+        }
+        
+        av_coordinate_response_measure::Condition modelCondition(ConditionUseCase &useCase) {
+            return useCase.condition(model);
         }
     };
 
@@ -874,12 +907,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
-        setCondition(audioVisualConditionName());
-        confirmTestSetup();
-        EXPECT_EQ(
-            av_coordinate_response_measure::Condition::audioVisual,
-            modelTestParameters().condition
-        );
+        assertAudioVisualConditionPassedToModel(confirmingTestSetup);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAuditoryOnlyCondition) {
@@ -892,12 +920,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, playCalibrationPassesAudioVisualCondition) {
-        setCondition(audioVisualConditionName());
-        playCalibration();
-        EXPECT_EQ(
-            av_coordinate_response_measure::Condition::audioVisual,
-            modelCalibrationParameters().condition
-        );
+        assertAudioVisualConditionPassedToModel(playingCalibration);
     }
 
     TEST_F(PresenterTests, playCalibrationPassesAuditoryOnlyCondition) {
