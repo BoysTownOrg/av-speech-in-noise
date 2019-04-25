@@ -428,14 +428,6 @@ namespace {
         };
     };
     
-    class UseCase {
-    public:
-        virtual ~UseCase() = default;
-        virtual void run(
-            av_coordinate_response_measure::View::EventListener &
-        ) = 0;
-    };
-    
     class TestSetupUseCase {
     public:
         virtual ~TestSetupUseCase() = default;
@@ -612,24 +604,12 @@ namespace {
             confirmTestSetup();
         }
         
-        bool testerViewShown() {
-            return testerView.shown();
-        }
-        
-        bool testerViewHidden() {
-            return testerView.hidden();
-        }
-        
-        bool setupViewHidden() {
-            return setupView.hidden();
-        }
-        
-        bool setupViewShown() {
-            return setupView.shown();
-        }
-        
         void assertTesterViewShown() {
             EXPECT_TRUE(testerViewShown());
+        }
+        
+        bool testerViewShown() {
+            return testerView.shown();
         }
         
         void assertTesterViewNotShown() {
@@ -640,6 +620,10 @@ namespace {
             EXPECT_TRUE(testerViewHidden());
         }
         
+        bool testerViewHidden() {
+            return testerView.hidden();
+        }
+        
         void assertTesterViewNotHidden() {
             EXPECT_FALSE(testerViewHidden());
         }
@@ -648,34 +632,62 @@ namespace {
             EXPECT_TRUE(setupViewShown());
         }
         
+        bool setupViewShown() {
+            return setupView.shown();
+        }
+        
         void assertSetupViewHidden() {
             EXPECT_TRUE(setupViewHidden());
+        }
+        
+        bool setupViewHidden() {
+            return setupView.hidden();
         }
         
         void assertSetupViewNotHidden() {
             EXPECT_FALSE(setupViewHidden());
         }
 
-        void run(TestSetupUseCase &useCase) {
-            useCase.run(testSetup);
-        }
-
         void assertBrowseResultPassedToEntry(
             BrowsingEnteredPathUseCase &useCase
         ) {
-            useCase.setResult(view, "a");
+            setBrowsingResult(useCase, "a");
             run(useCase);
-            assertEqual("a", useCase.entry(setupView));
+            assertEntryEquals(useCase, "a");
+        }
+        
+        void setBrowsingResult(
+            BrowsingEnteredPathUseCase &useCase,
+            std::string s
+        ) {
+            useCase.setResult(view, std::move(s));
+        }
+
+        void run(TestSetupUseCase &useCase) {
+            useCase.run(testSetup);
+        }
+        
+        void assertEntryEquals(
+            BrowsingEnteredPathUseCase &useCase,
+            std::string s
+        ) {
+            assertEqual(std::move(s), entry(useCase));
+        }
+        
+        std::string entry(
+            BrowsingEnteredPathUseCase &useCase
+        ) {
+            return useCase.entry(setupView);
         }
 
         void assertCancellingBrowseDoesNotChangePath(
             BrowsingEnteredPathUseCase &useCase
         ) {
             useCase.setEntry(setupView, "a");
-            useCase.setResult(view, "b");
+            setBrowsingResult(useCase, "b");
             view.setBrowseCancelled();
             run(useCase);
-            assertEqual("a", useCase.entry(setupView));
+            assertEntryEquals(useCase, "a");
         }
         
         void completeTrial() {
