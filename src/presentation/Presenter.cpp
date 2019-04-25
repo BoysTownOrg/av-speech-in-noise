@@ -31,14 +31,6 @@ namespace av_coordinate_response_measure {
     void Presenter::run() {
         view->eventLoop();
     }
-
-    void Presenter::newTest() {
-        showTestSetup();
-    }
-
-    void Presenter::openTest() {
-        showTesterView();
-    }
     
     void Presenter::closeTest() {
         if (userCancels())
@@ -131,7 +123,10 @@ namespace av_coordinate_response_measure {
         );
     }
 
-    void Presenter::applyIfBrowseNotCancelled(std::string s, void(TestSetup::*f)(std::string)) {
+    void Presenter::applyIfBrowseNotCancelled(
+        std::string s,
+        void(TestSetup::*f)(std::string)
+    ) {
         if (!view->browseCancelled())
             (testSetup->*f)(std::move(s));
     }
@@ -212,9 +207,7 @@ namespace av_coordinate_response_measure {
     }
     
     bool Presenter::TestSetup::auditoryOnly() {
-        return view->condition() == conditionName(
-            Condition::auditoryOnly
-        );
+        return view->condition() == conditionName(Condition::auditoryOnly);
     }
     
     void Presenter::TestSetup::hide() {

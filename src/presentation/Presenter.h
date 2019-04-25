@@ -13,8 +13,6 @@ namespace av_coordinate_response_measure {
         class EventListener {
         public:
             virtual ~EventListener() = default;
-            virtual void newTest() = 0;
-            virtual void openTest() = 0;
             virtual void closeTest() = 0;
         };
         
@@ -160,8 +158,6 @@ namespace av_coordinate_response_measure {
             Tester *,
             Subject *
         );
-        void newTest() override;
-        void openTest() override;
         void closeTest() override;
         void trialComplete() override;
         void run();

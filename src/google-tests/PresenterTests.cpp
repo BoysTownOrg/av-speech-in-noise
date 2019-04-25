@@ -159,14 +159,6 @@ namespace {
             return eventLoopCalled_;
         }
         
-        void newTest() {
-            listener_->newTest();
-        }
-        
-        void openTest() {
-            listener_->openTest();
-        }
-        
         void close() {
             listener_->closeTest();
         }
@@ -800,16 +792,6 @@ namespace {
     TEST_F(PresenterTests, callsEventLoopWhenRun) {
         presenter.run();
         EXPECT_TRUE(view.eventLoopCalled());
-    }
-
-    TEST_F(PresenterTests, openTestShowsTesterView) {
-        view.openTest();
-        assertTesterViewShown();
-    }
-
-    TEST_F(PresenterTests, newTestShowsTestSetupView) {
-        view.newTest();
-        assertSetupViewShown();
     }
 
     TEST_F(PresenterTests, confirmTestSetupHidesTestSetupView) {
