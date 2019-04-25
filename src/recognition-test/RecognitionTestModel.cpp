@@ -60,7 +60,7 @@ namespace av_coordinate_response_measure {
         s.startingX = p.startingSnr_dB;
         snrTrack->reset(s);
         
-        auto lists = targetListSetReader->read({});
+        auto lists = targetListSetReader->read(p.targetListSetDirectory);
         for (size_t i = 0; i < lists.size(); ++i)
             snrTrackFactory->make(s);
     }

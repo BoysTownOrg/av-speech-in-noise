@@ -545,6 +545,10 @@ namespace {
             test_.targetLevelRule = &targetLevelRule_;
         }
         
+        void setTargetListSetDirectory(std::string s) {
+            test_.targetListSetDirectory = std::move(s);
+        }
+        
         void setTargetListDirectory(std::string s) {
             test_.targetListDirectory = std::move(s);
         }
@@ -654,13 +658,19 @@ namespace {
     
     class TargetListSetReaderStub : public TargetListSetReader {
         std::vector<std::shared_ptr<TargetList>> targetLists_{};
+        std::string directory_{};
     public:
         void setTargetLists(std::vector<std::shared_ptr<TargetList>> lists) {
             targetLists_ = std::move(lists);
         }
         
-        std::vector<std::shared_ptr<TargetList>> read(std::string directory) override {
+        std::vector<std::shared_ptr<TargetList>> read(std::string d) override {
+            directory_ = std::move(d);
             return targetLists_;
+        }
+        
+        auto directory() const {
+            return directory_;
         }
     };
 
@@ -1047,6 +1057,15 @@ namespace {
         initializingTest.setTargetListDirectory("a");
         initializeTest();
         assertEqual("a", targetList.directory());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestPassesTargetListSetDirectory
+    ) {
+        initializingTest.setTargetListSetDirectory("a");
+        initializeTest();
+        assertEqual("a", targetListSetReader.directory());
     }
 
     TEST_F(
