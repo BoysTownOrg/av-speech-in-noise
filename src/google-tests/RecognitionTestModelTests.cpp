@@ -459,7 +459,7 @@ namespace {
             correctNumber_ = x;
         }
         
-        void setCorrectColor(::Color c) {
+        void setCorrectColor(Color c) {
             correctColor_ = c;
         }
         
@@ -534,7 +534,7 @@ namespace {
     class UseCase {
     public:
         virtual ~UseCase() = default;
-        virtual void run(::RecognitionTestModel &) = 0;
+        virtual void run(RecognitionTestModel &) = 0;
     };
     
     class InitializingTest : public UseCase {
@@ -553,7 +553,7 @@ namespace {
             test_.maskerFilePath = std::move(s);
         }
         
-        void run(::RecognitionTestModel &m) override {
+        void run(RecognitionTestModel &m) override {
             m.initializeTest(test_);
         }
         
@@ -600,7 +600,7 @@ namespace {
             trial.audioDevice = std::move(s);
         }
         
-        void run(::RecognitionTestModel &m) override {
+        void run(RecognitionTestModel &m) override {
             m.playTrial(trial);
         }
     };
@@ -612,7 +612,7 @@ namespace {
             calibration.audioDevice = std::move(s);
         }
         
-        void run(::RecognitionTestModel &m) override {
+        void run(RecognitionTestModel &m) override {
             m.playCalibration(calibration);
         }
         
@@ -640,27 +640,26 @@ namespace {
     };
     
     class TrackFactoryStub : public TrackFactory {
-        std::vector<::Track::Settings> parameters_;
+        std::vector<Track::Settings> parameters_;
     public:
         const auto &parameters() {
             return parameters_;
         }
         
-        std::shared_ptr<::Track>
-            make(const Track::Settings &s) override
-        {
+        std::shared_ptr<Track> make(const Track::Settings &s) override {
             parameters_.push_back(s);
             return {};
         }
     };
     
     class TargetListSetReaderStub : public TargetListSetReader {
-        std::vector<std::shared_ptr<::TargetList>> targetLists_{};
+        std::vector<std::shared_ptr<TargetList>> targetLists_{};
     public:
-        void setTargetLists(std::vector<std::shared_ptr<::TargetList>> lists) {
+        void setTargetLists(std::vector<std::shared_ptr<TargetList>> lists) {
             targetLists_ = std::move(lists);
         }
-        std::vector<std::shared_ptr<::TargetList>> read(std::string directory) override {
+        
+        std::vector<std::shared_ptr<TargetList>> read(std::string directory) override {
             return targetLists_;
         }
     };
@@ -994,7 +993,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
-        std::vector<std::shared_ptr<::TargetList>> lists{};
+        std::vector<std::shared_ptr<TargetList>> lists{};
         lists.push_back(std::make_shared<TargetListStub>());
         lists.push_back(std::make_shared<TargetListStub>());
         lists.push_back(std::make_shared<TargetListStub>());
@@ -1007,6 +1006,23 @@ namespace {
                 initializingTest.targetLevelRule(),
                 p.rule
             );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestCreatesEachSnrTrackWithStartingSnr
+    ) {
+        std::vector<std::shared_ptr<TargetList>> lists{};
+        lists.push_back(std::make_shared<TargetListStub>());
+        lists.push_back(std::make_shared<TargetListStub>());
+        lists.push_back(std::make_shared<TargetListStub>());
+        targetListSetReader.setTargetLists(lists);
+        initializingTest.setStartingSnr_dB(1);
+        initializeTest();
+        auto parameters = snrTrackFactory.parameters();
+        EXPECT_EQ(3, parameters.size());
+        for (auto p : parameters)
+            EXPECT_EQ(1, p.startingX);
     }
 
     TEST_F(
