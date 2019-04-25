@@ -132,27 +132,21 @@ namespace av_coordinate_response_measure {
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        std::vector<std::shared_ptr<Track>> tracks{};
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
-        TargetListReader *targetListSetReader;
         MaskerPlayer *maskerPlayer;
         TargetList *targetList;
         TargetPlayer *targetPlayer;
-        TrackFactory *snrTrackFactory;
         Track *snrTrack;
         ResponseEvaluator *evaluator;
         OutputFile *outputFile;
         Randomizer *randomizer;
         Model::EventListener *listener_{};
-        Track *currentSnrTrack{};
     public:
         RecognitionTestModel(
-            TargetListReader *,
             TargetList *,
             TargetPlayer *,
             MaskerPlayer *,
-            TrackFactory *,
             Track *,
             ResponseEvaluator *,
             OutputFile *,

@@ -513,10 +513,6 @@ namespace {
         double randomFloat_{};
         int randomInt_{};
     public:
-        void setRandomInt(int x) {
-            randomInt_ = x;
-        }
-        
         void setRandomFloat(double x) {
             randomFloat_ = x;
         }
@@ -552,10 +548,6 @@ namespace {
     public:
         InitializingTest() {
             test_.targetLevelRule = &targetLevelRule_;
-        }
-        
-        void setTargetListSetDirectory(std::string s) {
-            test_.targetListSetDirectory = std::move(s);
         }
         
         void setTargetListDirectory(std::string s) {
@@ -651,64 +643,22 @@ namespace {
                 Condition::auditoryOnly;
         }
     };
-    
-    class TrackFactoryStub : public TrackFactory {
-        std::vector<Track::Settings> parameters_;
-        std::vector<std::shared_ptr<Track>> tracks_{};
-    public:
-        const auto &parameters() {
-            return parameters_;
-        }
-        
-        std::shared_ptr<Track> make(const Track::Settings &s) override {
-            parameters_.push_back(s);
-            auto track = tracks_.front();
-            tracks_.erase(tracks_.begin());
-            return track;
-        }
-        
-        void setTracks(std::vector<std::shared_ptr<Track>> t) {
-            tracks_ = std::move(t);
-        }
-    };
-    
-    class TargetListSetReaderStub : public TargetListReader {
-        lists_type targetLists_{};
-        std::string directory_{};
-    public:
-        void setTargetLists(lists_type lists) {
-            targetLists_ = std::move(lists);
-        }
-        
-        lists_type read(std::string d) override {
-            directory_ = std::move(d);
-            return targetLists_;
-        }
-        
-        auto directory() const {
-            return directory_;
-        }
-    };
 
     class RecognitionTestModelTests : public testing::Test {
     protected:
         Calibration calibration;
         SubjectResponse subjectResponse;
         TargetListStub targetList{};
-        TargetListSetReaderStub targetListSetReader;
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
         OutputFileStub outputFile{};
         TrackStub snrTrack{};
-        TrackFactoryStub snrTrackFactory{};
         ResponseEvaluatorStub evaluator{};
         RandomizerStub randomizer{};
         RecognitionTestModel model{
-            &targetListSetReader,
             &targetList,
             &targetPlayer,
             &maskerPlayer,
-            &snrTrackFactory,
             &snrTrack,
             &evaluator,
             &outputFile,
@@ -935,19 +885,6 @@ namespace {
         auto trialWritten() {
             return outputFile.trialWritten();
         }
-        
-        void setTargetListCount(int n) {
-            lists.clear();
-            snrTracks.clear();
-            for (int i = 0; i < n; ++i) {
-                lists.push_back(std::make_shared<TargetListStub>());
-                snrTracks.push_back(std::make_shared<TrackStub>());
-            }
-            targetListSetReader.setTargetLists(lists);
-            snrTrackFactory.setTracks(
-                std::vector<std::shared_ptr<Track>>(snrTracks.begin(), snrTracks.end())
-            );
-        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1032,34 +969,6 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestCreatesEachSnrTrackWithTargetLevelRule
-    ) {
-        setTargetListCount(3);
-        initializeTest();
-        auto parameters = snrTrackFactory.parameters();
-        EXPECT_EQ(3, parameters.size());
-        for (auto p : parameters)
-            EXPECT_EQ(
-                initializingTest.targetLevelRule(),
-                p.rule
-            );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestCreatesEachSnrTrackWithStartingSnr
-    ) {
-        setTargetListCount(3);
-        initializingTest.setStartingSnr_dB(1);
-        initializeTest();
-        auto parameters = snrTrackFactory.parameters();
-        EXPECT_EQ(3, parameters.size());
-        for (auto p : parameters)
-            EXPECT_EQ(1, p.startingX);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeTestOpensNewOutputFile
     ) {
         initializeTest();
@@ -1081,15 +990,6 @@ namespace {
         initializingTest.setTargetListDirectory("a");
         initializeTest();
         assertEqual("a", targetList.directory());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestPassesTargetListSetDirectory
-    ) {
-        initializingTest.setTargetListSetDirectory("a");
-        initializeTest();
-        assertEqual("a", targetListSetReader.directory());
     }
 
     TEST_F(
@@ -1206,21 +1106,6 @@ namespace {
         playTrialSetsTargetPlayerLevel
     ) {
         snrTrack.setX(1);
-        initializingTest.setMaskerLevel_dB_SPL(2);
-        initializingTest.setFullScaleLevel_dB_SPL(3);
-        setTargetPlayerRms(4);
-        initializeTest();
-        playTrial();
-        EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialSetsTargetPlayerLevel_2
-    ) {
-        setTargetListCount(15);
-        randomizer.setRandomInt(13);
-        snrTracks.at(13)->setX(1);
         initializingTest.setMaskerLevel_dB_SPL(2);
         initializingTest.setFullScaleLevel_dB_SPL(3);
         setTargetPlayerRms(4);

@@ -4,26 +4,21 @@
 
 namespace av_coordinate_response_measure {
     RecognitionTestModel::RecognitionTestModel(
-        TargetListReader *targetListSetReader,
         TargetList *targetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
-        TrackFactory *snrTrackFactory,
         Track *snrTrack,
         ResponseEvaluator *evaluator,
         OutputFile *outputFile,
         Randomizer *randomizer
     ) :
-        targetListSetReader{targetListSetReader},
         maskerPlayer{maskerPlayer},
         targetList{targetList},
         targetPlayer{targetPlayer},
-        snrTrackFactory{snrTrackFactory},
         snrTrack{snrTrack},
         evaluator{evaluator},
         outputFile{outputFile},
-        randomizer{randomizer},
-        currentSnrTrack{snrTrack}
+        randomizer{randomizer}
     {
         targetPlayer->subscribe(this);
         maskerPlayer->subscribe(this);
@@ -60,14 +55,6 @@ namespace av_coordinate_response_measure {
         s.rule = p.targetLevelRule;
         s.startingX = p.startingSnr_dB;
         snrTrack->reset(s);
-        
-        auto lists = targetListSetReader->read(p.targetListSetDirectory);
-        tracks.clear();
-        for (size_t i = 0; i < lists.size(); ++i)
-            tracks.push_back(snrTrackFactory->make(s));
-        size_t n = randomizer->randomIntBetween({}, {});
-        if (n < tracks.size())
-            currentSnrTrack = tracks.at(n).get();
     }
     
     void RecognitionTestModel::prepareOutputFile(const Test &p) {
@@ -192,7 +179,7 @@ namespace av_coordinate_response_measure {
     }
     
     int RecognitionTestModel::SNR_dB() {
-        return currentSnrTrack->x();
+        return snrTrack->x();
     }
     
     double RecognitionTestModel::unalteredTargetLevel_dB() {
