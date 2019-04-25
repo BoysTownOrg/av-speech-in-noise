@@ -12,24 +12,6 @@ static NSTextField *allocLabel(NSString *label, NSRect frame) {
     return text;
 }
 
-CocoaTesterView::CocoaTesterView(NSRect r) :
-    view_{[[NSView alloc] initWithFrame:r]}
-{
-    [view_ setHidden:YES];
-}
-
-NSView *CocoaTesterView::view() {
-    return view_;
-}
-
-void CocoaTesterView::show() {
-    [view_ setHidden:NO];
-}
-
-void CocoaTesterView::hide() {
-    [view_ setHidden:YES];
-}
-
 static constexpr auto labelHeight = 22;
 static constexpr auto labelWidth = 140;
 static constexpr auto labelToTextFieldSpacing = 5;

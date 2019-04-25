@@ -204,10 +204,8 @@ int main() {
     testSetupView.setTargetListDirectory(
         "/Users/basset/Documents/Lalonde/Lalonde-coordinate-response/Seth Mars Attack"
     );
-    CocoaTesterView testerView{testerContentFrame};
     CocoaView view{testerWindowFrame};
     view.addSubview(testSetupView.view());
-    view.addSubview(testerView.view());
     view.center();
     auto subjectScreenSize = subjectScreenFrame.size;
     auto subjectViewHeight = subjectScreenSize.height / 4;
@@ -221,14 +219,12 @@ int main() {
         subjectViewWidth,
         subjectViewHeight
     )};
-    av_coordinate_response_measure::Presenter::Tester tester{&testerView};
     av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
     av_coordinate_response_measure::Presenter::TestSetup testSetup{&testSetupView};
     av_coordinate_response_measure::Presenter presenter{
         &model,
         &view,
         &testSetup,
-        &tester,
         &subject
     };
     presenter.run();

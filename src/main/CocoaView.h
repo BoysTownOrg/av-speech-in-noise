@@ -23,15 +23,6 @@ class CocoaSubjectView;
 - (void) playTrial;
 @end
 
-class CocoaTesterView : public av_coordinate_response_measure::View::Tester {
-    NSView *view_;
-public:
-    CocoaTesterView(NSRect);
-    void show() override;
-    void hide() override;
-    NSView *view();
-};
-
 class CocoaTestSetupView : public av_coordinate_response_measure::View::TestSetup {
     NSView *view_;
     NSTextField *subjectIdLabel;
