@@ -9,11 +9,6 @@ namespace av_coordinate_response_measure {
     class View {
     public:
         virtual ~View() = default;
-
-        class EventListener {
-        public:
-            virtual ~EventListener() = default;
-        };
         
         class Subject {
         public:
@@ -75,7 +70,6 @@ namespace av_coordinate_response_measure {
             virtual void populateConditionMenu(std::vector<std::string> items) = 0;
         };
         
-        virtual void subscribe(EventListener *) = 0;
         virtual void eventLoop() = 0;
         virtual std::string browseForDirectory() = 0;
         virtual std::string browseForOpeningFile() = 0;
@@ -92,7 +86,6 @@ namespace av_coordinate_response_measure {
     };
 
     class Presenter :
-        public View::EventListener,
         public Model::EventListener
     {
     public:

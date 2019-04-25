@@ -105,7 +105,6 @@ namespace {
         std::string browseForOpeningFileResult_{};
         std::string audioDevice_{};
         DialogResponse dialogResponse_{};
-        EventListener *listener_{};
         bool eventLoopCalled_{};
         bool confirmationDialogShown_{};
         bool browseCancelled_{};
@@ -120,14 +119,6 @@ namespace {
         
         auto errorMessage() {
             return errorMessage_;
-        }
-        
-        auto listener() const {
-            return listener_;
-        }
-        
-        void subscribe(EventListener *listener) override {
-            listener_ = listener;
         }
         
         void eventLoop() override {
@@ -819,10 +810,6 @@ namespace {
             model.setTestComplete();
         }
     };
-
-    TEST_F(PresenterTests, subscribesToViewEvents) {
-        EXPECT_EQ(&presenter, view.listener());
-    }
 
     TEST_F(PresenterTests, populatesConditionMenu) {
         assertSetupViewConditionsContains(auditoryOnlyConditionName());

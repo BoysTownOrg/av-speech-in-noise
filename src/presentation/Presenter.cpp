@@ -22,7 +22,6 @@ namespace av_coordinate_response_measure {
         subject{subject}
     {
         model->subscribe(this);
-        view->subscribe(this);
         testSetup->becomeChild(this);
         subject->becomeChild(this);
         view->populateAudioDeviceMenu(model->audioDevices());
