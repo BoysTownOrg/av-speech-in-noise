@@ -117,7 +117,6 @@ class CocoaView : public av_coordinate_response_measure::View {
 public:
     CocoaView(NSRect);
     void eventLoop() override;
-    DialogResponse showConfirmationDialog() override;
     void showErrorMessage(std::string) override;
     std::string browseForDirectory() override;
     bool browseCancelled() override;

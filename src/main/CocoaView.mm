@@ -557,23 +557,6 @@ void CocoaView::eventLoop() {
     [app run];
 }
 
-auto CocoaView::showConfirmationDialog() -> DialogResponse {
-    const auto alert = [[NSAlert alloc] init];
-    [alert setMessageText:@"Are you sure?"];
-    [alert setInformativeText:@"huehuehue"];
-    [alert addButtonWithTitle:@"Cancel"];
-    [alert addButtonWithTitle:@"No"];
-    [alert addButtonWithTitle:@"Yes"];
-    switch([alert runModal]) {
-        case NSAlertSecondButtonReturn:
-            return DialogResponse::decline;
-        case NSAlertThirdButtonReturn:
-            return DialogResponse::accept;
-        default:
-            return DialogResponse::cancel;
-    }
-}
-
 void CocoaView::showErrorMessage(std::string s) {
     auto alert = [[NSAlert alloc] init];
     [alert setMessageText:@"Error."];
