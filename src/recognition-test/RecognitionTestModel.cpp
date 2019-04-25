@@ -7,6 +7,7 @@ namespace av_coordinate_response_measure {
         TargetList *targetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
+        TrackFactory *snrTrackFactory,
         Track *snrTrack,
         ResponseEvaluator *evaluator,
         OutputFile *outputFile,
@@ -15,6 +16,7 @@ namespace av_coordinate_response_measure {
         maskerPlayer{maskerPlayer},
         targetList{targetList},
         targetPlayer{targetPlayer},
+        snrTrackFactory{snrTrackFactory},
         snrTrack{snrTrack},
         evaluator{evaluator},
         outputFile{outputFile},
@@ -55,6 +57,9 @@ namespace av_coordinate_response_measure {
         s.rule = p.targetLevelRule;
         s.startingX = p.startingSnr_dB;
         snrTrack->reset(s);
+        
+        for (int i = 0; i < 3; ++i)
+            snrTrackFactory->make(s);
     }
     
     void RecognitionTestModel::prepareOutputFile(const Test &p) {

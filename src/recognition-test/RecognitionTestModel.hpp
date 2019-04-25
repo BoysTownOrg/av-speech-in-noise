@@ -70,6 +70,12 @@ namespace av_coordinate_response_measure {
         virtual bool complete() = 0;
         virtual int reversals() = 0;
     };
+    
+    class TrackFactory {
+    public:
+        virtual ~TrackFactory() = default;
+        virtual std::shared_ptr<Track> make(const Track::Settings &) = 0;
+    };
 
     class TargetList {
     public:
@@ -123,6 +129,7 @@ namespace av_coordinate_response_measure {
         MaskerPlayer *maskerPlayer;
         TargetList *targetList;
         TargetPlayer *targetPlayer;
+        TrackFactory *snrTrackFactory;
         Track *snrTrack;
         ResponseEvaluator *evaluator;
         OutputFile *outputFile;
@@ -133,6 +140,7 @@ namespace av_coordinate_response_measure {
             TargetList *,
             TargetPlayer *,
             MaskerPlayer *,
+            TrackFactory *,
             Track *,
             ResponseEvaluator *,
             OutputFile *,

@@ -388,7 +388,7 @@ namespace {
     };
     
     class TrackStub : public av_coordinate_response_measure::Track {
-        Settings settings_{};
+        Settings settings_;
         int x_{};
         int reversals_{};
         bool pushedDown_{};
@@ -536,8 +536,13 @@ namespace {
     };
     
     class InitializingTest : public UseCase {
-        av_coordinate_response_measure::Test test_{};
+        av_coordinate_response_measure::Test test_;
+        av_coordinate_response_measure::TrackingRule targetLevelRule_;
     public:
+        InitializingTest() {
+            test_.targetLevelRule = &targetLevelRule_;
+        }
+        
         void setTargetListDirectory(std::string s) {
             test_.targetListDirectory = std::move(s);
         }
@@ -573,7 +578,7 @@ namespace {
         }
         
         auto targetLevelRule() const {
-            return test_.targetLevelRule;
+            return &targetLevelRule_;
         }
         
         auto &test() const {
@@ -631,6 +636,21 @@ namespace {
                 av_coordinate_response_measure::Condition::auditoryOnly;
         }
     };
+    
+    class TrackFactoryStub : public av_coordinate_response_measure::TrackFactory {
+        std::vector<av_coordinate_response_measure::Track::Settings> parameters_;
+    public:
+        const auto &parameters() {
+            return parameters_;
+        }
+        
+        std::shared_ptr<av_coordinate_response_measure::Track>
+            make(const av_coordinate_response_measure::Track::Settings &s) override
+        {
+            parameters_.push_back(s);
+            return {};
+        }
+    };
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
@@ -641,12 +661,14 @@ namespace {
         MaskerPlayerStub maskerPlayer{};
         OutputFileStub outputFile{};
         TrackStub snrTrack{};
+        TrackFactoryStub snrTrackFactory{};
         ResponseEvaluatorStub evaluator{};
         RandomizerStub randomizer{};
         av_coordinate_response_measure::RecognitionTestModel model{
             &targetList,
             &targetPlayer,
             &maskerPlayer,
+            &snrTrackFactory,
             &snrTrack,
             &evaluator,
             &outputFile,
@@ -871,6 +893,16 @@ namespace {
         auto trialWritten() {
             return outputFile.trialWritten();
         }
+        
+        void assertAllSnrTracksReceivedTargetLevelRule() {
+            auto parameters = snrTrackFactory.parameters();
+            EXPECT_EQ(3, parameters.size());
+            for (auto p : parameters)
+                EXPECT_EQ(
+                    initializingTest.targetLevelRule(),
+                    p.rule
+                );
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -951,6 +983,14 @@ namespace {
         initializingTest.setStartingSnr_dB(1);
         initializeTest();
         EXPECT_EQ(1, snrTrack.settings().startingX);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestCreatesEachSnrTrackWithTargetLevelRule
+    ) {
+        initializeTest();
+        assertAllSnrTracksReceivedTargetLevelRule();
     }
 
     TEST_F(
