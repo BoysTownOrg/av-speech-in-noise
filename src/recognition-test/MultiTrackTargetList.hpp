@@ -23,20 +23,20 @@ namespace av_coordinate_response_measure {
         virtual std::vector<std::string> subDirectories(std::string directory) = 0;
     };
     
-    class MultiTrackTargetList : public Track, public TargetList {
+    class MultiTrackTargetList : public TargetList {
         TargetListFactory *targetListFactory;
         DirectoryReader *directoryReader;
     public:
+        class EventListener {
+        public:
+            virtual ~EventListener() = default;
+            void listsLoaded(int);
+            void listSelected(int);
+        };
         MultiTrackTargetList(TargetListFactory *, DirectoryReader *);
         void loadFromDirectory(std::string directory) override;
         std::string next() override;
         std::string current() override;
-        void reset(const Track::Settings &) override;
-        void pushDown() override;
-        void pushUp() override;
-        int x() override;
-        bool complete() override;
-        int reversals() override;
     };
 }
 
