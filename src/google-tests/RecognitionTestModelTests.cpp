@@ -907,6 +907,13 @@ namespace {
         auto trialWritten() {
             return outputFile.trialWritten();
         }
+        
+        void setTargetListCount(int n) {
+            std::vector<std::shared_ptr<TargetList>> lists{};
+            for (int i = 0; i < n; ++i)
+                lists.push_back(std::make_shared<TargetListStub>());
+            targetListSetReader.setTargetLists(lists);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -993,11 +1000,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
-        std::vector<std::shared_ptr<TargetList>> lists{};
-        lists.push_back(std::make_shared<TargetListStub>());
-        lists.push_back(std::make_shared<TargetListStub>());
-        lists.push_back(std::make_shared<TargetListStub>());
-        targetListSetReader.setTargetLists(lists);
+        setTargetListCount(3);
         initializeTest();
         auto parameters = snrTrackFactory.parameters();
         EXPECT_EQ(3, parameters.size());
@@ -1012,11 +1015,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithStartingSnr
     ) {
-        std::vector<std::shared_ptr<TargetList>> lists{};
-        lists.push_back(std::make_shared<TargetListStub>());
-        lists.push_back(std::make_shared<TargetListStub>());
-        lists.push_back(std::make_shared<TargetListStub>());
-        targetListSetReader.setTargetLists(lists);
+        setTargetListCount(3);
         initializingTest.setStartingSnr_dB(1);
         initializeTest();
         auto parameters = snrTrackFactory.parameters();
