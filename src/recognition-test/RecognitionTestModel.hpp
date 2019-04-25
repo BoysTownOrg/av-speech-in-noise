@@ -171,8 +171,8 @@ namespace av_coordinate_response_measure {
         void seekRandomMaskerPosition();
         void preparePlayers(const AudioSettings &);
         void startTrial();
-        bool auditoryOnly(const Test &);
-        void prepareVideo(const Test &);
+        bool auditoryOnly(const Condition &);
+        void prepareVideo(const Condition &);
         int desiredMaskerLevel_dB();
         double unalteredTargetLevel_dB();
         int SNR_dB();

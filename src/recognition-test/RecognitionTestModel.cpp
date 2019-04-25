@@ -38,7 +38,7 @@ namespace av_coordinate_response_measure {
         prepareOutputFile(p);
         prepareMasker(p);
         prepareTargets(p);
-        prepareVideo(p);
+        prepareVideo(p.condition);
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -97,15 +97,15 @@ namespace av_coordinate_response_measure {
         targetList->loadFromDirectory(p.targetListDirectory);
     }
     
-    void RecognitionTestModel::prepareVideo(const Test &p) {
+    void RecognitionTestModel::prepareVideo(const Condition &p) {
         if (auditoryOnly(p))
             targetPlayer->hideVideo();
         else
             targetPlayer->showVideo();
     }
 
-    bool RecognitionTestModel::auditoryOnly(const Test &p) {
-        return p.condition == Condition::auditoryOnly;
+    bool RecognitionTestModel::auditoryOnly(const Condition &c) {
+        return c == Condition::auditoryOnly;
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
@@ -256,10 +256,7 @@ namespace av_coordinate_response_measure {
         setTargetPlayerDevice(p);
         loadTargetFile(p.filePath);
         trySettingTargetLevel(p);
-        if (p.condition == Condition::auditoryOnly)
-            targetPlayer->hideVideo();
-        else
-            targetPlayer->showVideo();
+        prepareVideo(p.condition);
         playTarget();
     }
     
