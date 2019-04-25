@@ -620,6 +620,16 @@ namespace {
         void setFullScaleLevel_dB_SPL(int x) {
             calibration.fullScaleLevel_dB_SPL = x;
         }
+        
+        void setAudioVisual() {
+            calibration.condition =
+                av_coordinate_response_measure::Condition::audioVisual;
+        }
+        
+        void setAuditoryOnly() {
+            calibration.condition =
+                av_coordinate_response_measure::Condition::auditoryOnly;
+        }
     };
 
     class RecognitionTestModelTests : public ::testing::Test {
@@ -883,6 +893,24 @@ namespace {
     ) {
         initializingTest.setAudioVisual();
         initializeTest();
+        assertTargetVideoOnlyShown();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationHidesTargetVideoWhenAuditoryOnly
+    ) {
+        playingCalibration.setAuditoryOnly();
+        playCalibration();
+        assertTargetVideoOnlyHidden();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playCalibrationShowsTargetVideoWhenAudioVisual
+    ) {
+        playingCalibration.setAudioVisual();
+        playCalibration();
         assertTargetVideoOnlyShown();
     }
 

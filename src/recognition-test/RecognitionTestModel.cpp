@@ -256,6 +256,10 @@ namespace av_coordinate_response_measure {
         setTargetPlayerDevice(p);
         loadTargetFile(p.filePath);
         trySettingTargetLevel(p);
+        if (p.condition == Condition::auditoryOnly)
+            targetPlayer->hideVideo();
+        else
+            targetPlayer->showVideo();
         playTarget();
     }
     
