@@ -651,12 +651,24 @@ namespace {
             return {};
         }
     };
+    
+    class TargetListSetReaderStub : public av_coordinate_response_measure::TargetListSetReader {
+        std::vector<std::shared_ptr<av_coordinate_response_measure::TargetList>> targetLists_{};
+    public:
+        void setTargetLists(std::vector<std::shared_ptr<av_coordinate_response_measure::TargetList>> lists) {
+            targetLists_ = std::move(lists);
+        }
+        std::vector<std::shared_ptr<av_coordinate_response_measure::TargetList>> read(std::string directory) override {
+            return targetLists_;
+        }
+    };
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
         av_coordinate_response_measure::Calibration calibration;
         av_coordinate_response_measure::SubjectResponse subjectResponse;
         TargetListStub targetList{};
+        TargetListSetReaderStub targetListSetReader;
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
         OutputFileStub outputFile{};
@@ -665,6 +677,7 @@ namespace {
         ResponseEvaluatorStub evaluator{};
         RandomizerStub randomizer{};
         av_coordinate_response_measure::RecognitionTestModel model{
+            &targetListSetReader,
             &targetList,
             &targetPlayer,
             &maskerPlayer,
@@ -893,16 +906,6 @@ namespace {
         auto trialWritten() {
             return outputFile.trialWritten();
         }
-        
-        void assertAllSnrTracksReceivedTargetLevelRule() {
-            auto parameters = snrTrackFactory.parameters();
-            EXPECT_EQ(3, parameters.size());
-            for (auto p : parameters)
-                EXPECT_EQ(
-                    initializingTest.targetLevelRule(),
-                    p.rule
-                );
-        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -989,8 +992,19 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
+        std::vector<std::shared_ptr<av_coordinate_response_measure::TargetList>> lists{};
+        lists.push_back(std::make_shared<TargetListStub>());
+        lists.push_back(std::make_shared<TargetListStub>());
+        lists.push_back(std::make_shared<TargetListStub>());
+        targetListSetReader.setTargetLists(lists);
         initializeTest();
-        assertAllSnrTracksReceivedTargetLevelRule();
+        auto parameters = snrTrackFactory.parameters();
+        EXPECT_EQ(3, parameters.size());
+        for (auto p : parameters)
+            EXPECT_EQ(
+                initializingTest.targetLevelRule(),
+                p.rule
+            );
     }
 
     TEST_F(

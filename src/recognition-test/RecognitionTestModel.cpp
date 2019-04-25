@@ -4,6 +4,7 @@
 
 namespace av_coordinate_response_measure {
     RecognitionTestModel::RecognitionTestModel(
+        TargetListSetReader *targetListSetReader,
         TargetList *targetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
@@ -13,6 +14,7 @@ namespace av_coordinate_response_measure {
         OutputFile *outputFile,
         Randomizer *randomizer
     ) :
+        targetListSetReader{targetListSetReader},
         maskerPlayer{maskerPlayer},
         targetList{targetList},
         targetPlayer{targetPlayer},
@@ -58,7 +60,8 @@ namespace av_coordinate_response_measure {
         s.startingX = p.startingSnr_dB;
         snrTrack->reset(s);
         
-        for (int i = 0; i < 3; ++i)
+        auto lists = targetListSetReader->read({});
+        for (size_t i = 0; i < lists.size(); ++i)
             snrTrackFactory->make(s);
     }
     

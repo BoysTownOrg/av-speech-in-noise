@@ -85,6 +85,12 @@ namespace av_coordinate_response_measure {
         virtual std::string current() = 0;
     };
     
+    class TargetListSetReader {
+    public:
+        virtual ~TargetListSetReader() = default;
+        virtual std::vector<std::shared_ptr<TargetList>> read(std::string directory) = 0;
+    };
+    
     class ResponseEvaluator {
     public:
         virtual ~ResponseEvaluator() = default;
@@ -126,6 +132,7 @@ namespace av_coordinate_response_measure {
     {
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
+        TargetListSetReader *targetListSetReader;
         MaskerPlayer *maskerPlayer;
         TargetList *targetList;
         TargetPlayer *targetPlayer;
@@ -137,6 +144,7 @@ namespace av_coordinate_response_measure {
         Model::EventListener *listener_{};
     public:
         RecognitionTestModel(
+            TargetListSetReader *,
             TargetList *,
             TargetPlayer *,
             MaskerPlayer *,
