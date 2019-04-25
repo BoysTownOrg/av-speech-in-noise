@@ -801,6 +801,15 @@ namespace {
         av_coordinate_response_measure::Condition modelCondition(ConditionUseCase &useCase) {
             return useCase.condition(model);
         }
+        
+        void assertAuditoryOnlyConditionPassedToModel(ConditionUseCase &useCase) {
+            setCondition(auditoryOnlyConditionName());
+            run(useCase);
+            EXPECT_EQ(
+                av_coordinate_response_measure::Condition::auditoryOnly,
+                modelCondition(useCase)
+            );
+        }
     };
 
     TEST_F(PresenterTests, subscribesToViewEvents) {
@@ -911,12 +920,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAuditoryOnlyCondition) {
-        setCondition(auditoryOnlyConditionName());
-        confirmTestSetup();
-        EXPECT_EQ(
-            av_coordinate_response_measure::Condition::auditoryOnly,
-            modelTestParameters().condition
-        );
+        assertAuditoryOnlyConditionPassedToModel(confirmingTestSetup);
     }
 
     TEST_F(PresenterTests, playCalibrationPassesAudioVisualCondition) {
@@ -924,12 +928,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, playCalibrationPassesAuditoryOnlyCondition) {
-        setCondition(auditoryOnlyConditionName());
-        playCalibration();
-        EXPECT_EQ(
-            av_coordinate_response_measure::Condition::auditoryOnly,
-            modelCalibrationParameters().condition
-        );
+        assertAuditoryOnlyConditionPassedToModel(playingCalibration);
     }
 
     TEST_F(
