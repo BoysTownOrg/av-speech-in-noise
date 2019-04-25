@@ -70,12 +70,6 @@ namespace av_coordinate_response_measure {
         virtual bool complete() = 0;
         virtual int reversals() = 0;
     };
-    
-    class TrackFactory {
-    public:
-        virtual ~TrackFactory() = default;
-        virtual std::shared_ptr<Track> make(const Track::Settings &) = 0;
-    };
 
     class TargetList {
     public:
