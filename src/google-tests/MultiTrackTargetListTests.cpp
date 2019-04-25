@@ -58,9 +58,15 @@ namespace {
     
     class DirectoryReaderStub : public DirectoryReader {
         std::vector<std::string> subDirectories_{};
+        std::string directory_{};
     public:
-        std::vector<std::string> subDirectories(std::string directory) override {
+        std::vector<std::string> subDirectories(std::string d) override {
+            directory_ = std::move(d);
             return subDirectories_;
+        }
+        
+        auto directory() const {
+            return directory_;
         }
         
         void setSubDirectories(std::vector<std::string> v) {
@@ -90,5 +96,10 @@ namespace {
         assertEqual("a", lists.at(0)->directory());
         assertEqual("b", lists.at(1)->directory());
         assertEqual("c", lists.at(2)->directory());
+    }
+    
+    TEST_F(MultiTrackTargetListTests, loadFromDirectoryPassesDirectory) {
+        list.loadFromDirectory("a");
+        assertEqual("a", directoryReader.directory());
     }
 }

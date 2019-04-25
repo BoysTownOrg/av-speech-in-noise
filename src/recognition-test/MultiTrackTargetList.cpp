@@ -16,7 +16,7 @@ namespace av_coordinate_response_measure {
         directoryReader{directoryReader} {}
     
     void MultiTrackTargetList::loadFromDirectory(std::string directory) {
-        auto subDirectories = directoryReader->subDirectories({});
+        auto subDirectories = directoryReader->subDirectories(std::move(directory));
         for (auto d : subDirectories) {
             auto targetList = targetListFactory->make();
             targetList->loadFromDirectory(d);
