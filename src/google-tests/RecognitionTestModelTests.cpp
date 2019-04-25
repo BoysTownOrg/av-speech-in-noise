@@ -656,15 +656,15 @@ namespace {
         }
     };
     
-    class TargetListSetReaderStub : public TargetListSetReader {
-        std::vector<std::shared_ptr<TargetList>> targetLists_{};
+    class TargetListSetReaderStub : public TargetListReader {
+        lists_type targetLists_{};
         std::string directory_{};
     public:
-        void setTargetLists(std::vector<std::shared_ptr<TargetList>> lists) {
+        void setTargetLists(lists_type lists) {
             targetLists_ = std::move(lists);
         }
         
-        std::vector<std::shared_ptr<TargetList>> read(std::string d) override {
+        lists_type read(std::string d) override {
             directory_ = std::move(d);
             return targetLists_;
         }
@@ -702,6 +702,7 @@ namespace {
         InitializingTest initializingTest{};
         PlayingTrial playingTrial{};
         PlayingCalibration playingCalibration{};
+        TargetListReader::lists_type lists{};
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
@@ -919,7 +920,7 @@ namespace {
         }
         
         void setTargetListCount(int n) {
-            std::vector<std::shared_ptr<TargetList>> lists{};
+            lists.clear();
             for (int i = 0; i < n; ++i)
                 lists.push_back(std::make_shared<TargetListStub>());
             targetListSetReader.setTargetLists(lists);

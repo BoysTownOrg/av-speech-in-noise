@@ -4,7 +4,7 @@
 
 namespace av_coordinate_response_measure {
     RecognitionTestModel::RecognitionTestModel(
-        TargetListSetReader *targetListSetReader,
+        TargetListReader *targetListSetReader,
         TargetList *targetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
