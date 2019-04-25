@@ -100,7 +100,6 @@ namespace {
         std::string browseForDirectoryResult_{};
         std::string browseForOpeningFileResult_{};
         std::string audioDevice_{};
-        DialogResponse dialogResponse_{};
         bool eventLoopCalled_{};
         bool confirmationDialogShown_{};
         bool browseCancelled_{};
@@ -119,11 +118,6 @@ namespace {
         
         void eventLoop() override {
             eventLoopCalled_ = true;
-        }
-        
-        DialogResponse showConfirmationDialog() override {
-            confirmationDialogShown_ = true;
-            return dialogResponse_;
         }
         
         std::string browseForDirectory() override {

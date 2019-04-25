@@ -70,12 +70,6 @@ namespace av_coordinate_response_measure {
         virtual void populateAudioDeviceMenu(std::vector<std::string>) = 0;
         virtual bool browseCancelled() = 0;
         virtual void showErrorMessage(std::string) = 0;
-        enum class DialogResponse {
-            decline,
-            accept,
-            cancel
-        };
-        virtual DialogResponse showConfirmationDialog() = 0;
     };
 
     class Presenter :

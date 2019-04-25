@@ -28,10 +28,6 @@ namespace av_coordinate_response_measure {
     void Presenter::run() {
         view->eventLoop();
     }
-
-    bool Presenter::userCancels() {
-        return view->showConfirmationDialog() == View::DialogResponse::cancel;
-    }
     
     void Presenter::confirmTestSetup() {
         try {
@@ -85,9 +81,8 @@ namespace av_coordinate_response_measure {
     }
     
     void Presenter::proceedToNextTrial() {
-        if (model->testComplete()) {
+        if (model->testComplete())
             showTestSetup();
-        }
         else
             showNextTrialButton();
     }
