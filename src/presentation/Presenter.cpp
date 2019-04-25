@@ -190,12 +190,16 @@ namespace av_coordinate_response_measure {
         p.subjectId = view->subjectId();
         p.testerId = view->testerId();
         p.session = view->session();
-        p.condition = auditoryOnly()
-            ? Condition::auditoryOnly
-            : Condition::audioVisual;
+        p.condition = readCondition();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         p.targetLevelRule = &targetLevelRule;
         return p;
+    }
+    
+    Condition Presenter::TestSetup::readCondition() {
+        return auditoryOnly()
+            ? Condition::auditoryOnly
+            : Condition::audioVisual;
     }
     
     int Presenter::TestSetup::readInteger(std::string x, std::string identifier) {
@@ -226,9 +230,7 @@ namespace av_coordinate_response_measure {
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readCalibrationLevel();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
-        p.condition = auditoryOnly()
-            ? Condition::auditoryOnly
-            : Condition::audioVisual;
+        p.condition = readCondition();
         return p;
     }
     

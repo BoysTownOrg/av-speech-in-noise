@@ -116,6 +116,7 @@ namespace av_coordinate_response_measure {
             Test testParameters();
             Calibration calibrationParameters();
         private:
+            Condition readCondition();
             int readMaskerLevel();
             int readCalibrationLevel();
             int readInteger(std::string x, std::string identifier);
