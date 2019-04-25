@@ -72,9 +72,7 @@ namespace av_coordinate_response_measure {
         virtual void showErrorMessage(std::string) = 0;
     };
 
-    class Presenter :
-        public Model::EventListener
-    {
+    class Presenter : public Model::EventListener {
     public:
         class TestSetup : public View::TestSetup::EventListener {
         public:
@@ -143,12 +141,9 @@ namespace av_coordinate_response_measure {
         void showErrorMessage(std::string);
         RUNTIME_ERROR(BadInput)
         void playCalibration_();
-        void hideTesterView();
         void showTestSetup();
         void proceedToNextTrial();
-        bool userCancels();
         void hideTestSetup();
-        void showTesterView();
         void hideResponseButtons();
         void showNextTrialButton();
         void hideNextTrialButton();

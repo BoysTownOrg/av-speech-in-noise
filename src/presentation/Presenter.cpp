@@ -37,10 +37,6 @@ namespace av_coordinate_response_measure {
         }
     }
     
-    void Presenter::showErrorMessage(std::string e) {
-        view->showErrorMessage(std::move(e));
-    }
-    
     void Presenter::initializeTest_() {
         model->initializeTest(testSetup->testParameters());
         hideTestSetup();
@@ -51,6 +47,14 @@ namespace av_coordinate_response_measure {
         testSetup->hide();
     }
     
+    void Presenter::showNextTrialButton() {
+        subject->showNextTrialButton();
+    }
+    
+    void Presenter::showErrorMessage(std::string e) {
+        view->showErrorMessage(std::move(e));
+    }
+    
     void Presenter::playTrial() {
         hideNextTrialButton();
         AudioSettings p;
@@ -58,16 +62,12 @@ namespace av_coordinate_response_measure {
         model->playTrial(p);
     }
     
-    void Presenter::showNextTrialButton() {
-        subject->showNextTrialButton();
-    }
-    
     void Presenter::hideNextTrialButton() {
         subject->hideNextTrialButton();
     }
     
-    void Presenter::hideResponseButtons() {
-        subject->hideResponseButtons();
+    void Presenter::trialComplete() {
+        showResponseButtons();
     }
     
     void Presenter::showResponseButtons() {
@@ -80,6 +80,10 @@ namespace av_coordinate_response_measure {
         proceedToNextTrial();
     }
     
+    void Presenter::hideResponseButtons() {
+        subject->hideResponseButtons();
+    }
+    
     void Presenter::proceedToNextTrial() {
         if (model->testComplete())
             showTestSetup();
@@ -89,6 +93,20 @@ namespace av_coordinate_response_measure {
     
     void Presenter::showTestSetup() {
         testSetup->show();
+    }
+    
+    void Presenter::playCalibration() {
+        try {
+            playCalibration_();
+        } catch (const std::runtime_error &e) {
+            showErrorMessage(e.what());
+        }
+    }
+    
+    void Presenter::playCalibration_() {
+        auto p = testSetup->calibrationParameters();
+        p.audioDevice = view->audioDevice();
+        model->playCalibration(p);
     }
     
     void Presenter::browseForTargetList() {
@@ -118,24 +136,6 @@ namespace av_coordinate_response_measure {
             view->browseForOpeningFile(),
             &TestSetup::setCalibrationFilePath
         );
-    }
-    
-    void Presenter::trialComplete() {
-        showResponseButtons();
-    }
-    
-    void Presenter::playCalibration() {
-        try {
-            playCalibration_();
-        } catch (const std::runtime_error &e) {
-            showErrorMessage(e.what());
-        }
-    }
-    
-    void Presenter::playCalibration_() {
-        auto p = testSetup->calibrationParameters();
-        p.audioDevice = view->audioDevice();
-        model->playCalibration(p);
     }
     
 
@@ -241,6 +241,7 @@ namespace av_coordinate_response_measure {
     void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
         view->setCalibrationFilePath(std::move(s));
     }
+
 
     Presenter::Subject::Subject(View::Subject *view) :
         view{view}
