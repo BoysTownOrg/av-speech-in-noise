@@ -159,18 +159,6 @@ namespace {
             return eventLoopCalled_;
         }
         
-        void close() {
-            listener_->closeTest();
-        }
-        
-        auto confirmationDialogShown() const {
-            return confirmationDialogShown_;
-        }
-        
-        void setDialogResponse(DialogResponse response) {
-            dialogResponse_ = response;
-        }
-        
         void setBrowseForDirectoryResult(std::string s) {
             browseForDirectoryResult_ = std::move(s);
         }
@@ -730,16 +718,6 @@ namespace {
             EXPECT_EQ(c, model.responseParameters().color);
         }
         
-        void close() {
-            view.close();
-        }
-        
-        void setDialogResponse(
-            av_coordinate_response_measure::View::DialogResponse r
-        ) {
-            view.setDialogResponse(r);
-        }
-        
         const av_coordinate_response_measure::Test &modelTestParameters() {
             return model.testParameters();
         }
@@ -1034,29 +1012,6 @@ namespace {
     TEST_F(PresenterTests, subjectResponseHidesResponseButtons) {
         submitResponse();
         assertResponseButtonsHidden();
-    }
-
-    TEST_F(PresenterTests, closingTestPromptsTesterToSave) {
-        close();
-        EXPECT_TRUE(view.confirmationDialogShown());
-    }
-
-    TEST_F(PresenterTests, closingTestHidesTesterViewIfUserDeclinesSaving) {
-        setDialogResponse(av_coordinate_response_measure::View::DialogResponse::decline);
-        close();
-        assertTesterViewHidden();
-    }
-
-    TEST_F(PresenterTests, closingTestHidesTesterViewIfUserAcceptsSaving) {
-        setDialogResponse(av_coordinate_response_measure::View::DialogResponse::accept);
-        close();
-        assertTesterViewHidden();
-    }
-
-    TEST_F(PresenterTests, closingTestDoesNotHideTesterViewIfUserCancels) {
-        setDialogResponse(av_coordinate_response_measure::View::DialogResponse::cancel);
-        close();
-        assertTesterViewNotHidden();
     }
 
     TEST_F(PresenterTests, browseForTargetListUpdatesTargetList) {

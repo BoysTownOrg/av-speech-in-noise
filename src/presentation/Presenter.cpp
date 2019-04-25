@@ -31,13 +31,6 @@ namespace av_coordinate_response_measure {
     void Presenter::run() {
         view->eventLoop();
     }
-    
-    void Presenter::closeTest() {
-        if (userCancels())
-            return;
-        
-        hideTesterView();
-    }
 
     bool Presenter::userCancels() {
         return view->showConfirmationDialog() == View::DialogResponse::cancel;
