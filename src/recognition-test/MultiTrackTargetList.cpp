@@ -19,4 +19,29 @@ namespace av_coordinate_response_measure {
     std::string MultiTrackTargetList::current() {
         return {};
     }
+    
+    void MultiTrackTargetList::reset(const Track::Settings &) { 
+        ;
+    }
+    
+    void MultiTrackTargetList::pushDown() { 
+        ;
+    }
+    
+    void MultiTrackTargetList::pushUp() { 
+        ;
+    }
+    
+    int MultiTrackTargetList::x() { 
+        return {};
+    }
+    
+    bool MultiTrackTargetList::complete() { 
+        return {};
+    }
+    
+    int MultiTrackTargetList::reversals() { 
+        return {};
+    }
+    
 }
