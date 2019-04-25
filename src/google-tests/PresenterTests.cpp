@@ -40,10 +40,6 @@ namespace {
             return trialParameters_;
         }
         
-        void setTestIncomplete() {
-            testComplete_ = false;
-        }
-        
         void setTestComplete() {
             testComplete_ = true;
         }
@@ -304,27 +300,6 @@ namespace {
             }
         };
         
-        class TesterViewStub : public Tester {
-            bool shown_{};
-            bool hidden_{};
-        public:
-            auto shown() const {
-                return shown_;
-            }
-            
-            void show() override {
-                shown_ = true;
-            }
-            
-            void hide() override {
-                hidden_ = true;
-            }
-            
-            auto hidden() const {
-                return hidden_;
-            }
-        };
-        
         class SubjectViewStub : public Subject {
             std::string numberResponse_{"0"};
             EventListener *listener_{};
@@ -534,15 +509,13 @@ namespace {
     protected:
         ModelStub model{};
         ViewStub::TestSetupViewStub setupView{};
-        ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
         ViewStub view{};
         av_coordinate_response_measure::Presenter::TestSetup testSetup{&setupView};
-        av_coordinate_response_measure::Presenter::Tester tester{&testerView};
         av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
         
         av_coordinate_response_measure::Presenter construct() {
-            return {&model, &view, &testSetup, &tester, &subject};
+            return {&model, &view, &testSetup, &subject};
         }
     };
     
@@ -557,16 +530,13 @@ namespace {
         ModelStub model{};
         ViewStub view{};
         ViewStub::TestSetupViewStub setupView{};
-        ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
         av_coordinate_response_measure::Presenter::TestSetup testSetup{&setupView};
-        av_coordinate_response_measure::Presenter::Tester tester{&testerView};
         av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
         av_coordinate_response_measure::Presenter presenter{
             &model,
             &view,
             &testSetup,
-            &tester,
             &subject
         };
         BrowsingForTargetList browsingForTargetList{};
@@ -606,30 +576,6 @@ namespace {
         void confirmTestSetupWithInvalidInput() {
             setupView.setStartingSnr("?");
             confirmTestSetup();
-        }
-        
-        void assertTesterViewShown() {
-            EXPECT_TRUE(testerViewShown());
-        }
-        
-        bool testerViewShown() {
-            return testerView.shown();
-        }
-        
-        void assertTesterViewNotShown() {
-            EXPECT_FALSE(testerViewShown());
-        }
-        
-        void assertTesterViewHidden() {
-            EXPECT_TRUE(testerViewHidden());
-        }
-        
-        bool testerViewHidden() {
-            return testerView.hidden();
-        }
-        
-        void assertTesterViewNotHidden() {
-            EXPECT_FALSE(testerViewHidden());
         }
         
         void assertSetupViewShown() {
@@ -920,11 +866,6 @@ namespace {
         assertAuditoryOnlyConditionPassedToModel(playingCalibration);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupShowsTesterView) {
-        confirmTestSetup();
-        assertTesterViewShown();
-    }
-
     TEST_F(PresenterTests, confirmTestSetupShowsNextTrialButton) {
         confirmTestSetup();
         assertNextTrialButtonShown();
@@ -993,18 +934,6 @@ namespace {
         assertModelPassedCondition(av_coordinate_response_measure::Color::white);
     }
 
-    TEST_F(PresenterTests, submitResponseDoesNotHideTesterViewWhileTestInProgress) {
-        model.setTestIncomplete();
-        submitResponse();
-        assertTesterViewNotHidden();
-    }
-
-    TEST_F(PresenterTests, submitResponseHidesTesterViewWhenTestComplete) {
-        setTestComplete();
-        submitResponse();
-        assertTesterViewHidden();
-    }
-
     TEST_F(PresenterTests, submitResponseShowsSetupViewWhenTestComplete) {
         setTestComplete();
         submitResponse();
@@ -1067,11 +996,6 @@ namespace {
         assertSetupViewNotHidden();
     }
 
-    TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotShowTesterView) {
-        confirmTestSetupWithInvalidInput();
-        assertTesterViewNotShown();
-    }
-
     class RequestFailingModel : public av_coordinate_response_measure::Model {
         std::string errorMessage{};
     public:
@@ -1107,10 +1031,8 @@ namespace {
         av_coordinate_response_measure::Model *model{&defaultModel};
         ViewStub view{};
         ViewStub::TestSetupViewStub setupView{};
-        ViewStub::TesterViewStub testerView{};
         ViewStub::SubjectViewStub subjectView{};
         av_coordinate_response_measure::Presenter::TestSetup testSetup{&setupView};
-        av_coordinate_response_measure::Presenter::Tester tester{&testerView};
         av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
         
         void useFailingModel(std::string s = {}) {
@@ -1123,7 +1045,6 @@ namespace {
                 model,
                 &view,
                 &testSetup,
-                &tester,
                 &subject
             };
             setupView.confirmTestSetup();
@@ -1137,11 +1058,6 @@ namespace {
         void assertConfirmTestSetupDoesNotHideSetupView() {
             confirmTestSetup();
             ASSERT_FALSE(setupView.hidden());
-        }
-        
-        void assertConfirmTestSetupDoesNotShowTesterView() {
-            confirmTestSetup();
-            ASSERT_FALSE(testerView.shown());
         }
     };
 
@@ -1159,13 +1075,5 @@ namespace {
     ) {
         useFailingModel();
         assertConfirmTestSetupDoesNotHideSetupView();
-    }
-
-    TEST_F(
-        PresenterFailureTests,
-        initializeTestDoesNotShowTesterViewWhenModelFailsRequest
-    ) {
-        useFailingModel();
-        assertConfirmTestSetupDoesNotShowTesterView();
     }
 }

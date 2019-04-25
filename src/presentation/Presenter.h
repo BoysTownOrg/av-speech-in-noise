@@ -31,13 +31,6 @@ namespace av_coordinate_response_measure {
             virtual void hideNextTrialButton() = 0;
         };
 
-        class Tester {
-        public:
-            virtual ~Tester() = default;
-            virtual void show() = 0;
-            virtual void hide() = 0;
-        };
-
         class TestSetup {
         public:
             class EventListener {
@@ -116,15 +109,6 @@ namespace av_coordinate_response_measure {
             Presenter *parent;
         };
         
-        class Tester {
-        public:
-            Tester(View::Tester *);
-            void show();
-            void hide();
-        private:
-            View::Tester *view;
-        };
-        
         class Subject : public View::Subject::EventListener {
         public:
             Subject(View::Subject *);
@@ -147,7 +131,6 @@ namespace av_coordinate_response_measure {
             Model *,
             View *,
             TestSetup *,
-            Tester *,
             Subject *
         );
         void trialComplete() override;
@@ -185,7 +168,6 @@ namespace av_coordinate_response_measure {
         Model *model;
         View *view;
         TestSetup *testSetup;
-        Tester *tester;
         Subject *subject;
     };
 }

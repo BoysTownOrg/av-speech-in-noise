@@ -12,13 +12,11 @@ namespace av_coordinate_response_measure {
         Model *model,
         View *view,
         TestSetup *testSetup,
-        Tester *tester,
         Subject *subject
     ) :
         model{model},
         view{view},
         testSetup{testSetup},
-        tester{tester},
         subject{subject}
     {
         model->subscribe(this);
@@ -50,16 +48,11 @@ namespace av_coordinate_response_measure {
     void Presenter::initializeTest_() {
         model->initializeTest(testSetup->testParameters());
         hideTestSetup();
-        showTesterView();
         showNextTrialButton();
     }
     
     void Presenter::hideTestSetup() {
         testSetup->hide();
-    }
-    
-    void Presenter::showTesterView() {
-        tester->show();
     }
     
     void Presenter::playTrial() {
@@ -93,15 +86,10 @@ namespace av_coordinate_response_measure {
     
     void Presenter::proceedToNextTrial() {
         if (model->testComplete()) {
-            hideTesterView();
             showTestSetup();
         }
         else
             showNextTrialButton();
-    }
-    
-    void Presenter::hideTesterView() {
-        tester->hide();
     }
     
     void Presenter::showTestSetup() {
@@ -257,17 +245,6 @@ namespace av_coordinate_response_measure {
     
     void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
         view->setCalibrationFilePath(std::move(s));
-    }
-    
-    
-    Presenter::Tester::Tester(View::Tester *view) : view{view} {}
-    
-    void Presenter::Tester::show() {
-        view->show();
-    }
-
-    void Presenter::Tester::hide() {
-        view->hide();
     }
 
     Presenter::Subject::Subject(View::Subject *view) :
