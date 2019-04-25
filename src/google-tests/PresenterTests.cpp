@@ -919,6 +919,24 @@ namespace {
         );
     }
 
+    TEST_F(PresenterTests, playCalibrationPassesAudioVisualCondition) {
+        setCondition(audioVisualConditionName());
+        playCalibration();
+        EXPECT_EQ(
+            av_coordinate_response_measure::Condition::audioVisual,
+            modelCalibrationParameters().condition
+        );
+    }
+
+    TEST_F(PresenterTests, playCalibrationPassesAuditoryOnlyCondition) {
+        setCondition(auditoryOnlyConditionName());
+        playCalibration();
+        EXPECT_EQ(
+            av_coordinate_response_measure::Condition::auditoryOnly,
+            modelCalibrationParameters().condition
+        );
+    }
+
     TEST_F(
         PresenterTests,
         confirmTestSetupWithInvalidMaskerLevelShowsErrorMessage

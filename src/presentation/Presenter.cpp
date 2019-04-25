@@ -226,6 +226,9 @@ namespace av_coordinate_response_measure {
         p.filePath = view->calibrationFilePath();
         p.level_dB_SPL = readCalibrationLevel();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
+        p.condition = auditoryOnly()
+            ? Condition::auditoryOnly
+            : Condition::audioVisual;
         return p;
     }
     

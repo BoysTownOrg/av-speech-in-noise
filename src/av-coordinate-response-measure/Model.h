@@ -74,6 +74,7 @@ namespace av_coordinate_response_measure {
         std::string audioDevice;
         int level_dB_SPL;
         int fullScaleLevel_dB_SPL;
+        Condition condition;
     };
     
     struct SubjectResponse {
