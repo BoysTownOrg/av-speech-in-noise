@@ -571,10 +571,6 @@ CocoaView::CocoaView(NSRect r) :
     [window makeKeyAndOrderFront:nil];
 }
 
-void CocoaView::subscribe(EventListener *listener_) {
-    listener = listener_;
-}
-
 void CocoaView::eventLoop() {
     [app run];
 }

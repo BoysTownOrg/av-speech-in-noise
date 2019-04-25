@@ -118,7 +118,6 @@ private:
 };
 
 class CocoaView : public av_coordinate_response_measure::View {
-    EventListener *listener{};
     NSApplication *app;
     NSWindow *window;
     NSTextField *audioDevice_label;
@@ -126,7 +125,6 @@ class CocoaView : public av_coordinate_response_measure::View {
     bool browseCancelled_{};
 public:
     CocoaView(NSRect);
-    void subscribe(EventListener *) override;
     void eventLoop() override;
     DialogResponse showConfirmationDialog() override;
     void showErrorMessage(std::string) override;
