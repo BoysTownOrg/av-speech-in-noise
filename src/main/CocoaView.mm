@@ -552,8 +552,7 @@ CocoaView::CocoaView(NSRect r) :
     deviceMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(160, 15, 140, 30)
         pullsDown:NO
-    ]},
-    actions{[ViewActions alloc]}
+    ]}
 {
     app.mainMenu = [[NSMenu alloc] init];
     
@@ -567,37 +566,9 @@ CocoaView::CocoaView(NSRect r) :
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
     
-    auto fileMenu = [[NSMenuItem alloc] init];
-    auto fileSubMenu = [[NSMenu alloc] initWithTitle:@"File"];
-    auto newTestItem = [[NSMenuItem alloc]
-        initWithTitle:@"New Test..."
-        action:@selector(newTest)
-        keyEquivalent:@"n"
-    ];
-    newTestItem.target = actions;
-    [fileSubMenu addItem:newTestItem];
-    auto openTestItem = [[NSMenuItem alloc]
-        initWithTitle:@"Open Test..."
-        action:@selector(openTest)
-        keyEquivalent:@"o"
-    ];
-    openTestItem.target = actions;
-    [fileSubMenu addItem:openTestItem];
-    [fileMenu setSubmenu:fileSubMenu];
-    [app.mainMenu addItem:fileMenu];
-    
     [window.contentView addSubview:audioDevice_label];
     [window.contentView addSubview:deviceMenu];
     [window makeKeyAndOrderFront:nil];
-    actions.controller = this;
-}
-
-void CocoaView::newTest() {
-    listener->newTest();
-}
-
-void CocoaView::openTest() {
-    listener->openTest();
 }
 
 void CocoaView::subscribe(EventListener *listener_) {
@@ -678,15 +649,4 @@ void CocoaView::addSubview(NSView *view) {
 void CocoaView::center() {
     [window center];
 }
-
-@implementation ViewActions
-@synthesize controller;
-- (void)newTest {
-    controller->newTest();
-}
-
-- (void)openTest {
-    controller->openTest();
-}
-@end
 

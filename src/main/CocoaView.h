@@ -4,14 +4,6 @@
 #include <presentation/Presenter.h>
 #import <Cocoa/Cocoa.h>
 
-class CocoaView;
-
-@interface ViewActions : NSObject
-@property CocoaView * controller;
-- (void) newTest;
-- (void) openTest;
-@end
-
 class CocoaTestSetupView;
 
 @interface SetupViewActions : NSObject
@@ -131,7 +123,6 @@ class CocoaView : public av_coordinate_response_measure::View {
     NSWindow *window;
     NSTextField *audioDevice_label;
     NSPopUpButton *deviceMenu;
-    ViewActions *actions;
     bool browseCancelled_{};
 public:
     CocoaView(NSRect);
@@ -144,8 +135,6 @@ public:
     std::string browseForOpeningFile() override;
     std::string audioDevice() override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
-    void newTest();
-    void openTest();
     void addSubview(NSView *);
     void center();
 private:
