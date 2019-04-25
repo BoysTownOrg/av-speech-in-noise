@@ -10,6 +10,12 @@ namespace av_coordinate_response_measure {
         virtual std::shared_ptr<Track> make(const Track::Settings &) = 0;
     };
     
+    class TargetListFactory {
+    public:
+        virtual ~TargetListFactory() = default;
+        virtual std::shared_ptr<TargetList> make(std::string directory) = 0;
+    };
+    
     class MultiTrackTargetList : public Track, public TargetList {
         void loadFromDirectory(std::string directory) override;
         std::string next() override;

@@ -668,8 +668,6 @@ namespace {
         InitializingTest initializingTest{};
         PlayingTrial playingTrial{};
         PlayingCalibration playingCalibration{};
-        TargetListReader::lists_type lists{};
-        std::vector<std::shared_ptr<TrackStub>> snrTracks{};
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
