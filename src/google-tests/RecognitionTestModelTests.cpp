@@ -6,7 +6,9 @@
 #include <cmath>
 
 namespace {
-    class MaskerPlayerStub : public av_coordinate_response_measure::MaskerPlayer {
+    using namespace av_coordinate_response_measure;
+    
+    class MaskerPlayerStub : public MaskerPlayer {
         std::vector<std::string> outputAudioDeviceDescriptions_{};
         LogString log_{};
         std::string filePath_{};
@@ -35,7 +37,7 @@ namespace {
         void setAudioDevice(std::string s) override {
             device_ = std::move(s);
             if (throwInvalidAudioDeviceWhenDeviceSet_)
-                throw av_coordinate_response_measure::InvalidAudioDevice{};
+                throw InvalidAudioDevice{};
         }
         
         auto device() const {
@@ -141,7 +143,7 @@ namespace {
         }
     };
 
-    class TargetPlayerStub : public av_coordinate_response_measure::TargetPlayer {
+    class TargetPlayerStub : public TargetPlayer {
         LogString log_{};
         std::string filePath_{};
         std::string device_{};
@@ -183,7 +185,7 @@ namespace {
             setDeviceCalled_ = true;
             device_ = std::move(s);
             if (throwInvalidAudioDeviceWhenDeviceSet_)
-                throw av_coordinate_response_measure::InvalidAudioDevice{};
+                throw InvalidAudioDevice{};
         }
         
         auto device() const {
@@ -234,7 +236,7 @@ namespace {
         double rms() override {
             log_.insert("rms ");
             if (throwInvalidAudioFileOnRms_)
-                throw av_coordinate_response_measure::InvalidAudioFile{};
+                throw InvalidAudioFile{};
             return rms_;
         }
         
@@ -271,7 +273,7 @@ namespace {
         }
     };
 
-    class TargetListStub : public av_coordinate_response_measure::TargetList {
+    class TargetListStub : public TargetList {
         std::string directory_{};
         std::string next_{};
         std::string current_{};
@@ -308,11 +310,11 @@ namespace {
         }
     };
     
-    class OutputFileStub : public av_coordinate_response_measure::OutputFile {
-        av_coordinate_response_measure::Trial trialWritten_{};
+    class OutputFileStub : public OutputFile {
+        Trial trialWritten_{};
         LogString log_{};
-        const av_coordinate_response_measure::Test *testWritten_{};
-        const av_coordinate_response_measure::Test *openNewFileParameters_{};
+        const Test *testWritten_{};
+        const Test *openNewFileParameters_{};
         bool throwOnOpen_{};
         bool headingWritten_{};
     public:
@@ -333,14 +335,14 @@ namespace {
         }
         
         void writeTrial(
-            const av_coordinate_response_measure::Trial &trial
+            const Trial &trial
         ) override {
             log_.insert("writeTrial ");
             trialWritten_ = trial;
         }
         
         void openNewFile(
-            const av_coordinate_response_measure::Test &p
+            const Test &p
         ) override {
             log_.insert("openNewFile ");
             openNewFileParameters_ = &p;
@@ -358,7 +360,7 @@ namespace {
         }
         
         void writeTest(
-            const av_coordinate_response_measure::Test &test
+            const Test &test
         ) override {
             log_.insert("writeTest ");
             testWritten_ = &test;
@@ -374,7 +376,7 @@ namespace {
     };
     
     class ModelEventListenerStub :
-        public av_coordinate_response_measure::Model::EventListener
+        public Model::EventListener
     {
         bool notified_{};
     public:
@@ -387,7 +389,7 @@ namespace {
         }
     };
     
-    class TrackStub : public av_coordinate_response_measure::Track {
+    class TrackStub : public Track {
         Settings settings_;
         int x_{};
         int reversals_{};
@@ -444,20 +446,20 @@ namespace {
         }
     };
     
-    class ResponseEvaluatorStub : public av_coordinate_response_measure::ResponseEvaluator {
+    class ResponseEvaluatorStub : public ResponseEvaluator {
         std::string correctTarget_{};
         std::string correctNumberFilePath_{};
         std::string correctColorFilePath_{};
-        const av_coordinate_response_measure::SubjectResponse *response_{};
+        const SubjectResponse *response_{};
         int correctNumber_{};
-        av_coordinate_response_measure::Color correctColor_{};
+        Color correctColor_{};
         bool correct_{};
     public:
         void setCorrectNumber(int x) {
             correctNumber_ = x;
         }
         
-        void setCorrectColor(av_coordinate_response_measure::Color c) {
+        void setCorrectColor(::Color c) {
             correctColor_ = c;
         }
         
@@ -487,14 +489,14 @@ namespace {
         
         bool correct(
             std::string target,
-            const av_coordinate_response_measure::SubjectResponse &p
+            const SubjectResponse &p
         ) override {
             correctTarget_ = std::move(target);
             response_ = &p;
             return correct_;
         }
         
-        av_coordinate_response_measure::Color correctColor(const std::string &filePath) override {
+        Color correctColor(const std::string &filePath) override {
             correctColorFilePath_ = filePath;
             return correctColor_;
         }
@@ -505,7 +507,7 @@ namespace {
         }
     };
     
-    class RandomizerStub : public av_coordinate_response_measure::Randomizer {
+    class RandomizerStub : public Randomizer {
         double lowerBound_{};
         double upperBound_{};
         double randomFloat_{};
@@ -532,12 +534,12 @@ namespace {
     class UseCase {
     public:
         virtual ~UseCase() = default;
-        virtual void run(av_coordinate_response_measure::RecognitionTestModel &) = 0;
+        virtual void run(::RecognitionTestModel &) = 0;
     };
     
     class InitializingTest : public UseCase {
-        av_coordinate_response_measure::Test test_;
-        av_coordinate_response_measure::TrackingRule targetLevelRule_;
+        Test test_;
+        TrackingRule targetLevelRule_;
     public:
         InitializingTest() {
             test_.targetLevelRule = &targetLevelRule_;
@@ -551,18 +553,18 @@ namespace {
             test_.maskerFilePath = std::move(s);
         }
         
-        void run(av_coordinate_response_measure::RecognitionTestModel &m) override {
+        void run(::RecognitionTestModel &m) override {
             m.initializeTest(test_);
         }
         
         void setAudioVisual() {
             test_.condition =
-                av_coordinate_response_measure::Condition::audioVisual;
+                Condition::audioVisual;
         }
         
         void setAuditoryOnly() {
             test_.condition =
-                av_coordinate_response_measure::Condition::auditoryOnly;
+                Condition::auditoryOnly;
         }
         
         void setMaskerLevel_dB_SPL(int x) {
@@ -592,25 +594,25 @@ namespace {
     };
     
     class PlayingTrial : public AudioDeviceUseCase {
-        av_coordinate_response_measure::AudioSettings trial;
+        AudioSettings trial;
     public:
         void setAudioDevice(std::string s) override {
             trial.audioDevice = std::move(s);
         }
         
-        void run(av_coordinate_response_measure::RecognitionTestModel &m) override {
+        void run(::RecognitionTestModel &m) override {
             m.playTrial(trial);
         }
     };
     
     class PlayingCalibration : public AudioDeviceUseCase {
-        av_coordinate_response_measure::Calibration calibration;
+        Calibration calibration;
     public:
         void setAudioDevice(std::string s) override {
             calibration.audioDevice = std::move(s);
         }
         
-        void run(av_coordinate_response_measure::RecognitionTestModel &m) override {
+        void run(::RecognitionTestModel &m) override {
             m.playCalibration(calibration);
         }
         
@@ -628,45 +630,45 @@ namespace {
         
         void setAudioVisual() {
             calibration.condition =
-                av_coordinate_response_measure::Condition::audioVisual;
+                Condition::audioVisual;
         }
         
         void setAuditoryOnly() {
             calibration.condition =
-                av_coordinate_response_measure::Condition::auditoryOnly;
+                Condition::auditoryOnly;
         }
     };
     
-    class TrackFactoryStub : public av_coordinate_response_measure::TrackFactory {
-        std::vector<av_coordinate_response_measure::Track::Settings> parameters_;
+    class TrackFactoryStub : public TrackFactory {
+        std::vector<::Track::Settings> parameters_;
     public:
         const auto &parameters() {
             return parameters_;
         }
         
-        std::shared_ptr<av_coordinate_response_measure::Track>
-            make(const av_coordinate_response_measure::Track::Settings &s) override
+        std::shared_ptr<::Track>
+            make(const Track::Settings &s) override
         {
             parameters_.push_back(s);
             return {};
         }
     };
     
-    class TargetListSetReaderStub : public av_coordinate_response_measure::TargetListSetReader {
-        std::vector<std::shared_ptr<av_coordinate_response_measure::TargetList>> targetLists_{};
+    class TargetListSetReaderStub : public TargetListSetReader {
+        std::vector<std::shared_ptr<::TargetList>> targetLists_{};
     public:
-        void setTargetLists(std::vector<std::shared_ptr<av_coordinate_response_measure::TargetList>> lists) {
+        void setTargetLists(std::vector<std::shared_ptr<::TargetList>> lists) {
             targetLists_ = std::move(lists);
         }
-        std::vector<std::shared_ptr<av_coordinate_response_measure::TargetList>> read(std::string directory) override {
+        std::vector<std::shared_ptr<::TargetList>> read(std::string directory) override {
             return targetLists_;
         }
     };
 
-    class RecognitionTestModelTests : public ::testing::Test {
+    class RecognitionTestModelTests : public testing::Test {
     protected:
-        av_coordinate_response_measure::Calibration calibration;
-        av_coordinate_response_measure::SubjectResponse subjectResponse;
+        Calibration calibration;
+        SubjectResponse subjectResponse;
         TargetListStub targetList{};
         TargetListSetReaderStub targetListSetReader;
         TargetPlayerStub targetPlayer{};
@@ -676,7 +678,7 @@ namespace {
         TrackFactoryStub snrTrackFactory{};
         ResponseEvaluatorStub evaluator{};
         RandomizerStub randomizer{};
-        av_coordinate_response_measure::RecognitionTestModel model{
+        RecognitionTestModel model{
             &targetListSetReader,
             &targetList,
             &targetPlayer,
@@ -785,7 +787,7 @@ namespace {
                     "RecognitionTestModel::"
                     "RequestFailure";
             } catch (
-                const av_coordinate_response_measure::
+                const
                 RecognitionTestModel::
                 RequestFailure &e
             ) {
@@ -801,7 +803,7 @@ namespace {
             try {
                 run(useCase);
             } catch (
-                const av_coordinate_response_measure::
+                const
                 RecognitionTestModel::
                 RequestFailure &
             ) {
@@ -881,7 +883,7 @@ namespace {
         }
         
         auto blueColor() {
-            return av_coordinate_response_measure::Color::blue;
+            return Color::blue;
         }
         
         void playTrialWhenTrialAlreadyInProgressIgnoringFailure() {
@@ -992,7 +994,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
-        std::vector<std::shared_ptr<av_coordinate_response_measure::TargetList>> lists{};
+        std::vector<std::shared_ptr<::TargetList>> lists{};
         lists.push_back(std::make_shared<TargetListStub>());
         lists.push_back(std::make_shared<TargetListStub>());
         lists.push_back(std::make_shared<TargetListStub>());
