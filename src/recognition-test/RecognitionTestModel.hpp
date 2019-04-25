@@ -124,6 +124,7 @@ namespace av_coordinate_response_measure {
     public:
         virtual ~Randomizer() = default;
         virtual double randomFloatBetween(double, double) = 0;
+        virtual int randomIntBetween(int, int) = 0;
     };
 
     class RecognitionTestModel :
@@ -131,6 +132,7 @@ namespace av_coordinate_response_measure {
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
+        std::vector<std::shared_ptr<Track>> tracks{};
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
         TargetListReader *targetListSetReader;
@@ -143,6 +145,7 @@ namespace av_coordinate_response_measure {
         OutputFile *outputFile;
         Randomizer *randomizer;
         Model::EventListener *listener_{};
+        Track *currentSnrTrack{};
     public:
         RecognitionTestModel(
             TargetListReader *,

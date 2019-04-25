@@ -22,7 +22,8 @@ namespace av_coordinate_response_measure {
         snrTrack{snrTrack},
         evaluator{evaluator},
         outputFile{outputFile},
-        randomizer{randomizer}
+        randomizer{randomizer},
+        currentSnrTrack{snrTrack}
     {
         targetPlayer->subscribe(this);
         maskerPlayer->subscribe(this);
@@ -61,8 +62,12 @@ namespace av_coordinate_response_measure {
         snrTrack->reset(s);
         
         auto lists = targetListSetReader->read(p.targetListSetDirectory);
+        tracks.clear();
         for (size_t i = 0; i < lists.size(); ++i)
-            snrTrackFactory->make(s);
+            tracks.push_back(snrTrackFactory->make(s));
+        size_t n = randomizer->randomIntBetween({}, {});
+        if (n < tracks.size())
+            currentSnrTrack = tracks.at(n).get();
     }
     
     void RecognitionTestModel::prepareOutputFile(const Test &p) {
@@ -187,7 +192,7 @@ namespace av_coordinate_response_measure {
     }
     
     int RecognitionTestModel::SNR_dB() {
-        return snrTrack->x();
+        return currentSnrTrack->x();
     }
     
     double RecognitionTestModel::unalteredTargetLevel_dB() {

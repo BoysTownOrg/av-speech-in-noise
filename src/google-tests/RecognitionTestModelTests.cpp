@@ -511,7 +511,12 @@ namespace {
         double lowerBound_{};
         double upperBound_{};
         double randomFloat_{};
+        int randomInt_{};
     public:
+        void setRandomInt(int x) {
+            randomInt_ = x;
+        }
+        
         void setRandomFloat(double x) {
             randomFloat_ = x;
         }
@@ -528,6 +533,10 @@ namespace {
             lowerBound_ = a;
             upperBound_ = b;
             return randomFloat_;
+        }
+        
+        int randomIntBetween(int, int) override {
+            return randomInt_;
         }
     };
     
@@ -645,6 +654,7 @@ namespace {
     
     class TrackFactoryStub : public TrackFactory {
         std::vector<Track::Settings> parameters_;
+        std::vector<std::shared_ptr<Track>> tracks_{};
     public:
         const auto &parameters() {
             return parameters_;
@@ -652,7 +662,13 @@ namespace {
         
         std::shared_ptr<Track> make(const Track::Settings &s) override {
             parameters_.push_back(s);
-            return {};
+            auto track = tracks_.front();
+            tracks_.erase(tracks_.begin());
+            return track;
+        }
+        
+        void setTracks(std::vector<std::shared_ptr<Track>> t) {
+            tracks_ = std::move(t);
         }
     };
     
@@ -703,6 +719,7 @@ namespace {
         PlayingTrial playingTrial{};
         PlayingCalibration playingCalibration{};
         TargetListReader::lists_type lists{};
+        std::vector<std::shared_ptr<TrackStub>> snrTracks{};
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
@@ -921,9 +938,15 @@ namespace {
         
         void setTargetListCount(int n) {
             lists.clear();
-            for (int i = 0; i < n; ++i)
+            snrTracks.clear();
+            for (int i = 0; i < n; ++i) {
                 lists.push_back(std::make_shared<TargetListStub>());
+                snrTracks.push_back(std::make_shared<TrackStub>());
+            }
             targetListSetReader.setTargetLists(lists);
+            snrTrackFactory.setTracks(
+                std::vector<std::shared_ptr<Track>>(snrTracks.begin(), snrTracks.end())
+            );
         }
     };
 
@@ -1183,6 +1206,21 @@ namespace {
         playTrialSetsTargetPlayerLevel
     ) {
         snrTrack.setX(1);
+        initializingTest.setMaskerLevel_dB_SPL(2);
+        initializingTest.setFullScaleLevel_dB_SPL(3);
+        setTargetPlayerRms(4);
+        initializeTest();
+        playTrial();
+        EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialSetsTargetPlayerLevel_2
+    ) {
+        setTargetListCount(15);
+        randomizer.setRandomInt(13);
+        snrTracks.at(13)->setX(1);
         initializingTest.setMaskerLevel_dB_SPL(2);
         initializingTest.setFullScaleLevel_dB_SPL(3);
         setTargetPlayerRms(4);
