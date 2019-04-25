@@ -73,14 +73,19 @@ namespace {
         TargetListFactoryStub targetListFactory;
         DirectoryReaderStub directoryReader;
         MultiTrackTargetList list{&targetListFactory, &directoryReader};
+        std::vector<std::shared_ptr<TargetListStub>> lists;
+        
+        void setListCount(int n) {
+            lists.clear();
+            for (int i = 0; i < n; ++i)
+                lists.push_back(std::make_shared<TargetListStub>());
+            targetListFactory.setLists({lists.begin(), lists.end()});
+        }
     };
     
-    TEST_F(MultiTrackTargetListTests, tbd) {
+    TEST_F(MultiTrackTargetListTests, loadFromDirectoryLoadsEachSubDirectory) {
+        setListCount(3);
         directoryReader.setSubDirectories({"a", "b", "c"});
-        std::vector<std::shared_ptr<TargetListStub>> lists;
-        for (int i = 0; i < 3; ++i)
-            lists.push_back(std::make_shared<TargetListStub>());
-        targetListFactory.setLists({lists.begin(), lists.end()});
         list.loadFromDirectory({});
         assertEqual("a", lists.at(0)->directory());
         assertEqual("b", lists.at(1)->directory());
