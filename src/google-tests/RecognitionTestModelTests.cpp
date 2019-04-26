@@ -959,10 +959,19 @@ namespace {
             snrTrackFactory.setTracks({snrTracks.begin(), snrTracks.end()});
         }
         
-        void selectList(int n) {
+        void initializeTestWithStartingList(int n) {
             if (gsl::narrow<size_t>(n) >= lists.size())
                 setTargetListCount(n+1);
+            selectList(n);
+            initializeTest();
+        }
+        
+        void selectList(int n) {
             randomizer.setRandomInt(n);
+        }
+        
+        void initializeTestWithListCount(int n) {
+            setTargetListCount(n);
             initializeTest();
         }
     };
@@ -1051,8 +1060,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
-        setTargetListCount(3);
-        initializeTest();
+        initializeTestWithListCount(3);
         auto parameters = snrTrackFactory.parameters();
         EXPECT_EQ(3, parameters.size());
         for (auto p : parameters)
@@ -1066,9 +1074,8 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithStartingSnr
     ) {
-        setTargetListCount(3);
         initializingTest.setStartingSnr_dB(1);
-        initializeTest();
+        initializeTestWithListCount(3);
         auto parameters = snrTrackFactory.parameters();
         EXPECT_EQ(3, parameters.size());
         for (auto p : parameters)
@@ -1164,7 +1171,7 @@ namespace {
         RecognitionTestModelTests,
         playTrialPassesNextTargetToTargetPlayer_2
     ) {
-        selectList(1);
+        initializeTestWithStartingList(1);
         lists.at(1)->setNext("a");
         playTrial();
         assertTargetFilePathEquals("a");
@@ -1174,9 +1181,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponseSelectsNextList
     ) {
-        setTargetListCount(3);
-        initializeTest();
-        randomizer.setRandomInt(1);
+        initializeTestWithListCount(3);
+        selectList(1);
         submitResponse();
         lists.at(1)->setNext("a");
         playTrial();
@@ -1187,8 +1193,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSelectsRandomListInRange
     ) {
-        setTargetListCount(3);
-        initializeTest();
+        initializeTestWithListCount(3);
         EXPECT_EQ(int{0}, randomizer.lowerIntBound());
         EXPECT_EQ(2, randomizer.upperIntBound());
     }
@@ -1271,7 +1276,7 @@ namespace {
         initializingTest.setMaskerLevel_dB_SPL(2);
         initializingTest.setFullScaleLevel_dB_SPL(3);
         setTargetPlayerRms(4);
-        selectList(5);
+        initializeTestWithStartingList(5);
         snrTracks.at(5)->setX(1);
         playTrial();
         EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
@@ -1418,7 +1423,7 @@ namespace {
         RecognitionTestModelTests,
         submitCorrectResponsePushesSnrDown_2
     ) {
-        selectList(1);
+        initializeTestWithStartingList(1);
         evaluator.setCorrect();
         submitResponse();
         EXPECT_TRUE(snrTracks.at(1)->pushedDown());
@@ -1429,7 +1434,7 @@ namespace {
         RecognitionTestModelTests,
         submitIncorrectResponsePushesSnrUp_2
     ) {
-        selectList(1);
+        initializeTestWithStartingList(1);
         evaluator.setIncorrect();
         submitResponse();
         EXPECT_TRUE(snrTracks.at(1)->pushedUp());
