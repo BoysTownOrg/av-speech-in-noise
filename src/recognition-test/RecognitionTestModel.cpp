@@ -19,7 +19,6 @@ namespace av_coordinate_response_measure {
         targetList{targetList},
         targetPlayer{targetPlayer},
         snrTrackFactory{snrTrackFactory},
-        snrTrack{snrTrack},
         evaluator{evaluator},
         outputFile{outputFile},
         randomizer{randomizer},
@@ -66,7 +65,7 @@ namespace av_coordinate_response_measure {
         Track::Settings s;
         s.rule = p.targetLevelRule;
         s.startingX = p.startingSnr_dB;
-        snrTrack->reset(s);
+        currentSnrTrack->reset(s);
         
         targetListsWithTracks.clear();
         tracks.clear();
@@ -131,7 +130,6 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::selectNextList() {
-        removeCompleteTracks();
         auto listCount = gsl::narrow<int>(targetListsWithTracks.size());
         size_t n = randomizer->randomIntBetween(0, listCount - 1);
         if (n < targetListsWithTracks.size()) {
@@ -164,7 +162,7 @@ namespace av_coordinate_response_measure {
     }
     
     bool RecognitionTestModel::noMoreTrials() {
-        return snrTrack->complete();
+        return currentSnrTrack->complete();
     }
     
     void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
@@ -262,6 +260,7 @@ namespace av_coordinate_response_measure {
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
         writeTrial(response);
         updateSnr(response);
+        removeCompleteTracks();
         selectNextList();
     }
     
@@ -269,7 +268,7 @@ namespace av_coordinate_response_measure {
         Trial trial;
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
-        trial.reversals = snrTrack->reversals();
+        trial.reversals = currentSnrTrack->reversals();
         trial.correctColor = evaluator->correctColor(currentTarget());
         trial.correctNumber = evaluator->correctNumber(currentTarget());
         trial.SNR_dB = SNR_dB();
@@ -329,7 +328,7 @@ namespace av_coordinate_response_measure {
     }
 
     bool RecognitionTestModel::testComplete() {
-        return snrTrack->complete();
+        return currentSnrTrack->complete();
     }
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {

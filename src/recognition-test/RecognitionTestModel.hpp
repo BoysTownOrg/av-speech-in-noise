@@ -147,7 +147,6 @@ namespace av_coordinate_response_measure {
         TargetList *targetList;
         TargetPlayer *targetPlayer;
         TrackFactory *snrTrackFactory;
-        Track *snrTrack;
         ResponseEvaluator *evaluator;
         OutputFile *outputFile;
         Randomizer *randomizer;
