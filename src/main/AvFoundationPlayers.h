@@ -63,9 +63,10 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     NSWindow *videoWindow;
     AVPlayer *player;
     AVPlayerLayer *playerLayer;
+    NSScreen *screen;
     EventListener *listener_{};
 public:
-    AvFoundationVideoPlayer(NSRect);
+    AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
     void setSampleRate(double x) {}
     std::vector<gsl::span<float>> &audio() { return audio_; }

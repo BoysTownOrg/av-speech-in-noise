@@ -111,7 +111,6 @@ namespace av_coordinate_response_measure {
     public:
         virtual ~Randomizer() = default;
         virtual double randomFloatBetween(double, double) = 0;
-        virtual int randomIntBetween(int, int) = 0;
     };
 
     class RecognitionTestModel :

@@ -154,9 +154,7 @@ int main() {
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
-    AvFoundationVideoPlayer videoPlayer{
-        NSMakeRect(subjectScreenOrigin.x+1, subjectScreenOrigin.y+1, 0, 0)
-    };
+    AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
     stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};

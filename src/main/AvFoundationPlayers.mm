@@ -330,16 +330,17 @@ static void loadItemFromFileWithAudioProcessing(
     [player replaceCurrentItemWithPlayerItem:playerItem];
 }
 
-AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSRect r) :
+AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen) :
     actions{[VideoPlayerActions alloc]},
     videoWindow{[[NSWindow alloc]
-        initWithContentRect: r
+        initWithContentRect: NSMakeRect(0, 0, 0, 0)
         styleMask:NSWindowStyleMaskBorderless
         backing:NSBackingStoreBuffered
         defer:YES
     ]},
     player{[AVPlayer playerWithPlayerItem:nil]},
-    playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}
+    playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]},
+    screen{screen}
 {
     createAudioProcessingTap<AvFoundationVideoPlayer>(this, &tap);
     prepareWindow();
@@ -387,7 +388,7 @@ void AvFoundationVideoPlayer::resizeVideo() {
 }
 
 void AvFoundationVideoPlayer::centerVideo() {
-    auto screenFrame = [[videoWindow screen] frame];
+    auto screenFrame = [screen frame];
     auto screenOrigin = screenFrame.origin;
     auto screenSize = screenFrame.size;
     auto windowSize = videoWindow.frame.size;
