@@ -558,7 +558,13 @@ namespace {
         virtual void run(RecognitionTestModel &) = 0;
     };
     
-    class InitializingTest : public UseCase {
+    class ConditionUseCase : public virtual UseCase {
+    public:
+        virtual void setAuditoryOnly() = 0;
+        virtual void setAudioVisual() = 0;
+    };
+    
+    class InitializingTest : public ConditionUseCase {
         Test test_;
         TrackingRule targetLevelRule_;
     public:
@@ -582,12 +588,12 @@ namespace {
             m.initializeTest(test_);
         }
         
-        void setAudioVisual() {
+        void setAudioVisual() override {
             test_.condition =
                 Condition::audioVisual;
         }
         
-        void setAuditoryOnly() {
+        void setAuditoryOnly() override {
             test_.condition =
                 Condition::auditoryOnly;
         }
@@ -613,7 +619,7 @@ namespace {
         }
     };
     
-    class AudioDeviceUseCase : public UseCase {
+    class AudioDeviceUseCase : public virtual UseCase {
     public:
         virtual void setAudioDevice(std::string) = 0;
     };
@@ -630,7 +636,10 @@ namespace {
         }
     };
     
-    class PlayingCalibration : public AudioDeviceUseCase {
+    class PlayingCalibration :
+        public AudioDeviceUseCase,
+        public ConditionUseCase
+    {
         Calibration calibration;
     public:
         void setAudioDevice(std::string s) override {
@@ -653,12 +662,12 @@ namespace {
             calibration.fullScaleLevel_dB_SPL = x;
         }
         
-        void setAudioVisual() {
+        void setAudioVisual() override {
             calibration.condition =
                 Condition::audioVisual;
         }
         
-        void setAuditoryOnly() {
+        void setAuditoryOnly() override {
             calibration.condition =
                 Condition::auditoryOnly;
         }
@@ -974,6 +983,18 @@ namespace {
             setTargetListCount(n);
             initializeTest();
         }
+        
+        void assertTargetVideoHiddenWhenAuditoryOnly(ConditionUseCase &useCase) {
+            useCase.setAuditoryOnly();
+            run(useCase);
+            assertTargetVideoOnlyHidden();
+        }
+        
+        void assertTargetVideoShownWhenAudioVisual(ConditionUseCase &useCase) {
+            useCase.setAudioVisual();
+            run(useCase);
+            assertTargetVideoOnlyShown();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -985,36 +1006,28 @@ namespace {
         RecognitionTestModelTests,
         initializeTestHidesTargetVideoWhenAuditoryOnly
     ) {
-        initializingTest.setAuditoryOnly();
-        initializeTest();
-        assertTargetVideoOnlyHidden();
+        assertTargetVideoHiddenWhenAuditoryOnly(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeTestShowsTargetVideoWhenAudioVisual
     ) {
-        initializingTest.setAudioVisual();
-        initializeTest();
-        assertTargetVideoOnlyShown();
+        assertTargetVideoShownWhenAudioVisual(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationHidesTargetVideoWhenAuditoryOnly
     ) {
-        playingCalibration.setAuditoryOnly();
-        playCalibration();
-        assertTargetVideoOnlyHidden();
+        assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationShowsTargetVideoWhenAudioVisual
     ) {
-        playingCalibration.setAudioVisual();
-        playCalibration();
-        assertTargetVideoOnlyShown();
+        assertTargetVideoShownWhenAudioVisual(playingCalibration);
     }
 
     TEST_F(
