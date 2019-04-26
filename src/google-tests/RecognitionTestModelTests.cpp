@@ -1142,10 +1142,9 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialQueriesTargetRmsAfterLoadingFile
+        initializeTestQueriesTargetRmsAfterLoadingFile
     ) {
-        initializeTest();
-        assertTargetFileLoadedPriorToRmsQuery(playingTrial);
+        assertTargetFileLoadedPriorToRmsQuery(initializingTest);
     }
 
     TEST_F(
@@ -1214,9 +1213,9 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSubscribesToTargetPlaybackCompletionNotification
+        initializeTestSubscribesToTargetPlaybackCompletionNotification
     ) {
-        playTrial();
+        initializeTest();
         EXPECT_TRUE(targetPlayer.playbackCompletionSubscribedTo());
     }
 
@@ -1254,14 +1253,14 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSetsTargetPlayerLevel
+        initializeTestSetsTargetPlayerLevel
     ) {
         setMaskerLevel_dB_SPL(2);
         setTestingFullScaleLevel_dB_SPL(3);
         setTargetPlayerRms(4);
-        initializeTestWithStartingList(5);
+        setTargetListCount(6);
         snrTrack(5)->setX(1);
-        playTrial();
+        initializeTestWithStartingList(5);
         EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
     }
 

@@ -60,7 +60,7 @@ namespace av_coordinate_response_measure {
         prepareMasker(p);
         prepareVideo(p.condition);
         selectNextList();
-        loadTargetFile(currentTargetList->next());
+        loadNextTarget();
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -168,7 +168,7 @@ namespace av_coordinate_response_measure {
     
     void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
         setAudioDevices(p);
-        loadNextTarget();
+        //loadNextTarget();
         seekRandomMaskerPosition();
     }
     
@@ -202,7 +202,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::loadNextTarget() {
-        //loadTargetFile(currentTargetList->next());
+        loadTargetFile(currentTargetList->next());
         setTargetLevel_dB(targetLevel_dB());
         targetPlayer->subscribeToPlaybackCompletion();
     }
