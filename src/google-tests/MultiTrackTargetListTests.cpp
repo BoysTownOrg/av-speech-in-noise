@@ -1,6 +1,7 @@
 #include "assert-utility.h"
 #include <recognition-test/MultiTrackTargetList.hpp>
 #include <gtest/gtest.h>
+#include <gsl/gsl>
 
 namespace {
     using namespace av_coordinate_response_measure;
@@ -87,26 +88,33 @@ namespace {
                 lists.push_back(std::make_shared<TargetListStub>());
             targetListFactory.setLists({lists.begin(), lists.end()});
         }
+        
+        auto read(std::string s = {}) {
+            return list.read(std::move(s));
+        }
+        
+        void setSubDirectories(std::vector<std::string> v) {
+            setListCount(gsl::narrow<int>(v.size()));
+            directoryReader.setSubDirectories(std::move(v));
+        }
     };
     
     TEST_F(MultiTrackTargetListTests, readLoadsEachSubDirectory) {
-        setListCount(3);
-        directoryReader.setSubDirectories({"a", "b", "c"});
-        list.read({});
+        setSubDirectories({"a", "b", "c"});
+        read();
         assertEqual("a", lists.at(0)->directory());
         assertEqual("b", lists.at(1)->directory());
         assertEqual("c", lists.at(2)->directory());
     }
     
     TEST_F(MultiTrackTargetListTests, readPassesDirectory) {
-        list.read("a");
+        read("a");
         assertEqual("a", directoryReader.directory());
     }
     
     TEST_F(MultiTrackTargetListTests, readReturnsReadLists) {
-        setListCount(3);
-        directoryReader.setSubDirectories({{"a", "b", "c"}});
-        auto actual = list.read({});
+        setSubDirectories(std::vector<std::string>(3));
+        auto actual = read();
         EXPECT_EQ(lists.at(0).get(), actual.at(0).get());
         EXPECT_EQ(lists.at(1).get(), actual.at(1).get());
         EXPECT_EQ(lists.at(2).get(), actual.at(2).get());
