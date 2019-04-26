@@ -995,6 +995,14 @@ namespace {
             run(useCase);
             assertTargetVideoOnlyShown();
         }
+        
+        auto targetLevelRule() {
+            return initializingTest.targetLevelRule();
+        }
+        
+        void assertSettingsContainTargetLevelRule(const Track::Settings &s) {
+            EXPECT_EQ(targetLevelRule(), s.rule);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1054,10 +1062,7 @@ namespace {
         initializeTestResetsSnrTrackWithTargetLevelRule
     ) {
         initializeTest();
-        EXPECT_EQ(
-            initializingTest.targetLevelRule(),
-            snrTrack.settings().rule
-        );
+        assertSettingsContainTargetLevelRule(snrTrack.settings());
     }
 
     TEST_F(
@@ -1076,11 +1081,8 @@ namespace {
         initializeTestWithListCount(3);
         auto parameters = snrTrackFactory.parameters();
         EXPECT_EQ(3, parameters.size());
-        for (auto p : parameters)
-            EXPECT_EQ(
-                initializingTest.targetLevelRule(),
-                p.rule
-            );
+        for (auto setting : parameters)
+            assertSettingsContainTargetLevelRule(setting);
     }
 
     TEST_F(
