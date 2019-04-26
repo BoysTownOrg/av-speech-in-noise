@@ -27,12 +27,12 @@ namespace av_coordinate_response_measure {
         Direction previousDirection{Direction::undefined};
         Step previousStep{Step::undefined};
     public:
+        AdaptiveTrack(const Settings &);
         int x() override;
         void pushUp() override;
         void pushDown() override;
         bool complete() override;
         int reversals() override;
-        void reset(const Settings &) override;
         
     private:
         void stepDown();

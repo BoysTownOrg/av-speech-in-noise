@@ -377,10 +377,6 @@ namespace {
             x_ = x;
         }
         
-        void reset(const Settings &p) override {
-            settings_ = p;
-        }
-        
         void pushDown() override {
             pushedDown_ = true;
         }

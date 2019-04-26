@@ -2,22 +2,11 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class AdaptiveTrackTests : public ::testing::Test {
-    protected:
-        av_coordinate_response_measure::AdaptiveTrack::Settings settings{};
-        av_coordinate_response_measure::TrackingRule rule;
-        av_coordinate_response_measure::AdaptiveTrack track{};
-        
-        AdaptiveTrackTests() {
-            rule.resize(3);
-            for (auto &sequence : rule)
-                sequence.runCount = 0;
-        }
-        
-        void reset() {
-            settings.rule = &rule;
-            track.reset(settings);
-        }
+    class AdaptiveTrackFacade {
+        av_coordinate_response_measure::AdaptiveTrack track;
+    public:
+        AdaptiveTrackFacade(const av_coordinate_response_measure::Track::Settings &s) :
+            track{s} {}
         
         void push(std::string directions) {
             for (const auto &c : directions)
@@ -63,6 +52,23 @@ namespace {
         void assertReversalsEquals(int expected) {
             EXPECT_EQ(expected, reversals());
         }
+    };
+    
+    class AdaptiveTrackTests : public ::testing::Test {
+    protected:
+        av_coordinate_response_measure::AdaptiveTrack::Settings settings{};
+        av_coordinate_response_measure::TrackingRule rule;
+        
+        AdaptiveTrackTests() {
+            rule.resize(3);
+            for (auto &sequence : rule)
+                sequence.runCount = 0;
+        }
+        
+        AdaptiveTrackFacade reset() {
+            settings.rule = &rule;
+            return {settings};
+        }
         
         template<typename T>
         void setStartingX(T x) {
@@ -72,19 +78,19 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
         setStartingX(1);
-        reset();
-        assertXEquals(1);
+        auto track = reset();
+        track.assertXEquals(1);
     }
 
     TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoChanges) {
         setStartingX(5);
-        reset();
-        pushDown();
-        assertXEquals(5);
-        pushDown();
-        assertXEquals(5);
-        pushUp();
-        assertXEquals(5);
+        auto track = reset();
+        track.pushDown();
+        track.assertXEquals(5);
+        track.pushDown();
+        track.assertXEquals(5);
+        track.pushUp();
+        track.assertXEquals(5);
     }
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
@@ -93,23 +99,23 @@ namespace {
         rule.at(0).stepSize = 4;
         rule.at(0).up = 1;
         rule.at(0).down = 2;
-        reset();
-        pushDown();
-        assertXEquals(5);
-        pushDown();
-        assertXEquals(5 - 4);
-        pushUp();
-        assertXEquals(5 - 4 + 4);
-        pushDown();
-        assertXEquals(5 - 4 + 4);
-        pushDown();
-        assertXEquals(5 - 4 + 4 - 4);
-        pushUp();
-        assertXEquals(5 - 4 + 4 - 4);
-        pushDown();
-        assertXEquals(5 - 4 + 4 - 4);
-        pushDown();
-        assertXEquals(5 - 4 + 4 - 4);
+        auto track = reset();
+        track.pushDown();
+        track.assertXEquals(5);
+        track.pushDown();
+        track.assertXEquals(5 - 4);
+        track.pushUp();
+        track.assertXEquals(5 - 4 + 4);
+        track.pushDown();
+        track.assertXEquals(5 - 4 + 4);
+        track.pushDown();
+        track.assertXEquals(5 - 4 + 4 - 4);
+        track.pushUp();
+        track.assertXEquals(5 - 4 + 4 - 4);
+        track.pushDown();
+        track.assertXEquals(5 - 4 + 4 - 4);
+        track.pushDown();
+        track.assertXEquals(5 - 4 + 4 - 4);
     }
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
@@ -118,20 +124,20 @@ namespace {
         rule.at(0).stepSize = 4;
         rule.at(0).up = 1;
         rule.at(0).down = 2;
-        reset();
-        assertIncomplete();
-        pushDown();
-        assertIncomplete();
-        pushDown();
-        assertIncomplete();
-        pushUp();
-        assertIncomplete();
-        pushDown();
-        assertIncomplete();
-        pushDown();
-        assertIncomplete();
-        pushUp();
-        assertComplete();
+        auto track = reset();
+        track.assertIncomplete();
+        track.pushDown();
+        track.assertIncomplete();
+        track.pushDown();
+        track.assertIncomplete();
+        track.pushUp();
+        track.assertIncomplete();
+        track.pushDown();
+        track.assertIncomplete();
+        track.pushDown();
+        track.assertIncomplete();
+        track.pushUp();
+        track.assertComplete();
     }
 
     // see https://doi.org/10.1121/1.1912375
@@ -141,9 +147,9 @@ namespace {
         rule.at(0).stepSize = 1;
         rule.at(0).down = 1;
         rule.at(0).up = 1;
-        reset();
-        push("dduuuudduuuddddduuudduu");
-        assertXEquals(1);
+        auto track = reset();
+        track.push("dduuuudduuuddddduuudduu");
+        track.assertXEquals(1);
     }
 
     // see https://doi.org/10.1121/1.1912375
@@ -153,9 +159,9 @@ namespace {
         rule.at(0).stepSize = 1;
         rule.at(0).down = 2;
         rule.at(0).up = 1;
-        reset();
-        push("dddduduududdddduuuddddd");
-        assertXEquals(1);
+        auto track = reset();
+        track.push("dddduduududdddduuuddddd");
+        track.assertXEquals(1);
     }
 
     TEST_F(AdaptiveTrackTests, twoSequences) {
@@ -168,29 +174,29 @@ namespace {
         rule.at(1).stepSize = 4;
         rule.at(1).down = 2;
         rule.at(1).up = 1;
-        reset();
-        pushDown();
-        assertXEquals(65);
-        pushDown();
-        assertXEquals(65 - 8);
-        pushDown();
-        assertXEquals(65 - 8);
-        pushDown();
-        assertXEquals(65 - 8 - 8);
-        pushUp();
-        assertXEquals(65 - 8 - 8 + 8);
-        pushUp();
-        assertXEquals(65 - 8 - 8 + 8 + 8);
-        pushDown();
-        assertXEquals(65 - 8 - 8 + 8 + 8);
-        pushDown();
-        assertXEquals(65 - 8 - 8 + 8 + 8 - 4);
-        pushDown();
-        assertXEquals(65 - 8 - 8 + 8 + 8 - 4);
-        pushDown();
-        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
-        pushUp();
-        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
+        auto track = reset();
+        track.pushDown();
+        track.assertXEquals(65);
+        track.pushDown();
+        track.assertXEquals(65 - 8);
+        track.pushDown();
+        track.assertXEquals(65 - 8);
+        track.pushDown();
+        track.assertXEquals(65 - 8 - 8);
+        track.pushUp();
+        track.assertXEquals(65 - 8 - 8 + 8);
+        track.pushUp();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8);
+        track.pushDown();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8);
+        track.pushDown();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8 - 4);
+        track.pushDown();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8 - 4);
+        track.pushDown();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
+        track.pushUp();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
     }
 
     TEST_F(AdaptiveTrackTests, threeSequences) {
@@ -207,9 +213,9 @@ namespace {
         rule.at(2).stepSize = 2;
         rule.at(2).down = 3;
         rule.at(2).up = 1;
-        reset();
-        push("ddudddudddddudddddduddd");
-        assertXEquals(3);
+        auto track = reset();
+        track.push("ddudddudddddudddddduddd");
+        track.assertXEquals(3);
     }
 
     TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
@@ -222,29 +228,29 @@ namespace {
         rule.at(1).stepSize = 4;
         rule.at(1).up = 2;
         rule.at(1).down = 1;
-        reset();
-        pushDown();
-        assertXEquals(65);
-        pushDown();
-        assertXEquals(65 - 8);
-        pushDown();
-        assertXEquals(65 - 8);
-        pushDown();
-        assertXEquals(65 - 8 - 8);
-        pushUp();
-        assertXEquals(65 - 8 - 8 + 8);
-        pushUp();
-        assertXEquals(65 - 8 - 8 + 8 + 8);
-        pushDown();
-        assertXEquals(65 - 8 - 8 + 8 + 8);
-        pushDown();
-        assertXEquals(65 - 8 - 8 + 8 + 8 - 4);
-        pushDown();
-        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
-        pushUp();
-        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
-        pushUp();
-        assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
+        auto track = reset();
+        track.pushDown();
+        track.assertXEquals(65);
+        track.pushDown();
+        track.assertXEquals(65 - 8);
+        track.pushDown();
+        track.assertXEquals(65 - 8);
+        track.pushDown();
+        track.assertXEquals(65 - 8 - 8);
+        track.pushUp();
+        track.assertXEquals(65 - 8 - 8 + 8);
+        track.pushUp();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8);
+        track.pushDown();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8);
+        track.pushDown();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8 - 4);
+        track.pushDown();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
+        track.pushUp();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
+        track.pushUp();
+        track.assertXEquals(65 - 8 - 8 + 8 + 8 - 4 - 4);
     }
     
     TEST_F(AdaptiveTrackTests, reversals) {
@@ -252,19 +258,19 @@ namespace {
         rule.at(0).runCount = 1000;
         rule.at(0).down = 2;
         rule.at(0).up = 1;
-        reset();
-        assertReversalsEquals(0);
-        pushUp();
-        assertReversalsEquals(0);
-        pushDown();
-        assertReversalsEquals(0);
-        pushDown();
-        assertReversalsEquals(1);
-        pushUp();
-        assertReversalsEquals(2);
-        pushDown();
-        assertReversalsEquals(2);
-        pushDown();
-        assertReversalsEquals(3);
+        auto track = reset();
+        track.assertReversalsEquals(0);
+        track.pushUp();
+        track.assertReversalsEquals(0);
+        track.pushDown();
+        track.assertReversalsEquals(0);
+        track.pushDown();
+        track.assertReversalsEquals(1);
+        track.pushUp();
+        track.assertReversalsEquals(2);
+        track.pushDown();
+        track.assertReversalsEquals(2);
+        track.pushDown();
+        track.assertReversalsEquals(3);
     }
 }

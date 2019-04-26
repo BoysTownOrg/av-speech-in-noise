@@ -1,7 +1,7 @@
 #include "AdaptiveTrack.hpp"
 
 namespace av_coordinate_response_measure {
-    void AdaptiveTrack::reset(const Settings &p) {
+    AdaptiveTrack::AdaptiveTrack(const Settings &p) {
         sequenceIndex = 0;
         sameDirectionConsecutiveCount = 0;
         runCounter = 0;

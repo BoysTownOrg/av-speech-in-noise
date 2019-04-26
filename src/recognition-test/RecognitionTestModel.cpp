@@ -4,7 +4,6 @@
 
 namespace av_coordinate_response_measure {
     class NullTrack : public Track {
-        void reset(const Track::Settings &) override {}
         void pushDown() override {}
         void pushUp() override {}
         int x() override { return {}; }

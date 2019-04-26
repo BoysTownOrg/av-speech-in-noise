@@ -63,7 +63,6 @@ namespace av_coordinate_response_measure {
             const TrackingRule *rule;
             int startingX;
         };
-        virtual void reset(const Settings &) = 0;
         virtual void pushDown() = 0;
         virtual void pushUp() = 0;
         virtual int x() = 0;
