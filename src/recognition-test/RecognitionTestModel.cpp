@@ -69,8 +69,13 @@ namespace av_coordinate_response_measure {
         snrTrack->reset(s);
         
         tracks.clear();
-        for (size_t i = 0; i < lists.size(); ++i)
+        for (size_t i = 0; i < lists.size(); ++i) {
             tracks.push_back(snrTrackFactory->make(s));
+            targetListsWithTracks.push_back({
+                lists.at(i),
+                tracks.at(i)
+            });
+        }
     }
     
     void RecognitionTestModel::prepareOutputFile(const Test &p) {
@@ -125,14 +130,27 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::selectNextList() {
-        auto listCount = gsl::narrow<int>(lists.size());
+        targetListsWithTracks.erase(
+            std::remove_if(
+                targetListsWithTracks.begin(),
+                targetListsWithTracks.end(),
+                [](const TargetListWithTrack &t) {
+                    return t.track->complete();
+                }),
+            targetListsWithTracks.end()
+        );
+        auto listCount = gsl::narrow<int>(targetListsWithTracks.size());
         size_t n = randomizer->randomIntBetween(0, listCount - 1);
         if (n < tracks.size()) {
-            tracks.erase(std::remove_if(
-                tracks.begin(),
-                tracks.end(),
-                [](const std::shared_ptr<Track> &t) { return t->complete(); }),
-                tracks.end());
+            tracks.erase(
+                std::remove_if(
+                    tracks.begin(),
+                    tracks.end(),
+                    [](const std::shared_ptr<Track> &t) {
+                        return t->complete();
+                    }),
+                tracks.end()
+            );
             currentSnrTrack = tracks.at(n).get();
             currentTargetList = lists.at(n).get();
         }

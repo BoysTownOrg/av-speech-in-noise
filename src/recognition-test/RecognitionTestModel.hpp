@@ -132,8 +132,14 @@ namespace av_coordinate_response_measure {
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
+        struct TargetListWithTrack {
+            std::shared_ptr<TargetList> list;
+            std::shared_ptr<Track> track;
+        };
+        
         std::vector<std::shared_ptr<Track>> tracks{};
         TargetListReader::lists_type lists{};
+        std::vector<TargetListWithTrack> targetListsWithTracks{};
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
         TargetListReader *targetListSetReader;
