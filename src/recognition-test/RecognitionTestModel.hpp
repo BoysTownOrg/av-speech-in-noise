@@ -144,7 +144,6 @@ namespace av_coordinate_response_measure {
         int fullScaleLevel_dB_SPL{};
         TargetListReader *targetListSetReader;
         MaskerPlayer *maskerPlayer;
-        TargetList *targetList;
         TargetPlayer *targetPlayer;
         TrackFactory *snrTrackFactory;
         ResponseEvaluator *evaluator;

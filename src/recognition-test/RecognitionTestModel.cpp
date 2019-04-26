@@ -16,7 +16,6 @@ namespace av_coordinate_response_measure {
     ) :
         targetListSetReader{targetListSetReader},
         maskerPlayer{maskerPlayer},
-        targetList{targetList},
         targetPlayer{targetPlayer},
         snrTrackFactory{snrTrackFactory},
         evaluator{evaluator},
@@ -115,7 +114,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::prepareTargets(const Test &p) {
-        targetList->loadFromDirectory(p.targetListDirectory);
+        currentTargetList->loadFromDirectory(p.targetListDirectory);
     }
     
     void RecognitionTestModel::prepareVideo(const Condition &p) {
@@ -288,7 +287,7 @@ namespace av_coordinate_response_measure {
     }
     
     std::string RecognitionTestModel::currentTarget() {
-        return targetList->current();
+        return currentTargetList->current();
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
