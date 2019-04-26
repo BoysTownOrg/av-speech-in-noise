@@ -1003,6 +1003,10 @@ namespace {
         void assertSettingsContainTargetLevelRule(const Track::Settings &s) {
             EXPECT_EQ(targetLevelRule(), s.rule);
         }
+        
+        void assertSettingsMatchStartingX(const Track::Settings &s, int x) {
+            EXPECT_EQ(x, s.startingX);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1071,7 +1075,7 @@ namespace {
     ) {
         initializingTest.setStartingSnr_dB(1);
         initializeTest();
-        EXPECT_EQ(1, snrTrack.settings().startingX);
+        assertSettingsMatchStartingX(snrTrack.settings(), 1);
     }
 
     TEST_F(
@@ -1093,8 +1097,8 @@ namespace {
         initializeTestWithListCount(3);
         auto parameters = snrTrackFactory.parameters();
         EXPECT_EQ(3, parameters.size());
-        for (auto p : parameters)
-            EXPECT_EQ(1, p.startingX);
+        for (auto setting : parameters)
+            assertSettingsMatchStartingX(setting, 1);
     }
 
     TEST_F(
