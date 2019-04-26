@@ -979,6 +979,10 @@ namespace {
         void assertSettingsMatchStartingX(const Track::Settings &s, int x) {
             EXPECT_EQ(x, s.startingX);
         }
+        
+        auto &testSettings() const {
+            return initializingTest.test();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1067,7 +1071,7 @@ namespace {
         initializeTestOpensNewOutputFile
     ) {
         initializeTest();
-        EXPECT_EQ(outputFile.openNewFileParameters(), &initializingTest.test());
+        EXPECT_EQ(outputFile.openNewFileParameters(), &testSettings());
     }
 
     TEST_F(
@@ -1075,7 +1079,7 @@ namespace {
         initializeTestWritesTestInformation
     ) {
         initializeTest();
-        EXPECT_EQ(outputFile.testWritten(), &initializingTest.test());
+        EXPECT_EQ(outputFile.testWritten(), &testSettings());
     }
 
     TEST_F(
