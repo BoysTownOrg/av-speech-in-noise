@@ -718,7 +718,7 @@ namespace {
         InitializingTest initializingTest{};
         PlayingTrial playingTrial{};
         PlayingCalibration playingCalibration{};
-        TargetListReader::lists_type lists{};
+        std::vector<std::shared_ptr<TargetListStub>> lists{};
         std::vector<std::shared_ptr<TrackStub>> snrTracks{};
         
         RecognitionTestModelTests() {
@@ -943,10 +943,8 @@ namespace {
                 lists.push_back(std::make_shared<TargetListStub>());
                 snrTracks.push_back(std::make_shared<TrackStub>());
             }
-            targetListSetReader.setTargetLists(lists);
-            snrTrackFactory.setTracks(
-                std::vector<std::shared_ptr<Track>>(snrTracks.begin(), snrTracks.end())
-            );
+            targetListSetReader.setTargetLists({lists.begin(), lists.end()});
+            snrTrackFactory.setTracks({snrTracks.begin(), snrTracks.end()});
         }
     };
 
@@ -1139,6 +1137,18 @@ namespace {
         playTrialPassesNextTargetToTargetPlayer
     ) {
         targetList.setNext("a");
+        playTrial();
+        assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        playTrialPassesNextTargetToTargetPlayer_2
+    ) {
+        setTargetListCount(15);
+        randomizer.setRandomInt(13);
+        lists.at(13)->setNext("a");
+        initializeTest();
         playTrial();
         assertTargetFilePathEquals("a");
     }
