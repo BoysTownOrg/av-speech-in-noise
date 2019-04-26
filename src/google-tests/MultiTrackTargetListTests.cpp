@@ -102,4 +102,13 @@ namespace {
         list.read("a");
         assertEqual("a", directoryReader.directory());
     }
+    
+    TEST_F(MultiTrackTargetListTests, readReturnsReadLists) {
+        setListCount(3);
+        directoryReader.setSubDirectories({{"a", "b", "c"}});
+        auto actual = list.read({});
+        EXPECT_EQ(lists.at(0).get(), actual.at(0).get());
+        EXPECT_EQ(lists.at(1).get(), actual.at(1).get());
+        EXPECT_EQ(lists.at(2).get(), actual.at(2).get());
+    }
 }
