@@ -1443,6 +1443,20 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitResponseSelectsNextListAmongThoseWithIncompleteTracks
+    ) {
+        initializeTestWithListCount(3);
+        snrTracks.at(1)->setComplete();
+        selectList(1);
+        submitResponse();
+        evaluator.setIncorrect();
+        submitResponse();
+        EXPECT_TRUE(snrTracks.at(2)->pushedUp());
+        EXPECT_FALSE(snrTracks.at(2)->pushedDown());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitResponsePassesSubjectResponseToEvaluator
     ) {
         submitResponse();

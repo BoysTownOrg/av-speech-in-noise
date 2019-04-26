@@ -128,6 +128,11 @@ namespace av_coordinate_response_measure {
         auto listCount = gsl::narrow<int>(lists.size());
         size_t n = randomizer->randomIntBetween(0, listCount - 1);
         if (n < tracks.size()) {
+            tracks.erase(std::remove_if(
+                tracks.begin(),
+                tracks.end(),
+                [](const std::shared_ptr<Track> &t) { return t->complete(); }),
+                tracks.end());
             currentSnrTrack = tracks.at(n).get();
             currentTargetList = lists.at(n).get();
         }
