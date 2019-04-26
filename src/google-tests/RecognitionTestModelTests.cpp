@@ -1413,6 +1413,19 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitIncorrectResponsePushesSnrUp_2
+    ) {
+        setTargetListCount(3);
+        randomizer.setRandomInt(1);
+        initializeTest();
+        evaluator.setIncorrect();
+        submitResponse();
+        EXPECT_TRUE(snrTracks.at(1)->pushedUp());
+        EXPECT_FALSE(snrTracks.at(1)->pushedDown());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitResponsePassesSubjectResponseToEvaluator
     ) {
         submitResponse();
