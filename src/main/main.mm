@@ -16,7 +16,10 @@
 #include <sys/stat.h>
 #include <fstream>
 
-class MacOsDirectoryReader : public target_list::DirectoryReader {
+class MacOsDirectoryReader :
+    public av_coordinate_response_measure::DirectoryReader,
+    public target_list::DirectoryReader
+{
     std::vector<std::string> filesIn(std::string directory) override {
         std::vector<std::string> files{};
         const auto contents = [[NSFileManager defaultManager]
@@ -26,6 +29,23 @@ class MacOsDirectoryReader : public target_list::DirectoryReader {
         for (id thing in contents)
             files.push_back([thing UTF8String]);
         return files;
+    }
+    
+    std::vector<std::string> subDirectories(std::string directory) override {
+        auto parent = asNsString(directory);
+        const auto contents = [[NSFileManager defaultManager]
+            contentsOfDirectoryAtPath: parent
+            error: nil
+        ];
+        std::vector<std::string> subDirectories_{};
+        for (id thing in contents) {
+            BOOL isDir = NO;
+            auto path = [parent stringByAppendingPathComponent:thing];
+            if ([[NSFileManager defaultManager]
+                fileExistsAtPath:path isDirectory:&isDir] && isDir)
+                subDirectories_.push_back([path UTF8String]);
+        }
+        return subDirectories_;
     }
 };
 
@@ -150,7 +170,8 @@ int main() {
         {".mov", ".avi", ".wav"}
     };
     MersenneTwisterRandomizer randomizer;
-    target_list::RandomizedTargetList list{&fileExtensions, &randomizer};
+    target_list::RandomizedTargetListFactory targetListFactory{&fileExtensions, &randomizer};
+    av_coordinate_response_measure::SubdirectoryTargetListReader targetListReader{&targetListFactory, &reader};
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
@@ -172,13 +193,13 @@ int main() {
         "Documents/AVCoordinatedResponseMeasureResults"
     );
     av_coordinate_response_measure::OutputFileImpl outputFile{&writer, &path};
-    av_coordinate_response_measure::AdaptiveTrack snrTrack{};
+    av_coordinate_response_measure::AdaptiveTrackFactory snrTrackFactory{};
     av_coordinate_response_measure::ResponseEvaluatorImpl responseEvaluator{};
     av_coordinate_response_measure::RecognitionTestModel model{
-        &list,
+        &targetListReader,
         &targetPlayer,
         &maskerPlayer,
-        &snrTrack,
+        &snrTrackFactory,
         &responseEvaluator,
         &outputFile,
         &randomizer

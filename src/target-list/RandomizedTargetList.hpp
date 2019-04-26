@@ -2,6 +2,7 @@
 #define target_list_RandomizedStimulusList_hpp
 
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/SubdirectoryTargetListReader.hpp>
 #include <vector>
 #include <string>
 
@@ -37,6 +38,19 @@ namespace target_list {
         void shuffle();
         bool empty_();
         void replaceLastFile();
+    };
+    
+    class RandomizedTargetListFactory : public av_coordinate_response_measure::TargetListFactory {
+        DirectoryReader *reader;
+        Randomizer *randomizer;
+    public:
+        RandomizedTargetListFactory(DirectoryReader *reader, Randomizer *randomizer) :
+            reader{reader},
+            randomizer{randomizer} {}
+        
+        std::shared_ptr<av_coordinate_response_measure::TargetList> make() override {
+            return std::make_shared<RandomizedTargetList>(reader, randomizer);
+        }
     };
 }
 

@@ -25,6 +25,7 @@ namespace av_coordinate_response_measure {
         lists_type read(std::string directory) override;
     private:
         std::vector<std::string> subDirectories(std::string directory);
+
     };
 }
 

@@ -19,6 +19,12 @@ public:
         std::uniform_real_distribution<> distribution{a, b};
         return distribution(engine);
     }
+    
+    int randomIntBetween(int a, int b) override {
+        std::uniform_int_distribution<> distribution{a, b};
+        return distribution(engine);
+    }
+    
 };
 
 #endif
