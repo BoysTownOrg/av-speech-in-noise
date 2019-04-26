@@ -983,6 +983,11 @@ namespace {
         auto &testSettings() const {
             return initializingTest.test();
         }
+        
+        void assertRandomizerPassedIntegerBounds(int a, int b) {
+            EXPECT_EQ(a, randomizer.lowerIntBound());
+            EXPECT_EQ(b, randomizer.upperIntBound());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1160,8 +1165,7 @@ namespace {
         initializeTestSelectsRandomListInRange
     ) {
         initializeTestWithListCount(3);
-        EXPECT_EQ(int{0}, randomizer.lowerIntBound());
-        EXPECT_EQ(2, randomizer.upperIntBound());
+        assertRandomizerPassedIntegerBounds(0, 2);
     }
 
     TEST_F(
@@ -1171,8 +1175,7 @@ namespace {
         initializeTestWithListCount(3);
         snrTracks.at(2)->setComplete();
         submitResponse();
-        EXPECT_EQ(int{0}, randomizer.lowerIntBound());
-        EXPECT_EQ(1, randomizer.upperIntBound());
+        assertRandomizerPassedIntegerBounds(0, 1);
     }
 
     TEST_F(
