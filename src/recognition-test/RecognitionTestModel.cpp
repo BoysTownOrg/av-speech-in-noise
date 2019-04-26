@@ -145,15 +145,8 @@ namespace av_coordinate_response_measure {
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
         throwIfTrialInProgress();
         
-        if (noMoreTrials())
-            return;
-        
         preparePlayers(settings);
         startTrial();
-    }
-    
-    bool RecognitionTestModel::noMoreTrials() {
-        return currentSnrTrack->complete();
     }
     
     void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
