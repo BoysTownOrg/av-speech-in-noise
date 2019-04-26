@@ -66,12 +66,10 @@ namespace av_coordinate_response_measure {
         s.startingX = p.startingSnr_dB;
         
         targetListsWithTracks.clear();
-        tracks.clear();
         for (size_t i = 0; i < lists.size(); ++i) {
-            tracks.push_back(snrTrackFactory->make(s));
             targetListsWithTracks.push_back({
                 lists.at(i),
-                tracks.at(i)
+                snrTrackFactory->make(s)
             });
         }
     }
