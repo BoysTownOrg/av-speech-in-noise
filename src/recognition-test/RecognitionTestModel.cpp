@@ -151,60 +151,6 @@ namespace av_coordinate_response_measure {
         }
     }
     
-    void RecognitionTestModel::removeCompleteTracks() {
-        targetListsWithTracks.erase(
-            std::remove_if(
-                targetListsWithTracks.begin(),
-                targetListsWithTracks.end(),
-                [](const TargetListWithTrack &t) {
-                    return t.track->complete();
-                }
-            ),
-            targetListsWithTracks.end()
-        );
-    }
-    
-    void RecognitionTestModel::playTrial(const AudioSettings &settings) {
-        throwIfTrialInProgress();
-        
-        preparePlayers(settings);
-        startTrial();
-    }
-    
-    void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
-        setAudioDevices(p);
-        //seekRandomMaskerPosition();
-    }
-    
-    void RecognitionTestModel::setAudioDevices(const AudioSettings &p) {
-        throwInvalidAudioDeviceOnErrorSettingDevice(
-            &RecognitionTestModel::setAudioDevices_,
-            p.audioDevice
-        );
-    }
-    
-    void RecognitionTestModel::throwInvalidAudioDeviceOnErrorSettingDevice(
-        void (RecognitionTestModel::*f)(const std::string &),
-        const std::string &device
-    ) {
-        try {
-            (this->*f)(device);
-        } catch (const InvalidAudioDevice &) {
-            throw RequestFailure{
-                "'" + device + "' is not a valid audio device."
-            };
-        }
-    }
-    
-    void RecognitionTestModel::setAudioDevices_(const std::string &device) {
-        maskerPlayer->setAudioDevice(device);
-        setTargetPlayerDevice_(device);
-    }
-    
-    void RecognitionTestModel::setTargetPlayerDevice_(const std::string &device) {
-        targetPlayer->setAudioDevice(device);
-    }
-    
     void RecognitionTestModel::loadNextTarget() {
         loadTargetFile(currentTargetList->next());
         setTargetLevel_dB(targetLevel_dB());
@@ -240,6 +186,46 @@ namespace av_coordinate_response_measure {
             2 * maskerPlayer->fadeTimeSeconds() -
             targetPlayer->durationSeconds();
         maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
+    }
+    
+    void RecognitionTestModel::playTrial(const AudioSettings &settings) {
+        throwIfTrialInProgress();
+        
+        preparePlayers(settings);
+        startTrial();
+    }
+    
+    void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
+        setAudioDevices(p);
+    }
+    
+    void RecognitionTestModel::setAudioDevices(const AudioSettings &p) {
+        throwInvalidAudioDeviceOnErrorSettingDevice(
+            &RecognitionTestModel::setAudioDevices_,
+            p.audioDevice
+        );
+    }
+    
+    void RecognitionTestModel::throwInvalidAudioDeviceOnErrorSettingDevice(
+        void (RecognitionTestModel::*f)(const std::string &),
+        const std::string &device
+    ) {
+        try {
+            (this->*f)(device);
+        } catch (const InvalidAudioDevice &) {
+            throw RequestFailure{
+                "'" + device + "' is not a valid audio device."
+            };
+        }
+    }
+    
+    void RecognitionTestModel::setAudioDevices_(const std::string &device) {
+        maskerPlayer->setAudioDevice(device);
+        setTargetPlayerDevice_(device);
+    }
+    
+    void RecognitionTestModel::setTargetPlayerDevice_(const std::string &device) {
+        targetPlayer->setAudioDevice(device);
     }
     
     void RecognitionTestModel::startTrial() {
@@ -294,6 +280,19 @@ namespace av_coordinate_response_measure {
     
     std::string RecognitionTestModel::currentTarget() {
         return currentTargetList->current();
+    }
+    
+    void RecognitionTestModel::removeCompleteTracks() {
+        targetListsWithTracks.erase(
+            std::remove_if(
+                targetListsWithTracks.begin(),
+                targetListsWithTracks.end(),
+                [](const TargetListWithTrack &t) {
+                    return t.track->complete();
+                }
+            ),
+            targetListsWithTracks.end()
+        );
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
