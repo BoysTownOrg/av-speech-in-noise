@@ -89,17 +89,17 @@ namespace {
         }
     };
     
-    TEST_F(MultiTrackTargetListTests, loadFromDirectoryLoadsEachSubDirectory) {
+    TEST_F(MultiTrackTargetListTests, readLoadsEachSubDirectory) {
         setListCount(3);
         directoryReader.setSubDirectories({"a", "b", "c"});
-        list.loadFromDirectory({});
+        list.read({});
         assertEqual("a", lists.at(0)->directory());
         assertEqual("b", lists.at(1)->directory());
         assertEqual("c", lists.at(2)->directory());
     }
     
-    TEST_F(MultiTrackTargetListTests, loadFromDirectoryPassesDirectory) {
-        list.loadFromDirectory("a");
+    TEST_F(MultiTrackTargetListTests, readPassesDirectory) {
+        list.read("a");
         assertEqual("a", directoryReader.directory());
     }
 }
