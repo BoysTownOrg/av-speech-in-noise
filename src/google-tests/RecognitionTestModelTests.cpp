@@ -708,13 +708,11 @@ namespace {
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
         OutputFileStub outputFile{};
-        TrackStub snrTrack{};
         TrackFactoryStub snrTrackFactory{};
         ResponseEvaluatorStub evaluator{};
         RandomizerStub randomizer{};
         RecognitionTestModel model{
             &targetListSetReader,
-            &targetList,
             &targetPlayer,
             &maskerPlayer,
             &snrTrackFactory,
@@ -1134,15 +1132,6 @@ namespace {
         RecognitionTestModelTests,
         playTrialPassesNextTargetToTargetPlayer
     ) {
-        targetList.setNext("a");
-        playTrial();
-        assertTargetFilePathEquals("a");
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialPassesNextTargetToTargetPlayer_2
-    ) {
         initializeTestWithStartingList(1);
         lists.at(1)->setNext("a");
         playTrial();
@@ -1356,7 +1345,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponsePassesTargetToEvaluatorForNumberAndColor
     ) {
-        targetList.setCurrent("a");
+        initializeTestWithStartingList(1);
+        lists.at(1)->setCurrent("a");
         submitResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
@@ -1366,7 +1356,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponsePassesTargetToEvaluator
     ) {
-        targetList.setCurrent("a");
+        initializeTestWithStartingList(1);
+        lists.at(1)->setCurrent("a");
         submitResponse();
         assertEqual("a", evaluator.correctFilePath());
     }

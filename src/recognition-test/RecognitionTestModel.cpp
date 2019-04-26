@@ -28,11 +28,25 @@ namespace av_coordinate_response_measure {
         }
     };
     
+    class NullTargetList : public TargetList {
+    
+        void loadFromDirectory(std::string directory) override {}
+        
+        std::string next() override{
+            return {};
+        }
+        
+        std::string current() override{
+            return {};
+        }
+        
+    };
+    
     static NullTrack nullTrack;
+    static NullTargetList nullTargetList;
     
     RecognitionTestModel::RecognitionTestModel(
         TargetListReader *targetListSetReader,
-        TargetList *targetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
         TrackFactory *snrTrackFactory,
@@ -48,7 +62,7 @@ namespace av_coordinate_response_measure {
         outputFile{outputFile},
         randomizer{randomizer},
         currentSnrTrack{&nullTrack},
-        currentTargetList{targetList}
+        currentTargetList{&nullTargetList}
     {
         targetPlayer->subscribe(this);
         maskerPlayer->subscribe(this);

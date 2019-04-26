@@ -154,7 +154,6 @@ namespace av_coordinate_response_measure {
     public:
         RecognitionTestModel(
             TargetListReader *,
-            TargetList *,
             TargetPlayer *,
             MaskerPlayer *,
             TrackFactory *,
