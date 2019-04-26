@@ -530,10 +530,6 @@ namespace {
             upperBound_ = b;
             return randomFloat_;
         }
-        
-        int randomIntBetween(int, int) override {
-            return randomInt_;
-        }
     };
     
     class UseCase {
