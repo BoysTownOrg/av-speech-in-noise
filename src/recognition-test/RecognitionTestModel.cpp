@@ -254,7 +254,7 @@ namespace av_coordinate_response_measure {
     
     void RecognitionTestModel::updateSnr(const SubjectResponse &response) {
         if (correct(response))
-            snrTrack->pushDown();
+            currentSnrTrack->pushDown();
         else
             snrTrack->pushUp();
     }

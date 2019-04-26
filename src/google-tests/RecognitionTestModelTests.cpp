@@ -1400,6 +1400,19 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitCorrectResponsePushesSnrDown_2
+    ) {
+        setTargetListCount(3);
+        randomizer.setRandomInt(1);
+        initializeTest();
+        evaluator.setCorrect();
+        submitResponse();
+        EXPECT_TRUE(snrTracks.at(1)->pushedDown());
+        EXPECT_FALSE(snrTracks.at(1)->pushedUp());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitResponsePassesSubjectResponseToEvaluator
     ) {
         submitResponse();
