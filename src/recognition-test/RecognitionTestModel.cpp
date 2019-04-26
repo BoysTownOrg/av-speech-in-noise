@@ -42,7 +42,6 @@ namespace av_coordinate_response_measure {
         prepareSnrTracks(p);
         prepareOutputFile(p);
         prepareMasker(p);
-        prepareTargets(p);
         prepareVideo(p.condition);
         selectNextList();
     }
@@ -108,10 +107,6 @@ namespace av_coordinate_response_measure {
     
     int RecognitionTestModel::desiredMaskerLevel_dB() {
         return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
-    }
-    
-    void RecognitionTestModel::prepareTargets(const Test &p) {
-        currentTargetList->loadFromDirectory(p.targetListDirectory);
     }
     
     void RecognitionTestModel::prepareVideo(const Condition &p) {

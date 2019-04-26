@@ -292,10 +292,6 @@ namespace {
             return nextCalled_;
         }
         
-        auto directory() const {
-            return directory_;
-        }
-        
         void loadFromDirectory(std::string directory) override {
             directory_ = std::move(directory);
         }
@@ -570,10 +566,6 @@ namespace {
         
         void setTargetListSetDirectory(std::string s) {
             test_.targetListSetDirectory = std::move(s);
-        }
-        
-        void setTargetListDirectory(std::string s) {
-            test_.targetListDirectory = std::move(s);
         }
         
         void setMaskerFilePath(std::string s) {
@@ -1094,15 +1086,6 @@ namespace {
     ) {
         initializeTest();
         EXPECT_EQ(outputFile.testWritten(), &initializingTest.test());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestPassesTargetListDirectoryToTargetList
-    ) {
-        initializingTest.setTargetListDirectory("a");
-        initializeTest();
-        assertEqual("a", targetList.directory());
     }
 
     TEST_F(
