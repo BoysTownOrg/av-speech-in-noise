@@ -43,6 +43,12 @@ namespace av_coordinate_response_measure {
         void reversal();
         bool complete_() const;
     };
+    
+    class AdaptiveTrackFactory : public TrackFactory {
+        std::shared_ptr<Track> make(const Track::Settings &s) override {
+            return std::make_shared<AdaptiveTrack>(s);
+        }
+    };
 }
 
 #endif

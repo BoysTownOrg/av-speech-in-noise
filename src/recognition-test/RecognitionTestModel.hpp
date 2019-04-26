@@ -105,16 +105,10 @@ namespace av_coordinate_response_measure {
     class OutputFile {
     public:
         virtual ~OutputFile() = default;
-        virtual void openNewFile(
-            const Test &
-        ) = 0;
+        virtual void openNewFile(const Test &) = 0;
         class OpenFailure {};
-        virtual void writeTrial(
-            const Trial &
-        ) = 0;
-        virtual void writeTest(
-            const Test &
-        ) = 0;
+        virtual void writeTrial(const Trial &) = 0;
+        virtual void writeTest(const Test &) = 0;
         virtual void writeTrialHeading() = 0;
         virtual void close() = 0;
     };
