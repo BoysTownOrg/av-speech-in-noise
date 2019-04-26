@@ -1004,6 +1004,10 @@ namespace {
         void setTestingFullScaleLevel_dB_SPL(int x) {
             initializingTest.setFullScaleLevel_dB_SPL(x);
         }
+        
+        auto snrTrackFactoryParameters() {
+            return snrTrackFactory.parameters();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1063,7 +1067,7 @@ namespace {
         initializeTestCreatesSnrTrackForEachList
     ) {
         initializeTestWithListCount(3);
-        EXPECT_EQ(3, snrTrackFactory.parameters().size());
+        EXPECT_EQ(3, snrTrackFactoryParameters().size());
     }
 
     TEST_F(
@@ -1071,9 +1075,10 @@ namespace {
         initializeTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
         initializeTestWithListCount(3);
-        auto parameters = snrTrackFactory.parameters();
         for (int i = 0; i < 3; ++i)
-            assertSettingsContainTargetLevelRule(parameters.at(i));
+            assertSettingsContainTargetLevelRule(
+                snrTrackFactoryParameters().at(i)
+            );
     }
 
     TEST_F(
@@ -1082,9 +1087,8 @@ namespace {
     ) {
         initializingTest.setStartingSnr_dB(1);
         initializeTestWithListCount(3);
-        auto parameters = snrTrackFactory.parameters();
         for (int i = 0; i < 3; ++i)
-            assertSettingsMatchStartingX(parameters.at(i), 1);
+            assertSettingsMatchStartingX(snrTrackFactoryParameters().at(i), 1);
     }
 
     TEST_F(
