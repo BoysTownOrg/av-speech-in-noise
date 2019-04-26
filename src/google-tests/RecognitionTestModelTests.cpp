@@ -723,7 +723,7 @@ namespace {
         InitializingTest initializingTest{};
         PlayingTrial playingTrial{};
         PlayingCalibration playingCalibration{};
-        std::vector<std::shared_ptr<TargetListStub>> lists{};
+        std::vector<std::shared_ptr<TargetListStub>> targetLists{};
         std::vector<std::shared_ptr<TrackStub>> snrTracks{};
         
         RecognitionTestModelTests() {
@@ -930,18 +930,18 @@ namespace {
         }
         
         void setTargetListCount(int n) {
-            lists.clear();
+            targetLists.clear();
             snrTracks.clear();
             for (int i = 0; i < n; ++i) {
-                lists.push_back(std::make_shared<TargetListStub>());
+                targetLists.push_back(std::make_shared<TargetListStub>());
                 snrTracks.push_back(std::make_shared<TrackStub>());
             }
-            targetListSetReader.setTargetLists({lists.begin(), lists.end()});
+            targetListSetReader.setTargetLists({targetLists.begin(), targetLists.end()});
             snrTrackFactory.setTracks({snrTracks.begin(), snrTracks.end()});
         }
         
         void initializeTestWithStartingList(int n) {
-            if (gsl::narrow<size_t>(n) >= lists.size())
+            if (gsl::narrow<size_t>(n) >= targetLists.size())
                 setTargetListCount(n+1);
             selectList(n);
             initializeTest();
@@ -987,6 +987,14 @@ namespace {
         void assertRandomizerPassedIntegerBounds(int a, int b) {
             EXPECT_EQ(a, randomizer.lowerIntBound());
             EXPECT_EQ(b, randomizer.upperIntBound());
+        }
+        
+        auto snrTrack(int n) {
+            return snrTracks.at(n);
+        }
+        
+        auto targetList(int n) {
+            return targetLists.at(n);
         }
     };
 
@@ -1143,7 +1151,7 @@ namespace {
         playTrialPassesNextTargetToTargetPlayer
     ) {
         initializeTestWithStartingList(1);
-        lists.at(1)->setNext("a");
+        targetList(1)->setNext("a");
         playTrial();
         assertTargetFilePathEquals("a");
     }
@@ -1155,7 +1163,7 @@ namespace {
         initializeTestWithListCount(3);
         selectList(1);
         submitResponse();
-        lists.at(1)->setNext("a");
+        targetList(1)->setNext("a");
         playTrial();
         assertTargetFilePathEquals("a");
     }
@@ -1173,7 +1181,7 @@ namespace {
         submitResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
     ) {
         initializeTestWithListCount(3);
-        snrTracks.at(2)->setComplete();
+        snrTrack(2)->setComplete();
         submitResponse();
         assertRandomizerPassedIntegerBounds(0, 1);
     }
@@ -1244,7 +1252,7 @@ namespace {
         initializingTest.setFullScaleLevel_dB_SPL(3);
         setTargetPlayerRms(4);
         initializeTestWithStartingList(5);
-        snrTracks.at(5)->setX(1);
+        snrTrack(5)->setX(1);
         playTrial();
         EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
     }
@@ -1298,7 +1306,7 @@ namespace {
         submitResponseWritesReversals
     ) {
         initializeTestWithStartingList(3);
-        snrTracks.at(3)->setReversals(1);
+        snrTrack(3)->setReversals(1);
         submitResponse();
         EXPECT_EQ(1, trialWritten().reversals);
     }
@@ -1326,7 +1334,7 @@ namespace {
         submitResponseWritesSnr
     ) {
         initializeTestWithStartingList(3);
-        snrTracks.at(3)->setX(1);
+        snrTrack(3)->setX(1);
         submitResponse();
         EXPECT_EQ(1, trialWritten().SNR_dB);
     }
@@ -1354,7 +1362,7 @@ namespace {
         submitResponsePassesTargetToEvaluatorForNumberAndColor
     ) {
         initializeTestWithStartingList(1);
-        lists.at(1)->setCurrent("a");
+        targetList(1)->setCurrent("a");
         submitResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
@@ -1365,7 +1373,7 @@ namespace {
         submitResponsePassesTargetToEvaluator
     ) {
         initializeTestWithStartingList(1);
-        lists.at(1)->setCurrent("a");
+        targetList(1)->setCurrent("a");
         submitResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
@@ -1377,8 +1385,8 @@ namespace {
         initializeTestWithStartingList(1);
         evaluator.setCorrect();
         submitResponse();
-        EXPECT_TRUE(snrTracks.at(1)->pushedDown());
-        EXPECT_FALSE(snrTracks.at(1)->pushedUp());
+        EXPECT_TRUE(snrTrack(1)->pushedDown());
+        EXPECT_FALSE(snrTrack(1)->pushedUp());
     }
 
     TEST_F(
@@ -1388,8 +1396,8 @@ namespace {
         initializeTestWithStartingList(1);
         evaluator.setIncorrect();
         submitResponse();
-        EXPECT_TRUE(snrTracks.at(1)->pushedUp());
-        EXPECT_FALSE(snrTracks.at(1)->pushedDown());
+        EXPECT_TRUE(snrTrack(1)->pushedUp());
+        EXPECT_FALSE(snrTrack(1)->pushedDown());
     }
 
     TEST_F(
@@ -1397,13 +1405,13 @@ namespace {
         submitResponseSelectsNextListAmongThoseWithIncompleteTracks
     ) {
         initializeTestWithListCount(3);
-        snrTracks.at(1)->setComplete();
+        snrTrack(1)->setComplete();
         selectList(1);
         submitResponse();
         evaluator.setIncorrect();
         submitResponse();
-        EXPECT_TRUE(snrTracks.at(2)->pushedUp());
-        EXPECT_FALSE(snrTracks.at(2)->pushedDown());
+        EXPECT_TRUE(snrTrack(2)->pushedUp());
+        EXPECT_FALSE(snrTrack(2)->pushedDown());
     }
 
     TEST_F(
@@ -1452,7 +1460,7 @@ namespace {
         throwInvalidAudioDeviceWhenSet();
         initializeTestWithStartingList(1);
         playTrialIgnoringFailure();
-        EXPECT_FALSE(lists.at(1)->nextCalled());
+        EXPECT_FALSE(targetList(1)->nextCalled());
     }
 
     TEST_F(
@@ -1532,7 +1540,7 @@ namespace {
     ) {
         initializeTestWithStartingList(1);
         playTrialWhenTrialAlreadyInProgressIgnoringFailure();
-        EXPECT_FALSE(lists.at(1)->nextCalled());
+        EXPECT_FALSE(targetList(1)->nextCalled());
     }
 
     TEST_F(
@@ -1548,11 +1556,11 @@ namespace {
         testCompleteWhenAllTracksComplete
     ) {
         initializeTestWithListCount(3);
-        snrTracks.at(0)->setComplete();
+        snrTrack(0)->setComplete();
         EXPECT_FALSE(model.testComplete());
-        snrTracks.at(1)->setComplete();
+        snrTrack(1)->setComplete();
         EXPECT_FALSE(model.testComplete());
-        snrTracks.at(2)->setComplete();
+        snrTrack(2)->setComplete();
         EXPECT_TRUE(model.testComplete());
     }
 }
