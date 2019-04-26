@@ -512,7 +512,17 @@ namespace {
         double upperBound_{};
         double randomFloat_{};
         int randomInt_{};
+        int lowerIntBound_{};
+        int upperIntBound_{};
     public:
+        auto lowerIntBound() const {
+            return lowerIntBound_;
+        }
+        
+        auto upperIntBound() const {
+            return upperIntBound_;
+        }
+        
         void setRandomInt(int x) {
             randomInt_ = x;
         }
@@ -535,7 +545,9 @@ namespace {
             return randomFloat_;
         }
         
-        int randomIntBetween(int, int) override {
+        int randomIntBetween(int a, int b) override {
+            lowerIntBound_ = a;
+            upperIntBound_ = b;
             return randomInt_;
         }
     };
@@ -1151,6 +1163,16 @@ namespace {
         initializeTest();
         playTrial();
         assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestSelectsRandomListInRange
+    ) {
+        setTargetListCount(3);
+        initializeTest();
+        EXPECT_EQ(int{0}, randomizer.lowerIntBound());
+        EXPECT_EQ(2, randomizer.upperIntBound());
     }
 
     TEST_F(
