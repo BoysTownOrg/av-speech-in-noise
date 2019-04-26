@@ -158,7 +158,6 @@ namespace av_coordinate_response_measure {
             TargetPlayer *,
             MaskerPlayer *,
             TrackFactory *,
-            Track *,
             ResponseEvaluator *,
             OutputFile *,
             Randomizer *

@@ -718,7 +718,6 @@ namespace {
             &targetPlayer,
             &maskerPlayer,
             &snrTrackFactory,
-            &snrTrack,
             &evaluator,
             &outputFile,
             &randomizer

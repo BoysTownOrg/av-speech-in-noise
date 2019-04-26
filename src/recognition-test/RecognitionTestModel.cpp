@@ -3,13 +3,39 @@
 #include <cmath>
 
 namespace av_coordinate_response_measure {
+    class NullTrack : public Track {
+    
+        void reset(const Track::Settings &) override {
+        
+        }
+        
+        void pushDown() override {
+        }
+        
+        void pushUp() override {
+        }
+        
+        int x() override {
+            return {};
+        }
+        
+        bool complete() override{
+            return {};
+        }
+
+        int reversals() override{
+            return {};
+        }
+    };
+    
+    static NullTrack nullTrack;
+    
     RecognitionTestModel::RecognitionTestModel(
         TargetListReader *targetListSetReader,
         TargetList *targetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
         TrackFactory *snrTrackFactory,
-        Track *snrTrack,
         ResponseEvaluator *evaluator,
         OutputFile *outputFile,
         Randomizer *randomizer
@@ -21,7 +47,7 @@ namespace av_coordinate_response_measure {
         evaluator{evaluator},
         outputFile{outputFile},
         randomizer{randomizer},
-        currentSnrTrack{snrTrack},
+        currentSnrTrack{&nullTrack},
         currentTargetList{targetList}
     {
         targetPlayer->subscribe(this);
