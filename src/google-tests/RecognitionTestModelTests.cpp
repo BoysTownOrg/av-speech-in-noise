@@ -703,7 +703,6 @@ namespace {
     protected:
         Calibration calibration;
         SubjectResponse subjectResponse;
-        TargetListStub targetList{};
         TargetListSetReaderStub targetListSetReader;
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
@@ -765,10 +764,6 @@ namespace {
         
         void assertTargetPlayerNotPlayed() {
             EXPECT_FALSE(targetPlayer.played());
-        }
-        
-        void assertListNotAdvanced() {
-            EXPECT_FALSE(targetList.nextCalled());
         }
         
         void setTrialInProgress() {
@@ -1442,8 +1437,9 @@ namespace {
         playTrialWithInvalidAudioDeviceDoesNotAdvanceTarget
     ) {
         throwInvalidAudioDeviceWhenSet();
+        initializeTestWithStartingList(1);
         playTrialIgnoringFailure();
-        assertListNotAdvanced();
+        EXPECT_FALSE(lists.at(1)->nextCalled());
     }
 
     TEST_F(
@@ -1521,8 +1517,9 @@ namespace {
         RecognitionTestModelTests,
         playTrialDoesNotAdvanceListIfTrialInProgress
     ) {
+        initializeTestWithStartingList(1);
         playTrialWhenTrialAlreadyInProgressIgnoringFailure();
-        assertListNotAdvanced();
+        EXPECT_FALSE(lists.at(1)->nextCalled());
     }
 
     TEST_F(
