@@ -1,16 +1,9 @@
 #include "AdaptiveTrack.hpp"
 
 namespace av_coordinate_response_measure {
-    AdaptiveTrack::AdaptiveTrack(const Settings &p) {
-        sequenceIndex = 0;
-        sameDirectionConsecutiveCount = 0;
-        runCounter = 0;
-        reversals_ = 0;
-        previousDirection = Direction::undefined;
-        previousStep = Step::undefined;
-        stepSizes.clear();
-        
-        x_ = p.startingX;
+    AdaptiveTrack::AdaptiveTrack(const Settings &p) :
+        x_{p.startingX}
+    {
         for (const auto &sequence : *p.rule) {
             if (sequence.runCount) {
                 stepSizes.push_back(sequence.stepSize);
