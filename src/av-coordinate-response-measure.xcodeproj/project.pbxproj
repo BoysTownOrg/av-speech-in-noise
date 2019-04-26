@@ -25,9 +25,9 @@
 		264E7E4E224E6F30008A595F /* OutputFilePathImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264E7E4C224E6F30008A595F /* OutputFilePathImpl.cpp */; };
 		264E7E4F224E6F30008A595F /* OutputFilePathImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 264E7E4D224E6F30008A595F /* OutputFilePathImpl.hpp */; };
 		2656B62722401D3F0058A23D /* MediaToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2656B62622401D3F0058A23D /* MediaToolbox.framework */; };
-		26688C302273A16600CAE9EB /* MultiTrackTargetListTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26688C2F2273A16600CAE9EB /* MultiTrackTargetListTests.cpp */; };
-		26688C332273A16F00CAE9EB /* MultiTrackTargetList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26688C312273A16F00CAE9EB /* MultiTrackTargetList.cpp */; };
-		26688C342273A16F00CAE9EB /* MultiTrackTargetList.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 26688C322273A16F00CAE9EB /* MultiTrackTargetList.hpp */; };
+		26688C332273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26688C312273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp */; };
+		26688C342273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 26688C322273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp */; };
+		26688C362273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26688C352273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp */; };
 		26955FF92236F21A00664A2C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F84421E003B600F378DE /* CoreAudio.framework */; };
 		269C4C7D2253B8A00059AD5F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2656B62422401D2C0058A23D /* CoreMedia.framework */; };
 		269C91942233204B00A80372 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 269C919222331FCE00A80372 /* main.mm */; };
@@ -97,9 +97,10 @@
 		264E7E50224E7065008A595F /* LogString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogString.h; sourceTree = "<group>"; };
 		2656B62422401D2C0058A23D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		2656B62622401D3F0058A23D /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
-		26688C2F2273A16600CAE9EB /* MultiTrackTargetListTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MultiTrackTargetListTests.cpp; sourceTree = "<group>"; };
-		26688C312273A16F00CAE9EB /* MultiTrackTargetList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MultiTrackTargetList.cpp; sourceTree = "<group>"; };
-		26688C322273A16F00CAE9EB /* MultiTrackTargetList.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MultiTrackTargetList.hpp; sourceTree = "<group>"; };
+		26688C312273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SubdirectoryTargetListReader.cpp; sourceTree = "<group>"; };
+		26688C322273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SubdirectoryTargetListReader.hpp; sourceTree = "<group>"; };
+		26688C352273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SubdirectoryTargetListReaderTests.cpp; sourceTree = "<group>"; };
+		26688C372273A53D00CAE9EB /* TargetListStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TargetListStub.h; sourceTree = "<group>"; };
 		26955FF82236A60200664A2C /* assert-utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "assert-utility.h"; sourceTree = "<group>"; };
 		269C919222331FCE00A80372 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		269C91952233212B00A80372 /* gtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = gtest_main.a; path = ../../../../../usr/local/lib/gtest_main.a; sourceTree = "<group>"; };
@@ -222,8 +223,8 @@
 		26A2236D21DD3482007D6511 /* recognition-test */ = {
 			isa = PBXGroup;
 			children = (
-				26688C312273A16F00CAE9EB /* MultiTrackTargetList.cpp */,
-				26688C322273A16F00CAE9EB /* MultiTrackTargetList.hpp */,
+				26688C312273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp */,
+				26688C322273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp */,
 				26A2236E21DD34A7007D6511 /* RecognitionTestModel.cpp */,
 				26A2236F21DD34A7007D6511 /* RecognitionTestModel.hpp */,
 				2623A153224BD037007C99F2 /* OutputFileImpl.cpp */,
@@ -283,7 +284,7 @@
 		26FC6B0521DA810C00289A0A /* google-tests */ = {
 			isa = PBXGroup;
 			children = (
-				26688C2F2273A16600CAE9EB /* MultiTrackTargetListTests.cpp */,
+				26688C352273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp */,
 				26FC6B0621DA810C00289A0A /* PresenterTests.cpp */,
 				26A2236B21DD2C75007D6511 /* RecognitionTestModelTests.cpp */,
 				2646F83321DFDF5500F378DE /* TargetListTests.cpp */,
@@ -297,6 +298,7 @@
 				26B22D342260EE6400D528F1 /* AdaptiveTrackTests.cpp */,
 				26DE2190226529F3006A3FD0 /* AudioReaderStub.h */,
 				2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */,
+				26688C372273A53D00CAE9EB /* TargetListStub.h */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";
@@ -350,7 +352,7 @@
 				26B22D3B2260FE4100D528F1 /* AdaptiveTrack.hpp in Headers */,
 				264E7E4F224E6F30008A595F /* OutputFilePathImpl.hpp in Headers */,
 				2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */,
-				26688C342273A16F00CAE9EB /* MultiTrackTargetList.hpp in Headers */,
+				26688C342273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp in Headers */,
 				2645BECC2267705D002E8C6C /* ResponseEvaluatorImpl.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -552,7 +554,7 @@
 			files = (
 				2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */,
 				26B22D3A2260FE4100D528F1 /* AdaptiveTrack.cpp in Sources */,
-				26688C332273A16F00CAE9EB /* MultiTrackTargetList.cpp in Sources */,
+				26688C332273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp in Sources */,
 				26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */,
 				264E7E4E224E6F30008A595F /* OutputFilePathImpl.cpp in Sources */,
 				2645BECB2267705D002E8C6C /* ResponseEvaluatorImpl.cpp in Sources */,
@@ -586,6 +588,7 @@
 				26FDD2D6224AC0840090BDD5 /* OutputFileTests.cpp in Sources */,
 				26B22D352260EE6400D528F1 /* AdaptiveTrackTests.cpp in Sources */,
 				26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */,
+				26688C362273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp in Sources */,
 				2645BEC822676AD7002E8C6C /* ResponseEvaluatorTests.cpp in Sources */,
 				26EE86C02242E8DE00C08622 /* TargetPlayerImpl.cpp in Sources */,
 				26C2A325225D050E00E2919D /* AudioReaderTests.cpp in Sources */,
@@ -593,7 +596,6 @@
 				26A2236C21DD2C75007D6511 /* RecognitionTestModelTests.cpp in Sources */,
 				264E7E4B224E6467008A595F /* OutputFilePathTests.cpp in Sources */,
 				2646F84021DFEA2300F378DE /* RandomizedTargetList.cpp in Sources */,
-				26688C302273A16600CAE9EB /* MultiTrackTargetListTests.cpp in Sources */,
 				26EE86BB2242CFFB00C08622 /* TargetPlayerTests.cpp in Sources */,
 				26C2A326225D0B3400E2919D /* MaskerPlayerImpl.cpp in Sources */,
 				2646F83421DFDF5500F378DE /* TargetListTests.cpp in Sources */,

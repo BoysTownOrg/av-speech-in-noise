@@ -17,11 +17,11 @@ namespace av_coordinate_response_measure {
         virtual std::vector<std::string> subDirectories(std::string directory) = 0;
     };
     
-    class MultiTrackTargetList : public TargetListReader {
+    class SubdirectoryTargetListReader : public TargetListReader {
         TargetListFactory *targetListFactory;
         DirectoryReader *directoryReader;
     public:
-        MultiTrackTargetList(TargetListFactory *, DirectoryReader *);
+        SubdirectoryTargetListReader(TargetListFactory *, DirectoryReader *);
         lists_type read(std::string directory) override;
     };
 }
