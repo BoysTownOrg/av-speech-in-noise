@@ -1169,8 +1169,8 @@ namespace {
         submitResponseLoadsNextTarget
     ) {
         initializeTestWithListCount(3);
-        selectList(1);
         targetList(1)->setNext("a");
+        selectList(1);
         submitResponse();
         assertTargetFilePathEquals("a");
     }
@@ -1221,6 +1221,14 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitResponseSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        submitResponse();
+        EXPECT_TRUE(targetPlayer.playbackCompletionSubscribedTo());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         targetPlayer.setDurationSeconds(1);
@@ -1237,6 +1245,15 @@ namespace {
     ) {
         randomizer.setRandomFloat(1);
         initializeTest();
+        EXPECT_EQ(1, maskerPlayer.secondsSeeked());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseSeeksToRandomMaskerPosition
+    ) {
+        randomizer.setRandomFloat(1);
+        submitResponse();
         EXPECT_EQ(1, maskerPlayer.secondsSeeked());
     }
 
@@ -1412,13 +1429,12 @@ namespace {
         submitResponseSelectsNextListAmongThoseWithIncompleteTracks
     ) {
         initializeTestWithListCount(3);
+        targetList(2)->setNext("a");
         snrTrack(1)->setComplete();
+        
         selectList(1);
         submitResponse();
-        evaluator.setIncorrect();
-        submitResponse();
-        EXPECT_TRUE(snrTrack(2)->pushedUp());
-        EXPECT_FALSE(snrTrack(2)->pushedDown());
+        assertTargetFilePathEquals("a");
     }
 
     TEST_F(
