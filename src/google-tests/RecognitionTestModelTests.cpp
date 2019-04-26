@@ -958,6 +958,13 @@ namespace {
             targetListSetReader.setTargetLists({lists.begin(), lists.end()});
             snrTrackFactory.setTracks({snrTracks.begin(), snrTracks.end()});
         }
+        
+        void selectList(int n) {
+            if (gsl::narrow<size_t>(n) >= lists.size())
+                setTargetListCount(n+1);
+            randomizer.setRandomInt(n);
+            initializeTest();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1157,10 +1164,8 @@ namespace {
         RecognitionTestModelTests,
         playTrialPassesNextTargetToTargetPlayer_2
     ) {
-        setTargetListCount(15);
-        randomizer.setRandomInt(13);
-        lists.at(13)->setNext("a");
-        initializeTest();
+        selectList(1);
+        lists.at(1)->setNext("a");
         playTrial();
         assertTargetFilePathEquals("a");
     }
@@ -1250,13 +1255,11 @@ namespace {
         RecognitionTestModelTests,
         playTrialSetsTargetPlayerLevel_2
     ) {
-        setTargetListCount(15);
-        randomizer.setRandomInt(13);
-        snrTracks.at(13)->setX(1);
         initializingTest.setMaskerLevel_dB_SPL(2);
         initializingTest.setFullScaleLevel_dB_SPL(3);
         setTargetPlayerRms(4);
-        initializeTest();
+        selectList(5);
+        snrTracks.at(5)->setX(1);
         playTrial();
         EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
     }
@@ -1402,9 +1405,7 @@ namespace {
         RecognitionTestModelTests,
         submitCorrectResponsePushesSnrDown_2
     ) {
-        setTargetListCount(3);
-        randomizer.setRandomInt(1);
-        initializeTest();
+        selectList(1);
         evaluator.setCorrect();
         submitResponse();
         EXPECT_TRUE(snrTracks.at(1)->pushedDown());
@@ -1415,9 +1416,7 @@ namespace {
         RecognitionTestModelTests,
         submitIncorrectResponsePushesSnrUp_2
     ) {
-        setTargetListCount(3);
-        randomizer.setRandomInt(1);
-        initializeTest();
+        selectList(1);
         evaluator.setIncorrect();
         submitResponse();
         EXPECT_TRUE(snrTracks.at(1)->pushedUp());
