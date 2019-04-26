@@ -171,13 +171,14 @@ namespace av_coordinate_response_measure {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void readTargetLists(const Test &);
         void throwIfTrialInProgress();
         void writeTrial(const SubjectResponse &);
         std::string currentTarget();
         bool correct(const SubjectResponse &);
         void updateSnr(const SubjectResponse &);
         void selectNextList();
-        void prepareSnrTrack(const Test &);
+        void prepareSnrTracks(const Test &);
         void setTargetPlayerDevice(const Calibration &);
         double calibrationLevel_dB(const Calibration &);
         void trySettingTargetLevel(const Calibration &);

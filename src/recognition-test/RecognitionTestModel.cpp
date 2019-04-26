@@ -40,13 +40,13 @@ namespace av_coordinate_response_measure {
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
         
-        lists = targetListSetReader->read(p.targetListSetDirectory);
-        prepareSnrTrack(p);
-        selectNextList();
+        readTargetLists(p);
+        prepareSnrTracks(p);
         prepareOutputFile(p);
         prepareMasker(p);
         prepareTargets(p);
         prepareVideo(p.condition);
+        selectNextList();
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -58,7 +58,11 @@ namespace av_coordinate_response_measure {
         return maskerPlayer->playing();
     }
     
-    void RecognitionTestModel::prepareSnrTrack(const Test &p) {
+    void RecognitionTestModel::readTargetLists(const Test &p) {
+        lists = targetListSetReader->read(p.targetListSetDirectory);
+    }
+    
+    void RecognitionTestModel::prepareSnrTracks(const Test &p) {
         Track::Settings s;
         s.rule = p.targetLevelRule;
         s.startingX = p.startingSnr_dB;
@@ -67,15 +71,6 @@ namespace av_coordinate_response_measure {
         tracks.clear();
         for (size_t i = 0; i < lists.size(); ++i)
             tracks.push_back(snrTrackFactory->make(s));
-    }
-    
-    void RecognitionTestModel::selectNextList() {
-        auto listCount = gsl::narrow<int>(lists.size());
-        size_t n = randomizer->randomIntBetween(0, listCount - 1);
-        if (n < tracks.size()) {
-            currentSnrTrack = tracks.at(n).get();
-            currentTargetList = lists.at(n).get();
-        }
     }
     
     void RecognitionTestModel::prepareOutputFile(const Test &p) {
@@ -127,6 +122,15 @@ namespace av_coordinate_response_measure {
 
     bool RecognitionTestModel::auditoryOnly(const Condition &c) {
         return c == Condition::auditoryOnly;
+    }
+    
+    void RecognitionTestModel::selectNextList() {
+        auto listCount = gsl::narrow<int>(lists.size());
+        size_t n = randomizer->randomIntBetween(0, listCount - 1);
+        if (n < tracks.size()) {
+            currentSnrTrack = tracks.at(n).get();
+            currentTargetList = lists.at(n).get();
+        }
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
