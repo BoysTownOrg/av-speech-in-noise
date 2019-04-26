@@ -531,11 +531,11 @@ namespace {
             randomFloat_ = x;
         }
         
-        auto lowerBound() const {
+        auto lowerFloatBound() const {
             return lowerBound_;
         }
         
-        auto upperBound() const {
+        auto upperFloatBound() const {
             return upperBound_;
         }
         
@@ -1172,6 +1172,19 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitResponseSelectsNextList
+    ) {
+        setTargetListCount(3);
+        initializeTest();
+        randomizer.setRandomInt(1);
+        submitResponse();
+        lists.at(1)->setNext("a");
+        playTrial();
+        assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestSelectsRandomListInRange
     ) {
         setTargetListCount(3);
@@ -1214,8 +1227,8 @@ namespace {
         maskerPlayer.setFadeTimeSeconds(2);
         maskerPlayer.setDurationSeconds(3);
         playTrial();
-        EXPECT_EQ(0., randomizer.lowerBound());
-        EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperBound());
+        EXPECT_EQ(0., randomizer.lowerFloatBound());
+        EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperFloatBound());
     }
 
     TEST_F(

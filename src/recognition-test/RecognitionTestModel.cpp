@@ -238,6 +238,7 @@ namespace av_coordinate_response_measure {
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
         writeTrial(response);
         updateSnr(response);
+        selectNextList();
     }
     
     void RecognitionTestModel::writeTrial(const SubjectResponse &response) {
