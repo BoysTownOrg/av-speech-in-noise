@@ -68,6 +68,7 @@ namespace av_coordinate_response_measure {
         s.startingX = p.startingSnr_dB;
         snrTrack->reset(s);
         
+        targetListsWithTracks.clear();
         tracks.clear();
         for (size_t i = 0; i < lists.size(); ++i) {
             tracks.push_back(snrTrackFactory->make(s));
@@ -141,18 +142,9 @@ namespace av_coordinate_response_measure {
         );
         auto listCount = gsl::narrow<int>(targetListsWithTracks.size());
         size_t n = randomizer->randomIntBetween(0, listCount - 1);
-        if (n < tracks.size()) {
-            tracks.erase(
-                std::remove_if(
-                    tracks.begin(),
-                    tracks.end(),
-                    [](const std::shared_ptr<Track> &t) {
-                        return t->complete();
-                    }),
-                tracks.end()
-            );
-            currentSnrTrack = tracks.at(n).get();
-            currentTargetList = lists.at(n).get();
+        if (n < targetListsWithTracks.size()) {
+            currentSnrTrack = targetListsWithTracks.at(n).track.get();
+            currentTargetList = targetListsWithTracks.at(n).list.get();
         }
     }
     
