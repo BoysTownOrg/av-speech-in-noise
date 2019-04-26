@@ -176,6 +176,7 @@ namespace av_coordinate_response_measure {
         std::string currentTarget();
         bool correct(const SubjectResponse &);
         void updateSnr(const SubjectResponse &);
+        void selectNextList();
         void prepareSnrTrack(const Test &);
         void setTargetPlayerDevice(const Calibration &);
         double calibrationLevel_dB(const Calibration &);

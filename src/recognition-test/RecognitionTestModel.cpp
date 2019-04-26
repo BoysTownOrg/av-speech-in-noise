@@ -40,7 +40,9 @@ namespace av_coordinate_response_measure {
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
         
+        lists = targetListSetReader->read(p.targetListSetDirectory);
         prepareSnrTrack(p);
+        selectNextList();
         prepareOutputFile(p);
         prepareMasker(p);
         prepareTargets(p);
@@ -62,10 +64,12 @@ namespace av_coordinate_response_measure {
         s.startingX = p.startingSnr_dB;
         snrTrack->reset(s);
         
-        lists = targetListSetReader->read(p.targetListSetDirectory);
         tracks.clear();
         for (size_t i = 0; i < lists.size(); ++i)
             tracks.push_back(snrTrackFactory->make(s));
+    }
+    
+    void RecognitionTestModel::selectNextList() {
         size_t n = randomizer->randomIntBetween({}, {});
         if (n < tracks.size()) {
             currentSnrTrack = tracks.at(n).get();
