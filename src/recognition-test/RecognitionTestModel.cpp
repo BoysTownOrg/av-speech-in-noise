@@ -72,7 +72,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::readTargetLists(const Test &p) {
-        lists = targetListSetReader->read(p.targetListSetDirectory);
+        lists = targetListSetReader->read(p.targetListDirectory);
     }
     
     void RecognitionTestModel::prepareSnrTracks(const Test &p) {

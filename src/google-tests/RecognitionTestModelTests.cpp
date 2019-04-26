@@ -561,7 +561,7 @@ namespace {
         }
         
         void setTargetListSetDirectory(std::string s) {
-            test_.targetListSetDirectory = std::move(s);
+            test_.targetListDirectory = std::move(s);
         }
         
         void setMaskerFilePath(std::string s) {
@@ -1089,7 +1089,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestOpensNewOutputFile
+        initializeTestOpensNewOutputFilePassingTestSettings
     ) {
         initializeTest();
         EXPECT_EQ(outputFile.openNewFileParameters(), &testSettings());
@@ -1097,7 +1097,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestWritesTestInformation
+        initializeTestWritesTestSettings
     ) {
         initializeTest();
         EXPECT_EQ(outputFile.testWritten(), &testSettings());
