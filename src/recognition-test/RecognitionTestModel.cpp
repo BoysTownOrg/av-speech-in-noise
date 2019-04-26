@@ -131,21 +131,26 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::selectNextList() {
-        targetListsWithTracks.erase(
-            std::remove_if(
-                targetListsWithTracks.begin(),
-                targetListsWithTracks.end(),
-                [](const TargetListWithTrack &t) {
-                    return t.track->complete();
-                }),
-            targetListsWithTracks.end()
-        );
+        removeCompleteTracks();
         auto listCount = gsl::narrow<int>(targetListsWithTracks.size());
         size_t n = randomizer->randomIntBetween(0, listCount - 1);
         if (n < targetListsWithTracks.size()) {
             currentSnrTrack = targetListsWithTracks.at(n).track.get();
             currentTargetList = targetListsWithTracks.at(n).list.get();
         }
+    }
+    
+    void RecognitionTestModel::removeCompleteTracks() {
+        targetListsWithTracks.erase(
+            std::remove_if(
+                targetListsWithTracks.begin(),
+                targetListsWithTracks.end(),
+                [](const TargetListWithTrack &t) {
+                    return t.track->complete();
+                }
+            ),
+            targetListsWithTracks.end()
+        );
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {

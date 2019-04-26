@@ -183,6 +183,7 @@ namespace av_coordinate_response_measure {
         std::string currentTarget();
         bool correct(const SubjectResponse &);
         void updateSnr(const SubjectResponse &);
+        void removeCompleteTracks();
         void selectNextList();
         void prepareSnrTracks(const Test &);
         void setTargetPlayerDevice(const Calibration &);
