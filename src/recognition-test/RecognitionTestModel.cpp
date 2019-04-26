@@ -64,7 +64,6 @@ namespace av_coordinate_response_measure {
         Track::Settings s;
         s.rule = p.targetLevelRule;
         s.startingX = p.startingSnr_dB;
-        currentSnrTrack->reset(s);
         
         targetListsWithTracks.clear();
         tracks.clear();

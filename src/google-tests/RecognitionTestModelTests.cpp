@@ -409,10 +409,6 @@ namespace {
             return pushedDown_;
         }
         
-        auto &settings() const {
-            return settings_;
-        }
-        
         void setX(int x) {
             x_ = x;
         }
@@ -1059,23 +1055,6 @@ namespace {
             "close openNewFile writeTest writeTrialHeading ",
             outputFile.log()
         );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestResetsSnrTrackWithTargetLevelRule
-    ) {
-        initializeTest();
-        assertSettingsContainTargetLevelRule(snrTrack.settings());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeTestResetsSnrTrackWithStartingSnr
-    ) {
-        initializingTest.setStartingSnr_dB(1);
-        initializeTest();
-        assertSettingsMatchStartingX(snrTrack.settings(), 1);
     }
 
     TEST_F(
