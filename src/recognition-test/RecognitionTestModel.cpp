@@ -312,7 +312,13 @@ namespace av_coordinate_response_measure {
     }
 
     bool RecognitionTestModel::testComplete() {
-        return currentSnrTrack->complete();
+        return std::all_of(
+                targetListsWithTracks.begin(),
+                targetListsWithTracks.end(),
+                [](const TargetListWithTrack &t) {
+                    return t.track->complete();
+                }
+            );
     }
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {

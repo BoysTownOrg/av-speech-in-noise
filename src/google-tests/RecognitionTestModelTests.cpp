@@ -906,14 +906,6 @@ namespace {
             targetPlayer.setRms(std::forward<T>(x));
         }
         
-        auto snrTrackPushedDown() {
-            return snrTrack.pushedDown();
-        }
-        
-        auto snrTrackPushedUp() {
-            return snrTrack.pushedUp();
-        }
-        
         auto targetFilePath() {
             return targetPlayer.filePath();
         }
@@ -1250,19 +1242,6 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSetsTargetPlayerLevel
-    ) {
-        snrTrack.setX(1);
-        initializingTest.setMaskerLevel_dB_SPL(2);
-        initializingTest.setFullScaleLevel_dB_SPL(3);
-        setTargetPlayerRms(4);
-        initializeTest();
-        playTrial();
-        EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         playTrialSetsTargetPlayerLevel_2
     ) {
         initializingTest.setMaskerLevel_dB_SPL(2);
@@ -1322,7 +1301,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesReversals
     ) {
-        snrTrack.setReversals(1);
+        initializeTestWithStartingList(3);
+        snrTracks.at(3)->setReversals(1);
         submitResponse();
         EXPECT_EQ(1, trialWritten().reversals);
     }
@@ -1349,7 +1329,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesSnr
     ) {
-        snrTrack.setX(1);
+        initializeTestWithStartingList(3);
+        snrTracks.at(3)->setX(1);
         submitResponse();
         EXPECT_EQ(1, trialWritten().SNR_dB);
     }
@@ -1389,26 +1370,6 @@ namespace {
         targetList.setCurrent("a");
         submitResponse();
         assertEqual("a", evaluator.correctFilePath());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCorrectResponsePushesSnrDown
-    ) {
-        evaluator.setCorrect();
-        submitResponse();
-        EXPECT_TRUE(snrTrackPushedDown());
-        EXPECT_FALSE(snrTrackPushedUp());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponsePushesSnrUp
-    ) {
-        evaluator.setIncorrect();
-        submitResponse();
-        EXPECT_TRUE(snrTrackPushedUp());
-        EXPECT_FALSE(snrTrackPushedDown());
     }
 
     TEST_F(
@@ -1584,9 +1545,14 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        testCompleteWhenTrackComplete
+        testCompleteWhenAllTracksComplete
     ) {
-        snrTrack.setComplete();
+        initializeTestWithListCount(3);
+        snrTracks.at(0)->setComplete();
+        EXPECT_FALSE(model.testComplete());
+        snrTracks.at(1)->setComplete();
+        EXPECT_FALSE(model.testComplete());
+        snrTracks.at(2)->setComplete();
         EXPECT_TRUE(model.testComplete());
     }
 }
