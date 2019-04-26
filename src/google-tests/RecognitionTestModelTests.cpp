@@ -1,3 +1,4 @@
+#include "TargetListStub.h"
 #include "LogString.h"
 #include "assert-utility.h"
 #include <recognition-test/RecognitionTestModel.hpp>
@@ -272,43 +273,6 @@ namespace {
             throwInvalidAudioFileOnRms_ = true;
         }
     };
-
-    class TargetListStub : public TargetList {
-        std::string directory_{};
-        std::string next_{};
-        std::string current_{};
-        bool empty_{};
-        bool nextCalled_{};
-    public:
-        std::string current() override {
-            return current_;
-        }
-        
-        void setCurrent(std::string s) {
-            current_ = std::move(s);
-        }
-        
-        auto nextCalled() const {
-            return nextCalled_;
-        }
-        
-        auto directory() const {
-            return directory_;
-        }
-        
-        void loadFromDirectory(std::string directory) override {
-            directory_ = std::move(directory);
-        }
-        
-        std::string next() override {
-            nextCalled_ = true;
-            return next_;
-        }
-        
-        void setNext(std::string s) {
-            next_ = std::move(s);
-        }
-    };
     
     class OutputFileStub : public OutputFile {
         Trial trialWritten_{};
@@ -409,16 +373,8 @@ namespace {
             return pushedDown_;
         }
         
-        auto &settings() const {
-            return settings_;
-        }
-        
         void setX(int x) {
             x_ = x;
-        }
-        
-        void reset(const Settings &p) override {
-            settings_ = p;
         }
         
         void pushDown() override {
@@ -512,16 +468,30 @@ namespace {
         double upperBound_{};
         double randomFloat_{};
         int randomInt_{};
+        int lowerIntBound_{};
+        int upperIntBound_{};
     public:
+        auto lowerIntBound() const {
+            return lowerIntBound_;
+        }
+        
+        auto upperIntBound() const {
+            return upperIntBound_;
+        }
+        
+        void setRandomInt(int x) {
+            randomInt_ = x;
+        }
+        
         void setRandomFloat(double x) {
             randomFloat_ = x;
         }
         
-        auto lowerBound() const {
+        auto lowerFloatBound() const {
             return lowerBound_;
         }
         
-        auto upperBound() const {
+        auto upperFloatBound() const {
             return upperBound_;
         }
         
@@ -529,6 +499,12 @@ namespace {
             lowerBound_ = a;
             upperBound_ = b;
             return randomFloat_;
+        }
+        
+        int randomIntBetween(int a, int b) override {
+            lowerIntBound_ = a;
+            upperIntBound_ = b;
+            return randomInt_;
         }
     };
     
@@ -538,7 +514,13 @@ namespace {
         virtual void run(RecognitionTestModel &) = 0;
     };
     
-    class InitializingTest : public UseCase {
+    class ConditionUseCase : public virtual UseCase {
+    public:
+        virtual void setAuditoryOnly() = 0;
+        virtual void setAudioVisual() = 0;
+    };
+    
+    class InitializingTest : public ConditionUseCase {
         Test test_;
         TrackingRule targetLevelRule_;
     public:
@@ -546,7 +528,7 @@ namespace {
             test_.targetLevelRule = &targetLevelRule_;
         }
         
-        void setTargetListDirectory(std::string s) {
+        void setTargetListSetDirectory(std::string s) {
             test_.targetListDirectory = std::move(s);
         }
         
@@ -558,12 +540,12 @@ namespace {
             m.initializeTest(test_);
         }
         
-        void setAudioVisual() {
+        void setAudioVisual() override {
             test_.condition =
                 Condition::audioVisual;
         }
         
-        void setAuditoryOnly() {
+        void setAuditoryOnly() override {
             test_.condition =
                 Condition::auditoryOnly;
         }
@@ -589,7 +571,7 @@ namespace {
         }
     };
     
-    class AudioDeviceUseCase : public UseCase {
+    class AudioDeviceUseCase : public virtual UseCase {
     public:
         virtual void setAudioDevice(std::string) = 0;
     };
@@ -606,7 +588,10 @@ namespace {
         }
     };
     
-    class PlayingCalibration : public AudioDeviceUseCase {
+    class PlayingCalibration :
+        public AudioDeviceUseCase,
+        public ConditionUseCase
+    {
         Calibration calibration;
     public:
         void setAudioDevice(std::string s) override {
@@ -629,14 +614,52 @@ namespace {
             calibration.fullScaleLevel_dB_SPL = x;
         }
         
-        void setAudioVisual() {
+        void setAudioVisual() override {
             calibration.condition =
                 Condition::audioVisual;
         }
         
-        void setAuditoryOnly() {
+        void setAuditoryOnly() override {
             calibration.condition =
                 Condition::auditoryOnly;
+        }
+    };
+    
+    class TrackFactoryStub : public TrackFactory {
+        std::vector<Track::Settings> parameters_;
+        std::vector<std::shared_ptr<Track>> tracks_{};
+    public:
+        const auto &parameters() {
+            return parameters_;
+        }
+        
+        std::shared_ptr<Track> make(const Track::Settings &s) override {
+            parameters_.push_back(s);
+            auto track = tracks_.front();
+            tracks_.erase(tracks_.begin());
+            return track;
+        }
+        
+        void setTracks(std::vector<std::shared_ptr<Track>> t) {
+            tracks_ = std::move(t);
+        }
+    };
+    
+    class TargetListSetReaderStub : public TargetListReader {
+        lists_type targetLists_{};
+        std::string directory_{};
+    public:
+        void setTargetLists(lists_type lists) {
+            targetLists_ = std::move(lists);
+        }
+        
+        lists_type read(std::string d) override {
+            directory_ = std::move(d);
+            return targetLists_;
+        }
+        
+        auto directory() const {
+            return directory_;
         }
     };
 
@@ -644,18 +667,18 @@ namespace {
     protected:
         Calibration calibration;
         SubjectResponse subjectResponse;
-        TargetListStub targetList{};
+        TargetListSetReaderStub targetListSetReader;
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
         OutputFileStub outputFile{};
-        TrackStub snrTrack{};
+        TrackFactoryStub snrTrackFactory{};
         ResponseEvaluatorStub evaluator{};
         RandomizerStub randomizer{};
         RecognitionTestModel model{
-            &targetList,
+            &targetListSetReader,
             &targetPlayer,
             &maskerPlayer,
-            &snrTrack,
+            &snrTrackFactory,
             &evaluator,
             &outputFile,
             &randomizer
@@ -664,6 +687,8 @@ namespace {
         InitializingTest initializingTest{};
         PlayingTrial playingTrial{};
         PlayingCalibration playingCalibration{};
+        std::vector<std::shared_ptr<TargetListStub>> targetLists{};
+        std::vector<std::shared_ptr<TrackStub>> snrTracks{};
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
@@ -703,10 +728,6 @@ namespace {
         
         void assertTargetPlayerNotPlayed() {
             EXPECT_FALSE(targetPlayer.played());
-        }
-        
-        void assertListNotAdvanced() {
-            EXPECT_FALSE(targetList.nextCalled());
         }
         
         void setTrialInProgress() {
@@ -841,14 +862,6 @@ namespace {
             targetPlayer.setRms(std::forward<T>(x));
         }
         
-        auto snrTrackPushedDown() {
-            return snrTrack.pushedDown();
-        }
-        
-        auto snrTrackPushedUp() {
-            return snrTrack.pushedUp();
-        }
-        
         auto targetFilePath() {
             return targetPlayer.filePath();
         }
@@ -879,6 +892,86 @@ namespace {
         auto trialWritten() {
             return outputFile.trialWritten();
         }
+        
+        void setTargetListCount(int n) {
+            targetLists.clear();
+            snrTracks.clear();
+            for (int i = 0; i < n; ++i) {
+                targetLists.push_back(std::make_shared<TargetListStub>());
+                snrTracks.push_back(std::make_shared<TrackStub>());
+            }
+            targetListSetReader.setTargetLists({targetLists.begin(), targetLists.end()});
+            snrTrackFactory.setTracks({snrTracks.begin(), snrTracks.end()});
+        }
+        
+        void initializeTestWithStartingList(int n) {
+            if (gsl::narrow<size_t>(n) >= targetLists.size())
+                setTargetListCount(n+1);
+            selectList(n);
+            initializeTest();
+        }
+        
+        void selectList(int n) {
+            randomizer.setRandomInt(n);
+        }
+        
+        void initializeTestWithListCount(int n) {
+            setTargetListCount(n);
+            initializeTest();
+        }
+        
+        void assertTargetVideoHiddenWhenAuditoryOnly(ConditionUseCase &useCase) {
+            useCase.setAuditoryOnly();
+            run(useCase);
+            assertTargetVideoOnlyHidden();
+        }
+        
+        void assertTargetVideoShownWhenAudioVisual(ConditionUseCase &useCase) {
+            useCase.setAudioVisual();
+            run(useCase);
+            assertTargetVideoOnlyShown();
+        }
+        
+        auto targetLevelRule() {
+            return initializingTest.targetLevelRule();
+        }
+        
+        void assertSettingsContainTargetLevelRule(const Track::Settings &s) {
+            EXPECT_EQ(targetLevelRule(), s.rule);
+        }
+        
+        void assertSettingsMatchStartingX(const Track::Settings &s, int x) {
+            EXPECT_EQ(x, s.startingX);
+        }
+        
+        auto &testSettings() const {
+            return initializingTest.test();
+        }
+        
+        void assertRandomizerPassedIntegerBounds(int a, int b) {
+            EXPECT_EQ(a, randomizer.lowerIntBound());
+            EXPECT_EQ(b, randomizer.upperIntBound());
+        }
+        
+        auto snrTrack(int n) {
+            return snrTracks.at(n);
+        }
+        
+        auto targetList(int n) {
+            return targetLists.at(n);
+        }
+        
+        void setMaskerLevel_dB_SPL(int x) {
+            initializingTest.setMaskerLevel_dB_SPL(x);
+        }
+        
+        void setTestingFullScaleLevel_dB_SPL(int x) {
+            initializingTest.setFullScaleLevel_dB_SPL(x);
+        }
+        
+        auto snrTrackFactoryParameters() {
+            return snrTrackFactory.parameters();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -890,36 +983,28 @@ namespace {
         RecognitionTestModelTests,
         initializeTestHidesTargetVideoWhenAuditoryOnly
     ) {
-        initializingTest.setAuditoryOnly();
-        initializeTest();
-        assertTargetVideoOnlyHidden();
+        assertTargetVideoHiddenWhenAuditoryOnly(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeTestShowsTargetVideoWhenAudioVisual
     ) {
-        initializingTest.setAudioVisual();
-        initializeTest();
-        assertTargetVideoOnlyShown();
+        assertTargetVideoShownWhenAudioVisual(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationHidesTargetVideoWhenAuditoryOnly
     ) {
-        playingCalibration.setAuditoryOnly();
-        playCalibration();
-        assertTargetVideoOnlyHidden();
+        assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationShowsTargetVideoWhenAudioVisual
     ) {
-        playingCalibration.setAudioVisual();
-        playCalibration();
-        assertTargetVideoOnlyShown();
+        assertTargetVideoShownWhenAudioVisual(playingCalibration);
     }
 
     TEST_F(
@@ -943,47 +1028,56 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestResetsSnrTrackWithTargetLevelRule
+        initializeTestCreatesSnrTrackForEachList
     ) {
-        initializeTest();
-        EXPECT_EQ(
-            initializingTest.targetLevelRule(),
-            snrTrack.settings().rule
-        );
+        initializeTestWithListCount(3);
+        EXPECT_EQ(3, snrTrackFactoryParameters().size());
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestResetsSnrTrackWithStartingSnr
+        initializeTestCreatesEachSnrTrackWithTargetLevelRule
+    ) {
+        initializeTestWithListCount(3);
+        for (int i = 0; i < 3; ++i)
+            assertSettingsContainTargetLevelRule(
+                snrTrackFactoryParameters().at(i)
+            );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestCreatesEachSnrTrackWithStartingSnr
     ) {
         initializingTest.setStartingSnr_dB(1);
-        initializeTest();
-        EXPECT_EQ(1, snrTrack.settings().startingX);
+        initializeTestWithListCount(3);
+        for (int i = 0; i < 3; ++i)
+            assertSettingsMatchStartingX(snrTrackFactoryParameters().at(i), 1);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestOpensNewOutputFile
+        initializeTestOpensNewOutputFilePassingTestSettings
     ) {
         initializeTest();
-        EXPECT_EQ(outputFile.openNewFileParameters(), &initializingTest.test());
+        EXPECT_EQ(outputFile.openNewFileParameters(), &testSettings());
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestWritesTestInformation
+        initializeTestWritesTestSettings
     ) {
         initializeTest();
-        EXPECT_EQ(outputFile.testWritten(), &initializingTest.test());
+        EXPECT_EQ(outputFile.testWritten(), &testSettings());
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestPassesTargetListDirectoryToTargetList
+        initializeTestPassesTargetListSetDirectory
     ) {
-        initializingTest.setTargetListDirectory("a");
+        initializingTest.setTargetListSetDirectory("a");
         initializeTest();
-        assertEqual("a", targetList.directory());
+        assertEqual("a", targetListSetReader.directory());
     }
 
     TEST_F(
@@ -1016,9 +1110,9 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialQueriesTargetRmsAfterLoadingFile
+        initializeTestQueriesTargetRmsAfterLoadingFile
     ) {
-        assertTargetFileLoadedPriorToRmsQuery(playingTrial);
+        assertTargetFileLoadedPriorToRmsQuery(initializingTest);
     }
 
     TEST_F(
@@ -1030,11 +1124,41 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialPassesNextTargetToTargetPlayer
+        initializeTestPassesNextTargetToTargetPlayer
     ) {
-        targetList.setNext("a");
-        playTrial();
+        setTargetListCount(3);
+        targetList(1)->setNext("a");
+        initializeTestWithStartingList(1);
         assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseLoadsNextTarget
+    ) {
+        initializeTestWithListCount(3);
+        targetList(1)->setNext("a");
+        selectList(1);
+        submitResponse();
+        assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestSelectsRandomListInRange
+    ) {
+        initializeTestWithListCount(3);
+        assertRandomizerPassedIntegerBounds(0, 2);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
+    ) {
+        initializeTestWithListCount(3);
+        snrTrack(2)->setComplete();
+        submitResponse();
+        assertRandomizerPassedIntegerBounds(0, 1);
     }
 
     TEST_F(
@@ -1057,30 +1181,47 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSubscribesToTargetPlaybackCompletionNotification
+        initializeTestSubscribesToTargetPlaybackCompletionNotification
     ) {
-        playTrial();
+        initializeTest();
         EXPECT_TRUE(targetPlayer.playbackCompletionSubscribedTo());
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSeeksToRandomMaskerPositionWithinTrialDuration
+        submitResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
-        targetPlayer.setDurationSeconds(1);
-        maskerPlayer.setFadeTimeSeconds(2);
-        maskerPlayer.setDurationSeconds(3);
-        playTrial();
-        EXPECT_EQ(0., randomizer.lowerBound());
-        EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperBound());
+        submitResponse();
+        EXPECT_TRUE(targetPlayer.playbackCompletionSubscribedTo());
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSeeksToRandomMaskerPosition
+        initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        targetPlayer.setDurationSeconds(1);
+        maskerPlayer.setFadeTimeSeconds(2);
+        maskerPlayer.setDurationSeconds(3);
+        initializeTest();
+        EXPECT_EQ(0., randomizer.lowerFloatBound());
+        EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperFloatBound());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeTestSeeksToRandomMaskerPosition
     ) {
         randomizer.setRandomFloat(1);
-        playTrial();
+        initializeTest();
+        EXPECT_EQ(1, maskerPlayer.secondsSeeked());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseSeeksToRandomMaskerPosition
+    ) {
+        randomizer.setRandomFloat(1);
+        submitResponse();
         EXPECT_EQ(1, maskerPlayer.secondsSeeked());
     }
 
@@ -1088,8 +1229,8 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSetsInitialMaskerPlayerLevel
     ) {
-        initializingTest.setMaskerLevel_dB_SPL(1);
-        initializingTest.setFullScaleLevel_dB_SPL(2);
+        setMaskerLevel_dB_SPL(1);
+        setTestingFullScaleLevel_dB_SPL(2);
         maskerPlayer.setRms(3);
         initializeTest();
         EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
@@ -1097,14 +1238,14 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSetsTargetPlayerLevel
+        initializeTestSetsTargetPlayerLevel
     ) {
-        snrTrack.setX(1);
-        initializingTest.setMaskerLevel_dB_SPL(2);
-        initializingTest.setFullScaleLevel_dB_SPL(3);
+        setMaskerLevel_dB_SPL(2);
+        setTestingFullScaleLevel_dB_SPL(3);
         setTargetPlayerRms(4);
-        initializeTest();
-        playTrial();
+        setTargetListCount(6);
+        snrTrack(5)->setX(1);
+        initializeTestWithStartingList(5);
         EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
     }
 
@@ -1156,7 +1297,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesReversals
     ) {
-        snrTrack.setReversals(1);
+        initializeTestWithStartingList(3);
+        snrTrack(3)->setReversals(1);
         submitResponse();
         EXPECT_EQ(1, trialWritten().reversals);
     }
@@ -1183,7 +1325,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesSnr
     ) {
-        snrTrack.setX(1);
+        initializeTestWithStartingList(3);
+        snrTrack(3)->setX(1);
         submitResponse();
         EXPECT_EQ(1, trialWritten().SNR_dB);
     }
@@ -1210,7 +1353,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponsePassesTargetToEvaluatorForNumberAndColor
     ) {
-        targetList.setCurrent("a");
+        initializeTestWithStartingList(1);
+        targetList(1)->setCurrent("a");
         submitResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
@@ -1220,29 +1364,45 @@ namespace {
         RecognitionTestModelTests,
         submitResponsePassesTargetToEvaluator
     ) {
-        targetList.setCurrent("a");
+        initializeTestWithStartingList(1);
+        targetList(1)->setCurrent("a");
         submitResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCorrectResponsePushesSnrDown
+        submitCorrectResponsePushesSnrDown_2
     ) {
+        initializeTestWithStartingList(1);
         evaluator.setCorrect();
         submitResponse();
-        EXPECT_TRUE(snrTrackPushedDown());
-        EXPECT_FALSE(snrTrackPushedUp());
+        EXPECT_TRUE(snrTrack(1)->pushedDown());
+        EXPECT_FALSE(snrTrack(1)->pushedUp());
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitIncorrectResponsePushesSnrUp
+        submitIncorrectResponsePushesSnrUp_2
     ) {
+        initializeTestWithStartingList(1);
         evaluator.setIncorrect();
         submitResponse();
-        EXPECT_TRUE(snrTrackPushedUp());
-        EXPECT_FALSE(snrTrackPushedDown());
+        EXPECT_TRUE(snrTrack(1)->pushedUp());
+        EXPECT_FALSE(snrTrack(1)->pushedDown());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseSelectsNextListAmongThoseWithIncompleteTracks
+    ) {
+        initializeTestWithListCount(3);
+        targetList(2)->setNext("a");
+        snrTrack(1)->setComplete();
+        
+        selectList(1);
+        submitResponse();
+        assertTargetFilePathEquals("a");
     }
 
     TEST_F(
@@ -1282,15 +1442,6 @@ namespace {
         playCalibrationWithInvalidAudioDeviceThrowsRequestFailure
     ) {
         assertThrowsRequestFailureWhenInvalidAudioDevice(playingCalibration);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialWithInvalidAudioDeviceDoesNotAdvanceTarget
-    ) {
-        throwInvalidAudioDeviceWhenSet();
-        playTrialIgnoringFailure();
-        assertListNotAdvanced();
     }
 
     TEST_F(
@@ -1366,14 +1517,6 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialDoesNotAdvanceListIfTrialInProgress
-    ) {
-        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
-        assertListNotAdvanced();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         audioDevicesReturnsOutputAudioDeviceDescriptions
     ) {
         setOutputAudioDeviceDescriptions({"a", "b", "c"});
@@ -1382,9 +1525,14 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        testCompleteWhenTrackComplete
+        testCompleteWhenAllTracksComplete
     ) {
-        snrTrack.setComplete();
+        initializeTestWithListCount(3);
+        snrTrack(0)->setComplete();
+        EXPECT_FALSE(model.testComplete());
+        snrTrack(1)->setComplete();
+        EXPECT_FALSE(model.testComplete());
+        snrTrack(2)->setComplete();
         EXPECT_TRUE(model.testComplete());
     }
 }

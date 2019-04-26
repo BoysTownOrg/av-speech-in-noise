@@ -5,12 +5,6 @@
 #include <memory>
 
 namespace av_coordinate_response_measure {
-    class TrackFactory {
-    public:
-        virtual ~TrackFactory() = default;
-        virtual std::shared_ptr<Track> make() = 0;
-    };
-    
     class TargetListFactory {
     public:
         virtual ~TargetListFactory() = default;
@@ -23,20 +17,15 @@ namespace av_coordinate_response_measure {
         virtual std::vector<std::string> subDirectories(std::string directory) = 0;
     };
     
-    class MultiTrackTargetList : public TargetList {
+    class SubdirectoryTargetListReader : public TargetListReader {
         TargetListFactory *targetListFactory;
         DirectoryReader *directoryReader;
     public:
-        class EventListener {
-        public:
-            virtual ~EventListener() = default;
-            void listsLoaded(int);
-            void listSelected(int);
-        };
-        MultiTrackTargetList(TargetListFactory *, DirectoryReader *);
-        void loadFromDirectory(std::string directory) override;
-        std::string next() override;
-        std::string current() override;
+        SubdirectoryTargetListReader(TargetListFactory *, DirectoryReader *);
+        lists_type read(std::string directory) override;
+    private:
+        std::vector<std::string> subDirectories(std::string directory);
+
     };
 }
 

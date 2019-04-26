@@ -54,7 +54,6 @@ namespace av_coordinate_response_measure {
     
     struct Test {
         std::string targetListDirectory;
-        std::string targetListSetDirectory;
         std::string subjectId;
         std::string testerId;
         std::string maskerFilePath;

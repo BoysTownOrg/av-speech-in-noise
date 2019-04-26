@@ -3,22 +3,41 @@
 #include <cmath>
 
 namespace av_coordinate_response_measure {
+    class NullTrack : public Track {
+        void pushDown() override {}
+        void pushUp() override {}
+        int x() override { return {}; }
+        bool complete() override { return {}; }
+        int reversals() override { return {}; }
+    };
+    
+    class NullTargetList : public TargetList {
+        void loadFromDirectory(std::string directory) override {}
+        std::string next() override { return {}; }
+        std::string current() override { return {}; }
+    };
+    
+    static NullTrack nullTrack;
+    static NullTargetList nullTargetList;
+    
     RecognitionTestModel::RecognitionTestModel(
-        TargetList *targetList,
+        TargetListReader *targetListSetReader,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
-        Track *snrTrack,
+        TrackFactory *snrTrackFactory,
         ResponseEvaluator *evaluator,
         OutputFile *outputFile,
         Randomizer *randomizer
     ) :
+        targetListSetReader{targetListSetReader},
         maskerPlayer{maskerPlayer},
-        targetList{targetList},
         targetPlayer{targetPlayer},
-        snrTrack{snrTrack},
+        snrTrackFactory{snrTrackFactory},
         evaluator{evaluator},
         outputFile{outputFile},
-        randomizer{randomizer}
+        randomizer{randomizer},
+        currentSnrTrack{&nullTrack},
+        currentTargetList{&nullTargetList}
     {
         targetPlayer->subscribe(this);
         maskerPlayer->subscribe(this);
@@ -34,11 +53,12 @@ namespace av_coordinate_response_measure {
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
         
-        prepareSnrTrack(p);
+        readTargetLists(p);
+        prepareSnrTracks(p);
         prepareOutputFile(p);
         prepareMasker(p);
-        prepareTargets(p);
         prepareVideo(p.condition);
+        prepareNextTrial();
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -50,11 +70,22 @@ namespace av_coordinate_response_measure {
         return maskerPlayer->playing();
     }
     
-    void RecognitionTestModel::prepareSnrTrack(const Test &p) {
+    void RecognitionTestModel::readTargetLists(const Test &p) {
+        lists = targetListSetReader->read(p.targetListDirectory);
+    }
+    
+    void RecognitionTestModel::prepareSnrTracks(const Test &p) {
         Track::Settings s;
         s.rule = p.targetLevelRule;
         s.startingX = p.startingSnr_dB;
-        snrTrack->reset(s);
+        
+        targetListsWithTracks.clear();
+        for (size_t i = 0; i < lists.size(); ++i) {
+            targetListsWithTracks.push_back({
+                lists.at(i),
+                snrTrackFactory->make(s)
+            });
+        }
     }
     
     void RecognitionTestModel::prepareOutputFile(const Test &p) {
@@ -93,10 +124,6 @@ namespace av_coordinate_response_measure {
         return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
     }
     
-    void RecognitionTestModel::prepareTargets(const Test &p) {
-        targetList->loadFromDirectory(p.targetListDirectory);
-    }
-    
     void RecognitionTestModel::prepareVideo(const Condition &p) {
         if (auditoryOnly(p))
             targetPlayer->hideVideo();
@@ -108,24 +135,67 @@ namespace av_coordinate_response_measure {
         return c == Condition::auditoryOnly;
     }
     
+    void RecognitionTestModel::prepareNextTrial() {
+        selectNextList();
+        loadNextTarget();
+        seekRandomMaskerPosition();
+    }
+    
+    void RecognitionTestModel::selectNextList() {
+        auto listCount = gsl::narrow<int>(targetListsWithTracks.size());
+        size_t n = randomizer->randomIntBetween(0, listCount - 1);
+        if (n < targetListsWithTracks.size()) {
+            currentSnrTrack = targetListsWithTracks.at(n).track.get();
+            currentTargetList = targetListsWithTracks.at(n).list.get();
+        }
+    }
+    
+    void RecognitionTestModel::loadNextTarget() {
+        loadTargetFile(currentTargetList->next());
+        setTargetLevel_dB(targetLevel_dB());
+        targetPlayer->subscribeToPlaybackCompletion();
+    }
+    
+    void RecognitionTestModel::loadTargetFile(std::string s) {
+        targetPlayer->loadFile(std::move(s));;
+    }
+    
+    void RecognitionTestModel::setTargetLevel_dB(double x) {
+        targetPlayer->setLevel_dB(x);
+    }
+    
+    double RecognitionTestModel::targetLevel_dB() {
+        return
+            desiredMaskerLevel_dB() +
+            SNR_dB() -
+            unalteredTargetLevel_dB();
+    }
+    
+    int RecognitionTestModel::SNR_dB() {
+        return currentSnrTrack->x();
+    }
+    
+    double RecognitionTestModel::unalteredTargetLevel_dB() {
+        return dB(targetPlayer->rms());
+    }
+    
+    void RecognitionTestModel::seekRandomMaskerPosition() {
+        auto upperLimit =
+            maskerPlayer->durationSeconds() -
+            2 * maskerPlayer->fadeTimeSeconds() -
+            targetPlayer->durationSeconds();
+        maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
+    }
+    
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
         throwIfTrialInProgress();
-        
-        if (noMoreTrials())
-            return;
         
         preparePlayers(settings);
         startTrial();
     }
     
-    bool RecognitionTestModel::noMoreTrials() {
-        return snrTrack->complete();
-    }
-    
     void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
         setAudioDevices(p);
-        loadNextTarget();
-        seekRandomMaskerPosition();
     }
     
     void RecognitionTestModel::setAudioDevices(const AudioSettings &p) {
@@ -157,43 +227,6 @@ namespace av_coordinate_response_measure {
         targetPlayer->setAudioDevice(device);
     }
     
-    void RecognitionTestModel::loadNextTarget() {
-        loadTargetFile(targetList->next());
-        setTargetLevel_dB(targetLevel_dB());
-        targetPlayer->subscribeToPlaybackCompletion();
-    }
-    
-    void RecognitionTestModel::loadTargetFile(std::string s) {
-        targetPlayer->loadFile(std::move(s));;
-    }
-    
-    void RecognitionTestModel::setTargetLevel_dB(double x) {
-        targetPlayer->setLevel_dB(x);
-    }
-    
-    double RecognitionTestModel::targetLevel_dB() {
-        return
-            desiredMaskerLevel_dB() +
-            SNR_dB() -
-            unalteredTargetLevel_dB();
-    }
-    
-    int RecognitionTestModel::SNR_dB() {
-        return snrTrack->x();
-    }
-    
-    double RecognitionTestModel::unalteredTargetLevel_dB() {
-        return dB(targetPlayer->rms());
-    }
-    
-    void RecognitionTestModel::seekRandomMaskerPosition() {
-        auto upperLimit =
-            maskerPlayer->durationSeconds() -
-            2 * maskerPlayer->fadeTimeSeconds() -
-            targetPlayer->durationSeconds();
-        maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
-    }
-    
     void RecognitionTestModel::startTrial() {
         maskerPlayer->fadeIn();
     }
@@ -217,13 +250,15 @@ namespace av_coordinate_response_measure {
     void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
         writeTrial(response);
         updateSnr(response);
+        removeCompleteTracks();
+        prepareNextTrial();
     }
     
     void RecognitionTestModel::writeTrial(const SubjectResponse &response) {
         Trial trial;
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
-        trial.reversals = snrTrack->reversals();
+        trial.reversals = currentSnrTrack->reversals();
         trial.correctColor = evaluator->correctColor(currentTarget());
         trial.correctNumber = evaluator->correctNumber(currentTarget());
         trial.SNR_dB = SNR_dB();
@@ -233,9 +268,9 @@ namespace av_coordinate_response_measure {
     
     void RecognitionTestModel::updateSnr(const SubjectResponse &response) {
         if (correct(response))
-            snrTrack->pushDown();
+            currentSnrTrack->pushDown();
         else
-            snrTrack->pushUp();
+            currentSnrTrack->pushUp();
     }
     
     bool RecognitionTestModel::correct(const SubjectResponse &response) {
@@ -243,7 +278,20 @@ namespace av_coordinate_response_measure {
     }
     
     std::string RecognitionTestModel::currentTarget() {
-        return targetList->current();
+        return currentTargetList->current();
+    }
+    
+    void RecognitionTestModel::removeCompleteTracks() {
+        targetListsWithTracks.erase(
+            std::remove_if(
+                targetListsWithTracks.begin(),
+                targetListsWithTracks.end(),
+                [](const TargetListWithTrack &t) {
+                    return t.track->complete();
+                }
+            ),
+            targetListsWithTracks.end()
+        );
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
@@ -283,7 +331,13 @@ namespace av_coordinate_response_measure {
     }
 
     bool RecognitionTestModel::testComplete() {
-        return snrTrack->complete();
+        return std::all_of(
+                targetListsWithTracks.begin(),
+                targetListsWithTracks.end(),
+                [](const TargetListWithTrack &t) {
+                    return t.track->complete();
+                }
+            );
     }
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {

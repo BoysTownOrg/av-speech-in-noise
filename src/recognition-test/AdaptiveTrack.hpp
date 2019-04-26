@@ -27,12 +27,12 @@ namespace av_coordinate_response_measure {
         Direction previousDirection{Direction::undefined};
         Step previousStep{Step::undefined};
     public:
+        AdaptiveTrack(const Settings &);
         int x() override;
         void pushUp() override;
         void pushDown() override;
         bool complete() override;
         int reversals() override;
-        void reset(const Settings &) override;
         
     private:
         void stepDown();
@@ -42,6 +42,12 @@ namespace av_coordinate_response_measure {
         void updateReversals(Step);
         void reversal();
         bool complete_() const;
+    };
+    
+    class AdaptiveTrackFactory : public TrackFactory {
+        std::shared_ptr<Track> make(const Track::Settings &s) override {
+            return std::make_shared<AdaptiveTrack>(s);
+        }
     };
 }
 

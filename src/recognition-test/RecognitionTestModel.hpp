@@ -63,12 +63,17 @@ namespace av_coordinate_response_measure {
             const TrackingRule *rule;
             int startingX;
         };
-        virtual void reset(const Settings &) = 0;
         virtual void pushDown() = 0;
         virtual void pushUp() = 0;
         virtual int x() = 0;
         virtual bool complete() = 0;
         virtual int reversals() = 0;
+    };
+    
+    class TrackFactory {
+    public:
+        virtual ~TrackFactory() = default;
+        virtual std::shared_ptr<Track> make(const Track::Settings &) = 0;
     };
 
     class TargetList {
@@ -78,6 +83,13 @@ namespace av_coordinate_response_measure {
         virtual std::string next() = 0;
         virtual std::string current() = 0;
     };
+    
+    class TargetListReader {
+    public:
+        virtual ~TargetListReader() = default;
+        using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
+        virtual lists_type read(std::string directory) = 0;
+};
     
     class ResponseEvaluator {
     public:
@@ -93,16 +105,10 @@ namespace av_coordinate_response_measure {
     class OutputFile {
     public:
         virtual ~OutputFile() = default;
-        virtual void openNewFile(
-            const Test &
-        ) = 0;
+        virtual void openNewFile(const Test &) = 0;
         class OpenFailure {};
-        virtual void writeTrial(
-            const Trial &
-        ) = 0;
-        virtual void writeTest(
-            const Test &
-        ) = 0;
+        virtual void writeTrial(const Trial &) = 0;
+        virtual void writeTest(const Test &) = 0;
         virtual void writeTrialHeading() = 0;
         virtual void close() = 0;
     };
@@ -111,6 +117,7 @@ namespace av_coordinate_response_measure {
     public:
         virtual ~Randomizer() = default;
         virtual double randomFloatBetween(double, double) = 0;
+        virtual int randomIntBetween(int, int) = 0;
     };
 
     class RecognitionTestModel :
@@ -118,22 +125,31 @@ namespace av_coordinate_response_measure {
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
+        struct TargetListWithTrack {
+            std::shared_ptr<TargetList> list;
+            std::shared_ptr<Track> track;
+        };
+        
+        TargetListReader::lists_type lists{};
+        std::vector<TargetListWithTrack> targetListsWithTracks{};
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
+        TargetListReader *targetListSetReader;
         MaskerPlayer *maskerPlayer;
-        TargetList *targetList;
         TargetPlayer *targetPlayer;
-        Track *snrTrack;
+        TrackFactory *snrTrackFactory;
         ResponseEvaluator *evaluator;
         OutputFile *outputFile;
         Randomizer *randomizer;
         Model::EventListener *listener_{};
+        Track *currentSnrTrack{};
+        TargetList *currentTargetList{};
     public:
         RecognitionTestModel(
-            TargetList *,
+            TargetListReader *,
             TargetPlayer *,
             MaskerPlayer *,
-            Track *,
+            TrackFactory *,
             ResponseEvaluator *,
             OutputFile *,
             Randomizer *
@@ -149,12 +165,16 @@ namespace av_coordinate_response_measure {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void prepareNextTrial();
+        void readTargetLists(const Test &);
         void throwIfTrialInProgress();
         void writeTrial(const SubjectResponse &);
         std::string currentTarget();
         bool correct(const SubjectResponse &);
         void updateSnr(const SubjectResponse &);
-        void prepareSnrTrack(const Test &);
+        void removeCompleteTracks();
+        void selectNextList();
+        void prepareSnrTracks(const Test &);
         void setTargetPlayerDevice(const Calibration &);
         double calibrationLevel_dB(const Calibration &);
         void trySettingTargetLevel(const Calibration &);
