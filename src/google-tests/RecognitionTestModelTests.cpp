@@ -996,6 +996,14 @@ namespace {
         auto targetList(int n) {
             return targetLists.at(n);
         }
+        
+        void setMaskerLevel_dB_SPL(int x) {
+            initializingTest.setMaskerLevel_dB_SPL(x);
+        }
+        
+        void setTestingFullScaleLevel_dB_SPL(int x) {
+            initializingTest.setFullScaleLevel_dB_SPL(x);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1237,8 +1245,8 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSetsInitialMaskerPlayerLevel
     ) {
-        initializingTest.setMaskerLevel_dB_SPL(1);
-        initializingTest.setFullScaleLevel_dB_SPL(2);
+        setMaskerLevel_dB_SPL(1);
+        setTestingFullScaleLevel_dB_SPL(2);
         maskerPlayer.setRms(3);
         initializeTest();
         EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
@@ -1246,10 +1254,10 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSetsTargetPlayerLevel_2
+        playTrialSetsTargetPlayerLevel
     ) {
-        initializingTest.setMaskerLevel_dB_SPL(2);
-        initializingTest.setFullScaleLevel_dB_SPL(3);
+        setMaskerLevel_dB_SPL(2);
+        setTestingFullScaleLevel_dB_SPL(3);
         setTargetPlayerRms(4);
         initializeTestWithStartingList(5);
         snrTrack(5)->setX(1);
