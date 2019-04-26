@@ -172,6 +172,7 @@ namespace av_coordinate_response_measure {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void prepareNextTrial();
         void readTargetLists(const Test &);
         void throwIfTrialInProgress();
         void writeTrial(const SubjectResponse &);

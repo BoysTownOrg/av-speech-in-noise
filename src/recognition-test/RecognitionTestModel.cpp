@@ -59,8 +59,7 @@ namespace av_coordinate_response_measure {
         prepareOutputFile(p);
         prepareMasker(p);
         prepareVideo(p.condition);
-        selectNextList();
-        loadNextTarget();
+        prepareNextTrial();
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -137,6 +136,12 @@ namespace av_coordinate_response_measure {
         return c == Condition::auditoryOnly;
     }
     
+    void RecognitionTestModel::prepareNextTrial() {
+        selectNextList();
+        loadNextTarget();
+        seekRandomMaskerPosition();
+    }
+    
     void RecognitionTestModel::selectNextList() {
         auto listCount = gsl::narrow<int>(targetListsWithTracks.size());
         size_t n = randomizer->randomIntBetween(0, listCount - 1);
@@ -168,8 +173,7 @@ namespace av_coordinate_response_measure {
     
     void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
         setAudioDevices(p);
-        //loadNextTarget();
-        seekRandomMaskerPosition();
+        //seekRandomMaskerPosition();
     }
     
     void RecognitionTestModel::setAudioDevices(const AudioSettings &p) {
@@ -262,8 +266,7 @@ namespace av_coordinate_response_measure {
         writeTrial(response);
         updateSnr(response);
         removeCompleteTracks();
-        selectNextList();
-        loadTargetFile(currentTargetList->next());
+        prepareNextTrial();
     }
     
     void RecognitionTestModel::writeTrial(const SubjectResponse &response) {

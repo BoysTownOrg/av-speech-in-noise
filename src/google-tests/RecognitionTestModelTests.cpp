@@ -1221,22 +1221,22 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSeeksToRandomMaskerPositionWithinTrialDuration
+        initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         targetPlayer.setDurationSeconds(1);
         maskerPlayer.setFadeTimeSeconds(2);
         maskerPlayer.setDurationSeconds(3);
-        playTrial();
+        initializeTest();
         EXPECT_EQ(0., randomizer.lowerFloatBound());
         EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperFloatBound());
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialSeeksToRandomMaskerPosition
+        initializeTestSeeksToRandomMaskerPosition
     ) {
         randomizer.setRandomFloat(1);
-        playTrial();
+        initializeTest();
         EXPECT_EQ(1, maskerPlayer.secondsSeeked());
     }
 
