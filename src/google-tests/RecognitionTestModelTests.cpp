@@ -1035,13 +1035,20 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeTestCreatesSnrTrackForEachList
+    ) {
+        initializeTestWithListCount(3);
+        EXPECT_EQ(3, snrTrackFactory.parameters().size());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
         initializeTestWithListCount(3);
         auto parameters = snrTrackFactory.parameters();
-        EXPECT_EQ(3, parameters.size());
-        for (auto setting : parameters)
-            assertSettingsContainTargetLevelRule(setting);
+        for (int i = 0; i < 3; ++i)
+            assertSettingsContainTargetLevelRule(parameters.at(i));
     }
 
     TEST_F(
@@ -1051,9 +1058,8 @@ namespace {
         initializingTest.setStartingSnr_dB(1);
         initializeTestWithListCount(3);
         auto parameters = snrTrackFactory.parameters();
-        EXPECT_EQ(3, parameters.size());
-        for (auto setting : parameters)
-            assertSettingsMatchStartingX(setting, 1);
+        for (int i = 0; i < 3; ++i)
+            assertSettingsMatchStartingX(parameters.at(i), 1);
     }
 
     TEST_F(
