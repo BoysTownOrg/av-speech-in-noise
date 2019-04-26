@@ -4,42 +4,18 @@
 
 namespace av_coordinate_response_measure {
     class NullTrack : public Track {
-    
-        void reset(const Track::Settings &) override {
-        
-        }
-        
-        void pushDown() override {
-        }
-        
-        void pushUp() override {
-        }
-        
-        int x() override {
-            return {};
-        }
-        
-        bool complete() override{
-            return {};
-        }
-
-        int reversals() override{
-            return {};
-        }
+        void reset(const Track::Settings &) override {}
+        void pushDown() override {}
+        void pushUp() override {}
+        int x() override { return {}; }
+        bool complete() override { return {}; }
+        int reversals() override { return {}; }
     };
     
     class NullTargetList : public TargetList {
-    
         void loadFromDirectory(std::string directory) override {}
-        
-        std::string next() override{
-            return {};
-        }
-        
-        std::string current() override{
-            return {};
-        }
-        
+        std::string next() override { return {}; }
+        std::string current() override { return {}; }
     };
     
     static NullTrack nullTrack;
@@ -84,6 +60,7 @@ namespace av_coordinate_response_measure {
         prepareMasker(p);
         prepareVideo(p.condition);
         selectNextList();
+        loadTargetFile(currentTargetList->next());
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -225,7 +202,7 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::loadNextTarget() {
-        loadTargetFile(currentTargetList->next());
+        //loadTargetFile(currentTargetList->next());
         setTargetLevel_dB(targetLevel_dB());
         targetPlayer->subscribeToPlaybackCompletion();
     }
@@ -286,6 +263,7 @@ namespace av_coordinate_response_measure {
         updateSnr(response);
         removeCompleteTracks();
         selectNextList();
+        loadTargetFile(currentTargetList->next());
     }
     
     void RecognitionTestModel::writeTrial(const SubjectResponse &response) {

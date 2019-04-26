@@ -288,10 +288,6 @@ namespace {
             current_ = std::move(s);
         }
         
-        auto nextCalled() const {
-            return nextCalled_;
-        }
-        
         void loadFromDirectory(std::string directory) override {
             directory_ = std::move(directory);
         }
@@ -1148,6 +1144,7 @@ namespace {
         RecognitionTestModelTests,
         playTrialQueriesTargetRmsAfterLoadingFile
     ) {
+        initializeTest();
         assertTargetFileLoadedPriorToRmsQuery(playingTrial);
     }
 
@@ -1160,23 +1157,22 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialPassesNextTargetToTargetPlayer
+        initializeTestPassesNextTargetToTargetPlayer
     ) {
-        initializeTestWithStartingList(1);
+        setTargetListCount(3);
         targetList(1)->setNext("a");
-        playTrial();
+        initializeTestWithStartingList(1);
         assertTargetFilePathEquals("a");
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseSelectsNextList
+        submitResponseLoadsNextTarget
     ) {
         initializeTestWithListCount(3);
         selectList(1);
-        submitResponse();
         targetList(1)->setNext("a");
-        playTrial();
+        submitResponse();
         assertTargetFilePathEquals("a");
     }
 
@@ -1467,16 +1463,6 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialWithInvalidAudioDeviceDoesNotAdvanceTarget
-    ) {
-        throwInvalidAudioDeviceWhenSet();
-        initializeTestWithStartingList(1);
-        playTrialIgnoringFailure();
-        EXPECT_FALSE(targetList(1)->nextCalled());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         playTrialDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
         playTrialWhenTrialAlreadyInProgressIgnoringFailure();
@@ -1544,15 +1530,6 @@ namespace {
         initializingTest.setAuditoryOnly();
         initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
         assertTargetVideoNotHidden();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playTrialDoesNotAdvanceListIfTrialInProgress
-    ) {
-        initializeTestWithStartingList(1);
-        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
-        EXPECT_FALSE(targetList(1)->nextCalled());
     }
 
     TEST_F(
