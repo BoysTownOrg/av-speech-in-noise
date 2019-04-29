@@ -790,12 +790,9 @@ namespace {
             assertCallThrowsRequestFailure(initializingTest, std::move(what));
         }
         
-        void assertPlayTrialThrowsRequestFailure(std::string what) {
-            assertCallThrowsRequestFailure(playingTrial, std::move(what));
-        }
-        
-        void assertPlayCalibrationThrowsRequestFailure(std::string what) {
-            assertCallThrowsRequestFailure(playingCalibration, std::move(what));
+        void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
+            setTrialInProgress();
+            assertCallThrowsRequestFailure(useCase, "Trial in progress.");
         }
         
         void assertCallThrowsRequestFailure(
@@ -1658,24 +1655,21 @@ namespace {
         RecognitionTestModelTests,
         initializeTestThrowsRequestFailureIfTrialInProgress
     ) {
-        setTrialInProgress();
-        assertInitializeTestThrowsRequestFailure("Trial in progress.");
+        assertThrowsRequestFailureWhenTrialInProgress(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         playTrialThrowsRequestFailureIfTrialInProgress
     ) {
-        setTrialInProgress();
-        assertPlayTrialThrowsRequestFailure("Trial in progress.");
+        assertThrowsRequestFailureWhenTrialInProgress(playingTrial);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationThrowsRequestFailureIfTrialInProgress
     ) {
-        setTrialInProgress();
-        assertPlayCalibrationThrowsRequestFailure("Trial in progress.");
+        assertThrowsRequestFailureWhenTrialInProgress(playingCalibration);
     }
 
     TEST_F(
