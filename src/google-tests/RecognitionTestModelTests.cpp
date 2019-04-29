@@ -1293,6 +1293,13 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitIncorrectResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
+    ) {
+        assertSelectsRandomListInRangeAfterRemovingCompleteTracks(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         playCalibrationPassesAudioFileToTargetPlayer
     ) {
         playingCalibration.setFilePath("a");
