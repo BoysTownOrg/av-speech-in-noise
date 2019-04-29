@@ -558,6 +558,21 @@ namespace {
         virtual void setAudioVisual() = 0;
     };
     
+    class SubmittingCoordinateResponse : public UseCase {
+        coordinate_response_measure::SubjectResponse response;
+    public:
+        void run(RecognitionTestModel &m) override {
+            m.submitResponse(response);
+        }
+    };
+    
+    class SubmittingCorrectResponse : public UseCase {
+    public:
+        void run(RecognitionTestModel &m) override {
+            m.submitCorrectResponse();
+        }
+    };
+    
     class InitializingTest : public ConditionUseCase {
         Test test_;
         TrackingRule targetLevelRule_;
@@ -683,6 +698,8 @@ namespace {
         InitializingTest initializingTest;
         PlayingTrial playingTrial;
         PlayingCalibration playingCalibration;
+        SubmittingCoordinateResponse submittingCoordinateResponse;
+        SubmittingCorrectResponse submittingCorrectResponse;
         std::vector<std::shared_ptr<TargetListStub>> targetLists;
         std::vector<std::shared_ptr<TrackStub>> snrTracks;
         
@@ -1020,6 +1037,13 @@ namespace {
         
         void assertTestComplete() {
             EXPECT_TRUE(testComplete());
+        }
+        
+        void assertPushesSnrTrackDown(UseCase &useCase) {
+            initializeTestWithStartingList(1);
+            run(useCase);
+            EXPECT_TRUE(snrTrackPushedDown(1));
+            EXPECT_FALSE(snrTrackPushedUp(1));
         }
     };
 
@@ -1430,23 +1454,17 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCorrectResponsePushesSnrDown
+        submitCoordinateResponsePushesSnrDownWhenEvaluationIsCorrect
     ) {
-        initializeTestWithStartingList(1);
         setCorrectResponse();
-        submitCoordinateResponse();
-        EXPECT_TRUE(snrTrackPushedDown(1));
-        EXPECT_FALSE(snrTrackPushedUp(1));
+        assertPushesSnrTrackDown(submittingCoordinateResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCorrectResponsePushesSnrDown_2
+        submitCorrectResponsePushesSnrDown
     ) {
-        initializeTestWithStartingList(1);
-        submitCorrectResponse();
-        EXPECT_TRUE(snrTrackPushedDown(1));
-        EXPECT_FALSE(snrTrackPushedUp(1));
+        assertPushesSnrTrackDown(submittingCorrectResponse);
     }
 
     TEST_F(
