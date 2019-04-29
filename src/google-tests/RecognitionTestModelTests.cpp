@@ -1061,6 +1061,12 @@ namespace {
             run(useCase);
             EXPECT_TRUE(targetPlayerPlaybackCompletionSubscribed());
         }
+        
+        void assertMaskerPlayerSeekedToRandomTime(UseCase &useCase) {
+            randomizer.setRandomFloat(1);
+            run(useCase);
+            EXPECT_EQ(1, maskerPlayerSecondsSeeked());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1311,18 +1317,21 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSeeksToRandomMaskerPosition
     ) {
-        randomizer.setRandomFloat(1);
-        initializeTest();
-        EXPECT_EQ(1, maskerPlayerSecondsSeeked());
+        assertMaskerPlayerSeekedToRandomTime(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitResponseSeeksToRandomMaskerPosition
     ) {
-        randomizer.setRandomFloat(1);
-        submitCoordinateResponse();
-        EXPECT_EQ(1, maskerPlayerSecondsSeeked());
+        assertMaskerPlayerSeekedToRandomTime(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCorrectResponseSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(submittingCorrectResponse);
     }
 
     TEST_F(
