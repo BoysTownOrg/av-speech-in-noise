@@ -111,6 +111,7 @@ class TimeStampImpl : public av_coordinate_response_measure::TimeStamp {
     tm *time{&dummyTime};
 public:
     int year() override {
+        // https://en.cppreference.com/w/c/chrono/tm
         return time->tm_year + 1900;
     }
     
@@ -191,6 +192,7 @@ public:
 @end
 
 int main() {
+    using namespace av_coordinate_response_measure;
     MacOsDirectoryReader reader;
     target_list::FileExtensionFilterDecorator fileExtensions{
         &reader,
@@ -198,7 +200,7 @@ int main() {
     };
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetListFactory targetListFactory{&fileExtensions, &randomizer};
-    av_coordinate_response_measure::SubdirectoryTargetListReader targetListReader{&targetListFactory, &reader};
+    SubdirectoryTargetListReader targetListReader{&targetListFactory, &reader};
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
@@ -213,14 +215,14 @@ int main() {
     FileWriter writer;
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
-    av_coordinate_response_measure::OutputFilePathImpl path{&timeStamp, &systemPath};
+    OutputFilePathImpl path{&timeStamp, &systemPath};
     path.setRelativeOutputDirectory(
         "Documents/AVCoordinatedResponseMeasureResults"
     );
-    av_coordinate_response_measure::OutputFileImpl outputFile{&writer, &path};
-    av_coordinate_response_measure::AdaptiveTrackFactory snrTrackFactory{};
-    av_coordinate_response_measure::ResponseEvaluatorImpl responseEvaluator{};
-    av_coordinate_response_measure::RecognitionTestModel model{
+    OutputFileImpl outputFile{&writer, &path};
+    AdaptiveTrackFactory snrTrackFactory{};
+    ResponseEvaluatorImpl responseEvaluator{};
+    RecognitionTestModel model{
         &targetListReader,
         &targetPlayer,
         &maskerPlayer,
@@ -255,19 +257,20 @@ int main() {
     view.center();
     auto subjectScreenSize = subjectScreenFrame.size;
     auto subjectViewHeight = subjectScreenSize.height / 4;
-    auto subjectViewWidth = subjectScreenSize.width / 3;
+    auto subjectScreenWidth = subjectScreenSize.width;
+    auto subjectViewWidth = subjectScreenWidth / 3;
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x +
-        (subjectScreenSize.width - subjectViewWidth) / 2;
+        (subjectScreenWidth - subjectViewWidth) / 2;
     CocoaSubjectView subjectView{NSMakeRect(
         subjectViewLeadingEdge,
         subjectScreenOrigin.y,
         subjectViewWidth,
         subjectViewHeight
     )};
-    av_coordinate_response_measure::Presenter::Subject subject{&subjectView};
-    av_coordinate_response_measure::Presenter::TestSetup testSetup{&testSetupView};
-    av_coordinate_response_measure::Presenter presenter{
+    Presenter::Subject subject{&subjectView};
+    Presenter::TestSetup testSetup{&testSetupView};
+    Presenter presenter{
         &model,
         &view,
         &testSetup,
