@@ -83,6 +83,7 @@ namespace {
     TEST_F(SubdirectoryTargetListReaderTests, readReturnsReadLists) {
         setSubDirectories(std::vector<std::string>(3));
         auto actual = read();
+        EXPECT_EQ(3, actual.size());
         EXPECT_EQ(targetLists.at(0).get(), actual.at(0).get());
         EXPECT_EQ(targetLists.at(1).get(), actual.at(1).get());
         EXPECT_EQ(targetLists.at(2).get(), actual.at(2).get());
@@ -95,5 +96,15 @@ namespace {
         setSubDirectories({});
         read("d");
         assertEqual("d", targetLists.at(0)->directory());
+    }
+    
+    TEST_F(
+        SubdirectoryTargetListReaderTests,
+        readReturnsFirstListIfNoSubdirectories
+    ) {
+        setSubDirectories({});
+        auto actual = read();
+        EXPECT_EQ(1, actual.size());
+        EXPECT_EQ(targetLists.at(0).get(), actual.at(0).get());
     }
 }
