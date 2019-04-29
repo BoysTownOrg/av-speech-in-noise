@@ -1089,6 +1089,13 @@ namespace {
             run(useCase);
             assertTargetFilePathEquals("a");
         }
+        
+        void assertPushesSnrTrackUp(UseCase &useCase) {
+            initializeTestWithStartingList(1);
+            run(useCase);
+            EXPECT_TRUE(snrTrackPushedUp(1));
+            EXPECT_FALSE(snrTrackPushedDown(1));
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1553,23 +1560,17 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitIncorrectResponsePushesSnrUp
+        submitCoordinateResponsePushesSnrUpWhenEvaluationIsIncorrect
     ) {
-        initializeTestWithStartingList(1);
         setIncorrectResponse();
-        submitCoordinateResponse();
-        EXPECT_TRUE(snrTrackPushedUp(1));
-        EXPECT_FALSE(snrTrackPushedDown(1));
+        assertPushesSnrTrackUp(submittingCoordinateResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitIncorrectResponsePushesSnrUp_2
+        submitIncorrectResponsePushesSnrUp
     ) {
-        initializeTestWithStartingList(1);
-        run(submittingIncorrectResponse);
-        EXPECT_TRUE(snrTrackPushedUp(1));
-        EXPECT_FALSE(snrTrackPushedDown(1));
+        assertPushesSnrTrackUp(submittingIncorrectResponse);
     }
 
     TEST_F(
