@@ -46,6 +46,10 @@ namespace {
         SubdirectoryTargetListReader listReader{&targetListFactory, &directoryReader};
         std::vector<std::shared_ptr<TargetListStub>> targetLists;
         
+        SubdirectoryTargetListReaderTests() {
+            setListCount(1);
+        }
+        
         void setListCount(int n) {
             targetLists.clear();
             for (int i = 0; i < n; ++i)
@@ -58,7 +62,7 @@ namespace {
         }
         
         void setSubDirectories(std::vector<std::string> v) {
-            setListCount(gsl::narrow<int>(v.size()));
+            setListCount(gsl::narrow<int>(v.size() + 1));
             directoryReader.setSubDirectories(std::move(v));
         }
     };
@@ -82,5 +86,14 @@ namespace {
         EXPECT_EQ(targetLists.at(0).get(), actual.at(0).get());
         EXPECT_EQ(targetLists.at(1).get(), actual.at(1).get());
         EXPECT_EQ(targetLists.at(2).get(), actual.at(2).get());
+    }
+    
+    TEST_F(
+        SubdirectoryTargetListReaderTests,
+        readPassesParentDirectoryToFirstListIfNoSubdirectories
+    ) {
+        setSubDirectories({});
+        read("d");
+        assertEqual("d", targetLists.at(0)->directory());
     }
 }

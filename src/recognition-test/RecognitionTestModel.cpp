@@ -141,8 +141,8 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::selectNextList() {
-        auto listCount = gsl::narrow<int>(targetListsWithTracks.size());
-        size_t n = randomizer->randomIntBetween(0, listCount - 1);
+        auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
+        size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
         if (n < targetListsWithTracks.size()) {
             currentSnrTrack = targetListsWithTracks.at(n).track.get();
             currentTargetList = targetListsWithTracks.at(n).list;

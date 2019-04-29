@@ -10,9 +10,14 @@ namespace av_coordinate_response_measure {
     
     auto SubdirectoryTargetListReader::read(std::string directory) -> lists_type {
         lists_type lists{};
-        for (auto d : subDirectories(directory)) {
+        auto subDirectories_ = subDirectories(directory);
+        for (auto d : subDirectories_) {
             lists.push_back(targetListFactory->make());
             lists.back()->loadFromDirectory(directory + "/" + d);
+        }
+        if (subDirectories_.empty()) {
+            lists.push_back(targetListFactory->make());
+            lists.back()->loadFromDirectory(directory);
         }
         return lists;
     }
