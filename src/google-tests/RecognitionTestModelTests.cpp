@@ -728,10 +728,6 @@ namespace {
             model.submitResponse(coordinateResponse);
         }
         
-        void submitCorrectResponse() {
-            model.submitCorrectResponse();
-        }
-        
         void setOutputAudioDeviceDescriptions(std::vector<std::string> v) {
             maskerPlayer.setOutputAudioDeviceDescriptions(std::move(v));
         }
@@ -1045,6 +1041,14 @@ namespace {
             EXPECT_TRUE(snrTrackPushedDown(1));
             EXPECT_FALSE(snrTrackPushedUp(1));
         }
+        
+        void assertNextTargetPassedToPlayer(UseCase &useCase) {
+            initializeTest();
+            targetList(1)->setNext("a");
+            selectList(1);
+            run(useCase);
+            assertTargetFilePathEquals("a");
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1206,24 +1210,16 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseLoadsNextTarget
+        submitCoordinateResponseLoadsNextTarget
     ) {
-        initializeTest();
-        targetList(1)->setNext("a");
-        selectList(1);
-        submitCoordinateResponse();
-        assertTargetFilePathEquals("a");
+        assertNextTargetPassedToPlayer(submittingCoordinateResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCorrectResponseLoadsNextTarget
     ) {
-        initializeTest();
-        targetList(1)->setNext("a");
-        selectList(1);
-        submitCorrectResponse();
-        assertTargetFilePathEquals("a");
+        assertNextTargetPassedToPlayer(submittingCorrectResponse);
     }
 
     TEST_F(
