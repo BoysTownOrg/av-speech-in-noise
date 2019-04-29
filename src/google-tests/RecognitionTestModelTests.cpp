@@ -723,8 +723,16 @@ namespace {
             return maskerPlayer.fadeInCalled();
         }
         
+        void assertTargetPlayerPlayed() {
+            EXPECT_TRUE(targetPlayerPlayed());
+        }
+        
+        bool targetPlayerPlayed() {
+            return targetPlayer.played();
+        }
+        
         void assertTargetPlayerNotPlayed() {
-            EXPECT_FALSE(targetPlayer.played());
+            EXPECT_FALSE(targetPlayerPlayed());
         }
         
         void setTrialInProgress() {
@@ -1094,7 +1102,7 @@ namespace {
 
     TEST_F(RecognitionTestModelTests, playCalibrationPlaysTarget) {
         playCalibration();
-        EXPECT_TRUE(targetPlayer.played());
+        assertTargetPlayerPlayed();
     }
 
     TEST_F(
@@ -1228,13 +1236,12 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSetsTargetPlayerLevel
     ) {
-        setMaskerLevel_dB_SPL(2);
-        setTestingFullScaleLevel_dB_SPL(3);
-        setTargetPlayerRms(4);
-        setTargetListCount(6);
-        snrTrack(5)->setX(1);
-        initializeTestWithStartingList(5);
-        EXPECT_EQ(1 + 2 - 3 - dB(4), targetPlayerLevel_dB());
+        snrTrack(1)->setX(2);
+        setMaskerLevel_dB_SPL(3);
+        setTestingFullScaleLevel_dB_SPL(4);
+        setTargetPlayerRms(5);
+        initializeTestWithStartingList(1);
+        EXPECT_EQ(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
     }
 
     TEST_F(
@@ -1250,7 +1257,7 @@ namespace {
 
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
         maskerPlayer.fadeInComplete();
-        EXPECT_TRUE(targetPlayer.played());
+        assertTargetPlayerPlayed();
     }
 
     TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
