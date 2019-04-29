@@ -168,6 +168,7 @@ namespace av_speech_in_noise {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void prepareNextTrialAfterRemovingCompleteTracks();
         void prepareNextTrial();
         void readTargetLists(const Test &);
         void throwIfTrialInProgress();

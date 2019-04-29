@@ -249,8 +249,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::submitResponse(const coordinate_response_measure::SubjectResponse &response) {
         writeTrial(response);
         updateSnr(response);
-        removeCompleteTracks();
-        prepareNextTrial();
+        prepareNextTrialAfterRemovingCompleteTracks();
     }
     
     void RecognitionTestModel::writeTrial(const coordinate_response_measure::SubjectResponse &response) {
@@ -345,14 +344,17 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::submitCorrectResponse() {
         currentSnrTrack->pushDown();
+        prepareNextTrialAfterRemovingCompleteTracks();
+    }
+    
+    void RecognitionTestModel::prepareNextTrialAfterRemovingCompleteTracks() {
         removeCompleteTracks();
         prepareNextTrial();
     }
     
     void RecognitionTestModel::submitIncorrectResponse() {
         currentSnrTrack->pushUp();
-        removeCompleteTracks();
-        prepareNextTrial();
+        prepareNextTrialAfterRemovingCompleteTracks();
     }
 }
 
