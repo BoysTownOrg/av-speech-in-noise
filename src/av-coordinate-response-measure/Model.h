@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #define RUNTIME_ERROR(class_name) \
     class class_name : public std::runtime_error {\

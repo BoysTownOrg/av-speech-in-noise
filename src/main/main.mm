@@ -21,34 +21,58 @@ class MacOsDirectoryReader :
     public target_list::DirectoryReader
 {
     std::vector<std::string> filesIn(std::string directory) override {
-        std::vector<std::string> files{};
-        const auto contents = [[NSFileManager defaultManager]
-            contentsOfDirectoryAtPath: asNsString(directory)
-            error: nil
-        ];
-        for (id thing in contents)
-            files.push_back([thing UTF8String]);
-        return files;
+        return collectAllPredicateAbidingContents(
+            std::move(directory),
+            &MacOsDirectoryReader::notADirectory
+        );
     }
     
     std::vector<std::string> subDirectories(std::string directory) override {
+        return collectAllPredicateAbidingContents(
+            std::move(directory),
+            &MacOsDirectoryReader::isDirectory
+        );
+    }
+    
+    std::vector<std::string> collectAllPredicateAbidingContents(
+        std::string directory,
+        BOOL(MacOsDirectoryReader::*f)(NSString *)
+    ) {
+        std::vector<std::string> items{};
         auto parent = asNsString(directory);
-        const auto contents = [[NSFileManager defaultManager]
+        for (id item in contents(parent)) {
+            auto path = combinePath(parent, item);
+            if ((this->*f)(path))
+                items.push_back(toCStr(item));
+        }
+        return items;
+    }
+    
+    NSArray<NSString *> *contents(NSString *parent) {
+        return [[NSFileManager defaultManager]
             contentsOfDirectoryAtPath: parent
             error: nil
         ];
-        std::vector<std::string> subDirectories_{};
-        for (id thing in contents) {
-            BOOL isDir = NO;
-            auto path = [parent stringByAppendingPathComponent:thing];
-            if ([[NSFileManager defaultManager]
-                    fileExistsAtPath:path
-                    isDirectory:&isDir] &&
-                isDir
-            )
-                subDirectories_.push_back([thing UTF8String]);
-        }
-        return subDirectories_;
+    }
+    
+    NSString *combinePath(NSString *base, id toAppend) {
+        return [base stringByAppendingPathComponent:toAppend];
+    }
+    
+    BOOL isDirectory(NSString *path) {
+        BOOL isDir = NO;
+        [[NSFileManager defaultManager]
+            fileExistsAtPath:path
+            isDirectory:&isDir];
+        return isDir;
+    }
+    
+    BOOL notADirectory(NSString *path) {
+        return !isDirectory(path);
+    }
+    
+    const char * _Nullable toCStr(id item) {
+        return [item UTF8String];
     }
 };
 
