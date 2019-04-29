@@ -1,6 +1,6 @@
 #include "SubdirectoryTargetListReader.hpp"
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     SubdirectoryTargetListReader::SubdirectoryTargetListReader(
         TargetListFactory *targetListFactory,
         DirectoryReader *directoryReader

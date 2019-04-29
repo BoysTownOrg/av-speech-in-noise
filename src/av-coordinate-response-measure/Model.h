@@ -1,5 +1,5 @@
-#ifndef av_coordinated_response_measure_Model_h
-#define av_coordinated_response_measure_Model_h
+#ifndef av_speech_in_noise_Model_h
+#define av_speech_in_noise_Model_h
 
 #include <stdexcept>
 #include <string>
@@ -11,7 +11,7 @@
         explicit class_name(std::string s) : std::runtime_error{ std::move(s) } {}\
 };
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     enum class Color {
         green,
         red,

@@ -1,6 +1,6 @@
 #include "AdaptiveTrack.hpp"
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     AdaptiveTrack::AdaptiveTrack(const Settings &p) :
         x_{p.startingX}
     {

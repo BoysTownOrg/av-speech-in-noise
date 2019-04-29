@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class TimeStampStub : public av_coordinate_response_measure::TimeStamp {
+    class TimeStampStub : public av_speech_in_noise::TimeStamp {
         LogString log_{};
         int year_{};
         int month_{};
@@ -77,7 +77,7 @@ namespace {
     };
     
     class FileSystemPathStub :
-        public av_coordinate_response_measure::FileSystemPath
+        public av_speech_in_noise::FileSystemPath
     {
         std::string homeDirectory_{};
         std::string directoryCreated_{};
@@ -103,9 +103,9 @@ namespace {
     protected:
         TimeStampStub timeStamp;
         FileSystemPathStub systemPath;
-        av_coordinate_response_measure::OutputFilePathImpl
+        av_speech_in_noise::OutputFilePathImpl
             path{&timeStamp, &systemPath};
-        av_coordinate_response_measure::Test test{};
+        av_speech_in_noise::Test test{};
         
         std::string generateFileName() {
             return path.generateFileName(test);

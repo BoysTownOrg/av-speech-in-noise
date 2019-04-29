@@ -17,7 +17,7 @@
 #include <fstream>
 
 class MacOsDirectoryReader :
-    public av_coordinate_response_measure::DirectoryReader,
+    public av_speech_in_noise::DirectoryReader,
     public target_list::DirectoryReader
 {
     std::vector<std::string> filesIn(std::string directory) override {
@@ -76,7 +76,7 @@ class MacOsDirectoryReader :
     }
 };
 
-class FileWriter : public av_coordinate_response_measure::Writer {
+class FileWriter : public av_speech_in_noise::Writer {
     std::ofstream file{};
 public:
     void write(std::string s) override {
@@ -96,7 +96,7 @@ public:
     }
 };
 
-class UnixFileSystemPath : public av_coordinate_response_measure::FileSystemPath {
+class UnixFileSystemPath : public av_speech_in_noise::FileSystemPath {
     std::string homeDirectory() override {
         return std::getenv("HOME");
     }
@@ -106,7 +106,7 @@ class UnixFileSystemPath : public av_coordinate_response_measure::FileSystemPath
     }
 };
 
-class TimeStampImpl : public av_coordinate_response_measure::TimeStamp {
+class TimeStampImpl : public av_speech_in_noise::TimeStamp {
     tm dummyTime{};
     tm *time{&dummyTime};
 public:
@@ -192,7 +192,7 @@ public:
 @end
 
 int main() {
-    using namespace av_coordinate_response_measure;
+    using namespace av_speech_in_noise;
     MacOsDirectoryReader reader;
     target_list::FileExtensionFilterDecorator fileExtensions{
         &reader,

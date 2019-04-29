@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    using namespace av_coordinate_response_measure;
+    using namespace av_speech_in_noise;
     
     class AdaptiveTrackFacade {
         AdaptiveTrack track;

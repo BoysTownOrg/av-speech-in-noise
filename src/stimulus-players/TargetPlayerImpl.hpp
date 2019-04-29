@@ -32,7 +32,7 @@ namespace stimulus_players {
     };
     
     class TargetPlayerImpl :
-        public av_coordinate_response_measure::TargetPlayer,
+        public av_speech_in_noise::TargetPlayer,
         public VideoPlayer::EventListener
     {
         std::string filePath_{};

@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     class View {
     public:
         virtual ~View() = default;

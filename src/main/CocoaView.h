@@ -23,7 +23,7 @@ class CocoaSubjectView;
 - (void) playTrial;
 @end
 
-class CocoaTestSetupView : public av_coordinate_response_measure::View::TestSetup {
+class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
     NSView *view_;
     NSTextField *subjectIdLabel;
     NSTextField *subjectId_;
@@ -81,7 +81,7 @@ private:
     const char * stringValue(NSTextField *field);
 };
 
-class CocoaSubjectView : public av_coordinate_response_measure::View::Subject {
+class CocoaSubjectView : public av_speech_in_noise::View::Subject {
     NSWindow *window;
     NSView *responseButtons;
     NSView *nextTrialButton;
@@ -108,7 +108,7 @@ private:
     void addButtonRow(NSColor *color, int row);
 };
 
-class CocoaView : public av_coordinate_response_measure::View {
+class CocoaView : public av_speech_in_noise::View {
     NSApplication *app;
     NSWindow *window;
     NSTextField *audioDevice_label;

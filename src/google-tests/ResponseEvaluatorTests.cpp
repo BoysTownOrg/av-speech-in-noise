@@ -4,25 +4,25 @@
 namespace {
     class ResponseEvaluatorTests : public ::testing::Test {
     protected:
-        av_coordinate_response_measure::ResponseEvaluatorImpl evaluator{};
+        av_speech_in_noise::ResponseEvaluatorImpl evaluator{};
         
         bool correct(
             std::string s,
-            av_coordinate_response_measure::SubjectResponse r
+            av_speech_in_noise::SubjectResponse r
         ) {
             return evaluator.correct(std::move(s), r);
         }
         
         void assertCorrect(
             std::string s,
-            av_coordinate_response_measure::SubjectResponse r
+            av_speech_in_noise::SubjectResponse r
         ) {
             EXPECT_TRUE(correct(std::move(s), r));
         }
         
         void assertIncorrect(
             std::string s,
-            av_coordinate_response_measure::SubjectResponse r
+            av_speech_in_noise::SubjectResponse r
         ) {
             EXPECT_FALSE(correct(std::move(s), r));
         }
@@ -33,7 +33,7 @@ namespace {
             "blue1.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::blue
+                av_speech_in_noise::Color::blue
             }
         );
     }
@@ -43,7 +43,7 @@ namespace {
             "red1.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::red
+                av_speech_in_noise::Color::red
             }
         );
     }
@@ -53,7 +53,7 @@ namespace {
             "white1.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::white
+                av_speech_in_noise::Color::white
             }
         );
     }
@@ -63,7 +63,7 @@ namespace {
             "green1.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::green
+                av_speech_in_noise::Color::green
             }
         );
     }
@@ -73,7 +73,7 @@ namespace {
             "blue2.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::blue
+                av_speech_in_noise::Color::blue
             }
         );
     }
@@ -83,7 +83,7 @@ namespace {
             "green1.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::blue
+                av_speech_in_noise::Color::blue
             }
         );
     }
@@ -93,7 +93,7 @@ namespace {
             "green2.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::blue
+                av_speech_in_noise::Color::blue
             }
         );
     }
@@ -103,28 +103,28 @@ namespace {
             "a/green1.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::green
+                av_speech_in_noise::Color::green
             }
         );
         assertCorrect(
             "a/b/green1.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::green
+                av_speech_in_noise::Color::green
             }
         );
         assertIncorrect(
             "a/red1.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::green
+                av_speech_in_noise::Color::green
             }
         );
         assertIncorrect(
             "a/b/red1.mov",
             {
                 1,
-                av_coordinate_response_measure::Color::green
+                av_speech_in_noise::Color::green
             }
         );
     }
@@ -134,35 +134,35 @@ namespace {
             "not-valid",
             {
                 1,
-                av_coordinate_response_measure::Color::blue
+                av_speech_in_noise::Color::blue
             }
         );
         assertIncorrect(
             "not-valid",
             {
-                av_coordinate_response_measure::ResponseEvaluatorImpl::invalidNumber,
-                av_coordinate_response_measure::Color::notAColor
+                av_speech_in_noise::ResponseEvaluatorImpl::invalidNumber,
+                av_speech_in_noise::Color::notAColor
             }
         );
         assertIncorrect(
             "almost.mov",
             {
-                av_coordinate_response_measure::ResponseEvaluatorImpl::invalidNumber,
-                av_coordinate_response_measure::Color::notAColor
+                av_speech_in_noise::ResponseEvaluatorImpl::invalidNumber,
+                av_speech_in_noise::Color::notAColor
             }
         );
         assertIncorrect(
             "white$.mov",
             {
-                av_coordinate_response_measure::ResponseEvaluatorImpl::invalidNumber,
-                av_coordinate_response_measure::Color::white
+                av_speech_in_noise::ResponseEvaluatorImpl::invalidNumber,
+                av_speech_in_noise::Color::white
             }
         );
         assertIncorrect(
             "/",
             {
-                av_coordinate_response_measure::ResponseEvaluatorImpl::invalidNumber,
-                av_coordinate_response_measure::Color::notAColor
+                av_speech_in_noise::ResponseEvaluatorImpl::invalidNumber,
+                av_speech_in_noise::Color::notAColor
             }
         );
     }

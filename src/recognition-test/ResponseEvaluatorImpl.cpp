@@ -1,6 +1,6 @@
 #include "ResponseEvaluatorImpl.hpp"
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     int ResponseEvaluatorImpl::invalidNumber = -1;
     
     bool ResponseEvaluatorImpl::correct(

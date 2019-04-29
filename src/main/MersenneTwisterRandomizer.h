@@ -7,7 +7,7 @@
 
 class MersenneTwisterRandomizer :
     public target_list::Randomizer,
-    public av_coordinate_response_measure::Randomizer
+    public av_speech_in_noise::Randomizer
 {
     std::mt19937 engine{std::random_device{}()};
 public:

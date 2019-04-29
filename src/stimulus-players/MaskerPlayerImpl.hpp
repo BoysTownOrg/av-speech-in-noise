@@ -43,7 +43,7 @@ namespace stimulus_players {
     };
 
     class MaskerPlayerImpl :
-        public av_coordinate_response_measure::MaskerPlayer,
+        public av_speech_in_noise::MaskerPlayer,
         public AudioPlayer::EventListener,
         public Timer::EventListener
     {

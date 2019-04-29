@@ -3,7 +3,7 @@
 
 #include <recognition-test/RecognitionTestModel.hpp>
 
-class TargetListStub : public av_coordinate_response_measure::TargetList {
+class TargetListStub : public av_speech_in_noise::TargetList {
     std::string directory_{};
     std::string next_{};
     std::string current_{};

@@ -4,7 +4,7 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <memory>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     class TargetListFactory {
     public:
         virtual ~TargetListFactory() = default;

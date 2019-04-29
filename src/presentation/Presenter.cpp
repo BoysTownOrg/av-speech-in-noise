@@ -1,7 +1,7 @@
 #include "Presenter.h"
 #include <sstream>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     int Presenter::fullScaleLevel_dB_SPL = 119;
     
     TrackingRule Presenter::targetLevelRule = {

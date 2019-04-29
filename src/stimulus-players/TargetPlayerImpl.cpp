@@ -57,7 +57,7 @@ namespace stimulus_players {
         try {
             return reader->read(filePath_);
         } catch (const AudioReader::InvalidFile &) {
-            throw av_coordinate_response_measure::InvalidAudioFile{};
+            throw av_speech_in_noise::InvalidAudioFile{};
         }
     }
 
@@ -86,7 +86,7 @@ namespace stimulus_players {
             std::move(device)
         );
         if (found == devices_.end())
-            throw av_coordinate_response_measure::InvalidAudioDevice{};
+            throw av_speech_in_noise::InvalidAudioDevice{};
         auto deviceIndex = gsl::narrow<int>(found - devices_.begin());
         player->setDevice(deviceIndex);
     }

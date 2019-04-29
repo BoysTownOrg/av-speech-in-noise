@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     class InvalidAudioDevice {};
     class InvalidAudioFile {};
     

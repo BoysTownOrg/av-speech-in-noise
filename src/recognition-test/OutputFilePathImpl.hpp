@@ -4,7 +4,7 @@
 #include "OutputFileImpl.hpp"
 #include <av-coordinate-response-measure/Model.h>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     class TimeStamp {
     public:
         virtual ~TimeStamp() = default;

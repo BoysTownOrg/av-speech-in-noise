@@ -20,7 +20,7 @@ namespace target_list {
         virtual void shuffle(shuffle_iterator begin, shuffle_iterator end) = 0;
     };
 
-    class RandomizedTargetList : public av_coordinate_response_measure::TargetList {
+    class RandomizedTargetList : public av_speech_in_noise::TargetList {
         std::vector<std::string> files{};
         std::string directory_{};
         std::string currentFile_{};
@@ -40,7 +40,7 @@ namespace target_list {
         void replaceLastFile();
     };
     
-    class RandomizedTargetListFactory : public av_coordinate_response_measure::TargetListFactory {
+    class RandomizedTargetListFactory : public av_speech_in_noise::TargetListFactory {
         DirectoryReader *reader;
         Randomizer *randomizer;
     public:
@@ -48,7 +48,7 @@ namespace target_list {
             reader{reader},
             randomizer{randomizer} {}
         
-        std::shared_ptr<av_coordinate_response_measure::TargetList> make() override {
+        std::shared_ptr<av_speech_in_noise::TargetList> make() override {
             return std::make_shared<RandomizedTargetList>(reader, randomizer);
         }
     };

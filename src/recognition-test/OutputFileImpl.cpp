@@ -1,7 +1,7 @@
 #include "OutputFileImpl.hpp"
 #include <sstream>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     namespace {
         class FormattedStream {
             std::stringstream stream;

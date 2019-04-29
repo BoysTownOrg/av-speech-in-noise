@@ -7,7 +7,7 @@
 #include <cmath>
 
 namespace {
-    using namespace av_coordinate_response_measure;
+    using namespace av_speech_in_noise;
     
     class MaskerPlayerStub : public MaskerPlayer {
         std::vector<std::string> outputAudioDeviceDescriptions_{};

@@ -5,7 +5,7 @@
 #include <gsl/gsl>
 
 namespace {
-    using namespace av_coordinate_response_measure;
+    using namespace av_speech_in_noise;
     
     class TargetListFactoryStub : public TargetListFactory {
         std::vector<std::shared_ptr<TargetList>> lists_{};

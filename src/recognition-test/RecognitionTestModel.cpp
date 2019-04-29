@@ -2,7 +2,7 @@
 #include <gsl/gsl>
 #include <cmath>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     class NullTrack : public Track {
         void pushDown() override {}
         void pushUp() override {}

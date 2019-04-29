@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class WriterStub : public av_coordinate_response_measure::Writer {
+    class WriterStub : public av_speech_in_noise::Writer {
         LogString written_{};
         std::string filePath_{};
         bool closed_{};
@@ -39,9 +39,9 @@ namespace {
     };
     
     class OutputFilePathStub :
-        public av_coordinate_response_measure::OutputFilePath
+        public av_speech_in_noise::OutputFilePath
     {
-        av_coordinate_response_measure::Test testParameters_{};
+        av_speech_in_noise::Test testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
         std::string outputDirectory_{};
@@ -59,7 +59,7 @@ namespace {
         }
         
         std::string generateFileName(
-            const av_coordinate_response_measure::Test &p
+            const av_speech_in_noise::Test &p
         ) override {
             testParameters_ = p;
             return fileName_;
@@ -78,16 +78,16 @@ namespace {
     protected:
         WriterStub writer{};
         OutputFilePathStub path{};
-        av_coordinate_response_measure::OutputFileImpl file{&writer, &path};
-        av_coordinate_response_measure::Trial trial{};
-        av_coordinate_response_measure::Test test{};
+        av_speech_in_noise::OutputFileImpl file{&writer, &path};
+        av_speech_in_noise::Trial trial{};
+        av_speech_in_noise::Test test{};
         
         void openNewFile() {
             file.openNewFile(test);
         }
         
         void assertWriterContainsConditionName(
-            av_coordinate_response_measure::Condition c
+            av_speech_in_noise::Condition c
         ) {
             test.condition = c;
             file.writeTest(test);
@@ -100,8 +100,8 @@ namespace {
         trial.SNR_dB = 1;
         trial.correctNumber = 2;
         trial.subjectNumber = 3;
-        trial.correctColor = av_coordinate_response_measure::Color::green;
-        trial.subjectColor = av_coordinate_response_measure::Color::red;
+        trial.correctColor = av_speech_in_noise::Color::green;
+        trial.subjectColor = av_speech_in_noise::Color::red;
         trial.reversals = 4;
         trial.correct = false;
         file.writeTrial(trial);
@@ -144,13 +144,13 @@ namespace {
 
     TEST_F(OutputFileTests, writeTestWithAvCondition) {
         assertWriterContainsConditionName(
-            av_coordinate_response_measure::Condition::audioVisual
+            av_speech_in_noise::Condition::audioVisual
         );
     }
 
     TEST_F(OutputFileTests, writeTestWithAuditoryOnlyCondition) {
         assertWriterContainsConditionName(
-            av_coordinate_response_measure::Condition::auditoryOnly
+            av_speech_in_noise::Condition::auditoryOnly
         );
     }
 
@@ -164,7 +164,7 @@ namespace {
     }
 
     TEST_F(OutputFileTests, colorNameUninitializedColorDefined) {
-        av_coordinate_response_measure::Trial uninitialized;
+        av_speech_in_noise::Trial uninitialized;
         file.writeTrial(uninitialized);
     }
 
@@ -195,7 +195,7 @@ namespace {
         assertEqual("a", path.testParameters().testerId);
     }
     
-    class FailingWriter : public av_coordinate_response_measure::Writer {
+    class FailingWriter : public av_speech_in_noise::Writer {
         bool failed_{};
     public:
         void write(std::string) override {
@@ -219,13 +219,13 @@ namespace {
     ) {
         FailingWriter writer{};
         OutputFilePathStub path{};
-        av_coordinate_response_measure::OutputFileImpl file{&writer, &path};
+        av_speech_in_noise::OutputFileImpl file{&writer, &path};
         try {
             file.openNewFile({});
             FAIL() << "Expected OutputFileImpl::OpenFailure";
         }
         catch (
-            const av_coordinate_response_measure::
+            const av_speech_in_noise::
             OutputFileImpl::
             OpenFailure &
         ) {

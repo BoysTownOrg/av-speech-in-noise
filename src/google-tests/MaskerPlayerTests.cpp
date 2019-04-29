@@ -118,7 +118,7 @@ namespace {
     };
     
     class MaskerPlayerListenerStub :
-        public av_coordinate_response_measure::MaskerPlayer::EventListener
+        public av_speech_in_noise::MaskerPlayer::EventListener
     {
         int fadeInCompletions_{};
         int fadeOutCompletions_{};
@@ -737,7 +737,7 @@ namespace {
         try {
             setAudioDevice("third");
             FAIL() << "Expected recognition_test::InvalidAudioDevice";
-        } catch(const av_coordinate_response_measure::InvalidAudioDevice &) {
+        } catch(const av_speech_in_noise::InvalidAudioDevice &) {
         
         }
     }
@@ -769,7 +769,7 @@ namespace {
         try {
             player.rms();
             FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
-        } catch(const av_coordinate_response_measure::InvalidAudioFile &) {
+        } catch(const av_speech_in_noise::InvalidAudioFile &) {
         
         }
     }

@@ -3,7 +3,7 @@
 
 #include <recognition-test/RecognitionTestModel.hpp>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     class AdaptiveTrack : public Track {
         enum class Direction {
             undefined,

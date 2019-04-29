@@ -3,7 +3,7 @@
 
 #include <recognition-test/RecognitionTestModel.hpp>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     class ResponseEvaluatorImpl : public ResponseEvaluator {
     public:
         bool correct(const std::string &filePath, const SubjectResponse &r) override;

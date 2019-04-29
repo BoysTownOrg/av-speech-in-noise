@@ -3,7 +3,7 @@
 
 #include "RecognitionTestModel.hpp"
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     class Writer {
     public:
         virtual ~Writer() = default;

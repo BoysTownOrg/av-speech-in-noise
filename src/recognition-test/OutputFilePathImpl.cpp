@@ -1,7 +1,7 @@
 #include "OutputFilePathImpl.hpp"
 #include <sstream>
 
-namespace av_coordinate_response_measure {
+namespace av_speech_in_noise {
     OutputFilePathImpl::OutputFilePathImpl(
         TimeStamp *timeStamp,
         FileSystemPath *systemPath
