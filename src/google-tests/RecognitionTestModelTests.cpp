@@ -1067,6 +1067,16 @@ namespace {
             run(useCase);
             EXPECT_EQ(1, maskerPlayerSecondsSeeked());
         }
+        
+        void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
+            initializeTest();
+            targetList(2)->setNext("a");
+            setSnrTrackComplete(1);
+            
+            selectList(1);
+            run(useCase);
+            assertTargetFilePathEquals("a");
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1385,7 +1395,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseWritesColor
+        submitCoordinateResponseWritesColor
     ) {
         coordinateResponse.color = blueColor();
         submitCoordinateResponse();
@@ -1394,7 +1404,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseWritesNumber
+        submitCoordinateResponseWritesNumber
     ) {
         coordinateResponse.number = 1;
         submitCoordinateResponse();
@@ -1403,7 +1413,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseWritesReversals
+        submitCoordinateResponseWritesReversals
     ) {
         initializeTestWithStartingList(1);
         snrTrack(1)->setReversals(2);
@@ -1413,7 +1423,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseWritesCorrectColor
+        submitCoordinateResponseWritesCorrectColor
     ) {
         evaluator.setCorrectColor(blueColor());
         submitCoordinateResponse();
@@ -1422,7 +1432,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseWritesCorrectNumber
+        submitCoordinateResponseWritesCorrectNumber
     ) {
         evaluator.setCorrectNumber(1);
         submitCoordinateResponse();
@@ -1431,7 +1441,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseWritesSnr
+        submitCoordinateResponseWritesSnr
     ) {
         initializeTestWithStartingList(1);
         snrTrack(1)->setX(2);
@@ -1441,7 +1451,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        correctEvaluationPassedToWrite
+        submitCoordinateResponseWritesCorrectTrial
     ) {
         setCorrectResponse();
         submitCoordinateResponse();
@@ -1450,7 +1460,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        incorrectEvaluationPassedToWrite
+        submitCoordinateResponseWritesIncorrectTrial
     ) {
         setIncorrectResponse();
         submitCoordinateResponse();
@@ -1459,7 +1469,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponsePassesTargetToEvaluatorForNumberAndColor
+        submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColor
     ) {
         initializeTestWithStartingList(1);
         setTargetListCurrent(1, "a");
@@ -1470,7 +1480,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponsePassesTargetToEvaluator
+        submitCoordinateResponsePassesTargetToEvaluator
     ) {
         initializeTestWithStartingList(1);
         setTargetListCurrent(1, "a");
@@ -1506,15 +1516,16 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseSelectsNextListAmongThoseWithIncompleteTracks
+        submitCoordinateResponseSelectsNextListAmongThoseWithIncompleteTracks
     ) {
-        initializeTest();
-        targetList(2)->setNext("a");
-        setSnrTrackComplete(1);
-        
-        selectList(1);
-        submitCoordinateResponse();
-        assertTargetFilePathEquals("a");
+        assertSelectsListAmongThoseWithIncompleteTracks(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCorrectResponseSelectsNextListAmongThoseWithIncompleteTracks
+    ) {
+        assertSelectsListAmongThoseWithIncompleteTracks(submittingCorrectResponse);
     }
 
     TEST_F(
