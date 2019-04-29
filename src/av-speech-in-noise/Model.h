@@ -99,7 +99,10 @@ namespace av_speech_in_noise {
         virtual void initializeTest(const Test &) = 0;
         virtual void playCalibration(const Calibration &) = 0;
         virtual void playTrial(const AudioSettings &) = 0;
-        virtual void submitResponse(const coordinate_response_measure::SubjectResponse &) = 0;
+        virtual void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) = 0;
+        virtual void submitCorrectResponse() = 0;
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
     };

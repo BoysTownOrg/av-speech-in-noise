@@ -711,6 +711,10 @@ namespace {
             model.submitResponse(subjectResponse);
         }
         
+        void submitCorrectResponse() {
+            model.submitCorrectResponse();
+        }
+        
         void setOutputAudioDeviceDescriptions(std::vector<std::string> v) {
             maskerPlayer.setOutputAudioDeviceDescriptions(std::move(v));
         }
@@ -1420,6 +1424,16 @@ namespace {
         initializeTestWithStartingList(1);
         setCorrectResponse();
         submitResponse();
+        EXPECT_TRUE(snrTrackPushedDown(1));
+        EXPECT_FALSE(snrTrackPushedUp(1));
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCorrectResponsePushesSnrDown_2
+    ) {
+        initializeTestWithStartingList(1);
+        submitCorrectResponse();
         EXPECT_TRUE(snrTrackPushedDown(1));
         EXPECT_FALSE(snrTrackPushedUp(1));
     }

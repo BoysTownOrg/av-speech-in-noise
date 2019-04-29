@@ -81,6 +81,10 @@ namespace {
             calibrationParameters_ = p;
         }
         
+        void submitCorrectResponse() override {
+
+        }
+        
         auto trialPlayed() const {
             return trialPlayed_;
         }
@@ -1016,6 +1020,7 @@ namespace {
         bool testComplete() override { return {}; }
         std::vector<std::string> audioDevices() override { return {}; }
         void subscribe(EventListener *) override {}
+        void submitCorrectResponse() override {}
     };
 
     class PresenterFailureTests : public ::testing::Test {

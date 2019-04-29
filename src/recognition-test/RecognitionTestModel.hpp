@@ -162,6 +162,7 @@ namespace av_speech_in_noise {
         std::vector<std::string> audioDevices() override;
         void subscribe(Model::EventListener *) override;
         void playCalibration(const Calibration &) override;
+        void submitCorrectResponse() override;
         void fadeInComplete() override;
         void fadeOutComplete() override;
         void playbackComplete() override;
