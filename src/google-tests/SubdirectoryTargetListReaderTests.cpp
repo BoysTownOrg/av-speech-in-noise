@@ -63,12 +63,12 @@ namespace {
         }
     };
     
-    TEST_F(SubdirectoryTargetListReaderTests, readLoadsEachSubDirectory) {
+    TEST_F(SubdirectoryTargetListReaderTests, readLoadsFullPathToEachSubDirectory) {
         setSubDirectories({"a", "b", "c"});
-        read();
-        assertEqual("a", targetLists.at(0)->directory());
-        assertEqual("b", targetLists.at(1)->directory());
-        assertEqual("c", targetLists.at(2)->directory());
+        read("d");
+        assertEqual("d/a", targetLists.at(0)->directory());
+        assertEqual("d/b", targetLists.at(1)->directory());
+        assertEqual("d/c", targetLists.at(2)->directory());
     }
     
     TEST_F(SubdirectoryTargetListReaderTests, readPassesDirectory) {

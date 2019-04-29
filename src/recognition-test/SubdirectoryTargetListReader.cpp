@@ -12,7 +12,7 @@ namespace av_coordinate_response_measure {
         lists_type lists{};
         for (auto d : subDirectories(directory)) {
             lists.push_back(targetListFactory->make());
-            lists.back()->loadFromDirectory(d);
+            lists.back()->loadFromDirectory(directory + "/" + d);
         }
         return lists;
     }
