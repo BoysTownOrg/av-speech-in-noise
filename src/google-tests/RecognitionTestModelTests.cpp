@@ -969,6 +969,34 @@ namespace {
         auto snrTrackFactoryParameters() {
             return snrTrackFactory.parameters();
         }
+        
+        bool targetPlayerPlaybackCompletionSubscribed() {
+            return targetPlayer.playbackCompletionSubscribedTo();
+        }
+        
+        auto maskerPlayerSecondsSeeked() {
+            return maskerPlayer.secondsSeeked();
+        }
+        
+        bool trialWrittenCorrect() {
+            return trialWritten().correct;
+        }
+        
+        bool snrTrackPushedDown(int n) {
+            return snrTrack(n)->pushedDown();
+        }
+        
+        bool snrTrackPushedUp(int n) {
+            return snrTrack(n)->pushedUp();
+        }
+        
+        void setCorrectResponse() {
+            evaluator.setCorrect();
+        }
+        
+        void setIncorrectResponse() {
+            evaluator.setIncorrect();
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1180,7 +1208,7 @@ namespace {
         initializeTestSubscribesToTargetPlaybackCompletionNotification
     ) {
         initializeTest();
-        EXPECT_TRUE(targetPlayer.playbackCompletionSubscribedTo());
+        EXPECT_TRUE(targetPlayerPlaybackCompletionSubscribed());
     }
 
     TEST_F(
@@ -1188,7 +1216,7 @@ namespace {
         submitResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
         submitResponse();
-        EXPECT_TRUE(targetPlayer.playbackCompletionSubscribedTo());
+        EXPECT_TRUE(targetPlayerPlaybackCompletionSubscribed());
     }
 
     TEST_F(
@@ -1209,7 +1237,7 @@ namespace {
     ) {
         randomizer.setRandomFloat(1);
         initializeTest();
-        EXPECT_EQ(1, maskerPlayer.secondsSeeked());
+        EXPECT_EQ(1, maskerPlayerSecondsSeeked());
     }
 
     TEST_F(
@@ -1218,7 +1246,7 @@ namespace {
     ) {
         randomizer.setRandomFloat(1);
         submitResponse();
-        EXPECT_EQ(1, maskerPlayer.secondsSeeked());
+        EXPECT_EQ(1, maskerPlayerSecondsSeeked());
     }
 
     TEST_F(
@@ -1292,10 +1320,10 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesReversals
     ) {
-        initializeTestWithStartingList(3);
-        snrTrack(3)->setReversals(1);
+        initializeTestWithStartingList(1);
+        snrTrack(1)->setReversals(2);
         submitResponse();
-        EXPECT_EQ(1, trialWritten().reversals);
+        EXPECT_EQ(2, trialWritten().reversals);
     }
 
     TEST_F(
@@ -1320,28 +1348,28 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesSnr
     ) {
-        initializeTestWithStartingList(3);
-        snrTrack(3)->setX(1);
+        initializeTestWithStartingList(1);
+        snrTrack(1)->setX(2);
         submitResponse();
-        EXPECT_EQ(1, trialWritten().SNR_dB);
+        EXPECT_EQ(2, trialWritten().SNR_dB);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         correctEvaluationPassedToWrite
     ) {
-        evaluator.setCorrect();
+        setCorrectResponse();
         submitResponse();
-        EXPECT_TRUE(trialWritten().correct);
+        EXPECT_TRUE(trialWrittenCorrect());
     }
 
     TEST_F(
         RecognitionTestModelTests,
         incorrectEvaluationPassedToWrite
     ) {
-        evaluator.setIncorrect();
+        setIncorrectResponse();
         submitResponse();
-        EXPECT_FALSE(trialWritten().correct);
+        EXPECT_FALSE(trialWrittenCorrect());
     }
 
     TEST_F(
@@ -1367,24 +1395,24 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCorrectResponsePushesSnrDown_2
+        submitCorrectResponsePushesSnrDown
     ) {
         initializeTestWithStartingList(1);
-        evaluator.setCorrect();
+        setCorrectResponse();
         submitResponse();
-        EXPECT_TRUE(snrTrack(1)->pushedDown());
-        EXPECT_FALSE(snrTrack(1)->pushedUp());
+        EXPECT_TRUE(snrTrackPushedDown(1));
+        EXPECT_FALSE(snrTrackPushedUp(1));
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitIncorrectResponsePushesSnrUp_2
+        submitIncorrectResponsePushesSnrUp
     ) {
         initializeTestWithStartingList(1);
-        evaluator.setIncorrect();
+        setIncorrectResponse();
         submitResponse();
-        EXPECT_TRUE(snrTrack(1)->pushedUp());
-        EXPECT_FALSE(snrTrack(1)->pushedDown());
+        EXPECT_TRUE(snrTrackPushedUp(1));
+        EXPECT_FALSE(snrTrackPushedDown(1));
     }
 
     TEST_F(
