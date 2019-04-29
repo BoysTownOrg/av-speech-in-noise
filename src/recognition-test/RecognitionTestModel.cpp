@@ -345,6 +345,7 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::submitCorrectResponse() {
         currentSnrTrack->pushDown();
+        prepareNextTrial();
     }
 }
 

@@ -662,7 +662,7 @@ namespace {
     class RecognitionTestModelTests : public testing::Test {
     protected:
         Calibration calibration;
-        coordinate_response_measure::SubjectResponse subjectResponse;
+        coordinate_response_measure::SubjectResponse coordinateResponse;
         TargetListSetReaderStub targetListSetReader;
         TargetPlayerStub targetPlayer;
         MaskerPlayerStub maskerPlayer;
@@ -707,8 +707,8 @@ namespace {
             run(playingCalibration);
         }
         
-        void submitResponse() {
-            model.submitResponse(subjectResponse);
+        void submitCoordinateResponse() {
+            model.submitResponse(coordinateResponse);
         }
         
         void submitCorrectResponse() {
@@ -1187,7 +1187,18 @@ namespace {
         initializeTest();
         targetList(1)->setNext("a");
         selectList(1);
-        submitResponse();
+        submitCoordinateResponse();
+        assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCorrectResponseLoadsNextTarget
+    ) {
+        initializeTest();
+        targetList(1)->setNext("a");
+        selectList(1);
+        submitCorrectResponse();
         assertTargetFilePathEquals("a");
     }
 
@@ -1205,7 +1216,7 @@ namespace {
     ) {
         initializeTestWithListCount(3);
         setSnrTrackComplete(2);
-        submitResponse();
+        submitCoordinateResponse();
         assertRandomizerPassedIntegerBounds(0, 1);
     }
 
@@ -1239,7 +1250,7 @@ namespace {
         RecognitionTestModelTests,
         submitResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_TRUE(targetPlayerPlaybackCompletionSubscribed());
     }
 
@@ -1269,7 +1280,7 @@ namespace {
         submitResponseSeeksToRandomMaskerPosition
     ) {
         randomizer.setRandomFloat(1);
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_EQ(1, maskerPlayerSecondsSeeked());
     }
 
@@ -1326,8 +1337,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesColor
     ) {
-        subjectResponse.color = blueColor();
-        submitResponse();
+        coordinateResponse.color = blueColor();
+        submitCoordinateResponse();
         EXPECT_EQ(blueColor(), trialWritten().subjectColor);
     }
 
@@ -1335,8 +1346,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponseWritesNumber
     ) {
-        subjectResponse.number = 1;
-        submitResponse();
+        coordinateResponse.number = 1;
+        submitCoordinateResponse();
         EXPECT_EQ(1, trialWritten().subjectNumber);
     }
 
@@ -1346,7 +1357,7 @@ namespace {
     ) {
         initializeTestWithStartingList(1);
         snrTrack(1)->setReversals(2);
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_EQ(2, trialWritten().reversals);
     }
 
@@ -1355,7 +1366,7 @@ namespace {
         submitResponseWritesCorrectColor
     ) {
         evaluator.setCorrectColor(blueColor());
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_EQ(blueColor(), trialWritten().correctColor);
     }
 
@@ -1364,7 +1375,7 @@ namespace {
         submitResponseWritesCorrectNumber
     ) {
         evaluator.setCorrectNumber(1);
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_EQ(1, trialWritten().correctNumber);
     }
 
@@ -1374,7 +1385,7 @@ namespace {
     ) {
         initializeTestWithStartingList(1);
         snrTrack(1)->setX(2);
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_EQ(2, trialWritten().SNR_dB);
     }
 
@@ -1383,7 +1394,7 @@ namespace {
         correctEvaluationPassedToWrite
     ) {
         setCorrectResponse();
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_TRUE(trialWrittenCorrect());
     }
 
@@ -1392,7 +1403,7 @@ namespace {
         incorrectEvaluationPassedToWrite
     ) {
         setIncorrectResponse();
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_FALSE(trialWrittenCorrect());
     }
 
@@ -1402,7 +1413,7 @@ namespace {
     ) {
         initializeTestWithStartingList(1);
         setTargetListCurrent(1, "a");
-        submitResponse();
+        submitCoordinateResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
     }
@@ -1413,7 +1424,7 @@ namespace {
     ) {
         initializeTestWithStartingList(1);
         setTargetListCurrent(1, "a");
-        submitResponse();
+        submitCoordinateResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
 
@@ -1423,7 +1434,7 @@ namespace {
     ) {
         initializeTestWithStartingList(1);
         setCorrectResponse();
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_TRUE(snrTrackPushedDown(1));
         EXPECT_FALSE(snrTrackPushedUp(1));
     }
@@ -1444,7 +1455,7 @@ namespace {
     ) {
         initializeTestWithStartingList(1);
         setIncorrectResponse();
-        submitResponse();
+        submitCoordinateResponse();
         EXPECT_TRUE(snrTrackPushedUp(1));
         EXPECT_FALSE(snrTrackPushedDown(1));
     }
@@ -1458,7 +1469,7 @@ namespace {
         setSnrTrackComplete(1);
         
         selectList(1);
-        submitResponse();
+        submitCoordinateResponse();
         assertTargetFilePathEquals("a");
     }
 
@@ -1466,8 +1477,8 @@ namespace {
         RecognitionTestModelTests,
         submitResponsePassesSubjectResponseToEvaluator
     ) {
-        submitResponse();
-        EXPECT_EQ(&subjectResponse, evaluator.response());
+        submitCoordinateResponse();
+        EXPECT_EQ(&coordinateResponse, evaluator.response());
     }
 
     TEST_F(
