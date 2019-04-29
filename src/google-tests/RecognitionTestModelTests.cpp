@@ -508,6 +508,44 @@ namespace {
         }
     };
     
+    class TrackFactoryStub : public TrackFactory {
+        std::vector<Track::Settings> parameters_;
+        std::vector<std::shared_ptr<Track>> tracks_;
+    public:
+        const auto &parameters() {
+            return parameters_;
+        }
+        
+        std::shared_ptr<Track> make(const Track::Settings &s) override {
+            parameters_.push_back(s);
+            auto track = tracks_.front();
+            tracks_.erase(tracks_.begin());
+            return track;
+        }
+        
+        void setTracks(std::vector<std::shared_ptr<Track>> t) {
+            tracks_ = std::move(t);
+        }
+    };
+    
+    class TargetListSetReaderStub : public TargetListReader {
+        lists_type targetLists_{};
+        std::string directory_{};
+    public:
+        void setTargetLists(lists_type lists) {
+            targetLists_ = std::move(lists);
+        }
+        
+        lists_type read(std::string d) override {
+            directory_ = std::move(d);
+            return targetLists_;
+        }
+        
+        auto directory() const {
+            return directory_;
+        }
+    };
+    
     class UseCase {
     public:
         virtual ~UseCase() = default;
@@ -528,7 +566,7 @@ namespace {
             test_.targetLevelRule = &targetLevelRule_;
         }
         
-        void setTargetListSetDirectory(std::string s) {
+        void setTargetListDirectory(std::string s) {
             test_.targetListDirectory = std::move(s);
         }
         
@@ -541,13 +579,11 @@ namespace {
         }
         
         void setAudioVisual() override {
-            test_.condition =
-                Condition::audioVisual;
+            test_.condition = Condition::audioVisual;
         }
         
         void setAuditoryOnly() override {
-            test_.condition =
-                Condition::auditoryOnly;
+            test_.condition = Condition::auditoryOnly;
         }
         
         void setMaskerLevel_dB_SPL(int x) {
@@ -615,51 +651,11 @@ namespace {
         }
         
         void setAudioVisual() override {
-            calibration.condition =
-                Condition::audioVisual;
+            calibration.condition = Condition::audioVisual;
         }
         
         void setAuditoryOnly() override {
-            calibration.condition =
-                Condition::auditoryOnly;
-        }
-    };
-    
-    class TrackFactoryStub : public TrackFactory {
-        std::vector<Track::Settings> parameters_;
-        std::vector<std::shared_ptr<Track>> tracks_{};
-    public:
-        const auto &parameters() {
-            return parameters_;
-        }
-        
-        std::shared_ptr<Track> make(const Track::Settings &s) override {
-            parameters_.push_back(s);
-            auto track = tracks_.front();
-            tracks_.erase(tracks_.begin());
-            return track;
-        }
-        
-        void setTracks(std::vector<std::shared_ptr<Track>> t) {
-            tracks_ = std::move(t);
-        }
-    };
-    
-    class TargetListSetReaderStub : public TargetListReader {
-        lists_type targetLists_{};
-        std::string directory_{};
-    public:
-        void setTargetLists(lists_type lists) {
-            targetLists_ = std::move(lists);
-        }
-        
-        lists_type read(std::string d) override {
-            directory_ = std::move(d);
-            return targetLists_;
-        }
-        
-        auto directory() const {
-            return directory_;
+            calibration.condition = Condition::auditoryOnly;
         }
     };
 
@@ -668,12 +664,12 @@ namespace {
         Calibration calibration;
         SubjectResponse subjectResponse;
         TargetListSetReaderStub targetListSetReader;
-        TargetPlayerStub targetPlayer{};
-        MaskerPlayerStub maskerPlayer{};
-        OutputFileStub outputFile{};
-        TrackFactoryStub snrTrackFactory{};
-        ResponseEvaluatorStub evaluator{};
-        RandomizerStub randomizer{};
+        TargetPlayerStub targetPlayer;
+        MaskerPlayerStub maskerPlayer;
+        OutputFileStub outputFile;
+        TrackFactoryStub snrTrackFactory;
+        ResponseEvaluatorStub evaluator;
+        RandomizerStub randomizer;
         RecognitionTestModel model{
             &targetListSetReader,
             &targetPlayer,
@@ -683,15 +679,16 @@ namespace {
             &outputFile,
             &randomizer
         };
-        ModelEventListenerStub listener{};
-        InitializingTest initializingTest{};
-        PlayingTrial playingTrial{};
-        PlayingCalibration playingCalibration{};
-        std::vector<std::shared_ptr<TargetListStub>> targetLists{};
-        std::vector<std::shared_ptr<TrackStub>> snrTracks{};
+        ModelEventListenerStub listener;
+        InitializingTest initializingTest;
+        PlayingTrial playingTrial;
+        PlayingCalibration playingCalibration;
+        std::vector<std::shared_ptr<TargetListStub>> targetLists;
+        std::vector<std::shared_ptr<TrackStub>> snrTracks;
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
+            setTargetListCount(3);
         }
         
         void initializeTest() {
@@ -778,11 +775,7 @@ namespace {
                     "Expected recognition_test::"
                     "RecognitionTestModel::"
                     "RequestFailure";
-            } catch (
-                const
-                RecognitionTestModel::
-                RequestFailure &e
-            ) {
+            } catch (const RecognitionTestModel::RequestFailure &e) {
                 assertEqual(std::move(what), e.what());
             }
         }
@@ -794,11 +787,7 @@ namespace {
         void runIgnoringFailure(UseCase &useCase) {
             try {
                 run(useCase);
-            } catch (
-                const
-                RecognitionTestModel::
-                RequestFailure &
-            ) {
+            } catch (const RecognitionTestModel::RequestFailure &) {
             }
         }
         
@@ -1073,9 +1062,9 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestPassesTargetListSetDirectory
+        initializeTestPassesTargetListDirectory
     ) {
-        initializingTest.setTargetListSetDirectory("a");
+        initializingTest.setTargetListDirectory("a");
         initializeTest();
         assertEqual("a", targetListSetReader.directory());
     }
@@ -1126,7 +1115,6 @@ namespace {
         RecognitionTestModelTests,
         initializeTestPassesNextTargetToTargetPlayer
     ) {
-        setTargetListCount(3);
         targetList(1)->setNext("a");
         initializeTestWithStartingList(1);
         assertTargetFilePathEquals("a");
@@ -1136,7 +1124,7 @@ namespace {
         RecognitionTestModelTests,
         submitResponseLoadsNextTarget
     ) {
-        initializeTestWithListCount(3);
+        initializeTest();
         targetList(1)->setNext("a");
         selectList(1);
         submitResponse();
