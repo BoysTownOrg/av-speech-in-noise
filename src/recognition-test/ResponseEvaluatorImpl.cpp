@@ -5,12 +5,12 @@ namespace av_speech_in_noise {
     
     bool ResponseEvaluatorImpl::correct(
         const std::string &filePath,
-        const SubjectResponse &r
+        const coordinate_response_measure::SubjectResponse &r
     ) {
         return
             correctNumber(filePath) == r.number &&
             correctColor(filePath) == r.color &&
-            r.color != Color::notAColor &&
+            r.color != coordinate_response_measure::Color::notAColor &&
             r.number != invalidNumber;
     }
     int ResponseEvaluatorImpl::correctNumber(const std::string &filePath) {
@@ -27,7 +27,7 @@ namespace av_speech_in_noise {
         }
     }
     
-    Color ResponseEvaluatorImpl::correctColor(const std::string &filePath) {
+    coordinate_response_measure::Color ResponseEvaluatorImpl::correctColor(const std::string &filePath) {
         auto fileSeparator = filePath.find_last_of("/");
         auto extension = filePath.find(".");
         auto fileNameBeginning = fileSeparator + 1;
@@ -37,16 +37,16 @@ namespace av_speech_in_noise {
         return color(colorName);
     }
     
-    Color ResponseEvaluatorImpl::color(const std::string &colorName) {
+    coordinate_response_measure::Color ResponseEvaluatorImpl::color(const std::string &colorName) {
         if (colorName == "green")
-            return Color::green;
+            return coordinate_response_measure::Color::green;
         else if (colorName == "blue")
-            return Color::blue;
+            return coordinate_response_measure::Color::blue;
         else if (colorName == "red")
-            return Color::red;
+            return coordinate_response_measure::Color::red;
         else if (colorName == "white")
-            return Color::white;
+            return coordinate_response_measure::Color::white;
         else
-            return Color::notAColor;
+            return coordinate_response_measure::Color::notAColor;
     }
 }

@@ -79,7 +79,7 @@ namespace {
         WriterStub writer{};
         OutputFilePathStub path{};
         av_speech_in_noise::OutputFileImpl file{&writer, &path};
-        av_speech_in_noise::Trial trial{};
+        av_speech_in_noise::coordinate_response_measure::Trial trial{};
         av_speech_in_noise::Test test{};
         
         void openNewFile() {
@@ -100,8 +100,8 @@ namespace {
         trial.SNR_dB = 1;
         trial.correctNumber = 2;
         trial.subjectNumber = 3;
-        trial.correctColor = av_speech_in_noise::Color::green;
-        trial.subjectColor = av_speech_in_noise::Color::red;
+        trial.correctColor = av_speech_in_noise::coordinate_response_measure::Color::green;
+        trial.subjectColor = av_speech_in_noise::coordinate_response_measure::Color::red;
         trial.reversals = 4;
         trial.correct = false;
         file.writeTrial(trial);
@@ -164,7 +164,7 @@ namespace {
     }
 
     TEST_F(OutputFileTests, colorNameUninitializedColorDefined) {
-        av_speech_in_noise::Trial uninitialized;
+        av_speech_in_noise::coordinate_response_measure::Trial uninitialized;
         file.writeTrial(uninitialized);
     }
 

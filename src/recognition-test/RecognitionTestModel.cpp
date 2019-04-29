@@ -246,15 +246,15 @@ namespace av_speech_in_noise {
         listener_->trialComplete();
     }
     
-    void RecognitionTestModel::submitResponse(const SubjectResponse &response) {
+    void RecognitionTestModel::submitResponse(const coordinate_response_measure::SubjectResponse &response) {
         writeTrial(response);
         updateSnr(response);
         removeCompleteTracks();
         prepareNextTrial();
     }
     
-    void RecognitionTestModel::writeTrial(const SubjectResponse &response) {
-        Trial trial;
+    void RecognitionTestModel::writeTrial(const coordinate_response_measure::SubjectResponse &response) {
+        coordinate_response_measure::Trial trial;
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
         trial.reversals = currentSnrTrack->reversals();
@@ -265,14 +265,14 @@ namespace av_speech_in_noise {
         outputFile->writeTrial(trial);
     }
     
-    void RecognitionTestModel::updateSnr(const SubjectResponse &response) {
+    void RecognitionTestModel::updateSnr(const coordinate_response_measure::SubjectResponse &response) {
         if (correct(response))
             currentSnrTrack->pushDown();
         else
             currentSnrTrack->pushUp();
     }
     
-    bool RecognitionTestModel::correct(const SubjectResponse &response) {
+    bool RecognitionTestModel::correct(const coordinate_response_measure::SubjectResponse &response) {
         return evaluator->correct(currentTarget(), response);
     }
     

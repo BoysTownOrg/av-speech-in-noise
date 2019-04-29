@@ -111,9 +111,9 @@ namespace av_speech_in_noise {
             void showNextTrialButton();
             void hideNextTrialButton();
             void showResponseButtons();
-            SubjectResponse subjectResponse();
+            coordinate_response_measure::SubjectResponse subjectResponse();
         private:
-            Color colorResponse();
+            coordinate_response_measure::Color colorResponse();
             
             View::Subject *view;
             Presenter *parent;

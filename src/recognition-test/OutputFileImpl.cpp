@@ -37,7 +37,7 @@ namespace av_speech_in_noise {
         writer{writer},
         path{path} {}
     
-    void OutputFileImpl::writeTrial(const Trial &trial) {
+    void OutputFileImpl::writeTrial(const coordinate_response_measure::Trial &trial) {
         write(formatTrial(trial));
     }
     
@@ -45,7 +45,7 @@ namespace av_speech_in_noise {
         writer->write(std::move(s));
     }
 
-    std::string OutputFileImpl::formatTrial(const Trial &trial) {
+    std::string OutputFileImpl::formatTrial(const coordinate_response_measure::Trial &trial) {
         FormattedStream stream;
         stream.insert(trial.SNR_dB);
         stream.insertCommaAndSpace();
@@ -64,21 +64,21 @@ namespace av_speech_in_noise {
         return stream.str();
     }
     
-    std::string OutputFileImpl::evaluation(const Trial &trial) {
+    std::string OutputFileImpl::evaluation(const coordinate_response_measure::Trial &trial) {
         return trial.correct ? "correct" : "incorrect";
     }
 
-    std::string OutputFileImpl::colorName(Color c) {
+    std::string OutputFileImpl::colorName(coordinate_response_measure::Color c) {
         switch (c) {
-        case Color::green:
+        case coordinate_response_measure::Color::green:
             return "green";
-        case Color::red:
+        case coordinate_response_measure::Color::red:
             return "red";
-        case Color::blue:
+        case coordinate_response_measure::Color::blue:
             return "blue";
-        case Color::white:
+        case coordinate_response_measure::Color::white:
             return "white";
-        case Color::notAColor:
+        case coordinate_response_measure::Color::notAColor:
             return "not a color";
         }
         return "unknown";

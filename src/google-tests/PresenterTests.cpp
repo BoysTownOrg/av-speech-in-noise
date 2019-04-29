@@ -18,7 +18,7 @@ namespace {
         av_speech_in_noise::Test testParameters_{};
         av_speech_in_noise::Calibration calibrationParameters_{};
         av_speech_in_noise::AudioSettings trialParameters_{};
-        av_speech_in_noise::SubjectResponse responseParameters_{};
+        av_speech_in_noise::coordinate_response_measure::SubjectResponse responseParameters_{};
         std::vector<std::string> audioDevices_{};
         EventListener *listener_{};
         bool testComplete_{};
@@ -66,7 +66,7 @@ namespace {
         }
         
         void submitResponse(
-            const av_speech_in_noise::SubjectResponse &p
+            const av_speech_in_noise::coordinate_response_measure::SubjectResponse &p
         ) override {
             responseParameters_ = p;
         }
@@ -674,7 +674,7 @@ namespace {
             return view.errorMessage();
         }
         
-        void assertModelPassedCondition(av_speech_in_noise::Color c) {
+        void assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color c) {
             EXPECT_EQ(c, model.responseParameters().color);
         }
         
@@ -907,25 +907,25 @@ namespace {
     TEST_F(PresenterTests, subjectResponsePassesGreenColor) {
         subjectView.setGreenResponse();
         submitResponse();
-        assertModelPassedCondition(av_speech_in_noise::Color::green);
+        assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color::green);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesRedColor) {
         subjectView.setRedResponse();
         submitResponse();
-        assertModelPassedCondition(av_speech_in_noise::Color::red);
+        assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color::red);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesBlueColor) {
         subjectView.setBlueResponse();
         submitResponse();
-        assertModelPassedCondition(av_speech_in_noise::Color::blue);
+        assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color::blue);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesWhiteColor) {
         subjectView.setGrayResponse();
         submitResponse();
-        assertModelPassedCondition(av_speech_in_noise::Color::white);
+        assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color::white);
     }
 
     TEST_F(PresenterTests, submitResponseShowsSetupViewWhenTestComplete) {
@@ -1005,7 +1005,7 @@ namespace {
             throw RequestFailure{errorMessage};
         }
         
-        void submitResponse(const av_speech_in_noise::SubjectResponse &) override {
+        void submitResponse(const av_speech_in_noise::coordinate_response_measure::SubjectResponse &) override {
             throw RequestFailure{errorMessage};
         }
         

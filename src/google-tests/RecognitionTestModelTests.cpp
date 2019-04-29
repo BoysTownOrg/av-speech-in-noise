@@ -275,7 +275,7 @@ namespace {
     };
     
     class OutputFileStub : public OutputFile {
-        Trial trialWritten_{};
+        coordinate_response_measure::Trial trialWritten_{};
         LogString log_{};
         const Test *testWritten_{};
         const Test *openNewFileParameters_{};
@@ -299,7 +299,7 @@ namespace {
         }
         
         void writeTrial(
-            const Trial &trial
+            const coordinate_response_measure::Trial &trial
         ) override {
             log_.insert("writeTrial ");
             trialWritten_ = trial;
@@ -406,16 +406,16 @@ namespace {
         std::string correctTarget_{};
         std::string correctNumberFilePath_{};
         std::string correctColorFilePath_{};
-        const SubjectResponse *response_{};
+        const coordinate_response_measure::SubjectResponse *response_{};
         int correctNumber_{};
-        Color correctColor_{};
+        coordinate_response_measure::Color correctColor_{};
         bool correct_{};
     public:
         void setCorrectNumber(int x) {
             correctNumber_ = x;
         }
         
-        void setCorrectColor(Color c) {
+        void setCorrectColor(coordinate_response_measure::Color c) {
             correctColor_ = c;
         }
         
@@ -445,14 +445,14 @@ namespace {
         
         bool correct(
             const std::string &target,
-            const SubjectResponse &p
+            const coordinate_response_measure::SubjectResponse &p
         ) override {
             correctTarget_ = target;
             response_ = &p;
             return correct_;
         }
         
-        Color correctColor(const std::string &filePath) override {
+        coordinate_response_measure::Color correctColor(const std::string &filePath) override {
             correctColorFilePath_ = filePath;
             return correctColor_;
         }
@@ -662,7 +662,7 @@ namespace {
     class RecognitionTestModelTests : public testing::Test {
     protected:
         Calibration calibration;
-        SubjectResponse subjectResponse;
+        coordinate_response_measure::SubjectResponse subjectResponse;
         TargetListSetReaderStub targetListSetReader;
         TargetPlayerStub targetPlayer;
         MaskerPlayerStub maskerPlayer;
@@ -864,7 +864,7 @@ namespace {
         }
         
         auto blueColor() {
-            return Color::blue;
+            return coordinate_response_measure::Color::blue;
         }
         
         void playTrialWhenTrialAlreadyInProgressIgnoringFailure() {

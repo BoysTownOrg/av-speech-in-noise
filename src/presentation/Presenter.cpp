@@ -283,21 +283,21 @@ namespace av_speech_in_noise {
         view->showResponseButtons();
     }
     
-    SubjectResponse Presenter::Subject::subjectResponse() {
-        SubjectResponse p;
+    coordinate_response_measure::SubjectResponse Presenter::Subject::subjectResponse() {
+        coordinate_response_measure::SubjectResponse p;
         p.color = colorResponse();
         p.number = std::stoi(view->numberResponse());
         return p;
     }
     
-    Color Presenter::Subject::colorResponse() {
+    coordinate_response_measure::Color Presenter::Subject::colorResponse() {
         if (view->greenResponse())
-            return Color::green;
+            return coordinate_response_measure::Color::green;
         else if (view->blueResponse())
-            return Color::blue;
+            return coordinate_response_measure::Color::blue;
         else if (view->whiteResponse())
-            return Color::white;
+            return coordinate_response_measure::Color::white;
         else
-            return Color::red;
+            return coordinate_response_measure::Color::red;
     }
 }

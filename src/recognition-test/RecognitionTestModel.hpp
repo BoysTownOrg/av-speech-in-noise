@@ -97,9 +97,9 @@ namespace av_speech_in_noise {
         virtual ~ResponseEvaluator() = default;
         virtual bool correct(
             const std::string &filePath,
-            const SubjectResponse &
+            const coordinate_response_measure::SubjectResponse &
         ) = 0;
-        virtual Color correctColor(const std::string &filePath) = 0;
+        virtual coordinate_response_measure::Color correctColor(const std::string &filePath) = 0;
         virtual int correctNumber(const std::string &filePath) = 0;
     };
     
@@ -108,7 +108,7 @@ namespace av_speech_in_noise {
         virtual ~OutputFile() = default;
         virtual void openNewFile(const Test &) = 0;
         class OpenFailure {};
-        virtual void writeTrial(const Trial &) = 0;
+        virtual void writeTrial(const coordinate_response_measure::Trial &) = 0;
         virtual void writeTest(const Test &) = 0;
         virtual void writeTrialHeading() = 0;
         virtual void close() = 0;
@@ -157,7 +157,7 @@ namespace av_speech_in_noise {
         );
         void initializeTest(const Test &) override;
         void playTrial(const AudioSettings &) override;
-        void submitResponse(const SubjectResponse &) override;
+        void submitResponse(const coordinate_response_measure::SubjectResponse &) override;
         bool testComplete() override;
         std::vector<std::string> audioDevices() override;
         void subscribe(Model::EventListener *) override;
@@ -169,10 +169,10 @@ namespace av_speech_in_noise {
         void prepareNextTrial();
         void readTargetLists(const Test &);
         void throwIfTrialInProgress();
-        void writeTrial(const SubjectResponse &);
+        void writeTrial(const coordinate_response_measure::SubjectResponse &);
         std::string currentTarget();
-        bool correct(const SubjectResponse &);
-        void updateSnr(const SubjectResponse &);
+        bool correct(const coordinate_response_measure::SubjectResponse &);
+        void updateSnr(const coordinate_response_measure::SubjectResponse &);
         void removeCompleteTracks();
         void selectNextList();
         void prepareSnrTracks(const Test &);

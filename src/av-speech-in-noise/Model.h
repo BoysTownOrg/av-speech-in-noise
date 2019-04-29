@@ -12,27 +12,34 @@
 };
 
 namespace av_speech_in_noise {
-    enum class Color {
-        green,
-        red,
-        blue,
-        white,
-        notAColor
-    };
+    namespace coordinate_response_measure {
+        enum class Color {
+            green,
+            red,
+            blue,
+            white,
+            notAColor
+        };
+        
+        struct SubjectResponse {
+            int number;
+            Color color;
+        };
+        
+        struct Trial {
+            int SNR_dB;
+            int correctNumber;
+            int subjectNumber;
+            int reversals;
+            Color correctColor;
+            Color subjectColor;
+            bool correct;
+        };
+    }
     
     enum class Condition {
         auditoryOnly,
         audioVisual
-    };
-    
-    struct Trial {
-        int SNR_dB;
-        int correctNumber;
-        int subjectNumber;
-        int reversals;
-        Color correctColor;
-        Color subjectColor;
-        bool correct;
     };
     
     constexpr const char *conditionName(Condition c) {
@@ -78,11 +85,6 @@ namespace av_speech_in_noise {
         Condition condition;
     };
     
-    struct SubjectResponse {
-        int number;
-        Color color;
-    };
-    
     class Model {
     public:
         class EventListener {
@@ -97,7 +99,7 @@ namespace av_speech_in_noise {
         virtual void initializeTest(const Test &) = 0;
         virtual void playCalibration(const Calibration &) = 0;
         virtual void playTrial(const AudioSettings &) = 0;
-        virtual void submitResponse(const SubjectResponse &) = 0;
+        virtual void submitResponse(const coordinate_response_measure::SubjectResponse &) = 0;
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
     };
