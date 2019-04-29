@@ -97,7 +97,7 @@ namespace stimulus_players {
             
             int hannCounter{};
             int halfWindowLength{};
-            MaskerPlayerImpl *sharedAtomics;
+            MaskerPlayerImpl *sharedAtomics{};
             AudioPlayer *player;
             bool fadingOut{};
             bool fadingIn{};
@@ -115,7 +115,7 @@ namespace stimulus_players {
             bool fading();
             void scheduleCallbackAfterSeconds(double);
             
-            MaskerPlayerImpl *sharedAtomics;
+            MaskerPlayerImpl *sharedAtomics{};
             AudioPlayer *player;
             MaskerPlayer::EventListener *listener{};
             Timer *timer;

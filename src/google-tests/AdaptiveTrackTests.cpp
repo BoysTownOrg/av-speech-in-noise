@@ -2,10 +2,12 @@
 #include <gtest/gtest.h>
 
 namespace {
+    using namespace av_coordinate_response_measure;
+    
     class AdaptiveTrackFacade {
-        av_coordinate_response_measure::AdaptiveTrack track;
+        AdaptiveTrack track;
     public:
-        AdaptiveTrackFacade(const av_coordinate_response_measure::Track::Settings &s) :
+        explicit AdaptiveTrackFacade(const Track::Settings &s) :
             track{s} {}
         
         void push(std::string directions) {
@@ -56,8 +58,8 @@ namespace {
     
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
-        av_coordinate_response_measure::AdaptiveTrack::Settings settings{};
-        av_coordinate_response_measure::TrackingRule rule;
+        AdaptiveTrack::Settings settings{};
+        TrackingRule rule;
         
         AdaptiveTrackTests() {
             rule.resize(3);
@@ -67,7 +69,7 @@ namespace {
         
         AdaptiveTrackFacade reset() {
             settings.rule = &rule;
-            return {settings};
+            return AdaptiveTrackFacade{settings};
         }
         
         template<typename T>
