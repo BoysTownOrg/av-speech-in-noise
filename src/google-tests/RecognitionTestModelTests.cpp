@@ -1019,6 +1019,10 @@ namespace {
             targetList(n)->setCurrent(std::move(s));;
         }
         
+        void setTargetListNext(int n, std::string s) {
+            targetList(n)->setNext(std::move(s));;
+        }
+        
         void setSnrTrackComplete(int n) {
             snrTrack(n)->setComplete();
         }
@@ -1044,7 +1048,7 @@ namespace {
         
         void assertNextTargetPassedToPlayer(UseCase &useCase) {
             initializeTest();
-            targetList(1)->setNext("a");
+            setTargetListNext(1, "a");
             selectList(1);
             run(useCase);
             assertTargetFilePathEquals("a");
@@ -1070,7 +1074,7 @@ namespace {
         
         void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
             initializeTest();
-            targetList(2)->setNext("a");
+            setTargetListNext(2, "a");
             setSnrTrackComplete(1);
             
             selectList(1);
@@ -1469,6 +1473,14 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitCoordinateResponsePassesSubjectResponseToEvaluator
+    ) {
+        submitCoordinateResponse();
+        EXPECT_EQ(&coordinateResponse, evaluator.response());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColor
     ) {
         initializeTestWithStartingList(1);
@@ -1526,14 +1538,6 @@ namespace {
         submitCorrectResponseSelectsNextListAmongThoseWithIncompleteTracks
     ) {
         assertSelectsListAmongThoseWithIncompleteTracks(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitResponsePassesSubjectResponseToEvaluator
-    ) {
-        submitCoordinateResponse();
-        EXPECT_EQ(&coordinateResponse, evaluator.response());
     }
 
     TEST_F(
