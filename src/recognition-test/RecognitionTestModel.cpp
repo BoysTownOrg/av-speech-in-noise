@@ -350,6 +350,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::submitIncorrectResponse() {
+        currentSnrTrack->pushUp();
         removeCompleteTracks();
         prepareNextTrial();
     }

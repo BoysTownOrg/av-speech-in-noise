@@ -1564,6 +1564,16 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitIncorrectResponsePushesSnrUp_2
+    ) {
+        initializeTestWithStartingList(1);
+        run(submittingIncorrectResponse);
+        EXPECT_TRUE(snrTrackPushedUp(1));
+        EXPECT_FALSE(snrTrackPushedDown(1));
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitCoordinateResponseSelectsNextListAmongThoseWithIncompleteTracks
     ) {
         assertSelectsListAmongThoseWithIncompleteTracks(submittingCoordinateResponse);
