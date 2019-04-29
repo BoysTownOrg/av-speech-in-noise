@@ -1049,6 +1049,13 @@ namespace {
             run(useCase);
             assertTargetFilePathEquals("a");
         }
+        
+        void assertSelectsRandomListInRangeAfterRemovingCompleteTracks(UseCase &useCase) {
+            initializeTestWithListCount(3);
+            setSnrTrackComplete(2);
+            run(useCase);
+            assertRandomizerPassedIntegerBounds(0, 1);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1234,20 +1241,14 @@ namespace {
         RecognitionTestModelTests,
         submitResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
     ) {
-        initializeTestWithListCount(3);
-        setSnrTrackComplete(2);
-        submitCoordinateResponse();
-        assertRandomizerPassedIntegerBounds(0, 1);
+        assertSelectsRandomListInRangeAfterRemovingCompleteTracks(submittingCoordinateResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCorrectResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
     ) {
-        initializeTestWithListCount(3);
-        setSnrTrackComplete(2);
-        run(submittingCorrectResponse);
-        assertRandomizerPassedIntegerBounds(0, 1);
+        assertSelectsRandomListInRangeAfterRemovingCompleteTracks(submittingCorrectResponse);
     }
 
     TEST_F(
