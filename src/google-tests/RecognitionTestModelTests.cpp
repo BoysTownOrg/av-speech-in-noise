@@ -997,6 +997,26 @@ namespace {
         void setIncorrectResponse() {
             evaluator.setIncorrect();
         }
+        
+        void setTargetListCurrent(int n, std::string s) {
+            targetList(n)->setCurrent(std::move(s));;
+        }
+        
+        void setSnrTrackComplete(int n) {
+            snrTrack(n)->setComplete();
+        }
+        
+        void assertTestIncomplete() {
+            EXPECT_FALSE(testComplete());
+        }
+        
+        bool testComplete() {
+            return model.testComplete();
+        }
+        
+        void assertTestComplete() {
+            EXPECT_TRUE(testComplete());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1180,7 +1200,7 @@ namespace {
         submitResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
     ) {
         initializeTestWithListCount(3);
-        snrTrack(2)->setComplete();
+        setSnrTrackComplete(2);
         submitResponse();
         assertRandomizerPassedIntegerBounds(0, 1);
     }
@@ -1377,7 +1397,7 @@ namespace {
         submitResponsePassesTargetToEvaluatorForNumberAndColor
     ) {
         initializeTestWithStartingList(1);
-        targetList(1)->setCurrent("a");
+        setTargetListCurrent(1, "a");
         submitResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
@@ -1388,7 +1408,7 @@ namespace {
         submitResponsePassesTargetToEvaluator
     ) {
         initializeTestWithStartingList(1);
-        targetList(1)->setCurrent("a");
+        setTargetListCurrent(1, "a");
         submitResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
@@ -1419,9 +1439,9 @@ namespace {
         RecognitionTestModelTests,
         submitResponseSelectsNextListAmongThoseWithIncompleteTracks
     ) {
-        initializeTestWithListCount(3);
+        initializeTest();
         targetList(2)->setNext("a");
-        snrTrack(1)->setComplete();
+        setSnrTrackComplete(1);
         
         selectList(1);
         submitResponse();
@@ -1551,12 +1571,12 @@ namespace {
         testCompleteWhenAllTracksComplete
     ) {
         initializeTestWithListCount(3);
-        snrTrack(0)->setComplete();
-        EXPECT_FALSE(model.testComplete());
-        snrTrack(1)->setComplete();
-        EXPECT_FALSE(model.testComplete());
-        snrTrack(2)->setComplete();
-        EXPECT_TRUE(model.testComplete());
+        setSnrTrackComplete(0);
+        assertTestIncomplete();
+        setSnrTrackComplete(1);
+        assertTestIncomplete();
+        setSnrTrackComplete(2);
+        assertTestComplete();
     }
 }
 
