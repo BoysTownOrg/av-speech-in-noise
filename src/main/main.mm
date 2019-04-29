@@ -42,8 +42,11 @@ class MacOsDirectoryReader :
             BOOL isDir = NO;
             auto path = [parent stringByAppendingPathComponent:thing];
             if ([[NSFileManager defaultManager]
-                fileExistsAtPath:path isDirectory:&isDir] && isDir)
-                subDirectories_.push_back([path UTF8String]);
+                    fileExistsAtPath:path
+                    isDirectory:&isDir] &&
+                isDir
+            )
+                subDirectories_.push_back([thing UTF8String]);
         }
         return subDirectories_;
     }
