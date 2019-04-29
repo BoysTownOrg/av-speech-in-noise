@@ -4,7 +4,7 @@ namespace av_coordinate_response_measure {
     int ResponseEvaluatorImpl::invalidNumber = -1;
     
     bool ResponseEvaluatorImpl::correct(
-        std::string filePath,
+        const std::string &filePath,
         const SubjectResponse &r
     ) {
         return

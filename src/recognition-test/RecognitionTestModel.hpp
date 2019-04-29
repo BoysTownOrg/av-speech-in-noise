@@ -96,7 +96,7 @@ namespace av_coordinate_response_measure {
     public:
         virtual ~ResponseEvaluator() = default;
         virtual bool correct(
-            std::string filePath,
+            const std::string &filePath,
             const SubjectResponse &
         ) = 0;
         virtual Color correctColor(const std::string &filePath) = 0;

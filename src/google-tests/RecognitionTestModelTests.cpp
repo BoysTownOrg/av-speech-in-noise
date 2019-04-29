@@ -444,10 +444,10 @@ namespace {
         }
         
         bool correct(
-            std::string target,
+            const std::string &target,
             const SubjectResponse &p
         ) override {
-            correctTarget_ = std::move(target);
+            correctTarget_ = target;
             response_ = &p;
             return correct_;
         }
