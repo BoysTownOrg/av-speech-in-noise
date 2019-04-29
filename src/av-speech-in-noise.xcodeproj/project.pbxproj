@@ -116,7 +116,7 @@
 		26B22D392260FE4100D528F1 /* AdaptiveTrack.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AdaptiveTrack.hpp; sourceTree = "<group>"; };
 		26B81F1E21DEA46800006FCB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		26B81F2021DEA46F00006FCB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "av-coordinated-response-measure.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		26B81F2621DEB15700006FCB /* av-speech-in-noise.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "av-speech-in-noise.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26C2A324225D050E00E2919D /* AudioReaderTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioReaderTests.cpp; sourceTree = "<group>"; };
 		26C2A328225D0CD000E2919D /* AudioReaderImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioReaderImpl.cpp; sourceTree = "<group>"; };
 		26C2A329225D0CD000E2919D /* AudioReaderImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AudioReaderImpl.hpp; sourceTree = "<group>"; };
@@ -256,7 +256,7 @@
 		26FC6AF821DA80C900289A0A = {
 			isa = PBXGroup;
 			children = (
-				26FDD2D7224AC3100090BDD5 /* av-coordinate-response-measure */,
+				26FDD2D7224AC3100090BDD5 /* av-speech-in-noise */,
 				26FC6B0B21DA85A400289A0A /* Frameworks */,
 				26FC6B0521DA810C00289A0A /* google-tests */,
 				269C919122331FCE00A80372 /* main */,
@@ -274,7 +274,7 @@
 				26FC6B0321DA810C00289A0A /* google-tests */,
 				26FC6B1621DAA3D800289A0A /* libpresentation.dylib */,
 				26A2237521DD3544007D6511 /* librecognition-test.dylib */,
-				26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */,
+				26B81F2621DEB15700006FCB /* av-speech-in-noise.app */,
 				2646F83921DFEA0400F378DE /* libtarget-list.dylib */,
 				26EE86C52242E98600C08622 /* libstimulus_players.dylib */,
 			);
@@ -326,12 +326,12 @@
 			path = presentation;
 			sourceTree = "<group>";
 		};
-		26FDD2D7224AC3100090BDD5 /* av-coordinate-response-measure */ = {
+		26FDD2D7224AC3100090BDD5 /* av-speech-in-noise */ = {
 			isa = PBXGroup;
 			children = (
 				26EE86BC2242E64900C08622 /* Model.h */,
 			);
-			path = "av-coordinate-response-measure";
+			path = "av-speech-in-noise";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -409,9 +409,9 @@
 			productReference = 26A2237521DD3544007D6511 /* librecognition-test.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		26B81F2521DEB15700006FCB /* av-coordinate-response-measure */ = {
+		26B81F2521DEB15700006FCB /* av-speech-in-noise */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 26B81F3421DEB15A00006FCB /* Build configuration list for PBXNativeTarget "av-coordinate-response-measure" */;
+			buildConfigurationList = 26B81F3421DEB15A00006FCB /* Build configuration list for PBXNativeTarget "av-speech-in-noise" */;
 			buildPhases = (
 				26B81F2221DEB15700006FCB /* Sources */,
 				26B81F2321DEB15700006FCB /* Frameworks */,
@@ -421,9 +421,9 @@
 			);
 			dependencies = (
 			);
-			name = "av-coordinate-response-measure";
+			name = "av-speech-in-noise";
 			productName = "experimental-recognition-experiment";
-			productReference = 26B81F2621DEB15700006FCB /* av-coordinated-response-measure.app */;
+			productReference = 26B81F2621DEB15700006FCB /* av-speech-in-noise.app */;
 			productType = "com.apple.product-type.application";
 		};
 		26EE86C42242E98600C08622 /* stimulus_players */ = {
@@ -505,7 +505,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 26FC6AFC21DA80C900289A0A /* Build configuration list for PBXProject "av-coordinate-response-measure" */;
+			buildConfigurationList = 26FC6AFC21DA80C900289A0A /* Build configuration list for PBXProject "av-speech-in-noise" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -521,7 +521,7 @@
 				26FC6B0221DA810C00289A0A /* google-tests */,
 				26FC6B1521DAA3D800289A0A /* presentation */,
 				26A2237421DD3544007D6511 /* recognition-test */,
-				26B81F2521DEB15700006FCB /* av-coordinate-response-measure */,
+				26B81F2521DEB15700006FCB /* av-speech-in-noise */,
 				2646F83821DFEA0400F378DE /* target-list */,
 				26EE86C42242E98600C08622 /* stimulus_players */,
 			);
@@ -910,8 +910,8 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "btnrh.av-coordinated-response-measure";
-				PRODUCT_NAME = "av-coordinated-response-measure";
+				PRODUCT_BUNDLE_IDENTIFIER = "btnrh.av-speech-in-noise";
+				PRODUCT_NAME = "av-speech-in-noise";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -973,8 +973,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "btnrh.av-coordinated-response-measure";
-				PRODUCT_NAME = "av-coordinated-response-measure";
+				PRODUCT_BUNDLE_IDENTIFIER = "btnrh.av-speech-in-noise";
+				PRODUCT_NAME = "av-speech-in-noise";
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -1377,7 +1377,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		26B81F3421DEB15A00006FCB /* Build configuration list for PBXNativeTarget "av-coordinate-response-measure" */ = {
+		26B81F3421DEB15A00006FCB /* Build configuration list for PBXNativeTarget "av-speech-in-noise" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26B81F3521DEB15A00006FCB /* Debug */,
@@ -1395,7 +1395,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		26FC6AFC21DA80C900289A0A /* Build configuration list for PBXProject "av-coordinate-response-measure" */ = {
+		26FC6AFC21DA80C900289A0A /* Build configuration list for PBXProject "av-speech-in-noise" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26FC6AFD21DA80C900289A0A /* Debug */,

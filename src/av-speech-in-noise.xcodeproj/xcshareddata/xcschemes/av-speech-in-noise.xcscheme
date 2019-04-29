@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "26B81F2521DEB15700006FCB"
-            BuildableName = "av-coordinated-response-measure.app"
-            BlueprintName = "av-coordinate-response-measure"
-            ReferencedContainer = "container:av-coordinate-response-measure.xcodeproj">
+            BuildableName = "av-speech-in-noise.app"
+            BlueprintName = "av-speech-in-noise"
+            ReferencedContainer = "container:av-speech-in-noise.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "26B81F2521DEB15700006FCB"
-            BuildableName = "av-coordinated-response-measure.app"
-            BlueprintName = "av-coordinate-response-measure"
-            ReferencedContainer = "container:av-coordinate-response-measure.xcodeproj">
+            BuildableName = "av-speech-in-noise.app"
+            BlueprintName = "av-speech-in-noise"
+            ReferencedContainer = "container:av-speech-in-noise.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>

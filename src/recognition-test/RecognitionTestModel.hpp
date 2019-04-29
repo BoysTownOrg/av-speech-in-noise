@@ -1,7 +1,7 @@
 #ifndef av_coordinate_response_measure_RecognitionTestModel_hpp
 #define av_coordinate_response_measure_RecognitionTestModel_hpp
 
-#include <av-coordinate-response-measure/Model.h>
+#include <av-speech-in-noise/Model.h>
 #include <vector>
 #include <memory>
 

@@ -2,7 +2,7 @@
 #define av_coordinate_response_measure_OutputFilePathImpl_hpp
 
 #include "OutputFileImpl.hpp"
-#include <av-coordinate-response-measure/Model.h>
+#include <av-speech-in-noise/Model.h>
 
 namespace av_speech_in_noise {
     class TimeStamp {
