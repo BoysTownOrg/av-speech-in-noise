@@ -1589,6 +1589,13 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitIncorrectResponseSelectsNextListAmongThoseWithIncompleteTracks
+    ) {
+        assertSelectsListAmongThoseWithIncompleteTracks(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestThrowsRequestFailureIfFileFailsToOpen
     ) {
         outputFile.throwOnOpen();
