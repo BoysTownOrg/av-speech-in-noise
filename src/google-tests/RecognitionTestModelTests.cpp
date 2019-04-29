@@ -1056,6 +1056,11 @@ namespace {
             run(useCase);
             assertRandomizerPassedIntegerBounds(0, 1);
         }
+        
+        void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
+            run(useCase);
+            EXPECT_TRUE(targetPlayerPlaybackCompletionSubscribed());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1273,16 +1278,21 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSubscribesToTargetPlaybackCompletionNotification
     ) {
-        initializeTest();
-        EXPECT_TRUE(targetPlayerPlaybackCompletionSubscribed());
+        assertTargetPlayerPlaybackCompletionSubscribed(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
-        submitCoordinateResponse();
-        EXPECT_TRUE(targetPlayerPlaybackCompletionSubscribed());
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCorrectResponseSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);
     }
 
     TEST_F(
