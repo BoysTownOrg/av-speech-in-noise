@@ -163,6 +163,7 @@ namespace av_speech_in_noise {
         void subscribe(Model::EventListener *) override;
         void playCalibration(const Calibration &) override;
         void submitCorrectResponse() override;
+        void submitIncorrectResponse() override;
         void fadeInComplete() override;
         void fadeOutComplete() override;
         void playbackComplete() override;

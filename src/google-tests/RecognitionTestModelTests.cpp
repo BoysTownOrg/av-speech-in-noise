@@ -573,6 +573,13 @@ namespace {
         }
     };
     
+    class SubmittingIncorrectResponse : public UseCase {
+    public:
+        void run(RecognitionTestModel &m) override {
+            m.submitIncorrectResponse();
+        }
+    };
+    
     class InitializingTest : public ConditionUseCase {
         Test test_;
         TrackingRule targetLevelRule_;
@@ -700,6 +707,7 @@ namespace {
         PlayingCalibration playingCalibration;
         SubmittingCoordinateResponse submittingCoordinateResponse;
         SubmittingCorrectResponse submittingCorrectResponse;
+        SubmittingIncorrectResponse submittingIncorrectResponse;
         std::vector<std::shared_ptr<TargetListStub>> targetLists;
         std::vector<std::shared_ptr<TrackStub>> snrTracks;
         
@@ -1235,7 +1243,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestPassesNextTargetToTargetPlayer
     ) {
-        targetList(1)->setNext("a");
+        setTargetListNext(1, "a");
         initializeTestWithStartingList(1);
         assertTargetFilePathEquals("a");
     }
@@ -1252,6 +1260,13 @@ namespace {
         submitCorrectResponseLoadsNextTarget
     ) {
         assertNextTargetPassedToPlayer(submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitIncorrectResponseLoadsNextTarget
+    ) {
+        assertNextTargetPassedToPlayer(submittingIncorrectResponse);
     }
 
     TEST_F(

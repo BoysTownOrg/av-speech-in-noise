@@ -85,6 +85,10 @@ namespace {
 
         }
         
+        void submitIncorrectResponse() override {
+            
+        }
+        
         auto trialPlayed() const {
             return trialPlayed_;
         }
@@ -1021,6 +1025,7 @@ namespace {
         std::vector<std::string> audioDevices() override { return {}; }
         void subscribe(EventListener *) override {}
         void submitCorrectResponse() override {}
+        void submitIncorrectResponse() override {}
     };
 
     class PresenterFailureTests : public ::testing::Test {

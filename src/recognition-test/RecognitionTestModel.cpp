@@ -348,5 +348,9 @@ namespace av_speech_in_noise {
         removeCompleteTracks();
         prepareNextTrial();
     }
+    
+    void RecognitionTestModel::submitIncorrectResponse() {
+        prepareNextTrial();
+    }
 }
 

@@ -103,6 +103,7 @@ namespace av_speech_in_noise {
             const coordinate_response_measure::SubjectResponse &
         ) = 0;
         virtual void submitCorrectResponse() = 0;
+        virtual void submitIncorrectResponse() = 0;
         virtual bool testComplete() = 0;
         virtual std::vector<std::string> audioDevices() = 0;
     };
