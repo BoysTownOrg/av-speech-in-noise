@@ -75,14 +75,13 @@ namespace av_coordinate_response_measure {
     }
     
     void RecognitionTestModel::prepareSnrTracks(const Test &p) {
-        Track::Settings s;
-        s.rule = p.targetLevelRule;
-        s.startingX = p.startingSnr_dB;
-        
         targetListsWithTracks.clear();
-        for (size_t i = 0; i < lists.size(); ++i) {
+        for (auto list : lists) {
+            Track::Settings s;
+            s.rule = p.targetLevelRule;
+            s.startingX = p.startingSnr_dB;
             targetListsWithTracks.push_back({
-                lists.at(i),
+                list.get(),
                 snrTrackFactory->make(s)
             });
         }
@@ -146,7 +145,7 @@ namespace av_coordinate_response_measure {
         size_t n = randomizer->randomIntBetween(0, listCount - 1);
         if (n < targetListsWithTracks.size()) {
             currentSnrTrack = targetListsWithTracks.at(n).track.get();
-            currentTargetList = targetListsWithTracks.at(n).list.get();
+            currentTargetList = targetListsWithTracks.at(n).list;
         }
     }
     

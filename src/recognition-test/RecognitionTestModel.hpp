@@ -3,6 +3,7 @@
 
 #include <av-coordinate-response-measure/Model.h>
 #include <vector>
+#include <memory>
 
 namespace av_coordinate_response_measure {
     class InvalidAudioDevice {};
@@ -126,7 +127,7 @@ namespace av_coordinate_response_measure {
         public MaskerPlayer::EventListener
     {
         struct TargetListWithTrack {
-            std::shared_ptr<TargetList> list;
+            TargetList *list;
             std::shared_ptr<Track> track;
         };
         
