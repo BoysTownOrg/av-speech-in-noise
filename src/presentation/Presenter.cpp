@@ -1,4 +1,5 @@
 #include "Presenter.h"
+#include <sstream>
 
 namespace av_coordinate_response_measure {
     int Presenter::fullScaleLevel_dB_SPL = 119;
@@ -177,7 +178,12 @@ namespace av_coordinate_response_measure {
             return std::stoi(x);
         }
         catch (const std::invalid_argument &) {
-            throw BadInput{"'" + x + "' is not a valid " + identifier + "."};
+            std::stringstream stream;
+            stream << '\'' << std::move(x) << '\'';
+            stream << " is not a valid ";
+            stream << std::move(identifier);
+            stream << '.';
+            throw BadInput{stream.str()};
         }
     }
     

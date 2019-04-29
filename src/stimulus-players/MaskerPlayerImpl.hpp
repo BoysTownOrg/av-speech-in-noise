@@ -76,7 +76,7 @@ namespace stimulus_players {
         
         class AudioThread {
         public:
-            AudioThread(AudioPlayer *);
+            explicit AudioThread(AudioPlayer *);
             void setSharedAtomics(MaskerPlayerImpl *);
             void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
         private:

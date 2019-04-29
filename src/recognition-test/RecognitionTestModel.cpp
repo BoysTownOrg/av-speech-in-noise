@@ -12,7 +12,7 @@ namespace av_coordinate_response_measure {
     };
     
     class NullTargetList : public TargetList {
-        void loadFromDirectory(std::string directory) override {}
+        void loadFromDirectory(std::string) override {}
         std::string next() override { return {}; }
         std::string current() override { return {}; }
     };

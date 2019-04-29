@@ -8,7 +8,7 @@ namespace av_coordinate_response_measure {
         public:
             template<typename T>
             void writeLabeledLine(std::string label, T thing) {
-                stream << label;
+                stream << std::move(label);
                 stream << ": ";
                 stream << thing;
                 stream << '\n';

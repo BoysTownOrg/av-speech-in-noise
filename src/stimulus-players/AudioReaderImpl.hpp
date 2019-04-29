@@ -27,7 +27,7 @@ namespace stimulus_players {
     class AudioReaderImpl : public AudioReader {
         BufferedAudioReader *reader;
     public:
-        AudioReaderImpl(BufferedAudioReader *);
+        explicit AudioReaderImpl(BufferedAudioReader *);
         std::vector<std::vector<float>> read(std::string filePath) override;
     private:
         void loadFile(std::string filePath);

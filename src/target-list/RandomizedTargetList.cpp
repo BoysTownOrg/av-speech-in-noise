@@ -44,7 +44,7 @@ namespace target_list {
     }
     
     std::string RandomizedTargetList::fullPath(std::string file) {
-        return directory_ + "/" + file;
+        return directory_ + "/" + std::move(file);
     }
     
     std::string RandomizedTargetList::current() {

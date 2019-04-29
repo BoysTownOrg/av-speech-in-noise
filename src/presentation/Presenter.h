@@ -76,7 +76,7 @@ namespace av_coordinate_response_measure {
     public:
         class TestSetup : public View::TestSetup::EventListener {
         public:
-            TestSetup(View::TestSetup *);
+            explicit TestSetup(View::TestSetup *);
             void playCalibration() override;
             void browseForTargetList() override;
             void browseForMasker() override;
@@ -103,7 +103,7 @@ namespace av_coordinate_response_measure {
         
         class Subject : public View::Subject::EventListener {
         public:
-            Subject(View::Subject *);
+            explicit Subject(View::Subject *);
             void playTrial() override;
             void submitResponse() override;
             void becomeChild(Presenter *parent);
