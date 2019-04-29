@@ -1339,6 +1339,13 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitIncorrectResponseSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         targetPlayer.setDurationSeconds(1);
