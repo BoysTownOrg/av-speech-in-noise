@@ -311,6 +311,18 @@ namespace {
             std::string method() override {
                 return method_;
             }
+            
+            void browseForMasker() {
+                listener_->browseForMasker();
+            }
+            
+            void browseForTargetList() {
+                listener_->browseForTargetList();
+            }
+            
+            void browseForCalibration() {
+                listener_->browseForCalibration();
+            }
         };
         
         class SubjectViewStub : public Subject {
@@ -458,9 +470,7 @@ namespace {
     class TestSetupUseCase {
     public:
         virtual ~TestSetupUseCase() = default;
-        virtual void run(
-            View::TestSetup::EventListener &
-        ) = 0;
+        virtual void run(ViewStub::TestSetupViewStub &) = 0;
     };
 
     class BrowsingUseCase : public TestSetupUseCase {
@@ -489,7 +499,7 @@ namespace {
         }
         
         void run(
-            View::TestSetup::EventListener &listener
+            ViewStub::TestSetupViewStub &listener
         ) override {
             listener.browseForMasker();
         }
@@ -498,7 +508,7 @@ namespace {
     class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
     public:
         void run(
-            View::TestSetup::EventListener &listener
+            ViewStub::TestSetupViewStub &listener
         ) override {
             listener.browseForTargetList();
         }
@@ -531,7 +541,7 @@ namespace {
         }
         
         void run(
-            View::TestSetup::EventListener &listener
+            ViewStub::TestSetupViewStub &listener
         ) override {
             listener.browseForCalibration();
         }
@@ -544,7 +554,7 @@ namespace {
     
     class ConfirmingTestSetup : public ConditionUseCase {
         void run(
-            View::TestSetup::EventListener &listener
+            ViewStub::TestSetupViewStub &listener
         ) override {
             listener.confirmTestSetup();
         }
@@ -556,7 +566,7 @@ namespace {
     
     class PlayingCalibration : public ConditionUseCase {
         void run(
-            View::TestSetup::EventListener &listener
+            ViewStub::TestSetupViewStub &listener
         ) override {
             listener.playCalibration();
         }
@@ -590,11 +600,11 @@ namespace {
 
     class PresenterTests : public ::testing::Test {
     protected:
-        ModelStub model{};
-        ViewStub view{};
-        ViewStub::TestSetupViewStub setupView{};
-        ViewStub::SubjectViewStub subjectView{};
-        ViewStub::ExperimenterViewStub experimenterView{};
+        ModelStub model;
+        ViewStub view;
+        ViewStub::TestSetupViewStub setupView;
+        ViewStub::SubjectViewStub subjectView;
+        ViewStub::ExperimenterViewStub experimenterView;
         Presenter::TestSetup testSetup{&setupView};
         Presenter::Experimenter experimenter{&experimenterView};
         Presenter::Subject subject{&subjectView};
@@ -605,11 +615,11 @@ namespace {
             &subject,
             &experimenter
         };
-        BrowsingForTargetList browsingForTargetList{};
-        BrowsingForMasker browsingForMasker{};
-        BrowsingForCalibration browsingForCalibration{};
-        ConfirmingTestSetup confirmingTestSetup{};
-        PlayingCalibration playingCalibration{};
+        BrowsingForTargetList browsingForTargetList;
+        BrowsingForMasker browsingForMasker;
+        BrowsingForCalibration browsingForCalibration;
+        ConfirmingTestSetup confirmingTestSetup;
+        PlayingCalibration playingCalibration;
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
@@ -700,7 +710,7 @@ namespace {
         }
 
         void run(TestSetupUseCase &useCase) {
-            useCase.run(testSetup);
+            useCase.run(setupView);
         }
         
         void assertEntryEquals(
@@ -1040,7 +1050,7 @@ namespace {
         assertNextTrialButtonHiddenForExperimenter();
     }
 
-    TEST_F(PresenterTests, playingTrialPassesAudioDevice) {
+    TEST_F(PresenterTests, playingTrialFromSubjectPassesAudioDevice) {
         setAudioDevice("a");
         playTrialFromSubject();
         assertEqual("a", model.trialParameters().audioDevice);
