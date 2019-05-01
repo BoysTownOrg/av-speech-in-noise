@@ -13,12 +13,14 @@ namespace av_speech_in_noise {
         Model *model,
         View *view,
         TestSetup *testSetup,
-        Subject *subject
+        Subject *subject,
+        Experimenter *experimenter
     ) :
         model{model},
         view{view},
         testSetup{testSetup},
-        subject{subject}
+        subject{subject},
+        experimenter{experimenter}
     {
         model->subscribe(this);
         testSetup->becomeChild(this);
@@ -50,6 +52,7 @@ namespace av_speech_in_noise {
     
     void Presenter::showNextTrialButton() {
         subject->showNextTrialButton();
+        experimenter->showNextTrialButton();
     }
     
     void Presenter::showErrorMessage(std::string e) {
@@ -299,5 +302,15 @@ namespace av_speech_in_noise {
             return coordinate_response_measure::Color::white;
         else
             return coordinate_response_measure::Color::red;
+    }
+
+    Presenter::Experimenter::Experimenter(View::Experimenter *view) :
+        view{view}
+    {
+        ;
+    }
+    
+    void Presenter::Experimenter::showNextTrialButton() {
+        view->showNextTrialButton();
     }
 }

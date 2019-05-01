@@ -63,6 +63,17 @@ namespace av_speech_in_noise {
             virtual void populateConditionMenu(std::vector<std::string> items) = 0;
         };
         
+        class Experimenter {
+        public:
+            class EventListener {
+            public:
+                virtual ~EventListener() = default;
+            };
+            
+            virtual ~Experimenter() = default;
+            virtual void showNextTrialButton() = 0;
+        };
+        
         virtual void eventLoop() = 0;
         virtual std::string browseForDirectory() = 0;
         virtual std::string browseForOpeningFile() = 0;
@@ -119,11 +130,19 @@ namespace av_speech_in_noise {
             Presenter *parent;
         };
         
+        class Experimenter : public View::Experimenter::EventListener {
+            View::Experimenter *view;
+        public:
+            explicit Experimenter(View::Experimenter *);
+            void showNextTrialButton();
+        };
+        
         Presenter(
             Model *,
             View *,
             TestSetup *,
-            Subject *
+            Subject *,
+            Experimenter *
         );
         void trialComplete() override;
         void run();
@@ -158,6 +177,7 @@ namespace av_speech_in_noise {
         View *view;
         TestSetup *testSetup;
         Subject *subject;
+        Experimenter *experimenter;
     };
 }
 

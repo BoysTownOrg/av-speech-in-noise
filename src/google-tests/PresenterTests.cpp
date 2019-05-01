@@ -181,6 +181,7 @@ namespace {
             std::string testerId_{};
             std::string session_{};
             std::string calibrationFilePath_{};
+            std::string method_{};
             EventListener *listener_{};
             bool shown_{};
             bool hidden_{};
@@ -235,6 +236,10 @@ namespace {
             
             void setStartingSnr(std::string s) {
                 startingSnr_ = std::move(s);
+            }
+            
+            void setMethod(std::string s) {
+                method_ = std::move(s);
             }
             
             void setCalibrationLevel(std::string s) {
@@ -394,6 +399,18 @@ namespace {
                 listener_->playTrial();
             }
         };
+        
+        class ExperimenterViewStub : public Experimenter {
+            bool nextTrialButtonShown_{};
+        public:
+            auto nextTrialButtonShown() const {
+                return nextTrialButtonShown_;
+            }
+            
+            void showNextTrialButton() override {
+                nextTrialButtonShown_ = true;
+            }
+        };
     };
     
     class TestSetupUseCase {
@@ -512,12 +529,14 @@ namespace {
         ModelStub model{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::SubjectViewStub subjectView{};
+        ViewStub::ExperimenterViewStub experimenterView{};
         ViewStub view{};
         av_speech_in_noise::Presenter::TestSetup testSetup{&setupView};
         av_speech_in_noise::Presenter::Subject subject{&subjectView};
+        av_speech_in_noise::Presenter::Experimenter experimenter{&experimenterView};
         
         av_speech_in_noise::Presenter construct() {
-            return {&model, &view, &testSetup, &subject};
+            return {&model, &view, &testSetup, &subject, &experimenter};
         }
     };
     
@@ -533,13 +552,16 @@ namespace {
         ViewStub view{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::SubjectViewStub subjectView{};
+        ViewStub::ExperimenterViewStub experimenterView{};
         av_speech_in_noise::Presenter::TestSetup testSetup{&setupView};
+        av_speech_in_noise::Presenter::Experimenter experimenter{&experimenterView};
         av_speech_in_noise::Presenter::Subject subject{&subjectView};
         av_speech_in_noise::Presenter presenter{
             &model,
             &view,
             &testSetup,
-            &subject
+            &subject,
+            &experimenter
         };
         BrowsingForTargetList browsingForTargetList{};
         BrowsingForMasker browsingForMasker{};
@@ -658,6 +680,10 @@ namespace {
             return subjectView.nextTrialButtonShown();
         }
         
+        void assertNextTrialButtonShown_2() {
+            EXPECT_TRUE(experimenterView.nextTrialButtonShown());
+        }
+        
         void assertNextTrialButtonNotShown() {
             EXPECT_FALSE(nextTrialButtonShown());
         }
@@ -756,6 +782,10 @@ namespace {
         
         void setTestComplete() {
             model.setTestComplete();
+        }
+        
+        void setAdaptiveOpenSet() {
+            setupView.setMethod("Adaptive open-set");
         }
     };
 
@@ -871,6 +901,12 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupShowsNextTrialButton) {
         confirmTestSetup();
         assertNextTrialButtonShown();
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupShowsNextTrialButton_2) {
+        setAdaptiveOpenSet();
+        confirmTestSetup();
+        assertNextTrialButtonShown_2();
     }
 
     TEST_F(
@@ -1036,8 +1072,10 @@ namespace {
         ViewStub view{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::SubjectViewStub subjectView{};
+        ViewStub::ExperimenterViewStub experimenterView{};
         av_speech_in_noise::Presenter::TestSetup testSetup{&setupView};
         av_speech_in_noise::Presenter::Subject subject{&subjectView};
+        av_speech_in_noise::Presenter::Experimenter experimenter{&experimenterView};
         
         void useFailingModel(std::string s = {}) {
             failure.setErrorMessage(std::move(s));
@@ -1049,7 +1087,8 @@ namespace {
                 model,
                 &view,
                 &testSetup,
-                &subject
+                &subject,
+                &experimenter
             };
             setupView.confirmTestSetup();
         }
