@@ -404,6 +404,7 @@ namespace {
         
         class ExperimenterViewStub : public Experimenter {
             bool nextTrialButtonShown_{};
+            bool shown_{};
         public:
             auto nextTrialButtonShown() const {
                 return nextTrialButtonShown_;
@@ -411,6 +412,14 @@ namespace {
             
             void showNextTrialButton() override {
                 nextTrialButtonShown_ = true;
+            }
+            
+            auto shown() const {
+                return shown_;
+            }
+            
+            void show() override {
+                shown_ = true;
             }
         };
     };
@@ -623,6 +632,10 @@ namespace {
         void assertSetupViewNotHidden() {
             EXPECT_FALSE(setupViewHidden());
         }
+        
+        void assertExperimenterViewShown() {
+            EXPECT_TRUE(experimenterView.shown());
+        }
 
         void assertBrowseResultPassedToEntry(
             BrowsingEnteredPathUseCase &useCase
@@ -808,6 +821,11 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupHidesTestSetupView) {
         confirmTestSetup();
         assertSetupViewHidden();
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupShowsExperimenterView) {
+        confirmTestSetup();
+        assertExperimenterViewShown();
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {

@@ -43,6 +43,7 @@ namespace av_speech_in_noise {
     void Presenter::initializeTest_() {
         model->initializeTest(testSetup->testParameters());
         hideTestSetup();
+        experimenter->show();
         showNextTrialButton();
     }
     
@@ -312,5 +313,9 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::showNextTrialButton() {
         view->showNextTrialButton();
+    }
+    
+    void Presenter::Experimenter::show() { 
+        view->show();
     }
 }

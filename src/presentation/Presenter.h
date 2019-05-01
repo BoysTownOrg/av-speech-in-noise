@@ -72,6 +72,7 @@ namespace av_speech_in_noise {
             
             virtual ~Experimenter() = default;
             virtual void showNextTrialButton() = 0;
+            virtual void show() = 0;
         };
         
         virtual void eventLoop() = 0;
@@ -135,6 +136,7 @@ namespace av_speech_in_noise {
         public:
             explicit Experimenter(View::Experimenter *);
             void showNextTrialButton();
+            void show();
         };
         
         Presenter(
