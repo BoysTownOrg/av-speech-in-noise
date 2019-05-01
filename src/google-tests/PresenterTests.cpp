@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 
 namespace {
+    using namespace av_speech_in_noise;
+    
     template<typename T>
     class Collection {
         std::vector<T> items{};
@@ -14,11 +16,11 @@ namespace {
         }
     };
     
-    class ModelStub : public av_speech_in_noise::Model {
-        av_speech_in_noise::Test testParameters_{};
-        av_speech_in_noise::Calibration calibrationParameters_{};
-        av_speech_in_noise::AudioSettings trialParameters_{};
-        av_speech_in_noise::coordinate_response_measure::SubjectResponse responseParameters_{};
+    class ModelStub : public Model {
+        Test testParameters_{};
+        Calibration calibrationParameters_{};
+        AudioSettings trialParameters_{};
+        coordinate_response_measure::SubjectResponse responseParameters_{};
         std::vector<std::string> audioDevices_{};
         EventListener *listener_{};
         bool testComplete_{};
@@ -49,14 +51,14 @@ namespace {
         }
         
         void playTrial(
-            const av_speech_in_noise::AudioSettings &p
+            const AudioSettings &p
         ) override {
             trialParameters_ = p;
             trialPlayed_ = true;
         }
         
         void initializeTest(
-            const av_speech_in_noise::Test &p
+            const Test &p
         ) override {
             testParameters_ = p;
         }
@@ -66,7 +68,7 @@ namespace {
         }
         
         void submitResponse(
-            const av_speech_in_noise::coordinate_response_measure::SubjectResponse &p
+            const coordinate_response_measure::SubjectResponse &p
         ) override {
             responseParameters_ = p;
         }
@@ -76,7 +78,7 @@ namespace {
         }
         
         void playCalibration(
-            const av_speech_in_noise::Calibration &p
+            const Calibration &p
         ) override {
             calibrationParameters_ = p;
         }
@@ -102,7 +104,7 @@ namespace {
         }
     };
 
-    class ViewStub : public av_speech_in_noise::View {
+    class ViewStub : public View {
         std::vector<std::string> audioDevices_{};
         std::string errorMessage_{};
         std::string browseForDirectoryResult_{};
@@ -417,7 +419,7 @@ namespace {
     public:
         virtual ~TestSetupUseCase() = default;
         virtual void run(
-            av_speech_in_noise::View::TestSetup::EventListener &
+            View::TestSetup::EventListener &
         ) = 0;
     };
 
@@ -447,7 +449,7 @@ namespace {
         }
         
         void run(
-            av_speech_in_noise::View::TestSetup::EventListener &listener
+            View::TestSetup::EventListener &listener
         ) override {
             listener.browseForMasker();
         }
@@ -456,7 +458,7 @@ namespace {
     class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
     public:
         void run(
-            av_speech_in_noise::View::TestSetup::EventListener &listener
+            View::TestSetup::EventListener &listener
         ) override {
             listener.browseForTargetList();
         }
@@ -489,7 +491,7 @@ namespace {
         }
         
         void run(
-            av_speech_in_noise::View::TestSetup::EventListener &listener
+            View::TestSetup::EventListener &listener
         ) override {
             listener.browseForCalibration();
         }
@@ -497,29 +499,29 @@ namespace {
 
     class ConditionUseCase : public TestSetupUseCase {
     public:
-        virtual av_speech_in_noise::Condition condition(ModelStub &) = 0;
+        virtual Condition condition(ModelStub &) = 0;
     };
     
     class ConfirmingTestSetup : public ConditionUseCase {
         void run(
-            av_speech_in_noise::View::TestSetup::EventListener &listener
+            View::TestSetup::EventListener &listener
         ) override {
             listener.confirmTestSetup();
         }
         
-        av_speech_in_noise::Condition condition(ModelStub &m) override {
+        Condition condition(ModelStub &m) override {
             return m.testParameters().condition;
         }
     };
     
     class PlayingCalibration : public ConditionUseCase {
         void run(
-            av_speech_in_noise::View::TestSetup::EventListener &listener
+            View::TestSetup::EventListener &listener
         ) override {
             listener.playCalibration();
         }
         
-        av_speech_in_noise::Condition condition(ModelStub &m) override {
+        Condition condition(ModelStub &m) override {
             return m.calibrationParameters().condition;
         }
     };
@@ -531,11 +533,11 @@ namespace {
         ViewStub::SubjectViewStub subjectView{};
         ViewStub::ExperimenterViewStub experimenterView{};
         ViewStub view{};
-        av_speech_in_noise::Presenter::TestSetup testSetup{&setupView};
-        av_speech_in_noise::Presenter::Subject subject{&subjectView};
-        av_speech_in_noise::Presenter::Experimenter experimenter{&experimenterView};
+        Presenter::TestSetup testSetup{&setupView};
+        Presenter::Subject subject{&subjectView};
+        Presenter::Experimenter experimenter{&experimenterView};
         
-        av_speech_in_noise::Presenter construct() {
+        Presenter construct() {
             return {&model, &view, &testSetup, &subject, &experimenter};
         }
     };
@@ -553,10 +555,10 @@ namespace {
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::SubjectViewStub subjectView{};
         ViewStub::ExperimenterViewStub experimenterView{};
-        av_speech_in_noise::Presenter::TestSetup testSetup{&setupView};
-        av_speech_in_noise::Presenter::Experimenter experimenter{&experimenterView};
-        av_speech_in_noise::Presenter::Subject subject{&subjectView};
-        av_speech_in_noise::Presenter presenter{
+        Presenter::TestSetup testSetup{&setupView};
+        Presenter::Experimenter experimenter{&experimenterView};
+        Presenter::Subject subject{&subjectView};
+        Presenter presenter{
             &model,
             &view,
             &testSetup,
@@ -571,13 +573,13 @@ namespace {
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
-                av_speech_in_noise::Condition::auditoryOnly
+                Condition::auditoryOnly
             );
         }
         
         std::string audioVisualConditionName() {
             return conditionName(
-                av_speech_in_noise::Condition::audioVisual
+                Condition::audioVisual
             );
         }
         
@@ -708,7 +710,7 @@ namespace {
             return view.errorMessage();
         }
         
-        void assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color c) {
+        void assertModelPassedCondition(coordinate_response_measure::Color c) {
             EXPECT_EQ(c, model.responseParameters().color);
         }
         
@@ -716,7 +718,7 @@ namespace {
             return model.testParameters();
         }
         
-        const av_speech_in_noise::Calibration &
+        const Calibration &
             modelCalibrationParameters()
         {
             return model.calibrationParameters();
@@ -758,12 +760,12 @@ namespace {
             setCondition(audioVisualConditionName());
             run(useCase);
             EXPECT_EQ(
-                av_speech_in_noise::Condition::audioVisual,
+                Condition::audioVisual,
                 modelCondition(useCase)
             );
         }
         
-        av_speech_in_noise::Condition modelCondition(ConditionUseCase &useCase) {
+        Condition modelCondition(ConditionUseCase &useCase) {
             return useCase.condition(model);
         }
         
@@ -771,7 +773,7 @@ namespace {
             setCondition(auditoryOnlyConditionName());
             run(useCase);
             EXPECT_EQ(
-                av_speech_in_noise::Condition::auditoryOnly,
+                Condition::auditoryOnly,
                 modelCondition(useCase)
             );
         }
@@ -861,7 +863,7 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupPassesFullScaleLevel) {
         confirmTestSetup();
         EXPECT_EQ(
-            av_speech_in_noise::Presenter::fullScaleLevel_dB_SPL,
+            Presenter::fullScaleLevel_dB_SPL,
             modelTestParameters().fullScaleLevel_dB_SPL
         );
     }
@@ -869,7 +871,7 @@ namespace {
     TEST_F(PresenterTests, playCalibrationPassesFullScaleLevel) {
         playCalibration();
         EXPECT_EQ(
-            av_speech_in_noise::Presenter::fullScaleLevel_dB_SPL,
+            Presenter::fullScaleLevel_dB_SPL,
             modelCalibrationParameters().fullScaleLevel_dB_SPL
         );
     }
@@ -877,7 +879,7 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRule) {
         confirmTestSetup();
         EXPECT_EQ(
-            &av_speech_in_noise::Presenter::targetLevelRule,
+            &Presenter::targetLevelRule,
             modelTestParameters().targetLevelRule
         );
     }
@@ -951,25 +953,25 @@ namespace {
     TEST_F(PresenterTests, subjectResponsePassesGreenColor) {
         subjectView.setGreenResponse();
         submitResponse();
-        assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color::green);
+        assertModelPassedCondition(coordinate_response_measure::Color::green);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesRedColor) {
         subjectView.setRedResponse();
         submitResponse();
-        assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color::red);
+        assertModelPassedCondition(coordinate_response_measure::Color::red);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesBlueColor) {
         subjectView.setBlueResponse();
         submitResponse();
-        assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color::blue);
+        assertModelPassedCondition(coordinate_response_measure::Color::blue);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesWhiteColor) {
         subjectView.setGrayResponse();
         submitResponse();
-        assertModelPassedCondition(av_speech_in_noise::coordinate_response_measure::Color::white);
+        assertModelPassedCondition(coordinate_response_measure::Color::white);
     }
 
     TEST_F(PresenterTests, submitResponseShowsSetupViewWhenTestComplete) {
@@ -1034,26 +1036,26 @@ namespace {
         assertSetupViewNotHidden();
     }
 
-    class RequestFailingModel : public av_speech_in_noise::Model {
+    class RequestFailingModel : public Model {
         std::string errorMessage{};
     public:
         void setErrorMessage(std::string s) {
             errorMessage = std::move(s);
         }
         
-        void initializeTest(const av_speech_in_noise::Test &) override {
+        void initializeTest(const Test &) override {
             throw RequestFailure{errorMessage};
         }
         
-        void playTrial(const av_speech_in_noise::AudioSettings &) override {
+        void playTrial(const AudioSettings &) override {
             throw RequestFailure{errorMessage};
         }
         
-        void submitResponse(const av_speech_in_noise::coordinate_response_measure::SubjectResponse &) override {
+        void submitResponse(const coordinate_response_measure::SubjectResponse &) override {
             throw RequestFailure{errorMessage};
         }
         
-        void playCalibration(const av_speech_in_noise::Calibration &) override {
+        void playCalibration(const Calibration &) override {
             throw RequestFailure{errorMessage};
         }
         
@@ -1068,14 +1070,14 @@ namespace {
     protected:
         RequestFailingModel failure{};
         ModelStub defaultModel{};
-        av_speech_in_noise::Model *model{&defaultModel};
+        Model *model{&defaultModel};
         ViewStub view{};
         ViewStub::TestSetupViewStub setupView{};
         ViewStub::SubjectViewStub subjectView{};
         ViewStub::ExperimenterViewStub experimenterView{};
-        av_speech_in_noise::Presenter::TestSetup testSetup{&setupView};
-        av_speech_in_noise::Presenter::Subject subject{&subjectView};
-        av_speech_in_noise::Presenter::Experimenter experimenter{&experimenterView};
+        Presenter::TestSetup testSetup{&setupView};
+        Presenter::Subject subject{&subjectView};
+        Presenter::Experimenter experimenter{&experimenterView};
         
         void useFailingModel(std::string s = {}) {
             failure.setErrorMessage(std::move(s));
@@ -1083,7 +1085,7 @@ namespace {
         }
         
         void confirmTestSetup() {
-            av_speech_in_noise::Presenter presenter{
+            Presenter presenter{
                 model,
                 &view,
                 &testSetup,
