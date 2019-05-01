@@ -497,6 +497,17 @@ namespace {
         }
     };
     
+    class SubmittingPassedTrial : public YetAnotherUseCase {
+        ViewStub::ExperimenterViewStub *view;
+    public:
+        explicit SubmittingPassedTrial(ViewStub::ExperimenterViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->submitPassedTrial();
+        }
+    };
+    
     class OtherUseCase {
     public:
         virtual ~OtherUseCase() = default;
@@ -708,6 +719,7 @@ namespace {
         PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
         PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView};
         RespondingFromSubject respondingFromSubject{&subjectView};
+        SubmittingPassedTrial submittingPassedTrial{&experimenterView};
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
@@ -1215,9 +1227,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
-        setTestComplete();
-        submitPassedTrial();
-        assertSetupViewShown();
+        assertCompleteTestShowsSetupView(submittingPassedTrial);
     }
 
     TEST_F(PresenterTests, respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
