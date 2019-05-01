@@ -255,7 +255,7 @@ namespace av_speech_in_noise {
     }
     
     bool Presenter::TestSetup::adaptiveClosedSet() { 
-        return view->method() == "Adaptive closed-set";
+        return view->method() == methodName(Method::adaptiveClosedSet);
     }
 
 

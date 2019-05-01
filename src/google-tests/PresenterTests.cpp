@@ -821,11 +821,11 @@ namespace {
         }
         
         void setAdaptiveOpenSet() {
-            setupView.setMethod("Adaptive open-set");
+            setupView.setMethod(methodName(Method::adaptiveOpenSet));
         }
         
         void setAdaptiveClosedSet() {
-            setupView.setMethod("Adaptive closed-set");
+            setupView.setMethod(methodName(Method::adaptiveClosedSet));
         }
     };
 

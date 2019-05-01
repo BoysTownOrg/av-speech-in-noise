@@ -85,6 +85,21 @@ namespace av_speech_in_noise {
         virtual bool browseCancelled() = 0;
         virtual void showErrorMessage(std::string) = 0;
     };
+    
+    
+    enum class Method {
+        adaptiveOpenSet,
+        adaptiveClosedSet
+    };
+    
+    constexpr const char *methodName(Method c) {
+        switch (c) {
+        case Method::adaptiveOpenSet:
+            return "adaptive open-set";
+        case Method::adaptiveClosedSet:
+            return "adaptive closed-set";
+        }
+    }
 
     class Presenter : public Model::EventListener {
     public:
