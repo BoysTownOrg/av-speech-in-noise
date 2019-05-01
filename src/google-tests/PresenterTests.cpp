@@ -1020,12 +1020,12 @@ namespace {
         assertInvalidCalibrationLevelShowsErrorMessage(playingCalibration);
     }
 
-    TEST_F(PresenterTests, playingTrialPlaysTrial) {
+    TEST_F(PresenterTests, playingTrialFromSubjectPlaysTrial) {
         playTrialFromSubject();
         EXPECT_TRUE(model.trialPlayed());
     }
 
-    TEST_F(PresenterTests, playingTrialPlaysTrial_2) {
+    TEST_F(PresenterTests, playingTrialFromExperimenterPlaysTrial) {
         playTrialFromExperimenter();
         EXPECT_TRUE(model.trialPlayed());
     }
