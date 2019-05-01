@@ -832,9 +832,7 @@ namespace {
             assertEqual(std::move(s), entry(useCase));
         }
         
-        std::string entry(
-            BrowsingEnteredPathUseCase &useCase
-        ) {
+        std::string entry(BrowsingEnteredPathUseCase &useCase) {
             return useCase.entry(setupView);
         }
 
@@ -998,6 +996,11 @@ namespace {
             setTestComplete();
             run(useCase);
             assertSetupViewShown();
+        }
+        
+        void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
+            run(useCase);
+            assertSetupViewNotShown();
         }
     };
 
@@ -1227,13 +1230,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
-        respondFromSubject();
-        assertSetupViewNotShown();
+        assertIncompleteTestDoesNotShowSetupView(respondingFromSubject);
     }
 
     TEST_F(PresenterTests, submitPassedTrialDoesNotShowSetupViewWhenTestIncomplete) {
-        submitPassedTrial();
-        assertSetupViewNotShown();
+        assertIncompleteTestDoesNotShowSetupView(submittingPassedTrial);
     }
 
     TEST_F(PresenterTests, respondFromSubjectHidesExperimenterViewWhenTestComplete) {
