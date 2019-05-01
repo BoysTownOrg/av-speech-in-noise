@@ -732,6 +732,10 @@ namespace {
             return setupView.shown();
         }
         
+        void assertSetupViewNotShown() {
+            EXPECT_FALSE(setupViewShown());
+        }
+        
         void assertSetupViewHidden() {
             EXPECT_TRUE(setupViewHidden());
         }
@@ -1174,6 +1178,11 @@ namespace {
         setTestComplete();
         respondFromSubject();
         assertSetupViewShown();
+    }
+
+    TEST_F(PresenterTests, respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
+        respondFromSubject();
+        assertSetupViewNotShown();
     }
 
     TEST_F(PresenterTests, respondFromSubjectHidesExperimenterViewWhenTestComplete) {
