@@ -674,20 +674,20 @@ namespace {
             EXPECT_TRUE(subjectView.responseButtonsShown());
         }
         
-        void assertNextTrialButtonShown() {
-            EXPECT_TRUE(nextTrialButtonShown());
+        void assertNextTrialButtonShownForSubject() {
+            EXPECT_TRUE(nextTrialButtonShownForSubject());
         }
         
-        bool nextTrialButtonShown() {
+        bool nextTrialButtonShownForSubject() {
             return subjectView.nextTrialButtonShown();
         }
         
-        void assertNextTrialButtonShown_2() {
+        void assertNextTrialButtonShownForExperimenter() {
             EXPECT_TRUE(experimenterView.nextTrialButtonShown());
         }
         
         void assertNextTrialButtonNotShown() {
-            EXPECT_FALSE(nextTrialButtonShown());
+            EXPECT_FALSE(nextTrialButtonShownForSubject());
         }
         
         void assertResponseButtonsHidden() {
@@ -902,13 +902,13 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupShowsNextTrialButton) {
         confirmTestSetup();
-        assertNextTrialButtonShown();
+        assertNextTrialButtonShownForSubject();
     }
 
     TEST_F(PresenterTests, confirmTestSetupShowsNextTrialButton_2) {
         setAdaptiveOpenSet();
         confirmTestSetup();
-        assertNextTrialButtonShown_2();
+        assertNextTrialButtonShownForExperimenter();
     }
 
     TEST_F(
@@ -982,7 +982,7 @@ namespace {
 
     TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
         submitResponse();
-        assertNextTrialButtonShown();
+        assertNextTrialButtonShownForSubject();
     }
 
     TEST_F(PresenterTests, subjectResponseDoesNotShowNextTrialButtonWhenTestComplete) {
