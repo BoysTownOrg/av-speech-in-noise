@@ -44,7 +44,8 @@ namespace av_speech_in_noise {
         model->initializeTest(testSetup->testParameters());
         hideTestSetup();
         experimenter->show();
-        subject->show();
+        if (testSetup->adaptiveClosedSet())
+            subject->show();
         showNextTrialButton();
     }
     
@@ -251,6 +252,10 @@ namespace av_speech_in_noise {
     
     void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
         view->setCalibrationFilePath(std::move(s));
+    }
+    
+    bool Presenter::TestSetup::adaptiveClosedSet() { 
+        return view->method() == "Adaptive closed-set";
     }
 
 

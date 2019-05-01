@@ -307,6 +307,10 @@ namespace {
             void subscribe(EventListener *listener) override {
                 listener_ = listener;
             }
+            
+            std::string method() override {
+                return method_;
+            }
         };
         
         class SubjectViewStub : public Subject {
@@ -649,6 +653,10 @@ namespace {
         void assertSubjectViewShown() {
             EXPECT_TRUE(subjectView.shown());
         }
+        
+        void assertSubjectViewNotShown() {
+            EXPECT_FALSE(subjectView.shown());
+        }
 
         void assertBrowseResultPassedToEntry(
             BrowsingEnteredPathUseCase &useCase
@@ -848,6 +856,15 @@ namespace {
         setAdaptiveClosedSet();
         confirmTestSetup();
         assertSubjectViewShown();
+    }
+
+    TEST_F(
+        PresenterTests,
+        confirmTestSetupDoesNotShowSubjectViewWhenAdaptiveOpenSet
+    ) {
+        setAdaptiveOpenSet();
+        confirmTestSetup();
+        assertSubjectViewNotShown();
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {

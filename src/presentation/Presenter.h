@@ -58,6 +58,7 @@ namespace av_speech_in_noise {
             virtual std::string subjectId() = 0;
             virtual std::string condition() = 0;
             virtual std::string session() = 0;
+            virtual std::string method() = 0;
             virtual void setMasker(std::string) = 0;
             virtual void setTargetListDirectory(std::string) = 0;
             virtual void setCalibrationFilePath(std::string) = 0;
@@ -103,6 +104,7 @@ namespace av_speech_in_noise {
             void setCalibrationFilePath(std::string);
             Test testParameters();
             Calibration calibrationParameters();
+            bool adaptiveClosedSet();
         private:
             Condition readCondition();
             int readMaskerLevel();
