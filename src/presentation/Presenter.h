@@ -71,6 +71,7 @@ namespace av_speech_in_noise {
             public:
                 virtual ~EventListener() = default;
                 virtual void playTrial() = 0;
+                virtual void submitPassedTrial() = 0;
             };
             
             virtual ~Experimenter() = default;
@@ -161,6 +162,7 @@ namespace av_speech_in_noise {
             void showNextTrialButton();
             void show();
             void playTrial() override;
+            void submitPassedTrial() override;
         private:
             Presenter *parent;
         };
@@ -181,6 +183,7 @@ namespace av_speech_in_noise {
         void browseForCalibration();
         void confirmTestSetup();
         void playCalibration();
+        void submitPassedTrial();
         static int fullScaleLevel_dB_SPL;
         static TrackingRule targetLevelRule;
         

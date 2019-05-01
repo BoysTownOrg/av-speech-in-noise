@@ -146,6 +146,11 @@ namespace av_speech_in_noise {
         );
     }
     
+    void Presenter::submitPassedTrial() { 
+        showTestSetup();
+    }
+    
+    
 
     Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         view->populateConditionMenu({
@@ -338,5 +343,9 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::becomeChild(Presenter *p) {
         parent = p;
+    }
+    
+    void Presenter::Experimenter::submitPassedTrial() {
+        parent->submitPassedTrial();
     }
 }

@@ -464,6 +464,10 @@ namespace {
             auto nextTrialButtonHidden() const {
                 return nextTrialButtonHidden_;
             }
+            
+            void submitPassedTrial() {
+                listener_->submitPassedTrial();
+            }
         };
     };
     
@@ -692,6 +696,10 @@ namespace {
         
         void submitResponse() {
             subjectView.submitResponse();
+        }
+        
+        void submitPassedTrial() {
+            experimenterView.submitPassedTrial();
         }
         
         void confirmTestSetup() {
@@ -1152,6 +1160,12 @@ namespace {
     TEST_F(PresenterTests, submitResponseShowsSetupViewWhenTestComplete) {
         setTestComplete();
         submitResponse();
+        assertSetupViewShown();
+    }
+
+    TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
+        setTestComplete();
+        submitPassedTrial();
         assertSetupViewShown();
     }
 
