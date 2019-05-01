@@ -467,6 +467,34 @@ namespace {
         };
     };
     
+    class OtherUseCase {
+    public:
+        virtual ~OtherUseCase() = default;
+        virtual void run() = 0;
+    };
+    
+    class PlayingTrialFromSubject : public OtherUseCase {
+        ViewStub::SubjectViewStub *view;
+    public:
+        explicit PlayingTrialFromSubject(ViewStub::SubjectViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->playTrial();
+        }
+    };
+    
+    class PlayingTrialFromExperimenter : public OtherUseCase {
+        ViewStub::ExperimenterViewStub *view;
+    public:
+        explicit PlayingTrialFromExperimenter(ViewStub::ExperimenterViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->playTrial();
+        }
+    };
+    
     class TestSetupUseCase {
     public:
         virtual ~TestSetupUseCase() = default;
@@ -620,6 +648,8 @@ namespace {
         BrowsingForCalibration browsingForCalibration;
         ConfirmingTestSetup confirmingTestSetup;
         PlayingCalibration playingCalibration;
+        PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
+        PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView};
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
@@ -867,6 +897,12 @@ namespace {
         void setAdaptiveClosedSet() {
             setupView.setMethod(methodName(Method::adaptiveClosedSet));
         }
+        
+        void assertAudioDevicePassedToTrial(OtherUseCase &useCase) {
+            setAudioDevice("a");
+            useCase.run();
+            assertEqual("a", model.trialParameters().audioDevice);
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1051,15 +1087,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, playingTrialFromSubjectPassesAudioDevice) {
-        setAudioDevice("a");
-        playTrialFromSubject();
-        assertEqual("a", model.trialParameters().audioDevice);
+        assertAudioDevicePassedToTrial(playingTrialFromSubject);
     }
 
     TEST_F(PresenterTests, playingTrialFromExperimenterPassesAudioDevice) {
-        setAudioDevice("a");
-        playTrialFromExperimenter();
-        assertEqual("a", model.trialParameters().audioDevice);
+        assertAudioDevicePassedToTrial(playingTrialFromExperimenter);
     }
 
     TEST_F(PresenterTests, playCalibrationPassesAudioDevice) {
