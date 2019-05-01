@@ -1210,6 +1210,11 @@ namespace {
         assertSetupViewShown();
     }
 
+    TEST_F(PresenterTests, submitPassedTrialDoesNotShowSetupViewWhenTestIncomplete) {
+        submitPassedTrial();
+        assertSetupViewNotShown();
+    }
+
     TEST_F(PresenterTests, submitPassedTrialHidesExperimenterViewWhenTestComplete) {
         setTestComplete();
         submitPassedTrial();

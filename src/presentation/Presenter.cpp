@@ -148,9 +148,11 @@ namespace av_speech_in_noise {
         );
     }
     
-    void Presenter::submitPassedTrial() { 
-        showTestSetup();
-        experimenter->hide();
+    void Presenter::submitPassedTrial() {
+        if (model->testComplete()) {
+            showTestSetup();
+            experimenter->hide();
+        }
     }
     
     
