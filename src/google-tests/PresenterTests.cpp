@@ -974,7 +974,7 @@ namespace {
             assertEqual("a", model.trialParameters().audioDevice);
         }
         
-        void run(PlayingTrial &useCase) {
+        void run(UseCase &useCase) {
             useCase.run();
         }
         
@@ -998,10 +998,6 @@ namespace {
             setTestComplete();
             run(useCase);
             assertSetupViewShown();
-        }
-        
-        void run(TrialSubmission &useCase) {
-            useCase.run();
         }
     };
 
