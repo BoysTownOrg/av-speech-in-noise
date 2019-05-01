@@ -1188,6 +1188,12 @@ namespace {
         assertSetupViewShown();
     }
 
+    TEST_F(PresenterTests, submitPassedTrialHidesExperimenterViewWhenTestComplete) {
+        setTestComplete();
+        submitPassedTrial();
+        assertExperimenterViewHidden();
+    }
+
     TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
         respondFromSubject();
         assertNextTrialButtonShownForSubject();
