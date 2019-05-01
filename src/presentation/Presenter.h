@@ -195,6 +195,7 @@ namespace av_speech_in_noise {
         RUNTIME_ERROR(BadInput)
         void playCalibration_();
         void showTestSetup();
+        bool testComplete();
         void proceedToNextTrial();
         void hideTestSetup();
         void hideResponseButtons();

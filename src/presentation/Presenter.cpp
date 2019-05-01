@@ -93,10 +93,14 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::proceedToNextTrial() {
-        if (model->testComplete())
+        if (testComplete())
             switchToSetupView();
         else
             showNextTrialButton();
+    }
+    
+    bool Presenter::testComplete() {
+        return model->testComplete();
     }
     
     void Presenter::switchToSetupView() {
@@ -152,7 +156,7 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::submitPassedTrial() {
-        if (model->testComplete())
+        if (testComplete())
             switchToSetupView();
     }
     
