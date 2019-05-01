@@ -190,6 +190,7 @@ namespace av_speech_in_noise {
         static TrackingRule targetLevelRule;
         
     private:
+        void switchToSetupView();
         void showErrorMessage(std::string);
         RUNTIME_ERROR(BadInput)
         void playCalibration_();
