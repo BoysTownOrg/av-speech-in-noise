@@ -1046,6 +1046,12 @@ namespace {
         assertEqual("a", model.trialParameters().audioDevice);
     }
 
+    TEST_F(PresenterTests, playingTrialFromExperimenterPassesAudioDevice) {
+        setAudioDevice("a");
+        playTrialFromExperimenter();
+        assertEqual("a", model.trialParameters().audioDevice);
+    }
+
     TEST_F(PresenterTests, playCalibrationPassesAudioDevice) {
         setAudioDevice("b");
         playCalibration();
