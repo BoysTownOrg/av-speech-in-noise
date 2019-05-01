@@ -480,6 +480,23 @@ namespace {
         };
     };
     
+    class YetAnotherUseCase {
+    public:
+        virtual ~YetAnotherUseCase() = default;
+        virtual void run() = 0;
+    };
+    
+    class RespondingFromSubject : public YetAnotherUseCase {
+        ViewStub::SubjectViewStub *view;
+    public:
+        explicit RespondingFromSubject(ViewStub::SubjectViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->submitResponse();
+        }
+    };
+    
     class OtherUseCase {
     public:
         virtual ~OtherUseCase() = default;
@@ -690,6 +707,7 @@ namespace {
         PlayingCalibration playingCalibration;
         PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
         PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView};
+        RespondingFromSubject respondingFromSubject{&subjectView};
         
         std::string auditoryOnlyConditionName() {
             return conditionName(
@@ -963,6 +981,16 @@ namespace {
             confirmTestSetup();
             EXPECT_TRUE(useCase.nextTrialButtonShown());
         }
+        
+        void assertCompleteTestShowsSetupView(YetAnotherUseCase &useCase) {
+            setTestComplete();
+            run(useCase);
+            assertSetupViewShown();
+        }
+        
+        void run(YetAnotherUseCase &useCase) {
+            useCase.run();
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1183,13 +1211,22 @@ namespace {
     }
 
     TEST_F(PresenterTests, respondFromSubjectShowsSetupViewWhenTestComplete) {
+        assertCompleteTestShowsSetupView(respondingFromSubject);
+    }
+
+    TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
         setTestComplete();
-        respondFromSubject();
+        submitPassedTrial();
         assertSetupViewShown();
     }
 
     TEST_F(PresenterTests, respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
         respondFromSubject();
+        assertSetupViewNotShown();
+    }
+
+    TEST_F(PresenterTests, submitPassedTrialDoesNotShowSetupViewWhenTestIncomplete) {
+        submitPassedTrial();
         assertSetupViewNotShown();
     }
 
@@ -1199,26 +1236,15 @@ namespace {
         assertExperimenterViewHidden();
     }
 
-    TEST_F(PresenterTests, respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
-        respondFromSubject();
-        assertExperimenterViewNotHidden();
-    }
-
-    TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
-        setTestComplete();
-        submitPassedTrial();
-        assertSetupViewShown();
-    }
-
-    TEST_F(PresenterTests, submitPassedTrialDoesNotShowSetupViewWhenTestIncomplete) {
-        submitPassedTrial();
-        assertSetupViewNotShown();
-    }
-
     TEST_F(PresenterTests, submitPassedTrialHidesExperimenterViewWhenTestComplete) {
         setTestComplete();
         submitPassedTrial();
         assertExperimenterViewHidden();
+    }
+
+    TEST_F(PresenterTests, respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
+        respondFromSubject();
+        assertExperimenterViewNotHidden();
     }
 
     TEST_F(PresenterTests, submitPassedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
