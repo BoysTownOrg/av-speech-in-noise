@@ -753,7 +753,15 @@ namespace {
         }
         
         void assertExperimenterViewHidden() {
-            EXPECT_TRUE(experimenterView.hidden());
+            EXPECT_TRUE(experimenterViewHidden());
+        }
+        
+        bool experimenterViewHidden() {
+            return experimenterView.hidden();
+        }
+        
+        void assertExperimenterViewNotHidden() {
+            EXPECT_FALSE(experimenterViewHidden());
         }
         
         void assertSubjectViewShown() {
@@ -1189,6 +1197,11 @@ namespace {
         setTestComplete();
         respondFromSubject();
         assertExperimenterViewHidden();
+    }
+
+    TEST_F(PresenterTests, respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
+        respondFromSubject();
+        assertExperimenterViewNotHidden();
     }
 
     TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
