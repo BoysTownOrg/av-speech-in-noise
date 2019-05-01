@@ -25,6 +25,7 @@ namespace av_speech_in_noise {
         model->subscribe(this);
         testSetup->becomeChild(this);
         subject->becomeChild(this);
+        experimenter->becomeChild(this);
         view->populateAudioDeviceMenu(model->audioDevices());
     }
 
@@ -332,5 +333,10 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::playTrial() { 
         view->hideNextTrialButton();
+        parent->playTrial();
+    }
+    
+    void Presenter::Experimenter::becomeChild(Presenter *p) {
+        parent = p;
     }
 }

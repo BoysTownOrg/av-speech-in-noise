@@ -627,7 +627,7 @@ namespace {
             subjectView.submitResponse();
         }
         
-        void playTrial() {
+        void playTrialFromSubject() {
             subjectView.playTrial();
         }
         
@@ -673,11 +673,15 @@ namespace {
         }
         
         void assertSubjectViewShown() {
-            EXPECT_TRUE(subjectView.shown());
+            EXPECT_TRUE(subjectViewShown());
+        }
+        
+        bool subjectViewShown() {
+            return subjectView.shown();
         }
         
         void assertSubjectViewNotShown() {
-            EXPECT_FALSE(subjectView.shown());
+            EXPECT_FALSE(subjectViewShown());
         }
 
         void assertBrowseResultPassedToEntry(
@@ -750,7 +754,7 @@ namespace {
             EXPECT_TRUE(subjectView.responseButtonsHidden());
         }
         
-        void assertNextTrialButtonHidden() {
+        void assertNextTrialButtonHiddenForSubject() {
             EXPECT_TRUE(subjectView.nextTrialButtonHidden());
         }
         
@@ -1017,23 +1021,28 @@ namespace {
     }
 
     TEST_F(PresenterTests, playingTrialPlaysTrial) {
-        playTrial();
+        playTrialFromSubject();
+        EXPECT_TRUE(model.trialPlayed());
+    }
+
+    TEST_F(PresenterTests, playingTrialPlaysTrial_2) {
+        playTrialFromExperimenter();
         EXPECT_TRUE(model.trialPlayed());
     }
 
     TEST_F(PresenterTests, playingTrialHidesNextTrialButton) {
-        playTrial();
-        assertNextTrialButtonHidden();
+        playTrialFromSubject();
+        assertNextTrialButtonHiddenForSubject();
     }
 
-    TEST_F(PresenterTests, playingTrialHidesNextTrialButton_2) {
+    TEST_F(PresenterTests, playingTrialHidesNextTrialButtonForExperimenter) {
         playTrialFromExperimenter();
         assertNextTrialButtonHiddenForExperimenter();
     }
 
     TEST_F(PresenterTests, playingTrialPassesAudioDevice) {
         setAudioDevice("a");
-        playTrial();
+        playTrialFromSubject();
         assertEqual("a", model.trialParameters().audioDevice);
     }
 

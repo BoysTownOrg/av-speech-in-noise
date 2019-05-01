@@ -157,9 +157,12 @@ namespace av_speech_in_noise {
             View::Experimenter *view;
         public:
             explicit Experimenter(View::Experimenter *);
+            void becomeChild(Presenter *parent);
             void showNextTrialButton();
             void show();
             void playTrial() override;
+        private:
+            Presenter *parent;
         };
         
         Presenter(
