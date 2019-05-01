@@ -789,6 +789,10 @@ namespace {
         void setAdaptiveOpenSet() {
             setupView.setMethod("Adaptive open-set");
         }
+        
+        void setAdaptiveClosedSet() {
+            setupView.setMethod("Adaptive closed-set");
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -900,12 +904,19 @@ namespace {
         assertAuditoryOnlyConditionPassedToModel(playingCalibration);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupShowsNextTrialButton) {
+    TEST_F(
+        PresenterTests,
+        confirmTestSetupShowsNextTrialButtonForSubjectWhenAdaptiveClosedSet
+    ) {
+        setAdaptiveClosedSet();
         confirmTestSetup();
         assertNextTrialButtonShownForSubject();
     }
 
-    TEST_F(PresenterTests, confirmTestSetupShowsNextTrialButton_2) {
+    TEST_F(
+        PresenterTests,
+        confirmTestSetupShowsNextTrialButtonForExperimenterWhenAdaptiveOpenSet
+    ) {
         setAdaptiveOpenSet();
         confirmTestSetup();
         assertNextTrialButtonShownForExperimenter();
