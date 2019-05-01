@@ -900,8 +900,17 @@ namespace {
         
         void assertAudioDevicePassedToTrial(OtherUseCase &useCase) {
             setAudioDevice("a");
-            useCase.run();
+            run(useCase);
             assertEqual("a", model.trialParameters().audioDevice);
+        }
+        
+        void run(OtherUseCase &useCase) {
+            useCase.run();
+        }
+        
+        void assertPlaysTrial(OtherUseCase &useCase) {
+            run(useCase);
+            EXPECT_TRUE(model.trialPlayed());
         }
     };
 
@@ -1067,13 +1076,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, playingTrialFromSubjectPlaysTrial) {
-        playTrialFromSubject();
-        EXPECT_TRUE(model.trialPlayed());
+        assertPlaysTrial(playingTrialFromSubject);
     }
 
     TEST_F(PresenterTests, playingTrialFromExperimenterPlaysTrial) {
-        playTrialFromExperimenter();
-        EXPECT_TRUE(model.trialPlayed());
+        assertPlaysTrial(playingTrialFromExperimenter);
     }
 
     TEST_F(PresenterTests, playingTrialHidesNextTrialButton) {
