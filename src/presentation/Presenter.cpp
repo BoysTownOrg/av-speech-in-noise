@@ -93,8 +93,10 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::proceedToNextTrial() {
-        if (model->testComplete())
+        if (model->testComplete()) {
             showTestSetup();
+            experimenter->hide();
+        }
         else
             showNextTrialButton();
     }
@@ -347,5 +349,9 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::submitPassedTrial() {
         parent->submitPassedTrial();
+    }
+    
+    void Presenter::Experimenter::hide() { 
+        view->hide();
     }
 }

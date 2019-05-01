@@ -432,6 +432,7 @@ namespace {
             bool nextTrialButtonShown_{};
             bool shown_{};
             bool nextTrialButtonHidden_{};
+            bool hidden_{};
         public:
             auto nextTrialButtonShown() const {
                 return nextTrialButtonShown_;
@@ -445,6 +446,10 @@ namespace {
                 return shown_;
             }
             
+            auto hidden() const {
+                return hidden_;
+            }
+            
             void show() override {
                 shown_ = true;
             }
@@ -455,6 +460,10 @@ namespace {
             
             void hideNextTrialButton() override {
                 nextTrialButtonHidden_ = true;
+            }
+            
+            void hide() override {
+                hidden_ = true;
             }
             
             void playTrial() {
@@ -694,7 +703,7 @@ namespace {
             );
         }
         
-        void submitResponse() {
+        void respondFromSubject() {
             subjectView.submitResponse();
         }
         
@@ -737,6 +746,10 @@ namespace {
         
         void assertExperimenterViewShown() {
             EXPECT_TRUE(experimenterView.shown());
+        }
+        
+        void assertExperimenterViewHidden() {
+            EXPECT_TRUE(experimenterView.hidden());
         }
         
         void assertSubjectViewShown() {
@@ -1129,38 +1142,44 @@ namespace {
 
     TEST_F(PresenterTests, subjectResponsePassesNumberResponse) {
         subjectView.setNumberResponse("1");
-        submitResponse();
+        respondFromSubject();
         EXPECT_EQ(1, model.responseParameters().number);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesGreenColor) {
         subjectView.setGreenResponse();
-        submitResponse();
+        respondFromSubject();
         assertModelPassedCondition(coordinate_response_measure::Color::green);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesRedColor) {
         subjectView.setRedResponse();
-        submitResponse();
+        respondFromSubject();
         assertModelPassedCondition(coordinate_response_measure::Color::red);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesBlueColor) {
         subjectView.setBlueResponse();
-        submitResponse();
+        respondFromSubject();
         assertModelPassedCondition(coordinate_response_measure::Color::blue);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesWhiteColor) {
         subjectView.setGrayResponse();
-        submitResponse();
+        respondFromSubject();
         assertModelPassedCondition(coordinate_response_measure::Color::white);
     }
 
-    TEST_F(PresenterTests, submitResponseShowsSetupViewWhenTestComplete) {
+    TEST_F(PresenterTests, respondFromSubjectShowsSetupViewWhenTestComplete) {
         setTestComplete();
-        submitResponse();
+        respondFromSubject();
         assertSetupViewShown();
+    }
+
+    TEST_F(PresenterTests, respondFromSubjectHidesExperimenterViewWhenTestComplete) {
+        setTestComplete();
+        respondFromSubject();
+        assertExperimenterViewHidden();
     }
 
     TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
@@ -1170,18 +1189,18 @@ namespace {
     }
 
     TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
-        submitResponse();
+        respondFromSubject();
         assertNextTrialButtonShownForSubject();
     }
 
     TEST_F(PresenterTests, subjectResponseDoesNotShowNextTrialButtonWhenTestComplete) {
         setTestComplete();
-        submitResponse();
+        respondFromSubject();
         assertNextTrialButtonNotShown();
     }
 
     TEST_F(PresenterTests, subjectResponseHidesResponseButtons) {
-        submitResponse();
+        respondFromSubject();
         assertResponseButtonsHidden();
     }
 
