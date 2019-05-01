@@ -1002,6 +1002,12 @@ namespace {
             run(useCase);
             assertSetupViewNotShown();
         }
+        
+        void assertCompleteTestHidesExperimenterView(TrialSubmission &useCase) {
+            setTestComplete();
+            run(useCase);
+            assertExperimenterViewHidden();
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1238,15 +1244,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, respondFromSubjectHidesExperimenterViewWhenTestComplete) {
-        setTestComplete();
-        respondFromSubject();
-        assertExperimenterViewHidden();
+        assertCompleteTestHidesExperimenterView(respondingFromSubject);
     }
 
     TEST_F(PresenterTests, submitPassedTrialHidesExperimenterViewWhenTestComplete) {
-        setTestComplete();
-        submitPassedTrial();
-        assertExperimenterViewHidden();
+        assertCompleteTestHidesExperimenterView(submittingPassedTrial);
     }
 
     TEST_F(PresenterTests, respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
