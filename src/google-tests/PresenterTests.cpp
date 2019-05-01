@@ -471,6 +471,7 @@ namespace {
     public:
         virtual ~OtherUseCase() = default;
         virtual void run() = 0;
+        virtual bool nextTrialButtonHidden() = 0;
     };
     
     class PlayingTrialFromSubject : public OtherUseCase {
@@ -482,6 +483,10 @@ namespace {
         void run() override {
             view->playTrial();
         }
+        
+        bool nextTrialButtonHidden() override {
+            return view->nextTrialButtonHidden();
+        }
     };
     
     class PlayingTrialFromExperimenter : public OtherUseCase {
@@ -492,6 +497,10 @@ namespace {
         
         void run() override {
             view->playTrial();
+        }
+        
+        bool nextTrialButtonHidden() override {
+            return view->nextTrialButtonHidden();
         }
     };
     
@@ -667,14 +676,6 @@ namespace {
             subjectView.submitResponse();
         }
         
-        void playTrialFromSubject() {
-            subjectView.playTrial();
-        }
-        
-        void playTrialFromExperimenter() {
-            experimenterView.playTrial();
-        }
-        
         void confirmTestSetup() {
             setupView.confirmTestSetup();
         }
@@ -794,14 +795,6 @@ namespace {
             EXPECT_TRUE(subjectView.responseButtonsHidden());
         }
         
-        void assertNextTrialButtonHiddenForSubject() {
-            EXPECT_TRUE(subjectView.nextTrialButtonHidden());
-        }
-        
-        void assertNextTrialButtonHiddenForExperimenter() {
-            EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
-        }
-        
         void assertSetupViewConditionsContains(std::string s) {
             EXPECT_TRUE(setupView.conditions().contains(std::move(s)));
         }
@@ -911,6 +904,11 @@ namespace {
         void assertPlaysTrial(OtherUseCase &useCase) {
             run(useCase);
             EXPECT_TRUE(model.trialPlayed());
+        }
+        
+        void assertHidesPlayTrialButton(OtherUseCase &useCase) {
+            run(useCase);
+            EXPECT_TRUE(useCase.nextTrialButtonHidden());
         }
     };
 
@@ -1084,13 +1082,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, playingTrialHidesNextTrialButton) {
-        playTrialFromSubject();
-        assertNextTrialButtonHiddenForSubject();
+        assertHidesPlayTrialButton(playingTrialFromSubject);
     }
 
     TEST_F(PresenterTests, playingTrialHidesNextTrialButtonForExperimenter) {
-        playTrialFromExperimenter();
-        assertNextTrialButtonHiddenForExperimenter();
+        assertHidesPlayTrialButton(playingTrialFromExperimenter);
     }
 
     TEST_F(PresenterTests, playingTrialFromSubjectPassesAudioDevice) {
