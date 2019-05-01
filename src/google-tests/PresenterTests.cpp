@@ -320,7 +320,16 @@ namespace {
             bool nextTrialButtonShown_{};
             bool responseButtonsHidden_{};
             bool nextTrialButtonHidden_{};
+            bool shown_{};
         public:
+            void show() override {
+                shown_ = true;
+            }
+            
+            auto shown() const {
+                return shown_;
+            }
+            
             bool whiteResponse() override {
                 return grayResponse_;
             }
@@ -636,6 +645,10 @@ namespace {
         void assertExperimenterViewShown() {
             EXPECT_TRUE(experimenterView.shown());
         }
+        
+        void assertSubjectViewShown() {
+            EXPECT_TRUE(subjectView.shown());
+        }
 
         void assertBrowseResultPassedToEntry(
             BrowsingEnteredPathUseCase &useCase
@@ -826,6 +839,15 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupShowsExperimenterView) {
         confirmTestSetup();
         assertExperimenterViewShown();
+    }
+
+    TEST_F(
+        PresenterTests,
+        confirmTestSetupShowsSubjectViewWhenAdaptiveClosedSet
+    ) {
+        setAdaptiveClosedSet();
+        confirmTestSetup();
+        assertSubjectViewShown();
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {

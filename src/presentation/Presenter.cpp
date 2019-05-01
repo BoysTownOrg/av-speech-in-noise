@@ -44,6 +44,7 @@ namespace av_speech_in_noise {
         model->initializeTest(testSetup->testParameters());
         hideTestSetup();
         experimenter->show();
+        subject->show();
         showNextTrialButton();
     }
     
@@ -304,6 +305,11 @@ namespace av_speech_in_noise {
         else
             return coordinate_response_measure::Color::red;
     }
+    
+    void Presenter::Subject::show() { 
+        view->show();
+    }
+    
 
     Presenter::Experimenter::Experimenter(View::Experimenter *view) :
         view{view}
