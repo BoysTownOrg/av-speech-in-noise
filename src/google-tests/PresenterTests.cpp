@@ -480,13 +480,15 @@ namespace {
         };
     };
     
-    class YetAnotherUseCase {
+    class UseCase {
     public:
-        virtual ~YetAnotherUseCase() = default;
+        virtual ~UseCase() = default;
         virtual void run() = 0;
     };
     
-    class RespondingFromSubject : public YetAnotherUseCase {
+    class TrialSubmission : public virtual UseCase {};
+    
+    class RespondingFromSubject : public TrialSubmission {
         ViewStub::SubjectViewStub *view;
     public:
         explicit RespondingFromSubject(ViewStub::SubjectViewStub *view) :
@@ -497,7 +499,7 @@ namespace {
         }
     };
     
-    class SubmittingPassedTrial : public YetAnotherUseCase {
+    class SubmittingPassedTrial : public TrialSubmission {
         ViewStub::ExperimenterViewStub *view;
     public:
         explicit SubmittingPassedTrial(ViewStub::ExperimenterViewStub *view) :
@@ -508,16 +510,14 @@ namespace {
         }
     };
     
-    class OtherUseCase {
+    class PlayingTrial : public virtual UseCase {
     public:
-        virtual ~OtherUseCase() = default;
-        virtual void run() = 0;
         virtual void setMethod(ViewStub::TestSetupViewStub &) = 0;
         virtual bool nextTrialButtonHidden() = 0;
         virtual bool nextTrialButtonShown() = 0;
     };
     
-    class PlayingTrialFromSubject : public OtherUseCase {
+    class PlayingTrialFromSubject : public PlayingTrial {
         ViewStub::SubjectViewStub *view;
     public:
         explicit PlayingTrialFromSubject(ViewStub::SubjectViewStub *view) :
@@ -540,7 +540,7 @@ namespace {
         }
     };
     
-    class PlayingTrialFromExperimenter : public OtherUseCase {
+    class PlayingTrialFromExperimenter : public PlayingTrial {
         ViewStub::ExperimenterViewStub *view;
     public:
         explicit PlayingTrialFromExperimenter(ViewStub::ExperimenterViewStub *view) :
@@ -968,39 +968,39 @@ namespace {
             setupView.setMethod(methodName(Method::adaptiveClosedSet));
         }
         
-        void assertAudioDevicePassedToTrial(OtherUseCase &useCase) {
+        void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
             setAudioDevice("a");
             run(useCase);
             assertEqual("a", model.trialParameters().audioDevice);
         }
         
-        void run(OtherUseCase &useCase) {
+        void run(PlayingTrial &useCase) {
             useCase.run();
         }
         
-        void assertPlaysTrial(OtherUseCase &useCase) {
+        void assertPlaysTrial(PlayingTrial &useCase) {
             run(useCase);
             EXPECT_TRUE(model.trialPlayed());
         }
         
-        void assertHidesPlayTrialButton(OtherUseCase &useCase) {
+        void assertHidesPlayTrialButton(PlayingTrial &useCase) {
             run(useCase);
             EXPECT_TRUE(useCase.nextTrialButtonHidden());
         }
         
-        void assertConfirmTestSetupShowsNextTrialButton(OtherUseCase &useCase) {
+        void assertConfirmTestSetupShowsNextTrialButton(PlayingTrial &useCase) {
             useCase.setMethod(setupView);
             confirmTestSetup();
             EXPECT_TRUE(useCase.nextTrialButtonShown());
         }
         
-        void assertCompleteTestShowsSetupView(YetAnotherUseCase &useCase) {
+        void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
             setTestComplete();
             run(useCase);
             assertSetupViewShown();
         }
         
-        void run(YetAnotherUseCase &useCase) {
+        void run(TrialSubmission &useCase) {
             useCase.run();
         }
     };
