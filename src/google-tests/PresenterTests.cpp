@@ -471,7 +471,9 @@ namespace {
     public:
         virtual ~OtherUseCase() = default;
         virtual void run() = 0;
+        virtual void setMethod(ViewStub::TestSetupViewStub &) = 0;
         virtual bool nextTrialButtonHidden() = 0;
+        virtual bool nextTrialButtonShown() = 0;
     };
     
     class PlayingTrialFromSubject : public OtherUseCase {
@@ -487,6 +489,14 @@ namespace {
         bool nextTrialButtonHidden() override {
             return view->nextTrialButtonHidden();
         }
+        
+        void setMethod(ViewStub::TestSetupViewStub &v) override {
+            v.setMethod(methodName(Method::adaptiveClosedSet));
+        }
+        
+        bool nextTrialButtonShown() override {
+            return view->nextTrialButtonShown();
+        }
     };
     
     class PlayingTrialFromExperimenter : public OtherUseCase {
@@ -501,6 +511,14 @@ namespace {
         
         bool nextTrialButtonHidden() override {
             return view->nextTrialButtonHidden();
+        }
+        
+        void setMethod(ViewStub::TestSetupViewStub &v) override {
+            v.setMethod(methodName(Method::adaptiveOpenSet));
+        }
+        
+        bool nextTrialButtonShown() override {
+            return view->nextTrialButtonShown();
         }
     };
     
@@ -783,10 +801,6 @@ namespace {
             return subjectView.nextTrialButtonShown();
         }
         
-        void assertNextTrialButtonShownForExperimenter() {
-            EXPECT_TRUE(experimenterView.nextTrialButtonShown());
-        }
-        
         void assertNextTrialButtonNotShown() {
             EXPECT_FALSE(nextTrialButtonShownForSubject());
         }
@@ -909,6 +923,12 @@ namespace {
         void assertHidesPlayTrialButton(OtherUseCase &useCase) {
             run(useCase);
             EXPECT_TRUE(useCase.nextTrialButtonHidden());
+        }
+        
+        void assertConfirmTestSetupShowsNextTrialButton(OtherUseCase &useCase) {
+            useCase.setMethod(setupView);
+            confirmTestSetup();
+            EXPECT_TRUE(useCase.nextTrialButtonShown());
         }
     };
 
@@ -1048,18 +1068,14 @@ namespace {
         PresenterTests,
         confirmTestSetupShowsNextTrialButtonForSubjectWhenAdaptiveClosedSet
     ) {
-        setAdaptiveClosedSet();
-        confirmTestSetup();
-        assertNextTrialButtonShownForSubject();
+        assertConfirmTestSetupShowsNextTrialButton(playingTrialFromSubject);
     }
 
     TEST_F(
         PresenterTests,
         confirmTestSetupShowsNextTrialButtonForExperimenterWhenAdaptiveOpenSet
     ) {
-        setAdaptiveOpenSet();
-        confirmTestSetup();
-        assertNextTrialButtonShownForExperimenter();
+        assertConfirmTestSetupShowsNextTrialButton(playingTrialFromExperimenter);
     }
 
     TEST_F(
