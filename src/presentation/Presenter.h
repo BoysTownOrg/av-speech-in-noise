@@ -70,10 +70,13 @@ namespace av_speech_in_noise {
             class EventListener {
             public:
                 virtual ~EventListener() = default;
+                virtual void playTrial() = 0;
             };
             
             virtual ~Experimenter() = default;
+            virtual void subscribe(EventListener *) = 0;
             virtual void showNextTrialButton() = 0;
+            virtual void hideNextTrialButton() = 0;
             virtual void show() = 0;
         };
         
@@ -156,6 +159,7 @@ namespace av_speech_in_noise {
             explicit Experimenter(View::Experimenter *);
             void showNextTrialButton();
             void show();
+            void playTrial() override;
         };
         
         Presenter(

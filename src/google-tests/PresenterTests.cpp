@@ -416,8 +416,10 @@ namespace {
         };
         
         class ExperimenterViewStub : public Experimenter {
+            EventListener *listener_{};
             bool nextTrialButtonShown_{};
             bool shown_{};
+            bool nextTrialButtonHidden_{};
         public:
             auto nextTrialButtonShown() const {
                 return nextTrialButtonShown_;
@@ -433,6 +435,22 @@ namespace {
             
             void show() override {
                 shown_ = true;
+            }
+            
+            void subscribe(EventListener *e) override {
+                listener_ = e;
+            }
+            
+            void hideNextTrialButton() override {
+                nextTrialButtonHidden_ = true;
+            }
+            
+            void playTrial() {
+                listener_->playTrial();
+            }
+            
+            auto nextTrialButtonHidden() const {
+                return nextTrialButtonHidden_;
             }
         };
     };
@@ -613,6 +631,10 @@ namespace {
             subjectView.playTrial();
         }
         
+        void playTrialFromExperimenter() {
+            experimenterView.playTrial();
+        }
+        
         void confirmTestSetup() {
             setupView.confirmTestSetup();
         }
@@ -730,6 +752,10 @@ namespace {
         
         void assertNextTrialButtonHidden() {
             EXPECT_TRUE(subjectView.nextTrialButtonHidden());
+        }
+        
+        void assertNextTrialButtonHiddenForExperimenter() {
+            EXPECT_TRUE(experimenterView.nextTrialButtonHidden());
         }
         
         void assertSetupViewConditionsContains(std::string s) {
@@ -998,6 +1024,11 @@ namespace {
     TEST_F(PresenterTests, playingTrialHidesNextTrialButton) {
         playTrial();
         assertNextTrialButtonHidden();
+    }
+
+    TEST_F(PresenterTests, playingTrialHidesNextTrialButton_2) {
+        playTrialFromExperimenter();
+        assertNextTrialButtonHiddenForExperimenter();
     }
 
     TEST_F(PresenterTests, playingTrialPassesAudioDevice) {

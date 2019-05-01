@@ -319,7 +319,7 @@ namespace av_speech_in_noise {
     Presenter::Experimenter::Experimenter(View::Experimenter *view) :
         view{view}
     {
-        ;
+        view->subscribe(this);
     }
     
     void Presenter::Experimenter::showNextTrialButton() {
@@ -328,5 +328,9 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::show() { 
         view->show();
+    }
+    
+    void Presenter::Experimenter::playTrial() { 
+        view->hideNextTrialButton();
     }
 }
