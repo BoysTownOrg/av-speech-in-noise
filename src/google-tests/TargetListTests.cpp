@@ -228,4 +228,10 @@ namespace {
         reader.setFileNames({ "a", "b.c", "d.e", "f.c", "g.h" });
         assertEqual({ "b.c", "f.c", "g.h" }, decorator.filesIn({}));
     }
+
+    TEST_F(FileExtensionFilterDecoratorTests, returnsSubdirectories) {
+        auto decorator = construct();
+        reader.setSubDirectories({ "a", "b", "c" });
+        assertEqual({ "a", "b", "c" }, decorator.subDirectories({}));
+    }
 }
