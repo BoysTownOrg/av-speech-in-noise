@@ -198,6 +198,7 @@ namespace av_speech_in_noise {
         currentTargetList = lists.front().get();
         loadTargetFile(currentTargetList->next());
         setTargetLevel_dB(targetLevel_dB(p.snr_dB));
+        maskerPlayer->loadFile(p.maskerFilePath);
         prepareVideo(p.condition);
     }
     

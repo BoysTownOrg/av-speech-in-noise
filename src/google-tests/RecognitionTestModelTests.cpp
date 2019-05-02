@@ -662,6 +662,10 @@ namespace {
         void setAuditoryOnly() override {
             test.condition = Condition::auditoryOnly;
         }
+        
+        void setMaskerFilePath(std::string s) {
+            test.maskerFilePath = std::move(s);
+        }
     };
     
     class AudioDeviceUseCase : public virtual UseCase {
@@ -1425,6 +1429,15 @@ namespace {
     ) {
         initializingTest.setMaskerFilePath("a");
         initializeTest();
+        assertEqual("a", maskerPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestPassesMaskerFilePathToMaskerPlayer
+    ) {
+        initializingFixedLevelTest.setMaskerFilePath("a");
+        initializeFixedLevelTest();
         assertEqual("a", maskerPlayer.filePath());
     }
 
