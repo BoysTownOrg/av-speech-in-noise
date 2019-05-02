@@ -944,6 +944,12 @@ namespace {
             assertEqual("", maskerPlayer.filePath());
         }
         
+        void assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(TestSetupUseCase &useCase) {
+            useCase.setAuditoryOnly();
+            runIgnoringFailureWithTrialInProgress(useCase);
+            assertTargetVideoNotHidden();
+        }
+        
         void assertTargetFilePathEquals(std::string what) {
             assertEqual(std::move(what), targetFilePath());
         }
@@ -1838,18 +1844,14 @@ namespace {
         RecognitionTestModelTests,
         initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
     ) {
-        initializingTest.setAuditoryOnly();
-        runIgnoringFailureWithTrialInProgress(initializingTest);
-        assertTargetVideoNotHidden();
+        assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
     ) {
-        initializingFixedLevelTest.setAuditoryOnly();
-        runIgnoringFailureWithTrialInProgress(initializingFixedLevelTest);
-        assertTargetVideoNotHidden();
+        assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(initializingFixedLevelTest);
     }
 
     TEST_F(
