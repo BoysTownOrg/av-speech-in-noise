@@ -201,11 +201,11 @@ namespace av_speech_in_noise {
         void prepareOutputFile(const Test &);
         void tryOpeningOutputFile(const Test &);
         void prepareTargets(const Test &);
-        void loadMaskerFile(const Test &);
+        void loadMaskerFile(const std::string &);
         void playTarget();
         bool noMoreTrials();
         bool trialInProgress();
-        void loadNextTarget();
+        void prepareTargetPlayer(int snr_dB);
         void seekRandomMaskerPosition();
         void preparePlayers(const AudioSettings &);
         void startTrial();

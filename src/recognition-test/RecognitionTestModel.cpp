@@ -103,12 +103,12 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::prepareMasker(const Test &p) {
-        loadMaskerFile(p);
+        loadMaskerFile(p.maskerFilePath);
         maskerPlayer->setLevel_dB(maskerLevel_dB());
     }
     
-    void RecognitionTestModel::loadMaskerFile(const Test &p) {
-        maskerPlayer->loadFile(p.maskerFilePath);
+    void RecognitionTestModel::loadMaskerFile(const std::string &p) {
+        maskerPlayer->loadFile(p);
     }
     
     static double dB(double x) {
@@ -136,7 +136,7 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::prepareNextTrial() {
         selectNextList();
-        loadNextTarget();
+        prepareTargetPlayer(SNR_dB());
         seekRandomMaskerPosition();
     }
     
@@ -149,9 +149,9 @@ namespace av_speech_in_noise {
         }
     }
     
-    void RecognitionTestModel::loadNextTarget() {
+    void RecognitionTestModel::prepareTargetPlayer(int snr_dB) {
         loadTargetFile(currentTargetList->next());
-        setTargetLevel_dB(targetLevel_dB());
+        setTargetLevel_dB(targetLevel_dB(snr_dB));
         targetPlayer->subscribeToPlaybackCompletion();
     }
     
@@ -194,11 +194,10 @@ namespace av_speech_in_noise {
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
         
-        lists = targetListSetReader->read({});
+        readTargetLists({});
         currentTargetList = lists.front().get();
-        loadTargetFile(currentTargetList->next());
-        setTargetLevel_dB(targetLevel_dB(p.snr_dB));
-        maskerPlayer->loadFile(p.maskerFilePath);
+        prepareTargetPlayer(p.snr_dB);
+        loadMaskerFile(p.maskerFilePath);
         prepareVideo(p.condition);
     }
     
