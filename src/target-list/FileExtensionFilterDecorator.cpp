@@ -41,6 +41,6 @@ namespace target_list {
     std::vector<std::string> FileExtensionFilterDecorator::subDirectories(
         std::string directory
     ) {
-        return reader->subDirectories({});
+        return reader->subDirectories(std::move(directory));
     }
 }

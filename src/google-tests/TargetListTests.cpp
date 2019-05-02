@@ -217,9 +217,15 @@ namespace {
         }
     };
 
-    TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecorated) {
+    TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecoratedForFiles) {
         auto decorator = construct();
         decorator.filesIn({"a"});
+        assertEqual("a", reader.directory());
+    }
+
+    TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
+        auto decorator = construct();
+        decorator.subDirectories({"a"});
         assertEqual("a", reader.directory());
     }
 
