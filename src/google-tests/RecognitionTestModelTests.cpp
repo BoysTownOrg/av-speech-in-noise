@@ -1319,13 +1319,6 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitTypedResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
-    ) {
-        assertSelectsRandomListInRangeAfterRemovingCompleteTracks(submittingTypedResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         playCalibrationPassesAudioFileToTargetPlayer
     ) {
         playingCalibration.setFilePath("a");
@@ -1368,6 +1361,13 @@ namespace {
         submitIncorrectResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitTypedResponseSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingTypedResponse);
     }
 
     TEST_F(
