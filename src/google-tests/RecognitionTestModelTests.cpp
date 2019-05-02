@@ -938,10 +938,6 @@ namespace {
             runIgnoringFailureWithTrialInProgress(playingCalibration);
         }
         
-        void initializeTestWhenTrialAlreadyInProgressIgnoringFailure() {
-            runIgnoringFailureWithTrialInProgress(initializingTest);
-        }
-        
         void assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(TestSetupUseCase &useCase) {
             useCase.setMaskerFilePath("a");
             runIgnoringFailureWithTrialInProgress(useCase);
@@ -1843,7 +1839,16 @@ namespace {
         initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
     ) {
         initializingTest.setAuditoryOnly();
-        initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
+        runIgnoringFailureWithTrialInProgress(initializingTest);
+        assertTargetVideoNotHidden();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
+    ) {
+        initializingFixedLevelTest.setAuditoryOnly();
+        runIgnoringFailureWithTrialInProgress(initializingFixedLevelTest);
         assertTargetVideoNotHidden();
     }
 
