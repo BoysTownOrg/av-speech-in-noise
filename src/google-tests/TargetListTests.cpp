@@ -138,6 +138,14 @@ namespace {
         void loadFromDirectory(std::string s = {}) {
             list.loadFromDirectory(std::move(s));
         }
+        
+        auto next() {
+            return list.next();
+        }
+        
+        void setFileNames(std::vector<std::string> v) {
+            reader.setFileNames(std::move(v));
+        }
     };
 
     TEST_F(
@@ -152,14 +160,14 @@ namespace {
         RandomizedFiniteTargetListTests,
         testCompleteWhenStimulusFilesExhausted
     ) {
-        reader.setFileNames({ "a", "b", "c" });
+        setFileNames({ "a", "b", "c" });
         loadFromDirectory();
         EXPECT_FALSE(list.empty());
-        list.next();
+        next();
         EXPECT_FALSE(list.empty());
-        list.next();
+        next();
         EXPECT_FALSE(list.empty());
-        list.next();
+        next();
         EXPECT_TRUE(list.empty());
     }
 
@@ -167,18 +175,18 @@ namespace {
         RandomizedFiniteTargetListTests,
         nextReturnsFullPathToFileAtFront
     ) {
-        reader.setFileNames({ "a", "b", "c" });
+        setFileNames({ "a", "b", "c" });
         loadFromDirectory("C:");
-        assertEqual("C:/a", list.next());
-        assertEqual("C:/b", list.next());
-        assertEqual("C:/c", list.next());
+        assertEqual("C:/a", next());
+        assertEqual("C:/b", next());
+        assertEqual("C:/c", next());
     }
 
     TEST_F(
         RandomizedFiniteTargetListTests,
         loadFromDirectoryShufflesFileNames
     ) {
-        reader.setFileNames({ "a", "b", "c" });
+        setFileNames({ "a", "b", "c" });
         loadFromDirectory();
         assertEqual({ "a", "b", "c" }, randomizer.toShuffle());
     }
@@ -187,9 +195,9 @@ namespace {
         RandomizedFiniteTargetListTests,
         currentReturnsFullPathToFile
     ) {
-        reader.setFileNames({ "a", "b", "c" });
+        setFileNames({ "a", "b", "c" });
         loadFromDirectory("C:");
-        list.next();
+        next();
         assertEqual("C:/a", list.current());
     }
     
