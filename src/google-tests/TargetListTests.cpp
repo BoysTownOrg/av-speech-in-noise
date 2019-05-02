@@ -1,31 +1,10 @@
+#include "DirectoryReaderStub.h"
 #include "assert-utility.h"
 #include <target-list/RandomizedTargetList.hpp>
 #include <target-list/FileExtensionFilterDecorator.hpp>
 #include <gtest/gtest.h>
 
 namespace {
-    class DirectoryReaderStub : public target_list::DirectoryReader {
-        std::vector<std::string> fileNames_;
-        std::string directory_;
-    public:
-        void setFileNames(std::vector<std::string> files) {
-            fileNames_ = files;
-        }
-        
-        std::vector<std::string> filesIn(std::string directory) override {
-            directory_ = directory;
-            return fileNames_;
-        }
-        
-        std::vector<std::string> subDirectories(std::string directory) override {
-            return {};
-        }
-        
-        auto directory() const {
-            return directory_;
-        }
-    };
-
     class RandomizerStub : public target_list::Randomizer {
         std::vector<std::string> toShuffle_;
     public:

@@ -74,6 +74,7 @@
 
 /* Begin PBXFileReference section */
 		2602F75E227B80E500906002 /* libadaptive-track.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libadaptive-track.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2602F765227B83A400906002 /* DirectoryReaderStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DirectoryReaderStub.h; sourceTree = "<group>"; };
 		2614B59D2238090B0083987B /* MersenneTwisterRandomizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MersenneTwisterRandomizer.h; sourceTree = "<group>"; };
 		2614B59E223809B50083987B /* CocoaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CocoaView.h; sourceTree = "<group>"; };
 		2614B59F2238108E0083987B /* AvFoundationPlayers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AvFoundationPlayers.h; sourceTree = "<group>"; };
@@ -318,6 +319,7 @@
 				26DE2190226529F3006A3FD0 /* AudioReaderStub.h */,
 				2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */,
 				26688C372273A53D00CAE9EB /* TargetListStub.h */,
+				2602F765227B83A400906002 /* DirectoryReaderStub.h */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";

@@ -1,4 +1,5 @@
 #include "TargetListStub.h"
+#include "DirectoryReaderStub.h"
 #include "assert-utility.h"
 #include <target-list/SubdirectoryTargetListReader.hpp>
 #include <gtest/gtest.h>
@@ -16,28 +17,6 @@ namespace {
         
         void setLists(std::vector<std::shared_ptr<av_speech_in_noise::TargetList>> v) {
             lists_ = std::move(v);
-        }
-    };
-    
-    class DirectoryReaderStub : public target_list::DirectoryReader {
-        std::vector<std::string> subDirectories_{};
-        std::string directory_{};
-    public:
-        std::vector<std::string> subDirectories(std::string d) override {
-            directory_ = std::move(d);
-            return subDirectories_;
-        }
-        
-        std::vector<std::string> filesIn(std::string directory) override {
-            return {};
-        }
-        
-        auto directory() const {
-            return directory_;
-        }
-        
-        void setSubDirectories(std::vector<std::string> v) {
-            subDirectories_ = std::move(v);
         }
     };
     
