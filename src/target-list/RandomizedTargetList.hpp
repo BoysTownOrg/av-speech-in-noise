@@ -66,6 +66,7 @@ namespace target_list {
         std::string next() override;
         std::string current() override;
     private:
+        bool empty_();
         std::string fullPath(std::string file);
     };
 }

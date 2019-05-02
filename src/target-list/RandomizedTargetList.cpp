@@ -66,11 +66,15 @@ namespace target_list {
     }
     
     bool RandomizedFiniteTargetList::empty() {
+        return empty_();
+    }
+    
+    bool RandomizedFiniteTargetList::empty_() {
         return files.empty();
     }
     
     std::string RandomizedFiniteTargetList::next() {
-        if (files.empty())
+        if (empty_())
             return "";
         
         currentFile_ = files.front();
