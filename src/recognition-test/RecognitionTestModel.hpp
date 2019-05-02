@@ -111,10 +111,10 @@ namespace av_speech_in_noise {
     class OutputFile {
     public:
         virtual ~OutputFile() = default;
-        virtual void openNewFile(const Test &) = 0;
+        virtual void openNewFile(const AdaptiveTest &) = 0;
         class OpenFailure {};
         virtual void writeTrial(const coordinate_response_measure::Trial &) = 0;
-        virtual void writeTest(const Test &) = 0;
+        virtual void writeTest(const AdaptiveTest &) = 0;
         virtual void writeTrialHeading() = 0;
         virtual void close() = 0;
     };
@@ -124,18 +124,6 @@ namespace av_speech_in_noise {
         virtual ~Randomizer() = default;
         virtual double randomFloatBetween(double, double) = 0;
         virtual int randomIntBetween(int, int) = 0;
-    };
-    
-    struct TypedResponse {
-    
-    };
-    
-    struct FixedLevelTest {
-        std::string maskerFilePath;
-        int snr_dB;
-        int maskerLevel_dB_SPL;
-        int fullScaleLevel_dB_SPL;
-        Condition condition;
     };
 
     class RecognitionTestModel :
@@ -175,8 +163,8 @@ namespace av_speech_in_noise {
             OutputFile *,
             Randomizer *
         );
-        void initializeTest(const Test &) override;
-        void initializeFixedLevelTest(const FixedLevelTest &);
+        void initializeTest(const AdaptiveTest &) override;
+        void initializeTest(const FixedLevelTest &);
         void playTrial(const AudioSettings &) override;
         void submitResponse(const coordinate_response_measure::SubjectResponse &) override;
         void submitTypedResponse(const TypedResponse &);
@@ -192,7 +180,7 @@ namespace av_speech_in_noise {
     private:
         void prepareNextTrialAfterRemovingCompleteTracks();
         void prepareNextTrial();
-        void readTargetLists(const Test &);
+        void readTargetLists(const AdaptiveTest &);
         void throwIfTrialInProgress();
         void writeTrial(const coordinate_response_measure::SubjectResponse &);
         std::string currentTarget();
@@ -200,15 +188,15 @@ namespace av_speech_in_noise {
         void updateSnr(const coordinate_response_measure::SubjectResponse &);
         void removeCompleteTracks();
         void selectNextList();
-        void prepareSnrTracks(const Test &);
+        void prepareSnrTracks(const AdaptiveTest &);
         void setTargetPlayerDevice(const Calibration &);
         double calibrationLevel_dB(const Calibration &);
         void trySettingTargetLevel(const Calibration &);
         void playCalibration_(const Calibration &);
-        void prepareMasker(const Test &);
-        void prepareOutputFile(const Test &);
-        void tryOpeningOutputFile(const Test &);
-        void prepareTargets(const Test &);
+        void prepareMasker(const AdaptiveTest &);
+        void prepareOutputFile(const AdaptiveTest &);
+        void tryOpeningOutputFile(const AdaptiveTest &);
+        void prepareTargets(const AdaptiveTest &);
         void loadMaskerFile(const std::string &);
         void playTarget();
         bool noMoreTrials();

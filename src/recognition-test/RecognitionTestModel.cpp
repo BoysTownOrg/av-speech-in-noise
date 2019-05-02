@@ -49,7 +49,7 @@ namespace av_speech_in_noise {
         listener_ = listener;
     }
     
-    void RecognitionTestModel::initializeTest(const Test &p) {
+    void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
@@ -72,11 +72,11 @@ namespace av_speech_in_noise {
         return maskerPlayer->playing();
     }
     
-    void RecognitionTestModel::readTargetLists(const Test &p) {
+    void RecognitionTestModel::readTargetLists(const AdaptiveTest &p) {
         lists = targetListSetReader->read(p.targetListDirectory);
     }
     
-    void RecognitionTestModel::prepareSnrTracks(const Test &p) {
+    void RecognitionTestModel::prepareSnrTracks(const AdaptiveTest &p) {
         targetListsWithTracks.clear();
         for (auto list : lists) {
             Track::Settings s;
@@ -89,14 +89,14 @@ namespace av_speech_in_noise {
         }
     }
     
-    void RecognitionTestModel::prepareOutputFile(const Test &p) {
+    void RecognitionTestModel::prepareOutputFile(const AdaptiveTest &p) {
         outputFile->close();
         tryOpeningOutputFile(p);
         outputFile->writeTest(p);
         outputFile->writeTrialHeading();
     }
     
-    void RecognitionTestModel::tryOpeningOutputFile(const Test &p) {
+    void RecognitionTestModel::tryOpeningOutputFile(const AdaptiveTest &p) {
         try {
             outputFile->openNewFile(p);
         } catch (const OutputFile::OpenFailure &) {
@@ -104,7 +104,7 @@ namespace av_speech_in_noise {
         }
     }
     
-    void RecognitionTestModel::prepareMasker(const Test &p) {
+    void RecognitionTestModel::prepareMasker(const AdaptiveTest &p) {
         loadMaskerFile(p.maskerFilePath);
         maskerPlayer->setLevel_dB(maskerLevel_dB());
     }
@@ -192,7 +192,7 @@ namespace av_speech_in_noise {
         maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
     }
     
-    void RecognitionTestModel::initializeFixedLevelTest(const FixedLevelTest &p) {
+    void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
         throwIfTrialInProgress();
         
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;

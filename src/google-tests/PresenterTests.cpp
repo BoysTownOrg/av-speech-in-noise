@@ -17,7 +17,7 @@ namespace {
     };
     
     class ModelStub : public Model {
-        Test testParameters_{};
+        AdaptiveTest testParameters_{};
         Calibration calibrationParameters_{};
         AudioSettings trialParameters_{};
         coordinate_response_measure::SubjectResponse responseParameters_{};
@@ -58,7 +58,7 @@ namespace {
         }
         
         void initializeTest(
-            const Test &p
+            const AdaptiveTest &p
         ) override {
             testParameters_ = p;
         }
@@ -886,7 +886,7 @@ namespace {
             EXPECT_EQ(c, model.responseParameters().color);
         }
         
-        const av_speech_in_noise::Test &modelTestParameters() {
+        const av_speech_in_noise::AdaptiveTest &modelTestParameters() {
             return model.testParameters();
         }
         
@@ -1324,7 +1324,7 @@ namespace {
             errorMessage = std::move(s);
         }
         
-        void initializeTest(const Test &) override {
+        void initializeTest(const AdaptiveTest &) override {
             throw RequestFailure{errorMessage};
         }
         

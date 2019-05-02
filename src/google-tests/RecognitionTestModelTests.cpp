@@ -277,8 +277,8 @@ namespace {
     class OutputFileStub : public OutputFile {
         coordinate_response_measure::Trial trialWritten_{};
         LogString log_{};
-        const Test *testWritten_{};
-        const Test *openNewFileParameters_{};
+        const AdaptiveTest *testWritten_{};
+        const AdaptiveTest *openNewFileParameters_{};
         bool throwOnOpen_{};
         bool headingWritten_{};
     public:
@@ -306,7 +306,7 @@ namespace {
         }
         
         void openNewFile(
-            const Test &p
+            const AdaptiveTest &p
         ) override {
             log_.insert("openNewFile ");
             openNewFileParameters_ = &p;
@@ -324,7 +324,7 @@ namespace {
         }
         
         void writeTest(
-            const Test &test
+            const AdaptiveTest &test
         ) override {
             log_.insert("writeTest ");
             testWritten_ = &test;
@@ -636,7 +636,7 @@ namespace {
     class TestSetupUseCase : public MaskerUseCase, public ConditionUseCase {};
     
     class InitializingTest : public TestSetupUseCase {
-        Test test_;
+        AdaptiveTest test_;
         TrackingRule targetLevelRule_;
     public:
         InitializingTest() {
@@ -688,7 +688,7 @@ namespace {
         FixedLevelTest test;
     public:
         void run(RecognitionTestModel &m) override {
-            m.initializeFixedLevelTest(test);
+            m.initializeTest(test);
         }
         
         void setSnr_dB(int x) {

@@ -41,7 +41,7 @@ namespace {
     class OutputFilePathStub :
         public av_speech_in_noise::OutputFilePath
     {
-        av_speech_in_noise::Test testParameters_{};
+        av_speech_in_noise::AdaptiveTest testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
         std::string outputDirectory_{};
@@ -59,7 +59,7 @@ namespace {
         }
         
         std::string generateFileName(
-            const av_speech_in_noise::Test &p
+            const av_speech_in_noise::AdaptiveTest &p
         ) override {
             testParameters_ = p;
             return fileName_;
@@ -80,7 +80,7 @@ namespace {
         OutputFilePathStub path{};
         av_speech_in_noise::OutputFileImpl file{&writer, &path};
         av_speech_in_noise::coordinate_response_measure::Trial trial{};
-        av_speech_in_noise::Test test{};
+        av_speech_in_noise::AdaptiveTest test{};
         
         void openNewFile() {
             file.openNewFile(test);

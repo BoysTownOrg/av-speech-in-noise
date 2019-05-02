@@ -9,7 +9,7 @@ namespace av_speech_in_noise {
         timeStamp{timeStamp},
         systemPath{systemPath} {}
     
-    std::string OutputFilePathImpl::generateFileName(const Test &test) {
+    std::string OutputFilePathImpl::generateFileName(const AdaptiveTest &test) {
         std::stringstream stream;
         stream << formatTestInformation(test);
         stream << '_';
@@ -17,7 +17,7 @@ namespace av_speech_in_noise {
         return stream.str();
     }
     
-    std::string OutputFilePathImpl::formatTestInformation(const Test &test) {
+    std::string OutputFilePathImpl::formatTestInformation(const AdaptiveTest &test) {
         std::stringstream stream;
         stream << "Subject_";
         stream << test.subjectId;

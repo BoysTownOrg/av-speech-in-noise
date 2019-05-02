@@ -174,8 +174,8 @@ namespace av_speech_in_noise {
         view->show();
     }
     
-    Test Presenter::TestSetup::testParameters() {
-        Test p;
+    AdaptiveTest Presenter::TestSetup::testParameters() {
+        AdaptiveTest p;
         p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
         p.maskerLevel_dB_SPL = readMaskerLevel();
         p.maskerFilePath = view->maskerFilePath();

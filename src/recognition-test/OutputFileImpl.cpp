@@ -107,23 +107,23 @@ namespace av_speech_in_noise {
         return stream.str();
     }
     
-    void OutputFileImpl::openNewFile(const Test &test) {
+    void OutputFileImpl::openNewFile(const AdaptiveTest &test) {
         writer->open(generateNewFilePath(test));
         if (writer->failed())
             throw OpenFailure{};
     }
     
-    std::string OutputFileImpl::generateNewFilePath(const Test &test) {
+    std::string OutputFileImpl::generateNewFilePath(const AdaptiveTest &test) {
         return
             path->outputDirectory() + "/" +
             path->generateFileName(test) + ".txt";
     }
     
-    void OutputFileImpl::writeTest(const Test &test) {
+    void OutputFileImpl::writeTest(const AdaptiveTest &test) {
         write(formatTest(test));
     }
     
-    std::string OutputFileImpl::formatTest(const Test &test) {
+    std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
         FormattedStream stream;
         stream.writeLabeledLine("subject", test.subjectId);
         stream.writeLabeledLine("tester", test.testerId);

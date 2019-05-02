@@ -60,7 +60,7 @@ namespace av_speech_in_noise {
     
     using TrackingRule = typename std::vector<TrackingSequence>;
     
-    struct Test {
+    struct AdaptiveTest {
         std::string targetListDirectory;
         std::string subjectId;
         std::string testerId;
@@ -85,6 +85,18 @@ namespace av_speech_in_noise {
         Condition condition;
     };
     
+    struct TypedResponse {
+    
+    };
+    
+    struct FixedLevelTest {
+        std::string maskerFilePath;
+        int snr_dB;
+        int maskerLevel_dB_SPL;
+        int fullScaleLevel_dB_SPL;
+        Condition condition;
+    };
+    
     class Model {
     public:
         class EventListener {
@@ -96,7 +108,7 @@ namespace av_speech_in_noise {
         virtual ~Model() = default;
         virtual void subscribe(EventListener *) = 0;
         RUNTIME_ERROR(RequestFailure)
-        virtual void initializeTest(const Test &) = 0;
+        virtual void initializeTest(const AdaptiveTest &) = 0;
         virtual void playCalibration(const Calibration &) = 0;
         virtual void playTrial(const AudioSettings &) = 0;
         virtual void submitResponse(

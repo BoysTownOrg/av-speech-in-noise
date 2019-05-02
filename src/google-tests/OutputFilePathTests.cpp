@@ -105,7 +105,7 @@ namespace {
         FileSystemPathStub systemPath;
         av_speech_in_noise::OutputFilePathImpl
             path{&timeStamp, &systemPath};
-        av_speech_in_noise::Test test{};
+        av_speech_in_noise::AdaptiveTest test{};
         
         std::string generateFileName() {
             return path.generateFileName(test);

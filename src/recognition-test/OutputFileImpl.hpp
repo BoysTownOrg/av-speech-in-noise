@@ -16,7 +16,7 @@ namespace av_speech_in_noise {
     class OutputFilePath {
     public:
         virtual ~OutputFilePath() = default;
-        virtual std::string generateFileName(const Test &) = 0;
+        virtual std::string generateFileName(const AdaptiveTest &) = 0;
         virtual std::string homeDirectory() = 0;
         virtual std::string outputDirectory() = 0;
     };
@@ -26,19 +26,19 @@ namespace av_speech_in_noise {
         OutputFilePath *path;
     public:
         OutputFileImpl(Writer *, OutputFilePath *);
-        void writeTest(const Test &) override;
+        void writeTest(const AdaptiveTest &) override;
         void writeTrial(const coordinate_response_measure::Trial &) override;
         void writeTrialHeading() override;
-        void openNewFile(const Test &) override;
+        void openNewFile(const AdaptiveTest &) override;
         void close() override;
         
     private:
         void write(std::string);
         std::string evaluation(const coordinate_response_measure::Trial &);
-        std::string formatTest(const Test &);
+        std::string formatTest(const AdaptiveTest &);
         std::string formatTrial(const coordinate_response_measure::Trial &);
         std::string formatTrialHeading();
-        std::string generateNewFilePath(const Test &);
+        std::string generateNewFilePath(const AdaptiveTest &);
         std::string colorName(coordinate_response_measure::Color);
     };
 }

@@ -122,7 +122,7 @@ namespace av_speech_in_noise {
             void setMasker(std::string);
             void setStimulusList(std::string);
             void setCalibrationFilePath(std::string);
-            Test testParameters();
+            AdaptiveTest testParameters();
             Calibration calibrationParameters();
             bool adaptiveClosedSet();
         private:
