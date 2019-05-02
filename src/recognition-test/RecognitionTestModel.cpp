@@ -49,6 +49,19 @@ namespace av_speech_in_noise {
         listener_ = listener;
     }
     
+    void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
+        throwIfTrialInProgress();
+        
+        fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
+        maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
+        
+        currentTargetList = finiteTargetList;
+        prepareTargetPlayer(p.snr_dB);
+        loadMaskerFile(p.maskerFilePath);
+        prepareVideo(p.condition);
+        fixedLevelTest = true;
+    }
+    
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
@@ -190,20 +203,6 @@ namespace av_speech_in_noise {
             2 * maskerPlayer->fadeTimeSeconds() -
             targetPlayer->durationSeconds();
         maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
-    }
-    
-    void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
-        throwIfTrialInProgress();
-        
-        fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
-        maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
-        
-        readTargetLists({});
-        currentTargetList = lists.front().get();
-        prepareTargetPlayer(p.snr_dB);
-        loadMaskerFile(p.maskerFilePath);
-        prepareVideo(p.condition);
-        fixedLevelTest = true;
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {

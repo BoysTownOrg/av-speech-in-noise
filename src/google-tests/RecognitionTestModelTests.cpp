@@ -565,13 +565,14 @@ namespace {
             nextCalled_ = true;
             return next_;
         }
-        /*
-        void setCurrent(std::string s) {
-            current_ = std::move(s);
-        }
         
         void setNext(std::string s) {
             next_ = std::move(s);
+        }
+        
+        /*
+        void setCurrent(std::string s) {
+            current_ = std::move(s);
         }
         
         auto directory() {
@@ -1403,7 +1404,7 @@ namespace {
         RecognitionTestModelTests,
         initializeFixedLevelTestPassesNextTargetToTargetPlayer
     ) {
-        setTargetListNext(0, "a");
+        finiteTargetList.setNext("a");
         initializeFixedLevelTest();
         assertTargetFilePathEquals("a");
     }
@@ -1434,7 +1435,7 @@ namespace {
         submitTypedResponseLoadsNextTarget
     ) {
         initializeFixedLevelTest();
-        setTargetListNext(0, "a");
+        finiteTargetList.setNext("a");
         run(submittingTypedResponse);
         assertTargetFilePathEquals("a");
     }
