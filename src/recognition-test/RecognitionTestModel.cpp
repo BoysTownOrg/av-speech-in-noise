@@ -57,8 +57,7 @@ namespace av_speech_in_noise {
         
         currentTargetList = finiteTargetList;
         prepareTargetPlayer(p.snr_dB);
-        loadMaskerFile(p.maskerFilePath);
-        maskerPlayer->setLevel_dB(maskerLevel_dB());
+        prepareMasker(p.maskerFilePath);
         prepareVideo(p.condition);
         fixedLevelTest = true;
     }
@@ -72,7 +71,7 @@ namespace av_speech_in_noise {
         readTargetLists(p);
         prepareSnrTracks(p);
         prepareOutputFile(p);
-        prepareMasker(p);
+        prepareMasker(p.maskerFilePath);
         prepareVideo(p.condition);
         prepareNextTrial();
     }
@@ -118,8 +117,8 @@ namespace av_speech_in_noise {
         }
     }
     
-    void RecognitionTestModel::prepareMasker(const AdaptiveTest &p) {
-        loadMaskerFile(p.maskerFilePath);
+    void RecognitionTestModel::prepareMasker(const std::string &p) {
+        loadMaskerFile(p);
         maskerPlayer->setLevel_dB(maskerLevel_dB());
     }
     
