@@ -120,6 +120,10 @@ namespace av_speech_in_noise {
         virtual double randomFloatBetween(double, double) = 0;
         virtual int randomIntBetween(int, int) = 0;
     };
+    
+    struct TypedResponse {
+    
+    };
 
     class RecognitionTestModel :
         public Model,
@@ -158,6 +162,7 @@ namespace av_speech_in_noise {
         void initializeTest(const Test &) override;
         void playTrial(const AudioSettings &) override;
         void submitResponse(const coordinate_response_measure::SubjectResponse &) override;
+        void submitTypedResponse(const TypedResponse &);
         bool testComplete() override;
         std::vector<std::string> audioDevices() override;
         void subscribe(Model::EventListener *) override;

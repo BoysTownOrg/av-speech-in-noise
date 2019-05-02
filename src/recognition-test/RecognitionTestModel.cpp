@@ -356,5 +356,9 @@ namespace av_speech_in_noise {
         currentSnrTrack->pushUp();
         prepareNextTrialAfterRemovingCompleteTracks();
     }
+    
+    void RecognitionTestModel::submitTypedResponse(const TypedResponse &) {
+        prepareNextTrialAfterRemovingCompleteTracks();
+    }
 }
 

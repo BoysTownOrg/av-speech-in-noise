@@ -580,6 +580,13 @@ namespace {
         }
     };
     
+    class SubmittingTypedResponse : public UseCase {
+    public:
+        void run(RecognitionTestModel &m) override {
+            m.submitTypedResponse({});
+        }
+    };
+    
     class InitializingTest : public ConditionUseCase {
         Test test_;
         TrackingRule targetLevelRule_;
@@ -708,6 +715,7 @@ namespace {
         SubmittingCoordinateResponse submittingCoordinateResponse;
         SubmittingCorrectResponse submittingCorrectResponse;
         SubmittingIncorrectResponse submittingIncorrectResponse;
+        SubmittingTypedResponse submittingTypedResponse;
         std::vector<std::shared_ptr<TargetListStub>> targetLists;
         std::vector<std::shared_ptr<TrackStub>> snrTracks;
         
@@ -1271,6 +1279,13 @@ namespace {
         submitIncorrectResponseLoadsNextTarget
     ) {
         assertNextTargetPassedToPlayer(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitTypedResponseLoadsNextTarget
+    ) {
+        assertNextTargetPassedToPlayer(submittingTypedResponse);
     }
 
     TEST_F(
