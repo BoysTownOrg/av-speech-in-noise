@@ -191,6 +191,8 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::initializeFixedLevelTest(const FixedLevelTest &p) {
+        throwIfTrialInProgress();
+        
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
         

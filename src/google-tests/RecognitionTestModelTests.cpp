@@ -862,6 +862,10 @@ namespace {
             runIgnoringFailure(initializingTest);
         }
         
+        void initializeFixedLevelTestIgnoringFailure() {
+            runIgnoringFailure(initializingFixedLevelTest);
+        }
+        
         void runIgnoringFailure(UseCase &useCase) {
             try {
                 run(useCase);
@@ -950,6 +954,11 @@ namespace {
         void initializeTestWhenTrialAlreadyInProgressIgnoringFailure() {
             setTrialInProgress();
             initializeTestIgnoringFailure();
+        }
+        
+        void initializeFixedLevelTestWhenTrialAlreadyInProgressIgnoringFailure() {
+            setTrialInProgress();
+            initializeFixedLevelTestIgnoringFailure();
         }
         
         void assertTargetFilePathEquals(std::string what) {
@@ -1834,6 +1843,15 @@ namespace {
     ) {
         initializingTest.setMaskerFilePath("a");
         initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
+        assertEqual("", maskerPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestDoesNotLoadMaskerIfTrialInProgress
+    ) {
+        initializingFixedLevelTest.setMaskerFilePath("a");
+        initializeFixedLevelTestWhenTrialAlreadyInProgressIgnoringFailure();
         assertEqual("", maskerPlayer.filePath());
     }
 
