@@ -1204,6 +1204,14 @@ namespace {
             EXPECT_EQ(0., randomizer.lowerFloatBound());
             EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperFloatBound());
         }
+        
+        void assertMaskerPlayerLevelSet(UseCase &useCase) {
+            setMaskerLevel_dB_SPL(1);
+            setTestingFullScaleLevel_dB_SPL(2);
+            maskerPlayer.setRms(3);
+            run(useCase);
+            EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1616,22 +1624,14 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSetsInitialMaskerPlayerLevel
     ) {
-        setMaskerLevel_dB_SPL(1);
-        setTestingFullScaleLevel_dB_SPL(2);
-        maskerPlayer.setRms(3);
-        initializeAdaptiveTest();
-        EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
+        assertMaskerPlayerLevelSet(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestSetsInitialMaskerPlayerLevel
     ) {
-        setMaskerLevel_dB_SPL(1);
-        setTestingFullScaleLevel_dB_SPL(2);
-        maskerPlayer.setRms(3);
-        initializeFixedLevelTest();
-        EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
+        assertMaskerPlayerLevelSet(initializingFixedLevelTest);
     }
 
     TEST_F(
