@@ -1221,7 +1221,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestHidesTargetVideoWhenAuditoryOnly
+        initializeAdaptiveTestHidesTargetVideoWhenAuditoryOnly
     ) {
         assertTargetVideoHiddenWhenAuditoryOnly(initializingAdaptiveTest);
     }
@@ -1235,7 +1235,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestShowsTargetVideoWhenAudioVisual
+        initializeAdaptiveTestShowsTargetVideoWhenAudioVisual
     ) {
         assertTargetVideoShownWhenAudioVisual(initializingAdaptiveTest);
     }
@@ -1256,7 +1256,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestWritesTrialHeading
+        initializeAdaptiveTestWritesTrialHeading
     ) {
         initializeAdaptiveTest();
         EXPECT_TRUE(outputFile.headingWritten());
@@ -1264,7 +1264,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
+        initializeAdaptiveTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
     ) {
         initializeAdaptiveTest();
         assertEqual(
@@ -1275,7 +1275,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestCreatesSnrTrackForEachList
+        initializeAdaptiveTestCreatesSnrTrackForEachList
     ) {
         initializeAdaptiveTestWithListCount(3);
         EXPECT_EQ(3, snrTrackFactoryParameters().size());
@@ -1283,7 +1283,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestCreatesEachSnrTrackWithTargetLevelRule
+        initializeAdaptiveTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
         initializeAdaptiveTestWithListCount(3);
         for (int i = 0; i < 3; ++i)
@@ -1294,7 +1294,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestCreatesEachSnrTrackWithStartingSnr
+        initializeAdaptiveTestCreatesEachSnrTrackWithStartingSnr
     ) {
         initializingAdaptiveTest.setStartingSnr_dB(1);
         initializeAdaptiveTestWithListCount(3);
@@ -1304,7 +1304,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestOpensNewOutputFilePassingTestSettings
+        initializeAdaptiveTestOpensNewOutputFilePassingTestSettings
     ) {
         initializeAdaptiveTest();
         EXPECT_EQ(outputFile.openNewFileParameters(), &testSettings());
@@ -1312,7 +1312,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestWritesTestSettings
+        initializeAdaptiveTestWritesTestSettings
     ) {
         initializeAdaptiveTest();
         EXPECT_EQ(outputFile.testWritten(), &testSettings());
@@ -1320,7 +1320,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestPassesTargetListDirectory
+        initializeAdaptiveTestPassesTargetListDirectory
     ) {
         initializingAdaptiveTest.setTargetListDirectory("a");
         initializeAdaptiveTest();
@@ -1357,7 +1357,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestQueriesTargetRmsAfterLoadingFile
+        initializeAdaptiveTestQueriesTargetRmsAfterLoadingFile
     ) {
         assertTargetFileLoadedPriorToRmsQuery(initializingAdaptiveTest);
     }
@@ -1406,7 +1406,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestPassesNextTargetToTargetPlayer
+        initializeAdaptiveTestPassesNextTargetToTargetPlayer
     ) {
         setTargetListNext(1, "a");
         initializeTestWithStartingList(1);
@@ -1451,7 +1451,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestSelectsRandomListInRange
+        initializeAdaptiveTestSelectsRandomListInRange
     ) {
         initializeAdaptiveTestWithListCount(3);
         assertRandomizerPassedIntegerBounds(0, 2);
@@ -1489,7 +1489,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestPassesMaskerFilePathToMaskerPlayer
+        initializeAdaptiveTestPassesMaskerFilePathToMaskerPlayer
     ) {
         assertMaskerFilePathPassedToPlayer(initializingAdaptiveTest);
     }
@@ -1503,7 +1503,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestSubscribesToTargetPlaybackCompletionNotification
+        initializeAdaptiveTestSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(initializingAdaptiveTest);
     }
@@ -1538,7 +1538,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
+        initializeAdaptiveTestSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingAdaptiveTest);
     }
@@ -1580,7 +1580,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestSeeksToRandomMaskerPosition
+        initializeAdaptiveTestSeeksToRandomMaskerPosition
     ) {
         assertMaskerPlayerSeekedToRandomTime(initializingAdaptiveTest);
     }
@@ -1622,7 +1622,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestSetsInitialMaskerPlayerLevel
+        initializeAdaptiveTestSetsInitialMaskerPlayerLevel
     ) {
         assertMaskerPlayerLevelSet(initializingAdaptiveTest);
     }
@@ -1636,7 +1636,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestSetsTargetPlayerLevel
+        initializeAdaptiveTestSetsTargetPlayerLevel
     ) {
         snrTrack(1)->setX(2);
         setMaskerLevel_dB_SPL(3);
@@ -1840,7 +1840,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestThrowsRequestFailureIfFileFailsToOpen
+        initializeAdaptiveTestThrowsRequestFailureIfFileFailsToOpen
     ) {
         outputFile.throwOnOpen();
         assertCallThrowsRequestFailure(initializingAdaptiveTest, "Unable to open output file.");
@@ -1900,7 +1900,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestThrowsRequestFailureIfTrialInProgress
+        initializeAdaptiveTestThrowsRequestFailureIfTrialInProgress
     ) {
         assertThrowsRequestFailureWhenTrialInProgress(initializingAdaptiveTest);
     }
@@ -1921,7 +1921,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestDoesNotLoadMaskerIfTrialInProgress
+        initializeAdaptiveTestDoesNotLoadMaskerIfTrialInProgress
     ) {
         assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(initializingAdaptiveTest);
     }
@@ -1935,7 +1935,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
+        initializeAdaptiveTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
     ) {
         assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(initializingAdaptiveTest);
     }
