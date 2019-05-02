@@ -942,8 +942,10 @@ namespace {
             runIgnoringFailureWithTrialInProgress(initializingTest);
         }
         
-        void initializeFixedLevelTestWhenTrialAlreadyInProgressIgnoringFailure() {
-            runIgnoringFailureWithTrialInProgress(initializingFixedLevelTest);
+        void assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(TestSetupUseCase &useCase) {
+            useCase.setMaskerFilePath("a");
+            runIgnoringFailureWithTrialInProgress(useCase);
+            assertEqual("", maskerPlayer.filePath());
         }
         
         void assertTargetFilePathEquals(std::string what) {
@@ -1826,18 +1828,14 @@ namespace {
         RecognitionTestModelTests,
         initializeTestDoesNotLoadMaskerIfTrialInProgress
     ) {
-        initializingTest.setMaskerFilePath("a");
-        initializeTestWhenTrialAlreadyInProgressIgnoringFailure();
-        assertEqual("", maskerPlayer.filePath());
+        assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestDoesNotLoadMaskerIfTrialInProgress
     ) {
-        initializingFixedLevelTest.setMaskerFilePath("a");
-        initializeFixedLevelTestWhenTrialAlreadyInProgressIgnoringFailure();
-        assertEqual("", maskerPlayer.filePath());
+        assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(initializingFixedLevelTest);
     }
 
     TEST_F(
