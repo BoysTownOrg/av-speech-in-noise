@@ -634,13 +634,13 @@ namespace {
         virtual void setAudioVisual() = 0;
     };
     
-    class TestSetupUseCase : public MaskerUseCase, public ConditionUseCase {};
+    class InitializingTestUseCase : public MaskerUseCase, public ConditionUseCase {};
     
-    class InitializingTest : public TestSetupUseCase {
+    class InitializingAdaptiveTest : public InitializingTestUseCase {
         AdaptiveTest test_;
         TrackingRule targetLevelRule_;
     public:
-        InitializingTest() {
+        InitializingAdaptiveTest() {
             test_.targetLevelRule = &targetLevelRule_;
         }
         
@@ -685,7 +685,7 @@ namespace {
         }
     };
     
-    class InitializingFixedLevelTest : public TestSetupUseCase {
+    class InitializingFixedLevelTest : public InitializingTestUseCase {
         FixedLevelTest test;
     public:
         void run(RecognitionTestModel &m) override {
@@ -792,7 +792,7 @@ namespace {
             &randomizer
         };
         ModelEventListenerStub listener;
-        InitializingTest initializingTest;
+        InitializingAdaptiveTest initializingAdaptiveTest;
         InitializingFixedLevelTest initializingFixedLevelTest;
         PlayingTrial playingTrial;
         PlayingCalibration playingCalibration;
@@ -809,7 +809,7 @@ namespace {
         }
         
         void initializeTest() {
-            run(initializingTest);
+            run(initializingAdaptiveTest);
         }
         
         void run(UseCase &useCase) {
@@ -879,7 +879,7 @@ namespace {
         }
         
         void assertInitializeTestThrowsRequestFailure(std::string what) {
-            assertCallThrowsRequestFailure(initializingTest, std::move(what));
+            assertCallThrowsRequestFailure(initializingAdaptiveTest, std::move(what));
         }
         
         void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
@@ -982,13 +982,13 @@ namespace {
             runIgnoringFailureWithTrialInProgress(playingCalibration);
         }
         
-        void assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(TestSetupUseCase &useCase) {
+        void assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(InitializingTestUseCase &useCase) {
             useCase.setMaskerFilePath("a");
             runIgnoringFailureWithTrialInProgress(useCase);
             assertEqual("", maskerPlayer.filePath());
         }
         
-        void assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(TestSetupUseCase &useCase) {
+        void assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(InitializingTestUseCase &useCase) {
             useCase.setAuditoryOnly();
             runIgnoringFailureWithTrialInProgress(useCase);
             assertTargetVideoNotHidden();
@@ -1046,7 +1046,7 @@ namespace {
         }
         
         auto targetLevelRule() {
-            return initializingTest.targetLevelRule();
+            return initializingAdaptiveTest.targetLevelRule();
         }
         
         void assertSettingsContainTargetLevelRule(const Track::Settings &s) {
@@ -1058,7 +1058,7 @@ namespace {
         }
         
         auto &testSettings() const {
-            return initializingTest.test();
+            return initializingAdaptiveTest.test();
         }
         
         void assertRandomizerPassedIntegerBounds(int a, int b) {
@@ -1075,7 +1075,7 @@ namespace {
         }
         
         void setMaskerLevel_dB_SPL(int x) {
-            initializingTest.setMaskerLevel_dB_SPL(x);
+            initializingAdaptiveTest.setMaskerLevel_dB_SPL(x);
             initializingFixedLevelTest.setMaskerLevel_dB_SPL(x);
         }
         
@@ -1084,7 +1084,7 @@ namespace {
         }
         
         void setTestingFullScaleLevel_dB_SPL(int x) {
-            initializingTest.setFullScaleLevel_dB_SPL(x);
+            initializingAdaptiveTest.setFullScaleLevel_dB_SPL(x);
             initializingFixedLevelTest.setFullScaleLevel_dB_SPL(x);
         }
         
@@ -1194,7 +1194,7 @@ namespace {
             EXPECT_FALSE(snrTrackPushedDown(1));
         }
         
-        void assertMaskerFilePathPassedToPlayer(TestSetupUseCase &useCase) {
+        void assertMaskerFilePathPassedToPlayer(InitializingTestUseCase &useCase) {
             useCase.setMaskerFilePath("a");
             run(useCase);
             assertEqual("a", maskerPlayer.filePath());
@@ -1225,7 +1225,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestHidesTargetVideoWhenAuditoryOnly
     ) {
-        assertTargetVideoHiddenWhenAuditoryOnly(initializingTest);
+        assertTargetVideoHiddenWhenAuditoryOnly(initializingAdaptiveTest);
     }
 
     TEST_F(
@@ -1239,7 +1239,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestShowsTargetVideoWhenAudioVisual
     ) {
-        assertTargetVideoShownWhenAudioVisual(initializingTest);
+        assertTargetVideoShownWhenAudioVisual(initializingAdaptiveTest);
     }
 
     TEST_F(
@@ -1298,7 +1298,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithStartingSnr
     ) {
-        initializingTest.setStartingSnr_dB(1);
+        initializingAdaptiveTest.setStartingSnr_dB(1);
         initializeTestWithListCount(3);
         for (int i = 0; i < 3; ++i)
             assertSettingsMatchStartingX(snrTrackFactoryParameters().at(i), 1);
@@ -1324,7 +1324,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestPassesTargetListDirectory
     ) {
-        initializingTest.setTargetListDirectory("a");
+        initializingAdaptiveTest.setTargetListDirectory("a");
         initializeTest();
         assertEqual("a", targetListSetReader.directory());
     }
@@ -1361,7 +1361,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestQueriesTargetRmsAfterLoadingFile
     ) {
-        assertTargetFileLoadedPriorToRmsQuery(initializingTest);
+        assertTargetFileLoadedPriorToRmsQuery(initializingAdaptiveTest);
     }
 
     TEST_F(
@@ -1493,7 +1493,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestPassesMaskerFilePathToMaskerPlayer
     ) {
-        assertMaskerFilePathPassedToPlayer(initializingTest);
+        assertMaskerFilePathPassedToPlayer(initializingAdaptiveTest);
     }
 
     TEST_F(
@@ -1507,7 +1507,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSubscribesToTargetPlaybackCompletionNotification
     ) {
-        assertTargetPlayerPlaybackCompletionSubscribed(initializingTest);
+        assertTargetPlayerPlaybackCompletionSubscribed(initializingAdaptiveTest);
     }
 
     TEST_F(
@@ -1542,7 +1542,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
-        assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingAdaptiveTest);
     }
 
     TEST_F(
@@ -1584,7 +1584,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSeeksToRandomMaskerPosition
     ) {
-        assertMaskerPlayerSeekedToRandomTime(initializingTest);
+        assertMaskerPlayerSeekedToRandomTime(initializingAdaptiveTest);
     }
 
     TEST_F(
@@ -1912,7 +1912,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestThrowsRequestFailureIfTrialInProgress
     ) {
-        assertThrowsRequestFailureWhenTrialInProgress(initializingTest);
+        assertThrowsRequestFailureWhenTrialInProgress(initializingAdaptiveTest);
     }
 
     TEST_F(
@@ -1933,7 +1933,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestDoesNotLoadMaskerIfTrialInProgress
     ) {
-        assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(initializingTest);
+        assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(initializingAdaptiveTest);
     }
 
     TEST_F(
@@ -1947,7 +1947,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
     ) {
-        assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(initializingTest);
+        assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(initializingAdaptiveTest);
     }
 
     TEST_F(
