@@ -552,12 +552,6 @@ namespace {
         virtual void run(RecognitionTestModel &) = 0;
     };
     
-    class ConditionUseCase : public virtual UseCase {
-    public:
-        virtual void setAuditoryOnly() = 0;
-        virtual void setAudioVisual() = 0;
-    };
-    
     class SubmittingCoordinateResponse : public UseCase {
         coordinate_response_measure::SubjectResponse response;
     public:
@@ -587,7 +581,20 @@ namespace {
         }
     };
     
-    class InitializingTest : public ConditionUseCase {
+    class MaskerUseCase : public virtual UseCase {
+    public:
+        virtual void setMaskerFilePath(std::string) = 0;
+    };
+    
+    class ConditionUseCase : public virtual UseCase {
+    public:
+        virtual void setAuditoryOnly() = 0;
+        virtual void setAudioVisual() = 0;
+    };
+    
+    class TestSetupUseCase : public MaskerUseCase, public ConditionUseCase {};
+    
+    class InitializingTest : public TestSetupUseCase {
         Test test_;
         TrackingRule targetLevelRule_;
     public:
@@ -599,7 +606,7 @@ namespace {
             test_.targetListDirectory = std::move(s);
         }
         
-        void setMaskerFilePath(std::string s) {
+        void setMaskerFilePath(std::string s) override {
             test_.maskerFilePath = std::move(s);
         }
         
@@ -636,7 +643,7 @@ namespace {
         }
     };
     
-    class InitializingFixedLevelTest : public ConditionUseCase {
+    class InitializingFixedLevelTest : public TestSetupUseCase {
         FixedLevelTest test;
     public:
         void run(RecognitionTestModel &m) override {
@@ -663,7 +670,7 @@ namespace {
             test.condition = Condition::auditoryOnly;
         }
         
-        void setMaskerFilePath(std::string s) {
+        void setMaskerFilePath(std::string s) override {
             test.maskerFilePath = std::move(s);
         }
     };
@@ -1144,6 +1151,12 @@ namespace {
             EXPECT_TRUE(snrTrackPushedUp(1));
             EXPECT_FALSE(snrTrackPushedDown(1));
         }
+        
+        void assertMaskerFilePathPassedToPlayer(TestSetupUseCase &useCase) {
+            useCase.setMaskerFilePath("a");
+            run(useCase);
+            assertEqual("a", maskerPlayer.filePath());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1427,18 +1440,14 @@ namespace {
         RecognitionTestModelTests,
         initializeTestPassesMaskerFilePathToMaskerPlayer
     ) {
-        initializingTest.setMaskerFilePath("a");
-        initializeTest();
-        assertEqual("a", maskerPlayer.filePath());
+        assertMaskerFilePathPassedToPlayer(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestPassesMaskerFilePathToMaskerPlayer
     ) {
-        initializingFixedLevelTest.setMaskerFilePath("a");
-        initializeFixedLevelTest();
-        assertEqual("a", maskerPlayer.filePath());
+        assertMaskerFilePathPassedToPlayer(initializingFixedLevelTest);
     }
 
     TEST_F(
