@@ -1412,6 +1412,13 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitTypedResponseSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(submittingTypedResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestSetsInitialMaskerPlayerLevel
     ) {
         setMaskerLevel_dB_SPL(1);
