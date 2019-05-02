@@ -1,23 +1,24 @@
-#ifndef av_coordinate_response_measure_MultiTrackTargetList_hpp
-#define av_coordinate_response_measure_MultiTrackTargetList_hpp
+#ifndef target_list_SubdirectoryTargetListReader_hpp
+#define target_list_SubdirectoryTargetListReader_hpp
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <memory>
 
-namespace av_speech_in_noise {
+namespace target_list {
     class TargetListFactory {
     public:
         virtual ~TargetListFactory() = default;
-        virtual std::shared_ptr<TargetList> make() = 0;
+        virtual std::shared_ptr<av_speech_in_noise::TargetList> make() = 0;
     };
     
     class DirectoryReader {
     public:
         virtual ~DirectoryReader() = default;
         virtual std::vector<std::string> subDirectories(std::string directory) = 0;
+        virtual std::vector<std::string> filesIn(std::string directory) = 0;
     };
     
-    class SubdirectoryTargetListReader : public TargetListReader {
+    class SubdirectoryTargetListReader : public av_speech_in_noise::TargetListReader {
         TargetListFactory *targetListFactory;
         DirectoryReader *directoryReader;
     public:

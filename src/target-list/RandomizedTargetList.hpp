@@ -1,18 +1,12 @@
 #ifndef target_list_RandomizedStimulusList_hpp
 #define target_list_RandomizedStimulusList_hpp
 
+#include "SubdirectoryTargetListReader.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
-#include <recognition-test/SubdirectoryTargetListReader.hpp>
 #include <vector>
 #include <string>
 
 namespace target_list {
-    class DirectoryReader {
-    public:
-        virtual ~DirectoryReader() = default;
-        virtual std::vector<std::string> filesIn(std::string directory) = 0;
-    };
-    
     class Randomizer {
     public:
         virtual ~Randomizer() = default;
@@ -40,7 +34,7 @@ namespace target_list {
         void replaceLastFile();
     };
     
-    class RandomizedTargetListFactory : public av_speech_in_noise::TargetListFactory {
+    class RandomizedTargetListFactory : public TargetListFactory {
         DirectoryReader *reader;
         Randomizer *randomizer;
     public:

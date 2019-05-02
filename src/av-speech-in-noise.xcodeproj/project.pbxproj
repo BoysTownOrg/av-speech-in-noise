@@ -217,6 +217,8 @@
 		2646F83D21DFEA0B00F378DE /* target-list */ = {
 			isa = PBXGroup;
 			children = (
+				26688C312273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp */,
+				26688C322273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp */,
 				2646F83E21DFEA2300F378DE /* RandomizedTargetList.cpp */,
 				2646F83F21DFEA2300F378DE /* RandomizedTargetList.hpp */,
 				2646F84821E017D100F378DE /* FileExtensionFilterDecorator.cpp */,
@@ -242,8 +244,6 @@
 		26A2236D21DD3482007D6511 /* recognition-test */ = {
 			isa = PBXGroup;
 			children = (
-				26688C312273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp */,
-				26688C322273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp */,
 				26A2236E21DD34A7007D6511 /* RecognitionTestModel.cpp */,
 				26A2236F21DD34A7007D6511 /* RecognitionTestModel.hpp */,
 				2623A153224BD037007C99F2 /* OutputFileImpl.cpp */,

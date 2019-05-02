@@ -1,33 +1,35 @@
 #include "TargetListStub.h"
 #include "assert-utility.h"
-#include <recognition-test/SubdirectoryTargetListReader.hpp>
+#include <target-list/SubdirectoryTargetListReader.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 
 namespace {
-    using namespace av_speech_in_noise;
-    
-    class TargetListFactoryStub : public TargetListFactory {
-        std::vector<std::shared_ptr<TargetList>> lists_{};
+    class TargetListFactoryStub : public target_list::TargetListFactory {
+        std::vector<std::shared_ptr<av_speech_in_noise::TargetList>> lists_{};
     public:
-        std::shared_ptr<TargetList> make() override {
+        std::shared_ptr<av_speech_in_noise::TargetList> make() override {
             auto list = lists_.front();
             lists_.erase(lists_.begin());
             return list;
         }
         
-        void setLists(std::vector<std::shared_ptr<TargetList>> v) {
+        void setLists(std::vector<std::shared_ptr<av_speech_in_noise::TargetList>> v) {
             lists_ = std::move(v);
         }
     };
     
-    class DirectoryReaderStub : public DirectoryReader {
+    class DirectoryReaderStub : public target_list::DirectoryReader {
         std::vector<std::string> subDirectories_{};
         std::string directory_{};
     public:
         std::vector<std::string> subDirectories(std::string d) override {
             directory_ = std::move(d);
             return subDirectories_;
+        }
+        
+        std::vector<std::string> filesIn(std::string directory) override {
+            return {};
         }
         
         auto directory() const {
@@ -43,7 +45,7 @@ namespace {
     protected:
         TargetListFactoryStub targetListFactory;
         DirectoryReaderStub directoryReader;
-        SubdirectoryTargetListReader listReader{&targetListFactory, &directoryReader};
+        target_list::SubdirectoryTargetListReader listReader{&targetListFactory, &directoryReader};
         std::vector<std::shared_ptr<TargetListStub>> targetLists;
         
         SubdirectoryTargetListReaderTests() {

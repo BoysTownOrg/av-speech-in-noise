@@ -17,6 +17,10 @@ namespace {
             return fileNames_;
         }
         
+        std::vector<std::string> subDirectories(std::string directory) override {
+            return {};
+        }
+        
         auto directory() const {
             return directory_;
         }

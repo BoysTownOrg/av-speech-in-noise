@@ -10,6 +10,7 @@ namespace target_list {
     public:
         FileExtensionFilterDecorator(DirectoryReader *, std::vector<std::string> filters);
         std::vector<std::string> filesIn(std::string directory) override;
+        std::vector<std::string> subDirectories(std::string directory) override;
     private:
         bool endingMatchesFilter(
             const std::string &,

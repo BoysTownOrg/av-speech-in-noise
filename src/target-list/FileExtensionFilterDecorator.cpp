@@ -37,4 +37,8 @@ namespace target_list {
                 filter
             );
     }
+    
+    std::vector<std::string> FileExtensionFilterDecorator::subDirectories(std::string directory) { 
+        return {};
+    }
 }
