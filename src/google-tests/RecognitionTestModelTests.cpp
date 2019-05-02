@@ -1306,6 +1306,34 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitCoordinateResponseQueriesTargetRmsAfterLoadingFile
+    ) {
+        assertTargetFileLoadedPriorToRmsQuery(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCorrectResponseQueriesTargetRmsAfterLoadingFile
+    ) {
+        assertTargetFileLoadedPriorToRmsQuery(submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitIncorrectResponseQueriesTargetRmsAfterLoadingFile
+    ) {
+        assertTargetFileLoadedPriorToRmsQuery(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitTypedResponseQueriesTargetRmsAfterLoadingFile
+    ) {
+        assertTargetFileLoadedPriorToRmsQuery(submittingTypedResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestPassesNextTargetToTargetPlayer
     ) {
         setTargetListNext(1, "a");
