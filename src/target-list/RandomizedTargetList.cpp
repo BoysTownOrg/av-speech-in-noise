@@ -18,10 +18,6 @@ namespace target_list {
         randomizer->shuffle(files.begin(), files.end());
     }
     
-    bool RandomizedTargetList::empty() {
-        return empty_();
-    }
-    
     bool RandomizedTargetList::empty_() {
         return files.empty();
     }

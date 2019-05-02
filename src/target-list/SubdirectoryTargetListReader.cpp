@@ -22,7 +22,9 @@ namespace target_list {
         return lists;
     }
     
-    std::vector<std::string> SubdirectoryTargetListReader::subDirectories(std::string directory) {
+    std::vector<std::string> SubdirectoryTargetListReader::subDirectories(
+        std::string directory
+    ) {
         return directoryReader->subDirectories(std::move(directory));
     }
 }
