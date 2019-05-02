@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2602F763227B810F00906002 /* AdaptiveTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26B22D382260FE4100D528F1 /* AdaptiveTrack.cpp */; };
 		2602F764227B819900906002 /* libadaptive-track.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2602F75E227B80E500906002 /* libadaptive-track.dylib */; };
+		2602F766227B86B100906002 /* libadaptive-track.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2602F75E227B80E500906002 /* libadaptive-track.dylib */; };
 		2614B5A222381DF80083987B /* CocoaView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A022381D850083987B /* CocoaView.mm */; };
 		2614B5A5223824FB0083987B /* AvFoundationPlayers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A3223824960083987B /* AvFoundationPlayers.mm */; };
 		2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2623A153224BD037007C99F2 /* OutputFileImpl.cpp */; };
@@ -164,6 +165,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2602F766227B86B100906002 /* libadaptive-track.dylib in Frameworks */,
 				269C4C7D2253B8A00059AD5F /* CoreMedia.framework in Frameworks */,
 				26EE86CB2242EBBE00C08622 /* libstimulus_players.dylib in Frameworks */,
 				2656B62722401D3F0058A23D /* MediaToolbox.framework in Frameworks */,

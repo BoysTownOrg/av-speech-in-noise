@@ -23,6 +23,20 @@ class CocoaSubjectView;
 - (void) playTrial;
 @end
 
+class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
+
+    void subscribe(EventListener *) override;
+    
+    void showNextTrialButton() override;
+    
+    void hideNextTrialButton() override;
+    
+    void show() override;
+    
+    void hide() override;
+    
+};
+
 class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
     NSView *view_;
     NSTextField *subjectIdLabel;
@@ -66,6 +80,7 @@ public:
     std::string session() override;
     std::string calibrationFilePath() override;
     void subscribe(EventListener *) override;
+    std::string method() override;
     NSView *view();
     void confirm();
     void browseForTargetList();
@@ -99,6 +114,7 @@ public:
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
     void subscribe(EventListener *) override;
+    void show() override;
     void respond(id sender);
     void playTrial();
 private:

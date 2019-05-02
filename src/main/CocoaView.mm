@@ -322,6 +322,10 @@ void CocoaTestSetupView::playCalibration() {
     listener_->playCalibration();
 }
 
+std::string CocoaTestSetupView::method() {
+    return {};
+}
+
 @implementation SetupViewActions
 @synthesize controller;
 
@@ -504,6 +508,10 @@ void CocoaSubjectView::subscribe(EventListener *e) {
     listener_ = e;
 }
 
+void CocoaSubjectView::show() {
+    [window makeKeyAndOrderFront:nil];
+}
+
 @implementation SubjectViewActions
 @synthesize controller;
 
@@ -611,3 +619,22 @@ void CocoaView::center() {
     [window center];
 }
 
+void CocoaExperimenterView::subscribe(EventListener *) {
+    ;
+}
+
+void CocoaExperimenterView::showNextTrialButton() { 
+    ;
+}
+
+void CocoaExperimenterView::hideNextTrialButton() { 
+    ;
+}
+
+void CocoaExperimenterView::show() { 
+    ;
+}
+
+void CocoaExperimenterView::hide() { 
+    ;
+}

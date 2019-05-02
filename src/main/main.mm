@@ -6,19 +6,17 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
-#include <recognition-test/AdaptiveTrack.hpp>
 #include <recognition-test/ResponseEvaluatorImpl.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
 #include <target-list/RandomizedTargetList.hpp>
 #include <target-list/FileExtensionFilterDecorator.hpp>
+#include <adaptive-track/AdaptiveTrack.hpp>
 #include <sys/stat.h>
 #include <fstream>
 
-class MacOsDirectoryReader :
-    public av_speech_in_noise::DirectoryReader,
-    public target_list::DirectoryReader
+class MacOsDirectoryReader : public target_list::DirectoryReader
 {
     std::vector<std::string> filesIn(std::string directory) override {
         return collectAllPredicateAbidingContents(
@@ -200,7 +198,8 @@ int main() {
     };
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetListFactory targetListFactory{&fileExtensions, &randomizer};
-    SubdirectoryTargetListReader targetListReader{&targetListFactory, &reader};
+    target_list::SubdirectoryTargetListReader targetListReader{&targetListFactory, &reader};
+    target_list::RandomizedFiniteTargetList finiteTargetList{&fileExtensions, &randomizer};
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
@@ -220,10 +219,11 @@ int main() {
         "Documents/AVCoordinatedResponseMeasureResults"
     );
     OutputFileImpl outputFile{&writer, &path};
-    AdaptiveTrackFactory snrTrackFactory{};
-    ResponseEvaluatorImpl responseEvaluator{};
+    adaptive_track::AdaptiveTrackFactory snrTrackFactory;
+    ResponseEvaluatorImpl responseEvaluator;
     RecognitionTestModel model{
         &targetListReader,
+        &finiteTargetList,
         &targetPlayer,
         &maskerPlayer,
         &snrTrackFactory,
@@ -268,13 +268,16 @@ int main() {
         subjectViewWidth,
         subjectViewHeight
     )};
+    CocoaExperimenterView experimenterView;
     Presenter::Subject subject{&subjectView};
     Presenter::TestSetup testSetup{&testSetupView};
+    Presenter::Experimenter experimenter{&experimenterView};
     Presenter presenter{
         &model,
         &view,
         &testSetup,
-        &subject
+        &subject,
+        &experimenter
     };
     presenter.run();
 }
