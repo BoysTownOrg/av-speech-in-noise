@@ -15,10 +15,10 @@ namespace adaptive_track {
             rise,
             fall
         };
-        std::vector<int> runCounts{};
-        std::vector<int> stepSizes{};
-        std::vector<int> up{};
-        std::vector<int> down{};
+        std::vector<int> runCounts;
+        std::vector<int> stepSizes;
+        std::vector<int> up;
+        std::vector<int> down;
         std::size_t sequenceIndex{};
         int x_{};
         int sameDirectionConsecutiveCount{};
@@ -45,7 +45,9 @@ namespace adaptive_track {
     };
     
     class AdaptiveTrackFactory : public av_speech_in_noise::TrackFactory {
-        std::shared_ptr<av_speech_in_noise::Track> make(const av_speech_in_noise::Track::Settings &s) override {
+        std::shared_ptr<av_speech_in_noise::Track> make(
+            const av_speech_in_noise::Track::Settings &s
+        ) override {
             return std::make_shared<AdaptiveTrack>(s);
         }
     };
