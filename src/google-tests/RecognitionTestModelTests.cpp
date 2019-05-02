@@ -1375,7 +1375,10 @@ namespace {
         RecognitionTestModelTests,
         submitTypedResponseLoadsNextTarget
     ) {
-        assertNextTargetPassedToPlayer(submittingTypedResponse);
+        initializeFixedLevelTest();
+        setTargetListNext(0, "a");
+        run(submittingTypedResponse);
+        assertTargetFilePathEquals("a");
     }
 
     TEST_F(
