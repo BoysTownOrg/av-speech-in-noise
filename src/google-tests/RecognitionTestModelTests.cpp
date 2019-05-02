@@ -1292,6 +1292,13 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeFixedLevelTestQueriesTargetRmsAfterLoadingFile
+    ) {
+        assertTargetFileLoadedPriorToRmsQuery(initializingFixedLevelTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         playCalibrationQueriesTargetRmsAfterLoadingFile
     ) {
         assertTargetFileLoadedPriorToRmsQuery(playingCalibration);
