@@ -66,11 +66,11 @@ namespace av_speech_in_noise {
         std::string testerId;
         std::string maskerFilePath;
         std::string session;
+        const TrackingRule *targetLevelRule;
         int startingSnr_dB;
         int maskerLevel_dB_SPL;
         int fullScaleLevel_dB_SPL;
         Condition condition;
-        const TrackingRule *targetLevelRule;
     };
     
     struct AudioSettings {

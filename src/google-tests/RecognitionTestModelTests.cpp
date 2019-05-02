@@ -305,9 +305,7 @@ namespace {
             trialWritten_ = trial;
         }
         
-        void openNewFile(
-            const AdaptiveTest &p
-        ) override {
+        void openNewFile(const AdaptiveTest &p) override {
             log_.insert("openNewFile ");
             openNewFileParameters_ = &p;
             if (throwOnOpen_)
@@ -323,9 +321,7 @@ namespace {
             headingWritten_ = true;
         }
         
-        void writeTest(
-            const AdaptiveTest &test
-        ) override {
+        void writeTest(const AdaptiveTest &test) override {
             log_.insert("writeTest ");
             testWritten_ = &test;
         }
@@ -339,9 +335,7 @@ namespace {
         }
     };
     
-    class ModelEventListenerStub :
-        public Model::EventListener
-    {
+    class ModelEventListenerStub : public Model::EventListener {
         bool notified_{};
     public:
         void trialComplete() override {
@@ -774,13 +768,13 @@ namespace {
         Calibration calibration;
         coordinate_response_measure::SubjectResponse coordinateResponse;
         TargetListSetReaderStub targetListSetReader;
+        FiniteTargetListStub finiteTargetList;
         TargetPlayerStub targetPlayer;
         MaskerPlayerStub maskerPlayer;
         OutputFileStub outputFile;
         TrackFactoryStub snrTrackFactory;
         ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
-        FiniteTargetListStub finiteTargetList;
         RecognitionTestModel model{
             &targetListSetReader,
             &finiteTargetList,
@@ -808,7 +802,7 @@ namespace {
             setTargetListCount(3);
         }
         
-        void initializeTest() {
+        void initializeAdaptiveTest() {
             run(initializingAdaptiveTest);
         }
         
@@ -876,10 +870,6 @@ namespace {
         
         void assertTargetVideoNotHidden() {
             EXPECT_FALSE(targetPlayerVideoHidden());
-        }
-        
-        void assertInitializeTestThrowsRequestFailure(std::string what) {
-            assertCallThrowsRequestFailure(initializingAdaptiveTest, std::move(what));
         }
         
         void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
@@ -1017,7 +1007,7 @@ namespace {
             if (gsl::narrow<size_t>(n) >= targetLists.size())
                 setTargetListCount(n+1);
             selectList(n);
-            initializeTest();
+            initializeAdaptiveTest();
         }
         
         void initializeFixedLevelTest() {
@@ -1030,7 +1020,7 @@ namespace {
         
         void initializeTestWithListCount(int n) {
             setTargetListCount(n);
-            initializeTest();
+            initializeAdaptiveTest();
         }
         
         void assertTargetVideoHiddenWhenAuditoryOnly(ConditionUseCase &useCase) {
@@ -1152,7 +1142,7 @@ namespace {
         }
         
         void assertNextTargetPassedToPlayer(UseCase &useCase) {
-            initializeTest();
+            initializeAdaptiveTest();
             setTargetListNext(1, "a");
             selectList(1);
             run(useCase);
@@ -1178,7 +1168,7 @@ namespace {
         }
         
         void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
-            initializeTest();
+            initializeAdaptiveTest();
             setTargetListNext(2, "a");
             setSnrTrackComplete(1);
             
@@ -1260,7 +1250,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestWritesTrialHeading
     ) {
-        initializeTest();
+        initializeAdaptiveTest();
         EXPECT_TRUE(outputFile.headingWritten());
     }
 
@@ -1268,7 +1258,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
     ) {
-        initializeTest();
+        initializeAdaptiveTest();
         assertEqual(
             "close openNewFile writeTest writeTrialHeading ",
             outputFile.log()
@@ -1308,7 +1298,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestOpensNewOutputFilePassingTestSettings
     ) {
-        initializeTest();
+        initializeAdaptiveTest();
         EXPECT_EQ(outputFile.openNewFileParameters(), &testSettings());
     }
 
@@ -1316,7 +1306,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestWritesTestSettings
     ) {
-        initializeTest();
+        initializeAdaptiveTest();
         EXPECT_EQ(outputFile.testWritten(), &testSettings());
     }
 
@@ -1325,7 +1315,7 @@ namespace {
         initializeTestPassesTargetListDirectory
     ) {
         initializingAdaptiveTest.setTargetListDirectory("a");
-        initializeTest();
+        initializeAdaptiveTest();
         assertEqual("a", targetListSetReader.directory());
     }
 
@@ -1629,7 +1619,7 @@ namespace {
         setMaskerLevel_dB_SPL(1);
         setTestingFullScaleLevel_dB_SPL(2);
         maskerPlayer.setRms(3);
-        initializeTest();
+        initializeAdaptiveTest();
         EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
     }
 
@@ -1853,7 +1843,7 @@ namespace {
         initializeTestThrowsRequestFailureIfFileFailsToOpen
     ) {
         outputFile.throwOnOpen();
-        assertInitializeTestThrowsRequestFailure("Unable to open output file.");
+        assertCallThrowsRequestFailure(initializingAdaptiveTest, "Unable to open output file.");
     }
 
     TEST_F(
