@@ -182,7 +182,16 @@ namespace {
         loadFromDirectory();
         assertEqual({ "a", "b", "c" }, randomizer.toShuffle());
     }
-    
+
+    TEST_F(
+        RandomizedFiniteTargetListTests,
+        currentReturnsFullPathToFile
+    ) {
+        reader.setFileNames({ "a", "b", "c" });
+        loadFromDirectory("C:");
+        list.next();
+        assertEqual("C:/a", list.current());
+    }
     
     
     class FileExtensionFilterDecoratorTests : public ::testing::Test {

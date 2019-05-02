@@ -50,6 +50,8 @@ namespace target_list {
     std::string RandomizedTargetList::current() {
         return fullPath(currentFile_);
     }
+    
+    
     RandomizedFiniteTargetList::RandomizedFiniteTargetList(
         DirectoryReader *reader,
         Randomizer *randomizer
@@ -68,12 +70,16 @@ namespace target_list {
     }
     
     std::string RandomizedFiniteTargetList::next() {
-        auto next_ = files.front();
+        currentFile_ = files.front();
         files.erase(files.begin());
-        return directory_ + "/" + next_;
+        return fullPath(currentFile_);
+    }
+    
+    std::string RandomizedFiniteTargetList::fullPath(std::string file) {
+        return directory_ + "/" + std::move(file);
     }
     
     std::string RandomizedFiniteTargetList::current() {
-        return {};
+        return fullPath(currentFile_);
     }
 }

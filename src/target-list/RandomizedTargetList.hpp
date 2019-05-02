@@ -56,6 +56,7 @@ namespace target_list {
     class RandomizedFiniteTargetList : public av_speech_in_noise::FiniteTargetList {
         std::vector<std::string> files{};
         std::string directory_{};
+        std::string currentFile_{};
         DirectoryReader *reader;
         Randomizer *randomizer;
     public:
@@ -64,6 +65,8 @@ namespace target_list {
         void loadFromDirectory(std::string directory) override;
         std::string next() override;
         std::string current() override;
+    private:
+        std::string fullPath(std::string file);
     };
 }
 
