@@ -636,7 +636,7 @@ namespace {
         }
     };
     
-    class InitializingFixedLevelTest : public UseCase {
+    class InitializingFixedLevelTest : public ConditionUseCase {
         FixedLevelTest test;
     public:
         void run(RecognitionTestModel &m) override {
@@ -653,6 +653,14 @@ namespace {
         
         void setFullScaleLevel_dB_SPL(int x) {
             test.fullScaleLevel_dB_SPL = x;
+        }
+        
+        void setAudioVisual() override {
+            test.condition = Condition::audioVisual;
+        }
+        
+        void setAuditoryOnly() override {
+            test.condition = Condition::auditoryOnly;
         }
     };
     
@@ -1144,6 +1152,13 @@ namespace {
         initializeTestHidesTargetVideoWhenAuditoryOnly
     ) {
         assertTargetVideoHiddenWhenAuditoryOnly(initializingTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestHidesTargetVideoWhenAuditoryOnly
+    ) {
+        assertTargetVideoHiddenWhenAuditoryOnly(initializingFixedLevelTest);
     }
 
     TEST_F(

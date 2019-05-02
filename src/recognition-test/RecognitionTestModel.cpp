@@ -195,6 +195,7 @@ namespace av_speech_in_noise {
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
         
         setTargetLevel_dB(targetLevel_dB(p.snr_dB));
+        prepareVideo(p.condition);
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {

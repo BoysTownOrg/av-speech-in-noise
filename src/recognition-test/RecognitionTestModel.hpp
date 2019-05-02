@@ -129,6 +129,7 @@ namespace av_speech_in_noise {
         int snr_dB;
         int maskerLevel_dB_SPL;
         int fullScaleLevel_dB_SPL;
+        Condition condition;
     };
 
     class RecognitionTestModel :
