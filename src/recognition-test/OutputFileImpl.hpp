@@ -1,5 +1,5 @@
-#ifndef av_coordinate_response_measure_OutputFileImpl_hpp
-#define av_coordinate_response_measure_OutputFileImpl_hpp
+#ifndef av_speech_in_noise_OutputFileImpl_hpp
+#define av_speech_in_noise_OutputFileImpl_hpp
 
 #include "RecognitionTestModel.hpp"
 
