@@ -179,6 +179,7 @@ namespace av_speech_in_noise {
         void playbackComplete() override;
     private:
         void prepareNextTrialAfterRemovingCompleteTracks();
+        void preparePlayersForNextTrial(int snr_dB);
         void prepareNextTrial();
         void readTargetLists(const AdaptiveTest &);
         void throwIfTrialInProgress();

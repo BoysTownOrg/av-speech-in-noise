@@ -58,8 +58,7 @@ namespace av_speech_in_noise {
         currentTargetList = finiteTargetList;
         prepareMasker(p.maskerFilePath);
         prepareVideo(p.condition);
-        prepareTargetPlayer(p.snr_dB);
-        seekRandomMaskerPosition();
+        preparePlayersForNextTrial(p.snr_dB);
         fixedLevelTest = true;
     }
     
@@ -152,7 +151,11 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::prepareNextTrial() {
         selectNextList();
-        prepareTargetPlayer(SNR_dB());
+        preparePlayersForNextTrial(SNR_dB());
+    }
+    
+    void RecognitionTestModel::preparePlayersForNextTrial(int snr_dB) {
+        prepareTargetPlayer(snr_dB);
         seekRandomMaskerPosition();
     }
     
