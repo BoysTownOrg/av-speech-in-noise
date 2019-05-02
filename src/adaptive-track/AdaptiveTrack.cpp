@@ -1,6 +1,6 @@
 #include "AdaptiveTrack.hpp"
 
-namespace av_speech_in_noise {
+namespace adaptive_track {
     AdaptiveTrack::AdaptiveTrack(const Settings &p) :
         x_{p.startingX}
     {

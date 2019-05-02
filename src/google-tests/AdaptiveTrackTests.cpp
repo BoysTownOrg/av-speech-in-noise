@@ -1,13 +1,11 @@
-#include <recognition-test/AdaptiveTrack.hpp>
+#include <adaptive-track/AdaptiveTrack.hpp>
 #include <gtest/gtest.h>
 
 namespace {
-    using namespace av_speech_in_noise;
-    
     class AdaptiveTrackFacade {
-        AdaptiveTrack track;
+        adaptive_track::AdaptiveTrack track;
     public:
-        explicit AdaptiveTrackFacade(const Track::Settings &s) :
+        explicit AdaptiveTrackFacade(const av_speech_in_noise::Track::Settings &s) :
             track{s} {}
         
         void push(std::string directions) {
@@ -58,8 +56,8 @@ namespace {
     
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
-        AdaptiveTrack::Settings settings{};
-        TrackingRule rule;
+        adaptive_track::AdaptiveTrack::Settings settings{};
+        av_speech_in_noise::TrackingRule rule;
         
         AdaptiveTrackTests() {
             rule.resize(3);

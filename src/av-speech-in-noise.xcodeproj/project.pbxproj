@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2602F763227B810F00906002 /* AdaptiveTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26B22D382260FE4100D528F1 /* AdaptiveTrack.cpp */; };
+		2602F764227B819900906002 /* libadaptive-track.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2602F75E227B80E500906002 /* libadaptive-track.dylib */; };
 		2614B5A222381DF80083987B /* CocoaView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A022381D850083987B /* CocoaView.mm */; };
 		2614B5A5223824FB0083987B /* AvFoundationPlayers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A3223824960083987B /* AvFoundationPlayers.mm */; };
 		2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2623A153224BD037007C99F2 /* OutputFileImpl.cpp */; };
@@ -37,7 +39,6 @@
 		26A2237A21DD3552007D6511 /* librecognition-test.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; };
 		26A86BDE223A972200210C00 /* MaskerPlayerTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A86BDD223A972200210C00 /* MaskerPlayerTests.cpp */; };
 		26B22D352260EE6400D528F1 /* AdaptiveTrackTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26B22D342260EE6400D528F1 /* AdaptiveTrackTests.cpp */; };
-		26B22D3A2260FE4100D528F1 /* AdaptiveTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26B22D382260FE4100D528F1 /* AdaptiveTrack.cpp */; };
 		26B22D3B2260FE4100D528F1 /* AdaptiveTrack.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 26B22D392260FE4100D528F1 /* AdaptiveTrack.hpp */; };
 		26B81F3721DEB18E00006FCB /* libpresentation.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26FC6B1621DAA3D800289A0A /* libpresentation.dylib */; };
 		26B81F3821DEB18E00006FCB /* librecognition-test.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; };
@@ -72,6 +73,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2602F75E227B80E500906002 /* libadaptive-track.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libadaptive-track.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2614B59D2238090B0083987B /* MersenneTwisterRandomizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MersenneTwisterRandomizer.h; sourceTree = "<group>"; };
 		2614B59E223809B50083987B /* CocoaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CocoaView.h; sourceTree = "<group>"; };
 		2614B59F2238108E0083987B /* AvFoundationPlayers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AvFoundationPlayers.h; sourceTree = "<group>"; };
@@ -136,6 +138,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2602F75C227B80E500906002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2646F83721DFEA0400F378DE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -177,6 +186,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2602F764227B819900906002 /* libadaptive-track.dylib in Frameworks */,
 				26EE86CA2242E99A00C08622 /* libstimulus_players.dylib in Frameworks */,
 				269C91962233212B00A80372 /* gtest_main.a in Frameworks */,
 				2646F84121DFEA5E00F378DE /* libtarget-list.dylib in Frameworks */,
@@ -195,6 +205,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2602F762227B80EA00906002 /* adaptive-track */ = {
+			isa = PBXGroup;
+			children = (
+				26B22D382260FE4100D528F1 /* AdaptiveTrack.cpp */,
+				26B22D392260FE4100D528F1 /* AdaptiveTrack.hpp */,
+			);
+			path = "adaptive-track";
+			sourceTree = "<group>";
+		};
 		2646F83D21DFEA0B00F378DE /* target-list */ = {
 			isa = PBXGroup;
 			children = (
@@ -231,8 +250,6 @@
 				2623A154224BD037007C99F2 /* OutputFileImpl.hpp */,
 				264E7E4C224E6F30008A595F /* OutputFilePathImpl.cpp */,
 				264E7E4D224E6F30008A595F /* OutputFilePathImpl.hpp */,
-				26B22D382260FE4100D528F1 /* AdaptiveTrack.cpp */,
-				26B22D392260FE4100D528F1 /* AdaptiveTrack.hpp */,
 				2645BEC92267705D002E8C6C /* ResponseEvaluatorImpl.cpp */,
 				2645BECA2267705D002E8C6C /* ResponseEvaluatorImpl.hpp */,
 			);
@@ -256,6 +273,7 @@
 		26FC6AF821DA80C900289A0A = {
 			isa = PBXGroup;
 			children = (
+				2602F762227B80EA00906002 /* adaptive-track */,
 				26FDD2D7224AC3100090BDD5 /* av-speech-in-noise */,
 				26FC6B0B21DA85A400289A0A /* Frameworks */,
 				26FC6B0521DA810C00289A0A /* google-tests */,
@@ -277,6 +295,7 @@
 				26B81F2621DEB15700006FCB /* av-speech-in-noise.app */,
 				2646F83921DFEA0400F378DE /* libtarget-list.dylib */,
 				26EE86C52242E98600C08622 /* libstimulus_players.dylib */,
+				2602F75E227B80E500906002 /* libadaptive-track.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -337,6 +356,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		2602F75A227B80E500906002 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2646F83521DFEA0400F378DE /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -375,6 +401,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		2602F75D227B80E500906002 /* adaptive-track */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2602F75F227B80E500906002 /* Build configuration list for PBXNativeTarget "adaptive-track" */;
+			buildPhases = (
+				2602F75A227B80E500906002 /* Headers */,
+				2602F75B227B80E500906002 /* Sources */,
+				2602F75C227B80E500906002 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "adaptive-track";
+			productName = "adaptive-track";
+			productReference = 2602F75E227B80E500906002 /* libadaptive-track.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		2646F83821DFEA0400F378DE /* target-list */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2646F83A21DFEA0400F378DE /* Build configuration list for PBXNativeTarget "target-list" */;
@@ -485,6 +528,9 @@
 			attributes = {
 				LastUpgradeCheck = 1010;
 				TargetAttributes = {
+					2602F75D227B80E500906002 = {
+						CreatedOnToolsVersion = 10.1;
+					};
 					2646F83821DFEA0400F378DE = {
 						CreatedOnToolsVersion = 10.1;
 					};
@@ -524,6 +570,7 @@
 				26B81F2521DEB15700006FCB /* av-speech-in-noise */,
 				2646F83821DFEA0400F378DE /* target-list */,
 				26EE86C42242E98600C08622 /* stimulus_players */,
+				2602F75D227B80E500906002 /* adaptive-track */,
 			);
 		};
 /* End PBXProject section */
@@ -539,6 +586,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2602F75B227B80E500906002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2602F763227B810F00906002 /* AdaptiveTrack.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2646F83621DFEA0400F378DE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -553,7 +608,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */,
-				26B22D3A2260FE4100D528F1 /* AdaptiveTrack.cpp in Sources */,
 				26688C332273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp in Sources */,
 				26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */,
 				264E7E4E224E6F30008A595F /* OutputFilePathImpl.cpp in Sources */,
@@ -613,6 +667,129 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		2602F760227B80E500906002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		2602F761227B80E500906002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		2646F83B21DFEA0400F378DE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1359,6 +1536,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2602F75F227B80E500906002 /* Build configuration list for PBXNativeTarget "adaptive-track" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2602F760227B80E500906002 /* Debug */,
+				2602F761227B80E500906002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2646F83A21DFEA0400F378DE /* Build configuration list for PBXNativeTarget "target-list" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

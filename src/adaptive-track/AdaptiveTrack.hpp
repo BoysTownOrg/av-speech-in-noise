@@ -1,10 +1,10 @@
-#ifndef av_coordinate_response_measure_AdaptiveTrack_hpp
-#define av_coordinate_response_measure_AdaptiveTrack_hpp
+#ifndef adaptive_track_AdaptiveTrack_hpp
+#define adaptive_track_AdaptiveTrack_hpp
 
 #include <recognition-test/RecognitionTestModel.hpp>
 
-namespace av_speech_in_noise {
-    class AdaptiveTrack : public Track {
+namespace adaptive_track {
+    class AdaptiveTrack : public av_speech_in_noise::Track {
         enum class Direction {
             undefined,
             up,
@@ -44,8 +44,8 @@ namespace av_speech_in_noise {
         bool complete_() const;
     };
     
-    class AdaptiveTrackFactory : public TrackFactory {
-        std::shared_ptr<Track> make(const Track::Settings &s) override {
+    class AdaptiveTrackFactory : public av_speech_in_noise::TrackFactory {
+        std::shared_ptr<av_speech_in_noise::Track> make(const av_speech_in_noise::Track::Settings &s) override {
             return std::make_shared<AdaptiveTrack>(s);
         }
     };
