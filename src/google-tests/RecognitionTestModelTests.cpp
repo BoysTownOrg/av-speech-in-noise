@@ -1018,7 +1018,7 @@ namespace {
             randomizer.setRandomInt(n);
         }
         
-        void initializeTestWithListCount(int n) {
+        void initializeAdaptiveTestWithListCount(int n) {
             setTargetListCount(n);
             initializeAdaptiveTest();
         }
@@ -1150,7 +1150,7 @@ namespace {
         }
         
         void assertSelectsRandomListInRangeAfterRemovingCompleteTracks(UseCase &useCase) {
-            initializeTestWithListCount(3);
+            initializeAdaptiveTestWithListCount(3);
             setSnrTrackComplete(2);
             run(useCase);
             assertRandomizerPassedIntegerBounds(0, 1);
@@ -1269,7 +1269,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesSnrTrackForEachList
     ) {
-        initializeTestWithListCount(3);
+        initializeAdaptiveTestWithListCount(3);
         EXPECT_EQ(3, snrTrackFactoryParameters().size());
     }
 
@@ -1277,7 +1277,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
-        initializeTestWithListCount(3);
+        initializeAdaptiveTestWithListCount(3);
         for (int i = 0; i < 3; ++i)
             assertSettingsContainTargetLevelRule(
                 snrTrackFactoryParameters().at(i)
@@ -1289,7 +1289,7 @@ namespace {
         initializeTestCreatesEachSnrTrackWithStartingSnr
     ) {
         initializingAdaptiveTest.setStartingSnr_dB(1);
-        initializeTestWithListCount(3);
+        initializeAdaptiveTestWithListCount(3);
         for (int i = 0; i < 3; ++i)
             assertSettingsMatchStartingX(snrTrackFactoryParameters().at(i), 1);
     }
@@ -1445,7 +1445,7 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSelectsRandomListInRange
     ) {
-        initializeTestWithListCount(3);
+        initializeAdaptiveTestWithListCount(3);
         assertRandomizerPassedIntegerBounds(0, 2);
     }
 
@@ -1959,7 +1959,7 @@ namespace {
         RecognitionTestModelTests,
         testCompleteWhenAllTracksComplete
     ) {
-        initializeTestWithListCount(3);
+        initializeAdaptiveTestWithListCount(3);
         setSnrTrackComplete(0);
         assertTestIncomplete();
         setSnrTrackComplete(1);
