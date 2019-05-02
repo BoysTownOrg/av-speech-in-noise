@@ -5,8 +5,8 @@
 
 namespace {
     class DirectoryReaderStub : public target_list::DirectoryReader {
-        std::vector<std::string> fileNames_{};
-        std::string directory_{};
+        std::vector<std::string> fileNames_;
+        std::string directory_;
     public:
         void setFileNames(std::vector<std::string> files) {
             fileNames_ = files;
@@ -36,8 +36,8 @@ namespace {
 
     class TargetListTests : public ::testing::Test {
     protected:
-        DirectoryReaderStub reader{};
-        RandomizerStub randomizer{};
+        DirectoryReaderStub reader;
+        RandomizerStub randomizer;
         target_list::RandomizedTargetList list{&reader, &randomizer};
         
         void loadFromDirectory(std::string s = {}) {
@@ -131,8 +131,8 @@ namespace {
 
     class FiniteTargetListTests : public ::testing::Test {
     protected:
-        DirectoryReaderStub reader{};
-        RandomizerStub randomizer{};
+        DirectoryReaderStub reader;
+        RandomizerStub randomizer;
         target_list::RandomizedFiniteTargetList list{&reader, &randomizer};
         
         void loadFromDirectory(std::string s = {}) {
@@ -212,11 +212,20 @@ namespace {
         next();
         assertEqual("C:/a", list.current());
     }
+
+    TEST_F(
+        FiniteTargetListTests,
+        nextReturnsEmptyIfNoFiles
+    ) {
+        setFileNames({});
+        loadFromDirectory();
+        assertEqual("", next());
+    }
     
     
     class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:
-        DirectoryReaderStub reader{};
+        DirectoryReaderStub reader;
         
         target_list::FileExtensionFilterDecorator construct(
             std::vector<std::string> filters = {}

@@ -70,6 +70,9 @@ namespace target_list {
     }
     
     std::string RandomizedFiniteTargetList::next() {
+        if (files.empty())
+            return "";
+        
         currentFile_ = files.front();
         files.erase(files.begin());
         return fullPath(currentFile_);
