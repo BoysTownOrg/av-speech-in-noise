@@ -85,12 +85,17 @@ namespace av_speech_in_noise {
         virtual std::string current() = 0;
     };
     
+    class FiniteTargetList : public virtual TargetList {
+    public:
+        virtual bool empty() = 0;
+    };
+    
     class TargetListReader {
     public:
         virtual ~TargetListReader() = default;
         using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
         virtual lists_type read(std::string directory) = 0;
-};
+    };
     
     class ResponseEvaluator {
     public:
@@ -148,6 +153,7 @@ namespace av_speech_in_noise {
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
         TargetListReader *targetListSetReader;
+        FiniteTargetList *finiteTargetList;
         MaskerPlayer *maskerPlayer;
         TargetPlayer *targetPlayer;
         TrackFactory *snrTrackFactory;
@@ -157,9 +163,11 @@ namespace av_speech_in_noise {
         Model::EventListener *listener_{};
         Track *currentSnrTrack{};
         TargetList *currentTargetList{};
+        bool fixedLevelTest{};
     public:
         RecognitionTestModel(
             TargetListReader *,
+            FiniteTargetList *,
             TargetPlayer *,
             MaskerPlayer *,
             TrackFactory *,

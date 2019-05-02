@@ -546,6 +546,47 @@ namespace {
         }
     };
     
+    class FiniteTargetListStub : public FiniteTargetList {
+        std::string directory_{};
+        std::string next_{};
+        std::string current_{};
+        bool empty_{};
+        bool nextCalled_{};
+    public:
+        std::string current() override {
+            return current_;
+        }
+        
+        void loadFromDirectory(std::string directory) override {
+            directory_ = std::move(directory);
+        }
+        
+        std::string next() override {
+            nextCalled_ = true;
+            return next_;
+        }
+        /*
+        void setCurrent(std::string s) {
+            current_ = std::move(s);
+        }
+        
+        void setNext(std::string s) {
+            next_ = std::move(s);
+        }
+        
+        auto directory() {
+            return directory_;
+        }*/
+        
+        void setEmpty() {
+            empty_ = true;
+        }
+        
+        bool empty() override {
+            return empty_;
+        }
+    };
+    
     class UseCase {
     public:
         virtual ~UseCase() = default;
@@ -738,8 +779,10 @@ namespace {
         TrackFactoryStub snrTrackFactory;
         ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
+        FiniteTargetListStub finiteTargetList;
         RecognitionTestModel model{
             &targetListSetReader,
+            &finiteTargetList,
             &targetPlayer,
             &maskerPlayer,
             &snrTrackFactory,
@@ -1872,6 +1915,16 @@ namespace {
         setSnrTrackComplete(1);
         assertTestIncomplete();
         setSnrTrackComplete(2);
+        assertTestComplete();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        fixedLevelTestCompleteWhenListEmpty
+    ) {
+        initializeFixedLevelTest();
+        assertTestIncomplete();
+        finiteTargetList.setEmpty();
         assertTestComplete();
     }
 }

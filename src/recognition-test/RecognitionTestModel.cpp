@@ -22,6 +22,7 @@ namespace av_speech_in_noise {
     
     RecognitionTestModel::RecognitionTestModel(
         TargetListReader *targetListSetReader,
+        FiniteTargetList *finiteTargetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
         TrackFactory *snrTrackFactory,
@@ -30,6 +31,7 @@ namespace av_speech_in_noise {
         Randomizer *randomizer
     ) :
         targetListSetReader{targetListSetReader},
+        finiteTargetList{finiteTargetList},
         maskerPlayer{maskerPlayer},
         targetPlayer{targetPlayer},
         snrTrackFactory{snrTrackFactory},
@@ -201,6 +203,7 @@ namespace av_speech_in_noise {
         prepareTargetPlayer(p.snr_dB);
         loadMaskerFile(p.maskerFilePath);
         prepareVideo(p.condition);
+        fixedLevelTest = true;
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
@@ -346,7 +349,9 @@ namespace av_speech_in_noise {
     }
 
     bool RecognitionTestModel::testComplete() {
-        return std::all_of(
+        return fixedLevelTest ?
+            finiteTargetList->empty() :
+            std::all_of(
                 targetListsWithTracks.begin(),
                 targetListsWithTracks.end(),
                 [](const TargetListWithTrack &t) {
