@@ -73,7 +73,8 @@ namespace av_speech_in_noise {
         prepareOutputFile(p);
         prepareMasker(p.maskerFilePath);
         prepareVideo(p.condition);
-        prepareNextTrial();
+        prepareNextAdaptiveTrial();
+        fixedLevelTest = false;
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -149,7 +150,7 @@ namespace av_speech_in_noise {
         return c == Condition::auditoryOnly;
     }
     
-    void RecognitionTestModel::prepareNextTrial() {
+    void RecognitionTestModel::prepareNextAdaptiveTrial() {
         selectNextList();
         preparePlayersForNextTrial(adaptiveSnr_dB());
     }
@@ -208,11 +209,11 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
         throwIfTrialInProgress();
         
-        preparePlayers(settings);
+        preparePlayersToPlay(settings);
         startTrial();
     }
     
-    void RecognitionTestModel::preparePlayers(const AudioSettings &p) {
+    void RecognitionTestModel::preparePlayersToPlay(const AudioSettings &p) {
         setAudioDevices(p);
     }
     
@@ -265,13 +266,17 @@ namespace av_speech_in_noise {
         listener_->trialComplete();
     }
     
-    void RecognitionTestModel::submitResponse(const coordinate_response_measure::SubjectResponse &response) {
+    void RecognitionTestModel::submitResponse(
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
         writeTrial(response);
         updateSnr(response);
-        prepareNextTrialAfterRemovingCompleteTracks();
+        prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
     }
     
-    void RecognitionTestModel::writeTrial(const coordinate_response_measure::SubjectResponse &response) {
+    void RecognitionTestModel::writeTrial(
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
         coordinate_response_measure::Trial trial;
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
@@ -283,19 +288,28 @@ namespace av_speech_in_noise {
         outputFile->writeTrial(trial);
     }
     
-    void RecognitionTestModel::updateSnr(const coordinate_response_measure::SubjectResponse &response) {
+    void RecognitionTestModel::updateSnr(
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
         if (correct(response))
             currentSnrTrack->pushDown();
         else
             currentSnrTrack->pushUp();
     }
     
-    bool RecognitionTestModel::correct(const coordinate_response_measure::SubjectResponse &response) {
+    bool RecognitionTestModel::correct(
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
         return evaluator->correct(currentTarget(), response);
     }
     
     std::string RecognitionTestModel::currentTarget() {
         return currentTargetList->current();
+    }
+    
+    void RecognitionTestModel::prepareNextAdaptiveTrialAfterRemovingCompleteTracks() {
+        removeCompleteTracks();
+        prepareNextAdaptiveTrial();
     }
     
     void RecognitionTestModel::removeCompleteTracks() {
@@ -309,6 +323,21 @@ namespace av_speech_in_noise {
             ),
             targetListsWithTracks.end()
         );
+    }
+    
+    void RecognitionTestModel::submitCorrectResponse() {
+        currentSnrTrack->pushDown();
+        prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
+    }
+    
+    void RecognitionTestModel::submitIncorrectResponse() {
+        currentSnrTrack->pushUp();
+        prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
+    }
+    
+    void RecognitionTestModel::submitTypedResponse(const TypedResponse &) {
+        prepareTargetPlayer({});
+        seekRandomMaskerPosition();
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
@@ -361,25 +390,6 @@ namespace av_speech_in_noise {
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {
         return maskerPlayer->outputAudioDeviceDescriptions();
-    }
-    
-    void RecognitionTestModel::submitCorrectResponse() {
-        currentSnrTrack->pushDown();
-        prepareNextTrialAfterRemovingCompleteTracks();
-    }
-    
-    void RecognitionTestModel::prepareNextTrialAfterRemovingCompleteTracks() {
-        removeCompleteTracks();
-        prepareNextTrial();
-    }
-    
-    void RecognitionTestModel::submitIncorrectResponse() {
-        currentSnrTrack->pushUp();
-        prepareNextTrialAfterRemovingCompleteTracks();
-    }
-    
-    void RecognitionTestModel::submitTypedResponse(const TypedResponse &) {
-        prepareNextTrialAfterRemovingCompleteTracks();
     }
 }
 

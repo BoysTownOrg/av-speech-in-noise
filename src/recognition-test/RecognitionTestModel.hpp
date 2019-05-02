@@ -178,9 +178,9 @@ namespace av_speech_in_noise {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
-        void prepareNextTrialAfterRemovingCompleteTracks();
+        void prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
         void preparePlayersForNextTrial(int snr_dB);
-        void prepareNextTrial();
+        void prepareNextAdaptiveTrial();
         void readTargetLists(const AdaptiveTest &);
         void throwIfTrialInProgress();
         void writeTrial(const coordinate_response_measure::SubjectResponse &);
@@ -204,7 +204,7 @@ namespace av_speech_in_noise {
         bool trialInProgress();
         void prepareTargetPlayer(int snr_dB);
         void seekRandomMaskerPosition();
-        void preparePlayers(const AudioSettings &);
+        void preparePlayersToPlay(const AudioSettings &);
         void startTrial();
         bool auditoryOnly(const Condition &);
         void prepareVideo(const Condition &);
