@@ -1543,6 +1543,18 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeFixedLevelTestSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        targetPlayer.setDurationSeconds(1);
+        maskerPlayer.setFadeTimeSeconds(2);
+        maskerPlayer.setDurationSeconds(3);
+        initializeFixedLevelTest();
+        EXPECT_EQ(0., randomizer.lowerFloatBound());
+        EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperFloatBound());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestSeeksToRandomMaskerPosition
     ) {
         assertMaskerPlayerSeekedToRandomTime(initializingTest);
