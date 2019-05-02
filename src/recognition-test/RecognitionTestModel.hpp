@@ -210,7 +210,7 @@ namespace av_speech_in_noise {
         void prepareVideo(const Condition &);
         int desiredMaskerLevel_dB();
         double unalteredTargetLevel_dB();
-        int SNR_dB();
+        int adaptiveSnr_dB();
         double targetLevel_dB(int snr_dB);
         double targetLevel_dB();
         double maskerLevel_dB();

@@ -151,7 +151,7 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::prepareNextTrial() {
         selectNextList();
-        preparePlayersForNextTrial(SNR_dB());
+        preparePlayersForNextTrial(adaptiveSnr_dB());
     }
     
     void RecognitionTestModel::preparePlayersForNextTrial(int snr_dB) {
@@ -182,10 +182,6 @@ namespace av_speech_in_noise {
         targetPlayer->setLevel_dB(x);
     }
     
-    double RecognitionTestModel::targetLevel_dB() {
-        return targetLevel_dB(SNR_dB());
-    }
-    
     double RecognitionTestModel::targetLevel_dB(int snr_dB) {
         return
             desiredMaskerLevel_dB() +
@@ -193,7 +189,7 @@ namespace av_speech_in_noise {
             unalteredTargetLevel_dB();
     }
     
-    int RecognitionTestModel::SNR_dB() {
+    int RecognitionTestModel::adaptiveSnr_dB() {
         return currentSnrTrack->x();
     }
     
@@ -282,7 +278,7 @@ namespace av_speech_in_noise {
         trial.reversals = currentSnrTrack->reversals();
         trial.correctColor = evaluator->correctColor(currentTarget());
         trial.correctNumber = evaluator->correctNumber(currentTarget());
-        trial.SNR_dB = SNR_dB();
+        trial.SNR_dB = adaptiveSnr_dB();
         trial.correct = correct(response);
         outputFile->writeTrial(trial);
     }
