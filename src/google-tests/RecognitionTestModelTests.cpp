@@ -1199,6 +1199,12 @@ namespace {
             run(useCase);
             assertEqual("a", maskerPlayer.filePath());
         }
+        
+        void assertFiniteTargetListNextPassedToPlayer(UseCase &useCase) {
+            finiteTargetList.setNext("a");
+            run(useCase);
+            assertTargetFilePathEquals("a");
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1404,9 +1410,7 @@ namespace {
         RecognitionTestModelTests,
         initializeFixedLevelTestPassesNextTargetToTargetPlayer
     ) {
-        finiteTargetList.setNext("a");
-        initializeFixedLevelTest();
-        assertTargetFilePathEquals("a");
+        assertFiniteTargetListNextPassedToPlayer(initializingFixedLevelTest);
     }
 
     TEST_F(
@@ -1435,9 +1439,7 @@ namespace {
         submitTypedResponseLoadsNextTarget
     ) {
         initializeFixedLevelTest();
-        finiteTargetList.setNext("a");
-        run(submittingTypedResponse);
-        assertTargetFilePathEquals("a");
+        assertFiniteTargetListNextPassedToPlayer(submittingTypedResponse);
     }
 
     TEST_F(
