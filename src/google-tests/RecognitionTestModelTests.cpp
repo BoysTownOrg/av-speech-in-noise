@@ -1205,6 +1205,15 @@ namespace {
             run(useCase);
             assertTargetFilePathEquals("a");
         }
+        
+        void assertSeeksToRandomMaskerPositionWithinTrialDuration(UseCase &useCase) {
+            targetPlayer.setDurationSeconds(1);
+            maskerPlayer.setFadeTimeSeconds(2);
+            maskerPlayer.setDurationSeconds(3);
+            run(useCase);
+            EXPECT_EQ(0., randomizer.lowerFloatBound());
+            EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperFloatBound());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1533,24 +1542,42 @@ namespace {
         RecognitionTestModelTests,
         initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
-        targetPlayer.setDurationSeconds(1);
-        maskerPlayer.setFadeTimeSeconds(2);
-        maskerPlayer.setDurationSeconds(3);
-        initializeTest();
-        EXPECT_EQ(0., randomizer.lowerFloatBound());
-        EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperFloatBound());
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
-        targetPlayer.setDurationSeconds(1);
-        maskerPlayer.setFadeTimeSeconds(2);
-        maskerPlayer.setDurationSeconds(3);
-        initializeFixedLevelTest();
-        EXPECT_EQ(0., randomizer.lowerFloatBound());
-        EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperFloatBound());
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingFixedLevelTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitResponseSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitIncorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitTypedResponseSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingTypedResponse);
     }
 
     TEST_F(
