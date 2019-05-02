@@ -124,6 +124,12 @@ namespace av_speech_in_noise {
     struct TypedResponse {
     
     };
+    
+    struct FixedLevelTest {
+        int snr_dB;
+        int maskerLevel_dB_SPL;
+        int fullScaleLevel_dB_SPL;
+    };
 
     class RecognitionTestModel :
         public Model,
@@ -160,6 +166,7 @@ namespace av_speech_in_noise {
             Randomizer *
         );
         void initializeTest(const Test &) override;
+        void initializeFixedLevelTest(const FixedLevelTest &);
         void playTrial(const AudioSettings &) override;
         void submitResponse(const coordinate_response_measure::SubjectResponse &) override;
         void submitTypedResponse(const TypedResponse &);

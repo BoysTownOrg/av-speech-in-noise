@@ -360,5 +360,16 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::submitTypedResponse(const TypedResponse &) {
         prepareNextTrialAfterRemovingCompleteTracks();
     }
+    
+    void RecognitionTestModel::initializeFixedLevelTest(const FixedLevelTest &p) {
+        fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
+        maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
+        
+        setTargetLevel_dB(
+            desiredMaskerLevel_dB() +
+            p.snr_dB -
+            unalteredTargetLevel_dB()
+        );
+    }
 }
 

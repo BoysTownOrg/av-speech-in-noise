@@ -636,6 +636,26 @@ namespace {
         }
     };
     
+    class InitializingFixedLevelTest : public UseCase {
+        FixedLevelTest test;
+    public:
+        void run(RecognitionTestModel &m) override {
+            m.initializeFixedLevelTest(test);
+        }
+        
+        void setSnr_dB(int x) {
+            test.snr_dB = x;
+        }
+        
+        void setMaskerLevel_dB_SPL(int x) {
+            test.maskerLevel_dB_SPL = x;
+        }
+        
+        void setFullScaleLevel_dB_SPL(int x) {
+            test.fullScaleLevel_dB_SPL = x;
+        }
+    };
+    
     class AudioDeviceUseCase : public virtual UseCase {
     public:
         virtual void setAudioDevice(std::string) = 0;
@@ -710,6 +730,7 @@ namespace {
         };
         ModelEventListenerStub listener;
         InitializingTest initializingTest;
+        InitializingFixedLevelTest initializingFixedLevelTest;
         PlayingTrial playingTrial;
         PlayingCalibration playingCalibration;
         SubmittingCoordinateResponse submittingCoordinateResponse;
@@ -938,6 +959,10 @@ namespace {
             initializeTest();
         }
         
+        void initializeFixedLevelTest() {
+            run(initializingFixedLevelTest);
+        }
+        
         void selectList(int n) {
             randomizer.setRandomInt(n);
         }
@@ -990,10 +1015,16 @@ namespace {
         
         void setMaskerLevel_dB_SPL(int x) {
             initializingTest.setMaskerLevel_dB_SPL(x);
+            initializingFixedLevelTest.setMaskerLevel_dB_SPL(x);
+        }
+        
+        void setSnr_dB(int x) {
+            initializingFixedLevelTest.setSnr_dB(x);
         }
         
         void setTestingFullScaleLevel_dB_SPL(int x) {
             initializingTest.setFullScaleLevel_dB_SPL(x);
+            initializingFixedLevelTest.setFullScaleLevel_dB_SPL(x);
         }
         
         auto snrTrackFactoryParameters() {
@@ -1437,6 +1468,18 @@ namespace {
         setTestingFullScaleLevel_dB_SPL(4);
         setTargetPlayerRms(5);
         initializeTestWithStartingList(1);
+        EXPECT_EQ(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestSetsTargetPlayerLevel
+    ) {
+        setSnr_dB(2);
+        setMaskerLevel_dB_SPL(3);
+        setTestingFullScaleLevel_dB_SPL(4);
+        setTargetPlayerRms(5);
+        initializeFixedLevelTest();
         EXPECT_EQ(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
     }
 
