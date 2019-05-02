@@ -1343,6 +1343,15 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeFixedLevelTestPassesNextTargetToTargetPlayer
+    ) {
+        setTargetListNext(0, "a");
+        initializeFixedLevelTest();
+        assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitCoordinateResponseLoadsNextTarget
     ) {
         assertNextTargetPassedToPlayer(submittingCoordinateResponse);

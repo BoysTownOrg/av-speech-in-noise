@@ -194,6 +194,8 @@ namespace av_speech_in_noise {
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
         
+        lists = targetListSetReader->read({});
+        currentTargetList = lists.front().get();
         loadTargetFile(currentTargetList->next());
         setTargetLevel_dB(targetLevel_dB(p.snr_dB));
         prepareVideo(p.condition);
