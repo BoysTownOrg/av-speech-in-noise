@@ -52,6 +52,19 @@ namespace target_list {
             return std::make_shared<RandomizedTargetList>(reader, randomizer);
         }
     };
+    
+    class RandomizedFiniteTargetList : public av_speech_in_noise::FiniteTargetList {
+        std::vector<std::string> files{};
+        std::string directory_{};
+        DirectoryReader *reader;
+        Randomizer *randomizer;
+    public:
+        RandomizedFiniteTargetList(DirectoryReader *, Randomizer *);
+        bool empty() override;
+        void loadFromDirectory(std::string directory) override;
+        std::string next() override;
+        std::string current() override;
+    };
 }
 
 #endif

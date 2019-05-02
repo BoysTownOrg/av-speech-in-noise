@@ -128,6 +128,62 @@ namespace {
         loadFromDirectory();
         assertEqual("", next());
     }
+
+    class RandomizedFiniteTargetListTests : public ::testing::Test {
+    protected:
+        DirectoryReaderStub reader{};
+        RandomizerStub randomizer{};
+        target_list::RandomizedFiniteTargetList list{&reader, &randomizer};
+        
+        void loadFromDirectory(std::string s = {}) {
+            list.loadFromDirectory(std::move(s));
+        }
+    };
+
+    TEST_F(
+        RandomizedFiniteTargetListTests,
+        loadFromDirectoryPassesDirectoryToDirectoryReader
+    ) {
+        loadFromDirectory("a");
+        assertEqual("a", reader.directory());
+    }
+
+    TEST_F(
+        RandomizedFiniteTargetListTests,
+        testCompleteWhenStimulusFilesExhausted
+    ) {
+        reader.setFileNames({ "a", "b", "c" });
+        loadFromDirectory();
+        EXPECT_FALSE(list.empty());
+        list.next();
+        EXPECT_FALSE(list.empty());
+        list.next();
+        EXPECT_FALSE(list.empty());
+        list.next();
+        EXPECT_TRUE(list.empty());
+    }
+
+    TEST_F(
+        RandomizedFiniteTargetListTests,
+        nextReturnsFullPathToFileAtFront
+    ) {
+        reader.setFileNames({ "a", "b", "c" });
+        loadFromDirectory("C:");
+        assertEqual("C:/a", list.next());
+        assertEqual("C:/b", list.next());
+        assertEqual("C:/c", list.next());
+    }
+
+    TEST_F(
+        RandomizedFiniteTargetListTests,
+        loadFromDirectoryShufflesFileNames
+    ) {
+        reader.setFileNames({ "a", "b", "c" });
+        loadFromDirectory();
+        assertEqual({ "a", "b", "c" }, randomizer.toShuffle());
+    }
+    
+    
     
     class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:
