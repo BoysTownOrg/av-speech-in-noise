@@ -858,27 +858,11 @@ namespace {
             }
         }
         
-        void initializeTestIgnoringFailure() {
-            runIgnoringFailure(initializingTest);
-        }
-        
-        void initializeFixedLevelTestIgnoringFailure() {
-            runIgnoringFailure(initializingFixedLevelTest);
-        }
-        
         void runIgnoringFailure(UseCase &useCase) {
             try {
                 run(useCase);
             } catch (const RecognitionTestModel::RequestFailure &) {
             }
-        }
-        
-        void playTrialIgnoringFailure() {
-            runIgnoringFailure(playingTrial);
-        }
-        
-        void playCalibrationIgnoringFailure() {
-            runIgnoringFailure(playingCalibration);
         }
         
         template<typename T>
@@ -942,23 +926,24 @@ namespace {
         }
         
         void playTrialWhenTrialAlreadyInProgressIgnoringFailure() {
+            runIgnoringFailureWithTrialInProgress(playingTrial);
+        }
+        
+        void runIgnoringFailureWithTrialInProgress(UseCase &useCase) {
             setTrialInProgress();
-            playTrialIgnoringFailure();
+            runIgnoringFailure(useCase);
         }
         
         void playCalibrationWhenTrialAlreadyInProgressIgnoringFailure() {
-            setTrialInProgress();
-            playCalibrationIgnoringFailure();
+            runIgnoringFailureWithTrialInProgress(playingCalibration);
         }
         
         void initializeTestWhenTrialAlreadyInProgressIgnoringFailure() {
-            setTrialInProgress();
-            initializeTestIgnoringFailure();
+            runIgnoringFailureWithTrialInProgress(initializingTest);
         }
         
         void initializeFixedLevelTestWhenTrialAlreadyInProgressIgnoringFailure() {
-            setTrialInProgress();
-            initializeFixedLevelTestIgnoringFailure();
+            runIgnoringFailureWithTrialInProgress(initializingFixedLevelTest);
         }
         
         void assertTargetFilePathEquals(std::string what) {
