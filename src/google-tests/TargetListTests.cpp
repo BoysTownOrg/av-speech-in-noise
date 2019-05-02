@@ -129,7 +129,7 @@ namespace {
         assertEqual("", next());
     }
 
-    class RandomizedFiniteTargetListTests : public ::testing::Test {
+    class FiniteTargetListTests : public ::testing::Test {
     protected:
         DirectoryReaderStub reader{};
         RandomizerStub randomizer{};
@@ -143,13 +143,25 @@ namespace {
             return list.next();
         }
         
+        auto empty() {
+            return list.empty();
+        }
+        
         void setFileNames(std::vector<std::string> v) {
             reader.setFileNames(std::move(v));
+        }
+        
+        void assertNotEmpty() {
+            EXPECT_FALSE(empty());
+        }
+        
+        void assertEmpty() {
+            EXPECT_TRUE(empty());
         }
     };
 
     TEST_F(
-        RandomizedFiniteTargetListTests,
+        FiniteTargetListTests,
         loadFromDirectoryPassesDirectoryToDirectoryReader
     ) {
         loadFromDirectory("a");
@@ -157,22 +169,22 @@ namespace {
     }
 
     TEST_F(
-        RandomizedFiniteTargetListTests,
+        FiniteTargetListTests,
         testCompleteWhenStimulusFilesExhausted
     ) {
         setFileNames({ "a", "b", "c" });
         loadFromDirectory();
-        EXPECT_FALSE(list.empty());
+        assertNotEmpty();
         next();
-        EXPECT_FALSE(list.empty());
+        assertNotEmpty();
         next();
-        EXPECT_FALSE(list.empty());
+        assertNotEmpty();
         next();
-        EXPECT_TRUE(list.empty());
+        assertEmpty();
     }
 
     TEST_F(
-        RandomizedFiniteTargetListTests,
+        FiniteTargetListTests,
         nextReturnsFullPathToFileAtFront
     ) {
         setFileNames({ "a", "b", "c" });
@@ -183,7 +195,7 @@ namespace {
     }
 
     TEST_F(
-        RandomizedFiniteTargetListTests,
+        FiniteTargetListTests,
         loadFromDirectoryShufflesFileNames
     ) {
         setFileNames({ "a", "b", "c" });
@@ -192,7 +204,7 @@ namespace {
     }
 
     TEST_F(
-        RandomizedFiniteTargetListTests,
+        FiniteTargetListTests,
         currentReturnsFullPathToFile
     ) {
         setFileNames({ "a", "b", "c" });
