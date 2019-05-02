@@ -1550,6 +1550,13 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeFixedLevelTestSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(initializingFixedLevelTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitResponseSeeksToRandomMaskerPosition
     ) {
         assertMaskerPlayerSeekedToRandomTime(submittingCoordinateResponse);
