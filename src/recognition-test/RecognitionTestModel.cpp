@@ -58,6 +58,7 @@ namespace av_speech_in_noise {
         currentTargetList = finiteTargetList;
         prepareTargetPlayer(p.snr_dB);
         loadMaskerFile(p.maskerFilePath);
+        maskerPlayer->setLevel_dB(maskerLevel_dB());
         prepareVideo(p.condition);
         fixedLevelTest = true;
     }

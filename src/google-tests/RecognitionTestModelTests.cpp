@@ -1589,6 +1589,17 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeFixedLevelTestSetsInitialMaskerPlayerLevel
+    ) {
+        setMaskerLevel_dB_SPL(1);
+        setTestingFullScaleLevel_dB_SPL(2);
+        maskerPlayer.setRms(3);
+        initializeFixedLevelTest();
+        EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeTestSetsTargetPlayerLevel
     ) {
         snrTrack(1)->setX(2);
