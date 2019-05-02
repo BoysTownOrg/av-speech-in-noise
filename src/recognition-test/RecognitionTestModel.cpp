@@ -164,9 +164,13 @@ namespace av_speech_in_noise {
     }
     
     double RecognitionTestModel::targetLevel_dB() {
+        return targetLevel_dB(SNR_dB());
+    }
+    
+    double RecognitionTestModel::targetLevel_dB(int snr_dB) {
         return
             desiredMaskerLevel_dB() +
-            SNR_dB() -
+            snr_dB -
             unalteredTargetLevel_dB();
     }
     
@@ -184,6 +188,13 @@ namespace av_speech_in_noise {
             2 * maskerPlayer->fadeTimeSeconds() -
             targetPlayer->durationSeconds();
         maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
+    }
+    
+    void RecognitionTestModel::initializeFixedLevelTest(const FixedLevelTest &p) {
+        fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
+        maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
+        
+        setTargetLevel_dB(targetLevel_dB(p.snr_dB));
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
@@ -359,17 +370,6 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::submitTypedResponse(const TypedResponse &) {
         prepareNextTrialAfterRemovingCompleteTracks();
-    }
-    
-    void RecognitionTestModel::initializeFixedLevelTest(const FixedLevelTest &p) {
-        fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
-        maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
-        
-        setTargetLevel_dB(
-            desiredMaskerLevel_dB() +
-            p.snr_dB -
-            unalteredTargetLevel_dB()
-        );
     }
 }
 

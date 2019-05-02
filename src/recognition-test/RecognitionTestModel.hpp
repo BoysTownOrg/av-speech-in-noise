@@ -212,6 +212,7 @@ namespace av_speech_in_noise {
         int desiredMaskerLevel_dB();
         double unalteredTargetLevel_dB();
         int SNR_dB();
+        double targetLevel_dB(int snr_dB);
         double targetLevel_dB();
         double maskerLevel_dB();
         void setTargetPlayerDevice_(const std::string &);
