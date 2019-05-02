@@ -1461,7 +1461,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
+        submitCoordinateResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
     ) {
         assertSelectsRandomListInRangeAfterRemovingCompleteTracks(submittingCoordinateResponse);
     }
@@ -1512,7 +1512,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseSubscribesToTargetPlaybackCompletionNotification
+        submitCoordinateResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingCoordinateResponse);
     }
@@ -1554,7 +1554,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseSeeksToRandomMaskerPositionWithinTrialDuration
+        submitCoordinateResponseSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCoordinateResponse);
     }
@@ -1596,7 +1596,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitResponseSeeksToRandomMaskerPosition
+        submitCoordinateResponseSeeksToRandomMaskerPosition
     ) {
         assertMaskerPlayerSeekedToRandomTime(submittingCoordinateResponse);
     }
