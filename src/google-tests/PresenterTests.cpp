@@ -777,6 +777,17 @@ namespace {
         }
     };
     
+    class RespondingFromExperimenter : public TrialSubmission {
+        ViewStub::ExperimenterViewStub *view;
+    public:
+        explicit RespondingFromExperimenter(ViewStub::ExperimenterViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->submitResponse();
+        }
+    };
+    
     class SubmittingPassedTrial : public TrialSubmission {
         ViewStub::ExperimenterViewStub *view;
     public:
@@ -977,6 +988,7 @@ namespace {
         PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
         PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView};
         RespondingFromSubject respondingFromSubject{&subjectView};
+        RespondingFromExperimenter respondingFromExperimenter{&experimenterView};
         SubmittingPassedTrial submittingPassedTrial{&experimenterView};
         
         std::string auditoryOnlyConditionName() {
@@ -1687,6 +1699,10 @@ namespace {
 
     TEST_F(PresenterTests, respondFromSubjectShowsSetupViewWhenTestComplete) {
         assertCompleteTestShowsSetupView(respondingFromSubject);
+    }
+
+    TEST_F(PresenterTests, respondFromExperimenterShowsSetupViewWhenTestComplete) {
+        assertCompleteTestShowsSetupView(respondingFromExperimenter);
     }
 
     TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
