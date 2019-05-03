@@ -1063,14 +1063,6 @@ namespace {
             model.setTestComplete();
         }
         
-        void setAdaptiveOpenSet() {
-            setMethod(Method::adaptiveOpenSet);
-        }
-        
-        void setMethod(Method m) {
-            setupView.setMethod(methodName(m));
-        }
-        
         void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
             setAudioDevice("a");
             run(useCase);
@@ -1179,8 +1171,7 @@ namespace {
         PresenterTests,
         confirmTestDoesNotShowSubjectViewWhenAdaptiveOpenSet
     ) {
-        setAdaptiveOpenSet();
-        confirmTestSetup();
+        run(confirmingAdaptiveOpenSetTest);
         assertSubjectViewNotShown();
     }
 
