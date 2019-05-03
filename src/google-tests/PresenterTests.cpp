@@ -457,9 +457,14 @@ namespace {
             bool shown_{};
             bool nextTrialButtonHidden_{};
             bool hidden_{};
+            bool evaluationButtonsShown_{};
         public:
             auto nextTrialButtonShown() const {
                 return nextTrialButtonShown_;
+            }
+            
+            auto evaluationButtonsShown() const {
+                return evaluationButtonsShown_;
             }
             
             void showNextTrialButton() override {
@@ -488,6 +493,10 @@ namespace {
             
             void hide() override {
                 hidden_ = true;
+            }
+            
+            void showEvaluationButtons() override {
+                evaluationButtonsShown_ = true;
             }
             
             void playTrial() {
@@ -1076,6 +1085,10 @@ namespace {
         
         void assertResponseButtonsShown() {
             EXPECT_TRUE(subjectView.responseButtonsShown());
+        }
+        
+        void assertEvaluationButtonsShown() {
+            EXPECT_TRUE(experimenterView.evaluationButtonsShown());
         }
         
         void assertNextTrialButtonShownForSubject() {
@@ -1728,6 +1741,11 @@ namespace {
     TEST_F(PresenterTests, trialCompleteShowsResponseButtons) {
         completeTrial();
         assertResponseButtonsShown();
+    }
+
+    TEST_F(PresenterTests, trialCompleteShowsEvaluationButtons) {
+        completeTrial();
+        assertEvaluationButtonsShown();
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestWithInvalidSnrShowsErrorMessage) {

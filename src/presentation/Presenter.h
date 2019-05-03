@@ -81,6 +81,7 @@ namespace av_speech_in_noise {
             virtual void hideNextTrialButton() = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
+            virtual void showEvaluationButtons() = 0;
         };
         
         virtual void eventLoop() = 0;
@@ -170,6 +171,7 @@ namespace av_speech_in_noise {
             void becomeChild(Presenter *parent);
             void show();
             void hide();
+            void showEvaluationButtons();
             void playTrial() override;
             void submitPassedTrial() override;
         private:
