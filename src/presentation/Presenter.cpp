@@ -93,12 +93,7 @@ namespace av_speech_in_noise {
     
     void Presenter::submitResponse() {
         model->submitResponse(subject->subjectResponse());
-        hideResponseButtons();
         proceedToNextTrial();
-    }
-    
-    void Presenter::hideResponseButtons() {
-        subject->hideResponseButtons();
     }
     
     void Presenter::proceedToNextTrial() {
@@ -320,6 +315,7 @@ namespace av_speech_in_noise {
 
     void Presenter::Subject::submitResponse() {
         showNextTrialButton();
+        hideResponseButtons();
         parent->submitResponse();
     }
     
@@ -329,10 +325,6 @@ namespace av_speech_in_noise {
     
     void Presenter::Subject::showNextTrialButton() {
         view->showNextTrialButton();
-    }
-    
-    void Presenter::Subject::hideNextTrialButton() {
-        view->hideNextTrialButton();
     }
     
     void Presenter::Subject::hideResponseButtons() {

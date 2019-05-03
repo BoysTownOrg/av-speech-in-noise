@@ -149,13 +149,12 @@ namespace av_speech_in_noise {
             void playTrial() override;
             void submitResponse() override;
             void becomeChild(Presenter *parent);
-            void hideResponseButtons();
-            void hideNextTrialButton();
             void showResponseButtons();
             void show();
             void hide();
             coordinate_response_measure::SubjectResponse subjectResponse();
         private:
+            void hideResponseButtons();
             void showNextTrialButton();
             coordinate_response_measure::Color colorResponse();
             
