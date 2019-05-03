@@ -1713,6 +1713,10 @@ namespace {
         assertIncompleteTestDoesNotShowSetupView(respondingFromSubject);
     }
 
+    TEST_F(PresenterTests, respondFromExperimenterDoesNotShowSetupViewWhenTestIncomplete) {
+        assertIncompleteTestDoesNotShowSetupView(respondingFromExperimenter);
+    }
+
     TEST_F(PresenterTests, submitPassedTrialDoesNotShowSetupViewWhenTestIncomplete) {
         assertIncompleteTestDoesNotShowSetupView(submittingPassedTrial);
     }
