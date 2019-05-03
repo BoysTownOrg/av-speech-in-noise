@@ -1732,6 +1732,10 @@ namespace {
         assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptiveOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestWithInvalidInputDoesNotHideSetupView) {
+        assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingFixedLevelOpenSetTest);
+    }
+
     class RequestFailingModel : public Model {
         std::string errorMessage{};
     public:
