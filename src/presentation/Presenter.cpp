@@ -319,7 +319,7 @@ namespace av_speech_in_noise {
     }
 
     void Presenter::Subject::submitResponse() {
-        view->showNextTrialButton();
+        showNextTrialButton();
         parent->submitResponse();
     }
     
@@ -363,7 +363,7 @@ namespace av_speech_in_noise {
     
     void Presenter::Subject::show() { 
         view->show();
-        view->showNextTrialButton();
+        showNextTrialButton();
     }
     
     void Presenter::Subject::hide() { 
