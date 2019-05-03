@@ -1296,6 +1296,12 @@ namespace {
                 adaptiveTest().targetLevelRule
             );
         }
+        
+        void assertInvalidSnrShowsErrorMessage(UseCase &useCase) {
+            setStartingSnr("a");
+            run(useCase);
+            assertErrorMessageEquals("'a' is not a valid SNR.");
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1709,10 +1715,12 @@ namespace {
         assertResponseButtonsShown();
     }
 
-    TEST_F(PresenterTests, confirmTestSetupWithInvalidSnrShowsErrorMessage) {
-        setStartingSnr("a");
-        confirmTestSetup();
-        assertErrorMessageEquals("'a' is not a valid SNR.");
+    TEST_F(PresenterTests, confirmAdaptiveClosedSetTestWithInvalidSnrShowsErrorMessage) {
+        assertInvalidSnrShowsErrorMessage(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestWithInvalidSnrShowsErrorMessage) {
+        assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotHideSetupView) {
