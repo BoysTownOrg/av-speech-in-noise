@@ -392,5 +392,9 @@ namespace av_speech_in_noise {
     std::vector<std::string> RecognitionTestModel::audioDevices() {
         return maskerPlayer->outputAudioDeviceDescriptions();
     }
+    
+    void RecognitionTestModel::submitResponse(const std::string &) { 
+        ;
+    }
 }
 

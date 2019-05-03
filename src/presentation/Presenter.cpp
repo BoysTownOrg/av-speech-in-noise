@@ -93,6 +93,7 @@ namespace av_speech_in_noise {
     
     void Presenter::submitResponse() {
         model->submitResponse(subject->subjectResponse());
+        model->submitResponse(experimenter->response());
         proceedToNextTrial();
     }
     
@@ -405,5 +406,13 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::showEvaluationButtons() { 
         view->showEvaluationButtons();
+    }
+    
+    void Presenter::Experimenter::submitResponse() {
+        parent->submitResponse();
+    }
+    
+    std::string Presenter::Experimenter::response() { 
+        return view->response();
     }
 }

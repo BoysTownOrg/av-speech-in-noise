@@ -73,6 +73,7 @@ namespace av_speech_in_noise {
                 virtual ~EventListener() = default;
                 virtual void playTrial() = 0;
                 virtual void submitPassedTrial() = 0;
+                virtual void submitResponse() = 0;
             };
             
             virtual ~Experimenter() = default;
@@ -82,6 +83,7 @@ namespace av_speech_in_noise {
             virtual void show() = 0;
             virtual void hide() = 0;
             virtual void showEvaluationButtons() = 0;
+            virtual std::string response() = 0;
         };
         
         virtual void eventLoop() = 0;
@@ -172,8 +174,10 @@ namespace av_speech_in_noise {
             void show();
             void hide();
             void showEvaluationButtons();
+            std::string response();
             void playTrial() override;
             void submitPassedTrial() override;
+            void submitResponse() override;
         private:
             void showNextTrialButton();
             Presenter *parent;

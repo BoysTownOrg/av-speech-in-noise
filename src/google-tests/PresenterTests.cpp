@@ -23,12 +23,17 @@ namespace {
         AudioSettings trialParameters_;
         coordinate_response_measure::SubjectResponse responseParameters_;
         std::vector<std::string> audioDevices_;
+        std::string freeResponse_;
         EventListener *listener_{};
         bool testComplete_{};
         bool trialPlayed_{};
         bool fixedLevelTestInitialized_{};
         bool adaptiveTestInitialized_{};
     public:
+        auto freeResponse() const {
+            return freeResponse_;
+        }
+        
         void completeTrial() {
             listener_->trialComplete();
         }
@@ -92,6 +97,10 @@ namespace {
         void initializeTest(const FixedLevelTest &p) override {
             fixedLevelTestInitialized_ = true;
             fixedLevelTest_ = p;
+        }
+        
+        void submitResponse(const std::string &s) override {
+            freeResponse_ = s;
         }
         
         auto trialPlayed() const {
@@ -452,6 +461,7 @@ namespace {
         };
         
         class ExperimenterViewStub : public Experimenter {
+            std::string response_;
             EventListener *listener_{};
             bool nextTrialButtonShown_{};
             bool shown_{};
@@ -499,6 +509,10 @@ namespace {
                 evaluationButtonsShown_ = true;
             }
             
+            std::string response() override {
+                return response_;
+            }
+            
             void playTrial() {
                 listener_->playTrial();
             }
@@ -509,6 +523,14 @@ namespace {
             
             void submitPassedTrial() {
                 listener_->submitPassedTrial();
+            }
+            
+            void setResponse(std::string s) {
+                response_ = std::move(s);
+            }
+            
+            void submitResponse() {
+                listener_->submitResponse();
             }
         };
     };
@@ -967,6 +989,10 @@ namespace {
         
         void respondFromSubject() {
             subjectView.submitResponse();
+        }
+        
+        void respondFromExperimenter() {
+            experimenterView.submitResponse();
         }
         
         void submitPassedTrial() {
@@ -1653,6 +1679,12 @@ namespace {
         assertModelPassedCondition(coordinate_response_measure::Color::white);
     }
 
+    TEST_F(PresenterTests, experimenterResponsePassesResponse) {
+        experimenterView.setResponse("a");
+        respondFromExperimenter();
+        assertEqual("a", model.freeResponse());
+    }
+
     TEST_F(PresenterTests, respondFromSubjectShowsSetupViewWhenTestComplete) {
         assertCompleteTestShowsSetupView(respondingFromSubject);
     }
@@ -1786,6 +1818,10 @@ namespace {
         }
         
         void submitResponse(const coordinate_response_measure::SubjectResponse &) override {
+            throw RequestFailure{errorMessage};
+        }
+        
+        void submitResponse(const std::string &) override {
             throw RequestFailure{errorMessage};
         }
         
