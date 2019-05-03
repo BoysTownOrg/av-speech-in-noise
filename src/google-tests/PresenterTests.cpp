@@ -623,8 +623,8 @@ namespace {
             return m.fixedLevelTest().maskerLevel_dB_SPL;
         }
         
-        std::string targetListDirectory(ModelStub &) override {
-            return "?";
+        std::string targetListDirectory(ModelStub &m) override {
+            return m.fixedLevelTest().targetListDirectory;
         }
         
         Condition condition(ModelStub &m) override {
@@ -1267,6 +1267,10 @@ namespace {
 
     TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTargetList) {
         assertPassesTargetListDirectory(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingFixedLevelTestPassesTargetList) {
+        assertPassesTargetListDirectory(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesSubjectId) {

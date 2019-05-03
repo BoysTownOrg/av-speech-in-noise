@@ -181,6 +181,7 @@ namespace av_speech_in_noise {
         FixedLevelTest p;
         p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
         p.maskerLevel_dB_SPL = readMaskerLevel();
+        p.targetListDirectory = view->targetListDirectory();
         return p;
     }
     
