@@ -491,6 +491,43 @@ namespace {
         virtual void run() = 0;
     };
     
+    class ConfirmingTestSetup2 : public virtual UseCase {
+    public:
+        virtual int snr_dB(ModelStub &) = 0;
+    };
+    
+    class ConfirmingAdaptiveClosedSetTest : public ConfirmingTestSetup2 {
+        ViewStub::TestSetupViewStub *view;
+    public:
+        explicit ConfirmingAdaptiveClosedSetTest(ViewStub::TestSetupViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->setMethod(methodName(Method::adaptiveClosedSet));
+            view->confirmTestSetup();
+        }
+        
+        int snr_dB(ModelStub &m) override {
+            return m.adaptiveTest().startingSnr_dB;
+        }
+    };
+    
+    class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup2 {
+        ViewStub::TestSetupViewStub *view;
+    public:
+        explicit ConfirmingFixedLevelOpenSetTest(ViewStub::TestSetupViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->setMethod(methodName(Method::adaptiveOpenSet));
+            view->confirmTestSetup();
+        }
+        
+        int snr_dB(ModelStub &m) override {
+            return m.fixedLevelTest().snr_dB;
+        }
+    };
+    
     class TrialSubmission : public virtual UseCase {};
     
     class RespondingFromSubject : public TrialSubmission {
@@ -720,6 +757,8 @@ namespace {
         BrowsingForMasker browsingForMasker;
         BrowsingForCalibration browsingForCalibration;
         ConfirmingTestSetup confirmingTestSetup;
+        ConfirmingAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{&setupView};
+        ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
         PlayingCalibration playingCalibration;
         PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
         PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView};
@@ -891,10 +930,6 @@ namespace {
             return model.adaptiveTest();
         }
         
-        const FixedLevelTest &fixedLevelTest() {
-            return model.fixedLevelTest();
-        }
-        
         const Calibration &modelCalibrationParameters() {
             return model.calibrationParameters();
         }
@@ -971,10 +1006,6 @@ namespace {
             setMethod(Method::adaptiveClosedSet);
         }
         
-        void setFixedLevelOpenSet() {
-            setMethod(Method::fixedLevelOpenSet);
-        }
-        
         void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
             setAudioDevice("a");
             run(useCase);
@@ -1017,6 +1048,12 @@ namespace {
             run(useCase);
             assertExperimenterViewHidden();
         }
+        
+        void assertStartingSnrPassedToModel(ConfirmingTestSetup2 &useCase) {
+            setStartingSnr("1");
+            run(useCase);
+            EXPECT_EQ(1, useCase.snr_dB(model));
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1058,16 +1095,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {
-        setStartingSnr("1");
-        confirmTestSetup();
-        EXPECT_EQ(1, adaptiveTest().startingSnr_dB);
+        assertStartingSnrPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesStartingSnrFixedLevelOpenSet) {
-        setFixedLevelOpenSet();
-        setStartingSnr("1");
-        confirmTestSetup();
-        EXPECT_EQ(1, fixedLevelTest().snr_dB);
+        assertStartingSnrPassedToModel(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesMaskerLevel) {
