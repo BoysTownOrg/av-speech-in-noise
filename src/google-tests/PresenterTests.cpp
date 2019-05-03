@@ -789,11 +789,11 @@ namespace {
 
     class PresenterConstructionTests : public ::testing::Test {
     protected:
-        ModelStub model{};
-        ViewStub::TestSetupViewStub setupView{};
-        ViewStub::SubjectViewStub subjectView{};
-        ViewStub::ExperimenterViewStub experimenterView{};
-        ViewStub view{};
+        ModelStub model;
+        ViewStub::TestSetupViewStub setupView;
+        ViewStub::SubjectViewStub subjectView;
+        ViewStub::ExperimenterViewStub experimenterView;
+        ViewStub view;
         Presenter::TestSetup testSetup{&setupView};
         Presenter::Subject subject{&subjectView};
         Presenter::Experimenter experimenter{&experimenterView};
@@ -1131,6 +1131,11 @@ namespace {
             run(useCase);
             assertExperimenterViewShown();
         }
+        
+        void assertDoesNotShowSubjectView(UseCase &useCase) {
+            run(useCase);
+            assertSubjectViewNotShown();
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1175,8 +1180,14 @@ namespace {
         PresenterTests,
         confirmAdaptiveOpenSetTestDoesNotShowSubjectView
     ) {
-        run(confirmingAdaptiveOpenSetTest);
-        assertSubjectViewNotShown();
+        assertDoesNotShowSubjectView(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(
+        PresenterTests,
+        confirmFixedLevelTestDoesNotShowSubjectView
+    ) {
+        assertDoesNotShowSubjectView(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmAdaptiveTestDoesNotInitializeFixedLevelTest) {
