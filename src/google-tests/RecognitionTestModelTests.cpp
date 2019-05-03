@@ -564,13 +564,13 @@ namespace {
             next_ = std::move(s);
         }
         
+        auto directory() const {
+            return directory_;
+        }
+        
         /*
         void setCurrent(std::string s) {
             current_ = std::move(s);
-        }
-        
-        auto directory() {
-            return directory_;
         }*/
         
         void setEmpty() {
@@ -708,6 +708,10 @@ namespace {
         
         void setMaskerFilePath(std::string s) override {
             test.maskerFilePath = std::move(s);
+        }
+        
+        void setTargetListDirectory(std::string s) {
+            test.targetListDirectory = std::move(s);
         }
     };
     
@@ -1325,6 +1329,15 @@ namespace {
         initializingAdaptiveTest.setTargetListDirectory("a");
         initializeAdaptiveTest();
         assertEqual("a", targetListSetReader.directory());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestPassesTargetListDirectory
+    ) {
+        initializingFixedLevelTest.setTargetListDirectory("a");
+        initializeFixedLevelTest();
+        assertEqual("a", finiteTargetList.directory());
     }
 
     TEST_F(
