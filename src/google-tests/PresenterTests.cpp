@@ -17,11 +17,12 @@ namespace {
     };
     
     class ModelStub : public Model {
-        AdaptiveTest adaptiveTest_{};
-        Calibration calibrationParameters_{};
-        AudioSettings trialParameters_{};
-        coordinate_response_measure::SubjectResponse responseParameters_{};
-        std::vector<std::string> audioDevices_{};
+        AdaptiveTest adaptiveTest_;
+        FixedLevelTest fixedLevelTest_;
+        Calibration calibrationParameters_;
+        AudioSettings trialParameters_;
+        coordinate_response_measure::SubjectResponse responseParameters_;
+        std::vector<std::string> audioDevices_;
         EventListener *listener_{};
         bool testComplete_{};
         bool trialPlayed_{};
@@ -87,12 +88,20 @@ namespace {
             
         }
         
+        void initializeTest(const FixedLevelTest &p) override {
+            fixedLevelTest_ = p;
+        }
+        
         auto trialPlayed() const {
             return trialPlayed_;
         }
         
         auto &adaptiveTest() const {
             return adaptiveTest_;
+        }
+        
+        auto &fixedLevelTest() const {
+            return fixedLevelTest_;
         }
         
         auto &calibrationParameters() const {
@@ -882,6 +891,10 @@ namespace {
             return model.adaptiveTest();
         }
         
+        const FixedLevelTest &fixedLevelTest() {
+            return model.fixedLevelTest();
+        }
+        
         const Calibration &modelCalibrationParameters() {
             return model.calibrationParameters();
         }
@@ -956,6 +969,10 @@ namespace {
         
         void setAdaptiveClosedSet() {
             setMethod(Method::adaptiveClosedSet);
+        }
+        
+        void setFixedLevelOpenSet() {
+            setMethod(Method::fixedLevelOpenSet);
         }
         
         void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
@@ -1044,6 +1061,13 @@ namespace {
         setStartingSnr("1");
         confirmTestSetup();
         EXPECT_EQ(1, adaptiveTest().startingSnr_dB);
+    }
+
+    TEST_F(PresenterTests, confirmTestSetupPassesStartingSnrFixedLevelOpenSet) {
+        setFixedLevelOpenSet();
+        setStartingSnr("1");
+        confirmTestSetup();
+        EXPECT_EQ(1, fixedLevelTest().snr_dB);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesMaskerLevel) {
@@ -1317,6 +1341,10 @@ namespace {
         }
         
         void initializeTest(const AdaptiveTest &) override {
+            throw RequestFailure{errorMessage};
+        }
+        
+        void initializeTest(const FixedLevelTest &) override {
             throw RequestFailure{errorMessage};
         }
         

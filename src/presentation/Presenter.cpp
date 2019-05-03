@@ -42,7 +42,8 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::initializeTest_() {
-        model->initializeTest(testSetup->testParameters());
+        model->initializeTest(testSetup->adaptiveTest());
+        model->initializeTest(testSetup->fixedLevelTest());
         hideTestSetup();
         experimenter->show();
         if (testSetup->adaptiveClosedSet())
@@ -174,7 +175,13 @@ namespace av_speech_in_noise {
         view->show();
     }
     
-    AdaptiveTest Presenter::TestSetup::testParameters() {
+    FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
+        FixedLevelTest p;
+        p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
+        return p;
+    }
+    
+    AdaptiveTest Presenter::TestSetup::adaptiveTest() {
         AdaptiveTest p;
         p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
         p.maskerLevel_dB_SPL = readMaskerLevel();

@@ -109,6 +109,7 @@ namespace av_speech_in_noise {
         virtual void subscribe(EventListener *) = 0;
         RUNTIME_ERROR(RequestFailure)
         virtual void initializeTest(const AdaptiveTest &) = 0;
+        virtual void initializeTest(const FixedLevelTest &) = 0;
         virtual void playCalibration(const Calibration &) = 0;
         virtual void playTrial(const AudioSettings &) = 0;
         virtual void submitResponse(

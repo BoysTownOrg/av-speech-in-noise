@@ -94,7 +94,8 @@ namespace av_speech_in_noise {
     
     enum class Method {
         adaptiveOpenSet,
-        adaptiveClosedSet
+        adaptiveClosedSet,
+        fixedLevelOpenSet
     };
     
     constexpr const char *methodName(Method c) {
@@ -103,6 +104,8 @@ namespace av_speech_in_noise {
             return "adaptive open-set";
         case Method::adaptiveClosedSet:
             return "adaptive closed-set";
+        case Method::fixedLevelOpenSet:
+            return "fixed-level open-set";
         }
     }
 
@@ -122,7 +125,8 @@ namespace av_speech_in_noise {
             void setMasker(std::string);
             void setStimulusList(std::string);
             void setCalibrationFilePath(std::string);
-            AdaptiveTest testParameters();
+            AdaptiveTest adaptiveTest();
+            FixedLevelTest fixedLevelTest();
             Calibration calibrationParameters();
             bool adaptiveClosedSet();
         private:
