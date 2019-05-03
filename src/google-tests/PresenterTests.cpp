@@ -19,7 +19,7 @@ namespace {
     class ModelStub : public Model {
         AdaptiveTest adaptiveTest_;
         FixedLevelTest fixedLevelTest_;
-        Calibration calibrationParameters_;
+        Calibration calibration_;
         AudioSettings trialParameters_;
         coordinate_response_measure::SubjectResponse responseParameters_;
         std::vector<std::string> audioDevices_;
@@ -78,7 +78,7 @@ namespace {
         }
         
         void playCalibration(const Calibration &p) override {
-            calibrationParameters_ = p;
+            calibration_ = p;
         }
         
         void submitCorrectResponse() override {
@@ -106,8 +106,8 @@ namespace {
             return fixedLevelTest_;
         }
         
-        auto &calibrationParameters() const {
-            return calibrationParameters_;
+        auto &calibration() const {
+            return calibration_;
         }
         
         auto fixedLevelTestInitialized() const {
@@ -881,7 +881,7 @@ namespace {
             view{view} {}
         
         Condition condition(ModelStub &m) override {
-            return m.calibrationParameters().condition;
+            return m.calibration().condition;
         }
         
         void run() override {
@@ -1105,8 +1105,8 @@ namespace {
             return model.adaptiveTest();
         }
         
-        const Calibration &modelCalibrationParameters() {
-            return model.calibrationParameters();
+        const Calibration &calibration() {
+            return model.calibration();
         }
         
         void assertInvalidCalibrationLevelShowsErrorMessage(
@@ -1375,7 +1375,7 @@ namespace {
     TEST_F(PresenterTests, playCalibrationPassesLevel) {
         setCalibrationLevel("1");
         playCalibration();
-        EXPECT_EQ(1, modelCalibrationParameters().level_dB_SPL);
+        EXPECT_EQ(1, calibration().level_dB_SPL);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTargetList) {
@@ -1429,7 +1429,7 @@ namespace {
     TEST_F(PresenterTests, playCalibrationPassesFilePath) {
         setupView.setCalibrationFilePath("a");
         playCalibration();
-        assertEqual("a", modelCalibrationParameters().filePath);
+        assertEqual("a", calibration().filePath);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesSession) {
@@ -1460,7 +1460,7 @@ namespace {
         playCalibration();
         EXPECT_EQ(
             Presenter::fullScaleLevel_dB_SPL,
-            modelCalibrationParameters().fullScaleLevel_dB_SPL
+            calibration().fullScaleLevel_dB_SPL
         );
     }
 
@@ -1540,7 +1540,7 @@ namespace {
     TEST_F(PresenterTests, playCalibrationPassesAudioDevice) {
         setAudioDevice("b");
         playCalibration();
-        assertEqual("b", modelCalibrationParameters().audioDevice);
+        assertEqual("b", calibration().audioDevice);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesNumberResponse) {
