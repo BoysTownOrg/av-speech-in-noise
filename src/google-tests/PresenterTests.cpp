@@ -27,6 +27,7 @@ namespace {
         bool testComplete_{};
         bool trialPlayed_{};
         bool fixedLevelTestInitialized_{};
+        bool adaptiveTestInitialized_{};
     public:
         void completeTrial() {
             listener_->trialComplete();
@@ -52,14 +53,13 @@ namespace {
             return testComplete_;
         }
         
-        void playTrial(
-            const AudioSettings &p
-        ) override {
+        void playTrial(const AudioSettings &p) override {
             trialParameters_ = p;
             trialPlayed_ = true;
         }
         
         void initializeTest(const AdaptiveTest &p) override {
+            adaptiveTestInitialized_ = true;
             adaptiveTest_ = p;
         }
         
@@ -112,6 +112,10 @@ namespace {
         
         auto fixedLevelTestInitialized() const {
             return fixedLevelTestInitialized_;
+        }
+        
+        auto adaptiveTestInitialized() const {
+            return adaptiveTestInitialized_;
         }
     };
 
@@ -496,8 +500,13 @@ namespace {
         virtual ~UseCase() = default;
         virtual void run() = 0;
     };
+
+    class ConditionUseCase : public virtual UseCase {
+    public:
+        virtual Condition condition(ModelStub &) = 0;
+    };
     
-    class ConfirmingTestSetup2 : public virtual UseCase {
+    class ConfirmingTestSetup2 : public virtual ConditionUseCase {
     public:
         virtual int snr_dB(ModelStub &) = 0;
         virtual int maskerLevel(ModelStub &) = 0;
@@ -521,6 +530,10 @@ namespace {
         int maskerLevel(ModelStub &m) override {
             return m.adaptiveTest().maskerLevel_dB_SPL;
         }
+        
+        Condition condition(ModelStub &m) override {
+            return m.adaptiveTest().condition;
+        }
     };
     
     class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup2 {
@@ -540,6 +553,10 @@ namespace {
         
         int maskerLevel(ModelStub &m) override {
             return m.fixedLevelTest().maskerLevel_dB_SPL;
+        }
+        
+        Condition condition(ModelStub &m) override {
+            return m.fixedLevelTest().condition;
         }
     };
     
@@ -699,33 +716,19 @@ namespace {
             listener.browseForCalibration();
         }
     };
-
-    class ConditionUseCase : public TestSetupUseCase {
-    public:
-        virtual Condition condition(ModelStub &) = 0;
-    };
-    
-    class ConfirmingTestSetup : public ConditionUseCase {
-        void run(
-            ViewStub::TestSetupViewStub &listener
-        ) override {
-            listener.confirmTestSetup();
-        }
-        
-        Condition condition(ModelStub &m) override {
-            return m.adaptiveTest().condition;
-        }
-    };
     
     class PlayingCalibration : public ConditionUseCase {
-        void run(
-            ViewStub::TestSetupViewStub &listener
-        ) override {
-            listener.playCalibration();
-        }
+        ViewStub::TestSetupViewStub *view;
+    public:
+        explicit PlayingCalibration(ViewStub::TestSetupViewStub *view) :
+            view{view} {}
         
         Condition condition(ModelStub &m) override {
             return m.calibrationParameters().condition;
+        }
+        
+        void run() override {
+            view->playCalibration();
         }
     };
 
@@ -771,10 +774,9 @@ namespace {
         BrowsingForTargetList browsingForTargetList;
         BrowsingForMasker browsingForMasker;
         BrowsingForCalibration browsingForCalibration;
-        ConfirmingTestSetup confirmingTestSetup;
         ConfirmingAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{&setupView};
         ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
-        PlayingCalibration playingCalibration;
+        PlayingCalibration playingCalibration{&setupView};
         PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
         PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView};
         RespondingFromSubject respondingFromSubject{&subjectView};
@@ -950,7 +952,7 @@ namespace {
         }
         
         void assertInvalidCalibrationLevelShowsErrorMessage(
-            TestSetupUseCase &useCase
+            UseCase &useCase
         ) {
             setCalibrationLevel("a");
             run(useCase);
@@ -962,7 +964,7 @@ namespace {
         }
         
         void assertInvalidMaskerLevelShowsErrorMessage(
-            TestSetupUseCase &useCase
+            UseCase &useCase
         ) {
             setMaskerLevel("a");
             run(useCase);
@@ -1120,6 +1122,11 @@ namespace {
         EXPECT_FALSE(model.fixedLevelTestInitialized());
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelTestSetupDoesNotInitializeAdaptiveTest) {
+        run(confirmingFixedLevelOpenSetTest);
+        EXPECT_FALSE(model.adaptiveTestInitialized());
+    }
+
     TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {
         assertStartingSnrPassedToModel(confirmingAdaptiveClosedSetTest);
     }
@@ -1144,25 +1151,25 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupPassesTargetList) {
         setupView.setTargetListDirectory("a");
-        confirmTestSetup();
+        run(confirmingAdaptiveClosedSetTest);
         assertEqual("a", adaptiveTest().targetListDirectory);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesSubjectId) {
         setupView.setSubjectId("b");
-        confirmTestSetup();
+        run(confirmingAdaptiveClosedSetTest);
         assertEqual("b", adaptiveTest().subjectId);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesTesterId) {
         setupView.setTesterId("c");
-        confirmTestSetup();
+        run(confirmingAdaptiveClosedSetTest);
         assertEqual("c", adaptiveTest().testerId);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesMasker) {
         setupView.setMasker("d");
-        confirmTestSetup();
+        run(confirmingAdaptiveClosedSetTest);
         assertEqual("d", adaptiveTest().maskerFilePath);
     }
 
@@ -1174,7 +1181,7 @@ namespace {
 
     TEST_F(PresenterTests, confirmTestSetupPassesSession) {
         setupView.setSession("e");
-        confirmTestSetup();
+        run(confirmingAdaptiveClosedSetTest);
         assertEqual("e", adaptiveTest().session);
     }
 
@@ -1203,11 +1210,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
-        assertAudioVisualConditionPassedToModel(confirmingTestSetup);
+        assertAudioVisualConditionPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesAuditoryOnlyCondition) {
-        assertAuditoryOnlyConditionPassedToModel(confirmingTestSetup);
+        assertAuditoryOnlyConditionPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(PresenterTests, playCalibrationPassesAudioVisualCondition) {
@@ -1236,7 +1243,7 @@ namespace {
         PresenterTests,
         confirmTestSetupWithInvalidMaskerLevelShowsErrorMessage
     ) {
-        assertInvalidMaskerLevelShowsErrorMessage(confirmingTestSetup);
+        assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(PresenterTests, playCalibrationWithInvalidLevelShowsErrorMessage) {
