@@ -654,11 +654,11 @@ namespace {
         }
         
         std::string subjectId(ModelStub &m) override {
-            return m.fixedLevelTest().subjectId;
+            return m.fixedLevelTest().common.subjectId;
         }
         
         std::string testerId(ModelStub &m) override {
-            return m.fixedLevelTest().testerId;
+            return m.fixedLevelTest().common.testerId;
         }
         
         Condition condition(ModelStub &m) override {

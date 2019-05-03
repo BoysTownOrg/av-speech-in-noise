@@ -182,8 +182,8 @@ namespace av_speech_in_noise {
         p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
         p.maskerLevel_dB_SPL = readMaskerLevel();
         p.targetListDirectory = view->targetListDirectory();
-        p.subjectId = view->subjectId();
-        p.testerId = view->testerId();
+        p.common.subjectId = view->subjectId();
+        p.common.testerId = view->testerId();
         return p;
     }
     
