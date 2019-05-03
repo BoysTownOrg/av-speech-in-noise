@@ -185,6 +185,7 @@ namespace av_speech_in_noise {
         p.maskerFilePath = view->maskerFilePath();
         p.information = testInformation();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
+        p.condition = readCondition();
         return p;
     }
     

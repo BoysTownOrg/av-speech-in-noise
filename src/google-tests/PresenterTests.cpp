@@ -1498,6 +1498,22 @@ namespace {
         assertAuditoryOnlyConditionPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesAudioVisualCondition) {
+        assertAudioVisualConditionPassedToModel(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesAuditoryOnlyCondition) {
+        assertAuditoryOnlyConditionPassedToModel(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesAudioVisualCondition) {
+        assertAudioVisualConditionPassedToModel(confirmingFixedLevelOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesAuditoryOnlyCondition) {
+        assertAuditoryOnlyConditionPassedToModel(confirmingFixedLevelOpenSetTest);
+    }
+
     TEST_F(PresenterTests, playCalibrationPassesAudioVisualCondition) {
         assertAudioVisualConditionPassedToModel(playingCalibration);
     }
