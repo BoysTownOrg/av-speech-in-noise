@@ -1719,8 +1719,12 @@ namespace {
         assertInvalidSnrShowsErrorMessage(confirmingAdaptiveClosedSetTest);
     }
 
-    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestWithInvalidSnrShowsErrorMessage) {
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestWithInvalidSnrShowsErrorMessage) {
         assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestWithInvalidSnrShowsErrorMessage) {
+        assertInvalidSnrShowsErrorMessage(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotHideSetupView) {
