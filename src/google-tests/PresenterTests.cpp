@@ -17,7 +17,7 @@ namespace {
     };
     
     class ModelStub : public Model {
-        AdaptiveTest testParameters_{};
+        AdaptiveTest adaptiveTest_{};
         Calibration calibrationParameters_{};
         AudioSettings trialParameters_{};
         coordinate_response_measure::SubjectResponse responseParameters_{};
@@ -57,10 +57,8 @@ namespace {
             trialPlayed_ = true;
         }
         
-        void initializeTest(
-            const AdaptiveTest &p
-        ) override {
-            testParameters_ = p;
+        void initializeTest(const AdaptiveTest &p) override {
+            adaptiveTest_ = p;
         }
         
         std::vector<std::string> audioDevices() override {
@@ -77,9 +75,7 @@ namespace {
             listener_ = listener;
         }
         
-        void playCalibration(
-            const Calibration &p
-        ) override {
+        void playCalibration(const Calibration &p) override {
             calibrationParameters_ = p;
         }
         
@@ -95,8 +91,8 @@ namespace {
             return trialPlayed_;
         }
         
-        auto &testParameters() const {
-            return testParameters_;
+        auto &adaptiveTest() const {
+            return adaptiveTest_;
         }
         
         auto &calibrationParameters() const {
@@ -656,7 +652,7 @@ namespace {
         }
         
         Condition condition(ModelStub &m) override {
-            return m.testParameters().condition;
+            return m.adaptiveTest().condition;
         }
     };
     
@@ -882,8 +878,8 @@ namespace {
             EXPECT_EQ(c, model.responseParameters().color);
         }
         
-        const AdaptiveTest &modelTestParameters() {
-            return model.testParameters();
+        const AdaptiveTest &adaptiveTest() {
+            return model.adaptiveTest();
         }
         
         const Calibration &modelCalibrationParameters() {
@@ -1043,13 +1039,13 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {
         setStartingSnr("1");
         confirmTestSetup();
-        EXPECT_EQ(1, modelTestParameters().startingSnr_dB);
+        EXPECT_EQ(1, adaptiveTest().startingSnr_dB);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesMaskerLevel) {
         setMaskerLevel("2");
         confirmTestSetup();
-        EXPECT_EQ(2, modelTestParameters().maskerLevel_dB_SPL);
+        EXPECT_EQ(2, adaptiveTest().maskerLevel_dB_SPL);
     }
 
     TEST_F(PresenterTests, playCalibrationPassesLevel) {
@@ -1061,25 +1057,25 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupPassesTargetList) {
         setupView.setTargetListDirectory("a");
         confirmTestSetup();
-        assertEqual("a", modelTestParameters().targetListDirectory);
+        assertEqual("a", adaptiveTest().targetListDirectory);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesSubjectId) {
         setupView.setSubjectId("b");
         confirmTestSetup();
-        assertEqual("b", modelTestParameters().subjectId);
+        assertEqual("b", adaptiveTest().subjectId);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesTesterId) {
         setupView.setTesterId("c");
         confirmTestSetup();
-        assertEqual("c", modelTestParameters().testerId);
+        assertEqual("c", adaptiveTest().testerId);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesMasker) {
         setupView.setMasker("d");
         confirmTestSetup();
-        assertEqual("d", modelTestParameters().maskerFilePath);
+        assertEqual("d", adaptiveTest().maskerFilePath);
     }
 
     TEST_F(PresenterTests, playCalibrationPassesFilePath) {
@@ -1091,14 +1087,14 @@ namespace {
     TEST_F(PresenterTests, confirmTestSetupPassesSession) {
         setupView.setSession("e");
         confirmTestSetup();
-        assertEqual("e", modelTestParameters().session);
+        assertEqual("e", adaptiveTest().session);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesFullScaleLevel) {
         confirmTestSetup();
         EXPECT_EQ(
             Presenter::fullScaleLevel_dB_SPL,
-            modelTestParameters().fullScaleLevel_dB_SPL
+            adaptiveTest().fullScaleLevel_dB_SPL
         );
     }
 
@@ -1114,7 +1110,7 @@ namespace {
         confirmTestSetup();
         EXPECT_EQ(
             &Presenter::targetLevelRule,
-            modelTestParameters().targetLevelRule
+            adaptiveTest().targetLevelRule
         );
     }
 
