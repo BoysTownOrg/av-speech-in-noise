@@ -179,6 +179,10 @@ namespace av_speech_in_noise {
         view->show();
     }
     
+    void Presenter::TestSetup::hide() {
+        view->hide();
+    }
+    
     FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
         FixedLevelTest p;
         p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
@@ -234,10 +238,6 @@ namespace av_speech_in_noise {
     
     bool Presenter::TestSetup::auditoryOnly() {
         return view->condition() == conditionName(Condition::auditoryOnly);
-    }
-    
-    void Presenter::TestSetup::hide() {
-        view->hide();
     }
     
     void Presenter::TestSetup::playCalibration() {
