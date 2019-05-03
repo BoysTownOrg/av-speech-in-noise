@@ -947,11 +947,15 @@ namespace {
         }
         
         void setAdaptiveOpenSet() {
-            setupView.setMethod(methodName(Method::adaptiveOpenSet));
+            setMethod(Method::adaptiveOpenSet);
+        }
+        
+        void setMethod(Method m) {
+            setupView.setMethod(methodName(m));
         }
         
         void setAdaptiveClosedSet() {
-            setupView.setMethod(methodName(Method::adaptiveClosedSet));
+            setMethod(Method::adaptiveClosedSet);
         }
         
         void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
