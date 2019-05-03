@@ -1530,7 +1530,17 @@ namespace {
         confirmAdaptiveOpenSetTestShowsNextTrialButtonForExperimenter
     ) {
         assertConfirmTestSetupShowsNextTrialButton(
-            confirmingAdaptiveClosedSetTest,
+            confirmingAdaptiveOpenSetTest,
+            playingTrialFromExperimenter
+        );
+    }
+
+    TEST_F(
+        PresenterTests,
+        confirmFixedLevelOpenSetTestShowsNextTrialButtonForExperimenter
+    ) {
+        assertConfirmTestSetupShowsNextTrialButton(
+            confirmingFixedLevelOpenSetTest,
             playingTrialFromExperimenter
         );
     }
