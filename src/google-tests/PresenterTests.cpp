@@ -841,18 +841,14 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(
-            ViewStub::TestSetupViewStub &listener
-        ) override {
+        void run(ViewStub::TestSetupViewStub &listener) override {
             listener.browseForMasker();
         }
     };
 
     class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
     public:
-        void run(
-            ViewStub::TestSetupViewStub &listener
-        ) override {
+        void run(ViewStub::TestSetupViewStub &listener) override {
             listener.browseForTargetList();
         }
 
@@ -883,9 +879,7 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(
-            ViewStub::TestSetupViewStub &listener
-        ) override {
+        void run(ViewStub::TestSetupViewStub &listener) override {
             listener.browseForCalibration();
         }
     };
