@@ -62,7 +62,6 @@ namespace av_speech_in_noise {
         experimenter->show();
         if (testSetup->adaptiveClosedSet())
             subject->show();
-        showNextTrialButton();
     }
     
     void Presenter::hideTestSetup() {
@@ -375,6 +374,7 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::show() { 
         view->show();
+        showNextTrialButton();
     }
     
     void Presenter::Experimenter::playTrial() { 
