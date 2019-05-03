@@ -68,10 +68,6 @@ namespace av_speech_in_noise {
         testSetup->hide();
     }
     
-    void Presenter::showNextTrialButton() {
-        experimenter->showNextTrialButton();
-    }
-    
     void Presenter::showErrorMessage(std::string e) {
         view->showErrorMessage(std::move(e));
     }
@@ -98,8 +94,6 @@ namespace av_speech_in_noise {
     void Presenter::proceedToNextTrial() {
         if (testComplete())
             switchToSetupView();
-        else
-            showNextTrialButton();
     }
     
     bool Presenter::testComplete() {
@@ -308,14 +302,14 @@ namespace av_speech_in_noise {
     }
 
     void Presenter::Subject::playTrial() {
-        view->hideNextTrialButton();
         parent->playTrial();
+        view->hideNextTrialButton();
     }
 
     void Presenter::Subject::submitResponse() {
+        parent->submitResponse();
         showNextTrialButton();
         hideResponseButtons();
-        parent->submitResponse();
     }
     
     void Presenter::Subject::becomeChild(Presenter *p) {
@@ -368,18 +362,18 @@ namespace av_speech_in_noise {
         view->subscribe(this);
     }
     
-    void Presenter::Experimenter::showNextTrialButton() {
-        view->showNextTrialButton();
-    }
-    
     void Presenter::Experimenter::show() { 
         view->show();
         showNextTrialButton();
     }
     
-    void Presenter::Experimenter::playTrial() { 
-        view->hideNextTrialButton();
+    void Presenter::Experimenter::showNextTrialButton() {
+        view->showNextTrialButton();
+    }
+    
+    void Presenter::Experimenter::playTrial() {
         parent->playTrial();
+        view->hideNextTrialButton();
     }
     
     void Presenter::Experimenter::becomeChild(Presenter *p) {
@@ -388,6 +382,7 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::submitPassedTrial() {
         parent->submitPassedTrial();
+        showNextTrialButton();
     }
     
     void Presenter::Experimenter::hide() { 

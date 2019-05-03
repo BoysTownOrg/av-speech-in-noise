@@ -1082,6 +1082,10 @@ namespace {
             EXPECT_TRUE(nextTrialButtonShownForSubject());
         }
         
+        void assertNextTrialButtonShownForExperimenter() {
+            EXPECT_TRUE(experimenterView.nextTrialButtonShown());
+        }
+        
         bool nextTrialButtonShownForSubject() {
             return subjectView.nextTrialButtonShown();
         }
@@ -1679,6 +1683,11 @@ namespace {
     TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
         respondFromSubject();
         assertNextTrialButtonShownForSubject();
+    }
+
+    TEST_F(PresenterTests, subjectPassedTrialShowsNextTrialButtonForExperimenter) {
+        submitPassedTrial();
+        assertNextTrialButtonShownForExperimenter();
     }
 
     TEST_F(PresenterTests, subjectResponseHidesSubjectViewWhenTestComplete) {
