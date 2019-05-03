@@ -961,17 +961,8 @@ namespace {
             experimenterView.submitPassedTrial();
         }
         
-        void confirmTestSetup() {
-            setupView.confirmTestSetup();
-        }
-        
         void playCalibration() {
             setupView.playCalibration();
-        }
-        
-        void confirmTestSetupWithInvalidInput() {
-            setupView.setStartingSnr("?");
-            confirmTestSetup();
         }
         
         void assertSetupViewShown() {
@@ -1301,6 +1292,12 @@ namespace {
             setStartingSnr("a");
             run(useCase);
             assertErrorMessageEquals("'a' is not a valid SNR.");
+        }
+        
+        void assertSetupViewNotHiddenWhenSnrIsInvalid(UseCase &useCase) {
+            setupView.setStartingSnr("?");
+            run(useCase);
+            assertSetupViewNotHidden();
         }
     };
 
@@ -1727,9 +1724,12 @@ namespace {
         assertInvalidSnrShowsErrorMessage(confirmingFixedLevelOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupWithInvalidInputDoesNotHideSetupView) {
-        confirmTestSetupWithInvalidInput();
-        assertSetupViewNotHidden();
+    TEST_F(PresenterTests, confirmAdaptiveClosedSetTestWithInvalidInputDoesNotHideSetupView) {
+        assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestWithInvalidInputDoesNotHideSetupView) {
+        assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptiveOpenSetTest);
     }
 
     class RequestFailingModel : public Model {
