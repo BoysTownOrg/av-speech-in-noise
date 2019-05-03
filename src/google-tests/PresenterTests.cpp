@@ -506,20 +506,19 @@ namespace {
         virtual Condition condition(ModelStub &) = 0;
     };
     
-    class ConfirmingTestSetup2 : public virtual ConditionUseCase {
+    class ConfirmingTestSetup : public virtual ConditionUseCase {
     public:
         virtual int snr_dB(ModelStub &) = 0;
         virtual int maskerLevel(ModelStub &) = 0;
     };
     
-    class ConfirmingAdaptiveClosedSetTest : public ConfirmingTestSetup2 {
+    class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
         ViewStub::TestSetupViewStub *view;
     public:
-        explicit ConfirmingAdaptiveClosedSetTest(ViewStub::TestSetupViewStub *view) :
+        explicit ConfirmingAdaptiveTest(ViewStub::TestSetupViewStub *view) :
             view{view} {}
         
         void run() override {
-            view->setMethod(methodName(Method::adaptiveClosedSet));
             view->confirmTestSetup();
         }
         
@@ -536,7 +535,59 @@ namespace {
         }
     };
     
-    class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup2 {
+    class ConfirmingAdaptiveClosedSetTest : public ConfirmingTestSetup {
+        ConfirmingAdaptiveTest confirmingAdaptiveTest;
+        ViewStub::TestSetupViewStub *view;
+    public:
+        explicit ConfirmingAdaptiveClosedSetTest(ViewStub::TestSetupViewStub *view) :
+            confirmingAdaptiveTest{view},
+            view{view} {}
+        
+        void run() override {
+            view->setMethod(methodName(Method::adaptiveClosedSet));
+            confirmingAdaptiveTest.run();
+        }
+        
+        int snr_dB(ModelStub &m) override {
+            return confirmingAdaptiveTest.snr_dB(m);
+        }
+        
+        int maskerLevel(ModelStub &m) override {
+            return confirmingAdaptiveTest.maskerLevel(m);
+        }
+        
+        Condition condition(ModelStub &m) override {
+            return confirmingAdaptiveTest.condition(m);
+        }
+    };
+    
+    class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
+        ConfirmingAdaptiveTest confirmingAdaptiveTest;
+        ViewStub::TestSetupViewStub *view;
+    public:
+        explicit ConfirmingAdaptiveOpenSetTest(ViewStub::TestSetupViewStub *view) :
+            confirmingAdaptiveTest{view},
+            view{view} {}
+        
+        void run() override {
+            view->setMethod(methodName(Method::adaptiveOpenSet));
+            confirmingAdaptiveTest.run();
+        }
+        
+        int snr_dB(ModelStub &m) override {
+            return confirmingAdaptiveTest.snr_dB(m);
+        }
+        
+        int maskerLevel(ModelStub &m) override {
+            return confirmingAdaptiveTest.maskerLevel(m);
+        }
+        
+        Condition condition(ModelStub &m) override {
+            return confirmingAdaptiveTest.condition(m);
+        }
+    };
+    
+    class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
         ViewStub::TestSetupViewStub *view;
     public:
         explicit ConfirmingFixedLevelOpenSetTest(ViewStub::TestSetupViewStub *view) :
@@ -775,6 +826,7 @@ namespace {
         BrowsingForMasker browsingForMasker;
         BrowsingForCalibration browsingForCalibration;
         ConfirmingAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{&setupView};
+        ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
         ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
         PlayingCalibration playingCalibration{&setupView};
         PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
@@ -1066,13 +1118,13 @@ namespace {
             assertExperimenterViewHidden();
         }
         
-        void assertStartingSnrPassedToModel(ConfirmingTestSetup2 &useCase) {
+        void assertStartingSnrPassedToModel(ConfirmingTestSetup &useCase) {
             setStartingSnr("1");
             run(useCase);
             EXPECT_EQ(1, useCase.snr_dB(model));
         }
         
-        void assertMaskerLevelPassedToModel(ConfirmingTestSetup2 &useCase) {
+        void assertMaskerLevelPassedToModel(ConfirmingTestSetup &useCase) {
             setMaskerLevel("2");
             run(useCase);
             EXPECT_EQ(2, useCase.maskerLevel(model));
@@ -1186,7 +1238,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesFullScaleLevel) {
-        confirmTestSetup();
+        run(confirmingAdaptiveClosedSetTest);
         EXPECT_EQ(
             Presenter::fullScaleLevel_dB_SPL,
             adaptiveTest().fullScaleLevel_dB_SPL
@@ -1202,7 +1254,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRule) {
-        confirmTestSetup();
+        run(confirmingAdaptiveClosedSetTest);
         EXPECT_EQ(
             &Presenter::targetLevelRule,
             adaptiveTest().targetLevelRule
