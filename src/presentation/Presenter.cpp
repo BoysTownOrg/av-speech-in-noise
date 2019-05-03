@@ -183,16 +183,16 @@ namespace av_speech_in_noise {
         p.maskerLevel_dB_SPL = readMaskerLevel();
         p.targetListDirectory = view->targetListDirectory();
         p.maskerFilePath = view->maskerFilePath();
-        p.information = commonTest();
+        p.information = testInformation();
         return p;
     }
     
-    TestInformation Presenter::TestSetup::commonTest() {
-        TestInformation common;
-        common.subjectId = view->subjectId();
-        common.testerId = view->testerId();
-        common.session = view->session();
-        return common;
+    TestInformation Presenter::TestSetup::testInformation() {
+        TestInformation p;
+        p.subjectId = view->subjectId();
+        p.testerId = view->testerId();
+        p.session = view->session();
+        return p;
     }
     
     AdaptiveTest Presenter::TestSetup::adaptiveTest() {
@@ -201,7 +201,7 @@ namespace av_speech_in_noise {
         p.maskerLevel_dB_SPL = readMaskerLevel();
         p.maskerFilePath = view->maskerFilePath();
         p.targetListDirectory = view->targetListDirectory();
-        p.information = commonTest();
+        p.information = testInformation();
         p.condition = readCondition();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         p.targetLevelRule = &targetLevelRule;

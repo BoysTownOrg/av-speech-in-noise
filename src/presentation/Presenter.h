@@ -131,7 +131,7 @@ namespace av_speech_in_noise {
             bool adaptiveClosedSet();
             bool adaptiveOpenSet();
         private:
-            TestInformation commonTest();
+            TestInformation testInformation();
             Condition readCondition();
             int readMaskerLevel();
             int readCalibrationLevel();
