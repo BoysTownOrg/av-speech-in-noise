@@ -1071,10 +1071,6 @@ namespace {
             setupView.setMethod(methodName(m));
         }
         
-        void setAdaptiveClosedSet() {
-            setMethod(Method::adaptiveClosedSet);
-        }
-        
         void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
             setAudioDevice("a");
             run(useCase);
@@ -1175,8 +1171,7 @@ namespace {
         PresenterTests,
         confirmTestShowsSubjectViewWhenAdaptiveClosedSet
     ) {
-        setAdaptiveClosedSet();
-        confirmTestSetup();
+        run(confirmingAdaptiveClosedSetTest);
         assertSubjectViewShown();
     }
 
