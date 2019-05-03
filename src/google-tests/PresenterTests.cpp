@@ -764,7 +764,10 @@ namespace {
         }
     };
     
-    class TrialSubmission : public virtual UseCase {};
+    class TrialSubmission : public virtual UseCase {
+    public:
+        virtual bool nextTrialButtonShown() = 0;
+    };
     
     class RespondingFromSubject : public TrialSubmission {
         ViewStub::SubjectViewStub *view;
@@ -774,6 +777,10 @@ namespace {
         
         void run() override {
             view->submitResponse();
+        }
+        
+        bool nextTrialButtonShown() override {
+            return view->nextTrialButtonShown();
         }
     };
     
@@ -786,6 +793,10 @@ namespace {
         void run() override {
             view->submitResponse();
         }
+        
+        bool nextTrialButtonShown() override {
+            return view->nextTrialButtonShown();
+        }
     };
     
     class SubmittingPassedTrial : public TrialSubmission {
@@ -796,6 +807,10 @@ namespace {
         
         void run() override {
             view->submitPassedTrial();
+        }
+        
+        bool nextTrialButtonShown() override {
+            return view->nextTrialButtonShown();
         }
     };
     
@@ -1007,10 +1022,6 @@ namespace {
             experimenterView.submitResponse();
         }
         
-        void submitPassedTrial() {
-            experimenterView.submitPassedTrial();
-        }
-        
         void playCalibration() {
             setupView.playCalibration();
         }
@@ -1121,18 +1132,6 @@ namespace {
         
         void assertEvaluationButtonsShown() {
             EXPECT_TRUE(experimenterView.evaluationButtonsShown());
-        }
-        
-        void assertNextTrialButtonShownForSubject() {
-            EXPECT_TRUE(nextTrialButtonShownForSubject());
-        }
-        
-        void assertNextTrialButtonShownForExperimenter() {
-            EXPECT_TRUE(experimenterView.nextTrialButtonShown());
-        }
-        
-        bool nextTrialButtonShownForSubject() {
-            return subjectView.nextTrialButtonShown();
         }
         
         void assertResponseButtonsHidden() {
@@ -1271,6 +1270,11 @@ namespace {
         void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
             run(useCase);
             assertExperimenterViewNotHidden();
+        }
+        
+        void assertShowsNextTrialButton(TrialSubmission &useCase) {
+            run(useCase);
+            EXPECT_TRUE(useCase.nextTrialButtonShown());
         }
         
         void assertStartingSnrPassedToModel(ConfirmingTestSetup &useCase) {
@@ -1751,18 +1755,15 @@ namespace {
     }
 
     TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
-        respondFromSubject();
-        assertNextTrialButtonShownForSubject();
+        assertShowsNextTrialButton(respondingFromSubject);
     }
 
     TEST_F(PresenterTests, experimenterResponseShowsNextTrialButton) {
-        respondFromExperimenter();
-        assertNextTrialButtonShownForExperimenter();
+        assertShowsNextTrialButton(respondingFromExperimenter);
     }
 
     TEST_F(PresenterTests, subjectPassedTrialShowsNextTrialButtonForExperimenter) {
-        submitPassedTrial();
-        assertNextTrialButtonShownForExperimenter();
+        assertShowsNextTrialButton(submittingPassedTrial);
     }
 
     TEST_F(PresenterTests, subjectResponseHidesSubjectViewWhenTestComplete) {
