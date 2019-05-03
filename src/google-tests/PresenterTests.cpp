@@ -510,6 +510,7 @@ namespace {
     public:
         virtual int snr_dB(ModelStub &) = 0;
         virtual int maskerLevel(ModelStub &) = 0;
+        virtual int fullScaleLevel(ModelStub &) = 0;
         virtual std::string targetListDirectory(ModelStub &) = 0;
         virtual std::string subjectId(ModelStub &) = 0;
         virtual std::string testerId(ModelStub &) = 0;
@@ -555,6 +556,10 @@ namespace {
             return m.adaptiveTest().information.session;
         }
         
+        int fullScaleLevel(ModelStub &m) override {
+            return m.adaptiveTest().fullScaleLevel_dB_SPL;
+        }
+        
         Condition condition(ModelStub &m) override {
             return m.adaptiveTest().condition;
         }
@@ -583,6 +588,10 @@ namespace {
         
         int maskerLevel(ModelStub &m) override {
             return confirmingAdaptiveTest.maskerLevel(m);
+        }
+        
+        int fullScaleLevel(ModelStub &m) override {
+            return confirmingAdaptiveTest.fullScaleLevel(m);
         }
         
         std::string targetListDirectory(ModelStub &m) override {
@@ -631,6 +640,10 @@ namespace {
             return confirmingAdaptiveTest.maskerLevel(m);
         }
         
+        int fullScaleLevel(ModelStub &m) override {
+            return confirmingAdaptiveTest.fullScaleLevel(m);
+        }
+        
         std::string targetListDirectory(ModelStub &m) override {
             return confirmingAdaptiveTest.targetListDirectory(m);
         }
@@ -673,6 +686,10 @@ namespace {
         
         int maskerLevel(ModelStub &m) override {
             return m.fixedLevelTest().maskerLevel_dB_SPL;
+        }
+        
+        int fullScaleLevel(ModelStub &m) override {
+            return m.fixedLevelTest().fullScaleLevel_dB_SPL;
         }
         
         std::string targetListDirectory(ModelStub &m) override {
@@ -1256,6 +1273,14 @@ namespace {
             run(useCase);
             assertEqual("e", useCase.session(model));
         }
+        
+        void assertPassesFullScaleLevel(ConfirmingTestSetup &useCase) {
+            run(useCase);
+            EXPECT_EQ(
+                Presenter::fullScaleLevel_dB_SPL,
+                useCase.fullScaleLevel(model)
+            );
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1420,11 +1445,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesFullScaleLevel) {
-        run(confirmingAdaptiveClosedSetTest);
-        EXPECT_EQ(
-            Presenter::fullScaleLevel_dB_SPL,
-            adaptiveTest().fullScaleLevel_dB_SPL
-        );
+        assertPassesFullScaleLevel(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesFullScaleLevel) {
+        assertPassesFullScaleLevel(confirmingAdaptiveOpenSetTest);
     }
 
     TEST_F(PresenterTests, playCalibrationPassesFullScaleLevel) {
