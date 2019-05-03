@@ -1134,6 +1134,11 @@ namespace {
             run(useCase);
             assertSetupViewHidden();
         }
+        
+        void assertShowsExperimenterView(UseCase &useCase) {
+            run(useCase);
+            assertExperimenterViewShown();
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1158,9 +1163,12 @@ namespace {
         assertHidesTestSetupView(confirmingFixedLevelOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupShowsExperimenterView) {
-        confirmTestSetup();
-        assertExperimenterViewShown();
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestSetupShowsExperimenterView) {
+        assertShowsExperimenterView(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelTestSetupShowsExperimenterView) {
+        assertShowsExperimenterView(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(
