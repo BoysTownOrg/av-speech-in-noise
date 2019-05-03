@@ -35,17 +35,29 @@ namespace av_speech_in_noise {
     
     void Presenter::confirmTestSetup() {
         try {
-            initializeTest_();
+            confirmTestSetup_();
         } catch (const std::runtime_error &e) {
             showErrorMessage(e.what());
         }
     }
     
-    void Presenter::initializeTest_() {
-        if (testSetup->adaptiveClosedSet() || testSetup->adaptiveOpenSet())
+    void Presenter::confirmTestSetup_() {
+        initializeTest();
+        switchToTestView();
+    }
+    
+    void Presenter::initializeTest() {
+        if (adaptiveTest())
             model->initializeTest(testSetup->adaptiveTest());
         else
             model->initializeTest(testSetup->fixedLevelTest());
+    }
+    
+    bool Presenter::adaptiveTest() {
+        return testSetup->adaptiveClosedSet() || testSetup->adaptiveOpenSet();
+    }
+    
+    void Presenter::switchToTestView() {
         hideTestSetup();
         experimenter->show();
         if (testSetup->adaptiveClosedSet())

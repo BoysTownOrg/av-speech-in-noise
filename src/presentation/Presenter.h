@@ -208,7 +208,10 @@ namespace av_speech_in_noise {
         void showNextTrialButton();
         void hideNextTrialButton();
         void showResponseButtons();
-        void initializeTest_();
+        bool adaptiveTest();
+        void initializeTest();
+        void switchToTestView();
+        void confirmTestSetup_();
         void applyIfBrowseNotCancelled(
             std::string s,
             void(TestSetup::*f)(std::string)
