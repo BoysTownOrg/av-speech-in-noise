@@ -1224,6 +1224,10 @@ namespace {
         assertMaskerLevelPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesMaskerLevel) {
+        assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetTest);
+    }
+
     TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesMaskerLevel) {
         assertMaskerLevelPassedToModel(confirmingFixedLevelOpenSetTest);
     }
