@@ -92,6 +92,7 @@ namespace av_speech_in_noise {
     struct FixedLevelTest {
         std::string targetListDirectory;
         std::string maskerFilePath;
+        std::string subjectId;
         int snr_dB;
         int maskerLevel_dB_SPL;
         int fullScaleLevel_dB_SPL;

@@ -511,6 +511,7 @@ namespace {
         virtual int snr_dB(ModelStub &) = 0;
         virtual int maskerLevel(ModelStub &) = 0;
         virtual std::string targetListDirectory(ModelStub &) = 0;
+        virtual std::string subjectId(ModelStub &) = 0;
     };
     
     class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
@@ -533,6 +534,10 @@ namespace {
         
         std::string targetListDirectory(ModelStub &m) override {
             return m.adaptiveTest().targetListDirectory;
+        }
+        
+        std::string subjectId(ModelStub &m) override {
+            return m.adaptiveTest().subjectId;
         }
         
         Condition condition(ModelStub &m) override {
@@ -569,6 +574,10 @@ namespace {
             return confirmingAdaptiveTest.targetListDirectory(m);
         }
         
+        std::string subjectId(ModelStub &m) override {
+            return confirmingAdaptiveTest.subjectId(m);
+        }
+        
         Condition condition(ModelStub &m) override {
             return confirmingAdaptiveTest.condition(m);
         }
@@ -599,6 +608,10 @@ namespace {
             return confirmingAdaptiveTest.targetListDirectory(m);
         }
         
+        std::string subjectId(ModelStub &m) override {
+            return confirmingAdaptiveTest.subjectId(m);
+        }
+        
         Condition condition(ModelStub &m) override {
             return confirmingAdaptiveTest.condition(m);
         }
@@ -625,6 +638,10 @@ namespace {
         
         std::string targetListDirectory(ModelStub &m) override {
             return m.fixedLevelTest().targetListDirectory;
+        }
+        
+        std::string subjectId(ModelStub &m) override {
+            return m.fixedLevelTest().subjectId;
         }
         
         Condition condition(ModelStub &m) override {
@@ -1164,6 +1181,12 @@ namespace {
             run(useCase);
             assertEqual("a", useCase.targetListDirectory(model));
         }
+        
+        void assertPassesSubjectId(ConfirmingTestSetup &useCase) {
+            setupView.setSubjectId("b");
+            run(useCase);
+            assertEqual("b", useCase.subjectId(model));
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1269,14 +1292,20 @@ namespace {
         assertPassesTargetListDirectory(confirmingAdaptiveOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmingFixedLevelTestPassesTargetList) {
+    TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesTargetList) {
         assertPassesTargetListDirectory(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesSubjectId) {
-        setupView.setSubjectId("b");
-        run(confirmingAdaptiveClosedSetTest);
-        assertEqual("b", adaptiveTest().subjectId);
+        assertPassesSubjectId(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesSubjectId) {
+        assertPassesSubjectId(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesSubjectId) {
+        assertPassesSubjectId(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTesterId) {
