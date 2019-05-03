@@ -20,11 +20,11 @@ namespace av_speech_in_noise {
     std::string OutputFilePathImpl::formatTestInformation(const AdaptiveTest &test) {
         std::stringstream stream;
         stream << "Subject_";
-        stream << test.common.subjectId;
+        stream << test.information.subjectId;
         stream << "_Session_";
-        stream << test.common.session;
+        stream << test.information.session;
         stream << "_Experimenter_";
-        stream << test.common.testerId;
+        stream << test.information.testerId;
         return stream.str();
     }
     

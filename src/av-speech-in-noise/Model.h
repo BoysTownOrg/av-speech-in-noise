@@ -60,18 +60,28 @@ namespace av_speech_in_noise {
     
     using TrackingRule = typename std::vector<TrackingSequence>;
     
-    struct CommonTest {
+    struct TestInformation {
         std::string subjectId;
         std::string testerId;
         std::string session;
     };
     
     struct AdaptiveTest {
-        CommonTest common;
+        TestInformation information;
         std::string targetListDirectory;
         std::string maskerFilePath;
         const TrackingRule *targetLevelRule;
         int startingSnr_dB;
+        int maskerLevel_dB_SPL;
+        int fullScaleLevel_dB_SPL;
+        Condition condition;
+    };
+    
+    struct FixedLevelTest {
+        TestInformation information;
+        std::string targetListDirectory;
+        std::string maskerFilePath;
+        int snr_dB;
         int maskerLevel_dB_SPL;
         int fullScaleLevel_dB_SPL;
         Condition condition;
@@ -91,16 +101,6 @@ namespace av_speech_in_noise {
     
     struct TypedResponse {
     
-    };
-    
-    struct FixedLevelTest {
-        CommonTest common;
-        std::string targetListDirectory;
-        std::string maskerFilePath;
-        int snr_dB;
-        int maskerLevel_dB_SPL;
-        int fullScaleLevel_dB_SPL;
-        Condition condition;
     };
     
     class Model {

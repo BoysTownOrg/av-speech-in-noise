@@ -540,11 +540,11 @@ namespace {
         }
         
         std::string subjectId(ModelStub &m) override {
-            return m.adaptiveTest().common.subjectId;
+            return m.adaptiveTest().information.subjectId;
         }
         
         std::string testerId(ModelStub &m) override {
-            return m.adaptiveTest().common.testerId;
+            return m.adaptiveTest().information.testerId;
         }
         
         std::string maskerFilePath(ModelStub &m) override {
@@ -552,7 +552,7 @@ namespace {
         }
         
         std::string session(ModelStub &m) override {
-            return m.adaptiveTest().common.session;
+            return m.adaptiveTest().information.session;
         }
         
         Condition condition(ModelStub &m) override {
@@ -680,15 +680,15 @@ namespace {
         }
         
         std::string subjectId(ModelStub &m) override {
-            return m.fixedLevelTest().common.subjectId;
+            return m.fixedLevelTest().information.subjectId;
         }
         
         std::string testerId(ModelStub &m) override {
-            return m.fixedLevelTest().common.testerId;
+            return m.fixedLevelTest().information.testerId;
         }
         
         std::string session(ModelStub &m) override {
-            return m.fixedLevelTest().common.session;
+            return m.fixedLevelTest().information.session;
         }
         
         std::string maskerFilePath(ModelStub &m) override {
