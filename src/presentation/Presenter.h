@@ -115,11 +115,6 @@ namespace av_speech_in_noise {
         class TestSetup : public View::TestSetup::EventListener {
         public:
             explicit TestSetup(View::TestSetup *);
-            void playCalibration() override;
-            void browseForTargetList() override;
-            void browseForMasker() override;
-            void confirmTestSetup() override;
-            void browseForCalibration() override;
             void show();
             void hide();
             void becomeChild(Presenter *parent);
@@ -131,6 +126,11 @@ namespace av_speech_in_noise {
             Calibration calibrationParameters();
             bool adaptiveClosedSet();
             bool adaptiveOpenSet();
+            void playCalibration() override;
+            void browseForTargetList() override;
+            void browseForMasker() override;
+            void confirmTestSetup() override;
+            void browseForCalibration() override;
         private:
             TestInformation testInformation();
             Condition readCondition();
@@ -146,13 +146,13 @@ namespace av_speech_in_noise {
         class Subject : public View::Subject::EventListener {
         public:
             explicit Subject(View::Subject *);
-            void playTrial() override;
-            void submitResponse() override;
-            void becomeChild(Presenter *parent);
-            void showResponseButtons();
             void show();
             void hide();
+            void becomeChild(Presenter *parent);
+            void showResponseButtons();
             coordinate_response_measure::SubjectResponse subjectResponse();
+            void playTrial() override;
+            void submitResponse() override;
         private:
             void hideResponseButtons();
             void showNextTrialButton();
@@ -167,12 +167,12 @@ namespace av_speech_in_noise {
         public:
             explicit Experimenter(View::Experimenter *);
             void becomeChild(Presenter *parent);
-            void showNextTrialButton();
             void show();
             void hide();
             void playTrial() override;
             void submitPassedTrial() override;
         private:
+            void showNextTrialButton();
             Presenter *parent;
         };
         
@@ -197,6 +197,7 @@ namespace av_speech_in_noise {
         static TrackingRule targetLevelRule;
         
     private:
+        void hideTestView();
         void switchToSetupView();
         void showErrorMessage(std::string);
         RUNTIME_ERROR(BadInput)
@@ -205,11 +206,10 @@ namespace av_speech_in_noise {
         bool testComplete();
         void proceedToNextTrial();
         void hideTestSetup();
-        void hideResponseButtons();
-        void showNextTrialButton();
         void showResponseButtons();
         bool adaptiveTest();
         void initializeTest();
+        void showTestView();
         void switchToTestView();
         void confirmTestSetup_();
         void applyIfBrowseNotCancelled(

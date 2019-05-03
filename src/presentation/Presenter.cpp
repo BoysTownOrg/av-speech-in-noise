@@ -59,6 +59,10 @@ namespace av_speech_in_noise {
     
     void Presenter::switchToTestView() {
         hideTestSetup();
+        showTestView();
+    }
+    
+    void Presenter::showTestView() {
         experimenter->show();
         if (testSetup->adaptiveClosedSet())
             subject->show();
@@ -102,12 +106,16 @@ namespace av_speech_in_noise {
     
     void Presenter::switchToSetupView() {
         showTestSetup();
-        experimenter->hide();
-        subject->hide();
+        hideTestView();
     }
     
     void Presenter::showTestSetup() {
         testSetup->show();
+    }
+    
+    void Presenter::hideTestView() {
+        experimenter->hide();
+        subject->hide();
     }
     
     void Presenter::playCalibration() {
@@ -157,7 +165,6 @@ namespace av_speech_in_noise {
         if (testComplete())
             switchToSetupView();
     }
-    
     
 
     Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
