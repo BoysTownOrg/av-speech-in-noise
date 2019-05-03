@@ -506,11 +506,18 @@ namespace {
         virtual Condition condition(ModelStub &) = 0;
     };
     
-    class ConfirmingTestSetup : public virtual ConditionUseCase {
+    class LevelUseCase : public virtual UseCase {
+    public:
+        virtual int fullScaleLevel(ModelStub &) = 0;
+    };
+    
+    class ConfirmingTestSetup :
+        public virtual ConditionUseCase,
+        public virtual LevelUseCase
+    {
     public:
         virtual int snr_dB(ModelStub &) = 0;
         virtual int maskerLevel(ModelStub &) = 0;
-        virtual int fullScaleLevel(ModelStub &) = 0;
         virtual std::string targetListDirectory(ModelStub &) = 0;
         virtual std::string subjectId(ModelStub &) = 0;
         virtual std::string testerId(ModelStub &) = 0;
@@ -874,7 +881,10 @@ namespace {
         }
     };
     
-    class PlayingCalibration : public ConditionUseCase {
+    class PlayingCalibration :
+        public ConditionUseCase,
+        public LevelUseCase
+    {
         ViewStub::TestSetupViewStub *view;
     public:
         explicit PlayingCalibration(ViewStub::TestSetupViewStub *view) :
@@ -886,6 +896,10 @@ namespace {
         
         void run() override {
             view->playCalibration();
+        }
+        
+        int fullScaleLevel(ModelStub &m) override {
+            return m.calibration().fullScaleLevel_dB_SPL;
         }
     };
 
@@ -1274,7 +1288,7 @@ namespace {
             assertEqual("e", useCase.session(model));
         }
         
-        void assertPassesFullScaleLevel(ConfirmingTestSetup &useCase) {
+        void assertPassesFullScaleLevel(LevelUseCase &useCase) {
             run(useCase);
             EXPECT_EQ(
                 Presenter::fullScaleLevel_dB_SPL,
@@ -1457,11 +1471,7 @@ namespace {
     }
 
     TEST_F(PresenterTests, playCalibrationPassesFullScaleLevel) {
-        playCalibration();
-        EXPECT_EQ(
-            Presenter::fullScaleLevel_dB_SPL,
-            calibration().fullScaleLevel_dB_SPL
-        );
+        assertPassesFullScaleLevel(playingCalibration);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTargetLevelRule) {
