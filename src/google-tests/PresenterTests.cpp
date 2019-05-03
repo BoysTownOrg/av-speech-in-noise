@@ -1552,6 +1552,20 @@ namespace {
         assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptiveClosedSetTest);
     }
 
+    TEST_F(
+        PresenterTests,
+        confirmingAdaptiveOpenSetTestWithInvalidMaskerLevelShowsErrorMessage
+    ) {
+        assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(
+        PresenterTests,
+        confirmingFixedLevelOpenSetTestWithInvalidMaskerLevelShowsErrorMessage
+    ) {
+        assertInvalidMaskerLevelShowsErrorMessage(confirmingFixedLevelOpenSetTest);
+    }
+
     TEST_F(PresenterTests, playCalibrationWithInvalidLevelShowsErrorMessage) {
         assertInvalidCalibrationLevelShowsErrorMessage(playingCalibration);
     }
