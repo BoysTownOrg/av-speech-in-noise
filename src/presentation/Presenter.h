@@ -194,7 +194,8 @@ namespace av_speech_in_noise {
         void run();
         void browseForTargetList();
         void playTrial();
-        void submitResponse();
+        void submitSubjectResponse();
+        void submitExperimenterResponse();
         void browseForMasker();
         void browseForCalibration();
         void confirmTestSetup();
