@@ -594,7 +594,7 @@ namespace {
             view{view} {}
         
         void run() override {
-            view->setMethod(methodName(Method::adaptiveOpenSet));
+            view->setMethod(methodName(Method::fixedLevelOpenSet));
             view->confirmTestSetup();
         }
         
@@ -1161,7 +1161,7 @@ namespace {
 
     TEST_F(
         PresenterTests,
-        confirmTestShowsSubjectViewWhenAdaptiveClosedSet
+        confirmAdaptiveClosedSetTestShowsSubjectView
     ) {
         run(confirmingAdaptiveClosedSetTest);
         assertSubjectViewShown();
@@ -1169,7 +1169,7 @@ namespace {
 
     TEST_F(
         PresenterTests,
-        confirmTestDoesNotShowSubjectViewWhenAdaptiveOpenSet
+        confirmAdaptiveOpenSetTestDoesNotShowSubjectView
     ) {
         run(confirmingAdaptiveOpenSetTest);
         assertSubjectViewNotShown();
@@ -1177,6 +1177,11 @@ namespace {
 
     TEST_F(PresenterTests, confirmAdaptiveTestDoesNotInitializeFixedLevelTest) {
         run(confirmingAdaptiveClosedSetTest);
+        EXPECT_FALSE(model.fixedLevelTestInitialized());
+    }
+
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestDoesNotInitializeFixedLevelTest) {
+        run(confirmingAdaptiveOpenSetTest);
         EXPECT_FALSE(model.fixedLevelTestInitialized());
     }
 

@@ -42,7 +42,7 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::initializeTest_() {
-        if (testSetup->adaptiveClosedSet())
+        if (testSetup->adaptiveClosedSet() || testSetup->adaptiveOpenSet())
             model->initializeTest(testSetup->adaptiveTest());
         else
             model->initializeTest(testSetup->fixedLevelTest());
@@ -282,6 +282,10 @@ namespace av_speech_in_noise {
     
     bool Presenter::TestSetup::adaptiveClosedSet() { 
         return view->method() == methodName(Method::adaptiveClosedSet);
+    }
+    
+    bool Presenter::TestSetup::adaptiveOpenSet() {
+        return view->method() == methodName(Method::adaptiveOpenSet);
     }
 
 

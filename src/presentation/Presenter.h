@@ -129,6 +129,7 @@ namespace av_speech_in_noise {
             FixedLevelTest fixedLevelTest();
             Calibration calibrationParameters();
             bool adaptiveClosedSet();
+            bool adaptiveOpenSet();
         private:
             Condition readCondition();
             int readMaskerLevel();
