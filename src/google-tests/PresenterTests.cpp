@@ -1415,6 +1415,10 @@ namespace {
         assertPassesSession(confirmingAdaptiveOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesSession) {
+        assertPassesSession(confirmingFixedLevelOpenSetTest);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesFullScaleLevel) {
         run(confirmingAdaptiveClosedSetTest);
         EXPECT_EQ(
