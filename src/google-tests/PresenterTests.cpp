@@ -722,15 +722,11 @@ namespace {
         SubmittingPassedTrial submittingPassedTrial{&experimenterView};
         
         std::string auditoryOnlyConditionName() {
-            return conditionName(
-                Condition::auditoryOnly
-            );
+            return conditionName(Condition::auditoryOnly);
         }
         
         std::string audioVisualConditionName() {
-            return conditionName(
-                Condition::audioVisual
-            );
+            return conditionName(Condition::audioVisual);
         }
         
         void respondFromSubject() {
@@ -886,13 +882,11 @@ namespace {
             EXPECT_EQ(c, model.responseParameters().color);
         }
         
-        const av_speech_in_noise::AdaptiveTest &modelTestParameters() {
+        const AdaptiveTest &modelTestParameters() {
             return model.testParameters();
         }
         
-        const Calibration &
-            modelCalibrationParameters()
-        {
+        const Calibration &modelCalibrationParameters() {
             return model.calibrationParameters();
         }
         
@@ -931,10 +925,11 @@ namespace {
         void assertAudioVisualConditionPassedToModel(ConditionUseCase &useCase) {
             setCondition(audioVisualConditionName());
             run(useCase);
-            EXPECT_EQ(
-                Condition::audioVisual,
-                modelCondition(useCase)
-            );
+            assertModelPassedCondition(useCase, Condition::audioVisual);
+        }
+        
+        void assertModelPassedCondition(ConditionUseCase &useCase, Condition c) {
+            EXPECT_EQ(c, modelCondition(useCase));
         }
         
         Condition modelCondition(ConditionUseCase &useCase) {
@@ -944,10 +939,7 @@ namespace {
         void assertAuditoryOnlyConditionPassedToModel(ConditionUseCase &useCase) {
             setCondition(auditoryOnlyConditionName());
             run(useCase);
-            EXPECT_EQ(
-                Condition::auditoryOnly,
-                modelCondition(useCase)
-            );
+            assertModelPassedCondition(useCase, Condition::auditoryOnly);
         }
         
         void setStartingSnr(std::string s) {
