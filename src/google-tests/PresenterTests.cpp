@@ -513,6 +513,7 @@ namespace {
         virtual std::string targetListDirectory(ModelStub &) = 0;
         virtual std::string subjectId(ModelStub &) = 0;
         virtual std::string testerId(ModelStub &) = 0;
+        virtual std::string maskerFilePath(ModelStub &) = 0;
     };
     
     class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
@@ -543,6 +544,10 @@ namespace {
         
         std::string testerId(ModelStub &m) override {
             return m.adaptiveTest().common.testerId;
+        }
+        
+        std::string maskerFilePath(ModelStub &m) override {
+            return m.adaptiveTest().maskerFilePath;
         }
         
         Condition condition(ModelStub &m) override {
@@ -587,6 +592,10 @@ namespace {
             return confirmingAdaptiveTest.testerId(m);
         }
         
+        std::string maskerFilePath(ModelStub &m) override {
+            return confirmingAdaptiveTest.maskerFilePath(m);
+        }
+        
         Condition condition(ModelStub &m) override {
             return confirmingAdaptiveTest.condition(m);
         }
@@ -625,6 +634,10 @@ namespace {
             return confirmingAdaptiveTest.testerId(m);
         }
         
+        std::string maskerFilePath(ModelStub &m) override {
+            return confirmingAdaptiveTest.maskerFilePath(m);
+        }
+        
         Condition condition(ModelStub &m) override {
             return confirmingAdaptiveTest.condition(m);
         }
@@ -659,6 +672,10 @@ namespace {
         
         std::string testerId(ModelStub &m) override {
             return m.fixedLevelTest().common.testerId;
+        }
+        
+        std::string maskerFilePath(ModelStub &m) override {
+            return m.fixedLevelTest().maskerFilePath;
         }
         
         Condition condition(ModelStub &m) override {
@@ -1210,6 +1227,12 @@ namespace {
             run(useCase);
             assertEqual("c", useCase.testerId(model));
         }
+        
+        void assertPassesMasker(ConfirmingTestSetup &useCase) {
+            setupView.setMasker("d");
+            run(useCase);
+            assertEqual("d", useCase.maskerFilePath(model));
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1344,9 +1367,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMasker) {
-        setupView.setMasker("d");
-        run(confirmingAdaptiveClosedSetTest);
-        assertEqual("d", adaptiveTest().maskerFilePath);
+        assertPassesMasker(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesMasker) {
+        assertPassesMasker(confirmingAdaptiveOpenSetTest);
     }
 
     TEST_F(PresenterTests, playCalibrationPassesFilePath) {
