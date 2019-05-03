@@ -1151,29 +1151,29 @@ namespace {
         EXPECT_TRUE(view.eventLoopCalled());
     }
 
-    TEST_F(PresenterTests, confirmAdaptiveClosedSetTestSetupHidesTestSetupView) {
+    TEST_F(PresenterTests, confirmAdaptiveClosedSetTestHidesTestSetupView) {
         assertHidesTestSetupView(confirmingAdaptiveClosedSetTest);
     }
 
-    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestSetupHidesTestSetupView) {
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestHidesTestSetupView) {
         assertHidesTestSetupView(confirmingAdaptiveOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmFixedLevelTestSetupHidesTestSetupView) {
+    TEST_F(PresenterTests, confirmFixedLevelTestHidesTestSetupView) {
         assertHidesTestSetupView(confirmingFixedLevelOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestSetupShowsExperimenterView) {
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsExperimenterView) {
         assertShowsExperimenterView(confirmingAdaptiveOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmFixedLevelTestSetupShowsExperimenterView) {
+    TEST_F(PresenterTests, confirmFixedLevelTestShowsExperimenterView) {
         assertShowsExperimenterView(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(
         PresenterTests,
-        confirmTestSetupShowsSubjectViewWhenAdaptiveClosedSet
+        confirmTestShowsSubjectViewWhenAdaptiveClosedSet
     ) {
         setAdaptiveClosedSet();
         confirmTestSetup();
@@ -1182,19 +1182,19 @@ namespace {
 
     TEST_F(
         PresenterTests,
-        confirmTestSetupDoesNotShowSubjectViewWhenAdaptiveOpenSet
+        confirmTestDoesNotShowSubjectViewWhenAdaptiveOpenSet
     ) {
         setAdaptiveOpenSet();
         confirmTestSetup();
         assertSubjectViewNotShown();
     }
 
-    TEST_F(PresenterTests, confirmAdaptiveTestSetupDoesNotInitializeFixedLevelTest) {
+    TEST_F(PresenterTests, confirmAdaptiveTestDoesNotInitializeFixedLevelTest) {
         run(confirmingAdaptiveClosedSetTest);
         EXPECT_FALSE(model.fixedLevelTestInitialized());
     }
 
-    TEST_F(PresenterTests, confirmFixedLevelTestSetupDoesNotInitializeAdaptiveTest) {
+    TEST_F(PresenterTests, confirmFixedLevelTestDoesNotInitializeAdaptiveTest) {
         run(confirmingFixedLevelOpenSetTest);
         EXPECT_FALSE(model.adaptiveTestInitialized());
     }
@@ -1203,7 +1203,7 @@ namespace {
         assertStartingSnrPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
-    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestSetupPassesStartingSnr) {
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesStartingSnr) {
         assertStartingSnrPassedToModel(confirmingFixedLevelOpenSetTest);
     }
 
@@ -1211,7 +1211,7 @@ namespace {
         assertMaskerLevelPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
-    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestSetupPassesMaskerLevel) {
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesMaskerLevel) {
         assertMaskerLevelPassedToModel(confirmingFixedLevelOpenSetTest);
     }
 
@@ -1299,14 +1299,14 @@ namespace {
 
     TEST_F(
         PresenterTests,
-        confirmTestSetupShowsNextTrialButtonForSubjectWhenAdaptiveClosedSet
+        confirmTestShowsNextTrialButtonForSubjectWhenAdaptiveClosedSet
     ) {
         assertConfirmTestSetupShowsNextTrialButton(playingTrialFromSubject);
     }
 
     TEST_F(
         PresenterTests,
-        confirmTestSetupShowsNextTrialButtonForExperimenterWhenAdaptiveOpenSet
+        confirmTestShowsNextTrialButtonForExperimenterWhenAdaptiveOpenSet
     ) {
         assertConfirmTestSetupShowsNextTrialButton(playingTrialFromExperimenter);
     }
