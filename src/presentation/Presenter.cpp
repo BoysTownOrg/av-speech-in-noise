@@ -414,6 +414,7 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::submitResponse() {
         parent->submitExperimenterResponse();
+        showNextTrialButton();
     }
     
     std::string Presenter::Experimenter::response() { 

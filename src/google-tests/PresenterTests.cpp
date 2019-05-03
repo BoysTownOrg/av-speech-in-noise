@@ -1755,6 +1755,11 @@ namespace {
         assertNextTrialButtonShownForSubject();
     }
 
+    TEST_F(PresenterTests, experimenterResponseShowsNextTrialButton) {
+        respondFromExperimenter();
+        assertNextTrialButtonShownForExperimenter();
+    }
+
     TEST_F(PresenterTests, subjectPassedTrialShowsNextTrialButtonForExperimenter) {
         submitPassedTrial();
         assertNextTrialButtonShownForExperimenter();
