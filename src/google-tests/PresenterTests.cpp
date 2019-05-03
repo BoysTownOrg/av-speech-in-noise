@@ -1268,6 +1268,11 @@ namespace {
             assertExperimenterViewHidden();
         }
         
+        void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
+            run(useCase);
+            assertExperimenterViewNotHidden();
+        }
+        
         void assertStartingSnrPassedToModel(ConfirmingTestSetup &useCase) {
             setStartingSnr("1");
             run(useCase);
@@ -1734,13 +1739,15 @@ namespace {
     }
 
     TEST_F(PresenterTests, respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
-        respondFromSubject();
-        assertExperimenterViewNotHidden();
+        assertDoesNotHideExperimenterView(respondingFromSubject);
+    }
+
+    TEST_F(PresenterTests, respondFromExperimenterDoesNotHideExperimenterViewWhenTestIncomplete) {
+        assertDoesNotHideExperimenterView(respondingFromExperimenter);
     }
 
     TEST_F(PresenterTests, submitPassedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
-        submitPassedTrial();
-        assertExperimenterViewNotHidden();
+        assertDoesNotHideExperimenterView(submittingPassedTrial);
     }
 
     TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
