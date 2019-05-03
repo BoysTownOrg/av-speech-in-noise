@@ -1179,7 +1179,7 @@ namespace {
         EXPECT_FALSE(model.adaptiveTestInitialized());
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesStartingSnr) {
         assertStartingSnrPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
@@ -1187,7 +1187,7 @@ namespace {
         assertStartingSnrPassedToModel(confirmingFixedLevelOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesMaskerLevel) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMaskerLevel) {
         assertMaskerLevelPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
@@ -1201,25 +1201,25 @@ namespace {
         EXPECT_EQ(1, modelCalibrationParameters().level_dB_SPL);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesTargetList) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTargetList) {
         setupView.setTargetListDirectory("a");
         run(confirmingAdaptiveClosedSetTest);
         assertEqual("a", adaptiveTest().targetListDirectory);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesSubjectId) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesSubjectId) {
         setupView.setSubjectId("b");
         run(confirmingAdaptiveClosedSetTest);
         assertEqual("b", adaptiveTest().subjectId);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesTesterId) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTesterId) {
         setupView.setTesterId("c");
         run(confirmingAdaptiveClosedSetTest);
         assertEqual("c", adaptiveTest().testerId);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesMasker) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMasker) {
         setupView.setMasker("d");
         run(confirmingAdaptiveClosedSetTest);
         assertEqual("d", adaptiveTest().maskerFilePath);
@@ -1231,13 +1231,13 @@ namespace {
         assertEqual("a", modelCalibrationParameters().filePath);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesSession) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesSession) {
         setupView.setSession("e");
         run(confirmingAdaptiveClosedSetTest);
         assertEqual("e", adaptiveTest().session);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesFullScaleLevel) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesFullScaleLevel) {
         run(confirmingAdaptiveClosedSetTest);
         EXPECT_EQ(
             Presenter::fullScaleLevel_dB_SPL,
@@ -1253,7 +1253,7 @@ namespace {
         );
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesTargetLevelRule) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTargetLevelRule) {
         run(confirmingAdaptiveClosedSetTest);
         EXPECT_EQ(
             &Presenter::targetLevelRule,
@@ -1261,11 +1261,11 @@ namespace {
         );
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesAudioVisualCondition) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesAudioVisualCondition) {
         assertAudioVisualConditionPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesAuditoryOnlyCondition) {
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesAuditoryOnlyCondition) {
         assertAuditoryOnlyConditionPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
@@ -1293,7 +1293,7 @@ namespace {
 
     TEST_F(
         PresenterTests,
-        confirmTestSetupWithInvalidMaskerLevelShowsErrorMessage
+        confirmingAdaptiveClosedSetTestWithInvalidMaskerLevelShowsErrorMessage
     ) {
         assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptiveClosedSetTest);
     }
