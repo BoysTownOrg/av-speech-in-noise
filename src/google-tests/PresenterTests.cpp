@@ -1136,6 +1136,11 @@ namespace {
             run(useCase);
             assertSubjectViewNotShown();
         }
+        
+        void assertDoesNotInitializeFixedLevelTest(UseCase &useCase) {
+            run(useCase);
+            EXPECT_FALSE(model.fixedLevelTestInitialized());
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1190,14 +1195,12 @@ namespace {
         assertDoesNotShowSubjectView(confirmingFixedLevelOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmAdaptiveTestDoesNotInitializeFixedLevelTest) {
-        run(confirmingAdaptiveClosedSetTest);
-        EXPECT_FALSE(model.fixedLevelTestInitialized());
+    TEST_F(PresenterTests, confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
+        assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmAdaptiveOpenSetTestDoesNotInitializeFixedLevelTest) {
-        run(confirmingAdaptiveOpenSetTest);
-        EXPECT_FALSE(model.fixedLevelTestInitialized());
+        assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmFixedLevelTestDoesNotInitializeAdaptiveTest) {
