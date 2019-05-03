@@ -1482,6 +1482,14 @@ namespace {
         );
     }
 
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTargetLevelRule) {
+        run(confirmingAdaptiveOpenSetTest);
+        EXPECT_EQ(
+            &Presenter::targetLevelRule,
+            adaptiveTest().targetLevelRule
+        );
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesAudioVisualCondition) {
         assertAudioVisualConditionPassedToModel(confirmingAdaptiveClosedSetTest);
     }
