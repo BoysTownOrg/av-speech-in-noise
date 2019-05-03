@@ -1452,6 +1452,10 @@ namespace {
         assertPassesFullScaleLevel(confirmingAdaptiveOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesFullScaleLevel) {
+        assertPassesFullScaleLevel(confirmingFixedLevelOpenSetTest);
+    }
+
     TEST_F(PresenterTests, playCalibrationPassesFullScaleLevel) {
         playCalibration();
         EXPECT_EQ(
