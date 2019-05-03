@@ -122,7 +122,7 @@ namespace {
 
     TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
         test.common.subjectId = "a";
-        test.session = "b";
+        test.common.session = "b";
         test.common.testerId = "c";
         timeStamp.setYear(1);
         timeStamp.setMonth(2);

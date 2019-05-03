@@ -63,13 +63,13 @@ namespace av_speech_in_noise {
     struct CommonTest {
         std::string subjectId;
         std::string testerId;
+        std::string session;
     };
     
     struct AdaptiveTest {
         CommonTest common;
         std::string targetListDirectory;
         std::string maskerFilePath;
-        std::string session;
         const TrackingRule *targetLevelRule;
         int startingSnr_dB;
         int maskerLevel_dB_SPL;

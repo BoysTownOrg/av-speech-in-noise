@@ -513,6 +513,7 @@ namespace {
         virtual std::string targetListDirectory(ModelStub &) = 0;
         virtual std::string subjectId(ModelStub &) = 0;
         virtual std::string testerId(ModelStub &) = 0;
+        virtual std::string session(ModelStub &) = 0;
         virtual std::string maskerFilePath(ModelStub &) = 0;
     };
     
@@ -548,6 +549,10 @@ namespace {
         
         std::string maskerFilePath(ModelStub &m) override {
             return m.adaptiveTest().maskerFilePath;
+        }
+        
+        std::string session(ModelStub &m) override {
+            return m.adaptiveTest().common.session;
         }
         
         Condition condition(ModelStub &m) override {
@@ -592,6 +597,10 @@ namespace {
             return confirmingAdaptiveTest.testerId(m);
         }
         
+        std::string session(ModelStub &m) override {
+            return confirmingAdaptiveTest.session(m);
+        }
+        
         std::string maskerFilePath(ModelStub &m) override {
             return confirmingAdaptiveTest.maskerFilePath(m);
         }
@@ -634,6 +643,10 @@ namespace {
             return confirmingAdaptiveTest.testerId(m);
         }
         
+        std::string session(ModelStub &m) override {
+            return confirmingAdaptiveTest.session(m);
+        }
+        
         std::string maskerFilePath(ModelStub &m) override {
             return confirmingAdaptiveTest.maskerFilePath(m);
         }
@@ -672,6 +685,10 @@ namespace {
         
         std::string testerId(ModelStub &m) override {
             return m.fixedLevelTest().common.testerId;
+        }
+        
+        std::string session(ModelStub &m) override {
+            return m.fixedLevelTest().common.session;
         }
         
         std::string maskerFilePath(ModelStub &m) override {
@@ -1233,6 +1250,12 @@ namespace {
             run(useCase);
             assertEqual("d", useCase.maskerFilePath(model));
         }
+        
+        void assertPassesSession(ConfirmingTestSetup &useCase) {
+            setupView.setSession("e");
+            run(useCase);
+            assertEqual("e", useCase.session(model));
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1385,9 +1408,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesSession) {
-        setupView.setSession("e");
-        run(confirmingAdaptiveClosedSetTest);
-        assertEqual("e", adaptiveTest().session);
+        assertPassesSession(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesSession) {
+        assertPassesSession(confirmingAdaptiveOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesFullScaleLevel) {

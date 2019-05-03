@@ -125,7 +125,7 @@ namespace {
 
     TEST_F(OutputFileTests, writeTest) {
         test.maskerFilePath = "a";
-        test.session = "b";
+        test.common.session = "b";
         test.common.subjectId = "c";
         test.targetListDirectory = "d";
         test.common.testerId = "e";

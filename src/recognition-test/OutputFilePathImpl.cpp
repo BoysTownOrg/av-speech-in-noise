@@ -22,7 +22,7 @@ namespace av_speech_in_noise {
         stream << "Subject_";
         stream << test.common.subjectId;
         stream << "_Session_";
-        stream << test.session;
+        stream << test.common.session;
         stream << "_Experimenter_";
         stream << test.common.testerId;
         return stream.str();

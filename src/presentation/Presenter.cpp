@@ -191,6 +191,7 @@ namespace av_speech_in_noise {
         CommonTest common;
         common.subjectId = view->subjectId();
         common.testerId = view->testerId();
+        common.session = view->session();
         return common;
     }
     
@@ -201,7 +202,6 @@ namespace av_speech_in_noise {
         p.maskerFilePath = view->maskerFilePath();
         p.targetListDirectory = view->targetListDirectory();
         p.common = commonTest();
-        p.session = view->session();
         p.condition = readCondition();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         p.targetLevelRule = &targetLevelRule;
