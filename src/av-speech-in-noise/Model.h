@@ -60,10 +60,14 @@ namespace av_speech_in_noise {
     
     using TrackingRule = typename std::vector<TrackingSequence>;
     
-    struct AdaptiveTest {
-        std::string targetListDirectory;
+    struct CommonTest {
         std::string subjectId;
         std::string testerId;
+    };
+    
+    struct AdaptiveTest {
+        CommonTest common;
+        std::string targetListDirectory;
         std::string maskerFilePath;
         std::string session;
         const TrackingRule *targetLevelRule;

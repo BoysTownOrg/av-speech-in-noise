@@ -125,8 +125,8 @@ namespace av_speech_in_noise {
     
     std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
         FormattedStream stream;
-        stream.writeLabeledLine("subject", test.subjectId);
-        stream.writeLabeledLine("tester", test.testerId);
+        stream.writeLabeledLine("subject", test.common.subjectId);
+        stream.writeLabeledLine("tester", test.common.testerId);
         stream.writeLabeledLine("session", test.session);
         stream.writeLabeledLine("masker", test.maskerFilePath);
         stream.writeLabeledLine("targets", test.targetListDirectory);

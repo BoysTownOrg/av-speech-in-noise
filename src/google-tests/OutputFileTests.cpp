@@ -126,9 +126,9 @@ namespace {
     TEST_F(OutputFileTests, writeTest) {
         test.maskerFilePath = "a";
         test.session = "b";
-        test.subjectId = "c";
+        test.common.subjectId = "c";
         test.targetListDirectory = "d";
-        test.testerId = "e";
+        test.common.testerId = "e";
         test.maskerLevel_dB_SPL = 1;
         test.startingSnr_dB = 2;
         file.writeTest(test);
@@ -190,9 +190,9 @@ namespace {
         OutputFileTests,
         openPassesTestParameters
     ) {
-        test.testerId = "a";
+        test.common.testerId = "a";
         openNewFile();
-        assertEqual("a", path.testParameters().testerId);
+        assertEqual("a", path.testParameters().common.testerId);
     }
     
     class FailingWriter : public av_speech_in_noise::Writer {

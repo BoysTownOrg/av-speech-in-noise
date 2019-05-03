@@ -538,11 +538,11 @@ namespace {
         }
         
         std::string subjectId(ModelStub &m) override {
-            return m.adaptiveTest().subjectId;
+            return m.adaptiveTest().common.subjectId;
         }
         
         std::string testerId(ModelStub &m) override {
-            return m.adaptiveTest().testerId;
+            return m.adaptiveTest().common.testerId;
         }
         
         Condition condition(ModelStub &m) override {
