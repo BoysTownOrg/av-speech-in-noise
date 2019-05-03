@@ -1295,6 +1295,14 @@ namespace {
                 useCase.fullScaleLevel(model)
             );
         }
+        
+        void assertPassesTargetLevelRule(UseCase &useCase) {
+            run(useCase);
+            EXPECT_EQ(
+                &Presenter::targetLevelRule,
+                adaptiveTest().targetLevelRule
+            );
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1475,19 +1483,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTargetLevelRule) {
-        run(confirmingAdaptiveClosedSetTest);
-        EXPECT_EQ(
-            &Presenter::targetLevelRule,
-            adaptiveTest().targetLevelRule
-        );
+        assertPassesTargetLevelRule(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTargetLevelRule) {
-        run(confirmingAdaptiveOpenSetTest);
-        EXPECT_EQ(
-            &Presenter::targetLevelRule,
-            adaptiveTest().targetLevelRule
-        );
+        assertPassesTargetLevelRule(confirmingAdaptiveOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesAudioVisualCondition) {
