@@ -70,7 +70,6 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::showNextTrialButton() {
-        subject->showNextTrialButton();
         experimenter->showNextTrialButton();
     }
     
@@ -79,14 +78,9 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::playTrial() {
-        hideNextTrialButton();
         AudioSettings p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
-    }
-    
-    void Presenter::hideNextTrialButton() {
-        subject->hideNextTrialButton();
     }
     
     void Presenter::trialComplete() {
@@ -121,6 +115,7 @@ namespace av_speech_in_noise {
     void Presenter::switchToSetupView() {
         showTestSetup();
         experimenter->hide();
+        subject->hide();
     }
     
     void Presenter::showTestSetup() {
@@ -319,10 +314,12 @@ namespace av_speech_in_noise {
     }
 
     void Presenter::Subject::playTrial() {
+        view->hideNextTrialButton();
         parent->playTrial();
     }
 
     void Presenter::Subject::submitResponse() {
+        view->showNextTrialButton();
         parent->submitResponse();
     }
     
@@ -366,6 +363,11 @@ namespace av_speech_in_noise {
     
     void Presenter::Subject::show() { 
         view->show();
+        view->showNextTrialButton();
+    }
+    
+    void Presenter::Subject::hide() { 
+        view->hide();
     }
     
 

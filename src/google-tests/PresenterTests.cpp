@@ -352,6 +352,7 @@ namespace {
             bool responseButtonsHidden_{};
             bool nextTrialButtonHidden_{};
             bool shown_{};
+            bool hidden_{};
         public:
             void show() override {
                 shown_ = true;
@@ -359,6 +360,10 @@ namespace {
             
             auto shown() const {
                 return shown_;
+            }
+            
+            auto hidden() const {
+                return hidden_;
             }
             
             bool whiteResponse() override {
@@ -431,6 +436,10 @@ namespace {
             
             void subscribe(EventListener *e) override {
                 listener_ = e;
+            }
+            
+            void hide() override {
+                hidden_ = true;
             }
         
             void submitResponse() {
@@ -1016,6 +1025,10 @@ namespace {
         void assertSubjectViewNotShown() {
             EXPECT_FALSE(subjectViewShown());
         }
+        
+        void assertSubjectViewHidden() {
+            EXPECT_TRUE(subjectView.hidden());
+        }
 
         void assertBrowseResultPassedToEntry(
             BrowsingEnteredPathUseCase &useCase
@@ -1071,10 +1084,6 @@ namespace {
         
         bool nextTrialButtonShownForSubject() {
             return subjectView.nextTrialButtonShown();
-        }
-        
-        void assertNextTrialButtonNotShown() {
-            EXPECT_FALSE(nextTrialButtonShownForSubject());
         }
         
         void assertResponseButtonsHidden() {
@@ -1672,10 +1681,10 @@ namespace {
         assertNextTrialButtonShownForSubject();
     }
 
-    TEST_F(PresenterTests, subjectResponseDoesNotShowNextTrialButtonWhenTestComplete) {
+    TEST_F(PresenterTests, subjectResponseHidesSubjectViewWhenTestComplete) {
         setTestComplete();
         respondFromSubject();
-        assertNextTrialButtonNotShown();
+        assertSubjectViewHidden();
     }
 
     TEST_F(PresenterTests, subjectResponseHidesResponseButtons) {

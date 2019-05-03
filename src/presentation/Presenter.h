@@ -30,6 +30,7 @@ namespace av_speech_in_noise {
             virtual void showNextTrialButton() = 0;
             virtual void hideNextTrialButton() = 0;
             virtual void show() = 0;
+            virtual void hide() = 0;
         };
 
         class TestSetup {
@@ -153,6 +154,7 @@ namespace av_speech_in_noise {
             void hideNextTrialButton();
             void showResponseButtons();
             void show();
+            void hide();
             coordinate_response_measure::SubjectResponse subjectResponse();
         private:
             coordinate_response_measure::Color colorResponse();
@@ -206,7 +208,6 @@ namespace av_speech_in_noise {
         void hideTestSetup();
         void hideResponseButtons();
         void showNextTrialButton();
-        void hideNextTrialButton();
         void showResponseButtons();
         bool adaptiveTest();
         void initializeTest();
