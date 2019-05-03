@@ -750,7 +750,6 @@ namespace {
     
     class PlayingTrial : public virtual UseCase {
     public:
-        virtual void setMethod(ViewStub::TestSetupViewStub &) = 0;
         virtual bool nextTrialButtonHidden() = 0;
         virtual bool nextTrialButtonShown() = 0;
     };
@@ -767,10 +766,6 @@ namespace {
         
         bool nextTrialButtonHidden() override {
             return view->nextTrialButtonHidden();
-        }
-        
-        void setMethod(ViewStub::TestSetupViewStub &v) override {
-            ::setMethod(&v, Method::adaptiveClosedSet);
         }
         
         bool nextTrialButtonShown() override {
@@ -790,10 +785,6 @@ namespace {
         
         bool nextTrialButtonHidden() override {
             return view->nextTrialButtonHidden();
-        }
-        
-        void setMethod(ViewStub::TestSetupViewStub &v) override {
-            ::setMethod(&v, Method::adaptiveOpenSet);
         }
         
         bool nextTrialButtonShown() override {
@@ -1203,10 +1194,12 @@ namespace {
             EXPECT_TRUE(useCase.nextTrialButtonHidden());
         }
         
-        void assertConfirmTestSetupShowsNextTrialButton(PlayingTrial &useCase) {
-            useCase.setMethod(setupView);
-            confirmTestSetup();
-            EXPECT_TRUE(useCase.nextTrialButtonShown());
+        void assertConfirmTestSetupShowsNextTrialButton(
+            ConfirmingTestSetup &confirmingTest,
+            PlayingTrial &playingTrial
+        ) {
+            run(confirmingTest);
+            EXPECT_TRUE(playingTrial.nextTrialButtonShown());
         }
         
         void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
@@ -1524,16 +1517,22 @@ namespace {
 
     TEST_F(
         PresenterTests,
-        confirmTestShowsNextTrialButtonForSubjectWhenAdaptiveClosedSet
+        confirmAdaptiveClosedSetTestShowsNextTrialButtonForSubject
     ) {
-        assertConfirmTestSetupShowsNextTrialButton(playingTrialFromSubject);
+        assertConfirmTestSetupShowsNextTrialButton(
+            confirmingAdaptiveClosedSetTest,
+            playingTrialFromSubject
+        );
     }
 
     TEST_F(
         PresenterTests,
-        confirmTestShowsNextTrialButtonForExperimenterWhenAdaptiveOpenSet
+        confirmAdaptiveOpenSetTestShowsNextTrialButtonForExperimenter
     ) {
-        assertConfirmTestSetupShowsNextTrialButton(playingTrialFromExperimenter);
+        assertConfirmTestSetupShowsNextTrialButton(
+            confirmingAdaptiveClosedSetTest,
+            playingTrialFromExperimenter
+        );
     }
 
     TEST_F(
