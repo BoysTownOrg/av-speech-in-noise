@@ -1129,6 +1129,11 @@ namespace {
             run(useCase);
             EXPECT_EQ(2, useCase.maskerLevel(model));
         }
+        
+        void assertHidesTestSetupView(UseCase &useCase) {
+            run(useCase);
+            assertSetupViewHidden();
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1141,9 +1146,16 @@ namespace {
         EXPECT_TRUE(view.eventLoopCalled());
     }
 
-    TEST_F(PresenterTests, confirmTestSetupHidesTestSetupView) {
-        confirmTestSetup();
-        assertSetupViewHidden();
+    TEST_F(PresenterTests, confirmAdaptiveClosedSetTestSetupHidesTestSetupView) {
+        assertHidesTestSetupView(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestSetupHidesTestSetupView) {
+        assertHidesTestSetupView(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelTestSetupHidesTestSetupView) {
+        assertHidesTestSetupView(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmTestSetupShowsExperimenterView) {
