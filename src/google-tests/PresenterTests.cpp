@@ -1725,6 +1725,10 @@ namespace {
         assertCompleteTestHidesExperimenterView(respondingFromSubject);
     }
 
+    TEST_F(PresenterTests, respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
+        assertCompleteTestHidesExperimenterView(respondingFromExperimenter);
+    }
+
     TEST_F(PresenterTests, submitPassedTrialHidesExperimenterViewWhenTestComplete) {
         assertCompleteTestHidesExperimenterView(submittingPassedTrial);
     }
