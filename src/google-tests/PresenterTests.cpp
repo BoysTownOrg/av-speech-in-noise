@@ -1212,6 +1212,10 @@ namespace {
         assertStartingSnrPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesStartingSnr) {
+        assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetTest);
+    }
+
     TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesStartingSnr) {
         assertStartingSnrPassedToModel(confirmingFixedLevelOpenSetTest);
     }
