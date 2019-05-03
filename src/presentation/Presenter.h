@@ -83,6 +83,7 @@ namespace av_speech_in_noise {
             virtual void show() = 0;
             virtual void hide() = 0;
             virtual void showEvaluationButtons() = 0;
+            virtual void showResponseField() = 0;
             virtual std::string response() = 0;
         };
         
@@ -174,6 +175,7 @@ namespace av_speech_in_noise {
             void show();
             void hide();
             void showEvaluationButtons();
+            void showResponseField();
             std::string response();
             void playTrial() override;
             void submitPassedTrial() override;

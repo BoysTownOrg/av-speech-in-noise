@@ -84,6 +84,7 @@ namespace av_speech_in_noise {
     
     void Presenter::trialComplete() {
         showResponseButtons();
+        experimenter->showResponseField();
     }
     
     void Presenter::showResponseButtons() {
@@ -410,6 +411,10 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::showEvaluationButtons() { 
         view->showEvaluationButtons();
+    }
+    
+    void Presenter::Experimenter::showResponseField() {
+        view->showResponseField();
     }
     
     void Presenter::Experimenter::submitResponse() {

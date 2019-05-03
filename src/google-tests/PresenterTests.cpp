@@ -468,6 +468,7 @@ namespace {
             bool nextTrialButtonHidden_{};
             bool hidden_{};
             bool evaluationButtonsShown_{};
+            bool responseFieldShown_{};
         public:
             auto nextTrialButtonShown() const {
                 return nextTrialButtonShown_;
@@ -475,6 +476,10 @@ namespace {
             
             auto evaluationButtonsShown() const {
                 return evaluationButtonsShown_;
+            }
+            
+            auto responseFieldShown() const {
+                return responseFieldShown_;
             }
             
             void showNextTrialButton() override {
@@ -511,6 +516,10 @@ namespace {
             
             std::string response() override {
                 return response_;
+            }
+            
+            void showResponseField() override {
+                responseFieldShown_ = true;
             }
             
             void playTrial() {
@@ -1132,6 +1141,10 @@ namespace {
         
         void assertEvaluationButtonsShown() {
             EXPECT_TRUE(experimenterView.evaluationButtonsShown());
+        }
+        
+        void assertResponseFieldShown() {
+            EXPECT_TRUE(experimenterView.responseFieldShown());
         }
         
         void assertResponseButtonsHidden() {
@@ -1809,6 +1822,11 @@ namespace {
     TEST_F(PresenterTests, trialCompleteShowsEvaluationButtons) {
         completeTrial();
         assertEvaluationButtonsShown();
+    }
+
+    TEST_F(PresenterTests, trialCompleteShowsResponseField) {
+        completeTrial();
+        assertResponseFieldShown();
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestWithInvalidSnrShowsErrorMessage) {
