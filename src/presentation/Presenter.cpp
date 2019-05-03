@@ -43,7 +43,8 @@ namespace av_speech_in_noise {
     
     void Presenter::initializeTest_() {
         model->initializeTest(testSetup->adaptiveTest());
-        model->initializeTest(testSetup->fixedLevelTest());
+        if (!testSetup->adaptiveClosedSet())
+            model->initializeTest(testSetup->fixedLevelTest());
         hideTestSetup();
         experimenter->show();
         if (testSetup->adaptiveClosedSet())

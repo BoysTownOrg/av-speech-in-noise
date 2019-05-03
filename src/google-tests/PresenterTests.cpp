@@ -26,6 +26,7 @@ namespace {
         EventListener *listener_{};
         bool testComplete_{};
         bool trialPlayed_{};
+        bool fixedLevelTestInitialized_{};
     public:
         void completeTrial() {
             listener_->trialComplete();
@@ -89,6 +90,7 @@ namespace {
         }
         
         void initializeTest(const FixedLevelTest &p) override {
+            fixedLevelTestInitialized_ = true;
             fixedLevelTest_ = p;
         }
         
@@ -106,6 +108,10 @@ namespace {
         
         auto &calibrationParameters() const {
             return calibrationParameters_;
+        }
+        
+        auto fixedLevelTestInitialized() const {
+            return fixedLevelTestInitialized_;
         }
     };
 
@@ -1107,6 +1113,11 @@ namespace {
         setAdaptiveOpenSet();
         confirmTestSetup();
         assertSubjectViewNotShown();
+    }
+
+    TEST_F(PresenterTests, confirmAdaptiveTestSetupDoesNotInitializeFixedLevelTest) {
+        run(confirmingAdaptiveClosedSetTest);
+        EXPECT_FALSE(model.fixedLevelTestInitialized());
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesStartingSnr) {
