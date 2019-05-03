@@ -1369,13 +1369,13 @@ namespace {
 
     class PresenterFailureTests : public ::testing::Test {
     protected:
-        RequestFailingModel failure{};
-        ModelStub defaultModel{};
+        RequestFailingModel failure;
+        ModelStub defaultModel;
         Model *model{&defaultModel};
-        ViewStub view{};
-        ViewStub::TestSetupViewStub setupView{};
-        ViewStub::SubjectViewStub subjectView{};
-        ViewStub::ExperimenterViewStub experimenterView{};
+        ViewStub view;
+        ViewStub::TestSetupViewStub setupView;
+        ViewStub::SubjectViewStub subjectView;
+        ViewStub::ExperimenterViewStub experimenterView;
         Presenter::TestSetup testSetup{&setupView};
         Presenter::Subject subject{&subjectView};
         Presenter::Experimenter experimenter{&experimenterView};
