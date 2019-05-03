@@ -134,6 +134,7 @@ namespace av_speech_in_noise {
         private:
             TestInformation testInformation();
             Condition readCondition();
+            bool method(Method m);
             int readMaskerLevel();
             int readCalibrationLevel();
             int readInteger(std::string x, std::string identifier);

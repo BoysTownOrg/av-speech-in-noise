@@ -293,12 +293,16 @@ namespace av_speech_in_noise {
         view->setCalibrationFilePath(std::move(s));
     }
     
-    bool Presenter::TestSetup::adaptiveClosedSet() { 
-        return view->method() == methodName(Method::adaptiveClosedSet);
+    bool Presenter::TestSetup::adaptiveClosedSet() {
+        return method(Method::adaptiveClosedSet);
+    }
+    
+    bool Presenter::TestSetup::method(Method m) {
+        return view->method() == methodName(m);
     }
     
     bool Presenter::TestSetup::adaptiveOpenSet() {
-        return view->method() == methodName(Method::adaptiveOpenSet);
+        return method(Method::adaptiveOpenSet);
     }
 
 
@@ -306,6 +310,15 @@ namespace av_speech_in_noise {
         view{view}
     {
         view->subscribe(this);
+    }
+    
+    void Presenter::Subject::show() {
+        view->show();
+        showNextTrialButton();
+    }
+    
+    void Presenter::Subject::hide() {
+        view->hide();
     }
 
     void Presenter::Subject::playTrial() {
@@ -335,7 +348,9 @@ namespace av_speech_in_noise {
         view->showResponseButtons();
     }
     
-    coordinate_response_measure::SubjectResponse Presenter::Subject::subjectResponse() {
+    coordinate_response_measure::SubjectResponse
+        Presenter::Subject::subjectResponse()
+    {
         coordinate_response_measure::SubjectResponse p;
         p.color = colorResponse();
         p.number = std::stoi(view->numberResponse());
@@ -351,15 +366,6 @@ namespace av_speech_in_noise {
             return coordinate_response_measure::Color::white;
         else
             return coordinate_response_measure::Color::red;
-    }
-    
-    void Presenter::Subject::show() { 
-        view->show();
-        showNextTrialButton();
-    }
-    
-    void Presenter::Subject::hide() { 
-        view->hide();
     }
     
 
