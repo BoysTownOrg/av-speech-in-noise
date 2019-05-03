@@ -494,6 +494,7 @@ namespace {
     class ConfirmingTestSetup2 : public virtual UseCase {
     public:
         virtual int snr_dB(ModelStub &) = 0;
+        virtual int maskerLevel(ModelStub &) = 0;
     };
     
     class ConfirmingAdaptiveClosedSetTest : public ConfirmingTestSetup2 {
@@ -510,6 +511,10 @@ namespace {
         int snr_dB(ModelStub &m) override {
             return m.adaptiveTest().startingSnr_dB;
         }
+        
+        int maskerLevel(ModelStub &m) override {
+            return m.adaptiveTest().maskerLevel_dB_SPL;
+        }
     };
     
     class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup2 {
@@ -525,6 +530,10 @@ namespace {
         
         int snr_dB(ModelStub &m) override {
             return m.fixedLevelTest().snr_dB;
+        }
+        
+        int maskerLevel(ModelStub &m) override {
+            return m.fixedLevelTest().maskerLevel_dB_SPL;
         }
     };
     
@@ -1054,6 +1063,12 @@ namespace {
             run(useCase);
             EXPECT_EQ(1, useCase.snr_dB(model));
         }
+        
+        void assertMaskerLevelPassedToModel(ConfirmingTestSetup2 &useCase) {
+            setMaskerLevel("2");
+            run(useCase);
+            EXPECT_EQ(2, useCase.maskerLevel(model));
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1098,14 +1113,16 @@ namespace {
         assertStartingSnrPassedToModel(confirmingAdaptiveClosedSetTest);
     }
 
-    TEST_F(PresenterTests, confirmTestSetupPassesStartingSnrFixedLevelOpenSet) {
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestSetupPassesStartingSnr) {
         assertStartingSnrPassedToModel(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmTestSetupPassesMaskerLevel) {
-        setMaskerLevel("2");
-        confirmTestSetup();
-        EXPECT_EQ(2, adaptiveTest().maskerLevel_dB_SPL);
+        assertMaskerLevelPassedToModel(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestSetupPassesMaskerLevel) {
+        assertMaskerLevelPassedToModel(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, playCalibrationPassesLevel) {
