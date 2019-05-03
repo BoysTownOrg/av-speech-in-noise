@@ -1339,6 +1339,10 @@ namespace {
         assertPassesTesterId(confirmingAdaptiveOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesTesterId) {
+        assertPassesTesterId(confirmingFixedLevelOpenSetTest);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMasker) {
         setupView.setMasker("d");
         run(confirmingAdaptiveClosedSetTest);

@@ -183,6 +183,7 @@ namespace av_speech_in_noise {
         p.maskerLevel_dB_SPL = readMaskerLevel();
         p.targetListDirectory = view->targetListDirectory();
         p.subjectId = view->subjectId();
+        p.testerId = view->testerId();
         return p;
     }
     
