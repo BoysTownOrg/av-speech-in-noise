@@ -535,6 +535,10 @@ namespace {
         }
     };
     
+    void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
+        view->setMethod(methodName(m));
+    }
+    
     class ConfirmingAdaptiveClosedSetTest : public ConfirmingTestSetup {
         ConfirmingAdaptiveTest confirmingAdaptiveTest;
         ViewStub::TestSetupViewStub *view;
@@ -544,7 +548,7 @@ namespace {
             view{view} {}
         
         void run() override {
-            view->setMethod(methodName(Method::adaptiveClosedSet));
+            setMethod(view, Method::adaptiveClosedSet);
             confirmingAdaptiveTest.run();
         }
         
@@ -570,7 +574,7 @@ namespace {
             view{view} {}
         
         void run() override {
-            view->setMethod(methodName(Method::adaptiveOpenSet));
+            setMethod(view, Method::adaptiveOpenSet);
             confirmingAdaptiveTest.run();
         }
         
@@ -594,7 +598,7 @@ namespace {
             view{view} {}
         
         void run() override {
-            view->setMethod(methodName(Method::fixedLevelOpenSet));
+            setMethod(view, Method::fixedLevelOpenSet);
             view->confirmTestSetup();
         }
         
@@ -657,7 +661,7 @@ namespace {
         }
         
         void setMethod(ViewStub::TestSetupViewStub &v) override {
-            v.setMethod(methodName(Method::adaptiveClosedSet));
+            ::setMethod(&v, Method::adaptiveClosedSet);
         }
         
         bool nextTrialButtonShown() override {
@@ -680,7 +684,7 @@ namespace {
         }
         
         void setMethod(ViewStub::TestSetupViewStub &v) override {
-            v.setMethod(methodName(Method::adaptiveOpenSet));
+            ::setMethod(&v, Method::adaptiveOpenSet);
         }
         
         bool nextTrialButtonShown() override {
