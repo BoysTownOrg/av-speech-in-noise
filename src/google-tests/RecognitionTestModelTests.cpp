@@ -281,14 +281,14 @@ namespace {
         const FixedLevelTest *fixedLevelTest_{};
         const TestInformation *openNewFileParameters_{};
         bool throwOnOpen_{};
-        bool headingWritten_{};
+        bool coordinateResponseHeadingWritten_{};
     public:
         auto &log() const {
             return log_;
         }
         
-        auto headingWritten() const {
-            return headingWritten_;
+        auto coordinateResponseHeadingWritten() const {
+            return coordinateResponseHeadingWritten_;
         }
         
         auto adaptiveTest() const {
@@ -322,8 +322,8 @@ namespace {
         }
         
         void writeCoordinateResponseTrialHeading() override {
-            log_.insert("writeTrialHeading ");
-            headingWritten_ = true;
+            log_.insert("writeCoordinateResponseTrialHeading ");
+            coordinateResponseHeadingWritten_ = true;
         }
         
         void writeTest(const AdaptiveTest &test) override {
@@ -1302,25 +1302,6 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestWritesTrialHeading
-    ) {
-        initializeAdaptiveTest();
-        EXPECT_TRUE(outputFile.headingWritten());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeAdaptiveTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
-    ) {
-        initializeAdaptiveTest();
-        assertEqual(
-            "close openNewFile writeTest writeTrialHeading ",
-            outputFile.log()
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeAdaptiveTestCreatesSnrTrackForEachList
     ) {
         initializeAdaptiveTestWithListCount(3);
@@ -1346,6 +1327,25 @@ namespace {
         initializeAdaptiveTestWithListCount(3);
         for (int i = 0; i < 3; ++i)
             assertSettingsMatchStartingX(snrTrackFactoryParameters().at(i), 1);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeAdaptiveTestWritesTrialHeading
+    ) {
+        initializeAdaptiveTest();
+        EXPECT_TRUE(outputFile.coordinateResponseHeadingWritten());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeAdaptiveTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
+    ) {
+        initializeAdaptiveTest();
+        assertEqual(
+            "close openNewFile writeTest writeCoordinateResponseTrialHeading ",
+            outputFile.log()
+        );
     }
 
     TEST_F(
