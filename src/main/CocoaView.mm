@@ -556,6 +556,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     evaluationButtons{[[NSView alloc]
         initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
     ]},
+    responseSubmission{[[NSView alloc]
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
+    ]},
     response_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
     ]},
@@ -572,13 +575,26 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
         buttonWidth,
         buttonHeight
     )];
+    const auto submitResponse_ = [NSButton
+        buttonWithTitle:@"submit"
+        target:actions
+        action:@selector(submitResponse)
+    ];
+    [submitResponse_ setFrame:NSMakeRect(
+        r.size.width - buttonWidth,
+        0,
+        buttonWidth,
+        buttonHeight
+    )];
     [nextTrialButton addSubview:nextTrialButton_];
+    [responseSubmission addSubview:submitResponse_];
+    [responseSubmission addSubview:response_];
     [view_ addSubview:nextTrialButton];
-    [view_ addSubview:response_];
+    [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
     [evaluationButtons setHidden:YES];
     [nextTrialButton setHidden:YES];
-    [response_ setHidden:YES];
+    [responseSubmission setHidden:YES];
     [view_ setHidden:YES];
     actions.controller = this;
 }
@@ -608,7 +624,7 @@ void CocoaExperimenterView::showEvaluationButtons() {
 }
 
 void CocoaExperimenterView::showResponseSubmission() {
-    [response_ setHidden:NO];
+    [responseSubmission setHidden:NO];
 }
 
 std::string CocoaExperimenterView::response() {
@@ -623,11 +639,19 @@ void CocoaExperimenterView::playTrial() {
     listener_->playTrial();
 }
 
+void CocoaExperimenterView::submitResponse() {
+    listener_->submitResponse();
+}
+
 @implementation ExperimenterViewActions
 @synthesize controller;
 
 - (void)playTrial {
     controller->playTrial();
+}
+
+- (void)submitResponse { 
+    controller->submitResponse();
 }
 @end
 
