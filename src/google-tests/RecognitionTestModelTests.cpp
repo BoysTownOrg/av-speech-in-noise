@@ -287,10 +287,6 @@ namespace {
             return log_;
         }
         
-        auto coordinateResponseHeadingWritten() const {
-            return coordinateResponseHeadingWritten_;
-        }
-        
         auto adaptiveTest() const {
             return adaptiveTest_;
         }
@@ -327,7 +323,7 @@ namespace {
         }
         
         void writeTest(const AdaptiveTest &test) override {
-            log_.insert("writeTest ");
+            log_.insert("writeAdaptiveTest ");
             adaptiveTest_ = &test;
         }
         
@@ -1331,19 +1327,11 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestWritesTrialHeading
-    ) {
-        initializeAdaptiveTest();
-        EXPECT_TRUE(outputFile.coordinateResponseHeadingWritten());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeAdaptiveTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
     ) {
         initializeAdaptiveTest();
         assertEqual(
-            "close openNewFile writeTest writeCoordinateResponseTrialHeading ",
+            "close openNewFile writeAdaptiveTest ",
             outputFile.log()
         );
     }

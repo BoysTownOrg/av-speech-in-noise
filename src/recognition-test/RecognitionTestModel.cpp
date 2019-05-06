@@ -110,7 +110,6 @@ namespace av_speech_in_noise {
         outputFile->close();
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
-        outputFile->writeCoordinateResponseTrialHeading();
     }
     
     void RecognitionTestModel::tryOpeningOutputFile(const TestInformation &p) {
