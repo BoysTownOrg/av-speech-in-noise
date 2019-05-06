@@ -512,6 +512,10 @@ void CocoaSubjectView::show() {
     [window makeKeyAndOrderFront:nil];
 }
 
+void CocoaSubjectView::hide() {
+    [window orderOut:nil];
+}
+
 @implementation SubjectViewActions
 @synthesize controller;
 
@@ -523,6 +527,59 @@ void CocoaSubjectView::show() {
     controller->playTrial();
 }
 @end
+
+
+CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
+    view_{[[NSView alloc] initWithFrame:r]},
+    nextTrialButton{[[NSView alloc]
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
+    ]},
+    evaluationButtons{[[NSView alloc]
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
+    ]},
+    response_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
+    ]}
+{
+    ;
+}
+
+void CocoaExperimenterView::subscribe(EventListener *e) {
+    listener_ = e;
+}
+
+void CocoaExperimenterView::showNextTrialButton() {
+    [nextTrialButton setHidden:NO];
+}
+
+void CocoaExperimenterView::hideNextTrialButton() {
+    [nextTrialButton setHidden:YES];
+}
+
+void CocoaExperimenterView::show() {
+    [view_ setHidden:NO];
+}
+
+void CocoaExperimenterView::hide() {
+    [view_ setHidden:YES];
+}
+
+void CocoaExperimenterView::showEvaluationButtons() {
+    [evaluationButtons setHidden:NO];
+}
+
+void CocoaExperimenterView::showResponseField() {
+    [response_ setHidden:NO];
+}
+
+std::string CocoaExperimenterView::response() {
+    return response_.stringValue.UTF8String;
+}
+
+NSView *CocoaExperimenterView::view() { 
+    return view_;
+}
+
 
 CocoaView::CocoaView(NSRect r) :
     app{[NSApplication sharedApplication]},
@@ -619,22 +676,4 @@ void CocoaView::center() {
     [window center];
 }
 
-void CocoaExperimenterView::subscribe(EventListener *) {
-    ;
-}
 
-void CocoaExperimenterView::showNextTrialButton() { 
-    ;
-}
-
-void CocoaExperimenterView::hideNextTrialButton() { 
-    ;
-}
-
-void CocoaExperimenterView::show() { 
-    ;
-}
-
-void CocoaExperimenterView::hide() { 
-    ;
-}
