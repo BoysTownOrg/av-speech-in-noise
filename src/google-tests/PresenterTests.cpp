@@ -1078,11 +1078,15 @@ namespace {
         }
         
         void assertExperimenterViewShown() {
-            EXPECT_TRUE(experimenterView.shown());
+            EXPECT_TRUE(experimenterViewShown());
+        }
+        
+        bool experimenterViewShown() {
+            return experimenterView.shown();
         }
         
         void assertExperimenterViewNotShown() {
-            EXPECT_FALSE(experimenterView.shown());
+            EXPECT_FALSE(experimenterViewShown());
         }
         
         void assertExperimenterViewHidden() {
