@@ -415,9 +415,9 @@ namespace {
     };
     
     class ResponseEvaluatorStub : public ResponseEvaluator {
-        std::string correctTarget_{};
-        std::string correctNumberFilePath_{};
-        std::string correctColorFilePath_{};
+        std::string correctTarget_;
+        std::string correctNumberFilePath_;
+        std::string correctColorFilePath_;
         const coordinate_response_measure::SubjectResponse *response_{};
         int correctNumber_{};
         coordinate_response_measure::Color correctColor_{};
@@ -559,9 +559,9 @@ namespace {
     };
     
     class FiniteTargetListStub : public FiniteTargetList {
-        std::string directory_{};
-        std::string next_{};
-        std::string current_{};
+        std::string directory_;
+        std::string next_;
+        std::string current_;
         bool empty_{};
         bool nextCalled_{};
     public:
@@ -585,11 +585,6 @@ namespace {
         auto directory() const {
             return directory_;
         }
-        
-        /*
-        void setCurrent(std::string s) {
-            current_ = std::move(s);
-        }*/
         
         void setEmpty() {
             empty_ = true;
@@ -868,7 +863,7 @@ namespace {
         }
         
         void assertMaskerPlayerNotPlayed() {
-            EXPECT_FALSE(maskerPlayerFadedIn());
+            assertFalse(maskerPlayerFadedIn());
         }
         
         bool maskerPlayerFadedIn() {
@@ -876,7 +871,7 @@ namespace {
         }
         
         void assertTargetPlayerPlayed() {
-            EXPECT_TRUE(targetPlayerPlayed());
+            assertTrue(targetPlayerPlayed());
         }
         
         bool targetPlayerPlayed() {
@@ -884,7 +879,7 @@ namespace {
         }
         
         void assertTargetPlayerNotPlayed() {
-            EXPECT_FALSE(targetPlayerPlayed());
+            assertFalse(targetPlayerPlayed());
         }
         
         void setTrialInProgress() {
@@ -892,8 +887,8 @@ namespace {
         }
         
         void assertTargetVideoOnlyHidden() {
-            EXPECT_TRUE(targetPlayerVideoHidden());
-            EXPECT_FALSE(targetPlayerVideoShown());
+            assertTrue(targetPlayerVideoHidden());
+            assertFalse(targetPlayerVideoShown());
         }
         
         bool targetPlayerVideoHidden() {
@@ -906,11 +901,11 @@ namespace {
         
         void assertTargetVideoOnlyShown() {
             assertTargetVideoNotHidden();
-            EXPECT_TRUE(targetPlayerVideoShown());
+            assertTrue(targetPlayerVideoShown());
         }
         
         void assertTargetVideoNotHidden() {
-            EXPECT_FALSE(targetPlayerVideoHidden());
+            assertFalse(targetPlayerVideoHidden());
         }
         
         void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
@@ -1081,11 +1076,11 @@ namespace {
         }
         
         void assertSettingsContainTargetLevelRule(const Track::Settings &s) {
-            EXPECT_EQ(targetLevelRule(), s.rule);
+            assertEqual(targetLevelRule(), s.rule);
         }
         
         void assertSettingsMatchStartingX(const Track::Settings &s, int x) {
-            EXPECT_EQ(x, s.startingX);
+            assertEqual(x, s.startingX);
         }
         
         auto &adaptiveTestSettings() const {
@@ -1097,8 +1092,8 @@ namespace {
         }
         
         void assertRandomizerPassedIntegerBounds(int a, int b) {
-            EXPECT_EQ(a, randomizer.lowerIntBound());
-            EXPECT_EQ(b, randomizer.upperIntBound());
+            assertEqual(a, randomizer.lowerIntBound());
+            assertEqual(b, randomizer.upperIntBound());
         }
         
         auto snrTrack(int n) {
@@ -1168,7 +1163,7 @@ namespace {
         }
         
         void assertTestIncomplete() {
-            EXPECT_FALSE(testComplete());
+            assertFalse(testComplete());
         }
         
         bool testComplete() {
@@ -1176,14 +1171,14 @@ namespace {
         }
         
         void assertTestComplete() {
-            EXPECT_TRUE(testComplete());
+            assertTrue(testComplete());
         }
         
         void assertPushesSnrTrackDown(UseCase &useCase) {
             initializeTestWithStartingList(1);
             run(useCase);
-            EXPECT_TRUE(snrTrackPushedDown(1));
-            EXPECT_FALSE(snrTrackPushedUp(1));
+            assertTrue(snrTrackPushedDown(1));
+            assertFalse(snrTrackPushedUp(1));
         }
         
         void assertNextTargetPassedToPlayer(UseCase &useCase) {
@@ -1203,13 +1198,13 @@ namespace {
         
         void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
             run(useCase);
-            EXPECT_TRUE(targetPlayerPlaybackCompletionSubscribed());
+            assertTrue(targetPlayerPlaybackCompletionSubscribed());
         }
         
         void assertMaskerPlayerSeekedToRandomTime(UseCase &useCase) {
             randomizer.setRandomFloat(1);
             run(useCase);
-            EXPECT_EQ(1, maskerPlayerSecondsSeeked());
+            assertEqual(1., maskerPlayerSecondsSeeked());
         }
         
         void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
@@ -1225,8 +1220,8 @@ namespace {
         void assertPushesSnrTrackUp(UseCase &useCase) {
             initializeTestWithStartingList(1);
             run(useCase);
-            EXPECT_TRUE(snrTrackPushedUp(1));
-            EXPECT_FALSE(snrTrackPushedDown(1));
+            assertTrue(snrTrackPushedUp(1));
+            assertFalse(snrTrackPushedDown(1));
         }
         
         void assertMaskerFilePathPassedToPlayer(InitializingTestUseCase &useCase) {
@@ -1246,8 +1241,8 @@ namespace {
             maskerPlayer.setFadeTimeSeconds(2);
             maskerPlayer.setDurationSeconds(3);
             run(useCase);
-            EXPECT_EQ(0., randomizer.lowerFloatBound());
-            EXPECT_EQ(3 - 2 - 1 - 2, randomizer.upperFloatBound());
+            assertEqual(0., randomizer.lowerFloatBound());
+            assertEqual(3. - 2 - 1 - 2, randomizer.upperFloatBound());
         }
         
         void assertMaskerPlayerLevelSet(UseCase &useCase) {
@@ -1255,12 +1250,12 @@ namespace {
             setTestingFullScaleLevel_dB_SPL(2);
             maskerPlayer.setRms(3);
             run(useCase);
-            EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
+            assertEqual(1 - 2 - dB(3), maskerPlayer.level_dB());
         }
         
         void assertOutputFilePassedTestInformation(InitializingTestUseCase &useCase) {
             run(useCase);
-            EXPECT_EQ(outputFile.openNewFileParameters(), &useCase.testInformation());
+            assertEqual(outputFile.openNewFileParameters(), &useCase.testInformation());
         }
         
         void assertThrowsRequestFailureWhenOutputFileThrows(UseCase &useCase) {
@@ -1270,8 +1265,8 @@ namespace {
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
-        EXPECT_EQ(&model, targetPlayer.listener());
-        EXPECT_EQ(&model, maskerPlayer.listener());
+        assertEqual(static_cast<TargetPlayer::EventListener *>(&model), targetPlayer.listener());
+        assertEqual(static_cast<MaskerPlayer::EventListener *>(&model), maskerPlayer.listener());
     }
 
     TEST_F(
@@ -1314,7 +1309,7 @@ namespace {
         initializeAdaptiveTestCreatesSnrTrackForEachList
     ) {
         initializeAdaptiveTestWithListCount(3);
-        EXPECT_EQ(3, snrTrackFactoryParameters().size());
+        assertEqual(3UL, snrTrackFactoryParameters().size());
     }
 
     TEST_F(
@@ -1379,7 +1374,7 @@ namespace {
         initializeAdaptiveTestWritesTestSettings
     ) {
         run(initializingAdaptiveTest);
-        EXPECT_EQ(outputFile.adaptiveTest(), &adaptiveTestSettings());
+        assertEqual(outputFile.adaptiveTest(), &adaptiveTestSettings());
     }
 
     TEST_F(
@@ -1387,7 +1382,7 @@ namespace {
         initializeFixedLevelTestWritesTestSettings
     ) {
         run(initializingFixedLevelTest);
-        EXPECT_EQ(outputFile.fixedLevelTest(), &fixedLevelTestSettings());
+        assertEqual(outputFile.fixedLevelTest(), &fixedLevelTestSettings());
     }
 
     TEST_F(
@@ -1428,7 +1423,7 @@ namespace {
 
     TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
         playTrial();
-        EXPECT_TRUE(maskerPlayerFadedIn());
+        assertTrue(maskerPlayerFadedIn());
     }
 
     TEST_F(RecognitionTestModelTests, playCalibrationPlaysTarget) {
@@ -1724,7 +1719,7 @@ namespace {
         setTestingFullScaleLevel_dB_SPL(4);
         setTargetPlayerRms(5);
         initializeTestWithStartingList(1);
-        EXPECT_EQ(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+        assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
     }
 
     TEST_F(
@@ -1736,7 +1731,7 @@ namespace {
         setTestingFullScaleLevel_dB_SPL(4);
         setTargetPlayerRms(5);
         initializeFixedLevelTest();
-        EXPECT_EQ(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+        assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
     }
 
     TEST_F(
@@ -1749,7 +1744,7 @@ namespace {
         initializeFixedLevelTest();
         setTargetPlayerRms(5);
         run(submittingTypedResponse);
-        EXPECT_EQ(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+        assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
     }
 
     TEST_F(
@@ -1760,7 +1755,7 @@ namespace {
         playingCalibration.setFullScaleLevel_dB_SPL(2);
         setTargetPlayerRms(3);
         playCalibration();
-        EXPECT_EQ(1 - 2 - dB(3), targetPlayerLevel_dB());
+        assertEqual(1 - 2 - dB(3), targetPlayerLevel_dB());
     }
 
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
@@ -1770,12 +1765,12 @@ namespace {
 
     TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
         targetPlayer.playbackComplete();
-        EXPECT_TRUE(maskerPlayer.fadeOutCalled());
+        assertTrue(maskerPlayer.fadeOutCalled());
     }
 
     TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
         maskerPlayer.fadeOutComplete();
-        EXPECT_TRUE(listener.notified());
+        assertTrue(listener.notified());
     }
 
     TEST_F(
@@ -1784,7 +1779,7 @@ namespace {
     ) {
         coordinateResponse.color = blueColor();
         submitCoordinateResponse();
-        EXPECT_EQ(blueColor(), trialWritten().subjectColor);
+        assertEqual(blueColor(), trialWritten().subjectColor);
     }
 
     TEST_F(
@@ -1793,7 +1788,7 @@ namespace {
     ) {
         coordinateResponse.number = 1;
         submitCoordinateResponse();
-        EXPECT_EQ(1, trialWritten().subjectNumber);
+        assertEqual(1, trialWritten().subjectNumber);
     }
 
     TEST_F(
@@ -1803,7 +1798,7 @@ namespace {
         initializeTestWithStartingList(1);
         snrTrack(1)->setReversals(2);
         submitCoordinateResponse();
-        EXPECT_EQ(2, trialWritten().reversals);
+        assertEqual(2, trialWritten().reversals);
     }
 
     TEST_F(
@@ -1812,7 +1807,7 @@ namespace {
     ) {
         evaluator.setCorrectColor(blueColor());
         submitCoordinateResponse();
-        EXPECT_EQ(blueColor(), trialWritten().correctColor);
+        assertEqual(blueColor(), trialWritten().correctColor);
     }
 
     TEST_F(
@@ -1821,7 +1816,7 @@ namespace {
     ) {
         evaluator.setCorrectNumber(1);
         submitCoordinateResponse();
-        EXPECT_EQ(1, trialWritten().correctNumber);
+        assertEqual(1, trialWritten().correctNumber);
     }
 
     TEST_F(
@@ -1831,7 +1826,7 @@ namespace {
         initializeTestWithStartingList(1);
         snrTrack(1)->setX(2);
         submitCoordinateResponse();
-        EXPECT_EQ(2, trialWritten().SNR_dB);
+        assertEqual(2, trialWritten().SNR_dB);
     }
 
     TEST_F(
@@ -1840,7 +1835,7 @@ namespace {
     ) {
         setCorrectResponse();
         submitCoordinateResponse();
-        EXPECT_TRUE(trialWrittenCorrect());
+        assertTrue(trialWrittenCorrect());
     }
 
     TEST_F(
@@ -1849,7 +1844,7 @@ namespace {
     ) {
         setIncorrectResponse();
         submitCoordinateResponse();
-        EXPECT_FALSE(trialWrittenCorrect());
+        assertFalse(trialWrittenCorrect());
     }
 
     TEST_F(
@@ -1857,7 +1852,8 @@ namespace {
         submitCoordinateResponsePassesSubjectResponseToEvaluator
     ) {
         submitCoordinateResponse();
-        EXPECT_EQ(&coordinateResponse, evaluator.response());
+        const auto *expected = &coordinateResponse;
+        assertEqual(expected, evaluator.response());
     }
 
     TEST_F(
@@ -1974,7 +1970,7 @@ namespace {
         playTrialDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
         playTrialWhenTrialAlreadyInProgressIgnoringFailure();
-        EXPECT_FALSE(maskerPlayer.setDeviceCalled());
+        assertFalse(maskerPlayer.setDeviceCalled());
     }
 
     TEST_F(
@@ -1982,7 +1978,7 @@ namespace {
         playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
         playCalibrationWhenTrialAlreadyInProgressIgnoringFailure();
-        EXPECT_FALSE(targetPlayer.setDeviceCalled());
+        assertFalse(targetPlayer.setDeviceCalled());
     }
 
     TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfTrialInProgress) {
