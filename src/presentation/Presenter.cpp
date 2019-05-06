@@ -136,7 +136,7 @@ namespace av_speech_in_noise {
     
     void Presenter::playCalibration_() {
         auto p = testSetup->calibrationParameters();
-        p.audioDevice = view->audioDevice();
+        p.audioSettings.audioDevice = view->audioDevice();
         model->playCalibration(p);
     }
     

@@ -764,7 +764,7 @@ namespace {
         Calibration calibration;
     public:
         void setAudioDevice(std::string s) override {
-            calibration.audioDevice = std::move(s);
+            calibration.audioSettings.audioDevice = std::move(s);
         }
         
         void run(RecognitionTestModel &m) override {

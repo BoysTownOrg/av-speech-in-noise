@@ -1724,7 +1724,7 @@ namespace {
     TEST_F(PresenterTests, playCalibrationPassesAudioDevice) {
         setAudioDevice("b");
         playCalibration();
-        assertEqual("b", calibration().audioDevice);
+        assertEqual("b", calibration().audioSettings.audioDevice);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesNumberResponse) {

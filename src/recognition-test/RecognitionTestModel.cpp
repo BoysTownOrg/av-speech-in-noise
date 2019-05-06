@@ -355,7 +355,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::setTargetPlayerDevice(const Calibration &p) {
         throwInvalidAudioDeviceOnErrorSettingDevice(
             &RecognitionTestModel::setTargetPlayerDevice_,
-            p.audioDevice
+            p.audioSettings.audioDevice
         );
     }
     

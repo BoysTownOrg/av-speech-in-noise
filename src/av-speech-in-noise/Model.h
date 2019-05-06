@@ -86,8 +86,8 @@ namespace av_speech_in_noise {
     };
     
     struct Calibration {
+        AudioSettings audioSettings;
         std::string filePath;
-        std::string audioDevice;
         int level_dB_SPL;
         int fullScaleLevel_dB_SPL;
         Condition condition;
