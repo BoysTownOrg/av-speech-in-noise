@@ -123,6 +123,10 @@ namespace av_speech_in_noise {
         write(formatTest(test));
     }
     
+    void OutputFileImpl::writeTest(const FixedLevelTest &test) {
+        write(formatTest(test));
+    }
+    
     std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
         FormattedStream stream;
         stream.writeLabeledLine("subject", test.information.subjectId);
@@ -137,14 +141,6 @@ namespace av_speech_in_noise {
         return stream.str();
     }
     
-    void OutputFileImpl::close() { 
-        writer->close();
-    }
-    
-    void OutputFileImpl::writeTest(const FixedLevelTest &test) {
-        write(formatTest(test));
-    }
-    
     std::string OutputFileImpl::formatTest(const FixedLevelTest &test) {
         FormattedStream stream;
         stream.writeLabeledLine("subject", test.information.subjectId);
@@ -157,5 +153,9 @@ namespace av_speech_in_noise {
         stream.writeLabeledLine("condition", conditionName(test.condition));
         stream.insertNewLine();
         return stream.str();
+    }
+    
+    void OutputFileImpl::close() {
+        writer->close();
     }
 }

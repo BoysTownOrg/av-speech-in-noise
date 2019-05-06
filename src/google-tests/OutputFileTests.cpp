@@ -87,8 +87,6 @@ namespace {
         }
         
         void assertWriterContainsConditionName(Condition c) {
-            adaptiveTest.condition = c;
-            file.writeTest(adaptiveTest);
             std::string name = conditionName(c);
             assertWriterContains("condition: " + name + "\n");
         }
@@ -163,10 +161,14 @@ namespace {
     }
 
     TEST_F(OutputFileTests, writeTestWithAvCondition) {
+        adaptiveTest.condition = Condition::audioVisual;
+        file.writeTest(adaptiveTest);
         assertWriterContainsConditionName(Condition::audioVisual);
     }
 
     TEST_F(OutputFileTests, writeTestWithAuditoryOnlyCondition) {
+        adaptiveTest.condition = Condition::auditoryOnly;
+        file.writeTest(adaptiveTest);
         assertWriterContainsConditionName(Condition::auditoryOnly);
     }
 
