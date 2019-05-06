@@ -30,14 +30,14 @@ namespace av_speech_in_noise {
         FileSystemPath *systemPath;
     public:
         OutputFilePathImpl(TimeStamp *, FileSystemPath *);
-        std::string generateFileName(const AdaptiveTest &) override;
+        std::string generateFileName(const TestInformation &) override;
         std::string homeDirectory() override;
         std::string outputDirectory() override;
         void setRelativeOutputDirectory(std::string);
     private:
         std::string homeDirectory_();
         std::string outputDirectory_();
-        std::string formatTestInformation(const AdaptiveTest &);
+        std::string formatTestInformation(const TestInformation &);
         std::string formatTimeStamp();
     };
 }

@@ -105,7 +105,7 @@ namespace {
         FileSystemPathStub systemPath;
         av_speech_in_noise::OutputFilePathImpl
             path{&timeStamp, &systemPath};
-        av_speech_in_noise::AdaptiveTest test{};
+        av_speech_in_noise::TestInformation test{};
         
         std::string generateFileName() {
             return path.generateFileName(test);
@@ -121,9 +121,9 @@ namespace {
     };
 
     TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
-        test.information.subjectId = "a";
-        test.information.session = "b";
-        test.information.testerId = "c";
+        test.subjectId = "a";
+        test.session = "b";
+        test.testerId = "c";
         timeStamp.setYear(1);
         timeStamp.setMonth(2);
         timeStamp.setDayOfMonth(3);

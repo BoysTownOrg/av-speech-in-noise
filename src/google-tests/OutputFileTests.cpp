@@ -41,7 +41,7 @@ namespace {
     class OutputFilePathStub :
         public av_speech_in_noise::OutputFilePath
     {
-        av_speech_in_noise::AdaptiveTest testParameters_{};
+        av_speech_in_noise::TestInformation testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
         std::string outputDirectory_{};
@@ -59,7 +59,7 @@ namespace {
         }
         
         std::string generateFileName(
-            const av_speech_in_noise::AdaptiveTest &p
+            const av_speech_in_noise::TestInformation &p
         ) override {
             testParameters_ = p;
             return fileName_;
@@ -192,7 +192,7 @@ namespace {
     ) {
         test.information.testerId = "a";
         openNewFile();
-        assertEqual("a", path.testParameters().information.testerId);
+        assertEqual("a", path.testParameters().testerId);
     }
     
     class FailingWriter : public av_speech_in_noise::Writer {

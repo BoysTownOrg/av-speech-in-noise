@@ -16,7 +16,7 @@ namespace av_speech_in_noise {
     class OutputFilePath {
     public:
         virtual ~OutputFilePath() = default;
-        virtual std::string generateFileName(const AdaptiveTest &) = 0;
+        virtual std::string generateFileName(const TestInformation &) = 0;
         virtual std::string homeDirectory() = 0;
         virtual std::string outputDirectory() = 0;
     };

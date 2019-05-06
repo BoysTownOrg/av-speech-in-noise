@@ -116,7 +116,7 @@ namespace av_speech_in_noise {
     std::string OutputFileImpl::generateNewFilePath(const AdaptiveTest &test) {
         return
             path->outputDirectory() + "/" +
-            path->generateFileName(test) + ".txt";
+            path->generateFileName(test.information) + ".txt";
     }
     
     void OutputFileImpl::writeTest(const AdaptiveTest &test) {
