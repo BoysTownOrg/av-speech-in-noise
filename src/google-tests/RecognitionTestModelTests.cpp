@@ -681,38 +681,42 @@ namespace {
     };
     
     class InitializingFixedLevelTest : public InitializingTestUseCase {
-        FixedLevelTest test;
+        FixedLevelTest test_;
     public:
         void run(RecognitionTestModel &m) override {
-            m.initializeTest(test);
+            m.initializeTest(test_);
         }
         
         void setSnr_dB(int x) {
-            test.snr_dB = x;
+            test_.snr_dB = x;
         }
         
         void setMaskerLevel_dB_SPL(int x) {
-            test.maskerLevel_dB_SPL = x;
+            test_.maskerLevel_dB_SPL = x;
         }
         
         void setFullScaleLevel_dB_SPL(int x) {
-            test.fullScaleLevel_dB_SPL = x;
+            test_.fullScaleLevel_dB_SPL = x;
         }
         
         void setAudioVisual() override {
-            test.condition = Condition::audioVisual;
+            test_.condition = Condition::audioVisual;
         }
         
         void setAuditoryOnly() override {
-            test.condition = Condition::auditoryOnly;
+            test_.condition = Condition::auditoryOnly;
         }
         
         void setMaskerFilePath(std::string s) override {
-            test.maskerFilePath = std::move(s);
+            test_.maskerFilePath = std::move(s);
         }
         
         void setTargetListDirectory(std::string s) {
-            test.targetListDirectory = std::move(s);
+            test_.targetListDirectory = std::move(s);
+        }
+        
+        auto &test() const {
+            return test_;
         }
     };
     
@@ -1052,8 +1056,12 @@ namespace {
             EXPECT_EQ(x, s.startingX);
         }
         
-        auto &testSettings() const {
+        auto &adaptiveTestSettings() const {
             return initializingAdaptiveTest.test();
+        }
+        
+        auto &fixedLevelTestSettings() const {
+            return initializingFixedLevelTest.test();
         }
         
         void assertRandomizerPassedIntegerBounds(int a, int b) {
@@ -1309,10 +1317,18 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestOpensNewOutputFilePassingTestSettings
+        initializeAdaptiveTestOpensNewOutputFilePassingTestInformation
     ) {
         initializeAdaptiveTest();
-        EXPECT_EQ(outputFile.openNewFileParameters(), &testSettings().information);
+        EXPECT_EQ(outputFile.openNewFileParameters(), &adaptiveTestSettings().information);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestOpensNewOutputFilePassingTestInformation
+    ) {
+        run(initializingFixedLevelTest);
+        EXPECT_EQ(outputFile.openNewFileParameters(), &fixedLevelTestSettings().information);
     }
 
     TEST_F(
@@ -1320,7 +1336,7 @@ namespace {
         initializeAdaptiveTestWritesTestSettings
     ) {
         initializeAdaptiveTest();
-        EXPECT_EQ(outputFile.testWritten(), &testSettings());
+        EXPECT_EQ(outputFile.testWritten(), &adaptiveTestSettings());
     }
 
     TEST_F(

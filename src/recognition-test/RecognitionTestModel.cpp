@@ -57,6 +57,7 @@ namespace av_speech_in_noise {
         
         currentTargetList = finiteTargetList;
         currentTargetList->loadFromDirectory(p.targetListDirectory);
+        tryOpeningOutputFile(p.information);
         prepareMasker(p.maskerFilePath);
         prepareVideo(p.condition);
         preparePlayersForNextTrial(fixedLevelSnr_dB = p.snr_dB);
@@ -106,14 +107,14 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::prepareOutputFile(const AdaptiveTest &p) {
         outputFile->close();
-        tryOpeningOutputFile(p);
+        tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
         outputFile->writeCoordinateResponseTrialHeading();
     }
     
-    void RecognitionTestModel::tryOpeningOutputFile(const AdaptiveTest &p) {
+    void RecognitionTestModel::tryOpeningOutputFile(const TestInformation &p) {
         try {
-            outputFile->openNewFile(p.information);
+            outputFile->openNewFile(p);
         } catch (const OutputFile::OpenFailure &) {
             throw RequestFailure{"Unable to open output file."};
         }
