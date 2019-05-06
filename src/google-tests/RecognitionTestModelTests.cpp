@@ -1253,6 +1253,11 @@ namespace {
             run(useCase);
             EXPECT_EQ(outputFile.openNewFileParameters(), &useCase.testInformation());
         }
+        
+        void assertThrowsRequestFailureWhenOutputFileThrows(UseCase &useCase) {
+            outputFile.throwOnOpen();
+            assertCallThrowsRequestFailure(useCase, "Unable to open output file.");
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1919,16 +1924,14 @@ namespace {
         RecognitionTestModelTests,
         initializeAdaptiveTestThrowsRequestFailureIfFileFailsToOpen
     ) {
-        outputFile.throwOnOpen();
-        assertCallThrowsRequestFailure(initializingAdaptiveTest, "Unable to open output file.");
+        assertThrowsRequestFailureWhenOutputFileThrows(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestThrowsRequestFailureIfFileFailsToOpen
     ) {
-        outputFile.throwOnOpen();
-        assertCallThrowsRequestFailure(initializingFixedLevelTest, "Unable to open output file.");
+        assertThrowsRequestFailureWhenOutputFileThrows(initializingFixedLevelTest);
     }
 
     TEST_F(
