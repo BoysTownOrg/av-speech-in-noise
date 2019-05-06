@@ -64,6 +64,7 @@ namespace av_speech_in_noise {
             virtual void setTargetListDirectory(std::string) = 0;
             virtual void setCalibrationFilePath(std::string) = 0;
             virtual void populateConditionMenu(std::vector<std::string> items) = 0;
+            virtual void populateMethodMenu(std::vector<std::string> items) = 0;
         };
         
         class Experimenter {

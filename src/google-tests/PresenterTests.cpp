@@ -196,6 +196,7 @@ namespace {
 
         class TestSetupViewStub : public TestSetup {
             Collection<std::string> conditions_{};
+            Collection<std::string> methods_{};
             std::string signalLevel_{"0"};
             std::string calibrationLevel_{"0"};
             std::string startingSnr_{"0"};
@@ -242,6 +243,10 @@ namespace {
             
             auto &conditions() const {
                 return conditions_;
+            }
+            
+            auto &methods() const {
+                return methods_;
             }
             
             auto shown() const {
@@ -334,6 +339,10 @@ namespace {
             
             std::string method() override {
                 return method_;
+            }
+            
+            void populateMethodMenu(std::vector<std::string> items) override {
+                methods_ = std::move(items);
             }
             
             void browseForMasker() {
@@ -1155,6 +1164,10 @@ namespace {
             EXPECT_TRUE(setupView.conditions().contains(std::move(s)));
         }
         
+        void assertSetupViewMethodsContains(std::string s) {
+            EXPECT_TRUE(setupView.methods().contains(std::move(s)));
+        }
+        
         void setCondition(std::string s) {
             setupView.setCondition(std::move(s));
         }
@@ -1384,6 +1397,12 @@ namespace {
     TEST_F(PresenterTests, populatesConditionMenu) {
         assertSetupViewConditionsContains(auditoryOnlyConditionName());
         assertSetupViewConditionsContains(audioVisualConditionName());
+    }
+
+    TEST_F(PresenterTests, populatesMethodMenu) {
+        assertSetupViewMethodsContains(methodName(Method::fixedLevelOpenSet));
+        assertSetupViewMethodsContains(methodName(Method::adaptiveOpenSet));
+        assertSetupViewMethodsContains(methodName(Method::adaptiveClosedSet));
     }
 
     TEST_F(PresenterTests, callsEventLoopWhenRun) {

@@ -179,6 +179,11 @@ namespace av_speech_in_noise {
             conditionName(Condition::audioVisual),
             conditionName(Condition::auditoryOnly)
         });
+        view->populateMethodMenu({
+            methodName(Method::adaptiveClosedSet),
+            methodName(Method::adaptiveOpenSet),
+            methodName(Method::fixedLevelOpenSet)
+        });
         view->subscribe(this);
     }
     
