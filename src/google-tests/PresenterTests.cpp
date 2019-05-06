@@ -892,19 +892,13 @@ namespace {
             return view->nextTrialButtonShown();
         }
     };
-    
-    class TestSetupUseCase {
-    public:
-        virtual ~TestSetupUseCase() = default;
-        virtual void run(ViewStub::TestSetupViewStub &) = 0;
-    };
 
-    class BrowsingUseCase : public TestSetupUseCase {
+    class BrowsingUseCase : public virtual UseCase {
     public:
         virtual void setResult(ViewStub &, std::string) = 0;
     };
 
-    class BrowsingEnteredPathUseCase : public BrowsingUseCase {
+    class BrowsingEnteredPathUseCase : public virtual BrowsingUseCase {
     public:
         virtual std::string entry() = 0;
         virtual void setEntry(std::string) = 0;
@@ -928,7 +922,7 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(ViewStub::TestSetupViewStub &) override {
+        void run() override {
             view->browseForMasker();
         }
     };
@@ -939,7 +933,7 @@ namespace {
         explicit BrowsingForTargetList(ViewStub::TestSetupViewStub *view) :
             view{view} {}
         
-        void run(ViewStub::TestSetupViewStub &) override {
+        void run() override {
             view->browseForTargetList();
         }
 
@@ -974,7 +968,7 @@ namespace {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(ViewStub::TestSetupViewStub &listener) override {
+        void run() override {
             view->browseForCalibration();
         }
     };
@@ -1150,10 +1144,6 @@ namespace {
             std::string s
         ) {
             useCase.setResult(view, std::move(s));
-        }
-
-        void run(TestSetupUseCase &useCase) {
-            useCase.run(setupView);
         }
         
         void assertEntryEquals(
