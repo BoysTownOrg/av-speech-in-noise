@@ -23,15 +23,24 @@ class CocoaSubjectView;
 - (void) playTrial;
 @end
 
+class CocoaExperimenterView;
+
+@interface ExperimenterViewActions : NSObject
+@property CocoaExperimenterView *controller;
+- (void) playTrial;
+@end
+
 class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
     NSView *view_;
     NSView *nextTrialButton;
     NSView *evaluationButtons;
     NSTextField *response_;
     EventListener *listener_{};
+    ExperimenterViewActions *actions;
 public:
     CocoaExperimenterView(NSRect);
     NSView *view();
+    void playTrial();
     void subscribe(EventListener *) override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;

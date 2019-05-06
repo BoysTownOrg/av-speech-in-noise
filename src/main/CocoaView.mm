@@ -539,9 +539,24 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     ]},
     response_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
-    ]}
+    ]},
+    actions{[ExperimenterViewActions alloc]}
 {
-    ;
+    const auto nextTrialButton_ = [NSButton
+        buttonWithTitle:@"play trial"
+        target:actions
+        action:@selector(playTrial)
+    ];
+    [nextTrialButton_ setFrame:NSMakeRect(
+        r.size.width - buttonWidth,
+        0,
+        buttonWidth,
+        buttonHeight
+    )];
+    [nextTrialButton addSubview:nextTrialButton_];
+    [view_ addSubview:nextTrialButton];
+    [view_ addSubview:response_];
+    actions.controller = this;
 }
 
 void CocoaExperimenterView::subscribe(EventListener *e) {
@@ -579,6 +594,18 @@ std::string CocoaExperimenterView::response() {
 NSView *CocoaExperimenterView::view() { 
     return view_;
 }
+
+void CocoaExperimenterView::playTrial() {
+    listener_->playTrial();
+}
+
+@implementation ExperimenterViewActions
+@synthesize controller;
+
+- (void)playTrial {
+    controller->playTrial();
+}
+@end
 
 
 CocoaView::CocoaView(NSRect r) :
@@ -675,5 +702,7 @@ void CocoaView::addSubview(NSView *view) {
 void CocoaView::center() {
     [window center];
 }
+
+
 
 
