@@ -93,6 +93,10 @@ namespace av_speech_in_noise {
         Condition condition;
     };
     
+    struct OpenSetResponse {
+        std::string response;
+    };
+    
     class Model {
     public:
         class EventListener {
@@ -114,7 +118,7 @@ namespace av_speech_in_noise {
         virtual void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) = 0;
-        virtual void submitResponse(const std::string &) = 0;
+        virtual void submitResponse(const OpenSetResponse &) = 0;
         virtual void submitCorrectResponse() = 0;
         virtual void submitIncorrectResponse() = 0;
         virtual bool testComplete() = 0;

@@ -23,7 +23,7 @@ namespace {
         AudioSettings trialParameters_;
         coordinate_response_measure::SubjectResponse responseParameters_;
         std::vector<std::string> audioDevices_;
-        std::string freeResponse_;
+        OpenSetResponse freeResponse_;
         EventListener *listener_{};
         bool testComplete_{};
         bool trialPlayed_{};
@@ -99,7 +99,7 @@ namespace {
             fixedLevelTest_ = p;
         }
         
-        void submitResponse(const std::string &s) override {
+        void submitResponse(const OpenSetResponse &s) override {
             freeResponse_ = s;
         }
         
@@ -1760,7 +1760,7 @@ namespace {
     TEST_F(PresenterTests, experimenterResponsePassesResponse) {
         experimenterView.setResponse("a");
         respondFromExperimenter();
-        assertEqual("a", model.freeResponse());
+        assertEqual("a", model.freeResponse().response);
     }
 
     TEST_F(PresenterTests, respondFromSubjectShowsSetupViewWhenTestComplete) {
@@ -1925,7 +1925,7 @@ namespace {
             throw RequestFailure{errorMessage};
         }
         
-        void submitResponse(const std::string &) override {
+        void submitResponse(const OpenSetResponse &) override {
             throw RequestFailure{errorMessage};
         }
         

@@ -333,7 +333,7 @@ namespace av_speech_in_noise {
         prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
     }
     
-    void RecognitionTestModel::submitResponse(const std::string &) {
+    void RecognitionTestModel::submitResponse(const OpenSetResponse &) {
         prepareTargetPlayer(fixedLevelSnr_dB);
         seekRandomMaskerPosition();
     }

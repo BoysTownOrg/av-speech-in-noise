@@ -178,7 +178,7 @@ namespace av_speech_in_noise {
             void hide();
             void showEvaluationButtons();
             void showResponseSubmission();
-            std::string response();
+            OpenSetResponse openSetResponse();
             void playTrial() override;
             void submitPassedTrial() override;
             void submitResponse() override;
