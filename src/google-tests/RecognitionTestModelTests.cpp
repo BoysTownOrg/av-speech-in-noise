@@ -1925,6 +1925,14 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeFixedLevelTestThrowsRequestFailureIfFileFailsToOpen
+    ) {
+        outputFile.throwOnOpen();
+        assertCallThrowsRequestFailure(initializingFixedLevelTest, "Unable to open output file.");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile
     ) {
         playingCalibration.setFilePath("a");
