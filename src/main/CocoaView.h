@@ -90,6 +90,7 @@ public:
     std::string subjectId() override;
     std::string condition() override;
     void populateConditionMenu(std::vector<std::string> items) override;
+    void populateMethodMenu(std::vector<std::string> items) override;
     void setTargetListDirectory(std::string) override;
     void setMasker(std::string) override;
     void setCalibrationFilePath(std::string) override;

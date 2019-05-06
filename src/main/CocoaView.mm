@@ -18,6 +18,7 @@ static constexpr auto labelToTextFieldSpacing = 5;
 static constexpr auto textFieldLeadingEdge =
     labelWidth + labelToTextFieldSpacing;
 static constexpr auto normalTextFieldWidth = 150;
+static constexpr auto menuWidth = 180;
 static constexpr auto filePathTextFieldWidth = 500;
 static constexpr auto buttonHeight = 25;
 static constexpr auto buttonWidth = 100;
@@ -113,7 +114,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         initWithFrame:NSMakeRect(
             textFieldLeadingEdge,
             90,
-            normalTextFieldWidth,
+            menuWidth,
             labelHeight
         )
         pullsDown:NO
@@ -126,7 +127,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         initWithFrame:NSMakeRect(
             textFieldLeadingEdge,
             60,
-            normalTextFieldWidth,
+            menuWidth,
             labelHeight
         )
         pullsDown:NO
@@ -314,6 +315,11 @@ void CocoaTestSetupView::setStartingSnr_dB(std::string s) {
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
     for (auto item : items)
         [conditionMenu addItemWithTitle:asNsString(item)];
+}
+
+void CocoaTestSetupView::populateMethodMenu(std::vector<std::string> items) {
+    for (auto item : items)
+        [methodMenu addItemWithTitle:asNsString(item)];
 }
 
 void CocoaTestSetupView::confirm() {
@@ -720,7 +726,4 @@ void CocoaView::addSubview(NSView *view) {
 void CocoaView::center() {
     [window center];
 }
-
-
-
 
