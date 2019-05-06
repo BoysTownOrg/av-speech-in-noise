@@ -202,8 +202,6 @@ namespace {
 
     class MaskerPlayerTests : public ::testing::Test {
     protected:
-        std::vector<float> leftChannel;
-        std::vector<float> rightChannel;
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
         AudioReaderStub audioReader;
@@ -213,6 +211,8 @@ namespace {
             &audioReader,
             &timer
         };
+        std::vector<float> leftChannel;
+        std::vector<float> rightChannel;
         
         MaskerPlayerTests() {
             player.subscribe(&listener);
