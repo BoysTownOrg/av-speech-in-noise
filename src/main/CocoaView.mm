@@ -569,6 +569,10 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     [nextTrialButton addSubview:nextTrialButton_];
     [view_ addSubview:nextTrialButton];
     [view_ addSubview:response_];
+    [view_ addSubview:evaluationButtons];
+    [evaluationButtons setHidden:YES];
+    [nextTrialButton setHidden:YES];
+    [response_ setHidden:YES];
     [view_ setHidden:YES];
     actions.controller = this;
 }
