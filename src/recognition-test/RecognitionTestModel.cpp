@@ -57,6 +57,7 @@ namespace av_speech_in_noise {
         
         currentTargetList = finiteTargetList;
         currentTargetList->loadFromDirectory(p.targetListDirectory);
+        outputFile->close();
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
         prepareMasker(p.maskerFilePath);

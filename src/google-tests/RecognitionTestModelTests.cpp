@@ -332,6 +332,7 @@ namespace {
         }
         
         void writeTest(const FixedLevelTest &p) override {
+            log_.insert("writeFixedLevelTest ");
             fixedLevelTest_ = &p;
         }
         
@@ -1327,11 +1328,22 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestClosesOutputFileOpensWritesTestAndWritesTrialHeadingInOrder
+        initializeAdaptiveTestClosesOutputFileOpensAndWritesTestInOrder
     ) {
         initializeAdaptiveTest();
         assertEqual(
             "close openNewFile writeAdaptiveTest ",
+            outputFile.log()
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestClosesOutputFileOpensAndWritesTestInOrder
+    ) {
+        run(initializingFixedLevelTest);
+        assertEqual(
+            "close openNewFile writeFixedLevelTest ",
             outputFile.log()
         );
     }
