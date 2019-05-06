@@ -37,6 +37,7 @@ namespace av_speech_in_noise {
         void write(std::string);
         std::string evaluation(const coordinate_response_measure::Trial &);
         std::string formatTest(const AdaptiveTest &);
+        std::string formatTest(const FixedLevelTest &);
         std::string formatTrial(const coordinate_response_measure::Trial &);
         std::string formatCoordinateResponseTrialHeading();
         std::string generateNewFilePath(const TestInformation &);

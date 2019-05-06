@@ -79,6 +79,7 @@ namespace {
         OutputFileImpl file{&writer, &path};
         coordinate_response_measure::Trial coordinateResponseTrial{};
         AdaptiveTest adaptiveTest{};
+        FixedLevelTest fixedLevelTest{};
         TestInformation testInformation{};
         
         void openNewFile() {
@@ -100,6 +101,15 @@ namespace {
             file.writeTrial(coordinateResponseTrial);
         }
     };
+
+    TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
+        file.writeCoordinateResponseTrialHeading();
+        assertEqual(
+            "SNR (dB), correct number, subject number, "
+            "correct color, subject color, evaluation, reversals\n",
+            writer.written()
+        );
+    }
 
     TEST_F(OutputFileTests, writeCoordinateResponseTrial) {
         coordinateResponseTrial.SNR_dB = 1;
@@ -126,6 +136,11 @@ namespace {
         coordinateResponseTrial.correct = true;
         writeCoordinateResponseTrial();
         assertWriterContains(" correct, ");
+    }
+
+    TEST_F(OutputFileTests, colorNameUninitializedColorDefined) {
+        coordinate_response_measure::Trial uninitialized;
+        file.writeTrial(uninitialized);
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTest) {
@@ -155,18 +170,23 @@ namespace {
         assertWriterContainsConditionName(Condition::auditoryOnly);
     }
 
-    TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
-        file.writeCoordinateResponseTrialHeading();
-        assertEqual(
-            "SNR (dB), correct number, subject number, "
-            "correct color, subject color, evaluation, reversals\n",
-            writer.written()
-        );
-    }
-
-    TEST_F(OutputFileTests, colorNameUninitializedColorDefined) {
-        coordinate_response_measure::Trial uninitialized;
-        file.writeTrial(uninitialized);
+    TEST_F(OutputFileTests, writeFixedLevelTest) {
+        fixedLevelTest.maskerFilePath = "a";
+        fixedLevelTest.information.session = "b";
+        fixedLevelTest.information.subjectId = "c";
+        fixedLevelTest.targetListDirectory = "d";
+        fixedLevelTest.information.testerId = "e";
+        fixedLevelTest.maskerLevel_dB_SPL = 1;
+        fixedLevelTest.snr_dB = 2;
+        file.writeTest(fixedLevelTest);
+        assertWriterContains("subject: c\n");
+        assertWriterContains("tester: e\n");
+        assertWriterContains("session: b\n");
+        assertWriterContains("masker: a\n");
+        assertWriterContains("targets: d\n");
+        assertWriterContains("masker level (dB SPL): 1\n");
+        assertWriterContains("SNR (dB): 2\n");
+        EXPECT_TRUE(writer.written().endsWith("\n\n"));
     }
 
     TEST_F(OutputFileTests, openPassesFormattedFilePath) {

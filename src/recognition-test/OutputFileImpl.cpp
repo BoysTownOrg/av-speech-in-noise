@@ -141,7 +141,21 @@ namespace av_speech_in_noise {
         writer->close();
     }
     
-    void OutputFileImpl::writeTest(const FixedLevelTest &) { 
-        ;
+    void OutputFileImpl::writeTest(const FixedLevelTest &test) {
+        write(formatTest(test));
+    }
+    
+    std::string OutputFileImpl::formatTest(const FixedLevelTest &test) {
+        FormattedStream stream;
+        stream.writeLabeledLine("subject", test.information.subjectId);
+        stream.writeLabeledLine("tester", test.information.testerId);
+        stream.writeLabeledLine("session", test.information.session);
+        stream.writeLabeledLine("masker", test.maskerFilePath);
+        stream.writeLabeledLine("targets", test.targetListDirectory);
+        stream.writeLabeledLine("masker level (dB SPL)", test.maskerLevel_dB_SPL);
+        stream.writeLabeledLine("SNR (dB)", test.snr_dB);
+        stream.writeLabeledLine("condition", conditionName(test.condition));
+        stream.insertNewLine();
+        return stream.str();
     }
 }
