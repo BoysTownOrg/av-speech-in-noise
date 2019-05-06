@@ -5,12 +5,6 @@
 #include <string>
 #include <vector>
 
-#define RUNTIME_ERROR(class_name) \
-    class class_name : public std::runtime_error {\
-    public:\
-        explicit class_name(std::string s) : std::runtime_error{ std::move(s) } {}\
-};
-
 namespace av_speech_in_noise {
     namespace coordinate_response_measure {
         enum class Color {
@@ -109,7 +103,10 @@ namespace av_speech_in_noise {
         
         virtual ~Model() = default;
         virtual void subscribe(EventListener *) = 0;
-        RUNTIME_ERROR(RequestFailure)
+        class RequestFailure : public std::runtime_error {
+        public:
+            explicit RequestFailure(std::string s) : std::runtime_error{ std::move(s) } {}
+        };
         virtual void initializeTest(const AdaptiveTest &) = 0;
         virtual void initializeTest(const FixedLevelTest &) = 0;
         virtual void playCalibration(const Calibration &) = 0;

@@ -4,14 +4,13 @@ namespace adaptive_track {
     AdaptiveTrack::AdaptiveTrack(const Settings &p) :
         x_{p.startingX}
     {
-        for (const auto &sequence : *p.rule) {
+        for (const auto &sequence : *p.rule)
             if (sequence.runCount) {
                 stepSizes.push_back(sequence.stepSize);
                 runCounts.push_back(sequence.runCount);
                 up.push_back(sequence.up);
                 down.push_back(sequence.down);
             }
-        }
         stepSizes.push_back(0);
     }
     
@@ -21,7 +20,7 @@ namespace adaptive_track {
         
         auto direction = Direction::up;
         updateConsecutiveCount(direction);
-        if (sameDirectionConsecutiveCount == up[sequenceIndex])
+        if (sameDirectionConsecutiveCount == up.at(sequenceIndex))
             stepUp();
         previousDirection = direction;
     }
@@ -45,12 +44,12 @@ namespace adaptive_track {
     }
 
     int AdaptiveTrack::stepSize() {
-        return stepSizes[sequenceIndex];
+        return stepSizes.at(sequenceIndex);
     }
 
     void AdaptiveTrack::reversal() {
         ++reversals_;
-        if (++runCounter == runCounts[sequenceIndex]) {
+        if (++runCounter == runCounts.at(sequenceIndex)) {
             runCounter = 0;
             ++sequenceIndex;
         }
@@ -62,7 +61,7 @@ namespace adaptive_track {
         
         auto direction = Direction::down;
         updateConsecutiveCount(direction);
-        if (sameDirectionConsecutiveCount == down[sequenceIndex])
+        if (sameDirectionConsecutiveCount == down.at(sequenceIndex))
             stepDown();
         previousDirection = direction;
     }

@@ -212,7 +212,10 @@ namespace av_speech_in_noise {
         void hideTestView();
         void switchToSetupView();
         void showErrorMessage(std::string);
-        RUNTIME_ERROR(BadInput)
+        class BadInput : public std::runtime_error {
+        public:
+            explicit BadInput(std::string s) : std::runtime_error{ std::move(s) } {}
+        };
         void playCalibration_();
         void showTestSetup();
         bool testComplete();
