@@ -50,8 +50,12 @@ namespace {
             directoryReader.setSubDirectories(std::move(v));
         }
         
+        auto targetList(int n) {
+            return targetLists.at(n);
+        }
+        
         auto targetListDirectory(int n) {
-            return targetLists.at(n)->directory();
+            return targetList(n)->directory();
         }
     };
     
@@ -72,9 +76,9 @@ namespace {
         setSubDirectories(std::vector<std::string>(3));
         auto actual = read();
         EXPECT_EQ(3, actual.size());
-        EXPECT_EQ(targetLists.at(0), actual.at(0));
-        EXPECT_EQ(targetLists.at(1), actual.at(1));
-        EXPECT_EQ(targetLists.at(2), actual.at(2));
+        EXPECT_EQ(targetList(0), actual.at(0));
+        EXPECT_EQ(targetList(1), actual.at(1));
+        EXPECT_EQ(targetList(2), actual.at(2));
     }
     
     TEST_F(
@@ -93,6 +97,6 @@ namespace {
         setSubDirectories({});
         auto actual = read();
         EXPECT_EQ(1, actual.size());
-        EXPECT_EQ(targetLists.at(0), actual.at(0));
+        EXPECT_EQ(targetList(0), actual.at(0));
     }
 }
