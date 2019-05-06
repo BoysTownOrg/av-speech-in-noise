@@ -3,6 +3,14 @@
 
 #include <gtest/gtest.h>
 
+inline void assertTrue(bool c) {
+    EXPECT_TRUE(c);
+}
+
+inline void assertFalse(bool c) {
+    EXPECT_FALSE(c);
+}
+
 inline void assertEqual(std::string expected, std::string actual) {
     EXPECT_EQ(expected, actual);
 }

@@ -578,6 +578,28 @@ namespace {
         virtual int fullScaleLevel(ModelStub &) = 0;
     };
     
+    class PlayingCalibration :
+        public ConditionUseCase,
+        public LevelUseCase
+    {
+        ViewStub::TestSetupViewStub *view;
+    public:
+        explicit PlayingCalibration(ViewStub::TestSetupViewStub *view) :
+            view{view} {}
+        
+        Condition condition(ModelStub &m) override {
+            return m.calibration().condition;
+        }
+        
+        void run() override {
+            view->playCalibration();
+        }
+        
+        int fullScaleLevel(ModelStub &m) override {
+            return m.calibration().fullScaleLevel_dB_SPL;
+        }
+    };
+    
     class ConfirmingTestSetup :
         public virtual ConditionUseCase,
         public virtual LevelUseCase
@@ -972,28 +994,6 @@ namespace {
             view->browseForCalibration();
         }
     };
-    
-    class PlayingCalibration :
-        public ConditionUseCase,
-        public LevelUseCase
-    {
-        ViewStub::TestSetupViewStub *view;
-    public:
-        explicit PlayingCalibration(ViewStub::TestSetupViewStub *view) :
-            view{view} {}
-        
-        Condition condition(ModelStub &m) override {
-            return m.calibration().condition;
-        }
-        
-        void run() override {
-            view->playCalibration();
-        }
-        
-        int fullScaleLevel(ModelStub &m) override {
-            return m.calibration().fullScaleLevel_dB_SPL;
-        }
-    };
 
     class PresenterConstructionTests : public ::testing::Test {
     protected:
@@ -1068,7 +1068,7 @@ namespace {
         }
         
         void assertSetupViewShown() {
-            EXPECT_TRUE(setupViewShown());
+            assertTrue(setupViewShown());
         }
         
         bool setupViewShown() {
@@ -1076,11 +1076,11 @@ namespace {
         }
         
         void assertSetupViewNotShown() {
-            EXPECT_FALSE(setupViewShown());
+            assertFalse(setupViewShown());
         }
         
         void assertSetupViewHidden() {
-            EXPECT_TRUE(setupViewHidden());
+            assertTrue(setupViewHidden());
         }
         
         bool setupViewHidden() {
@@ -1088,11 +1088,11 @@ namespace {
         }
         
         void assertSetupViewNotHidden() {
-            EXPECT_FALSE(setupViewHidden());
+            assertFalse(setupViewHidden());
         }
         
         void assertExperimenterViewShown() {
-            EXPECT_TRUE(experimenterViewShown());
+            assertTrue(experimenterViewShown());
         }
         
         bool experimenterViewShown() {
@@ -1100,11 +1100,11 @@ namespace {
         }
         
         void assertExperimenterViewNotShown() {
-            EXPECT_FALSE(experimenterViewShown());
+            assertFalse(experimenterViewShown());
         }
         
         void assertExperimenterViewHidden() {
-            EXPECT_TRUE(experimenterViewHidden());
+            assertTrue(experimenterViewHidden());
         }
         
         bool experimenterViewHidden() {
@@ -1112,11 +1112,11 @@ namespace {
         }
         
         void assertExperimenterViewNotHidden() {
-            EXPECT_FALSE(experimenterViewHidden());
+            assertFalse(experimenterViewHidden());
         }
         
         void assertSubjectViewShown() {
-            EXPECT_TRUE(subjectViewShown());
+            assertTrue(subjectViewShown());
         }
         
         bool subjectViewShown() {
@@ -1124,11 +1124,11 @@ namespace {
         }
         
         void assertSubjectViewNotShown() {
-            EXPECT_FALSE(subjectViewShown());
+            assertFalse(subjectViewShown());
         }
         
         void assertSubjectViewHidden() {
-            EXPECT_TRUE(subjectView.hidden());
+            assertTrue(subjectView.hidden());
         }
 
         void assertBrowseResultPassedToEntry(
@@ -1172,27 +1172,27 @@ namespace {
         }
         
         void assertResponseButtonsShown() {
-            EXPECT_TRUE(subjectView.responseButtonsShown());
+            assertTrue(subjectView.responseButtonsShown());
         }
         
         void assertEvaluationButtonsShown() {
-            EXPECT_TRUE(experimenterView.evaluationButtonsShown());
+            assertTrue(experimenterView.evaluationButtonsShown());
         }
         
         void assertResponseSubmissionShown() {
-            EXPECT_TRUE(experimenterView.responseSubmissionShown());
+            assertTrue(experimenterView.responseSubmissionShown());
         }
         
         void assertResponseButtonsHidden() {
-            EXPECT_TRUE(subjectView.responseButtonsHidden());
+            assertTrue(subjectView.responseButtonsHidden());
         }
         
         void assertSetupViewConditionsContains(std::string s) {
-            EXPECT_TRUE(setupView.conditions().contains(std::move(s)));
+            assertTrue(setupView.conditions().contains(std::move(s)));
         }
         
         void assertSetupViewMethodsContains(std::string s) {
-            EXPECT_TRUE(setupView.methods().contains(std::move(s)));
+            assertTrue(setupView.methods().contains(std::move(s)));
         }
         
         void setCondition(std::string s) {
@@ -1287,12 +1287,12 @@ namespace {
         
         void assertPlaysTrial(PlayingTrial &useCase) {
             run(useCase);
-            EXPECT_TRUE(model.trialPlayed());
+            assertTrue(model.trialPlayed());
         }
         
         void assertHidesPlayTrialButton(PlayingTrial &useCase) {
             run(useCase);
-            EXPECT_TRUE(useCase.nextTrialButtonHidden());
+            assertTrue(useCase.nextTrialButtonHidden());
         }
         
         void assertConfirmTestSetupShowsNextTrialButton(
@@ -1300,7 +1300,7 @@ namespace {
             PlayingTrial &playingTrial
         ) {
             run(confirmingTest);
-            EXPECT_TRUE(playingTrial.nextTrialButtonShown());
+            assertTrue(playingTrial.nextTrialButtonShown());
         }
         
         void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
@@ -1327,7 +1327,7 @@ namespace {
         
         void assertShowsNextTrialButton(TrialSubmission &useCase) {
             run(useCase);
-            EXPECT_TRUE(useCase.nextTrialButtonShown());
+            assertTrue(useCase.nextTrialButtonShown());
         }
         
         void assertStartingSnrPassedToModel(ConfirmingTestSetup &useCase) {
@@ -1359,7 +1359,7 @@ namespace {
         
         void assertDoesNotInitializeFixedLevelTest(UseCase &useCase) {
             run(useCase);
-            EXPECT_FALSE(model.fixedLevelTestInitialized());
+            assertFalse(model.fixedLevelTestInitialized());
         }
         
         void assertPassesTargetListDirectory(ConfirmingTestSetup &useCase) {
@@ -1434,7 +1434,7 @@ namespace {
 
     TEST_F(PresenterTests, callsEventLoopWhenRun) {
         presenter.run();
-        EXPECT_TRUE(view.eventLoopCalled());
+        assertTrue(view.eventLoopCalled());
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestHidesTestSetupView) {
@@ -1497,7 +1497,7 @@ namespace {
 
     TEST_F(PresenterTests, confirmFixedLevelTestDoesNotInitializeAdaptiveTest) {
         run(confirmingFixedLevelOpenSetTest);
-        EXPECT_FALSE(model.adaptiveTestInitialized());
+        assertFalse(model.adaptiveTestInitialized());
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesStartingSnr) {
@@ -1835,7 +1835,7 @@ namespace {
 
     TEST_F(PresenterTests, experimenterResponseHidesResponseSubmission) {
         run(respondingFromExperimenter);
-        EXPECT_TRUE(experimenterView.responseSubmissionHidden());
+        assertTrue(experimenterView.responseSubmissionHidden());
     }
 
     TEST_F(PresenterTests, subjectResponseHidesSubjectViewWhenTestComplete) {
