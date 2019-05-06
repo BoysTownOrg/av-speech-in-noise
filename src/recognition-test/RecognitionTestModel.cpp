@@ -113,7 +113,7 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::tryOpeningOutputFile(const AdaptiveTest &p) {
         try {
-            outputFile->openNewFile(p);
+            outputFile->openNewFile(p.information);
         } catch (const OutputFile::OpenFailure &) {
             throw RequestFailure{"Unable to open output file."};
         }

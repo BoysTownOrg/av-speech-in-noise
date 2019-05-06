@@ -278,7 +278,7 @@ namespace {
         coordinate_response_measure::Trial trialWritten_{};
         LogString log_{};
         const AdaptiveTest *testWritten_{};
-        const AdaptiveTest *openNewFileParameters_{};
+        const TestInformation *openNewFileParameters_{};
         bool throwOnOpen_{};
         bool headingWritten_{};
     public:
@@ -305,7 +305,7 @@ namespace {
             trialWritten_ = trial;
         }
         
-        void openNewFile(const AdaptiveTest &p) override {
+        void openNewFile(const TestInformation &p) override {
             log_.insert("openNewFile ");
             openNewFileParameters_ = &p;
             if (throwOnOpen_)
@@ -1312,7 +1312,7 @@ namespace {
         initializeAdaptiveTestOpensNewOutputFilePassingTestSettings
     ) {
         initializeAdaptiveTest();
-        EXPECT_EQ(outputFile.openNewFileParameters(), &testSettings());
+        EXPECT_EQ(outputFile.openNewFileParameters(), &testSettings().information);
     }
 
     TEST_F(

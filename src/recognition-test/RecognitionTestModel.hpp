@@ -111,7 +111,7 @@ namespace av_speech_in_noise {
     class OutputFile {
     public:
         virtual ~OutputFile() = default;
-        virtual void openNewFile(const AdaptiveTest &) = 0;
+        virtual void openNewFile(const TestInformation &) = 0;
         class OpenFailure {};
         virtual void writeTrial(const coordinate_response_measure::Trial &) = 0;
         virtual void writeTest(const AdaptiveTest &) = 0;

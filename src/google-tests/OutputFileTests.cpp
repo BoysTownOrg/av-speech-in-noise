@@ -76,21 +76,21 @@ namespace {
 
     class OutputFileTests : public ::testing::Test {
     protected:
-        WriterStub writer{};
-        OutputFilePathStub path{};
+        WriterStub writer;
+        OutputFilePathStub path;
         av_speech_in_noise::OutputFileImpl file{&writer, &path};
         av_speech_in_noise::coordinate_response_measure::Trial trial{};
-        av_speech_in_noise::AdaptiveTest test{};
+        av_speech_in_noise::AdaptiveTest adaptiveTest{};
         
         void openNewFile() {
-            file.openNewFile(test);
+            file.openNewFile(adaptiveTest.information);
         }
         
         void assertWriterContainsConditionName(
             av_speech_in_noise::Condition c
         ) {
-            test.condition = c;
-            file.writeTest(test);
+            adaptiveTest.condition = c;
+            file.writeTest(adaptiveTest);
             std::string name = conditionName(c);
             EXPECT_TRUE(writer.written().contains("condition: " + name + "\n"));
         }
@@ -124,14 +124,14 @@ namespace {
     }
 
     TEST_F(OutputFileTests, writeTest) {
-        test.maskerFilePath = "a";
-        test.information.session = "b";
-        test.information.subjectId = "c";
-        test.targetListDirectory = "d";
-        test.information.testerId = "e";
-        test.maskerLevel_dB_SPL = 1;
-        test.startingSnr_dB = 2;
-        file.writeTest(test);
+        adaptiveTest.maskerFilePath = "a";
+        adaptiveTest.information.session = "b";
+        adaptiveTest.information.subjectId = "c";
+        adaptiveTest.targetListDirectory = "d";
+        adaptiveTest.information.testerId = "e";
+        adaptiveTest.maskerLevel_dB_SPL = 1;
+        adaptiveTest.startingSnr_dB = 2;
+        file.writeTest(adaptiveTest);
         EXPECT_TRUE(writer.written().contains("subject: c\n"));
         EXPECT_TRUE(writer.written().contains("tester: e\n"));
         EXPECT_TRUE(writer.written().contains("session: b\n"));
@@ -190,7 +190,7 @@ namespace {
         OutputFileTests,
         openPassesTestParameters
     ) {
-        test.information.testerId = "a";
+        adaptiveTest.information.testerId = "a";
         openNewFile();
         assertEqual("a", path.testParameters().testerId);
     }
@@ -198,10 +198,6 @@ namespace {
     class FailingWriter : public av_speech_in_noise::Writer {
         bool failed_{};
     public:
-        void write(std::string) override {
-        
-        }
-        
         void open(std::string) override {
             failed_ = true;
         }
@@ -211,6 +207,7 @@ namespace {
         }
         
         void close() override {}
+        void write(std::string) override {}
     };
     
     TEST(
