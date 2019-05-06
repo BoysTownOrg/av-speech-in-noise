@@ -24,7 +24,10 @@ namespace {
     protected:
         TargetListFactoryStub targetListFactory;
         DirectoryReaderStub directoryReader;
-        target_list::SubdirectoryTargetListReader listReader{&targetListFactory, &directoryReader};
+        target_list::SubdirectoryTargetListReader listReader{
+            &targetListFactory,
+            &directoryReader
+        };
         std::vector<std::shared_ptr<TargetListStub>> targetLists;
         
         SubdirectoryTargetListReaderTests() {
@@ -46,14 +49,18 @@ namespace {
             setListCount(gsl::narrow<int>(v.size() + 1));
             directoryReader.setSubDirectories(std::move(v));
         }
+        
+        auto targetListDirectory(int n) {
+            return targetLists.at(n)->directory();
+        }
     };
     
     TEST_F(SubdirectoryTargetListReaderTests, readLoadsFullPathToEachSubDirectory) {
         setSubDirectories({"a", "b", "c"});
         read("d");
-        assertEqual("d/a", targetLists.at(0)->directory());
-        assertEqual("d/b", targetLists.at(1)->directory());
-        assertEqual("d/c", targetLists.at(2)->directory());
+        assertEqual("d/a", targetListDirectory(0));
+        assertEqual("d/b", targetListDirectory(1));
+        assertEqual("d/c", targetListDirectory(2));
     }
     
     TEST_F(SubdirectoryTargetListReaderTests, readPassesDirectory) {
@@ -65,9 +72,9 @@ namespace {
         setSubDirectories(std::vector<std::string>(3));
         auto actual = read();
         EXPECT_EQ(3, actual.size());
-        EXPECT_EQ(targetLists.at(0).get(), actual.at(0).get());
-        EXPECT_EQ(targetLists.at(1).get(), actual.at(1).get());
-        EXPECT_EQ(targetLists.at(2).get(), actual.at(2).get());
+        EXPECT_EQ(targetLists.at(0), actual.at(0));
+        EXPECT_EQ(targetLists.at(1), actual.at(1));
+        EXPECT_EQ(targetLists.at(2), actual.at(2));
     }
     
     TEST_F(
@@ -76,7 +83,7 @@ namespace {
     ) {
         setSubDirectories({});
         read("d");
-        assertEqual("d", targetLists.at(0)->directory());
+        assertEqual("d", targetListDirectory(0));
     }
     
     TEST_F(
@@ -86,6 +93,6 @@ namespace {
         setSubDirectories({});
         auto actual = read();
         EXPECT_EQ(1, actual.size());
-        EXPECT_EQ(targetLists.at(0).get(), actual.at(0).get());
+        EXPECT_EQ(targetLists.at(0), actual.at(0));
     }
 }

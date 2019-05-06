@@ -109,7 +109,8 @@ namespace av_speech_in_noise {
         virtual void subscribe(EventListener *) = 0;
         class RequestFailure : public std::runtime_error {
         public:
-            explicit RequestFailure(std::string s) : std::runtime_error{ std::move(s) } {}
+            explicit RequestFailure(std::string s) :
+                std::runtime_error{ std::move(s) } {}
         };
         virtual void initializeTest(const AdaptiveTest &) = 0;
         virtual void initializeTest(const FixedLevelTest &) = 0;
