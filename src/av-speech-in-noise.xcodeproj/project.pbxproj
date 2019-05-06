@@ -14,6 +14,11 @@
 		2614B5A5223824FB0083987B /* AvFoundationPlayers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A3223824960083987B /* AvFoundationPlayers.mm */; };
 		2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2623A153224BD037007C99F2 /* OutputFileImpl.cpp */; };
 		2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2623A154224BD037007C99F2 /* OutputFileImpl.hpp */; };
+		2625356C2280D8F400652B36 /* libpresentation.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 26FC6B1621DAA3D800289A0A /* libpresentation.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		2625356D2280D8F400652B36 /* librecognition-test.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		2625356E2280D8F400652B36 /* libtarget-list.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2646F83921DFEA0400F378DE /* libtarget-list.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		2625356F2280D8F400652B36 /* libstimulus_players.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 26EE86C52242E98600C08622 /* libstimulus_players.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		262535702280D8F400652B36 /* libadaptive-track.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2602F75E227B80E500906002 /* libadaptive-track.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		2645BEC822676AD7002E8C6C /* ResponseEvaluatorTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */; };
 		2645BECB2267705D002E8C6C /* ResponseEvaluatorImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2645BEC92267705D002E8C6C /* ResponseEvaluatorImpl.cpp */; };
 		2645BECC2267705D002E8C6C /* ResponseEvaluatorImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2645BECA2267705D002E8C6C /* ResponseEvaluatorImpl.hpp */; };
@@ -62,6 +67,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		2625356B2280D8C800652B36 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2625356C2280D8F400652B36 /* libpresentation.dylib in CopyFiles */,
+				2625356D2280D8F400652B36 /* librecognition-test.dylib in CopyFiles */,
+				2625356E2280D8F400652B36 /* libtarget-list.dylib in CopyFiles */,
+				2625356F2280D8F400652B36 /* libstimulus_players.dylib in CopyFiles */,
+				262535702280D8F400652B36 /* libadaptive-track.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		26FC6B0121DA810C00289A0A /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -462,7 +481,7 @@
 			buildPhases = (
 				26B81F2221DEB15700006FCB /* Sources */,
 				26B81F2321DEB15700006FCB /* Frameworks */,
-				26B81F2421DEB15700006FCB /* Resources */,
+				2625356B2280D8C800652B36 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -578,16 +597,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXResourcesBuildPhase section */
-		26B81F2421DEB15700006FCB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2602F75B227B80E500906002 /* Sources */ = {
@@ -726,6 +735,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -785,6 +795,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -849,6 +860,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -908,6 +920,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -970,6 +983,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -1022,6 +1036,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -1215,6 +1230,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1274,6 +1290,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -1483,6 +1500,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -1532,6 +1550,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
