@@ -28,7 +28,7 @@ namespace av_speech_in_noise {
         OutputFileImpl(Writer *, OutputFilePath *);
         void writeTest(const AdaptiveTest &) override;
         void writeTrial(const coordinate_response_measure::Trial &) override;
-        void writeTrialHeading() override;
+        void writeCoordinateResponseTrialHeading() override;
         void openNewFile(const TestInformation &) override;
         void close() override;
         
@@ -37,7 +37,7 @@ namespace av_speech_in_noise {
         std::string evaluation(const coordinate_response_measure::Trial &);
         std::string formatTest(const AdaptiveTest &);
         std::string formatTrial(const coordinate_response_measure::Trial &);
-        std::string formatTrialHeading();
+        std::string formatCoordinateResponseTrialHeading();
         std::string generateNewFilePath(const TestInformation &);
         std::string colorName(coordinate_response_measure::Color);
     };

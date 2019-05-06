@@ -316,7 +316,7 @@ namespace {
             return openNewFileParameters_;
         }
         
-        void writeTrialHeading() override {
+        void writeCoordinateResponseTrialHeading() override {
             log_.insert("writeTrialHeading ");
             headingWritten_ = true;
         }

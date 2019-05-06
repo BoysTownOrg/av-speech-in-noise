@@ -84,11 +84,11 @@ namespace av_speech_in_noise {
         return "unknown";
     }
     
-    void OutputFileImpl::writeTrialHeading() {
-        write(formatTrialHeading());
+    void OutputFileImpl::writeCoordinateResponseTrialHeading() {
+        write(formatCoordinateResponseTrialHeading());
     }
     
-    std::string OutputFileImpl::formatTrialHeading() {
+    std::string OutputFileImpl::formatCoordinateResponseTrialHeading() {
         FormattedStream stream;
         stream.insert("SNR (dB)");
         stream.insertCommaAndSpace();

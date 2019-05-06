@@ -115,7 +115,7 @@ namespace av_speech_in_noise {
         class OpenFailure {};
         virtual void writeTrial(const coordinate_response_measure::Trial &) = 0;
         virtual void writeTest(const AdaptiveTest &) = 0;
-        virtual void writeTrialHeading() = 0;
+        virtual void writeCoordinateResponseTrialHeading() = 0;
         virtual void close() = 0;
     };
     

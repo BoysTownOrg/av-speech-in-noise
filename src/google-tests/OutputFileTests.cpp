@@ -155,7 +155,7 @@ namespace {
     }
 
     TEST_F(OutputFileTests, writeTrialHeading) {
-        file.writeTrialHeading();
+        file.writeCoordinateResponseTrialHeading();
         assertEqual(
             "SNR (dB), correct number, subject number, "
             "correct color, subject color, evaluation, reversals\n",
