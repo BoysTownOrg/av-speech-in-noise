@@ -1204,7 +1204,7 @@ namespace {
         }
         
         void assertModelPassedCondition(coordinate_response_measure::Color c) {
-            EXPECT_EQ(c, model.responseParameters().color);
+            assertEqual(c, model.responseParameters().color);
         }
         
         const AdaptiveTest &adaptiveTest() {
@@ -1254,7 +1254,7 @@ namespace {
         }
         
         void assertModelPassedCondition(ConditionUseCase &useCase, Condition c) {
-            EXPECT_EQ(c, modelCondition(useCase));
+            assertEqual(c, modelCondition(useCase));
         }
         
         Condition modelCondition(ConditionUseCase &useCase) {
@@ -1333,13 +1333,13 @@ namespace {
         void assertStartingSnrPassedToModel(ConfirmingTestSetup &useCase) {
             setStartingSnr("1");
             run(useCase);
-            EXPECT_EQ(1, useCase.snr_dB(model));
+            assertEqual(1, useCase.snr_dB(model));
         }
         
         void assertMaskerLevelPassedToModel(ConfirmingTestSetup &useCase) {
             setMaskerLevel("2");
             run(useCase);
-            EXPECT_EQ(2, useCase.maskerLevel(model));
+            assertEqual(2, useCase.maskerLevel(model));
         }
         
         void assertHidesTestSetupView(UseCase &useCase) {
@@ -1394,7 +1394,7 @@ namespace {
         
         void assertPassesFullScaleLevel(LevelUseCase &useCase) {
             run(useCase);
-            EXPECT_EQ(
+            assertEqual(
                 Presenter::fullScaleLevel_dB_SPL,
                 useCase.fullScaleLevel(model)
             );
@@ -1402,10 +1402,8 @@ namespace {
         
         void assertPassesTargetLevelRule(UseCase &useCase) {
             run(useCase);
-            EXPECT_EQ(
-                &Presenter::targetLevelRule,
-                adaptiveTest().targetLevelRule
-            );
+            const auto *expected = &Presenter::targetLevelRule;
+            assertEqual(expected, adaptiveTest().targetLevelRule);
         }
         
         void assertInvalidSnrShowsErrorMessage(UseCase &useCase) {
@@ -1527,7 +1525,7 @@ namespace {
     TEST_F(PresenterTests, playCalibrationPassesLevel) {
         setCalibrationLevel("1");
         playCalibration();
-        EXPECT_EQ(1, calibration().level_dB_SPL);
+        assertEqual(1, calibration().level_dB_SPL);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTargetList) {
@@ -1740,7 +1738,7 @@ namespace {
     TEST_F(PresenterTests, subjectResponsePassesNumberResponse) {
         subjectView.setNumberResponse("1");
         respondFromSubject();
-        EXPECT_EQ(1, model.responseParameters().number);
+        assertEqual(1, model.responseParameters().number);
     }
 
     TEST_F(PresenterTests, subjectResponsePassesGreenColor) {
@@ -1986,7 +1984,7 @@ namespace {
         
         void assertConfirmTestSetupDoesNotHideSetupView() {
             confirmTestSetup();
-            ASSERT_FALSE(setupView.hidden());
+            assertFalse(setupView.hidden());
         }
     };
 
