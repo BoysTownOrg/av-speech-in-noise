@@ -627,6 +627,10 @@ void CocoaExperimenterView::showResponseSubmission() {
     [responseSubmission setHidden:NO];
 }
 
+void CocoaExperimenterView::hideResponseSubmission() {
+    [responseSubmission setHidden:YES];
+}
+
 std::string CocoaExperimenterView::response() {
     return response_.stringValue.UTF8String;
 }

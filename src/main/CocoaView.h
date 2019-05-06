@@ -52,6 +52,7 @@ public:
     void showEvaluationButtons() override;
     void showResponseSubmission() override;
     std::string response() override;
+    void hideResponseSubmission() override;
 };
 
 class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
