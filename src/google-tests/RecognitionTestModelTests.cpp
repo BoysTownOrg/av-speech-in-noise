@@ -629,7 +629,13 @@ namespace {
         virtual void setAudioVisual() = 0;
     };
     
-    class InitializingTestUseCase : public MaskerUseCase, public ConditionUseCase {};
+    class InitializingTestUseCase :
+        public virtual MaskerUseCase,
+        public virtual ConditionUseCase
+    {
+    public:
+        virtual const TestInformation &testInformation() = 0;
+    };
     
     class InitializingAdaptiveTest : public InitializingTestUseCase {
         AdaptiveTest test_;
@@ -678,6 +684,10 @@ namespace {
         auto &test() const {
             return test_;
         }
+        
+        const TestInformation &testInformation() override {
+            return test_.information;
+        }
     };
     
     class InitializingFixedLevelTest : public InitializingTestUseCase {
@@ -715,8 +725,8 @@ namespace {
             test_.targetListDirectory = std::move(s);
         }
         
-        auto &test() const {
-            return test_;
+        const TestInformation &testInformation() override {
+            return test_.information;
         }
     };
     
@@ -1060,10 +1070,6 @@ namespace {
             return initializingAdaptiveTest.test();
         }
         
-        auto &fixedLevelTestSettings() const {
-            return initializingFixedLevelTest.test();
-        }
-        
         void assertRandomizerPassedIntegerBounds(int a, int b) {
             EXPECT_EQ(a, randomizer.lowerIntBound());
             EXPECT_EQ(b, randomizer.upperIntBound());
@@ -1225,6 +1231,11 @@ namespace {
             run(useCase);
             EXPECT_EQ(1 - 2 - dB(3), maskerPlayer.level_dB());
         }
+        
+        void assertOutputFilePassedTestInformation(InitializingTestUseCase &useCase) {
+            run(useCase);
+            EXPECT_EQ(outputFile.openNewFileParameters(), &useCase.testInformation());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1319,16 +1330,14 @@ namespace {
         RecognitionTestModelTests,
         initializeAdaptiveTestOpensNewOutputFilePassingTestInformation
     ) {
-        initializeAdaptiveTest();
-        EXPECT_EQ(outputFile.openNewFileParameters(), &adaptiveTestSettings().information);
+        assertOutputFilePassedTestInformation(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestOpensNewOutputFilePassingTestInformation
     ) {
-        run(initializingFixedLevelTest);
-        EXPECT_EQ(outputFile.openNewFileParameters(), &fixedLevelTestSettings().information);
+        assertOutputFilePassedTestInformation(initializingFixedLevelTest);
     }
 
     TEST_F(
