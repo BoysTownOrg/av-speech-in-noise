@@ -6,12 +6,12 @@
 
 namespace {
     class AudioPlayerStub : public stimulus_players::AudioPlayer {
-        std::vector<std::vector<float>> audioRead_{};
+        std::vector<std::vector<float>> audioRead_;
         std::vector<std::string> audioDeviceDescriptions_{10};
-        std::string filePath_{};
-        std::string deviceDescription_{};
-        std::string audioFilePath_{};
-        std::map<int, bool> outputDevices{};
+        std::string filePath_;
+        std::string deviceDescription_;
+        std::string audioFilePath_;
+        std::map<int, bool> outputDevices;
         double sampleRateHz_{};
         double durationSeconds_{};
         double secondsSeeked_{};
@@ -202,8 +202,8 @@ namespace {
 
     class MaskerPlayerTests : public ::testing::Test {
     protected:
-        std::vector<float> leftChannel{};
-        std::vector<float> rightChannel{};
+        std::vector<float> leftChannel;
+        std::vector<float> rightChannel;
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
         AudioReaderStub audioReader;
@@ -300,7 +300,7 @@ namespace {
         }
         
         void assertCallbackScheduled() {
-            EXPECT_TRUE(callbackScheduled());
+            assertTrue(callbackScheduled());
         }
         
         bool callbackScheduled() {
@@ -308,7 +308,7 @@ namespace {
         }
         
         void assertCallbackNotScheduled() {
-            EXPECT_FALSE(callbackScheduled());
+            assertFalse(callbackScheduled());
         }
         
         void assertFillingLeftChannelMultipliesBy_Buffered(
@@ -382,7 +382,7 @@ namespace {
         
         void assertFadeInNotCompletedAfterMonoFill() {
             callbackAfterMonoFill();
-            EXPECT_FALSE(listener.fadeInCompleted());
+            assertFalse(listener.fadeInCompleted());
         }
         
         void callbackAfterMonoFill() {
@@ -392,12 +392,12 @@ namespace {
         
         void assertFadeInCompletedAfterMonoFill() {
             callbackAfterMonoFill();
-            EXPECT_TRUE(listener.fadeInCompleted());
+            assertTrue(listener.fadeInCompleted());
         }
         
         void assertFadeOutNotCompletedAfterMonoFill() {
             callbackAfterMonoFill();
-            EXPECT_FALSE(fadeOutCompleted());
+            assertFalse(fadeOutCompleted());
         }
         
         bool fadeOutCompleted() {
@@ -406,7 +406,7 @@ namespace {
         
         void assertFadeOutCompletedAfterMonoFill() {
             callbackAfterMonoFill();
-            EXPECT_TRUE(fadeOutCompleted());
+            assertTrue(fadeOutCompleted());
         }
         
         void fadeInCompletely() {
@@ -466,22 +466,22 @@ namespace {
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
         audioPlayer.setPlaying();
-        EXPECT_TRUE(player.playing());
+        assertTrue(player.playing());
     }
 
     TEST_F(MaskerPlayerTests, durationReturnsDuration) {
         audioPlayer.setDurationSeconds(1);
-        EXPECT_EQ(1, player.durationSeconds());
+        assertEqual(1., player.durationSeconds());
     }
 
     TEST_F(MaskerPlayerTests, seekSeeksAudioPlayer) {
         player.seekSeconds(1);
-        EXPECT_EQ(1, audioPlayer.secondsSeeked());
+        assertEqual(1., audioPlayer.secondsSeeked());
     }
 
     TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {
         player.setFadeInOutSeconds(1);
-        EXPECT_EQ(1, player.fadeTimeSeconds());
+        assertEqual(1., player.fadeTimeSeconds());
     }
 
     TEST_F(MaskerPlayerTests, loadFileLoadsVideoFile) {
@@ -491,7 +491,7 @@ namespace {
 
     TEST_F(MaskerPlayerTests, fadeInPlaysVideoPlayer) {
         fadeIn();
-        EXPECT_TRUE(audioPlayer.played());
+        assertTrue(audioPlayer.played());
     }
 
     TEST_F(MaskerPlayerTests, twentydBMultipliesSignalByTen) {
@@ -620,9 +620,9 @@ namespace {
 
     TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeIn) {
         fadeInCompletely();
-        EXPECT_EQ(1, listener.fadeInCompletions());
+        assertEqual(1, listener.fadeInCompletions());
         callbackAfterMonoFill();
-        EXPECT_EQ(1, listener.fadeInCompletions());
+        assertEqual(1, listener.fadeInCompletions());
     }
 
     TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
@@ -641,9 +641,9 @@ namespace {
         fadeInCompletely();
         
         fadeOutCompletely();
-        EXPECT_EQ(1, listener.fadeOutCompletions());
+        assertEqual(1, listener.fadeOutCompletions());
         callbackAfterMonoFill();
-        EXPECT_EQ(1, listener.fadeOutCompletions());
+        assertEqual(1, listener.fadeOutCompletions());
     }
 
     TEST_F(MaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
@@ -655,10 +655,10 @@ namespace {
         resizeChannels(1);
         for (int i = 0; i < 3 * 4; ++i) {
             callbackAfterMonoFill();
-            EXPECT_FALSE(playerStopped());
+            assertFalse(playerStopped());
         }
         callbackAfterMonoFill();
-        EXPECT_TRUE(playerStopped());
+        assertTrue(playerStopped());
     }
 
     TEST_F(MaskerPlayerTests, fadeInSchedulesCallback) {
@@ -729,7 +729,7 @@ namespace {
     TEST_F(MaskerPlayerTests, setAudioDeviceFindsIndex) {
         setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
         setAudioDevice("second");
-        EXPECT_EQ(2, audioPlayer.deviceIndex());
+        assertEqual(2, audioPlayer.deviceIndex());
     }
 
     TEST_F(MaskerPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
@@ -755,7 +755,7 @@ namespace {
             { 4, 5, 6 },
             { 7, 8, 9 }
         });
-        EXPECT_EQ(std::sqrt((1*1 + 2*2 + 3*3)/3.f), player.rms());
+        assertEqual(std::sqrt((1*1 + 2*2 + 3*3)/3.), player.rms(), 1e-6);
     }
 
     TEST_F(MaskerPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
