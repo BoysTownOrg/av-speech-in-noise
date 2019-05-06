@@ -611,9 +611,10 @@ namespace {
     };
     
     class SubmittingTypedResponse : public UseCase {
+        std::string response_;
     public:
         void run(RecognitionTestModel &m) override {
-            m.submitTypedResponse({});
+            m.submitResponse(response_);
         }
     };
     

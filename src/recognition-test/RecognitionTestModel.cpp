@@ -336,11 +336,6 @@ namespace av_speech_in_noise {
         prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
     }
     
-    void RecognitionTestModel::submitTypedResponse(const TypedResponse &) {
-        prepareTargetPlayer({});
-        seekRandomMaskerPosition();
-    }
-    
     void RecognitionTestModel::playCalibration(const Calibration &p) {
         throwIfTrialInProgress();
         
@@ -393,8 +388,9 @@ namespace av_speech_in_noise {
         return maskerPlayer->outputAudioDeviceDescriptions();
     }
     
-    void RecognitionTestModel::submitResponse(const std::string &) { 
-        ;
+    void RecognitionTestModel::submitResponse(const std::string &) {
+        prepareTargetPlayer({});
+        seekRandomMaskerPosition();
     }
 }
 

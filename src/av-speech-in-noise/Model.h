@@ -99,10 +99,6 @@ namespace av_speech_in_noise {
         Condition condition;
     };
     
-    struct TypedResponse {
-    
-    };
-    
     class Model {
     public:
         class EventListener {
