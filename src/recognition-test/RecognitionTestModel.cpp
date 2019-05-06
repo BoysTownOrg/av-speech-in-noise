@@ -58,6 +58,7 @@ namespace av_speech_in_noise {
         currentTargetList = finiteTargetList;
         currentTargetList->loadFromDirectory(p.targetListDirectory);
         tryOpeningOutputFile(p.information);
+        outputFile->writeTest(p);
         prepareMasker(p.maskerFilePath);
         prepareVideo(p.condition);
         preparePlayersForNextTrial(fixedLevelSnr_dB = p.snr_dB);

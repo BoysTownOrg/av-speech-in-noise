@@ -140,4 +140,8 @@ namespace av_speech_in_noise {
     void OutputFileImpl::close() { 
         writer->close();
     }
+    
+    void OutputFileImpl::writeTest(const FixedLevelTest &) { 
+        ;
+    }
 }

@@ -31,6 +31,7 @@ namespace av_speech_in_noise {
         void writeCoordinateResponseTrialHeading() override;
         void openNewFile(const TestInformation &) override;
         void close() override;
+        void writeTest(const FixedLevelTest &) override;
         
     private:
         void write(std::string);

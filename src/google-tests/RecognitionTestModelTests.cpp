@@ -277,7 +277,8 @@ namespace {
     class OutputFileStub : public OutputFile {
         coordinate_response_measure::Trial trialWritten_{};
         LogString log_{};
-        const AdaptiveTest *testWritten_{};
+        const AdaptiveTest *adaptiveTest_{};
+        const FixedLevelTest *fixedLevelTest_{};
         const TestInformation *openNewFileParameters_{};
         bool throwOnOpen_{};
         bool headingWritten_{};
@@ -290,8 +291,12 @@ namespace {
             return headingWritten_;
         }
         
-        auto testWritten() const {
-            return testWritten_;
+        auto adaptiveTest() const {
+            return adaptiveTest_;
+        }
+        
+        auto fixedLevelTest() const {
+            return fixedLevelTest_;
         }
         
         auto &trialWritten() const {
@@ -323,11 +328,15 @@ namespace {
         
         void writeTest(const AdaptiveTest &test) override {
             log_.insert("writeTest ");
-            testWritten_ = &test;
+            adaptiveTest_ = &test;
         }
         
         void close() override {
             log_.insert("close ");
+        }
+        
+        void writeTest(const FixedLevelTest &p) override {
+            fixedLevelTest_ = &p;
         }
         
         void throwOnOpen() {
@@ -725,6 +734,10 @@ namespace {
             test_.targetListDirectory = std::move(s);
         }
         
+        auto &test() const {
+            return test_;
+        }
+        
         const TestInformation &testInformation() override {
             return test_.information;
         }
@@ -1070,6 +1083,10 @@ namespace {
             return initializingAdaptiveTest.test();
         }
         
+        auto &fixedLevelTestSettings() const {
+            return initializingFixedLevelTest.test();
+        }
+        
         void assertRandomizerPassedIntegerBounds(int a, int b) {
             EXPECT_EQ(a, randomizer.lowerIntBound());
             EXPECT_EQ(b, randomizer.upperIntBound());
@@ -1344,8 +1361,16 @@ namespace {
         RecognitionTestModelTests,
         initializeAdaptiveTestWritesTestSettings
     ) {
-        initializeAdaptiveTest();
-        EXPECT_EQ(outputFile.testWritten(), &adaptiveTestSettings());
+        run(initializingAdaptiveTest);
+        EXPECT_EQ(outputFile.adaptiveTest(), &adaptiveTestSettings());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestWritesTestSettings
+    ) {
+        run(initializingFixedLevelTest);
+        EXPECT_EQ(outputFile.fixedLevelTest(), &fixedLevelTestSettings());
     }
 
     TEST_F(
