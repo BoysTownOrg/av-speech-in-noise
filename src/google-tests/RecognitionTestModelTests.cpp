@@ -1674,6 +1674,19 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitTypedResponseSetsTargetPlayerLevel
+    ) {
+        setSnr_dB(2);
+        setMaskerLevel_dB_SPL(3);
+        setTestingFullScaleLevel_dB_SPL(4);
+        initializeFixedLevelTest();
+        setTargetPlayerRms(5);
+        run(submittingTypedResponse);
+        EXPECT_EQ(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         playCalibrationSetsTargetPlayerLevel
     ) {
         playingCalibration.setLevel_dB_SPL(1);

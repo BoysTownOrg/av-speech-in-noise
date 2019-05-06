@@ -140,6 +140,7 @@ namespace av_speech_in_noise {
         std::vector<TargetListWithTrack> targetListsWithTracks{};
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
+        int fixedLevelSnr_dB{};
         TargetListReader *targetListSetReader;
         FiniteTargetList *finiteTargetList;
         MaskerPlayer *maskerPlayer;

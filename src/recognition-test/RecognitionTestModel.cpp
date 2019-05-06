@@ -59,7 +59,7 @@ namespace av_speech_in_noise {
         currentTargetList->loadFromDirectory(p.targetListDirectory);
         prepareMasker(p.maskerFilePath);
         prepareVideo(p.condition);
-        preparePlayersForNextTrial(p.snr_dB);
+        preparePlayersForNextTrial(fixedLevelSnr_dB = p.snr_dB);
         fixedLevelTest = true;
     }
     
@@ -336,6 +336,11 @@ namespace av_speech_in_noise {
         prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
     }
     
+    void RecognitionTestModel::submitResponse(const std::string &) {
+        prepareTargetPlayer(fixedLevelSnr_dB);
+        seekRandomMaskerPosition();
+    }
+    
     void RecognitionTestModel::playCalibration(const Calibration &p) {
         throwIfTrialInProgress();
         
@@ -386,11 +391,6 @@ namespace av_speech_in_noise {
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {
         return maskerPlayer->outputAudioDeviceDescriptions();
-    }
-    
-    void RecognitionTestModel::submitResponse(const std::string &) {
-        prepareTargetPlayer({});
-        seekRandomMaskerPosition();
     }
 }
 
