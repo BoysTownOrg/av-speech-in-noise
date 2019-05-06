@@ -47,7 +47,7 @@ public:
     void show() override;
     void hide() override;
     void showEvaluationButtons() override;
-    void showResponseField() override;
+    void showResponseSubmission() override;
     std::string response() override;
 };
 

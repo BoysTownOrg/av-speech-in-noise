@@ -607,7 +607,7 @@ void CocoaExperimenterView::showEvaluationButtons() {
     [evaluationButtons setHidden:NO];
 }
 
-void CocoaExperimenterView::showResponseField() {
+void CocoaExperimenterView::showResponseSubmission() {
     [response_ setHidden:NO];
 }
 
