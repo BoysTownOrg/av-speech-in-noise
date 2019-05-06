@@ -57,7 +57,6 @@ namespace av_speech_in_noise {
         
         currentTargetList = finiteTargetList;
         currentTargetList->loadFromDirectory(p.targetListDirectory);
-        outputFile->close();
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
         prepareMasker(p.maskerFilePath);
@@ -108,12 +107,12 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::prepareOutputFile(const AdaptiveTest &p) {
-        outputFile->close();
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
     }
     
     void RecognitionTestModel::tryOpeningOutputFile(const TestInformation &p) {
+        outputFile->close();
         try {
             outputFile->openNewFile(p);
         } catch (const OutputFile::OpenFailure &) {
