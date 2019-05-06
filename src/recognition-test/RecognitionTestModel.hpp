@@ -197,7 +197,6 @@ namespace av_speech_in_noise {
         void trySettingTargetLevel(const Calibration &);
         void playCalibration_(const Calibration &);
         void prepareMasker(const std::string &);
-        void prepareOutputFile(const AdaptiveTest &);
         void tryOpeningOutputFile(const TestInformation &);
         void prepareTargets(const AdaptiveTest &);
         void loadMaskerFile(const std::string &);

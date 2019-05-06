@@ -73,7 +73,8 @@ namespace av_speech_in_noise {
         
         readTargetLists(p);
         prepareSnrTracks(p);
-        prepareOutputFile(p);
+        tryOpeningOutputFile(p.information);
+        outputFile->writeTest(p);
         prepareMasker(p.maskerFilePath);
         prepareVideo(p.condition);
         prepareNextAdaptiveTrial();
@@ -104,11 +105,6 @@ namespace av_speech_in_noise {
                 snrTrackFactory->make(s)
             });
         }
-    }
-    
-    void RecognitionTestModel::prepareOutputFile(const AdaptiveTest &p) {
-        tryOpeningOutputFile(p.information);
-        outputFile->writeTest(p);
     }
     
     void RecognitionTestModel::tryOpeningOutputFile(const TestInformation &p) {
