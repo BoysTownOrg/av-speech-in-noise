@@ -1081,6 +1081,10 @@ namespace {
             EXPECT_TRUE(experimenterView.shown());
         }
         
+        void assertExperimenterViewNotShown() {
+            EXPECT_FALSE(experimenterView.shown());
+        }
+        
         void assertExperimenterViewHidden() {
             EXPECT_TRUE(experimenterViewHidden());
         }
@@ -1459,6 +1463,14 @@ namespace {
         confirmFixedLevelTestDoesNotShowSubjectView
     ) {
         assertDoesNotShowSubjectView(confirmingFixedLevelOpenSetTest);
+    }
+
+    TEST_F(
+        PresenterTests,
+        confirmAdaptiveClosedSetTestDoesNotShowExperimenterView
+    ) {
+        run(confirmingAdaptiveClosedSetTest);
+        assertExperimenterViewNotShown();
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {

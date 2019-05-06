@@ -63,9 +63,10 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::showTestView() {
-        experimenter->show();
         if (testSetup->adaptiveClosedSet())
             subject->show();
+        else
+            experimenter->show();
     }
     
     void Presenter::hideTestSetup() {
