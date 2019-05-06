@@ -10,10 +10,10 @@ namespace {
     using namespace av_speech_in_noise;
     
     class MaskerPlayerStub : public MaskerPlayer {
-        std::vector<std::string> outputAudioDeviceDescriptions_{};
-        LogString log_{};
-        std::string filePath_{};
-        std::string device_{};
+        std::vector<std::string> outputAudioDeviceDescriptions_;
+        LogString log_;
+        std::string filePath_;
+        std::string device_;
         double rms_{};
         double level_dB_{};
         double fadeTimeSeconds_{};
@@ -73,8 +73,8 @@ namespace {
             return fadeOutCalled_;
         }
         
-        void subscribe(EventListener *listener) override {
-            listener_ = listener;
+        void subscribe(EventListener *e) override {
+            listener_ = e;
         }
         
         void fadeOut() override {
@@ -82,8 +82,12 @@ namespace {
         }
         
         void loadFile(std::string filePath) override {
-            log_.insert("loadFile ");
+            addToLog("loadFile ");
             filePath_ = filePath;
+        }
+        
+        void addToLog(std::string s) {
+            log_.insert(std::move(s));
         }
         
         std::vector<std::string> outputAudioDeviceDescriptions() override {
@@ -111,7 +115,7 @@ namespace {
         }
         
         double rms() override {
-            log_.insert("rms ");
+            addToLog("rms ");
             return rms_;
         }
         
@@ -145,9 +149,9 @@ namespace {
     };
 
     class TargetPlayerStub : public TargetPlayer {
-        LogString log_{};
-        std::string filePath_{};
-        std::string device_{};
+        LogString log_;
+        std::string filePath_;
+        std::string device_;
         double rms_{};
         double level_dB_{};
         double durationSeconds_{};
@@ -230,12 +234,16 @@ namespace {
         }
         
         void loadFile(std::string filePath) override {
-            log_.insert("loadFile ");
+            addToLog("loadFile ");
             filePath_ = filePath;
         }
         
+        void addToLog(std::string s) {
+            log_.insert(std::move(s));
+        }
+        
         double rms() override {
-            log_.insert("rms ");
+            addToLog("rms ");
             if (throwInvalidAudioFileOnRms_)
                 throw InvalidAudioFile{};
             return rms_;
@@ -275,8 +283,8 @@ namespace {
     };
     
     class OutputFileStub : public OutputFile {
-        coordinate_response_measure::Trial trialWritten_{};
-        LogString log_{};
+        coordinate_response_measure::Trial trialWritten_;
+        LogString log_;
         const AdaptiveTest *adaptiveTest_{};
         const FixedLevelTest *fixedLevelTest_{};
         const TestInformation *openNewFileParameters_{};
@@ -302,12 +310,16 @@ namespace {
         void writeTrial(
             const coordinate_response_measure::Trial &trial
         ) override {
-            log_.insert("writeTrial ");
+            addToLog("writeTrial ");
             trialWritten_ = trial;
         }
         
+        void addToLog(std::string s) {
+            log_.insert(std::move(s));
+        }
+        
         void openNewFile(const TestInformation &p) override {
-            log_.insert("openNewFile ");
+            addToLog("openNewFile ");
             openNewFileParameters_ = &p;
             if (throwOnOpen_)
                 throw OpenFailure{};
@@ -318,21 +330,21 @@ namespace {
         }
         
         void writeCoordinateResponseTrialHeading() override {
-            log_.insert("writeCoordinateResponseTrialHeading ");
+            addToLog("writeCoordinateResponseTrialHeading ");
             coordinateResponseHeadingWritten_ = true;
         }
         
         void writeTest(const AdaptiveTest &test) override {
-            log_.insert("writeAdaptiveTest ");
+            addToLog("writeAdaptiveTest ");
             adaptiveTest_ = &test;
         }
         
         void close() override {
-            log_.insert("close ");
+            addToLog("close ");
         }
         
         void writeTest(const FixedLevelTest &p) override {
-            log_.insert("writeFixedLevelTest ");
+            addToLog("writeFixedLevelTest ");
             fixedLevelTest_ = &p;
         }
         
