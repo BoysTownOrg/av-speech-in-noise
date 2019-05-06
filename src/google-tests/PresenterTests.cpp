@@ -129,11 +129,11 @@ namespace {
     };
 
     class ViewStub : public View {
-        std::vector<std::string> audioDevices_{};
-        std::string errorMessage_{};
-        std::string browseForDirectoryResult_{};
-        std::string browseForOpeningFileResult_{};
-        std::string audioDevice_{};
+        std::vector<std::string> audioDevices_;
+        std::string errorMessage_;
+        std::string browseForDirectoryResult_;
+        std::string browseForOpeningFileResult_;
+        std::string audioDevice_;
         bool eventLoopCalled_{};
         bool confirmationDialogShown_{};
         bool browseCancelled_{};
@@ -195,20 +195,20 @@ namespace {
         }
 
         class TestSetupViewStub : public TestSetup {
-            Collection<std::string> conditions_{};
-            Collection<std::string> methods_{};
+            Collection<std::string> conditions_;
+            Collection<std::string> methods_;
             std::string signalLevel_{"0"};
             std::string calibrationLevel_{"0"};
             std::string startingSnr_{"0"};
             std::string maskerLevel_{"0"};
-            std::string masker_{};
-            std::string condition_{};
-            std::string stimulusList_{};
-            std::string subjectId_{};
-            std::string testerId_{};
-            std::string session_{};
-            std::string calibrationFilePath_{};
-            std::string method_{};
+            std::string masker_;
+            std::string condition_;
+            std::string stimulusList_;
+            std::string subjectId_;
+            std::string testerId_;
+            std::string session_;
+            std::string calibrationFilePath_;
+            std::string method_;
             EventListener *listener_{};
             bool shown_{};
             bool hidden_{};
@@ -602,40 +602,44 @@ namespace {
             view->confirmTestSetup();
         }
         
+        auto adaptiveTest(ModelStub &m) {
+            return m.adaptiveTest();
+        }
+        
         int snr_dB(ModelStub &m) override {
-            return m.adaptiveTest().startingSnr_dB;
+            return adaptiveTest(m).startingSnr_dB;
         }
         
         int maskerLevel(ModelStub &m) override {
-            return m.adaptiveTest().maskerLevel_dB_SPL;
+            return adaptiveTest(m).maskerLevel_dB_SPL;
         }
         
         std::string targetListDirectory(ModelStub &m) override {
-            return m.adaptiveTest().targetListDirectory;
+            return adaptiveTest(m).targetListDirectory;
         }
         
         std::string subjectId(ModelStub &m) override {
-            return m.adaptiveTest().information.subjectId;
+            return adaptiveTest(m).information.subjectId;
         }
         
         std::string testerId(ModelStub &m) override {
-            return m.adaptiveTest().information.testerId;
-        }
-        
-        std::string maskerFilePath(ModelStub &m) override {
-            return m.adaptiveTest().maskerFilePath;
+            return adaptiveTest(m).information.testerId;
         }
         
         std::string session(ModelStub &m) override {
-            return m.adaptiveTest().information.session;
+            return adaptiveTest(m).information.session;
+        }
+        
+        std::string maskerFilePath(ModelStub &m) override {
+            return adaptiveTest(m).maskerFilePath;
         }
         
         int fullScaleLevel(ModelStub &m) override {
-            return m.adaptiveTest().fullScaleLevel_dB_SPL;
+            return adaptiveTest(m).fullScaleLevel_dB_SPL;
         }
         
         Condition condition(ModelStub &m) override {
-            return m.adaptiveTest().condition;
+            return adaptiveTest(m).condition;
         }
     };
     
@@ -754,40 +758,44 @@ namespace {
             view->confirmTestSetup();
         }
         
+        auto fixedLevelTest(ModelStub &m) {
+            return m.fixedLevelTest();
+        }
+        
         int snr_dB(ModelStub &m) override {
-            return m.fixedLevelTest().snr_dB;
+            return fixedLevelTest(m).snr_dB;
         }
         
         int maskerLevel(ModelStub &m) override {
-            return m.fixedLevelTest().maskerLevel_dB_SPL;
+            return fixedLevelTest(m).maskerLevel_dB_SPL;
         }
         
         int fullScaleLevel(ModelStub &m) override {
-            return m.fixedLevelTest().fullScaleLevel_dB_SPL;
+            return fixedLevelTest(m).fullScaleLevel_dB_SPL;
         }
         
         std::string targetListDirectory(ModelStub &m) override {
-            return m.fixedLevelTest().targetListDirectory;
+            return fixedLevelTest(m).targetListDirectory;
         }
         
         std::string subjectId(ModelStub &m) override {
-            return m.fixedLevelTest().information.subjectId;
+            return fixedLevelTest(m).information.subjectId;
         }
         
         std::string testerId(ModelStub &m) override {
-            return m.fixedLevelTest().information.testerId;
+            return fixedLevelTest(m).information.testerId;
         }
         
         std::string session(ModelStub &m) override {
-            return m.fixedLevelTest().information.session;
+            return fixedLevelTest(m).information.session;
         }
         
         std::string maskerFilePath(ModelStub &m) override {
-            return m.fixedLevelTest().maskerFilePath;
+            return fixedLevelTest(m).maskerFilePath;
         }
         
         Condition condition(ModelStub &m) override {
-            return m.fixedLevelTest().condition;
+            return fixedLevelTest(m).condition;
         }
     };
     
@@ -898,56 +906,68 @@ namespace {
 
     class BrowsingEnteredPathUseCase : public BrowsingUseCase {
     public:
-        virtual std::string entry(ViewStub::TestSetupViewStub &) = 0;
-        virtual void setEntry(ViewStub::TestSetupViewStub &, std::string) = 0;
+        virtual std::string entry() = 0;
+        virtual void setEntry(std::string) = 0;
     };
     
     class BrowsingForMasker : public BrowsingEnteredPathUseCase {
+        ViewStub::TestSetupViewStub *view;
     public:
-        std::string entry(ViewStub::TestSetupViewStub &view) override {
-            return view.maskerFilePath();
+        explicit BrowsingForMasker(ViewStub::TestSetupViewStub *view) :
+            view{view} {}
+        
+        std::string entry() override {
+            return view->maskerFilePath();
         }
         
-        void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
-            view.setMasker(s);
+        void setEntry(std::string s) override {
+            view->setMasker(std::move(s));
         }
         
         void setResult(ViewStub &view, std::string s) override {
             return view.setBrowseForOpeningFileResult(s);
         }
         
-        void run(ViewStub::TestSetupViewStub &listener) override {
-            listener.browseForMasker();
+        void run(ViewStub::TestSetupViewStub &) override {
+            view->browseForMasker();
         }
     };
 
     class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
+        ViewStub::TestSetupViewStub *view;
     public:
-        void run(ViewStub::TestSetupViewStub &listener) override {
-            listener.browseForTargetList();
+        explicit BrowsingForTargetList(ViewStub::TestSetupViewStub *view) :
+            view{view} {}
+        
+        void run(ViewStub::TestSetupViewStub &) override {
+            view->browseForTargetList();
         }
 
         void setResult(ViewStub &view, std::string s) override {
             view.setBrowseForDirectoryResult(s);
         }
         
-        std::string entry(ViewStub::TestSetupViewStub &view) override {
-            return view.targetListDirectory();
+        std::string entry() override {
+            return view->targetListDirectory();
         }
         
-        void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
-            view.setTargetListDirectory(s);
+        void setEntry(std::string s) override {
+            view->setTargetListDirectory(std::move(s));
         }
     };
     
     class BrowsingForCalibration : public BrowsingEnteredPathUseCase {
+        ViewStub::TestSetupViewStub *view;
     public:
-        std::string entry(ViewStub::TestSetupViewStub &view) override {
-            return view.calibrationFilePath();
+        explicit BrowsingForCalibration(ViewStub::TestSetupViewStub *view) :
+            view{view} {}
+        
+        std::string entry() override {
+            return view->calibrationFilePath();
         }
         
-        void setEntry(ViewStub::TestSetupViewStub &view, std::string s) override {
-            view.setCalibrationFilePath(std::move(s));
+        void setEntry(std::string s) override {
+            view->setCalibrationFilePath(std::move(s));
         }
         
         void setResult(ViewStub &view, std::string s) override {
@@ -955,7 +975,7 @@ namespace {
         }
         
         void run(ViewStub::TestSetupViewStub &listener) override {
-            listener.browseForCalibration();
+            view->browseForCalibration();
         }
     };
     
@@ -1020,9 +1040,9 @@ namespace {
             &subject,
             &experimenter
         };
-        BrowsingForTargetList browsingForTargetList;
-        BrowsingForMasker browsingForMasker;
-        BrowsingForCalibration browsingForCalibration;
+        BrowsingForTargetList browsingForTargetList{&setupView};
+        BrowsingForMasker browsingForMasker{&setupView};
+        BrowsingForCalibration browsingForCalibration{&setupView};
         ConfirmingAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{&setupView};
         ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
         ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
@@ -1144,13 +1164,13 @@ namespace {
         }
         
         std::string entry(BrowsingEnteredPathUseCase &useCase) {
-            return useCase.entry(setupView);
+            return useCase.entry();
         }
 
         void assertCancellingBrowseDoesNotChangePath(
             BrowsingEnteredPathUseCase &useCase
         ) {
-            useCase.setEntry(setupView, "a");
+            useCase.setEntry("a");
             setBrowsingResult(useCase, "b");
             view.setBrowseCancelled();
             run(useCase);
