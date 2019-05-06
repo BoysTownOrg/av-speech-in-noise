@@ -4,9 +4,11 @@
 #include <gtest/gtest.h>
 
 namespace {
-    class WriterStub : public av_speech_in_noise::Writer {
-        LogString written_{};
-        std::string filePath_{};
+    using namespace av_speech_in_noise;
+    
+    class WriterStub : public Writer {
+        LogString written_;
+        std::string filePath_;
         bool closed_{};
     public:
         void close() override {
@@ -38,13 +40,11 @@ namespace {
         }
     };
     
-    class OutputFilePathStub :
-        public av_speech_in_noise::OutputFilePath
-    {
-        const av_speech_in_noise::TestInformation *testParameters_{};
-        std::string fileName_{};
-        std::string homeDirectory_{};
-        std::string outputDirectory_{};
+    class OutputFilePathStub : public OutputFilePath {
+        std::string fileName_;
+        std::string homeDirectory_;
+        std::string outputDirectory_;
+        const TestInformation *testInformation_{};
     public:
         std::string outputDirectory() override {
             return outputDirectory_;
@@ -58,10 +58,8 @@ namespace {
             fileName_ = s;
         }
         
-        std::string generateFileName(
-            const av_speech_in_noise::TestInformation &p
-        ) override {
-            testParameters_ = &p;
+        std::string generateFileName(const TestInformation &p) override {
+            testInformation_ = &p;
             return fileName_;
         }
         
@@ -69,8 +67,8 @@ namespace {
             return homeDirectory_;
         }
         
-        auto testParameters() const {
-            return testParameters_;
+        auto testInformation() const {
+            return testInformation_;
         }
     };
 
@@ -78,53 +76,59 @@ namespace {
     protected:
         WriterStub writer;
         OutputFilePathStub path;
-        av_speech_in_noise::OutputFileImpl file{&writer, &path};
-        av_speech_in_noise::coordinate_response_measure::Trial trial{};
-        av_speech_in_noise::AdaptiveTest adaptiveTest{};
-        av_speech_in_noise::TestInformation testInformation{};
+        OutputFileImpl file{&writer, &path};
+        coordinate_response_measure::Trial coordinateResponseTrial{};
+        AdaptiveTest adaptiveTest{};
+        TestInformation testInformation{};
         
         void openNewFile() {
             file.openNewFile(testInformation);
         }
         
-        void assertWriterContainsConditionName(
-            av_speech_in_noise::Condition c
-        ) {
+        void assertWriterContainsConditionName(Condition c) {
             adaptiveTest.condition = c;
             file.writeTest(adaptiveTest);
             std::string name = conditionName(c);
-            EXPECT_TRUE(writer.written().contains("condition: " + name + "\n"));
+            assertWriterContains("condition: " + name + "\n");
+        }
+        
+        void assertWriterContains(std::string s) {
+            EXPECT_TRUE(writer.written().contains(std::move(s)));
+        }
+        
+        void writeCoordinateResponseTrial() {
+            file.writeTrial(coordinateResponseTrial);
         }
     };
 
-    TEST_F(OutputFileTests, writeTrial) {
-        trial.SNR_dB = 1;
-        trial.correctNumber = 2;
-        trial.subjectNumber = 3;
-        trial.correctColor = av_speech_in_noise::coordinate_response_measure::Color::green;
-        trial.subjectColor = av_speech_in_noise::coordinate_response_measure::Color::red;
-        trial.reversals = 4;
-        trial.correct = false;
-        file.writeTrial(trial);
+    TEST_F(OutputFileTests, writeCoordinateResponseTrial) {
+        coordinateResponseTrial.SNR_dB = 1;
+        coordinateResponseTrial.correctNumber = 2;
+        coordinateResponseTrial.subjectNumber = 3;
+        coordinateResponseTrial.correctColor = coordinate_response_measure::Color::green;
+        coordinateResponseTrial.subjectColor = coordinate_response_measure::Color::red;
+        coordinateResponseTrial.reversals = 4;
+        coordinateResponseTrial.correct = false;
+        writeCoordinateResponseTrial();
         assertEqual(
             "1, 2, 3, green, red, incorrect, 4\n",
             writer.written()
         );
     }
 
-    TEST_F(OutputFileTests, writeTrialIncorrect) {
-        trial.correct = false;
-        file.writeTrial(trial);
-        EXPECT_TRUE(writer.written().contains(" incorrect, "));
+    TEST_F(OutputFileTests, writeIncorrectCoordinateResponseTrial) {
+        coordinateResponseTrial.correct = false;
+        writeCoordinateResponseTrial();
+        assertWriterContains(" incorrect, ");
     }
 
-    TEST_F(OutputFileTests, writeTrialCorrect) {
-        trial.correct = true;
-        file.writeTrial(trial);
-        EXPECT_TRUE(writer.written().contains(" correct, "));
+    TEST_F(OutputFileTests, writeCorrectCoordinateResponseTrial) {
+        coordinateResponseTrial.correct = true;
+        writeCoordinateResponseTrial();
+        assertWriterContains(" correct, ");
     }
 
-    TEST_F(OutputFileTests, writeTest) {
+    TEST_F(OutputFileTests, writeAdaptiveTest) {
         adaptiveTest.maskerFilePath = "a";
         adaptiveTest.information.session = "b";
         adaptiveTest.information.subjectId = "c";
@@ -133,29 +137,25 @@ namespace {
         adaptiveTest.maskerLevel_dB_SPL = 1;
         adaptiveTest.startingSnr_dB = 2;
         file.writeTest(adaptiveTest);
-        EXPECT_TRUE(writer.written().contains("subject: c\n"));
-        EXPECT_TRUE(writer.written().contains("tester: e\n"));
-        EXPECT_TRUE(writer.written().contains("session: b\n"));
-        EXPECT_TRUE(writer.written().contains("masker: a\n"));
-        EXPECT_TRUE(writer.written().contains("targets: d\n"));
-        EXPECT_TRUE(writer.written().contains("masker level (dB SPL): 1\n"));
-        EXPECT_TRUE(writer.written().contains("starting SNR (dB): 2\n"));
+        assertWriterContains("subject: c\n");
+        assertWriterContains("tester: e\n");
+        assertWriterContains("session: b\n");
+        assertWriterContains("masker: a\n");
+        assertWriterContains("targets: d\n");
+        assertWriterContains("masker level (dB SPL): 1\n");
+        assertWriterContains("starting SNR (dB): 2\n");
         EXPECT_TRUE(writer.written().endsWith("\n\n"));
     }
 
     TEST_F(OutputFileTests, writeTestWithAvCondition) {
-        assertWriterContainsConditionName(
-            av_speech_in_noise::Condition::audioVisual
-        );
+        assertWriterContainsConditionName(Condition::audioVisual);
     }
 
     TEST_F(OutputFileTests, writeTestWithAuditoryOnlyCondition) {
-        assertWriterContainsConditionName(
-            av_speech_in_noise::Condition::auditoryOnly
-        );
+        assertWriterContainsConditionName(Condition::auditoryOnly);
     }
 
-    TEST_F(OutputFileTests, writeTrialHeading) {
+    TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
         file.writeCoordinateResponseTrialHeading();
         assertEqual(
             "SNR (dB), correct number, subject number, "
@@ -165,37 +165,28 @@ namespace {
     }
 
     TEST_F(OutputFileTests, colorNameUninitializedColorDefined) {
-        av_speech_in_noise::coordinate_response_measure::Trial uninitialized;
+        coordinate_response_measure::Trial uninitialized;
         file.writeTrial(uninitialized);
     }
 
-    TEST_F(
-        OutputFileTests,
-        openPassesFormattedFilePath
-    ) {
+    TEST_F(OutputFileTests, openPassesFormattedFilePath) {
         path.setFileName("a");
         path.setOutputDirectory("b");
         openNewFile();
         assertEqual("b/a.txt", writer.filePath());
     }
 
-    TEST_F(
-        OutputFileTests,
-        closeClosesWriter
-    ) {
+    TEST_F(OutputFileTests, closeClosesWriter) {
         file.close();
         EXPECT_TRUE(writer.closed());
     }
-
-    TEST_F(
-        OutputFileTests,
-        openPassesTestParameters
-    ) {
+ 
+    TEST_F(OutputFileTests, openPassesTestInformation) {
         openNewFile();
-        EXPECT_EQ(&testInformation, path.testParameters());
+        EXPECT_EQ(&testInformation, path.testInformation());
     }
     
-    class FailingWriter : public av_speech_in_noise::Writer {
+    class FailingWriter : public Writer {
         bool failed_{};
     public:
         void open(std::string) override {
@@ -214,18 +205,14 @@ namespace {
         FailingOutputFileTests,
         openThrowsOpenFailureWhenWriterFails
     ) {
-        FailingWriter writer{};
-        OutputFilePathStub path{};
-        av_speech_in_noise::OutputFileImpl file{&writer, &path};
+        FailingWriter writer;
+        OutputFilePathStub path;
+        OutputFileImpl file{&writer, &path};
         try {
             file.openNewFile({});
             FAIL() << "Expected OutputFileImpl::OpenFailure";
         }
-        catch (
-            const av_speech_in_noise::
-            OutputFileImpl::
-            OpenFailure &
-        ) {
+        catch (const OutputFileImpl::OpenFailure &) {
         }
     }
 }
