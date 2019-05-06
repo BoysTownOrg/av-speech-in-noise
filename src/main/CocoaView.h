@@ -73,6 +73,8 @@ class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
     NSTextField *calibrationFilePath_;
     NSTextField *condition_label;
     NSPopUpButton *conditionMenu;
+    NSTextField *method_label;
+    NSPopUpButton *methodMenu;
     SetupViewActions *actions;
     EventListener *listener_{};
 public:

@@ -118,6 +118,19 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         )
         pullsDown:NO
     ]},
+    method_label{allocLabel(
+        @"method:",
+        NSMakeRect(0, 0, labelWidth, labelHeight)
+    )},
+    methodMenu{[[NSPopUpButton alloc]
+        initWithFrame:NSMakeRect(
+            textFieldLeadingEdge,
+            0,
+            normalTextFieldWidth,
+            labelHeight
+        )
+        pullsDown:NO
+    ]},
     actions{[SetupViewActions alloc]}
 {
     actions.controller = this;
@@ -201,7 +214,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     addSubview(calibrationFilePath_);
     addSubview(condition_label);
     addSubview(conditionMenu);
-    addSubview(conditionMenu);
+    addSubview(method_label);
+    addSubview(methodMenu);
     [view_ setHidden:NO];
 }
 
@@ -259,6 +273,10 @@ std::string CocoaTestSetupView::subjectId() {
 
 std::string CocoaTestSetupView::session() {
     return stringValue(session_);
+}
+
+std::string CocoaTestSetupView::method() {
+    return methodMenu.titleOfSelectedItem.UTF8String;
 }
 
 std::string CocoaTestSetupView::condition() {
@@ -320,10 +338,6 @@ void CocoaTestSetupView::browseForCalibration() {
 
 void CocoaTestSetupView::playCalibration() {
     listener_->playCalibration();
-}
-
-std::string CocoaTestSetupView::method() {
-    return {};
 }
 
 @implementation SetupViewActions
