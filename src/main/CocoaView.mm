@@ -44,75 +44,75 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
     subjectIdLabel{allocLabel(
         @"subject:",
-        NSMakeRect(0, 270, labelWidth, labelHeight)
+        NSMakeRect(0, 300, labelWidth, labelHeight)
     )},
     subjectId_{[[NSTextField alloc]
-        initWithFrame:normalTextFieldSizeAtHeight(270)
+        initWithFrame:normalTextFieldSizeAtHeight(300)
     ]},
     testerIdLabel{allocLabel(
         @"tester:",
-        NSMakeRect(0, 240, labelWidth, labelHeight)
+        NSMakeRect(0, 270, labelWidth, labelHeight)
     )},
     testerId_{[[NSTextField alloc]
-        initWithFrame:normalTextFieldSizeAtHeight(240)
+        initWithFrame:normalTextFieldSizeAtHeight(270)
     ]},
     sessionLabel{allocLabel(
         @"session:",
-        NSMakeRect(0, 210, labelWidth, labelHeight)
+        NSMakeRect(0, 240, labelWidth, labelHeight)
     )},
     session_{[[NSTextField alloc]
-        initWithFrame:normalTextFieldSizeAtHeight(210)
+        initWithFrame:normalTextFieldSizeAtHeight(240)
     ]},
     maskerLevel_dB_SPL_label{allocLabel(
         @"masker level (dB SPL):",
-        NSMakeRect(0, 180, labelWidth, labelHeight)
+        NSMakeRect(0, 210, labelWidth, labelHeight)
     )},
     maskerLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:normalTextFieldSizeAtHeight(180)
+        initWithFrame:normalTextFieldSizeAtHeight(210)
     ]},
     calibrationLevel_dB_SPL_label{allocLabel(
         @"calibration level (dB SPL):",
-        NSMakeRect(350, 30, 150, labelHeight)
+        NSMakeRect(350, 60, 150, labelHeight)
     )},
     calibrationLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(505, 30, 80, labelHeight)
+        initWithFrame:NSMakeRect(505, 60, 80, labelHeight)
     ]},
     startingSnr_dB_label{allocLabel(
         @"starting SNR (dB):",
-        NSMakeRect(0, 150, labelWidth, labelHeight)
+        NSMakeRect(0, 180, labelWidth, labelHeight)
     )},
     startingSnr_dB_{[[NSTextField alloc]
-        initWithFrame:normalTextFieldSizeAtHeight(150)
+        initWithFrame:normalTextFieldSizeAtHeight(180)
     ]},
     targetListDirectoryLabel{allocLabel(
         @"targets:",
-        NSMakeRect(0, 120, labelWidth, labelHeight)
+        NSMakeRect(0, 150, labelWidth, labelHeight)
     )},
     targetListDirectory_{[[NSTextField alloc]
-        initWithFrame:filePathTextFieldSizeAtHeight(120)
+        initWithFrame:filePathTextFieldSizeAtHeight(150)
     ]},
     maskerFilePath_label{allocLabel(
         @"masker:",
-        NSMakeRect(0, 90, labelWidth, labelHeight)
+        NSMakeRect(0, 120, labelWidth, labelHeight)
     )},
     maskerFilePath_{[[NSTextField alloc]
-        initWithFrame:filePathTextFieldSizeAtHeight(90)
+        initWithFrame:filePathTextFieldSizeAtHeight(120)
     ]},
     calibrationFilePath_label{allocLabel(
         @"calibration:",
-        NSMakeRect(0, 60, labelWidth, labelHeight)
+        NSMakeRect(0, 90, labelWidth, labelHeight)
     )},
     calibrationFilePath_{[[NSTextField alloc]
-        initWithFrame:filePathTextFieldSizeAtHeight(60)
+        initWithFrame:filePathTextFieldSizeAtHeight(90)
     ]},
     condition_label{allocLabel(
         @"condition:",
-        NSMakeRect(0, 30, labelWidth, labelHeight)
+        NSMakeRect(0, 60, labelWidth, labelHeight)
     )},
     conditionMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(
             textFieldLeadingEdge,
-            30,
+            60,
             normalTextFieldWidth,
             labelHeight
         )
@@ -120,12 +120,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     ]},
     method_label{allocLabel(
         @"method:",
-        NSMakeRect(0, 0, labelWidth, labelHeight)
+        NSMakeRect(0, 30, labelWidth, labelHeight)
     )},
     methodMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(
             textFieldLeadingEdge,
-            0,
+            30,
             normalTextFieldWidth,
             labelHeight
         )
@@ -141,7 +141,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     ];
     [browseForStimulusListButton setFrame:NSMakeRect(
         filePathTextFieldWidth + textFieldLeadingEdge + 10,
-        120,
+        150,
         buttonWidth,
         buttonHeight
     )];
@@ -152,7 +152,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     ];
     [browseForMaskerButton setFrame:NSMakeRect(
         filePathTextFieldWidth + textFieldLeadingEdge + 10,
-        90,
+        120,
         buttonWidth,
         buttonHeight
     )];
@@ -163,7 +163,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     ];
     [browseForCalibrationButton setFrame:NSMakeRect(
         filePathTextFieldWidth + textFieldLeadingEdge + 10,
-        60,
+        90,
         buttonWidth,
         buttonHeight
     )];
@@ -185,7 +185,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     ];
     [playCalibrationButton setFrame:NSMakeRect(
         filePathTextFieldWidth + textFieldLeadingEdge + 10,
-        30,
+        60,
         buttonWidth,
         buttonHeight
     )];
@@ -397,7 +397,6 @@ CocoaSubjectView::CocoaSubjectView(NSRect r) :
     [window.contentView addSubview:responseButtons];
     hideResponseButtons();
     hideNextTrialButton();
-    [window makeKeyAndOrderFront:nil];
 }
 
 void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
@@ -570,6 +569,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     [nextTrialButton addSubview:nextTrialButton_];
     [view_ addSubview:nextTrialButton];
     [view_ addSubview:response_];
+    [view_ setHidden:YES];
     actions.controller = this;
 }
 
