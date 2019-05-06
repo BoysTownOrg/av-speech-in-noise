@@ -41,7 +41,7 @@ namespace {
     class OutputFilePathStub :
         public av_speech_in_noise::OutputFilePath
     {
-        av_speech_in_noise::TestInformation testParameters_{};
+        const av_speech_in_noise::TestInformation *testParameters_{};
         std::string fileName_{};
         std::string homeDirectory_{};
         std::string outputDirectory_{};
@@ -61,7 +61,7 @@ namespace {
         std::string generateFileName(
             const av_speech_in_noise::TestInformation &p
         ) override {
-            testParameters_ = p;
+            testParameters_ = &p;
             return fileName_;
         }
         
@@ -69,7 +69,7 @@ namespace {
             return homeDirectory_;
         }
         
-        auto &testParameters() const {
+        auto testParameters() const {
             return testParameters_;
         }
     };
@@ -81,9 +81,10 @@ namespace {
         av_speech_in_noise::OutputFileImpl file{&writer, &path};
         av_speech_in_noise::coordinate_response_measure::Trial trial{};
         av_speech_in_noise::AdaptiveTest adaptiveTest{};
+        av_speech_in_noise::TestInformation testInformation{};
         
         void openNewFile() {
-            file.openNewFile(adaptiveTest.information);
+            file.openNewFile(testInformation);
         }
         
         void assertWriterContainsConditionName(
@@ -190,9 +191,8 @@ namespace {
         OutputFileTests,
         openPassesTestParameters
     ) {
-        adaptiveTest.information.testerId = "a";
         openNewFile();
-        assertEqual("a", path.testParameters().testerId);
+        EXPECT_EQ(&testInformation, path.testParameters());
     }
     
     class FailingWriter : public av_speech_in_noise::Writer {
