@@ -97,17 +97,28 @@ bool CoreAudioDevices::outputDevice(int device) {
         kAudioObjectPropertyScopeOutput,
         kAudioObjectPropertyElementMaster
     };
-    AudioBufferList bufferList{};
-    UInt32 dataSize = sizeof(AudioBufferList);
+    UInt32 dataSize{};
+    AudioObjectGetPropertyDataSize(
+        objectId(device),
+        &address,
+        0,
+        nullptr,
+        &dataSize
+    );
+    std::vector<AudioBufferList> bufferLists(dataSize/sizeof(AudioBufferList));
     AudioObjectGetPropertyData(
         objectId(device),
         &address,
         0,
         nullptr,
         &dataSize,
-        &bufferList
+        &bufferLists.front()
     );
-    return bufferList.mNumberBuffers != 0;
+    for (auto list : bufferLists)
+        for(UInt32 j = 0; j < list.mNumberBuffers; ++j)
+            if (list.mBuffers[j].mNumberChannels != 0)
+                return true;
+    return false;
 }
 
 class AvAssetFacade {
