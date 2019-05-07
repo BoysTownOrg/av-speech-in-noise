@@ -107,15 +107,11 @@ std::string CoreAudioDevices::stringProperty(
     int device
 ) {
     auto address = globalAddress(s);
-    CFStringRef deviceName{};
-    UInt32 dataSize = sizeof(CFStringRef);
-    ::getPropertyData(
-        objectId(device),
-        &address,
-        &dataSize,
-        &deviceName
-    );
-    return toString(deviceName);
+    auto data = loadPropertyData<CFStringRef>(objectId(device), &address);
+    if (data.empty())
+        return {};
+    
+    return toString(data.front());
 }
 
 AudioObjectID CoreAudioDevices::objectId(int device) {
