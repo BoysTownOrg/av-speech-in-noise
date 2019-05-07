@@ -22,6 +22,13 @@ public:
     AudioObjectID objectId(int device);
     std::string uid(int device);
     bool outputDevice(int device);
+private:
+    OSStatus getPropertyData(
+        AudioObjectID,
+        const AudioObjectPropertyAddress *,
+        UInt32 *,
+        void *
+    );
 };
 
 class CoreAudioBuffer : public stimulus_players::AudioBuffer {

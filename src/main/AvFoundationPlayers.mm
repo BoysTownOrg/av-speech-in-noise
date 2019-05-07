@@ -4,20 +4,22 @@
 #include <limits>
 
 // https://stackoverflow.com/questions/4575408/audioobjectgetpropertydata-to-get-a-list-of-input-devices
+// http://fdiv.net/2008/08/12/nssound-setplaybackdeviceidentifier-coreaudio-output-device-enumeration
 CoreAudioDevices::CoreAudioDevices() {
     loadDevices();
 }
 
 void CoreAudioDevices::loadDevices() {
     auto count = deviceCount_();
+    if (count == 0)
+        return;
+    
     devices.resize(count);
     UInt32 dataSize = count * sizeof(AudioDeviceID);
     auto address = globalAddress(kAudioHardwarePropertyDevices);
-    AudioObjectGetPropertyData(
+    getPropertyData(
         kAudioObjectSystemObject,
         &address,
-        0,
-        nullptr,
         &dataSize,
         &devices[0]
     );
@@ -72,11 +74,9 @@ std::string CoreAudioDevices::stringProperty(
     auto address = globalAddress(s);
     CFStringRef deviceName{};
     UInt32 dataSize = sizeof(CFStringRef);
-    AudioObjectGetPropertyData(
+    getPropertyData(
         objectId(device),
         &address,
-        0,
-        nullptr,
         &dataSize,
         &deviceName
     );
@@ -106,13 +106,11 @@ bool CoreAudioDevices::outputDevice(int device) {
         &dataSize
     );
     std::vector<AudioBufferList> bufferLists(dataSize/sizeof(AudioBufferList));
-    AudioObjectGetPropertyData(
+    getPropertyData(
         objectId(device),
         &address,
-        0,
-        nullptr,
         &dataSize,
-        &bufferLists.front()
+        &bufferLists[0]
     );
     for (auto list : bufferLists)
         for(UInt32 j = 0; j < list.mNumberBuffers; ++j)
@@ -120,6 +118,23 @@ bool CoreAudioDevices::outputDevice(int device) {
                 return true;
     return false;
 }
+
+OSStatus CoreAudioDevices::getPropertyData(
+    AudioObjectID id_,
+    const AudioObjectPropertyAddress *address,
+    UInt32 *dataSize,
+    void *out_
+) {
+    return AudioObjectGetPropertyData(
+        id_,
+        address,
+        0,
+        nullptr,
+        dataSize,
+        out_
+    );
+}
+
 
 class AvAssetFacade {
     AVAsset *asset;
