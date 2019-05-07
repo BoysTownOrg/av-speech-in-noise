@@ -3,6 +3,58 @@
 #include <gsl/gsl>
 #include <limits>
 
+static OSStatus getPropertyDataSize(
+    AudioObjectID id_,
+    const AudioObjectPropertyAddress *address,
+    UInt32 *outDataSize
+) {
+    return AudioObjectGetPropertyDataSize(
+        id_,
+        address,
+        0,
+        nullptr,
+        outDataSize
+    );
+}
+
+static OSStatus getPropertyData(
+    AudioObjectID id_,
+    const AudioObjectPropertyAddress *address,
+    UInt32 *dataSize,
+    void *out_
+) {
+    return AudioObjectGetPropertyData(
+        id_,
+        address,
+        0,
+        nullptr,
+        dataSize,
+        out_
+    );
+}
+
+template<typename T>
+std::vector<T> loadPropertyData(
+    AudioObjectID id_,
+    const AudioObjectPropertyAddress *address
+) {
+    UInt32 dataSize{};
+    getPropertyDataSize(
+        id_,
+        address,
+        &dataSize
+    );
+    std::vector<T> data(dataSize / sizeof(T));
+    if (!data.empty())
+        getPropertyData(
+            id_,
+            address,
+            &dataSize,
+            &data.front()
+        );
+    return data;
+}
+
 // https://stackoverflow.com/questions/4575408/audioobjectgetpropertydata-to-get-a-list-of-input-devices
 // http://fdiv.net/2008/08/12/nssound-setplaybackdeviceidentifier-coreaudio-output-device-enumeration
 CoreAudioDevices::CoreAudioDevices() {
@@ -11,23 +63,7 @@ CoreAudioDevices::CoreAudioDevices() {
 
 void CoreAudioDevices::loadDevices() {
     auto address = globalAddress(kAudioHardwarePropertyDevices);
-    UInt32 dataSize{};
-    getPropertyDataSize(
-        kAudioObjectSystemObject,
-        &address,
-        &dataSize
-    );
-    auto count = dataSize / sizeof(AudioDeviceID);
-    if (count == 0)
-        return;
-    
-    devices.resize(count);
-    getPropertyData(
-        kAudioObjectSystemObject,
-        &address,
-        &dataSize,
-        &devices.front()
-    );
+    devices = loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
 }
 
 AudioObjectPropertyAddress CoreAudioDevices::globalAddress(
@@ -73,7 +109,7 @@ std::string CoreAudioDevices::stringProperty(
     auto address = globalAddress(s);
     CFStringRef deviceName{};
     UInt32 dataSize = sizeof(CFStringRef);
-    getPropertyData(
+    ::getPropertyData(
         objectId(device),
         &address,
         &dataSize,
@@ -83,7 +119,7 @@ std::string CoreAudioDevices::stringProperty(
 }
 
 AudioObjectID CoreAudioDevices::objectId(int device) {
-    return devices[device];
+    return devices.at(device);
 }
 
 std::string CoreAudioDevices::uid(int device) {
@@ -95,56 +131,13 @@ bool CoreAudioDevices::outputDevice(int device) {
         kAudioDevicePropertyStreamConfiguration,
         kAudioObjectPropertyScopeOutput
     );
-    UInt32 dataSize{};
-    getPropertyDataSize(
-        objectId(device),
-        &address,
-        &dataSize
-    );
-    std::vector<AudioBufferList> bufferLists(dataSize/sizeof(AudioBufferList));
-    getPropertyData(
-        objectId(device),
-        &address,
-        &dataSize,
-        &bufferLists.front()
-    );
+    auto bufferLists = loadPropertyData<AudioBufferList>(objectId(device), &address);
     for (auto list : bufferLists)
         for(UInt32 j = 0; j < list.mNumberBuffers; ++j)
             if (list.mBuffers[j].mNumberChannels != 0)
                 return true;
     return false;
 }
-
-OSStatus CoreAudioDevices::getPropertyData(
-    AudioObjectID id_,
-    const AudioObjectPropertyAddress *address,
-    UInt32 *dataSize,
-    void *out_
-) {
-    return AudioObjectGetPropertyData(
-        id_,
-        address,
-        0,
-        nullptr,
-        dataSize,
-        out_
-    );
-}
-
-OSStatus CoreAudioDevices::getPropertyDataSize(
-    AudioObjectID id_,
-    const AudioObjectPropertyAddress *address,
-    UInt32 *outDataSize
-) {
-    return AudioObjectGetPropertyDataSize(
-        id_,
-        address,
-        0,
-        nullptr,
-        outDataSize
-    );
-}
-
 
 
 class AvAssetFacade {

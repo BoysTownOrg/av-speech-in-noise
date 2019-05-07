@@ -23,17 +23,6 @@ private:
     AudioObjectPropertyAddress masterAddress(AudioObjectPropertySelector, AudioObjectPropertyScope);
     AudioObjectID objectId(int device);
     std::string stringProperty(AudioObjectPropertySelector, int device);
-    OSStatus getPropertyData(
-        AudioObjectID,
-        const AudioObjectPropertyAddress *,
-        UInt32 *,
-        void *
-    );
-    OSStatus getPropertyDataSize(
-        AudioObjectID,
-        const AudioObjectPropertyAddress *,
-        UInt32 *
-    );
 };
 
 class CoreAudioBuffer : public stimulus_players::AudioBuffer {
