@@ -283,7 +283,8 @@ namespace {
     };
     
     class OutputFileStub : public OutputFile {
-        coordinate_response_measure::Trial trialWritten_;
+        coordinate_response_measure::Trial writtenCoordinateResponseTrial_;
+        OpenSetTrial writtenOpenSetTrial_;
         LogString log_;
         const AdaptiveTest *adaptiveTest_{};
         const FixedLevelTest *fixedLevelTest_{};
@@ -303,15 +304,19 @@ namespace {
             return fixedLevelTest_;
         }
         
-        auto &trialWritten() const {
-            return trialWritten_;
+        auto &writtenCoordinateResponseTrial() const {
+            return writtenCoordinateResponseTrial_;
+        }
+        
+        auto &writtenOpenSetTrial() const {
+            return writtenOpenSetTrial_;
         }
         
         void writeTrial(
             const coordinate_response_measure::Trial &trial
         ) override {
             addToLog("writeTrial ");
-            trialWritten_ = trial;
+            writtenCoordinateResponseTrial_ = trial;
         }
         
         void addToLog(std::string s) {
@@ -346,6 +351,10 @@ namespace {
         void writeTest(const FixedLevelTest &p) override {
             addToLog("writeFixedLevelTest ");
             fixedLevelTest_ = &p;
+        }
+        
+        void writeTrial(const OpenSetTrial &p) override {
+            writtenOpenSetTrial_ = p;
         }
         
         void throwOnOpen() {
@@ -628,6 +637,10 @@ namespace {
     public:
         void run(RecognitionTestModel &m) override {
             m.submitResponse(response_);
+        }
+        
+        void setResponse(std::string s) {
+            response_.response = std::move(s);
         }
     };
     
@@ -1024,8 +1037,12 @@ namespace {
             assertEqual(std::move(what), targetFilePath());
         }
         
-        auto trialWritten() {
-            return outputFile.trialWritten();
+        auto writtenCoordinateResponseTrial() {
+            return outputFile.writtenCoordinateResponseTrial();
+        }
+        
+        auto writtenOpenSetTrial() {
+            return outputFile.writtenOpenSetTrial();
         }
         
         void setTargetListCount(int n) {
@@ -1131,7 +1148,7 @@ namespace {
         }
         
         bool trialWrittenCorrect() {
-            return trialWritten().correct;
+            return writtenCoordinateResponseTrial().correct;
         }
         
         bool snrTrackPushedDown(int n) {
@@ -1775,11 +1792,20 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitOpenSetResponseWritesResponse
+    ) {
+        submittingTypedResponse.setResponse("a");
+        run(submittingTypedResponse);
+        assertEqual("a", writtenOpenSetTrial().response);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitCoordinateResponseWritesColor
     ) {
         coordinateResponse.color = blueColor();
         submitCoordinateResponse();
-        assertEqual(blueColor(), trialWritten().subjectColor);
+        assertEqual(blueColor(), writtenCoordinateResponseTrial().subjectColor);
     }
 
     TEST_F(
@@ -1788,7 +1814,7 @@ namespace {
     ) {
         coordinateResponse.number = 1;
         submitCoordinateResponse();
-        assertEqual(1, trialWritten().subjectNumber);
+        assertEqual(1, writtenCoordinateResponseTrial().subjectNumber);
     }
 
     TEST_F(
@@ -1798,7 +1824,7 @@ namespace {
         initializeTestWithStartingList(1);
         snrTrack(1)->setReversals(2);
         submitCoordinateResponse();
-        assertEqual(2, trialWritten().reversals);
+        assertEqual(2, writtenCoordinateResponseTrial().reversals);
     }
 
     TEST_F(
@@ -1807,7 +1833,7 @@ namespace {
     ) {
         evaluator.setCorrectColor(blueColor());
         submitCoordinateResponse();
-        assertEqual(blueColor(), trialWritten().correctColor);
+        assertEqual(blueColor(), writtenCoordinateResponseTrial().correctColor);
     }
 
     TEST_F(
@@ -1816,7 +1842,7 @@ namespace {
     ) {
         evaluator.setCorrectNumber(1);
         submitCoordinateResponse();
-        assertEqual(1, trialWritten().correctNumber);
+        assertEqual(1, writtenCoordinateResponseTrial().correctNumber);
     }
 
     TEST_F(
@@ -1826,7 +1852,7 @@ namespace {
         initializeTestWithStartingList(1);
         snrTrack(1)->setX(2);
         submitCoordinateResponse();
-        assertEqual(2, trialWritten().SNR_dB);
+        assertEqual(2, writtenCoordinateResponseTrial().SNR_dB);
     }
 
     TEST_F(

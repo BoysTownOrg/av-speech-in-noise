@@ -32,6 +32,7 @@ namespace av_speech_in_noise {
         void openNewFile(const TestInformation &) override;
         void close() override;
         void writeTest(const FixedLevelTest &) override;
+        void writeTrial(const OpenSetTrial &) override;
         
     private:
         void write(std::string);

@@ -97,6 +97,10 @@ namespace av_speech_in_noise {
         std::string response;
     };
     
+    struct OpenSetTrial {
+        std::string response;
+    };
+    
     class Model {
     public:
         class EventListener {

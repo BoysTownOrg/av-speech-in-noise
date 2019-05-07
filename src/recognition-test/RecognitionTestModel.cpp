@@ -55,8 +55,8 @@ namespace av_speech_in_noise {
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
         snr_dB = p.snr_dB;
-        
         currentTargetList = finiteTargetList;
+        
         currentTargetList->loadFromDirectory(p.targetListDirectory);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
@@ -335,7 +335,11 @@ namespace av_speech_in_noise {
         prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
     }
     
-    void RecognitionTestModel::submitResponse(const OpenSetResponse &) {
+    void RecognitionTestModel::submitResponse(const OpenSetResponse &p) {
+        OpenSetTrial trial;
+        trial.response = p.response;
+        outputFile->writeTrial(trial);
+        
         prepareTargetPlayer();
         seekRandomMaskerPosition();
     }
