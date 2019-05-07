@@ -78,6 +78,7 @@ namespace {
         OutputFilePathStub path;
         OutputFileImpl file{&writer, &path};
         coordinate_response_measure::Trial coordinateResponseTrial{};
+        OpenSetTrial openSetTrial{};
         AdaptiveTest adaptiveTest{};
         FixedLevelTest fixedLevelTest{};
         TestInformation testInformation{};
@@ -97,6 +98,10 @@ namespace {
         
         void writeCoordinateResponseTrial() {
             file.writeTrial(coordinateResponseTrial);
+        }
+        
+        void writeOpenSetTrial() {
+            file.writeTrial(openSetTrial);
         }
     };
 
@@ -139,6 +144,16 @@ namespace {
     TEST_F(OutputFileTests, colorNameUninitializedColorDefined) {
         coordinate_response_measure::Trial uninitialized;
         file.writeTrial(uninitialized);
+    }
+
+    TEST_F(OutputFileTests, writeOpenSetTrial) {
+        openSetTrial.response = "a";
+        openSetTrial.target = "b";
+        writeOpenSetTrial();
+        assertEqual(
+            "b, a\n",
+            writer.written()
+        );
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTest) {

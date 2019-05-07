@@ -40,6 +40,7 @@ namespace av_speech_in_noise {
         std::string formatTest(const AdaptiveTest &);
         std::string formatTest(const FixedLevelTest &);
         std::string formatTrial(const coordinate_response_measure::Trial &);
+        std::string formatTrial(const OpenSetTrial &);
         std::string formatCoordinateResponseTrialHeading();
         std::string generateNewFilePath(const TestInformation &);
         std::string colorName(coordinate_response_measure::Color);

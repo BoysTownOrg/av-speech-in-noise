@@ -159,7 +159,16 @@ namespace av_speech_in_noise {
         writer->close();
     }
     
-    void OutputFileImpl::writeTrial(const OpenSetTrial &) {
-        ;
+    void OutputFileImpl::writeTrial(const OpenSetTrial &trial) {
+        write(formatTrial(trial));
+    }
+
+    std::string OutputFileImpl::formatTrial(const OpenSetTrial &trial) {
+        FormattedStream stream;
+        stream.insert(trial.target);
+        stream.insertCommaAndSpace();
+        stream.insert(trial.response);
+        stream.insertNewLine();
+        return stream.str();
     }
 }
