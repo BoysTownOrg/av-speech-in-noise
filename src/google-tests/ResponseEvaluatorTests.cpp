@@ -1,3 +1,4 @@
+#include "assert-utility.h"
 #include <recognition-test/ResponseEvaluatorImpl.hpp>
 #include <gtest/gtest.h>
 
@@ -87,5 +88,10 @@ namespace {
                 Color::notAColor
             }
         );
+    }
+    
+    TEST_F(ResponseEvaluatorTests, fileNameReturnsEverythingAfterFinalSlash) {
+        assertEqual("b", evaluator.fileName("a/b"));
+        assertEqual("a", evaluator.fileName("a"));
     }
 }

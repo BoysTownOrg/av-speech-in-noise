@@ -50,8 +50,9 @@ namespace av_speech_in_noise {
             return coordinate_response_measure::Color::notAColor;
     }
     
-    std::string ResponseEvaluatorImpl::fileName(const std::string &filePath) { 
-        return {};
+    std::string ResponseEvaluatorImpl::fileName(const std::string &filePath) {
+        auto fileSeparator = filePath.find_last_of("/");
+        return filePath.substr(fileSeparator+1);
     }
     
 }
