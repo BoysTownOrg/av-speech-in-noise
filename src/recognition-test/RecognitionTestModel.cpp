@@ -54,6 +54,7 @@ namespace av_speech_in_noise {
         
         fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
+        snr_dB = p.snr_dB;
         
         currentTargetList = finiteTargetList;
         currentTargetList->loadFromDirectory(p.targetListDirectory);
@@ -61,7 +62,7 @@ namespace av_speech_in_noise {
         outputFile->writeTest(p);
         prepareMasker(p.maskerFilePath);
         prepareVideo(p.condition);
-        preparePlayersForNextTrial(fixedLevelSnr_dB = p.snr_dB);
+        preparePlayersForNextTrial();
         fixedLevelTest = true;
     }
     
@@ -150,11 +151,12 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::prepareNextAdaptiveTrial() {
         selectNextList();
-        preparePlayersForNextTrial(adaptiveSnr_dB());
+        snr_dB = adaptiveSnr_dB();
+        preparePlayersForNextTrial();
     }
     
-    void RecognitionTestModel::preparePlayersForNextTrial(int snr_dB) {
-        prepareTargetPlayer(snr_dB);
+    void RecognitionTestModel::preparePlayersForNextTrial() {
+        prepareTargetPlayer();
         seekRandomMaskerPosition();
     }
     
@@ -167,7 +169,7 @@ namespace av_speech_in_noise {
         }
     }
     
-    void RecognitionTestModel::prepareTargetPlayer(int snr_dB) {
+    void RecognitionTestModel::prepareTargetPlayer() {
         loadTargetFile(currentTargetList->next());
         setTargetLevel_dB(targetLevel_dB(snr_dB));
         targetPlayer->subscribeToPlaybackCompletion();
@@ -334,7 +336,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::submitResponse(const OpenSetResponse &) {
-        prepareTargetPlayer(fixedLevelSnr_dB);
+        prepareTargetPlayer();
         seekRandomMaskerPosition();
     }
     

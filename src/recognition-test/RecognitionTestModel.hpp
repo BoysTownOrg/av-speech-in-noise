@@ -141,7 +141,7 @@ namespace av_speech_in_noise {
         std::vector<TargetListWithTrack> targetListsWithTracks{};
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
-        int fixedLevelSnr_dB{};
+        int snr_dB{};
         TargetListReader *targetListSetReader;
         FiniteTargetList *finiteTargetList;
         MaskerPlayer *maskerPlayer;
@@ -181,7 +181,7 @@ namespace av_speech_in_noise {
         void playbackComplete() override;
     private:
         void prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
-        void preparePlayersForNextTrial(int snr_dB);
+        void preparePlayersForNextTrial();
         void prepareNextAdaptiveTrial();
         void readTargetLists(const AdaptiveTest &);
         void throwIfTrialInProgress();
@@ -203,7 +203,7 @@ namespace av_speech_in_noise {
         void playTarget();
         bool noMoreTrials();
         bool trialInProgress();
-        void prepareTargetPlayer(int snr_dB);
+        void prepareTargetPlayer();
         void seekRandomMaskerPosition();
         void preparePlayersToPlay(const AudioSettings &);
         void startTrial();
