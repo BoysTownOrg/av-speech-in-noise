@@ -338,7 +338,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::submitResponse(const OpenSetResponse &p) {
         OpenSetTrial trial;
         trial.response = p.response;
-        trial.target = evaluator->fileName({});
+        trial.target = evaluator->fileName(finiteTargetList->current());
         outputFile->writeTrial(trial);
         
         prepareTargetPlayer();

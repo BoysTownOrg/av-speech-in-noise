@@ -428,6 +428,7 @@ namespace {
         std::string correctNumberFilePath_;
         std::string correctColorFilePath_;
         std::string fileName_;
+        std::string filePathForFileName_;
         const coordinate_response_measure::SubjectResponse *response_{};
         int correctNumber_{};
         coordinate_response_measure::Color correctColor_{};
@@ -489,7 +490,12 @@ namespace {
         }
         
         std::string fileName(const std::string &filePath) override {
+            filePathForFileName_ = filePath;
             return fileName_;
+        }
+        
+        auto filePathForFileName() const {
+            return filePathForFileName_;
         }
     };
     
@@ -586,10 +592,10 @@ namespace {
         std::string current() override {
             return current_;
         }
-        /*
+        
         void setCurrent(std::string s) {
             current_ = std::move(s);
-        }*/
+        }
         
         void loadFromDirectory(std::string directory) override {
             directory_ = std::move(directory);
@@ -1810,6 +1816,15 @@ namespace {
         submittingTypedResponse.setResponse("a");
         run(submittingTypedResponse);
         assertEqual("a", writtenOpenSetTrial().response);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitOpenSetResponsePassesCurrentTargetToEvaluator
+    ) {
+        finiteTargetList.setCurrent("a");
+        run(submittingTypedResponse);
+        assertEqual("a", evaluator.filePathForFileName());
     }
 
     TEST_F(
