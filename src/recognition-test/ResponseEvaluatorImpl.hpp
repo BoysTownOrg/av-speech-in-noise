@@ -12,6 +12,8 @@ namespace av_speech_in_noise {
         static int invalidNumber;
         int correctNumber(const std::string &filePath) override;
         coordinate_response_measure::Color correctColor(const std::string &filePath) override;
+        std::string fileName(const std::string &filePath) override;
+        
     private:
         coordinate_response_measure::Color color(const std::string &colorName);
     };

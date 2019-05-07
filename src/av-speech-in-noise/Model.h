@@ -99,6 +99,7 @@ namespace av_speech_in_noise {
     
     struct OpenSetTrial {
         std::string response;
+        std::string target;
     };
     
     class Model {

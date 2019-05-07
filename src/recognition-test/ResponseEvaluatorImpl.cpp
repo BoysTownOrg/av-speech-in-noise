@@ -49,4 +49,9 @@ namespace av_speech_in_noise {
         else
             return coordinate_response_measure::Color::notAColor;
     }
+    
+    std::string ResponseEvaluatorImpl::fileName(const std::string &filePath) { 
+        return {};
+    }
+    
 }

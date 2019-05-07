@@ -106,6 +106,7 @@ namespace av_speech_in_noise {
         ) = 0;
         virtual coordinate_response_measure::Color correctColor(const std::string &filePath) = 0;
         virtual int correctNumber(const std::string &filePath) = 0;
+        virtual std::string fileName(const std::string &filePath) = 0;
     };
     
     class OutputFile {
