@@ -10,40 +10,39 @@ CoreAudioDevices::CoreAudioDevices() {
 }
 
 void CoreAudioDevices::loadDevices() {
-    auto count = deviceCount_();
+    auto address = globalAddress(kAudioHardwarePropertyDevices);
+    UInt32 dataSize{};
+    getPropertyDataSize(
+        kAudioObjectSystemObject,
+        &address,
+        &dataSize
+    );
+    auto count = dataSize / sizeof(AudioDeviceID);
     if (count == 0)
         return;
     
     devices.resize(count);
-    UInt32 dataSize = count * sizeof(AudioDeviceID);
-    auto address = globalAddress(kAudioHardwarePropertyDevices);
     getPropertyData(
         kAudioObjectSystemObject,
         &address,
         &dataSize,
-        &devices[0]
+        &devices.front()
     );
-}
-
-UInt32 CoreAudioDevices::deviceCount_() {
-    auto address = globalAddress(kAudioHardwarePropertyDevices);
-    UInt32 dataSize{};
-    AudioObjectGetPropertyDataSize(
-        kAudioObjectSystemObject,
-        &address,
-        0,
-        nullptr,
-        &dataSize
-    );
-    return dataSize / sizeof(AudioDeviceID);
 }
 
 AudioObjectPropertyAddress CoreAudioDevices::globalAddress(
     AudioObjectPropertySelector s
 ) {
+    return masterAddress(s, kAudioObjectPropertyScopeGlobal);
+}
+
+AudioObjectPropertyAddress CoreAudioDevices::masterAddress(
+    AudioObjectPropertySelector selector,
+    AudioObjectPropertyScope scope
+) {
     return {
-        s,
-        kAudioObjectPropertyScopeGlobal,
+        selector,
+        scope,
         kAudioObjectPropertyElementMaster
     };
 }
@@ -92,17 +91,14 @@ std::string CoreAudioDevices::uid(int device) {
 }
 
 bool CoreAudioDevices::outputDevice(int device) {
-    AudioObjectPropertyAddress address {
+    auto address = masterAddress(
         kAudioDevicePropertyStreamConfiguration,
-        kAudioObjectPropertyScopeOutput,
-        kAudioObjectPropertyElementMaster
-    };
+        kAudioObjectPropertyScopeOutput
+    );
     UInt32 dataSize{};
-    AudioObjectGetPropertyDataSize(
+    getPropertyDataSize(
         objectId(device),
         &address,
-        0,
-        nullptr,
         &dataSize
     );
     std::vector<AudioBufferList> bufferLists(dataSize/sizeof(AudioBufferList));
@@ -110,7 +106,7 @@ bool CoreAudioDevices::outputDevice(int device) {
         objectId(device),
         &address,
         &dataSize,
-        &bufferLists[0]
+        &bufferLists.front()
     );
     for (auto list : bufferLists)
         for(UInt32 j = 0; j < list.mNumberBuffers; ++j)
@@ -134,6 +130,21 @@ OSStatus CoreAudioDevices::getPropertyData(
         out_
     );
 }
+
+OSStatus CoreAudioDevices::getPropertyDataSize(
+    AudioObjectID id_,
+    const AudioObjectPropertyAddress *address,
+    UInt32 *outDataSize
+) {
+    return AudioObjectGetPropertyDataSize(
+        id_,
+        address,
+        0,
+        nullptr,
+        outDataSize
+    );
+}
+
 
 
 class AvAssetFacade {

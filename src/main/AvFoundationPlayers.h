@@ -13,21 +13,26 @@ class CoreAudioDevices {
     std::vector<AudioObjectID> devices{};
 public:
     CoreAudioDevices();
-    void loadDevices();
-    UInt32 deviceCount_();
-    AudioObjectPropertyAddress globalAddress(AudioObjectPropertySelector);
     int deviceCount();
     std::string description(int device);
-    std::string stringProperty(AudioObjectPropertySelector, int device);
-    AudioObjectID objectId(int device);
     std::string uid(int device);
     bool outputDevice(int device);
 private:
+    void loadDevices();
+    AudioObjectPropertyAddress globalAddress(AudioObjectPropertySelector);
+    AudioObjectPropertyAddress masterAddress(AudioObjectPropertySelector, AudioObjectPropertyScope);
+    AudioObjectID objectId(int device);
+    std::string stringProperty(AudioObjectPropertySelector, int device);
     OSStatus getPropertyData(
         AudioObjectID,
         const AudioObjectPropertyAddress *,
         UInt32 *,
         void *
+    );
+    OSStatus getPropertyDataSize(
+        AudioObjectID,
+        const AudioObjectPropertyAddress *,
+        UInt32 *
     );
 };
 
