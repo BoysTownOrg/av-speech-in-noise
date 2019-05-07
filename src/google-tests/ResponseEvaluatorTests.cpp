@@ -93,5 +93,6 @@ namespace {
     TEST_F(ResponseEvaluatorTests, fileNameReturnsEverythingAfterFinalSlash) {
         assertEqual("b", evaluator.fileName("a/b"));
         assertEqual("a", evaluator.fileName("a"));
+        assertEqual("c.txt", evaluator.fileName("a/b/c.txt"));
     }
 }
