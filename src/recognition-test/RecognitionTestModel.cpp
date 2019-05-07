@@ -171,7 +171,7 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::prepareTargetPlayer() {
         loadTargetFile(currentTargetList->next());
-        setTargetLevel_dB(targetLevel_dB(snr_dB));
+        setTargetLevel_dB(targetLevel_dB());
         targetPlayer->subscribeToPlaybackCompletion();
     }
     
@@ -183,7 +183,7 @@ namespace av_speech_in_noise {
         targetPlayer->setLevel_dB(x);
     }
     
-    double RecognitionTestModel::targetLevel_dB(int snr_dB) {
+    double RecognitionTestModel::targetLevel_dB() {
         return
             desiredMaskerLevel_dB() +
             snr_dB -
