@@ -1323,6 +1323,12 @@ namespace {
             run(useCase);
             assertOutputFileLog("writeTrialHeading writeTrial ");
         }
+        
+        void assertHeadingWrittenOnceWhenRunTwice(UseCase &useCase) {
+            run(useCase);
+            run(useCase);
+            assertOutputFileLog("writeTrialHeading writeTrial writeTrial ");
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1862,18 +1868,14 @@ namespace {
         RecognitionTestModelTests,
         submitFreeResponseTwiceWritesTrialHeadingOnce
     ) {
-        run(submittingFreeResponse);
-        run(submittingFreeResponse);
-        assertOutputFileLog("writeTrialHeading writeTrial writeTrial ");
+        assertHeadingWrittenOnceWhenRunTwice(submittingFreeResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponseTwiceWritesTrialHeadingOnce
     ) {
-        run(submittingCoordinateResponse);
-        run(submittingCoordinateResponse);
-        assertOutputFileLog("writeTrialHeading writeTrial writeTrial ");
+        assertHeadingWrittenOnceWhenRunTwice(submittingCoordinateResponse);
     }
 
     TEST_F(
