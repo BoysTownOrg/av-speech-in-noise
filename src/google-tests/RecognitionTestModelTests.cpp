@@ -1837,11 +1837,33 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitCoordinateResponseWritesTrialHeadingBeforeWritingTrial
+    ) {
+        run(submittingCoordinateResponse);
+        assertOutputFileLog("writeCoordinateResponseTrialHeading writeTrial ");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitFreeResponseTwiceWritesTrialHeadingOnce
     ) {
         run(submittingFreeResponse);
         run(submittingFreeResponse);
         assertOutputFileLog("writeFreeResponseTrialHeading writeTrial writeTrial ");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitFreeResponseTwiceWithCoordinateResponseInbetweenWritesTrialHeadingAgain
+    ) {
+        run(submittingFreeResponse);
+        run(submittingCoordinateResponse);
+        run(submittingFreeResponse);
+        assertOutputFileLog(
+            "writeFreeResponseTrialHeading writeTrial "
+            "writeCoordinateResponseTrialHeading writeTrial "
+            "writeFreeResponseTrialHeading writeTrial "
+        );
     }
 
     TEST_F(

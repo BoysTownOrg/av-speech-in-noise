@@ -277,6 +277,8 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::writeTrial(
         const coordinate_response_measure::SubjectResponse &response
     ) {
+        if (!justWroteCoordinateResponseTrial)
+            outputFile->writeCoordinateResponseTrialHeading();
         coordinate_response_measure::Trial trial;
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
@@ -286,6 +288,8 @@ namespace av_speech_in_noise {
         trial.SNR_dB = adaptiveSnr_dB();
         trial.correct = correct(response);
         outputFile->writeTrial(trial);
+        justWroteCoordinateResponseTrial = true;
+        justWroteFreeResponseTrial = false;
     }
     
     void RecognitionTestModel::updateSnr(
@@ -336,13 +340,13 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::submitResponse(const FreeResponse &p) {
-        if (!freeResponseSubmitted)
+        if (!justWroteFreeResponseTrial)
             outputFile->writeFreeResponseTrialHeading();
-        freeResponseSubmitted = true;
         FreeResponseTrial trial;
         trial.response = p.response;
         trial.target = evaluator->fileName(finiteTargetList->current());
         outputFile->writeTrial(trial);
+        justWroteFreeResponseTrial = true;
         
         prepareTargetPlayer();
         seekRandomMaskerPosition();
