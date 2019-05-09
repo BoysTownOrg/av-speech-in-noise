@@ -126,6 +126,7 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::submitFailedTrial() {
+        model->submitIncorrectResponse();
         proceedToNextTrial();
     }
     

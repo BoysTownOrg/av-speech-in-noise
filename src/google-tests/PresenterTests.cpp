@@ -30,7 +30,12 @@ namespace {
         bool fixedLevelTestInitialized_{};
         bool adaptiveTestInitialized_{};
         bool correctResponseSubmitted_{};
+        bool incorrectResponseSubmitted_{};
     public:
+        auto incorrectResponseSubmitted() const {
+            return incorrectResponseSubmitted_;
+        }
+        
         auto correctResponseSubmitted() const {
             return correctResponseSubmitted_;
         }
@@ -96,7 +101,7 @@ namespace {
         }
         
         void submitIncorrectResponse() override {
-            
+            incorrectResponseSubmitted_ = true;
         }
         
         void initializeTest(const FixedLevelTest &p) override {
@@ -1837,9 +1842,14 @@ namespace {
         assertEqual("a", model.freeResponse().response);
     }
 
-    TEST_F(PresenterTests, passedTrialCallsModel) {
+    TEST_F(PresenterTests, passedTrialSubmitsCorrectResponse) {
         run(submittingPassedTrial);
         assertTrue(model.correctResponseSubmitted());
+    }
+
+    TEST_F(PresenterTests, failedTrialSubmitsIncorrectResponse) {
+        run(submittingFailedTrial);
+        assertTrue(model.incorrectResponseSubmitted());
     }
 
     TEST_F(PresenterTests, respondFromSubjectShowsSetupViewWhenTestComplete) {
