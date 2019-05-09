@@ -651,7 +651,7 @@ namespace {
         }
     };
     
-    class SubmittingTypedResponse : public UseCase {
+    class SubmittingFreeResponse : public UseCase {
         FreeResponse response_;
     public:
         void run(RecognitionTestModel &m) override {
@@ -861,7 +861,7 @@ namespace {
         SubmittingCoordinateResponse submittingCoordinateResponse;
         SubmittingCorrectResponse submittingCorrectResponse;
         SubmittingIncorrectResponse submittingIncorrectResponse;
-        SubmittingTypedResponse submittingTypedResponse;
+        SubmittingFreeResponse submittingFreeResponse;
         std::vector<std::shared_ptr<TargetListStub>> targetLists;
         std::vector<std::shared_ptr<TrackStub>> snrTracks;
         
@@ -1513,7 +1513,7 @@ namespace {
         RecognitionTestModelTests,
         submitTypedResponseQueriesTargetRmsAfterLoadingFile
     ) {
-        assertTargetFileLoadedPriorToRmsQuery(submittingTypedResponse);
+        assertTargetFileLoadedPriorToRmsQuery(submittingFreeResponse);
     }
 
     TEST_F(
@@ -1558,7 +1558,7 @@ namespace {
         submitTypedResponseLoadsNextTarget
     ) {
         initializeFixedLevelTest();
-        assertFiniteTargetListNextPassedToPlayer(submittingTypedResponse);
+        assertFiniteTargetListNextPassedToPlayer(submittingFreeResponse);
     }
 
     TEST_F(
@@ -1645,7 +1645,7 @@ namespace {
         RecognitionTestModelTests,
         submitTypedResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
-        assertTargetPlayerPlaybackCompletionSubscribed(submittingTypedResponse);
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
     }
 
     TEST_F(
@@ -1687,7 +1687,7 @@ namespace {
         RecognitionTestModelTests,
         submitTypedResponseSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
-        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingTypedResponse);
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingFreeResponse);
     }
 
     TEST_F(
@@ -1729,7 +1729,7 @@ namespace {
         RecognitionTestModelTests,
         submitTypedResponseSeeksToRandomMaskerPosition
     ) {
-        assertMaskerPlayerSeekedToRandomTime(submittingTypedResponse);
+        assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
     }
 
     TEST_F(
@@ -1779,7 +1779,7 @@ namespace {
         setTestingFullScaleLevel_dB_SPL(4);
         initializeFixedLevelTest();
         setTargetPlayerRms(5);
-        run(submittingTypedResponse);
+        run(submittingFreeResponse);
         assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
     }
 
@@ -1813,8 +1813,8 @@ namespace {
         RecognitionTestModelTests,
         submitOpenSetResponseWritesResponse
     ) {
-        submittingTypedResponse.setResponse("a");
-        run(submittingTypedResponse);
+        submittingFreeResponse.setResponse("a");
+        run(submittingFreeResponse);
         assertEqual("a", writtenOpenSetTrial().response);
     }
 
@@ -1823,7 +1823,7 @@ namespace {
         submitOpenSetResponsePassesCurrentTargetToEvaluator
     ) {
         finiteTargetList.setCurrent("a");
-        run(submittingTypedResponse);
+        run(submittingFreeResponse);
         assertEqual("a", evaluator.filePathForFileName());
     }
 
@@ -1832,7 +1832,7 @@ namespace {
         submitOpenSetResponseWritesTarget
     ) {
         evaluator.setFileName("a");
-        run(submittingTypedResponse);
+        run(submittingFreeResponse);
         assertEqual("a", writtenOpenSetTrial().target);
     }
 
