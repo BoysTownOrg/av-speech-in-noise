@@ -84,6 +84,7 @@ namespace av_speech_in_noise {
             virtual void show() = 0;
             virtual void hide() = 0;
             virtual void showEvaluationButtons() = 0;
+            virtual void hideEvaluationButtons() = 0;
             virtual void showResponseSubmission() = 0;
             virtual void hideResponseSubmission() = 0;
             virtual std::string response() = 0;

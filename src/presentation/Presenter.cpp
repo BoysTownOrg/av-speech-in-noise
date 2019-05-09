@@ -429,6 +429,7 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::submitPassedTrial() {
         parent->submitPassedTrial();
+        view->hideEvaluationButtons();
         showNextTrialButton();
     }
     

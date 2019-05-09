@@ -479,9 +479,14 @@ namespace {
             bool evaluationButtonsShown_{};
             bool responseSubmissionShown_{};
             bool responseSubmissionHidden_{};
+            bool evaluationButtonsHidden_{};
         public:
             auto responseSubmissionHidden() const {
                 return responseSubmissionHidden_;
+            }
+            
+            auto evaluationButtonsHidden() const {
+                return evaluationButtonsHidden_;
             }
             
             auto nextTrialButtonShown() const {
@@ -538,6 +543,10 @@ namespace {
             
             void hideResponseSubmission() override {
                 responseSubmissionHidden_ = true;
+            }
+            
+            void hideEvaluationButtons() override {
+                evaluationButtonsHidden_ = true;
             }
             
             void playTrial() {
@@ -1844,6 +1853,11 @@ namespace {
     TEST_F(PresenterTests, experimenterResponseHidesResponseSubmission) {
         run(respondingFromExperimenter);
         assertTrue(experimenterView.responseSubmissionHidden());
+    }
+
+    TEST_F(PresenterTests, correctResponseHidesEvaluationButtons) {
+        run(submittingPassedTrial);
+        assertTrue(experimenterView.evaluationButtonsHidden());
     }
 
     TEST_F(PresenterTests, subjectResponseHidesSubjectViewWhenTestComplete) {
