@@ -1184,24 +1184,8 @@ namespace {
             model.completeTrial();
         }
         
-        auto subjectResponseButtonsShown() {
-            return subjectView.responseButtonsShown();
-        }
-        
-        void assertSubjectResponseButtonsNotShown() {
-            assertFalse(subjectResponseButtonsShown());
-        }
-        
         void assertEvaluationButtonsShown() {
             assertTrue(experimenterView.evaluationButtonsShown());
-        }
-        
-        auto experimenterResponseSubmissionShown() {
-            return experimenterView.responseSubmissionShown();
-        }
-        
-        void assertExperimenterResponseSubmissionNotShown() {
-            assertFalse(experimenterResponseSubmissionShown());
         }
         
         void assertResponseButtonsHidden() {
@@ -1446,6 +1430,15 @@ namespace {
             run(useCase);
             completeTrial();
             assertTrue(trialSubmission.responseViewShown());
+        }
+        
+        void assertCompleteTrialDoesNotShowResponseView(
+            ConfirmingTestSetup &useCase,
+            TrialSubmission &trialSubmission
+        ) {
+            run(useCase);
+            completeTrial();
+            assertFalse(trialSubmission.responseViewShown());
         }
     };
 
@@ -1930,18 +1923,20 @@ namespace {
         PresenterTests,
         completingTrialDoesNotShowExperimenterResponseSubmissionForAdaptiveClosedSetTest
     ) {
-        run(confirmingAdaptiveClosedSetTest);
-        completeTrial();
-        assertExperimenterResponseSubmissionNotShown();
+        assertCompleteTrialDoesNotShowResponseView(
+            confirmingAdaptiveClosedSetTest,
+            respondingFromExperimenter
+        );
     }
 
     TEST_F(
         PresenterTests,
         completingTrialDoesNotShowSubjectResponseButtonsForFixedLevelOpenSetTest
     ) {
-        run(confirmingFixedLevelOpenSetTest);
-        completeTrial();
-        assertSubjectResponseButtonsNotShown();
+        assertCompleteTrialDoesNotShowResponseView(
+            confirmingFixedLevelOpenSetTest,
+            respondingFromSubject
+        );
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestWithInvalidSnrShowsErrorMessage) {
