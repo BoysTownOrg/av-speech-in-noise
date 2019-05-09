@@ -1234,10 +1234,6 @@ namespace {
             model.completeTrial();
         }
         
-        void assertResponseButtonsHidden() {
-            assertTrue(subjectView.responseButtonsHidden());
-        }
-        
         void assertSetupViewConditionsContains(std::string s) {
             assertTrue(setupView.conditions().contains(std::move(s)));
         }
@@ -1928,15 +1924,14 @@ namespace {
         assertResponseViewHidden(submittingFailedTrial);
     }
 
+    TEST_F(PresenterTests, subjectResponseHidesResponseButtons) {
+        assertResponseViewHidden(respondingFromSubject);
+    }
+
     TEST_F(PresenterTests, subjectResponseHidesSubjectViewWhenTestComplete) {
         setTestComplete();
         respondFromSubject();
         assertSubjectViewHidden();
-    }
-
-    TEST_F(PresenterTests, subjectResponseHidesResponseButtons) {
-        respondFromSubject();
-        assertResponseButtonsHidden();
     }
 
     TEST_F(PresenterTests, browseForTargetListUpdatesTargetList) {
