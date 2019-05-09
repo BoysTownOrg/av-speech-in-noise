@@ -107,6 +107,19 @@ namespace av_speech_in_noise {
         return stream.str();
     }
     
+    void OutputFileImpl::writeOpenSetTrialHeading() {
+        write(formatOpenSetTrialHeading());
+    }
+    
+    std::string OutputFileImpl::formatOpenSetTrialHeading() {
+        FormattedStream stream;
+        stream.insert("target");
+        stream.insertCommaAndSpace();
+        stream.insert("response");
+        stream.insertNewLine();
+        return stream.str();
+    }
+    
     void OutputFileImpl::openNewFile(const TestInformation &test) {
         writer->open(generateNewFilePath(test));
         if (writer->failed())

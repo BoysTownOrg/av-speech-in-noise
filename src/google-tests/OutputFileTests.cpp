@@ -156,6 +156,11 @@ namespace {
         file.writeTrial(uninitialized);
     }
 
+    TEST_F(OutputFileTests, writeOpenSetTrialHeading) {
+        file.writeOpenSetTrialHeading();
+        assertWritten("target, response\n");
+    }
+
     TEST_F(OutputFileTests, writeOpenSetTrial) {
         openSetTrial.response = "a";
         openSetTrial.target = "b";

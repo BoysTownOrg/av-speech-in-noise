@@ -43,6 +43,7 @@ namespace av_speech_in_noise {
         case Condition::audioVisual:
             return "audio-visual";
         }
+        return "unknown";
     }
     
     struct TrackingSequence {
