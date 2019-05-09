@@ -1887,19 +1887,9 @@ namespace {
         assertCancellingBrowseDoesNotChangePath(browsingForCalibration);
     }
 
-    TEST_F(PresenterTests, trialCompleteShowsResponseButtons) {
-        completeTrial();
-        assertSubjectResponseButtonsShown();
-    }
-
     TEST_F(PresenterTests, trialCompleteShowsEvaluationButtons) {
         completeTrial();
         assertEvaluationButtonsShown();
-    }
-
-    TEST_F(PresenterTests, trialCompleteShowsResponseSubmission) {
-        completeTrial();
-        assertExperimenterResponseSubmissionShown();
     }
 
     TEST_F(

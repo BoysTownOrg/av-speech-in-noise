@@ -222,7 +222,6 @@ namespace av_speech_in_noise {
         bool testComplete();
         void proceedToNextTrial();
         void hideTestSetup();
-        void showResponseButtons();
         bool adaptiveTest();
         void initializeTest();
         void showTestView();

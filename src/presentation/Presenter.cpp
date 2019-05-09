@@ -88,15 +88,11 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::trialComplete() {
-        showResponseButtons();
-        if (!adaptiveClosedSet)
-            experimenter->showResponseSubmission();
-    }
-    
-    void Presenter::showResponseButtons() {
-        if (!fixedLevelOpenSet)
-            subject->showResponseButtons();
         experimenter->showEvaluationButtons();
+        if (adaptiveClosedSet)
+            subject->showResponseButtons();
+        if (fixedLevelOpenSet)
+            experimenter->showResponseSubmission();
     }
     
     void Presenter::submitSubjectResponse() {
