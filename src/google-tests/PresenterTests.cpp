@@ -824,6 +824,7 @@ namespace {
     class TrialSubmission : public virtual UseCase {
     public:
         virtual bool nextTrialButtonShown() = 0;
+        virtual bool responseViewShown() = 0;
     };
     
     class RespondingFromSubject : public TrialSubmission {
@@ -838,6 +839,10 @@ namespace {
         
         bool nextTrialButtonShown() override {
             return view->nextTrialButtonShown();
+        }
+        
+        bool responseViewShown() override {
+            return view->responseButtonsShown();
         }
     };
     
@@ -854,6 +859,10 @@ namespace {
         bool nextTrialButtonShown() override {
             return view->nextTrialButtonShown();
         }
+        
+        bool responseViewShown() override {
+            return view->responseSubmissionShown();
+        }
     };
     
     class SubmittingPassedTrial : public TrialSubmission {
@@ -868,6 +877,10 @@ namespace {
         
         bool nextTrialButtonShown() override {
             return view->nextTrialButtonShown();
+        }
+        
+        bool responseViewShown() override {
+            return view->evaluationButtonsShown();
         }
     };
     
@@ -1175,10 +1188,6 @@ namespace {
             return subjectView.responseButtonsShown();
         }
         
-        void assertSubjectResponseButtonsShown() {
-            assertTrue(subjectResponseButtonsShown());
-        }
-        
         void assertSubjectResponseButtonsNotShown() {
             assertFalse(subjectResponseButtonsShown());
         }
@@ -1432,6 +1441,15 @@ namespace {
             setupView.setStartingSnr("?");
             run(useCase);
             assertSetupViewNotHidden();
+        }
+        
+        void assertCompleteTrialShowsResponseView(
+            ConfirmingTestSetup &useCase,
+            TrialSubmission &trialSubmission
+        ) {
+            run(useCase);
+            completeTrial();
+            assertTrue(trialSubmission.responseViewShown());
         }
     };
 
@@ -1896,9 +1914,10 @@ namespace {
         PresenterTests,
         completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest
     ) {
-        run(confirmingAdaptiveClosedSetTest);
-        completeTrial();
-        assertSubjectResponseButtonsShown();
+        assertCompleteTrialShowsResponseView(
+            confirmingAdaptiveClosedSetTest,
+            respondingFromSubject
+        );
     }
 
     TEST_F(
