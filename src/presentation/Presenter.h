@@ -132,6 +132,7 @@ namespace av_speech_in_noise {
             Calibration calibrationParameters();
             bool adaptiveClosedSet();
             bool adaptiveOpenSet();
+            bool fixedLevelOpenSet();
             void playCalibration() override;
             void browseForTargetList() override;
             void browseForMasker() override;
@@ -238,6 +239,7 @@ namespace av_speech_in_noise {
         Subject *subject;
         Experimenter *experimenter;
         bool adaptiveClosedSet{};
+        bool fixedLevelOpenSet{};
     };
 }
 

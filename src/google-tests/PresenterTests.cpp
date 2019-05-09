@@ -1175,6 +1175,10 @@ namespace {
             assertTrue(subjectView.responseButtonsShown());
         }
         
+        void assertSubjectResponseButtonsNotShown() {
+            assertFalse(subjectView.responseButtonsShown());
+        }
+        
         void assertEvaluationButtonsShown() {
             assertTrue(experimenterView.evaluationButtonsShown());
         }
@@ -1919,6 +1923,15 @@ namespace {
         run(confirmingAdaptiveClosedSetTest);
         completeTrial();
         assertExperimenterResponseSubmissionNotShown();
+    }
+
+    TEST_F(
+        PresenterTests,
+        completingTrialDoesNotShowSubjectResponseButtonsForFixedLevelOpenSetTest
+    ) {
+        run(confirmingFixedLevelOpenSetTest);
+        completeTrial();
+        assertSubjectResponseButtonsNotShown();
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestWithInvalidSnrShowsErrorMessage) {
