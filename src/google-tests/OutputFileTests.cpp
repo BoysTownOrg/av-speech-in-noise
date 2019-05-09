@@ -71,6 +71,41 @@ namespace {
             return testInformation_;
         }
     };
+    
+    class UseCase {
+    public:
+        virtual ~UseCase() = default;
+        virtual void run(OutputFileImpl &) = 0;
+    };
+    
+    class WritingTestUseCase : public virtual UseCase {
+    public:
+        virtual void setCondition(Condition) = 0;
+    };
+    
+    class WritingAdaptiveTest : public WritingTestUseCase {
+        AdaptiveTest test;
+    public:
+        void setCondition(Condition c) override {
+            test.condition = c;
+        }
+        
+        void run(OutputFileImpl &file) override {
+            file.writeTest(test);
+        }
+    };
+    
+    class WritingFixedLevelTest : public WritingTestUseCase {
+        FixedLevelTest test;
+    public:
+        void setCondition(Condition c) override {
+            test.condition = c;
+        }
+        
+        void run(OutputFileImpl &file) override {
+            file.writeTest(test);
+        }
+    };
 
     class OutputFileTests : public ::testing::Test {
     protected:
@@ -82,6 +117,8 @@ namespace {
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
         TestInformation testInformation;
+        WritingFixedLevelTest writingFixedLevelTest;
+        WritingAdaptiveTest writingAdaptiveTest;
         
         void openNewFile() {
             file.openNewFile(testInformation);
@@ -114,6 +151,15 @@ namespace {
         
         void assertWrittenLast(std::string s) {
             EXPECT_TRUE(written().endsWith(std::move(s)));
+        }
+        
+        void assertConditionNameWritten(
+            WritingTestUseCase &useCase,
+            Condition c
+        ) {
+            useCase.setCondition(c);
+            useCase.run(file);
+            assertWriterContainsConditionName(c);
         }
     };
 
@@ -188,15 +234,11 @@ namespace {
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTestWithAvCondition) {
-        adaptiveTest.condition = Condition::audioVisual;
-        file.writeTest(adaptiveTest);
-        assertWriterContainsConditionName(Condition::audioVisual);
+        assertConditionNameWritten(writingAdaptiveTest, Condition::audioVisual);
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTestWithAuditoryOnlyCondition) {
-        adaptiveTest.condition = Condition::auditoryOnly;
-        file.writeTest(adaptiveTest);
-        assertWriterContainsConditionName(Condition::auditoryOnly);
+        assertConditionNameWritten(writingAdaptiveTest, Condition::auditoryOnly);
     }
 
     TEST_F(OutputFileTests, writeFixedLevelTest) {
@@ -219,15 +261,11 @@ namespace {
     }
 
     TEST_F(OutputFileTests, writeFixedLevelTestWithAvCondition) {
-        fixedLevelTest.condition = Condition::audioVisual;
-        file.writeTest(fixedLevelTest);
-        assertWriterContainsConditionName(Condition::audioVisual);
+        assertConditionNameWritten(writingFixedLevelTest, Condition::audioVisual);
     }
 
     TEST_F(OutputFileTests, writeFixedLevelTestWithAuditoryOnlyCondition) {
-        fixedLevelTest.condition = Condition::auditoryOnly;
-        file.writeTest(fixedLevelTest);
-        assertWriterContainsConditionName(Condition::auditoryOnly);
+        assertConditionNameWritten(writingFixedLevelTest, Condition::auditoryOnly);
     }
 
     TEST_F(OutputFileTests, openPassesFormattedFilePath) {
