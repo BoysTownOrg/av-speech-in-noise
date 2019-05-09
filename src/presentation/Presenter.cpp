@@ -51,9 +51,9 @@ namespace av_speech_in_noise {
     }
     
     auto Presenter::getTrialCompletionHandler() -> TrialCompletionHandler * {
-        if (testSetup->adaptiveClosedSet())
+        if (adaptiveClosedSet())
             return &adaptiveClosedSetTrialCompletionHandler;
-        if (testSetup->adaptiveOpenSet())
+        if (adaptiveOpenSet())
             return &adaptiveOpenSetTrialCompletionHandler;
         if (testSetup->fixedLevelOpenSet())
             return &fixedLevelOpenSetTrialCompletionHandler;
@@ -69,7 +69,15 @@ namespace av_speech_in_noise {
     }
     
     bool Presenter::adaptiveTest() {
-        return testSetup->adaptiveClosedSet() || testSetup->adaptiveOpenSet();
+        return adaptiveClosedSet() || adaptiveOpenSet();
+    }
+    
+    bool Presenter::adaptiveClosedSet() {
+        return testSetup->adaptiveClosedSet();
+    }
+    
+    bool Presenter::adaptiveOpenSet() {
+        return testSetup->adaptiveOpenSet();
     }
     
     void Presenter::switchToTestView() {
@@ -78,7 +86,7 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::showTestView() {
-        if (testSetup->adaptiveClosedSet())
+        if (adaptiveClosedSet())
             subject->show();
         else
             experimenter->show();
