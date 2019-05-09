@@ -1200,10 +1200,6 @@ namespace {
             return experimenterView.responseSubmissionShown();
         }
         
-        void assertExperimenterResponseSubmissionShown() {
-            assertTrue(experimenterResponseSubmissionShown());
-        }
-        
         void assertExperimenterResponseSubmissionNotShown() {
             assertFalse(experimenterResponseSubmissionShown());
         }
@@ -1924,9 +1920,10 @@ namespace {
         PresenterTests,
         completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetTest
     ) {
-        run(confirmingFixedLevelOpenSetTest);
-        completeTrial();
-        assertExperimenterResponseSubmissionShown();
+        assertCompleteTrialShowsResponseView(
+            confirmingFixedLevelOpenSetTest,
+            respondingFromExperimenter
+        );
     }
 
     TEST_F(
