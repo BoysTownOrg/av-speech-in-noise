@@ -29,7 +29,7 @@ namespace av_speech_in_noise {
         void writeTest(const AdaptiveTest &) override;
         void writeTrial(const coordinate_response_measure::Trial &) override;
         void writeCoordinateResponseTrialHeading() override;
-        void writeFreeResponseTrialHeading();
+        void writeFreeResponseTrialHeading() override;
         void openNewFile(const TestInformation &) override;
         void close() override;
         void writeTest(const FixedLevelTest &) override;

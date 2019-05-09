@@ -119,6 +119,7 @@ namespace av_speech_in_noise {
         virtual void writeTest(const AdaptiveTest &) = 0;
         virtual void writeTest(const FixedLevelTest &) = 0;
         virtual void writeCoordinateResponseTrialHeading() = 0;
+        virtual void writeFreeResponseTrialHeading() = 0;
         virtual void close() = 0;
     };
     

@@ -340,6 +340,7 @@ namespace av_speech_in_noise {
         trial.response = p.response;
         trial.target = evaluator->fileName(finiteTargetList->current());
         outputFile->writeTrial(trial);
+        outputFile->writeFreeResponseTrialHeading();
         
         prepareTargetPlayer();
         seekRandomMaskerPosition();

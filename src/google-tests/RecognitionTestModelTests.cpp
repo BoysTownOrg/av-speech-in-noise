@@ -291,6 +291,7 @@ namespace {
         const TestInformation *openNewFileParameters_{};
         bool throwOnOpen_{};
         bool coordinateResponseHeadingWritten_{};
+        bool freeResponseTrialHeadingWritten_{};
     public:
         auto &log() const {
             return log_;
@@ -310,6 +311,10 @@ namespace {
         
         auto &writtenFreeResponseTrial() const {
             return writtenFreeResponseTrial_;
+        }
+        
+        auto freeResponseTrialHeadingWritten() const {
+            return freeResponseTrialHeadingWritten_;
         }
         
         void writeTrial(
@@ -355,6 +360,10 @@ namespace {
         
         void writeTrial(const FreeResponseTrial &p) override {
             writtenFreeResponseTrial_ = p;
+        }
+        
+        void writeFreeResponseTrialHeading() override {
+            freeResponseTrialHeadingWritten_ = true;
         }
         
         void throwOnOpen() {
@@ -1807,6 +1816,14 @@ namespace {
     TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
         maskerPlayer.fadeOutComplete();
         assertTrue(listener.notified());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitFreeResponseWritesTrialHeading
+    ) {
+        run(submittingFreeResponse);
+        assertTrue(outputFile.freeResponseTrialHeadingWritten());
     }
 
     TEST_F(
