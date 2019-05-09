@@ -1179,12 +1179,16 @@ namespace {
             assertTrue(experimenterView.evaluationButtonsShown());
         }
         
+        auto experimenterResponseSubmissionShown() {
+            return experimenterView.responseSubmissionShown();
+        }
+        
         void assertExperimenterResponseSubmissionShown() {
-            assertTrue(experimenterView.responseSubmissionShown());
+            assertTrue(experimenterResponseSubmissionShown());
         }
         
         void assertExperimenterResponseSubmissionNotShown() {
-            assertFalse(experimenterView.responseSubmissionShown());
+            assertFalse(experimenterResponseSubmissionShown());
         }
         
         void assertResponseButtonsHidden() {
