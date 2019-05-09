@@ -187,13 +187,13 @@ namespace {
         assertWrittenLast("\n\n");
     }
 
-    TEST_F(OutputFileTests, writeTestWithAvCondition) {
+    TEST_F(OutputFileTests, writeAdaptiveTestWithAvCondition) {
         adaptiveTest.condition = Condition::audioVisual;
         file.writeTest(adaptiveTest);
         assertWriterContainsConditionName(Condition::audioVisual);
     }
 
-    TEST_F(OutputFileTests, writeTestWithAuditoryOnlyCondition) {
+    TEST_F(OutputFileTests, writeAdaptiveTestWithAuditoryOnlyCondition) {
         adaptiveTest.condition = Condition::auditoryOnly;
         file.writeTest(adaptiveTest);
         assertWriterContainsConditionName(Condition::auditoryOnly);
@@ -216,6 +216,18 @@ namespace {
         assertWriterContains("masker level (dB SPL): 1\n");
         assertWriterContains("SNR (dB): 2\n");
         assertWrittenLast("\n\n");
+    }
+
+    TEST_F(OutputFileTests, writeFixedLevelTestWithAvCondition) {
+        fixedLevelTest.condition = Condition::audioVisual;
+        file.writeTest(fixedLevelTest);
+        assertWriterContainsConditionName(Condition::audioVisual);
+    }
+
+    TEST_F(OutputFileTests, writeFixedLevelTestWithAuditoryOnlyCondition) {
+        fixedLevelTest.condition = Condition::auditoryOnly;
+        file.writeTest(fixedLevelTest);
+        assertWriterContainsConditionName(Condition::auditoryOnly);
     }
 
     TEST_F(OutputFileTests, openPassesFormattedFilePath) {
