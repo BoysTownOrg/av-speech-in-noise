@@ -29,7 +29,12 @@ namespace {
         bool trialPlayed_{};
         bool fixedLevelTestInitialized_{};
         bool adaptiveTestInitialized_{};
+        bool correctResponseSubmitted_{};
     public:
+        auto correctResponseSubmitted() const {
+            return correctResponseSubmitted_;
+        }
+        
         auto freeResponse() const {
             return freeResponse_;
         }
@@ -87,7 +92,7 @@ namespace {
         }
         
         void submitCorrectResponse() override {
-
+            correctResponseSubmitted_ = true;
         }
         
         void submitIncorrectResponse() override {
@@ -1830,6 +1835,11 @@ namespace {
         experimenterView.setResponse("a");
         respondFromExperimenter();
         assertEqual("a", model.freeResponse().response);
+    }
+
+    TEST_F(PresenterTests, passedTrialCallsModel) {
+        run(submittingPassedTrial);
+        assertTrue(model.correctResponseSubmitted());
     }
 
     TEST_F(PresenterTests, respondFromSubjectShowsSetupViewWhenTestComplete) {
