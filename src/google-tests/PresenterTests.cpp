@@ -1905,6 +1905,15 @@ namespace {
 
     TEST_F(
         PresenterTests,
+        completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetTest
+    ) {
+        run(confirmingFixedLevelOpenSetTest);
+        completeTrial();
+        assertExperimenterResponseSubmissionShown();
+    }
+
+    TEST_F(
+        PresenterTests,
         completingTrialDoesNotShowExperimenterResponseSubmissionForAdaptiveClosedSetTest
     ) {
         run(confirmingAdaptiveClosedSetTest);
