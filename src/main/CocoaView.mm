@@ -586,9 +586,33 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
         buttonWidth,
         buttonHeight
     )];
+    const auto passButton_ = [NSButton
+        buttonWithTitle:@"pass"
+        target:actions
+        action:@selector(submitPassedTrial)
+    ];
+    [passButton_ setFrame:NSMakeRect(
+        r.size.width - 3 * buttonWidth,
+        0,
+        buttonWidth,
+        buttonHeight
+    )];
+    const auto failButton_ = [NSButton
+        buttonWithTitle:@"fail"
+        target:actions
+        action:@selector(submitFailedTrial)
+    ];
+    [failButton_ setFrame:NSMakeRect(
+        r.size.width - buttonWidth,
+        0,
+        buttonWidth,
+        buttonHeight
+    )];
     [nextTrialButton addSubview:nextTrialButton_];
     [responseSubmission addSubview:submitResponse_];
     [responseSubmission addSubview:response_];
+    [evaluationButtons addSubview:passButton_];
+    [evaluationButtons addSubview:failButton_];
     [view_ addSubview:nextTrialButton];
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
@@ -631,6 +655,10 @@ void CocoaExperimenterView::hideResponseSubmission() {
     [responseSubmission setHidden:YES];
 }
 
+void CocoaExperimenterView::hideEvaluationButtons() {
+    [evaluationButtons setHidden:YES];
+}
+
 std::string CocoaExperimenterView::response() {
     return response_.stringValue.UTF8String;
 }
@@ -647,6 +675,14 @@ void CocoaExperimenterView::submitResponse() {
     listener_->submitResponse();
 }
 
+void CocoaExperimenterView::submitPassedTrial() {
+    listener_->submitPassedTrial();
+}
+
+void CocoaExperimenterView::submitFailedTrial() {
+    listener_->submitFailedTrial();
+}
+
 @implementation ExperimenterViewActions
 @synthesize controller;
 
@@ -656,6 +692,14 @@ void CocoaExperimenterView::submitResponse() {
 
 - (void)submitResponse { 
     controller->submitResponse();
+}
+
+- (void)submitPassedTrial {
+    controller->submitPassedTrial();
+}
+
+- (void)submitFailedTrial {
+    controller->submitFailedTrial();
 }
 @end
 

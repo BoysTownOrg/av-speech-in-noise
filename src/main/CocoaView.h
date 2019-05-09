@@ -29,6 +29,8 @@ class CocoaExperimenterView;
 @property CocoaExperimenterView *controller;
 - (void) playTrial;
 - (void) submitResponse;
+- (void) submitPassedTrial;
+- (void) submitFailedTrial;
 @end
 
 class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
@@ -44,6 +46,8 @@ public:
     NSView *view();
     void playTrial();
     void submitResponse();
+    void submitPassedTrial();
+    void submitFailedTrial();
     void subscribe(EventListener *) override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
@@ -53,6 +57,7 @@ public:
     void showResponseSubmission() override;
     std::string response() override;
     void hideResponseSubmission() override;
+    void hideEvaluationButtons() override;
 };
 
 class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
