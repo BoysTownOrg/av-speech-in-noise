@@ -1904,6 +1904,11 @@ namespace {
         assertTrue(experimenterView.evaluationButtonsHidden());
     }
 
+    TEST_F(PresenterTests, incorrectResponseHidesEvaluationButtons) {
+        run(submittingFailedTrial);
+        assertTrue(experimenterView.evaluationButtonsHidden());
+    }
+
     TEST_F(PresenterTests, subjectResponseHidesSubjectViewWhenTestComplete) {
         setTestComplete();
         respondFromSubject();
