@@ -335,8 +335,8 @@ namespace av_speech_in_noise {
         prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
     }
     
-    void RecognitionTestModel::submitResponse(const OpenSetResponse &p) {
-        OpenSetTrial trial;
+    void RecognitionTestModel::submitResponse(const FreeResponse &p) {
+        FreeResponseTrial trial;
         trial.response = p.response;
         trial.target = evaluator->fileName(finiteTargetList->current());
         outputFile->writeTrial(trial);

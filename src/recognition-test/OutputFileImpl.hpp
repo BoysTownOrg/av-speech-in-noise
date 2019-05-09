@@ -33,7 +33,7 @@ namespace av_speech_in_noise {
         void openNewFile(const TestInformation &) override;
         void close() override;
         void writeTest(const FixedLevelTest &) override;
-        void writeTrial(const OpenSetTrial &) override;
+        void writeTrial(const FreeResponseTrial &) override;
         
     private:
         void write(std::string);
@@ -41,7 +41,7 @@ namespace av_speech_in_noise {
         std::string formatTest(const AdaptiveTest &);
         std::string formatTest(const FixedLevelTest &);
         std::string formatTrial(const coordinate_response_measure::Trial &);
-        std::string formatTrial(const OpenSetTrial &);
+        std::string formatTrial(const FreeResponseTrial &);
         std::string formatCoordinateResponseTrialHeading();
         std::string formatOpenSetTrialHeading();
         std::string generateNewFilePath(const TestInformation &);

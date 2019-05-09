@@ -122,7 +122,7 @@ namespace {
         OutputFilePathStub path;
         OutputFileImpl file{&writer, &path};
         coordinate_response_measure::Trial coordinateResponseTrial;
-        OpenSetTrial openSetTrial;
+        FreeResponseTrial openSetTrial;
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
         TestInformation testInformation;

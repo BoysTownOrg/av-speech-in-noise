@@ -284,7 +284,7 @@ namespace {
     
     class OutputFileStub : public OutputFile {
         coordinate_response_measure::Trial writtenCoordinateResponseTrial_;
-        OpenSetTrial writtenOpenSetTrial_;
+        FreeResponseTrial writtenOpenSetTrial_;
         LogString log_;
         const AdaptiveTest *adaptiveTest_{};
         const FixedLevelTest *fixedLevelTest_{};
@@ -353,7 +353,7 @@ namespace {
             fixedLevelTest_ = &p;
         }
         
-        void writeTrial(const OpenSetTrial &p) override {
+        void writeTrial(const FreeResponseTrial &p) override {
             writtenOpenSetTrial_ = p;
         }
         
@@ -652,7 +652,7 @@ namespace {
     };
     
     class SubmittingTypedResponse : public UseCase {
-        OpenSetResponse response_;
+        FreeResponse response_;
     public:
         void run(RecognitionTestModel &m) override {
             m.submitResponse(response_);

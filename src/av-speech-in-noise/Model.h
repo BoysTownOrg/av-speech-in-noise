@@ -94,11 +94,11 @@ namespace av_speech_in_noise {
         Condition condition;
     };
     
-    struct OpenSetResponse {
+    struct FreeResponse {
         std::string response;
     };
     
-    struct OpenSetTrial {
+    struct FreeResponseTrial {
         std::string response;
         std::string target;
     };
@@ -125,7 +125,7 @@ namespace av_speech_in_noise {
         virtual void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) = 0;
-        virtual void submitResponse(const OpenSetResponse &) = 0;
+        virtual void submitResponse(const FreeResponse &) = 0;
         virtual void submitCorrectResponse() = 0;
         virtual void submitIncorrectResponse() = 0;
         virtual bool testComplete() = 0;

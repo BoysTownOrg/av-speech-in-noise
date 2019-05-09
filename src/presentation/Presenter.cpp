@@ -429,7 +429,7 @@ namespace av_speech_in_noise {
         showNextTrialButton();
     }
     
-    OpenSetResponse Presenter::Experimenter::openSetResponse() {
+    FreeResponse Presenter::Experimenter::openSetResponse() {
         return {view->response()};
     }
 }
