@@ -838,6 +838,7 @@ namespace {
     public:
         virtual bool nextTrialButtonShown() = 0;
         virtual bool responseViewShown() = 0;
+        virtual bool responseViewHidden() = 0;
     };
     
     class RespondingFromSubject : public TrialSubmission {
@@ -856,6 +857,10 @@ namespace {
         
         bool responseViewShown() override {
             return view->responseButtonsShown();
+        }
+        
+        bool responseViewHidden() override {
+            return view->responseButtonsHidden();
         }
     };
     
@@ -876,6 +881,10 @@ namespace {
         bool responseViewShown() override {
             return view->responseSubmissionShown();
         }
+        
+        bool responseViewHidden() override {
+            return view->responseSubmissionHidden();
+        }
     };
     
     class SubmittingPassedTrial : public TrialSubmission {
@@ -895,6 +904,10 @@ namespace {
         bool responseViewShown() override {
             return view->evaluationButtonsShown();
         }
+        
+        bool responseViewHidden() override {
+            return view->evaluationButtonsHidden();
+        }
     };
     
     class SubmittingFailedTrial : public TrialSubmission {
@@ -913,6 +926,10 @@ namespace {
         
         bool responseViewShown() override {
             return view->evaluationButtonsShown();
+        }
+        
+        bool responseViewHidden() override {
+            return view->evaluationButtonsHidden();
         }
     };
     
@@ -1460,6 +1477,11 @@ namespace {
             completeTrial();
             assertTrue(trialSubmission.responseViewShown());
         }
+        
+        void assertResponseViewHidden(TrialSubmission &useCase) {
+            run(useCase);
+            assertTrue(useCase.responseViewHidden());
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1895,18 +1917,15 @@ namespace {
     }
 
     TEST_F(PresenterTests, experimenterResponseHidesResponseSubmission) {
-        run(respondingFromExperimenter);
-        assertTrue(experimenterView.responseSubmissionHidden());
+        assertResponseViewHidden(respondingFromExperimenter);
     }
 
     TEST_F(PresenterTests, correctResponseHidesEvaluationButtons) {
-        run(submittingPassedTrial);
-        assertTrue(experimenterView.evaluationButtonsHidden());
+        assertResponseViewHidden(submittingPassedTrial);
     }
 
     TEST_F(PresenterTests, incorrectResponseHidesEvaluationButtons) {
-        run(submittingFailedTrial);
-        assertTrue(experimenterView.evaluationButtonsHidden());
+        assertResponseViewHidden(submittingFailedTrial);
     }
 
     TEST_F(PresenterTests, subjectResponseHidesSubjectViewWhenTestComplete) {
