@@ -183,6 +183,8 @@ namespace av_speech_in_noise {
             void showResponseSubmission();
             FreeResponse openSetResponse();
             void playTrial() override;
+            void prepareNextEvaluatedTrial();
+            
             void submitPassedTrial() override;
             void submitResponse() override;
             void submitFailedTrial() override;
