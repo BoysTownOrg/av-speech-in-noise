@@ -239,6 +239,7 @@ namespace av_speech_in_noise {
         Experimenter *experimenter;
         bool adaptiveClosedSet{};
         bool fixedLevelOpenSet{};
+        bool adaptiveOpenSet{};
     };
 }
 

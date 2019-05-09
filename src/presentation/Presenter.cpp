@@ -46,6 +46,8 @@ namespace av_speech_in_noise {
         switchToTestView();
         if (testSetup->adaptiveClosedSet())
             adaptiveClosedSet = true;
+        if (testSetup->adaptiveOpenSet())
+            adaptiveOpenSet = true;
         if (testSetup->fixedLevelOpenSet())
             fixedLevelOpenSet = true;
     }
@@ -88,9 +90,10 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::trialComplete() {
-        experimenter->showEvaluationButtons();
         if (adaptiveClosedSet)
             subject->showResponseButtons();
+        if (adaptiveOpenSet)
+            experimenter->showEvaluationButtons();
         if (fixedLevelOpenSet)
             experimenter->showResponseSubmission();
     }

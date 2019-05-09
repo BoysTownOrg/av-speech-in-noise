@@ -1184,10 +1184,6 @@ namespace {
             model.completeTrial();
         }
         
-        void assertEvaluationButtonsShown() {
-            assertTrue(experimenterView.evaluationButtonsShown());
-        }
-        
         void assertResponseButtonsHidden() {
             assertTrue(subjectView.responseButtonsHidden());
         }
@@ -1894,11 +1890,6 @@ namespace {
         assertCancellingBrowseDoesNotChangePath(browsingForCalibration);
     }
 
-    TEST_F(PresenterTests, trialCompleteShowsEvaluationButtons) {
-        completeTrial();
-        assertEvaluationButtonsShown();
-    }
-
     TEST_F(
         PresenterTests,
         completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest
@@ -1936,6 +1927,16 @@ namespace {
         assertCompleteTrialDoesNotShowResponseView(
             confirmingAdaptiveClosedSetTest,
             respondingFromExperimenter
+        );
+    }
+
+    TEST_F(
+        PresenterTests,
+        completingTrialDoesNotShowExperimenterEvaluationButtonsForAdaptiveClosedSetTest
+    ) {
+        assertCompleteTrialDoesNotShowResponseView(
+            confirmingAdaptiveClosedSetTest,
+            submittingPassedTrial
         );
     }
 
