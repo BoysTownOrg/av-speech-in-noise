@@ -77,11 +77,11 @@ namespace {
         WriterStub writer;
         OutputFilePathStub path;
         OutputFileImpl file{&writer, &path};
-        coordinate_response_measure::Trial coordinateResponseTrial{};
-        OpenSetTrial openSetTrial{};
-        AdaptiveTest adaptiveTest{};
-        FixedLevelTest fixedLevelTest{};
-        TestInformation testInformation{};
+        coordinate_response_measure::Trial coordinateResponseTrial;
+        OpenSetTrial openSetTrial;
+        AdaptiveTest adaptiveTest;
+        FixedLevelTest fixedLevelTest;
+        TestInformation testInformation;
         
         void openNewFile() {
             file.openNewFile(testInformation);
@@ -103,14 +103,17 @@ namespace {
         void writeOpenSetTrial() {
             file.writeTrial(openSetTrial);
         }
+        
+        void assertWritten(std::string s) {
+            assertEqual(std::move(s), writer.written());
+        }
     };
 
     TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
         file.writeCoordinateResponseTrialHeading();
-        assertEqual(
+        assertWritten(
             "SNR (dB), correct number, subject number, "
-            "correct color, subject color, evaluation, reversals\n",
-            writer.written()
+            "correct color, subject color, evaluation, reversals\n"
         );
     }
 
@@ -118,15 +121,14 @@ namespace {
         coordinateResponseTrial.SNR_dB = 1;
         coordinateResponseTrial.correctNumber = 2;
         coordinateResponseTrial.subjectNumber = 3;
-        coordinateResponseTrial.correctColor = coordinate_response_measure::Color::green;
-        coordinateResponseTrial.subjectColor = coordinate_response_measure::Color::red;
+        coordinateResponseTrial.correctColor =
+            coordinate_response_measure::Color::green;
+        coordinateResponseTrial.subjectColor =
+            coordinate_response_measure::Color::red;
         coordinateResponseTrial.reversals = 4;
         coordinateResponseTrial.correct = false;
         writeCoordinateResponseTrial();
-        assertEqual(
-            "1, 2, 3, green, red, incorrect, 4\n",
-            writer.written()
-        );
+        assertWritten("1, 2, 3, green, red, incorrect, 4\n");
     }
 
     TEST_F(OutputFileTests, writeIncorrectCoordinateResponseTrial) {
@@ -141,7 +143,7 @@ namespace {
         assertWriterContains(" correct, ");
     }
 
-    TEST_F(OutputFileTests, colorNameUninitializedColorDefined) {
+    TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
         coordinate_response_measure::Trial uninitialized;
         file.writeTrial(uninitialized);
     }
@@ -150,10 +152,7 @@ namespace {
         openSetTrial.response = "a";
         openSetTrial.target = "b";
         writeOpenSetTrial();
-        assertEqual(
-            "b, a\n",
-            writer.written()
-        );
+        assertWritten("b, a\n");
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTest) {
