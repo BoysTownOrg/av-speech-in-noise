@@ -481,6 +481,10 @@ namespace {
             bool responseSubmissionHidden_{};
             bool evaluationButtonsHidden_{};
         public:
+            void submitFailedTrial() {
+                listener_->submitFailedTrial();
+            }
+            
             auto responseSubmissionHidden() const {
                 return responseSubmissionHidden_;
             }
@@ -893,6 +897,25 @@ namespace {
         }
     };
     
+    class SubmittingFailedTrial : public TrialSubmission {
+        ViewStub::ExperimenterViewStub *view;
+    public:
+        explicit SubmittingFailedTrial(ViewStub::ExperimenterViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->submitFailedTrial();
+        }
+        
+        bool nextTrialButtonShown() override {
+            return view->nextTrialButtonShown();
+        }
+        
+        bool responseViewShown() override {
+            return view->evaluationButtonsShown();
+        }
+    };
+    
     class PlayingTrial : public virtual UseCase {
     public:
         virtual bool nextTrialButtonHidden() = 0;
@@ -1068,6 +1091,7 @@ namespace {
         RespondingFromSubject respondingFromSubject{&subjectView};
         RespondingFromExperimenter respondingFromExperimenter{&experimenterView};
         SubmittingPassedTrial submittingPassedTrial{&experimenterView};
+        SubmittingFailedTrial submittingFailedTrial{&experimenterView};
         
         std::string auditoryOnlyConditionName() {
             return conditionName(Condition::auditoryOnly);
@@ -1800,6 +1824,10 @@ namespace {
 
     TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
         assertCompleteTestShowsSetupView(submittingPassedTrial);
+    }
+
+    TEST_F(PresenterTests, submitFailedTrialShowsSetupViewWhenTestComplete) {
+        assertCompleteTestShowsSetupView(submittingFailedTrial);
     }
 
     TEST_F(PresenterTests, respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {

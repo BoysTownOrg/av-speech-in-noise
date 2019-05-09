@@ -120,6 +120,14 @@ namespace av_speech_in_noise {
         proceedToNextTrial();
     }
     
+    void Presenter::submitPassedTrial() {
+        proceedToNextTrial();
+    }
+    
+    void Presenter::submitFailedTrial() {
+        proceedToNextTrial();
+    }
+    
     void Presenter::proceedToNextTrial() {
         if (testComplete())
             switchToSetupView();
@@ -184,11 +192,6 @@ namespace av_speech_in_noise {
             view->browseForOpeningFile(),
             &TestSetup::setCalibrationFilePath
         );
-    }
-    
-    void Presenter::submitPassedTrial() {
-        if (testComplete())
-            switchToSetupView();
     }
     
 
@@ -431,6 +434,10 @@ namespace av_speech_in_noise {
         parent->submitPassedTrial();
         view->hideEvaluationButtons();
         showNextTrialButton();
+    }
+    
+    void Presenter::Experimenter::submitFailedTrial() {
+        parent->submitPassedTrial();
     }
     
     void Presenter::Experimenter::hide() { 
