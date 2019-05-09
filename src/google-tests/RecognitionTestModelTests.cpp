@@ -372,6 +372,10 @@ namespace {
         auto freeResponseTrialHeadingWritten() const {
             return freeResponseTrialHeadingWritten_;
         }
+        
+        auto coordinateResponseTrialHeadingWritten() const {
+            return coordinateResponseHeadingWritten_;
+        }
     };
     
     class ModelEventListenerStub : public Model::EventListener {
@@ -1825,6 +1829,14 @@ namespace {
     ) {
         run(submittingFreeResponse);
         assertTrue(outputFile.freeResponseTrialHeadingWritten());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseWritesTrialHeading
+    ) {
+        run(submittingCoordinateResponse);
+        assertTrue(outputFile.coordinateResponseTrialHeadingWritten());
     }
 
     TEST_F(
