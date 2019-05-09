@@ -44,6 +44,8 @@ namespace av_speech_in_noise {
     void Presenter::confirmTestSetup_() {
         initializeTest();
         switchToTestView();
+        if (testSetup->adaptiveClosedSet())
+            adaptiveClosedSet = true;
     }
     
     void Presenter::initializeTest() {
@@ -85,7 +87,8 @@ namespace av_speech_in_noise {
     
     void Presenter::trialComplete() {
         showResponseButtons();
-        experimenter->showResponseSubmission();
+        if (!adaptiveClosedSet)
+            experimenter->showResponseSubmission();
     }
     
     void Presenter::showResponseButtons() {

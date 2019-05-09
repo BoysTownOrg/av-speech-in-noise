@@ -1171,7 +1171,7 @@ namespace {
             model.completeTrial();
         }
         
-        void assertResponseButtonsShown() {
+        void assertSubjectResponseButtonsShown() {
             assertTrue(subjectView.responseButtonsShown());
         }
         
@@ -1179,8 +1179,12 @@ namespace {
             assertTrue(experimenterView.evaluationButtonsShown());
         }
         
-        void assertResponseSubmissionShown() {
+        void assertExperimenterResponseSubmissionShown() {
             assertTrue(experimenterView.responseSubmissionShown());
+        }
+        
+        void assertExperimenterResponseSubmissionNotShown() {
+            assertFalse(experimenterView.responseSubmissionShown());
         }
         
         void assertResponseButtonsHidden() {
@@ -1873,7 +1877,7 @@ namespace {
 
     TEST_F(PresenterTests, trialCompleteShowsResponseButtons) {
         completeTrial();
-        assertResponseButtonsShown();
+        assertSubjectResponseButtonsShown();
     }
 
     TEST_F(PresenterTests, trialCompleteShowsEvaluationButtons) {
@@ -1883,7 +1887,25 @@ namespace {
 
     TEST_F(PresenterTests, trialCompleteShowsResponseSubmission) {
         completeTrial();
-        assertResponseSubmissionShown();
+        assertExperimenterResponseSubmissionShown();
+    }
+
+    TEST_F(
+        PresenterTests,
+        completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest
+    ) {
+        run(confirmingAdaptiveClosedSetTest);
+        completeTrial();
+        assertSubjectResponseButtonsShown();
+    }
+
+    TEST_F(
+        PresenterTests,
+        completingTrialDoesNotShowExperimenterResponseSubmissionForAdaptiveClosedSetTest
+    ) {
+        run(confirmingAdaptiveClosedSetTest);
+        completeTrial();
+        assertExperimenterResponseSubmissionNotShown();
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestWithInvalidSnrShowsErrorMessage) {
