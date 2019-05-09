@@ -1427,15 +1427,6 @@ namespace {
             completeTrial();
             assertTrue(trialSubmission.responseViewShown());
         }
-        
-        void assertCompleteTrialDoesNotShowResponseView(
-            ConfirmingTestSetup &useCase,
-            TrialSubmission &trialSubmission
-        ) {
-            run(useCase);
-            completeTrial();
-            assertFalse(trialSubmission.responseViewShown());
-        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1917,46 +1908,6 @@ namespace {
         assertCompleteTrialShowsResponseView(
             confirmingFixedLevelOpenSetTest,
             respondingFromExperimenter
-        );
-    }
-
-    TEST_F(
-        PresenterTests,
-        completingTrialDoesNotShowExperimenterResponseSubmissionForAdaptiveClosedSetTest
-    ) {
-        assertCompleteTrialDoesNotShowResponseView(
-            confirmingAdaptiveClosedSetTest,
-            respondingFromExperimenter
-        );
-    }
-
-    TEST_F(
-        PresenterTests,
-        completingTrialDoesNotShowExperimenterEvaluationButtonsForAdaptiveClosedSetTest
-    ) {
-        assertCompleteTrialDoesNotShowResponseView(
-            confirmingAdaptiveClosedSetTest,
-            submittingPassedTrial
-        );
-    }
-
-    TEST_F(
-        PresenterTests,
-        completingTrialDoesNotShowSubjectResponseButtonsForAdaptiveOpenSetTest
-    ) {
-        assertCompleteTrialDoesNotShowResponseView(
-            confirmingAdaptiveOpenSetTest,
-            respondingFromSubject
-        );
-    }
-
-    TEST_F(
-        PresenterTests,
-        completingTrialDoesNotShowSubjectResponseButtonsForFixedLevelOpenSetTest
-    ) {
-        assertCompleteTrialDoesNotShowResponseView(
-            confirmingFixedLevelOpenSetTest,
-            respondingFromSubject
         );
     }
 
