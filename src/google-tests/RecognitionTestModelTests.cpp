@@ -1310,6 +1310,10 @@ namespace {
             outputFile.throwOnOpen();
             assertCallThrowsRequestFailure(useCase, "Unable to open output file.");
         }
+        
+        void assertOutputFileLog(std::string s) {
+            assertEqual(std::move(s), outputFile.log());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1386,10 +1390,7 @@ namespace {
         initializeAdaptiveTestClosesOutputFileOpensAndWritesTestInOrder
     ) {
         run(initializingAdaptiveTest);
-        assertEqual(
-            "close openNewFile writeTest ",
-            outputFile.log()
-        );
+        assertOutputFileLog("close openNewFile writeTest ");
     }
 
     TEST_F(
@@ -1397,10 +1398,7 @@ namespace {
         initializeFixedLevelTestClosesOutputFileOpensAndWritesTestInOrder
     ) {
         run(initializingFixedLevelTest);
-        assertEqual(
-            "close openNewFile writeTest ",
-            outputFile.log()
-        );
+        assertOutputFileLog("close openNewFile writeTest ");
     }
 
     TEST_F(
@@ -1834,7 +1832,7 @@ namespace {
         submitFreeResponseWritesTrialHeadingBeforeWritingTrial
     ) {
         run(submittingFreeResponse);
-        assertEqual("writeFreeResponseTrialHeading writeTrial ", outputFile.log());
+        assertOutputFileLog("writeFreeResponseTrialHeading writeTrial ");
     }
 
     TEST_F(
