@@ -87,15 +87,6 @@ namespace {
             file.openNewFile(testInformation);
         }
         
-        void assertWriterContainsConditionName(Condition c) {
-            std::string name = conditionName(c);
-            assertWriterContains("condition: " + name + "\n");
-        }
-        
-        void assertWriterContains(std::string s) {
-            EXPECT_TRUE(writer.written().contains(std::move(s)));
-        }
-        
         void writeCoordinateResponseTrial() {
             file.writeTrial(coordinateResponseTrial);
         }
@@ -104,8 +95,25 @@ namespace {
             file.writeTrial(openSetTrial);
         }
         
+        const auto &written() {
+            return writer.written();
+        }
+        
+        void assertWriterContainsConditionName(Condition c) {
+            std::string name = conditionName(c);
+            assertWriterContains("condition: " + name + "\n");
+        }
+        
+        void assertWriterContains(std::string s) {
+            EXPECT_TRUE(written().contains(std::move(s)));
+        }
+        
         void assertWritten(std::string s) {
-            assertEqual(std::move(s), writer.written());
+            assertEqual(std::move(s), written());
+        }
+        
+        void assertWrittenLast(std::string s) {
+            EXPECT_TRUE(written().endsWith(std::move(s)));
         }
     };
 
@@ -171,7 +179,7 @@ namespace {
         assertWriterContains("targets: d\n");
         assertWriterContains("masker level (dB SPL): 1\n");
         assertWriterContains("starting SNR (dB): 2\n");
-        EXPECT_TRUE(writer.written().endsWith("\n\n"));
+        assertWrittenLast("\n\n");
     }
 
     TEST_F(OutputFileTests, writeTestWithAvCondition) {
@@ -202,7 +210,7 @@ namespace {
         assertWriterContains("targets: d\n");
         assertWriterContains("masker level (dB SPL): 1\n");
         assertWriterContains("SNR (dB): 2\n");
-        EXPECT_TRUE(writer.written().endsWith("\n\n"));
+        assertWrittenLast("\n\n");
     }
 
     TEST_F(OutputFileTests, openPassesFormattedFilePath) {
