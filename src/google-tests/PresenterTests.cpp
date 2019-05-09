@@ -1171,12 +1171,16 @@ namespace {
             model.completeTrial();
         }
         
+        auto subjectResponseButtonsShown() {
+            return subjectView.responseButtonsShown();
+        }
+        
         void assertSubjectResponseButtonsShown() {
-            assertTrue(subjectView.responseButtonsShown());
+            assertTrue(subjectResponseButtonsShown());
         }
         
         void assertSubjectResponseButtonsNotShown() {
-            assertFalse(subjectView.responseButtonsShown());
+            assertFalse(subjectResponseButtonsShown());
         }
         
         void assertEvaluationButtonsShown() {
