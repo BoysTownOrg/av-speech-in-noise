@@ -81,6 +81,7 @@ namespace {
     class WritingTestUseCase : public virtual UseCase {
     public:
         virtual void setCondition(Condition) = 0;
+        virtual void setTestInfo(const TestInformation &) = 0;
     };
     
     class WritingAdaptiveTest : public WritingTestUseCase {
@@ -88,6 +89,10 @@ namespace {
     public:
         void setCondition(Condition c) override {
             test.condition = c;
+        }
+        
+        void setTestInfo(const TestInformation &p) override {
+            test.information = p;
         }
         
         void run(OutputFileImpl &file) override {
@@ -100,6 +105,10 @@ namespace {
     public:
         void setCondition(Condition c) override {
             test.condition = c;
+        }
+        
+        void setTestInfo(const TestInformation &p) override {
+            test.information = p;
         }
         
         void run(OutputFileImpl &file) override {
@@ -161,6 +170,18 @@ namespace {
             useCase.run(file);
             assertWriterContainsConditionName(c);
         }
+        
+        void assertTestInformationWritten(WritingTestUseCase &useCase) {
+            TestInformation info;
+            info.subjectId = "a";
+            info.testerId = "b";
+            info.session = "c";
+            useCase.setTestInfo(info);
+            useCase.run(file);
+            assertWriterContains("subject: a\n");
+            assertWriterContains("tester: b\n");
+            assertWriterContains("session: c\n");
+        }
     };
 
     TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
@@ -216,21 +237,19 @@ namespace {
 
     TEST_F(OutputFileTests, writeAdaptiveTest) {
         adaptiveTest.maskerFilePath = "a";
-        adaptiveTest.information.session = "b";
-        adaptiveTest.information.subjectId = "c";
         adaptiveTest.targetListDirectory = "d";
-        adaptiveTest.information.testerId = "e";
         adaptiveTest.maskerLevel_dB_SPL = 1;
         adaptiveTest.startingSnr_dB = 2;
         file.writeTest(adaptiveTest);
-        assertWriterContains("subject: c\n");
-        assertWriterContains("tester: e\n");
-        assertWriterContains("session: b\n");
         assertWriterContains("masker: a\n");
         assertWriterContains("targets: d\n");
         assertWriterContains("masker level (dB SPL): 1\n");
         assertWriterContains("starting SNR (dB): 2\n");
         assertWrittenLast("\n\n");
+    }
+
+    TEST_F(OutputFileTests, writeAdaptiveTestInformation) {
+        assertTestInformationWritten(writingAdaptiveTest);
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTestWithAvCondition) {
@@ -243,21 +262,19 @@ namespace {
 
     TEST_F(OutputFileTests, writeFixedLevelTest) {
         fixedLevelTest.maskerFilePath = "a";
-        fixedLevelTest.information.session = "b";
-        fixedLevelTest.information.subjectId = "c";
         fixedLevelTest.targetListDirectory = "d";
-        fixedLevelTest.information.testerId = "e";
         fixedLevelTest.maskerLevel_dB_SPL = 1;
         fixedLevelTest.snr_dB = 2;
         file.writeTest(fixedLevelTest);
-        assertWriterContains("subject: c\n");
-        assertWriterContains("tester: e\n");
-        assertWriterContains("session: b\n");
         assertWriterContains("masker: a\n");
         assertWriterContains("targets: d\n");
         assertWriterContains("masker level (dB SPL): 1\n");
         assertWriterContains("SNR (dB): 2\n");
         assertWrittenLast("\n\n");
+    }
+
+    TEST_F(OutputFileTests, writeFixedLevelTestInformation) {
+        assertTestInformationWritten(writingFixedLevelTest);
     }
 
     TEST_F(OutputFileTests, writeFixedLevelTestWithAvCondition) {
