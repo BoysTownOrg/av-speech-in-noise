@@ -1890,6 +1890,10 @@ namespace {
         assertShowsNextTrialButton(submittingPassedTrial);
     }
 
+    TEST_F(PresenterTests, subjectFailedTrialShowsNextTrialButtonForExperimenter) {
+        assertShowsNextTrialButton(submittingFailedTrial);
+    }
+
     TEST_F(PresenterTests, experimenterResponseHidesResponseSubmission) {
         run(respondingFromExperimenter);
         assertTrue(experimenterView.responseSubmissionHidden());
