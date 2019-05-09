@@ -313,7 +313,7 @@ namespace {
         }
         
         void writeCoordinateResponseTrialHeading() override {
-            addToLog("writeCoordinateResponseTrialHeading ");
+            addToLog("writeTrialHeading ");
             coordinateResponseHeadingWritten_ = true;
         }
         
@@ -333,7 +333,7 @@ namespace {
         }
         
         void writeFreeResponseTrialHeading() override {
-            addToLog("writeFreeResponseTrialHeading ");
+            addToLog("writeTrialHeading ");
             freeResponseTrialHeadingWritten_ = true;
         }
         
@@ -1318,6 +1318,11 @@ namespace {
         void assertOutputFileLog(std::string s) {
             assertEqual(std::move(s), outputFile.log());
         }
+        
+        void assertHeadingWrittenBeforeTrial(UseCase &useCase) {
+            run(useCase);
+            assertOutputFileLog("writeTrialHeading writeTrial ");
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1843,16 +1848,14 @@ namespace {
         RecognitionTestModelTests,
         submitFreeResponseWritesTrialHeadingBeforeWritingTrial
     ) {
-        run(submittingFreeResponse);
-        assertOutputFileLog("writeFreeResponseTrialHeading writeTrial ");
+        assertHeadingWrittenBeforeTrial(submittingFreeResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponseWritesTrialHeadingBeforeWritingTrial
     ) {
-        run(submittingCoordinateResponse);
-        assertOutputFileLog("writeCoordinateResponseTrialHeading writeTrial ");
+        assertHeadingWrittenBeforeTrial(submittingCoordinateResponse);
     }
 
     TEST_F(
@@ -1861,7 +1864,7 @@ namespace {
     ) {
         run(submittingFreeResponse);
         run(submittingFreeResponse);
-        assertOutputFileLog("writeFreeResponseTrialHeading writeTrial writeTrial ");
+        assertOutputFileLog("writeTrialHeading writeTrial writeTrial ");
     }
 
     TEST_F(
@@ -1870,7 +1873,7 @@ namespace {
     ) {
         run(submittingCoordinateResponse);
         run(submittingCoordinateResponse);
-        assertOutputFileLog("writeCoordinateResponseTrialHeading writeTrial writeTrial ");
+        assertOutputFileLog("writeTrialHeading writeTrial writeTrial ");
     }
 
     TEST_F(
@@ -1881,9 +1884,9 @@ namespace {
         run(submittingCoordinateResponse);
         run(submittingFreeResponse);
         assertOutputFileLog(
-            "writeFreeResponseTrialHeading writeTrial "
-            "writeCoordinateResponseTrialHeading writeTrial "
-            "writeFreeResponseTrialHeading writeTrial "
+            "writeTrialHeading writeTrial "
+            "writeTrialHeading writeTrial "
+            "writeTrialHeading writeTrial "
         );
     }
 
@@ -1895,9 +1898,9 @@ namespace {
         run(submittingFreeResponse);
         run(submittingCoordinateResponse);
         assertOutputFileLog(
-            "writeCoordinateResponseTrialHeading writeTrial "
-            "writeFreeResponseTrialHeading writeTrial "
-            "writeCoordinateResponseTrialHeading writeTrial "
+            "writeTrialHeading writeTrial "
+            "writeTrialHeading writeTrial "
+            "writeTrialHeading writeTrial "
         );
     }
 
