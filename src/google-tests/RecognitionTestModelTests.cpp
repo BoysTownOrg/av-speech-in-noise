@@ -1854,6 +1854,15 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitCoordinateResponseTwiceWritesTrialHeadingOnce
+    ) {
+        run(submittingCoordinateResponse);
+        run(submittingCoordinateResponse);
+        assertOutputFileLog("writeCoordinateResponseTrialHeading writeTrial writeTrial ");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitFreeResponseTwiceWithCoordinateResponseInbetweenWritesTrialHeadingAgain
     ) {
         run(submittingFreeResponse);
