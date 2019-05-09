@@ -122,7 +122,7 @@ namespace {
         OutputFilePathStub path;
         OutputFileImpl file{&writer, &path};
         coordinate_response_measure::Trial coordinateResponseTrial;
-        FreeResponseTrial openSetTrial;
+        FreeResponseTrial freeResponseTrial;
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
         TestInformation testInformation;
@@ -137,8 +137,8 @@ namespace {
             file.writeTrial(coordinateResponseTrial);
         }
         
-        void writeOpenSetTrial() {
-            file.writeTrial(openSetTrial);
+        void writeFreeResponseTrial() {
+            file.writeTrial(freeResponseTrial);
         }
         
         const auto &written() {
@@ -215,10 +215,10 @@ namespace {
         file.writeTrial(uninitialized);
     }
 
-    TEST_F(OutputFileTests, writeOpenSetTrial) {
-        openSetTrial.response = "a";
-        openSetTrial.target = "b";
-        writeOpenSetTrial();
+    TEST_F(OutputFileTests, writeFreeResponseTrial) {
+        freeResponseTrial.response = "a";
+        freeResponseTrial.target = "b";
+        writeFreeResponseTrial();
         assertWritten("b, a\n");
     }
 
@@ -230,8 +230,8 @@ namespace {
         );
     }
 
-    TEST_F(OutputFileTests, writeOpenSetTrialHeading) {
-        file.writeOpenSetTrialHeading();
+    TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
+        file.writeFreeResponseTrialHeading();
         assertWritten("target, response\n");
     }
 

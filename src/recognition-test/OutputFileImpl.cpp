@@ -107,7 +107,7 @@ namespace av_speech_in_noise {
         return stream.str();
     }
     
-    void OutputFileImpl::writeOpenSetTrialHeading() {
+    void OutputFileImpl::writeFreeResponseTrialHeading() {
         write(formatOpenSetTrialHeading());
     }
     
