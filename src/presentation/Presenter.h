@@ -188,6 +188,57 @@ namespace av_speech_in_noise {
             Presenter *parent;
         };
         
+        class TrialCompletionHandler {
+        public:
+            virtual ~TrialCompletionHandler() = default;
+            virtual void showResponseView() = 0;
+        };
+        
+        class AdaptiveClosedSetTestTrialCompletionHandler :
+            public TrialCompletionHandler
+        {
+            Subject *subject;
+        public:
+            explicit AdaptiveClosedSetTestTrialCompletionHandler(
+                Subject *subject
+            ) :
+                subject{subject} {}
+            
+            void showResponseView() override {
+                subject->showResponseButtons();
+            }
+        };
+        
+        class AdaptiveOpenSetTestTrialCompletionHandler :
+            public TrialCompletionHandler
+        {
+            Experimenter *experimenter;
+        public:
+            explicit AdaptiveOpenSetTestTrialCompletionHandler(
+                Experimenter *experimenter
+            ) :
+                experimenter{experimenter} {}
+            
+            void showResponseView() override {
+                experimenter->showEvaluationButtons();
+            }
+        };
+        
+        class FixedLevelOpenSetTestTrialCompletionHandler :
+            public TrialCompletionHandler
+        {
+            Experimenter *experimenter;
+        public:
+            explicit FixedLevelOpenSetTestTrialCompletionHandler(
+                Experimenter *experimenter
+            ) :
+                experimenter{experimenter} {}
+            
+            void showResponseView() override {
+                experimenter->showResponseSubmission();
+            }
+        };
+        
         Presenter(
             Model *,
             View *,
@@ -232,14 +283,15 @@ namespace av_speech_in_noise {
             void(TestSetup::*f)(std::string)
         );
         
+        FixedLevelOpenSetTestTrialCompletionHandler fixedLevelOpenSetTrialCompletionHandler;
+        AdaptiveOpenSetTestTrialCompletionHandler adaptiveOpenSetTrialCompletionHandler;
+        AdaptiveClosedSetTestTrialCompletionHandler adaptiveClosedSetTrialCompletionHandler;
         Model *model;
         View *view;
         TestSetup *testSetup;
         Subject *subject;
         Experimenter *experimenter;
-        bool adaptiveClosedSet{};
-        bool fixedLevelOpenSet{};
-        bool adaptiveOpenSet{};
+        TrialCompletionHandler *trialCompletionHandler{};
     };
 }
 

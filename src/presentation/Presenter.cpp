@@ -16,6 +16,9 @@ namespace av_speech_in_noise {
         Subject *subject,
         Experimenter *experimenter
     ) :
+        fixedLevelOpenSetTrialCompletionHandler{experimenter},
+        adaptiveOpenSetTrialCompletionHandler{experimenter},
+        adaptiveClosedSetTrialCompletionHandler{subject},
         model{model},
         view{view},
         testSetup{testSetup},
@@ -45,11 +48,11 @@ namespace av_speech_in_noise {
         initializeTest();
         switchToTestView();
         if (testSetup->adaptiveClosedSet())
-            adaptiveClosedSet = true;
+            trialCompletionHandler = &adaptiveClosedSetTrialCompletionHandler;
         if (testSetup->adaptiveOpenSet())
-            adaptiveOpenSet = true;
+            trialCompletionHandler = &adaptiveOpenSetTrialCompletionHandler;
         if (testSetup->fixedLevelOpenSet())
-            fixedLevelOpenSet = true;
+            trialCompletionHandler = &fixedLevelOpenSetTrialCompletionHandler;
     }
     
     void Presenter::initializeTest() {
@@ -90,12 +93,7 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::trialComplete() {
-        if (adaptiveClosedSet)
-            subject->showResponseButtons();
-        if (adaptiveOpenSet)
-            experimenter->showEvaluationButtons();
-        if (fixedLevelOpenSet)
-            experimenter->showResponseSubmission();
+        trialCompletionHandler->showResponseView();
     }
     
     void Presenter::submitSubjectResponse() {
