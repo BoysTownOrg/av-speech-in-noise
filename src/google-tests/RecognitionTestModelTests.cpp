@@ -1877,6 +1877,20 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitCoordinateResponseTwiceWithFreeResponseInbetweenWritesTrialHeadingAgain
+    ) {
+        run(submittingCoordinateResponse);
+        run(submittingFreeResponse);
+        run(submittingCoordinateResponse);
+        assertOutputFileLog(
+            "writeCoordinateResponseTrialHeading writeTrial "
+            "writeFreeResponseTrialHeading writeTrial "
+            "writeCoordinateResponseTrialHeading writeTrial "
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitFreeResponseWritesResponse
     ) {
         submittingFreeResponse.setResponse("a");
