@@ -282,6 +282,7 @@ namespace av_speech_in_noise {
             std::string s,
             void(TestSetup::*f)(std::string)
         );
+        TrialCompletionHandler *getTrialCompletionHandler();
         
         FixedLevelOpenSetTestTrialCompletionHandler fixedLevelOpenSetTrialCompletionHandler;
         AdaptiveOpenSetTestTrialCompletionHandler adaptiveOpenSetTrialCompletionHandler;

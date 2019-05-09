@@ -47,12 +47,18 @@ namespace av_speech_in_noise {
     void Presenter::confirmTestSetup_() {
         initializeTest();
         switchToTestView();
+        trialCompletionHandler = getTrialCompletionHandler();
+    }
+    
+    auto Presenter::getTrialCompletionHandler() -> TrialCompletionHandler * {
         if (testSetup->adaptiveClosedSet())
-            trialCompletionHandler = &adaptiveClosedSetTrialCompletionHandler;
+            return &adaptiveClosedSetTrialCompletionHandler;
         if (testSetup->adaptiveOpenSet())
-            trialCompletionHandler = &adaptiveOpenSetTrialCompletionHandler;
+            return &adaptiveOpenSetTrialCompletionHandler;
         if (testSetup->fixedLevelOpenSet())
-            trialCompletionHandler = &fixedLevelOpenSetTrialCompletionHandler;
+            return &fixedLevelOpenSetTrialCompletionHandler;
+        else
+            return {};
     }
     
     void Presenter::initializeTest() {
