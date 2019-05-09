@@ -1858,6 +1858,10 @@ namespace {
         assertCompleteTestHidesExperimenterView(submittingPassedTrial);
     }
 
+    TEST_F(PresenterTests, submitFailedTrialHidesExperimenterViewWhenTestComplete) {
+        assertCompleteTestHidesExperimenterView(submittingFailedTrial);
+    }
+
     TEST_F(PresenterTests, respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
         assertDoesNotHideExperimenterView(respondingFromSubject);
     }
@@ -1868,6 +1872,10 @@ namespace {
 
     TEST_F(PresenterTests, submitPassedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
         assertDoesNotHideExperimenterView(submittingPassedTrial);
+    }
+
+    TEST_F(PresenterTests, submitFailedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
+        assertDoesNotHideExperimenterView(submittingFailedTrial);
     }
 
     TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
