@@ -184,14 +184,6 @@ namespace {
         }
     };
 
-    TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
-        file.writeCoordinateResponseTrialHeading();
-        assertWritten(
-            "SNR (dB), correct number, subject number, "
-            "correct color, subject color, evaluation, reversals\n"
-        );
-    }
-
     TEST_F(OutputFileTests, writeCoordinateResponseTrial) {
         coordinateResponseTrial.SNR_dB = 1;
         coordinateResponseTrial.correctNumber = 2;
@@ -223,16 +215,24 @@ namespace {
         file.writeTrial(uninitialized);
     }
 
-    TEST_F(OutputFileTests, writeOpenSetTrialHeading) {
-        file.writeOpenSetTrialHeading();
-        assertWritten("target, response\n");
-    }
-
     TEST_F(OutputFileTests, writeOpenSetTrial) {
         openSetTrial.response = "a";
         openSetTrial.target = "b";
         writeOpenSetTrial();
         assertWritten("b, a\n");
+    }
+
+    TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
+        file.writeCoordinateResponseTrialHeading();
+        assertWritten(
+            "SNR (dB), correct number, subject number, "
+            "correct color, subject color, evaluation, reversals\n"
+        );
+    }
+
+    TEST_F(OutputFileTests, writeOpenSetTrialHeading) {
+        file.writeOpenSetTrialHeading();
+        assertWritten("target, response\n");
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTest) {
@@ -248,18 +248,6 @@ namespace {
         assertWrittenLast("\n\n");
     }
 
-    TEST_F(OutputFileTests, writeAdaptiveTestInformation) {
-        assertTestInformationWritten(writingAdaptiveTest);
-    }
-
-    TEST_F(OutputFileTests, writeAdaptiveTestWithAvCondition) {
-        assertConditionNameWritten(writingAdaptiveTest, Condition::audioVisual);
-    }
-
-    TEST_F(OutputFileTests, writeAdaptiveTestWithAuditoryOnlyCondition) {
-        assertConditionNameWritten(writingAdaptiveTest, Condition::auditoryOnly);
-    }
-
     TEST_F(OutputFileTests, writeFixedLevelTest) {
         fixedLevelTest.maskerFilePath = "a";
         fixedLevelTest.targetListDirectory = "d";
@@ -273,8 +261,20 @@ namespace {
         assertWrittenLast("\n\n");
     }
 
+    TEST_F(OutputFileTests, writeAdaptiveTestInformation) {
+        assertTestInformationWritten(writingAdaptiveTest);
+    }
+
     TEST_F(OutputFileTests, writeFixedLevelTestInformation) {
         assertTestInformationWritten(writingFixedLevelTest);
+    }
+
+    TEST_F(OutputFileTests, writeAdaptiveTestWithAvCondition) {
+        assertConditionNameWritten(writingAdaptiveTest, Condition::audioVisual);
+    }
+
+    TEST_F(OutputFileTests, writeAdaptiveTestWithAuditoryOnlyCondition) {
+        assertConditionNameWritten(writingAdaptiveTest, Condition::auditoryOnly);
     }
 
     TEST_F(OutputFileTests, writeFixedLevelTestWithAvCondition) {
