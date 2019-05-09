@@ -1332,19 +1332,23 @@ namespace {
             assertEqual(std::move(s), outputFile.log());
         }
         
-        std::string trialHeadingFollowedByTrial() {
-            return "writeTrialHeading writeTrial ";
+        std::string trialWritten() {
+            return "writeTrial ";
+        }
+        
+        std::string trialHeadingWrittenFollowedByTrial() {
+            return "writeTrialHeading " + trialWritten();
         }
         
         void assertHeadingWrittenBeforeTrial(UseCase &useCase) {
             run(useCase);
-            assertOutputFileLog(trialHeadingFollowedByTrial());
+            assertOutputFileLog(trialHeadingWrittenFollowedByTrial());
         }
         
         void assertHeadingWrittenOnceWhenRunTwice(UseCase &useCase) {
             run(useCase);
             run(useCase);
-            assertOutputFileLog(trialHeadingFollowedByTrial() + "writeTrial ");
+            assertOutputFileLog(trialHeadingWrittenFollowedByTrial() + trialWritten());
         }
         
         void assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(UseCase &useCase, UseCase &other) {
@@ -1352,9 +1356,9 @@ namespace {
             run(other);
             run(useCase);
             assertOutputFileLog(
-                trialHeadingFollowedByTrial() +
-                trialHeadingFollowedByTrial() +
-                trialHeadingFollowedByTrial()
+                trialHeadingWrittenFollowedByTrial() +
+                trialHeadingWrittenFollowedByTrial() +
+                trialHeadingWrittenFollowedByTrial()
             );
         }
         
