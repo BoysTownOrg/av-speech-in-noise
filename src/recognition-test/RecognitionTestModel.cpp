@@ -336,11 +336,11 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::submitResponse(const FreeResponse &p) {
+        outputFile->writeFreeResponseTrialHeading();
         FreeResponseTrial trial;
         trial.response = p.response;
         trial.target = evaluator->fileName(finiteTargetList->current());
         outputFile->writeTrial(trial);
-        outputFile->writeFreeResponseTrialHeading();
         
         prepareTargetPlayer();
         seekRandomMaskerPosition();

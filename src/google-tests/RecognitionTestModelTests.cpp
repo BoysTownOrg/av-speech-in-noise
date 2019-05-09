@@ -293,6 +293,62 @@ namespace {
         bool coordinateResponseHeadingWritten_{};
         bool freeResponseTrialHeadingWritten_{};
     public:
+        
+        void writeTrial(
+            const coordinate_response_measure::Trial &trial
+        ) override {
+            addToLog("writeTrial ");
+            writtenCoordinateResponseTrial_ = trial;
+        }
+        
+        void openNewFile(const TestInformation &p) override {
+            addToLog("openNewFile ");
+            openNewFileParameters_ = &p;
+            if (throwOnOpen_)
+                throw OpenFailure{};
+        }
+        
+        void close() override {
+            addToLog("close ");
+        }
+        
+        void writeCoordinateResponseTrialHeading() override {
+            addToLog("writeCoordinateResponseTrialHeading ");
+            coordinateResponseHeadingWritten_ = true;
+        }
+        
+        void writeTest(const AdaptiveTest &test) override {
+            addToLog("writeTest ");
+            adaptiveTest_ = &test;
+        }
+        
+        void writeTest(const FixedLevelTest &p) override {
+            addToLog("writeTest ");
+            fixedLevelTest_ = &p;
+        }
+        
+        void writeTrial(const FreeResponseTrial &p) override {
+            addToLog("writeTrial ");
+            writtenFreeResponseTrial_ = p;
+        }
+        
+        void writeFreeResponseTrialHeading() override {
+            addToLog("writeFreeResponseTrialHeading ");
+            freeResponseTrialHeadingWritten_ = true;
+        }
+        
+        void addToLog(std::string s) {
+            log_.insert(std::move(s));
+        }
+        
+        void throwOnOpen() {
+            throwOnOpen_ = true;
+        }
+        
+        auto openNewFileParameters() const {
+            return openNewFileParameters_;
+        }
+        
         auto &log() const {
             return log_;
         }
@@ -315,59 +371,6 @@ namespace {
         
         auto freeResponseTrialHeadingWritten() const {
             return freeResponseTrialHeadingWritten_;
-        }
-        
-        void writeTrial(
-            const coordinate_response_measure::Trial &trial
-        ) override {
-            addToLog("writeTrial ");
-            writtenCoordinateResponseTrial_ = trial;
-        }
-        
-        void addToLog(std::string s) {
-            log_.insert(std::move(s));
-        }
-        
-        void openNewFile(const TestInformation &p) override {
-            addToLog("openNewFile ");
-            openNewFileParameters_ = &p;
-            if (throwOnOpen_)
-                throw OpenFailure{};
-        }
-        
-        auto openNewFileParameters() const {
-            return openNewFileParameters_;
-        }
-        
-        void writeCoordinateResponseTrialHeading() override {
-            addToLog("writeCoordinateResponseTrialHeading ");
-            coordinateResponseHeadingWritten_ = true;
-        }
-        
-        void writeTest(const AdaptiveTest &test) override {
-            addToLog("writeAdaptiveTest ");
-            adaptiveTest_ = &test;
-        }
-        
-        void close() override {
-            addToLog("close ");
-        }
-        
-        void writeTest(const FixedLevelTest &p) override {
-            addToLog("writeFixedLevelTest ");
-            fixedLevelTest_ = &p;
-        }
-        
-        void writeTrial(const FreeResponseTrial &p) override {
-            writtenFreeResponseTrial_ = p;
-        }
-        
-        void writeFreeResponseTrialHeading() override {
-            freeResponseTrialHeadingWritten_ = true;
-        }
-        
-        void throwOnOpen() {
-            throwOnOpen_ = true;
         }
     };
     
@@ -1382,9 +1385,9 @@ namespace {
         RecognitionTestModelTests,
         initializeAdaptiveTestClosesOutputFileOpensAndWritesTestInOrder
     ) {
-        initializeAdaptiveTest();
+        run(initializingAdaptiveTest);
         assertEqual(
-            "close openNewFile writeAdaptiveTest ",
+            "close openNewFile writeTest ",
             outputFile.log()
         );
     }
@@ -1395,7 +1398,7 @@ namespace {
     ) {
         run(initializingFixedLevelTest);
         assertEqual(
-            "close openNewFile writeFixedLevelTest ",
+            "close openNewFile writeTest ",
             outputFile.log()
         );
     }
@@ -1824,6 +1827,14 @@ namespace {
     ) {
         run(submittingFreeResponse);
         assertTrue(outputFile.freeResponseTrialHeadingWritten());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitFreeResponseWritesTrialHeadingBeforeWritingTrial
+    ) {
+        run(submittingFreeResponse);
+        assertEqual("writeFreeResponseTrialHeading writeTrial ", outputFile.log());
     }
 
     TEST_F(
