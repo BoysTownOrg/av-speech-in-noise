@@ -1911,6 +1911,16 @@ namespace {
 
     TEST_F(
         PresenterTests,
+        completingTrialShowsExperimenterEvaluationButtonsForAdaptiveOpenSetTest
+    ) {
+        assertCompleteTrialShowsResponseView(
+            confirmingAdaptiveOpenSetTest,
+            submittingPassedTrial
+        );
+    }
+
+    TEST_F(
+        PresenterTests,
         completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetTest
     ) {
         assertCompleteTrialShowsResponseView(
@@ -1926,6 +1936,16 @@ namespace {
         assertCompleteTrialDoesNotShowResponseView(
             confirmingAdaptiveClosedSetTest,
             respondingFromExperimenter
+        );
+    }
+
+    TEST_F(
+        PresenterTests,
+        completingTrialDoesNotShowSubjectResponseButtonsForAdaptiveOpenSetTest
+    ) {
+        assertCompleteTrialDoesNotShowResponseView(
+            confirmingAdaptiveOpenSetTest,
+            respondingFromSubject
         );
     }
 
