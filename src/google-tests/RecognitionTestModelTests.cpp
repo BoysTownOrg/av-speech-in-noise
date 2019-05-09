@@ -1329,6 +1329,17 @@ namespace {
             run(useCase);
             assertOutputFileLog("writeTrialHeading writeTrial writeTrial ");
         }
+        
+        void assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(UseCase &useCase, UseCase &other) {
+            run(useCase);
+            run(other);
+            run(useCase);
+            assertOutputFileLog(
+                "writeTrialHeading writeTrial "
+                "writeTrialHeading writeTrial "
+                "writeTrialHeading writeTrial "
+            );
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1882,13 +1893,9 @@ namespace {
         RecognitionTestModelTests,
         submitFreeResponseTwiceWithCoordinateResponseInbetweenWritesTrialHeadingAgain
     ) {
-        run(submittingFreeResponse);
-        run(submittingCoordinateResponse);
-        run(submittingFreeResponse);
-        assertOutputFileLog(
-            "writeTrialHeading writeTrial "
-            "writeTrialHeading writeTrial "
-            "writeTrialHeading writeTrial "
+        assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(
+            submittingFreeResponse,
+            submittingCoordinateResponse
         );
     }
 
@@ -1896,13 +1903,9 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseTwiceWithFreeResponseInbetweenWritesTrialHeadingAgain
     ) {
-        run(submittingCoordinateResponse);
-        run(submittingFreeResponse);
-        run(submittingCoordinateResponse);
-        assertOutputFileLog(
-            "writeTrialHeading writeTrial "
-            "writeTrialHeading writeTrial "
-            "writeTrialHeading writeTrial "
+        assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(
+            submittingCoordinateResponse,
+            submittingFreeResponse
         );
     }
 
