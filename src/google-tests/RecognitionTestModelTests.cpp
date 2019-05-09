@@ -645,11 +645,20 @@ namespace {
         virtual void run(RecognitionTestModel &) = 0;
     };
     
-    class SubmittingCoordinateResponse : public UseCase {
+    class SubmittingResponse : public virtual UseCase {
+    public:
+        virtual bool headingWritten(OutputFileStub &) = 0;
+    };
+    
+    class SubmittingCoordinateResponse : public SubmittingResponse {
         coordinate_response_measure::SubjectResponse response;
     public:
         void run(RecognitionTestModel &m) override {
             m.submitResponse(response);
+        }
+        
+        bool headingWritten(OutputFileStub &file) override {
+            return file.coordinateResponseTrialHeadingWritten();
         }
     };
     
@@ -667,7 +676,7 @@ namespace {
         }
     };
     
-    class SubmittingFreeResponse : public UseCase {
+    class SubmittingFreeResponse : public SubmittingResponse {
         FreeResponse response_;
     public:
         void run(RecognitionTestModel &m) override {
@@ -676,6 +685,10 @@ namespace {
         
         void setResponse(std::string s) {
             response_.response = std::move(s);
+        }
+        
+        bool headingWritten(OutputFileStub &file) override {
+            return file.freeResponseTrialHeadingWritten();
         }
     };
     
@@ -1340,6 +1353,11 @@ namespace {
                 "writeTrialHeading writeTrial "
             );
         }
+        
+        void assertHeadingWritten(SubmittingResponse &useCase) {
+            run(useCase);
+            assertTrue(useCase.headingWritten(outputFile));
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1849,16 +1867,14 @@ namespace {
         RecognitionTestModelTests,
         submitFreeResponseWritesTrialHeading
     ) {
-        run(submittingFreeResponse);
-        assertTrue(outputFile.freeResponseTrialHeadingWritten());
+        assertHeadingWritten(submittingFreeResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponseWritesTrialHeading
     ) {
-        run(submittingCoordinateResponse);
-        assertTrue(outputFile.coordinateResponseTrialHeadingWritten());
+        assertHeadingWritten(submittingCoordinateResponse);
     }
 
     TEST_F(
