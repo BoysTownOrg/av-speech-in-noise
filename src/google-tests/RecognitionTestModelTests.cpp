@@ -1348,10 +1348,15 @@ namespace {
         void assertHeadingWrittenOnceWhenRunTwice(UseCase &useCase) {
             run(useCase);
             run(useCase);
-            assertOutputFileLog(trialHeadingWrittenFollowedByTrial() + trialWritten());
+            assertOutputFileLog(
+                trialHeadingWrittenFollowedByTrial() + trialWritten()
+            );
         }
         
-        void assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(UseCase &useCase, UseCase &other) {
+        void assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(
+            UseCase &useCase,
+            UseCase &other
+        ) {
             run(useCase);
             run(other);
             run(useCase);
@@ -1369,8 +1374,14 @@ namespace {
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
-        assertEqual(static_cast<TargetPlayer::EventListener *>(&model), targetPlayer.listener());
-        assertEqual(static_cast<MaskerPlayer::EventListener *>(&model), maskerPlayer.listener());
+        assertEqual(
+            static_cast<TargetPlayer::EventListener *>(&model),
+            targetPlayer.listener()
+        );
+        assertEqual(
+            static_cast<MaskerPlayer::EventListener *>(&model),
+            maskerPlayer.listener()
+        );
     }
 
     TEST_F(
