@@ -157,6 +157,7 @@ namespace av_speech_in_noise {
         Track *currentSnrTrack{};
         TargetList *currentTargetList{};
         bool fixedLevelTest{};
+        bool freeResponseSubmitted{};
     public:
         RecognitionTestModel(
             TargetListReader *,

@@ -1837,6 +1837,15 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitFreeResponseTwiceWritesTrialHeadingOnce
+    ) {
+        run(submittingFreeResponse);
+        run(submittingFreeResponse);
+        assertOutputFileLog("writeFreeResponseTrialHeading writeTrial writeTrial ");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitFreeResponseWritesResponse
     ) {
         submittingFreeResponse.setResponse("a");

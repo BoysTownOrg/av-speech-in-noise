@@ -336,7 +336,9 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::submitResponse(const FreeResponse &p) {
-        outputFile->writeFreeResponseTrialHeading();
+        if (!freeResponseSubmitted)
+            outputFile->writeFreeResponseTrialHeading();
+        freeResponseSubmitted = true;
         FreeResponseTrial trial;
         trial.response = p.response;
         trial.target = evaluator->fileName(finiteTargetList->current());
