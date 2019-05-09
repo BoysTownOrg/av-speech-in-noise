@@ -284,7 +284,7 @@ namespace {
     
     class OutputFileStub : public OutputFile {
         coordinate_response_measure::Trial writtenCoordinateResponseTrial_;
-        FreeResponseTrial writtenOpenSetTrial_;
+        FreeResponseTrial writtenFreeResponseTrial_;
         LogString log_;
         const AdaptiveTest *adaptiveTest_{};
         const FixedLevelTest *fixedLevelTest_{};
@@ -308,8 +308,8 @@ namespace {
             return writtenCoordinateResponseTrial_;
         }
         
-        auto &writtenOpenSetTrial() const {
-            return writtenOpenSetTrial_;
+        auto &writtenFreeResponseTrial() const {
+            return writtenFreeResponseTrial_;
         }
         
         void writeTrial(
@@ -354,7 +354,7 @@ namespace {
         }
         
         void writeTrial(const FreeResponseTrial &p) override {
-            writtenOpenSetTrial_ = p;
+            writtenFreeResponseTrial_ = p;
         }
         
         void throwOnOpen() {
@@ -1060,8 +1060,8 @@ namespace {
             return outputFile.writtenCoordinateResponseTrial();
         }
         
-        auto writtenOpenSetTrial() {
-            return outputFile.writtenOpenSetTrial();
+        auto writtenFreeResponseTrial() {
+            return outputFile.writtenFreeResponseTrial();
         }
         
         void setTargetListCount(int n) {
@@ -1811,16 +1811,16 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitOpenSetResponseWritesResponse
+        submitFreeResponseWritesResponse
     ) {
         submittingFreeResponse.setResponse("a");
         run(submittingFreeResponse);
-        assertEqual("a", writtenOpenSetTrial().response);
+        assertEqual("a", writtenFreeResponseTrial().response);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitOpenSetResponsePassesCurrentTargetToEvaluator
+        submitFreeResponsePassesCurrentTargetToEvaluator
     ) {
         finiteTargetList.setCurrent("a");
         run(submittingFreeResponse);
@@ -1829,11 +1829,11 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitOpenSetResponseWritesTarget
+        submitFreeResponseWritesTarget
     ) {
         evaluator.setFileName("a");
         run(submittingFreeResponse);
-        assertEqual("a", writtenOpenSetTrial().target);
+        assertEqual("a", writtenFreeResponseTrial().target);
     }
 
     TEST_F(
