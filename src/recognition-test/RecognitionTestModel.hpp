@@ -121,7 +121,7 @@ namespace av_speech_in_noise {
         virtual void writeCoordinateResponseTrialHeading() = 0;
         virtual void writeFreeResponseTrialHeading() = 0;
         virtual void close() = 0;
-        virtual void save() {}
+        virtual void save() = 0;
     };
     
     class Randomizer {

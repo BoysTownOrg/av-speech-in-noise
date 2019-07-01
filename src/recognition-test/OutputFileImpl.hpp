@@ -11,7 +11,7 @@ namespace av_speech_in_noise {
         virtual void open(std::string) = 0;
         virtual bool failed() = 0;
         virtual void close() = 0;
-        virtual void save() {}
+        virtual void save() = 0;
     };
     
     class OutputFilePath {

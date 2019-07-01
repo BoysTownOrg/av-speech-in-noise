@@ -329,6 +329,7 @@ namespace {
         
         void close() override {}
         void write(std::string) override {}
+        void save() override {}
     };
     
     TEST(

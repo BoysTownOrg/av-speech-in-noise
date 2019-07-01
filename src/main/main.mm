@@ -92,6 +92,10 @@ public:
     void close() override {
         file.close();
     }
+    
+    void save() override {
+        file.flush();
+    }
 };
 
 class UnixFileSystemPath : public av_speech_in_noise::FileSystemPath {
