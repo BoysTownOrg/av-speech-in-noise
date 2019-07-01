@@ -86,6 +86,10 @@ namespace {
         void setStartingX(T x) {
             settings.startingX = x;
         }
+        
+        void setCeiling(int x) {
+            settings.ceiling = x;
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
@@ -128,6 +132,21 @@ namespace {
         track.assertXEquals(5 - 4 + 4 - 4);
         track.pushDown();
         track.assertXEquals(5 - 4 + 4 - 4);
+    }
+
+    TEST_F(AdaptiveTrackTests, upperLimitActsAsCeiling) {
+        setStartingX(5);
+        setCeiling(10);
+        firstSequence().runCount = 3;
+        firstSequence().stepSize = 4;
+        firstSequence().up = 1;
+        firstSequence().down = 2;
+        auto track = reset();
+        track.assertXEquals(5);
+        track.pushUp();
+        track.assertXEquals(5 + 4);
+        track.pushUp();
+        track.assertXEquals(10);
     }
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {

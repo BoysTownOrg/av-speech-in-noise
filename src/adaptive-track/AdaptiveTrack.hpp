@@ -20,7 +20,8 @@ namespace adaptive_track {
         std::vector<int> up;
         std::vector<int> down;
         std::size_t sequenceIndex{};
-        int x_{};
+        int x_;
+        int ceiling_;
         int sameDirectionConsecutiveCount{};
         int runCounter{};
         int reversals_{};

@@ -4,6 +4,7 @@
 #include <av-speech-in-noise/Model.h>
 #include <vector>
 #include <memory>
+#include <limits>
 
 namespace av_speech_in_noise {
     class InvalidAudioDevice {};
@@ -63,6 +64,7 @@ namespace av_speech_in_noise {
         struct Settings {
             const TrackingRule *rule;
             int startingX;
+            int ceiling = std::numeric_limits<int>::max();
         };
         virtual void pushDown() = 0;
         virtual void pushUp() = 0;
