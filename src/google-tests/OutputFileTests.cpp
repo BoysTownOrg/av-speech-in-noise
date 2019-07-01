@@ -160,7 +160,7 @@ namespace {
         }
         
         void assertWriterContains(std::string s) {
-            EXPECT_TRUE(written().contains(std::move(s)));
+            assertTrue(written().contains(std::move(s)));
         }
         
         void assertWritten(std::string s) {
@@ -168,7 +168,7 @@ namespace {
         }
         
         void assertWrittenLast(std::string s) {
-            EXPECT_TRUE(written().endsWith(std::move(s)));
+            assertTrue(written().endsWith(std::move(s)));
         }
         
         void assertConditionNameWritten(
@@ -244,11 +244,6 @@ namespace {
         assertWritten("target, response\n");
     }
 
-    TEST_F(OutputFileTests, saveSavesWriter) {
-        file.save();
-        assertTrue(writer.saved());
-    }
-
     TEST_F(OutputFileTests, writeAdaptiveTest) {
         adaptiveTest.maskerFilePath = "a";
         adaptiveTest.targetListDirectory = "d";
@@ -308,7 +303,12 @@ namespace {
 
     TEST_F(OutputFileTests, closeClosesWriter) {
         file.close();
-        EXPECT_TRUE(writer.closed());
+        assertTrue(writer.closed());
+    }
+
+    TEST_F(OutputFileTests, saveSavesWriter) {
+        file.save();
+        assertTrue(writer.saved());
     }
  
     TEST_F(OutputFileTests, openPassesTestInformation) {
