@@ -1389,6 +1389,11 @@ namespace {
             run(useCase);
             assertTrue(useCase.headingWritten(outputFile));
         }
+        
+        void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
+            run(useCase);
+            assertTrue(outputFileLog().endsWith("save "));
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -2067,16 +2072,14 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseSavesOutputFileAfterWritingTrial
     ) {
-        submitCoordinateResponse();
-        assertTrue(outputFileLog().endsWith("save "));
+        assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitFreeResponseSavesOutputFileAfterWritingTrial
     ) {
-        run(submittingFreeResponse);
-        assertTrue(outputFileLog().endsWith("save "));
+        assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
     }
 
     TEST_F(
