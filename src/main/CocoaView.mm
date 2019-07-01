@@ -374,7 +374,8 @@ static auto greenColor = NSColor.greenColor;
 static auto redColor = NSColor.redColor;
 static auto blueColor = NSColor.blueColor;
 static auto whiteColor = NSColor.whiteColor;
-static constexpr auto responseNumbers = 8;
+static constexpr int numbers[] {1, 2, 3, 4, 5, 6, 8, 9};
+static constexpr auto responseNumbers = std::size(numbers);
 static constexpr auto responseColors = 4;
 
 CocoaSubjectView::CocoaSubjectView(NSRect r) :
@@ -406,12 +407,12 @@ CocoaSubjectView::CocoaSubjectView(NSRect r) :
 }
 
 void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
-    for (int i = 0; i < responseNumbers; ++i)
-        addNumberButton(color, i, row);
+    for (std::size_t col = 0; col < responseNumbers; ++col)
+        addNumberButton(color, numbers[col], row, col);
 }
 
-void CocoaSubjectView::addNumberButton(NSColor *color, int i, int row) {
-    auto title = asNsString(std::to_string(i+1));
+void CocoaSubjectView::addNumberButton(NSColor *color, int number, int row, std::size_t col) {
+    auto title = asNsString(std::to_string(number));
     const auto button = [NSButton
         buttonWithTitle:title
         target:actions
@@ -420,7 +421,7 @@ void CocoaSubjectView::addNumberButton(NSColor *color, int i, int row) {
     auto responseWidth = responseButtons.frame.size.width/responseNumbers;
     auto responseHeight = responseButtons.frame.size.height/responseColors;
     [button setFrame:NSMakeRect(
-        responseWidth*i,
+        responseWidth*col,
         responseHeight*row,
         responseWidth,
         responseHeight

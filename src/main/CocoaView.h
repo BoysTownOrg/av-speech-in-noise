@@ -147,7 +147,7 @@ public:
 private:
     void addNextTrialButton();
     NSColor *lastPressedColor();
-    void addNumberButton(NSColor *color, int i, int row);
+    void addNumberButton(NSColor *color, int number, int row, std::size_t col);
     void addButtonRow(NSColor *color, int row);
 };
 
