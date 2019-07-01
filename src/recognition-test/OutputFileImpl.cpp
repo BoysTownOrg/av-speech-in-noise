@@ -172,6 +172,10 @@ namespace av_speech_in_noise {
         writer->close();
     }
     
+    void OutputFileImpl::save() {
+        writer->save();
+    }
+    
     void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
         write(formatTrial(trial));
     }

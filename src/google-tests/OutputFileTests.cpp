@@ -12,6 +12,10 @@ namespace {
         bool closed_{};
         bool saved_{};
     public:
+        void save() override {
+            saved_ = true;
+        }
+        
         auto saved() const {
             return saved_;
         }

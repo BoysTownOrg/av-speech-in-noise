@@ -11,6 +11,7 @@ namespace av_speech_in_noise {
         virtual void open(std::string) = 0;
         virtual bool failed() = 0;
         virtual void close() = 0;
+        virtual void save() {}
     };
     
     class OutputFilePath {
@@ -34,6 +35,7 @@ namespace av_speech_in_noise {
         void close() override;
         void writeTest(const FixedLevelTest &) override;
         void writeTrial(const FreeResponseTrial &) override;
+        void save() override;
         
     private:
         void write(std::string);
