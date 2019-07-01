@@ -95,4 +95,8 @@ namespace {
         assertEqual("a", evaluator.fileName("a"));
         assertEqual("c.txt", evaluator.fileName("a/b/c.txt"));
     }
+    
+    TEST_F(ResponseEvaluatorTests, onlyEvaluatesFirstPartOfFileName) {
+        assertCorrect("blue2_3.mov", { 2, Color::blue });
+    }
 }
