@@ -22,6 +22,7 @@ namespace adaptive_track {
         std::size_t sequenceIndex{};
         int x_;
         int ceiling_;
+        int floor_;
         int sameDirectionConsecutiveCount{};
         int runCounter{};
         int reversals_{};

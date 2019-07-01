@@ -3,7 +3,8 @@
 namespace adaptive_track {
     AdaptiveTrack::AdaptiveTrack(const Settings &p) :
         x_{p.startingX},
-        ceiling_{p.ceiling}
+        ceiling_{p.ceiling},
+        floor_{p.floor}
     {
         for (const auto &sequence : *p.rule)
             if (sequence.runCount) {
@@ -71,6 +72,7 @@ namespace adaptive_track {
     void AdaptiveTrack::stepDown() {
         updateReversals(Step::rise);
         x_ -= stepSize();
+        x_ = std::max(x_, floor_);
         sameDirectionConsecutiveCount = 0;
         previousStep = Step::fall;
     }
