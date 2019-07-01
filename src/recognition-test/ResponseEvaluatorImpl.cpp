@@ -16,16 +16,17 @@ namespace av_speech_in_noise {
             r.number != invalidNumber;
     }
     
+    unsigned long ResponseEvaluatorImpl::leadingPathLength(const std::string &filePath) {
+        return filePath.find_last_of("/") + 1;
+    }
+    
     int ResponseEvaluatorImpl::correctNumber(const std::string &filePath) {
-        auto fileSeparator = filePath.find_last_of("/");
-        auto leadingPathLength = fileSeparator + 1;
-        auto fileNameBeginning = filePath.begin() + leadingPathLength;
-        auto found = std::find_if(fileNameBeginning, filePath.end(), [](unsigned char c) { return !std::isalpha(c); });
-        auto colorNameLength = std::distance(fileNameBeginning, found);
+        auto leadingPathLength_ = leadingPathLength(filePath);
+        auto colorNameLength_ = colorNameLength(filePath, leadingPathLength_);
         auto extension = filePath.find(".");
         if (extension == std::string::npos)
             return invalidNumber;
-        auto number = filePath.substr(leadingPathLength + colorNameLength, 1);
+        auto number = filePath.substr(leadingPathLength_ + colorNameLength_, 1);
         try {
             return std::stoi(number);
         }
@@ -34,13 +35,15 @@ namespace av_speech_in_noise {
         }
     }
     
-    coordinate_response_measure::Color ResponseEvaluatorImpl::correctColor(const std::string &filePath) {
-        auto fileSeparator = filePath.find_last_of("/");
-        auto leadingPathLength = fileSeparator + 1;
-        auto fileNameBeginning = filePath.begin() + leadingPathLength;
+    long ResponseEvaluatorImpl::colorNameLength(const std::string &filePath, unsigned long leadingPathLength_) {
+        auto fileNameBeginning = filePath.begin() + leadingPathLength_;
         auto found = std::find_if(fileNameBeginning, filePath.end(), [](unsigned char c) { return !std::isalpha(c); });
-        auto colorNameLength = std::distance(fileNameBeginning, found);
-        auto colorName = filePath.substr(leadingPathLength, colorNameLength);
+        return std::distance(fileNameBeginning, found);
+    }
+    
+    coordinate_response_measure::Color ResponseEvaluatorImpl::correctColor(const std::string &filePath) {
+        auto leadingPathLength_ = leadingPathLength(filePath);
+        auto colorName = filePath.substr(leadingPathLength_, colorNameLength(filePath, leadingPathLength_));
         return color(colorName);
     }
     
