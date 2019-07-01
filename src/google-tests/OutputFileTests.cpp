@@ -10,7 +10,12 @@ namespace {
         LogString written_;
         std::string filePath_;
         bool closed_{};
+        bool saved_{};
     public:
+        auto saved() const {
+            return saved_;
+        }
+        
         void close() override {
             closed_ = true;
         }
@@ -233,6 +238,11 @@ namespace {
     TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
         file.writeFreeResponseTrialHeading();
         assertWritten("target, response\n");
+    }
+
+    TEST_F(OutputFileTests, saveSavesWriter) {
+        file.save();
+        assertTrue(writer.saved());
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTest) {
