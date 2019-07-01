@@ -288,6 +288,7 @@ namespace av_speech_in_noise {
         trial.SNR_dB = adaptiveSnr_dB();
         trial.correct = correct(response);
         outputFile->writeTrial(trial);
+        outputFile->save();
         justWroteCoordinateResponseTrial = true;
         justWroteFreeResponseTrial = false;
     }

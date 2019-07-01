@@ -289,10 +289,14 @@ namespace {
         const AdaptiveTest *adaptiveTest_{};
         const FixedLevelTest *fixedLevelTest_{};
         const TestInformation *openNewFileParameters_{};
+        int timesHeadingWritten_{};
         bool throwOnOpen_{};
         bool coordinateResponseHeadingWritten_{};
         bool freeResponseTrialHeadingWritten_{};
     public:
+        void save() override {
+            addToLog("save ");
+        }
         
         void writeTrial(
             const coordinate_response_measure::Trial &trial
@@ -314,6 +318,7 @@ namespace {
         
         void writeCoordinateResponseTrialHeading() override {
             addToLog("writeTrialHeading ");
+            ++timesHeadingWritten_;
             coordinateResponseHeadingWritten_ = true;
         }
         
@@ -334,6 +339,7 @@ namespace {
         
         void writeFreeResponseTrialHeading() override {
             addToLog("writeTrialHeading ");
+            ++timesHeadingWritten_;
             freeResponseTrialHeadingWritten_ = true;
         }
         
@@ -351,6 +357,14 @@ namespace {
         
         auto &log() const {
             return log_;
+        }
+        
+        auto timesHeadingWritten() const {
+            return timesHeadingWritten_;
+        }
+        
+        void clearTimesHeadingWritten() {
+            timesHeadingWritten_ = 0;
         }
         
         auto adaptiveTest() const {
@@ -1342,15 +1356,13 @@ namespace {
         
         void assertHeadingWrittenBeforeTrial(UseCase &useCase) {
             run(useCase);
-            assertOutputFileLog(trialHeadingWrittenFollowedByTrial());
+            assertTrue(outputFile.log().beginsWith(trialHeadingWrittenFollowedByTrial()));
         }
         
         void assertHeadingWrittenOnceWhenRunTwice(UseCase &useCase) {
             run(useCase);
             run(useCase);
-            assertOutputFileLog(
-                trialHeadingWrittenFollowedByTrial() + trialWritten()
-            );
+            assertEqual(1, outputFile.timesHeadingWritten());
         }
         
         void assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(
@@ -1359,12 +1371,9 @@ namespace {
         ) {
             run(useCase);
             run(other);
+            outputFile.clearTimesHeadingWritten();
             run(useCase);
-            assertOutputFileLog(
-                trialHeadingWrittenFollowedByTrial() +
-                trialHeadingWrittenFollowedByTrial() +
-                trialHeadingWrittenFollowedByTrial()
-            );
+            assertEqual(1, outputFile.timesHeadingWritten());
         }
         
         void assertHeadingWritten(SubmittingResponse &useCase) {
@@ -2043,6 +2052,14 @@ namespace {
         setIncorrectResponse();
         submitCoordinateResponse();
         assertFalse(trialWrittenCorrect());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseSavesOutputFileAfterWritingTrial
+    ) {
+        submitCoordinateResponse();
+        assertTrue(outputFile.log().endsWith("save "));
     }
 
     TEST_F(
