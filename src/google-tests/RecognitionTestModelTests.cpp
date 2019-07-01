@@ -2073,6 +2073,14 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitFreeResponseSavesOutputFileAfterWritingTrial
+    ) {
+        run(submittingFreeResponse);
+        assertTrue(outputFileLog().endsWith("save "));
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitCoordinateResponsePassesSubjectResponseToEvaluator
     ) {
         submitCoordinateResponse();
