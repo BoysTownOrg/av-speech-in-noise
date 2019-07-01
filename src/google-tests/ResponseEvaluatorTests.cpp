@@ -98,5 +98,8 @@ namespace {
     
     TEST_F(ResponseEvaluatorTests, onlyEvaluatesFirstPartOfFileName) {
         assertCorrect("blue2_3.mov", { 2, Color::blue });
+        assertCorrect("a/blue2_3.mov", { 2, Color::blue });
+        assertIncorrect("blue2_3.mov", { 3, Color::blue });
+        assertIncorrect("a/blue2_3.mov", { 3, Color::blue });
     }
 }
