@@ -1,6 +1,4 @@
-add_library(av-speech-in-noise INTERFACE)
-target_include_directories(av-speech-in-noise INTERFACE include)
-target_compile_features(av-speech-in-noise INTERFACE cxx_std_14)
+add_subdirectory(av-speech-in-noise)
 add_subdirectory(recognition-test)
 add_subdirectory(adaptive-track)
 add_subdirectory(presentation)

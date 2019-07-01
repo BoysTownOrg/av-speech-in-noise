@@ -19,7 +19,6 @@ namespace {
         double fadeTimeSeconds_{};
         double durationSeconds_{};
         double secondsSeeked_{};
-        int deviceIndex_{};
         EventListener *listener_{};
         bool fadeInCalled_{};
         bool fadeOutCalled_{};
@@ -155,7 +154,6 @@ namespace {
         double rms_{};
         double level_dB_{};
         double durationSeconds_{};
-        int deviceIndex_{};
         EventListener *listener_{};
         bool played_{};
         bool videoHidden_{};
@@ -391,7 +389,6 @@ namespace {
     };
     
     class TrackStub : public Track {
-        Settings settings_;
         int x_{};
         int reversals_{};
         bool pushedDown_{};

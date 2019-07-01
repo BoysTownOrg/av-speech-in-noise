@@ -145,7 +145,6 @@ namespace {
         std::string browseForOpeningFileResult_;
         std::string audioDevice_;
         bool eventLoopCalled_{};
-        bool confirmationDialogShown_{};
         bool browseCancelled_{};
     public:
         void setAudioDevice(std::string s) {
