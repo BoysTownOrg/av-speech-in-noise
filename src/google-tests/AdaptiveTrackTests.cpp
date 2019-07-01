@@ -65,6 +65,18 @@ namespace {
                 sequence.runCount = 0;
         }
         
+        auto &firstSequence() {
+            return rule.at(0);
+        }
+        
+        auto &secondSequence() {
+            return rule.at(1);
+        }
+        
+        auto &thirdSequence() {
+            return rule.at(2);
+        }
+        
         AdaptiveTrackFacade reset() {
             settings.rule = &rule;
             return AdaptiveTrackFacade{settings};
@@ -95,10 +107,10 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
         setStartingX(5);
-        rule.at(0).runCount = 3;
-        rule.at(0).stepSize = 4;
-        rule.at(0).up = 1;
-        rule.at(0).down = 2;
+        firstSequence().runCount = 3;
+        firstSequence().stepSize = 4;
+        firstSequence().up = 1;
+        firstSequence().down = 2;
         auto track = reset();
         track.pushDown();
         track.assertXEquals(5);
@@ -120,10 +132,10 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
         setStartingX(5);
-        rule.at(0).runCount = 3;
-        rule.at(0).stepSize = 4;
-        rule.at(0).up = 1;
-        rule.at(0).down = 2;
+        firstSequence().runCount = 3;
+        firstSequence().stepSize = 4;
+        firstSequence().up = 1;
+        firstSequence().down = 2;
         auto track = reset();
         track.assertIncomplete();
         track.pushDown();
@@ -143,10 +155,10 @@ namespace {
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure4) {
         setStartingX(0);
-        rule.at(0).runCount = 8;
-        rule.at(0).stepSize = 1;
-        rule.at(0).down = 1;
-        rule.at(0).up = 1;
+        firstSequence().runCount = 8;
+        firstSequence().stepSize = 1;
+        firstSequence().down = 1;
+        firstSequence().up = 1;
         auto track = reset();
         track.push("dduuuudduuuddddduuudduu");
         track.assertXEquals(1);
@@ -155,10 +167,10 @@ namespace {
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure5) {
         setStartingX(0);
-        rule.at(0).runCount = 5;
-        rule.at(0).stepSize = 1;
-        rule.at(0).down = 2;
-        rule.at(0).up = 1;
+        firstSequence().runCount = 5;
+        firstSequence().stepSize = 1;
+        firstSequence().down = 2;
+        firstSequence().up = 1;
         auto track = reset();
         track.push("dddduduududdddduuuddddd");
         track.assertXEquals(1);
@@ -166,14 +178,14 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, twoSequences) {
         setStartingX(65);
-        rule.at(0).runCount = 2;
-        rule.at(0).stepSize = 8;
-        rule.at(0).down = 2;
-        rule.at(0).up = 1;
-        rule.at(1).runCount = 1;
-        rule.at(1).stepSize = 4;
-        rule.at(1).down = 2;
-        rule.at(1).up = 1;
+        firstSequence().runCount = 2;
+        firstSequence().stepSize = 8;
+        firstSequence().down = 2;
+        firstSequence().up = 1;
+        secondSequence().runCount = 1;
+        secondSequence().stepSize = 4;
+        secondSequence().down = 2;
+        secondSequence().up = 1;
         auto track = reset();
         track.pushDown();
         track.assertXEquals(65);
@@ -201,18 +213,18 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, threeSequences) {
         setStartingX(0);
-        rule.at(0).runCount = 1;
-        rule.at(0).stepSize = 10;
-        rule.at(0).down = 3;
-        rule.at(0).up = 1;
-        rule.at(1).runCount = 1;
-        rule.at(1).stepSize = 5;
-        rule.at(1).down = 3;
-        rule.at(1).up = 1;
-        rule.at(2).runCount = 6;
-        rule.at(2).stepSize = 2;
-        rule.at(2).down = 3;
-        rule.at(2).up = 1;
+        firstSequence().runCount = 1;
+        firstSequence().stepSize = 10;
+        firstSequence().down = 3;
+        firstSequence().up = 1;
+        secondSequence().runCount = 1;
+        secondSequence().stepSize = 5;
+        secondSequence().down = 3;
+        secondSequence().up = 1;
+        thirdSequence().runCount = 6;
+        thirdSequence().stepSize = 2;
+        thirdSequence().down = 3;
+        thirdSequence().up = 1;
         auto track = reset();
         track.push("ddudddudddddudddddduddd");
         track.assertXEquals(3);
@@ -220,14 +232,14 @@ namespace {
 
     TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
         setStartingX(65);
-        rule.at(0).runCount = 2;
-        rule.at(0).stepSize = 8;
-        rule.at(0).up = 1;
-        rule.at(0).down = 2;
-        rule.at(1).runCount = 1;
-        rule.at(1).stepSize = 4;
-        rule.at(1).up = 2;
-        rule.at(1).down = 1;
+        firstSequence().runCount = 2;
+        firstSequence().stepSize = 8;
+        firstSequence().up = 1;
+        firstSequence().down = 2;
+        secondSequence().runCount = 1;
+        secondSequence().stepSize = 4;
+        secondSequence().up = 2;
+        secondSequence().down = 1;
         auto track = reset();
         track.pushDown();
         track.assertXEquals(65);
@@ -255,9 +267,9 @@ namespace {
     
     TEST_F(AdaptiveTrackTests, reversals) {
         setStartingX(0);
-        rule.at(0).runCount = 1000;
-        rule.at(0).down = 2;
-        rule.at(0).up = 1;
+        firstSequence().runCount = 1000;
+        firstSequence().down = 2;
+        firstSequence().up = 1;
         auto track = reset();
         track.assertReversalsEquals(0);
         track.pushUp();
