@@ -102,4 +102,11 @@ namespace {
         assertIncorrect("blue2_3.mov", { 3, Color::blue });
         assertIncorrect("a/blue2_3.mov", { 3, Color::blue });
     }
+    
+    TEST_F(ResponseEvaluatorTests, miscellaneous) {
+        assertCorrect("a/b/c/blue9-3.mov", { 9, Color::blue });
+        assertCorrect("a/b/c/red8 4.mov", { 8, Color::red });
+        assertIncorrect("a/b/c/blue9-3.mov", { 3, Color::blue });
+        assertIncorrect("a/b/c/red8 4.mov", { 4, Color::red });
+    }
 }
