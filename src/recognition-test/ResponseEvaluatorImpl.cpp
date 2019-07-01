@@ -48,21 +48,21 @@ namespace av_speech_in_noise {
     }
     
     coordinate_response_measure::Color ResponseEvaluatorImpl::color(const std::string &colorName) {
+        using coordinate_response_measure::Color;
         if (colorName == "green")
-            return coordinate_response_measure::Color::green;
+            return Color::green;
         else if (colorName == "blue")
-            return coordinate_response_measure::Color::blue;
+            return Color::blue;
         else if (colorName == "red")
-            return coordinate_response_measure::Color::red;
+            return Color::red;
         else if (colorName == "white")
-            return coordinate_response_measure::Color::white;
+            return Color::white;
         else
-            return coordinate_response_measure::Color::notAColor;
+            return Color::notAColor;
     }
     
     std::string ResponseEvaluatorImpl::fileName(const std::string &filePath) {
-        auto fileSeparator = filePath.find_last_of("/");
-        return filePath.substr(fileSeparator+1);
+        return filePath.substr(leadingPathLength(filePath));
     }
     
 }
