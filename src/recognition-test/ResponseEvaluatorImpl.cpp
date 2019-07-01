@@ -16,29 +16,36 @@ namespace av_speech_in_noise {
             r.number != invalidNumber;
     }
     
-    unsigned long ResponseEvaluatorImpl::leadingPathLength(const std::string &filePath) {
-        return filePath.find_last_of("/") + 1;
-    }
-    
     int ResponseEvaluatorImpl::correctNumber(const std::string &filePath) {
-        auto leadingPathLength_ = leadingPathLength(filePath);
-        auto colorNameLength_ = colorNameLength(filePath, leadingPathLength_);
-        auto extension = filePath.find(".");
-        if (extension == std::string::npos)
-            return invalidNumber;
-        auto number = filePath.substr(leadingPathLength_ + colorNameLength_, 1);
         try {
-            return std::stoi(number);
+            return correctNumber_(filePath);
         }
         catch (const std::invalid_argument &) {
             return invalidNumber;
         }
     }
     
+    int ResponseEvaluatorImpl::correctNumber_(const std::string &filePath) {
+        auto leadingPathLength_ = leadingPathLength(filePath);
+        auto number = filePath.substr(
+            leadingPathLength_ + colorNameLength(filePath, leadingPathLength_),
+            1
+        );
+        return std::stoi(number);
+    }
+    
+    unsigned long ResponseEvaluatorImpl::leadingPathLength(const std::string &filePath) {
+        return filePath.find_last_of("/") + 1;
+    }
+    
     long ResponseEvaluatorImpl::colorNameLength(const std::string &filePath, unsigned long leadingPathLength_) {
         auto fileNameBeginning = filePath.begin() + leadingPathLength_;
-        auto found = std::find_if(fileNameBeginning, filePath.end(), [](unsigned char c) { return !std::isalpha(c); });
-        return std::distance(fileNameBeginning, found);
+        auto notAlpha = std::find_if(
+            fileNameBeginning,
+            filePath.end(),
+            [](unsigned char c) { return !std::isalpha(c); }
+        );
+        return std::distance(fileNameBeginning, notAlpha);
     }
     
     coordinate_response_measure::Color ResponseEvaluatorImpl::correctColor(const std::string &filePath) {

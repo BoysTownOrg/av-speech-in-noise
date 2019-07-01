@@ -17,6 +17,7 @@ namespace av_speech_in_noise {
     private:
         coordinate_response_measure::Color color(const std::string &colorName);
         unsigned long leadingPathLength(const std::string &filePath);
+        int correctNumber_(const std::string &filePath);
         long colorNameLength(const std::string &filePath, unsigned long leadingPathLength_);
     };
 }
