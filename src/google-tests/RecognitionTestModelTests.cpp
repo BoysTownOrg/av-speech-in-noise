@@ -1099,6 +1099,10 @@ namespace {
             assertEqual(std::move(what), targetFilePath());
         }
         
+        auto &outputFileLog() {
+            return outputFile.log();
+        }
+        
         auto writtenCoordinateResponseTrial() {
             return outputFile.writtenCoordinateResponseTrial();
         }
@@ -1343,7 +1347,7 @@ namespace {
         }
         
         void assertOutputFileLog(std::string s) {
-            assertEqual(std::move(s), outputFile.log());
+            assertEqual(std::move(s), outputFileLog());
         }
         
         std::string trialWritten() {
@@ -1356,13 +1360,17 @@ namespace {
         
         void assertHeadingWrittenBeforeTrial(UseCase &useCase) {
             run(useCase);
-            assertTrue(outputFile.log().beginsWith(trialHeadingWrittenFollowedByTrial()));
+            assertTrue(outputFileLog().beginsWith(trialHeadingWrittenFollowedByTrial()));
         }
         
         void assertHeadingWrittenOnceWhenRunTwice(UseCase &useCase) {
             run(useCase);
             run(useCase);
-            assertEqual(1, outputFile.timesHeadingWritten());
+            assertHeadingWrittenTimes(1);
+        }
+        
+        void assertHeadingWrittenTimes(int n) {
+            assertEqual(n, outputFile.timesHeadingWritten());
         }
         
         void assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(
@@ -1372,8 +1380,9 @@ namespace {
             run(useCase);
             run(other);
             outputFile.clearTimesHeadingWritten();
+            
             run(useCase);
-            assertEqual(1, outputFile.timesHeadingWritten());
+            assertHeadingWrittenTimes(1);
         }
         
         void assertHeadingWritten(SubmittingResponse &useCase) {
@@ -2059,7 +2068,7 @@ namespace {
         submitCoordinateResponseSavesOutputFileAfterWritingTrial
     ) {
         submitCoordinateResponse();
-        assertTrue(outputFile.log().endsWith("save "));
+        assertTrue(outputFileLog().endsWith("save "));
     }
 
     TEST_F(
