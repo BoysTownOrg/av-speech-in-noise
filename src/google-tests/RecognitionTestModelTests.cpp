@@ -818,32 +818,36 @@ namespace {
             m.initializeTest(test_);
         }
         
+        auto &common() {
+            return test_.common;
+        }
+        
         void setSnr_dB(int x) {
             test_.snr_dB = x;
         }
         
         void setMaskerLevel_dB_SPL(int x) {
-            test_.maskerLevel_dB_SPL = x;
+            common().maskerLevel_dB_SPL = x;
         }
         
         void setFullScaleLevel_dB_SPL(int x) {
-            test_.fullScaleLevel_dB_SPL = x;
+            common().fullScaleLevel_dB_SPL = x;
         }
         
         void setAudioVisual() override {
-            test_.condition = Condition::audioVisual;
+            common().condition = Condition::audioVisual;
         }
         
         void setAuditoryOnly() override {
-            test_.condition = Condition::auditoryOnly;
+            common().condition = Condition::auditoryOnly;
         }
         
         void setMaskerFilePath(std::string s) override {
-            test_.maskerFilePath = std::move(s);
+            common().maskerFilePath = std::move(s);
         }
         
         void setTargetListDirectory(std::string s) {
-            test_.targetListDirectory = std::move(s);
+            common().targetListDirectory = std::move(s);
         }
         
         auto &test() const {
