@@ -3,7 +3,6 @@
 #include <cmath>
 
 namespace av_speech_in_noise {
-    
     class NullTargetList : public TargetList {
         void loadFromDirectory(std::string) override {}
         std::string next() override { return {}; }
@@ -67,12 +66,15 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
-        readTargetLists(p);
-        prepareSnrTracks(p);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
-        prepareCommonTest(p.common);
-        prepareNextAdaptiveTrial();
+        auto common = p.common;
+        prepareCommonTest(common);
+        adaptiveMethod.loadFromDirectory(common.targetListDirectory);
+        adaptiveMethod.prepareSnrTracks(p);
+        adaptiveMethod.selectNextList(currentTargetList);
+        snr_dB = adaptiveMethod.snr_dB();
+        preparePlayersForNextTrial();
         fixedLevelTest = false;
     }
     
@@ -139,7 +141,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::prepareNextAdaptiveTrial() {
-        selectNextList();
+        adaptiveMethod.selectNextList(currentTargetList);
         snr_dB = adaptiveSnr_dB();
         preparePlayersForNextTrial();
     }
@@ -298,7 +300,9 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::prepareNextAdaptiveTrialAfterRemovingCompleteTracks() {
         removeCompleteTracks();
-        prepareNextAdaptiveTrial();
+        adaptiveMethod.selectNextList(currentTargetList);
+        snr_dB = adaptiveSnr_dB();
+        preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::removeCompleteTracks() {

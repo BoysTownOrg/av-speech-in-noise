@@ -149,11 +149,11 @@ namespace av_speech_in_noise {
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        struct TargetListWithTrack {
-            TargetList *list;
-            std::shared_ptr<Track> track;
-        };
         class AdaptiveMethod {
+            struct TargetListWithTrack {
+                TargetList *list;
+                std::shared_ptr<Track> track;
+            };
             TargetListReader::lists_type lists{};
             std::vector<TargetListWithTrack> targetListsWithTracks{};
             TargetListReader *targetListSetReader;
@@ -161,7 +161,6 @@ namespace av_speech_in_noise {
             Randomizer *randomizer;
             Track *currentSnrTrack;
         public:
-            
             AdaptiveMethod(
                 TargetListReader *targetListSetReader,
                 TrackFactory *snrTrackFactory,
