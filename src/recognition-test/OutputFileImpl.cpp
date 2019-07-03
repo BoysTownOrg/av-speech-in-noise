@@ -38,6 +38,26 @@ namespace av_speech_in_noise {
             void writeTester(const TestInformation &p) {
                 writeLabeledLine("tester", p.testerId);
             }
+            
+            void writeSession(const TestInformation &p) {
+                writeLabeledLine("session", p.session);
+            }
+            
+            void writeMasker(const CommonTest &p) {
+                writeLabeledLine("masker", p.maskerFilePath);
+            }
+            
+            void writeTargetList(const CommonTest &p) {
+                writeLabeledLine("targets", p.targetListDirectory);
+            }
+            
+            void writeMaskerLevel(const CommonTest &p) {
+                writeLabeledLine("masker level (dB SPL)", p.maskerLevel_dB_SPL);
+            }
+            
+            void writeCondition(const CommonTest &p) {
+                writeLabeledLine("condition", conditionName(p.condition));
+            }
         };
     }
     
@@ -150,28 +170,32 @@ namespace av_speech_in_noise {
     
     std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
         FormattedStream stream;
-        stream.writeSubjectId(test.information);
-        stream.writeTester(test.information);
-        stream.writeLabeledLine("session", test.information.session);
-        stream.writeLabeledLine("masker", test.common.maskerFilePath);
-        stream.writeLabeledLine("targets", test.common.targetListDirectory);
-        stream.writeLabeledLine("masker level (dB SPL)", test.common.maskerLevel_dB_SPL);
+        auto information = test.information;
+        stream.writeSubjectId(information);
+        stream.writeTester(information);
+        stream.writeSession(information);
+        auto common = test.common;
+        stream.writeMasker(common);
+        stream.writeTargetList(common);
+        stream.writeMaskerLevel(common);
         stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
-        stream.writeLabeledLine("condition", conditionName(test.common.condition));
+        stream.writeCondition(common);
         stream.insertNewLine();
         return stream.str();
     }
     
     std::string OutputFileImpl::formatTest(const FixedLevelTest &test) {
         FormattedStream stream;
-        stream.writeSubjectId(test.information);
-        stream.writeTester(test.information);
-        stream.writeLabeledLine("session", test.information.session);
-        stream.writeLabeledLine("masker", test.common.maskerFilePath);
-        stream.writeLabeledLine("targets", test.common.targetListDirectory);
-        stream.writeLabeledLine("masker level (dB SPL)", test.common.maskerLevel_dB_SPL);
+        auto information = test.information;
+        stream.writeSubjectId(information);
+        stream.writeTester(information);
+        stream.writeSession(information);
+        auto common = test.common;
+        stream.writeMasker(common);
+        stream.writeTargetList(common);
+        stream.writeMaskerLevel(common);
         stream.writeLabeledLine("SNR (dB)", test.snr_dB);
-        stream.writeLabeledLine("condition", conditionName(test.common.condition));
+        stream.writeCondition(common);
         stream.insertNewLine();
         return stream.str();
     }
