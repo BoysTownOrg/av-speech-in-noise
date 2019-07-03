@@ -45,7 +45,7 @@ namespace av_speech_in_noise {
         outputFile->writeTest(p);
         auto common = p.common;
         prepareCommonTest(common);
-        fixedLevelMethod.loadFromDirectory(common.targetListDirectory);
+        fixedLevelMethod.loadTargets(common.targetListDirectory);
         snr_dB = p.snr_dB;
         testMethod = &fixedLevelMethod;
         preparePlayersForNextTrial();
@@ -69,7 +69,7 @@ namespace av_speech_in_noise {
         outputFile->writeTest(p);
         auto common = p.common;
         prepareCommonTest(common);
-        adaptiveMethod.loadFromDirectory(common.targetListDirectory);
+        adaptiveMethod.loadTargets(common.targetListDirectory);
         adaptiveMethod.prepareSnrTracks(p);
         adaptiveMethod.selectNextList();
         snr_dB = adaptiveMethod.snr_dB();
@@ -84,10 +84,6 @@ namespace av_speech_in_noise {
     
     bool RecognitionTestModel::trialInProgress() {
         return maskerPlayer->playing();
-    }
-    
-    void RecognitionTestModel::prepareSnrTracks(const AdaptiveTest &p) {
-        adaptiveMethod.prepareSnrTracks(p);
     }
     
     void RecognitionTestModel::tryOpeningOutputFile(const TestInformation &p) {
@@ -133,16 +129,6 @@ namespace av_speech_in_noise {
 
     bool RecognitionTestModel::auditoryOnly(const Condition &c) {
         return c == Condition::auditoryOnly;
-    }
-    
-    void RecognitionTestModel::prepareNextAdaptiveTrial() {
-        adaptiveMethod.selectNextList();
-        snr_dB = adaptiveSnr_dB();
-        preparePlayersForNextTrial();
-    }
-    
-    void RecognitionTestModel::selectNextList() {
-        adaptiveMethod.selectNextList();
     }
     
     void RecognitionTestModel::preparePlayersForNextTrial() {
@@ -252,7 +238,7 @@ namespace av_speech_in_noise {
     ) {
         writeTrial(response);
         updateSnr(response);
-        prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
+        prepareNextAdaptiveTrial();
     }
     
     void RecognitionTestModel::writeTrial(
@@ -293,20 +279,15 @@ namespace av_speech_in_noise {
         return testMethod->current();
     }
     
-    void RecognitionTestModel::prepareNextAdaptiveTrialAfterRemovingCompleteTracks() {
-        removeCompleteTracks();
+    void RecognitionTestModel::prepareNextAdaptiveTrial() {
         adaptiveMethod.selectNextList();
         snr_dB = adaptiveSnr_dB();
         preparePlayersForNextTrial();
     }
     
-    void RecognitionTestModel::removeCompleteTracks() {
-        adaptiveMethod.removeCompleteTracks();
-    }
-    
     void RecognitionTestModel::submitCorrectResponse() {
         pushDownTrack();
-        prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
+        prepareNextAdaptiveTrial();
     }
     
     void RecognitionTestModel::pushDownTrack() {
@@ -315,7 +296,7 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::submitIncorrectResponse() {
         pushUpTrack();
-        prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
+        prepareNextAdaptiveTrial();
     }
     
     void RecognitionTestModel::pushUpTrack() {

@@ -193,7 +193,7 @@ namespace av_speech_in_noise {
                 return currentSnrTrack->x();
             }
             
-            void loadFromDirectory(const std::string &p) {
+            void loadTargets(const std::string &p) {
                 lists = targetListSetReader->read(p);
             }
             
@@ -226,6 +226,7 @@ namespace av_speech_in_noise {
             }
     
             void selectNextList() {
+                removeCompleteTracks();
                 auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
                 size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
                 if (n < targetListsWithTracks.size()) {
@@ -276,7 +277,7 @@ namespace av_speech_in_noise {
             FixedLevelMethod(FiniteTargetList *targetList) :
                 currentTargetList{targetList} {}
             
-            void loadFromDirectory(const std::string &p) {
+            void loadTargets(const std::string &p) {
                 currentTargetList->loadFromDirectory(p);
             }
             
@@ -335,11 +336,10 @@ namespace av_speech_in_noise {
     private:
         void pushUpTrack();
         void pushDownTrack();
-        void prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
+        void prepareNextAdaptiveTrial();
         void prepareCommonTest(const CommonTest &);
         void storeLevels(const CommonTest &common);
         void preparePlayersForNextTrial();
-        void prepareNextAdaptiveTrial();
         void readTargetLists(const AdaptiveTest &);
         void throwIfTrialInProgress();
         void writeTrial(const coordinate_response_measure::SubjectResponse &);
