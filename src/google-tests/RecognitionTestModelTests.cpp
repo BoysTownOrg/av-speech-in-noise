@@ -782,6 +782,35 @@ namespace {
         }
     };
     
+    class SnrUseCase {
+    public:
+        virtual ~SnrUseCase() = default;
+        virtual void set(InitializingAdaptiveTest &, int) = 0;
+        virtual int value(const Track::Settings &) = 0;
+    };
+    
+    class SettingStartingSnr : public SnrUseCase {
+    public:
+        void set(InitializingAdaptiveTest &test, int x) override {
+            test.setStartingSnr_dB(x);
+        }
+        
+        int value(const Track::Settings & s) override {
+            return s.startingX;
+        }
+    };
+    
+    class SettingCeilingSnr : public SnrUseCase {
+    public:
+        void set(InitializingAdaptiveTest &test, int x) override {
+            test.setCeilingSnr_dB(x);
+        }
+        
+        int value(const Track::Settings & s) override {
+            return s.ceiling;
+        }
+    };
+    
     class InitializingFixedLevelTest : public InitializingTestUseCase {
         FixedLevelTest test_;
     public:
@@ -909,6 +938,8 @@ namespace {
         SubmittingCorrectResponse submittingCorrectResponse;
         SubmittingIncorrectResponse submittingIncorrectResponse;
         SubmittingFreeResponse submittingFreeResponse;
+        SettingStartingSnr settingStartingSnr;
+        SettingCeilingSnr settingCeilingSnr;
         std::vector<std::shared_ptr<TargetListStub>> targetLists;
         std::vector<std::shared_ptr<TrackStub>> snrTracks;
         
@@ -1166,14 +1197,6 @@ namespace {
             assertEqual(targetLevelRule(), s.rule);
         }
         
-        void assertSettingsMatchStartingX(const Track::Settings &s, int x) {
-            assertEqual(x, s.startingX);
-        }
-        
-        void assertSettingsMatchCeiling(const Track::Settings &s, int x) {
-            assertEqual(x, s.ceiling);
-        }
-        
         auto &adaptiveTestSettings() const {
             return initializingAdaptiveTest.test();
         }
@@ -1402,6 +1425,13 @@ namespace {
             run(useCase);
             assertTrue(outputFileLog().endsWith("save "));
         }
+        
+        void assertSnrPassedToTrackFactory(SnrUseCase &useCase) {
+            useCase.set(initializingAdaptiveTest, 1);
+            initializeAdaptiveTestWithListCount(3);
+            for (int i = 0; i < 3; ++i)
+                assertEqual(1, useCase.value(snrTrackFactoryParameters().at(i)));
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1473,20 +1503,14 @@ namespace {
         RecognitionTestModelTests,
         initializeAdaptiveTestCreatesEachSnrTrackWithStartingSnr
     ) {
-        initializingAdaptiveTest.setStartingSnr_dB(1);
-        initializeAdaptiveTestWithListCount(3);
-        for (int i = 0; i < 3; ++i)
-            assertSettingsMatchStartingX(snrTrackFactoryParameters().at(i), 1);
+        assertSnrPassedToTrackFactory(settingStartingSnr);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeAdaptiveTestCreatesEachSnrTrackWithCeilingSnr
     ) {
-        initializingAdaptiveTest.setCeilingSnr_dB(1);
-        initializeAdaptiveTestWithListCount(3);
-        for (int i = 0; i < 3; ++i)
-            assertSettingsMatchCeiling(snrTrackFactoryParameters().at(i), 1);
+        assertSnrPassedToTrackFactory(settingCeilingSnr);
     }
 
     TEST_F(
