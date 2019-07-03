@@ -934,12 +934,12 @@ namespace {
         TrackFactoryStub snrTrackFactory;
         ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
+        AdaptiveMethod adaptiveMethod{&targetListSetReader, &snrTrackFactory, &randomizer};
         RecognitionTestModel model{
-            &targetListSetReader,
+            &adaptiveMethod,
             &finiteTargetList,
             &targetPlayer,
             &maskerPlayer,
-            &snrTrackFactory,
             &evaluator,
             &outputFile,
             &randomizer

@@ -15,16 +15,15 @@ namespace av_speech_in_noise {
     static NullTestMethod nullTestMethod;
     
     RecognitionTestModel::RecognitionTestModel(
-        TargetListReader *targetListSetReader,
+        AdaptiveMethod *adaptiveMethod,
         FiniteTargetList *finiteTargetList,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
-        TrackFactory *snrTrackFactory,
         ResponseEvaluator *evaluator,
         OutputFile *outputFile,
         Randomizer *randomizer
     ) :
-        adaptiveMethod{targetListSetReader, snrTrackFactory, randomizer},
+        adaptiveMethod{adaptiveMethod},
         fixedLevelMethod{finiteTargetList},
         maskerPlayer{maskerPlayer},
         targetPlayer{targetPlayer},
@@ -54,8 +53,8 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
-        adaptiveMethod.store(p);
-        testMethod = &adaptiveMethod;
+        adaptiveMethod->store(p);
+        testMethod = adaptiveMethod;
         prepareCommonTest(p.common);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
@@ -241,7 +240,7 @@ namespace av_speech_in_noise {
         coordinate_response_measure::Trial trial;
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
-        trial.reversals = adaptiveMethod.reversals();
+        trial.reversals = adaptiveMethod->reversals();
         trial.correctColor = evaluator->correctColor(currentTarget());
         trial.correctNumber = evaluator->correctNumber(currentTarget());
         trial.SNR_dB = testMethod->snr_dB();

@@ -163,174 +163,175 @@ namespace av_speech_in_noise {
         virtual void correct() = 0;
         virtual void incorrect() = 0;
     };
+    
+    class AdaptiveMethod : public TestMethod {
+        struct TargetListWithTrack {
+            TargetList *list;
+            std::shared_ptr<Track> track;
+        };
+        TargetListReader::lists_type lists{};
+        std::vector<TargetListWithTrack> targetListsWithTracks{};
+        Track::Settings trackSettings{};
+        TargetListReader *targetListSetReader;
+        TrackFactory *snrTrackFactory;
+        Randomizer *randomizer;
+        Track *currentSnrTrack;
+        TargetList *currentTargetList;
+    public:
+        AdaptiveMethod(
+            TargetListReader *targetListSetReader,
+            TrackFactory *snrTrackFactory,
+            Randomizer *randomizer
+        ) :
+            targetListSetReader{targetListSetReader},
+            snrTrackFactory{snrTrackFactory},
+            randomizer{randomizer},
+            currentSnrTrack{&nullTrack},
+            currentTargetList{&nullTargetList} {}
+        
+        void store(const AdaptiveTest &p) {
+            trackSettings.ceiling = p.ceilingSnr_dB;
+            trackSettings.rule = p.targetLevelRule;
+            trackSettings.startingX = p.startingSnr_dB;
+        }
+        
+        int snr_dB() override {
+            return currentSnrTrack->x();
+        }
+        
+        void loadTargets(const std::string &p) override {
+            lists = targetListSetReader->read(p);
+            prepareSnrTracks();
+        }
+        
+        void incorrect() override {
+            pushUpTrack();
+        }
+        
+        void correct() override {
+            pushDownTrack();
+        }
+        
+        bool complete() override {
+            return std::all_of(
+                targetListsWithTracks.begin(),
+                targetListsWithTracks.end(),
+                [](const TargetListWithTrack &t) {
+                    return t.track->complete();
+                }
+            );
+        }
+        
+        int reversals() {
+            return currentSnrTrack->reversals();
+        }
+        
+        std::string next() override {
+            return currentTargetList->next();
+        }
+        
+        std::string current() override {
+            return currentTargetList->current();
+        }
+        
+    private:
+        void pushUpTrack() {
+            currentSnrTrack->pushUp();
+            selectNextList();
+        }
+        
+        void pushDownTrack() {
+            currentSnrTrack->pushDown();
+            selectNextList();
+        }
+
+        void prepareSnrTracks() {
+            targetListsWithTracks.clear();
+            for (auto list : lists)
+                makeTrackWithList(list.get());
+            selectNextList();
+        }
+        
+        void makeTrackWithList(
+            TargetList *list
+        ) {
+            targetListsWithTracks.push_back({
+                list,
+                snrTrackFactory->make(trackSettings)
+            });
+        }
+
+        void selectNextList() {
+            removeCompleteTracks();
+            auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
+            size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
+            if (n < targetListsWithTracks.size()) {
+                currentSnrTrack = targetListsWithTracks.at(n).track.get();
+                currentTargetList = targetListsWithTracks.at(n).list;
+            }
+        }
+        
+        void removeCompleteTracks() {
+            targetListsWithTracks.erase(
+                std::remove_if(
+                    targetListsWithTracks.begin(),
+                    targetListsWithTracks.end(),
+                    [](const TargetListWithTrack &t) {
+                        return t.track->complete();
+                    }
+                ),
+                targetListsWithTracks.end()
+            );
+        }
+    };
+
+    class FixedLevelMethod : public TestMethod {
+        FiniteTargetList *currentTargetList{};
+        int snr_dB_;
+    public:
+        FixedLevelMethod(FiniteTargetList *targetList) :
+            currentTargetList{targetList} {}
+        
+        void store(const FixedLevelTest &p) {
+            snr_dB_ = p.snr_dB;
+        }
+        
+        int snr_dB() override {
+            return snr_dB_;
+        }
+        
+        void loadTargets(const std::string &p) override {
+            currentTargetList->loadFromDirectory(p);
+        }
+        
+        std::string next() override {
+            return currentTargetList->next();
+        }
+        
+        bool complete() override {
+            return currentTargetList->empty();
+        }
+        
+        std::string current() override {
+            return currentTargetList->current();
+        }
+        
+        void incorrect() override {
+            
+        }
+        
+        void correct() override {
+            
+        }
+    };
 
     class RecognitionTestModel :
         public Model,
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        class AdaptiveMethod : public TestMethod {
-            struct TargetListWithTrack {
-                TargetList *list;
-                std::shared_ptr<Track> track;
-            };
-            TargetListReader::lists_type lists{};
-            std::vector<TargetListWithTrack> targetListsWithTracks{};
-            Track::Settings trackSettings{};
-            TargetListReader *targetListSetReader;
-            TrackFactory *snrTrackFactory;
-            Randomizer *randomizer;
-            Track *currentSnrTrack;
-            TargetList *currentTargetList;
-        public:
-            AdaptiveMethod(
-                TargetListReader *targetListSetReader,
-                TrackFactory *snrTrackFactory,
-                Randomizer *randomizer
-            ) :
-                targetListSetReader{targetListSetReader},
-                snrTrackFactory{snrTrackFactory},
-                randomizer{randomizer},
-                currentSnrTrack{&nullTrack},
-                currentTargetList{&nullTargetList} {}
-            
-            void store(const AdaptiveTest &p) {
-                trackSettings.ceiling = p.ceilingSnr_dB;
-                trackSettings.rule = p.targetLevelRule;
-                trackSettings.startingX = p.startingSnr_dB;
-            }
-            
-            int snr_dB() override {
-                return currentSnrTrack->x();
-            }
-            
-            void loadTargets(const std::string &p) override {
-                lists = targetListSetReader->read(p);
-                prepareSnrTracks();
-            }
-            
-            void incorrect() override {
-                pushUpTrack();
-            }
-            
-            void correct() override {
-                pushDownTrack();
-            }
-            
-            bool complete() override {
-                return std::all_of(
-                    targetListsWithTracks.begin(),
-                    targetListsWithTracks.end(),
-                    [](const TargetListWithTrack &t) {
-                        return t.track->complete();
-                    }
-                );
-            }
-            
-            int reversals() {
-                return currentSnrTrack->reversals();
-            }
-            
-            std::string next() override {
-                return currentTargetList->next();
-            }
-            
-            std::string current() override {
-                return currentTargetList->current();
-            }
-            
-        private:
-            void pushUpTrack() {
-                currentSnrTrack->pushUp();
-                selectNextList();
-            }
-            
-            void pushDownTrack() {
-                currentSnrTrack->pushDown();
-                selectNextList();
-            }
-    
-            void prepareSnrTracks() {
-                targetListsWithTracks.clear();
-                for (auto list : lists)
-                    makeTrackWithList(list.get());
-                selectNextList();
-            }
-            
-            void makeTrackWithList(
-                TargetList *list
-            ) {
-                targetListsWithTracks.push_back({
-                    list,
-                    snrTrackFactory->make(trackSettings)
-                });
-            }
-    
-            void selectNextList() {
-                removeCompleteTracks();
-                auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
-                size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
-                if (n < targetListsWithTracks.size()) {
-                    currentSnrTrack = targetListsWithTracks.at(n).track.get();
-                    currentTargetList = targetListsWithTracks.at(n).list;
-                }
-            }
-            
-            void removeCompleteTracks() {
-                targetListsWithTracks.erase(
-                    std::remove_if(
-                        targetListsWithTracks.begin(),
-                        targetListsWithTracks.end(),
-                        [](const TargetListWithTrack &t) {
-                            return t.track->complete();
-                        }
-                    ),
-                    targetListsWithTracks.end()
-                );
-            }
-        };
         
-        class FixedLevelMethod : public TestMethod {
-            FiniteTargetList *currentTargetList{};
-            int snr_dB_;
-        public:
-            FixedLevelMethod(FiniteTargetList *targetList) :
-                currentTargetList{targetList} {}
-            
-            void store(const FixedLevelTest &p) {
-                snr_dB_ = p.snr_dB;
-            }
-            
-            int snr_dB() override {
-                return snr_dB_;
-            }
-            
-            void loadTargets(const std::string &p) override {
-                currentTargetList->loadFromDirectory(p);
-            }
-            
-            std::string next() override {
-                return currentTargetList->next();
-            }
-            
-            bool complete() override {
-                return currentTargetList->empty();
-            }
-            
-            std::string current() override {
-                return currentTargetList->current();
-            }
-            
-            void incorrect() override {
-                
-            }
-            
-            void correct() override {
-                
-            }
-        };
-        
-        AdaptiveMethod adaptiveMethod;
+        AdaptiveMethod *adaptiveMethod;
         FixedLevelMethod fixedLevelMethod;
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
@@ -345,11 +346,10 @@ namespace av_speech_in_noise {
         bool justWroteCoordinateResponseTrial{};
     public:
         RecognitionTestModel(
-            TargetListReader *,
+            AdaptiveMethod *,
             FiniteTargetList *,
             TargetPlayer *,
             MaskerPlayer *,
-            TrackFactory *,
             ResponseEvaluator *,
             OutputFile *,
             Randomizer *
