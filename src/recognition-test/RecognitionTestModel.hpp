@@ -332,7 +332,7 @@ namespace av_speech_in_noise {
     {
         
         AdaptiveMethod *adaptiveMethod;
-        FixedLevelMethod fixedLevelMethod;
+        FixedLevelMethod *fixedLevelMethod;
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
         MaskerPlayer *maskerPlayer;
@@ -347,7 +347,7 @@ namespace av_speech_in_noise {
     public:
         RecognitionTestModel(
             AdaptiveMethod *,
-            FiniteTargetList *,
+            FixedLevelMethod *,
             TargetPlayer *,
             MaskerPlayer *,
             ResponseEvaluator *,

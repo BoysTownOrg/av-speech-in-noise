@@ -935,9 +935,10 @@ namespace {
         ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
         AdaptiveMethod adaptiveMethod{&targetListSetReader, &snrTrackFactory, &randomizer};
+        FixedLevelMethod fixedLevelMethod{&finiteTargetList};
         RecognitionTestModel model{
             &adaptiveMethod,
-            &finiteTargetList,
+            &fixedLevelMethod,
             &targetPlayer,
             &maskerPlayer,
             &evaluator,

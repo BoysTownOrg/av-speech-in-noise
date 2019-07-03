@@ -16,7 +16,7 @@ namespace av_speech_in_noise {
     
     RecognitionTestModel::RecognitionTestModel(
         AdaptiveMethod *adaptiveMethod,
-        FiniteTargetList *finiteTargetList,
+        FixedLevelMethod *fixedLevelMethod,
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
         ResponseEvaluator *evaluator,
@@ -24,7 +24,7 @@ namespace av_speech_in_noise {
         Randomizer *randomizer
     ) :
         adaptiveMethod{adaptiveMethod},
-        fixedLevelMethod{finiteTargetList},
+        fixedLevelMethod{fixedLevelMethod},
         maskerPlayer{maskerPlayer},
         targetPlayer{targetPlayer},
         evaluator{evaluator},
@@ -43,8 +43,8 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
         throwIfTrialInProgress();
         
-        fixedLevelMethod.store(p);
-        testMethod = &fixedLevelMethod;
+        fixedLevelMethod->store(p);
+        testMethod = fixedLevelMethod;
         prepareCommonTest(p.common);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
