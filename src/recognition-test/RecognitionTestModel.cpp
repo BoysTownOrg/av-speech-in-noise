@@ -101,6 +101,7 @@ namespace av_speech_in_noise {
             Track::Settings s;
             s.rule = p.targetLevelRule;
             s.startingX = p.startingSnr_dB;
+            s.ceiling = p.ceilingSnr_dB;
             targetListsWithTracks.push_back({
                 list.get(),
                 snrTrackFactory->make(s)

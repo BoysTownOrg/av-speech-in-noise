@@ -761,6 +761,10 @@ namespace {
             test_.startingSnr_dB = x;
         }
         
+        void setCeilingSnr_dB(int x) {
+            test_.ceilingSnr_dB = x;
+        }
+        
         void setFullScaleLevel_dB_SPL(int x) {
             test_.fullScaleLevel_dB_SPL = x;
         }
@@ -1166,6 +1170,10 @@ namespace {
             assertEqual(x, s.startingX);
         }
         
+        void assertSettingsMatchCeiling(const Track::Settings &s, int x) {
+            assertEqual(x, s.ceiling);
+        }
+        
         auto &adaptiveTestSettings() const {
             return initializingAdaptiveTest.test();
         }
@@ -1469,6 +1477,16 @@ namespace {
         initializeAdaptiveTestWithListCount(3);
         for (int i = 0; i < 3; ++i)
             assertSettingsMatchStartingX(snrTrackFactoryParameters().at(i), 1);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeAdaptiveTestCreatesEachSnrTrackWithCeilingSnr
+    ) {
+        initializingAdaptiveTest.setCeilingSnr_dB(1);
+        initializeAdaptiveTestWithListCount(3);
+        for (int i = 0; i < 3; ++i)
+            assertSettingsMatchCeiling(snrTrackFactoryParameters().at(i), 1);
     }
 
     TEST_F(
