@@ -9,6 +9,8 @@ namespace av_speech_in_noise {
         std::string current() override { return {}; }
         void loadTargets(const std::string &) override {}
         int snr_dB() override { return {}; }
+        void correct() override {}
+        void incorrect() override {}
     };
     
     static NullTestMethod nullTestMethod;
@@ -43,20 +45,19 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
         throwIfTrialInProgress();
         
-        tryOpeningOutputFile(p.information);
-        outputFile->writeTest(p);
-        auto common = p.common;
-        prepareCommonTest(common);
         fixedLevelMethod.store(p);
         testMethod = &fixedLevelMethod;
-        testMethod->loadTargets(common.targetListDirectory);
-        preparePlayersForNextTrial();
+        tryOpeningOutputFile(p.information);
+        outputFile->writeTest(p);
+        prepareCommonTest(p.common);
     }
     
     void RecognitionTestModel::prepareCommonTest(const CommonTest &common) {
         storeLevels(common);
         prepareMasker(common.maskerFilePath);
         prepareVideo(common.condition);
+        testMethod->loadTargets(common.targetListDirectory);
+        preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::storeLevels(const CommonTest &common) {
@@ -67,14 +68,11 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
-        tryOpeningOutputFile(p.information);
-        outputFile->writeTest(p);
-        auto common = p.common;
-        prepareCommonTest(common);
         adaptiveMethod.store(p);
         testMethod = &adaptiveMethod;
-        testMethod->loadTargets(common.targetListDirectory);
-        preparePlayersForNextTrial();
+        tryOpeningOutputFile(p.information);
+        outputFile->writeTest(p);
+        prepareCommonTest(p.common);
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -234,7 +232,7 @@ namespace av_speech_in_noise {
     ) {
         writeTrial(response);
         updateSnr(response);
-        prepareNextAdaptiveTrial();
+        preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::writeTrial(
@@ -275,26 +273,22 @@ namespace av_speech_in_noise {
         return testMethod->current();
     }
     
-    void RecognitionTestModel::prepareNextAdaptiveTrial() {
+    void RecognitionTestModel::submitCorrectResponse() {
+        pushDownTrack();
         preparePlayersForNextTrial();
     }
     
-    void RecognitionTestModel::submitCorrectResponse() {
-        pushDownTrack();
-        prepareNextAdaptiveTrial();
-    }
-    
     void RecognitionTestModel::pushDownTrack() {
-        adaptiveMethod.pushDownTrack();
+        testMethod->correct();
     }
     
     void RecognitionTestModel::submitIncorrectResponse() {
         pushUpTrack();
-        prepareNextAdaptiveTrial();
+        preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::pushUpTrack() {
-        adaptiveMethod.pushUpTrack();
+        testMethod->incorrect();
     }
     
     void RecognitionTestModel::submitResponse(const FreeResponse &p) {

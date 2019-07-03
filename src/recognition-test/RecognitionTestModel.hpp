@@ -160,6 +160,8 @@ namespace av_speech_in_noise {
         virtual std::string current() = 0;
         virtual void loadTargets(const std::string &) = 0;
         virtual int snr_dB() = 0;
+        virtual void correct() = 0;
+        virtual void incorrect() = 0;
     };
 
     class RecognitionTestModel :
@@ -205,6 +207,14 @@ namespace av_speech_in_noise {
             void loadTargets(const std::string &p) override {
                 lists = targetListSetReader->read(p);
                 prepareSnrTracks();
+            }
+            
+            void incorrect() override {
+                pushUpTrack();
+            }
+            
+            void correct() override {
+                pushDownTrack();
             }
             
             void pushUpTrack() {
@@ -308,6 +318,14 @@ namespace av_speech_in_noise {
             
             std::string current() override {
                 return currentTargetList->current();
+            }
+            
+            void incorrect() override {
+                
+            }
+            
+            void correct() override {
+                
             }
         };
         
