@@ -158,6 +158,8 @@ namespace av_speech_in_noise {
         virtual bool complete() = 0;
         virtual std::string next() = 0;
         virtual std::string current() = 0;
+        virtual void loadTargets(const std::string &) = 0;
+        virtual int snr_dB() = 0;
     };
 
     class RecognitionTestModel :
@@ -172,6 +174,7 @@ namespace av_speech_in_noise {
             };
             TargetListReader::lists_type lists{};
             std::vector<TargetListWithTrack> targetListsWithTracks{};
+            Track::Settings trackSettings{};
             TargetListReader *targetListSetReader;
             TrackFactory *snrTrackFactory;
             Randomizer *randomizer;
@@ -189,12 +192,19 @@ namespace av_speech_in_noise {
                 currentSnrTrack{&nullTrack},
                 currentTargetList{&nullTargetList} {}
             
-            int snr_dB() {
+            void store(const AdaptiveTest &p) {
+                trackSettings.ceiling = p.ceilingSnr_dB;
+                trackSettings.rule = p.targetLevelRule;
+                trackSettings.startingX = p.startingSnr_dB;
+            }
+            
+            int snr_dB() override {
                 return currentSnrTrack->x();
             }
             
-            void loadTargets(const std::string &p) {
+            void loadTargets(const std::string &p) override {
                 lists = targetListSetReader->read(p);
+                prepareSnrTracks();
             }
             
             void pushUpTrack() {
@@ -207,24 +217,19 @@ namespace av_speech_in_noise {
                 selectNextList();
             }
     
-            void prepareSnrTracks(const AdaptiveTest &p) {
+            void prepareSnrTracks() {
                 targetListsWithTracks.clear();
                 for (auto list : lists)
-                    makeTrackWithList(list.get(), p);
+                    makeTrackWithList(list.get());
                 selectNextList();
             }
             
             void makeTrackWithList(
-                TargetList *list,
-                const AdaptiveTest &p
+                TargetList *list
             ) {
-                Track::Settings s;
-                s.rule = p.targetLevelRule;
-                s.startingX = p.startingSnr_dB;
-                s.ceiling = p.ceilingSnr_dB;
                 targetListsWithTracks.push_back({
                     list,
-                    snrTrackFactory->make(s)
+                    snrTrackFactory->make(trackSettings)
                 });
             }
     
@@ -276,11 +281,20 @@ namespace av_speech_in_noise {
         
         class FixedLevelMethod : public TestMethod {
             FiniteTargetList *currentTargetList{};
+            int snr_dB_;
         public:
             FixedLevelMethod(FiniteTargetList *targetList) :
                 currentTargetList{targetList} {}
             
-            void loadTargets(const std::string &p) {
+            void store(const FixedLevelTest &p) {
+                snr_dB_ = p.snr_dB;
+            }
+            
+            int snr_dB() override {
+                return snr_dB_;
+            }
+            
+            void loadTargets(const std::string &p) override {
                 currentTargetList->loadFromDirectory(p);
             }
             
@@ -301,7 +315,6 @@ namespace av_speech_in_noise {
         FixedLevelMethod fixedLevelMethod;
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
-        int snr_dB{};
         MaskerPlayer *maskerPlayer;
         TargetPlayer *targetPlayer;
         ResponseEvaluator *evaluator;

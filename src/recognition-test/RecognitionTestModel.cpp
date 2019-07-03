@@ -7,6 +7,8 @@ namespace av_speech_in_noise {
         bool complete() override { return {}; }
         std::string next() override { return {}; }
         std::string current() override { return {}; }
+        void loadTargets(const std::string &) override {}
+        int snr_dB() override { return {}; }
     };
     
     static NullTestMethod nullTestMethod;
@@ -45,9 +47,9 @@ namespace av_speech_in_noise {
         outputFile->writeTest(p);
         auto common = p.common;
         prepareCommonTest(common);
-        fixedLevelMethod.loadTargets(common.targetListDirectory);
-        snr_dB = p.snr_dB;
+        fixedLevelMethod.store(p);
         testMethod = &fixedLevelMethod;
+        testMethod->loadTargets(common.targetListDirectory);
         preparePlayersForNextTrial();
     }
     
@@ -69,10 +71,9 @@ namespace av_speech_in_noise {
         outputFile->writeTest(p);
         auto common = p.common;
         prepareCommonTest(common);
-        adaptiveMethod.loadTargets(common.targetListDirectory);
-        adaptiveMethod.prepareSnrTracks(p);
-        snr_dB = adaptiveMethod.snr_dB();
+        adaptiveMethod.store(p);
         testMethod = &adaptiveMethod;
+        testMethod->loadTargets(common.targetListDirectory);
         preparePlayersForNextTrial();
     }
     
@@ -152,7 +153,7 @@ namespace av_speech_in_noise {
     double RecognitionTestModel::targetLevel_dB() {
         return
             desiredMaskerLevel_dB() +
-            snr_dB -
+            testMethod->snr_dB() -
             unalteredTargetLevel_dB();
     }
     
@@ -275,7 +276,6 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::prepareNextAdaptiveTrial() {
-        snr_dB = adaptiveMethod.snr_dB();
         preparePlayersForNextTrial();
     }
     
