@@ -74,19 +74,13 @@ namespace av_speech_in_noise {
         TestInformation information;
         const TrackingRule *targetLevelRule;
         int startingSnr_dB;
-        int maskerLevel_dB_SPL;
-        int fullScaleLevel_dB_SPL;
         int ceilingSnr_dB;
-        Condition condition;
     };
     
     struct FixedLevelTest {
         CommonTest common;
         TestInformation information;
         int snr_dB;
-        int maskerLevel_dB_SPL;
-        int fullScaleLevel_dB_SPL;
-        Condition condition;
     };
     
     struct AudioSettings {
