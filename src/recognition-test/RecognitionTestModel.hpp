@@ -368,9 +368,8 @@ namespace av_speech_in_noise {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
-        void pushUpTrack();
-        void pushDownTrack();
-        void prepareNextAdaptiveTrial();
+        void submitCorrectResponse_();
+        void submitIncorrectResponse_();
         void prepareCommonTest(const CommonTest &);
         void storeLevels(const CommonTest &common);
         void preparePlayersForNextTrial();
@@ -378,7 +377,7 @@ namespace av_speech_in_noise {
         void writeTrial(const coordinate_response_measure::SubjectResponse &);
         std::string currentTarget();
         bool correct(const coordinate_response_measure::SubjectResponse &);
-        void updateSnr(const coordinate_response_measure::SubjectResponse &);
+        void submitResponse_(const coordinate_response_measure::SubjectResponse &);
         void setTargetPlayerDevice(const Calibration &);
         double calibrationLevel_dB(const Calibration &);
         void trySettingTargetLevel(const Calibration &);
@@ -398,7 +397,6 @@ namespace av_speech_in_noise {
         void prepareVideo(const Condition &);
         int desiredMaskerLevel_dB();
         double unalteredTargetLevel_dB();
-        int adaptiveSnr_dB();
         double targetLevel_dB();
         double maskerLevel_dB();
         void setTargetPlayerDevice_(const std::string &);

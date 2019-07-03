@@ -231,8 +231,7 @@ namespace av_speech_in_noise {
         const coordinate_response_measure::SubjectResponse &response
     ) {
         writeTrial(response);
-        updateSnr(response);
-        preparePlayersForNextTrial();
+        submitResponse_(response);
     }
     
     void RecognitionTestModel::writeTrial(
@@ -254,13 +253,13 @@ namespace av_speech_in_noise {
         justWroteFreeResponseTrial = false;
     }
     
-    void RecognitionTestModel::updateSnr(
+    void RecognitionTestModel::submitResponse_(
         const coordinate_response_measure::SubjectResponse &response
     ) {
         if (correct(response))
-            pushDownTrack();
+            submitCorrectResponse_();
         else
-            pushUpTrack();
+            submitIncorrectResponse_();
     }
     
     bool RecognitionTestModel::correct(
@@ -274,21 +273,21 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::submitCorrectResponse() {
-        pushDownTrack();
-        preparePlayersForNextTrial();
+        submitCorrectResponse_();
     }
     
-    void RecognitionTestModel::pushDownTrack() {
+    void RecognitionTestModel::submitCorrectResponse_() {
         testMethod->correct();
+        preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::submitIncorrectResponse() {
-        pushUpTrack();
-        preparePlayersForNextTrial();
+        submitIncorrectResponse_();
     }
     
-    void RecognitionTestModel::pushUpTrack() {
+    void RecognitionTestModel::submitIncorrectResponse_() {
         testMethod->incorrect();
+        preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::submitResponse(const FreeResponse &p) {
