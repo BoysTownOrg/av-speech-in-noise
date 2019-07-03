@@ -755,7 +755,7 @@ namespace {
         }
     };
     
-    class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
+    class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
         ConfirmingAdaptiveTest confirmingAdaptiveTest;
         ViewStub::TestSetupViewStub *view;
     public:
@@ -802,6 +802,10 @@ namespace {
         
         Condition condition(ModelStub &m) override {
             return confirmingAdaptiveTest.condition(m);
+        }
+        
+        int ceilingSnr_dB(ModelStub &m) override {
+            return confirmingAdaptiveTest.ceilingSnr_dB(m);
         }
     };
     
@@ -1688,6 +1692,10 @@ namespace {
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesCeilingSNR) {
         assertPassesCeilingSNR(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesCeilingSNR) {
+        assertPassesCeilingSNR(confirmingAdaptiveOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesFullScaleLevel) {
