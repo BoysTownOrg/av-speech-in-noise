@@ -149,7 +149,7 @@ namespace av_speech_in_noise {
         stream.writeLabeledLine("targets", test.common.targetListDirectory);
         stream.writeLabeledLine("masker level (dB SPL)", test.common.maskerLevel_dB_SPL);
         stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
-        stream.writeLabeledLine("condition", conditionName(test.condition));
+        stream.writeLabeledLine("condition", conditionName(test.common.condition));
         stream.insertNewLine();
         return stream.str();
     }
@@ -163,7 +163,7 @@ namespace av_speech_in_noise {
         stream.writeLabeledLine("targets", test.common.targetListDirectory);
         stream.writeLabeledLine("masker level (dB SPL)", test.common.maskerLevel_dB_SPL);
         stream.writeLabeledLine("SNR (dB)", test.snr_dB);
-        stream.writeLabeledLine("condition", conditionName(test.condition));
+        stream.writeLabeledLine("condition", conditionName(test.common.condition));
         stream.insertNewLine();
         return stream.str();
     }

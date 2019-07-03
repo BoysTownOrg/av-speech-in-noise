@@ -82,7 +82,7 @@ namespace av_speech_in_noise {
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
         prepareMasker(common.maskerFilePath);
-        prepareVideo(p.common.condition);
+        prepareVideo(common.condition);
         prepareNextAdaptiveTrial();
         fixedLevelTest = false;
     }

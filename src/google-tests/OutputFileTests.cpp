@@ -97,7 +97,7 @@ namespace {
         AdaptiveTest test;
     public:
         void setCondition(Condition c) override {
-            test.condition = c;
+            test.common.condition = c;
         }
         
         void setTestInfo(const TestInformation &p) override {
@@ -113,7 +113,7 @@ namespace {
         FixedLevelTest test;
     public:
         void setCondition(Condition c) override {
-            test.condition = c;
+            test.common.condition = c;
         }
         
         void setTestInfo(const TestInformation &p) override {
