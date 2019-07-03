@@ -738,11 +738,11 @@ namespace {
         }
         
         void setTargetListDirectory(std::string s) {
-            test_.targetListDirectory = std::move(s);
+            common().targetListDirectory = std::move(s);
         }
         
         void setMaskerFilePath(std::string s) override {
-            test_.maskerFilePath = std::move(s);
+            common().maskerFilePath = std::move(s);
         }
         
         void run(RecognitionTestModel &m) override {

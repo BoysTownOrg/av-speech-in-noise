@@ -81,7 +81,7 @@ namespace av_speech_in_noise {
         prepareSnrTracks(p);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
-        prepareMasker(p.maskerFilePath);
+        prepareMasker(common.maskerFilePath);
         prepareVideo(p.common.condition);
         prepareNextAdaptiveTrial();
         fixedLevelTest = false;
@@ -97,7 +97,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::readTargetLists(const AdaptiveTest &p) {
-        lists = targetListSetReader->read(p.targetListDirectory);
+        lists = targetListSetReader->read(p.common.targetListDirectory);
     }
     
     void RecognitionTestModel::prepareSnrTracks(const AdaptiveTest &p) {

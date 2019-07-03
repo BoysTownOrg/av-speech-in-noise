@@ -72,8 +72,6 @@ namespace av_speech_in_noise {
     struct AdaptiveTest {
         CommonTest common;
         TestInformation information;
-        std::string targetListDirectory;
-        std::string maskerFilePath;
         const TrackingRule *targetLevelRule;
         int startingSnr_dB;
         int maskerLevel_dB_SPL;
@@ -85,8 +83,6 @@ namespace av_speech_in_noise {
     struct FixedLevelTest {
         CommonTest common;
         TestInformation information;
-        std::string targetListDirectory;
-        std::string maskerFilePath;
         int snr_dB;
         int maskerLevel_dB_SPL;
         int fullScaleLevel_dB_SPL;
