@@ -30,7 +30,7 @@ namespace av_speech_in_noise {
         OutputFile *outputFile,
         Randomizer *randomizer
     ) :
-        adaptiveMethod{targetListSetReader, snrTrackFactory},
+        adaptiveMethod{targetListSetReader, snrTrackFactory, randomizer},
         finiteTargetList{finiteTargetList},
         maskerPlayer{maskerPlayer},
         targetPlayer{targetPlayer},
@@ -154,12 +154,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::selectNextList() {
-        auto remainingListCount = gsl::narrow<int>(adaptiveMethod.targetListsWithTracks.size());
-        size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
-        if (n < adaptiveMethod.targetListsWithTracks.size()) {
-            currentSnrTrack = adaptiveMethod.targetListsWithTracks.at(n).track.get();
-            currentTargetList = adaptiveMethod.targetListsWithTracks.at(n).list;
-        }
+        adaptiveMethod.selectNextList(currentSnrTrack, currentTargetList);
     }
     
     void RecognitionTestModel::preparePlayersForNextTrial() {
@@ -316,16 +311,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::removeCompleteTracks() {
-        adaptiveMethod.targetListsWithTracks.erase(
-            std::remove_if(
-                adaptiveMethod.targetListsWithTracks.begin(),
-                adaptiveMethod.targetListsWithTracks.end(),
-                [](const TargetListWithTrack &t) {
-                    return t.track->complete();
-                }
-            ),
-            adaptiveMethod.targetListsWithTracks.end()
-        );
+        adaptiveMethod.removeCompleteTracks();
     }
     
     void RecognitionTestModel::submitCorrectResponse() {
@@ -398,15 +384,9 @@ namespace av_speech_in_noise {
     }
 
     bool RecognitionTestModel::testComplete() {
-        return fixedLevelTest ?
-            finiteTargetList->empty() :
-            std::all_of(
-                adaptiveMethod.targetListsWithTracks.begin(),
-                adaptiveMethod.targetListsWithTracks.end(),
-                [](const TargetListWithTrack &t) {
-                    return t.track->complete();
-                }
-            );
+        return fixedLevelTest
+            ? finiteTargetList->empty()
+            : adaptiveMethod.complete();
     }
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {
