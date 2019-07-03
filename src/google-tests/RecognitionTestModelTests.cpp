@@ -1432,6 +1432,11 @@ namespace {
             for (int i = 0; i < 3; ++i)
                 assertEqual(1, useCase.value(snrTrackFactoryParameters().at(i)));
         }
+        
+        void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
+            run(useCase);
+            assertOutputFileLog("close openNewFile writeTest ");
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1517,16 +1522,14 @@ namespace {
         RecognitionTestModelTests,
         initializeAdaptiveTestClosesOutputFileOpensAndWritesTestInOrder
     ) {
-        run(initializingAdaptiveTest);
-        assertOutputFileLog("close openNewFile writeTest ");
+        assertClosesOutputFileOpensAndWritesTestInOrder(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestClosesOutputFileOpensAndWritesTestInOrder
     ) {
-        run(initializingFixedLevelTest);
-        assertOutputFileLog("close openNewFile writeTest ");
+        assertClosesOutputFileOpensAndWritesTestInOrder(initializingFixedLevelTest);
     }
 
     TEST_F(
