@@ -151,13 +151,20 @@ namespace av_speech_in_noise {
     
     static NullTargetList nullTargetList;
     static NullTrack nullTrack;
+    
+    class TestMethod {
+    public:
+        virtual ~TestMethod() = default;
+        virtual bool complete() = 0;
+        virtual std::string next() = 0;
+    };
 
     class RecognitionTestModel :
         public Model,
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        class AdaptiveMethod {
+        class AdaptiveMethod : public TestMethod {
             struct TargetListWithTrack {
                 TargetList *list;
                 std::shared_ptr<Track> track;
@@ -168,8 +175,8 @@ namespace av_speech_in_noise {
             TrackFactory *snrTrackFactory;
             Randomizer *randomizer;
             Track *currentSnrTrack;
+            TargetList *currentTargetList;
         public:
-            TargetList *currentTargetList{};
             AdaptiveMethod(
                 TargetListReader *targetListSetReader,
                 TrackFactory *snrTrackFactory,
@@ -239,7 +246,7 @@ namespace av_speech_in_noise {
                 );
             }
             
-            bool complete() {
+            bool complete() override {
                 return std::all_of(
                     targetListsWithTracks.begin(),
                     targetListsWithTracks.end(),
@@ -252,17 +259,36 @@ namespace av_speech_in_noise {
             int reversals() {
                 return currentSnrTrack->reversals();
             }
+            
+            std::string next() override {
+                return currentTargetList->next();
+            }
+            
+            std::string current() {
+                return currentTargetList->current();
+            }
         };
         
-        class FixedLevelMethod {
-        public:
+        class FixedLevelMethod : public TestMethod {
             FiniteTargetList *currentTargetList{};
-            
+        public:
             FixedLevelMethod(FiniteTargetList *targetList) :
                 currentTargetList{targetList} {}
             
-            bool complete() {
+            void loadFromDirectory(const std::string &p) {
+                currentTargetList->loadFromDirectory(p);
+            }
+            
+            std::string next() override {
+                return currentTargetList->next();
+            }
+            
+            bool complete() override {
                 return currentTargetList->empty();
+            }
+            
+            std::string current() {
+                return currentTargetList->current();
             }
         };
         
@@ -277,6 +303,7 @@ namespace av_speech_in_noise {
         OutputFile *outputFile;
         Randomizer *randomizer;
         Model::EventListener *listener_{};
+        TestMethod *testMethod;
         bool fixedLevelTest{};
         bool justWroteFreeResponseTrial{};
         bool justWroteCoordinateResponseTrial{};

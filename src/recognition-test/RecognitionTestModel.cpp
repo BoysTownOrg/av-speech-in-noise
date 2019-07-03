@@ -3,6 +3,15 @@
 #include <cmath>
 
 namespace av_speech_in_noise {
+    class NullTestMethod : public TestMethod {
+    
+        bool complete() override { return {}; }
+        
+        std::string next() override { return {}; }
+        
+    };
+    
+    static NullTestMethod nullTestMethod;
     
     RecognitionTestModel::RecognitionTestModel(
         TargetListReader *targetListSetReader,
@@ -20,7 +29,8 @@ namespace av_speech_in_noise {
         targetPlayer{targetPlayer},
         evaluator{evaluator},
         outputFile{outputFile},
-        randomizer{randomizer}
+        randomizer{randomizer},
+        testMethod{&nullTestMethod}
     {
         targetPlayer->subscribe(this);
         maskerPlayer->subscribe(this);
@@ -37,9 +47,10 @@ namespace av_speech_in_noise {
         outputFile->writeTest(p);
         auto common = p.common;
         prepareCommonTest(common);
-        fixedLevelMethod.currentTargetList->loadFromDirectory(common.targetListDirectory);
+        fixedLevelMethod.loadFromDirectory(common.targetListDirectory);
         snr_dB = p.snr_dB;
         fixedLevelTest = true;
+        testMethod = &fixedLevelMethod;
         preparePlayersForNextTrial();
     }
     
@@ -65,6 +76,7 @@ namespace av_speech_in_noise {
         adaptiveMethod.prepareSnrTracks(p);
         adaptiveMethod.selectNextList();
         snr_dB = adaptiveMethod.snr_dB();
+        testMethod = &adaptiveMethod;
         preparePlayersForNextTrial();
         fixedLevelTest = false;
     }
@@ -143,10 +155,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::prepareTargetPlayer() {
-    auto targetList = fixedLevelTest
-        ? fixedLevelMethod.currentTargetList
-        : adaptiveMethod.currentTargetList;
-        loadTargetFile(targetList->next());
+        loadTargetFile(testMethod->next());
         setTargetLevel_dB(targetLevel_dB());
         targetPlayer->subscribeToPlaybackCompletion();
     }
@@ -285,10 +294,10 @@ namespace av_speech_in_noise {
     }
     
     std::string RecognitionTestModel::currentTarget() {
-    auto targetList = fixedLevelTest
-        ? fixedLevelMethod.currentTargetList
-        : adaptiveMethod.currentTargetList;
-        return targetList->current();
+    auto current_ = fixedLevelTest
+        ? fixedLevelMethod.current()
+        : adaptiveMethod.current();
+        return current_;
     }
     
     void RecognitionTestModel::prepareNextAdaptiveTrialAfterRemovingCompleteTracks() {
@@ -325,7 +334,7 @@ namespace av_speech_in_noise {
             outputFile->writeFreeResponseTrialHeading();
         FreeResponseTrial trial;
         trial.response = p.response;
-        trial.target = evaluator->fileName(fixedLevelMethod.currentTargetList->current());
+        trial.target = evaluator->fileName(fixedLevelMethod.current());
         outputFile->writeTrial(trial);
         outputFile->save();
         justWroteFreeResponseTrial = true;
