@@ -217,6 +217,29 @@ namespace av_speech_in_noise {
                 pushDownTrack();
             }
             
+            bool complete() override {
+                return std::all_of(
+                    targetListsWithTracks.begin(),
+                    targetListsWithTracks.end(),
+                    [](const TargetListWithTrack &t) {
+                        return t.track->complete();
+                    }
+                );
+            }
+            
+            int reversals() {
+                return currentSnrTrack->reversals();
+            }
+            
+            std::string next() override {
+                return currentTargetList->next();
+            }
+            
+            std::string current() override {
+                return currentTargetList->current();
+            }
+            
+        private:
             void pushUpTrack() {
                 currentSnrTrack->pushUp();
                 selectNextList();
@@ -264,28 +287,6 @@ namespace av_speech_in_noise {
                     ),
                     targetListsWithTracks.end()
                 );
-            }
-            
-            bool complete() override {
-                return std::all_of(
-                    targetListsWithTracks.begin(),
-                    targetListsWithTracks.end(),
-                    [](const TargetListWithTrack &t) {
-                        return t.track->complete();
-                    }
-                );
-            }
-            
-            int reversals() {
-                return currentSnrTrack->reversals();
-            }
-            
-            std::string next() override {
-                return currentTargetList->next();
-            }
-            
-            std::string current() override {
-                return currentTargetList->current();
             }
         };
         

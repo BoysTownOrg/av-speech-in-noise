@@ -245,7 +245,7 @@ namespace av_speech_in_noise {
         trial.reversals = adaptiveMethod.reversals();
         trial.correctColor = evaluator->correctColor(currentTarget());
         trial.correctNumber = evaluator->correctNumber(currentTarget());
-        trial.SNR_dB = adaptiveMethod.snr_dB();
+        trial.SNR_dB = testMethod->snr_dB();
         trial.correct = correct(response);
         outputFile->writeTrial(trial);
         outputFile->save();
@@ -295,7 +295,7 @@ namespace av_speech_in_noise {
             outputFile->writeFreeResponseTrialHeading();
         FreeResponseTrial trial;
         trial.response = p.response;
-        trial.target = evaluator->fileName(fixedLevelMethod.current());
+        trial.target = evaluator->fileName(testMethod->current());
         outputFile->writeTrial(trial);
         outputFile->save();
         justWroteFreeResponseTrial = true;

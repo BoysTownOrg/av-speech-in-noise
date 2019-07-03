@@ -2052,6 +2052,7 @@ namespace {
         RecognitionTestModelTests,
         submitFreeResponsePassesCurrentTargetToEvaluator
     ) {
+        run(initializingFixedLevelTest);
         finiteTargetList.setCurrent("a");
         run(submittingFreeResponse);
         assertEqual("a", evaluator.filePathForFileName());
