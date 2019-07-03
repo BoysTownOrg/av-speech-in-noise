@@ -613,6 +613,7 @@ namespace {
     };
     
     class FiniteTargetListStub : public FiniteTargetList {
+        LogString log_;
         std::string directory_;
         std::string next_;
         std::string current_;
@@ -628,10 +629,12 @@ namespace {
         }
         
         void loadFromDirectory(std::string directory) override {
+            log_.insert("loadFromDirectory ");
             directory_ = std::move(directory);
         }
         
         std::string next() override {
+            log_.insert("next ");
             nextCalled_ = true;
             return next_;
         }
@@ -650,6 +653,10 @@ namespace {
         
         bool empty() override {
             return empty_;
+        }
+        
+        auto &log() const {
+            return log_;
         }
     };
     
@@ -1688,6 +1695,14 @@ namespace {
         initializeFixedLevelTestPassesNextTargetToTargetPlayer
     ) {
         assertFiniteTargetListNextPassedToPlayer(initializingFixedLevelTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestPassesNextTargetToTargetPlayerAfterLoadingFromDirectory
+    ) {
+        run(initializingFixedLevelTest);
+        assertEqual("loadFromDirectory next ", finiteTargetList.log());
     }
 
     TEST_F(

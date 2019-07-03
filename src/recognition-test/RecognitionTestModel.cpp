@@ -52,14 +52,13 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
         throwIfTrialInProgress();
         
-        currentTargetList = finiteTargetList;
-        
         auto common = p.common;
-        currentTargetList->loadFromDirectory(common.targetListDirectory);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
         prepareCommonTest(common);
         snr_dB = p.snr_dB;
+        currentTargetList = finiteTargetList;
+        finiteTargetList->loadFromDirectory(common.targetListDirectory);
         preparePlayersForNextTrial();
         fixedLevelTest = true;
     }
@@ -173,11 +172,6 @@ namespace av_speech_in_noise {
         preparePlayersForNextTrial();
     }
     
-    void RecognitionTestModel::preparePlayersForNextTrial() {
-        prepareTargetPlayer();
-        seekRandomMaskerPosition();
-    }
-    
     void RecognitionTestModel::selectNextList() {
         auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
         size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
@@ -185,6 +179,11 @@ namespace av_speech_in_noise {
             currentSnrTrack = targetListsWithTracks.at(n).track.get();
             currentTargetList = targetListsWithTracks.at(n).list;
         }
+    }
+    
+    void RecognitionTestModel::preparePlayersForNextTrial() {
+        prepareTargetPlayer();
+        seekRandomMaskerPosition();
     }
     
     void RecognitionTestModel::prepareTargetPlayer() {
