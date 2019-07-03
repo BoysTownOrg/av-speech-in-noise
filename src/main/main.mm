@@ -246,7 +246,7 @@ int main() {
     CocoaTestSetupView testSetupView{testerContentFrame};
     testSetupView.setMaskerLevel_dB_SPL("65");
     testSetupView.setCalibrationLevel_dB_SPL("65");
-    testSetupView.setStartingSnr_dB("10");
+    testSetupView.setStartingSnr_dB("5");
     testSetupView.setMasker(
         "/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav"
     );

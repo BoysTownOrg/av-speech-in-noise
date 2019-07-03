@@ -637,7 +637,12 @@ namespace {
         virtual std::string maskerFilePath(ModelStub &) = 0;
     };
     
-    class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
+    class ConfirmingAdaptiveTest_ : public virtual ConfirmingTestSetup {
+    public:
+        virtual int ceilingSnr_dB(ModelStub &) = 0;
+    };
+    
+    class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
         ViewStub::TestSetupViewStub *view;
     public:
         explicit ConfirmingAdaptiveTest(ViewStub::TestSetupViewStub *view) :
@@ -686,13 +691,17 @@ namespace {
         Condition condition(ModelStub &m) override {
             return adaptiveTest(m).condition;
         }
+        
+        int ceilingSnr_dB(ModelStub &m) override {
+            return adaptiveTest(m).ceilingSnr_dB;
+        }
     };
     
     void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
         view->setMethod(methodName(m));
     }
     
-    class ConfirmingAdaptiveClosedSetTest : public ConfirmingTestSetup {
+    class ConfirmingAdaptiveClosedSetTest : public ConfirmingAdaptiveTest_ {
         ConfirmingAdaptiveTest confirmingAdaptiveTest;
         ViewStub::TestSetupViewStub *view;
     public:
@@ -739,6 +748,10 @@ namespace {
         
         Condition condition(ModelStub &m) override {
             return confirmingAdaptiveTest.condition(m);
+        }
+        
+        int ceilingSnr_dB(ModelStub &m) override {
+            return confirmingAdaptiveTest.ceilingSnr_dB(m);
         }
     };
     
@@ -1457,6 +1470,14 @@ namespace {
             );
         }
         
+        void assertPassesCeilingSNR(ConfirmingAdaptiveTest_ &useCase) {
+            run(useCase);
+            assertEqual(
+                Presenter::ceilingSnr_dB,
+                useCase.ceilingSnr_dB(model)
+            );
+        }
+        
         void assertPassesTargetLevelRule(UseCase &useCase) {
             run(useCase);
             const auto *expected = &Presenter::targetLevelRule;
@@ -1663,6 +1684,10 @@ namespace {
 
     TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesSession) {
         assertPassesSession(confirmingFixedLevelOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesCeilingSNR) {
+        assertPassesCeilingSNR(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesFullScaleLevel) {

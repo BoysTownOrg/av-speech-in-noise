@@ -69,6 +69,7 @@ namespace av_speech_in_noise {
         int startingSnr_dB;
         int maskerLevel_dB_SPL;
         int fullScaleLevel_dB_SPL;
+        int ceilingSnr_dB;
         Condition condition;
     };
     

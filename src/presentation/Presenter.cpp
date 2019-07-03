@@ -3,6 +3,7 @@
 
 namespace av_speech_in_noise {
     int Presenter::fullScaleLevel_dB_SPL = 119;
+    int Presenter::ceilingSnr_dB = 20;
     
     TrackingRule Presenter::targetLevelRule = {
         { 2, 4, 1, 1 },
@@ -247,6 +248,7 @@ namespace av_speech_in_noise {
         p.information = testInformation();
         p.condition = readCondition();
         p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
+        p.ceilingSnr_dB = ceilingSnr_dB;
         p.targetLevelRule = &targetLevelRule;
         return p;
     }
