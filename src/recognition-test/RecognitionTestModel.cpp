@@ -52,18 +52,22 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
         throwIfTrialInProgress();
         
-        auto common = p.common;
-        storeLevels(common);
-        snr_dB = p.snr_dB;
         currentTargetList = finiteTargetList;
         
+        auto common = p.common;
         currentTargetList->loadFromDirectory(common.targetListDirectory);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
-        prepareMasker(common.maskerFilePath);
-        prepareVideo(common.condition);
+        prepareCommonTest(common);
+        snr_dB = p.snr_dB;
         preparePlayersForNextTrial();
         fixedLevelTest = true;
+    }
+    
+    void RecognitionTestModel::prepareCommonTest(const CommonTest &common) {
+        storeLevels(common);
+        prepareMasker(common.maskerFilePath);
+        prepareVideo(common.condition);
     }
     
     void RecognitionTestModel::storeLevels(const CommonTest &common) {
@@ -75,14 +79,12 @@ namespace av_speech_in_noise {
         throwIfTrialInProgress();
         
         auto common = p.common;
-        storeLevels(common);
         
         readTargetLists(p);
         prepareSnrTracks(p);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
-        prepareMasker(common.maskerFilePath);
-        prepareVideo(common.condition);
+        prepareCommonTest(common);
         prepareNextAdaptiveTrial();
         fixedLevelTest = false;
     }
@@ -102,20 +104,30 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::prepareSnrTracks(const AdaptiveTest &p) {
         targetListsWithTracks.clear();
-        for (auto list : lists) {
-            Track::Settings s;
-            s.rule = p.targetLevelRule;
-            s.startingX = p.startingSnr_dB;
-            s.ceiling = p.ceilingSnr_dB;
-            targetListsWithTracks.push_back({
-                list.get(),
-                snrTrackFactory->make(s)
-            });
-        }
+        for (auto list : lists)
+            makeTrackWithList(list.get(), p);
+    }
+    
+    void RecognitionTestModel::makeTrackWithList(
+        TargetList *list,
+        const AdaptiveTest &p
+    ) {
+        Track::Settings s;
+        s.rule = p.targetLevelRule;
+        s.startingX = p.startingSnr_dB;
+        s.ceiling = p.ceilingSnr_dB;
+        targetListsWithTracks.push_back({
+            list,
+            snrTrackFactory->make(s)
+        });
     }
     
     void RecognitionTestModel::tryOpeningOutputFile(const TestInformation &p) {
         outputFile->close();
+        tryOpeningOutputFile_(p);
+    }
+    
+    void RecognitionTestModel::tryOpeningOutputFile_(const TestInformation &p) {
         try {
             outputFile->openNewFile(p);
         } catch (const OutputFile::OpenFailure &) {

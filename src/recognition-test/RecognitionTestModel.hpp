@@ -190,6 +190,7 @@ namespace av_speech_in_noise {
         void playbackComplete() override;
     private:
         void prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
+        void prepareCommonTest(const CommonTest &);
         void storeLevels(const CommonTest &common);
         void preparePlayersForNextTrial();
         void prepareNextAdaptiveTrial();
@@ -201,12 +202,14 @@ namespace av_speech_in_noise {
         void updateSnr(const coordinate_response_measure::SubjectResponse &);
         void removeCompleteTracks();
         void selectNextList();
+        void makeTrackWithList(TargetList *, const AdaptiveTest &);
         void prepareSnrTracks(const AdaptiveTest &);
         void setTargetPlayerDevice(const Calibration &);
         double calibrationLevel_dB(const Calibration &);
         void trySettingTargetLevel(const Calibration &);
         void playCalibration_(const Calibration &);
         void prepareMasker(const std::string &);
+        void tryOpeningOutputFile_(const TestInformation &);
         void tryOpeningOutputFile(const TestInformation &);
         void prepareTargets(const AdaptiveTest &);
         void loadMaskerFile(const std::string &);
