@@ -157,6 +157,7 @@ namespace av_speech_in_noise {
         virtual ~TestMethod() = default;
         virtual bool complete() = 0;
         virtual std::string next() = 0;
+        virtual std::string current() = 0;
     };
 
     class RecognitionTestModel :
@@ -264,7 +265,7 @@ namespace av_speech_in_noise {
                 return currentTargetList->next();
             }
             
-            std::string current() {
+            std::string current() override {
                 return currentTargetList->current();
             }
         };
@@ -287,7 +288,7 @@ namespace av_speech_in_noise {
                 return currentTargetList->empty();
             }
             
-            std::string current() {
+            std::string current() override {
                 return currentTargetList->current();
             }
         };
@@ -304,7 +305,6 @@ namespace av_speech_in_noise {
         Randomizer *randomizer;
         Model::EventListener *listener_{};
         TestMethod *testMethod;
-        bool fixedLevelTest{};
         bool justWroteFreeResponseTrial{};
         bool justWroteCoordinateResponseTrial{};
     public:

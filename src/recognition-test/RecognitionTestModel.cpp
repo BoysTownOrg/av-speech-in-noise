@@ -4,11 +4,9 @@
 
 namespace av_speech_in_noise {
     class NullTestMethod : public TestMethod {
-    
         bool complete() override { return {}; }
-        
         std::string next() override { return {}; }
-        
+        std::string current() override { return {}; }
     };
     
     static NullTestMethod nullTestMethod;
@@ -49,7 +47,6 @@ namespace av_speech_in_noise {
         prepareCommonTest(common);
         fixedLevelMethod.loadFromDirectory(common.targetListDirectory);
         snr_dB = p.snr_dB;
-        fixedLevelTest = true;
         testMethod = &fixedLevelMethod;
         preparePlayersForNextTrial();
     }
@@ -78,7 +75,6 @@ namespace av_speech_in_noise {
         snr_dB = adaptiveMethod.snr_dB();
         testMethod = &adaptiveMethod;
         preparePlayersForNextTrial();
-        fixedLevelTest = false;
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -294,10 +290,7 @@ namespace av_speech_in_noise {
     }
     
     std::string RecognitionTestModel::currentTarget() {
-    auto current_ = fixedLevelTest
-        ? fixedLevelMethod.current()
-        : adaptiveMethod.current();
-        return current_;
+        return testMethod->current();
     }
     
     void RecognitionTestModel::prepareNextAdaptiveTrialAfterRemovingCompleteTracks() {
@@ -381,9 +374,7 @@ namespace av_speech_in_noise {
     }
 
     bool RecognitionTestModel::testComplete() {
-        return fixedLevelTest
-            ? fixedLevelMethod.complete()
-            : adaptiveMethod.complete();
+        return testMethod->complete();
     }
     
     std::vector<std::string> RecognitionTestModel::audioDevices() {
