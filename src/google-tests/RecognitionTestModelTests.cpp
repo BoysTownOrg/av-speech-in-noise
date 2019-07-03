@@ -733,6 +733,10 @@ namespace {
             test_.targetLevelRule = &targetLevelRule_;
         }
         
+        auto &common() {
+            return test_.common;
+        }
+        
         void setTargetListDirectory(std::string s) {
             test_.targetListDirectory = std::move(s);
         }
@@ -746,15 +750,15 @@ namespace {
         }
         
         void setAudioVisual() override {
-            test_.condition = Condition::audioVisual;
+            common().condition = Condition::audioVisual;
         }
         
         void setAuditoryOnly() override {
-            test_.condition = Condition::auditoryOnly;
+            common().condition = Condition::auditoryOnly;
         }
         
         void setMaskerLevel_dB_SPL(int x) {
-            test_.maskerLevel_dB_SPL = x;
+            common().maskerLevel_dB_SPL = x;
         }
         
         void setStartingSnr_dB(int x) {
@@ -766,7 +770,7 @@ namespace {
         }
         
         void setFullScaleLevel_dB_SPL(int x) {
-            test_.fullScaleLevel_dB_SPL = x;
+            common().fullScaleLevel_dB_SPL = x;
         }
         
         auto targetLevelRule() const {

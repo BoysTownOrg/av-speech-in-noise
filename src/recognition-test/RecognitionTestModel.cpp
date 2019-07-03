@@ -52,16 +52,17 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
         throwIfTrialInProgress();
         
-        fullScaleLevel_dB_SPL = p.common.fullScaleLevel_dB_SPL;
-        maskerLevel_dB_SPL = p.common.maskerLevel_dB_SPL;
+        auto common = p.common;
+        fullScaleLevel_dB_SPL = common.fullScaleLevel_dB_SPL;
+        maskerLevel_dB_SPL = common.maskerLevel_dB_SPL;
         snr_dB = p.snr_dB;
         currentTargetList = finiteTargetList;
         
         currentTargetList->loadFromDirectory(p.common.targetListDirectory);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
-        prepareMasker(p.common.maskerFilePath);
-        prepareVideo(p.common.condition);
+        prepareMasker(common.maskerFilePath);
+        prepareVideo(common.condition);
         preparePlayersForNextTrial();
         fixedLevelTest = true;
     }
@@ -69,15 +70,15 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
-        fullScaleLevel_dB_SPL = p.fullScaleLevel_dB_SPL;
-        maskerLevel_dB_SPL = p.maskerLevel_dB_SPL;
+        fullScaleLevel_dB_SPL = p.common.fullScaleLevel_dB_SPL;
+        maskerLevel_dB_SPL = p.common.maskerLevel_dB_SPL;
         
         readTargetLists(p);
         prepareSnrTracks(p);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
         prepareMasker(p.maskerFilePath);
-        prepareVideo(p.condition);
+        prepareVideo(p.common.condition);
         prepareNextAdaptiveTrial();
         fixedLevelTest = false;
     }
