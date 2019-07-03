@@ -3,13 +3,6 @@
 #include <cmath>
 
 namespace av_speech_in_noise {
-    class NullTrack : public Track {
-        void pushDown() override {}
-        void pushUp() override {}
-        int x() override { return {}; }
-        bool complete() override { return {}; }
-        int reversals() override { return {}; }
-    };
     
     class NullTargetList : public TargetList {
         void loadFromDirectory(std::string) override {}
@@ -17,7 +10,6 @@ namespace av_speech_in_noise {
         std::string current() override { return {}; }
     };
     
-    static NullTrack nullTrack;
     static NullTargetList nullTargetList;
     
     RecognitionTestModel::RecognitionTestModel(
@@ -37,7 +29,6 @@ namespace av_speech_in_noise {
         evaluator{evaluator},
         outputFile{outputFile},
         randomizer{randomizer},
-        currentSnrTrack{&nullTrack},
         currentTargetList{&nullTargetList}
     {
         targetPlayer->subscribe(this);
@@ -154,7 +145,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::selectNextList() {
-        adaptiveMethod.selectNextList(currentSnrTrack, currentTargetList);
+        adaptiveMethod.selectNextList(currentTargetList);
     }
     
     void RecognitionTestModel::preparePlayersForNextTrial() {
@@ -184,7 +175,7 @@ namespace av_speech_in_noise {
     }
     
     int RecognitionTestModel::adaptiveSnr_dB() {
-        return currentSnrTrack->x();
+        return adaptiveMethod.snr_dB();
     }
     
     double RecognitionTestModel::unalteredTargetLevel_dB() {
@@ -275,7 +266,7 @@ namespace av_speech_in_noise {
         coordinate_response_measure::Trial trial;
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;
-        trial.reversals = currentSnrTrack->reversals();
+        trial.reversals = adaptiveMethod.reversals();
         trial.correctColor = evaluator->correctColor(currentTarget());
         trial.correctNumber = evaluator->correctNumber(currentTarget());
         trial.SNR_dB = adaptiveSnr_dB();
@@ -320,7 +311,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::pushDownTrack() {
-        currentSnrTrack->pushDown();
+        adaptiveMethod.pushDownTrack();
     }
     
     void RecognitionTestModel::submitIncorrectResponse() {
@@ -329,7 +320,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::pushUpTrack() {
-        currentSnrTrack->pushUp();
+        adaptiveMethod.pushUpTrack();
     }
     
     void RecognitionTestModel::submitResponse(const FreeResponse &p) {

@@ -134,6 +134,15 @@ namespace av_speech_in_noise {
         virtual double randomFloatBetween(double, double) = 0;
         virtual int randomIntBetween(int, int) = 0;
     };
+    
+    class NullTrack : public Track {
+        void pushDown() override {}
+        void pushUp() override {}
+        int x() override { return {}; }
+        bool complete() override { return {}; }
+        int reversals() override { return {}; }
+    };
+    static NullTrack nullTrack;
 
     class RecognitionTestModel :
         public Model,
@@ -150,6 +159,7 @@ namespace av_speech_in_noise {
             TargetListReader *targetListSetReader;
             TrackFactory *snrTrackFactory;
             Randomizer *randomizer;
+            Track *currentSnrTrack;
         public:
             
             AdaptiveMethod(
@@ -159,10 +169,23 @@ namespace av_speech_in_noise {
             ) :
                 targetListSetReader{targetListSetReader},
                 snrTrackFactory{snrTrackFactory},
-                randomizer{randomizer} {}
+                randomizer{randomizer},
+                currentSnrTrack{&nullTrack} {}
+            
+            int snr_dB() {
+                return currentSnrTrack->x();
+            }
             
             void loadFromDirectory(const std::string &p) {
                 lists = targetListSetReader->read(p);
+            }
+            
+            void pushUpTrack() {
+                currentSnrTrack->pushUp();
+            }
+            
+            void pushDownTrack() {
+                currentSnrTrack->pushDown();
             }
     
             void prepareSnrTracks(const AdaptiveTest &p) {
@@ -185,7 +208,7 @@ namespace av_speech_in_noise {
                 });
             }
     
-            void selectNextList(Track * &currentSnrTrack, TargetList * &currentTargetList) {
+            void selectNextList(TargetList * &currentTargetList) {
                 auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
                 size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
                 if (n < targetListsWithTracks.size()) {
@@ -216,6 +239,10 @@ namespace av_speech_in_noise {
                     }
                 );
             }
+            
+            int reversals() {
+                return currentSnrTrack->reversals();
+            }
         };
         
         AdaptiveMethod adaptiveMethod;
@@ -229,7 +256,6 @@ namespace av_speech_in_noise {
         OutputFile *outputFile;
         Randomizer *randomizer;
         Model::EventListener *listener_{};
-        Track *currentSnrTrack{};
         TargetList *currentTargetList{};
         bool fixedLevelTest{};
         bool justWroteFreeResponseTrial{};
