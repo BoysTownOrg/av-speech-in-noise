@@ -199,16 +199,19 @@ namespace av_speech_in_noise {
             
             void pushUpTrack() {
                 currentSnrTrack->pushUp();
+                selectNextList();
             }
             
             void pushDownTrack() {
                 currentSnrTrack->pushDown();
+                selectNextList();
             }
     
             void prepareSnrTracks(const AdaptiveTest &p) {
                 targetListsWithTracks.clear();
                 for (auto list : lists)
                     makeTrackWithList(list.get(), p);
+                selectNextList();
             }
             
             void makeTrackWithList(

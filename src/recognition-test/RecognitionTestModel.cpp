@@ -71,7 +71,6 @@ namespace av_speech_in_noise {
         prepareCommonTest(common);
         adaptiveMethod.loadTargets(common.targetListDirectory);
         adaptiveMethod.prepareSnrTracks(p);
-        adaptiveMethod.selectNextList();
         snr_dB = adaptiveMethod.snr_dB();
         testMethod = &adaptiveMethod;
         preparePlayersForNextTrial();
@@ -280,7 +279,6 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::prepareNextAdaptiveTrial() {
-        adaptiveMethod.selectNextList();
         snr_dB = adaptiveSnr_dB();
         preparePlayersForNextTrial();
     }
