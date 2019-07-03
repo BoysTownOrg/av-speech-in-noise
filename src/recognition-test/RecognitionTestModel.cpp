@@ -30,11 +30,10 @@ namespace av_speech_in_noise {
         OutputFile *outputFile,
         Randomizer *randomizer
     ) :
-        targetListSetReader{targetListSetReader},
+        adaptiveMethod{targetListSetReader, snrTrackFactory},
         finiteTargetList{finiteTargetList},
         maskerPlayer{maskerPlayer},
         targetPlayer{targetPlayer},
-        snrTrackFactory{snrTrackFactory},
         evaluator{evaluator},
         outputFile{outputFile},
         randomizer{randomizer},
@@ -52,13 +51,13 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
         throwIfTrialInProgress();
         
-        auto common = p.common;
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
+        auto common = p.common;
         prepareCommonTest(common);
-        snr_dB = p.snr_dB;
         currentTargetList = finiteTargetList;
         finiteTargetList->loadFromDirectory(common.targetListDirectory);
+        snr_dB = p.snr_dB;
         preparePlayersForNextTrial();
         fixedLevelTest = true;
     }
@@ -77,13 +76,11 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
-        auto common = p.common;
-        
         readTargetLists(p);
         prepareSnrTracks(p);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
-        prepareCommonTest(common);
+        prepareCommonTest(p.common);
         prepareNextAdaptiveTrial();
         fixedLevelTest = false;
     }
@@ -98,27 +95,11 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::readTargetLists(const AdaptiveTest &p) {
-        lists = targetListSetReader->read(p.common.targetListDirectory);
+        adaptiveMethod.loadFromDirectory(p.common.targetListDirectory);
     }
     
     void RecognitionTestModel::prepareSnrTracks(const AdaptiveTest &p) {
-        targetListsWithTracks.clear();
-        for (auto list : lists)
-            makeTrackWithList(list.get(), p);
-    }
-    
-    void RecognitionTestModel::makeTrackWithList(
-        TargetList *list,
-        const AdaptiveTest &p
-    ) {
-        Track::Settings s;
-        s.rule = p.targetLevelRule;
-        s.startingX = p.startingSnr_dB;
-        s.ceiling = p.ceilingSnr_dB;
-        targetListsWithTracks.push_back({
-            list,
-            snrTrackFactory->make(s)
-        });
+        adaptiveMethod.prepareSnrTracks(p);
     }
     
     void RecognitionTestModel::tryOpeningOutputFile(const TestInformation &p) {
@@ -173,11 +154,11 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::selectNextList() {
-        auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
+        auto remainingListCount = gsl::narrow<int>(adaptiveMethod.targetListsWithTracks.size());
         size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
-        if (n < targetListsWithTracks.size()) {
-            currentSnrTrack = targetListsWithTracks.at(n).track.get();
-            currentTargetList = targetListsWithTracks.at(n).list;
+        if (n < adaptiveMethod.targetListsWithTracks.size()) {
+            currentSnrTrack = adaptiveMethod.targetListsWithTracks.at(n).track.get();
+            currentTargetList = adaptiveMethod.targetListsWithTracks.at(n).list;
         }
     }
     
@@ -314,9 +295,9 @@ namespace av_speech_in_noise {
         const coordinate_response_measure::SubjectResponse &response
     ) {
         if (correct(response))
-            currentSnrTrack->pushDown();
+            pushDownTrack();
         else
-            currentSnrTrack->pushUp();
+            pushUpTrack();
     }
     
     bool RecognitionTestModel::correct(
@@ -335,26 +316,34 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::removeCompleteTracks() {
-        targetListsWithTracks.erase(
+        adaptiveMethod.targetListsWithTracks.erase(
             std::remove_if(
-                targetListsWithTracks.begin(),
-                targetListsWithTracks.end(),
+                adaptiveMethod.targetListsWithTracks.begin(),
+                adaptiveMethod.targetListsWithTracks.end(),
                 [](const TargetListWithTrack &t) {
                     return t.track->complete();
                 }
             ),
-            targetListsWithTracks.end()
+            adaptiveMethod.targetListsWithTracks.end()
         );
     }
     
     void RecognitionTestModel::submitCorrectResponse() {
-        currentSnrTrack->pushDown();
+        pushDownTrack();
         prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
     }
     
+    void RecognitionTestModel::pushDownTrack() {
+        currentSnrTrack->pushDown();
+    }
+    
     void RecognitionTestModel::submitIncorrectResponse() {
-        currentSnrTrack->pushUp();
+        pushUpTrack();
         prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
+    }
+    
+    void RecognitionTestModel::pushUpTrack() {
+        currentSnrTrack->pushUp();
     }
     
     void RecognitionTestModel::submitResponse(const FreeResponse &p) {
@@ -412,8 +401,8 @@ namespace av_speech_in_noise {
         return fixedLevelTest ?
             finiteTargetList->empty() :
             std::all_of(
-                targetListsWithTracks.begin(),
-                targetListsWithTracks.end(),
+                adaptiveMethod.targetListsWithTracks.begin(),
+                adaptiveMethod.targetListsWithTracks.end(),
                 [](const TargetListWithTrack &t) {
                     return t.track->complete();
                 }

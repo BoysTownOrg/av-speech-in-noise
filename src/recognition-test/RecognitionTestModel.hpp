@@ -143,17 +143,52 @@ namespace av_speech_in_noise {
             TargetList *list;
             std::shared_ptr<Track> track;
         };
+        class AdaptiveMethod {
+            TargetListReader *targetListSetReader;
+            TrackFactory *snrTrackFactory;
+        public:
+            TargetListReader::lists_type lists{};
+            std::vector<TargetListWithTrack> targetListsWithTracks{};
+            
+            AdaptiveMethod(
+                TargetListReader *targetListSetReader,
+                TrackFactory *snrTrackFactory
+            ) :
+                targetListSetReader{targetListSetReader},
+                snrTrackFactory{snrTrackFactory} {}
+            
+            void loadFromDirectory(const std::string &p) {
+                lists = targetListSetReader->read(p);
+            }
+    
+            void prepareSnrTracks(const AdaptiveTest &p) {
+                targetListsWithTracks.clear();
+                for (auto list : lists)
+                    makeTrackWithList(list.get(), p);
+            }
+            
+            void makeTrackWithList(
+                TargetList *list,
+                const AdaptiveTest &p
+            ) {
+                Track::Settings s;
+                s.rule = p.targetLevelRule;
+                s.startingX = p.startingSnr_dB;
+                s.ceiling = p.ceilingSnr_dB;
+                targetListsWithTracks.push_back({
+                    list,
+                    snrTrackFactory->make(s)
+                });
+            }
+        };
         
-        TargetListReader::lists_type lists{};
-        std::vector<TargetListWithTrack> targetListsWithTracks{};
+        AdaptiveMethod adaptiveMethod;
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
         int snr_dB{};
-        TargetListReader *targetListSetReader;
         FiniteTargetList *finiteTargetList;
         MaskerPlayer *maskerPlayer;
         TargetPlayer *targetPlayer;
-        TrackFactory *snrTrackFactory;
         ResponseEvaluator *evaluator;
         OutputFile *outputFile;
         Randomizer *randomizer;
@@ -189,6 +224,8 @@ namespace av_speech_in_noise {
         void fadeOutComplete() override;
         void playbackComplete() override;
     private:
+        void pushUpTrack();
+        void pushDownTrack();
         void prepareNextAdaptiveTrialAfterRemovingCompleteTracks();
         void prepareCommonTest(const CommonTest &);
         void storeLevels(const CommonTest &common);
@@ -202,7 +239,6 @@ namespace av_speech_in_noise {
         void updateSnr(const coordinate_response_measure::SubjectResponse &);
         void removeCompleteTracks();
         void selectNextList();
-        void makeTrackWithList(TargetList *, const AdaptiveTest &);
         void prepareSnrTracks(const AdaptiveTest &);
         void setTargetPlayerDevice(const Calibration &);
         double calibrationLevel_dB(const Calibration &);
