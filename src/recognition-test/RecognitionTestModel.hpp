@@ -371,6 +371,7 @@ namespace av_speech_in_noise {
     private:
         void submitCorrectResponse_();
         void submitIncorrectResponse_();
+        void writeTrial(const FreeResponse &p);
         void prepareCommonTest(const CommonTest &);
         void storeLevels(const CommonTest &common);
         void preparePlayersForNextTrial();

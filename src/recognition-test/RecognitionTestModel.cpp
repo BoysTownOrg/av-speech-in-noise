@@ -1,5 +1,4 @@
 #include "RecognitionTestModel.hpp"
-#include <gsl/gsl>
 #include <cmath>
 
 namespace av_speech_in_noise {
@@ -47,9 +46,28 @@ namespace av_speech_in_noise {
         
         fixedLevelMethod.store(p);
         testMethod = &fixedLevelMethod;
+        prepareCommonTest(p.common);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
+    }
+    
+    void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
+        throwIfTrialInProgress();
+        
+        adaptiveMethod.store(p);
+        testMethod = &adaptiveMethod;
         prepareCommonTest(p.common);
+        tryOpeningOutputFile(p.information);
+        outputFile->writeTest(p);
+    }
+    
+    void RecognitionTestModel::throwIfTrialInProgress() {
+        if (trialInProgress())
+            throw RequestFailure{"Trial in progress."};
+    }
+    
+    bool RecognitionTestModel::trialInProgress() {
+        return maskerPlayer->playing();
     }
     
     void RecognitionTestModel::prepareCommonTest(const CommonTest &common) {
@@ -63,38 +81,6 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::storeLevels(const CommonTest &common) {
         fullScaleLevel_dB_SPL = common.fullScaleLevel_dB_SPL;
         maskerLevel_dB_SPL = common.maskerLevel_dB_SPL;
-    }
-    
-    void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
-        throwIfTrialInProgress();
-        
-        adaptiveMethod.store(p);
-        testMethod = &adaptiveMethod;
-        tryOpeningOutputFile(p.information);
-        outputFile->writeTest(p);
-        prepareCommonTest(p.common);
-    }
-    
-    void RecognitionTestModel::throwIfTrialInProgress() {
-        if (trialInProgress())
-            throw RequestFailure{"Trial in progress."};
-    }
-    
-    bool RecognitionTestModel::trialInProgress() {
-        return maskerPlayer->playing();
-    }
-    
-    void RecognitionTestModel::tryOpeningOutputFile(const TestInformation &p) {
-        outputFile->close();
-        tryOpeningOutputFile_(p);
-    }
-    
-    void RecognitionTestModel::tryOpeningOutputFile_(const TestInformation &p) {
-        try {
-            outputFile->openNewFile(p);
-        } catch (const OutputFile::OpenFailure &) {
-            throw RequestFailure{"Unable to open output file."};
-        }
     }
     
     void RecognitionTestModel::prepareMasker(const std::string &p) {
@@ -165,6 +151,19 @@ namespace av_speech_in_noise {
             2 * maskerPlayer->fadeTimeSeconds() -
             targetPlayer->durationSeconds();
         maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
+    }
+    
+    void RecognitionTestModel::tryOpeningOutputFile(const TestInformation &p) {
+        outputFile->close();
+        tryOpeningOutputFile_(p);
+    }
+    
+    void RecognitionTestModel::tryOpeningOutputFile_(const TestInformation &p) {
+        try {
+            outputFile->openNewFile(p);
+        } catch (const OutputFile::OpenFailure &) {
+            throw RequestFailure{"Unable to open output file."};
+        }
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
@@ -291,6 +290,11 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::submitResponse(const FreeResponse &p) {
+        writeTrial(p);
+        preparePlayersForNextTrial();
+    }
+    
+    void RecognitionTestModel::writeTrial(const FreeResponse &p) {
         if (!justWroteFreeResponseTrial)
             outputFile->writeFreeResponseTrialHeading();
         FreeResponseTrial trial;
@@ -300,9 +304,6 @@ namespace av_speech_in_noise {
         outputFile->save();
         justWroteFreeResponseTrial = true;
         justWroteCoordinateResponseTrial = false;
-        
-        prepareTargetPlayer();
-        seekRandomMaskerPosition();
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
