@@ -30,6 +30,14 @@ namespace av_speech_in_noise {
             auto str() const {
                 return stream.str();
             }
+            
+            void writeSubjectId(const TestInformation &p) {
+                writeLabeledLine("subject", p.subjectId);
+            }
+            
+            void writeTester(const TestInformation &p) {
+                writeLabeledLine("tester", p.testerId);
+            }
         };
     }
     
@@ -142,8 +150,8 @@ namespace av_speech_in_noise {
     
     std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
         FormattedStream stream;
-        stream.writeLabeledLine("subject", test.information.subjectId);
-        stream.writeLabeledLine("tester", test.information.testerId);
+        stream.writeSubjectId(test.information);
+        stream.writeTester(test.information);
         stream.writeLabeledLine("session", test.information.session);
         stream.writeLabeledLine("masker", test.common.maskerFilePath);
         stream.writeLabeledLine("targets", test.common.targetListDirectory);
@@ -156,8 +164,8 @@ namespace av_speech_in_noise {
     
     std::string OutputFileImpl::formatTest(const FixedLevelTest &test) {
         FormattedStream stream;
-        stream.writeLabeledLine("subject", test.information.subjectId);
-        stream.writeLabeledLine("tester", test.information.testerId);
+        stream.writeSubjectId(test.information);
+        stream.writeTester(test.information);
         stream.writeLabeledLine("session", test.information.session);
         stream.writeLabeledLine("masker", test.common.maskerFilePath);
         stream.writeLabeledLine("targets", test.common.targetListDirectory);
