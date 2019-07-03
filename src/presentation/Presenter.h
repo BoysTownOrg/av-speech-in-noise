@@ -142,6 +142,7 @@ namespace av_speech_in_noise {
             void browseForCalibration() override;
         private:
             TestInformation testInformation();
+            CommonTest commonTest();
             Condition readCondition();
             bool method(Method m);
             int readMaskerLevel();

@@ -222,12 +222,8 @@ namespace av_speech_in_noise {
     FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
         FixedLevelTest p;
         p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
-        p.common.maskerLevel_dB_SPL = readMaskerLevel();
-        p.common.targetListDirectory = view->targetListDirectory();
-        p.common.maskerFilePath = view->maskerFilePath();
         p.information = testInformation();
-        p.common.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
-        p.common.condition = readCondition();
+        p.common = commonTest();
         return p;
     }
     
@@ -239,17 +235,23 @@ namespace av_speech_in_noise {
         return p;
     }
     
+    CommonTest Presenter::TestSetup::commonTest() {
+        CommonTest p;
+        p.maskerLevel_dB_SPL = readMaskerLevel();
+        p.targetListDirectory = view->targetListDirectory();
+        p.maskerFilePath = view->maskerFilePath();
+        p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
+        p.condition = readCondition();
+        return p;
+    }
+    
     AdaptiveTest Presenter::TestSetup::adaptiveTest() {
         AdaptiveTest p;
         p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
-        p.common.maskerLevel_dB_SPL = readMaskerLevel();
-        p.common.maskerFilePath = view->maskerFilePath();
-        p.common.targetListDirectory = view->targetListDirectory();
         p.information = testInformation();
-        p.common.condition = readCondition();
-        p.common.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         p.ceilingSnr_dB = ceilingSnr_dB;
         p.targetLevelRule = &targetLevelRule;
+        p.common = commonTest();
         return p;
     }
     
