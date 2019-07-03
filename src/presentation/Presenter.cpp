@@ -242,12 +242,12 @@ namespace av_speech_in_noise {
     AdaptiveTest Presenter::TestSetup::adaptiveTest() {
         AdaptiveTest p;
         p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
-        p.maskerLevel_dB_SPL = readMaskerLevel();
-        p.maskerFilePath = view->maskerFilePath();
-        p.targetListDirectory = view->targetListDirectory();
+        p.common.maskerLevel_dB_SPL = readMaskerLevel();
+        p.common.maskerFilePath = view->maskerFilePath();
+        p.common.targetListDirectory = view->targetListDirectory();
         p.information = testInformation();
-        p.condition = readCondition();
-        p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
+        p.common.condition = readCondition();
+        p.common.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
         p.ceilingSnr_dB = ceilingSnr_dB;
         p.targetLevelRule = &targetLevelRule;
         return p;

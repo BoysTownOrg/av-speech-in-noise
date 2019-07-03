@@ -648,12 +648,16 @@ namespace {
         explicit ConfirmingAdaptiveTest(ViewStub::TestSetupViewStub *view) :
             view{view} {}
         
-        void run() override {
-            view->confirmTestSetup();
-        }
-        
         auto adaptiveTest(ModelStub &m) {
             return m.adaptiveTest();
+        }
+        
+        auto common(ModelStub &m) {
+            return adaptiveTest(m).common;
+        }
+        
+        void run() override {
+            view->confirmTestSetup();
         }
         
         int snr_dB(ModelStub &m) override {
@@ -661,11 +665,11 @@ namespace {
         }
         
         int maskerLevel(ModelStub &m) override {
-            return adaptiveTest(m).maskerLevel_dB_SPL;
+            return common(m).maskerLevel_dB_SPL;
         }
         
         std::string targetListDirectory(ModelStub &m) override {
-            return adaptiveTest(m).targetListDirectory;
+            return common(m).targetListDirectory;
         }
         
         std::string subjectId(ModelStub &m) override {
@@ -681,15 +685,15 @@ namespace {
         }
         
         std::string maskerFilePath(ModelStub &m) override {
-            return adaptiveTest(m).maskerFilePath;
+            return common(m).maskerFilePath;
         }
         
         int fullScaleLevel(ModelStub &m) override {
-            return adaptiveTest(m).fullScaleLevel_dB_SPL;
+            return common(m).fullScaleLevel_dB_SPL;
         }
         
         Condition condition(ModelStub &m) override {
-            return adaptiveTest(m).condition;
+            return common(m).condition;
         }
         
         int ceilingSnr_dB(ModelStub &m) override {

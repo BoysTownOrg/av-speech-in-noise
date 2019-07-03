@@ -61,7 +61,16 @@ namespace av_speech_in_noise {
         std::string session;
     };
     
+    struct CommonTest {
+        std::string targetListDirectory;
+        std::string maskerFilePath;
+        int maskerLevel_dB_SPL;
+        int fullScaleLevel_dB_SPL;
+        Condition condition;
+    };
+    
     struct AdaptiveTest {
+        CommonTest common;
         TestInformation information;
         std::string targetListDirectory;
         std::string maskerFilePath;
@@ -74,6 +83,7 @@ namespace av_speech_in_noise {
     };
     
     struct FixedLevelTest {
+        CommonTest common;
         TestInformation information;
         std::string targetListDirectory;
         std::string maskerFilePath;
