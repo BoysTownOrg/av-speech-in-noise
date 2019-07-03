@@ -142,6 +142,14 @@ namespace av_speech_in_noise {
         bool complete() override { return {}; }
         int reversals() override { return {}; }
     };
+    
+    class NullTargetList : public TargetList {
+        void loadFromDirectory(std::string) override {}
+        std::string next() override { return {}; }
+        std::string current() override { return {}; }
+    };
+    
+    static NullTargetList nullTargetList;
     static NullTrack nullTrack;
 
     class RecognitionTestModel :
@@ -161,6 +169,7 @@ namespace av_speech_in_noise {
             Randomizer *randomizer;
             Track *currentSnrTrack;
         public:
+            TargetList *currentTargetList{};
             AdaptiveMethod(
                 TargetListReader *targetListSetReader,
                 TrackFactory *snrTrackFactory,
@@ -169,7 +178,8 @@ namespace av_speech_in_noise {
                 targetListSetReader{targetListSetReader},
                 snrTrackFactory{snrTrackFactory},
                 randomizer{randomizer},
-                currentSnrTrack{&nullTrack} {}
+                currentSnrTrack{&nullTrack},
+                currentTargetList{&nullTargetList} {}
             
             int snr_dB() {
                 return currentSnrTrack->x();
@@ -207,7 +217,7 @@ namespace av_speech_in_noise {
                 });
             }
     
-            void selectNextList(TargetList * &currentTargetList) {
+            void selectNextList() {
                 auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
                 size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
                 if (n < targetListsWithTracks.size()) {
@@ -244,18 +254,29 @@ namespace av_speech_in_noise {
             }
         };
         
+        class FixedLevelMethod {
+        public:
+            FiniteTargetList *currentTargetList{};
+            
+            FixedLevelMethod(FiniteTargetList *targetList) :
+                currentTargetList{targetList} {}
+            
+            bool complete() {
+                return currentTargetList->empty();
+            }
+        };
+        
         AdaptiveMethod adaptiveMethod;
+        FixedLevelMethod fixedLevelMethod;
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
         int snr_dB{};
-        FiniteTargetList *finiteTargetList;
         MaskerPlayer *maskerPlayer;
         TargetPlayer *targetPlayer;
         ResponseEvaluator *evaluator;
         OutputFile *outputFile;
         Randomizer *randomizer;
         Model::EventListener *listener_{};
-        TargetList *currentTargetList{};
         bool fixedLevelTest{};
         bool justWroteFreeResponseTrial{};
         bool justWroteCoordinateResponseTrial{};

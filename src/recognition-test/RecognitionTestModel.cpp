@@ -3,13 +3,6 @@
 #include <cmath>
 
 namespace av_speech_in_noise {
-    class NullTargetList : public TargetList {
-        void loadFromDirectory(std::string) override {}
-        std::string next() override { return {}; }
-        std::string current() override { return {}; }
-    };
-    
-    static NullTargetList nullTargetList;
     
     RecognitionTestModel::RecognitionTestModel(
         TargetListReader *targetListSetReader,
@@ -22,13 +15,12 @@ namespace av_speech_in_noise {
         Randomizer *randomizer
     ) :
         adaptiveMethod{targetListSetReader, snrTrackFactory, randomizer},
-        finiteTargetList{finiteTargetList},
+        fixedLevelMethod{finiteTargetList},
         maskerPlayer{maskerPlayer},
         targetPlayer{targetPlayer},
         evaluator{evaluator},
         outputFile{outputFile},
-        randomizer{randomizer},
-        currentTargetList{&nullTargetList}
+        randomizer{randomizer}
     {
         targetPlayer->subscribe(this);
         maskerPlayer->subscribe(this);
@@ -45,11 +37,10 @@ namespace av_speech_in_noise {
         outputFile->writeTest(p);
         auto common = p.common;
         prepareCommonTest(common);
-        currentTargetList = finiteTargetList;
-        finiteTargetList->loadFromDirectory(common.targetListDirectory);
+        fixedLevelMethod.currentTargetList->loadFromDirectory(common.targetListDirectory);
         snr_dB = p.snr_dB;
-        preparePlayersForNextTrial();
         fixedLevelTest = true;
+        preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::prepareCommonTest(const CommonTest &common) {
@@ -72,7 +63,7 @@ namespace av_speech_in_noise {
         prepareCommonTest(common);
         adaptiveMethod.loadFromDirectory(common.targetListDirectory);
         adaptiveMethod.prepareSnrTracks(p);
-        adaptiveMethod.selectNextList(currentTargetList);
+        adaptiveMethod.selectNextList();
         snr_dB = adaptiveMethod.snr_dB();
         preparePlayersForNextTrial();
         fixedLevelTest = false;
@@ -85,10 +76,6 @@ namespace av_speech_in_noise {
     
     bool RecognitionTestModel::trialInProgress() {
         return maskerPlayer->playing();
-    }
-    
-    void RecognitionTestModel::readTargetLists(const AdaptiveTest &p) {
-        adaptiveMethod.loadFromDirectory(p.common.targetListDirectory);
     }
     
     void RecognitionTestModel::prepareSnrTracks(const AdaptiveTest &p) {
@@ -141,13 +128,13 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::prepareNextAdaptiveTrial() {
-        adaptiveMethod.selectNextList(currentTargetList);
+        adaptiveMethod.selectNextList();
         snr_dB = adaptiveSnr_dB();
         preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::selectNextList() {
-        adaptiveMethod.selectNextList(currentTargetList);
+        adaptiveMethod.selectNextList();
     }
     
     void RecognitionTestModel::preparePlayersForNextTrial() {
@@ -156,7 +143,10 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::prepareTargetPlayer() {
-        loadTargetFile(currentTargetList->next());
+    auto targetList = fixedLevelTest
+        ? fixedLevelMethod.currentTargetList
+        : adaptiveMethod.currentTargetList;
+        loadTargetFile(targetList->next());
         setTargetLevel_dB(targetLevel_dB());
         targetPlayer->subscribeToPlaybackCompletion();
     }
@@ -295,12 +285,15 @@ namespace av_speech_in_noise {
     }
     
     std::string RecognitionTestModel::currentTarget() {
-        return currentTargetList->current();
+    auto targetList = fixedLevelTest
+        ? fixedLevelMethod.currentTargetList
+        : adaptiveMethod.currentTargetList;
+        return targetList->current();
     }
     
     void RecognitionTestModel::prepareNextAdaptiveTrialAfterRemovingCompleteTracks() {
         removeCompleteTracks();
-        adaptiveMethod.selectNextList(currentTargetList);
+        adaptiveMethod.selectNextList();
         snr_dB = adaptiveSnr_dB();
         preparePlayersForNextTrial();
     }
@@ -332,7 +325,7 @@ namespace av_speech_in_noise {
             outputFile->writeFreeResponseTrialHeading();
         FreeResponseTrial trial;
         trial.response = p.response;
-        trial.target = evaluator->fileName(finiteTargetList->current());
+        trial.target = evaluator->fileName(fixedLevelMethod.currentTargetList->current());
         outputFile->writeTrial(trial);
         outputFile->save();
         justWroteFreeResponseTrial = true;
@@ -380,7 +373,7 @@ namespace av_speech_in_noise {
 
     bool RecognitionTestModel::testComplete() {
         return fixedLevelTest
-            ? finiteTargetList->empty()
+            ? fixedLevelMethod.complete()
             : adaptiveMethod.complete();
     }
     
