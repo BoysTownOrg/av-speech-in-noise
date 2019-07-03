@@ -222,12 +222,12 @@ namespace av_speech_in_noise {
     FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
         FixedLevelTest p;
         p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
-        p.maskerLevel_dB_SPL = readMaskerLevel();
-        p.targetListDirectory = view->targetListDirectory();
-        p.maskerFilePath = view->maskerFilePath();
+        p.common.maskerLevel_dB_SPL = readMaskerLevel();
+        p.common.targetListDirectory = view->targetListDirectory();
+        p.common.maskerFilePath = view->maskerFilePath();
         p.information = testInformation();
-        p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
-        p.condition = readCondition();
+        p.common.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
+        p.common.condition = readCondition();
         return p;
     }
     

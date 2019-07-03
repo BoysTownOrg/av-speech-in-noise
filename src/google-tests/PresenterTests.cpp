@@ -656,6 +656,10 @@ namespace {
             return adaptiveTest(m).common;
         }
         
+        auto information(ModelStub &m) {
+            return adaptiveTest(m).information;
+        }
+        
         void run() override {
             view->confirmTestSetup();
         }
@@ -673,15 +677,15 @@ namespace {
         }
         
         std::string subjectId(ModelStub &m) override {
-            return adaptiveTest(m).information.subjectId;
+            return information(m).subjectId;
         }
         
         std::string testerId(ModelStub &m) override {
-            return adaptiveTest(m).information.testerId;
+            return information(m).testerId;
         }
         
         std::string session(ModelStub &m) override {
-            return adaptiveTest(m).information.session;
+            return information(m).session;
         }
         
         std::string maskerFilePath(ModelStub &m) override {
@@ -828,40 +832,48 @@ namespace {
             return m.fixedLevelTest();
         }
         
+        auto common(ModelStub &m) {
+            return fixedLevelTest(m).common;
+        }
+        
+        auto information(ModelStub &m) {
+            return fixedLevelTest(m).information;
+        }
+        
         int snr_dB(ModelStub &m) override {
             return fixedLevelTest(m).snr_dB;
         }
         
         int maskerLevel(ModelStub &m) override {
-            return fixedLevelTest(m).maskerLevel_dB_SPL;
+            return common(m).maskerLevel_dB_SPL;
         }
         
         int fullScaleLevel(ModelStub &m) override {
-            return fixedLevelTest(m).fullScaleLevel_dB_SPL;
+            return common(m).fullScaleLevel_dB_SPL;
         }
         
         std::string targetListDirectory(ModelStub &m) override {
-            return fixedLevelTest(m).targetListDirectory;
+            return common(m).targetListDirectory;
         }
         
         std::string subjectId(ModelStub &m) override {
-            return fixedLevelTest(m).information.subjectId;
+            return information(m).subjectId;
         }
         
         std::string testerId(ModelStub &m) override {
-            return fixedLevelTest(m).information.testerId;
+            return information(m).testerId;
         }
         
         std::string session(ModelStub &m) override {
-            return fixedLevelTest(m).information.session;
+            return information(m).session;
         }
         
         std::string maskerFilePath(ModelStub &m) override {
-            return fixedLevelTest(m).maskerFilePath;
+            return common(m).maskerFilePath;
         }
         
         Condition condition(ModelStub &m) override {
-            return fixedLevelTest(m).condition;
+            return common(m).condition;
         }
     };
     
