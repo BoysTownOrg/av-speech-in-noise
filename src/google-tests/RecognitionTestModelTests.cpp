@@ -1437,6 +1437,15 @@ namespace {
             run(useCase);
             assertOutputFileLog("close openNewFile writeTest ");
         }
+        
+        void assertSetsTargetLevel(InitializingFixedLevelTest &useCase) {
+            useCase.setSnr_dB(2);
+            setMaskerLevel_dB_SPL(3);
+            setTestingFullScaleLevel_dB_SPL(4);
+            setTargetPlayerRms(5);
+            run(useCase);
+            assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1903,12 +1912,7 @@ namespace {
         RecognitionTestModelTests,
         initializeFixedLevelTestSetsTargetPlayerLevel
     ) {
-        setSnr_dB(2);
-        setMaskerLevel_dB_SPL(3);
-        setTestingFullScaleLevel_dB_SPL(4);
-        setTargetPlayerRms(5);
-        initializeFixedLevelTest();
-        assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+        assertSetsTargetLevel(initializingFixedLevelTest);
     }
 
     TEST_F(
