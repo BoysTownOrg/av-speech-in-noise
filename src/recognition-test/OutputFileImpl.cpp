@@ -145,9 +145,9 @@ namespace av_speech_in_noise {
         stream.writeLabeledLine("subject", test.information.subjectId);
         stream.writeLabeledLine("tester", test.information.testerId);
         stream.writeLabeledLine("session", test.information.session);
-        stream.writeLabeledLine("masker", test.maskerFilePath);
-        stream.writeLabeledLine("targets", test.targetListDirectory);
-        stream.writeLabeledLine("masker level (dB SPL)", test.maskerLevel_dB_SPL);
+        stream.writeLabeledLine("masker", test.common.maskerFilePath);
+        stream.writeLabeledLine("targets", test.common.targetListDirectory);
+        stream.writeLabeledLine("masker level (dB SPL)", test.common.maskerLevel_dB_SPL);
         stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
         stream.writeLabeledLine("condition", conditionName(test.condition));
         stream.insertNewLine();
@@ -159,9 +159,9 @@ namespace av_speech_in_noise {
         stream.writeLabeledLine("subject", test.information.subjectId);
         stream.writeLabeledLine("tester", test.information.testerId);
         stream.writeLabeledLine("session", test.information.session);
-        stream.writeLabeledLine("masker", test.maskerFilePath);
-        stream.writeLabeledLine("targets", test.targetListDirectory);
-        stream.writeLabeledLine("masker level (dB SPL)", test.maskerLevel_dB_SPL);
+        stream.writeLabeledLine("masker", test.common.maskerFilePath);
+        stream.writeLabeledLine("targets", test.common.targetListDirectory);
+        stream.writeLabeledLine("masker level (dB SPL)", test.common.maskerLevel_dB_SPL);
         stream.writeLabeledLine("SNR (dB)", test.snr_dB);
         stream.writeLabeledLine("condition", conditionName(test.condition));
         stream.insertNewLine();

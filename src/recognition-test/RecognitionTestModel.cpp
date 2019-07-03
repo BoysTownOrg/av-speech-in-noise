@@ -53,12 +53,11 @@ namespace av_speech_in_noise {
         throwIfTrialInProgress();
         
         auto common = p.common;
-        fullScaleLevel_dB_SPL = common.fullScaleLevel_dB_SPL;
-        maskerLevel_dB_SPL = common.maskerLevel_dB_SPL;
+        storeLevels(common);
         snr_dB = p.snr_dB;
         currentTargetList = finiteTargetList;
         
-        currentTargetList->loadFromDirectory(p.common.targetListDirectory);
+        currentTargetList->loadFromDirectory(common.targetListDirectory);
         tryOpeningOutputFile(p.information);
         outputFile->writeTest(p);
         prepareMasker(common.maskerFilePath);
@@ -67,11 +66,16 @@ namespace av_speech_in_noise {
         fixedLevelTest = true;
     }
     
+    void RecognitionTestModel::storeLevels(const CommonTest &common) {
+        fullScaleLevel_dB_SPL = common.fullScaleLevel_dB_SPL;
+        maskerLevel_dB_SPL = common.maskerLevel_dB_SPL;
+    }
+    
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
-        fullScaleLevel_dB_SPL = p.common.fullScaleLevel_dB_SPL;
-        maskerLevel_dB_SPL = p.common.maskerLevel_dB_SPL;
+        auto common = p.common;
+        storeLevels(common);
         
         readTargetLists(p);
         prepareSnrTracks(p);

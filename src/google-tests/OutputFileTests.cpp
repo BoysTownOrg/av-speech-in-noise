@@ -245,9 +245,9 @@ namespace {
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTest) {
-        adaptiveTest.maskerFilePath = "a";
-        adaptiveTest.targetListDirectory = "d";
-        adaptiveTest.maskerLevel_dB_SPL = 1;
+        adaptiveTest.common.maskerFilePath = "a";
+        adaptiveTest.common.targetListDirectory = "d";
+        adaptiveTest.common.maskerLevel_dB_SPL = 1;
         adaptiveTest.startingSnr_dB = 2;
         file.writeTest(adaptiveTest);
         assertWriterContains("masker: a\n");
@@ -258,9 +258,9 @@ namespace {
     }
 
     TEST_F(OutputFileTests, writeFixedLevelTest) {
-        fixedLevelTest.maskerFilePath = "a";
-        fixedLevelTest.targetListDirectory = "d";
-        fixedLevelTest.maskerLevel_dB_SPL = 1;
+        fixedLevelTest.common.maskerFilePath = "a";
+        fixedLevelTest.common.targetListDirectory = "d";
+        fixedLevelTest.common.maskerLevel_dB_SPL = 1;
         fixedLevelTest.snr_dB = 2;
         file.writeTest(fixedLevelTest);
         assertWriterContains("masker: a\n");
