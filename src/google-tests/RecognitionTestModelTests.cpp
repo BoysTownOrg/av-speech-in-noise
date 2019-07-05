@@ -1939,6 +1939,7 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesColor
     ) {
+        run(initializingAdaptiveTest);
         coordinateResponse.color = blueColor();
         submitCoordinateResponse();
         assertEqual(blueColor(), writtenCoordinateResponseTrial().subjectColor);
@@ -1948,6 +1949,7 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesNumber
     ) {
+        run(initializingAdaptiveTest);
         coordinateResponse.number = 1;
         submitCoordinateResponse();
         assertEqual(1, writtenCoordinateResponseTrial().subjectNumber);
@@ -1967,6 +1969,7 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesCorrectColor
     ) {
+        run(initializingAdaptiveTest);
         evaluator.setCorrectColor(blueColor());
         submitCoordinateResponse();
         assertEqual(blueColor(), writtenCoordinateResponseTrial().correctColor);
@@ -1976,6 +1979,7 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesCorrectNumber
     ) {
+        run(initializingAdaptiveTest);
         evaluator.setCorrectNumber(1);
         submitCoordinateResponse();
         assertEqual(1, writtenCoordinateResponseTrial().correctNumber);
@@ -1995,6 +1999,7 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesCorrectTrial
     ) {
+        run(initializingAdaptiveTest);
         setCorrectResponse();
         submitCoordinateResponse();
         assertTrue(trialWrittenCorrect());
@@ -2004,6 +2009,7 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesIncorrectTrial
     ) {
+        run(initializingAdaptiveTest);
         setIncorrectResponse();
         submitCoordinateResponse();
         assertFalse(trialWrittenCorrect());
