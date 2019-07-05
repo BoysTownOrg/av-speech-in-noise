@@ -1634,6 +1634,11 @@ namespace {
             run(useCase);
             assertSubjectViewShown();
         }
+        
+        void assertDoesNotShowExperimenterView(UseCase &useCase) {
+            run(useCase);
+            assertExperimenterViewNotShown();
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1708,16 +1713,14 @@ namespace {
         PresenterTests,
         confirmAdaptiveClosedSetTestDoesNotShowExperimenterView
     ) {
-        run(confirmingAdaptiveClosedSetTest);
-        assertExperimenterViewNotShown();
+        assertDoesNotShowExperimenterView(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(
         PresenterTests,
         confirmFixedLevelClosedSetTestDoesNotShowExperimenterView
     ) {
-        run(confirmingFixedLevelClosedSetTest);
-        assertExperimenterViewNotShown();
+        assertDoesNotShowExperimenterView(confirmingFixedLevelClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
