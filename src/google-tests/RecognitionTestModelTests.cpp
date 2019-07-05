@@ -2061,7 +2061,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesSnr
+        submitCoordinateResponseWritesSnrForAdaptiveTest
     ) {
         initializeTestWithStartingList(1);
         snrTrack(1)->setX(2);
@@ -2071,12 +2071,22 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesCorrectTrial
+        submitCoordinateResponseWritesCorrectTrialForAdaptiveTest
     ) {
         run(initializingAdaptiveTest);
         setCorrectResponse();
         submitCoordinateResponse();
-        assertTrue(trialWrittenCorrect());
+        assertTrue(writtenCoordinateResponseTrial(initializingAdaptiveTest).correct);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseWritesCorrectTrialForFixedLevelTest
+    ) {
+        run(initializingFixedLevelTest);
+        setCorrectResponse();
+        submitCoordinateResponse();
+        assertTrue(writtenCoordinateResponseTrial(initializingFixedLevelTest).correct);
     }
 
     TEST_F(

@@ -348,7 +348,7 @@ namespace av_speech_in_noise {
             trial.trial.subjectNumber = response.number;
             trial.trial.correctColor = evaluator->correctColor(current());
             trial.trial.correctNumber = evaluator->correctNumber(current());
-            //trial.trial.correct = evaluator->correct(current(), response);
+            trial.trial.correct = evaluator->correct(current(), response);
             file->writeTrial(trial);
         }
     };
