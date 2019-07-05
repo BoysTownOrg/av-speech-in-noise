@@ -2005,6 +2005,13 @@ namespace {
         assertInvalidMaskerLevelShowsErrorMessage(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(
+        PresenterTests,
+        confirmingFixedLevelClosedSetTestWithInvalidMaskerLevelShowsErrorMessage
+    ) {
+        assertInvalidMaskerLevelShowsErrorMessage(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, playCalibrationWithInvalidLevelShowsErrorMessage) {
         assertInvalidCalibrationLevelShowsErrorMessage(playingCalibration);
     }
