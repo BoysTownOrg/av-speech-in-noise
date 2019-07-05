@@ -877,6 +877,66 @@ namespace {
         }
     };
     
+    class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
+        ViewStub::TestSetupViewStub *view;
+    public:
+        explicit ConfirmingFixedLevelClosedSetTest(ViewStub::TestSetupViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            setMethod(view, Method::fixedLevelClosedSet);
+            view->confirmTestSetup();
+        }
+        
+        auto fixedLevelTest(ModelStub &m) {
+            return m.fixedLevelTest();
+        }
+        
+        auto common(ModelStub &m) {
+            return fixedLevelTest(m).common;
+        }
+        
+        auto information(ModelStub &m) {
+            return fixedLevelTest(m).information;
+        }
+        
+        int snr_dB(ModelStub &m) override {
+            return fixedLevelTest(m).snr_dB;
+        }
+        
+        int maskerLevel(ModelStub &m) override {
+            return common(m).maskerLevel_dB_SPL;
+        }
+        
+        int fullScaleLevel(ModelStub &m) override {
+            return common(m).fullScaleLevel_dB_SPL;
+        }
+        
+        std::string targetListDirectory(ModelStub &m) override {
+            return common(m).targetListDirectory;
+        }
+        
+        std::string subjectId(ModelStub &m) override {
+            return information(m).subjectId;
+        }
+        
+        std::string testerId(ModelStub &m) override {
+            return information(m).testerId;
+        }
+        
+        std::string session(ModelStub &m) override {
+            return information(m).session;
+        }
+        
+        std::string maskerFilePath(ModelStub &m) override {
+            return common(m).maskerFilePath;
+        }
+        
+        Condition condition(ModelStub &m) override {
+            return common(m).condition;
+        }
+    };
+    
     class TrialSubmission : public virtual UseCase {
     public:
         virtual bool nextTrialButtonShown() = 0;
@@ -1145,6 +1205,7 @@ namespace {
         ConfirmingAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{&setupView};
         ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
         ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
+        ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{&setupView};
         PlayingCalibration playingCalibration{&setupView};
         PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
         PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView};
@@ -1555,8 +1616,12 @@ namespace {
         assertHidesTestSetupView(confirmingAdaptiveOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmFixedLevelTestHidesTestSetupView) {
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestHidesTestSetupView) {
         assertHidesTestSetupView(confirmingFixedLevelOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestHidesTestSetupView) {
+        assertHidesTestSetupView(confirmingFixedLevelClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsExperimenterView) {

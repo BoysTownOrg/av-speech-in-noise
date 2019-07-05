@@ -104,7 +104,8 @@ namespace av_speech_in_noise {
     enum class Method {
         adaptiveOpenSet,
         adaptiveClosedSet,
-        fixedLevelOpenSet
+        fixedLevelOpenSet,
+        fixedLevelClosedSet
     };
     
     constexpr const char *methodName(Method c) {
@@ -115,6 +116,8 @@ namespace av_speech_in_noise {
             return "adaptive closed-set";
         case Method::fixedLevelOpenSet:
             return "fixed-level open-set";
+        case Method::fixedLevelClosedSet:
+            return "fixed-level closed-set";
         }
     }
 
