@@ -1449,6 +1449,13 @@ namespace {
             submitCoordinateResponse();
             assertEqual(1, writtenCoordinateResponseTrial(useCase).correctNumber);
         }
+        
+        void assertWritesCorrectEvaluation(InitializingTestUseCase &useCase) {
+            run(useCase);
+            setCorrectResponse();
+            submitCoordinateResponse();
+            assertTrue(writtenCoordinateResponseTrial(useCase).correct);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -2073,20 +2080,14 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesCorrectTrialForAdaptiveTest
     ) {
-        run(initializingAdaptiveTest);
-        setCorrectResponse();
-        submitCoordinateResponse();
-        assertTrue(writtenCoordinateResponseTrial(initializingAdaptiveTest).correct);
+        assertWritesCorrectEvaluation(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponseWritesCorrectTrialForFixedLevelTest
     ) {
-        run(initializingFixedLevelTest);
-        setCorrectResponse();
-        submitCoordinateResponse();
-        assertTrue(writtenCoordinateResponseTrial(initializingFixedLevelTest).correct);
+        assertWritesCorrectEvaluation(initializingFixedLevelTest);
     }
 
     TEST_F(
