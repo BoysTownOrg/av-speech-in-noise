@@ -1653,6 +1653,7 @@ namespace {
 
     TEST_F(PresenterTests, populatesMethodMenu) {
         assertSetupViewMethodsContains(methodName(Method::fixedLevelOpenSet));
+        assertSetupViewMethodsContains(methodName(Method::fixedLevelClosedSet));
         assertSetupViewMethodsContains(methodName(Method::adaptiveOpenSet));
         assertSetupViewMethodsContains(methodName(Method::adaptiveClosedSet));
     }

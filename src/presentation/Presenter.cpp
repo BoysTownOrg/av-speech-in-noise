@@ -232,6 +232,7 @@ namespace av_speech_in_noise {
         view->populateMethodMenu({
             methodName(Method::adaptiveClosedSet),
             methodName(Method::adaptiveOpenSet),
+            methodName(Method::fixedLevelClosedSet),
             methodName(Method::fixedLevelOpenSet)
         });
         view->subscribe(this);
