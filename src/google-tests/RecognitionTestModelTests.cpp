@@ -283,7 +283,6 @@ namespace {
     };
     
     class OutputFileStub : public OutputFile {
-        coordinate_response_measure::Trial writtenCoordinateResponseTrial_;
         coordinate_response_measure::AdaptiveTrial writtenAdaptiveCoordinateResponseTrial_;
         coordinate_response_measure::Trial writtenAdaptiveCoordinateResponseTrial2_;
         coordinate_response_measure::Trial writtenFixedLevelTrial2_;
@@ -302,7 +301,6 @@ namespace {
             const coordinate_response_measure::AdaptiveTrial &trial
         ) override {
             addToLog("writeTrial ");
-            writtenCoordinateResponseTrial_ = trial.trial;
             writtenAdaptiveCoordinateResponseTrial_ = trial;
             writtenAdaptiveCoordinateResponseTrial2_ = trial.trial;
         }
@@ -339,7 +337,6 @@ namespace {
         
         void writeTrial(const coordinate_response_measure::FixedLevelTrial &trial) override {
             addToLog("writeTrial ");
-            writtenCoordinateResponseTrial_ = trial.trial;
             writtenFixedLevelTrial2_ = trial.trial;
         }
         
@@ -369,10 +366,6 @@ namespace {
         
         auto fixedLevelTest() const {
             return fixedLevelTest_;
-        }
-        
-        auto &writtenCoordinateResponseTrial() const {
-            return writtenCoordinateResponseTrial_;
         }
         
         auto &writtenAdaptiveCoordinateResponseTrial() const {
@@ -1145,10 +1138,6 @@ namespace {
             return outputFile.log();
         }
         
-        auto writtenCoordinateResponseTrial() {
-            return outputFile.writtenCoordinateResponseTrial();
-        }
-        
         auto writtenAdaptiveCoordinateResponseTrial() {
             return outputFile.writtenAdaptiveCoordinateResponseTrial();
         }
@@ -1253,10 +1242,6 @@ namespace {
         
         auto maskerPlayerSecondsSeeked() {
             return maskerPlayer.secondsSeeked();
-        }
-        
-        bool trialWrittenCorrect() {
-            return writtenCoordinateResponseTrial().correct;
         }
         
         bool snrTrackPushedDown(int n) {
@@ -2092,12 +2077,22 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesIncorrectTrial
+        submitCoordinateResponseWritesIncorrectTrialForAdaptiveTest
     ) {
         run(initializingAdaptiveTest);
         setIncorrectResponse();
         submitCoordinateResponse();
-        assertFalse(trialWrittenCorrect());
+        assertFalse(writtenCoordinateResponseTrial(initializingAdaptiveTest).correct);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseWritesIncorrectTrialForFixedLevelTest
+    ) {
+        run(initializingFixedLevelTest);
+        setIncorrectResponse();
+        submitCoordinateResponse();
+        assertFalse(writtenCoordinateResponseTrial(initializingFixedLevelTest).correct);
     }
 
     TEST_F(
