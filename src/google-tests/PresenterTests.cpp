@@ -1956,6 +1956,16 @@ namespace {
 
     TEST_F(
         PresenterTests,
+        confirmFixedLevelClosedSetTestShowsNextTrialButtonForSubject
+    ) {
+        assertConfirmTestSetupShowsNextTrialButton(
+            confirmingFixedLevelClosedSetTest,
+            playingTrialFromSubject
+        );
+    }
+
+    TEST_F(
+        PresenterTests,
         confirmAdaptiveOpenSetTestShowsNextTrialButtonForExperimenter
     ) {
         assertConfirmTestSetupShowsNextTrialButton(
