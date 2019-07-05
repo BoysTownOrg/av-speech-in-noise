@@ -1794,6 +1794,10 @@ namespace {
         assertPassesTargetListDirectory(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesTargetList) {
+        assertPassesTargetListDirectory(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesSubjectId) {
         assertPassesSubjectId(confirmingAdaptiveClosedSetTest);
     }
