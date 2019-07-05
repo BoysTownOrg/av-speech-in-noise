@@ -1418,18 +1418,22 @@ namespace {
             assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
         }
         
+        auto writtenCoordinateResponseTrial(InitializingTestUseCase &useCase) {
+            return useCase.writtenCoordinateResponseTrial(outputFile);
+        }
+        
         void assertWritesSubjectColor(InitializingTestUseCase &useCase) {
             run(useCase);
             coordinateResponse.color = blueColor();
             submitCoordinateResponse();
-            assertEqual(blueColor(), useCase.writtenCoordinateResponseTrial(outputFile).subjectColor);
+            assertEqual(blueColor(), writtenCoordinateResponseTrial(useCase).subjectColor);
         }
         
         void assertWritesSubjectNumber(InitializingTestUseCase &useCase) {
             run(useCase);
             coordinateResponse.number = 1;
             submitCoordinateResponse();
-            assertEqual(1, useCase.writtenCoordinateResponseTrial(outputFile).subjectNumber);
+            assertEqual(1, writtenCoordinateResponseTrial(useCase).subjectNumber);
         }
     };
 
