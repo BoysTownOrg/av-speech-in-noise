@@ -1435,6 +1435,13 @@ namespace {
             submitCoordinateResponse();
             assertEqual(1, writtenCoordinateResponseTrial(useCase).subjectNumber);
         }
+        
+        void assertWritesCorrectColor(InitializingTestUseCase &useCase) {
+            run(useCase);
+            evaluator.setCorrectColor(blueColor());
+            submitCoordinateResponse();
+            assertEqual(blueColor(), writtenCoordinateResponseTrial(useCase).correctColor);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -2021,20 +2028,14 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesCorrectColorForAdaptiveTest
     ) {
-        run(initializingAdaptiveTest);
-        evaluator.setCorrectColor(blueColor());
-        submitCoordinateResponse();
-        assertEqual(blueColor(), writtenCoordinateResponseTrial(initializingAdaptiveTest).correctColor);
+        assertWritesCorrectColor(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponseWritesCorrectColorForFixedLevelTest
     ) {
-        run(initializingFixedLevelTest);
-        evaluator.setCorrectColor(blueColor());
-        submitCoordinateResponse();
-        assertEqual(blueColor(), writtenCoordinateResponseTrial(initializingFixedLevelTest).correctColor);
+        assertWritesCorrectColor(initializingFixedLevelTest);
     }
 
     TEST_F(
