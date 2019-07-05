@@ -1629,6 +1629,11 @@ namespace {
             run(useCase);
             assertTrue(useCase.responseViewHidden());
         }
+        
+        void assertShowsSubjectView(UseCase &useCase) {
+            run(useCase);
+            assertSubjectViewShown();
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1675,16 +1680,14 @@ namespace {
         PresenterTests,
         confirmAdaptiveClosedSetTestShowsSubjectView
     ) {
-        run(confirmingAdaptiveClosedSetTest);
-        assertSubjectViewShown();
+        assertShowsSubjectView(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(
         PresenterTests,
         confirmFixedLevelClosedSetTestShowsSubjectView
     ) {
-        run(confirmingFixedLevelClosedSetTest);
-        assertSubjectViewShown();
+        assertShowsSubjectView(confirmingFixedLevelClosedSetTest);
     }
 
     TEST_F(
