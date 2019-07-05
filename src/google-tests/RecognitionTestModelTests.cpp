@@ -2144,6 +2144,17 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColorForFixedLevelTest
+    ) {
+        run(initializingFixedLevelTest);
+        finiteTargetList.setCurrent("a");
+        submitCoordinateResponse();
+        assertEqual("a", evaluator.correctColorFilePath());
+        assertEqual("a", evaluator.correctNumberFilePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluator
     ) {
         initializeTestWithStartingList(1);
