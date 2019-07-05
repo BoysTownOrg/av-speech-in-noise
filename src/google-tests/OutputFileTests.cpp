@@ -230,14 +230,17 @@ namespace {
         
         std::string nthWrittenEntry(int n) {
             std::string written_ = written();
-            auto position = find_nth_element(written_, n, ',');
-            if (position == std::string::npos)
-                position = written_.size() - 1;
-            auto tillComma = written_.substr(0, position);
-            auto found = tillComma.find(',');
-            if (found == std::string::npos)
-                return tillComma;
-            return followingLastOf(tillComma, ", ");
+            if (!contains(written_, ','))
+                return written_.substr(0, written_.size()-1);
+            if (n == 1)
+                return upUntilFirstOfAny(written_, {','});
+            auto position = find_nth_element(written_, n - 1, ',');
+            auto afterComma = written_.substr(position + 2);
+            return upUntilFirstOfAny(afterComma, {',', '\n'});
+        }
+        
+        bool contains(const std::string &content, char what) {
+            return content.find(what) != std::string::npos;
         }
 
         std::string::size_type find_nth_element(const std::string &content, int n, char what) {
@@ -247,8 +250,8 @@ namespace {
             return found;
         }
 
-        std::string followingLastOf(const std::string &content, const std::string &what) {
-            return content.substr(content.rfind(what) + what.size());
+        std::string upUntilFirstOfAny(const std::string &content, std::vector<char> v) {
+            return content.substr(0, content.find_first_of({v.begin(), v.end()}));
         }
         
         void assertConditionNameWritten(
