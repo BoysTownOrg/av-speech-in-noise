@@ -228,6 +228,26 @@ namespace {
             assertTrue(written().endsWith(std::move(s)));
         }
         
+        std::string nthTrialEntry(int n) {
+            std::string written_ = written();
+            auto position = find_nth_element(written_, n, ',');
+            if (position == std::string::npos)
+                position = written_.size() - 1;
+            auto tillComma = written_.substr(0, position);
+            return followingLastOf(tillComma, " ");
+        }
+
+        std::string::size_type find_nth_element(const std::string &content, int n, char what) {
+            auto found = std::string::npos;
+            for (int i = 0; i < n; ++i)
+                found = content.find(what, found + 1U);
+            return found;
+        }
+
+        std::string followingLastOf(const std::string &content, const std::string &what) {
+            return content.substr(content.find_last_of(what) + 1U);
+        }
+        
         void assertConditionNameWritten(
             WritingTestUseCase &useCase,
             Condition c
@@ -274,6 +294,14 @@ namespace {
         writingAdaptiveCoordinateResponseTrial.trial().trial.correct = false;
         run(writingAdaptiveCoordinateResponseTrial);
         assertWritten("1, 2, 3, green, red, incorrect, 4\n");
+        assertEqual("1", nthTrialEntry(1));
+        assertEqual("2", nthTrialEntry(2));
+        assertEqual("3", nthTrialEntry(3));
+        assertEqual("green", nthTrialEntry(4));
+        assertEqual("red", nthTrialEntry(5));
+        assertEqual("incorrect", nthTrialEntry(6));
+        assertEqual("4", nthTrialEntry(7));
+        assertWrittenLast("\n");
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
