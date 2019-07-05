@@ -269,38 +269,42 @@ namespace {
             assertWriterContains("session: c\n");
         }
         
-        void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
-            useCase.incorrect();
-            run(useCase);
-            assertWriterContains(" incorrect");
+        void assertNthEntry(std::string what, int n) {
+            assertEqual(std::move(what), nthWrittenEntry(n));
         }
         
-        void assertCorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
+        void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase, int n) {
+            useCase.incorrect();
+            run(useCase);
+            assertNthEntry("incorrect", n);
+        }
+        
+        void assertCorrectTrialWritesEvaluation(WritingTrialUseCase &useCase, int n) {
             useCase.correct();
             run(useCase);
-            assertWriterContains(" correct");
+            assertNthEntry("correct", n);
         }
     };
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
         file.writeAdaptiveCoordinateResponseTrialHeading();
-        assertEqual("SNR (dB)", nthWrittenEntry(1));
-        assertEqual("correct number", nthWrittenEntry(2));
-        assertEqual("subject number", nthWrittenEntry(3));
-        assertEqual("correct color", nthWrittenEntry(4));
-        assertEqual("subject color", nthWrittenEntry(5));
-        assertEqual("evaluation", nthWrittenEntry(6));
-        assertEqual("reversals", nthWrittenEntry(7));
+        assertNthEntry("SNR (dB)", 1);
+        assertNthEntry("correct number", 2);
+        assertNthEntry("subject number", 3);
+        assertNthEntry("correct color", 4);
+        assertNthEntry("subject color", 5);
+        assertNthEntry("evaluation", 6);
+        assertNthEntry("reversals", 7);
         assertWrittenLast("\n");
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
         file.writeFixedLevelCoordinateResponseTrialHeading();
-        assertEqual("correct number", nthWrittenEntry(1));
-        assertEqual("subject number", nthWrittenEntry(2));
-        assertEqual("correct color", nthWrittenEntry(3));
-        assertEqual("subject color", nthWrittenEntry(4));
-        assertEqual("evaluation", nthWrittenEntry(5));
+        assertNthEntry("correct number", 1);
+        assertNthEntry("subject number", 2);
+        assertNthEntry("correct color", 3);
+        assertNthEntry("subject color", 4);
+        assertNthEntry("evaluation", 5);
         assertWrittenLast("\n");
     }
 
@@ -314,12 +318,12 @@ namespace {
             coordinate_response_measure::Color::red;
         writingAdaptiveCoordinateResponseTrial.trial().reversals = 4;
         run(writingAdaptiveCoordinateResponseTrial);
-        assertEqual("1", nthWrittenEntry(1));
-        assertEqual("2", nthWrittenEntry(2));
-        assertEqual("3", nthWrittenEntry(3));
-        assertEqual("green", nthWrittenEntry(4));
-        assertEqual("red", nthWrittenEntry(5));
-        assertEqual("4", nthWrittenEntry(7));
+        assertNthEntry("1", 1);
+        assertNthEntry("2", 2);
+        assertNthEntry("3", 3);
+        assertNthEntry("green", 4);
+        assertNthEntry("red", 5);
+        assertNthEntry("4", 7);
         assertWrittenLast("\n");
     }
 
@@ -331,35 +335,27 @@ namespace {
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectColor =
             coordinate_response_measure::Color::red;
         run(writingFixedLevelCoordinateResponseTrial);
-        assertEqual("2", nthWrittenEntry(1));
-        assertEqual("3", nthWrittenEntry(2));
-        assertEqual("green", nthWrittenEntry(3));
-        assertEqual("red", nthWrittenEntry(4));
+        assertNthEntry("2", 1);
+        assertNthEntry("3", 2);
+        assertNthEntry("green", 3);
+        assertNthEntry("red", 4);
         assertWrittenLast("\n");
     }
 
     TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
-        assertIncorrectTrialWritesEvaluation(
-            writingAdaptiveCoordinateResponseTrial
-        );
+        assertIncorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial, 6);
     }
 
     TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
-        assertCorrectTrialWritesEvaluation(
-            writingAdaptiveCoordinateResponseTrial
-        );
+        assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial, 6);
     }
 
     TEST_F(OutputFileTests, writeIncorrectFixedLevelCoordinateResponseTrial) {
-        assertIncorrectTrialWritesEvaluation(
-            writingFixedLevelCoordinateResponseTrial
-        );
+        assertIncorrectTrialWritesEvaluation(writingFixedLevelCoordinateResponseTrial, 5);
     }
 
     TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
-        assertCorrectTrialWritesEvaluation(
-            writingFixedLevelCoordinateResponseTrial
-        );
+        assertCorrectTrialWritesEvaluation(writingFixedLevelCoordinateResponseTrial, 5);
     }
 
     TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
