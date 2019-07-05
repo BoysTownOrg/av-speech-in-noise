@@ -131,15 +131,23 @@ namespace {
         virtual void correct() = 0;
     };
     
-    class WritingAdaptiveCoordinateTrial : public WritingTrialUseCase {
+    void setCorrect(coordinate_response_measure::Trial &trial) {
+        trial.correct = true;
+    }
+    
+    void setIncorrect(coordinate_response_measure::Trial &trial) {
+        trial.correct = false;
+    }
+    
+    class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
         coordinate_response_measure::AdaptiveTrial trial;
     public:
         void incorrect() override {
-            trial.trial.correct = false;
+            setIncorrect(trial.trial);
         }
         
         void correct() override {
-            trial.trial.correct = true;
+            setCorrect(trial.trial);
         }
         
         void run(av_speech_in_noise::OutputFileImpl &file) override {
@@ -147,15 +155,15 @@ namespace {
         }
     };
     
-    class WritingFixedLevelCoordinateTrial : public WritingTrialUseCase {
+    class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
         coordinate_response_measure::FixedLevelTrial trial;
     public:
         void incorrect() override {
-            trial.trial.correct = false;
+            setIncorrect(trial.trial);
         }
         
         void correct() override {
-            trial.trial.correct = true;
+            setCorrect(trial.trial);
         }
         
         void run(av_speech_in_noise::OutputFileImpl &file) override {
@@ -171,8 +179,8 @@ namespace {
         coordinate_response_measure::Trial coordinateResponseTrial;
         coordinate_response_measure::AdaptiveTrial adaptiveCoordinateResponseTrial;
         coordinate_response_measure::FixedLevelTrial fixedLevelCoordinateResponseTrial;
-        WritingAdaptiveCoordinateTrial writingAdaptiveCoordinateTrial;
-        WritingFixedLevelCoordinateTrial writingFixedLevelCoordinateTrial;
+        WritingAdaptiveCoordinateResponseTrial writingAdaptiveCoordinateTrial;
+        WritingFixedLevelCoordinateResponseTrial writingFixedLevelCoordinateTrial;
         FreeResponseTrial freeResponseTrial;
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
