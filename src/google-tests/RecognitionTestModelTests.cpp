@@ -2045,7 +2045,17 @@ namespace {
         run(initializingAdaptiveTest);
         evaluator.setCorrectNumber(1);
         submitCoordinateResponse();
-        assertEqual(1, writtenCoordinateResponseTrial().correctNumber);
+        assertEqual(1, writtenCoordinateResponseTrial(initializingAdaptiveTest).correctNumber);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseWritesCorrectNumberForFixedLevelTest
+    ) {
+        run(initializingFixedLevelTest);
+        evaluator.setCorrectNumber(1);
+        submitCoordinateResponse();
+        assertEqual(1, writtenCoordinateResponseTrial(initializingFixedLevelTest).correctNumber);
     }
 
     TEST_F(
