@@ -121,22 +121,41 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::submitSubjectResponse() {
+        proceedToNextTrialAfter(&Presenter::submitSubjectResponse_);
+    }
+    
+    void Presenter::submitSubjectResponse_() {
         model->submitResponse(subject->subjectResponse());
-        proceedToNextTrial();
     }
     
     void Presenter::submitExperimenterResponse() {
+        proceedToNextTrialAfter(&Presenter::submitExperimenterResponse_);
+    }
+    
+    void Presenter::submitExperimenterResponse_() {
         model->submitResponse(experimenter->openSetResponse());
-        proceedToNextTrial();
     }
     
     void Presenter::submitPassedTrial() {
+        proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
+    }
+    
+    void Presenter::submitPassedTrial_() {
         model->submitCorrectResponse();
-        proceedToNextTrial();
     }
     
     void Presenter::submitFailedTrial() {
+        proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
+    }
+    
+    void Presenter::submitFailedTrial_() {
         model->submitIncorrectResponse();
+    }
+    
+    void Presenter::proceedToNextTrialAfter(
+        void(Presenter::*f)()
+    ) {
+        (this->*f)();
         proceedToNextTrial();
     }
     

@@ -289,6 +289,13 @@ namespace av_speech_in_noise {
         static TrackingRule targetLevelRule;
         
     private:
+        void proceedToNextTrialAfter(
+            void(Presenter::*f)()
+        );
+        void submitFailedTrial_();
+        void submitPassedTrial_();
+        void submitExperimenterResponse_();
+        void submitSubjectResponse_();
         void hideTestView();
         void switchToSetupView();
         void showErrorMessage(std::string);
