@@ -1888,6 +1888,10 @@ namespace {
         assertPassesFullScaleLevel(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesFullScaleLevel) {
+        assertPassesFullScaleLevel(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, playCalibrationPassesFullScaleLevel) {
         assertPassesFullScaleLevel(playingCalibration);
     }
