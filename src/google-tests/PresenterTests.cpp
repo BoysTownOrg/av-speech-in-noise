@@ -1864,6 +1864,10 @@ namespace {
         assertPassesSession(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesSession) {
+        assertPassesSession(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesCeilingSNR) {
         assertPassesCeilingSNR(confirmingAdaptiveClosedSetTest);
     }
