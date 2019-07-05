@@ -1937,9 +1937,19 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesColor
+        submitCoordinateResponseWritesColorForAdaptiveTest
     ) {
         run(initializingAdaptiveTest);
+        coordinateResponse.color = blueColor();
+        submitCoordinateResponse();
+        assertEqual(blueColor(), writtenCoordinateResponseTrial().subjectColor);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseWritesColorForFixedLevelTest
+    ) {
+        run(initializingFixedLevelTest);
         coordinateResponse.color = blueColor();
         submitCoordinateResponse();
         assertEqual(blueColor(), writtenCoordinateResponseTrial().subjectColor);
