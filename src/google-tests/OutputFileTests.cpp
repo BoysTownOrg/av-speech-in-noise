@@ -132,6 +132,7 @@ namespace {
         OutputFileImpl file{&writer, &path};
         coordinate_response_measure::Trial coordinateResponseTrial;
         coordinate_response_measure::AdaptiveTrial adaptiveCoordinateResponseTrial;
+        coordinate_response_measure::FixedLevelTrial fixedLevelCoordinateResponseTrial;
         FreeResponseTrial freeResponseTrial;
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
@@ -149,6 +150,10 @@ namespace {
         
         void writeAdaptiveCoordinateResponseTrial() {
             file.writeTrial(adaptiveCoordinateResponseTrial);
+        }
+        
+        void writeFixedLevelCoordinateResponseTrial() {
+            file.writeTrial(fixedLevelCoordinateResponseTrial);
         }
         
         void writeFreeResponseTrial() {
@@ -224,6 +229,18 @@ namespace {
         adaptiveCoordinateResponseTrial.trial.correct = false;
         writeAdaptiveCoordinateResponseTrial();
         assertWritten("1, 2, 3, green, red, incorrect, 4\n");
+    }
+
+    TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
+        fixedLevelCoordinateResponseTrial.trial.correctNumber = 2;
+        fixedLevelCoordinateResponseTrial.trial.subjectNumber = 3;
+        fixedLevelCoordinateResponseTrial.trial.correctColor =
+            coordinate_response_measure::Color::green;
+        fixedLevelCoordinateResponseTrial.trial.subjectColor =
+            coordinate_response_measure::Color::red;
+        fixedLevelCoordinateResponseTrial.trial.correct = false;
+        writeFixedLevelCoordinateResponseTrial();
+        assertWritten("2, 3, green, red, incorrect\n");
     }
 
     TEST_F(OutputFileTests, writeIncorrectCoordinateResponseTrial) {

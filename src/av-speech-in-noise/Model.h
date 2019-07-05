@@ -35,6 +35,10 @@ namespace av_speech_in_noise {
             int SNR_dB;
             int reversals;
         };
+        
+        struct FixedLevelTrial {
+            Trial trial;
+        };
     }
     
     enum class Condition {
