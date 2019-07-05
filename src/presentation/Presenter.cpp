@@ -76,6 +76,10 @@ namespace av_speech_in_noise {
         showTestView();
     }
     
+    void Presenter::hideTestSetup() {
+        testSetup->hide();
+    }
+    
     void Presenter::showTestView() {
         if (closedSet())
             subject->show();
@@ -91,23 +95,19 @@ namespace av_speech_in_noise {
         return testSetup->fixedLevelClosedSet();
     }
     
-    void Presenter::hideTestSetup() {
-        testSetup->hide();
-    }
-    
-    void Presenter::showErrorMessage(std::string e) {
-        view->showErrorMessage(std::move(e));
-    }
-    
     auto Presenter::getTrialCompletionHandler() -> TrialCompletionHandler * {
         if (adaptiveClosedSet())
             return &adaptiveClosedSetTrialCompletionHandler;
         if (adaptiveOpenSet())
             return &adaptiveOpenSetTrialCompletionHandler;
-        if (testSetup->fixedLevelOpenSet())
-            return &fixedLevelOpenSetTrialCompletionHandler;
-        else
+        if (fixedLevelClosedSet())
             return &fixedLevelClosedSetTrialCompletionHandler;
+        else
+            return &fixedLevelOpenSetTrialCompletionHandler;
+    }
+    
+    void Presenter::showErrorMessage(std::string e) {
+        view->showErrorMessage(std::move(e));
     }
     
     void Presenter::playTrial() {
