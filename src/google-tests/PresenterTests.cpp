@@ -1842,6 +1842,10 @@ namespace {
         assertPassesMasker(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesMasker) {
+        assertPassesMasker(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, playCalibrationPassesFilePath) {
         setupView.setCalibrationFilePath("a");
         playCalibration();
