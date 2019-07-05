@@ -239,16 +239,13 @@ namespace {
         
         std::string nthWrittenEntryOfLine(int n, int line) {
             std::string written_ = written();
-            auto startOfLine = find_nth_element(written_, line - 1, '\n');
-            auto lineBeginning = (startOfLine == std::string::npos)
-                ? 0U
-                : startOfLine + 1;
-            auto s = written_.substr(lineBeginning);
-            auto precedingComma = find_nth_element(s, n - 1, ',');
+            auto precedingNewLine = find_nth_element(written_, line - 1, '\n');
+            auto line_ = written_.substr(precedingNewLine + 1);
+            auto precedingComma = find_nth_element(line_, n - 1, ',');
             auto entryBeginning = (precedingComma == std::string::npos)
                 ? 0U
                 : precedingComma + 2;
-            return upUntilFirstOfAny(s.substr(entryBeginning), {',', '\n'});
+            return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
         }
 
         std::string::size_type find_nth_element(const std::string &content, int n, char what) {
@@ -305,7 +302,7 @@ namespace {
     };
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
-        file.writeAdaptiveCoordinateResponseTrialHeading();
+        run(writingAdaptiveCoordinateResponseTrial);
         assertNthEntryOfFirstLine("SNR (dB)", 1);
         assertNthEntryOfFirstLine("correct number", 2);
         assertNthEntryOfFirstLine("subject number", 3);

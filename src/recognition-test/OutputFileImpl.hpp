@@ -32,7 +32,6 @@ namespace av_speech_in_noise {
         void writeTrial(const coordinate_response_measure::AdaptiveTrial &);
         void writeTrial(const coordinate_response_measure::FixedLevelTrial &);
         void writeCoordinateResponseTrialHeading() override;
-        void writeAdaptiveCoordinateResponseTrialHeading();
         void writeFreeResponseTrialHeading() override;
         void openNewFile(const TestInformation &) override;
         void close() override;
@@ -42,6 +41,7 @@ namespace av_speech_in_noise {
         
     private:
         void writeFixedLevelCoordinateResponseTrialHeading();
+        void writeAdaptiveCoordinateResponseTrialHeading();
         void write(std::string);
         std::string evaluation(const coordinate_response_measure::Trial &);
         std::string formatTest(const AdaptiveTest &);

@@ -65,51 +65,11 @@ namespace av_speech_in_noise {
         writer{writer},
         path{path} {}
     
-    void OutputFileImpl::writeTrial(const coordinate_response_measure::Trial &trial) {
-        write(formatTrial(trial));
+    void OutputFileImpl::writeTrial(const coordinate_response_measure::Trial &) {
     }
     
     void OutputFileImpl::write(std::string s) {
         writer->write(std::move(s));
-    }
-
-    std::string OutputFileImpl::formatTrial(const coordinate_response_measure::Trial &trial) {
-        FormattedStream stream;
-        stream.insert(trial.SNR_dB);
-        stream.insertCommaAndSpace();
-        stream.insert(trial.correctNumber);
-        stream.insertCommaAndSpace();
-        stream.insert(trial.subjectNumber);
-        stream.insertCommaAndSpace();
-        stream.insert(colorName(trial.correctColor));
-        stream.insertCommaAndSpace();
-        stream.insert(colorName(trial.subjectColor));
-        stream.insertCommaAndSpace();
-        stream.insert(evaluation(trial));
-        stream.insertCommaAndSpace();
-        stream.insert(trial.reversals);
-        stream.insertNewLine();
-        return stream.str();
-    }
-    
-    std::string OutputFileImpl::evaluation(const coordinate_response_measure::Trial &trial) {
-        return trial.correct ? "correct" : "incorrect";
-    }
-
-    std::string OutputFileImpl::colorName(coordinate_response_measure::Color c) {
-        switch (c) {
-        case coordinate_response_measure::Color::green:
-            return "green";
-        case coordinate_response_measure::Color::red:
-            return "red";
-        case coordinate_response_measure::Color::blue:
-            return "blue";
-        case coordinate_response_measure::Color::white:
-            return "white";
-        case coordinate_response_measure::Color::notAColor:
-            return "not a color";
-        }
-        return "unknown";
     }
     
     void OutputFileImpl::writeTrial(const coordinate_response_measure::AdaptiveTrial &trial) {
@@ -132,45 +92,6 @@ namespace av_speech_in_noise {
         write(stream.str());
     }
     
-    void OutputFileImpl::writeTrial(const coordinate_response_measure::FixedLevelTrial &trial) {
-        writeFixedLevelCoordinateResponseTrialHeading();
-        FormattedStream stream;
-        stream.insert(trial.trial.correctNumber);
-        stream.insertCommaAndSpace();
-        stream.insert(trial.trial.subjectNumber);
-        stream.insertCommaAndSpace();
-        stream.insert(colorName(trial.trial.correctColor));
-        stream.insertCommaAndSpace();
-        stream.insert(colorName(trial.trial.subjectColor));
-        stream.insertCommaAndSpace();
-        stream.insert(evaluation(trial.trial));
-        stream.insertNewLine();
-        write(stream.str());
-    }
-    
-    void OutputFileImpl::writeCoordinateResponseTrialHeading() {
-        write(formatCoordinateResponseTrialHeading());
-    }
-    
-    std::string OutputFileImpl::formatCoordinateResponseTrialHeading() {
-        FormattedStream stream;
-        stream.insert("SNR (dB)");
-        stream.insertCommaAndSpace();
-        stream.insert("correct number");
-        stream.insertCommaAndSpace();
-        stream.insert("subject number");
-        stream.insertCommaAndSpace();
-        stream.insert("correct color");
-        stream.insertCommaAndSpace();
-        stream.insert("subject color");
-        stream.insertCommaAndSpace();
-        stream.insert("evaluation");
-        stream.insertCommaAndSpace();
-        stream.insert("reversals");
-        stream.insertNewLine();
-        return stream.str();
-    }
-    
     void OutputFileImpl::writeAdaptiveCoordinateResponseTrialHeading() {
         FormattedStream stream;
         stream.insert("SNR (dB)");
@@ -190,6 +111,22 @@ namespace av_speech_in_noise {
         write(stream.str());
     }
     
+    void OutputFileImpl::writeTrial(const coordinate_response_measure::FixedLevelTrial &trial) {
+        writeFixedLevelCoordinateResponseTrialHeading();
+        FormattedStream stream;
+        stream.insert(trial.trial.correctNumber);
+        stream.insertCommaAndSpace();
+        stream.insert(trial.trial.subjectNumber);
+        stream.insertCommaAndSpace();
+        stream.insert(colorName(trial.trial.correctColor));
+        stream.insertCommaAndSpace();
+        stream.insert(colorName(trial.trial.subjectColor));
+        stream.insertCommaAndSpace();
+        stream.insert(evaluation(trial.trial));
+        stream.insertNewLine();
+        write(stream.str());
+    }
+    
     void OutputFileImpl::writeFixedLevelCoordinateResponseTrialHeading() {
         FormattedStream stream;
         stream.insert("correct number");
@@ -203,6 +140,29 @@ namespace av_speech_in_noise {
         stream.insert("evaluation");
         stream.insertNewLine();
         write(stream.str());
+    }
+    
+    std::string OutputFileImpl::evaluation(const coordinate_response_measure::Trial &trial) {
+        return trial.correct ? "correct" : "incorrect";
+    }
+
+    std::string OutputFileImpl::colorName(coordinate_response_measure::Color c) {
+        switch (c) {
+        case coordinate_response_measure::Color::green:
+            return "green";
+        case coordinate_response_measure::Color::red:
+            return "red";
+        case coordinate_response_measure::Color::blue:
+            return "blue";
+        case coordinate_response_measure::Color::white:
+            return "white";
+        case coordinate_response_measure::Color::notAColor:
+            return "not a color";
+        }
+        return "unknown";
+    }
+    
+    void OutputFileImpl::writeCoordinateResponseTrialHeading() {
     }
     
     void OutputFileImpl::writeFreeResponseTrialHeading() {
