@@ -226,10 +226,6 @@ namespace av_speech_in_noise {
             );
         }
         
-        int reversals() {
-            return currentSnrTrack->reversals();
-        }
-        
         std::string next() override {
             return currentTargetList->next();
         }
@@ -242,28 +238,28 @@ namespace av_speech_in_noise {
             coordinate_response_measure::AdaptiveTrial trial;
             trial.trial.subjectColor = response.color;
             trial.trial.subjectNumber = response.number;
-            trial.reversals = reversals();
+            trial.reversals = currentSnrTrack->reversals();
             trial.trial.correctColor = evaluator->correctColor(current());
             trial.trial.correctNumber = evaluator->correctNumber(current());
             trial.SNR_dB = snr_dB();
-            trial.trial.correct = evaluator->correct(current(), response);
+            trial.trial.correct = correct(response);
             file->writeTrial(trial);
         }
         
         void submitResponse(const coordinate_response_measure::SubjectResponse &response) override {
             if (correct(response))
-                submitCorrectResponse();
+                pushDownTrack();
             else
-                submitIncorrectResponse();
+                pushUpTrack();
         }
-    
+        
+    private:
         bool correct(
             const coordinate_response_measure::SubjectResponse &response
         ) {
             return evaluator->correct(current(), response);
         }
         
-    private:
         void pushUpTrack() {
             currentSnrTrack->pushUp();
             selectNextList();
