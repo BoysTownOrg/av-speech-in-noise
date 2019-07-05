@@ -140,34 +140,42 @@ namespace {
     }
     
     class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
-        coordinate_response_measure::AdaptiveTrial trial;
+        coordinate_response_measure::AdaptiveTrial trial_;
     public:
+        auto &trial() {
+            return trial_;
+        }
+        
         void incorrect() override {
-            setIncorrect(trial.trial);
+            setIncorrect(trial_.trial);
         }
         
         void correct() override {
-            setCorrect(trial.trial);
+            setCorrect(trial_.trial);
         }
         
         void run(av_speech_in_noise::OutputFileImpl &file) override {
-            file.writeTrial(trial);
+            file.writeTrial(trial_);
         }
     };
     
     class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
-        coordinate_response_measure::FixedLevelTrial trial;
+        coordinate_response_measure::FixedLevelTrial trial_;
     public:
+        auto &trial() {
+            return trial_;
+        }
+        
         void incorrect() override {
-            setIncorrect(trial.trial);
+            setIncorrect(trial_.trial);
         }
         
         void correct() override {
-            setCorrect(trial.trial);
+            setCorrect(trial_.trial);
         }
         
         void run(av_speech_in_noise::OutputFileImpl &file) override {
-            file.writeTrial(trial);
+            file.writeTrial(trial_);
         }
     };
 
@@ -176,11 +184,10 @@ namespace {
         WriterStub writer;
         OutputFilePathStub path;
         OutputFileImpl file{&writer, &path};
-        coordinate_response_measure::Trial coordinateResponseTrial;
-        coordinate_response_measure::AdaptiveTrial adaptiveCoordinateResponseTrial;
-        coordinate_response_measure::FixedLevelTrial fixedLevelCoordinateResponseTrial;
-        WritingAdaptiveCoordinateResponseTrial writingAdaptiveCoordinateTrial;
-        WritingFixedLevelCoordinateResponseTrial writingFixedLevelCoordinateTrial;
+        WritingAdaptiveCoordinateResponseTrial
+            writingAdaptiveCoordinateResponseTrial;
+        WritingFixedLevelCoordinateResponseTrial
+            writingFixedLevelCoordinateResponseTrial;
         FreeResponseTrial freeResponseTrial;
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
@@ -194,14 +201,6 @@ namespace {
         
         void openNewFile() {
             file.openNewFile(testInformation);
-        }
-        
-        void writeAdaptiveCoordinateResponseTrial() {
-            file.writeTrial(adaptiveCoordinateResponseTrial);
-        }
-        
-        void writeFixedLevelCoordinateResponseTrial() {
-            file.writeTrial(fixedLevelCoordinateResponseTrial);
         }
         
         void writeFreeResponseTrial() {
@@ -264,45 +263,53 @@ namespace {
     };
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
-        adaptiveCoordinateResponseTrial.SNR_dB = 1;
-        adaptiveCoordinateResponseTrial.trial.correctNumber = 2;
-        adaptiveCoordinateResponseTrial.trial.subjectNumber = 3;
-        adaptiveCoordinateResponseTrial.trial.correctColor =
+        writingAdaptiveCoordinateResponseTrial.trial().SNR_dB = 1;
+        writingAdaptiveCoordinateResponseTrial.trial().trial.correctNumber = 2;
+        writingAdaptiveCoordinateResponseTrial.trial().trial.subjectNumber = 3;
+        writingAdaptiveCoordinateResponseTrial.trial().trial.correctColor =
             coordinate_response_measure::Color::green;
-        adaptiveCoordinateResponseTrial.trial.subjectColor =
+        writingAdaptiveCoordinateResponseTrial.trial().trial.subjectColor =
             coordinate_response_measure::Color::red;
-        adaptiveCoordinateResponseTrial.reversals = 4;
-        adaptiveCoordinateResponseTrial.trial.correct = false;
-        writeAdaptiveCoordinateResponseTrial();
+        writingAdaptiveCoordinateResponseTrial.trial().reversals = 4;
+        writingAdaptiveCoordinateResponseTrial.trial().trial.correct = false;
+        run(writingAdaptiveCoordinateResponseTrial);
         assertWritten("1, 2, 3, green, red, incorrect, 4\n");
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
-        fixedLevelCoordinateResponseTrial.trial.correctNumber = 2;
-        fixedLevelCoordinateResponseTrial.trial.subjectNumber = 3;
-        fixedLevelCoordinateResponseTrial.trial.correctColor =
+        writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
+        writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;
+        writingFixedLevelCoordinateResponseTrial.trial().trial.correctColor =
             coordinate_response_measure::Color::green;
-        fixedLevelCoordinateResponseTrial.trial.subjectColor =
+        writingFixedLevelCoordinateResponseTrial.trial().trial.subjectColor =
             coordinate_response_measure::Color::red;
-        fixedLevelCoordinateResponseTrial.trial.correct = false;
-        writeFixedLevelCoordinateResponseTrial();
+        writingFixedLevelCoordinateResponseTrial.trial().trial.correct = false;
+        run(writingFixedLevelCoordinateResponseTrial);
         assertWritten("2, 3, green, red, incorrect\n");
     }
 
     TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
-        assertIncorrectTrialWritesEvaluation(writingAdaptiveCoordinateTrial);
+        assertIncorrectTrialWritesEvaluation(
+            writingAdaptiveCoordinateResponseTrial
+        );
     }
 
     TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
-        assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateTrial);
+        assertCorrectTrialWritesEvaluation(
+            writingAdaptiveCoordinateResponseTrial
+        );
     }
 
     TEST_F(OutputFileTests, writeIncorrectFixedLevelCoordinateResponseTrial) {
-        assertIncorrectTrialWritesEvaluation(writingFixedLevelCoordinateTrial);
+        assertIncorrectTrialWritesEvaluation(
+            writingFixedLevelCoordinateResponseTrial
+        );
     }
 
     TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
-        assertCorrectTrialWritesEvaluation(writingFixedLevelCoordinateTrial);
+        assertCorrectTrialWritesEvaluation(
+            writingFixedLevelCoordinateResponseTrial
+        );
     }
 
     TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
