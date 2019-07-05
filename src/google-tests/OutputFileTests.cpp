@@ -404,7 +404,7 @@ namespace {
     }
 
     TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
-        coordinate_response_measure::Trial uninitialized;
+        coordinate_response_measure::AdaptiveTrial uninitialized;
         file.writeTrial(uninitialized);
     }
 

@@ -235,14 +235,14 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::writeTrial(
         const coordinate_response_measure::SubjectResponse &response
     ) {
-        coordinate_response_measure::Trial trial;
-        trial.subjectColor = response.color;
-        trial.subjectNumber = response.number;
-        trial.reversals = adaptiveMethod->reversals();
-        trial.correctColor = evaluator->correctColor(currentTarget());
-        trial.correctNumber = evaluator->correctNumber(currentTarget());
-        trial.SNR_dB = testMethod->snr_dB();
-        trial.correct = correct(response);
+        coordinate_response_measure::AdaptiveTrial trial;
+        trial.trial.subjectColor = response.color;
+        trial.trial.subjectNumber = response.number;
+        trial.trial.reversals = adaptiveMethod->reversals();
+        trial.trial.correctColor = evaluator->correctColor(currentTarget());
+        trial.trial.correctNumber = evaluator->correctNumber(currentTarget());
+        trial.trial.SNR_dB = testMethod->snr_dB();
+        trial.trial.correct = correct(response);
         outputFile->writeTrial(trial);
         outputFile->save();
     }

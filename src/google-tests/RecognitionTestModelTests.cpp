@@ -296,10 +296,10 @@ namespace {
         }
         
         void writeTrial(
-            const coordinate_response_measure::Trial &trial
+            const coordinate_response_measure::AdaptiveTrial &trial
         ) override {
             addToLog("writeTrial ");
-            writtenCoordinateResponseTrial_ = trial;
+            writtenCoordinateResponseTrial_ = trial.trial;
         }
         
         void openNewFile(const TestInformation &p) override {

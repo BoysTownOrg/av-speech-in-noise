@@ -65,9 +65,6 @@ namespace av_speech_in_noise {
         writer{writer},
         path{path} {}
     
-    void OutputFileImpl::writeTrial(const coordinate_response_measure::Trial &) {
-    }
-    
     void OutputFileImpl::write(std::string s) {
         writer->write(std::move(s));
     }
