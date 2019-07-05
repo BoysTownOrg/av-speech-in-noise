@@ -1712,6 +1712,14 @@ namespace {
         assertExperimenterViewNotShown();
     }
 
+    TEST_F(
+        PresenterTests,
+        confirmFixedLevelClosedSetTestDoesNotShowExperimenterView
+    ) {
+        run(confirmingFixedLevelClosedSetTest);
+        assertExperimenterViewNotShown();
+    }
+
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
         assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveClosedSetTest);
     }
