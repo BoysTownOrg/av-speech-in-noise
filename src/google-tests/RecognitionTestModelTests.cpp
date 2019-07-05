@@ -1424,6 +1424,13 @@ namespace {
             submitCoordinateResponse();
             assertEqual(blueColor(), useCase.writtenCoordinateResponseTrial(outputFile).subjectColor);
         }
+        
+        void assertWritesSubjectNumber(InitializingTestUseCase &useCase) {
+            run(useCase);
+            coordinateResponse.number = 1;
+            submitCoordinateResponse();
+            assertEqual(1, useCase.writtenCoordinateResponseTrial(outputFile).subjectNumber);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1986,20 +1993,14 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesNumberForAdaptiveTest
     ) {
-        run(initializingAdaptiveTest);
-        coordinateResponse.number = 1;
-        submitCoordinateResponse();
-        assertEqual(1, writtenCoordinateResponseTrial().subjectNumber);
+        assertWritesSubjectNumber(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponseWritesNumberForFixedLevelTest
     ) {
-        run(initializingFixedLevelTest);
-        coordinateResponse.number = 1;
-        submitCoordinateResponse();
-        assertEqual(1, writtenCoordinateResponseTrial().subjectNumber);
+        assertWritesSubjectNumber(initializingFixedLevelTest);
     }
 
     TEST_F(
