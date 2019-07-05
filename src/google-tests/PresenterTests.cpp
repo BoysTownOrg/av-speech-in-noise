@@ -2270,6 +2270,10 @@ namespace {
         assertInvalidSnrShowsErrorMessage(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestWithInvalidSnrShowsErrorMessage) {
+        assertInvalidSnrShowsErrorMessage(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestWithInvalidInputDoesNotHideSetupView) {
         assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptiveClosedSetTest);
     }
