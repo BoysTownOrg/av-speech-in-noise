@@ -113,6 +113,7 @@ namespace av_speech_in_noise {
     }
     
     void OutputFileImpl::writeTrial(const coordinate_response_measure::AdaptiveTrial &trial) {
+        writeAdaptiveCoordinateResponseTrialHeading();
         FormattedStream stream;
         stream.insert(trial.SNR_dB);
         stream.insertCommaAndSpace();
@@ -132,6 +133,7 @@ namespace av_speech_in_noise {
     }
     
     void OutputFileImpl::writeTrial(const coordinate_response_measure::FixedLevelTrial &trial) {
+        writeFixedLevelCoordinateResponseTrialHeading();
         FormattedStream stream;
         stream.insert(trial.trial.correctNumber);
         stream.insertCommaAndSpace();
