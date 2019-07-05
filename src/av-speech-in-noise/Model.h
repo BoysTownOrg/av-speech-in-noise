@@ -29,6 +29,16 @@ namespace av_speech_in_noise {
             Color subjectColor;
             bool correct;
         };
+        
+        struct AdaptiveTrial {
+            int SNR_dB;
+            int correctNumber;
+            int subjectNumber;
+            int reversals;
+            Color correctColor;
+            Color subjectColor;
+            bool correct;
+        };
     }
     
     enum class Condition {

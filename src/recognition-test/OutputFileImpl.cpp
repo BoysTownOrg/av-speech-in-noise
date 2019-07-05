@@ -112,6 +112,25 @@ namespace av_speech_in_noise {
         return "unknown";
     }
     
+    void OutputFileImpl::writeTrial(const coordinate_response_measure::AdaptiveTrial &trial) {
+        FormattedStream stream;
+        stream.insert(trial.SNR_dB);
+        stream.insertCommaAndSpace();
+        stream.insert(trial.correctNumber);
+        stream.insertCommaAndSpace();
+        stream.insert(trial.subjectNumber);
+        stream.insertCommaAndSpace();
+        stream.insert(colorName(trial.correctColor));
+        stream.insertCommaAndSpace();
+        stream.insert(colorName(trial.subjectColor));
+        stream.insertCommaAndSpace();
+        stream.insert(trial.correct ? "correct" : "incorrect");
+        stream.insertCommaAndSpace();
+        stream.insert(trial.reversals);
+        stream.insertNewLine();
+        write(stream.str());
+    }
+    
     void OutputFileImpl::writeCoordinateResponseTrialHeading() {
         write(formatCoordinateResponseTrialHeading());
     }
@@ -220,4 +239,5 @@ namespace av_speech_in_noise {
         stream.insertNewLine();
         return stream.str();
     }
+    
 }
