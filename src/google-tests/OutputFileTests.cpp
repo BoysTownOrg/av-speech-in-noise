@@ -228,13 +228,16 @@ namespace {
             assertTrue(written().endsWith(std::move(s)));
         }
         
-        std::string nthTrialEntry(int n) {
+        std::string nthWrittenEntry(int n) {
             std::string written_ = written();
             auto position = find_nth_element(written_, n, ',');
             if (position == std::string::npos)
                 position = written_.size() - 1;
             auto tillComma = written_.substr(0, position);
-            return followingLastOf(tillComma, " ");
+            auto found = tillComma.find(',');
+            if (found == std::string::npos)
+                return tillComma;
+            return followingLastOf(tillComma, ", ");
         }
 
         std::string::size_type find_nth_element(const std::string &content, int n, char what) {
@@ -245,7 +248,7 @@ namespace {
         }
 
         std::string followingLastOf(const std::string &content, const std::string &what) {
-            return content.substr(content.find_last_of(what) + 1U);
+            return content.substr(content.rfind(what) + what.size());
         }
         
         void assertConditionNameWritten(
@@ -282,20 +285,19 @@ namespace {
         }
     };
 
-    TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
-        file.writeCoordinateResponseTrialHeading();
-        assertWritten(
-            "SNR (dB), correct number, subject number, "
-            "correct color, subject color, evaluation, reversals\n"
-        );
-    }
-
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
         file.writeAdaptiveCoordinateResponseTrialHeading();
         assertWritten(
             "SNR (dB), correct number, subject number, "
             "correct color, subject color, evaluation, reversals\n"
         );
+        assertEqual("SNR (dB)", nthWrittenEntry(1));
+        assertEqual("correct number", nthWrittenEntry(2));
+        assertEqual("subject number", nthWrittenEntry(3));
+        assertEqual("correct color", nthWrittenEntry(4));
+        assertEqual("subject color", nthWrittenEntry(5));
+        assertEqual("evaluation", nthWrittenEntry(6));
+        assertEqual("reversals", nthWrittenEntry(7));
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
@@ -315,12 +317,12 @@ namespace {
             coordinate_response_measure::Color::red;
         writingAdaptiveCoordinateResponseTrial.trial().reversals = 4;
         run(writingAdaptiveCoordinateResponseTrial);
-        assertEqual("1", nthTrialEntry(1));
-        assertEqual("2", nthTrialEntry(2));
-        assertEqual("3", nthTrialEntry(3));
-        assertEqual("green", nthTrialEntry(4));
-        assertEqual("red", nthTrialEntry(5));
-        assertEqual("4", nthTrialEntry(7));
+        assertEqual("1", nthWrittenEntry(1));
+        assertEqual("2", nthWrittenEntry(2));
+        assertEqual("3", nthWrittenEntry(3));
+        assertEqual("green", nthWrittenEntry(4));
+        assertEqual("red", nthWrittenEntry(5));
+        assertEqual("4", nthWrittenEntry(7));
         assertWrittenLast("\n");
     }
 
@@ -332,10 +334,10 @@ namespace {
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectColor =
             coordinate_response_measure::Color::red;
         run(writingFixedLevelCoordinateResponseTrial);
-        assertEqual("2", nthTrialEntry(1));
-        assertEqual("3", nthTrialEntry(2));
-        assertEqual("green", nthTrialEntry(3));
-        assertEqual("red", nthTrialEntry(4));
+        assertEqual("2", nthWrittenEntry(1));
+        assertEqual("3", nthWrittenEntry(2));
+        assertEqual("green", nthWrittenEntry(3));
+        assertEqual("red", nthWrittenEntry(4));
         assertWrittenLast("\n");
     }
 
