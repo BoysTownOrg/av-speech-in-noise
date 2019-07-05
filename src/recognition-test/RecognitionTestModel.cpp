@@ -235,8 +235,6 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::writeTrial(
         const coordinate_response_measure::SubjectResponse &response
     ) {
-        if (!justWroteCoordinateResponseTrial)
-            outputFile->writeCoordinateResponseTrialHeading();
         coordinate_response_measure::Trial trial;
         trial.subjectColor = response.color;
         trial.subjectNumber = response.number;

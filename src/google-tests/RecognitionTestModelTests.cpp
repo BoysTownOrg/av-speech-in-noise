@@ -289,10 +289,7 @@ namespace {
         const AdaptiveTest *adaptiveTest_{};
         const FixedLevelTest *fixedLevelTest_{};
         const TestInformation *openNewFileParameters_{};
-        int timesHeadingWritten_{};
         bool throwOnOpen_{};
-        bool coordinateResponseHeadingWritten_{};
-        bool freeResponseTrialHeadingWritten_{};
     public:
         void save() override {
             addToLog("save ");
@@ -318,8 +315,6 @@ namespace {
         
         void writeCoordinateResponseTrialHeading() override {
             addToLog("writeTrialHeading ");
-            ++timesHeadingWritten_;
-            coordinateResponseHeadingWritten_ = true;
         }
         
         void writeTest(const AdaptiveTest &test) override {
@@ -339,8 +334,6 @@ namespace {
         
         void writeFreeResponseTrialHeading() override {
             addToLog("writeTrialHeading ");
-            ++timesHeadingWritten_;
-            freeResponseTrialHeadingWritten_ = true;
         }
         
         void addToLog(std::string s) {
@@ -359,14 +352,6 @@ namespace {
             return log_;
         }
         
-        auto timesHeadingWritten() const {
-            return timesHeadingWritten_;
-        }
-        
-        void clearTimesHeadingWritten() {
-            timesHeadingWritten_ = 0;
-        }
-        
         auto adaptiveTest() const {
             return adaptiveTest_;
         }
@@ -381,14 +366,6 @@ namespace {
         
         auto &writtenFreeResponseTrial() const {
             return writtenFreeResponseTrial_;
-        }
-        
-        auto freeResponseTrialHeadingWritten() const {
-            return freeResponseTrialHeadingWritten_;
-        }
-        
-        auto coordinateResponseTrialHeadingWritten() const {
-            return coordinateResponseHeadingWritten_;
         }
     };
     
@@ -667,8 +644,6 @@ namespace {
     };
     
     class SubmittingResponse : public virtual UseCase {
-    public:
-        virtual bool headingWritten(OutputFileStub &) = 0;
     };
     
     class SubmittingCoordinateResponse : public SubmittingResponse {
@@ -676,10 +651,6 @@ namespace {
     public:
         void run(RecognitionTestModel &m) override {
             m.submitResponse(response);
-        }
-        
-        bool headingWritten(OutputFileStub &file) override {
-            return file.coordinateResponseTrialHeadingWritten();
         }
     };
     
@@ -706,10 +677,6 @@ namespace {
         
         void setResponse(std::string s) {
             response_.response = std::move(s);
-        }
-        
-        bool headingWritten(OutputFileStub &file) override {
-            return file.freeResponseTrialHeadingWritten();
         }
     };
     
@@ -1397,46 +1364,6 @@ namespace {
             assertEqual(std::move(s), outputFileLog());
         }
         
-        std::string trialWritten() {
-            return "writeTrial ";
-        }
-        
-        std::string trialHeadingWrittenFollowedByTrial() {
-            return "writeTrialHeading " + trialWritten();
-        }
-        
-        void assertHeadingWrittenBeforeTrial(UseCase &useCase) {
-            run(useCase);
-            assertTrue(outputFileLog().beginsWith(trialHeadingWrittenFollowedByTrial()));
-        }
-        
-        void assertHeadingWrittenOnceWhenRunTwice(UseCase &useCase) {
-            run(useCase);
-            run(useCase);
-            assertHeadingWrittenTimes(1);
-        }
-        
-        void assertHeadingWrittenTimes(int n) {
-            assertEqual(n, outputFile.timesHeadingWritten());
-        }
-        
-        void assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(
-            UseCase &useCase,
-            UseCase &other
-        ) {
-            run(useCase);
-            run(other);
-            outputFile.clearTimesHeadingWritten();
-            
-            run(useCase);
-            assertHeadingWrittenTimes(1);
-        }
-        
-        void assertHeadingWritten(SubmittingResponse &useCase) {
-            run(useCase);
-            assertTrue(useCase.headingWritten(outputFile));
-        }
-        
         void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
             run(useCase);
             assertTrue(outputFileLog().endsWith("save "));
@@ -1976,68 +1903,6 @@ namespace {
     TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
         maskerPlayer.fadeOutComplete();
         assertTrue(listener.notified());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitFreeResponseWritesTrialHeading
-    ) {
-        assertHeadingWritten(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseWritesTrialHeading
-    ) {
-        assertHeadingWritten(submittingCoordinateResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitFreeResponseWritesTrialHeadingBeforeWritingTrial
-    ) {
-        assertHeadingWrittenBeforeTrial(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseWritesTrialHeadingBeforeWritingTrial
-    ) {
-        assertHeadingWrittenBeforeTrial(submittingCoordinateResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitFreeResponseTwiceWritesTrialHeadingOnce
-    ) {
-        assertHeadingWrittenOnceWhenRunTwice(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseTwiceWritesTrialHeadingOnce
-    ) {
-        assertHeadingWrittenOnceWhenRunTwice(submittingCoordinateResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitFreeResponseTwiceWithCoordinateResponseInbetweenWritesTrialHeadingAgain
-    ) {
-        assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(
-            submittingFreeResponse,
-            submittingCoordinateResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseTwiceWithFreeResponseInbetweenWritesTrialHeadingAgain
-    ) {
-        assertHeadingWrittenTwiceWhenRunTwiceNotConsecutively(
-            submittingCoordinateResponse,
-            submittingFreeResponse
-        );
     }
 
     TEST_F(
