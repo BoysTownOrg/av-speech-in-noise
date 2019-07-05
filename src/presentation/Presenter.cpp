@@ -152,9 +152,7 @@ namespace av_speech_in_noise {
         model->submitIncorrectResponse();
     }
     
-    void Presenter::proceedToNextTrialAfter(
-        void(Presenter::*f)()
-    ) {
+    void Presenter::proceedToNextTrialAfter(void(Presenter::*f)()) {
         (this->*f)();
         proceedToNextTrial();
     }
