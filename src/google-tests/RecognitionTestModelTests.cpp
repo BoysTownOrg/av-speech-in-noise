@@ -2155,10 +2155,20 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponsePassesTargetToEvaluator
+        submitCoordinateResponsePassesTargetToEvaluatorForAdaptiveTest
     ) {
         initializeTestWithStartingList(1);
         setTargetListCurrent(1, "a");
+        submitCoordinateResponse();
+        assertEqual("a", evaluator.correctFilePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponsePassesTargetToEvaluatorForFixedLevelTest
+    ) {
+        run(initializingFixedLevelTest);
+        finiteTargetList.setCurrent("a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
