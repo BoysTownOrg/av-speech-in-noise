@@ -166,9 +166,6 @@ namespace av_speech_in_noise {
         return "unknown";
     }
     
-    void OutputFileImpl::writeCoordinateResponseTrialHeading() {
-    }
-    
     void OutputFileImpl::writeFreeResponseTrialHeading() {
         write(formatOpenSetTrialHeading());
     }

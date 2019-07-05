@@ -245,8 +245,6 @@ namespace av_speech_in_noise {
         trial.correct = correct(response);
         outputFile->writeTrial(trial);
         outputFile->save();
-        justWroteCoordinateResponseTrial = true;
-        justWroteFreeResponseTrial = false;
     }
     
     void RecognitionTestModel::submitResponse_(
@@ -292,15 +290,11 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::writeTrial(const FreeResponse &p) {
-        if (!justWroteFreeResponseTrial)
-            outputFile->writeFreeResponseTrialHeading();
         FreeResponseTrial trial;
         trial.response = p.response;
         trial.target = evaluator->fileName(testMethod->current());
         outputFile->writeTrial(trial);
         outputFile->save();
-        justWroteFreeResponseTrial = true;
-        justWroteCoordinateResponseTrial = false;
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {

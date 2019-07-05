@@ -122,8 +122,8 @@ namespace av_speech_in_noise {
         virtual void writeTrial(const FreeResponseTrial &) = 0;
         virtual void writeTest(const AdaptiveTest &) = 0;
         virtual void writeTest(const FixedLevelTest &) = 0;
-        virtual void writeCoordinateResponseTrialHeading() = 0;
-        virtual void writeFreeResponseTrialHeading() = 0;
+        virtual void writeCoordinateResponseTrialHeading() {}
+        virtual void writeFreeResponseTrialHeading() {}
         virtual void close() = 0;
         virtual void save() = 0;
     };
@@ -342,8 +342,6 @@ namespace av_speech_in_noise {
         Randomizer *randomizer;
         Model::EventListener *listener_{};
         TestMethod *testMethod;
-        bool justWroteFreeResponseTrial{};
-        bool justWroteCoordinateResponseTrial{};
     public:
         RecognitionTestModel(
             AdaptiveMethod *,

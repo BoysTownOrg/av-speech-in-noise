@@ -313,10 +313,6 @@ namespace {
             addToLog("close ");
         }
         
-        void writeCoordinateResponseTrialHeading() override {
-            addToLog("writeTrialHeading ");
-        }
-        
         void writeTest(const AdaptiveTest &test) override {
             addToLog("writeTest ");
             adaptiveTest_ = &test;
@@ -330,10 +326,6 @@ namespace {
         void writeTrial(const FreeResponseTrial &p) override {
             addToLog("writeTrial ");
             writtenFreeResponseTrial_ = p;
-        }
-        
-        void writeFreeResponseTrialHeading() override {
-            addToLog("writeTrialHeading ");
         }
         
         void addToLog(std::string s) {
