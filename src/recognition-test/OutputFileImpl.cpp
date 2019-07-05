@@ -197,6 +197,8 @@ namespace av_speech_in_noise {
         stream.insert("correct color");
         stream.insertCommaAndSpace();
         stream.insert("subject color");
+        stream.insertCommaAndSpace();
+        stream.insert("evaluation");
         stream.insertNewLine();
         write(stream.str());
     }

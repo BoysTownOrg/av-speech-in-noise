@@ -230,17 +230,11 @@ namespace {
         
         std::string nthWrittenEntry(int n) {
             std::string written_ = written();
-            if (!contains(written_, ','))
-                return written_.substr(0, written_.size()-1);
-            if (n == 1)
-                return upUntilFirstOfAny(written_, {','});
             auto position = find_nth_element(written_, n - 1, ',');
-            auto afterComma = written_.substr(position + 2);
-            return upUntilFirstOfAny(afterComma, {',', '\n'});
-        }
-        
-        bool contains(const std::string &content, char what) {
-            return content.find(what) != std::string::npos;
+            auto beginning = (position == std::string::npos)
+                ? 0U
+                : position + 2;
+            return upUntilFirstOfAny(written_.substr(beginning), {',', '\n'});
         }
 
         std::string::size_type find_nth_element(const std::string &content, int n, char what) {
@@ -290,10 +284,6 @@ namespace {
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
         file.writeAdaptiveCoordinateResponseTrialHeading();
-        assertWritten(
-            "SNR (dB), correct number, subject number, "
-            "correct color, subject color, evaluation, reversals\n"
-        );
         assertEqual("SNR (dB)", nthWrittenEntry(1));
         assertEqual("correct number", nthWrittenEntry(2));
         assertEqual("subject number", nthWrittenEntry(3));
@@ -301,13 +291,17 @@ namespace {
         assertEqual("subject color", nthWrittenEntry(5));
         assertEqual("evaluation", nthWrittenEntry(6));
         assertEqual("reversals", nthWrittenEntry(7));
+        assertWrittenLast("\n");
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
         file.writeFixedLevelCoordinateResponseTrialHeading();
-        assertWritten(
-            "correct number, subject number, correct color, subject color\n"
-        );
+        assertEqual("correct number", nthWrittenEntry(1));
+        assertEqual("subject number", nthWrittenEntry(2));
+        assertEqual("correct color", nthWrittenEntry(3));
+        assertEqual("subject color", nthWrittenEntry(4));
+        assertEqual("evaluation", nthWrittenEntry(5));
+        assertWrittenLast("\n");
     }
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
