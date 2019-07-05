@@ -8,9 +8,10 @@ namespace av_speech_in_noise {
         std::string current() override { return {}; }
         void loadTargets(const std::string &) override {}
         int snr_dB() override { return {}; }
-        void correct() override {}
-        void incorrect() override {}
+        void submitCorrectResponse() override {}
+        void submitIncorrectResponse() override {}
         void writeTrial(OutputFile *, const coordinate_response_measure::SubjectResponse &) override {}
+        void submitResponse(const coordinate_response_measure::SubjectResponse &) override {}
     };
     
     static NullTestMethod nullTestMethod;
@@ -243,20 +244,8 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::submitResponse_(
         const coordinate_response_measure::SubjectResponse &response
     ) {
-        if (correct(response))
-            submitCorrectResponse_();
-        else
-            submitIncorrectResponse_();
-    }
-    
-    bool RecognitionTestModel::correct(
-        const coordinate_response_measure::SubjectResponse &response
-    ) {
-        return evaluator->correct(currentTarget(), response);
-    }
-    
-    std::string RecognitionTestModel::currentTarget() {
-        return testMethod->current();
+        testMethod->submitResponse(response);
+        preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::submitCorrectResponse() {
@@ -264,7 +253,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::submitCorrectResponse_() {
-        testMethod->correct();
+        testMethod->submitCorrectResponse();
         preparePlayersForNextTrial();
     }
     
@@ -273,7 +262,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::submitIncorrectResponse_() {
-        testMethod->incorrect();
+        testMethod->submitIncorrectResponse();
         preparePlayersForNextTrial();
     }
     

@@ -159,9 +159,10 @@ namespace av_speech_in_noise {
         virtual std::string current() = 0;
         virtual void loadTargets(const std::string &) = 0;
         virtual int snr_dB() = 0;
-        virtual void correct() = 0;
-        virtual void incorrect() = 0;
+        virtual void submitCorrectResponse() = 0;
+        virtual void submitIncorrectResponse() = 0;
         virtual void writeTrial(OutputFile *, const coordinate_response_measure::SubjectResponse &) = 0;
+        virtual void submitResponse(const coordinate_response_measure::SubjectResponse &) = 0;
     };
     
     class AdaptiveMethod : public TestMethod {
@@ -207,11 +208,11 @@ namespace av_speech_in_noise {
             prepareSnrTracks();
         }
         
-        void incorrect() override {
+        void submitIncorrectResponse() override {
             pushUpTrack();
         }
         
-        void correct() override {
+        void submitCorrectResponse() override {
             pushDownTrack();
         }
         
@@ -249,6 +250,18 @@ namespace av_speech_in_noise {
             file->writeTrial(trial);
         }
         
+        void submitResponse(const coordinate_response_measure::SubjectResponse &response) override {
+            if (correct(response))
+                submitCorrectResponse();
+            else
+                submitIncorrectResponse();
+        }
+    
+        bool correct(
+            const coordinate_response_measure::SubjectResponse &response
+        ) {
+            return evaluator->correct(current(), response);
+        }
         
     private:
         void pushUpTrack() {
@@ -334,11 +347,11 @@ namespace av_speech_in_noise {
             return currentTargetList->current();
         }
         
-        void incorrect() override {
+        void submitIncorrectResponse() override {
             
         }
         
-        void correct() override {
+        void submitCorrectResponse() override {
             
         }
         
@@ -350,6 +363,10 @@ namespace av_speech_in_noise {
             trial.trial.correctNumber = evaluator->correctNumber(current());
             trial.trial.correct = evaluator->correct(current(), response);
             file->writeTrial(trial);
+        }
+        
+        void submitResponse(const coordinate_response_measure::SubjectResponse &) override {
+            
         }
     };
 
