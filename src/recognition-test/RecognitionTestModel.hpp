@@ -160,6 +160,7 @@ namespace av_speech_in_noise {
         virtual int snr_dB() = 0;
         virtual void correct() = 0;
         virtual void incorrect() = 0;
+        virtual void writeTrial(OutputFile *, const coordinate_response_measure::SubjectResponse &) = 0;
     };
     
     class AdaptiveMethod : public TestMethod {
@@ -172,6 +173,7 @@ namespace av_speech_in_noise {
         Track::Settings trackSettings{};
         TargetListReader *targetListSetReader;
         TrackFactory *snrTrackFactory;
+        ResponseEvaluator *evaluator;
         Randomizer *randomizer;
         Track *currentSnrTrack;
         TargetList *currentTargetList;
@@ -179,10 +181,12 @@ namespace av_speech_in_noise {
         AdaptiveMethod(
             TargetListReader *targetListSetReader,
             TrackFactory *snrTrackFactory,
+            ResponseEvaluator *evaluator,
             Randomizer *randomizer
         ) :
             targetListSetReader{targetListSetReader},
             snrTrackFactory{snrTrackFactory},
+            evaluator{evaluator},
             randomizer{randomizer},
             currentSnrTrack{&nullTrack},
             currentTargetList{&nullTargetList} {}
@@ -231,6 +235,19 @@ namespace av_speech_in_noise {
         std::string current() override {
             return currentTargetList->current();
         }
+        
+        void writeTrial(OutputFile *file, const coordinate_response_measure::SubjectResponse &response) override {
+            coordinate_response_measure::AdaptiveTrial trial;
+            trial.trial.subjectColor = response.color;
+            trial.trial.subjectNumber = response.number;
+            trial.reversals = reversals();
+            trial.trial.correctColor = evaluator->correctColor(current());
+            trial.trial.correctNumber = evaluator->correctNumber(current());
+            trial.SNR_dB = snr_dB();
+            trial.trial.correct = evaluator->correct(current(), response);
+            file->writeTrial(trial);
+        }
+        
         
     private:
         void pushUpTrack() {
@@ -320,6 +337,9 @@ namespace av_speech_in_noise {
         
         void correct() override {
             
+        }
+        
+        void writeTrial(OutputFile *, const coordinate_response_measure::SubjectResponse &) override {
         }
     };
 

@@ -899,7 +899,7 @@ namespace {
         TrackFactoryStub snrTrackFactory;
         ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
-        AdaptiveMethod adaptiveMethod{&targetListSetReader, &snrTrackFactory, &randomizer};
+        AdaptiveMethod adaptiveMethod{&targetListSetReader, &snrTrackFactory, &evaluator, &randomizer};
         FixedLevelMethod fixedLevelMethod{&finiteTargetList};
         RecognitionTestModel model{
             &adaptiveMethod,

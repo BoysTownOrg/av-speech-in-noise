@@ -10,6 +10,7 @@ namespace av_speech_in_noise {
         int snr_dB() override { return {}; }
         void correct() override {}
         void incorrect() override {}
+        void writeTrial(OutputFile *, const coordinate_response_measure::SubjectResponse &) override {}
     };
     
     static NullTestMethod nullTestMethod;
