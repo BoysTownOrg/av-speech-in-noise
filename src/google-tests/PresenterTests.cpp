@@ -1928,6 +1928,14 @@ namespace {
         assertAuditoryOnlyConditionPassedToModel(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesAudioVisualCondition) {
+        assertAudioVisualConditionPassedToModel(confirmingFixedLevelClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingFixedLevelClosedetTestPassesAuditoryOnlyCondition) {
+        assertAuditoryOnlyConditionPassedToModel(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, playCalibrationPassesAudioVisualCondition) {
         assertAudioVisualConditionPassedToModel(playingCalibration);
     }
