@@ -1448,6 +1448,13 @@ namespace {
             submitCoordinateResponse();
             assertFalse(writtenCoordinateResponseTrial(useCase).correct);
         }
+        
+        void assertSubjectResponsePassedToEvaluator(UseCase &useCase) {
+            run(useCase);
+            submitCoordinateResponse();
+            const auto *expected = &coordinateResponse;
+            assertEqual(expected, evaluator.response());
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -2112,16 +2119,21 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponsePassesSubjectResponseToEvaluator
+        submitCoordinateResponsePassesSubjectResponseToEvaluatorForAdaptiveTest
     ) {
-        submitCoordinateResponse();
-        const auto *expected = &coordinateResponse;
-        assertEqual(expected, evaluator.response());
+        assertSubjectResponsePassedToEvaluator(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColor
+        submitCoordinateResponsePassesSubjectResponseToEvaluatorForFixedLevelTest
+    ) {
+        assertSubjectResponsePassedToEvaluator(initializingFixedLevelTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColorForAdaptiveTest
     ) {
         initializeTestWithStartingList(1);
         setTargetListCurrent(1, "a");
