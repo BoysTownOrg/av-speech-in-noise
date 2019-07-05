@@ -1810,6 +1810,10 @@ namespace {
         assertPassesSubjectId(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesSubjectId) {
+        assertPassesSubjectId(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTesterId) {
         assertPassesTesterId(confirmingAdaptiveClosedSetTest);
     }
