@@ -1731,8 +1731,13 @@ namespace {
         assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmFixedLevelTestDoesNotInitializeAdaptiveTest) {
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestDoesNotInitializeAdaptiveTest) {
         run(confirmingFixedLevelOpenSetTest);
+        assertFalse(model.adaptiveTestInitialized());
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestDoesNotInitializeAdaptiveTest) {
+        run(confirmingFixedLevelClosedSetTest);
         assertFalse(model.adaptiveTestInitialized());
     }
 
