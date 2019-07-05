@@ -1772,6 +1772,10 @@ namespace {
         assertMaskerLevelPassedToModel(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestPassesMaskerLevel) {
+        assertMaskerLevelPassedToModel(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, playCalibrationPassesLevel) {
         setCalibrationLevel("1");
         playCalibration();
