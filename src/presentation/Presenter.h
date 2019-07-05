@@ -250,6 +250,21 @@ namespace av_speech_in_noise {
             }
         };
         
+        class FixedLevelClosedSetTestTrialCompletionHandler :
+            public TrialCompletionHandler
+        {
+            Subject *subject;
+        public:
+            explicit FixedLevelClosedSetTestTrialCompletionHandler(
+                Subject *subject
+            ) :
+                subject{subject} {}
+            
+            void showResponseView() override {
+                subject->showResponseButtons();
+            }
+        };
+        
         Presenter(
             Model *,
             View *,
@@ -302,6 +317,7 @@ namespace av_speech_in_noise {
         TrialCompletionHandler *getTrialCompletionHandler();
         
         FixedLevelOpenSetTestTrialCompletionHandler fixedLevelOpenSetTrialCompletionHandler;
+        FixedLevelClosedSetTestTrialCompletionHandler fixedLevelClosedSetTrialCompletionHandler;
         AdaptiveOpenSetTestTrialCompletionHandler adaptiveOpenSetTrialCompletionHandler;
         AdaptiveClosedSetTestTrialCompletionHandler adaptiveClosedSetTrialCompletionHandler;
         Model *model;

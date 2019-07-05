@@ -18,6 +18,7 @@ namespace av_speech_in_noise {
         Experimenter *experimenter
     ) :
         fixedLevelOpenSetTrialCompletionHandler{experimenter},
+        fixedLevelClosedSetTrialCompletionHandler{subject},
         adaptiveOpenSetTrialCompletionHandler{experimenter},
         adaptiveClosedSetTrialCompletionHandler{subject},
         model{model},
@@ -106,7 +107,7 @@ namespace av_speech_in_noise {
         if (testSetup->fixedLevelOpenSet())
             return &fixedLevelOpenSetTrialCompletionHandler;
         else
-            return {};
+            return &fixedLevelClosedSetTrialCompletionHandler;
     }
     
     void Presenter::playTrial() {

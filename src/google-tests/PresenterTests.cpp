@@ -2230,6 +2230,16 @@ namespace {
 
     TEST_F(
         PresenterTests,
+        completingTrialShowsSubjectResponseButtonsForFixedLevelClosedSetTest
+    ) {
+        assertCompleteTrialShowsResponseView(
+            confirmingFixedLevelClosedSetTest,
+            respondingFromSubject
+        );
+    }
+
+    TEST_F(
+        PresenterTests,
         completingTrialShowsExperimenterEvaluationButtonsForAdaptiveOpenSetTest
     ) {
         assertCompleteTrialShowsResponseView(
