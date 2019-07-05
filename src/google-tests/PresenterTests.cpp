@@ -1826,6 +1826,10 @@ namespace {
         assertPassesTesterId(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesTesterId) {
+        assertPassesTesterId(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMasker) {
         assertPassesMasker(confirmingAdaptiveClosedSetTest);
     }
