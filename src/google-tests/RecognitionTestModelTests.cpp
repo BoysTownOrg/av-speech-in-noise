@@ -285,6 +285,8 @@ namespace {
     class OutputFileStub : public OutputFile {
         coordinate_response_measure::Trial writtenCoordinateResponseTrial_;
         coordinate_response_measure::AdaptiveTrial writtenAdaptiveCoordinateResponseTrial_;
+        coordinate_response_measure::Trial writtenAdaptiveCoordinateResponseTrial2_;
+        coordinate_response_measure::Trial writtenFixedLevelTrial2_;
         FreeResponseTrial writtenFreeResponseTrial_;
         LogString log_;
         const AdaptiveTest *adaptiveTest_{};
@@ -302,6 +304,11 @@ namespace {
             addToLog("writeTrial ");
             writtenCoordinateResponseTrial_ = trial.trial;
             writtenAdaptiveCoordinateResponseTrial_ = trial;
+            writtenAdaptiveCoordinateResponseTrial2_ = trial.trial;
+        }
+        
+        auto &writtenAdaptiveCoordinateResponseTrial2() const {
+            return writtenAdaptiveCoordinateResponseTrial2_;
         }
         
         void openNewFile(const TestInformation &p) override {
@@ -333,6 +340,11 @@ namespace {
         void writeTrial(const coordinate_response_measure::FixedLevelTrial &trial) override {
             addToLog("writeTrial ");
             writtenCoordinateResponseTrial_ = trial.trial;
+            writtenFixedLevelTrial2_ = trial.trial;
+        }
+        
+        auto &writtenFixedLevelTrial2() const {
+            return writtenFixedLevelTrial2_;
         }
         
         void addToLog(std::string s) {
@@ -700,6 +712,7 @@ namespace {
     {
     public:
         virtual const TestInformation &testInformation() = 0;
+        virtual const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(OutputFileStub &) = 0;
     };
     
     class InitializingAdaptiveTest : public InitializingTestUseCase {
@@ -760,6 +773,10 @@ namespace {
         
         const TestInformation &testInformation() override {
             return test_.information;
+        }
+        
+        const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(OutputFileStub &file) override {
+            return file.writtenAdaptiveCoordinateResponseTrial2();
         }
     };
     
@@ -837,6 +854,10 @@ namespace {
         
         const TestInformation &testInformation() override {
             return test_.information;
+        }
+        
+        const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(OutputFileStub &file) override {
+            return file.writtenFixedLevelTrial2();
         }
     };
     
@@ -1396,6 +1417,13 @@ namespace {
             run(useCase);
             assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
         }
+        
+        void assertWritesSubjectColor(InitializingTestUseCase &useCase) {
+            run(useCase);
+            coordinateResponse.color = blueColor();
+            submitCoordinateResponse();
+            assertEqual(blueColor(), useCase.writtenCoordinateResponseTrial(outputFile).subjectColor);
+        }
     };
 
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
@@ -1944,20 +1972,14 @@ namespace {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesColorForAdaptiveTest
     ) {
-        run(initializingAdaptiveTest);
-        coordinateResponse.color = blueColor();
-        submitCoordinateResponse();
-        assertEqual(blueColor(), writtenCoordinateResponseTrial().subjectColor);
+        assertWritesSubjectColor(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponseWritesColorForFixedLevelTest
     ) {
-        run(initializingFixedLevelTest);
-        coordinateResponse.color = blueColor();
-        submitCoordinateResponse();
-        assertEqual(blueColor(), writtenCoordinateResponseTrial().subjectColor);
+        assertWritesSubjectColor(initializingFixedLevelTest);
     }
 
     TEST_F(
