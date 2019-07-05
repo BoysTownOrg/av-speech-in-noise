@@ -220,7 +220,7 @@ int main() {
     UnixFileSystemPath systemPath;
     OutputFilePathImpl path{&timeStamp, &systemPath};
     path.setRelativeOutputDirectory(
-        "Documents/AVCoordinatedResponseMeasureResults"
+        "Documents/AVCoordinateResponseMeasureResults"
     );
     OutputFileImpl outputFile{&writer, &path};
     adaptive_track::AdaptiveTrackFactory snrTrackFactory;
