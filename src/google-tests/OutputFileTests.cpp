@@ -229,10 +229,6 @@ namespace {
             assertTrue(written().contains(std::move(s)));
         }
         
-        void assertWritten(std::string s) {
-            assertEqual(std::move(s), written());
-        }
-        
         void assertWrittenLast(std::string s) {
             assertTrue(written().endsWith(std::move(s)));
         }
@@ -413,15 +409,17 @@ namespace {
     }
 
     TEST_F(OutputFileTests, writeFreeResponseTrial) {
-        freeResponseTrial.response = "a";
-        freeResponseTrial.target = "b";
+        freeResponseTrial.target = "a";
+        freeResponseTrial.response = "b";
         writeFreeResponseTrial();
-        assertWritten("b, a\n");
+        assertNthEntryOfSecondLine("a", 1);
+        assertNthEntryOfSecondLine("b", 2);
     }
 
     TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
-        file.writeFreeResponseTrialHeading();
-        assertWritten("target, response\n");
+        writeFreeResponseTrial();
+        assertNthEntryOfFirstLine("target", 1);
+        assertNthEntryOfFirstLine("response", 2);
     }
 
     TEST_F(OutputFileTests, writeAdaptiveTest) {
