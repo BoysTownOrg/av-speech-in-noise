@@ -214,14 +214,14 @@ namespace {
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
         adaptiveCoordinateResponseTrial.SNR_dB = 1;
-        adaptiveCoordinateResponseTrial.correctNumber = 2;
-        adaptiveCoordinateResponseTrial.subjectNumber = 3;
-        adaptiveCoordinateResponseTrial.correctColor =
+        adaptiveCoordinateResponseTrial.trial.correctNumber = 2;
+        adaptiveCoordinateResponseTrial.trial.subjectNumber = 3;
+        adaptiveCoordinateResponseTrial.trial.correctColor =
             coordinate_response_measure::Color::green;
-        adaptiveCoordinateResponseTrial.subjectColor =
+        adaptiveCoordinateResponseTrial.trial.subjectColor =
             coordinate_response_measure::Color::red;
         adaptiveCoordinateResponseTrial.reversals = 4;
-        adaptiveCoordinateResponseTrial.correct = false;
+        adaptiveCoordinateResponseTrial.trial.correct = false;
         writeAdaptiveCoordinateResponseTrial();
         assertWritten("1, 2, 3, green, red, incorrect, 4\n");
     }
