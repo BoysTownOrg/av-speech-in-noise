@@ -112,7 +112,8 @@ namespace av_speech_in_noise {
     }
     
     void OutputFileImpl::writeTrial(const coordinate_response_measure::FixedLevelTrial &trial) {
-        writeFixedLevelCoordinateResponseTrialHeading();
+        if (!justWroteFixedLevelCoordinateResponseTrial)
+            writeFixedLevelCoordinateResponseTrialHeading();
         FormattedStream stream;
         stream.insert(trial.trial.correctNumber);
         stream.insertCommaAndSpace();
@@ -125,6 +126,7 @@ namespace av_speech_in_noise {
         stream.insert(evaluation(trial.trial));
         stream.insertNewLine();
         write(stream.str());
+        justWroteFixedLevelCoordinateResponseTrial = true;
     }
     
     void OutputFileImpl::writeFixedLevelCoordinateResponseTrialHeading() {

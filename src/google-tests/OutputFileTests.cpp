@@ -288,6 +288,10 @@ namespace {
             assertEqual(std::move(what), nthWrittenEntryOfLine(n, 2));
         }
         
+        void assertNthEntryOfThirdLine(std::string what, int n) {
+            assertEqual(std::move(what), nthWrittenEntryOfLine(n, 3));
+        }
+        
         void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
             useCase.incorrect();
             run(useCase);
@@ -351,6 +355,21 @@ namespace {
         assertNthEntryOfSecondLine("3", 2);
         assertNthEntryOfSecondLine("green", 3);
         assertNthEntryOfSecondLine("red", 4);
+    }
+
+    TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialDoesNotWriteHeadingTwice) {
+        run(writingFixedLevelCoordinateResponseTrial);
+        writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
+        writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;
+        writingFixedLevelCoordinateResponseTrial.trial().trial.correctColor =
+            coordinate_response_measure::Color::green;
+        writingFixedLevelCoordinateResponseTrial.trial().trial.subjectColor =
+            coordinate_response_measure::Color::red;
+        run(writingFixedLevelCoordinateResponseTrial);
+        assertNthEntryOfThirdLine("2", 1);
+        assertNthEntryOfThirdLine("3", 2);
+        assertNthEntryOfThirdLine("green", 3);
+        assertNthEntryOfThirdLine("red", 4);
     }
 
     TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
