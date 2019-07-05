@@ -817,14 +817,13 @@ namespace {
         }
     };
     
-    class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
+    class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
         ViewStub::TestSetupViewStub *view;
     public:
-        explicit ConfirmingFixedLevelOpenSetTest(ViewStub::TestSetupViewStub *view) :
+        explicit ConfirmingFixedLevelTest(ViewStub::TestSetupViewStub *view) :
             view{view} {}
         
         void run() override {
-            setMethod(view, Method::fixedLevelOpenSet);
             view->confirmTestSetup();
         }
         
@@ -877,63 +876,103 @@ namespace {
         }
     };
     
+    class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
+        ConfirmingFixedLevelTest confirmingFixedLevelTest;
+        ViewStub::TestSetupViewStub *view;
+    public:
+        explicit ConfirmingFixedLevelOpenSetTest(ViewStub::TestSetupViewStub *view) :
+            confirmingFixedLevelTest{view},
+            view{view} {}
+        
+        void run() override {
+            setMethod(view, Method::fixedLevelOpenSet);
+            confirmingFixedLevelTest.run();
+        }
+        
+        int snr_dB(ModelStub &m) override {
+            return confirmingFixedLevelTest.snr_dB(m);
+        }
+        
+        int maskerLevel(ModelStub &m) override {
+            return confirmingFixedLevelTest.maskerLevel(m);
+        }
+        
+        int fullScaleLevel(ModelStub &m) override {
+            return confirmingFixedLevelTest.fullScaleLevel(m);
+        }
+        
+        std::string targetListDirectory(ModelStub &m) override {
+            return confirmingFixedLevelTest.targetListDirectory(m);
+        }
+        
+        std::string subjectId(ModelStub &m) override {
+            return confirmingFixedLevelTest.subjectId(m);
+        }
+        
+        std::string testerId(ModelStub &m) override {
+            return confirmingFixedLevelTest.testerId(m);
+        }
+        
+        std::string session(ModelStub &m) override {
+            return confirmingFixedLevelTest.session(m);
+        }
+        
+        std::string maskerFilePath(ModelStub &m) override {
+            return confirmingFixedLevelTest.maskerFilePath(m);
+        }
+        
+        Condition condition(ModelStub &m) override {
+            return confirmingFixedLevelTest.condition(m);
+        }
+    };
+    
     class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
+        ConfirmingFixedLevelTest confirmingFixedLevelTest;
         ViewStub::TestSetupViewStub *view;
     public:
         explicit ConfirmingFixedLevelClosedSetTest(ViewStub::TestSetupViewStub *view) :
+            confirmingFixedLevelTest{view},
             view{view} {}
         
         void run() override {
             setMethod(view, Method::fixedLevelClosedSet);
-            view->confirmTestSetup();
-        }
-        
-        auto fixedLevelTest(ModelStub &m) {
-            return m.fixedLevelTest();
-        }
-        
-        auto common(ModelStub &m) {
-            return fixedLevelTest(m).common;
-        }
-        
-        auto information(ModelStub &m) {
-            return fixedLevelTest(m).information;
+            confirmingFixedLevelTest.run();
         }
         
         int snr_dB(ModelStub &m) override {
-            return fixedLevelTest(m).snr_dB;
+            return confirmingFixedLevelTest.snr_dB(m);
         }
         
         int maskerLevel(ModelStub &m) override {
-            return common(m).maskerLevel_dB_SPL;
+            return confirmingFixedLevelTest.maskerLevel(m);
         }
         
         int fullScaleLevel(ModelStub &m) override {
-            return common(m).fullScaleLevel_dB_SPL;
+            return confirmingFixedLevelTest.fullScaleLevel(m);
         }
         
         std::string targetListDirectory(ModelStub &m) override {
-            return common(m).targetListDirectory;
+            return confirmingFixedLevelTest.targetListDirectory(m);
         }
         
         std::string subjectId(ModelStub &m) override {
-            return information(m).subjectId;
+            return confirmingFixedLevelTest.subjectId(m);
         }
         
         std::string testerId(ModelStub &m) override {
-            return information(m).testerId;
+            return confirmingFixedLevelTest.testerId(m);
         }
         
         std::string session(ModelStub &m) override {
-            return information(m).session;
+            return confirmingFixedLevelTest.session(m);
         }
         
         std::string maskerFilePath(ModelStub &m) override {
-            return common(m).maskerFilePath;
+            return confirmingFixedLevelTest.maskerFilePath(m);
         }
         
         Condition condition(ModelStub &m) override {
-            return common(m).condition;
+            return confirmingFixedLevelTest.condition(m);
         }
     };
     
