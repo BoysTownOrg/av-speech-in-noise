@@ -124,6 +124,44 @@ namespace {
             file.writeTest(test);
         }
     };
+    
+    class WritingTrialUseCase : public virtual UseCase {
+    public:
+        virtual void incorrect() = 0;
+        virtual void correct() = 0;
+    };
+    
+    class WritingAdaptiveCoordinateTrial : public WritingTrialUseCase {
+        coordinate_response_measure::AdaptiveTrial trial;
+    public:
+        void incorrect() override {
+            trial.trial.correct = false;
+        }
+        
+        void correct() override {
+            trial.trial.correct = true;
+        }
+        
+        void run(av_speech_in_noise::OutputFileImpl &file) override {
+            file.writeTrial(trial);
+        }
+    };
+    
+    class WritingFixedLevelCoordinateTrial : public WritingTrialUseCase {
+        coordinate_response_measure::FixedLevelTrial trial;
+    public:
+        void incorrect() override {
+            trial.trial.correct = false;
+        }
+        
+        void correct() override {
+            trial.trial.correct = true;
+        }
+        
+        void run(av_speech_in_noise::OutputFileImpl &file) override {
+            file.writeTrial(trial);
+        }
+    };
 
     class OutputFileTests : public ::testing::Test {
     protected:
@@ -133,6 +171,8 @@ namespace {
         coordinate_response_measure::Trial coordinateResponseTrial;
         coordinate_response_measure::AdaptiveTrial adaptiveCoordinateResponseTrial;
         coordinate_response_measure::FixedLevelTrial fixedLevelCoordinateResponseTrial;
+        WritingAdaptiveCoordinateTrial writingAdaptiveCoordinateTrial;
+        WritingFixedLevelCoordinateTrial writingFixedLevelCoordinateTrial;
         FreeResponseTrial freeResponseTrial;
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
@@ -140,12 +180,12 @@ namespace {
         WritingFixedLevelTest writingFixedLevelTest;
         WritingAdaptiveTest writingAdaptiveTest;
         
-        void openNewFile() {
-            file.openNewFile(testInformation);
+        void run(UseCase &useCase) {
+            useCase.run(file);
         }
         
-        void writeCoordinateResponseTrial() {
-            file.writeTrial(coordinateResponseTrial);
+        void openNewFile() {
+            file.openNewFile(testInformation);
         }
         
         void writeAdaptiveCoordinateResponseTrial() {
@@ -201,6 +241,18 @@ namespace {
             assertWriterContains("tester: b\n");
             assertWriterContains("session: c\n");
         }
+        
+        void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
+            useCase.incorrect();
+            run(useCase);
+            assertWriterContains(" incorrect");
+        }
+        
+        void assertCorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
+            useCase.correct();
+            run(useCase);
+            assertWriterContains(" correct");
+        }
     };
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
@@ -229,40 +281,20 @@ namespace {
         assertWritten("2, 3, green, red, incorrect\n");
     }
 
-    TEST_F(OutputFileTests, writeIncorrectCoordinateResponseTrial) {
-        coordinateResponseTrial.correct = false;
-        writeCoordinateResponseTrial();
-        assertWriterContains(" incorrect");
-    }
-
-    TEST_F(OutputFileTests, writeCorrectCoordinateResponseTrial) {
-        coordinateResponseTrial.correct = true;
-        writeCoordinateResponseTrial();
-        assertWriterContains(" correct");
-    }
-
     TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
-        adaptiveCoordinateResponseTrial.trial.correct = false;
-        writeAdaptiveCoordinateResponseTrial();
-        assertWriterContains(" incorrect");
+        assertIncorrectTrialWritesEvaluation(writingAdaptiveCoordinateTrial);
     }
 
     TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
-        adaptiveCoordinateResponseTrial.trial.correct = true;
-        writeAdaptiveCoordinateResponseTrial();
-        assertWriterContains(" correct");
+        assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateTrial);
     }
 
     TEST_F(OutputFileTests, writeIncorrectFixedLevelCoordinateResponseTrial) {
-        fixedLevelCoordinateResponseTrial.trial.correct = false;
-        writeFixedLevelCoordinateResponseTrial();
-        assertWriterContains(" incorrect");
+        assertIncorrectTrialWritesEvaluation(writingFixedLevelCoordinateTrial);
     }
 
     TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
-        fixedLevelCoordinateResponseTrial.trial.correct = true;
-        writeFixedLevelCoordinateResponseTrial();
-        assertWriterContains(" correct");
+        assertCorrectTrialWritesEvaluation(writingFixedLevelCoordinateTrial);
     }
 
     TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
