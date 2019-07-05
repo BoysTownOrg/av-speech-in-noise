@@ -21,10 +21,8 @@ namespace av_speech_in_noise {
         };
         
         struct Trial {
-            int SNR_dB;
             int correctNumber;
             int subjectNumber;
-            int reversals;
             Color correctColor;
             Color subjectColor;
             bool correct;

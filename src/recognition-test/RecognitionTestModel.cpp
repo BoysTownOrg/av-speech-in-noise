@@ -238,10 +238,10 @@ namespace av_speech_in_noise {
         coordinate_response_measure::AdaptiveTrial trial;
         trial.trial.subjectColor = response.color;
         trial.trial.subjectNumber = response.number;
-        trial.trial.reversals = adaptiveMethod->reversals();
+        trial.reversals = adaptiveMethod->reversals();
         trial.trial.correctColor = evaluator->correctColor(currentTarget());
         trial.trial.correctNumber = evaluator->correctNumber(currentTarget());
-        trial.trial.SNR_dB = testMethod->snr_dB();
+        trial.SNR_dB = testMethod->snr_dB();
         trial.trial.correct = correct(response);
         outputFile->writeTrial(trial);
         outputFile->save();

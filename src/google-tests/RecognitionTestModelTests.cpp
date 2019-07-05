@@ -284,6 +284,7 @@ namespace {
     
     class OutputFileStub : public OutputFile {
         coordinate_response_measure::Trial writtenCoordinateResponseTrial_;
+        coordinate_response_measure::AdaptiveTrial writtenAdaptiveCoordinateResponseTrial_;
         FreeResponseTrial writtenFreeResponseTrial_;
         LogString log_;
         const AdaptiveTest *adaptiveTest_{};
@@ -300,6 +301,7 @@ namespace {
         ) override {
             addToLog("writeTrial ");
             writtenCoordinateResponseTrial_ = trial.trial;
+            writtenAdaptiveCoordinateResponseTrial_ = trial;
         }
         
         void openNewFile(const TestInformation &p) override {
@@ -354,6 +356,10 @@ namespace {
         
         auto &writtenCoordinateResponseTrial() const {
             return writtenCoordinateResponseTrial_;
+        }
+        
+        auto &writtenAdaptiveCoordinateResponseTrial() const {
+            return writtenAdaptiveCoordinateResponseTrial_;
         }
         
         auto &writtenFreeResponseTrial() const {
@@ -1115,6 +1121,10 @@ namespace {
         
         auto writtenCoordinateResponseTrial() {
             return outputFile.writtenCoordinateResponseTrial();
+        }
+        
+        auto writtenAdaptiveCoordinateResponseTrial() {
+            return outputFile.writtenAdaptiveCoordinateResponseTrial();
         }
         
         auto writtenFreeResponseTrial() {
@@ -1950,7 +1960,7 @@ namespace {
         initializeTestWithStartingList(1);
         snrTrack(1)->setReversals(2);
         submitCoordinateResponse();
-        assertEqual(2, writtenCoordinateResponseTrial().reversals);
+        assertEqual(2, writtenAdaptiveCoordinateResponseTrial().reversals);
     }
 
     TEST_F(
@@ -1978,7 +1988,7 @@ namespace {
         initializeTestWithStartingList(1);
         snrTrack(1)->setX(2);
         submitCoordinateResponse();
-        assertEqual(2, writtenCoordinateResponseTrial().SNR_dB);
+        assertEqual(2, writtenAdaptiveCoordinateResponseTrial().SNR_dB);
     }
 
     TEST_F(
