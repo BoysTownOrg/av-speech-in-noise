@@ -188,6 +188,19 @@ namespace av_speech_in_noise {
         write(stream.str());
     }
     
+    void OutputFileImpl::writeFixedLevelCoordinateResponseTrialHeading() {
+        FormattedStream stream;
+        stream.insert("correct number");
+        stream.insertCommaAndSpace();
+        stream.insert("subject number");
+        stream.insertCommaAndSpace();
+        stream.insert("correct color");
+        stream.insertCommaAndSpace();
+        stream.insert("subject color");
+        stream.insertNewLine();
+        write(stream.str());
+    }
+    
     void OutputFileImpl::writeFreeResponseTrialHeading() {
         write(formatOpenSetTrialHeading());
     }

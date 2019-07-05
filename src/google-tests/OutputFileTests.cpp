@@ -298,6 +298,13 @@ namespace {
         );
     }
 
+    TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
+        file.writeFixedLevelCoordinateResponseTrialHeading();
+        assertWritten(
+            "correct number, subject number, correct color, subject color\n"
+        );
+    }
+
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
         writingAdaptiveCoordinateResponseTrial.trial().SNR_dB = 1;
         writingAdaptiveCoordinateResponseTrial.trial().trial.correctNumber = 2;
