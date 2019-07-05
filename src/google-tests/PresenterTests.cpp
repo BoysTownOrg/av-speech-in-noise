@@ -1667,7 +1667,7 @@ namespace {
         assertShowsExperimenterView(confirmingAdaptiveOpenSetTest);
     }
 
-    TEST_F(PresenterTests, confirmFixedLevelTestShowsExperimenterView) {
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsExperimenterView) {
         assertShowsExperimenterView(confirmingFixedLevelOpenSetTest);
     }
 
@@ -1676,6 +1676,14 @@ namespace {
         confirmAdaptiveClosedSetTestShowsSubjectView
     ) {
         run(confirmingAdaptiveClosedSetTest);
+        assertSubjectViewShown();
+    }
+
+    TEST_F(
+        PresenterTests,
+        confirmFixedLevelClosedSetTestShowsSubjectView
+    ) {
+        run(confirmingFixedLevelClosedSetTest);
         assertSubjectViewShown();
     }
 

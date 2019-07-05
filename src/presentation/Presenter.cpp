@@ -51,17 +51,6 @@ namespace av_speech_in_noise {
         trialCompletionHandler = getTrialCompletionHandler();
     }
     
-    auto Presenter::getTrialCompletionHandler() -> TrialCompletionHandler * {
-        if (adaptiveClosedSet())
-            return &adaptiveClosedSetTrialCompletionHandler;
-        if (adaptiveOpenSet())
-            return &adaptiveOpenSetTrialCompletionHandler;
-        if (testSetup->fixedLevelOpenSet())
-            return &fixedLevelOpenSetTrialCompletionHandler;
-        else
-            return {};
-    }
-    
     void Presenter::initializeTest() {
         if (adaptiveTest())
             model->initializeTest(testSetup->adaptiveTest());
@@ -87,10 +76,18 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::showTestView() {
-        if (adaptiveClosedSet())
+        if (closedSet())
             subject->show();
         else
             experimenter->show();
+    }
+    
+    bool Presenter::closedSet() {
+        return adaptiveClosedSet() || fixedLevelClosedSet();
+    }
+    
+    bool Presenter::fixedLevelClosedSet() {
+        return testSetup->fixedLevelClosedSet();
     }
     
     void Presenter::hideTestSetup() {
@@ -99,6 +96,17 @@ namespace av_speech_in_noise {
     
     void Presenter::showErrorMessage(std::string e) {
         view->showErrorMessage(std::move(e));
+    }
+    
+    auto Presenter::getTrialCompletionHandler() -> TrialCompletionHandler * {
+        if (adaptiveClosedSet())
+            return &adaptiveClosedSetTrialCompletionHandler;
+        if (adaptiveOpenSet())
+            return &adaptiveOpenSetTrialCompletionHandler;
+        if (testSetup->fixedLevelOpenSet())
+            return &fixedLevelOpenSetTrialCompletionHandler;
+        else
+            return {};
     }
     
     void Presenter::playTrial() {
@@ -346,6 +354,10 @@ namespace av_speech_in_noise {
     
     bool Presenter::TestSetup::fixedLevelOpenSet() {
         return method(Method::fixedLevelOpenSet);
+    }
+    
+    bool Presenter::TestSetup::fixedLevelClosedSet() {
+        return method(Method::fixedLevelClosedSet);
     }
 
 

@@ -138,6 +138,7 @@ namespace av_speech_in_noise {
             bool adaptiveClosedSet();
             bool adaptiveOpenSet();
             bool fixedLevelOpenSet();
+            bool fixedLevelClosedSet();
             void playCalibration() override;
             void browseForTargetList() override;
             void browseForMasker() override;
@@ -288,6 +289,8 @@ namespace av_speech_in_noise {
         bool adaptiveClosedSet();
         bool adaptiveOpenSet();
         bool adaptiveTest();
+        bool closedSet();
+        bool fixedLevelClosedSet();
         void initializeTest();
         void showTestView();
         void switchToTestView();
