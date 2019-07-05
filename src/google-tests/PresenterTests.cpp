@@ -1639,6 +1639,11 @@ namespace {
             run(useCase);
             assertExperimenterViewNotShown();
         }
+        
+        void assertDoesNotInitializeAdaptiveTest(UseCase &useCase) {
+            run(useCase);
+            assertFalse(model.adaptiveTestInitialized());
+        }
     };
 
     TEST_F(PresenterTests, populatesConditionMenu) {
@@ -1732,13 +1737,11 @@ namespace {
     }
 
     TEST_F(PresenterTests, confirmFixedLevelOpenSetTestDoesNotInitializeAdaptiveTest) {
-        run(confirmingFixedLevelOpenSetTest);
-        assertFalse(model.adaptiveTestInitialized());
+        assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelOpenSetTest);
     }
 
     TEST_F(PresenterTests, confirmFixedLevelClosedSetTestDoesNotInitializeAdaptiveTest) {
-        run(confirmingFixedLevelClosedSetTest);
-        assertFalse(model.adaptiveTestInitialized());
+        assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesStartingSnr) {
