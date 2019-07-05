@@ -32,7 +32,7 @@ namespace av_speech_in_noise {
         OutputFileImpl(Writer *, OutputFilePath *);
         void writeTest(const AdaptiveTest &) override;
         void writeTrial(const coordinate_response_measure::AdaptiveTrial &) override;
-        void writeTrial(const coordinate_response_measure::FixedLevelTrial &);
+        void writeTrial(const coordinate_response_measure::FixedLevelTrial &) override;
         void openNewFile(const TestInformation &) override;
         void close() override;
         void writeTest(const FixedLevelTest &) override;

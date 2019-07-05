@@ -330,6 +330,11 @@ namespace {
             writtenFreeResponseTrial_ = p;
         }
         
+        void writeTrial(const coordinate_response_measure::FixedLevelTrial &trial) override {
+            addToLog("writeTrial ");
+            writtenCoordinateResponseTrial_ = trial.trial;
+        }
+        
         void addToLog(std::string s) {
             log_.insert(std::move(s));
         }
@@ -1957,9 +1962,19 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesNumber
+        submitCoordinateResponseWritesNumberForAdaptiveTest
     ) {
         run(initializingAdaptiveTest);
+        coordinateResponse.number = 1;
+        submitCoordinateResponse();
+        assertEqual(1, writtenCoordinateResponseTrial().subjectNumber);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseWritesNumberForFixedLevelTest
+    ) {
+        run(initializingFixedLevelTest);
         coordinateResponse.number = 1;
         submitCoordinateResponse();
         assertEqual(1, writtenCoordinateResponseTrial().subjectNumber);

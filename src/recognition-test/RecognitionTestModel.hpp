@@ -119,6 +119,7 @@ namespace av_speech_in_noise {
         virtual void openNewFile(const TestInformation &) = 0;
         class OpenFailure {};
         virtual void writeTrial(const coordinate_response_measure::AdaptiveTrial &) = 0;
+        virtual void writeTrial(const coordinate_response_measure::FixedLevelTrial &) = 0;
         virtual void writeTrial(const FreeResponseTrial &) = 0;
         virtual void writeTest(const AdaptiveTest &) = 0;
         virtual void writeTest(const FixedLevelTest &) = 0;
@@ -339,7 +340,14 @@ namespace av_speech_in_noise {
             
         }
         
-        void writeTrial(OutputFile *, const coordinate_response_measure::SubjectResponse &) override {
+        void writeTrial(OutputFile *file, const coordinate_response_measure::SubjectResponse &response) override {
+            coordinate_response_measure::FixedLevelTrial trial;
+            trial.trial.subjectColor = response.color;
+            trial.trial.subjectNumber = response.number;
+            //trial.trial.correctColor = evaluator->correctColor(current());
+            //trial.trial.correctNumber = evaluator->correctNumber(current());
+            //trial.trial.correct = evaluator->correct(current(), response);
+            file->writeTrial(trial);
         }
     };
 
