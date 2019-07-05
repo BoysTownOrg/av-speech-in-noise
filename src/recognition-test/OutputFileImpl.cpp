@@ -243,8 +243,10 @@ namespace av_speech_in_noise {
     }
     
     void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
-        writeFreeResponseTrialHeading();
+        if (!justWroteFreeResponseTrial)
+            writeFreeResponseTrialHeading();
         write(formatTrial(trial));
+        justWroteFreeResponseTrial = true;
     }
 
     std::string OutputFileImpl::formatTrial(const FreeResponseTrial &trial) {

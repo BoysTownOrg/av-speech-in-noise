@@ -416,6 +416,15 @@ namespace {
         assertNthEntryOfSecondLine("b", 2);
     }
 
+    TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
+        writeFreeResponseTrial();
+        freeResponseTrial.target = "a";
+        freeResponseTrial.response = "b";
+        writeFreeResponseTrial();
+        assertNthEntryOfThirdLine("a", 1);
+        assertNthEntryOfThirdLine("b", 2);
+    }
+
     TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
         writeFreeResponseTrial();
         assertNthEntryOfFirstLine("target", 1);
