@@ -343,6 +343,25 @@ namespace {
         assertNthEntryOfSecondLine("4", 7);
     }
 
+    TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
+        run(writingAdaptiveCoordinateResponseTrial);
+        writingAdaptiveCoordinateResponseTrial.trial().SNR_dB = 1;
+        writingAdaptiveCoordinateResponseTrial.trial().trial.correctNumber = 2;
+        writingAdaptiveCoordinateResponseTrial.trial().trial.subjectNumber = 3;
+        writingAdaptiveCoordinateResponseTrial.trial().trial.correctColor =
+            coordinate_response_measure::Color::green;
+        writingAdaptiveCoordinateResponseTrial.trial().trial.subjectColor =
+            coordinate_response_measure::Color::red;
+        writingAdaptiveCoordinateResponseTrial.trial().reversals = 4;
+        run(writingAdaptiveCoordinateResponseTrial);
+        assertNthEntryOfThirdLine("1", 1);
+        assertNthEntryOfThirdLine("2", 2);
+        assertNthEntryOfThirdLine("3", 3);
+        assertNthEntryOfThirdLine("green", 4);
+        assertNthEntryOfThirdLine("red", 5);
+        assertNthEntryOfThirdLine("4", 7);
+    }
+
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
         writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;
@@ -357,7 +376,7 @@ namespace {
         assertNthEntryOfSecondLine("red", 4);
     }
 
-    TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialDoesNotWriteHeadingTwice) {
+    TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
         run(writingFixedLevelCoordinateResponseTrial);
         writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;

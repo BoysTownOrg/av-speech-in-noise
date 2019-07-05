@@ -26,6 +26,7 @@ namespace av_speech_in_noise {
         Writer *writer;
         OutputFilePath *path;
         bool justWroteFixedLevelCoordinateResponseTrial{};
+        bool justWroteAdaptiveCoordinateResponseTrial{};
     public:
         OutputFileImpl(Writer *, OutputFilePath *);
         void writeTest(const AdaptiveTest &) override;
