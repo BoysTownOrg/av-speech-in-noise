@@ -282,6 +282,22 @@ namespace {
         }
     };
 
+    TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
+        file.writeCoordinateResponseTrialHeading();
+        assertWritten(
+            "SNR (dB), correct number, subject number, "
+            "correct color, subject color, evaluation, reversals\n"
+        );
+    }
+
+    TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
+        file.writeAdaptiveCoordinateResponseTrialHeading();
+        assertWritten(
+            "SNR (dB), correct number, subject number, "
+            "correct color, subject color, evaluation, reversals\n"
+        );
+    }
+
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
         writingAdaptiveCoordinateResponseTrial.trial().SNR_dB = 1;
         writingAdaptiveCoordinateResponseTrial.trial().trial.correctNumber = 2;
@@ -291,15 +307,12 @@ namespace {
         writingAdaptiveCoordinateResponseTrial.trial().trial.subjectColor =
             coordinate_response_measure::Color::red;
         writingAdaptiveCoordinateResponseTrial.trial().reversals = 4;
-        writingAdaptiveCoordinateResponseTrial.trial().trial.correct = false;
         run(writingAdaptiveCoordinateResponseTrial);
-        assertWritten("1, 2, 3, green, red, incorrect, 4\n");
         assertEqual("1", nthTrialEntry(1));
         assertEqual("2", nthTrialEntry(2));
         assertEqual("3", nthTrialEntry(3));
         assertEqual("green", nthTrialEntry(4));
         assertEqual("red", nthTrialEntry(5));
-        assertEqual("incorrect", nthTrialEntry(6));
         assertEqual("4", nthTrialEntry(7));
         assertWrittenLast("\n");
     }
@@ -311,9 +324,12 @@ namespace {
             coordinate_response_measure::Color::green;
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectColor =
             coordinate_response_measure::Color::red;
-        writingFixedLevelCoordinateResponseTrial.trial().trial.correct = false;
         run(writingFixedLevelCoordinateResponseTrial);
-        assertWritten("2, 3, green, red, incorrect\n");
+        assertEqual("2", nthTrialEntry(1));
+        assertEqual("3", nthTrialEntry(2));
+        assertEqual("green", nthTrialEntry(3));
+        assertEqual("red", nthTrialEntry(4));
+        assertWrittenLast("\n");
     }
 
     TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
@@ -350,14 +366,6 @@ namespace {
         freeResponseTrial.target = "b";
         writeFreeResponseTrial();
         assertWritten("b, a\n");
-    }
-
-    TEST_F(OutputFileTests, writeCoordinateResponseTrialHeading) {
-        file.writeCoordinateResponseTrialHeading();
-        assertWritten(
-            "SNR (dB), correct number, subject number, "
-            "correct color, subject color, evaluation, reversals\n"
-        );
     }
 
     TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {

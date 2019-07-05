@@ -169,6 +169,25 @@ namespace av_speech_in_noise {
         return stream.str();
     }
     
+    void OutputFileImpl::writeAdaptiveCoordinateResponseTrialHeading() {
+        FormattedStream stream;
+        stream.insert("SNR (dB)");
+        stream.insertCommaAndSpace();
+        stream.insert("correct number");
+        stream.insertCommaAndSpace();
+        stream.insert("subject number");
+        stream.insertCommaAndSpace();
+        stream.insert("correct color");
+        stream.insertCommaAndSpace();
+        stream.insert("subject color");
+        stream.insertCommaAndSpace();
+        stream.insert("evaluation");
+        stream.insertCommaAndSpace();
+        stream.insert("reversals");
+        stream.insertNewLine();
+        write(stream.str());
+    }
+    
     void OutputFileImpl::writeFreeResponseTrialHeading() {
         write(formatOpenSetTrialHeading());
     }
@@ -254,4 +273,5 @@ namespace av_speech_in_noise {
         stream.insertNewLine();
         return stream.str();
     }
+    
 }
