@@ -124,7 +124,7 @@ namespace av_speech_in_noise {
         stream.insertCommaAndSpace();
         stream.insert(colorName(trial.trial.subjectColor));
         stream.insertCommaAndSpace();
-        stream.insert(trial.trial.correct ? "correct" : "incorrect");
+        stream.insert(evaluation(trial.trial));
         stream.insertCommaAndSpace();
         stream.insert(trial.reversals);
         stream.insertNewLine();
@@ -141,7 +141,7 @@ namespace av_speech_in_noise {
         stream.insertCommaAndSpace();
         stream.insert(colorName(trial.trial.subjectColor));
         stream.insertCommaAndSpace();
-        stream.insert(trial.trial.correct ? "correct" : "incorrect");
+        stream.insert(evaluation(trial.trial));
         stream.insertNewLine();
         write(stream.str());
     }

@@ -203,20 +203,6 @@ namespace {
         }
     };
 
-    TEST_F(OutputFileTests, writeCoordinateResponseTrial) {
-        coordinateResponseTrial.SNR_dB = 1;
-        coordinateResponseTrial.correctNumber = 2;
-        coordinateResponseTrial.subjectNumber = 3;
-        coordinateResponseTrial.correctColor =
-            coordinate_response_measure::Color::green;
-        coordinateResponseTrial.subjectColor =
-            coordinate_response_measure::Color::red;
-        coordinateResponseTrial.reversals = 4;
-        coordinateResponseTrial.correct = false;
-        writeCoordinateResponseTrial();
-        assertWritten("1, 2, 3, green, red, incorrect, 4\n");
-    }
-
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
         adaptiveCoordinateResponseTrial.SNR_dB = 1;
         adaptiveCoordinateResponseTrial.trial.correctNumber = 2;
@@ -246,13 +232,37 @@ namespace {
     TEST_F(OutputFileTests, writeIncorrectCoordinateResponseTrial) {
         coordinateResponseTrial.correct = false;
         writeCoordinateResponseTrial();
-        assertWriterContains(" incorrect, ");
+        assertWriterContains(" incorrect");
     }
 
     TEST_F(OutputFileTests, writeCorrectCoordinateResponseTrial) {
         coordinateResponseTrial.correct = true;
         writeCoordinateResponseTrial();
-        assertWriterContains(" correct, ");
+        assertWriterContains(" correct");
+    }
+
+    TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
+        adaptiveCoordinateResponseTrial.trial.correct = false;
+        writeAdaptiveCoordinateResponseTrial();
+        assertWriterContains(" incorrect");
+    }
+
+    TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
+        adaptiveCoordinateResponseTrial.trial.correct = true;
+        writeAdaptiveCoordinateResponseTrial();
+        assertWriterContains(" correct");
+    }
+
+    TEST_F(OutputFileTests, writeIncorrectFixedLevelCoordinateResponseTrial) {
+        fixedLevelCoordinateResponseTrial.trial.correct = false;
+        writeFixedLevelCoordinateResponseTrial();
+        assertWriterContains(" incorrect");
+    }
+
+    TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
+        fixedLevelCoordinateResponseTrial.trial.correct = true;
+        writeFixedLevelCoordinateResponseTrial();
+        assertWriterContains(" correct");
     }
 
     TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
