@@ -1756,6 +1756,10 @@ namespace {
         assertStartingSnrPassedToModel(confirmingFixedLevelOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestPassesStartingSnr) {
+        assertStartingSnrPassedToModel(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMaskerLevel) {
         assertMaskerLevelPassedToModel(confirmingAdaptiveClosedSetTest);
     }
