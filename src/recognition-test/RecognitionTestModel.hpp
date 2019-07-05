@@ -302,11 +302,13 @@ namespace av_speech_in_noise {
     };
 
     class FixedLevelMethod : public TestMethod {
-        FiniteTargetList *currentTargetList{};
+        FiniteTargetList *currentTargetList;
+        ResponseEvaluator *evaluator;
         int snr_dB_;
     public:
-        FixedLevelMethod(FiniteTargetList *targetList) :
-            currentTargetList{targetList} {}
+        FixedLevelMethod(FiniteTargetList *targetList, ResponseEvaluator *evaluator) :
+            currentTargetList{targetList},
+            evaluator{evaluator} {}
         
         void store(const FixedLevelTest &p) {
             snr_dB_ = p.snr_dB;
@@ -344,7 +346,7 @@ namespace av_speech_in_noise {
             coordinate_response_measure::FixedLevelTrial trial;
             trial.trial.subjectColor = response.color;
             trial.trial.subjectNumber = response.number;
-            //trial.trial.correctColor = evaluator->correctColor(current());
+            trial.trial.correctColor = evaluator->correctColor(current());
             //trial.trial.correctNumber = evaluator->correctNumber(current());
             //trial.trial.correct = evaluator->correct(current(), response);
             file->writeTrial(trial);

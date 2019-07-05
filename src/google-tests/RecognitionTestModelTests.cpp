@@ -926,7 +926,7 @@ namespace {
         ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
         AdaptiveMethod adaptiveMethod{&targetListSetReader, &snrTrackFactory, &evaluator, &randomizer};
-        FixedLevelMethod fixedLevelMethod{&finiteTargetList};
+        FixedLevelMethod fixedLevelMethod{&finiteTargetList, &evaluator};
         RecognitionTestModel model{
             &adaptiveMethod,
             &fixedLevelMethod,
@@ -2009,7 +2009,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesReversals
+        submitCoordinateResponseWritesReversalsForAdaptiveTest
     ) {
         initializeTestWithStartingList(1);
         snrTrack(1)->setReversals(2);
@@ -2019,17 +2019,27 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesCorrectColor
+        submitCoordinateResponseWritesCorrectColorForAdaptiveTest
     ) {
         run(initializingAdaptiveTest);
         evaluator.setCorrectColor(blueColor());
         submitCoordinateResponse();
-        assertEqual(blueColor(), writtenCoordinateResponseTrial().correctColor);
+        assertEqual(blueColor(), writtenCoordinateResponseTrial(initializingAdaptiveTest).correctColor);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesCorrectNumber
+        submitCoordinateResponseWritesCorrectColorForFixedLevelTest
+    ) {
+        run(initializingFixedLevelTest);
+        evaluator.setCorrectColor(blueColor());
+        submitCoordinateResponse();
+        assertEqual(blueColor(), writtenCoordinateResponseTrial(initializingFixedLevelTest).correctColor);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseWritesCorrectNumberForAdaptiveTest
     ) {
         run(initializingAdaptiveTest);
         evaluator.setCorrectNumber(1);
