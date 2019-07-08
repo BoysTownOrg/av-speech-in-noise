@@ -246,7 +246,7 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseLoadsNextTarget
+        submitCoordinateResponseLoadsNextTargetForFixedLevelTest
     ) {
         assertNextTargetPassedToPlayer(
             initializingFixedLevelTest,
@@ -256,24 +256,72 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCorrectResponseLoadsNextTarget
+        submitCoordinateResponseLoadsNextTargetForAdaptiveTest
     ) {
-        assertNextTargetPassedToPlayer(initializingFixedLevelTest, submittingCorrectResponse);
+        assertNextTargetPassedToPlayer(
+            initializingAdaptiveTest,
+            submittingCoordinateResponse
+        );
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitIncorrectResponseLoadsNextTarget
+        submitCorrectResponseLoadsNextTargetForFixedLevelTest
     ) {
-        assertNextTargetPassedToPlayer(initializingFixedLevelTest, submittingIncorrectResponse);
+        assertNextTargetPassedToPlayer(
+            initializingFixedLevelTest,
+            submittingCorrectResponse
+        );
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitTypedResponseLoadsNextTarget
+        submitCorrectResponseLoadsNextTargetForAdaptiveTest
     ) {
-        initializeFixedLevelTest();
-        assertNextTargetPassedToPlayer(submittingFreeResponse);
+        assertNextTargetPassedToPlayer(
+            initializingAdaptiveTest,
+            submittingCorrectResponse
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitIncorrectResponseLoadsNextTargetForFixedLevelTest
+    ) {
+        assertNextTargetPassedToPlayer(
+            initializingFixedLevelTest,
+            submittingIncorrectResponse
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitIncorrectResponseLoadsNextTargetForAdaptiveTest
+    ) {
+        assertNextTargetPassedToPlayer(
+            initializingAdaptiveTest,
+            submittingIncorrectResponse
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitTypedResponseLoadsNextTargetForFixedLevelTest
+    ) {
+        assertNextTargetPassedToPlayer(
+            initializingFixedLevelTest,
+            submittingFreeResponse
+        );
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitTypedResponseLoadsNextTargetForAdaptiveTest
+    ) {
+        assertNextTargetPassedToPlayer(
+            initializingAdaptiveTest,
+            submittingFreeResponse
+        );
     }
 
     TEST_F(

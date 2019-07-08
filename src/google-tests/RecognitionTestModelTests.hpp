@@ -243,25 +243,16 @@ namespace av_speech_in_noise::tests {
     };
 
     class SubmittingFreeResponse :
-        public SubmittingResponse,
-        public TargetLoaderUseCase
+        public SubmittingResponse
     {
         FreeResponse response_;
-        FiniteTargetListStub *finiteTargetList;
     public:
-        SubmittingFreeResponse(FiniteTargetListStub *finiteTargetList) :
-            finiteTargetList{finiteTargetList} {}
-        
         void run(RecognitionTestModel &m) override {
             m.submitResponse(response_);
         }
         
         void setResponse(std::string s) {
             response_.response = std::move(s);
-        }
-        
-        void setNextTarget(std::string s) override {
-            finiteTargetList->setNext(std::move(s));
         }
     };
 
@@ -611,7 +602,7 @@ namespace av_speech_in_noise::tests {
         SubmittingCoordinateResponse submittingCoordinateResponse;
         SubmittingCorrectResponse submittingCorrectResponse;
         SubmittingIncorrectResponse submittingIncorrectResponse;
-        SubmittingFreeResponse submittingFreeResponse{&finiteTargetList};
+        SubmittingFreeResponse submittingFreeResponse;
         SettingStartingSnr settingStartingSnr;
         SettingCeilingSnr settingCeilingSnr;
         

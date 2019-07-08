@@ -135,6 +135,10 @@ namespace av_speech_in_noise {
         );
     }
     
+    void AdaptiveMethod::submitResponse(const FreeResponse &) {
+        selectNextList();
+    }
+    
     FixedLevelMethod::FixedLevelMethod(
         FiniteTargetList *targetList,
         ResponseEvaluator *evaluator
@@ -194,6 +198,10 @@ namespace av_speech_in_noise {
     ) {
         complete_ = targetList->empty();
     }
+    
+    void FixedLevelMethod::submitResponse(const FreeResponse &) {
+    
+    }
 
     class NullTestMethod : public TestMethod {
         bool complete() override { return {}; }
@@ -205,6 +213,7 @@ namespace av_speech_in_noise {
         void submitIncorrectResponse() override {}
         void writeTrial(OutputFile *, const coordinate_response_measure::SubjectResponse &) override {}
         void submitResponse(const coordinate_response_measure::SubjectResponse &) override {}
+        void submitResponse(const FreeResponse &) override {}
     };
     
     static NullTestMethod nullTestMethod;
@@ -459,8 +468,9 @@ namespace av_speech_in_noise {
         preparePlayersForNextTrial();
     }
     
-    void RecognitionTestModel::submitResponse(const FreeResponse &p) {
-        writeTrial(p);
+    void RecognitionTestModel::submitResponse(const FreeResponse &response) {
+        writeTrial(response);
+        testMethod->submitResponse(response);
         preparePlayersForNextTrial();
     }
     

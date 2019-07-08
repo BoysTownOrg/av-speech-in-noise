@@ -150,6 +150,7 @@ namespace av_speech_in_noise {
         virtual int snr_dB() = 0;
         virtual void submitCorrectResponse() = 0;
         virtual void submitIncorrectResponse() = 0;
+        virtual void submitResponse(const FreeResponse &) = 0;
         virtual void writeTrial(
             OutputFile *,
             const coordinate_response_measure::SubjectResponse &
@@ -195,6 +196,7 @@ namespace av_speech_in_noise {
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) override;
+        void submitResponse(const FreeResponse &) override;
         
     private:
         bool correct(
@@ -235,6 +237,7 @@ namespace av_speech_in_noise {
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) override;
+        void submitResponse(const FreeResponse &) override;
     };
 
     class RecognitionTestModel :
