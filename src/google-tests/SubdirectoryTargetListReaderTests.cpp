@@ -28,7 +28,7 @@ namespace {
             &targetListFactory,
             &directoryReader
         };
-        std::vector<std::shared_ptr<TargetListStub>> targetLists;
+        std::vector<std::shared_ptr<av_speech_in_noise::tests::TargetListStub>> targetLists;
         
         SubdirectoryTargetListReaderTests() {
             setListCount(1);
@@ -37,7 +37,7 @@ namespace {
         void setListCount(int n) {
             targetLists.clear();
             for (int i = 0; i < n; ++i)
-                targetLists.push_back(std::make_shared<TargetListStub>());
+                targetLists.push_back(std::make_shared<av_speech_in_noise::tests::TargetListStub>());
             targetListFactory.setLists({targetLists.begin(), targetLists.end()});
         }
         
