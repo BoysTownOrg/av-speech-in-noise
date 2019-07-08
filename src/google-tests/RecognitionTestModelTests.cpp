@@ -224,6 +224,14 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeFixedLevelTestPassesNextTargetToTargetPlayerAfterLoadingFromDirectory
+    ) {
+        run(initializingFixedLevelTest);
+        assertEqual("loadFromDirectory next ", finiteTargetList.log());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeAdaptiveTestPassesNextTargetToTargetPlayer
     ) {
         assertNextTargetPassedToPlayer(initializingAdaptiveTest);
@@ -234,14 +242,6 @@ namespace av_speech_in_noise::tests {
         initializeFixedLevelTestPassesNextTargetToTargetPlayer
     ) {
         assertNextTargetPassedToPlayer(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestPassesNextTargetToTargetPlayerAfterLoadingFromDirectory
-    ) {
-        run(initializingFixedLevelTest);
-        assertEqual("loadFromDirectory next ", finiteTargetList.log());
     }
 
     TEST_F(
@@ -381,6 +381,13 @@ namespace av_speech_in_noise::tests {
         initializeAdaptiveTestSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(initializingAdaptiveTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(initializingFixedLevelTest);
     }
 
     TEST_F(
