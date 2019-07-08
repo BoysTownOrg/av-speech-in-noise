@@ -35,6 +35,13 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeFixedLevelTestShowsTargetVideoWhenAudioVisual
+    ) {
+        assertTargetVideoShownWhenAudioVisual(initializingFixedLevelTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         playCalibrationHidesTargetVideoWhenAuditoryOnly
     ) {
         assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
