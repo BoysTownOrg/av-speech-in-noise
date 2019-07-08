@@ -2,23 +2,6 @@
 #include <cmath>
 
 namespace av_speech_in_noise {
-    class NullTrack : public Track {
-        void pushDown() override {}
-        void pushUp() override {}
-        int x() override { return {}; }
-        bool complete() override { return {}; }
-        int reversals() override { return {}; }
-    };
-    
-    class NullTargetList : public TargetList {
-        void loadFromDirectory(std::string) override {}
-        std::string next() override { return {}; }
-        std::string current() override { return {}; }
-    };
-    
-    static NullTargetList nullTargetList;
-    static NullTrack nullTrack;
-    
     AdaptiveMethod::AdaptiveMethod(
         TargetListReader *targetListSetReader,
         TrackFactory *snrTrackFactory,
@@ -29,8 +12,8 @@ namespace av_speech_in_noise {
         snrTrackFactory{snrTrackFactory},
         evaluator{evaluator},
         randomizer{randomizer},
-        currentSnrTrack{&nullTrack},
-        currentTargetList{&nullTargetList} {}
+        currentSnrTrack{},
+        currentTargetList{} {}
     
     void AdaptiveMethod::store(const AdaptiveTest &p) {
         trackSettings.ceiling = p.ceilingSnr_dB;
