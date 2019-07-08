@@ -108,7 +108,9 @@ namespace av_speech_in_noise {
             const std::string &filePath,
             const coordinate_response_measure::SubjectResponse &
         ) = 0;
-        virtual coordinate_response_measure::Color correctColor(const std::string &filePath) = 0;
+        virtual coordinate_response_measure::Color correctColor(
+            const std::string &filePath
+        ) = 0;
         virtual int correctNumber(const std::string &filePath) = 0;
         virtual std::string fileName(const std::string &filePath) = 0;
     };
@@ -118,8 +120,12 @@ namespace av_speech_in_noise {
         virtual ~OutputFile() = default;
         virtual void openNewFile(const TestInformation &) = 0;
         class OpenFailure {};
-        virtual void writeTrial(const coordinate_response_measure::AdaptiveTrial &) = 0;
-        virtual void writeTrial(const coordinate_response_measure::FixedLevelTrial &) = 0;
+        virtual void writeTrial(
+            const coordinate_response_measure::AdaptiveTrial &
+        ) = 0;
+        virtual void writeTrial(
+            const coordinate_response_measure::FixedLevelTrial &
+        ) = 0;
         virtual void writeTrial(const FreeResponseTrial &) = 0;
         virtual void writeTest(const AdaptiveTest &) = 0;
         virtual void writeTest(const FixedLevelTest &) = 0;
@@ -144,8 +150,13 @@ namespace av_speech_in_noise {
         virtual int snr_dB() = 0;
         virtual void submitCorrectResponse() = 0;
         virtual void submitIncorrectResponse() = 0;
-        virtual void writeTrial(OutputFile *, const coordinate_response_measure::SubjectResponse &) = 0;
-        virtual void submitResponse(const coordinate_response_measure::SubjectResponse &) = 0;
+        virtual void writeTrial(
+            OutputFile *,
+            const coordinate_response_measure::SubjectResponse &
+        ) = 0;
+        virtual void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) = 0;
     };
     
     class AdaptiveMethod : public TestMethod {
@@ -169,20 +180,25 @@ namespace av_speech_in_noise {
             ResponseEvaluator *,
             Randomizer *
         );
-        void store(const AdaptiveTest &p);
+        void store(const AdaptiveTest &);
         int snr_dB() override;
-        void loadTargets(const std::string &p) override;
+        void loadTargets(const std::string &) override;
         void submitIncorrectResponse() override;
         void submitCorrectResponse() override;
         bool complete() override;
         std::string next() override;
         std::string current() override;
-        void writeTrial(OutputFile *file, const coordinate_response_measure::SubjectResponse &response) override;
-        void submitResponse(const coordinate_response_measure::SubjectResponse &response) override;
+        void writeTrial(
+            OutputFile *,
+            const coordinate_response_measure::SubjectResponse &
+        ) override;
+        void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) override;
         
     private:
         bool correct(
-            const coordinate_response_measure::SubjectResponse &response
+            const coordinate_response_measure::SubjectResponse &
         );
         void pushUpTrack();
         void pushDownTrack();
@@ -201,20 +217,20 @@ namespace av_speech_in_noise {
         bool complete_{};
     public:
         FixedLevelMethod(
-            FiniteTargetList *targetList,
-            ResponseEvaluator *evaluator
+            FiniteTargetList *,
+            ResponseEvaluator *
         );
-        void store(const FixedLevelTest &p);
+        void store(const FixedLevelTest &);
         int snr_dB() override;
-        void loadTargets(const std::string &p) override;
+        void loadTargets(const std::string &) override;
         std::string next() override;
         bool complete() override;
         std::string current() override;
         void submitIncorrectResponse() override;
         void submitCorrectResponse() override;
         void writeTrial(
-            OutputFile *file,
-            const coordinate_response_measure::SubjectResponse &response
+            OutputFile *,
+            const coordinate_response_measure::SubjectResponse &
         ) override;
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
