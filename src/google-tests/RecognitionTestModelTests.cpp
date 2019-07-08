@@ -466,7 +466,7 @@ namespace {
         }
     };
 
-    class RecognitionTestModelTests : public testing::Test {
+    class RecognitionTestModelTests : public ::testing::Test {
     protected:
         Calibration calibration;
         coordinate_response_measure::SubjectResponse coordinateResponse;
@@ -476,7 +476,7 @@ namespace {
         MaskerPlayerStub maskerPlayer;
         OutputFileStub outputFile;
         TrackFactoryStub snrTrackFactory;
-        ResponseEvaluatorStub evaluator;
+        tests::ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
         AdaptiveMethod adaptiveMethod{&targetListSetReader, &snrTrackFactory, &evaluator, &randomizer};
         FixedLevelMethod fixedLevelMethod{&finiteTargetList, &evaluator};
