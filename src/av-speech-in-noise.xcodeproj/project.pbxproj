@@ -146,6 +146,7 @@
 		26C2A329225D0CD000E2919D /* AudioReaderImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AudioReaderImpl.hpp; sourceTree = "<group>"; };
 		26DE218F22652844006A3FD0 /* AudioReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioReader.h; sourceTree = "<group>"; };
 		26DE2190226529F3006A3FD0 /* AudioReaderStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioReaderStub.h; sourceTree = "<group>"; };
+		26DFF70622D39F230070E04B /* MaskerPlayerStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MaskerPlayerStub.h; sourceTree = "<group>"; };
 		26EE86BA2242CFFB00C08622 /* TargetPlayerTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetPlayerTests.cpp; sourceTree = "<group>"; };
 		26EE86BC2242E64900C08622 /* Model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
 		26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetPlayerImpl.cpp; sourceTree = "<group>"; };
@@ -343,6 +344,7 @@
 				2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */,
 				26688C372273A53D00CAE9EB /* TargetListStub.h */,
 				2602F765227B83A400906002 /* DirectoryReaderStub.h */,
+				26DFF70622D39F230070E04B /* MaskerPlayerStub.h */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";
