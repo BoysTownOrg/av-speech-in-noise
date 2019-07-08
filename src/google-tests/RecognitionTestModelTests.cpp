@@ -58,7 +58,7 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         initializeAdaptiveTestCreatesSnrTrackForEachList
     ) {
-        initializeAdaptiveTestWithListCount(3);
+        run(initializingAdaptiveTest);
         assertEqual(3UL, snrTrackFactoryParameters().size());
     }
 
@@ -66,7 +66,7 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         initializeAdaptiveTestCreatesEachSnrTrackWithTargetLevelRule
     ) {
-        initializeAdaptiveTestWithListCount(3);
+        run(initializingAdaptiveTest);
         for (int i = 0; i < 3; ++i)
             assertSettingsContainTargetLevelRule(
                 snrTrackFactoryParameters().at(i)
@@ -280,7 +280,7 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         initializeAdaptiveTestSelectsRandomListInRange
     ) {
-        initializeAdaptiveTestWithListCount(3);
+        run(initializingAdaptiveTest);
         assertRandomizerPassedIntegerBounds(0, 2);
     }
 
@@ -580,8 +580,9 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesReversalsForAdaptiveTest
     ) {
-        initializeTestWithStartingList(1);
-        snrTrack(1)->setReversals(2);
+        selectList(1);
+        run(initializingAdaptiveTest);
+        initializingAdaptiveTest.snrTrack(1)->setReversals(2);
         submitCoordinateResponse();
         assertEqual(2, writtenAdaptiveCoordinateResponseTrial().reversals);
     }
@@ -618,8 +619,9 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesSnrForAdaptiveTest
     ) {
-        initializeTestWithStartingList(1);
-        snrTrack(1)->setX(2);
+        initializingAdaptiveTest.selectList(1);
+        run(initializingAdaptiveTest);
+        initializingAdaptiveTest.snrTrack(1)->setX(2);
         submitCoordinateResponse();
         assertEqual(2, writtenAdaptiveCoordinateResponseTrial().SNR_dB);
     }
@@ -684,8 +686,9 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColorForAdaptiveTest
     ) {
-        initializeTestWithStartingList(1);
-        setTargetListCurrent(1, "a");
+        initializingAdaptiveTest.selectList(1);
+        run(initializingAdaptiveTest);
+        initializingAdaptiveTest.setTargetListCurrent(1, "a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
@@ -706,8 +709,9 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForAdaptiveTest
     ) {
-        initializeTestWithStartingList(1);
-        setTargetListCurrent(1, "a");
+        initializingAdaptiveTest.selectList(1);
+        run(initializingAdaptiveTest);
+        initializingAdaptiveTest.setTargetListCurrent(1, "a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
@@ -907,14 +911,14 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         testCompleteWhenAllTracksComplete
     ) {
-        initializeAdaptiveTestWithListCount(3);
-        setSnrTrackComplete(0);
+        run(initializingAdaptiveTest);
+        initializingAdaptiveTest.setSnrTrackComplete(0);
         submitCoordinateResponse();
         assertTestIncomplete();
-        setSnrTrackComplete(1);
+        initializingAdaptiveTest.setSnrTrackComplete(1);
         submitCoordinateResponse();
         assertTestIncomplete();
-        setSnrTrackComplete(2);
+        initializingAdaptiveTest.setSnrTrackComplete(2);
         submitCoordinateResponse();
         assertTestComplete();
     }

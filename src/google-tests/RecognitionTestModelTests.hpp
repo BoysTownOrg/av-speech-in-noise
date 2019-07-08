@@ -348,6 +348,18 @@ namespace av_speech_in_noise::tests {
             snrTrackFactory->setTracks({snrTracks.begin(), snrTracks.end()});
         }
         
+        bool snrTrackPushedDown(int n) {
+            return snrTrack(n)->pushedDown();
+        }
+        
+        bool snrTrackPushedUp(int n) {
+            return snrTrack(n)->pushedUp();
+        }
+        
+        void setTargetListCurrent(int n, std::string s) {
+            targetList(n)->setCurrent(std::move(s));;
+        }
+        
         void selectList(int n) {
             randomizer->setRandomInt(n);
         }
@@ -414,13 +426,13 @@ namespace av_speech_in_noise::tests {
     class SnrUseCase {
     public:
         virtual ~SnrUseCase() = default;
-        virtual void set(InitializingAdaptiveTest &, int) = 0;
+        virtual void setSnr(InitializingAdaptiveTest &, int) = 0;
         virtual int value(const Track::Settings &) = 0;
     };
 
     class SettingStartingSnr : public SnrUseCase {
     public:
-        void set(InitializingAdaptiveTest &test, int x) override {
+        void setSnr(InitializingAdaptiveTest &test, int x) override {
             test.setStartingSnr_dB(x);
         }
         
@@ -431,7 +443,7 @@ namespace av_speech_in_noise::tests {
 
     class SettingCeilingSnr : public SnrUseCase {
     public:
-        void set(InitializingAdaptiveTest &test, int x) override {
+        void setSnr(InitializingAdaptiveTest &test, int x) override {
             test.setCeilingSnr_dB(x);
         }
         
@@ -602,8 +614,6 @@ namespace av_speech_in_noise::tests {
         SubmittingFreeResponse submittingFreeResponse{&finiteTargetList};
         SettingStartingSnr settingStartingSnr;
         SettingCeilingSnr settingCeilingSnr;
-        std::vector<std::shared_ptr<TargetListStub>> targetLists;
-        std::vector<std::shared_ptr<TrackStub>> snrTracks;
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
@@ -807,35 +817,12 @@ namespace av_speech_in_noise::tests {
             return outputFile.writtenFreeResponseTrial();
         }
         
-        void setTargetListCount(int n) {
-            targetLists.clear();
-            snrTracks.clear();
-            for (int i = 0; i < n; ++i) {
-                targetLists.push_back(std::make_shared<TargetListStub>());
-                snrTracks.push_back(std::make_shared<TrackStub>());
-            }
-            targetListSetReader.setTargetLists({targetLists.begin(), targetLists.end()});
-            snrTrackFactory.setTracks({snrTracks.begin(), snrTracks.end()});
-        }
-        
-        void initializeTestWithStartingList(int n) {
-            if (gsl::narrow<size_t>(n) >= targetLists.size())
-                setTargetListCount(n+1);
-            selectList(n);
-            initializeAdaptiveTest();
-        }
-        
         void initializeFixedLevelTest() {
             run(initializingFixedLevelTest);
         }
         
         void selectList(int n) {
             randomizer.setRandomInt(n);
-        }
-        
-        void initializeAdaptiveTestWithListCount(int n) {
-            setTargetListCount(n);
-            initializeAdaptiveTest();
         }
         
         void assertTargetVideoHiddenWhenAuditoryOnly(ConditionUseCase &useCase) {
@@ -871,14 +858,6 @@ namespace av_speech_in_noise::tests {
             assertEqual(b, randomizer.upperIntBound());
         }
         
-        auto snrTrack(int n) {
-            return snrTracks.at(n);
-        }
-        
-        auto targetList(int n) {
-            return targetLists.at(n);
-        }
-        
         void setMaskerLevel_dB_SPL(int x) {
             initializingAdaptiveTest.setMaskerLevel_dB_SPL(x);
             initializingFixedLevelTest.setMaskerLevel_dB_SPL(x);
@@ -905,32 +884,12 @@ namespace av_speech_in_noise::tests {
             return maskerPlayer.secondsSeeked();
         }
         
-        bool snrTrackPushedDown(int n) {
-            return snrTrack(n)->pushedDown();
-        }
-        
-        bool snrTrackPushedUp(int n) {
-            return snrTrack(n)->pushedUp();
-        }
-        
         void setCorrectResponse() {
             evaluator.setCorrect();
         }
         
         void setIncorrectResponse() {
             evaluator.setIncorrect();
-        }
-        
-        void setTargetListCurrent(int n, std::string s) {
-            targetList(n)->setCurrent(std::move(s));;
-        }
-        
-        void setTargetListNext(int n, std::string s) {
-            targetList(n)->setNext(std::move(s));
-        }
-        
-        void setSnrTrackComplete(int n) {
-            snrTrack(n)->setComplete();
         }
         
         void assertTestIncomplete() {
@@ -946,15 +905,16 @@ namespace av_speech_in_noise::tests {
         }
         
         void assertPushesSnrTrackDown(UseCase &useCase) {
-            initializeTestWithStartingList(1);
+            initializingAdaptiveTest.selectList(1);
+            run(initializingAdaptiveTest);
             run(useCase);
-            assertTrue(snrTrackPushedDown(1));
-            assertFalse(snrTrackPushedUp(1));
+            assertTrue(initializingAdaptiveTest.snrTrackPushedDown(1));
+            assertFalse(initializingAdaptiveTest.snrTrackPushedUp(1));
         }
         
         void assertSelectsRandomListInRangeAfterRemovingCompleteTracks(UseCase &useCase) {
-            initializeAdaptiveTestWithListCount(3);
-            setSnrTrackComplete(2);
+            run(initializingAdaptiveTest);
+            initializingAdaptiveTest.setSnrTrackComplete(2);
             run(useCase);
             assertRandomizerPassedIntegerBounds(0, 1);
         }
@@ -981,10 +941,11 @@ namespace av_speech_in_noise::tests {
         }
         
         void assertPushesSnrTrackUp(UseCase &useCase) {
-            initializeTestWithStartingList(1);
+            initializingAdaptiveTest.selectList(1);
+            run(initializingAdaptiveTest);
             run(useCase);
-            assertTrue(snrTrackPushedUp(1));
-            assertFalse(snrTrackPushedDown(1));
+            assertTrue(initializingAdaptiveTest.snrTrackPushedUp(1));
+            assertFalse(initializingAdaptiveTest.snrTrackPushedDown(1));
         }
         
         void assertMaskerFilePathPassedToPlayer(InitializingTestUseCase &useCase) {
@@ -1043,8 +1004,8 @@ namespace av_speech_in_noise::tests {
         }
         
         void assertSnrPassedToTrackFactory(SnrUseCase &useCase) {
-            useCase.set(initializingAdaptiveTest, 1);
-            initializeAdaptiveTestWithListCount(3);
+            useCase.setSnr(initializingAdaptiveTest, 1);
+            run(initializingAdaptiveTest);
             for (int i = 0; i < 3; ++i)
                 assertEqual(1, useCase.value(snrTrackFactoryParameters().at(i)));
         }
