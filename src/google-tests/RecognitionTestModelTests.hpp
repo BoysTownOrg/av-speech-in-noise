@@ -277,6 +277,7 @@ namespace av_speech_in_noise::tests {
         virtual void setTargetListDirectory(std::string) = 0;
         virtual std::string receivedTargetListDirectory() = 0;
         virtual void setSnr_dB(int x) = 0;
+        virtual void setCurrentTarget(std::string) = 0;
     };
 
     class InitializingAdaptiveTest : public InitializingTestUseCase {
@@ -320,6 +321,11 @@ namespace av_speech_in_noise::tests {
         
         void setNextTarget(std::string s) override {
             setTargetListNext(1, std::move(s));
+            selectList(1);
+        }
+        
+        void setCurrentTarget(std::string s) override {
+            setTargetListCurrent(1, std::move(s));
             selectList(1);
         }
         
@@ -468,6 +474,10 @@ namespace av_speech_in_noise::tests {
         
         void setNextTarget(std::string s) override {
             finiteTargetList->setNext(std::move(s));
+        }
+        
+        void setCurrentTarget(std::string s) override {
+            finiteTargetList->setCurrent(std::move(s));
         }
         
         void setMaskerLevel_dB_SPL(int x) {
