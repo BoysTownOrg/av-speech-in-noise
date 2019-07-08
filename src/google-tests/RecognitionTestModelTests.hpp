@@ -282,6 +282,7 @@ namespace av_speech_in_noise::tests {
         virtual std::string receivedTargetListDirectory() = 0;
         virtual void setSnr_dB(int x) = 0;
         virtual void setCurrentTarget(std::string) = 0;
+        virtual void setComplete() = 0;
     };
 
     class InitializingAdaptiveTest : public InitializingTestUseCase {
@@ -339,6 +340,11 @@ namespace av_speech_in_noise::tests {
         
         void setSnrTrackComplete(int n) {
             snrTrack(n)->setComplete();
+        }
+        
+        void setComplete() override {
+            for (auto track : snrTracks)
+                track->setComplete();
         }
         
         void setTargetListCount(int n) {
@@ -468,7 +474,7 @@ namespace av_speech_in_noise::tests {
             m.initializeTest(test_);
         }
         
-        void setComplete() {
+        void setComplete() override {
             finiteTargetList->setEmpty();
         }
         
@@ -1134,6 +1140,16 @@ namespace av_speech_in_noise::tests {
             run(initializingTest);
             run(useCase);
             assertEqual("a", evaluator.filePathForFileName());
+        }
+        void assertCoordinateResponseDoesNotLoadNextTargetWhenTestComplete(
+            InitializingTestUseCase &initializingTest
+        ) {
+            initializingTest.setNextTarget("a");
+            run(initializingTest);
+            initializingTest.setComplete();
+            initializingTest.setNextTarget("b");
+            submitCoordinateResponse();
+            assertTargetFilePathEquals("a");
         }
     };
 }
