@@ -597,20 +597,20 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitFreeResponsePassesCurrentTargetToEvaluatorForFixedLevelTest
     ) {
-        initializingFixedLevelTest.setCurrentTarget("a");
-        run(initializingFixedLevelTest);
-        run(submittingFreeResponse);
-        assertEqual("a", evaluator.filePathForFileName());
+        assertCurrentTargetPassedToEvaluator(
+            initializingFixedLevelTest,
+            submittingFreeResponse
+        );
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitFreeResponsePassesCurrentTargetToEvaluatorForAdaptiveTest
     ) {
-        initializingAdaptiveTest.setCurrentTarget("a");
-        run(initializingAdaptiveTest);
-        run(submittingFreeResponse);
-        assertEqual("a", evaluator.filePathForFileName());
+        assertCurrentTargetPassedToEvaluator(
+            initializingAdaptiveTest,
+            submittingFreeResponse
+        );
     }
 
     TEST_F(

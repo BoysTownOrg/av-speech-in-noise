@@ -1099,6 +1099,16 @@ namespace av_speech_in_noise::tests {
             run(useCase);
             assertEqual("a", useCase.receivedTargetListDirectory());
         }
+        
+        void assertCurrentTargetPassedToEvaluator(
+            InitializingTestUseCase &initializingTest,
+            UseCase &useCase
+        ) {
+            initializingTest.setCurrentTarget("a");
+            run(initializingTest);
+            run(useCase);
+            assertEqual("a", evaluator.filePathForFileName());
+        }
     };
 }
 #endif
