@@ -2372,8 +2372,10 @@ namespace {
         fixedLevelTestCompleteWhenListEmpty
     ) {
         initializeFixedLevelTest();
+        submitCoordinateResponse();
         assertTestIncomplete();
         finiteTargetList.setEmpty();
+        submitCoordinateResponse();
         assertTestComplete();
     }
 }

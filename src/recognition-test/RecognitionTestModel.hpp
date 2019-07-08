@@ -314,6 +314,7 @@ namespace av_speech_in_noise {
         FiniteTargetList *currentTargetList;
         ResponseEvaluator *evaluator;
         int snr_dB_;
+        bool complete_{};
     public:
         FixedLevelMethod(FiniteTargetList *targetList, ResponseEvaluator *evaluator) :
             currentTargetList{targetList},
@@ -329,6 +330,7 @@ namespace av_speech_in_noise {
         
         void loadTargets(const std::string &p) override {
             currentTargetList->loadFromDirectory(p);
+            complete_ = currentTargetList->empty();
         }
         
         std::string next() override {
@@ -336,7 +338,7 @@ namespace av_speech_in_noise {
         }
         
         bool complete() override {
-            return currentTargetList->empty();
+            return complete_;
         }
         
         std::string current() override {
@@ -362,7 +364,7 @@ namespace av_speech_in_noise {
         }
         
         void submitResponse(const coordinate_response_measure::SubjectResponse &) override {
-            
+            complete_ = currentTargetList->empty();
         }
     };
 

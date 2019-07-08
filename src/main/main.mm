@@ -225,8 +225,13 @@ int main() {
     OutputFileImpl outputFile{&writer, &path};
     adaptive_track::AdaptiveTrackFactory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
-    AdaptiveMethod adaptiveMethod{&targetListReader, &snrTrackFactory, &randomizer};
-    FixedLevelMethod fixedLevelMethod{&finiteTargetList};
+    AdaptiveMethod adaptiveMethod{
+        &targetListReader,
+        &snrTrackFactory,
+        &responseEvaluator,
+        &randomizer
+    };
+    FixedLevelMethod fixedLevelMethod{&finiteTargetList, &responseEvaluator};
     RecognitionTestModel model{
         &adaptiveMethod,
         &fixedLevelMethod,
