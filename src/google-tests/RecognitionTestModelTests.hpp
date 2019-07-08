@@ -1091,10 +1091,29 @@ namespace av_speech_in_noise::tests {
             assertFalse(writtenCoordinateResponseTrial(useCase).correct);
         }
         
-        void assertSubjectResponsePassedToEvaluator(UseCase &useCase) {
+        void assertCoordinateResponsePassedToEvaluator(UseCase &useCase) {
             run(useCase);
             run(submittingCoordinateResponse);
             assertEqual(&submittingCoordinateResponse.response(), evaluator.response());
+        }
+        
+        void assertCoordinateResponsePassesCurrentTargetToEvaluator(
+            InitializingTestUseCase &initializingTest
+        ) {
+            initializingTest.setCurrentTarget("a");
+            run(initializingTest);
+            submitCoordinateResponse();
+            assertEqual("a", evaluator.correctColorFilePath());
+            assertEqual("a", evaluator.correctNumberFilePath());
+        }
+        
+        void assertCoordinateResponsePassesCurrentTargetToEvaluatorForDeterminingResponseCorrectness(
+            InitializingTestUseCase &initializingTest
+        ) {
+            initializingTest.setCurrentTarget("a");
+            run(initializingTest);
+            submitCoordinateResponse();
+            assertEqual("a", evaluator.correctFilePath());
         }
         
         void assertTargetListPassed(InitializingTestUseCase &useCase) {

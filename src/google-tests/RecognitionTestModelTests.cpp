@@ -746,58 +746,43 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponsePassesSubjectResponseToEvaluatorForAdaptiveTest
     ) {
-        assertSubjectResponsePassedToEvaluator(initializingAdaptiveTest);
+        assertCoordinateResponsePassedToEvaluator(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponsePassesSubjectResponseToEvaluatorForFixedLevelTest
     ) {
-        assertSubjectResponsePassedToEvaluator(initializingFixedLevelTest);
+        assertCoordinateResponsePassedToEvaluator(initializingFixedLevelTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColorForAdaptiveTest
     ) {
-        initializingAdaptiveTest.selectList(1);
-        run(initializingAdaptiveTest);
-        initializingAdaptiveTest.setTargetListCurrent(1, "a");
-        submitCoordinateResponse();
-        assertEqual("a", evaluator.correctColorFilePath());
-        assertEqual("a", evaluator.correctNumberFilePath());
+        assertCoordinateResponsePassesCurrentTargetToEvaluator(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColorForFixedLevelTest
     ) {
-        run(initializingFixedLevelTest);
-        finiteTargetList.setCurrent("a");
-        submitCoordinateResponse();
-        assertEqual("a", evaluator.correctColorFilePath());
-        assertEqual("a", evaluator.correctNumberFilePath());
+        assertCoordinateResponsePassesCurrentTargetToEvaluator(initializingFixedLevelTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForAdaptiveTest
     ) {
-        initializingAdaptiveTest.selectList(1);
-        run(initializingAdaptiveTest);
-        initializingAdaptiveTest.setTargetListCurrent(1, "a");
-        submitCoordinateResponse();
-        assertEqual("a", evaluator.correctFilePath());
+        assertCoordinateResponsePassesCurrentTargetToEvaluatorForDeterminingResponseCorrectness(initializingAdaptiveTest);
+
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForFixedLevelTest
     ) {
-        run(initializingFixedLevelTest);
-        finiteTargetList.setCurrent("a");
-        submitCoordinateResponse();
-        assertEqual("a", evaluator.correctFilePath());
+        assertCoordinateResponsePassesCurrentTargetToEvaluatorForDeterminingResponseCorrectness(initializingFixedLevelTest);
     }
 
     TEST_F(
