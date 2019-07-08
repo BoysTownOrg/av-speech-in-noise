@@ -546,6 +546,20 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
+        submitCorrectResponseSetsTargetPlayerLevelForAdaptiveTest
+    ) {
+        assertSetsTargetLevel(initializingAdaptiveTest, submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitIncorrectResponseSetsTargetPlayerLevelForAdaptiveTest
+    ) {
+        assertSetsTargetLevel(initializingAdaptiveTest, submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         playCalibrationSetsTargetPlayerLevel
     ) {
         playingCalibration.setLevel_dB_SPL(1);
