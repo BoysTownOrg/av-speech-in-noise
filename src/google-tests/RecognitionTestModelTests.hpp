@@ -276,6 +276,7 @@ namespace av_speech_in_noise::tests {
             writtenCoordinateResponseTrial(OutputFileStub &) = 0;
         virtual void setTargetListDirectory(std::string) = 0;
         virtual std::string receivedTargetListDirectory() = 0;
+        virtual void setSnr_dB(int x) = 0;
     };
 
     class InitializingAdaptiveTest : public InitializingTestUseCase {
@@ -308,6 +309,15 @@ namespace av_speech_in_noise::tests {
             return targetLists.at(n);
         }
         
+        auto snrTrack(int n) {
+            return snrTracks.at(n);
+        }
+        
+        void setSnr_dB(int x) override {
+            snrTrack(1)->setX(x);
+            selectList(1);
+        }
+        
         void setNextTarget(std::string s) override {
             setTargetListNext(1, std::move(s));
             selectList(1);
@@ -315,10 +325,6 @@ namespace av_speech_in_noise::tests {
         
         void setTargetListNext(int n, std::string s) {
             targetList(n)->setNext(std::move(s));
-        }
-        
-        auto snrTrack(int n) {
-            return snrTracks.at(n);
         }
         
         void setSnrTrackComplete(int n) {
@@ -456,7 +462,7 @@ namespace av_speech_in_noise::tests {
             return test_.common;
         }
         
-        void setSnr_dB(int x) {
+        void setSnr_dB(int x) override {
             test_.snr_dB = x;
         }
         
@@ -1003,7 +1009,7 @@ namespace av_speech_in_noise::tests {
             assertOutputFileLog("close openNewFile writeTest ");
         }
         
-        void assertSetsTargetLevel(InitializingFixedLevelTest &useCase) {
+        void assertSetsTargetLevel(InitializingTestUseCase &useCase) {
             useCase.setSnr_dB(2);
             setMaskerLevel_dB_SPL(3);
             setTestingFullScaleLevel_dB_SPL(4);

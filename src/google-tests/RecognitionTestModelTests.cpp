@@ -520,13 +520,7 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         initializeAdaptiveTestSetsTargetPlayerLevel
     ) {
-        initializingAdaptiveTest.snrTrack(1)->setX(2);
-        setMaskerLevel_dB_SPL(3);
-        setTestingFullScaleLevel_dB_SPL(4);
-        setTargetPlayerRms(5);
-        initializingAdaptiveTest.selectList(1);
-        run(initializingAdaptiveTest);
-        assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+        assertSetsTargetLevel(initializingAdaptiveTest);
     }
 
     TEST_F(
