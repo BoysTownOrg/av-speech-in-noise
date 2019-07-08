@@ -28,6 +28,13 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
+        playCalibrationHidesTargetVideoWhenAuditoryOnly
+    ) {
+        assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeAdaptiveTestShowsTargetVideoWhenAudioVisual
     ) {
         assertTargetVideoShownWhenAudioVisual(initializingAdaptiveTest);
@@ -38,13 +45,6 @@ namespace av_speech_in_noise::tests {
         initializeFixedLevelTestShowsTargetVideoWhenAudioVisual
     ) {
         assertTargetVideoShownWhenAudioVisual(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationHidesTargetVideoWhenAuditoryOnly
-    ) {
-        assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
     }
 
     TEST_F(
@@ -135,18 +135,14 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         initializeAdaptiveTestPassesTargetListDirectory
     ) {
-        initializingAdaptiveTest.setTargetListDirectory("a");
-        initializeAdaptiveTest();
-        assertEqual("a", targetListSetReader.directory());
+        assertTargetListPassed(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestPassesTargetListDirectory
     ) {
-        initializingFixedLevelTest.setTargetListDirectory("a");
-        initializeFixedLevelTest();
-        assertEqual("a", finiteTargetList.directory());
+        assertTargetListPassed(initializingFixedLevelTest);
     }
 
     TEST_F(

@@ -269,13 +269,18 @@ namespace av_speech_in_noise::tests {
         virtual const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(
             OutputFileStub &
         ) = 0;
+        virtual void setTargetListDirectory(std::string) = 0;
+        virtual std::string receivedTargetListDirectory() = 0;
     };
 
     class InitializingAdaptiveTest : public InitializingTestUseCase {
         AdaptiveTest test_;
         TrackingRule targetLevelRule_;
+        TargetListSetReaderStub *targetListSetReader;
     public:
-        InitializingAdaptiveTest() {
+        InitializingAdaptiveTest(TargetListSetReaderStub *targetListSetReader) :
+            targetListSetReader{targetListSetReader}
+        {
             test_.targetLevelRule = &targetLevelRule_;
         }
         
@@ -283,7 +288,7 @@ namespace av_speech_in_noise::tests {
             return test_.common;
         }
         
-        void setTargetListDirectory(std::string s) {
+        void setTargetListDirectory(std::string s) override {
             common().targetListDirectory = std::move(s);
         }
         
@@ -336,6 +341,10 @@ namespace av_speech_in_noise::tests {
         ) override {
             return file.writtenAdaptiveCoordinateResponseTrial2();
         }
+        
+        std::string receivedTargetListDirectory() override {
+            return targetListSetReader->directory();
+        }
     };
 
     class SnrUseCase {
@@ -369,7 +378,11 @@ namespace av_speech_in_noise::tests {
 
     class InitializingFixedLevelTest : public InitializingTestUseCase {
         FixedLevelTest test_;
+        FiniteTargetListStub *finiteTargetList;
     public:
+        InitializingFixedLevelTest(FiniteTargetListStub *finiteTargetList) :
+            finiteTargetList{finiteTargetList} {}
+        
         void run(RecognitionTestModel &m) override {
             m.initializeTest(test_);
         }
@@ -402,7 +415,7 @@ namespace av_speech_in_noise::tests {
             common().maskerFilePath = std::move(s);
         }
         
-        void setTargetListDirectory(std::string s) {
+        void setTargetListDirectory(std::string s) override {
             common().targetListDirectory = std::move(s);
         }
         
@@ -418,6 +431,10 @@ namespace av_speech_in_noise::tests {
             OutputFileStub &file
         ) override {
             return file.writtenFixedLevelTrial2();
+        }
+        
+        std::string receivedTargetListDirectory() override {
+            return finiteTargetList->directory();
         }
     };
 
@@ -497,8 +514,8 @@ namespace av_speech_in_noise::tests {
             &randomizer
         };
         ModelEventListenerStub listener;
-        InitializingAdaptiveTest initializingAdaptiveTest;
-        InitializingFixedLevelTest initializingFixedLevelTest;
+        InitializingAdaptiveTest initializingAdaptiveTest{&targetListSetReader};
+        InitializingFixedLevelTest initializingFixedLevelTest{&finiteTargetList};
         PlayingTrial playingTrial;
         PlayingCalibration playingCalibration;
         SubmittingCoordinateResponse submittingCoordinateResponse;
@@ -1021,6 +1038,12 @@ namespace av_speech_in_noise::tests {
             submitCoordinateResponse();
             const auto *expected = &coordinateResponse;
             assertEqual(expected, evaluator.response());
+        }
+        
+        void assertTargetListPassed(InitializingTestUseCase &useCase) {
+            useCase.setTargetListDirectory("a");
+            run(useCase);
+            assertEqual("a", useCase.receivedTargetListDirectory());
         }
     };
 }
