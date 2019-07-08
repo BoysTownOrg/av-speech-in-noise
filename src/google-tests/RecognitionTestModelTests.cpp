@@ -2360,10 +2360,13 @@ namespace {
     ) {
         initializeAdaptiveTestWithListCount(3);
         setSnrTrackComplete(0);
+        submitCoordinateResponse();
         assertTestIncomplete();
         setSnrTrackComplete(1);
+        submitCoordinateResponse();
         assertTestIncomplete();
         setSnrTrackComplete(2);
+        submitCoordinateResponse();
         assertTestComplete();
     }
 
