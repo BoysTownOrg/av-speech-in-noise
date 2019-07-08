@@ -236,16 +236,32 @@ namespace av_speech_in_noise::tests {
             m.submitIncorrectResponse();
         }
     };
-
-    class SubmittingFreeResponse : public SubmittingResponse {
-        FreeResponse response_;
+    
+    class TargetLoaderUseCase : public virtual UseCase {
     public:
+        virtual void setNextTarget(std::string) = 0;
+    };
+
+    class SubmittingFreeResponse :
+        public SubmittingResponse,
+        public TargetLoaderUseCase
+    {
+        FreeResponse response_;
+        FiniteTargetListStub *finiteTargetList;
+    public:
+        SubmittingFreeResponse(FiniteTargetListStub *finiteTargetList) :
+            finiteTargetList{finiteTargetList} {}
+        
         void run(RecognitionTestModel &m) override {
             m.submitResponse(response_);
         }
         
         void setResponse(std::string s) {
             response_.response = std::move(s);
+        }
+        
+        void setNextTarget(std::string s) override {
+            finiteTargetList->setNext(std::move(s));
         }
     };
 
@@ -376,7 +392,10 @@ namespace av_speech_in_noise::tests {
         }
     };
 
-    class InitializingFixedLevelTest : public InitializingTestUseCase {
+    class InitializingFixedLevelTest :
+        public InitializingTestUseCase,
+        public TargetLoaderUseCase
+    {
         FixedLevelTest test_;
         FiniteTargetListStub *finiteTargetList;
     public:
@@ -393,6 +412,10 @@ namespace av_speech_in_noise::tests {
         
         void setSnr_dB(int x) {
             test_.snr_dB = x;
+        }
+        
+        void setNextTarget(std::string s) override {
+            finiteTargetList->setNext(std::move(s));
         }
         
         void setMaskerLevel_dB_SPL(int x) {
@@ -521,7 +544,7 @@ namespace av_speech_in_noise::tests {
         SubmittingCoordinateResponse submittingCoordinateResponse;
         SubmittingCorrectResponse submittingCorrectResponse;
         SubmittingIncorrectResponse submittingIncorrectResponse;
-        SubmittingFreeResponse submittingFreeResponse;
+        SubmittingFreeResponse submittingFreeResponse{&finiteTargetList};
         SettingStartingSnr settingStartingSnr;
         SettingCeilingSnr settingCeilingSnr;
         std::vector<std::shared_ptr<TargetListStub>> targetLists;
@@ -924,8 +947,8 @@ namespace av_speech_in_noise::tests {
             assertEqual("a", maskerPlayer.filePath());
         }
         
-        void assertFiniteTargetListNextPassedToPlayer(UseCase &useCase) {
-            finiteTargetList.setNext("a");
+        void assertFiniteTargetListNextPassedToPlayer(TargetLoaderUseCase &useCase) {
+            useCase.setNextTarget("a");
             run(useCase);
             assertTargetFilePathEquals("a");
         }
