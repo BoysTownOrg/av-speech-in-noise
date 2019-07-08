@@ -1022,11 +1022,11 @@ namespace av_speech_in_noise::tests {
             InitializingTestUseCase &initializingTest,
             UseCase &useCase
         ) {
-            run(initializingTest);
-            initializingTest.setSnr_dB(2);
             setMaskerLevel_dB_SPL(3);
             setTestingFullScaleLevel_dB_SPL(4);
+            run(initializingTest);
             setTargetPlayerRms(5);
+            initializingTest.setSnr_dB(2);
             run(useCase);
             assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
         }
