@@ -127,7 +127,7 @@ namespace {
         std::vector<float> leftChannel{};
         VideoPlayerStub videoPlayer;
         TargetPlayerListenerStub listener;
-        AudioReaderStub audioReader{};
+        stimulus_players::tests::AudioReaderStub audioReader{};
         stimulus_players::TargetPlayerImpl player{&videoPlayer, &audioReader};
         
         TargetPlayerTests() {

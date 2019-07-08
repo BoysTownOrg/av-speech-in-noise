@@ -204,7 +204,7 @@ namespace {
     protected:
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
-        AudioReaderStub audioReader;
+        stimulus_players::tests::AudioReaderStub audioReader;
         TimerStub timer;
         stimulus_players::MaskerPlayerImpl player{
             &audioPlayer,
