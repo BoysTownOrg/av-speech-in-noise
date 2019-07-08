@@ -226,16 +226,14 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         initializeAdaptiveTestPassesNextTargetToTargetPlayer
     ) {
-        setTargetListNext(1, "a");
-        initializeTestWithStartingList(1);
-        assertTargetFilePathEquals("a");
+        assertNextTargetPassedToPlayer(initializingAdaptiveTest);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestPassesNextTargetToTargetPlayer
     ) {
-        assertFiniteTargetListNextPassedToPlayer(initializingFixedLevelTest);
+        assertNextTargetPassedToPlayer(initializingFixedLevelTest);
     }
 
     TEST_F(
@@ -250,21 +248,24 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponseLoadsNextTarget
     ) {
-        assertNextTargetPassedToPlayer(submittingCoordinateResponse);
+        assertNextTargetPassedToPlayer(
+            initializingFixedLevelTest,
+            submittingCoordinateResponse
+        );
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitCorrectResponseLoadsNextTarget
     ) {
-        assertNextTargetPassedToPlayer(submittingCorrectResponse);
+        assertNextTargetPassedToPlayer(initializingFixedLevelTest, submittingCorrectResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
         submitIncorrectResponseLoadsNextTarget
     ) {
-        assertNextTargetPassedToPlayer(submittingIncorrectResponse);
+        assertNextTargetPassedToPlayer(initializingFixedLevelTest, submittingIncorrectResponse);
     }
 
     TEST_F(
@@ -272,7 +273,7 @@ namespace av_speech_in_noise::tests {
         submitTypedResponseLoadsNextTarget
     ) {
         initializeFixedLevelTest();
-        assertFiniteTargetListNextPassedToPlayer(submittingFreeResponse);
+        assertNextTargetPassedToPlayer(submittingFreeResponse);
     }
 
     TEST_F(
@@ -464,11 +465,12 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         initializeAdaptiveTestSetsTargetPlayerLevel
     ) {
-        snrTrack(1)->setX(2);
+        initializingAdaptiveTest.snrTrack(1)->setX(2);
         setMaskerLevel_dB_SPL(3);
         setTestingFullScaleLevel_dB_SPL(4);
         setTargetPlayerRms(5);
-        initializeTestWithStartingList(1);
+        initializingAdaptiveTest.selectList(1);
+        run(initializingAdaptiveTest);
         assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
     }
 

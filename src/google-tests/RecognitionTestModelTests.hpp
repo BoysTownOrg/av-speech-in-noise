@@ -278,7 +278,8 @@ namespace av_speech_in_noise::tests {
 
     class InitializingTestUseCase :
         public virtual MaskerUseCase,
-        public virtual ConditionUseCase
+        public virtual ConditionUseCase,
+        public virtual TargetLoaderUseCase
     {
     public:
         virtual const TestInformation &testInformation() = 0;
@@ -290,18 +291,65 @@ namespace av_speech_in_noise::tests {
     };
 
     class InitializingAdaptiveTest : public InitializingTestUseCase {
+        std::vector<std::shared_ptr<TargetListStub>> targetLists;
+        std::vector<std::shared_ptr<TrackStub>> snrTracks;
         AdaptiveTest test_;
         TrackingRule targetLevelRule_;
         TargetListSetReaderStub *targetListSetReader;
+        TrackFactoryStub *snrTrackFactory;
+        RandomizerStub *randomizer;
     public:
-        InitializingAdaptiveTest(TargetListSetReaderStub *targetListSetReader) :
-            targetListSetReader{targetListSetReader}
+        InitializingAdaptiveTest(
+            TargetListSetReaderStub *targetListSetReader,
+            TrackFactoryStub *snrTrackFactory,
+            RandomizerStub *randomizer
+        ) :
+            targetListSetReader{targetListSetReader},
+            snrTrackFactory{snrTrackFactory},
+            randomizer{randomizer}
         {
             test_.targetLevelRule = &targetLevelRule_;
+            setTargetListCount(3);
         }
         
         auto &common() {
             return test_.common;
+        }
+        
+        auto targetList(int n) {
+            return targetLists.at(n);
+        }
+        
+        void setNextTarget(std::string s) override {
+            setTargetListNext(1, std::move(s));
+            selectList(1);
+        }
+        
+        void setTargetListNext(int n, std::string s) {
+            targetList(n)->setNext(std::move(s));
+        }
+        
+        auto snrTrack(int n) {
+            return snrTracks.at(n);
+        }
+        
+        void setSnrTrackComplete(int n) {
+            snrTrack(n)->setComplete();
+        }
+        
+        void setTargetListCount(int n) {
+            targetLists.clear();
+            snrTracks.clear();
+            for (int i = 0; i < n; ++i) {
+                targetLists.push_back(std::make_shared<TargetListStub>());
+                snrTracks.push_back(std::make_shared<TrackStub>());
+            }
+            targetListSetReader->setTargetLists({targetLists.begin(), targetLists.end()});
+            snrTrackFactory->setTracks({snrTracks.begin(), snrTracks.end()});
+        }
+        
+        void selectList(int n) {
+            randomizer->setRandomInt(n);
         }
         
         void setTargetListDirectory(std::string s) override {
@@ -392,9 +440,7 @@ namespace av_speech_in_noise::tests {
         }
     };
 
-    class InitializingFixedLevelTest :
-        public InitializingTestUseCase,
-        public TargetLoaderUseCase
+    class InitializingFixedLevelTest : public InitializingTestUseCase
     {
         FixedLevelTest test_;
         FiniteTargetListStub *finiteTargetList;
@@ -525,7 +571,12 @@ namespace av_speech_in_noise::tests {
         TrackFactoryStub snrTrackFactory;
         ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
-        AdaptiveMethod adaptiveMethod{&targetListSetReader, &snrTrackFactory, &evaluator, &randomizer};
+        AdaptiveMethod adaptiveMethod{
+            &targetListSetReader,
+            &snrTrackFactory,
+            &evaluator,
+            &randomizer
+        };
         FixedLevelMethod fixedLevelMethod{&finiteTargetList, &evaluator};
         RecognitionTestModel model{
             &adaptiveMethod,
@@ -537,7 +588,11 @@ namespace av_speech_in_noise::tests {
             &randomizer
         };
         ModelEventListenerStub listener;
-        InitializingAdaptiveTest initializingAdaptiveTest{&targetListSetReader};
+        InitializingAdaptiveTest initializingAdaptiveTest{
+            &targetListSetReader,
+            &snrTrackFactory,
+            &randomizer
+        };
         InitializingFixedLevelTest initializingFixedLevelTest{&finiteTargetList};
         PlayingTrial playingTrial;
         PlayingCalibration playingCalibration;
@@ -552,7 +607,6 @@ namespace av_speech_in_noise::tests {
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);
-            setTargetListCount(3);
         }
         
         void initializeAdaptiveTest() {
@@ -872,7 +926,7 @@ namespace av_speech_in_noise::tests {
         }
         
         void setTargetListNext(int n, std::string s) {
-            targetList(n)->setNext(std::move(s));;
+            targetList(n)->setNext(std::move(s));
         }
         
         void setSnrTrackComplete(int n) {
@@ -898,14 +952,6 @@ namespace av_speech_in_noise::tests {
             assertFalse(snrTrackPushedUp(1));
         }
         
-        void assertNextTargetPassedToPlayer(UseCase &useCase) {
-            initializeAdaptiveTest();
-            setTargetListNext(1, "a");
-            selectList(1);
-            run(useCase);
-            assertTargetFilePathEquals("a");
-        }
-        
         void assertSelectsRandomListInRangeAfterRemovingCompleteTracks(UseCase &useCase) {
             initializeAdaptiveTestWithListCount(3);
             setSnrTrackComplete(2);
@@ -925,11 +971,11 @@ namespace av_speech_in_noise::tests {
         }
         
         void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
-            initializeAdaptiveTest();
-            setTargetListNext(2, "a");
-            setSnrTrackComplete(1);
+            run(initializingAdaptiveTest);
+            initializingAdaptiveTest.setTargetListNext(2, "a");
+            initializingAdaptiveTest.setSnrTrackComplete(1);
             
-            selectList(1);
+            initializingAdaptiveTest.selectList(1);
             run(useCase);
             assertTargetFilePathEquals("a");
         }
@@ -947,8 +993,15 @@ namespace av_speech_in_noise::tests {
             assertEqual("a", maskerPlayer.filePath());
         }
         
-        void assertFiniteTargetListNextPassedToPlayer(TargetLoaderUseCase &useCase) {
+        void assertNextTargetPassedToPlayer(TargetLoaderUseCase &useCase) {
             useCase.setNextTarget("a");
+            run(useCase);
+            assertTargetFilePathEquals("a");
+        }
+        
+        void assertNextTargetPassedToPlayer(InitializingTestUseCase &initializeTest, UseCase &useCase) {
+            run(initializeTest);
+            initializeTest.setNextTarget("a");
             run(useCase);
             assertTargetFilePathEquals("a");
         }
