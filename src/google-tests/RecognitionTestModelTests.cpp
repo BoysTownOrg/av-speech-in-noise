@@ -473,10 +473,10 @@ namespace {
         TargetListSetReaderStub targetListSetReader;
         FiniteTargetListStub finiteTargetList;
         TargetPlayerStub targetPlayer;
-        MaskerPlayerStub maskerPlayer;
+        av_speech_in_noise::tests::MaskerPlayerStub maskerPlayer;
         OutputFileStub outputFile;
         TrackFactoryStub snrTrackFactory;
-        tests::ResponseEvaluatorStub evaluator;
+        av_speech_in_noise::tests::ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
         AdaptiveMethod adaptiveMethod{&targetListSetReader, &snrTrackFactory, &evaluator, &randomizer};
         FixedLevelMethod fixedLevelMethod{&finiteTargetList, &evaluator};
