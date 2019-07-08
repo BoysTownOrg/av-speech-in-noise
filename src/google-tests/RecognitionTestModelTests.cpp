@@ -478,7 +478,7 @@ namespace {
         coordinate_response_measure::SubjectResponse coordinateResponse;
         TargetListSetReaderStub targetListSetReader;
         FiniteTargetListStub finiteTargetList;
-        TargetPlayerStub targetPlayer;
+        av_speech_in_noise::tests::TargetPlayerStub targetPlayer;
         av_speech_in_noise::tests::MaskerPlayerStub maskerPlayer;
         av_speech_in_noise::tests::OutputFileStub outputFile;
         TrackFactoryStub snrTrackFactory;
