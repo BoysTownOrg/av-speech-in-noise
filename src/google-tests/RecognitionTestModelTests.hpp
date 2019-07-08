@@ -236,15 +236,8 @@ namespace av_speech_in_noise::tests {
             m.submitIncorrectResponse();
         }
     };
-    
-    class TargetLoaderUseCase : public virtual UseCase {
-    public:
-        virtual void setNextTarget(std::string) = 0;
-    };
 
-    class SubmittingFreeResponse :
-        public SubmittingResponse
-    {
+    class SubmittingFreeResponse : public SubmittingResponse {
         FreeResponse response_;
     public:
         void run(RecognitionTestModel &m) override {
@@ -266,6 +259,11 @@ namespace av_speech_in_noise::tests {
         virtual void setAuditoryOnly() = 0;
         virtual void setAudioVisual() = 0;
     };
+    
+    class TargetLoaderUseCase : public virtual UseCase {
+    public:
+        virtual void setNextTarget(std::string) = 0;
+    };
 
     class InitializingTestUseCase :
         public virtual MaskerUseCase,
@@ -274,9 +272,8 @@ namespace av_speech_in_noise::tests {
     {
     public:
         virtual const TestInformation &testInformation() = 0;
-        virtual const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(
-            OutputFileStub &
-        ) = 0;
+        virtual const coordinate_response_measure::Trial &
+            writtenCoordinateResponseTrial(OutputFileStub &) = 0;
         virtual void setTargetListDirectory(std::string) = 0;
         virtual std::string receivedTargetListDirectory() = 0;
     };
