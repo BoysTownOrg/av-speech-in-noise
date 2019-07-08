@@ -216,10 +216,14 @@ namespace av_speech_in_noise::tests {
     };
 
     class SubmittingCoordinateResponse : public SubmittingResponse {
-        coordinate_response_measure::SubjectResponse response;
+        coordinate_response_measure::SubjectResponse response_;
     public:
         void run(RecognitionTestModel &m) override {
-            m.submitResponse(response);
+            m.submitResponse(response_);
+        }
+        
+        auto &response() const {
+            return response_;
         }
     };
 
@@ -1089,9 +1093,8 @@ namespace av_speech_in_noise::tests {
         
         void assertSubjectResponsePassedToEvaluator(UseCase &useCase) {
             run(useCase);
-            submitCoordinateResponse();
-            const auto *expected = &coordinateResponse;
-            assertEqual(expected, evaluator.response());
+            run(submittingCoordinateResponse);
+            assertEqual(&submittingCoordinateResponse.response(), evaluator.response());
         }
         
         void assertTargetListPassed(InitializingTestUseCase &useCase) {

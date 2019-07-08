@@ -654,11 +654,22 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponseWritesReversalsForAdaptiveTest
     ) {
-        selectList(1);
+        initializingAdaptiveTest.selectList(1);
         run(initializingAdaptiveTest);
         initializingAdaptiveTest.snrTrack(1)->setReversals(2);
-        submitCoordinateResponse();
+        run(submittingCoordinateResponse);
         assertEqual(2, writtenAdaptiveCoordinateResponseTrial().reversals);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseWritesSnrForAdaptiveTest
+    ) {
+        initializingAdaptiveTest.selectList(1);
+        run(initializingAdaptiveTest);
+        initializingAdaptiveTest.snrTrack(1)->setX(2);
+        submitCoordinateResponse();
+        assertEqual(2, writtenAdaptiveCoordinateResponseTrial().SNR_dB);
     }
 
     TEST_F(
@@ -687,17 +698,6 @@ namespace av_speech_in_noise::tests {
         submitCoordinateResponseWritesCorrectNumberForFixedLevelTest
     ) {
         assertWritesCorrectNumber(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseWritesSnrForAdaptiveTest
-    ) {
-        initializingAdaptiveTest.selectList(1);
-        run(initializingAdaptiveTest);
-        initializingAdaptiveTest.snrTrack(1)->setX(2);
-        submitCoordinateResponse();
-        assertEqual(2, writtenAdaptiveCoordinateResponseTrial().SNR_dB);
     }
 
     TEST_F(
