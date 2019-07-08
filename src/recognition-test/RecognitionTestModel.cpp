@@ -447,7 +447,8 @@ namespace av_speech_in_noise {
         const coordinate_response_measure::SubjectResponse &response
     ) {
         testMethod->submitResponse(response);
-        preparePlayersForNextTrial();
+        if (!testMethod->complete())
+            preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel::submitCorrectResponse() {

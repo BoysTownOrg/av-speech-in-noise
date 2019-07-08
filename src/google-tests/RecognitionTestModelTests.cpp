@@ -993,5 +993,17 @@ namespace av_speech_in_noise::tests {
         submitCoordinateResponse();
         assertTestComplete();
     }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseDoesNotLoadNextTargetWhenCompleteForFixedLevelTest
+    ) {
+        initializingFixedLevelTest.setNextTarget("a");
+        run(initializingFixedLevelTest);
+        initializingFixedLevelTest.setComplete();
+        initializingFixedLevelTest.setNextTarget("b");
+        submitCoordinateResponse();
+        assertTargetFilePathEquals("a");
+    }
 }
 

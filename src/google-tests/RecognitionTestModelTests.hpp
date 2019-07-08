@@ -468,6 +468,10 @@ namespace av_speech_in_noise::tests {
             m.initializeTest(test_);
         }
         
+        void setComplete() {
+            finiteTargetList->setEmpty();
+        }
+        
         auto &common() {
             return test_.common;
         }
