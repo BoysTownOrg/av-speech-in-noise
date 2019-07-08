@@ -311,13 +311,16 @@ namespace av_speech_in_noise {
     };
 
     class FixedLevelMethod : public TestMethod {
-        FiniteTargetList *currentTargetList;
+        FiniteTargetList *targetList;
         ResponseEvaluator *evaluator;
         int snr_dB_;
         bool complete_{};
     public:
-        FixedLevelMethod(FiniteTargetList *targetList, ResponseEvaluator *evaluator) :
-            currentTargetList{targetList},
+        FixedLevelMethod(
+            FiniteTargetList *targetList,
+            ResponseEvaluator *evaluator
+        ) :
+            targetList{targetList},
             evaluator{evaluator} {}
         
         void store(const FixedLevelTest &p) {
@@ -329,12 +332,12 @@ namespace av_speech_in_noise {
         }
         
         void loadTargets(const std::string &p) override {
-            currentTargetList->loadFromDirectory(p);
-            complete_ = currentTargetList->empty();
+            targetList->loadFromDirectory(p);
+            complete_ = targetList->empty();
         }
         
         std::string next() override {
-            return currentTargetList->next();
+            return targetList->next();
         }
         
         bool complete() override {
@@ -342,7 +345,7 @@ namespace av_speech_in_noise {
         }
         
         std::string current() override {
-            return currentTargetList->current();
+            return targetList->current();
         }
         
         void submitIncorrectResponse() override {
@@ -353,18 +356,24 @@ namespace av_speech_in_noise {
             
         }
         
-        void writeTrial(OutputFile *file, const coordinate_response_measure::SubjectResponse &response) override {
+        void writeTrial(
+            OutputFile *file,
+            const coordinate_response_measure::SubjectResponse &response
+        ) override {
             coordinate_response_measure::FixedLevelTrial trial;
             trial.trial.subjectColor = response.color;
             trial.trial.subjectNumber = response.number;
-            trial.trial.correctColor = evaluator->correctColor(current());
-            trial.trial.correctNumber = evaluator->correctNumber(current());
-            trial.trial.correct = evaluator->correct(current(), response);
+            auto current_ = current();
+            trial.trial.correctColor = evaluator->correctColor(current_);
+            trial.trial.correctNumber = evaluator->correctNumber(current_);
+            trial.trial.correct = evaluator->correct(current_, response);
             file->writeTrial(trial);
         }
         
-        void submitResponse(const coordinate_response_measure::SubjectResponse &) override {
-            complete_ = currentTargetList->empty();
+        void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) override {
+            complete_ = targetList->empty();
         }
     };
 
