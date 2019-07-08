@@ -15,7 +15,6 @@ namespace av_speech_in_noise::tests {
         double fadeTimeSeconds_{};
         double durationSeconds_{};
         double secondsSeeked_{};
-        int deviceIndex_{};
         EventListener *listener_{};
         bool fadeInCalled_{};
         bool fadeOutCalled_{};

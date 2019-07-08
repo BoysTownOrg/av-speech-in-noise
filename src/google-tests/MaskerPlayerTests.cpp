@@ -16,7 +16,6 @@ namespace {
         double durationSeconds_{};
         double secondsSeeked_{};
         int deviceIndex_{};
-        int deviceCount_{};
         int deviceDescriptionDeviceIndex_{};
         EventListener *listener_{};
         bool playing_{};

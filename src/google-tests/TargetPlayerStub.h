@@ -12,7 +12,6 @@ namespace av_speech_in_noise::tests {
         double rms_{};
         double level_dB_{};
         double durationSeconds_{};
-        int deviceIndex_{};
         EventListener *listener_{};
         bool played_{};
         bool videoHidden_{};

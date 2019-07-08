@@ -8,7 +8,6 @@ namespace av_speech_in_noise::tests {
         std::string directory_{};
         std::string next_{};
         std::string current_{};
-        bool empty_{};
         bool nextCalled_{};
     public:
         std::string current() override {
