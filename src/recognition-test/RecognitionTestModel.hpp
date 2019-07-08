@@ -134,23 +134,6 @@ namespace av_speech_in_noise {
         virtual int randomIntBetween(int, int) = 0;
     };
     
-    class NullTrack : public Track {
-        void pushDown() override {}
-        void pushUp() override {}
-        int x() override { return {}; }
-        bool complete() override { return {}; }
-        int reversals() override { return {}; }
-    };
-    
-    class NullTargetList : public TargetList {
-        void loadFromDirectory(std::string) override {}
-        std::string next() override { return {}; }
-        std::string current() override { return {}; }
-    };
-    
-    static NullTargetList nullTargetList;
-    static NullTrack nullTrack;
-    
     class TestMethod {
     public:
         virtual ~TestMethod() = default;
@@ -181,133 +164,34 @@ namespace av_speech_in_noise {
         TargetList *currentTargetList;
     public:
         AdaptiveMethod(
-            TargetListReader *targetListSetReader,
-            TrackFactory *snrTrackFactory,
-            ResponseEvaluator *evaluator,
-            Randomizer *randomizer
-        ) :
-            targetListSetReader{targetListSetReader},
-            snrTrackFactory{snrTrackFactory},
-            evaluator{evaluator},
-            randomizer{randomizer},
-            currentSnrTrack{&nullTrack},
-            currentTargetList{&nullTargetList} {}
-        
-        void store(const AdaptiveTest &p) {
-            trackSettings.ceiling = p.ceilingSnr_dB;
-            trackSettings.rule = p.targetLevelRule;
-            trackSettings.startingX = p.startingSnr_dB;
-        }
-        
-        int snr_dB() override {
-            return currentSnrTrack->x();
-        }
-        
-        void loadTargets(const std::string &p) override {
-            lists = targetListSetReader->read(p);
-            prepareSnrTracks();
-        }
-        
-        void submitIncorrectResponse() override {
-            pushUpTrack();
-        }
-        
-        void submitCorrectResponse() override {
-            pushDownTrack();
-        }
-        
-        bool complete() override {
-            return std::all_of(
-                targetListsWithTracks.begin(),
-                targetListsWithTracks.end(),
-                [](const TargetListWithTrack &t) {
-                    return t.track->complete();
-                }
-            );
-        }
-        
-        std::string next() override {
-            return currentTargetList->next();
-        }
-        
-        std::string current() override {
-            return currentTargetList->current();
-        }
-        
-        void writeTrial(OutputFile *file, const coordinate_response_measure::SubjectResponse &response) override {
-            coordinate_response_measure::AdaptiveTrial trial;
-            trial.trial.subjectColor = response.color;
-            trial.trial.subjectNumber = response.number;
-            trial.reversals = currentSnrTrack->reversals();
-            trial.trial.correctColor = evaluator->correctColor(current());
-            trial.trial.correctNumber = evaluator->correctNumber(current());
-            trial.SNR_dB = snr_dB();
-            trial.trial.correct = correct(response);
-            file->writeTrial(trial);
-        }
-        
-        void submitResponse(const coordinate_response_measure::SubjectResponse &response) override {
-            if (correct(response))
-                pushDownTrack();
-            else
-                pushUpTrack();
-        }
+            TargetListReader *,
+            TrackFactory *,
+            ResponseEvaluator *,
+            Randomizer *
+        );
+        void store(const AdaptiveTest &p);
+        int snr_dB() override;
+        void loadTargets(const std::string &p) override;
+        void submitIncorrectResponse() override;
+        void submitCorrectResponse() override;
+        bool complete() override;
+        std::string next() override;
+        std::string current() override;
+        void writeTrial(OutputFile *file, const coordinate_response_measure::SubjectResponse &response) override;
+        void submitResponse(const coordinate_response_measure::SubjectResponse &response) override;
         
     private:
         bool correct(
             const coordinate_response_measure::SubjectResponse &response
-        ) {
-            return evaluator->correct(current(), response);
-        }
-        
-        void pushUpTrack() {
-            currentSnrTrack->pushUp();
-            selectNextList();
-        }
-        
-        void pushDownTrack() {
-            currentSnrTrack->pushDown();
-            selectNextList();
-        }
-
-        void prepareSnrTracks() {
-            targetListsWithTracks.clear();
-            for (auto list : lists)
-                makeTrackWithList(list.get());
-            selectNextList();
-        }
-        
+        );
+        void pushUpTrack();
+        void pushDownTrack();
+        void prepareSnrTracks();
         void makeTrackWithList(
             TargetList *list
-        ) {
-            targetListsWithTracks.push_back({
-                list,
-                snrTrackFactory->make(trackSettings)
-            });
-        }
-
-        void selectNextList() {
-            removeCompleteTracks();
-            auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
-            size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
-            if (n < targetListsWithTracks.size()) {
-                currentSnrTrack = targetListsWithTracks.at(n).track.get();
-                currentTargetList = targetListsWithTracks.at(n).list;
-            }
-        }
-        
-        void removeCompleteTracks() {
-            targetListsWithTracks.erase(
-                std::remove_if(
-                    targetListsWithTracks.begin(),
-                    targetListsWithTracks.end(),
-                    [](const TargetListWithTrack &t) {
-                        return t.track->complete();
-                    }
-                ),
-                targetListsWithTracks.end()
-            );
-        }
+        );
+        void selectNextList();
+        void removeCompleteTracks();
     };
 
     class FixedLevelMethod : public TestMethod {
@@ -319,62 +203,22 @@ namespace av_speech_in_noise {
         FixedLevelMethod(
             FiniteTargetList *targetList,
             ResponseEvaluator *evaluator
-        ) :
-            targetList{targetList},
-            evaluator{evaluator} {}
-        
-        void store(const FixedLevelTest &p) {
-            snr_dB_ = p.snr_dB;
-        }
-        
-        int snr_dB() override {
-            return snr_dB_;
-        }
-        
-        void loadTargets(const std::string &p) override {
-            targetList->loadFromDirectory(p);
-            complete_ = targetList->empty();
-        }
-        
-        std::string next() override {
-            return targetList->next();
-        }
-        
-        bool complete() override {
-            return complete_;
-        }
-        
-        std::string current() override {
-            return targetList->current();
-        }
-        
-        void submitIncorrectResponse() override {
-            
-        }
-        
-        void submitCorrectResponse() override {
-            
-        }
-        
+        );
+        void store(const FixedLevelTest &p);
+        int snr_dB() override;
+        void loadTargets(const std::string &p) override;
+        std::string next() override;
+        bool complete() override;
+        std::string current() override;
+        void submitIncorrectResponse() override;
+        void submitCorrectResponse() override;
         void writeTrial(
             OutputFile *file,
             const coordinate_response_measure::SubjectResponse &response
-        ) override {
-            coordinate_response_measure::FixedLevelTrial trial;
-            trial.trial.subjectColor = response.color;
-            trial.trial.subjectNumber = response.number;
-            auto current_ = current();
-            trial.trial.correctColor = evaluator->correctColor(current_);
-            trial.trial.correctNumber = evaluator->correctNumber(current_);
-            trial.trial.correct = evaluator->correct(current_, response);
-            file->writeTrial(trial);
-        }
-        
+        ) override;
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
-        ) override {
-            complete_ = targetList->empty();
-        }
+        ) override;
     };
 
     class RecognitionTestModel :

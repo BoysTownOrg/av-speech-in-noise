@@ -2,6 +2,216 @@
 #include <cmath>
 
 namespace av_speech_in_noise {
+    class NullTrack : public Track {
+        void pushDown() override {}
+        void pushUp() override {}
+        int x() override { return {}; }
+        bool complete() override { return {}; }
+        int reversals() override { return {}; }
+    };
+    
+    class NullTargetList : public TargetList {
+        void loadFromDirectory(std::string) override {}
+        std::string next() override { return {}; }
+        std::string current() override { return {}; }
+    };
+    
+    static NullTargetList nullTargetList;
+    static NullTrack nullTrack;
+    
+    AdaptiveMethod::AdaptiveMethod(
+        TargetListReader *targetListSetReader,
+        TrackFactory *snrTrackFactory,
+        ResponseEvaluator *evaluator,
+        Randomizer *randomizer
+    ) :
+        targetListSetReader{targetListSetReader},
+        snrTrackFactory{snrTrackFactory},
+        evaluator{evaluator},
+        randomizer{randomizer},
+        currentSnrTrack{&nullTrack},
+        currentTargetList{&nullTargetList} {}
+    
+    void AdaptiveMethod::store(const AdaptiveTest &p) {
+        trackSettings.ceiling = p.ceilingSnr_dB;
+        trackSettings.rule = p.targetLevelRule;
+        trackSettings.startingX = p.startingSnr_dB;
+    }
+    
+    int AdaptiveMethod::snr_dB() {
+        return currentSnrTrack->x();
+    }
+    
+    void AdaptiveMethod::loadTargets(const std::string &p) {
+        lists = targetListSetReader->read(p);
+        prepareSnrTracks();
+    }
+    
+    void AdaptiveMethod::submitIncorrectResponse() {
+        pushUpTrack();
+    }
+    
+    void AdaptiveMethod::submitCorrectResponse() {
+        pushDownTrack();
+    }
+    
+    bool AdaptiveMethod::complete() {
+        return std::all_of(
+            targetListsWithTracks.begin(),
+            targetListsWithTracks.end(),
+            [](const TargetListWithTrack &t) {
+                return t.track->complete();
+            }
+        );
+    }
+    
+    std::string AdaptiveMethod::next() {
+        return currentTargetList->next();
+    }
+    
+    std::string AdaptiveMethod::current() {
+        return currentTargetList->current();
+    }
+    
+    void AdaptiveMethod::writeTrial(
+        OutputFile *file,
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
+        coordinate_response_measure::AdaptiveTrial trial;
+        trial.trial.subjectColor = response.color;
+        trial.trial.subjectNumber = response.number;
+        trial.reversals = currentSnrTrack->reversals();
+        trial.trial.correctColor = evaluator->correctColor(current());
+        trial.trial.correctNumber = evaluator->correctNumber(current());
+        trial.SNR_dB = snr_dB();
+        trial.trial.correct = correct(response);
+        file->writeTrial(trial);
+    }
+    
+    void AdaptiveMethod::submitResponse(
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
+        if (correct(response))
+            pushDownTrack();
+        else
+            pushUpTrack();
+    }
+
+    bool AdaptiveMethod::correct(
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
+        return evaluator->correct(current(), response);
+    }
+    
+    void AdaptiveMethod::pushUpTrack() {
+        currentSnrTrack->pushUp();
+        selectNextList();
+    }
+    
+    void AdaptiveMethod::pushDownTrack() {
+        currentSnrTrack->pushDown();
+        selectNextList();
+    }
+
+    void AdaptiveMethod::prepareSnrTracks() {
+        targetListsWithTracks.clear();
+        for (auto list : lists)
+            makeTrackWithList(list.get());
+        selectNextList();
+    }
+    
+    void AdaptiveMethod::makeTrackWithList(
+        TargetList *list
+    ) {
+        targetListsWithTracks.push_back({
+            list,
+            snrTrackFactory->make(trackSettings)
+        });
+    }
+
+    void AdaptiveMethod::selectNextList() {
+        removeCompleteTracks();
+        auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
+        size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
+        if (n < targetListsWithTracks.size()) {
+            currentSnrTrack = targetListsWithTracks.at(n).track.get();
+            currentTargetList = targetListsWithTracks.at(n).list;
+        }
+    }
+    
+    void AdaptiveMethod::removeCompleteTracks() {
+        targetListsWithTracks.erase(
+            std::remove_if(
+                targetListsWithTracks.begin(),
+                targetListsWithTracks.end(),
+                [](const TargetListWithTrack &t) {
+                    return t.track->complete();
+                }
+            ),
+            targetListsWithTracks.end()
+        );
+    }
+    
+    FixedLevelMethod::FixedLevelMethod(
+        FiniteTargetList *targetList,
+        ResponseEvaluator *evaluator
+    ) :
+        targetList{targetList},
+        evaluator{evaluator} {}
+    
+    void FixedLevelMethod::store(const FixedLevelTest &p) {
+        snr_dB_ = p.snr_dB;
+    }
+    
+    int FixedLevelMethod::snr_dB() {
+        return snr_dB_;
+    }
+    
+    void FixedLevelMethod::loadTargets(const std::string &p) {
+        targetList->loadFromDirectory(p);
+        complete_ = targetList->empty();
+    }
+    
+    std::string FixedLevelMethod::next() {
+        return targetList->next();
+    }
+    
+    bool FixedLevelMethod::complete() {
+        return complete_;
+    }
+    
+    std::string FixedLevelMethod::current() {
+        return targetList->current();
+    }
+    
+    void FixedLevelMethod::submitIncorrectResponse() {
+        
+    }
+    
+    void FixedLevelMethod::submitCorrectResponse() {
+        
+    }
+    
+    void FixedLevelMethod::writeTrial(
+        OutputFile *file,
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
+        coordinate_response_measure::FixedLevelTrial trial;
+        trial.trial.subjectColor = response.color;
+        trial.trial.subjectNumber = response.number;
+        auto current_ = current();
+        trial.trial.correctColor = evaluator->correctColor(current_);
+        trial.trial.correctNumber = evaluator->correctNumber(current_);
+        trial.trial.correct = evaluator->correct(current_, response);
+        file->writeTrial(trial);
+    }
+    
+    void FixedLevelMethod::submitResponse(
+        const coordinate_response_measure::SubjectResponse &
+    ) {
+        complete_ = targetList->empty();
+    }
+
     class NullTestMethod : public TestMethod {
         bool complete() override { return {}; }
         std::string next() override { return {}; }
