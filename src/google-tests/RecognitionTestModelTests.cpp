@@ -532,15 +532,16 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitTypedResponseSetsTargetPlayerLevel
+        submitTypedResponseSetsTargetPlayerLevelForFixedLevelTest
     ) {
-        setSnr_dB(2);
-        setMaskerLevel_dB_SPL(3);
-        setTestingFullScaleLevel_dB_SPL(4);
-        initializeFixedLevelTest();
-        setTargetPlayerRms(5);
-        run(submittingFreeResponse);
-        assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+        assertSetsTargetLevel(initializingFixedLevelTest, submittingFreeResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitTypedResponseSetsTargetPlayerLevelForAdaptiveTest
+    ) {
+        assertSetsTargetLevel(initializingAdaptiveTest, submittingFreeResponse);
     }
 
     TEST_F(

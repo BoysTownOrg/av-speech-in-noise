@@ -1018,6 +1018,19 @@ namespace av_speech_in_noise::tests {
             assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
         }
         
+        void assertSetsTargetLevel(
+            InitializingTestUseCase &initializingTest,
+            UseCase &useCase
+        ) {
+            run(initializingTest);
+            initializingTest.setSnr_dB(2);
+            setMaskerLevel_dB_SPL(3);
+            setTestingFullScaleLevel_dB_SPL(4);
+            setTargetPlayerRms(5);
+            run(useCase);
+            assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+        }
+        
         auto writtenCoordinateResponseTrial(InitializingTestUseCase &useCase) {
             return useCase.writtenCoordinateResponseTrial(outputFile);
         }
