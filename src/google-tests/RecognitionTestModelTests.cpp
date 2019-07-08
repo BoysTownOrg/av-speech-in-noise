@@ -1007,5 +1007,12 @@ namespace av_speech_in_noise::tests {
     ) {
         assertCoordinateResponseDoesNotLoadNextTargetWhenTestComplete(initializingAdaptiveTest);
     }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        submitCoordinateResponseWritesTrialAfterSubmittingResponseForAdaptiveTest
+    ) {
+        FAIL();
+    }
 }
 
