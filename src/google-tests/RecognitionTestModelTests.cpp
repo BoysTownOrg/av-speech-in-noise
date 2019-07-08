@@ -2175,7 +2175,7 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponsePushesSnrDownWhenEvaluationIsCorrect
+        submitCoordinateResponsePushesSnrDownWhenEvaluationIsCorrectForAdaptiveTest
     ) {
         setCorrectResponse();
         assertPushesSnrTrackDown(submittingCoordinateResponse);
@@ -2183,14 +2183,14 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCorrectResponsePushesSnrDown
+        submitCorrectResponsePushesSnrDownForAdaptiveTest
     ) {
         assertPushesSnrTrackDown(submittingCorrectResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponsePushesSnrUpWhenEvaluationIsIncorrect
+        submitCoordinateResponsePushesSnrUpWhenEvaluationIsIncorrectForAdaptiveTest
     ) {
         setIncorrectResponse();
         assertPushesSnrTrackUp(submittingCoordinateResponse);
@@ -2198,28 +2198,28 @@ namespace {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitIncorrectResponsePushesSnrUp
+        submitIncorrectResponsePushesSnrUpForAdaptiveTest
     ) {
         assertPushesSnrTrackUp(submittingIncorrectResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseSelectsNextListAmongThoseWithIncompleteTracks
+        submitCoordinateResponseSelectsNextListAmongThoseWithIncompleteTracksForAdaptiveTest
     ) {
         assertSelectsListAmongThoseWithIncompleteTracks(submittingCoordinateResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCorrectResponseSelectsNextListAmongThoseWithIncompleteTracks
+        submitCorrectResponseSelectsNextListAmongThoseWithIncompleteTracksForAdaptiveTest
     ) {
         assertSelectsListAmongThoseWithIncompleteTracks(submittingCorrectResponse);
     }
 
     TEST_F(
         RecognitionTestModelTests,
-        submitIncorrectResponseSelectsNextListAmongThoseWithIncompleteTracks
+        submitIncorrectResponseSelectsNextListAmongThoseWithIncompleteTracksForAdaptiveTest
     ) {
         assertSelectsListAmongThoseWithIncompleteTracks(submittingIncorrectResponse);
     }
@@ -2295,6 +2295,13 @@ namespace {
         initializeAdaptiveTestThrowsRequestFailureIfTrialInProgress
     ) {
         assertThrowsRequestFailureWhenTrialInProgress(initializingAdaptiveTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestThrowsRequestFailureIfTrialInProgress
+    ) {
+        assertThrowsRequestFailureWhenTrialInProgress(initializingFixedLevelTest);
     }
 
     TEST_F(
