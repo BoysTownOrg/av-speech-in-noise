@@ -265,7 +265,9 @@ namespace {
     {
     public:
         virtual const TestInformation &testInformation() = 0;
-        virtual const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(OutputFileStub &) = 0;
+        virtual const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(
+            av_speech_in_noise::tests::OutputFileStub &
+        ) = 0;
     };
     
     class InitializingAdaptiveTest : public InitializingTestUseCase {
@@ -328,7 +330,9 @@ namespace {
             return test_.information;
         }
         
-        const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(OutputFileStub &file) override {
+        const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(
+            av_speech_in_noise::tests::OutputFileStub &file
+        ) override {
             return file.writtenAdaptiveCoordinateResponseTrial2();
         }
     };
@@ -409,7 +413,9 @@ namespace {
             return test_.information;
         }
         
-        const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(OutputFileStub &file) override {
+        const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(
+            av_speech_in_noise::tests::OutputFileStub &file
+        ) override {
             return file.writtenFixedLevelTrial2();
         }
     };
@@ -474,7 +480,7 @@ namespace {
         FiniteTargetListStub finiteTargetList;
         TargetPlayerStub targetPlayer;
         av_speech_in_noise::tests::MaskerPlayerStub maskerPlayer;
-        OutputFileStub outputFile;
+        av_speech_in_noise::tests::OutputFileStub outputFile;
         TrackFactoryStub snrTrackFactory;
         av_speech_in_noise::tests::ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
