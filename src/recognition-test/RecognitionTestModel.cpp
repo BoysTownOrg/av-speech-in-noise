@@ -363,7 +363,7 @@ namespace av_speech_in_noise {
         return
             desiredMaskerLevel_dB() +
             testMethod->snr_dB() -
-            unalteredTargetLevel_dB();
+            dB(maskerPlayer->rms());
     }
     
     double RecognitionTestModel::unalteredTargetLevel_dB() {

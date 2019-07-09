@@ -163,55 +163,6 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestQueriesTargetRmsAfterLoadingFile
-    ) {
-        assertTargetFileLoadedPriorToRmsQuery(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestQueriesTargetRmsAfterLoadingFile
-    ) {
-        assertTargetFileLoadedPriorToRmsQuery(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationQueriesTargetRmsAfterLoadingFile
-    ) {
-        assertTargetFileLoadedPriorToRmsQuery(playingCalibration);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseQueriesTargetRmsAfterLoadingFile
-    ) {
-        assertTargetFileLoadedPriorToRmsQuery(submittingCoordinateResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCorrectResponseQueriesTargetRmsAfterLoadingFile
-    ) {
-        assertTargetFileLoadedPriorToRmsQuery(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponseQueriesTargetRmsAfterLoadingFile
-    ) {
-        assertTargetFileLoadedPriorToRmsQuery(submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitTypedResponseQueriesTargetRmsAfterLoadingFile
-    ) {
-        assertTargetFileLoadedPriorToRmsQuery(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeFixedLevelTestPassesNextTargetToTargetPlayerAfterLoadingFromDirectory
     ) {
         run(initializingFixedLevelTest);
