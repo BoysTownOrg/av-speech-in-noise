@@ -2,10 +2,13 @@
 #define RecognitionTestModelTests_h
 
 #include "TargetListStub.h"
+#include "TargetListSetReaderStub.h"
+#include "TrackStub.h"
 #include "MaskerPlayerStub.h"
 #include "TargetPlayerStub.h"
 #include "OutputFileStub.h"
 #include "ResponseEvaluatorStub.h"
+#include "RandomizerStub.h"
 #include "LogString.h"
 #include "assert-utility.h"
 #include <recognition-test/RecognitionTestModel.hpp>
@@ -23,152 +26,6 @@ namespace av_speech_in_noise::tests {
         
         auto notified() const {
             return notified_;
-        }
-    };
-
-    class TrackStub : public Track {
-        Settings settings_;
-        int x_{};
-        int reversals_{};
-        int reversalsWhenUpdated_{};
-        int xWhenUpdated_{};
-        bool pushedDown_{};
-        bool pushedUp_{};
-        bool complete_{};
-    public:
-        void setXWhenUpdated(int x) {
-            xWhenUpdated_ = x;
-        }
-        
-        void setReversalsWhenUpdated(int x) {
-            reversalsWhenUpdated_ = x;
-        }
-        
-        void setReversals(int x) {
-            reversals_ = x;
-        }
-        
-        auto pushedUp() const {
-            return pushedUp_;
-        }
-        
-        auto pushedDown() const {
-            return pushedDown_;
-        }
-        
-        void setX(int x) {
-            x_ = x;
-        }
-        
-        void pushDown() override {
-            pushedDown_ = true;
-            reversals_ = reversalsWhenUpdated_;
-            x_ = xWhenUpdated_;
-        }
-        
-        void pushUp() override {
-            pushedUp_ = true;
-            reversals_ = reversalsWhenUpdated_;
-            x_ = xWhenUpdated_;
-        }
-        
-        int x() override {
-            return x_;
-        }
-        
-        bool complete() override {
-            return complete_;
-        }
-        
-        int reversals() override {
-            return reversals_;
-        }
-        
-        void setComplete() {
-            complete_ = true;
-        }
-    };
-
-    class RandomizerStub : public Randomizer {
-        double lowerBound_{};
-        double upperBound_{};
-        double randomFloat_{};
-        int randomInt_{};
-        int lowerIntBound_{};
-        int upperIntBound_{};
-    public:
-        auto lowerIntBound() const {
-            return lowerIntBound_;
-        }
-        
-        auto upperIntBound() const {
-            return upperIntBound_;
-        }
-        
-        void setRandomInt(int x) {
-            randomInt_ = x;
-        }
-        
-        void setRandomFloat(double x) {
-            randomFloat_ = x;
-        }
-        
-        auto lowerFloatBound() const {
-            return lowerBound_;
-        }
-        
-        auto upperFloatBound() const {
-            return upperBound_;
-        }
-        
-        double randomFloatBetween(double a, double b) override {
-            lowerBound_ = a;
-            upperBound_ = b;
-            return randomFloat_;
-        }
-        
-        int randomIntBetween(int a, int b) override {
-            lowerIntBound_ = a;
-            upperIntBound_ = b;
-            return randomInt_;
-        }
-    };
-
-    class TrackFactoryStub : public TrackFactory {
-        std::vector<Track::Settings> parameters_;
-        std::vector<std::shared_ptr<Track>> tracks_;
-    public:
-        const auto &parameters() {
-            return parameters_;
-        }
-        
-        std::shared_ptr<Track> make(const Track::Settings &s) override {
-            parameters_.push_back(s);
-            auto track = tracks_.front();
-            tracks_.erase(tracks_.begin());
-            return track;
-        }
-        
-        void setTracks(std::vector<std::shared_ptr<Track>> t) {
-            tracks_ = std::move(t);
-        }
-    };
-
-    class TargetListSetReaderStub : public TargetListReader {
-        lists_type targetLists_{};
-        std::string directory_{};
-    public:
-        void setTargetLists(lists_type lists) {
-            targetLists_ = std::move(lists);
-        }
-        
-        lists_type read(std::string d) override {
-            directory_ = std::move(d);
-            return targetLists_;
-        }
-        
-        auto directory() const {
-            return directory_;
         }
     };
 
