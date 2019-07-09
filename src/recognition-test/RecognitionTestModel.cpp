@@ -172,6 +172,10 @@ namespace av_speech_in_noise {
     
     void FixedLevelMethod::loadTargets(const std::string &p) {
         targetList->loadFromDirectory(p);
+        updateCompletion();
+    }
+    
+    void FixedLevelMethod::updateCompletion() {
         complete_ = targetList->empty();
     }
     
@@ -212,7 +216,7 @@ namespace av_speech_in_noise {
     void FixedLevelMethod::submitResponse(
         const coordinate_response_measure::SubjectResponse &
     ) {
-        complete_ = targetList->empty();
+        updateCompletion();
     }
     
     void FixedLevelMethod::submitResponse(const FreeResponse &) {
@@ -227,8 +231,13 @@ namespace av_speech_in_noise {
         int snr_dB() override { return {}; }
         void submitCorrectResponse() override {}
         void submitIncorrectResponse() override {}
-        void writeTrial(OutputFile *, const coordinate_response_measure::SubjectResponse &) override {}
-        void submitResponse(const coordinate_response_measure::SubjectResponse &) override {}
+        void writeTrial(
+            OutputFile *,
+            const coordinate_response_measure::SubjectResponse &
+        ) override {}
+        void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) override {}
         void submitResponse(const FreeResponse &) override {}
     };
     

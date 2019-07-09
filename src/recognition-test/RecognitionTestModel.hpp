@@ -246,6 +246,8 @@ namespace av_speech_in_noise {
             const coordinate_response_measure::SubjectResponse &
         ) override;
         void submitResponse(const FreeResponse &) override;
+    private:
+        void updateCompletion();
     };
 
     class RecognitionTestModel :
