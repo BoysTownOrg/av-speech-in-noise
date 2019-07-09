@@ -656,9 +656,10 @@ namespace av_speech_in_noise::tests {
     ) {
         initializingAdaptiveTest.selectList(1);
         run(initializingAdaptiveTest);
-        initializingAdaptiveTest.snrTrack(1)->setReversalsWhenUpdated(2);
+        initializingAdaptiveTest.snrTrack(1)->setReversalsWhenUpdated(3);
+        initializingAdaptiveTest.selectList(2);
         run(submittingCoordinateResponse);
-        assertEqual(2, writtenAdaptiveCoordinateResponseTrial().reversals);
+        assertEqual(3, writtenAdaptiveCoordinateResponseTrial().reversals);
     }
 
     TEST_F(
@@ -667,10 +668,11 @@ namespace av_speech_in_noise::tests {
     ) {
         initializingAdaptiveTest.selectList(1);
         run(initializingAdaptiveTest);
-        initializingAdaptiveTest.snrTrack(1)->setX(2);
+        initializingAdaptiveTest.snrTrack(1)->setX(4);
         initializingAdaptiveTest.snrTrack(1)->setXWhenUpdated(3);
+        initializingAdaptiveTest.selectList(2);
         submitCoordinateResponse();
-        assertEqual(2, writtenAdaptiveCoordinateResponseTrial().SNR_dB);
+        assertEqual(4, writtenAdaptiveCoordinateResponseTrial().SNR_dB);
     }
 
     TEST_F(

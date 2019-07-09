@@ -92,6 +92,7 @@ namespace av_speech_in_noise {
             correct();
         else
             incorrect();
+        reversals_ = currentSnrTrack->reversals();
     }
 
     bool AdaptiveMethod::correct(
@@ -141,7 +142,7 @@ namespace av_speech_in_noise {
         coordinate_response_measure::AdaptiveTrial trial;
         trial.trial.subjectColor = response.color;
         trial.trial.subjectNumber = response.number;
-        trial.reversals = currentSnrTrack->reversals();
+        trial.reversals = reversals_;
         trial.trial.correctColor = evaluator->correctColor(previousTarget);
         trial.trial.correctNumber = evaluator->correctNumber(previousTarget);
         trial.SNR_dB = lastSnr_dB;
