@@ -461,6 +461,10 @@ namespace {
         void setSampleRateHz(double x) {
             audioPlayer.setSampleRateHz(x);
         }
+        
+        void loadFile(std::string s = {}) {
+            player.loadFile(std::move(s));
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -484,7 +488,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, loadFileLoadsVideoFile) {
-        player.loadFile("a");
+        loadFile("a");
         assertEqual("a", audioPlayer.filePath());
     }
 
@@ -754,12 +758,12 @@ namespace {
             { 4, 5, 6 },
             { 7, 8, 9 }
         });
-        player.loadFile({});
+        loadFile();
         assertEqual(std::sqrt((1*1 + 2*2 + 3*3)/3.), player.rms(), 1e-6);
     }
 
     TEST_F(MaskerPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
-        player.loadFile("a");
+        loadFile("a");
         player.rms();
         assertEqual("a", audioReader.filePath());
     }
@@ -767,7 +771,7 @@ namespace {
     TEST_F(MaskerPlayerTests, loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
         audioReader.throwOnRead();
         try {
-            player.loadFile({});
+            loadFile();
             FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
         } catch(const av_speech_in_noise::InvalidAudioFile &) {
         
