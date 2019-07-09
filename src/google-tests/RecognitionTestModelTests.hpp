@@ -177,11 +177,16 @@ namespace av_speech_in_noise::tests {
         std::string directory_;
         std::string next_;
         std::string current_;
+        std::string currentWhenNext_{};
         bool empty_{};
         bool nextCalled_{};
     public:
         std::string current() override {
             return current_;
+        }
+        
+        void setCurrentTargetWhenNext(std::string s) {
+            currentWhenNext_ = std::move(s);
         }
         
         void setCurrent(std::string s) {
@@ -196,6 +201,7 @@ namespace av_speech_in_noise::tests {
         std::string next() override {
             log_.insert("next ");
             nextCalled_ = true;
+            current_ = currentWhenNext_;
             return next_;
         }
         
@@ -506,6 +512,10 @@ namespace av_speech_in_noise::tests {
         
         void setCurrentTarget(std::string s) override {
             finiteTargetList->setCurrent(std::move(s));
+        }
+        
+        void setCurrentTargetWhenNext(std::string s) {
+            finiteTargetList->setCurrentTargetWhenNext(std::move(s));
         }
         
         void setMaskerLevel_dB_SPL(int x) {

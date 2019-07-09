@@ -184,6 +184,7 @@ namespace av_speech_in_noise {
     }
     
     std::string FixedLevelMethod::next() {
+        previousTarget = current();
         return targetList->next();
     }
     
@@ -210,10 +211,9 @@ namespace av_speech_in_noise {
         coordinate_response_measure::FixedLevelTrial trial;
         trial.trial.subjectColor = response.color;
         trial.trial.subjectNumber = response.number;
-        auto current_ = current();
-        trial.trial.correctColor = evaluator->correctColor(current_);
-        trial.trial.correctNumber = evaluator->correctNumber(current_);
-        trial.trial.correct = evaluator->correct(current_, response);
+        trial.trial.correctColor = evaluator->correctColor(previousTarget);
+        trial.trial.correctNumber = evaluator->correctNumber(previousTarget);
+        trial.trial.correct = evaluator->correct(previousTarget, response);
         file->writeTrial(trial);
     }
     

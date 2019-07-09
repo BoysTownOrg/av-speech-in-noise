@@ -597,10 +597,11 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitFreeResponsePassesCurrentTargetToEvaluatorForFixedLevelTest
     ) {
-        assertCurrentTargetPassedToEvaluator(
-            initializingFixedLevelTest,
-            submittingFreeResponse
-        );
+        run(initializingFixedLevelTest);
+        initializingFixedLevelTest.setCurrentTarget("a");
+        initializingFixedLevelTest.setCurrentTargetWhenNext("b");
+        run(submittingFreeResponse);
+        assertEqual("a", evaluator.filePathForFileName());
     }
 
     TEST_F(
@@ -776,7 +777,12 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColorForFixedLevelTest
     ) {
-        assertCoordinateResponsePassesCurrentTargetToEvaluator(initializingFixedLevelTest);
+        run(initializingFixedLevelTest);
+        initializingFixedLevelTest.setCurrentTarget("a");
+        initializingFixedLevelTest.setCurrentTargetWhenNext("b");
+        submitCoordinateResponse();
+        assertEqual("a", evaluator.correctColorFilePath());
+        assertEqual("a", evaluator.correctNumberFilePath());
     }
 
     TEST_F(
@@ -791,7 +797,11 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForFixedLevelTest
     ) {
-        assertCoordinateResponsePassesCurrentTargetToEvaluatorForDeterminingResponseCorrectness(initializingFixedLevelTest);
+        run(initializingFixedLevelTest);
+        initializingFixedLevelTest.setCurrentTarget("a");
+        initializingFixedLevelTest.setCurrentTargetWhenNext("b");
+        submitCoordinateResponse();
+        assertEqual("a", evaluator.correctFilePath());
     }
 
     TEST_F(
