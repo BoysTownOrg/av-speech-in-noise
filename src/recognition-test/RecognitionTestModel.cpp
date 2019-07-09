@@ -47,6 +47,8 @@ namespace av_speech_in_noise {
     }
 
     void AdaptiveMethod::selectNextList() {
+        if (currentTargetList)
+            previousTarget = current();
         removeCompleteTracks();
         auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
         size_t n = randomizer->randomIntBetween(0, remainingLists - 1);
@@ -85,6 +87,7 @@ namespace av_speech_in_noise {
     void AdaptiveMethod::submitResponse_(
         const coordinate_response_measure::SubjectResponse &response
     ) {
+        lastSnr_dB = snr_dB();
         if (correct(response))
             correct();
         else
@@ -102,12 +105,10 @@ namespace av_speech_in_noise {
     }
     
     void AdaptiveMethod::incorrect() {
-        lastSnr_dB = snr_dB();
         currentSnrTrack->pushUp();
     }
     
     void AdaptiveMethod::correct() {
-        lastSnr_dB = snr_dB();
         currentSnrTrack->pushDown();
     }
     
@@ -141,8 +142,8 @@ namespace av_speech_in_noise {
         trial.trial.subjectColor = response.color;
         trial.trial.subjectNumber = response.number;
         trial.reversals = currentSnrTrack->reversals();
-        trial.trial.correctColor = evaluator->correctColor(current());
-        trial.trial.correctNumber = evaluator->correctNumber(current());
+        trial.trial.correctColor = evaluator->correctColor(previousTarget);
+        trial.trial.correctNumber = evaluator->correctNumber(previousTarget);
         trial.SNR_dB = lastSnr_dB;
         trial.trial.correct = correct(response);
         file->writeTrial(trial);

@@ -168,6 +168,7 @@ namespace av_speech_in_noise {
         TargetListReader::lists_type lists{};
         std::vector<TargetListWithTrack> targetListsWithTracks{};
         Track::Settings trackSettings{};
+        std::string previousTarget{};
         TargetListReader *targetListSetReader;
         TrackFactory *snrTrackFactory;
         ResponseEvaluator *evaluator;
