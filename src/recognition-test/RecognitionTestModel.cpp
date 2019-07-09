@@ -25,12 +25,15 @@ namespace av_speech_in_noise {
         lists = targetListSetReader->read(p);
         prepareSnrTracks();
     }
-
+    
     void AdaptiveMethod::prepareSnrTracks() {
+        selectNextListAfter(&AdaptiveMethod::makeSnrTracks);
+    }
+
+    void AdaptiveMethod::makeSnrTracks() {
         targetListsWithTracks.clear();
         for (auto list : lists)
             makeTrackWithList(list.get());
-        selectNextList();
     }
     
     void AdaptiveMethod::makeTrackWithList(
@@ -68,11 +71,17 @@ namespace av_speech_in_noise {
     void AdaptiveMethod::submitResponse(
         const coordinate_response_measure::SubjectResponse &response
     ) {
+        submitResponse_(response);
+        selectNextList();
+    }
+    
+    void AdaptiveMethod::submitResponse_(
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
         if (correct(response))
             correct();
         else
             incorrect();
-        selectNextList();
     }
 
     bool AdaptiveMethod::correct(
@@ -94,13 +103,11 @@ namespace av_speech_in_noise {
     }
     
     void AdaptiveMethod::submitIncorrectResponse() {
-        incorrect();
-        selectNextList();
+        selectNextListAfter(&AdaptiveMethod::incorrect);
     }
     
     void AdaptiveMethod::submitCorrectResponse() {
-        correct();
-        selectNextList();
+        selectNextListAfter(&AdaptiveMethod::correct);
     }
     
     bool AdaptiveMethod::complete() {
@@ -139,6 +146,12 @@ namespace av_speech_in_noise {
     void AdaptiveMethod::submitResponse(const FreeResponse &) {
         selectNextList();
     }
+    
+    void AdaptiveMethod::selectNextListAfter(void (AdaptiveMethod::*f)()) {
+        (this->*f)();
+        selectNextList();
+    }
+    
     
     FixedLevelMethod::FixedLevelMethod(
         FiniteTargetList *targetList,

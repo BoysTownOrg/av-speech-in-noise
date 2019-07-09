@@ -199,11 +199,18 @@ namespace av_speech_in_noise {
         void submitResponse(const FreeResponse &) override;
         
     private:
+        void submitResponse_(
+            const coordinate_response_measure::SubjectResponse &
+        );
+        void selectNextListAfter(
+            void(AdaptiveMethod::*)()
+        );
         bool correct(
             const coordinate_response_measure::SubjectResponse &
         );
         void incorrect();
         void correct();
+        void makeSnrTracks();
         void prepareSnrTracks();
         void makeTrackWithList(
             TargetList *list
