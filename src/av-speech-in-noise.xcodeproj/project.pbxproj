@@ -337,6 +337,7 @@
 		26FC6B0521DA810C00289A0A /* google-tests */ = {
 			isa = PBXGroup;
 			children = (
+				26788DFF22D4FA6700E89037 /* AdaptiveMethodTests.cpp */,
 				26B22D342260EE6400D528F1 /* AdaptiveTrackTests.cpp */,
 				26955FF82236A60200664A2C /* assert-utility.h */,
 				26DE2190226529F3006A3FD0 /* AudioReaderStub.h */,
@@ -349,19 +350,18 @@
 				26DFF70822D3A0530070E04B /* OutputFileStub.h */,
 				26FDD2D5224AC0840090BDD5 /* OutputFileTests.cpp */,
 				26FC6B0621DA810C00289A0A /* PresenterTests.cpp */,
+				26788E0322D4FC5300E89037 /* RandomizerStub.h */,
 				26A2236B21DD2C75007D6511 /* RecognitionTestModelTests.cpp */,
+				26DFF70A22D3AFED0070E04B /* RecognitionTestModelTests.hpp */,
 				26DFF70922D3A0DB0070E04B /* ResponseEvaluatorStub.h */,
 				2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */,
 				26688C352273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp */,
+				26788E0122D4FB4500E89037 /* TargetListSetReaderStub.h */,
 				26688C372273A53D00CAE9EB /* TargetListStub.h */,
 				2646F83321DFDF5500F378DE /* TargetListTests.cpp */,
 				26DFF70722D39FC70070E04B /* TargetPlayerStub.h */,
 				26EE86BA2242CFFB00C08622 /* TargetPlayerTests.cpp */,
-				26DFF70A22D3AFED0070E04B /* RecognitionTestModelTests.hpp */,
-				26788DFF22D4FA6700E89037 /* AdaptiveMethodTests.cpp */,
-				26788E0122D4FB4500E89037 /* TargetListSetReaderStub.h */,
 				26788E0222D4FBC100E89037 /* TrackStub.h */,
-				26788E0322D4FC5300E89037 /* RandomizerStub.h */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";
