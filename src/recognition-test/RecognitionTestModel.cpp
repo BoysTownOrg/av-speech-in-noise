@@ -15,7 +15,7 @@ namespace av_speech_in_noise {
         currentSnrTrack{},
         currentTargetList{} {}
     
-    void AdaptiveMethod::store(const AdaptiveTest &p) {
+    void AdaptiveMethod::initialize(const AdaptiveTest &p) {
         trackSettings.ceiling = p.ceilingSnr_dB;
         trackSettings.rule = p.targetLevelRule;
         trackSettings.startingX = p.startingSnr_dB;
@@ -163,7 +163,7 @@ namespace av_speech_in_noise {
         targetList{targetList},
         evaluator{evaluator} {}
     
-    void FixedLevelMethod::store(const FixedLevelTest &p) {
+    void FixedLevelMethod::initialize(const FixedLevelTest &p) {
         snr_dB_ = p.snr_dB;
         targetList->loadFromDirectory(p.common.targetListDirectory);
         updateCompletion();
@@ -269,7 +269,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
         throwIfTrialInProgress();
         
-        fixedLevelMethod->store(p);
+        fixedLevelMethod->initialize(p);
         testMethod = fixedLevelMethod;
         prepareCommonTest(p.common);
         tryOpeningOutputFile(p.information);
@@ -279,7 +279,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
-        adaptiveMethod->store(p);
+        adaptiveMethod->initialize(p);
         testMethod = adaptiveMethod;
         prepareCommonTest(p.common);
         tryOpeningOutputFile(p.information);

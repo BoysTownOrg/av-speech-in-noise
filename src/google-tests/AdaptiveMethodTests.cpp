@@ -42,7 +42,7 @@ namespace av_speech_in_noise::tests {
         snrTrackFactory.setTracks(tracks);
         AdaptiveTest test;
         test.targetLevelRule = &targetLevelRule_;
-        method.store(test);
+        method.initialize(test);
         assertEqual(3UL, snrTrackFactory.parameters().size());
     }
 
@@ -60,7 +60,7 @@ namespace av_speech_in_noise::tests {
         snrTrackFactory.setTracks(tracks);
         AdaptiveTest test;
         test.targetLevelRule = &targetLevelRule_;
-        method.store(test);
+        method.initialize(test);
         for (int i = 0; i < 3; ++i)
             assertSettingsContainTargetLevelRule(
                 snrTrackFactory.parameters().at(i)

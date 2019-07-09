@@ -183,7 +183,7 @@ namespace av_speech_in_noise {
             ResponseEvaluator *,
             Randomizer *
         );
-        void store(const AdaptiveTest &);
+        void initialize(const AdaptiveTest &);
         int snr_dB() override;
         void submitIncorrectResponse() override;
         void submitCorrectResponse() override;
@@ -232,7 +232,7 @@ namespace av_speech_in_noise {
             FiniteTargetList *,
             ResponseEvaluator *
         );
-        void store(const FixedLevelTest &);
+        void initialize(const FixedLevelTest &);
         int snr_dB() override;
         std::string next() override;
         bool complete() override;
