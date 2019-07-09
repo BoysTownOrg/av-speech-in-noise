@@ -208,6 +208,7 @@ namespace av_speech_in_noise {
         bool correct(
             const coordinate_response_measure::SubjectResponse &
         );
+        bool complete(const TargetListWithTrack &);
         void incorrect();
         void correct();
         void makeSnrTracks();

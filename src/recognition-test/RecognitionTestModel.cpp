@@ -23,11 +23,12 @@ namespace av_speech_in_noise {
     
     void AdaptiveMethod::loadTargets(const std::string &p) {
         lists = targetListSetReader->read(p);
-        prepareSnrTracks();
+        selectNextListAfter(&AdaptiveMethod::makeSnrTracks);
     }
     
-    void AdaptiveMethod::prepareSnrTracks() {
-        selectNextListAfter(&AdaptiveMethod::makeSnrTracks);
+    void AdaptiveMethod::selectNextListAfter(void (AdaptiveMethod::*f)()) {
+        (this->*f)();
+        selectNextList();
     }
 
     void AdaptiveMethod::makeSnrTracks() {
@@ -47,25 +48,31 @@ namespace av_speech_in_noise {
 
     void AdaptiveMethod::selectNextList() {
         removeCompleteTracks();
-        auto remainingListCount = gsl::narrow<int>(targetListsWithTracks.size());
-        size_t n = randomizer->randomIntBetween(0, remainingListCount - 1);
+        auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
+        size_t n = randomizer->randomIntBetween(0, remainingLists - 1);
         if (n < targetListsWithTracks.size()) {
-            currentSnrTrack = targetListsWithTracks.at(n).track.get();
-            currentTargetList = targetListsWithTracks.at(n).list;
+            auto targetListsWithTrack_ = targetListsWithTracks.at(n);
+            currentSnrTrack = targetListsWithTrack_.track.get();
+            currentTargetList = targetListsWithTrack_.list;
         }
     }
     
     void AdaptiveMethod::removeCompleteTracks() {
+        auto end = targetListsWithTracks.end();
         targetListsWithTracks.erase(
             std::remove_if(
                 targetListsWithTracks.begin(),
-                targetListsWithTracks.end(),
-                [](const TargetListWithTrack &t) {
-                    return t.track->complete();
+                end,
+                [&](const TargetListWithTrack &t) {
+                    return complete(t);
                 }
             ),
-            targetListsWithTracks.end()
+            end
         );
+    }
+    
+    bool AdaptiveMethod::complete(const TargetListWithTrack &t) {
+        return t.track->complete();
     }
     
     void AdaptiveMethod::submitResponse(
@@ -114,8 +121,8 @@ namespace av_speech_in_noise {
         return std::all_of(
             targetListsWithTracks.begin(),
             targetListsWithTracks.end(),
-            [](const TargetListWithTrack &t) {
-                return t.track->complete();
+            [&](const TargetListWithTrack &t) {
+                return complete(t);
             }
         );
     }
@@ -144,11 +151,6 @@ namespace av_speech_in_noise {
     }
     
     void AdaptiveMethod::submitResponse(const FreeResponse &) {
-        selectNextList();
-    }
-    
-    void AdaptiveMethod::selectNextListAfter(void (AdaptiveMethod::*f)()) {
-        (this->*f)();
         selectNextList();
     }
     
