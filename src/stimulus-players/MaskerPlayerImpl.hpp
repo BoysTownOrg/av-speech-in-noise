@@ -126,6 +126,7 @@ namespace stimulus_players {
         AudioThread audioThread;
         MainThread mainThread;
         std::string filePath_{};
+        double rms_{};
         std::atomic<double> levelScalar{1};
         std::atomic<double> fadeInOutSeconds{};
         AudioPlayer *player;

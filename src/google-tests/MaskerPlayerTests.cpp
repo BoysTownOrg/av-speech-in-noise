@@ -754,6 +754,7 @@ namespace {
             { 4, 5, 6 },
             { 7, 8, 9 }
         });
+        player.loadFile({});
         assertEqual(std::sqrt((1*1 + 2*2 + 3*3)/3.), player.rms(), 1e-6);
     }
 
@@ -763,10 +764,10 @@ namespace {
         assertEqual("a", audioReader.filePath());
     }
 
-    TEST_F(MaskerPlayerTests, rmsThrowsInvalidAudioFileWhenAudioReaderThrows) {
+    TEST_F(MaskerPlayerTests, loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
         audioReader.throwOnRead();
         try {
-            player.rms();
+            player.loadFile({});
             FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
         } catch(const av_speech_in_noise::InvalidAudioFile &) {
         
