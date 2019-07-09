@@ -20,6 +20,12 @@ namespace av_speech_in_noise::tests {
             &evaluator,
             &randomizer
         };
+        TrackingRule targetLevelRule_;
+        
+        void assertSettingsContainTargetLevelRule(const Track::Settings &s) {
+            const auto *rule = &targetLevelRule_;
+            assertEqual(rule, s.rule);
+        }
     };
     
     TEST_F(
@@ -36,5 +42,27 @@ namespace av_speech_in_noise::tests {
         snrTrackFactory.setTracks(tracks);
         method.loadTargets({});
         assertEqual(3UL, snrTrackFactory.parameters().size());
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        loadFromDirectoryCreatesEachSnrTrackWithTargetLevelRule
+    ) {
+        std::vector<std::shared_ptr<TargetList>> lists;
+        std::vector<std::shared_ptr<Track>> tracks;
+        for (int i = 0; i < 3; ++i) {
+            lists.push_back(std::make_shared<TargetListStub>());
+            tracks.push_back(std::make_shared<TrackStub>());
+        }
+        targetListSetReader.setTargetLists(lists);
+        snrTrackFactory.setTracks(tracks);
+        AdaptiveTest test;
+        test.targetLevelRule = &targetLevelRule_;
+        method.store(test);
+        method.loadTargets({});
+        for (int i = 0; i < 3; ++i)
+            assertSettingsContainTargetLevelRule(
+                snrTrackFactory.parameters().at(i)
+            );
     }
 }

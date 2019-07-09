@@ -56,25 +56,6 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestCreatesSnrTrackForEachList
-    ) {
-        run(initializingAdaptiveTest);
-        assertEqual(3UL, snrTrackFactoryParameters().size());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeAdaptiveTestCreatesEachSnrTrackWithTargetLevelRule
-    ) {
-        run(initializingAdaptiveTest);
-        for (int i = 0; i < 3; ++i)
-            assertSettingsContainTargetLevelRule(
-                snrTrackFactoryParameters().at(i)
-            );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeAdaptiveTestCreatesEachSnrTrackWithStartingSnr
     ) {
         assertSnrPassedToTrackFactory(settingStartingSnr);
