@@ -765,8 +765,8 @@ namespace av_speech_in_noise::tests {
         submitCoordinateResponsePassesPreviousTargetToEvaluatorForNumberAndColorForAdaptiveTest
     ) {
         initializingAdaptiveTest.selectList(1);
-        initializingAdaptiveTest.setTargetListCurrent(1, "a");
         run(initializingAdaptiveTest);
+        initializingAdaptiveTest.setTargetListCurrent(1, "a");
         initializingAdaptiveTest.selectList(2);
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctColorFilePath());
