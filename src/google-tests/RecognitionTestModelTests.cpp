@@ -652,11 +652,11 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesReversalsForAdaptiveTest
+        submitCoordinateResponseWritesReversalsForAdaptiveTestAfterUpdatingTrack
     ) {
         initializingAdaptiveTest.selectList(1);
         run(initializingAdaptiveTest);
-        initializingAdaptiveTest.snrTrack(1)->setReversals(2);
+        initializingAdaptiveTest.snrTrack(1)->setReversalsWhenUpdated(2);
         run(submittingCoordinateResponse);
         assertEqual(2, writtenAdaptiveCoordinateResponseTrial().reversals);
     }

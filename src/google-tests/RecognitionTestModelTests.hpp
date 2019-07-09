@@ -30,10 +30,15 @@ namespace av_speech_in_noise::tests {
         Settings settings_;
         int x_{};
         int reversals_{};
+        int reversalsWhenUpdated_{};
         bool pushedDown_{};
         bool pushedUp_{};
         bool complete_{};
     public:
+        void setReversalsWhenUpdated(int x) {
+            reversalsWhenUpdated_ = x;
+        }
+        
         void setReversals(int x) {
             reversals_ = x;
         }
@@ -52,10 +57,12 @@ namespace av_speech_in_noise::tests {
         
         void pushDown() override {
             pushedDown_ = true;
+            reversals_ = reversalsWhenUpdated_;
         }
         
         void pushUp() override {
             pushedUp_ = true;
+            reversals_ = reversalsWhenUpdated_;
         }
         
         int x() override {
