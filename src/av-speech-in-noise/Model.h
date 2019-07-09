@@ -83,6 +83,7 @@ namespace av_speech_in_noise {
         const TrackingRule *targetLevelRule;
         int startingSnr_dB;
         int ceilingSnr_dB;
+        int floorSnr_dB;
     };
     
     struct FixedLevelTest {

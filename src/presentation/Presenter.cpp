@@ -4,10 +4,11 @@
 namespace av_speech_in_noise {
     int Presenter::fullScaleLevel_dB_SPL = 119;
     int Presenter::ceilingSnr_dB = 20;
+    int Presenter::floorSnr_dB = -40;
     
     TrackingRule Presenter::targetLevelRule = {
-        { 2, 4, 1, 1 },
-        { 6, 2, 1, 1 }
+        { 2, 4, 2, 1 },
+        { 8, 2, 2, 1 }
     };
     
     Presenter::Presenter(
@@ -277,6 +278,7 @@ namespace av_speech_in_noise {
         p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
         p.information = testInformation();
         p.ceilingSnr_dB = ceilingSnr_dB;
+        p.floorSnr_dB = floorSnr_dB;
         p.targetLevelRule = &targetLevelRule;
         p.common = commonTest();
         return p;
