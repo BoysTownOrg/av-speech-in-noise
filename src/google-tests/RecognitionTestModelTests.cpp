@@ -70,6 +70,13 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeAdaptiveTestCreatesEachSnrTrackWithFloorSnr
+    ) {
+        assertSnrPassedToTrackFactory(settingFloorSnr);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         initializeAdaptiveTestClosesOutputFileOpensAndWritesTestInOrder
     ) {
         assertClosesOutputFileOpensAndWritesTestInOrder(initializingAdaptiveTest);

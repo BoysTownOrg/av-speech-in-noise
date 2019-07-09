@@ -283,6 +283,10 @@ namespace av_speech_in_noise::tests {
             test_.ceilingSnr_dB = x;
         }
         
+        void setFloorSnr_dB(int x) {
+            test_.floorSnr_dB = x;
+        }
+        
         void setFullScaleLevel_dB_SPL(int x) {
             common().fullScaleLevel_dB_SPL = x;
         }
@@ -336,6 +340,17 @@ namespace av_speech_in_noise::tests {
         
         int value(const Track::Settings & s) override {
             return s.ceiling;
+        }
+    };
+
+    class SettingFloorSnr : public SnrUseCase {
+    public:
+        void setSnr(InitializingAdaptiveTest &test, int x) override {
+            test.setFloorSnr_dB(x);
+        }
+        
+        int value(const Track::Settings & s) override {
+            return s.floor;
         }
     };
 
@@ -513,6 +528,7 @@ namespace av_speech_in_noise::tests {
         SubmittingFreeResponse submittingFreeResponse;
         SettingStartingSnr settingStartingSnr;
         SettingCeilingSnr settingCeilingSnr;
+        SettingFloorSnr settingFloorSnr;
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);

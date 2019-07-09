@@ -19,6 +19,7 @@ namespace av_speech_in_noise {
         trackSettings.ceiling = p.ceilingSnr_dB;
         trackSettings.rule = p.targetLevelRule;
         trackSettings.startingX = p.startingSnr_dB;
+        trackSettings.floor = p.floorSnr_dB;
         lists = targetListSetReader->read(p.common.targetListDirectory);
         selectNextListAfter(&AdaptiveMethod::makeSnrTracks);
     }
