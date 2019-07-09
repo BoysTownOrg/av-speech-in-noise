@@ -432,6 +432,7 @@ void CocoaSubjectView::addNumberButton(NSColor *color, int number, int row, std:
     auto attrsDictionary = [NSDictionary
         dictionaryWithObjectsAndKeys:
         color, NSForegroundColorAttributeName,
+        NSColor.blackColor, NSBackgroundColorAttributeName,
         style, NSParagraphStyleAttributeName,
         [NSFont fontWithName:@"Courier" size:36], NSFontAttributeName,
         nil
