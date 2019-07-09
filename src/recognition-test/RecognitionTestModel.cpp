@@ -19,10 +19,7 @@ namespace av_speech_in_noise {
         trackSettings.ceiling = p.ceilingSnr_dB;
         trackSettings.rule = p.targetLevelRule;
         trackSettings.startingX = p.startingSnr_dB;
-    }
-    
-    void AdaptiveMethod::loadTargets(const std::string &p) {
-        lists = targetListSetReader->read(p);
+        lists = targetListSetReader->read(p.common.targetListDirectory);
         selectNextListAfter(&AdaptiveMethod::makeSnrTracks);
     }
     
@@ -168,15 +165,12 @@ namespace av_speech_in_noise {
     
     void FixedLevelMethod::store(const FixedLevelTest &p) {
         snr_dB_ = p.snr_dB;
+        targetList->loadFromDirectory(p.common.targetListDirectory);
+        updateCompletion();
     }
     
     int FixedLevelMethod::snr_dB() {
         return snr_dB_;
-    }
-    
-    void FixedLevelMethod::loadTargets(const std::string &p) {
-        targetList->loadFromDirectory(p);
-        updateCompletion();
     }
     
     void FixedLevelMethod::updateCompletion() {
@@ -231,7 +225,6 @@ namespace av_speech_in_noise {
         bool complete() override { return {}; }
         std::string next() override { return {}; }
         std::string current() override { return {}; }
-        void loadTargets(const std::string &) override {}
         int snr_dB() override { return {}; }
         void submitCorrectResponse() override {}
         void submitIncorrectResponse() override {}
@@ -306,7 +299,6 @@ namespace av_speech_in_noise {
         storeLevels(common);
         prepareMasker(common.maskerFilePath);
         prepareVideo(common.condition);
-        testMethod->loadTargets(common.targetListDirectory);
         preparePlayersForNextTrial();
     }
     

@@ -146,7 +146,6 @@ namespace av_speech_in_noise {
         virtual bool complete() = 0;
         virtual std::string next() = 0;
         virtual std::string current() = 0;
-        virtual void loadTargets(const std::string &) = 0;
         virtual int snr_dB() = 0;
         virtual void submitCorrectResponse() = 0;
         virtual void submitIncorrectResponse() = 0;
@@ -186,7 +185,6 @@ namespace av_speech_in_noise {
         );
         void store(const AdaptiveTest &);
         int snr_dB() override;
-        void loadTargets(const std::string &) override;
         void submitIncorrectResponse() override;
         void submitCorrectResponse() override;
         bool complete() override;
@@ -236,7 +234,6 @@ namespace av_speech_in_noise {
         );
         void store(const FixedLevelTest &);
         int snr_dB() override;
-        void loadTargets(const std::string &) override;
         std::string next() override;
         bool complete() override;
         std::string current() override;
