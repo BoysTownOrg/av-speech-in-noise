@@ -102,10 +102,12 @@ namespace av_speech_in_noise {
     }
     
     void AdaptiveMethod::incorrect() {
+        lastSnr_dB = snr_dB();
         currentSnrTrack->pushUp();
     }
     
     void AdaptiveMethod::correct() {
+        lastSnr_dB = snr_dB();
         currentSnrTrack->pushDown();
     }
     
@@ -141,7 +143,7 @@ namespace av_speech_in_noise {
         trial.reversals = currentSnrTrack->reversals();
         trial.trial.correctColor = evaluator->correctColor(current());
         trial.trial.correctNumber = evaluator->correctNumber(current());
-        trial.SNR_dB = snr_dB();
+        trial.SNR_dB = lastSnr_dB;
         trial.trial.correct = correct(response);
         file->writeTrial(trial);
     }

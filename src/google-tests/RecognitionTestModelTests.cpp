@@ -663,11 +663,12 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesSnrForAdaptiveTest
+        submitCoordinateResponseWritesSnrBeforeUpdatingForAdaptiveTest
     ) {
         initializingAdaptiveTest.selectList(1);
         run(initializingAdaptiveTest);
         initializingAdaptiveTest.snrTrack(1)->setX(2);
+        initializingAdaptiveTest.snrTrack(1)->setXWhenUpdated(3);
         submitCoordinateResponse();
         assertEqual(2, writtenAdaptiveCoordinateResponseTrial().SNR_dB);
     }
