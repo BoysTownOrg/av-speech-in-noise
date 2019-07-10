@@ -485,11 +485,11 @@ namespace av_speech_in_noise::tests {
         assertTargetPlayerPlayed();
     }
 
-    TEST_F(RecognitionTestModelTests, fadeInCompleteShowsTargetPlayerWhenAudioVisualForAdaptiveTest) {
+    TEST_F(RecognitionTestModelTests, startTrialShowsTargetPlayerWhenAudioVisualForAdaptiveTest) {
         assertAudioVisualConditionShowsTargetVideo(initializingAdaptiveTest);
     }
 
-    TEST_F(RecognitionTestModelTests, fadeInCompleteShowsTargetPlayerWhenAudioVisualForFixedLevelTest) {
+    TEST_F(RecognitionTestModelTests, startTrialShowsTargetPlayerWhenAudioVisualForFixedLevelTest) {
         assertAudioVisualConditionShowsTargetVideo(initializingFixedLevelTest);
     }
 
@@ -501,11 +501,11 @@ namespace av_speech_in_noise::tests {
         assertAudioVisualConditionHidesTargetVideo(initializingFixedLevelTest);
     }
 
-    TEST_F(RecognitionTestModelTests, fadeInCompleteDoesNotShowTargetPlayerWhenAuditoryOnlyForAdaptiveTest) {
+    TEST_F(RecognitionTestModelTests, startTrialDoesNotShowTargetPlayerWhenAuditoryOnlyForAdaptiveTest) {
         assertAuditoryOnlyConditionDoesNotShowTargetVideo(initializingAdaptiveTest);
     }
 
-    TEST_F(RecognitionTestModelTests, fadeInCompleteDoesNotShowTargetPlayerWhenAuditoryOnlyForFixedLevelTest) {
+    TEST_F(RecognitionTestModelTests, startTrialDoesNotShowTargetPlayerWhenAuditoryOnlyForFixedLevelTest) {
         assertAuditoryOnlyConditionDoesNotShowTargetVideo(initializingFixedLevelTest);
     }
 

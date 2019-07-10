@@ -1004,7 +1004,7 @@ namespace av_speech_in_noise::tests {
         void assertAudioVisualConditionShowsTargetVideo(InitializingTestUseCase &useCase) {
             useCase.setAudioVisual();
             run(useCase);
-            maskerPlayer.fadeInComplete();
+            playTrial();
             assertTargetVideoOnlyShown();
         }
         

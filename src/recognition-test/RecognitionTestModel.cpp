@@ -417,6 +417,8 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::startTrial() {
+        if (!auditoryOnly(condition))
+            targetPlayer->showVideo();
         maskerPlayer->fadeIn();
     }
     
