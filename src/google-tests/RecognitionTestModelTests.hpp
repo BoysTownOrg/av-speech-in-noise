@@ -182,6 +182,7 @@ namespace av_speech_in_noise::tests {
         {
             test_.targetLevelRule = &targetLevelRule_;
             setTargetListCount(3);
+            selectList(1);
         }
         
         auto &common() {
@@ -197,8 +198,8 @@ namespace av_speech_in_noise::tests {
         }
         
         void setSnr_dB(int x) override {
-            snrTrack(1)->setX(x);
-            selectList(1);
+            snrTrack(2)->setX(x);
+            selectList(2);
         }
         
         void setNextTarget(std::string s) override {
@@ -208,7 +209,6 @@ namespace av_speech_in_noise::tests {
         
         void setCurrentTarget(std::string s) override {
             setTargetListCurrent(1, std::move(s));
-            selectList(1);
         }
         
         void setTargetListNext(int n, std::string s) {
@@ -397,10 +397,12 @@ namespace av_speech_in_noise::tests {
         
         void setCurrentTarget(std::string s) override {
             finiteTargetList->setCurrent(std::move(s));
+            targetList->setCurrent(std::move(s));
         }
         
         void setCurrentTargetWhenNext(std::string s) {
             finiteTargetList->setCurrentTargetWhenNext(std::move(s));
+            targetList->setCurrentTargetWhenNext(std::move(s));
         }
         
         void setMaskerLevel_dB_SPL(int x) {
@@ -1031,8 +1033,8 @@ namespace av_speech_in_noise::tests {
         void assertCoordinateResponsePassesCurrentTargetToEvaluatorForDeterminingResponseCorrectness(
             InitializingTestUseCase &initializingTest
         ) {
-            initializingTest.setCurrentTarget("a");
             run(initializingTest);
+            initializingTest.setCurrentTarget("a");
             submitCoordinateResponse();
             assertEqual("a", evaluator.correctFilePath());
         }
@@ -1047,8 +1049,8 @@ namespace av_speech_in_noise::tests {
             InitializingTestUseCase &initializingTest,
             UseCase &useCase
         ) {
-            initializingTest.setCurrentTarget("a");
             run(initializingTest);
+            initializingTest.setCurrentTarget("a");
             run(useCase);
             assertEqual("a", evaluator.filePathForFileName());
         }

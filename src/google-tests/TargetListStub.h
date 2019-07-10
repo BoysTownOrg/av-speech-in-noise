@@ -7,6 +7,7 @@
 namespace av_speech_in_noise::tests {
     class TargetListStub : public TargetList {
         LogString log_{};
+        std::string currentWhenNext_{};
         std::string directory_{};
         std::string next_{};
         std::string current_{};
@@ -20,6 +21,10 @@ namespace av_speech_in_noise::tests {
             current_ = std::move(s);
         }
         
+        void setCurrentTargetWhenNext(std::string s) {
+            currentWhenNext_ = std::move(s);
+        }
+        
         void loadFromDirectory(std::string directory) override {
             log_.insert("loadFromDirectory ");
             directory_ = std::move(directory);
@@ -28,6 +33,7 @@ namespace av_speech_in_noise::tests {
         std::string next() override {
             log_.insert("next ");
             nextCalled_ = true;
+            current_ = currentWhenNext_;
             return next_;
         }
         

@@ -45,8 +45,6 @@ namespace av_speech_in_noise {
     }
 
     void AdaptiveMethod::selectNextList() {
-        if (currentTargetList)
-            previousTarget = current();
         removeCompleteTracks();
         auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
         size_t n = randomizer->randomIntBetween(0, remainingLists - 1);
@@ -79,6 +77,8 @@ namespace av_speech_in_noise {
         const coordinate_response_measure::SubjectResponse &response
     ) {
         submitResponse_(response);
+        if (currentTargetList)
+            previousTarget = current();
         selectNextList();
     }
     
@@ -144,7 +144,7 @@ namespace av_speech_in_noise {
         trial.trial.correctColor = evaluator->correctColor(previousTarget);
         trial.trial.correctNumber = evaluator->correctNumber(previousTarget);
         trial.SNR_dB = lastSnr_dB;
-        trial.trial.correct = correct(response);
+        trial.trial.correct = evaluator->correct(previousTarget, response);
         file->writeTrial(trial);
     }
     
@@ -169,7 +169,6 @@ namespace av_speech_in_noise {
     void FixedLevelMethod::initialize(const FixedLevelTest &p) {
         snr_dB_ = p.snr_dB;
         trials_ = p.trials;
-        //targetList->loadFromDirectory(p.common.targetListDirectory);
         targetList2->loadFromDirectory(p.common.targetListDirectory);
         updateCompletion();
     }
@@ -183,7 +182,6 @@ namespace av_speech_in_noise {
     }
     
     std::string FixedLevelMethod::next() {
-        previousTarget = current();
         targetList2->next();
         return targetList->next();
     }
@@ -220,6 +218,7 @@ namespace av_speech_in_noise {
     void FixedLevelMethod::submitResponse(
         const coordinate_response_measure::SubjectResponse &
     ) {
+        previousTarget = current();
         --trials_;
         updateCompletion();
     }
