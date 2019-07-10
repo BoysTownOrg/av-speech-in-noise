@@ -16,7 +16,7 @@
 #include <gsl/gsl>
 #include <cmath>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise::tests::recognition_test {
     class ModelEventListenerStub : public Model::EventListener {
         bool notified_{};
     public:
