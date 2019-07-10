@@ -405,6 +405,7 @@ namespace av_speech_in_noise {
 
     void Presenter::Subject::submitResponse() {
         parent->submitSubjectResponse();
+        showNextTrialButton();
         hideResponseButtons();
     }
     

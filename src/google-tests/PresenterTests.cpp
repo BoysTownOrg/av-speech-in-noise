@@ -524,6 +524,10 @@ namespace av_speech_in_noise::tests::presentation {
         assertDoesNotHideExperimenterView(submittingFailedTrial);
     }
 
+    TEST_F(PresenterTests, subjectResponseShowsNextTrialButton) {
+        assertShowsNextTrialButton(respondingFromSubject);
+    }
+
     TEST_F(PresenterTests, experimenterResponseShowsNextTrialButton) {
         assertShowsNextTrialButton(respondingFromExperimenter);
     }
