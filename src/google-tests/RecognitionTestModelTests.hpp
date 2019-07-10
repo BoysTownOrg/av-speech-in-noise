@@ -996,6 +996,13 @@ namespace av_speech_in_noise::tests {
             submitCoordinateResponse();
             assertTargetFilePathEquals("a");
         }
+        
+        void assertAudioVisualConditionShowsTargetVideo(InitializingTestUseCase &useCase) {
+            useCase.setAudioVisual();
+            run(useCase);
+            maskerPlayer.fadeInComplete();
+            assertTargetVideoOnlyShown();
+        }
     };
 }
 #endif

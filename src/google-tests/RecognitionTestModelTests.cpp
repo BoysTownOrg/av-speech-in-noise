@@ -513,11 +513,12 @@ namespace av_speech_in_noise::tests {
         assertTargetPlayerPlayed();
     }
 
-    TEST_F(RecognitionTestModelTests, fadeInCompleteShowsTargetPlayerWhenAudioVisual) {
-        initializingAdaptiveTest.setAudioVisual();
-        run(initializingAdaptiveTest);
-        maskerPlayer.fadeInComplete();
-        assertTargetVideoOnlyShown();
+    TEST_F(RecognitionTestModelTests, fadeInCompleteShowsTargetPlayerWhenAudioVisualForAdaptiveTest) {
+        assertAudioVisualConditionShowsTargetVideo(initializingAdaptiveTest);
+    }
+
+    TEST_F(RecognitionTestModelTests, fadeInCompleteShowsTargetPlayerWhenAudioVisualForFixedLevelTest) {
+        assertAudioVisualConditionShowsTargetVideo(initializingFixedLevelTest);
     }
 
     TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
