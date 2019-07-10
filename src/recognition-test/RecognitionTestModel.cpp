@@ -495,7 +495,11 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::playCalibration_(const Calibration &p) {
         setTargetPlayerDevice(p);
-        loadTargetFile(p.filePath);
+        try {
+            loadTargetFile(p.filePath);
+        } catch (const InvalidAudioFile &) {
+            throw RequestFailure{"unable to read " + p.filePath};
+        }
         trySettingTargetLevel(p);
         prepareVideo(p.condition);
         playTarget();

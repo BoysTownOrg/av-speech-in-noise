@@ -815,6 +815,15 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
+        playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile2
+    ) {
+        playingCalibration.setFilePath("a");
+        targetPlayer.throwInvalidAudioFileOnLoad();
+        assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         playTrialWithInvalidAudioDeviceThrowsRequestFailure
     ) {
         assertThrowsRequestFailureWhenInvalidAudioDevice(playingTrial);
