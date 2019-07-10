@@ -174,8 +174,6 @@ namespace av_speech_in_noise {
         Randomizer *randomizer;
         Track *currentSnrTrack;
         TargetList *currentTargetList;
-        int lastSnr_dB{};
-        int reversals_{};
     public:
         AdaptiveMethod(
             TargetListReader *,

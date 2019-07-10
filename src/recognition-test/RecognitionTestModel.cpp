@@ -78,27 +78,21 @@ namespace av_speech_in_noise {
     void AdaptiveMethod::submitResponse(
         const coordinate_response_measure::SubjectResponse &response
     ) {
-        submitResponse_(response);
-        auto current_ = current();
-        lastTrial.trial.subjectColor = response.color;
-        lastTrial.trial.subjectNumber = response.number;
-        lastTrial.reversals = reversals_;
-        lastTrial.trial.correctColor = evaluator->correctColor(current_);
-        lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
-        lastTrial.SNR_dB = lastSnr_dB;
-        lastTrial.trial.correct = correct(current_, response);
-        selectNextList();
-    }
-    
-    void AdaptiveMethod::submitResponse_(
-        const coordinate_response_measure::SubjectResponse &response
-    ) {
-        lastSnr_dB = snr_dB();
-        if (correct(current(), response))
+        auto lastSnr_dB_ = snr_dB();
+        auto correct_ = correct(current(), response);
+        if (correct_)
             correct();
         else
             incorrect();
-        reversals_ = currentSnrTrack->reversals();
+        auto current_ = current();
+        lastTrial.trial.subjectColor = response.color;
+        lastTrial.trial.subjectNumber = response.number;
+        lastTrial.reversals = currentSnrTrack->reversals();
+        lastTrial.trial.correctColor = evaluator->correctColor(current_);
+        lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
+        lastTrial.SNR_dB = lastSnr_dB_;
+        lastTrial.trial.correct = correct_;
+        selectNextList();
     }
 
     bool AdaptiveMethod::correct(
