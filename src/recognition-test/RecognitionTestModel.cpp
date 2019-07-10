@@ -191,7 +191,7 @@ namespace av_speech_in_noise {
     }
     
     std::string FixedLevelMethod::current() {
-        return targetList->current();
+        return targetList2->current();
     }
     
     void FixedLevelMethod::submitIncorrectResponse() {

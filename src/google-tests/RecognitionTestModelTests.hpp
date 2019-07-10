@@ -391,18 +391,18 @@ namespace av_speech_in_noise::tests {
         }
         
         void setNextTarget(std::string s) override {
-            finiteTargetList->setNext(std::move(s));
-            targetList->setNext(std::move(s));
+            finiteTargetList->setNext(s);
+            targetList->setNext(s);
         }
         
         void setCurrentTarget(std::string s) override {
-            finiteTargetList->setCurrent(std::move(s));
-            targetList->setCurrent(std::move(s));
+            finiteTargetList->setCurrent(s);
+            targetList->setCurrent(s);
         }
         
         void setCurrentTargetWhenNext(std::string s) {
-            finiteTargetList->setCurrentTargetWhenNext(std::move(s));
-            targetList->setCurrentTargetWhenNext(std::move(s));
+            finiteTargetList->setCurrentTargetWhenNext(s);
+            targetList->setCurrentTargetWhenNext(s);
         }
         
         void setMaskerLevel_dB_SPL(int x) {
