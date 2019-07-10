@@ -45,6 +45,14 @@ namespace av_speech_in_noise::tests {
             m.submitResponse(response_);
         }
         
+        void setNumber(int n) {
+            response_.number = n;
+        }
+        
+        void setColor(coordinate_response_measure::Color c) {
+            response_.color = c;
+        }
+        
         auto &response() const {
             return response_;
         }
@@ -317,15 +325,15 @@ namespace av_speech_in_noise::tests {
         }
         
         void setNextTarget(std::string s) override {
-            targetList->setNext(s);
+            targetList->setNext(std::move(s));
         }
         
         void setCurrentTarget(std::string s) override {
-            targetList->setCurrent(s);
+            targetList->setCurrent(std::move(s));
         }
         
         void setCurrentTargetWhenNext(std::string s) {
-            targetList->setCurrentTargetWhenNext(s);
+            targetList->setCurrentTargetWhenNext(std::move(s));
         }
         
         void setMaskerLevel_dB_SPL(int x) {
@@ -360,8 +368,8 @@ namespace av_speech_in_noise::tests {
             return test_.information;
         }
         
-        const coordinate_response_measure::Trial &writtenCoordinateResponseTrial(
-            OutputFileStub &file
+        const coordinate_response_measure::Trial &
+            writtenCoordinateResponseTrial(OutputFileStub &file
         ) override {
             return file.writtenFixedLevelTrial2();
         }
@@ -426,7 +434,6 @@ namespace av_speech_in_noise::tests {
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
         Calibration calibration;
-        coordinate_response_measure::SubjectResponse coordinateResponse;
         TargetListSetReaderStub targetListSetReader;
         TargetListStub targetList;
         TargetPlayerStub targetPlayer;
@@ -489,7 +496,7 @@ namespace av_speech_in_noise::tests {
         }
         
         void submitCoordinateResponse() {
-            model.submitResponse(coordinateResponse);
+            run(submittingCoordinateResponse);
         }
         
         void setOutputAudioDeviceDescriptions(std::vector<std::string> v) {
@@ -896,14 +903,14 @@ namespace av_speech_in_noise::tests {
         
         void assertWritesSubjectColor(InitializingTestUseCase &useCase) {
             run(useCase);
-            coordinateResponse.color = blueColor();
+            submittingCoordinateResponse.setColor(blueColor());
             submitCoordinateResponse();
             assertEqual(blueColor(), writtenCoordinateResponseTrial(useCase).subjectColor);
         }
         
         void assertWritesSubjectNumber(InitializingTestUseCase &useCase) {
             run(useCase);
-            coordinateResponse.number = 1;
+            submittingCoordinateResponse.setNumber(1);
             submitCoordinateResponse();
             assertEqual(1, writtenCoordinateResponseTrial(useCase).subjectNumber);
         }
