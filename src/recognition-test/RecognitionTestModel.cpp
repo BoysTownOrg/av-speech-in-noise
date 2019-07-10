@@ -133,10 +133,7 @@ namespace av_speech_in_noise {
         currentSnrTrack->pushUp();
     }
     
-    void AdaptiveMethod::writeLastTrial(
-        OutputFile *file,
-        const coordinate_response_measure::SubjectResponse &response
-    ) {
+    void AdaptiveMethod::writeLastCoordinateResponse(OutputFile *file) {
         file->writeTrial(lastTrial);
     }
     
@@ -200,10 +197,7 @@ namespace av_speech_in_noise {
         return targetList->current();
     }
     
-    void FixedLevelMethod::writeLastTrial(
-        OutputFile *file,
-        const coordinate_response_measure::SubjectResponse &response
-    ) {
+    void FixedLevelMethod::writeLastCoordinateResponse(OutputFile *file) {
         file->writeTrial(lastTrial);
     }
     
@@ -226,10 +220,7 @@ namespace av_speech_in_noise {
         int snr_dB() override { return {}; }
         void submitCorrectResponse() override {}
         void submitIncorrectResponse() override {}
-        void writeLastTrial(
-            OutputFile *,
-            const coordinate_response_measure::SubjectResponse &
-        ) override {}
+        void writeLastCoordinateResponse(OutputFile *) override {}
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) override {}
@@ -449,13 +440,7 @@ namespace av_speech_in_noise {
         const coordinate_response_measure::SubjectResponse &response
     ) {
         submitResponse_(response);
-        writeTrial(response);
-    }
-    
-    void RecognitionTestModel::writeTrial(
-        const coordinate_response_measure::SubjectResponse &response
-    ) {
-        testMethod->writeLastTrial(outputFile, response);
+        testMethod->writeLastCoordinateResponse(outputFile);
         outputFile->save();
     }
     

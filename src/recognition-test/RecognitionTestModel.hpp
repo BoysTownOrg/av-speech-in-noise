@@ -150,10 +150,7 @@ namespace av_speech_in_noise {
         virtual void submitCorrectResponse() = 0;
         virtual void submitIncorrectResponse() = 0;
         virtual void submitResponse(const FreeResponse &) = 0;
-        virtual void writeLastTrial(
-            OutputFile *,
-            const coordinate_response_measure::SubjectResponse &
-        ) = 0;
+        virtual void writeLastCoordinateResponse(OutputFile *) = 0;
         virtual void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) = 0;
@@ -188,10 +185,7 @@ namespace av_speech_in_noise {
         bool complete() override;
         std::string next() override;
         std::string current() override;
-        void writeLastTrial(
-            OutputFile *,
-            const coordinate_response_measure::SubjectResponse &
-        ) override;
+        void writeLastCoordinateResponse(OutputFile *) override;
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) override;
@@ -239,10 +233,7 @@ namespace av_speech_in_noise {
         std::string current() override;
         void submitIncorrectResponse() override;
         void submitCorrectResponse() override;
-        void writeLastTrial(
-            OutputFile *,
-            const coordinate_response_measure::SubjectResponse &
-        ) override;
+        void writeLastCoordinateResponse(OutputFile *) override;
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) override;
