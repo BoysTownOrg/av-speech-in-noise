@@ -248,6 +248,7 @@ namespace av_speech_in_noise {
         TestMethod *testMethod{};
         int maskerLevel_dB_SPL{};
         int fullScaleLevel_dB_SPL{};
+        Condition condition;
     public:
         RecognitionTestModel(
             AdaptiveMethod *,

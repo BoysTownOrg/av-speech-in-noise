@@ -287,6 +287,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::prepareCommonTest(const CommonTest &common) {
         storeLevels(common);
         prepareMasker(common.maskerFilePath);
+        condition = common.condition;
         preparePlayersForNextTrial();
     }
     
@@ -420,7 +421,8 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::fadeInComplete() {
-        targetPlayer->showVideo();
+        if (!auditoryOnly(condition))
+            targetPlayer->showVideo();
         playTarget();
     }
     

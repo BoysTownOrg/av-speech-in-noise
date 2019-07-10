@@ -548,6 +548,10 @@ namespace av_speech_in_noise::tests {
             assertFalse(targetPlayerVideoHidden());
         }
         
+        void assertTargetNotShown() {
+            assertFalse(targetPlayerVideoShown());
+        }
+        
         void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
             setTrialInProgress();
             assertCallThrowsRequestFailure(useCase, "Trial in progress.");
