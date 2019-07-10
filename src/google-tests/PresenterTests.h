@@ -1398,6 +1398,10 @@ namespace av_speech_in_noise::tests::presentation {
             assertTrue(setupView.methods().contains(std::move(s)));
         }
         
+        void assertSetupViewMethodsContains(Method m) {
+            assertTrue(setupView.methods().contains(methodName(m)));
+        }
+        
         void setCondition(std::string s) {
             setupView.setCondition(std::move(s));
         }

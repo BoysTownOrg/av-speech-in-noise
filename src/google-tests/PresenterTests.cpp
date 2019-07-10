@@ -7,10 +7,10 @@ namespace av_speech_in_noise::tests::presentation {
     }
 
     TEST_F(PresenterTests, populatesMethodMenu) {
-        assertSetupViewMethodsContains(methodName(Method::fixedLevelOpenSet));
-        assertSetupViewMethodsContains(methodName(Method::fixedLevelClosedSet));
-        assertSetupViewMethodsContains(methodName(Method::adaptiveOpenSet));
-        assertSetupViewMethodsContains(methodName(Method::adaptiveClosedSet));
+        assertSetupViewMethodsContains(Method::fixedLevelOpenSet);
+        assertSetupViewMethodsContains(Method::fixedLevelClosedSet);
+        assertSetupViewMethodsContains(Method::adaptiveOpenSet);
+        assertSetupViewMethodsContains(Method::adaptiveClosedSet);
     }
 
     TEST_F(PresenterTests, callsEventLoopWhenRun) {
