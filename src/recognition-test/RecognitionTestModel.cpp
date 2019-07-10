@@ -287,6 +287,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::prepareCommonTest(const CommonTest &common) {
         storeLevels(common);
         prepareMasker(common.maskerFilePath);
+        targetPlayer->hideVideo();
         condition = common.condition;
         preparePlayersForNextTrial();
     }

@@ -1005,7 +1005,7 @@ namespace av_speech_in_noise::tests::recognition_test {
             useCase.setAudioVisual();
             run(useCase);
             playTrial();
-            assertTargetVideoOnlyShown();
+            assertTrue(targetPlayerVideoShown());
         }
         
         void assertAudioVisualConditionHidesTargetVideo(InitializingTestUseCase &useCase) {

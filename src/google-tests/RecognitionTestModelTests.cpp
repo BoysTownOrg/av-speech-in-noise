@@ -509,6 +509,11 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertAuditoryOnlyConditionDoesNotShowTargetVideo(initializingFixedLevelTest);
     }
 
+    TEST_F(RecognitionTestModelTests, initializeTestHidesTargetPlayerForFixedLevelTest) {
+        run(initializingFixedLevelTest);
+        assertTargetVideoOnlyHidden();
+    }
+
     TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
         targetPlayer.playbackComplete();
         assertTrue(maskerPlayer.fadeOutCalled());
