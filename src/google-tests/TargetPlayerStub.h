@@ -18,15 +18,10 @@ namespace av_speech_in_noise::tests {
         bool videoShown_{};
         bool throwInvalidAudioDeviceWhenDeviceSet_{};
         bool throwInvalidAudioFileOnRms_{};
-        bool throwInvalidAudioFileOnLoad_{};
         bool setDeviceCalled_{};
         bool playing_{};
         bool playbackCompletionSubscribedTo_{};
     public:
-        void throwInvalidAudioFileOnLoad() {
-            throwInvalidAudioFileOnLoad_ = true;
-        }
-        
         void subscribeToPlaybackCompletion() override {
             playbackCompletionSubscribedTo_ = true;
         }
@@ -97,8 +92,6 @@ namespace av_speech_in_noise::tests {
         void loadFile(std::string filePath) override {
             addToLog("loadFile ");
             filePath_ = std::move(filePath);
-            if (throwInvalidAudioFileOnLoad_)
-                throw InvalidAudioFile{};
         }
         
         void addToLog(std::string s) {
