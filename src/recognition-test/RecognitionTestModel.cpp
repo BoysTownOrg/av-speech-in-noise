@@ -79,7 +79,14 @@ namespace av_speech_in_noise {
         const coordinate_response_measure::SubjectResponse &response
     ) {
         submitResponse_(response);
-        previousTarget = current();
+        auto current_ = current();
+        lastTrial.trial.subjectColor = response.color;
+        lastTrial.trial.subjectNumber = response.number;
+        lastTrial.reversals = reversals_;
+        lastTrial.trial.correctColor = evaluator->correctColor(current_);
+        lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
+        lastTrial.SNR_dB = lastSnr_dB;
+        lastTrial.trial.correct = correct(current_, response);
         selectNextList();
     }
     
@@ -135,19 +142,11 @@ namespace av_speech_in_noise {
         return currentTargetList->next();
     }
     
-    void AdaptiveMethod::writeTrial(
+    void AdaptiveMethod::writeLastTrial(
         OutputFile *file,
         const coordinate_response_measure::SubjectResponse &response
     ) {
-        coordinate_response_measure::AdaptiveTrial trial;
-        trial.trial.subjectColor = response.color;
-        trial.trial.subjectNumber = response.number;
-        trial.reversals = reversals_;
-        trial.trial.correctColor = evaluator->correctColor(previousTarget);
-        trial.trial.correctNumber = evaluator->correctNumber(previousTarget);
-        trial.SNR_dB = lastSnr_dB;
-        trial.trial.correct = correct(previousTarget, response);
-        file->writeTrial(trial);
+        file->writeTrial(lastTrial);
     }
     
     int AdaptiveMethod::snr_dB() {
@@ -201,7 +200,7 @@ namespace av_speech_in_noise {
         
     }
     
-    void FixedLevelMethod::writeTrial(
+    void FixedLevelMethod::writeLastTrial(
         OutputFile *file,
         const coordinate_response_measure::SubjectResponse &response
     ) {
@@ -233,7 +232,7 @@ namespace av_speech_in_noise {
         int snr_dB() override { return {}; }
         void submitCorrectResponse() override {}
         void submitIncorrectResponse() override {}
-        void writeTrial(
+        void writeLastTrial(
             OutputFile *,
             const coordinate_response_measure::SubjectResponse &
         ) override {}
@@ -462,7 +461,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::writeTrial(
         const coordinate_response_measure::SubjectResponse &response
     ) {
-        testMethod->writeTrial(outputFile, response);
+        testMethod->writeLastTrial(outputFile, response);
         outputFile->save();
     }
     

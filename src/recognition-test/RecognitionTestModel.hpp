@@ -150,7 +150,7 @@ namespace av_speech_in_noise {
         virtual void submitCorrectResponse() = 0;
         virtual void submitIncorrectResponse() = 0;
         virtual void submitResponse(const FreeResponse &) = 0;
-        virtual void writeTrial(
+        virtual void writeLastTrial(
             OutputFile *,
             const coordinate_response_measure::SubjectResponse &
         ) = 0;
@@ -167,7 +167,7 @@ namespace av_speech_in_noise {
         TargetListReader::lists_type lists{};
         std::vector<TargetListWithTrack> targetListsWithTracks{};
         Track::Settings trackSettings{};
-        std::string previousTarget{};
+        coordinate_response_measure::AdaptiveTrial lastTrial;
         TargetListReader *targetListSetReader;
         TrackFactory *snrTrackFactory;
         ResponseEvaluator *evaluator;
@@ -190,7 +190,7 @@ namespace av_speech_in_noise {
         bool complete() override;
         std::string next() override;
         std::string current() override;
-        void writeTrial(
+        void writeLastTrial(
             OutputFile *,
             const coordinate_response_measure::SubjectResponse &
         ) override;
@@ -241,7 +241,7 @@ namespace av_speech_in_noise {
         std::string current() override;
         void submitIncorrectResponse() override;
         void submitCorrectResponse() override;
-        void writeTrial(
+        void writeLastTrial(
             OutputFile *,
             const coordinate_response_measure::SubjectResponse &
         ) override;
