@@ -431,11 +431,11 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::playbackComplete() {
-        targetPlayer->hideVideo();
         maskerPlayer->fadeOut();
     }
     
     void RecognitionTestModel::fadeOutComplete() {
+        targetPlayer->hideVideo();
         listener_->trialComplete();
     }
     
