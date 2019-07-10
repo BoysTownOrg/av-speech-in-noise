@@ -357,14 +357,11 @@ namespace av_speech_in_noise::tests {
     class InitializingFixedLevelTest : public InitializingTestUseCase
     {
         FixedLevelTest test_;
-        FiniteTargetListStub *finiteTargetList;
         TargetListStub *targetList;
     public:
         InitializingFixedLevelTest(
-            FiniteTargetListStub *finiteTargetList,
             TargetListStub *targetList
         ) :
-            finiteTargetList{finiteTargetList},
             targetList{targetList}
         {
             test_.trials = 3;
@@ -375,7 +372,6 @@ namespace av_speech_in_noise::tests {
         }
         
         void setComplete() override {
-            finiteTargetList->setEmpty();
         }
         
         auto &common() {
@@ -391,17 +387,14 @@ namespace av_speech_in_noise::tests {
         }
         
         void setNextTarget(std::string s) override {
-            finiteTargetList->setNext(s);
             targetList->setNext(s);
         }
         
         void setCurrentTarget(std::string s) override {
-            finiteTargetList->setCurrent(s);
             targetList->setCurrent(s);
         }
         
         void setCurrentTargetWhenNext(std::string s) {
-            finiteTargetList->setCurrentTargetWhenNext(s);
             targetList->setCurrentTargetWhenNext(s);
         }
         
@@ -505,7 +498,6 @@ namespace av_speech_in_noise::tests {
         Calibration calibration;
         coordinate_response_measure::SubjectResponse coordinateResponse;
         TargetListSetReaderStub targetListSetReader;
-        FiniteTargetListStub finiteTargetList;
         TargetListStub targetList;
         TargetPlayerStub targetPlayer;
         MaskerPlayerStub maskerPlayer;
@@ -535,7 +527,7 @@ namespace av_speech_in_noise::tests {
             &snrTrackFactory,
             &randomizer
         };
-        InitializingFixedLevelTest initializingFixedLevelTest{&finiteTargetList, &targetList};
+        InitializingFixedLevelTest initializingFixedLevelTest{&targetList};
         PlayingTrial playingTrial;
         PlayingCalibration playingCalibration;
         SubmittingCoordinateResponse submittingCoordinateResponse;
