@@ -14,37 +14,9 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestHidesTargetVideoWhenAuditoryOnly
-    ) {
-        assertTargetVideoHiddenWhenAuditoryOnly(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestHidesTargetVideoWhenAuditoryOnly
-    ) {
-        assertTargetVideoHiddenWhenAuditoryOnly(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         playCalibrationHidesTargetVideoWhenAuditoryOnly
     ) {
         assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeAdaptiveTestShowsTargetVideoWhenAudioVisual
-    ) {
-        assertTargetVideoShownWhenAudioVisual(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestShowsTargetVideoWhenAudioVisual
-    ) {
-        assertTargetVideoShownWhenAudioVisual(initializingFixedLevelTest);
     }
 
     TEST_F(
@@ -519,6 +491,13 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(RecognitionTestModelTests, fadeInCompleteShowsTargetPlayerWhenAudioVisualForFixedLevelTest) {
         assertAudioVisualConditionShowsTargetVideo(initializingFixedLevelTest);
+    }
+
+    TEST_F(RecognitionTestModelTests, targetPlaybackCompleteHidesTargetPlayerWhenAudioVisualForAdaptiveTest) {
+        initializingAdaptiveTest.setAudioVisual();
+        run(initializingAdaptiveTest);
+        targetPlayer.playbackComplete();
+        assertTargetVideoOnlyHidden();
     }
 
     TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
