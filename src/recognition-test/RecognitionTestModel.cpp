@@ -302,7 +302,11 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::loadMaskerFile(const std::string &p) {
-        maskerPlayer->loadFile(p);
+        try {
+            maskerPlayer->loadFile(p);
+        } catch (const InvalidAudioFile &) {
+            throw RequestFailure{"unable to read " + p};
+        }
     }
     
     static double dB(double x) {

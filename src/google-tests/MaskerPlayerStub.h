@@ -21,7 +21,12 @@ namespace av_speech_in_noise::tests {
         bool playing_{};
         bool setDeviceCalled_{};
         bool throwInvalidAudioDeviceWhenDeviceSet_{};
+        bool throwInvalidAudioFileOnLoad_{};
     public:
+        void throwInvalidAudioFileOnLoad() {
+            throwInvalidAudioFileOnLoad_ = true;
+        }
+        
         void fadeOutComplete() {
             listener_->fadeOutComplete();
         }
@@ -79,6 +84,8 @@ namespace av_speech_in_noise::tests {
         void loadFile(std::string filePath) override {
             addToLog("loadFile ");
             filePath_ = std::move(filePath);
+            if (throwInvalidAudioFileOnLoad_)
+                throw InvalidAudioFile{};
         }
         
         void addToLog(std::string s) {

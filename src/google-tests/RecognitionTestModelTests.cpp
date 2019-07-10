@@ -815,6 +815,15 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
+        initializeTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile
+    ) {
+        initializingAdaptiveTest.setMaskerFilePath("a");
+        maskerPlayer.throwInvalidAudioFileOnLoad();
+        assertCallThrowsRequestFailure(initializingAdaptiveTest, "unable to read a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests,
         playTrialWithInvalidAudioDeviceThrowsRequestFailure
     ) {
         assertThrowsRequestFailureWhenInvalidAudioDevice(playingTrial);
