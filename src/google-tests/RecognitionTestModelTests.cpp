@@ -502,10 +502,11 @@ namespace av_speech_in_noise::tests {
     }
 
     TEST_F(RecognitionTestModelTests, fadeInCompleteDoesNotShowTargetPlayerWhenAuditoryOnlyForAdaptiveTest) {
-        initializingAdaptiveTest.setAuditoryOnly();
-        run(initializingAdaptiveTest);
-        maskerPlayer.fadeInComplete();
-        assertTargetNotShown();
+        assertAuditoryOnlyConditionDoesNotShowTargetVideo(initializingAdaptiveTest);
+    }
+
+    TEST_F(RecognitionTestModelTests, fadeInCompleteDoesNotShowTargetPlayerWhenAuditoryOnlyForFixedLevelTest) {
+        assertAuditoryOnlyConditionDoesNotShowTargetVideo(initializingFixedLevelTest);
     }
 
     TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {

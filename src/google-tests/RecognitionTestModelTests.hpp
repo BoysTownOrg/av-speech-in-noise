@@ -528,7 +528,7 @@ namespace av_speech_in_noise::tests {
         
         void assertTargetVideoOnlyHidden() {
             assertTrue(targetPlayerVideoHidden());
-            assertFalse(targetPlayerVideoShown());
+            assertTargetVideoNotShown();;
         }
         
         bool targetPlayerVideoHidden() {
@@ -548,7 +548,7 @@ namespace av_speech_in_noise::tests {
             assertFalse(targetPlayerVideoHidden());
         }
         
-        void assertTargetNotShown() {
+        void assertTargetVideoNotShown() {
             assertFalse(targetPlayerVideoShown());
         }
         
@@ -1013,6 +1013,13 @@ namespace av_speech_in_noise::tests {
             run(useCase);
             targetPlayer.playbackComplete();
             assertTargetVideoOnlyHidden();
+        }
+        
+        void assertAuditoryOnlyConditionDoesNotShowTargetVideo(InitializingTestUseCase &useCase) {
+            useCase.setAuditoryOnly();
+            run(useCase);
+            maskerPlayer.fadeInComplete();
+            assertTargetVideoNotShown();
         }
     };
 }
