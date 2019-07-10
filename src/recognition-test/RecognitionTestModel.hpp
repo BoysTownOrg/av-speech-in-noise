@@ -207,6 +207,7 @@ namespace av_speech_in_noise {
             void(AdaptiveMethod::*)()
         );
         bool correct(
+            const std::string &,
             const coordinate_response_measure::SubjectResponse &
         );
         bool complete(const TargetListWithTrack &);

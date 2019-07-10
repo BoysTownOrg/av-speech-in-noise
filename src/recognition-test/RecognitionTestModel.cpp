@@ -79,8 +79,7 @@ namespace av_speech_in_noise {
         const coordinate_response_measure::SubjectResponse &response
     ) {
         submitResponse_(response);
-        if (currentTargetList)
-            previousTarget = current();
+        previousTarget = current();
         selectNextList();
     }
     
@@ -88,7 +87,7 @@ namespace av_speech_in_noise {
         const coordinate_response_measure::SubjectResponse &response
     ) {
         lastSnr_dB = snr_dB();
-        if (correct(response))
+        if (correct(current(), response))
             correct();
         else
             incorrect();
@@ -96,9 +95,10 @@ namespace av_speech_in_noise {
     }
 
     bool AdaptiveMethod::correct(
+        const std::string &target,
         const coordinate_response_measure::SubjectResponse &response
     ) {
-        return evaluator->correct(current(), response);
+        return evaluator->correct(target, response);
     }
     
     std::string AdaptiveMethod::current() {
@@ -146,7 +146,7 @@ namespace av_speech_in_noise {
         trial.trial.correctColor = evaluator->correctColor(previousTarget);
         trial.trial.correctNumber = evaluator->correctNumber(previousTarget);
         trial.SNR_dB = lastSnr_dB;
-        trial.trial.correct = evaluator->correct(previousTarget, response);
+        trial.trial.correct = correct(previousTarget, response);
         file->writeTrial(trial);
     }
     
