@@ -942,12 +942,14 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        fixedLevelTestCompleteWhenListEmpty
+        fixedLevelTestCompleteAfterTrials
     ) {
-        initializeFixedLevelTest();
+        initializingFixedLevelTest.setTrials(3);
+        run(initializingFixedLevelTest);
         submitCoordinateResponse();
         assertTestIncomplete();
-        finiteTargetList.setEmpty();
+        submitCoordinateResponse();
+        assertTestIncomplete();
         submitCoordinateResponse();
         assertTestComplete();
     }
@@ -956,7 +958,12 @@ namespace av_speech_in_noise::tests {
         RecognitionTestModelTests,
         submitCoordinateResponseDoesNotLoadNextTargetWhenCompleteForFixedLevelTest
     ) {
-        assertCoordinateResponseDoesNotLoadNextTargetWhenTestComplete(initializingFixedLevelTest);
+        initializingFixedLevelTest.setNextTarget("a");
+        initializingFixedLevelTest.setTrials(1);
+        run(initializingFixedLevelTest);
+        initializingFixedLevelTest.setNextTarget("b");
+        submitCoordinateResponse();
+        assertTargetFilePathEquals("a");
     }
 
     TEST_F(

@@ -90,6 +90,7 @@ namespace av_speech_in_noise {
         CommonTest common;
         TestInformation information;
         int snr_dB;
+        int trials;
     };
     
     struct AudioSettings {

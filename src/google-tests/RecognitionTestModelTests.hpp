@@ -360,7 +360,10 @@ namespace av_speech_in_noise::tests {
         FiniteTargetListStub *finiteTargetList;
     public:
         InitializingFixedLevelTest(FiniteTargetListStub *finiteTargetList) :
-            finiteTargetList{finiteTargetList} {}
+            finiteTargetList{finiteTargetList}
+        {
+            test_.trials = 3;
+        }
         
         void run(RecognitionTestModel &m) override {
             m.initializeTest(test_);
@@ -376,6 +379,10 @@ namespace av_speech_in_noise::tests {
         
         void setSnr_dB(int x) override {
             test_.snr_dB = x;
+        }
+        
+        void setTrials(int n) {
+            test_.trials = n;
         }
         
         void setNextTarget(std::string s) override {

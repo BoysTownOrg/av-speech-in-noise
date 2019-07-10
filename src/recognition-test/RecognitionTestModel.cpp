@@ -166,6 +166,7 @@ namespace av_speech_in_noise {
     
     void FixedLevelMethod::initialize(const FixedLevelTest &p) {
         snr_dB_ = p.snr_dB;
+        trials_ = p.trials;
         targetList->loadFromDirectory(p.common.targetListDirectory);
         updateCompletion();
     }
@@ -175,7 +176,7 @@ namespace av_speech_in_noise {
     }
     
     void FixedLevelMethod::updateCompletion() {
-        complete_ = targetList->empty();
+        complete_ = trials_ == 0;
     }
     
     std::string FixedLevelMethod::next() {
@@ -215,6 +216,7 @@ namespace av_speech_in_noise {
     void FixedLevelMethod::submitResponse(
         const coordinate_response_measure::SubjectResponse &
     ) {
+        --trials_;
         updateCompletion();
     }
     

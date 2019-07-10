@@ -225,7 +225,8 @@ namespace av_speech_in_noise {
         std::string previousTarget{};
         FiniteTargetList *targetList;
         ResponseEvaluator *evaluator;
-        int snr_dB_;
+        int snr_dB_{};
+        int trials_{};
         bool complete_{};
     public:
         FixedLevelMethod(
