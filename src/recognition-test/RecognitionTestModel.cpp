@@ -423,8 +423,6 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::fadeInComplete() {
-        if (!auditoryOnly(condition))
-            targetPlayer->showVideo();
         playTarget();
     }
     
