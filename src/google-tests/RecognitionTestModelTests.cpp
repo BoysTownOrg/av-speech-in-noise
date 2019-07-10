@@ -494,10 +494,11 @@ namespace av_speech_in_noise::tests {
     }
 
     TEST_F(RecognitionTestModelTests, targetPlaybackCompleteHidesTargetPlayerWhenAudioVisualForAdaptiveTest) {
-        initializingAdaptiveTest.setAudioVisual();
-        run(initializingAdaptiveTest);
-        targetPlayer.playbackComplete();
-        assertTargetVideoOnlyHidden();
+        assertAudioVisualConditionHidesTargetVideo(initializingAdaptiveTest);
+    }
+
+    TEST_F(RecognitionTestModelTests, targetPlaybackCompleteHidesTargetPlayerWhenAudioVisualForFixedLevelTest) {
+        assertAudioVisualConditionHidesTargetVideo(initializingFixedLevelTest);
     }
 
     TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {

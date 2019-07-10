@@ -1003,6 +1003,13 @@ namespace av_speech_in_noise::tests {
             maskerPlayer.fadeInComplete();
             assertTargetVideoOnlyShown();
         }
+        
+        void assertAudioVisualConditionHidesTargetVideo(InitializingTestUseCase &useCase) {
+            useCase.setAudioVisual();
+            run(useCase);
+            targetPlayer.playbackComplete();
+            assertTargetVideoOnlyHidden();
+        }
     };
 }
 #endif
