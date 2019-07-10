@@ -75,53 +75,6 @@ namespace av_speech_in_noise {
         return t.track->complete();
     }
     
-    void AdaptiveMethod::submitResponse(
-        const coordinate_response_measure::SubjectResponse &response
-    ) {
-        auto lastSnr_dB_ = snr_dB();
-        auto correct_ = correct(current(), response);
-        if (correct_)
-            correct();
-        else
-            incorrect();
-        auto current_ = current();
-        lastTrial.trial.subjectColor = response.color;
-        lastTrial.trial.subjectNumber = response.number;
-        lastTrial.reversals = currentSnrTrack->reversals();
-        lastTrial.trial.correctColor = evaluator->correctColor(current_);
-        lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
-        lastTrial.SNR_dB = lastSnr_dB_;
-        lastTrial.trial.correct = correct_;
-        selectNextList();
-    }
-
-    bool AdaptiveMethod::correct(
-        const std::string &target,
-        const coordinate_response_measure::SubjectResponse &response
-    ) {
-        return evaluator->correct(target, response);
-    }
-    
-    std::string AdaptiveMethod::current() {
-        return currentTargetList->current();
-    }
-    
-    void AdaptiveMethod::incorrect() {
-        currentSnrTrack->pushUp();
-    }
-    
-    void AdaptiveMethod::correct() {
-        currentSnrTrack->pushDown();
-    }
-    
-    void AdaptiveMethod::submitIncorrectResponse() {
-        selectNextListAfter(&AdaptiveMethod::incorrect);
-    }
-    
-    void AdaptiveMethod::submitCorrectResponse() {
-        selectNextListAfter(&AdaptiveMethod::correct);
-    }
-    
     bool AdaptiveMethod::complete() {
         return std::all_of(
             targetListsWithTracks.begin(),
@@ -136,6 +89,50 @@ namespace av_speech_in_noise {
         return currentTargetList->next();
     }
     
+    void AdaptiveMethod::submitResponse(
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
+        auto lastSnr_dB_ = snr_dB();
+        auto current_ = current();
+        auto correct_ = correct(current_, response);
+        if (correct_)
+            correct();
+        else
+            incorrect();
+        auto updatedReversals = currentSnrTrack->reversals();
+        lastTrial.trial.subjectColor = response.color;
+        lastTrial.trial.subjectNumber = response.number;
+        lastTrial.reversals = updatedReversals;
+        lastTrial.trial.correctColor = evaluator->correctColor(current_);
+        lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
+        lastTrial.SNR_dB = lastSnr_dB_;
+        lastTrial.trial.correct = correct_;
+        selectNextList();
+    }
+    
+    int AdaptiveMethod::snr_dB() {
+        return currentSnrTrack->x();
+    }
+    
+    std::string AdaptiveMethod::current() {
+        return currentTargetList->current();
+    }
+
+    bool AdaptiveMethod::correct(
+        const std::string &target,
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
+        return evaluator->correct(target, response);
+    }
+    
+    void AdaptiveMethod::correct() {
+        currentSnrTrack->pushDown();
+    }
+    
+    void AdaptiveMethod::incorrect() {
+        currentSnrTrack->pushUp();
+    }
+    
     void AdaptiveMethod::writeLastTrial(
         OutputFile *file,
         const coordinate_response_measure::SubjectResponse &response
@@ -143,8 +140,12 @@ namespace av_speech_in_noise {
         file->writeTrial(lastTrial);
     }
     
-    int AdaptiveMethod::snr_dB() {
-        return currentSnrTrack->x();
+    void AdaptiveMethod::submitIncorrectResponse() {
+        selectNextListAfter(&AdaptiveMethod::incorrect);
+    }
+    
+    void AdaptiveMethod::submitCorrectResponse() {
+        selectNextListAfter(&AdaptiveMethod::correct);
     }
     
     void AdaptiveMethod::submitResponse(const FreeResponse &) {
