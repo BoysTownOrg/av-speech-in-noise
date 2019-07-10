@@ -221,7 +221,7 @@ namespace av_speech_in_noise {
     };
 
     class FixedLevelMethod : public TestMethod {
-        std::string previousTarget{};
+        coordinate_response_measure::FixedLevelTrial lastTrial;
         TargetList *targetList;
         ResponseEvaluator *evaluator;
         int snr_dB_{};

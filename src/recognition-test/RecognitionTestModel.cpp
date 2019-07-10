@@ -167,24 +167,44 @@ namespace av_speech_in_noise {
         updateCompletion();
     }
     
-    int FixedLevelMethod::snr_dB() {
-        return snr_dB_;
-    }
-    
     void FixedLevelMethod::updateCompletion() {
         complete_ = trials_ == 0;
-    }
-    
-    std::string FixedLevelMethod::next() {
-        return targetList->next();
     }
     
     bool FixedLevelMethod::complete() {
         return complete_;
     }
     
+    std::string FixedLevelMethod::next() {
+        return targetList->next();
+    }
+    
+    int FixedLevelMethod::snr_dB() {
+        return snr_dB_;
+    }
+    
+    void FixedLevelMethod::submitResponse(
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
+        --trials_;
+        auto current_ = current();
+        lastTrial.trial.subjectColor = response.color;
+        lastTrial.trial.subjectNumber = response.number;
+        lastTrial.trial.correctColor = evaluator->correctColor(current_);
+        lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
+        lastTrial.trial.correct = evaluator->correct(current_, response);
+        updateCompletion();
+    }
+    
     std::string FixedLevelMethod::current() {
         return targetList->current();
+    }
+    
+    void FixedLevelMethod::writeLastTrial(
+        OutputFile *file,
+        const coordinate_response_measure::SubjectResponse &response
+    ) {
+        file->writeTrial(lastTrial);
     }
     
     void FixedLevelMethod::submitIncorrectResponse() {
@@ -193,27 +213,6 @@ namespace av_speech_in_noise {
     
     void FixedLevelMethod::submitCorrectResponse() {
         
-    }
-    
-    void FixedLevelMethod::writeLastTrial(
-        OutputFile *file,
-        const coordinate_response_measure::SubjectResponse &response
-    ) {
-        coordinate_response_measure::FixedLevelTrial trial;
-        trial.trial.subjectColor = response.color;
-        trial.trial.subjectNumber = response.number;
-        trial.trial.correctColor = evaluator->correctColor(previousTarget);
-        trial.trial.correctNumber = evaluator->correctNumber(previousTarget);
-        trial.trial.correct = evaluator->correct(previousTarget, response);
-        file->writeTrial(trial);
-    }
-    
-    void FixedLevelMethod::submitResponse(
-        const coordinate_response_measure::SubjectResponse &
-    ) {
-        previousTarget = current();
-        --trials_;
-        updateCompletion();
     }
     
     void FixedLevelMethod::submitResponse(const FreeResponse &) {
