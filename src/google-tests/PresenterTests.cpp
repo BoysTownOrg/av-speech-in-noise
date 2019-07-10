@@ -380,6 +380,10 @@ namespace av_speech_in_noise::tests::presentation {
         assertInvalidCalibrationLevelShowsErrorMessage(playingCalibration);
     }
 
+    TEST_F(PresenterTests, respondingFromSubjectPlaysTrial) {
+        assertPlaysTrial(respondingFromSubject);
+    }
+
     TEST_F(PresenterTests, playingTrialFromSubjectPlaysTrial) {
         assertPlaysTrial(playingTrialFromSubject);
     }

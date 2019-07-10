@@ -123,6 +123,7 @@ namespace av_speech_in_noise {
     
     void Presenter::submitSubjectResponse() {
         proceedToNextTrialAfter(&Presenter::submitSubjectResponse_);
+        playTrial();
     }
     
     void Presenter::submitSubjectResponse_() {

@@ -1492,7 +1492,7 @@ namespace av_speech_in_noise::tests::presentation {
             useCase.run();
         }
         
-        void assertPlaysTrial(PlayingTrial &useCase) {
+        void assertPlaysTrial(UseCase &useCase) {
             run(useCase);
             assertTrue(model.trialPlayed());
         }
