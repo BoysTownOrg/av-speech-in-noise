@@ -433,7 +433,6 @@ namespace av_speech_in_noise::tests {
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
-        Calibration calibration;
         TargetListSetReaderStub targetListSetReader;
         TargetListStub targetList;
         TargetPlayerStub targetPlayer;
@@ -772,6 +771,14 @@ namespace av_speech_in_noise::tests {
             assertFalse(initializingAdaptiveTest.snrTrackPushedUp(1));
         }
         
+        void assertPushesSnrTrackUp(UseCase &useCase) {
+            initializingAdaptiveTest.selectList(1);
+            run(initializingAdaptiveTest);
+            run(useCase);
+            assertTrue(initializingAdaptiveTest.snrTrackPushedUp(1));
+            assertFalse(initializingAdaptiveTest.snrTrackPushedDown(1));
+        }
+        
         void assertSelectsRandomListInRangeAfterRemovingCompleteTracks(UseCase &useCase) {
             run(initializingAdaptiveTest);
             initializingAdaptiveTest.setSnrTrackComplete(2);
@@ -798,14 +805,6 @@ namespace av_speech_in_noise::tests {
             initializingAdaptiveTest.selectList(1);
             run(useCase);
             assertTargetFilePathEquals("a");
-        }
-        
-        void assertPushesSnrTrackUp(UseCase &useCase) {
-            initializingAdaptiveTest.selectList(1);
-            run(initializingAdaptiveTest);
-            run(useCase);
-            assertTrue(initializingAdaptiveTest.snrTrackPushedUp(1));
-            assertFalse(initializingAdaptiveTest.snrTrackPushedDown(1));
         }
         
         void assertMaskerFilePathPassedToPlayer(InitializingTestUseCase &useCase) {
@@ -881,7 +880,11 @@ namespace av_speech_in_noise::tests {
             setTestingFullScaleLevel_dB_SPL(4);
             maskerPlayer.setRms(5);
             run(useCase);
-            assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+            assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
+        }
+        
+        void assertTargetPlayerLevelEquals_dB(double x) {
+            assertEqual(x, targetPlayerLevel_dB());
         }
         
         void assertSetsTargetLevel(
@@ -894,7 +897,7 @@ namespace av_speech_in_noise::tests {
             maskerPlayer.setRms(5);
             initializingTest.setSnr_dB(2);
             run(useCase);
-            assertEqual(2 + 3 - 4 - dB(5), targetPlayerLevel_dB());
+            assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
         }
         
         auto writtenCoordinateResponseTrial(InitializingTestUseCase &useCase) {
