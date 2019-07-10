@@ -162,7 +162,6 @@ namespace av_speech_in_noise {
         TargetList *targetList2,
         ResponseEvaluator *evaluator
     ) :
-        targetList{targetList},
         targetList2{targetList2},
         evaluator{evaluator} {}
     
@@ -182,8 +181,7 @@ namespace av_speech_in_noise {
     }
     
     std::string FixedLevelMethod::next() {
-        targetList2->next();
-        return targetList->next();
+        return targetList2->next();
     }
     
     bool FixedLevelMethod::complete() {
