@@ -93,7 +93,7 @@ namespace stimulus_players {
     }
     
     void MaskerPlayerImpl::setAudioDevice(std::string device) {
-        player->setDevice(findDeviceIndex(device));
+        player->setDevice(findDeviceIndex(std::move(device)));
     }
     
     int MaskerPlayerImpl::findDeviceIndex(const std::string &device) {

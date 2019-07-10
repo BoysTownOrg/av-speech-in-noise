@@ -39,7 +39,7 @@ namespace av_speech_in_noise::tests {
     };
 
     class SubmittingCoordinateResponse : public SubmittingResponse {
-        coordinate_response_measure::SubjectResponse response_;
+        coordinate_response_measure::SubjectResponse response_{};
     public:
         void run(RecognitionTestModel &m) override {
             m.submitResponse(response_);
@@ -300,7 +300,7 @@ namespace av_speech_in_noise::tests {
         FixedLevelTest test_;
         TargetListStub *targetList;
     public:
-        InitializingFixedLevelTest(
+        explicit InitializingFixedLevelTest(
             TargetListStub *targetList
         ) :
             targetList{targetList}
@@ -400,7 +400,7 @@ namespace av_speech_in_noise::tests {
         public AudioDeviceUseCase,
         public ConditionUseCase
     {
-        Calibration calibration;
+        Calibration calibration{};
     public:
         void setAudioDevice(std::string s) override {
             calibration.audioSettings.audioDevice = std::move(s);
@@ -433,14 +433,14 @@ namespace av_speech_in_noise::tests {
 
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
-        TargetListSetReaderStub targetListSetReader;
-        TargetListStub targetList;
-        TargetPlayerStub targetPlayer;
-        MaskerPlayerStub maskerPlayer;
-        OutputFileStub outputFile;
-        TrackFactoryStub snrTrackFactory;
-        ResponseEvaluatorStub evaluator;
-        RandomizerStub randomizer;
+        TargetListSetReaderStub targetListSetReader{};
+        TargetListStub targetList{};
+        TargetPlayerStub targetPlayer{};
+        MaskerPlayerStub maskerPlayer{};
+        OutputFileStub outputFile{};
+        TrackFactoryStub snrTrackFactory{};
+        ResponseEvaluatorStub evaluator{};
+        RandomizerStub randomizer{};
         AdaptiveMethod adaptiveMethod{
             &targetListSetReader,
             &snrTrackFactory,
@@ -457,22 +457,22 @@ namespace av_speech_in_noise::tests {
             &outputFile,
             &randomizer
         };
-        ModelEventListenerStub listener;
+        ModelEventListenerStub listener{};
         InitializingAdaptiveTest initializingAdaptiveTest{
             &targetListSetReader,
             &snrTrackFactory,
             &randomizer
         };
         InitializingFixedLevelTest initializingFixedLevelTest{&targetList};
-        PlayingTrial playingTrial;
-        PlayingCalibration playingCalibration;
-        SubmittingCoordinateResponse submittingCoordinateResponse;
-        SubmittingCorrectResponse submittingCorrectResponse;
-        SubmittingIncorrectResponse submittingIncorrectResponse;
-        SubmittingFreeResponse submittingFreeResponse;
-        SettingStartingSnr settingStartingSnr;
-        SettingCeilingSnr settingCeilingSnr;
-        SettingFloorSnr settingFloorSnr;
+        PlayingTrial playingTrial{};
+        PlayingCalibration playingCalibration{};
+        SubmittingCoordinateResponse submittingCoordinateResponse{};
+        SubmittingCorrectResponse submittingCorrectResponse{};
+        SubmittingIncorrectResponse submittingIncorrectResponse{};
+        SubmittingFreeResponse submittingFreeResponse{};
+        SettingStartingSnr settingStartingSnr{};
+        SettingCeilingSnr settingCeilingSnr{};
+        SettingFloorSnr settingFloorSnr{};
         
         RecognitionTestModelTests() {
             model.subscribe(&listener);

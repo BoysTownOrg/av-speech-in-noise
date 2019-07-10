@@ -91,7 +91,7 @@ namespace av_speech_in_noise::tests {
         
         void loadFile(std::string filePath) override {
             addToLog("loadFile ");
-            filePath_ = filePath;
+            filePath_ = std::move(filePath);
         }
         
         void addToLog(std::string s) {

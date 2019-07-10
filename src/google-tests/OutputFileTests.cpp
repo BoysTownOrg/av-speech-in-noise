@@ -64,7 +64,7 @@ namespace {
         }
         
         void setFileName(std::string s) {
-            fileName_ = s;
+            fileName_ = std::move(s);
         }
         
         std::string generateFileName(const TestInformation &p) override {
@@ -94,7 +94,7 @@ namespace {
     };
     
     class WritingAdaptiveTest : public WritingTestUseCase {
-        AdaptiveTest test;
+        AdaptiveTest test{};
     public:
         void setCondition(Condition c) override {
             test.common.condition = c;
@@ -110,7 +110,7 @@ namespace {
     };
     
     class WritingFixedLevelTest : public WritingTestUseCase {
-        FixedLevelTest test;
+        FixedLevelTest test{};
     public:
         void setCondition(Condition c) override {
             test.common.condition = c;
@@ -141,7 +141,7 @@ namespace {
     }
     
     class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
-        coordinate_response_measure::AdaptiveTrial trial_;
+        coordinate_response_measure::AdaptiveTrial trial_{};
     public:
         auto &trial() {
             return trial_;
@@ -165,7 +165,7 @@ namespace {
     };
     
     class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
-        coordinate_response_measure::FixedLevelTrial trial_;
+        coordinate_response_measure::FixedLevelTrial trial_{};
     public:
         auto &trial() {
             return trial_;

@@ -9,7 +9,7 @@ namespace {
     class Collection {
         std::vector<T> items{};
     public:
-        Collection(std::vector<T> items = {}) : items{std::move(items)} {}
+        explicit Collection(std::vector<T> items = {}) : items{std::move(items)} {}
         
         bool contains(T item) const {
             return std::find(items.begin(), items.end(), item) != items.end();
@@ -17,13 +17,13 @@ namespace {
     };
     
     class ModelStub : public Model {
-        AdaptiveTest adaptiveTest_;
-        FixedLevelTest fixedLevelTest_;
-        Calibration calibration_;
-        AudioSettings trialParameters_;
-        coordinate_response_measure::SubjectResponse responseParameters_;
-        std::vector<std::string> audioDevices_;
-        FreeResponse freeResponse_;
+        AdaptiveTest adaptiveTest_{};
+        FixedLevelTest fixedLevelTest_{};
+        Calibration calibration_{};
+        AudioSettings trialParameters_{};
+        coordinate_response_measure::SubjectResponse responseParameters_{};
+        std::vector<std::string> audioDevices_{};
+        FreeResponse freeResponse_{};
         EventListener *listener_{};
         bool testComplete_{};
         bool trialPlayed_{};
@@ -247,7 +247,7 @@ namespace {
             }
             
             void populateConditionMenu(std::vector<std::string> items) override {
-                conditions_ = std::move(items);
+                conditions_ = Collection{std::move(items)};
             }
             
             auto &conditions() const {
@@ -351,7 +351,7 @@ namespace {
             }
             
             void populateMethodMenu(std::vector<std::string> items) override {
-                methods_ = std::move(items);
+                methods_ = Collection{std::move(items)};
             }
             
             void browseForMasker() {
@@ -446,7 +446,7 @@ namespace {
             }
             
             void setNumberResponse(std::string s) {
-                numberResponse_ = s;
+                numberResponse_ = std::move(s);
             }
             
             std::string numberResponse() override {
@@ -1229,7 +1229,7 @@ namespace {
     
     TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
         model.setAudioDevices({"a", "b", "c"});
-        auto presenter = construct();
+        construct();
         assertEqual({"a", "b", "c"}, view.audioDevices());
     }
 

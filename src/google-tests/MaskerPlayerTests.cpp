@@ -155,7 +155,7 @@ namespace {
     class VectorFacade {
         std::vector<T> v;
     public:
-        VectorFacade(std::vector<T> v) : v{std::move(v)} {}
+        explicit VectorFacade(std::vector<T> v) : v{std::move(v)} {}
         
         std::vector<T> elementWiseProduct(std::vector<T> y) {
             std::vector<T> product;
@@ -170,7 +170,7 @@ namespace {
         }
         
         VectorFacade<T> subvector(int b, int e) {
-            return std::vector<T>{v.begin() + b, v.begin() + e};
+            return VectorFacade<T>{{v.begin() + b, v.begin() + e}};
         }
     };
     
@@ -350,14 +350,14 @@ namespace {
         }
         
         void assertLeftChannelEquals(std::vector<float> x) {
-            assertChannelEqual(leftChannel, x);
+            assertChannelEqual(leftChannel, std::move(x));
         }
         
         void assertChannelEqual(
             const std::vector<float> &channel,
             std::vector<float> x
         ) {
-            assertEqual(x, channel, 1e-6f);
+            assertEqual(std::move(x), channel, 1e-6f);
         }
         
         void assertFillingStereoChannelsMultipliesBy(
@@ -376,7 +376,7 @@ namespace {
         }
         
         void assertRightChannelEquals(std::vector<float> x) {
-            assertChannelEqual(rightChannel, x);
+            assertChannelEqual(rightChannel, std::move(x));
         }
         
         void assertFadeInNotCompletedAfterMonoFill() {
@@ -515,7 +515,7 @@ namespace {
         
         fadeIn();
         assertFillingLeftChannelMultipliesBy_Buffered(
-            halfHannWindow(halfWindowLength),
+            VectorFacade<float>{halfHannWindow(halfWindowLength)},
             halfWindowLength/framesPerBuffer,
             framesPerBuffer
         );
@@ -528,7 +528,7 @@ namespace {
     
         fadeIn();
         assertFillingLeftChannelMultipliesBy(
-            halfHannWindow(halfWindowLength),
+            VectorFacade<float>{halfHannWindow(halfWindowLength)},
             halfWindowLength
         );
     }
@@ -544,7 +544,7 @@ namespace {
         
         fadeIn();
         assertFillingStereoChannelsMultipliesBy_Buffered(
-            halfHannWindow(halfWindowLength),
+            VectorFacade<float>{halfHannWindow(halfWindowLength)},
             halfWindowLength/framesPerBuffer,
             framesPerBuffer
         );
@@ -557,7 +557,7 @@ namespace {
     
         fadeIn();
         assertFillingStereoChannelsMultipliesBy(
-            halfHannWindow(halfWindowLength),
+            VectorFacade<float>{halfHannWindow(halfWindowLength)},
             halfWindowLength
         );
     }
@@ -582,7 +582,7 @@ namespace {
         
         fadeOut();
         assertFillingLeftChannelMultipliesBy_Buffered(
-            backHalfHannWindow(halfWindowLength),
+            VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
             halfWindowLength/framesPerBuffer,
             framesPerBuffer
         );
@@ -596,7 +596,7 @@ namespace {
     
         fadeOut();
         assertFillingLeftChannelMultipliesBy(
-            backHalfHannWindow(halfWindowLength),
+            VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
             halfWindowLength
         );
     }

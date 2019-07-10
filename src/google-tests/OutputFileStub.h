@@ -6,11 +6,11 @@
 
 namespace av_speech_in_noise::tests {
     class OutputFileStub : public OutputFile {
-        coordinate_response_measure::AdaptiveTrial writtenAdaptiveCoordinateResponseTrial_;
-        coordinate_response_measure::Trial writtenAdaptiveCoordinateResponseTrial2_;
-        coordinate_response_measure::Trial writtenFixedLevelTrial2_;
-        FreeResponseTrial writtenFreeResponseTrial_;
-        LogString log_;
+        coordinate_response_measure::AdaptiveTrial writtenAdaptiveCoordinateResponseTrial_{};
+        coordinate_response_measure::Trial writtenAdaptiveCoordinateResponseTrial2_{};
+        coordinate_response_measure::Trial writtenFixedLevelTrial2_{};
+        FreeResponseTrial writtenFreeResponseTrial_{};
+        LogString log_{};
         const AdaptiveTest *adaptiveTest_{};
         const FixedLevelTest *fixedLevelTest_{};
         const TestInformation *openNewFileParameters_{};
