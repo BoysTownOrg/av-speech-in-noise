@@ -163,14 +163,6 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeFixedLevelTestPassesNextTargetToTargetPlayerAfterLoadingFromDirectory
-    ) {
-        run(initializingFixedLevelTest);
-        assertEqual("loadFromDirectory next ", finiteTargetList.log());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeFixedLevelTestPassesNextTargetToTargetPlayerAfterLoadingFromDirectory2
     ) {
         run(initializingFixedLevelTest);

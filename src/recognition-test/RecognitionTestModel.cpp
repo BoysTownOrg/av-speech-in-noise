@@ -169,7 +169,7 @@ namespace av_speech_in_noise {
     void FixedLevelMethod::initialize(const FixedLevelTest &p) {
         snr_dB_ = p.snr_dB;
         trials_ = p.trials;
-        targetList->loadFromDirectory(p.common.targetListDirectory);
+        //targetList->loadFromDirectory(p.common.targetListDirectory);
         targetList2->loadFromDirectory(p.common.targetListDirectory);
         updateCompletion();
     }

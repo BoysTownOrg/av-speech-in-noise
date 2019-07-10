@@ -358,9 +358,14 @@ namespace av_speech_in_noise::tests {
     {
         FixedLevelTest test_;
         FiniteTargetListStub *finiteTargetList;
+        TargetListStub *targetList;
     public:
-        InitializingFixedLevelTest(FiniteTargetListStub *finiteTargetList) :
-            finiteTargetList{finiteTargetList}
+        InitializingFixedLevelTest(
+            FiniteTargetListStub *finiteTargetList,
+            TargetListStub *targetList
+        ) :
+            finiteTargetList{finiteTargetList},
+            targetList{targetList}
         {
             test_.trials = 3;
         }
@@ -387,6 +392,7 @@ namespace av_speech_in_noise::tests {
         
         void setNextTarget(std::string s) override {
             finiteTargetList->setNext(std::move(s));
+            targetList->setNext(std::move(s));
         }
         
         void setCurrentTarget(std::string s) override {
@@ -436,7 +442,7 @@ namespace av_speech_in_noise::tests {
         }
         
         std::string receivedTargetListDirectory() override {
-            return finiteTargetList->directory();
+            return targetList->directory();
         }
     };
 
@@ -527,7 +533,7 @@ namespace av_speech_in_noise::tests {
             &snrTrackFactory,
             &randomizer
         };
-        InitializingFixedLevelTest initializingFixedLevelTest{&finiteTargetList};
+        InitializingFixedLevelTest initializingFixedLevelTest{&finiteTargetList, &targetList};
         PlayingTrial playingTrial;
         PlayingCalibration playingCalibration;
         SubmittingCoordinateResponse submittingCoordinateResponse;
