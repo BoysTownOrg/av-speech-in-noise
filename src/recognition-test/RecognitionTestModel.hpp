@@ -164,13 +164,13 @@ namespace av_speech_in_noise {
         TargetListReader::lists_type lists{};
         std::vector<TargetListWithTrack> targetListsWithTracks{};
         Track::Settings trackSettings{};
-        coordinate_response_measure::AdaptiveTrial lastTrial;
+        coordinate_response_measure::AdaptiveTrial lastTrial{};
         TargetListReader *targetListSetReader;
         TrackFactory *snrTrackFactory;
         ResponseEvaluator *evaluator;
         Randomizer *randomizer;
-        Track *currentSnrTrack;
-        TargetList *currentTargetList;
+        Track *currentSnrTrack{};
+        TargetList *currentTargetList{};
     public:
         AdaptiveMethod(
             TargetListReader *,
@@ -192,40 +192,30 @@ namespace av_speech_in_noise {
         void submitResponse(const FreeResponse &) override;
         
     private:
-        void submitResponse_(
-            const coordinate_response_measure::SubjectResponse &
-        );
-        void selectNextListAfter(
-            void(AdaptiveMethod::*)()
-        );
+        void selectNextListAfter(void(AdaptiveMethod::*)());
+        void prepareSnrTracks();
+        void makeSnrTracks();
+        void makeTrackWithList(TargetList *list);
+        void selectNextList();
+        void removeCompleteTracks();
+        bool complete(const TargetListWithTrack &);
         bool correct(
             const std::string &,
             const coordinate_response_measure::SubjectResponse &
         );
-        bool complete(const TargetListWithTrack &);
         void incorrect();
         void correct();
-        void makeSnrTracks();
-        void prepareSnrTracks();
-        void makeTrackWithList(
-            TargetList *list
-        );
-        void selectNextList();
-        void removeCompleteTracks();
     };
 
     class FixedLevelMethod : public TestMethod {
-        coordinate_response_measure::FixedLevelTrial lastTrial;
+        coordinate_response_measure::FixedLevelTrial lastTrial{};
         TargetList *targetList;
         ResponseEvaluator *evaluator;
         int snr_dB_{};
         int trials_{};
         bool complete_{};
     public:
-        FixedLevelMethod(
-            TargetList *,
-            ResponseEvaluator *
-        );
+        FixedLevelMethod(TargetList *, ResponseEvaluator *);
         void initialize(const FixedLevelTest &);
         int snr_dB() override;
         std::string next() override;
@@ -247,18 +237,17 @@ namespace av_speech_in_noise {
         public TargetPlayer::EventListener,
         public MaskerPlayer::EventListener
     {
-        
         AdaptiveMethod *adaptiveMethod;
         FixedLevelMethod *fixedLevelMethod;
-        int maskerLevel_dB_SPL{};
-        int fullScaleLevel_dB_SPL{};
         MaskerPlayer *maskerPlayer;
         TargetPlayer *targetPlayer;
         ResponseEvaluator *evaluator;
         OutputFile *outputFile;
         Randomizer *randomizer;
         Model::EventListener *listener_{};
-        TestMethod *testMethod;
+        TestMethod *testMethod{};
+        int maskerLevel_dB_SPL{};
+        int fullScaleLevel_dB_SPL{};
     public:
         RecognitionTestModel(
             AdaptiveMethod *,
@@ -291,7 +280,6 @@ namespace av_speech_in_noise {
         void storeLevels(const CommonTest &common);
         void preparePlayersForNextTrial();
         void throwIfTrialInProgress();
-        void writeTrial(const coordinate_response_measure::SubjectResponse &);
         std::string currentTarget();
         bool correct(const coordinate_response_measure::SubjectResponse &);
         void submitResponse_(const coordinate_response_measure::SubjectResponse &);
