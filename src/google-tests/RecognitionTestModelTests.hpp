@@ -498,6 +498,7 @@ namespace av_speech_in_noise::tests {
         coordinate_response_measure::SubjectResponse coordinateResponse;
         TargetListSetReaderStub targetListSetReader;
         FiniteTargetListStub finiteTargetList;
+        TargetListStub targetList;
         TargetPlayerStub targetPlayer;
         MaskerPlayerStub maskerPlayer;
         OutputFileStub outputFile;
@@ -510,7 +511,7 @@ namespace av_speech_in_noise::tests {
             &evaluator,
             &randomizer
         };
-        FixedLevelMethod fixedLevelMethod{&finiteTargetList, &evaluator};
+        FixedLevelMethod fixedLevelMethod{&finiteTargetList, &targetList, &evaluator};
         RecognitionTestModel model{
             &adaptiveMethod,
             &fixedLevelMethod,

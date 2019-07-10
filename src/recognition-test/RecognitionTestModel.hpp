@@ -224,6 +224,7 @@ namespace av_speech_in_noise {
     class FixedLevelMethod : public TestMethod {
         std::string previousTarget{};
         FiniteTargetList *targetList;
+        TargetList *targetList2;
         ResponseEvaluator *evaluator;
         int snr_dB_{};
         int trials_{};
@@ -231,6 +232,7 @@ namespace av_speech_in_noise {
     public:
         FixedLevelMethod(
             FiniteTargetList *,
+            TargetList *,
             ResponseEvaluator *
         );
         void initialize(const FixedLevelTest &);

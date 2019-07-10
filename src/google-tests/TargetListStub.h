@@ -1,10 +1,12 @@
 #ifndef TargetListStub_h
 #define TargetListStub_h
 
+#include "LogString.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 
 namespace av_speech_in_noise::tests {
     class TargetListStub : public TargetList {
+        LogString log_{};
         std::string directory_{};
         std::string next_{};
         std::string current_{};
@@ -19,10 +21,12 @@ namespace av_speech_in_noise::tests {
         }
         
         void loadFromDirectory(std::string directory) override {
+            log_.insert("loadFromDirectory ");
             directory_ = std::move(directory);
         }
         
         std::string next() override {
+            log_.insert("next ");
             nextCalled_ = true;
             return next_;
         }
@@ -33,6 +37,10 @@ namespace av_speech_in_noise::tests {
         
         auto directory() {
             return directory_;
+        }
+        
+        auto &log() const {
+            return log_;
         }
     };
 }
