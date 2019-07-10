@@ -29,60 +29,6 @@ namespace av_speech_in_noise::tests {
         }
     };
 
-    class FiniteTargetListStub : public FiniteTargetList {
-        LogString log_;
-        std::string directory_;
-        std::string next_;
-        std::string current_;
-        std::string currentWhenNext_{};
-        bool empty_{};
-        bool nextCalled_{};
-    public:
-        std::string current() override {
-            return current_;
-        }
-        
-        void setCurrentTargetWhenNext(std::string s) {
-            currentWhenNext_ = std::move(s);
-        }
-        
-        void setCurrent(std::string s) {
-            current_ = std::move(s);
-        }
-        
-        void loadFromDirectory(std::string directory) override {
-            log_.insert("loadFromDirectory ");
-            directory_ = std::move(directory);
-        }
-        
-        std::string next() override {
-            log_.insert("next ");
-            nextCalled_ = true;
-            current_ = currentWhenNext_;
-            return next_;
-        }
-        
-        void setNext(std::string s) {
-            next_ = std::move(s);
-        }
-        
-        auto directory() const {
-            return directory_;
-        }
-        
-        void setEmpty() {
-            empty_ = true;
-        }
-        
-        bool empty() override {
-            return empty_;
-        }
-        
-        auto &log() const {
-            return log_;
-        }
-    };
-
     class UseCase {
     public:
         virtual ~UseCase() = default;
@@ -130,35 +76,23 @@ namespace av_speech_in_noise::tests {
         }
     };
 
-    class MaskerUseCase : public virtual UseCase {
-    public:
-        virtual void setMaskerFilePath(std::string) = 0;
-    };
-
     class ConditionUseCase : public virtual UseCase {
     public:
         virtual void setAuditoryOnly() = 0;
         virtual void setAudioVisual() = 0;
     };
-    
-    class TargetLoaderUseCase : public virtual UseCase {
-    public:
-        virtual void setNextTarget(std::string) = 0;
-    };
 
-    class InitializingTestUseCase :
-        public virtual MaskerUseCase,
-        public virtual ConditionUseCase,
-        public virtual TargetLoaderUseCase
-    {
+    class InitializingTestUseCase : public virtual ConditionUseCase {
     public:
         virtual const TestInformation &testInformation() = 0;
         virtual const coordinate_response_measure::Trial &
             writtenCoordinateResponseTrial(OutputFileStub &) = 0;
         virtual void setTargetListDirectory(std::string) = 0;
+        virtual void setMaskerFilePath(std::string) = 0;
         virtual std::string receivedTargetListDirectory() = 0;
         virtual void setSnr_dB(int x) = 0;
         virtual void setCurrentTarget(std::string) = 0;
+        virtual void setNextTarget(std::string) = 0;
         virtual void setComplete() = 0;
     };
 
@@ -877,7 +811,7 @@ namespace av_speech_in_noise::tests {
             assertEqual("a", maskerPlayer.filePath());
         }
         
-        void assertNextTargetPassedToPlayer(TargetLoaderUseCase &useCase) {
+        void assertNextTargetPassedToPlayer(InitializingTestUseCase &useCase) {
             useCase.setNextTarget("a");
             run(useCase);
             assertTargetFilePathEquals("a");
