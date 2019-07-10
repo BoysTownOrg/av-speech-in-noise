@@ -93,7 +93,6 @@ namespace av_speech_in_noise::tests {
         virtual void setSnr_dB(int x) = 0;
         virtual void setCurrentTarget(std::string) = 0;
         virtual void setNextTarget(std::string) = 0;
-        virtual void setComplete() = 0;
     };
 
     class InitializingAdaptiveTest : public InitializingTestUseCase {
@@ -153,7 +152,7 @@ namespace av_speech_in_noise::tests {
             snrTrack(n)->setComplete();
         }
         
-        void setComplete() override {
+        void setComplete() {
             for (auto track : snrTracks)
                 track->setComplete();
         }
@@ -303,9 +302,6 @@ namespace av_speech_in_noise::tests {
         
         void run(RecognitionTestModel &m) override {
             m.initializeTest(test_);
-        }
-        
-        void setComplete() override {
         }
         
         auto &common() {
@@ -981,7 +977,7 @@ namespace av_speech_in_noise::tests {
             assertEqual("a", evaluator.filePathForFileName());
         }
         void assertCoordinateResponseDoesNotLoadNextTargetWhenTestComplete(
-            InitializingTestUseCase &initializingTest
+            InitializingAdaptiveTest &initializingTest
         ) {
             initializingTest.setNextTarget("a");
             run(initializingTest);
