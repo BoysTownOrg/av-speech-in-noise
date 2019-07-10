@@ -519,7 +519,7 @@ namespace av_speech_in_noise::tests {
             &evaluator,
             &randomizer
         };
-        FixedLevelMethod fixedLevelMethod{&finiteTargetList, &targetList, &evaluator};
+        FixedLevelMethod fixedLevelMethod{&targetList, &evaluator};
         RecognitionTestModel model{
             &adaptiveMethod,
             &fixedLevelMethod,

@@ -158,17 +158,16 @@ namespace av_speech_in_noise {
     
     
     FixedLevelMethod::FixedLevelMethod(
-        FiniteTargetList *targetList,
-        TargetList *targetList2,
+        TargetList *targetList,
         ResponseEvaluator *evaluator
     ) :
-        targetList2{targetList2},
+        targetList{targetList},
         evaluator{evaluator} {}
     
     void FixedLevelMethod::initialize(const FixedLevelTest &p) {
         snr_dB_ = p.snr_dB;
         trials_ = p.trials;
-        targetList2->loadFromDirectory(p.common.targetListDirectory);
+        targetList->loadFromDirectory(p.common.targetListDirectory);
         updateCompletion();
     }
     
@@ -181,7 +180,7 @@ namespace av_speech_in_noise {
     }
     
     std::string FixedLevelMethod::next() {
-        return targetList2->next();
+        return targetList->next();
     }
     
     bool FixedLevelMethod::complete() {
@@ -189,7 +188,7 @@ namespace av_speech_in_noise {
     }
     
     std::string FixedLevelMethod::current() {
-        return targetList2->current();
+        return targetList->current();
     }
     
     void FixedLevelMethod::submitIncorrectResponse() {
