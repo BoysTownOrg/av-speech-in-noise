@@ -505,7 +505,7 @@ namespace av_speech_in_noise::tests {
         playingCalibration.setFullScaleLevel_dB_SPL(2);
         setTargetPlayerRms(3);
         playCalibration();
-        assertEqual(1 - 2 - dB(3), targetPlayerLevel_dB());
+        assertTargetPlayerLevelEquals_dB(1 - 2 - dB(3));
     }
 
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
@@ -534,7 +534,7 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitFreeResponsePassesCurrentTargetToEvaluatorForFixedLevelTest
+        submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTargetForFixedLevelTest
     ) {
         run(initializingFixedLevelTest);
         initializingFixedLevelTest.setCurrentTarget("a");

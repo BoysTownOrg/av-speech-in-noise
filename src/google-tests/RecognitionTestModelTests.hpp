@@ -123,7 +123,7 @@ namespace av_speech_in_noise::tests {
         {
             test_.targetLevelRule = &targetLevelRule_;
             setTargetListCount(3);
-            selectList(1);
+            selectList(0);
         }
         
         auto &common() {
@@ -149,7 +149,7 @@ namespace av_speech_in_noise::tests {
         }
         
         void setCurrentTarget(std::string s) override {
-            setTargetListCurrent(1, std::move(s));
+            setTargetListCurrent(0, std::move(s));
         }
         
         void setTargetListNext(int n, std::string s) {

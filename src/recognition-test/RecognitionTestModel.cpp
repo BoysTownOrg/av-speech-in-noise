@@ -21,6 +21,7 @@ namespace av_speech_in_noise {
         trackSettings.startingX = p.startingSnr_dB;
         trackSettings.floor = p.floorSnr_dB;
         lists = targetListSetReader->read(p.common.targetListDirectory);
+        
         selectNextListAfter(&AdaptiveMethod::makeSnrTracks);
     }
     
@@ -47,12 +48,13 @@ namespace av_speech_in_noise {
     void AdaptiveMethod::selectNextList() {
         removeCompleteTracks();
         auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
-        size_t n = randomizer->randomIntBetween(0, remainingLists - 1);
-        if (n < targetListsWithTracks.size()) {
-            auto targetListsWithTrack_ = targetListsWithTracks.at(n);
-            currentSnrTrack = targetListsWithTrack_.track.get();
-            currentTargetList = targetListsWithTrack_.list;
-        }
+        if (remainingLists == 0)
+            return;
+        auto targetListsWithTrack_ = targetListsWithTracks.at(
+            randomizer->randomIntBetween(0, remainingLists - 1)
+        );
+        currentSnrTrack = targetListsWithTrack_.track.get();
+        currentTargetList = targetListsWithTrack_.list;
     }
     
     void AdaptiveMethod::removeCompleteTracks() {
