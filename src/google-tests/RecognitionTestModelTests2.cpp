@@ -126,6 +126,11 @@ namespace av_speech_in_noise::tests {
             &fixedLevelMethod,
             &internalModel
         };
+        FixedLevelTest test;
+        
+        void initializeFixedLevelTest() {
+            model.initializeTest(test);
+        }
     };
     
     TEST_F(RecognitionTestModelTests2, passesCoordinateResponse) {
@@ -135,14 +140,12 @@ namespace av_speech_in_noise::tests {
     }
     
     TEST_F(RecognitionTestModelTests2, initializeFixedLevelTestInitializesFixedLevelMethod) {
-        FixedLevelTest test;
-        model.initializeTest(test);
+        initializeFixedLevelTest();
         EXPECT_EQ(&test, fixedLevelMethod.test());
     }
     
     TEST_F(RecognitionTestModelTests2, initializeFixedLevelTestInitializesInternalModel) {
-        FixedLevelTest test;
-        model.initializeTest(test);
+        initializeFixedLevelTest();
         EXPECT_EQ(&fixedLevelMethod, internalModel.testMethod());
         EXPECT_EQ(&test.common, internalModel.commonTest());
         EXPECT_EQ(&test.information, internalModel.testInformation());
