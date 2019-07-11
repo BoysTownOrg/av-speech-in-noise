@@ -168,11 +168,16 @@ namespace av_speech_in_noise::tests::recognition_test {
             virtual void run(RecognitionTestModel &) = 0;
             virtual const CommonTest &commonTest() = 0;
             virtual const TestInformation &testInformation() = 0;
+            virtual const TestMethod *testMethod() = 0;
         };
         
         class InitializingAdaptiveTest : public InitializingTestUseCase {
             AdaptiveTest test;
+            AdaptiveMethodStub *method;
         public:
+            explicit InitializingAdaptiveTest(AdaptiveMethodStub *method) :
+                method{method} {}
+            
             void run(RecognitionTestModel &model) override {
                 model.initializeTest(test);
             }
@@ -183,12 +188,20 @@ namespace av_speech_in_noise::tests::recognition_test {
             
             const TestInformation &testInformation() override {
                 return test.information;
+            }
+            
+            const TestMethod *testMethod() override {
+                return method;
             }
         };
         
         class InitializingFixedLevelTest : public InitializingTestUseCase {
             FixedLevelTest test;
+            FixedLevelMethodStub *method;
         public:
+            explicit InitializingFixedLevelTest(FixedLevelMethodStub *method) :
+                method{method} {}
+            
             void run(RecognitionTestModel &model) override {
                 model.initializeTest(test);
             }
@@ -199,6 +212,10 @@ namespace av_speech_in_noise::tests::recognition_test {
             
             const TestInformation &testInformation() override {
                 return test.information;
+            }
+            
+            const TestMethod *testMethod() override {
+                return method;
             }
         };
     }
@@ -215,8 +232,8 @@ namespace av_speech_in_noise::tests::recognition_test {
         };
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
-        internal_::InitializingAdaptiveTest initializingAdaptiveTest;
-        internal_::InitializingFixedLevelTest initializingFixedLevelTest;
+        internal_::InitializingAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
+        internal_::InitializingFixedLevelTest initializingFixedLevelTest{&fixedLevelMethod};
         
         void initializeFixedLevelTest() {
             model.initializeTest(fixedLevelTest);
@@ -232,6 +249,22 @@ namespace av_speech_in_noise::tests::recognition_test {
         
         void run(internal_::InitializingTestUseCase &useCase) {
             useCase.run(model);
+        }
+        
+        void assertInitializesInternalModel(internal_::InitializingTestUseCase &useCase) {
+            run(useCase);
+            assertEqual(
+                useCase.testMethod(),
+                internalModel.testMethod()
+            );
+            assertEqual(
+                &useCase.commonTest(),
+                internalModel.commonTest()
+            );
+            assertEqual(
+                &useCase.testInformation(),
+                internalModel.testInformation()
+            );
         }
     };
     
@@ -261,38 +294,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         RecognitionTestModelTests2,
         initializeFixedLevelTestInitializesInternalModel
     ) {
-        run(initializingFixedLevelTest);
-        assertEqual(
-            static_cast<const TestMethod *>(&fixedLevelMethod),
-            internalModel.testMethod()
-        );
-        assertEqual(
-            &initializingFixedLevelTest.commonTest(),
-            internalModel.commonTest()
-        );
-        assertEqual(
-            &initializingFixedLevelTest.testInformation(),
-            internalModel.testInformation()
-        );
+        assertInitializesInternalModel(initializingFixedLevelTest);
     }
     
     TEST_F(
         RecognitionTestModelTests2,
         initializeAdaptiveTestInitializesInternalModel
     ) {
-        run(initializingAdaptiveTest);
-        assertEqual(
-            static_cast<const TestMethod *>(&adaptiveMethod),
-            internalModel.testMethod()
-        );
-        assertEqual(
-            &initializingAdaptiveTest.commonTest(),
-            internalModel.commonTest()
-        );
-        assertEqual(
-            &initializingAdaptiveTest.testInformation(),
-            internalModel.testInformation()
-        );
+        assertInitializesInternalModel(initializingAdaptiveTest);
     }
     
     TEST_F(RecognitionTestModelTests2, playTrialPassesAudioSettings) {
