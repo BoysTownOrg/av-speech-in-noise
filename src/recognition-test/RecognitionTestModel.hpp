@@ -247,9 +247,32 @@ namespace av_speech_in_noise {
         void updateCompletion();
     };
     
+    class IRecognitionTestModel_Internal {
+    public:
+        virtual ~IRecognitionTestModel_Internal() = default;
+        virtual void initialize(
+            TestMethod *,
+            const CommonTest &,
+            const TestInformation &
+        ) = 0;
+        virtual void playTrial(const AudioSettings &) = 0;
+        virtual void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) = 0;
+        virtual bool testComplete() = 0;
+        virtual std::vector<std::string> audioDevices() = 0;
+        virtual void subscribe(Model::EventListener *) = 0;
+        virtual void playCalibration(const Calibration &) = 0;
+        virtual void submitCorrectResponse() = 0;
+        virtual void submitIncorrectResponse() = 0;
+        virtual void submitResponse(const FreeResponse &) = 0;
+        virtual void throwIfTrialInProgress() = 0;
+    };
+    
     class RecognitionTestModel_Internal :
         public TargetPlayer::EventListener,
-        public MaskerPlayer::EventListener
+        public MaskerPlayer::EventListener,
+        public IRecognitionTestModel_Internal
     {
         MaskerPlayer *maskerPlayer;
         TargetPlayer *targetPlayer;
@@ -269,20 +292,26 @@ namespace av_speech_in_noise {
             OutputFile *,
             Randomizer *
         );
-        void initialize(TestMethod *, const CommonTest &, const TestInformation &);
-        void playTrial(const AudioSettings &);
-        void submitResponse(const coordinate_response_measure::SubjectResponse &);
-        bool testComplete();
-        std::vector<std::string> audioDevices();
-        void subscribe(Model::EventListener *);
-        void playCalibration(const Calibration &);
-        void submitCorrectResponse();
-        void submitIncorrectResponse();
-        void submitResponse(const FreeResponse &);
+        void initialize(
+            TestMethod *,
+            const CommonTest &,
+            const TestInformation &
+        ) override;
+        void playTrial(const AudioSettings &) override;
+        void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) override;
+        bool testComplete() override;
+        std::vector<std::string> audioDevices() override;
+        void subscribe(Model::EventListener *) override;
+        void playCalibration(const Calibration &) override;
+        void submitCorrectResponse() override;
+        void submitIncorrectResponse() override;
+        void submitResponse(const FreeResponse &) override;
+        void throwIfTrialInProgress() override;
         void fadeInComplete() override;
         void fadeOutComplete() override;
         void playbackComplete() override;
-        void throwIfTrialInProgress();
     private:
         void submitCorrectResponse_();
         void submitIncorrectResponse_();
@@ -331,14 +360,14 @@ namespace av_speech_in_noise {
     };
 
     class RecognitionTestModel : public Model {
-        AdaptiveMethod *adaptiveMethod;
-        FixedLevelMethod *fixedLevelMethod;
-        RecognitionTestModel_Internal *model;
+        IAdaptiveMethod *adaptiveMethod;
+        IFixedLevelMethod *fixedLevelMethod;
+        IRecognitionTestModel_Internal *model;
     public:
         RecognitionTestModel(
-            AdaptiveMethod *,
-            FixedLevelMethod *,
-            RecognitionTestModel_Internal *
+            IAdaptiveMethod *,
+            IFixedLevelMethod *,
+            IRecognitionTestModel_Internal *
         );
         void initializeTest(const AdaptiveTest &) override;
         void initializeTest(const FixedLevelTest &) override;

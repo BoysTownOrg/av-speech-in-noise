@@ -222,9 +222,9 @@ namespace av_speech_in_noise {
     }
     
     RecognitionTestModel::RecognitionTestModel(
-        AdaptiveMethod *adaptiveMethod,
-        FixedLevelMethod *fixedLevelMethod,
-        RecognitionTestModel_Internal *model
+        IAdaptiveMethod *adaptiveMethod,
+        IFixedLevelMethod *fixedLevelMethod,
+        IRecognitionTestModel_Internal *model
     ) :
         adaptiveMethod{adaptiveMethod},
         fixedLevelMethod{fixedLevelMethod},
