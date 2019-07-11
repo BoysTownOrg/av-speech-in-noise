@@ -966,15 +966,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             assertEqual("a", evaluator.correctNumberFilePath());
         }
         
-        void assertCoordinateResponsePassesCurrentTargetToEvaluatorForDeterminingResponseCorrectness(
-            InitializingTestUseCase &initializingTest
-        ) {
-            run(initializingTest);
-            initializingTest.setCurrentTarget("a");
-            submitCoordinateResponse();
-            assertEqual("a", evaluator.correctFilePath());
-        }
-        
         void assertTargetListPassed(InitializingTestUseCase &useCase) {
             useCase.setTargetListDirectory("a");
             run(useCase);
@@ -1011,8 +1002,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertAudioVisualConditionHidesTargetVideo(InitializingTestUseCase &useCase) {
             useCase.setAudioVisual();
             run(useCase);
-            maskerPlayer.fadeOutComplete();
+            maskerFadeOutComplete();
             assertTargetVideoOnlyHidden();
+        }
+        
+        void maskerFadeOutComplete() {
+            maskerPlayer.fadeOutComplete();
         }
         
         void assertAuditoryOnlyConditionDoesNotShowTargetVideo(InitializingTestUseCase &useCase) {

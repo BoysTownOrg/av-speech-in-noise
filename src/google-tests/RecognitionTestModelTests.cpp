@@ -523,7 +523,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
-        maskerPlayer.fadeOutComplete();
+        maskerFadeOutComplete();
         assertTrue(listener.notified());
     }
 
@@ -732,8 +732,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForAdaptiveTest
     ) {
-        assertCoordinateResponsePassesCurrentTargetToEvaluatorForDeterminingResponseCorrectness(initializingAdaptiveTest);
-
+        initializingAdaptiveTest.selectList(1);
+        run(initializingAdaptiveTest);
+        initializingAdaptiveTest.setTargetListCurrent(1, "a");
+        initializingAdaptiveTest.selectList(2);
+        submitCoordinateResponse();
+        assertEqual("a", evaluator.correctFilePath());
     }
 
     TEST_F(
