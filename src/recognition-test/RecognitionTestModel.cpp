@@ -220,23 +220,6 @@ namespace av_speech_in_noise {
     void FixedLevelMethod::submitResponse(const FreeResponse &) {
     
     }
-
-    class NullTestMethod : public TestMethod {
-        bool complete() override { return {}; }
-        std::string next() override { return {}; }
-        std::string current() override { return {}; }
-        int snr_dB() override { return {}; }
-        void submitCorrectResponse() override {}
-        void submitIncorrectResponse() override {}
-        void writeLastCoordinateResponse(OutputFile *) override {}
-        void writeTestingParameters(OutputFile *) override {}
-        void submitResponse(
-            const coordinate_response_measure::SubjectResponse &
-        ) override {}
-        void submitResponse(const FreeResponse &) override {}
-    };
-    
-    static NullTestMethod nullTestMethod;
     
     RecognitionTestModel::RecognitionTestModel(
         AdaptiveMethod *adaptiveMethod,
@@ -261,10 +244,6 @@ namespace av_speech_in_noise {
         
         adaptiveMethod->initialize(p);
         model->initialize(adaptiveMethod, p.common, p.information);
-    }
-    
-    static double dB(double x) {
-        return 20 * std::log10(x);
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
@@ -307,6 +286,23 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::subscribe(Model::EventListener *e) {
         model->subscribe(e);
     }
+
+    class NullTestMethod : public TestMethod {
+        bool complete() override { return {}; }
+        std::string next() override { return {}; }
+        std::string current() override { return {}; }
+        int snr_dB() override { return {}; }
+        void submitCorrectResponse() override {}
+        void submitIncorrectResponse() override {}
+        void writeLastCoordinateResponse(OutputFile *) override {}
+        void writeTestingParameters(OutputFile *) override {}
+        void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) override {}
+        void submitResponse(const FreeResponse &) override {}
+    };
+    
+    static NullTestMethod nullTestMethod;
     
     
     RecognitionTestModel_Internal::RecognitionTestModel_Internal(
@@ -386,6 +382,10 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel_Internal::loadMaskerFile(const std::string &p) {
         maskerPlayer->loadFile(p);
+    }
+    
+    static double dB(double x) {
+        return 20 * std::log10(x);
     }
     
     double RecognitionTestModel_Internal::maskerLevel_dB() {

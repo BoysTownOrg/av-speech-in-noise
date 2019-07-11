@@ -320,8 +320,7 @@ namespace av_speech_in_noise {
         void setTargetLevel_dB(double);
     };
 
-    class RecognitionTestModel : public Model
-    {
+    class RecognitionTestModel : public Model {
         AdaptiveMethod *adaptiveMethod;
         FixedLevelMethod *fixedLevelMethod;
         RecognitionTestModel_Internal *model;
