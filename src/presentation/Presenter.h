@@ -1,5 +1,5 @@
-#ifndef presentation_Presenter_h
-#define presentation_Presenter_h
+#ifndef av_speech_in_noise_Presenter_h
+#define av_speech_in_noise_Presenter_h
 
 #include <av-speech-in-noise/Model.h>
 #include <vector>
@@ -63,8 +63,8 @@ namespace av_speech_in_noise {
             virtual void setMasker(std::string) = 0;
             virtual void setTargetListDirectory(std::string) = 0;
             virtual void setCalibrationFilePath(std::string) = 0;
-            virtual void populateConditionMenu(std::vector<std::string> items) = 0;
-            virtual void populateMethodMenu(std::vector<std::string> items) = 0;
+            virtual void populateConditionMenu(std::vector<std::string>) = 0;
+            virtual void populateMethodMenu(std::vector<std::string>) = 0;
         };
         
         class Experimenter {
@@ -188,13 +188,12 @@ namespace av_speech_in_noise {
             void showResponseSubmission();
             FreeResponse openSetResponse();
             void playTrial() override;
-            void prepareNextEvaluatedTrial();
-            
             void submitPassedTrial() override;
             void submitResponse() override;
             void submitFailedTrial() override;
             
         private:
+            void prepareNextEvaluatedTrial();
             void showNextTrialButton();
             Presenter *parent;
         };
@@ -300,10 +299,6 @@ namespace av_speech_in_noise {
         void hideTestView();
         void switchToSetupView();
         void showErrorMessage(std::string);
-        class BadInput : public std::runtime_error {
-        public:
-            explicit BadInput(std::string s) : std::runtime_error{ std::move(s) } {}
-        };
         void playCalibration_();
         void showTestSetup();
         bool testComplete();

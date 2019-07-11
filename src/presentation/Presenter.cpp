@@ -2,6 +2,14 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
+    namespace {
+        class BadInput : public std::runtime_error {
+        public:
+            explicit BadInput(const std::string &s) :
+                std::runtime_error{ s } {}
+        };
+    }
+    
     int Presenter::fullScaleLevel_dB_SPL = 119;
     int Presenter::ceilingSnr_dB = 20;
     int Presenter::floorSnr_dB = -40;
