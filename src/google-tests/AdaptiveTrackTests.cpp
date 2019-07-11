@@ -1,3 +1,4 @@
+#include "assert-utility.h"
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <gtest/gtest.h>
 
@@ -5,7 +6,9 @@ namespace adaptive_track::tests {
     class AdaptiveTrackFacade {
         AdaptiveTrack track;
     public:
-        explicit AdaptiveTrackFacade(const av_speech_in_noise::Track::Settings &s) :
+        explicit AdaptiveTrackFacade(
+            const av_speech_in_noise::Track::Settings &s
+        ) :
             track{s} {}
         
         void push(std::string directions) {
@@ -38,19 +41,19 @@ namespace adaptive_track::tests {
         
         template<typename T>
         void assertXEquals(T expected) {
-            EXPECT_EQ(expected, x());
+            assertEqual(expected, x());
         }
         
         void assertComplete() {
-            EXPECT_TRUE(complete());
+            assertTrue(complete());
         }
         
         void assertIncomplete() {
-            EXPECT_FALSE(complete());
+            assertFalse(complete());
         }
         
         void assertReversalsEquals(int expected) {
-            EXPECT_EQ(expected, reversals());
+            assertEqual(expected, reversals());
         }
     };
     
