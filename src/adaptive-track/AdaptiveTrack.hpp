@@ -37,6 +37,7 @@ namespace adaptive_track {
         int reversals() override;
         
     private:
+        void callIfConsecutiveCountMet(void(AdaptiveTrack::*)(), int threshold);
         bool consecutiveCountMet(int threshold);
         void stepDown();
         void stepUp();
