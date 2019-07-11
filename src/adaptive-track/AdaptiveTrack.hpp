@@ -37,6 +37,7 @@ namespace adaptive_track {
         int reversals() override;
         
     private:
+        void update(Direction, const std::vector<int> &, void(AdaptiveTrack::*)());
         void callIfConsecutiveCountMet(void(AdaptiveTrack::*)(), int threshold);
         bool consecutiveCountMet(int threshold);
         void stepDown();

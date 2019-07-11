@@ -20,9 +20,16 @@ namespace adaptive_track {
         if (complete_())
             return;
         
-        auto direction = Direction::up;
+        update(Direction::up, up, &AdaptiveTrack::stepUp);
+    }
+    
+    void AdaptiveTrack::update(
+        Direction direction,
+        const std::vector<int> &thresholds,
+        void(AdaptiveTrack::*whenThresholdMet)()
+    ) {
         updateConsecutiveCount(direction);
-        callIfConsecutiveCountMet(&AdaptiveTrack::stepUp, up.at(sequenceIndex));
+        callIfConsecutiveCountMet(whenThresholdMet, thresholds.at(sequenceIndex));
         previousDirection = direction;
     }
     
@@ -33,7 +40,6 @@ namespace adaptive_track {
         if (consecutiveCountMet(threshold))
             (this->*f)();
     }
-    
     
     bool AdaptiveTrack::consecutiveCountMet(int threshold) {
         return sameDirectionConsecutiveCount == threshold;
@@ -73,10 +79,7 @@ namespace adaptive_track {
         if (complete_())
             return;
         
-        auto direction = Direction::down;
-        updateConsecutiveCount(direction);
-        callIfConsecutiveCountMet(&AdaptiveTrack::stepDown, down.at(sequenceIndex));
-        previousDirection = direction;
+        update(Direction::down, down, &AdaptiveTrack::stepDown);
     }
 
     void AdaptiveTrack::stepDown() {
