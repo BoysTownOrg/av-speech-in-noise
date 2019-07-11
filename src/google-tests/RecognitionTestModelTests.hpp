@@ -993,16 +993,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             run(useCase);
             assertEqual("a", evaluator.filePathForFileName());
         }
-        void assertCoordinateResponseDoesNotLoadNextTargetWhenTestComplete(
-            InitializingAdaptiveTest &initializingTest
-        ) {
-            initializingTest.setNextTarget("a");
-            run(initializingTest);
-            initializingTest.setComplete();
-            initializingTest.setNextTarget("b");
-            submitCoordinateResponse();
-            assertTargetFilePathEquals("a");
-        }
         
         void assertAudioVisualConditionShowsTargetVideo(InitializingTestUseCase &useCase) {
             useCase.setAudioVisual();
