@@ -171,10 +171,11 @@ namespace av_speech_in_noise::tests::recognition_test {
             &fixedLevelMethod,
             &internalModel
         };
-        FixedLevelTest test;
+        AdaptiveTest adaptiveTest;
+        FixedLevelTest fixedLevelTest;
         
         void initializeFixedLevelTest() {
-            model.initializeTest(test);
+            model.initializeTest(fixedLevelTest);
         }
         
         bool testComplete() {
@@ -193,14 +194,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         initializeFixedLevelTestInitializesFixedLevelMethod
     ) {
         initializeFixedLevelTest();
-        assertEqual(&std::as_const(test), fixedLevelMethod.test());
+        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
     }
     
     TEST_F(
         RecognitionTestModelTests2,
         initializeAdaptiveTestInitializesAdaptiveMethod
     ) {
-        AdaptiveTest adaptiveTest;
         model.initializeTest(adaptiveTest);
         assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
     }
@@ -215,11 +215,11 @@ namespace av_speech_in_noise::tests::recognition_test {
             internalModel.testMethod()
         );
         assertEqual(
-            &std::as_const(test.common),
+            &std::as_const(fixedLevelTest.common),
             internalModel.commonTest()
         );
         assertEqual(
-            &std::as_const(test.information),
+            &std::as_const(fixedLevelTest.information),
             internalModel.testInformation()
         );
     }
