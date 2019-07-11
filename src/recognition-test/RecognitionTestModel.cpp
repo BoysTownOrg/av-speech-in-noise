@@ -247,7 +247,6 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::playTrial(const AudioSettings &settings) {
-        model->throwIfTrialInProgress();
         model->playTrial(settings);
     }
     

@@ -62,6 +62,7 @@ namespace av_speech_in_noise::tests {
     };
     
     class RecognitionTestModel_InternalStub : public IRecognitionTestModel_Internal {
+        const AudioSettings *playTrialSettings_{};
         const TestInformation *testInformation_{};
         const CommonTest *commonTest_{};
         const TestMethod *testMethod_{};
@@ -77,7 +78,9 @@ namespace av_speech_in_noise::tests {
             testInformation_ = &ti;
         }
         
-        void playTrial(const AudioSettings &)  {}
+        void playTrial(const AudioSettings &s) {
+            playTrialSettings_ = &s;
+        }
         
         void submitResponse(const coordinate_response_measure::SubjectResponse &p) {
             coordinateResponse_ = &p;
@@ -114,6 +117,10 @@ namespace av_speech_in_noise::tests {
         auto testInformation() const {
             return testInformation_;
         }
+        
+        auto playTrialSettings() const {
+            return playTrialSettings_;
+        }
     };
     
     class RecognitionTestModelTests2 : public ::testing::Test {
@@ -133,7 +140,7 @@ namespace av_speech_in_noise::tests {
         }
     };
     
-    TEST_F(RecognitionTestModelTests2, passesCoordinateResponse) {
+    TEST_F(RecognitionTestModelTests2, submitResponsePassesCoordinateResponse) {
         coordinate_response_measure::SubjectResponse response;
         model.submitResponse(response);
         EXPECT_EQ(&response, internalModel.coordinateResponse());
@@ -149,5 +156,11 @@ namespace av_speech_in_noise::tests {
         EXPECT_EQ(&fixedLevelMethod, internalModel.testMethod());
         EXPECT_EQ(&test.common, internalModel.commonTest());
         EXPECT_EQ(&test.information, internalModel.testInformation());
+    }
+    
+    TEST_F(RecognitionTestModelTests2, playTrialPassesAudioSettings) {
+        AudioSettings settings;
+        model.playTrial(settings);
+        EXPECT_EQ(&settings, internalModel.playTrialSettings());
     }
 }
