@@ -62,9 +62,20 @@ namespace av_speech_in_noise::tests {
     };
     
     class RecognitionTestModel_InternalStub : public IRecognitionTestModel_Internal {
+        const TestInformation *testInformation_{};
+        const CommonTest *commonTest_{};
+        const TestMethod *testMethod_{};
         const coordinate_response_measure::SubjectResponse *coordinateResponse_{};
     public:
-        void initialize(TestMethod *, const CommonTest &, const TestInformation &)  {}
+        void initialize(
+            TestMethod *tm,
+            const CommonTest &ct,
+            const TestInformation &ti
+        ) {
+            testMethod_ = tm;
+            commonTest_ = &ct;
+            testInformation_ = &ti;
+        }
         
         void playTrial(const AudioSettings &)  {}
         
@@ -88,8 +99,20 @@ namespace av_speech_in_noise::tests {
         
         void throwIfTrialInProgress()  {}
         
-        const coordinate_response_measure::SubjectResponse *coordinateResponse() const {
+        auto coordinateResponse() const {
             return coordinateResponse_;
+        }
+        
+        auto testMethod() const {
+            return testMethod_;
+        }
+        
+        auto commonTest() const {
+            return commonTest_;
+        }
+        
+        auto testInformation() const {
+            return testInformation_;
         }
     };
     
@@ -115,5 +138,13 @@ namespace av_speech_in_noise::tests {
         FixedLevelTest test;
         model.initializeTest(test);
         EXPECT_EQ(&test, fixedLevelMethod.test());
+    }
+    
+    TEST_F(RecognitionTestModelTests2, initializeFixedLevelTestInitializesInternalModel) {
+        FixedLevelTest test;
+        model.initializeTest(test);
+        EXPECT_EQ(&fixedLevelMethod, internalModel.testMethod());
+        EXPECT_EQ(&test.common, internalModel.commonTest());
+        EXPECT_EQ(&test.information, internalModel.testInformation());
     }
 }
