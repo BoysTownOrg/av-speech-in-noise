@@ -318,6 +318,10 @@ namespace av_speech_in_noise {
             void(RecognitionTestModel::*f)(const std::string &),
             const std::string &
         );
+        void throwInvalidAudioFileOnErrorLoading(
+            void (RecognitionTestModel::*f)(const std::string &),
+            const std::string &file
+        );
         void loadTargetFile(std::string);
         void setTargetLevel_dB(double);
     };

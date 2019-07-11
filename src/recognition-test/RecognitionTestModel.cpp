@@ -269,6 +269,7 @@ namespace av_speech_in_noise {
         
         fixedLevelMethod->initialize(p);
         testMethod = fixedLevelMethod;
+        
         prepareCommonTest(p.common, p.information);
     }
     
@@ -277,6 +278,7 @@ namespace av_speech_in_noise {
         
         adaptiveMethod->initialize(p);
         testMethod = adaptiveMethod;
+        
         prepareCommonTest(p.common, p.information);
     }
     
@@ -308,16 +310,23 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::prepareMasker(const std::string &p) {
-        loadMaskerFile(p);
+        throwInvalidAudioFileOnErrorLoading(&RecognitionTestModel::loadMaskerFile, p);
         maskerPlayer->setLevel_dB(maskerLevel_dB());
     }
     
-    void RecognitionTestModel::loadMaskerFile(const std::string &p) {
+    void RecognitionTestModel::throwInvalidAudioFileOnErrorLoading(
+        void (RecognitionTestModel::*f)(const std::string &),
+        const std::string &file
+    ) {
         try {
-            maskerPlayer->loadFile(p);
+            (this->*f)(file);
         } catch (const InvalidAudioFile &) {
-            throw RequestFailure{"unable to read " + p};
+            throw RequestFailure{"unable to read " + file};
         }
+    }
+    
+    void RecognitionTestModel::loadMaskerFile(const std::string &p) {
+        maskerPlayer->loadFile(p);
     }
     
     static double dB(double x) {
@@ -364,10 +373,6 @@ namespace av_speech_in_noise {
     
     double RecognitionTestModel::targetLevel_dB() {
         return maskerLevel_dB() + testMethod->snr_dB();
-    }
-    
-    double RecognitionTestModel::unalteredTargetLevel_dB() {
-        return dB(targetPlayer->rms());
     }
     
     void RecognitionTestModel::seekRandomMaskerPosition() {
@@ -536,6 +541,10 @@ namespace av_speech_in_noise {
             p.level_dB_SPL -
             p.fullScaleLevel_dB_SPL -
             unalteredTargetLevel_dB();
+    }
+    
+    double RecognitionTestModel::unalteredTargetLevel_dB() {
+        return dB(targetPlayer->rms());
     }
 
     bool RecognitionTestModel::testComplete() {
