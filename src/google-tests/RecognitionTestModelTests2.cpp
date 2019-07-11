@@ -62,6 +62,7 @@ namespace av_speech_in_noise::tests {
     };
     
     class RecognitionTestModel_InternalStub : public IRecognitionTestModel_Internal {
+        const Calibration *calibration_{};
         const AudioSettings *playTrialSettings_{};
         const TestInformation *testInformation_{};
         const CommonTest *commonTest_{};
@@ -92,7 +93,9 @@ namespace av_speech_in_noise::tests {
         
         void subscribe(Model::EventListener *)  {}
         
-        void playCalibration(const Calibration &)  {}
+        void playCalibration(const Calibration &c) {
+            calibration_ = &c;
+        }
         
         void submitCorrectResponse()  {}
         
@@ -120,6 +123,10 @@ namespace av_speech_in_noise::tests {
         
         auto playTrialSettings() const {
             return playTrialSettings_;
+        }
+        
+        auto calibration() const {
+            return calibration_;
         }
     };
     
@@ -162,5 +169,11 @@ namespace av_speech_in_noise::tests {
         AudioSettings settings;
         model.playTrial(settings);
         EXPECT_EQ(&settings, internalModel.playTrialSettings());
+    }
+    
+    TEST_F(RecognitionTestModelTests2, playCalibrationPassesCalibration) {
+        Calibration calibration;
+        model.playCalibration(calibration);
+        EXPECT_EQ(&calibration, internalModel.calibration());
     }
 }
