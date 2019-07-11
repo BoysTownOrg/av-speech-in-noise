@@ -1,3 +1,4 @@
+#include "assert-utility.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 
@@ -150,6 +151,10 @@ namespace av_speech_in_noise::tests {
         void initializeFixedLevelTest() {
             model.initializeTest(test);
         }
+        
+        bool testComplete() {
+            return model.testComplete();
+        }
     };
     
     TEST_F(RecognitionTestModelTests2, submitResponsePassesCoordinateResponse) {
@@ -183,8 +188,8 @@ namespace av_speech_in_noise::tests {
     }
     
     TEST_F(RecognitionTestModelTests2, testCompleteWhenComplete) {
-        EXPECT_FALSE(model.testComplete());
+        assertFalse(testComplete());
         internalModel.setComplete();
-        EXPECT_TRUE(model.testComplete());
+        assertTrue(testComplete());
     }
 }
