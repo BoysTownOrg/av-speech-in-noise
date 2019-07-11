@@ -1,9 +1,9 @@
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <gtest/gtest.h>
 
-namespace {
+namespace adaptive_track::tests {
     class AdaptiveTrackFacade {
-        adaptive_track::AdaptiveTrack track;
+        AdaptiveTrack track;
     public:
         explicit AdaptiveTrackFacade(const av_speech_in_noise::Track::Settings &s) :
             track{s} {}
@@ -56,7 +56,7 @@ namespace {
     
     class AdaptiveTrackTests : public ::testing::Test {
     protected:
-        adaptive_track::AdaptiveTrack::Settings settings{};
+        AdaptiveTrack::Settings settings{};
         av_speech_in_noise::TrackingRule rule;
         
         AdaptiveTrackTests() {
