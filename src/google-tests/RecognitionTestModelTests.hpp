@@ -770,6 +770,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertPushesSnrTrackDown(UseCase &useCase) {
             initializingAdaptiveTest.selectList(1);
             run(initializingAdaptiveTest);
+            initializingAdaptiveTest.selectList(2);
             run(useCase);
             assertTrue(initializingAdaptiveTest.snrTrackPushedDown(1));
             assertFalse(initializingAdaptiveTest.snrTrackPushedUp(1));
@@ -778,6 +779,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertPushesSnrTrackUp(UseCase &useCase) {
             initializingAdaptiveTest.selectList(1);
             run(initializingAdaptiveTest);
+            initializingAdaptiveTest.selectList(2);
             run(useCase);
             assertTrue(initializingAdaptiveTest.snrTrackPushedUp(1));
             assertFalse(initializingAdaptiveTest.snrTrackPushedDown(1));
