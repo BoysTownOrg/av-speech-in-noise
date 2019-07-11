@@ -4,7 +4,7 @@
 namespace av_speech_in_noise::tests {
     class AdaptiveMethodStub : public IAdaptiveMethod {
     
-        void initialize(const av_speech_in_noise::AdaptiveTest &)  {}
+        void initialize(const AdaptiveTest &)  {}
         
         bool complete()  {return {};}
         
@@ -18,19 +18,26 @@ namespace av_speech_in_noise::tests {
         
         void submitIncorrectResponse()  {}
         
-        void submitResponse(const av_speech_in_noise::FreeResponse &)  {}
+        void submitResponse(const FreeResponse &)  {}
         
-        void writeTestingParameters(av_speech_in_noise::OutputFile *)  {}
+        void writeTestingParameters(OutputFile *)  {}
         
-        void writeLastCoordinateResponse(av_speech_in_noise::OutputFile *)  {}
+        void writeLastCoordinateResponse(OutputFile *)  {}
         
         void submitResponse(const coordinate_response_measure::SubjectResponse &)  {}
         
     };
     
     class FixedLevelMethodStub : public IFixedLevelMethod {
-    
-        void initialize(const av_speech_in_noise::FixedLevelTest &)  {}
+        const FixedLevelTest *test_{};
+    public:
+        void initialize(const FixedLevelTest &t) {
+            test_ = &t;
+        }
+        
+        auto test() const {
+            return test_;
+        }
         
         bool complete()  {return {};}
         
@@ -44,11 +51,11 @@ namespace av_speech_in_noise::tests {
         
         void submitIncorrectResponse()  {}
         
-        void submitResponse(const av_speech_in_noise::FreeResponse &)  {}
+        void submitResponse(const FreeResponse &)  {}
         
-        void writeTestingParameters(av_speech_in_noise::OutputFile *)  {}
+        void writeTestingParameters(OutputFile *)  {}
         
-        void writeLastCoordinateResponse(av_speech_in_noise::OutputFile *)  {}
+        void writeLastCoordinateResponse(OutputFile *)  {}
         
         void submitResponse(const coordinate_response_measure::SubjectResponse &)  {}
         
@@ -57,9 +64,9 @@ namespace av_speech_in_noise::tests {
     class RecognitionTestModel_InternalStub : public IRecognitionTestModel_Internal {
         const coordinate_response_measure::SubjectResponse *coordinateResponse_{};
     public:
-        void initialize(av_speech_in_noise::TestMethod *, const av_speech_in_noise::CommonTest &, const av_speech_in_noise::TestInformation &)  {}
+        void initialize(TestMethod *, const CommonTest &, const TestInformation &)  {}
         
-        void playTrial(const av_speech_in_noise::AudioSettings &)  {}
+        void playTrial(const AudioSettings &)  {}
         
         void submitResponse(const coordinate_response_measure::SubjectResponse &p) {
             coordinateResponse_ = &p;
@@ -71,13 +78,13 @@ namespace av_speech_in_noise::tests {
         
         void subscribe(Model::EventListener *)  {}
         
-        void playCalibration(const av_speech_in_noise::Calibration &)  {}
+        void playCalibration(const Calibration &)  {}
         
         void submitCorrectResponse()  {}
         
         void submitIncorrectResponse()  {}
         
-        void submitResponse(const av_speech_in_noise::FreeResponse &)  {}
+        void submitResponse(const FreeResponse &)  {}
         
         void throwIfTrialInProgress()  {}
         
@@ -102,5 +109,11 @@ namespace av_speech_in_noise::tests {
         coordinate_response_measure::SubjectResponse response;
         model.submitResponse(response);
         EXPECT_EQ(&response, internalModel.coordinateResponse());
+    }
+    
+    TEST_F(RecognitionTestModelTests2, initializeFixedLevelTestInitializesFixedLevelMethod) {
+        FixedLevelTest test;
+        model.initializeTest(test);
+        EXPECT_EQ(&test, fixedLevelMethod.test());
     }
 }
