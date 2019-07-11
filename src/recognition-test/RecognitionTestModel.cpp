@@ -267,8 +267,8 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
         throwIfTrialInProgress();
         
+        fixedLevelMethod->initialize(p);
         testMethod = fixedLevelMethod;
-        testMethod->initialize(p);
         
         prepareCommonTest(p.common, p.information);
     }
@@ -276,8 +276,8 @@ namespace av_speech_in_noise {
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
         throwIfTrialInProgress();
         
+        adaptiveMethod->initialize(p);
         testMethod = adaptiveMethod;
-        testMethod->initialize(p);
         
         prepareCommonTest(p.common, p.information);
     }
