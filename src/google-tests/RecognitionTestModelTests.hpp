@@ -1021,6 +1021,11 @@ namespace av_speech_in_noise::tests::recognition_test {
             playTrial();
             assertTargetVideoNotShown();
         }
+        
+        void assertHidesTargetVideo(UseCase &useCase) {
+            run(useCase);
+            assertTargetVideoOnlyHidden();
+        }
     };
 }
 #endif

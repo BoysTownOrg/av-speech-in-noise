@@ -135,7 +135,7 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeFixedLevelTestPassesNextTargetToTargetPlayerAfterLoadingFromDirectory2
+        initializeFixedLevelTestPassesNextTargetToTargetPlayerAfterLoadingFromDirectory
     ) {
         run(initializingFixedLevelTest);
         assertEqual("loadFromDirectory next ", targetList.log());
@@ -509,9 +509,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertAuditoryOnlyConditionDoesNotShowTargetVideo(initializingFixedLevelTest);
     }
 
-    TEST_F(RecognitionTestModelTests, initializeTestHidesTargetPlayerForFixedLevelTest) {
-        run(initializingFixedLevelTest);
-        assertTargetVideoOnlyHidden();
+    TEST_F(RecognitionTestModelTests, initializeFixedLevelTestHidesTargetPlayer) {
+        assertHidesTargetVideo(initializingFixedLevelTest);
+    }
+
+    TEST_F(RecognitionTestModelTests, initializeAdaptiveTestHidesTargetPlayer) {
+        assertHidesTargetVideo(initializingAdaptiveTest);
     }
 
     TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
