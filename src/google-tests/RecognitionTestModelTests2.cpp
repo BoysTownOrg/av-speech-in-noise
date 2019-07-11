@@ -5,8 +5,15 @@
 
 namespace av_speech_in_noise::tests::recognition_test {
     class AdaptiveMethodStub : public IAdaptiveMethod {
-    
-        void initialize(const AdaptiveTest &)  {}
+        const AdaptiveTest *test_{};
+    public:
+        void initialize(const AdaptiveTest &t) {
+            test_ = &t;
+        }
+        
+        auto test() const {
+            return test_;
+        }
         
         bool complete()  {return {};}
         
@@ -63,7 +70,9 @@ namespace av_speech_in_noise::tests::recognition_test {
         
     };
     
-    class RecognitionTestModel_InternalStub : public IRecognitionTestModel_Internal {
+    class RecognitionTestModel_InternalStub :
+        public IRecognitionTestModel_Internal
+    {
         std::vector<std::string> audioDevices_{};
         const Model::EventListener *listener_{};
         const Calibration *calibration_{};
@@ -71,7 +80,8 @@ namespace av_speech_in_noise::tests::recognition_test {
         const TestInformation *testInformation_{};
         const CommonTest *commonTest_{};
         const TestMethod *testMethod_{};
-        const coordinate_response_measure::SubjectResponse *coordinateResponse_{};
+        const coordinate_response_measure::SubjectResponse *
+            coordinateResponse_{};
         bool complete_{};
     public:
         void initialize(
@@ -88,11 +98,13 @@ namespace av_speech_in_noise::tests::recognition_test {
             playTrialSettings_ = &s;
         }
         
-        void submitResponse(const coordinate_response_measure::SubjectResponse &p) {
+        void submitResponse(
+            const coordinate_response_measure::SubjectResponse &p
+        ) {
             coordinateResponse_ = &p;
         }
         
-        bool testComplete()  { return complete_; }
+        bool testComplete() { return complete_; }
         
         std::vector<std::string> audioDevices() { return audioDevices_; }
         
@@ -176,19 +188,40 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertEqual(&std::as_const(response), internalModel.coordinateResponse());
     }
     
-    TEST_F(RecognitionTestModelTests2, initializeFixedLevelTestInitializesFixedLevelMethod) {
+    TEST_F(
+        RecognitionTestModelTests2,
+        initializeFixedLevelTestInitializesFixedLevelMethod
+    ) {
         initializeFixedLevelTest();
         assertEqual(&std::as_const(test), fixedLevelMethod.test());
     }
     
-    TEST_F(RecognitionTestModelTests2, initializeFixedLevelTestInitializesInternalModel) {
+    TEST_F(
+        RecognitionTestModelTests2,
+        initializeAdaptiveTestInitializesAdaptiveMethod
+    ) {
+        AdaptiveTest adaptiveTest;
+        model.initializeTest(adaptiveTest);
+        assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests2,
+        initializeFixedLevelTestInitializesInternalModel
+    ) {
         initializeFixedLevelTest();
         assertEqual(
             static_cast<const TestMethod *>(&fixedLevelMethod),
             internalModel.testMethod()
         );
-        assertEqual(&std::as_const(test.common), internalModel.commonTest());
-        assertEqual(&std::as_const(test.information), internalModel.testInformation());
+        assertEqual(
+            &std::as_const(test.common),
+            internalModel.commonTest()
+        );
+        assertEqual(
+            &std::as_const(test.information),
+            internalModel.testInformation()
+        );
     }
     
     TEST_F(RecognitionTestModelTests2, playTrialPassesAudioSettings) {
