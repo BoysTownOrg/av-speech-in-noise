@@ -37,6 +37,7 @@ namespace adaptive_track {
         int reversals() override;
         
     private:
+        bool consecutiveCountMet(int threshold);
         void stepDown();
         void stepUp();
         int stepSize();

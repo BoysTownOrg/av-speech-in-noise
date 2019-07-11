@@ -22,9 +22,13 @@ namespace adaptive_track {
         
         auto direction = Direction::up;
         updateConsecutiveCount(direction);
-        if (sameDirectionConsecutiveCount == up.at(sequenceIndex))
+        if (consecutiveCountMet(up.at(sequenceIndex)))
             stepUp();
         previousDirection = direction;
+    }
+    
+    bool AdaptiveTrack::consecutiveCountMet(int threshold) {
+        return sameDirectionConsecutiveCount == threshold;
     }
 
     void AdaptiveTrack::updateConsecutiveCount(Direction direction) {
@@ -35,8 +39,7 @@ namespace adaptive_track {
     
     void AdaptiveTrack::stepUp() {
         updateReversals(Step::fall);
-        x_ += stepSize();
-        x_ = std::min(x_, ceiling_);
+        x_ = std::min(x_ + stepSize(), ceiling_);
         sameDirectionConsecutiveCount = 0;
         previousStep = Step::rise;
     }
@@ -64,15 +67,14 @@ namespace adaptive_track {
         
         auto direction = Direction::down;
         updateConsecutiveCount(direction);
-        if (sameDirectionConsecutiveCount == down.at(sequenceIndex))
+        if (consecutiveCountMet(down.at(sequenceIndex)))
             stepDown();
         previousDirection = direction;
     }
 
     void AdaptiveTrack::stepDown() {
         updateReversals(Step::rise);
-        x_ -= stepSize();
-        x_ = std::max(x_, floor_);
+        x_ = std::max(x_ - stepSize(), floor_);
         sameDirectionConsecutiveCount = 0;
         previousStep = Step::fall;
     }
