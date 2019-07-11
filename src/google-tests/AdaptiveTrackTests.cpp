@@ -11,7 +11,7 @@ namespace adaptive_track::tests {
         ) :
             track{s} {}
         
-        void push(std::string directions) {
+        void push(const std::string &directions) {
             for (const auto &c : directions)
                 if (c == 'd')
                     pushDown();
@@ -113,6 +113,10 @@ namespace adaptive_track::tests {
         
         void assertIncomplete(AdaptiveTrackFacade &track) {
             track.assertIncomplete();
+        }
+        
+        void push(AdaptiveTrackFacade &track, const std::string &s) {
+            track.push(s);
         }
     };
 
@@ -218,7 +222,7 @@ namespace adaptive_track::tests {
         firstSequence().down = 1;
         firstSequence().up = 1;
         auto track = reset();
-        track.push("dduuuudduuuddddduuudduu");
+        push(track, "dduuuudduuuddddduuudduu");
         assertXEquals(track, 1);
     }
 
@@ -230,7 +234,7 @@ namespace adaptive_track::tests {
         firstSequence().down = 2;
         firstSequence().up = 1;
         auto track = reset();
-        track.push("dddduduududdddduuuddddd");
+        push(track, "dddduduududdddduuuddddd");
         assertXEquals(track, 1);
     }
 
@@ -284,7 +288,7 @@ namespace adaptive_track::tests {
         thirdSequence().down = 3;
         thirdSequence().up = 1;
         auto track = reset();
-        track.push("ddudddudddddudddddduddd");
+        push(track, "ddudddudddddudddddduddd");
         assertXEquals(track, 3);
     }
 
