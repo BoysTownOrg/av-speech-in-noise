@@ -63,6 +63,7 @@ namespace av_speech_in_noise::tests {
     };
     
     class RecognitionTestModel_InternalStub : public IRecognitionTestModel_Internal {
+        std::vector<std::string> audioDevices_{};
         const Calibration *calibration_{};
         const AudioSettings *playTrialSettings_{};
         const TestInformation *testInformation_{};
@@ -91,7 +92,7 @@ namespace av_speech_in_noise::tests {
         
         bool testComplete()  { return complete_; }
         
-        std::vector<std::string> audioDevices() {return {};}
+        std::vector<std::string> audioDevices() { return audioDevices_; }
         
         void subscribe(Model::EventListener *)  {}
         
@@ -133,6 +134,10 @@ namespace av_speech_in_noise::tests {
         
         void setComplete() {
             complete_ = true;
+        }
+        
+        void setAudioDevices(std::vector<std::string> v) {
+            audioDevices_ = std::move(v);
         }
     };
     
@@ -191,5 +196,10 @@ namespace av_speech_in_noise::tests {
         assertFalse(testComplete());
         internalModel.setComplete();
         assertTrue(testComplete());
+    }
+    
+    TEST_F(RecognitionTestModelTests2, returnsAudioDevices) {
+        internalModel.setAudioDevices({"a", "b", "c"});
+        assertEqual({"a", "b", "c"}, model.audioDevices());
     }
 }
