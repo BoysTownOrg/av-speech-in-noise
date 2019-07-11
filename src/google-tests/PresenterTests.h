@@ -10,9 +10,10 @@ namespace av_speech_in_noise::tests::presentation {
     class Collection {
         std::vector<T> items{};
     public:
-        explicit Collection(std::vector<T> items = {}) : items{std::move(items)} {}
+        explicit Collection(std::vector<T> items = {}) :
+            items{std::move(items)} {}
         
-        bool contains(T item) const {
+        bool contains(const T &item) const {
             return std::find(items.begin(), items.end(), item) != items.end();
         }
     };
@@ -247,7 +248,9 @@ namespace av_speech_in_noise::tests::presentation {
                 return startingSnr_;
             }
             
-            void populateConditionMenu(std::vector<std::string> items) override {
+            void populateConditionMenu(
+                std::vector<std::string> items
+            ) override {
                 conditions_ = Collection{std::move(items)};
             }
             
