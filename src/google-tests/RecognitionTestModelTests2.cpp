@@ -173,31 +173,40 @@ namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(RecognitionTestModelTests2, submitResponsePassesCoordinateResponse) {
         coordinate_response_measure::SubjectResponse response;
         model.submitResponse(response);
-        EXPECT_EQ(&response, internalModel.coordinateResponse());
+        assertEqual(&std::as_const(response), internalModel.coordinateResponse());
     }
     
     TEST_F(RecognitionTestModelTests2, initializeFixedLevelTestInitializesFixedLevelMethod) {
         initializeFixedLevelTest();
-        EXPECT_EQ(&test, fixedLevelMethod.test());
+        assertEqual(&std::as_const(test), fixedLevelMethod.test());
     }
     
     TEST_F(RecognitionTestModelTests2, initializeFixedLevelTestInitializesInternalModel) {
         initializeFixedLevelTest();
-        EXPECT_EQ(&fixedLevelMethod, internalModel.testMethod());
-        EXPECT_EQ(&test.common, internalModel.commonTest());
-        EXPECT_EQ(&test.information, internalModel.testInformation());
+        assertEqual(
+            static_cast<const TestMethod *>(&fixedLevelMethod),
+            internalModel.testMethod()
+        );
+        assertEqual(&std::as_const(test.common), internalModel.commonTest());
+        assertEqual(&std::as_const(test.information), internalModel.testInformation());
     }
     
     TEST_F(RecognitionTestModelTests2, playTrialPassesAudioSettings) {
         AudioSettings settings;
         model.playTrial(settings);
-        EXPECT_EQ(&settings, internalModel.playTrialSettings());
+        assertEqual(
+            &std::as_const(settings),
+            internalModel.playTrialSettings()
+        );
     }
     
     TEST_F(RecognitionTestModelTests2, playCalibrationPassesCalibration) {
         Calibration calibration;
         model.playCalibration(calibration);
-        EXPECT_EQ(&calibration, internalModel.calibration());
+        assertEqual(
+            &std::as_const(calibration),
+            internalModel.calibration()
+        );
     }
     
     TEST_F(RecognitionTestModelTests2, testCompleteWhenComplete) {
@@ -214,6 +223,9 @@ namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(RecognitionTestModelTests2, subscribesToListener) {
         ModelEventListenerStub listener;
         model.subscribe(&listener);
-        EXPECT_EQ(&listener, internalModel.listener());
+        assertEqual(
+            static_cast<const Model::EventListener *>(&listener),
+            internalModel.listener()
+        );
     }
 }
