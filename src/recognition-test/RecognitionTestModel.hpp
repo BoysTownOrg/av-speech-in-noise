@@ -157,7 +157,17 @@ namespace av_speech_in_noise {
         ) = 0;
     };
     
-    class AdaptiveMethod : public TestMethod {
+    class IAdaptiveMethod : public virtual TestMethod {
+    public:
+        virtual void initialize(const AdaptiveTest &) = 0;
+    };
+    
+    class IFixedLevelMethod : public virtual TestMethod {
+    public:
+        virtual void initialize(const FixedLevelTest &) = 0;
+    };
+    
+    class AdaptiveMethod : public IAdaptiveMethod {
         struct TargetListWithTrack {
             TargetList *list;
             std::shared_ptr<Track> track;
@@ -180,7 +190,7 @@ namespace av_speech_in_noise {
             ResponseEvaluator *,
             Randomizer *
         );
-        void initialize(const AdaptiveTest &);
+        void initialize(const AdaptiveTest &) override;
         int snr_dB() override;
         void submitIncorrectResponse() override;
         void submitCorrectResponse() override;
@@ -210,7 +220,7 @@ namespace av_speech_in_noise {
         void correct();
     };
 
-    class FixedLevelMethod : public TestMethod {
+    class FixedLevelMethod : public IFixedLevelMethod {
         coordinate_response_measure::FixedLevelTrial lastTrial{};
         const FixedLevelTest *test{};
         TargetList *targetList;
@@ -220,7 +230,7 @@ namespace av_speech_in_noise {
         bool complete_{};
     public:
         FixedLevelMethod(TargetList *, ResponseEvaluator *);
-        void initialize(const FixedLevelTest &);
+        void initialize(const FixedLevelTest &) override;
         int snr_dB() override;
         std::string next() override;
         bool complete() override;

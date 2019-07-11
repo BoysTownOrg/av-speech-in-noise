@@ -270,8 +270,6 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::playCalibration(const Calibration &p) {
-        model->throwIfTrialInProgress();
-        
         model->playCalibration(p);
     }
 
