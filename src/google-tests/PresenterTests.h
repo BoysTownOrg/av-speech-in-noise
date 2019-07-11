@@ -1494,7 +1494,11 @@ namespace av_speech_in_noise::tests::presentation {
         
         void assertPlaysTrial(UseCase &useCase) {
             run(useCase);
-            assertTrue(model.trialPlayed());
+            assertTrue(trialPlayed());
+        }
+        
+        bool trialPlayed() {
+            return model.trialPlayed();
         }
         
         void assertHidesPlayTrialButton(PlayingTrial &useCase) {
@@ -1530,7 +1534,7 @@ namespace av_speech_in_noise::tests::presentation {
         void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
             setTestComplete();
             run(useCase);
-            assertFalse(model.trialPlayed());
+            assertFalse(trialPlayed());
         }
         
         void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
