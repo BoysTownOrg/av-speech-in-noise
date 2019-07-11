@@ -143,6 +143,8 @@ namespace av_speech_in_noise {
     class TestMethod {
     public:
         virtual ~TestMethod() = default;
+        virtual void initialize(const AdaptiveTest &) {}
+        virtual void initialize(const FixedLevelTest &) {}
         virtual bool complete() = 0;
         virtual std::string next() = 0;
         virtual std::string current() = 0;
@@ -180,7 +182,7 @@ namespace av_speech_in_noise {
             ResponseEvaluator *,
             Randomizer *
         );
-        void initialize(const AdaptiveTest &);
+        void initialize(const AdaptiveTest &) override;
         int snr_dB() override;
         void submitIncorrectResponse() override;
         void submitCorrectResponse() override;
@@ -220,7 +222,7 @@ namespace av_speech_in_noise {
         bool complete_{};
     public:
         FixedLevelMethod(TargetList *, ResponseEvaluator *);
-        void initialize(const FixedLevelTest &);
+        void initialize(const FixedLevelTest &) override;
         int snr_dB() override;
         std::string next() override;
         bool complete() override;
