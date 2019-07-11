@@ -68,6 +68,7 @@ namespace av_speech_in_noise::tests {
         const CommonTest *commonTest_{};
         const TestMethod *testMethod_{};
         const coordinate_response_measure::SubjectResponse *coordinateResponse_{};
+        bool complete_{};
     public:
         void initialize(
             TestMethod *tm,
@@ -87,7 +88,7 @@ namespace av_speech_in_noise::tests {
             coordinateResponse_ = &p;
         }
         
-        bool testComplete()  {return {};}
+        bool testComplete()  { return complete_; }
         
         std::vector<std::string> audioDevices() {return {};}
         
@@ -127,6 +128,10 @@ namespace av_speech_in_noise::tests {
         
         auto calibration() const {
             return calibration_;
+        }
+        
+        void setComplete() {
+            complete_ = true;
         }
     };
     
@@ -175,5 +180,11 @@ namespace av_speech_in_noise::tests {
         Calibration calibration;
         model.playCalibration(calibration);
         EXPECT_EQ(&calibration, internalModel.calibration());
+    }
+    
+    TEST_F(RecognitionTestModelTests2, testCompleteWhenComplete) {
+        EXPECT_FALSE(model.testComplete());
+        internalModel.setComplete();
+        EXPECT_TRUE(model.testComplete());
     }
 }
