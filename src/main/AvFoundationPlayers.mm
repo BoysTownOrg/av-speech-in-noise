@@ -453,7 +453,7 @@ void AvFoundationVideoPlayer::hide() {
 }
 
 void AvFoundationVideoPlayer::show() {
-    [videoWindow setIsVisible:YES];
+    showWindow();
 }
 
 int AvFoundationVideoPlayer::deviceCount() {
