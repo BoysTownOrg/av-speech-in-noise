@@ -118,6 +118,10 @@ namespace adaptive_track::tests {
         void push(AdaptiveTrackFacade &track, const std::string &s) {
             track.push(s);
         }
+        
+        void assertReversalsEquals(AdaptiveTrackFacade &track, int n) {
+            track.assertReversalsEquals(n);
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
@@ -333,18 +337,18 @@ namespace adaptive_track::tests {
         firstSequence().down = 2;
         firstSequence().up = 1;
         auto track = reset();
-        track.assertReversalsEquals(0);
+        assertReversalsEquals(track, 0);
         pushUp(track);
-        track.assertReversalsEquals(0);
+        assertReversalsEquals(track, 0);
         pushDown(track);
-        track.assertReversalsEquals(0);
+        assertReversalsEquals(track, 0);
         pushDown(track);
-        track.assertReversalsEquals(1);
+        assertReversalsEquals(track, 1);
         pushUp(track);
-        track.assertReversalsEquals(2);
+        assertReversalsEquals(track, 2);
         pushDown(track);
-        track.assertReversalsEquals(2);
+        assertReversalsEquals(track, 2);
         pushDown(track);
-        track.assertReversalsEquals(3);
+        assertReversalsEquals(track, 3);
     }
 }
