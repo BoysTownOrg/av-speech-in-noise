@@ -3,11 +3,11 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
         assertEqual(
-            static_cast<TargetPlayer::EventListener *>(&model),
+            static_cast<TargetPlayer::EventListener *>(&internalModel),
             targetPlayer.listener()
         );
         assertEqual(
-            static_cast<MaskerPlayer::EventListener *>(&model),
+            static_cast<MaskerPlayer::EventListener *>(&internalModel),
             maskerPlayer.listener()
         );
     }

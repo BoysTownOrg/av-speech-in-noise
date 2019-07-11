@@ -448,14 +448,17 @@ namespace av_speech_in_noise::tests::recognition_test {
             &randomizer
         };
         FixedLevelMethod fixedLevelMethod{&targetList, &evaluator};
-        RecognitionTestModel model{
-            &adaptiveMethod,
-            &fixedLevelMethod,
+        RecognitionTestModel_Internal internalModel{
             &targetPlayer,
             &maskerPlayer,
             &evaluator,
             &outputFile,
             &randomizer
+        };
+        RecognitionTestModel model{
+            &adaptiveMethod,
+            &fixedLevelMethod,
+            &internalModel
         };
         ModelEventListenerStub listener{};
         InitializingAdaptiveTest initializingAdaptiveTest{
