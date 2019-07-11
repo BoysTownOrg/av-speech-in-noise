@@ -1,8 +1,9 @@
 #include "assert-utility.h"
+#include "RecognitionTestModelTests.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise::tests::recognition_test {
     class AdaptiveMethodStub : public IAdaptiveMethod {
     
         void initialize(const AdaptiveTest &)  {}
@@ -64,6 +65,7 @@ namespace av_speech_in_noise::tests {
     
     class RecognitionTestModel_InternalStub : public IRecognitionTestModel_Internal {
         std::vector<std::string> audioDevices_{};
+        const Model::EventListener *listener_{};
         const Calibration *calibration_{};
         const AudioSettings *playTrialSettings_{};
         const TestInformation *testInformation_{};
@@ -94,7 +96,9 @@ namespace av_speech_in_noise::tests {
         
         std::vector<std::string> audioDevices() { return audioDevices_; }
         
-        void subscribe(Model::EventListener *)  {}
+        void subscribe(Model::EventListener *e) {
+            listener_ = e;
+        }
         
         void playCalibration(const Calibration &c) {
             calibration_ = &c;
@@ -138,6 +142,10 @@ namespace av_speech_in_noise::tests {
         
         void setAudioDevices(std::vector<std::string> v) {
             audioDevices_ = std::move(v);
+        }
+        
+        auto listener() const {
+            return listener_;
         }
     };
     
@@ -201,5 +209,11 @@ namespace av_speech_in_noise::tests {
     TEST_F(RecognitionTestModelTests2, returnsAudioDevices) {
         internalModel.setAudioDevices({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, model.audioDevices());
+    }
+    
+    TEST_F(RecognitionTestModelTests2, subscribesToListener) {
+        ModelEventListenerStub listener;
+        model.subscribe(&listener);
+        EXPECT_EQ(&listener, internalModel.listener());
     }
 }
