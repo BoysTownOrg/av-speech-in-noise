@@ -224,6 +224,25 @@ namespace av_speech_in_noise::tests::recognition_test {
         );
     }
     
+    TEST_F(
+        RecognitionTestModelTests2,
+        initializeAdaptiveTestInitializesInternalModel
+    ) {
+        model.initializeTest(adaptiveTest);
+        assertEqual(
+            static_cast<const TestMethod *>(&adaptiveMethod),
+            internalModel.testMethod()
+        );
+        assertEqual(
+            &std::as_const(adaptiveTest.common),
+            internalModel.commonTest()
+        );
+        assertEqual(
+            &std::as_const(adaptiveTest.information),
+            internalModel.testInformation()
+        );
+    }
+    
     TEST_F(RecognitionTestModelTests2, playTrialPassesAudioSettings) {
         AudioSettings settings;
         model.playTrial(settings);
