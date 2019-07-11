@@ -122,8 +122,11 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::submitSubjectResponse() {
-        proceedToNextTrialAfter(&Presenter::submitSubjectResponse_);
-        playTrial();
+        submitSubjectResponse_();
+        if (testComplete())
+            switchToSetupView();
+        else
+            playTrial();
     }
     
     void Presenter::submitSubjectResponse_() {

@@ -508,6 +508,10 @@ namespace av_speech_in_noise::tests::presentation {
         assertCompleteTestHidesExperimenterView(submittingFailedTrial);
     }
 
+    TEST_F(PresenterTests, submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
+        assertCompleteTestDoesNotPlayTrial(respondingFromSubject);
+    }
+
     TEST_F(PresenterTests, respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
         assertDoesNotHideExperimenterView(respondingFromSubject);
     }

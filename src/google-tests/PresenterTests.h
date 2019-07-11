@@ -1527,6 +1527,12 @@ namespace av_speech_in_noise::tests::presentation {
             assertExperimenterViewHidden();
         }
         
+        void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
+            setTestComplete();
+            run(useCase);
+            assertFalse(model.trialPlayed());
+        }
+        
         void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
             run(useCase);
             assertExperimenterViewNotHidden();
