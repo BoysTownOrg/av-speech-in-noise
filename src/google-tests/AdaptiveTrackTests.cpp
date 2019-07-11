@@ -110,6 +110,10 @@ namespace adaptive_track::tests {
         void assertXEquals(AdaptiveTrackFacade &track, T x) {
             track.assertXEquals(x);
         }
+        
+        void assertIncomplete(AdaptiveTrackFacade &track) {
+            track.assertIncomplete();
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
@@ -191,17 +195,17 @@ namespace adaptive_track::tests {
         firstSequence().up = 1;
         firstSequence().down = 2;
         auto track = reset();
-        track.assertIncomplete();
+        assertIncomplete(track);
         pushDown(track);
-        track.assertIncomplete();
+        assertIncomplete(track);
         pushDown(track);
-        track.assertIncomplete();
+        assertIncomplete(track);
         pushUp(track);
-        track.assertIncomplete();
+        assertIncomplete(track);
         pushDown(track);
-        track.assertIncomplete();
+        assertIncomplete(track);
         pushDown(track);
-        track.assertIncomplete();
+        assertIncomplete(track);
         pushUp(track);
         track.assertComplete();
     }
