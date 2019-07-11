@@ -164,9 +164,9 @@ namespace av_speech_in_noise {
         };
         TargetListReader::lists_type lists{};
         std::vector<TargetListWithTrack> targetListsWithTracks{};
-        const AdaptiveTest *test{};
         Track::Settings trackSettings{};
         coordinate_response_measure::AdaptiveTrial lastTrial{};
+        const AdaptiveTest *test{};
         TargetListReader *targetListSetReader;
         TrackFactory *snrTrackFactory;
         ResponseEvaluator *evaluator;
@@ -211,8 +211,8 @@ namespace av_speech_in_noise {
     };
 
     class FixedLevelMethod : public TestMethod {
-        const FixedLevelTest *test{};
         coordinate_response_measure::FixedLevelTrial lastTrial{};
+        const FixedLevelTest *test{};
         TargetList *targetList;
         ResponseEvaluator *evaluator;
         int snr_dB_{};
@@ -282,7 +282,7 @@ namespace av_speech_in_noise {
         void submitCorrectResponse_();
         void submitIncorrectResponse_();
         void writeTrial(const FreeResponse &p);
-        void prepareCommonTest(const CommonTest &);
+        void prepareCommonTest(const CommonTest &, const TestInformation &);
         void storeLevels(const CommonTest &common);
         void preparePlayersForNextTrial();
         void throwIfTrialInProgress();

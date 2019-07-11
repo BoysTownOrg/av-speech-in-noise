@@ -269,9 +269,7 @@ namespace av_speech_in_noise {
         
         fixedLevelMethod->initialize(p);
         testMethod = fixedLevelMethod;
-        prepareCommonTest(p.common);
-        tryOpeningOutputFile(p.information);
-        testMethod->writeTestingParameters(outputFile);
+        prepareCommonTest(p.common, p.information);
     }
     
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
@@ -279,9 +277,7 @@ namespace av_speech_in_noise {
         
         adaptiveMethod->initialize(p);
         testMethod = adaptiveMethod;
-        prepareCommonTest(p.common);
-        tryOpeningOutputFile(p.information);
-        testMethod->writeTestingParameters(outputFile);
+        prepareCommonTest(p.common, p.information);
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {
@@ -293,12 +289,17 @@ namespace av_speech_in_noise {
         return maskerPlayer->playing();
     }
     
-    void RecognitionTestModel::prepareCommonTest(const CommonTest &common) {
+    void RecognitionTestModel::prepareCommonTest(
+        const CommonTest &common,
+        const TestInformation &information
+    ) {
         storeLevels(common);
         prepareMasker(common.maskerFilePath);
         targetPlayer->hideVideo();
         condition = common.condition;
         preparePlayersForNextTrial();
+        tryOpeningOutputFile(information);
+        testMethod->writeTestingParameters(outputFile);
     }
     
     void RecognitionTestModel::storeLevels(const CommonTest &common) {
