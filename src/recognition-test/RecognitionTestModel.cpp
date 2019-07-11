@@ -11,11 +11,10 @@ namespace av_speech_in_noise {
         targetListSetReader{targetListSetReader},
         snrTrackFactory{snrTrackFactory},
         evaluator{evaluator},
-        randomizer{randomizer},
-        currentSnrTrack{},
-        currentTargetList{} {}
+        randomizer{randomizer} {}
     
     void AdaptiveMethod::initialize(const AdaptiveTest &p) {
+        test = &p;
         trackSettings.ceiling = p.ceilingSnr_dB;
         trackSettings.rule = p.targetLevelRule;
         trackSettings.startingX = p.startingSnr_dB;
@@ -133,6 +132,10 @@ namespace av_speech_in_noise {
         currentSnrTrack->pushUp();
     }
     
+    void AdaptiveMethod::writeTestingParameters(OutputFile *file) {
+        file->writeTest(*test);
+    }
+    
     void AdaptiveMethod::writeLastCoordinateResponse(OutputFile *file) {
         file->writeTrial(lastTrial);
     }
@@ -158,6 +161,7 @@ namespace av_speech_in_noise {
         evaluator{evaluator} {}
     
     void FixedLevelMethod::initialize(const FixedLevelTest &p) {
+        test = &p;
         snr_dB_ = p.snr_dB;
         trials_ = p.trials;
         targetList->loadFromDirectory(p.common.targetListDirectory);
@@ -197,6 +201,10 @@ namespace av_speech_in_noise {
         return targetList->current();
     }
     
+    void FixedLevelMethod::writeTestingParameters(OutputFile *file) {
+        file->writeTest(*test);
+    }
+    
     void FixedLevelMethod::writeLastCoordinateResponse(OutputFile *file) {
         file->writeTrial(lastTrial);
     }
@@ -221,6 +229,7 @@ namespace av_speech_in_noise {
         void submitCorrectResponse() override {}
         void submitIncorrectResponse() override {}
         void writeLastCoordinateResponse(OutputFile *) override {}
+        void writeTestingParameters(OutputFile *) override {}
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) override {}
@@ -262,7 +271,7 @@ namespace av_speech_in_noise {
         testMethod = fixedLevelMethod;
         prepareCommonTest(p.common);
         tryOpeningOutputFile(p.information);
-        outputFile->writeTest(p);
+        testMethod->writeTestingParameters(outputFile);
     }
     
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
@@ -272,7 +281,7 @@ namespace av_speech_in_noise {
         testMethod = adaptiveMethod;
         prepareCommonTest(p.common);
         tryOpeningOutputFile(p.information);
-        outputFile->writeTest(p);
+        testMethod->writeTestingParameters(outputFile);
     }
     
     void RecognitionTestModel::throwIfTrialInProgress() {

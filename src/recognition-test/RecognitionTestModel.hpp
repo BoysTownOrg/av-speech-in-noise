@@ -150,6 +150,7 @@ namespace av_speech_in_noise {
         virtual void submitCorrectResponse() = 0;
         virtual void submitIncorrectResponse() = 0;
         virtual void submitResponse(const FreeResponse &) = 0;
+        virtual void writeTestingParameters(OutputFile *) = 0;
         virtual void writeLastCoordinateResponse(OutputFile *) = 0;
         virtual void submitResponse(
             const coordinate_response_measure::SubjectResponse &
@@ -163,6 +164,7 @@ namespace av_speech_in_noise {
         };
         TargetListReader::lists_type lists{};
         std::vector<TargetListWithTrack> targetListsWithTracks{};
+        const AdaptiveTest *test{};
         Track::Settings trackSettings{};
         coordinate_response_measure::AdaptiveTrial lastTrial{};
         TargetListReader *targetListSetReader;
@@ -186,6 +188,7 @@ namespace av_speech_in_noise {
         std::string next() override;
         std::string current() override;
         void writeLastCoordinateResponse(OutputFile *) override;
+        void writeTestingParameters(OutputFile *) override;
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) override;
@@ -208,6 +211,7 @@ namespace av_speech_in_noise {
     };
 
     class FixedLevelMethod : public TestMethod {
+        const FixedLevelTest *test{};
         coordinate_response_measure::FixedLevelTrial lastTrial{};
         TargetList *targetList;
         ResponseEvaluator *evaluator;
@@ -224,6 +228,7 @@ namespace av_speech_in_noise {
         void submitIncorrectResponse() override;
         void submitCorrectResponse() override;
         void writeLastCoordinateResponse(OutputFile *) override;
+        void writeTestingParameters(OutputFile *) override;
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) override;
