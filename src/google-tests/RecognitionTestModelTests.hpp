@@ -755,6 +755,16 @@ namespace av_speech_in_noise::tests::recognition_test {
             evaluator.setIncorrect();
         }
         
+        void assertTestIncompleteAfterCoordinateResponse() {
+            submitCoordinateResponse();
+            assertTestIncomplete();
+        }
+        
+        void assertTestCompleteAfterCoordinateResponse() {
+            submitCoordinateResponse();
+            assertTestComplete();
+        }
+        
         void assertTestIncomplete() {
             assertFalse(testComplete());
         }

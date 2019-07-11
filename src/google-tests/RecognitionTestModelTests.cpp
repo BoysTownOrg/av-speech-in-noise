@@ -947,14 +947,11 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         run(initializingAdaptiveTest);
         initializingAdaptiveTest.setSnrTrackComplete(0);
-        submitCoordinateResponse();
-        assertTestIncomplete();
+        assertTestIncompleteAfterCoordinateResponse();
         initializingAdaptiveTest.setSnrTrackComplete(1);
-        submitCoordinateResponse();
-        assertTestIncomplete();
+        assertTestIncompleteAfterCoordinateResponse();
         initializingAdaptiveTest.setSnrTrackComplete(2);
-        submitCoordinateResponse();
-        assertTestComplete();
+        assertTestCompleteAfterCoordinateResponse();
     }
 
     TEST_F(
@@ -963,12 +960,9 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         initializingFixedLevelTest.setTrials(3);
         run(initializingFixedLevelTest);
-        submitCoordinateResponse();
-        assertTestIncomplete();
-        submitCoordinateResponse();
-        assertTestIncomplete();
-        submitCoordinateResponse();
-        assertTestComplete();
+        assertTestIncompleteAfterCoordinateResponse();
+        assertTestIncompleteAfterCoordinateResponse();
+        assertTestCompleteAfterCoordinateResponse();
     }
 
     TEST_F(
