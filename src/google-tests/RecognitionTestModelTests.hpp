@@ -514,11 +514,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             maskerPlayer.setPlaying();
         }
         
-        void assertTargetVideoOnlyHidden() {
-            assertTrue(targetPlayerVideoHidden());
-            assertTargetVideoNotShown();;
-        }
-        
         bool targetPlayerVideoHidden() {
             return targetPlayer.videoHidden();
         }
@@ -674,12 +669,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         
         void selectList(int n) {
             randomizer.setRandomInt(n);
-        }
-        
-        void assertTargetVideoHiddenWhenAuditoryOnly(ConditionUseCase &useCase) {
-            useCase.setAuditoryOnly();
-            run(useCase);
-            assertTargetVideoOnlyHidden();
         }
         
         void assertTargetVideoShownWhenAudioVisual(ConditionUseCase &useCase) {
@@ -982,34 +971,8 @@ namespace av_speech_in_noise::tests::recognition_test {
             assertEqual("a", evaluator.filePathForFileName());
         }
         
-        void assertAudioVisualConditionShowsTargetVideo(InitializingTestUseCase &useCase) {
-            useCase.setAudioVisual();
-            run(useCase);
-            playTrial();
-            assertTrue(targetPlayerVideoShown());
-        }
-        
-        void assertAudioVisualConditionHidesTargetVideo(InitializingTestUseCase &useCase) {
-            useCase.setAudioVisual();
-            run(useCase);
-            maskerFadeOutComplete();
-            assertTargetVideoOnlyHidden();
-        }
-        
         void maskerFadeOutComplete() {
             maskerPlayer.fadeOutComplete();
-        }
-        
-        void assertAuditoryOnlyConditionDoesNotShowTargetVideo(InitializingTestUseCase &useCase) {
-            useCase.setAuditoryOnly();
-            run(useCase);
-            playTrial();
-            assertTargetVideoNotShown();
-        }
-        
-        void assertHidesTargetVideo(UseCase &useCase) {
-            run(useCase);
-            assertTargetVideoOnlyHidden();
         }
     };
 }
