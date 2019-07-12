@@ -534,4 +534,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         targetPlayer.throwInvalidAudioFileOnRms();
         assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile
+    ) {
+        initializingTest.setMaskerFilePath("a");
+        maskerPlayer.throwInvalidAudioFileOnLoad();
+        assertCallThrowsRequestFailure(initializingTest, "unable to read a");
+    }
 }
