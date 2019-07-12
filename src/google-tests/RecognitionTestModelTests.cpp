@@ -228,20 +228,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestSetsInitialMaskerPlayerLevel
-    ) {
-        assertMaskerPlayerLevelSet(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestSetsInitialMaskerPlayerLevel
-    ) {
-        assertMaskerPlayerLevelSet(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeAdaptiveTestSetsTargetPlayerLevel
     ) {
         assertSetsTargetLevel(initializingAdaptiveTest);

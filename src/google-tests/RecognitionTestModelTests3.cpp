@@ -50,6 +50,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         void setMaskerFilePath(std::string s) {
             common.maskerFilePath = std::move(s);
         }
+        
+        void setMaskerLevel_dB_SPL(int x) {
+            common.maskerLevel_dB_SPL = x;
+        }
+        
+        void setTestingFullScaleLevel_dB_SPL(int x) {
+            common.fullScaleLevel_dB_SPL = x;
+        }
     };
     
     class RecognitionTestModelTests3 : public ::testing::Test {
@@ -198,6 +206,10 @@ namespace av_speech_in_noise::tests::recognition_test {
             run(useCase);
             assertEqual(1., maskerPlayerSecondsSeeked());
         }
+    
+        double dB(double x) {
+            return 20 * std::log10(x);
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -341,5 +353,16 @@ namespace av_speech_in_noise::tests::recognition_test {
         submitCoordinateResponseSeeksToRandomMaskerPosition
     ) {
         assertMaskerPlayerSeekedToRandomTime(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestSetsInitialMaskerPlayerLevel
+    ) {
+        initializingTest.setMaskerLevel_dB_SPL(1);
+        initializingTest.setTestingFullScaleLevel_dB_SPL(2);
+        maskerPlayer.setRms(3);
+        run(initializingTest);
+        assertEqual(1 - 2 - dB(3), maskerPlayer.level_dB());
     }
 }
