@@ -423,4 +423,15 @@ namespace av_speech_in_noise::tests::recognition_test {
         run(submittingCoordinateResponse);
         assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationSetsTargetPlayerLevel
+    ) {
+        playingCalibration.setLevel_dB_SPL(1);
+        playingCalibration.setFullScaleLevel_dB_SPL(2);
+        targetPlayer.setRms(3);
+        run(playingCalibration);
+        assertTargetPlayerLevelEquals_dB(1 - 2 - dB(3));
+    }
 }

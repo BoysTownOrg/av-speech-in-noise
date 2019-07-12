@@ -261,17 +261,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertSetsTargetLevel(initializingAdaptiveTest, submittingIncorrectResponse);
     }
 
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationSetsTargetPlayerLevel
-    ) {
-        playingCalibration.setLevel_dB_SPL(1);
-        playingCalibration.setFullScaleLevel_dB_SPL(2);
-        setTargetPlayerRms(3);
-        playCalibration();
-        assertTargetPlayerLevelEquals_dB(1 - 2 - dB(3));
-    }
-
     TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
         maskerPlayer.fadeInComplete();
         assertTargetPlayerPlayed();
