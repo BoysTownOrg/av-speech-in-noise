@@ -1,5 +1,5 @@
 #include "RecognitionTestModel.hpp"
-#include <cmath>
+#include <gsl/gsl>
 
 namespace av_speech_in_noise {
     AdaptiveMethod::AdaptiveMethod(

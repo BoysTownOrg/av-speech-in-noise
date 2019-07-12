@@ -506,36 +506,8 @@ namespace av_speech_in_noise::tests::recognition_test {
             run(playingTrial);
         }
         
-        void playCalibration() {
-            run(playingCalibration);
-        }
-        
         void submitCoordinateResponse() {
             run(submittingCoordinateResponse);
-        }
-        
-        void setOutputAudioDeviceDescriptions(std::vector<std::string> v) {
-            maskerPlayer.setOutputAudioDeviceDescriptions(std::move(v));
-        }
-        
-        void assertMaskerPlayerNotPlayed() {
-            assertFalse(maskerPlayerFadedIn());
-        }
-        
-        bool maskerPlayerFadedIn() {
-            return maskerPlayer.fadeInCalled();
-        }
-        
-        void assertTargetPlayerPlayed() {
-            assertTrue(targetPlayerPlayed());
-        }
-        
-        bool targetPlayerPlayed() {
-            return targetPlayer.played();
-        }
-        
-        void assertTargetPlayerNotPlayed() {
-            assertFalse(targetPlayerPlayed());
         }
         
         void setTrialInProgress() {

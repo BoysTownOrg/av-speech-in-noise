@@ -2,7 +2,6 @@
 #define av_speech_in_noise_RecognitionTestModel_hpp
 
 #include <av-speech-in-noise/Model.h>
-#include <gsl/gsl>
 #include <vector>
 #include <memory>
 #include <limits>
