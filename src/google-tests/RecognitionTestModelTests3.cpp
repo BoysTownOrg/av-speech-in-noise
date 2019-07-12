@@ -170,6 +170,15 @@ namespace av_speech_in_noise::tests::recognition_test {
             run(useCase);
             assertTargetFilePathEquals("a");
         }
+        
+        void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
+            run(useCase);
+            assertTrue(targetPlayerPlaybackCompletionSubscribed());
+        }
+        
+        bool targetPlayerPlaybackCompletionSubscribed() {
+            return targetPlayer.playbackCompletionSubscribedTo();
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -271,5 +280,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         initializingTest.setMaskerFilePath("a");
         run(initializingTest);
         assertEqual("a", maskerPlayer.filePath());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(initializingTest);
     }
 }

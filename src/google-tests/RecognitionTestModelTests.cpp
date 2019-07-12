@@ -165,20 +165,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestSubscribesToTargetPlaybackCompletionNotification
-    ) {
-        assertTargetPlayerPlaybackCompletionSubscribed(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestSubscribesToTargetPlaybackCompletionNotification
-    ) {
-        assertTargetPlayerPlaybackCompletionSubscribed(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCoordinateResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingCoordinateResponse);
