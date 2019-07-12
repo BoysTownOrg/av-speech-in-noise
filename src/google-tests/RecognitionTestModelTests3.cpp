@@ -265,6 +265,21 @@ namespace av_speech_in_noise::tests::recognition_test {
             run(useCase);
             assertTrue(outputFileLog().endsWith("save "));
         }
+        
+        void assertCallThrowsRequestFailure(
+            UseCase &useCase,
+            std::string what
+        ) {
+            try {
+                run(useCase);
+                FAIL() <<
+                    "Expected recognition_test::"
+                    "RecognitionTestModel::"
+                    "RequestFailure";
+            } catch (const RecognitionTestModel::RequestFailure &e) {
+                assertEqual(std::move(what), e.what());
+            }
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -501,5 +516,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         submitCoordinateResponseSavesOutputFileAfterWritingTrial
     ) {
         assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestThrowsRequestFailureIfFileFailsToOpen
+    ) {
+        outputFile.throwOnOpen();
+        assertCallThrowsRequestFailure(initializingTest, "Unable to open output file.");
     }
 }
