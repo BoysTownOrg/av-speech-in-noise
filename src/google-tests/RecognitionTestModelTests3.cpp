@@ -5,7 +5,12 @@ namespace av_speech_in_noise::tests::recognition_test {
     class TestMethodStub : public TestMethod {
         std::string next_{};
         int snr_dB_{};
+        bool complete_{};
     public:
+        void setComplete() {
+            complete_ = true;
+        }
+        
         void setSnr_dB(int x) {
             snr_dB_ = x;
         }
@@ -14,7 +19,7 @@ namespace av_speech_in_noise::tests::recognition_test {
             next_ = std::move(s);
         }
         
-        bool complete()  {return {};}
+        bool complete()  { return complete_; }
         
         std::string next() {
             return next_;
@@ -328,6 +333,18 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
             setTrialInProgress();
             assertCallThrowsRequestFailure(useCase, "Trial in progress.");
+        }
+        
+        void assertTestIncomplete() {
+            assertFalse(testComplete());
+        }
+        
+        bool testComplete() {
+            return model.testComplete();
+        }
+        
+        void assertTestComplete() {
+            assertTrue(testComplete());
         }
     };
     
@@ -681,5 +698,27 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         maskerPlayer.setOutputAudioDeviceDescriptions({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, model.audioDevices());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        testCompleteWhenComplete
+    ) {
+        run(initializingTest);
+        assertTestIncomplete();
+        testMethod.setComplete();
+        assertTestComplete();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        submitCoordinateResponseDoesNotLoadNextTargetWhenComplete
+    ) {
+        testMethod.setNextTarget("a");
+        run(initializingTest);
+        testMethod.setComplete();
+        testMethod.setNextTarget("b");
+        run(submittingCoordinateResponse);
+        assertTargetFilePathEquals("a");
     }
 }
