@@ -24,20 +24,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestClosesOutputFileOpensAndWritesTestInOrder
-    ) {
-        assertClosesOutputFileOpensAndWritesTestInOrder(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestClosesOutputFileOpensAndWritesTestInOrder
-    ) {
-        assertClosesOutputFileOpensAndWritesTestInOrder(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeAdaptiveTestOpensNewOutputFilePassingTestInformation
     ) {
         assertOutputFilePassedTestInformation(initializingAdaptiveTest);

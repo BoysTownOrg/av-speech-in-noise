@@ -2,6 +2,38 @@
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests::recognition_test {
+    class TestMethodStub : public TestMethod {
+        bool complete()  {return {};}
+        std::string next()  {return {};}
+        std::string current()  {return {};}
+        int snr_dB()  {return {};}
+        void submitCorrectResponse()  {}
+        void submitIncorrectResponse()  {}
+        void submitResponse(const FreeResponse &)  {}
+        void writeTestingParameters(OutputFile *file) {
+            file->writeTest(AdaptiveTest{});
+        }
+        void writeLastCoordinateResponse(OutputFile *)  {}
+        void submitResponse(const coordinate_response_measure::SubjectResponse &)  {}
+    };
+    
+    class InitializingTest : public UseCase {
+        TestInformation information{};
+        CommonTest common{};
+        TestMethod *method;
+    public:
+        explicit InitializingTest(TestMethod *method) :
+            method{method} {}
+        
+        void run(RecognitionTestModel &) override {
+        
+        }
+        
+        void run(RecognitionTestModel_Internal &m) override {
+            m.initialize(method, common, information);
+        }
+    };
+    
     class RecognitionTestModelTests3 : public ::testing::Test {
     protected:
         TargetPlayerStub targetPlayer{};
@@ -16,7 +48,9 @@ namespace av_speech_in_noise::tests::recognition_test {
             &outputFile,
             &randomizer
         };
+        TestMethodStub testMethod;
         PlayingCalibration playingCalibration{};
+        InitializingTest initializingTest{&testMethod};
         
         void run(UseCase &useCase) {
             useCase.run(model);
@@ -59,6 +93,19 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertTargetVideoNotHidden() {
             assertFalse(targetPlayerVideoHidden());
         }
+        
+        void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
+            run(useCase);
+            assertOutputFileLog("close openNewFile writeTest ");
+        }
+        
+        auto &outputFileLog() {
+            return outputFile.log();
+        }
+        
+        void assertOutputFileLog(std::string s) {
+            assertEqual(std::move(s), outputFileLog());
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -84,5 +131,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         playCalibrationShowsTargetVideoWhenAudioVisual
     ) {
         assertTargetVideoShownWhenAudioVisual(playingCalibration);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestClosesOutputFileOpensAndWritesTestInOrder
+    ) {
+        assertClosesOutputFileOpensAndWritesTestInOrder(initializingTest);
     }
 }
