@@ -656,4 +656,13 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertThrowsRequestFailureWhenTrialInProgress(playingCalibration);
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestDoesNotLoadMaskerIfTrialInProgress
+    ) {
+        setMaskerFilePath("a");
+        runIgnoringFailureWithTrialInProgress(initializingTest);
+        assertEqual("", maskerPlayer.filePath());
+    }
 }
