@@ -406,4 +406,17 @@ namespace av_speech_in_noise::tests::recognition_test {
         run(initializingTest);
         assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        submitCoordinateResponseSetsTargetPlayerLevel
+    ) {
+        setMaskerLevel_dB_SPL(3);
+        setTestingFullScaleLevel_dB_SPL(4);
+        run(initializingTest);
+        setMaskerRms(5);
+        testMethod.setSnr_dB(2);
+        run(submittingCoordinateResponse);
+        assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
+    }
 }
