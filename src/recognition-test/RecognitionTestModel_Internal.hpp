@@ -2,6 +2,7 @@
 #define av_speech_in_noise_RecognitionTestModel_Internal_hpp
 
 #include "RecognitionTestModel.hpp"
+#include <string>
 
 namespace av_speech_in_noise {
     class InvalidAudioDevice {};

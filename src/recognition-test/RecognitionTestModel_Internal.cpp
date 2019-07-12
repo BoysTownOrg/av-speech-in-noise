@@ -1,13 +1,7 @@
 #include "RecognitionTestModel_Internal.hpp"
-#include "RecognitionTestModel.hpp"
 #include <cmath>
 
 namespace av_speech_in_noise {
-    
-    void RecognitionTestModel_Internal::subscribe(Model::EventListener *listener) {
-        listener_ = listener;
-    }
-
     class NullTestMethod : public TestMethod {
         bool complete() override { return {}; }
         std::string next() override { return {}; }
@@ -25,7 +19,6 @@ namespace av_speech_in_noise {
     
     static NullTestMethod nullTestMethod;
     
-    
     RecognitionTestModel_Internal::RecognitionTestModel_Internal(
         TargetPlayer *targetPlayer,
         MaskerPlayer *maskerPlayer,
@@ -42,6 +35,10 @@ namespace av_speech_in_noise {
     {
         targetPlayer->subscribe(this);
         maskerPlayer->subscribe(this);
+    }
+    
+    void RecognitionTestModel_Internal::subscribe(Model::EventListener *listener) {
+        listener_ = listener;
     }
     
     void RecognitionTestModel_Internal::throwIfTrialInProgress() {
