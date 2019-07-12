@@ -260,6 +260,11 @@ namespace av_speech_in_noise::tests::recognition_test {
         void maskerFadeOutComplete() {
             maskerPlayer.fadeOutComplete();
         }
+        
+        void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
+            run(useCase);
+            assertTrue(outputFileLog().endsWith("save "));
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -489,5 +494,12 @@ namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(RecognitionTestModelTests3, fadeOutCompleteNotifiesTrialComplete) {
         maskerFadeOutComplete();
         assertTrue(listener.notified());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        submitCoordinateResponseSavesOutputFileAfterWritingTrial
+    ) {
+        assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
     }
 }
