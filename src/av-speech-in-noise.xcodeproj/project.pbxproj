@@ -33,6 +33,8 @@
 		264E7E4E224E6F30008A595F /* OutputFilePathImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264E7E4C224E6F30008A595F /* OutputFilePathImpl.cpp */; };
 		264E7E4F224E6F30008A595F /* OutputFilePathImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 264E7E4D224E6F30008A595F /* OutputFilePathImpl.hpp */; };
 		264F07C222D91102007B4126 /* RecognitionTestModelTests3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264F07C122D91102007B4126 /* RecognitionTestModelTests3.cpp */; };
+		264F07C522D93330007B4126 /* RecognitionTestModel_Internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264F07C322D93330007B4126 /* RecognitionTestModel_Internal.cpp */; };
+		264F07C622D93330007B4126 /* RecognitionTestModel_Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 264F07C422D93330007B4126 /* RecognitionTestModel_Internal.hpp */; };
 		2656B62722401D3F0058A23D /* MediaToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2656B62622401D3F0058A23D /* MediaToolbox.framework */; };
 		26688C332273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26688C312273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp */; };
 		26688C342273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 26688C322273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp */; };
@@ -124,6 +126,8 @@
 		264E7E4D224E6F30008A595F /* OutputFilePathImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFilePathImpl.hpp; sourceTree = "<group>"; };
 		264E7E50224E7065008A595F /* LogString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogString.h; sourceTree = "<group>"; };
 		264F07C122D91102007B4126 /* RecognitionTestModelTests3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecognitionTestModelTests3.cpp; sourceTree = "<group>"; };
+		264F07C322D93330007B4126 /* RecognitionTestModel_Internal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecognitionTestModel_Internal.cpp; sourceTree = "<group>"; };
+		264F07C422D93330007B4126 /* RecognitionTestModel_Internal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RecognitionTestModel_Internal.hpp; sourceTree = "<group>"; };
 		2656B62422401D2C0058A23D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		2656B62622401D3F0058A23D /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
 		26688C312273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SubdirectoryTargetListReader.cpp; sourceTree = "<group>"; };
@@ -291,6 +295,8 @@
 				264E7E4D224E6F30008A595F /* OutputFilePathImpl.hpp */,
 				2645BEC92267705D002E8C6C /* ResponseEvaluatorImpl.cpp */,
 				2645BECA2267705D002E8C6C /* ResponseEvaluatorImpl.hpp */,
+				264F07C322D93330007B4126 /* RecognitionTestModel_Internal.cpp */,
+				264F07C422D93330007B4126 /* RecognitionTestModel_Internal.hpp */,
 			);
 			path = "recognition-test";
 			sourceTree = "<group>";
@@ -430,6 +436,7 @@
 				26B22D3B2260FE4100D528F1 /* AdaptiveTrack.hpp in Headers */,
 				264E7E4F224E6F30008A595F /* OutputFilePathImpl.hpp in Headers */,
 				2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */,
+				264F07C622D93330007B4126 /* RecognitionTestModel_Internal.hpp in Headers */,
 				26688C342273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp in Headers */,
 				2645BECC2267705D002E8C6C /* ResponseEvaluatorImpl.hpp in Headers */,
 			);
@@ -670,6 +677,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				264F07C522D93330007B4126 /* RecognitionTestModel_Internal.cpp in Sources */,
 				2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */,
 				26688C332273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp in Sources */,
 				26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */,
