@@ -465,13 +465,11 @@ void CocoaSubjectView::addNextTrialButton() {
         attributes:attrsDictionary
     ];
     [button setAttributedTitle:attrString];
-    constexpr auto height = 100;
-    constexpr auto width = 400;
     [button setFrame:NSMakeRect(
-        (nextTrialButton.frame.size.width - width)/2.,
-        (nextTrialButton.frame.size.height - height)/2.,
-        width,
-        height
+        0,
+        0,
+        nextTrialButton.frame.size.width,
+        nextTrialButton.frame.size.height
     )];
     [nextTrialButton addSubview:button];
 }
