@@ -75,6 +75,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     
     class RecognitionTestModelTests3 : public ::testing::Test {
     protected:
+        ModelEventListenerStub listener;
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
         ResponseEvaluatorStub evaluator{};
@@ -92,6 +93,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         InitializingTest initializingTest{&testMethod};
         PlayingTrial playingTrial;
         SubmittingCoordinateResponse submittingCoordinateResponse;
+        
+        RecognitionTestModelTests3() {
+            model.subscribe(&listener);
+        }
         
         void run(UseCase &useCase) {
             useCase.run(model);
@@ -444,10 +449,17 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertTargetPlayerLevelEquals_dB(1 - 2 - dB(3));
     }
 
-    TEST_F(RecognitionTestModelTests3, startTrialShowsTargetPlayerWhenAudioVisualForAdaptiveTest) {
+    TEST_F(RecognitionTestModelTests3, startTrialShowsTargetPlayerWhenAudioVisual) {
         initializingTest.setAudioVisual();
         run(initializingTest);
         run(playingTrial);
         assertTrue(targetPlayerVideoShown());
+    }
+
+    TEST_F(RecognitionTestModelTests3, maskerFadeOutCompleteHidesTargetPlayerWhenAudioVisual) {
+        initializingTest.setAudioVisual();
+        run(initializingTest);
+        maskerPlayer.fadeOutComplete();
+        assertTargetVideoOnlyHidden();
     }
 }
