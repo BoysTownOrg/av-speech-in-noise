@@ -300,6 +300,22 @@ namespace av_speech_in_noise::tests::recognition_test {
             maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
             targetPlayer.throwInvalidAudioDeviceWhenDeviceSet();
         }
+        
+        void runIgnoringFailureWithTrialInProgress(UseCase &useCase) {
+            setTrialInProgress();
+            runIgnoringFailure(useCase);
+        }
+        
+        void setTrialInProgress() {
+            maskerPlayer.setPlaying();
+        }
+        
+        void runIgnoringFailure(UseCase &useCase) {
+            try {
+                run(useCase);
+            } catch (const RecognitionTestModel::RequestFailure &) {
+            }
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -576,5 +592,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         playCalibrationWithInvalidAudioDeviceThrowsRequestFailure
     ) {
         assertThrowsRequestFailureWhenInvalidAudioDevice(playingCalibration);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playTrialDoesNotChangeAudioDeviceWhenTrialInProgress
+    ) {
+        runIgnoringFailureWithTrialInProgress(playingTrial);
+        assertFalse(maskerPlayer.setDeviceCalled());
     }
 }
