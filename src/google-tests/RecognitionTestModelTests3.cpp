@@ -288,4 +288,11 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(initializingTest);
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        submitCoordinateResponseSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingCoordinateResponse);
+    }
 }
