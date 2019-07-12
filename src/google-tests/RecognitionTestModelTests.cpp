@@ -529,11 +529,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertSelectsListAmongThoseWithIncompleteTracks(submittingIncorrectResponse);
     }
 
-    TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfTrialInProgress) {
-        playTrialWhenTrialAlreadyInProgressIgnoringFailure();
-        assertMaskerPlayerNotPlayed();
-    }
-
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationDoesNotPlayIfTrialInProgress

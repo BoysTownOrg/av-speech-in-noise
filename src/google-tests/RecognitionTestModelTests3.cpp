@@ -316,6 +316,10 @@ namespace av_speech_in_noise::tests::recognition_test {
             } catch (const RecognitionTestModel::RequestFailure &) {
             }
         }
+        
+        void assertMaskerPlayerNotPlayed() {
+            assertFalse(maskerPlayerFadedIn());
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -608,5 +612,10 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         runIgnoringFailureWithTrialInProgress(playingCalibration);
         assertFalse(targetPlayer.setDeviceCalled());
+    }
+
+    TEST_F(RecognitionTestModelTests3, playTrialDoesNotPlayIfTrialInProgress) {
+        runIgnoringFailureWithTrialInProgress(playingTrial);
+        assertMaskerPlayerNotPlayed();
     }
 }
