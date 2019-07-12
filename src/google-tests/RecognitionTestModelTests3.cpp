@@ -665,4 +665,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         runIgnoringFailureWithTrialInProgress(initializingTest);
         assertEqual("", maskerPlayer.filePath());
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
+    ) {
+        initializingTest.setAuditoryOnly();
+        runIgnoringFailureWithTrialInProgress(initializingTest);
+        assertTargetVideoNotHidden();
+    }
 }

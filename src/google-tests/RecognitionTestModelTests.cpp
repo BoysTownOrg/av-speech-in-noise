@@ -531,20 +531,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
-    ) {
-        assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
-    ) {
-        assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         audioDevicesReturnsOutputAudioDeviceDescriptions
     ) {
         setOutputAudioDeviceDescriptions({"a", "b", "c"});
