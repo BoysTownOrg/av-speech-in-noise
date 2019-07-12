@@ -188,6 +188,16 @@ namespace av_speech_in_noise::tests::recognition_test {
             assertEqual(0., randomizer.lowerFloatBound());
             assertEqual(3. - 2 - 1 - 2, randomizer.upperFloatBound());
         }
+        
+        auto maskerPlayerSecondsSeeked() {
+            return maskerPlayer.secondsSeeked();
+        }
+        
+        void assertMaskerPlayerSeekedToRandomTime(UseCase &useCase) {
+            randomizer.setRandomFloat(1);
+            run(useCase);
+            assertEqual(1., maskerPlayerSecondsSeeked());
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -317,5 +327,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         submitCoordinateResponseSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(initializingTest);
     }
 }
