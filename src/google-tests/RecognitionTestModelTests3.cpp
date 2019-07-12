@@ -460,9 +460,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertTrue(targetPlayerVideoShown());
     }
 
-    TEST_F(RecognitionTestModelTests3, maskerFadeOutCompleteHidesTargetPlayerWhenAudioVisual) {
-        initializingTest.setAudioVisual();
-        run(initializingTest);
+    TEST_F(RecognitionTestModelTests3, maskerFadeOutCompleteHidesTargetPlayer) {
         maskerPlayer.fadeOutComplete();
         assertTargetVideoOnlyHidden();
     }
