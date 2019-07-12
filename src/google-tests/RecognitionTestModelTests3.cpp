@@ -313,6 +313,11 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertTargetPlayerPlayed();
     }
 
+    TEST_F(RecognitionTestModelTests3, fadeInCompletePlaysTarget) {
+        maskerPlayer.fadeInComplete();
+        assertTargetPlayerPlayed();
+    }
+
     TEST_F(
         RecognitionTestModelTests3,
         initializeTestPassesNextTargetToTargetPlayer

@@ -261,11 +261,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertSetsTargetLevel(initializingAdaptiveTest, submittingIncorrectResponse);
     }
 
-    TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
-        maskerPlayer.fadeInComplete();
-        assertTargetPlayerPlayed();
-    }
-
     TEST_F(RecognitionTestModelTests, startTrialShowsTargetPlayerWhenAudioVisualForAdaptiveTest) {
         assertAudioVisualConditionShowsTargetVideo(initializingAdaptiveTest);
     }
