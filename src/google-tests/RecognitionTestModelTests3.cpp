@@ -311,4 +311,11 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        submitCoordinateResponseSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCoordinateResponse);
+    }
 }

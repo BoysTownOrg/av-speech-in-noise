@@ -186,13 +186,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseSeeksToRandomMaskerPositionWithinTrialDuration
-    ) {
-        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCoordinateResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCorrectResponse);
