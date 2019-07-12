@@ -179,6 +179,15 @@ namespace av_speech_in_noise::tests::recognition_test {
         bool targetPlayerPlaybackCompletionSubscribed() {
             return targetPlayer.playbackCompletionSubscribedTo();
         }
+        
+        void assertSeeksToRandomMaskerPositionWithinTrialDuration(UseCase &useCase) {
+            targetPlayer.setDurationSeconds(1);
+            maskerPlayer.setFadeTimeSeconds(2);
+            maskerPlayer.setDurationSeconds(3);
+            run(useCase);
+            assertEqual(0., randomizer.lowerFloatBound());
+            assertEqual(3. - 2 - 1 - 2, randomizer.upperFloatBound());
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -294,5 +303,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         submitCoordinateResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
     }
 }
