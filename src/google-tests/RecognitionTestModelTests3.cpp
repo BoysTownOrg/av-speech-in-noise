@@ -4,7 +4,12 @@
 namespace av_speech_in_noise::tests::recognition_test {
     class TestMethodStub : public TestMethod {
         std::string next_{};
+        int snr_dB_{};
     public:
+        void setSnr_dB(int x) {
+            snr_dB_ = x;
+        }
+        
         void setNextTarget(std::string s) {
             next_ = std::move(s);
         }
@@ -16,7 +21,11 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
         
         std::string current()  {return {};}
-        int snr_dB()  {return {};}
+        
+        int snr_dB() {
+            return snr_dB_;
+        }
+        
         void submitCorrectResponse()  {}
         void submitIncorrectResponse()  {}
         void submitResponse(const FreeResponse &)  {}
@@ -210,6 +219,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         double dB(double x) {
             return 20 * std::log10(x);
         }
+        
+        auto targetPlayerLevel_dB() {
+            return targetPlayer.level_dB();
+        }
+        
+        void assertTargetPlayerLevelEquals_dB(double x) {
+            assertEqual(x, targetPlayerLevel_dB());
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -364,5 +381,17 @@ namespace av_speech_in_noise::tests::recognition_test {
         maskerPlayer.setRms(3);
         run(initializingTest);
         assertEqual(1 - 2 - dB(3), maskerPlayer.level_dB());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestSetsTargetPlayerLevel
+    ) {
+        testMethod.setSnr_dB(2);
+        initializingTest.setMaskerLevel_dB_SPL(3);
+        initializingTest.setTestingFullScaleLevel_dB_SPL(4);
+        maskerPlayer.setRms(5);
+        run(initializingTest);
+        assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
     }
 }
