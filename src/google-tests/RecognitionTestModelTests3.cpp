@@ -525,4 +525,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         outputFile.throwOnOpen();
         assertCallThrowsRequestFailure(initializingTest, "Unable to open output file.");
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile
+    ) {
+        playingCalibration.setFilePath("a");
+        targetPlayer.throwInvalidAudioFileOnRms();
+        assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
+    }
 }
