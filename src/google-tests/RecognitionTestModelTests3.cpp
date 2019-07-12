@@ -173,4 +173,11 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertDevicePassedToTargetPlayer(playingTrial);
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationPassesAudioDeviceToTargetPlayer
+    ) {
+        assertDevicePassedToTargetPlayer(playingCalibration);
+    }
 }
