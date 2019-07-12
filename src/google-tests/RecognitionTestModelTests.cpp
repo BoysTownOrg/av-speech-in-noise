@@ -531,14 +531,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        playCalibrationDoesNotPlayIfTrialInProgress
-    ) {
-        playCalibrationWhenTrialAlreadyInProgressIgnoringFailure();
-        assertTargetPlayerNotPlayed();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeAdaptiveTestThrowsRequestFailureIfTrialInProgress
     ) {
         assertThrowsRequestFailureWhenTrialInProgress(initializingAdaptiveTest);

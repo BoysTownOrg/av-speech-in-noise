@@ -320,6 +320,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertMaskerPlayerNotPlayed() {
             assertFalse(maskerPlayerFadedIn());
         }
+        
+        void assertTargetPlayerNotPlayed() {
+            assertFalse(targetPlayerPlayed());
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -617,5 +621,13 @@ namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(RecognitionTestModelTests3, playTrialDoesNotPlayIfTrialInProgress) {
         runIgnoringFailureWithTrialInProgress(playingTrial);
         assertMaskerPlayerNotPlayed();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationDoesNotPlayIfTrialInProgress
+    ) {
+        runIgnoringFailureWithTrialInProgress(playingCalibration);
+        assertTargetPlayerNotPlayed();
     }
 }
