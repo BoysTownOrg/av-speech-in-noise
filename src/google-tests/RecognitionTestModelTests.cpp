@@ -531,20 +531,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        playTrialThrowsRequestFailureIfTrialInProgress
-    ) {
-        assertThrowsRequestFailureWhenTrialInProgress(playingTrial);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationThrowsRequestFailureIfTrialInProgress
-    ) {
-        assertThrowsRequestFailureWhenTrialInProgress(playingCalibration);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeAdaptiveTestDoesNotLoadMaskerIfTrialInProgress
     ) {
         assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(initializingAdaptiveTest);

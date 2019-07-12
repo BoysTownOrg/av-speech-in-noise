@@ -642,4 +642,18 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertThrowsRequestFailureWhenTrialInProgress(initializingTest);
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playTrialThrowsRequestFailureIfTrialInProgress
+    ) {
+        assertThrowsRequestFailureWhenTrialInProgress(playingTrial);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationThrowsRequestFailureIfTrialInProgress
+    ) {
+        assertThrowsRequestFailureWhenTrialInProgress(playingCalibration);
+    }
 }
