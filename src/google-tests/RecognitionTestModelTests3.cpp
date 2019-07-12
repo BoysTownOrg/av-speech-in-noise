@@ -476,4 +476,9 @@ namespace av_speech_in_noise::tests::recognition_test {
         run(initializingTest);
         assertTargetVideoOnlyHidden();
     }
+
+    TEST_F(RecognitionTestModelTests3, targetPlaybackCompleteFadesOutMasker) {
+        targetPlayer.playbackComplete();
+        assertTrue(maskerPlayer.fadeOutCalled());
+    }
 }
