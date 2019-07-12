@@ -46,6 +46,10 @@ namespace av_speech_in_noise::tests::recognition_test {
             m.submitResponse(response_);
         }
         
+        void run(RecognitionTestModel_Internal &m) override {
+            m.submitResponse(response_);
+        }
+        
         void setNumber(int n) {
             response_.number = n;
         }

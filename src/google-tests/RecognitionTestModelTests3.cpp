@@ -66,6 +66,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         PlayingCalibration playingCalibration{};
         InitializingTest initializingTest{&testMethod};
         PlayingTrial playingTrial;
+        SubmittingCoordinateResponse submittingCoordinateResponse;
         
         void run(UseCase &useCase) {
             useCase.run(model);
@@ -231,10 +232,20 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests3,
-        initializeAdaptiveTestPassesNextTargetToTargetPlayer
+        initializeTestPassesNextTargetToTargetPlayer
     ) {
         testMethod.setNextTarget("a");
         run(initializingTest);
+        assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        submittingCoordinateResponsePassesNextTargetToTargetPlayer
+    ) {
+        run(initializingTest);
+        testMethod.setNextTarget("a");
+        run(submittingCoordinateResponse);
         assertTargetFilePathEquals("a");
     }
 }
