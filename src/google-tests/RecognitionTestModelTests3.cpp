@@ -125,6 +125,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertDevicePassedToTargetPlayer(AudioDeviceUseCase &useCase) {
             assertDevicePassedToPlayer(targetPlayer, useCase);
         }
+        
+        void assertDevicePassedToMaskerPlayer(AudioDeviceUseCase &useCase) {
+            assertDevicePassedToPlayer(maskerPlayer, useCase);
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -179,5 +183,9 @@ namespace av_speech_in_noise::tests::recognition_test {
         playCalibrationPassesAudioDeviceToTargetPlayer
     ) {
         assertDevicePassedToTargetPlayer(playingCalibration);
+    }
+
+    TEST_F(RecognitionTestModelTests3, playTrialPassesAudioDeviceToMaskerPlayer) {
+        assertDevicePassedToMaskerPlayer(playingTrial);
     }
 }
