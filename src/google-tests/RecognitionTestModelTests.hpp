@@ -33,6 +33,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     public:
         virtual ~UseCase() = default;
         virtual void run(RecognitionTestModel &) = 0;
+        virtual void run(RecognitionTestModel_Internal &) {}
     };
 
     class SubmittingResponse : public virtual UseCase {
@@ -407,6 +408,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
         
         void run(RecognitionTestModel &m) override {
+            m.playCalibration(calibration);
+        }
+        
+        void run(RecognitionTestModel_Internal &m) override {
             m.playCalibration(calibration);
         }
         

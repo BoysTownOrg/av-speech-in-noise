@@ -16,6 +16,34 @@ namespace av_speech_in_noise::tests::recognition_test {
             &outputFile,
             &randomizer
         };
+        PlayingCalibration playingCalibration{};
+        
+        void run(UseCase &useCase) {
+            useCase.run(model);
+        }
+        
+        void assertTargetVideoOnlyHidden() {
+            assertTrue(targetPlayerVideoHidden());
+            assertTargetVideoNotShown();
+        }
+        
+        bool targetPlayerVideoHidden() {
+            return targetPlayer.videoHidden();
+        }
+        
+        void assertTargetVideoNotShown() {
+            assertFalse(targetPlayerVideoShown());
+        }
+        
+        bool targetPlayerVideoShown() {
+            return targetPlayer.videoShown();
+        }
+        
+        void assertTargetVideoHiddenWhenAuditoryOnly(ConditionUseCase &useCase) {
+            useCase.setAuditoryOnly();
+            run(useCase);
+            assertTargetVideoOnlyHidden();
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -27,5 +55,12 @@ namespace av_speech_in_noise::tests::recognition_test {
             static_cast<MaskerPlayer::EventListener *>(&model),
             maskerPlayer.listener()
         );
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationHidesTargetVideoWhenAuditoryOnly
+    ) {
+        assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
     }
 }

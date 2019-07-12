@@ -1,24 +1,6 @@
 #include "RecognitionTestModelTests.hpp"
 
 namespace av_speech_in_noise::tests::recognition_test {
-    TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
-        assertEqual(
-            static_cast<TargetPlayer::EventListener *>(&internalModel),
-            targetPlayer.listener()
-        );
-        assertEqual(
-            static_cast<MaskerPlayer::EventListener *>(&internalModel),
-            maskerPlayer.listener()
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        playCalibrationHidesTargetVideoWhenAuditoryOnly
-    ) {
-        assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
-    }
-
     TEST_F(
         RecognitionTestModelTests,
         playCalibrationShowsTargetVideoWhenAudioVisual
