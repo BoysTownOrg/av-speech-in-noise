@@ -129,6 +129,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertDevicePassedToMaskerPlayer(AudioDeviceUseCase &useCase) {
             assertDevicePassedToPlayer(maskerPlayer, useCase);
         }
+        
+        bool maskerPlayerFadedIn() {
+            return maskerPlayer.fadeInCalled();
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -187,5 +191,10 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(RecognitionTestModelTests3, playTrialPassesAudioDeviceToMaskerPlayer) {
         assertDevicePassedToMaskerPlayer(playingTrial);
+    }
+
+    TEST_F(RecognitionTestModelTests3, playTrialFadesInMasker) {
+        run(playingTrial);
+        assertTrue(maskerPlayerFadedIn());
     }
 }

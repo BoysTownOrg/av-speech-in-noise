@@ -52,11 +52,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertTargetListPassed(initializingFixedLevelTest);
     }
 
-    TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
-        playTrial();
-        assertTrue(maskerPlayerFadedIn());
-    }
-
     TEST_F(RecognitionTestModelTests, playCalibrationPlaysTarget) {
         playCalibration();
         assertTargetPlayerPlayed();
