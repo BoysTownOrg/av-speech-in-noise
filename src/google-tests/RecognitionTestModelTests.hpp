@@ -395,6 +395,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         void run(RecognitionTestModel &m) override {
             m.playTrial(trial);
         }
+        
+        void run(RecognitionTestModel_Internal &m) override {
+            m.playTrial(trial);
+        }
     };
 
     class PlayingCalibration :

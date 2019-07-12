@@ -55,6 +55,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         TestMethodStub testMethod;
         PlayingCalibration playingCalibration{};
         InitializingTest initializingTest{&testMethod};
+        PlayingTrial playingTrial;
         
         void run(UseCase &useCase) {
             useCase.run(model);
@@ -110,6 +111,20 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertOutputFileLog(std::string s) {
             assertEqual(std::move(s), outputFileLog());
         }
+        
+        template<typename T>
+        void assertDevicePassedToPlayer(
+            const T &player,
+            AudioDeviceUseCase &useCase
+        ) {
+            useCase.setAudioDevice("a");
+            run(useCase);
+            assertEqual("a", player.device());
+        }
+        
+        void assertDevicePassedToTargetPlayer(AudioDeviceUseCase &useCase) {
+            assertDevicePassedToPlayer(targetPlayer, useCase);
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -150,5 +165,12 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         run(initializingTest);
         assertEqual(outputFile.openNewFileParameters(), &initializingTest.testInformation());
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playTrialPassesAudioDeviceToTargetPlayer
+    ) {
+        assertDevicePassedToTargetPlayer(playingTrial);
     }
 }
