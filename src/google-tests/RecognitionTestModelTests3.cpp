@@ -674,4 +674,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         runIgnoringFailureWithTrialInProgress(initializingTest);
         assertTargetVideoNotHidden();
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        audioDevicesReturnsOutputAudioDeviceDescriptions
+    ) {
+        maskerPlayer.setOutputAudioDeviceDescriptions({"a", "b", "c"});
+        assertEqual({"a", "b", "c"}, model.audioDevices());
+    }
 }

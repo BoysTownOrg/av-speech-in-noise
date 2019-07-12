@@ -531,14 +531,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        audioDevicesReturnsOutputAudioDeviceDescriptions
-    ) {
-        setOutputAudioDeviceDescriptions({"a", "b", "c"});
-        assertEqual({"a", "b", "c"}, model.audioDevices());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         testCompleteWhenAllTracksComplete
     ) {
         run(initializingAdaptiveTest);
