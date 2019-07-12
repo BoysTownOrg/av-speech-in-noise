@@ -3,6 +3,7 @@
 
 #include "AudioReader.h"
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/RecognitionTestModel_Internal.hpp>
 #include <gsl/gsl>
 
 namespace stimulus_players {

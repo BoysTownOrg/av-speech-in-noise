@@ -3,6 +3,7 @@
 
 #include "LogString.h"
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/RecognitionTestModel_Internal.hpp>
 
 namespace av_speech_in_noise::tests {
     class MaskerPlayerStub : public MaskerPlayer {
