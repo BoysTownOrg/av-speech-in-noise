@@ -3,8 +3,18 @@
 
 namespace av_speech_in_noise::tests::recognition_test {
     class TestMethodStub : public TestMethod {
+        std::string next_{};
+    public:
+        void setNextTarget(std::string s) {
+            next_ = std::move(s);
+        }
+        
         bool complete()  {return {};}
-        std::string next()  {return {};}
+        
+        std::string next() {
+            return next_;
+        }
+        
         std::string current()  {return {};}
         int snr_dB()  {return {};}
         void submitCorrectResponse()  {}
@@ -141,6 +151,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         bool targetPlayerPlayed() {
             return targetPlayer.played();
         }
+        
+        auto targetFilePath() {
+            return targetPlayer.filePath();
+        }
+        
+        void assertTargetFilePathEquals(std::string what) {
+            assertEqual(std::move(what), targetFilePath());
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -209,5 +227,14 @@ namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(RecognitionTestModelTests3, playCalibrationPlaysTarget) {
         run(playingCalibration);
         assertTargetPlayerPlayed();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeAdaptiveTestPassesNextTargetToTargetPlayer
+    ) {
+        testMethod.setNextTarget("a");
+        run(initializingTest);
+        assertTargetFilePathEquals("a");
     }
 }
