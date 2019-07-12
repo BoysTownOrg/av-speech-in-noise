@@ -418,21 +418,24 @@ void CocoaSubjectView::addNumberButton(NSColor *color, int number, int row, std:
         target:actions
         action:@selector(respond:)
     ];
-    auto responseWidth = responseButtons.frame.size.width/responseNumbers;
-    auto responseHeight = responseButtons.frame.size.height/responseColors;
+    auto gap = 8;
+    auto responseWidth = (responseButtons.frame.size.width - gap*(responseNumbers+1))/responseNumbers;
+    auto responseHeight = (responseButtons.frame.size.height - gap*(responseColors+1))/responseColors;
     [button setFrame:NSMakeRect(
-        responseWidth*col,
-        responseHeight*row,
+        responseWidth*col + gap*(col+1),
+        responseHeight*row + gap*(row+1),
         responseWidth,
         responseHeight
     )];
     [button setBezelStyle:NSBezelStyleTexturedSquare];
+    [button setBordered:NO];
+    [button setWantsLayer:YES];
+    button.layer.backgroundColor = NSColor.blackColor.CGColor;
     auto style = [[NSMutableParagraphStyle alloc] init];
     [style setAlignment:NSTextAlignmentCenter];
     auto attrsDictionary = [NSDictionary
         dictionaryWithObjectsAndKeys:
         color, NSForegroundColorAttributeName,
-        NSColor.blackColor, NSBackgroundColorAttributeName,
         style, NSParagraphStyleAttributeName,
         [NSFont fontWithName:@"Courier" size:36], NSFontAttributeName,
         nil
