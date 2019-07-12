@@ -160,6 +160,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertTargetFilePathEquals(std::string what) {
             assertEqual(std::move(what), targetFilePath());
         }
+        
+        void assertPassesNextTargetToPlayer(UseCase &useCase) {
+            testMethod.setNextTarget("a");
+            run(useCase);
+            assertTargetFilePathEquals("a");
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -234,9 +240,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         RecognitionTestModelTests3,
         initializeTestPassesNextTargetToTargetPlayer
     ) {
-        testMethod.setNextTarget("a");
-        run(initializingTest);
-        assertTargetFilePathEquals("a");
+        assertPassesNextTargetToPlayer(initializingTest);
     }
 
     TEST_F(
@@ -244,8 +248,15 @@ namespace av_speech_in_noise::tests::recognition_test {
         submittingCoordinateResponsePassesNextTargetToTargetPlayer
     ) {
         run(initializingTest);
-        testMethod.setNextTarget("a");
-        run(submittingCoordinateResponse);
+        assertPassesNextTargetToPlayer(submittingCoordinateResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationPassesAudioFileToTargetPlayer
+    ) {
+        playingCalibration.setFilePath("a");
+        run(playingCalibration);
         assertTargetFilePathEquals("a");
     }
 }
