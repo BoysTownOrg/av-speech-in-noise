@@ -473,4 +473,9 @@ namespace av_speech_in_noise::tests::recognition_test {
         run(playingTrial);
         assertTargetVideoNotShown();
     }
+
+    TEST_F(RecognitionTestModelTests3, initializeTestHidesTargetPlayer) {
+        run(initializingTest);
+        assertTargetVideoOnlyHidden();
+    }
 }
