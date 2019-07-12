@@ -601,4 +601,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         runIgnoringFailureWithTrialInProgress(playingTrial);
         assertFalse(maskerPlayer.setDeviceCalled());
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress
+    ) {
+        runIgnoringFailureWithTrialInProgress(playingCalibration);
+        assertFalse(targetPlayer.setDeviceCalled());
+    }
 }
