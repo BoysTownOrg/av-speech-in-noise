@@ -412,7 +412,7 @@ void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
 }
 
 void CocoaSubjectView::addNumberButton(NSColor *color, int number, int row, std::size_t col) {
-    auto title = asNsString(std::to_string(number));
+    auto title = asNsString(" " + std::to_string(number) + " ");
     const auto button = [NSButton
         buttonWithTitle:title
         target:actions
