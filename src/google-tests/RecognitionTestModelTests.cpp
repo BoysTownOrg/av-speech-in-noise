@@ -261,11 +261,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertSetsTargetLevel(initializingAdaptiveTest, submittingIncorrectResponse);
     }
 
-    TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
-        maskerFadeOutComplete();
-        assertTrue(listener.notified());
-    }
-
     TEST_F(
         RecognitionTestModelTests,
         submitFreeResponseWritesResponse

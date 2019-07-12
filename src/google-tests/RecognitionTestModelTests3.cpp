@@ -256,6 +256,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         void setSnr_dB(int x) {
             testMethod.setSnr_dB(x);
         }
+        
+        void maskerFadeOutComplete() {
+            maskerPlayer.fadeOutComplete();
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -461,7 +465,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(RecognitionTestModelTests3, maskerFadeOutCompleteHidesTargetPlayer) {
-        maskerPlayer.fadeOutComplete();
+        maskerFadeOutComplete();
         assertTargetVideoOnlyHidden();
     }
 
@@ -480,5 +484,10 @@ namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(RecognitionTestModelTests3, targetPlaybackCompleteFadesOutMasker) {
         targetPlayer.playbackComplete();
         assertTrue(maskerPlayer.fadeOutCalled());
+    }
+
+    TEST_F(RecognitionTestModelTests3, fadeOutCompleteNotifiesTrialComplete) {
+        maskerFadeOutComplete();
+        assertTrue(listener.notified());
     }
 }
