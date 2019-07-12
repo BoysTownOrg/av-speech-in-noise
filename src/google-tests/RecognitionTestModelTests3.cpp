@@ -32,6 +32,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         void run(RecognitionTestModel_Internal &m) override {
             m.initialize(method, common, information);
         }
+        
+        auto &testInformation() const {
+            return information;
+        }
     };
     
     class RecognitionTestModelTests3 : public ::testing::Test {
@@ -138,5 +142,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         initializeTestClosesOutputFileOpensAndWritesTestInOrder
     ) {
         assertClosesOutputFileOpensAndWritesTestInOrder(initializingTest);
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestOpensNewOutputFilePassingTestInformation
+    ) {
+        run(initializingTest);
+        assertEqual(outputFile.openNewFileParameters(), &initializingTest.testInformation());
     }
 }
