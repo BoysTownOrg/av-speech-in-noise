@@ -570,4 +570,11 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertThrowsRequestFailureWhenInvalidAudioDevice(playingTrial);
     }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationWithInvalidAudioDeviceThrowsRequestFailure
+    ) {
+        assertThrowsRequestFailureWhenInvalidAudioDevice(playingCalibration);
+    }
 }
