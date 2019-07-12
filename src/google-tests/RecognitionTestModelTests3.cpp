@@ -71,6 +71,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         void setAudioVisual() {
             common.condition = Condition::audioVisual;
         }
+        
+        void setAuditoryOnly() {
+            common.condition = Condition::auditoryOnly;
+        }
     };
     
     class RecognitionTestModelTests3 : public ::testing::Test {
@@ -461,5 +465,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         run(initializingTest);
         maskerPlayer.fadeOutComplete();
         assertTargetVideoOnlyHidden();
+    }
+
+    TEST_F(RecognitionTestModelTests3, startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
+        initializingTest.setAuditoryOnly();
+        run(initializingTest);
+        run(playingTrial);
+        assertTargetVideoNotShown();
     }
 }

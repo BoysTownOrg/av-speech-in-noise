@@ -261,14 +261,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertSetsTargetLevel(initializingAdaptiveTest, submittingIncorrectResponse);
     }
 
-    TEST_F(RecognitionTestModelTests, startTrialDoesNotShowTargetPlayerWhenAuditoryOnlyForAdaptiveTest) {
-        assertAuditoryOnlyConditionDoesNotShowTargetVideo(initializingAdaptiveTest);
-    }
-
-    TEST_F(RecognitionTestModelTests, startTrialDoesNotShowTargetPlayerWhenAuditoryOnlyForFixedLevelTest) {
-        assertAuditoryOnlyConditionDoesNotShowTargetVideo(initializingFixedLevelTest);
-    }
-
     TEST_F(RecognitionTestModelTests, initializeFixedLevelTestHidesTargetPlayer) {
         assertHidesTargetVideo(initializingFixedLevelTest);
     }
