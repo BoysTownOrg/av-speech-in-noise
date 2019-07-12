@@ -284,6 +284,22 @@ namespace av_speech_in_noise::tests::recognition_test {
         void setMaskerFilePath(std::string s) {
             initializingTest.setMaskerFilePath(std::move(s));
         }
+        
+        void assertThrowsRequestFailureWhenInvalidAudioDevice(
+            AudioDeviceUseCase &useCase
+        ) {
+            throwInvalidAudioDeviceWhenSet();
+            useCase.setAudioDevice("a");
+            assertCallThrowsRequestFailure(
+                useCase,
+                "'a' is not a valid audio device."
+            );
+        }
+        
+        void throwInvalidAudioDeviceWhenSet() {
+            maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+            targetPlayer.throwInvalidAudioDeviceWhenDeviceSet();
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -546,5 +562,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         setMaskerFilePath("a");
         maskerPlayer.throwInvalidAudioFileOnLoad();
         assertCallThrowsRequestFailure(initializingTest, "unable to read a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        playTrialWithInvalidAudioDeviceThrowsRequestFailure
+    ) {
+        assertThrowsRequestFailureWhenInvalidAudioDevice(playingTrial);
     }
 }
