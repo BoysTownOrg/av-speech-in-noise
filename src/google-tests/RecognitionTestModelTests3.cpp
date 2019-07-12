@@ -133,6 +133,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         bool maskerPlayerFadedIn() {
             return maskerPlayer.fadeInCalled();
         }
+        
+        void assertTargetPlayerPlayed() {
+            assertTrue(targetPlayerPlayed());
+        }
+        
+        bool targetPlayerPlayed() {
+            return targetPlayer.played();
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -196,5 +204,10 @@ namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(RecognitionTestModelTests3, playTrialFadesInMasker) {
         run(playingTrial);
         assertTrue(maskerPlayerFadedIn());
+    }
+
+    TEST_F(RecognitionTestModelTests3, playCalibrationPlaysTarget) {
+        run(playingCalibration);
+        assertTargetPlayerPlayed();
     }
 }
