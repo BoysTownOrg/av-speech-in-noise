@@ -233,15 +233,11 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
-        model->throwIfTrialInProgress();
-        
         fixedLevelMethod->initialize(p);
         model->initialize(fixedLevelMethod, p.common, p.information);
     }
     
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
-        model->throwIfTrialInProgress();
-        
         adaptiveMethod->initialize(p);
         model->initialize(adaptiveMethod, p.common, p.information);
     }
