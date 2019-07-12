@@ -280,6 +280,10 @@ namespace av_speech_in_noise::tests::recognition_test {
                 assertEqual(std::move(what), e.what());
             }
         }
+        
+        void setMaskerFilePath(std::string s) {
+            initializingTest.setMaskerFilePath(std::move(s));
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -383,7 +387,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         RecognitionTestModelTests3,
         initializeTestPassesMaskerFilePathToMaskerPlayer
     ) {
-        initializingTest.setMaskerFilePath("a");
+        setMaskerFilePath("a");
         run(initializingTest);
         assertEqual("a", maskerPlayer.filePath());
     }
@@ -539,7 +543,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         RecognitionTestModelTests3,
         initializeTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile
     ) {
-        initializingTest.setMaskerFilePath("a");
+        setMaskerFilePath("a");
         maskerPlayer.throwInvalidAudioFileOnLoad();
         assertCallThrowsRequestFailure(initializingTest, "unable to read a");
     }
