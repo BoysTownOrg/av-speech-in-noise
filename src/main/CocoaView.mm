@@ -435,7 +435,7 @@ void CocoaSubjectView::addNumberButton(NSColor *color, int number, int row, std:
         [NSNumber numberWithFloat: -4.0], NSStrokeWidthAttributeName,
         NSColor.blackColor, NSStrokeColorAttributeName,
         style, NSParagraphStyleAttributeName,
-        [NSFont fontWithName:@"Arial-Black" size:64], NSFontAttributeName,
+        [NSFont fontWithName:@"Arial-Black" size:48], NSFontAttributeName,
         nil
     ];
     auto attrString = [[NSAttributedString alloc]

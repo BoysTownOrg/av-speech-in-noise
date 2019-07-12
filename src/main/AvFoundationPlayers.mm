@@ -408,8 +408,10 @@ void AvFoundationVideoPlayer::prepareVideo() {
 void AvFoundationVideoPlayer::resizeVideo() {
     AvAssetFacade asset{player.currentItem.asset};
     auto size = asset.videoTrack().naturalSize;
-    size.height /= 2;
-    size.width /= 2;
+    size.height *= 2;
+    size.height /= 3;
+    size.width *= 2;
+    size.width /= 3;
     [videoWindow setContentSize:
         NSSizeFromCGSize(size)
     ];
