@@ -67,6 +67,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         void setTestingFullScaleLevel_dB_SPL(int x) {
             common.fullScaleLevel_dB_SPL = x;
         }
+        
+        void setAudioVisual() {
+            common.condition = Condition::audioVisual;
+        }
     };
     
     class RecognitionTestModelTests3 : public ::testing::Test {
@@ -438,5 +442,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         targetPlayer.setRms(3);
         run(playingCalibration);
         assertTargetPlayerLevelEquals_dB(1 - 2 - dB(3));
+    }
+
+    TEST_F(RecognitionTestModelTests3, startTrialShowsTargetPlayerWhenAudioVisualForAdaptiveTest) {
+        initializingTest.setAudioVisual();
+        run(initializingTest);
+        run(playingTrial);
+        assertTrue(targetPlayerVideoShown());
     }
 }
