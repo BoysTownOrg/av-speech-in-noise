@@ -44,6 +44,21 @@ namespace av_speech_in_noise::tests::recognition_test {
             run(useCase);
             assertTargetVideoOnlyHidden();
         }
+        
+        void assertTargetVideoShownWhenAudioVisual(ConditionUseCase &useCase) {
+            useCase.setAudioVisual();
+            run(useCase);
+            assertTargetVideoOnlyShown();
+        }
+        
+        void assertTargetVideoOnlyShown() {
+            assertTargetVideoNotHidden();
+            assertTrue(targetPlayerVideoShown());
+        }
+        
+        void assertTargetVideoNotHidden() {
+            assertFalse(targetPlayerVideoHidden());
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -62,5 +77,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         playCalibrationHidesTargetVideoWhenAuditoryOnly
     ) {
         assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests3,
+        playCalibrationShowsTargetVideoWhenAudioVisual
+    ) {
+        assertTargetVideoShownWhenAudioVisual(playingCalibration);
     }
 }

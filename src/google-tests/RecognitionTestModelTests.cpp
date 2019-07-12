@@ -3,13 +3,6 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelTests,
-        playCalibrationShowsTargetVideoWhenAudioVisual
-    ) {
-        assertTargetVideoShownWhenAudioVisual(playingCalibration);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeAdaptiveTestCreatesEachSnrTrackWithStartingSnr
     ) {
         assertSnrPassedToTrackFactory(settingStartingSnr);
