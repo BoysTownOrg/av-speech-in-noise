@@ -622,31 +622,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             return coordinate_response_measure::Color::blue;
         }
         
-        void playTrialWhenTrialAlreadyInProgressIgnoringFailure() {
-            runIgnoringFailureWithTrialInProgress(playingTrial);
-        }
-        
-        void runIgnoringFailureWithTrialInProgress(UseCase &useCase) {
-            setTrialInProgress();
-            runIgnoringFailure(useCase);
-        }
-        
-        void playCalibrationWhenTrialAlreadyInProgressIgnoringFailure() {
-            runIgnoringFailureWithTrialInProgress(playingCalibration);
-        }
-        
-        void assertMaskerFilePathNotPassedToPlayerWhenTrialInProgress(InitializingTestUseCase &useCase) {
-            useCase.setMaskerFilePath("a");
-            runIgnoringFailureWithTrialInProgress(useCase);
-            assertEqual("", maskerPlayer.filePath());
-        }
-        
-        void assertTargetVideoNotHiddenWhenAuditoryOnlyButTrialInProgress(InitializingTestUseCase &useCase) {
-            useCase.setAuditoryOnly();
-            runIgnoringFailureWithTrialInProgress(useCase);
-            assertTargetVideoNotHidden();
-        }
-        
         void assertTargetFilePathEquals(std::string what) {
             assertEqual(std::move(what), targetFilePath());
         }
@@ -669,12 +644,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         
         void selectList(int n) {
             randomizer.setRandomInt(n);
-        }
-        
-        void assertTargetVideoShownWhenAudioVisual(ConditionUseCase &useCase) {
-            useCase.setAudioVisual();
-            run(useCase);
-            assertTargetVideoOnlyShown();
         }
         
         auto targetLevelRule() {
@@ -800,12 +769,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             assertTargetFilePathEquals("a");
         }
         
-        void assertMaskerFilePathPassedToPlayer(InitializingTestUseCase &useCase) {
-            useCase.setMaskerFilePath("a");
-            run(useCase);
-            assertEqual("a", maskerPlayer.filePath());
-        }
-        
         void assertNextTargetPassedToPlayer(InitializingTestUseCase &useCase) {
             useCase.setNextTarget("a");
             run(useCase);
@@ -828,22 +791,9 @@ namespace av_speech_in_noise::tests::recognition_test {
             assertEqual(3. - 2 - 1 - 2, randomizer.upperFloatBound());
         }
         
-        void assertMaskerPlayerLevelSet(UseCase &useCase) {
-            setMaskerLevel_dB_SPL(1);
-            setTestingFullScaleLevel_dB_SPL(2);
-            maskerPlayer.setRms(3);
-            run(useCase);
-            assertEqual(1 - 2 - dB(3), maskerPlayer.level_dB());
-        }
-        
         void assertOutputFilePassedTestInformation(InitializingTestUseCase &useCase) {
             run(useCase);
             assertEqual(outputFile.openNewFileParameters(), &useCase.testInformation());
-        }
-        
-        void assertThrowsRequestFailureWhenOutputFileThrows(UseCase &useCase) {
-            outputFile.throwOnOpen();
-            assertCallThrowsRequestFailure(useCase, "Unable to open output file.");
         }
         
         void assertOutputFileLog(std::string s) {
@@ -860,11 +810,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             run(initializingAdaptiveTest);
             for (int i = 0; i < 3; ++i)
                 assertEqual(1, useCase.value(snrTrackFactoryParameters().at(i)));
-        }
-        
-        void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
-            run(useCase);
-            assertOutputFileLog("close openNewFile writeTest ");
         }
         
         void assertSetsTargetLevel(InitializingTestUseCase &useCase) {
