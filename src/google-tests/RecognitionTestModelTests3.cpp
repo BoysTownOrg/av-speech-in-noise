@@ -227,6 +227,18 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertTargetPlayerLevelEquals_dB(double x) {
             assertEqual(x, targetPlayerLevel_dB());
         }
+        
+        void setMaskerLevel_dB_SPL(int x) {
+            initializingTest.setMaskerLevel_dB_SPL(x);
+        }
+        
+        void setTestingFullScaleLevel_dB_SPL(int x) {
+            initializingTest.setTestingFullScaleLevel_dB_SPL(x);
+        }
+        
+        void setMaskerRms(double x) {
+            maskerPlayer.setRms(x);
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -376,9 +388,9 @@ namespace av_speech_in_noise::tests::recognition_test {
         RecognitionTestModelTests3,
         initializeTestSetsInitialMaskerPlayerLevel
     ) {
-        initializingTest.setMaskerLevel_dB_SPL(1);
-        initializingTest.setTestingFullScaleLevel_dB_SPL(2);
-        maskerPlayer.setRms(3);
+        setMaskerLevel_dB_SPL(1);
+        setTestingFullScaleLevel_dB_SPL(2);
+        setMaskerRms(3);
         run(initializingTest);
         assertEqual(1 - 2 - dB(3), maskerPlayer.level_dB());
     }
@@ -388,9 +400,9 @@ namespace av_speech_in_noise::tests::recognition_test {
         initializeTestSetsTargetPlayerLevel
     ) {
         testMethod.setSnr_dB(2);
-        initializingTest.setMaskerLevel_dB_SPL(3);
-        initializingTest.setTestingFullScaleLevel_dB_SPL(4);
-        maskerPlayer.setRms(5);
+        setMaskerLevel_dB_SPL(3);
+        setTestingFullScaleLevel_dB_SPL(4);
+        setMaskerRms(5);
         run(initializingTest);
         assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
     }
