@@ -412,7 +412,7 @@ void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
 }
 
 void CocoaSubjectView::addNumberButton(NSColor *color, int number, int row, std::size_t col) {
-    auto title = asNsString(" " + std::to_string(number) + " ");
+    auto title = asNsString(std::to_string(number));
     const auto button = [NSButton
         buttonWithTitle:title
         target:actions
@@ -432,9 +432,10 @@ void CocoaSubjectView::addNumberButton(NSColor *color, int number, int row, std:
     auto attrsDictionary = [NSDictionary
         dictionaryWithObjectsAndKeys:
         color, NSForegroundColorAttributeName,
-        NSColor.blackColor, NSBackgroundColorAttributeName,
+        [NSNumber numberWithFloat: -4.0], NSStrokeWidthAttributeName,
+        NSColor.blackColor, NSStrokeColorAttributeName,
         style, NSParagraphStyleAttributeName,
-        [NSFont fontWithName:@"Courier" size:36], NSFontAttributeName,
+        [NSFont fontWithName:@"Arial-Black" size:64], NSFontAttributeName,
         nil
     ];
     auto attrString = [[NSAttributedString alloc]
