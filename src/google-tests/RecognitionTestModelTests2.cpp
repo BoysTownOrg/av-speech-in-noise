@@ -16,25 +16,15 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
         
         bool complete()  {return {};}
-        
         std::string next()  {return {};}
-        
         std::string current()  {return {};}
-        
         int snr_dB()  {return {};}
-        
         void submitCorrectResponse()  {}
-        
         void submitIncorrectResponse()  {}
-        
         void submitResponse(const FreeResponse &)  {}
-        
         void writeTestingParameters(OutputFile *)  {}
-        
         void writeLastCoordinateResponse(OutputFile *)  {}
-        
         void submitResponse(const coordinate_response_measure::SubjectResponse &)  {}
-        
     };
     
     class FixedLevelMethodStub : public IFixedLevelMethod {
@@ -49,25 +39,15 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
         
         bool complete()  {return {};}
-        
         std::string next()  {return {};}
-        
         std::string current()  {return {};}
-        
         int snr_dB()  {return {};}
-        
-        void submitCorrectResponse()  {}
-        
-        void submitIncorrectResponse()  {}
-        
-        void submitResponse(const FreeResponse &)  {}
-        
-        void writeTestingParameters(OutputFile *)  {}
-        
-        void writeLastCoordinateResponse(OutputFile *)  {}
-        
-        void submitResponse(const coordinate_response_measure::SubjectResponse &)  {}
-        
+        void submitCorrectResponse() {}
+        void submitIncorrectResponse() {}
+        void submitResponse(const FreeResponse &) {}
+        void writeTestingParameters(OutputFile *) {}
+        void writeLastCoordinateResponse(OutputFile *) {}
+        void submitResponse(const coordinate_response_measure::SubjectResponse &) {}
     };
     
     class RecognitionTestModel_InternalStub :
@@ -232,8 +212,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         };
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
-        internal_::InitializingAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
-        internal_::InitializingFixedLevelTest initializingFixedLevelTest{&fixedLevelMethod};
+        internal_::InitializingAdaptiveTest initializingAdaptiveTest{
+            &adaptiveMethod
+        };
+        internal_::InitializingFixedLevelTest initializingFixedLevelTest{
+            &fixedLevelMethod
+        };
         
         void initializeFixedLevelTest() {
             model.initializeTest(fixedLevelTest);
@@ -251,7 +235,9 @@ namespace av_speech_in_noise::tests::recognition_test {
             useCase.run(model);
         }
         
-        void assertInitializesInternalModel(internal_::InitializingTestUseCase &useCase) {
+        void assertInitializesInternalModel(
+            internal_::InitializingTestUseCase &useCase
+        ) {
             run(useCase);
             assertEqual(
                 useCase.testMethod(),
