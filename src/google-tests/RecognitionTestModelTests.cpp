@@ -165,29 +165,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        playCalibrationPassesAudioFileToTargetPlayer
-    ) {
-        playingCalibration.setFilePath("a");
-        playCalibration();
-        assertTargetFilePathEquals("a");
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeAdaptiveTestPassesMaskerFilePathToMaskerPlayer
-    ) {
-        assertMaskerFilePathPassedToPlayer(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestPassesMaskerFilePathToMaskerPlayer
-    ) {
-        assertMaskerFilePathPassedToPlayer(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeAdaptiveTestSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(initializingAdaptiveTest);

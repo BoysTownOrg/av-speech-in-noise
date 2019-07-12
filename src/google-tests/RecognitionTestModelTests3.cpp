@@ -46,6 +46,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         auto &testInformation() const {
             return information;
         }
+        
+        void setMaskerFilePath(std::string s) {
+            common.maskerFilePath = std::move(s);
+        }
     };
     
     class RecognitionTestModelTests3 : public ::testing::Test {
@@ -258,5 +262,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         playingCalibration.setFilePath("a");
         run(playingCalibration);
         assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestPassesMaskerFilePathToMaskerPlayer
+    ) {
+        initializingTest.setMaskerFilePath("a");
+        run(initializingTest);
+        assertEqual("a", maskerPlayer.filePath());
     }
 }
