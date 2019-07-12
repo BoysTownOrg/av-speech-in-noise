@@ -531,20 +531,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestThrowsRequestFailureIfTrialInProgress
-    ) {
-        assertThrowsRequestFailureWhenTrialInProgress(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestThrowsRequestFailureIfTrialInProgress
-    ) {
-        assertThrowsRequestFailureWhenTrialInProgress(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         playTrialThrowsRequestFailureIfTrialInProgress
     ) {
         assertThrowsRequestFailureWhenTrialInProgress(playingTrial);

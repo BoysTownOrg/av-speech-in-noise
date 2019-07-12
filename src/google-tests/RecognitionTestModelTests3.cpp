@@ -324,6 +324,11 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertTargetPlayerNotPlayed() {
             assertFalse(targetPlayerPlayed());
         }
+        
+        void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
+            setTrialInProgress();
+            assertCallThrowsRequestFailure(useCase, "Trial in progress.");
+        }
     };
     
     TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
@@ -629,5 +634,12 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         runIgnoringFailureWithTrialInProgress(playingCalibration);
         assertTargetPlayerNotPlayed();
+    }
+
+    TEST_F(
+        RecognitionTestModelTests3,
+        initializeTestThrowsRequestFailureIfTrialInProgress
+    ) {
+        assertThrowsRequestFailureWhenTrialInProgress(initializingTest);
     }
 }
