@@ -278,7 +278,7 @@ namespace av_speech_in_noise::tests {
         submitCoordinateResponseSelectsListInRangeAfterRemovingCompleteTracks
     ) {
         initialize();
-        track(2)->setComplete();
+        setSnrTrackComplete(2);
         submitCoordinateResponse();
         assertRandomizerPassedIntegerBounds(0, 1);
     }
@@ -450,7 +450,7 @@ namespace av_speech_in_noise::tests {
     ) {
         initialize();
         setNextForList(2, "a");
-        track(1)->setComplete();
+        setSnrTrackComplete(1);
         selectList(1);
         submitCoordinateResponse();
         assertNextEquals("a");
