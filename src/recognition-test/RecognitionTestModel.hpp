@@ -15,11 +15,6 @@ namespace av_speech_in_noise {
         virtual std::string current() = 0;
     };
     
-    class FiniteTargetList : public virtual TargetList {
-    public:
-        virtual bool empty() = 0;
-    };
-    
     class TargetListReader {
     public:
         virtual ~TargetListReader() = default;
