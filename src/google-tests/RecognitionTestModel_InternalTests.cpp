@@ -920,6 +920,15 @@ namespace av_speech_in_noise::tests::recognition_test {
     
     TEST_F(
         RecognitionTestModel_InternalTests,
+        submitFreeResponseWritesTarget
+    ) {
+        evaluator.setFileName("a");
+        run(submittingFreeResponse);
+        assertEqual("a", outputFile.writtenFreeResponseTrial().target);
+    }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
         submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
     ) {
         run(initializingTest);

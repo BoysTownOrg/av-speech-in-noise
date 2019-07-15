@@ -3,25 +3,6 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelOldTests,
-        submitFreeResponsePassesCurrentTargetToEvaluatorForAdaptiveTest
-    ) {
-        assertCurrentTargetPassedToEvaluator(
-            initializingAdaptiveTest,
-            submittingFreeResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
-        submitFreeResponseWritesTarget
-    ) {
-        evaluator.setFileName("a");
-        run(submittingFreeResponse);
-        assertEqual("a", writtenFreeResponseTrial().target);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitFreeResponseSavesOutputFileAfterWritingTrial
     ) {
         assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
