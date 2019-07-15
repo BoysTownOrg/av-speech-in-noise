@@ -39,6 +39,10 @@ namespace av_speech_in_noise::tests {
         auto writtenFixedLevelTrial() {
             return outputFile.writtenFixedLevelTrial2();
         }
+        
+        bool writtenFixedLevelTrialCorrect() {
+            return writtenFixedLevelTrial().correct;
+        }
     };
     
     TEST_F(FixedLevelMethodTests, writeTestPassesSettings) {
@@ -91,12 +95,12 @@ namespace av_speech_in_noise::tests {
     TEST_F(FixedLevelMethodTests, writeCorrectCoordinateResponse) {
         evaluator.setCorrect();
         writeCoordinateResponse();
-        assertTrue(writtenFixedLevelTrial().correct);
+        assertTrue(writtenFixedLevelTrialCorrect());
     }
     
     TEST_F(FixedLevelMethodTests, writeIncorrectCoordinateResponse) {
         evaluator.setIncorrect();
         writeCoordinateResponse();
-        assertFalse(writtenFixedLevelTrial().correct);
+        assertFalse(writtenFixedLevelTrialCorrect());
     }
 }
