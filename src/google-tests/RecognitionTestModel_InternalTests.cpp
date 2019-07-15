@@ -1,6 +1,12 @@
-#include "RecognitionTestModelOldTests.hpp"
 #include "ModelEventListenerStub.h"
+#include "RandomizerStub.h"
+#include "ResponseEvaluatorStub.h"
+#include "OutputFileStub.h"
+#include "MaskerPlayerStub.h"
+#include "TargetPlayerStub.h"
+#include "assert-utility.h"
 #include <gtest/gtest.h>
+#include <cmath>
 
 namespace av_speech_in_noise::tests::recognition_test {
     class TestMethodStub : public TestMethod {
@@ -65,6 +71,16 @@ namespace av_speech_in_noise::tests::recognition_test {
         auto &log() const {
             return log_;
         }
+    };
+    
+    class UseCase {
+    public:
+        virtual ~UseCase() = default;
+        virtual void run(RecognitionTestModel &) = 0;
+        virtual void run(RecognitionTestModel_Internal &) {}
+    };
+
+    class SubmittingResponse : public virtual UseCase {
     };
     
     class InitializingTest : public UseCase {

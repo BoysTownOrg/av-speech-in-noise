@@ -173,7 +173,6 @@
 		26DFF70722D39FC70070E04B /* TargetPlayerStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TargetPlayerStub.h; sourceTree = "<group>"; };
 		26DFF70822D3A0530070E04B /* OutputFileStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutputFileStub.h; sourceTree = "<group>"; };
 		26DFF70922D3A0DB0070E04B /* ResponseEvaluatorStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResponseEvaluatorStub.h; sourceTree = "<group>"; };
-		26DFF70A22D3AFED0070E04B /* RecognitionTestModelOldTests.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RecognitionTestModelOldTests.hpp; sourceTree = "<group>"; };
 		26EE86BA2242CFFB00C08622 /* TargetPlayerTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetPlayerTests.cpp; sourceTree = "<group>"; };
 		26EE86BC2242E64900C08622 /* Model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
 		26EE86BE2242E8DE00C08622 /* TargetPlayerImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TargetPlayerImpl.cpp; sourceTree = "<group>"; };
@@ -375,7 +374,6 @@
 				26FDD2D5224AC0840090BDD5 /* OutputFileTests.cpp */,
 				26FC6B0621DA810C00289A0A /* PresenterTests.cpp */,
 				26788E0322D4FC5300E89037 /* RandomizerStub.h */,
-				26DFF70A22D3AFED0070E04B /* RecognitionTestModelOldTests.hpp */,
 				26DFF70922D3A0DB0070E04B /* ResponseEvaluatorStub.h */,
 				2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */,
 				26688C352273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp */,
