@@ -35,4 +35,10 @@ namespace av_speech_in_noise::tests {
         targetList.setNext("a");
         assertEqual("a", method.next());
     }
+    
+    TEST_F(FixedLevelMethodTests, snrReturnsInitializedSnr) {
+        test.snr_dB = 1;
+        initialize();
+        assertEqual(1, method.snr_dB());
+    }
 }
