@@ -123,6 +123,10 @@ namespace av_speech_in_noise::tests {
         auto blueColor() {
             return coordinate_response_measure::Color::blue;
         }
+        
+        bool writtenCoordinateResponseTrialCorrect() {
+            return writtenCoordinateResponseTrial().correct;
+        }
     };
     
     TEST_F(
@@ -359,7 +363,7 @@ namespace av_speech_in_noise::tests {
         initialize();
         evaluator.setCorrect();
         writeCoordinateResponse();
-        assertTrue(writtenCoordinateResponseTrial().correct);
+        assertTrue(writtenCoordinateResponseTrialCorrect());
     }
 
     TEST_F(
@@ -369,6 +373,6 @@ namespace av_speech_in_noise::tests {
         initialize();
         evaluator.setIncorrect();
         writeCoordinateResponse();
-        assertFalse(writtenCoordinateResponseTrial().correct);
+        assertFalse(writtenCoordinateResponseTrialCorrect());
     }
 }

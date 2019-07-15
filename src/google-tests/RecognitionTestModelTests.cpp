@@ -298,18 +298,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponsePassesTargetToEvaluatorForAdaptiveTest
-    ) {
-        initializingAdaptiveTest.selectList(1);
-        run(initializingAdaptiveTest);
-        initializingAdaptiveTest.setTargetListCurrent(1, "a");
-        initializingAdaptiveTest.selectList(2);
-        submitCoordinateResponse();
-        assertEqual("a", evaluator.correctFilePath());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCoordinateResponsePassesTargetToEvaluatorForFixedLevelTest
     ) {
         run(initializingFixedLevelTest);
