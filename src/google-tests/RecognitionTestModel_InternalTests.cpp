@@ -4,6 +4,7 @@
 
 namespace av_speech_in_noise::tests::recognition_test {
     class TestMethodStub : public TestMethod {
+        LogString log_{};
         std::string current_{};
         std::string currentWhenNext_{};
         std::string next_{};
@@ -44,13 +45,26 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
         
         void submitCorrectResponse()  {}
+        
         void submitIncorrectResponse()  {}
+        
         void submitResponse(const FreeResponse &)  {}
+        
         void writeTestingParameters(OutputFile *file) {
             file->writeTest(AdaptiveTest{});
         }
-        void writeLastCoordinateResponse(OutputFile *)  {}
-        void submitResponse(const coordinate_response_measure::SubjectResponse &)  {}
+        
+        void writeLastCoordinateResponse(OutputFile *) {
+            log_.insert("writeLastCoordinateResponse ");
+        }
+        
+        void submitResponse(const coordinate_response_measure::SubjectResponse &) {
+            log_.insert("submitResponse ");
+        }
+        
+        auto &log() const {
+            return log_;
+        }
     };
     
     class InitializingTest : public UseCase {
@@ -947,5 +961,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         submitFreeResponseSavesOutputFileAfterWritingTrial
     ) {
         assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
+    }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitCoordinateResponseWritesTrialAfterSubmittingResponse
+    ) {
+        run(initializingTest);
+        run(submittingCoordinateResponse);
+        assertEqual("submitResponse writeLastCoordinateResponse ", testMethod.log());
     }
 }
