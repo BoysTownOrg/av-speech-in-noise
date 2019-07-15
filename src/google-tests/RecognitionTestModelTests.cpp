@@ -230,13 +230,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesColorForAdaptiveTest
-    ) {
-        assertWritesSubjectColor(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCoordinateResponseWritesColorForFixedLevelTest
     ) {
         assertWritesSubjectColor(initializingFixedLevelTest);

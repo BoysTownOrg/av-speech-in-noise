@@ -261,4 +261,18 @@ namespace av_speech_in_noise::tests {
         submitCoordinateResponse();
         assertEqual(&std::as_const(coordinateResponse), evaluator.response());
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        writeLastCoordinateResponsePassesSubjectColor
+    ) {
+        initialize();
+        coordinateResponse.color = coordinate_response_measure::Color::blue;
+        submitCoordinateResponse();
+        method.writeLastCoordinateResponse(&outputFile);
+        assertEqual(
+            coordinate_response_measure::Color::blue,
+            outputFile.writtenAdaptiveCoordinateResponseTrial2().subjectColor
+        );
+    }
 }
