@@ -400,4 +400,17 @@ namespace av_speech_in_noise::tests {
         assertTrue(snrTrackPushedDown(1));
         assertFalse(snrTrackPushedUp(1));
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        submitIncorrectCoordinateResponsePushesSnrTrackUp
+    ) {
+        selectList(1);
+        initialize();
+        evaluator.setIncorrect();
+        selectList(2);
+        submitCoordinateResponse();
+        assertFalse(snrTrackPushedDown(1));
+        assertTrue(snrTrackPushedUp(1));
+    }
 }
