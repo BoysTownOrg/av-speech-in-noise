@@ -93,4 +93,10 @@ namespace av_speech_in_noise::tests {
         writeCoordinateResponse();
         assertTrue(writtenFixedLevelTrial().correct);
     }
+    
+    TEST_F(FixedLevelMethodTests, writeIncorrectCoordinateResponse) {
+        evaluator.setIncorrect();
+        writeCoordinateResponse();
+        assertFalse(writtenFixedLevelTrial().correct);
+    }
 }
