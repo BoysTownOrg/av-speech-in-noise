@@ -747,13 +747,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             assertTrue(outputFileLog().endsWith("save "));
         }
         
-        void assertSnrPassedToTrackFactory(SnrUseCase &useCase) {
-            useCase.setSnr(initializingAdaptiveTest, 1);
-            run(initializingAdaptiveTest);
-            for (int i = 0; i < 3; ++i)
-                assertEqual(1, useCase.value(snrTrackFactoryParameters().at(i)));
-        }
-        
         void assertSetsTargetLevel(InitializingTestUseCase &useCase) {
             useCase.setSnr_dB(2);
             setMaskerLevel_dB_SPL(3);
@@ -856,10 +849,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             initializingTest.setCurrentTarget("a");
             run(useCase);
             assertEqual("a", evaluator.filePathForFileName());
-        }
-        
-        void maskerFadeOutComplete() {
-            maskerPlayer.fadeOutComplete();
         }
     };
 }
