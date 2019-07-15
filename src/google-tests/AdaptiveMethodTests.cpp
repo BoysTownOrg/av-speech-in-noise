@@ -225,4 +225,16 @@ namespace av_speech_in_noise::tests {
         initialize();
         assertEqual(1, method.snr_dB());
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        submitCoordinateResponsePassesCurrentToEvaluator
+    ) {
+        selectList(1);
+        initialize();
+        lists.at(1)->setCurrent("a");
+        submitCoordinateResponse();
+        assertEqual("a", evaluator.correctColorFilePath());
+        assertEqual("a", evaluator.correctNumberFilePath());
+    }
 }
