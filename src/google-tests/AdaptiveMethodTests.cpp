@@ -102,6 +102,10 @@ namespace av_speech_in_noise::tests {
         auto track(int n) {
             return tracks.at(n);
         }
+        
+        void setCurrentForTarget(int n, std::string s) {
+            lists.at(n)->setCurrent(std::move(s));
+        }
     };
     
     TEST_F(
@@ -232,7 +236,7 @@ namespace av_speech_in_noise::tests {
     ) {
         selectList(1);
         initialize();
-        lists.at(1)->setCurrent("a");
+        setCurrentForTarget(1, "a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
@@ -244,7 +248,7 @@ namespace av_speech_in_noise::tests {
     ) {
         selectList(1);
         initialize();
-        lists.at(1)->setCurrent("a");
+        setCurrentForTarget(1, "a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
