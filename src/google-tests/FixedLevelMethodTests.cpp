@@ -103,4 +103,9 @@ namespace av_speech_in_noise::tests {
         writeCoordinateResponse();
         assertFalse(writtenFixedLevelTrialCorrect());
     }
+    
+    TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesResponse) {
+        submitCoordinateResponse();
+        assertEqual(&std::as_const(coordinateResponse), evaluator.response());
+    }
 }

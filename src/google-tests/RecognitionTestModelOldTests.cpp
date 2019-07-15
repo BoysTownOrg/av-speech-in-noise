@@ -200,13 +200,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelOldTests,
-        submitCoordinateResponsePassesSubjectResponseToEvaluatorForFixedLevelTest
-    ) {
-        assertCoordinateResponsePassedToEvaluator(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColorForFixedLevelTest
     ) {
         run(initializingFixedLevelTest);
