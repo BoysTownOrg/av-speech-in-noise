@@ -374,11 +374,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
     };
 
-    class AudioDeviceUseCase : public virtual UseCase {
-    public:
-        virtual void setAudioDevice(std::string) = 0;
-    };
-
     class RecognitionTestModelOldTests : public ::testing::Test {
     protected:
         TargetListSetReaderStub targetListSetReader{};
@@ -430,37 +425,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         void submitCoordinateResponse() {
             run(submittingCoordinateResponse);
         }
-        
-        void setTrialInProgress() {
-            maskerPlayer.setPlaying();
-        }
-        
-        void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
-            setTrialInProgress();
-            assertCallThrowsRequestFailure(useCase, "Trial in progress.");
-        }
-        
-        void assertCallThrowsRequestFailure(
-            UseCase &useCase,
-            std::string what
-        ) {
-            try {
-                run(useCase);
-                FAIL() <<
-                    "Expected recognition_test::"
-                    "RecognitionTestModel::"
-                    "RequestFailure";
-            } catch (const RecognitionTestModel::RequestFailure &e) {
-                assertEqual(std::move(what), e.what());
-            }
-        }
-        
-        void runIgnoringFailure(UseCase &useCase) {
-            try {
-                run(useCase);
-            } catch (const RecognitionTestModel::RequestFailure &) {
-            }
-        }
     
         double dB(double x) {
             return 20 * std::log10(x);
@@ -477,10 +441,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         
         auto targetFilePath() {
             return targetPlayer.filePath();
-        }
-        
-        auto blueColor() {
-            return coordinate_response_measure::Color::blue;
         }
         
         void assertTargetFilePathEquals(std::string what) {
@@ -696,25 +656,11 @@ namespace av_speech_in_noise::tests::recognition_test {
             return useCase.writtenCoordinateResponseTrial(outputFile);
         }
         
-        void assertWritesSubjectColor(InitializingTestUseCase &useCase) {
-            run(useCase);
-            submittingCoordinateResponse.setColor(blueColor());
-            submitCoordinateResponse();
-            assertEqual(blueColor(), writtenCoordinateResponseTrial(useCase).subjectColor);
-        }
-        
         void assertWritesSubjectNumber(InitializingTestUseCase &useCase) {
             run(useCase);
             submittingCoordinateResponse.setNumber(1);
             submitCoordinateResponse();
             assertEqual(1, writtenCoordinateResponseTrial(useCase).subjectNumber);
-        }
-        
-        void assertWritesCorrectColor(InitializingTestUseCase &useCase) {
-            run(useCase);
-            evaluator.setCorrectColor(blueColor());
-            submitCoordinateResponse();
-            assertEqual(blueColor(), writtenCoordinateResponseTrial(useCase).correctColor);
         }
         
         void assertWritesCorrectNumber(InitializingTestUseCase &useCase) {

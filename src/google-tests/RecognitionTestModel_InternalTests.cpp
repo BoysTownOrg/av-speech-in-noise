@@ -83,6 +83,11 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
     };
 
+    class AudioDeviceUseCase : public virtual UseCase {
+    public:
+        virtual void setAudioDevice(std::string) = 0;
+    };
+
     class PlayingCalibration :
         public AudioDeviceUseCase,
         public ConditionUseCase
