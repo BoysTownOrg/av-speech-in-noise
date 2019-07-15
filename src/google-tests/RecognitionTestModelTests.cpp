@@ -244,19 +244,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesSnrBeforeUpdatingForAdaptiveTest
-    ) {
-        initializingAdaptiveTest.selectList(1);
-        run(initializingAdaptiveTest);
-        initializingAdaptiveTest.snrTrack(1)->setX(4);
-        initializingAdaptiveTest.snrTrack(1)->setXWhenUpdated(3);
-        initializingAdaptiveTest.selectList(2);
-        submitCoordinateResponse();
-        assertEqual(4, writtenAdaptiveCoordinateResponseTrial().SNR_dB);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCoordinateResponseWritesCorrectColorForAdaptiveTest
     ) {
         assertWritesCorrectColor(initializingAdaptiveTest);

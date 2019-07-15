@@ -311,4 +311,17 @@ namespace av_speech_in_noise::tests {
         writeCoordinateResponse();
         assertEqual(3, outputFile.writtenAdaptiveCoordinateResponseTrial().reversals);
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        writeCoordinateResponsePassesSnrBeforeUpdatingTrack
+    ) {
+        selectList(1);
+        initialize();
+        track(1)->setX(4);
+        track(1)->setXWhenUpdated(4);
+        selectList(2);
+        writeCoordinateResponse();
+        assertEqual(4, outputFile.writtenAdaptiveCoordinateResponseTrial().SNR_dB);
+    }
 }
