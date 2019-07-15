@@ -82,6 +82,61 @@ namespace av_speech_in_noise::tests::recognition_test {
             common.condition = Condition::auditoryOnly;
         }
     };
+
+    class PlayingCalibration :
+        public AudioDeviceUseCase,
+        public ConditionUseCase
+    {
+        Calibration calibration{};
+    public:
+        void setAudioDevice(std::string s) override {
+            calibration.audioSettings.audioDevice = std::move(s);
+        }
+        
+        void run(RecognitionTestModel &m) override {
+            m.playCalibration(calibration);
+        }
+        
+        void run(RecognitionTestModel_Internal &m) override {
+            m.playCalibration(calibration);
+        }
+        
+        void setFilePath(std::string s) {
+            calibration.filePath = std::move(s);
+        }
+        
+        void setLevel_dB_SPL(int x) {
+            calibration.level_dB_SPL = x;
+        }
+        
+        void setFullScaleLevel_dB_SPL(int x) {
+            calibration.fullScaleLevel_dB_SPL = x;
+        }
+        
+        void setAudioVisual() override {
+            calibration.condition = Condition::audioVisual;
+        }
+        
+        void setAuditoryOnly() override {
+            calibration.condition = Condition::auditoryOnly;
+        }
+    };
+
+    class PlayingTrial : public AudioDeviceUseCase {
+        AudioSettings trial;
+    public:
+        void setAudioDevice(std::string s) override {
+            trial.audioDevice = std::move(s);
+        }
+        
+        void run(RecognitionTestModel &m) override {
+            m.playTrial(trial);
+        }
+        
+        void run(RecognitionTestModel_Internal &m) override {
+            m.playTrial(trial);
+        }
+    };
     
     class RecognitionTestModel_InternalTests : public ::testing::Test {
     protected:
