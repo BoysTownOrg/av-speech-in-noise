@@ -443,6 +443,18 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         AdaptiveMethodTests,
+        submitCorrectResponsePushesSnrTrackDown
+    ) {
+        selectList(1);
+        initialize();
+        selectList(2);
+        method.submitCorrectResponse();
+        assertTrue(snrTrackPushedDown(1));
+        assertFalse(snrTrackPushedUp(1));
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
         submitIncorrectCoordinateResponsePushesSnrTrackUp
     ) {
         selectList(1);
@@ -450,6 +462,18 @@ namespace av_speech_in_noise::tests {
         setIncorrectCoordinateResponse();
         selectList(2);
         submitCoordinateResponse();
+        assertFalse(snrTrackPushedDown(1));
+        assertTrue(snrTrackPushedUp(1));
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        submitIncorrectResponsePushesSnrTrackDown
+    ) {
+        selectList(1);
+        initialize();
+        selectList(2);
+        method.submitIncorrectResponse();
         assertFalse(snrTrackPushedDown(1));
         assertTrue(snrTrackPushedUp(1));
     }
