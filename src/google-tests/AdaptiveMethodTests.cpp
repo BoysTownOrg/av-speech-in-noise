@@ -39,9 +39,12 @@ namespace av_speech_in_noise::tests {
             return snrTrackFactory.parameters();
         }
         
+        auto snrTrackFactoryParameters(int x) const {
+            return snrTrackFactoryParameters().at(x);
+        }
+        
         void assertSettingsContainTargetLevelRule(const Track::Settings &s) {
-            const auto *rule = &targetLevelRule_;
-            assertEqual(rule, s.rule);
+            assertEqual(&std::as_const(targetLevelRule_), s.rule);
         }
         
         void initialize() {
@@ -64,7 +67,7 @@ namespace av_speech_in_noise::tests {
         initialize();
         for (int i = 0; i < 3; ++i)
             assertSettingsContainTargetLevelRule(
-                snrTrackFactoryParameters().at(i)
+                snrTrackFactoryParameters(i)
             );
     }
 
@@ -75,6 +78,6 @@ namespace av_speech_in_noise::tests {
         test.startingSnr_dB = 1;
         initialize();
         for (int i = 0; i < 3; ++i)
-            assertEqual(1, snrTrackFactoryParameters().at(i).startingX);
+            assertEqual(1, snrTrackFactoryParameters(i).startingX);
     }
 }
