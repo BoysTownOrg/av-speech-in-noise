@@ -1,4 +1,4 @@
-#include "RecognitionTestModelTests.hpp"
+#include "RecognitionTestModelOldTests.hpp"
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests::recognition_test {

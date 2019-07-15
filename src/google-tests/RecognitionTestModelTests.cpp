@@ -1,361 +1,330 @@
-#include "RecognitionTestModelTests.hpp"
+#include "assert-utility.h"
+#include "RecognitionTestModelOldTests.hpp"
+#include <recognition-test/RecognitionTestModel.hpp>
+#include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests::recognition_test {
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestWritesTestSettings
-    ) {
-        run(initializingFixedLevelTest);
-        assertEqual(outputFile.fixedLevelTest(), &fixedLevelTestSettings());
+    class AdaptiveMethodStub : public IAdaptiveMethod {
+        const AdaptiveTest *test_{};
+    public:
+        void initialize(const AdaptiveTest &t) {
+            test_ = &t;
+        }
+        
+        auto test() const {
+            return test_;
+        }
+        
+        bool complete()  {return {};}
+        std::string next()  {return {};}
+        std::string current()  {return {};}
+        int snr_dB()  {return {};}
+        void submitCorrectResponse()  {}
+        void submitIncorrectResponse()  {}
+        void submitResponse(const FreeResponse &)  {}
+        void writeTestingParameters(OutputFile *)  {}
+        void writeLastCoordinateResponse(OutputFile *)  {}
+        void submitResponse(const coordinate_response_measure::SubjectResponse &)  {}
+    };
+    
+    class FixedLevelMethodStub : public IFixedLevelMethod {
+        const FixedLevelTest *test_{};
+    public:
+        void initialize(const FixedLevelTest &t) {
+            test_ = &t;
+        }
+        
+        auto test() const {
+            return test_;
+        }
+        
+        bool complete()  {return {};}
+        std::string next()  {return {};}
+        std::string current()  {return {};}
+        int snr_dB()  {return {};}
+        void submitCorrectResponse() {}
+        void submitIncorrectResponse() {}
+        void submitResponse(const FreeResponse &) {}
+        void writeTestingParameters(OutputFile *) {}
+        void writeLastCoordinateResponse(OutputFile *) {}
+        void submitResponse(const coordinate_response_measure::SubjectResponse &) {}
+    };
+    
+    class RecognitionTestModel_InternalStub :
+        public IRecognitionTestModel_Internal
+    {
+        std::vector<std::string> audioDevices_{};
+        const Model::EventListener *listener_{};
+        const Calibration *calibration_{};
+        const AudioSettings *playTrialSettings_{};
+        const TestInformation *testInformation_{};
+        const CommonTest *commonTest_{};
+        const TestMethod *testMethod_{};
+        const coordinate_response_measure::SubjectResponse *
+            coordinateResponse_{};
+        bool complete_{};
+    public:
+        void initialize(
+            TestMethod *tm,
+            const CommonTest &ct,
+            const TestInformation &ti
+        ) {
+            testMethod_ = tm;
+            commonTest_ = &ct;
+            testInformation_ = &ti;
+        }
+        
+        void playTrial(const AudioSettings &s) {
+            playTrialSettings_ = &s;
+        }
+        
+        void submitResponse(
+            const coordinate_response_measure::SubjectResponse &p
+        ) {
+            coordinateResponse_ = &p;
+        }
+        
+        bool testComplete() { return complete_; }
+        
+        std::vector<std::string> audioDevices() { return audioDevices_; }
+        
+        void subscribe(Model::EventListener *e) {
+            listener_ = e;
+        }
+        
+        void playCalibration(const Calibration &c) {
+            calibration_ = &c;
+        }
+        
+        void submitCorrectResponse()  {}
+        
+        void submitIncorrectResponse()  {}
+        
+        void submitResponse(const FreeResponse &)  {}
+        
+        void throwIfTrialInProgress()  {}
+        
+        auto coordinateResponse() const {
+            return coordinateResponse_;
+        }
+        
+        auto testMethod() const {
+            return testMethod_;
+        }
+        
+        auto commonTest() const {
+            return commonTest_;
+        }
+        
+        auto testInformation() const {
+            return testInformation_;
+        }
+        
+        auto playTrialSettings() const {
+            return playTrialSettings_;
+        }
+        
+        auto calibration() const {
+            return calibration_;
+        }
+        
+        void setComplete() {
+            complete_ = true;
+        }
+        
+        void setAudioDevices(std::vector<std::string> v) {
+            audioDevices_ = std::move(v);
+        }
+        
+        auto listener() const {
+            return listener_;
+        }
+    };
+    
+    namespace internal_ {
+        class InitializingTestUseCase {
+        public:
+            virtual ~InitializingTestUseCase() = default;
+            virtual void run(RecognitionTestModel &) = 0;
+            virtual const CommonTest &commonTest() = 0;
+            virtual const TestInformation &testInformation() = 0;
+            virtual const TestMethod *testMethod() = 0;
+        };
+        
+        class InitializingAdaptiveTest : public InitializingTestUseCase {
+            AdaptiveTest test;
+            AdaptiveMethodStub *method;
+        public:
+            explicit InitializingAdaptiveTest(AdaptiveMethodStub *method) :
+                method{method} {}
+            
+            void run(RecognitionTestModel &model) override {
+                model.initializeTest(test);
+            }
+            
+            const CommonTest &commonTest() override {
+                return test.common;
+            }
+            
+            const TestInformation &testInformation() override {
+                return test.information;
+            }
+            
+            const TestMethod *testMethod() override {
+                return method;
+            }
+        };
+        
+        class InitializingFixedLevelTest : public InitializingTestUseCase {
+            FixedLevelTest test;
+            FixedLevelMethodStub *method;
+        public:
+            explicit InitializingFixedLevelTest(FixedLevelMethodStub *method) :
+                method{method} {}
+            
+            void run(RecognitionTestModel &model) override {
+                model.initializeTest(test);
+            }
+            
+            const CommonTest &commonTest() override {
+                return test.common;
+            }
+            
+            const TestInformation &testInformation() override {
+                return test.information;
+            }
+            
+            const TestMethod *testMethod() override {
+                return method;
+            }
+        };
     }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestPassesTargetListDirectory
-    ) {
-        assertTargetListPassed(initializingFixedLevelTest);
+    
+    class RecognitionTestModelTests : public ::testing::Test {
+    protected:
+        AdaptiveMethodStub adaptiveMethod;
+        FixedLevelMethodStub fixedLevelMethod;
+        RecognitionTestModel_InternalStub internalModel;
+        RecognitionTestModel model{
+            &adaptiveMethod,
+            &fixedLevelMethod,
+            &internalModel
+        };
+        AdaptiveTest adaptiveTest;
+        FixedLevelTest fixedLevelTest;
+        internal_::InitializingAdaptiveTest initializingAdaptiveTest{
+            &adaptiveMethod
+        };
+        internal_::InitializingFixedLevelTest initializingFixedLevelTest{
+            &fixedLevelMethod
+        };
+        
+        void initializeFixedLevelTest() {
+            model.initializeTest(fixedLevelTest);
+        }
+        
+        void initializeAdaptiveTest() {
+            model.initializeTest(adaptiveTest);
+        }
+        
+        bool testComplete() {
+            return model.testComplete();
+        }
+        
+        void run(internal_::InitializingTestUseCase &useCase) {
+            useCase.run(model);
+        }
+        
+        void assertInitializesInternalModel(
+            internal_::InitializingTestUseCase &useCase
+        ) {
+            run(useCase);
+            assertEqual(
+                useCase.testMethod(),
+                internalModel.testMethod()
+            );
+            assertEqual(
+                &useCase.commonTest(),
+                internalModel.commonTest()
+            );
+            assertEqual(
+                &useCase.testInformation(),
+                internalModel.testInformation()
+            );
+        }
+    };
+    
+    TEST_F(RecognitionTestModelTests, submitResponsePassesCoordinateResponse) {
+        coordinate_response_measure::SubjectResponse response;
+        model.submitResponse(response);
+        assertEqual(&std::as_const(response), internalModel.coordinateResponse());
     }
-
+    
     TEST_F(
         RecognitionTestModelTests,
-        initializeFixedLevelTestPassesNextTargetToTargetPlayerAfterLoadingFromDirectory
+        initializeFixedLevelTestInitializesFixedLevelMethod
     ) {
-        run(initializingFixedLevelTest);
-        assertEqual("loadFromDirectory next ", targetList.log());
+        initializeFixedLevelTest();
+        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
     }
-
+    
     TEST_F(
         RecognitionTestModelTests,
-        initializeFixedLevelTestPassesNextTargetToTargetPlayer
+        initializeAdaptiveTestInitializesAdaptiveMethod
     ) {
-        assertNextTargetPassedToPlayer(initializingFixedLevelTest);
+        initializeAdaptiveTest();
+        assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
     }
-
+    
     TEST_F(
         RecognitionTestModelTests,
-        submitCorrectResponseLoadsNextTargetForFixedLevelTest
+        initializeFixedLevelTestInitializesInternalModel
     ) {
-        assertNextTargetPassedToPlayer(
-            initializingFixedLevelTest,
-            submittingCorrectResponse
+        assertInitializesInternalModel(initializingFixedLevelTest);
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeAdaptiveTestInitializesInternalModel
+    ) {
+        assertInitializesInternalModel(initializingAdaptiveTest);
+    }
+    
+    TEST_F(RecognitionTestModelTests, playTrialPassesAudioSettings) {
+        AudioSettings settings;
+        model.playTrial(settings);
+        assertEqual(
+            &std::as_const(settings),
+            internalModel.playTrialSettings()
         );
     }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCorrectResponseLoadsNextTargetForAdaptiveTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingAdaptiveTest,
-            submittingCorrectResponse
+    
+    TEST_F(RecognitionTestModelTests, playCalibrationPassesCalibration) {
+        Calibration calibration;
+        model.playCalibration(calibration);
+        assertEqual(
+            &std::as_const(calibration),
+            internalModel.calibration()
         );
     }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponseLoadsNextTargetForFixedLevelTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingFixedLevelTest,
-            submittingIncorrectResponse
+    
+    TEST_F(RecognitionTestModelTests, testCompleteWhenComplete) {
+        assertFalse(testComplete());
+        internalModel.setComplete();
+        assertTrue(testComplete());
+    }
+    
+    TEST_F(RecognitionTestModelTests, returnsAudioDevices) {
+        internalModel.setAudioDevices({"a", "b", "c"});
+        assertEqual({"a", "b", "c"}, model.audioDevices());
+    }
+    
+    TEST_F(RecognitionTestModelTests, subscribesToListener) {
+        ModelEventListenerStub listener;
+        model.subscribe(&listener);
+        assertEqual(
+            static_cast<const Model::EventListener *>(&listener),
+            internalModel.listener()
         );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponseLoadsNextTargetForAdaptiveTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingAdaptiveTest,
-            submittingIncorrectResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitTypedResponseLoadsNextTargetForFixedLevelTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingFixedLevelTest,
-            submittingFreeResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitTypedResponseLoadsNextTargetForAdaptiveTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingAdaptiveTest,
-            submittingFreeResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
-    ) {
-        assertSelectsRandomListInRangeAfterRemovingCompleteTracks(submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCorrectResponseSubscribesToTargetPlaybackCompletionNotification
-    ) {
-        assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponseSubscribesToTargetPlaybackCompletionNotification
-    ) {
-        assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitTypedResponseSubscribesToTargetPlaybackCompletionNotification
-    ) {
-        assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration
-    ) {
-        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration
-    ) {
-        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitTypedResponseSeeksToRandomMaskerPositionWithinTrialDuration
-    ) {
-        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCorrectResponseSeeksToRandomMaskerPosition
-    ) {
-        assertMaskerPlayerSeekedToRandomTime(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponseSeeksToRandomMaskerPosition
-    ) {
-        assertMaskerPlayerSeekedToRandomTime(submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitTypedResponseSeeksToRandomMaskerPosition
-    ) {
-        assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        initializeFixedLevelTestSetsTargetPlayerLevel
-    ) {
-        assertSetsTargetLevel(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitTypedResponseSetsTargetPlayerLevelForAdaptiveTest
-    ) {
-        assertSetsTargetLevel(initializingAdaptiveTest, submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCorrectResponseSetsTargetPlayerLevelForAdaptiveTest
-    ) {
-        assertSetsTargetLevel(initializingAdaptiveTest, submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponseSetsTargetPlayerLevelForAdaptiveTest
-    ) {
-        assertSetsTargetLevel(initializingAdaptiveTest, submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitFreeResponseWritesResponse
-    ) {
-        submittingFreeResponse.setResponse("a");
-        run(submittingFreeResponse);
-        assertEqual("a", writtenFreeResponseTrial().response);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTargetForFixedLevelTest
-    ) {
-        run(initializingFixedLevelTest);
-        initializingFixedLevelTest.setCurrentTarget("a");
-        initializingFixedLevelTest.setCurrentTargetWhenNext("b");
-        run(submittingFreeResponse);
-        assertEqual("a", evaluator.filePathForFileName());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitFreeResponsePassesCurrentTargetToEvaluatorForAdaptiveTest
-    ) {
-        assertCurrentTargetPassedToEvaluator(
-            initializingAdaptiveTest,
-            submittingFreeResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitFreeResponseWritesTarget
-    ) {
-        evaluator.setFileName("a");
-        run(submittingFreeResponse);
-        assertEqual("a", writtenFreeResponseTrial().target);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseWritesColorForFixedLevelTest
-    ) {
-        assertWritesSubjectColor(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseWritesNumberForFixedLevelTest
-    ) {
-        assertWritesSubjectNumber(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseWritesCorrectColorForFixedLevelTest
-    ) {
-        assertWritesCorrectColor(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseWritesCorrectNumberForFixedLevelTest
-    ) {
-        assertWritesCorrectNumber(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseWritesCorrectTrialForFixedLevelTest
-    ) {
-        assertWritesCorrectEvaluation(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseWritesIncorrectTrialForFixedLevelTest
-    ) {
-        assertWritesIncorrectEvaluation(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitFreeResponseSavesOutputFileAfterWritingTrial
-    ) {
-        assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponsePassesSubjectResponseToEvaluatorForFixedLevelTest
-    ) {
-        assertCoordinateResponsePassedToEvaluator(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColorForFixedLevelTest
-    ) {
-        run(initializingFixedLevelTest);
-        initializingFixedLevelTest.setCurrentTarget("a");
-        initializingFixedLevelTest.setCurrentTargetWhenNext("b");
-        submitCoordinateResponse();
-        assertEqual("a", evaluator.correctColorFilePath());
-        assertEqual("a", evaluator.correctNumberFilePath());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponsePassesTargetToEvaluatorForFixedLevelTest
-    ) {
-        run(initializingFixedLevelTest);
-        initializingFixedLevelTest.setCurrentTarget("a");
-        initializingFixedLevelTest.setCurrentTargetWhenNext("b");
-        submitCoordinateResponse();
-        assertEqual("a", evaluator.correctFilePath());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCorrectResponsePushesSnrDownForAdaptiveTest
-    ) {
-        assertPushesSnrTrackDown(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponsePushesSnrUpForAdaptiveTest
-    ) {
-        assertPushesSnrTrackUp(submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCorrectResponseSelectsNextListAmongThoseWithIncompleteTracksForAdaptiveTest
-    ) {
-        assertSelectsListAmongThoseWithIncompleteTracks(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitIncorrectResponseSelectsNextListAmongThoseWithIncompleteTracksForAdaptiveTest
-    ) {
-        assertSelectsListAmongThoseWithIncompleteTracks(submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        fixedLevelTestCompleteAfterTrials
-    ) {
-        initializingFixedLevelTest.setTrials(3);
-        run(initializingFixedLevelTest);
-        assertTestIncompleteAfterCoordinateResponse();
-        assertTestIncompleteAfterCoordinateResponse();
-        assertTestCompleteAfterCoordinateResponse();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponseDoesNotLoadNextTargetWhenCompleteForFixedLevelTest
-    ) {
-        initializingFixedLevelTest.setNextTarget("a");
-        initializingFixedLevelTest.setTrials(1);
-        run(initializingFixedLevelTest);
-        initializingFixedLevelTest.setNextTarget("b");
-        submitCoordinateResponse();
-        assertTargetFilePathEquals("a");
     }
 }
-

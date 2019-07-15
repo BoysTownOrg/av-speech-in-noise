@@ -446,7 +446,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
     };
 
-    class RecognitionTestModelTests : public ::testing::Test {
+    class RecognitionTestModelOldTests : public ::testing::Test {
     protected:
         TargetListSetReaderStub targetListSetReader{};
         TargetListStub targetList{};
@@ -492,7 +492,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         SettingCeilingSnr settingCeilingSnr{};
         SettingFloorSnr settingFloorSnr{};
         
-        RecognitionTestModelTests() {
+        RecognitionTestModelOldTests() {
             model.subscribe(&listener);
         }
         
