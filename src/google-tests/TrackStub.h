@@ -71,7 +71,7 @@ namespace av_speech_in_noise::tests {
         std::vector<Track::Settings> parameters_;
         std::vector<std::shared_ptr<Track>> tracks_;
     public:
-        const auto &parameters() {
+        auto &parameters() const {
             return parameters_;
         }
         
