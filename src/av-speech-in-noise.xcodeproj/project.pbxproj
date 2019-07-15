@@ -49,7 +49,6 @@
 		269C4C7D2253B8A00059AD5F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2656B62422401D2C0058A23D /* CoreMedia.framework */; };
 		269C91942233204B00A80372 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 269C919222331FCE00A80372 /* main.mm */; };
 		269C91962233212B00A80372 /* gtest_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 269C91952233212B00A80372 /* gtest_main.a */; };
-		26A2236C21DD2C75007D6511 /* RecognitionTestModelOldTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A2236B21DD2C75007D6511 /* RecognitionTestModelOldTests.cpp */; };
 		26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A2236E21DD34A7007D6511 /* RecognitionTestModel.cpp */; };
 		26A2237A21DD3552007D6511 /* librecognition-test.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 26A2237521DD3544007D6511 /* librecognition-test.dylib */; };
 		26A86BDE223A972200210C00 /* MaskerPlayerTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26A86BDD223A972200210C00 /* MaskerPlayerTests.cpp */; };
@@ -152,7 +151,6 @@
 		26955FF82236A60200664A2C /* assert-utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "assert-utility.h"; sourceTree = "<group>"; };
 		269C919222331FCE00A80372 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		269C91952233212B00A80372 /* gtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = gtest_main.a; path = ../../../../../usr/local/lib/gtest_main.a; sourceTree = "<group>"; };
-		26A2236B21DD2C75007D6511 /* RecognitionTestModelOldTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecognitionTestModelOldTests.cpp; sourceTree = "<group>"; };
 		26A2236E21DD34A7007D6511 /* RecognitionTestModel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecognitionTestModel.cpp; sourceTree = "<group>"; };
 		26A2236F21DD34A7007D6511 /* RecognitionTestModel.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RecognitionTestModel.hpp; sourceTree = "<group>"; };
 		26A2237521DD3544007D6511 /* librecognition-test.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "librecognition-test.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -377,7 +375,6 @@
 				26FDD2D5224AC0840090BDD5 /* OutputFileTests.cpp */,
 				26FC6B0621DA810C00289A0A /* PresenterTests.cpp */,
 				26788E0322D4FC5300E89037 /* RandomizerStub.h */,
-				26A2236B21DD2C75007D6511 /* RecognitionTestModelOldTests.cpp */,
 				26DFF70A22D3AFED0070E04B /* RecognitionTestModelOldTests.hpp */,
 				26DFF70922D3A0DB0070E04B /* ResponseEvaluatorStub.h */,
 				2645BEC722676AD7002E8C6C /* ResponseEvaluatorTests.cpp */,
@@ -742,7 +739,6 @@
 				26D3526C22D7DB7B0028D7E6 /* RecognitionTestModelTests.cpp in Sources */,
 				26C2A325225D050E00E2919D /* AudioReaderTests.cpp in Sources */,
 				26A86BDE223A972200210C00 /* MaskerPlayerTests.cpp in Sources */,
-				26A2236C21DD2C75007D6511 /* RecognitionTestModelOldTests.cpp in Sources */,
 				264E7E4B224E6467008A595F /* OutputFilePathTests.cpp in Sources */,
 				26788E0022D4FA6700E89037 /* AdaptiveMethodTests.cpp in Sources */,
 				2646F84021DFEA2300F378DE /* RandomizedTargetList.cpp in Sources */,

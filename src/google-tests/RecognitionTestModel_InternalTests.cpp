@@ -113,6 +113,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         virtual void setAudioDevice(std::string) = 0;
     };
 
+    class ConditionUseCase : public virtual UseCase {
+    public:
+        virtual void setAuditoryOnly() = 0;
+        virtual void setAudioVisual() = 0;
+    };
+
     class PlayingCalibration :
         public AudioDeviceUseCase,
         public ConditionUseCase
@@ -204,6 +210,26 @@ namespace av_speech_in_noise::tests::recognition_test {
         
         auto &response() const {
             return response_;
+        }
+    };
+
+    class SubmittingCorrectResponse : public UseCase {
+    public:
+        void run(RecognitionTestModel &m) override {
+            m.submitCorrectResponse();
+        }
+        void run(RecognitionTestModel_Internal &m) override {
+            m.submitCorrectResponse();
+        }
+    };
+
+    class SubmittingIncorrectResponse : public UseCase {
+    public:
+        void run(RecognitionTestModel &m) override {
+            m.submitIncorrectResponse();
+        }
+        void run(RecognitionTestModel_Internal &m) override {
+            m.submitIncorrectResponse();
         }
     };
     
