@@ -156,4 +156,15 @@ namespace av_speech_in_noise::tests {
         initialize();
         assertEqual("a", method.next());
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        nextReturnsNextFilePathAfterSubmitCoordinateResponse
+    ) {
+        initialize();
+        lists.at(1)->setNext("a");
+        randomizer.setRandomInt(1);
+        method.submitResponse(coordinate_response_measure::SubjectResponse{});
+        assertEqual("a", method.next());
+    }
 }
