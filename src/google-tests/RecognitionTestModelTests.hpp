@@ -11,6 +11,7 @@
 #include "RandomizerStub.h"
 #include "LogString.h"
 #include "assert-utility.h"
+#include <recognition-test/FixedLevelMethod.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
