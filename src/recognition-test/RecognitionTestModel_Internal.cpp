@@ -234,14 +234,14 @@ namespace av_speech_in_noise {
         submitResponse_(response);
         testMethod->writeLastCoordinateResponse(outputFile);
         outputFile->save();
+        if (!testMethod->complete())
+            preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel_Internal::submitResponse_(
         const coordinate_response_measure::SubjectResponse &response
     ) {
         testMethod->submitResponse(response);
-        if (!testMethod->complete())
-            preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel_Internal::submitCorrectResponse() {
@@ -258,8 +258,8 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel_Internal::submitIncorrectResponse_() {
-        testMethod->submitIncorrectResponse();
         preparePlayersForNextTrial();
+        testMethod->submitIncorrectResponse();
     }
     
     void RecognitionTestModel_Internal::submitResponse(const FreeResponse &response) {
@@ -323,5 +323,4 @@ namespace av_speech_in_noise {
     std::vector<std::string> RecognitionTestModel_Internal::audioDevices() {
         return maskerPlayer->outputAudioDeviceDescriptions();
     }
-
 }

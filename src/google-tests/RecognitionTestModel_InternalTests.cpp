@@ -43,11 +43,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         bool complete()  { return complete_; }
         
         std::string next() {
+            log_.insert("next ");
             current_ = currentWhenNext_;
             return next_;
         }
         
-        std::string current()  { return current_; }
+        std::string current() { return current_; }
         
         void setCurrent(std::string s) {
             current_ = std::move(s);
@@ -66,6 +67,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
         
         void submitIncorrectResponse() {
+            log_.insert("submitIncorrectResponse ");
             submittedIncorrectResponse_ = true;
         }
         
@@ -1065,7 +1067,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         run(initializingTest);
         run(submittingCoordinateResponse);
-        assertEqual("submitResponse writeLastCoordinateResponse ", testMethod.log());
+        assertTrue(testMethod.log().contains("submitResponse writeLastCoordinateResponse "));
     }
     
     TEST_F(
