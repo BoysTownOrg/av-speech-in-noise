@@ -137,4 +137,13 @@ namespace av_speech_in_noise::tests {
         method.writeTestingParameters(&outputFile);
         assertEqual(&std::as_const(test), outputFile.adaptiveTest());
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        initializePassesTargetListDirectory
+    ) {
+        test.common.targetListDirectory = "a";
+        initialize();
+        assertEqual("a", targetListSetReader.directory());
+    }
 }
