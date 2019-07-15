@@ -59,6 +59,10 @@ namespace av_speech_in_noise::tests {
             assertEqual(1, s.ceiling);
         }
         
+        void assertFloorEqualsOne(const Track::Settings &s) {
+            assertEqual(1, s.floor);
+        }
+        
         void applyToSnrTrackFactoryParameters(
             int n,
             void(AdaptiveMethodTests::*f)(const Track::Settings &)
@@ -108,6 +112,18 @@ namespace av_speech_in_noise::tests {
         applyToSnrTrackFactoryParameters(
             3,
             &AdaptiveMethodTests::assertCeilingEqualsOne
+        );
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        initializeCreatesEachSnrTrackWithFloor
+    ) {
+        test.floorSnr_dB = 1;
+        initialize();
+        applyToSnrTrackFactoryParameters(
+            3,
+            &AdaptiveMethodTests::assertFloorEqualsOne
         );
     }
 }
