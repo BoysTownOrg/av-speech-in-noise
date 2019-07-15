@@ -3,9 +3,7 @@
 #include <recognition-test/OutputFileImpl.hpp>
 #include <gtest/gtest.h>
 
-namespace {
-    using namespace av_speech_in_noise;
-    
+namespace av_speech_in_noise::tests::output_file {
     class WriterStub : public Writer {
         LogString written_;
         std::string filePath_;

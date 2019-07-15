@@ -2,9 +2,9 @@
 #include <recognition-test/ResponseEvaluatorImpl.hpp>
 #include <gtest/gtest.h>
 
-namespace {
-    using namespace av_speech_in_noise;
-    using namespace av_speech_in_noise::coordinate_response_measure;
+namespace av_speech_in_noise::tests::response_evaluation {
+    using coordinate_response_measure::SubjectResponse;
+    using coordinate_response_measure::Color;
     
     class ResponseEvaluatorTests : public ::testing::Test {
     protected:
