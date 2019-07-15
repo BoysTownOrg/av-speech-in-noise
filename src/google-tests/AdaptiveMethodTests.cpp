@@ -119,6 +119,10 @@ namespace av_speech_in_noise::tests {
             submitCoordinateResponse();
             writeLastCoordinateResponse();
         }
+        
+        auto blueColor() {
+            return coordinate_response_measure::Color::blue;
+        }
     };
     
     TEST_F(
@@ -279,14 +283,25 @@ namespace av_speech_in_noise::tests {
         AdaptiveMethodTests,
         writeCoordinateResponsePassesSubjectColor
     ) {
-        using coordinate_response_measure::Color;
-        
         initialize();
-        coordinateResponse.color = Color::blue;
+        coordinateResponse.color = blueColor();
         writeCoordinateResponse();
         assertEqual(
-            Color::blue,
+            blueColor(),
             writtenCoordinateResponseTrial().subjectColor
+        );
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        writeCoordinateResponsePassesCorrectColor
+    ) {
+        initialize();
+        evaluator.setCorrectColor(blueColor());
+        writeCoordinateResponse();
+        assertEqual(
+            blueColor(),
+            writtenCoordinateResponseTrial().correctColor
         );
     }
 
@@ -323,20 +338,5 @@ namespace av_speech_in_noise::tests {
         selectList(2);
         writeCoordinateResponse();
         assertEqual(4, outputFile.writtenAdaptiveCoordinateResponseTrial().SNR_dB);
-    }
-
-    TEST_F(
-        AdaptiveMethodTests,
-        writeCoordinateResponsePassesCorrectColor
-    ) {
-        using coordinate_response_measure::Color;
-        
-        initialize();
-        evaluator.setCorrectColor(Color::blue);
-        writeCoordinateResponse();
-        assertEqual(
-            Color::blue,
-            writtenCoordinateResponseTrial().correctColor
-        );
     }
 }
