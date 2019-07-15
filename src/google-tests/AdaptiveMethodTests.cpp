@@ -492,6 +492,30 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         AdaptiveMethodTests,
+        submitCorrectResponseSelectsListAmongThoseWithIncompleteTracks
+    ) {
+        initialize();
+        setNextForList(2, "a");
+        setSnrTrackComplete(1);
+        selectList(1);
+        method.submitCorrectResponse();
+        assertNextEquals("a");
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        submitIncorrectResponseSelectsListAmongThoseWithIncompleteTracks
+    ) {
+        initialize();
+        setNextForList(2, "a");
+        setSnrTrackComplete(1);
+        selectList(1);
+        method.submitIncorrectResponse();
+        assertNextEquals("a");
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
         completeWhenAllTracksComplete
     ) {
         initialize();
