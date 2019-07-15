@@ -1072,7 +1072,16 @@ namespace av_speech_in_noise::tests::recognition_test {
     
     TEST_F(
         RecognitionTestModel_InternalTests,
-        submitCorrectResponseWritesTrialAfterSubmittingResponse
+        submitIncorrectResponseQueriesNextTargetAfterSubmittingResponse
+    ) {
+        run(initializingTest);
+        run(submittingIncorrectResponse);
+        assertTrue(testMethod.log().contains("submitIncorrectResponse next "));
+    }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitCorrectResponseSubmitsCorrectResponse
     ) {
         run(initializingTest);
         run(submittingCorrectResponse);
@@ -1081,7 +1090,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     
     TEST_F(
         RecognitionTestModel_InternalTests,
-        submitIncorrectResponseWritesTrialAfterSubmittingResponse
+        submitIncorrectResponseSubmitsIncorrectResponse
     ) {
         run(initializingTest);
         run(submittingIncorrectResponse);

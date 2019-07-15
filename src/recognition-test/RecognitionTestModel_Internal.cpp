@@ -258,8 +258,8 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel_Internal::submitIncorrectResponse_() {
-        preparePlayersForNextTrial();
         testMethod->submitIncorrectResponse();
+        preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel_Internal::submitResponse(const FreeResponse &response) {
