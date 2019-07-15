@@ -251,17 +251,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelOldTests,
-        fixedLevelTestCompleteAfterTrials
-    ) {
-        initializingFixedLevelTest.setTrials(3);
-        run(initializingFixedLevelTest);
-        assertTestIncompleteAfterCoordinateResponse();
-        assertTestIncompleteAfterCoordinateResponse();
-        assertTestCompleteAfterCoordinateResponse();
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitCoordinateResponseDoesNotLoadNextTargetWhenCompleteForFixedLevelTest
     ) {
         initializingFixedLevelTest.setNextTarget("a");

@@ -47,6 +47,28 @@ namespace av_speech_in_noise::tests {
         void setCurrentTarget(std::string s) {
             targetList.setCurrent(std::move(s));
         }
+        
+        void assertTestIncompleteAfterCoordinateResponse() {
+            submitCoordinateResponse();
+            assertTestIncomplete();
+        }
+        
+        void assertTestCompleteAfterCoordinateResponse() {
+            submitCoordinateResponse();
+            assertTestComplete();
+        }
+        
+        void assertTestIncomplete() {
+            assertFalse(testComplete());
+        }
+        
+        bool testComplete() {
+            return method.complete();
+        }
+        
+        void assertTestComplete() {
+            assertTrue(testComplete());
+        }
     };
     
     TEST_F(FixedLevelMethodTests, writeTestPassesSettings) {
@@ -124,5 +146,13 @@ namespace av_speech_in_noise::tests {
         setCurrentTarget("a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctFilePath());
+    }
+    
+    TEST_F(FixedLevelMethodTests, completeWhenTrialsExhausted) {
+        test.trials = 3;
+        initialize();
+        assertTestIncompleteAfterCoordinateResponse();
+        assertTestIncompleteAfterCoordinateResponse();
+        assertTestCompleteAfterCoordinateResponse();
     }
 }
