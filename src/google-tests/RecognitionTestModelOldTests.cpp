@@ -3,13 +3,6 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelOldTests,
-        submitFreeResponseSavesOutputFileAfterWritingTrial
-    ) {
-        assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitCoordinateResponsePassesTargetToEvaluatorForNumberAndColorForFixedLevelTest
     ) {
         run(initializingFixedLevelTest);

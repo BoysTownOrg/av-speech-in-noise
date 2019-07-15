@@ -941,4 +941,11 @@ namespace av_speech_in_noise::tests::recognition_test {
         run(submittingFreeResponse);
         assertEqual("a", evaluator.filePathForFileName());
     }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitFreeResponseSavesOutputFileAfterWritingTrial
+    ) {
+        assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
+    }
 }
