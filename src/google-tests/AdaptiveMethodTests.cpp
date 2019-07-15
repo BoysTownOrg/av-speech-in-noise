@@ -275,4 +275,18 @@ namespace av_speech_in_noise::tests {
             outputFile.writtenAdaptiveCoordinateResponseTrial2().subjectColor
         );
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        writeLastCoordinateResponsePassesSubjectNumber
+    ) {
+        initialize();
+        coordinateResponse.number = 1;
+        submitCoordinateResponse();
+        method.writeLastCoordinateResponse(&outputFile);
+        assertEqual(
+            1,
+            outputFile.writtenAdaptiveCoordinateResponseTrial2().subjectNumber
+        );
+    }
 }
