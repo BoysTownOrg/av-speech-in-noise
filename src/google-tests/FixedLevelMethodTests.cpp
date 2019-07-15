@@ -24,4 +24,10 @@ namespace av_speech_in_noise::tests {
         method.writeTestingParameters(&outputFile);
         assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
     }
+    
+    TEST_F(FixedLevelMethodTests, passesTargetList) {
+        test.common.targetListDirectory = "a";
+        initialize();
+        assertEqual("a", targetList.directory());
+    }
 }
