@@ -43,6 +43,10 @@ namespace av_speech_in_noise::tests {
         bool writtenFixedLevelTrialCorrect() {
             return writtenFixedLevelTrial().correct;
         }
+        
+        void setCurrentTarget(std::string s) {
+            targetList.setCurrent(std::move(s));
+        }
     };
     
     TEST_F(FixedLevelMethodTests, writeTestPassesSettings) {
@@ -110,14 +114,14 @@ namespace av_speech_in_noise::tests {
     }
     
     TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesCurrentToEvaluator) {
-        targetList.setCurrent("a");
+        setCurrentTarget("a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
     }
     
     TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesCorrectTargetToEvaluator) {
-        targetList.setCurrent("a");
+        setCurrentTarget("a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
