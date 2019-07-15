@@ -3,17 +3,6 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelOldTests,
-        submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTargetForFixedLevelTest
-    ) {
-        run(initializingFixedLevelTest);
-        initializingFixedLevelTest.setCurrentTarget("a");
-        initializingFixedLevelTest.setCurrentTargetWhenNext("b");
-        run(submittingFreeResponse);
-        assertEqual("a", evaluator.filePathForFileName());
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitFreeResponsePassesCurrentTargetToEvaluatorForAdaptiveTest
     ) {
         assertCurrentTargetPassedToEvaluator(

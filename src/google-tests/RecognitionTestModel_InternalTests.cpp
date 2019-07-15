@@ -4,6 +4,8 @@
 
 namespace av_speech_in_noise::tests::recognition_test {
     class TestMethodStub : public TestMethod {
+        std::string current_{};
+        std::string currentWhenNext_{};
         std::string next_{};
         int snr_dB_{};
         bool complete_{};
@@ -23,10 +25,19 @@ namespace av_speech_in_noise::tests::recognition_test {
         bool complete()  { return complete_; }
         
         std::string next() {
+            current_ = currentWhenNext_;
             return next_;
         }
         
-        std::string current()  {return {};}
+        std::string current()  { return current_; }
+        
+        void setCurrent(std::string s) {
+            current_ = std::move(s);
+        }
+        
+        void setCurrentWhenNext(std::string s) {
+            currentWhenNext_ = std::move(s);
+        }
         
         int snr_dB() {
             return snr_dB_;
@@ -905,5 +916,16 @@ namespace av_speech_in_noise::tests::recognition_test {
         submittingFreeResponse.setResponse("a");
         run(submittingFreeResponse);
         assertEqual("a", outputFile.writtenFreeResponseTrial().response);
+    }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
+    ) {
+        run(initializingTest);
+        testMethod.setCurrent("a");
+        testMethod.setCurrentWhenNext("b");
+        run(submittingFreeResponse);
+        assertEqual("a", evaluator.filePathForFileName());
     }
 }
