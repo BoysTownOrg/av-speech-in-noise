@@ -94,8 +94,8 @@ namespace av_speech_in_noise::tests::recognition_test {
     class UseCase {
     public:
         virtual ~UseCase() = default;
-        virtual void run(RecognitionTestModel &) = 0;
-        virtual void run(RecognitionTestModel_Internal &) {}
+        virtual void run(RecognitionTestModel &) {}
+        virtual void run(RecognitionTestModel_Internal &) = 0;
     };
 
     class SubmittingResponse : public virtual UseCase {
@@ -108,10 +108,6 @@ namespace av_speech_in_noise::tests::recognition_test {
     public:
         explicit InitializingTest(TestMethod *method) :
             method{method} {}
-        
-        void run(RecognitionTestModel &) override {
-        
-        }
         
         void run(RecognitionTestModel_Internal &m) override {
             m.initialize(method, common, information);
@@ -163,10 +159,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             calibration.audioSettings.audioDevice = std::move(s);
         }
         
-        void run(RecognitionTestModel &m) override {
-            m.playCalibration(calibration);
-        }
-        
         void run(RecognitionTestModel_Internal &m) override {
             m.playCalibration(calibration);
         }
@@ -199,10 +191,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             trial.audioDevice = std::move(s);
         }
         
-        void run(RecognitionTestModel &m) override {
-            m.playTrial(trial);
-        }
-        
         void run(RecognitionTestModel_Internal &m) override {
             m.playTrial(trial);
         }
@@ -211,9 +199,6 @@ namespace av_speech_in_noise::tests::recognition_test {
     class SubmittingFreeResponse : public SubmittingResponse {
         FreeResponse response_;
     public:
-        void run(RecognitionTestModel &m) override {
-            m.submitResponse(response_);
-        }
         void run(RecognitionTestModel_Internal &m) override {
             m.submitResponse(response_);
         }
@@ -226,10 +211,6 @@ namespace av_speech_in_noise::tests::recognition_test {
     class SubmittingCoordinateResponse : public SubmittingResponse {
         coordinate_response_measure::SubjectResponse response_{};
     public:
-        void run(RecognitionTestModel &m) override {
-            m.submitResponse(response_);
-        }
-        
         void run(RecognitionTestModel_Internal &m) override {
             m.submitResponse(response_);
         }
@@ -249,9 +230,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     class SubmittingCorrectResponse : public UseCase {
     public:
-        void run(RecognitionTestModel &m) override {
-            m.submitCorrectResponse();
-        }
         void run(RecognitionTestModel_Internal &m) override {
             m.submitCorrectResponse();
         }
@@ -259,9 +237,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     class SubmittingIncorrectResponse : public UseCase {
     public:
-        void run(RecognitionTestModel &m) override {
-            m.submitIncorrectResponse();
-        }
         void run(RecognitionTestModel_Internal &m) override {
             m.submitIncorrectResponse();
         }
