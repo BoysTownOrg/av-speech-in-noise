@@ -4,6 +4,7 @@
 #include "OutputFileStub.h"
 #include "MaskerPlayerStub.h"
 #include "TargetPlayerStub.h"
+#include "LogString.h"
 #include "assert-utility.h"
 #include <gtest/gtest.h>
 #include <cmath>
@@ -16,7 +17,17 @@ namespace av_speech_in_noise::tests::recognition_test {
         std::string next_{};
         int snr_dB_{};
         bool complete_{};
+        bool submittedCorrectResponse_{};
+        bool submittedIncorrectResponse_{};
     public:
+        auto submittedCorrectResponse() const {
+            return submittedCorrectResponse_;
+        }
+        
+        auto submittedIncorrectResponse() const {
+            return submittedIncorrectResponse_;
+        }
+        
         void setComplete() {
             complete_ = true;
         }
@@ -50,9 +61,13 @@ namespace av_speech_in_noise::tests::recognition_test {
             return snr_dB_;
         }
         
-        void submitCorrectResponse()  {}
+        void submitCorrectResponse() {
+            submittedCorrectResponse_ = true;
+        }
         
-        void submitIncorrectResponse()  {}
+        void submitIncorrectResponse() {
+            submittedIncorrectResponse_ = true;
+        }
         
         void submitResponse(const FreeResponse &)  {}
         
@@ -1051,5 +1066,23 @@ namespace av_speech_in_noise::tests::recognition_test {
         run(initializingTest);
         run(submittingCoordinateResponse);
         assertEqual("submitResponse writeLastCoordinateResponse ", testMethod.log());
+    }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitCorrectResponseWritesTrialAfterSubmittingResponse
+    ) {
+        run(initializingTest);
+        run(submittingCorrectResponse);
+        assertTrue(testMethod.submittedCorrectResponse());
+    }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitIncorrectResponseWritesTrialAfterSubmittingResponse
+    ) {
+        run(initializingTest);
+        run(submittingIncorrectResponse);
+        assertTrue(testMethod.submittedIncorrectResponse());
     }
 }
