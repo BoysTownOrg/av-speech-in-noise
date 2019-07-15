@@ -231,7 +231,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel_Internal::submitResponse(
         const coordinate_response_measure::SubjectResponse &response
     ) {
-        submitResponse_(response);
+        testMethod->submitResponse(response);
         testMethod->writeLastCoordinateResponse(outputFile);
         outputFile->save();
         if (!testMethod->complete())

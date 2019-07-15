@@ -1073,6 +1073,15 @@ namespace av_speech_in_noise::tests::recognition_test {
     
     TEST_F(
         RecognitionTestModel_InternalTests,
+        submitCoordinateResponseQueriesNextTargetAfterWritingResponse
+    ) {
+        run(initializingTest);
+        run(submittingCoordinateResponse);
+        assertTrue(testMethod.log().contains("writeLastCoordinateResponse next "));
+    }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
         submitIncorrectResponseQueriesNextTargetAfterSubmittingResponse
     ) {
         run(initializingTest);
