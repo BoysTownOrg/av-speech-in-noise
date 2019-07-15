@@ -2,6 +2,7 @@
 #define av_speech_in_noise_AdaptiveMethod_hpp
 
 #include "RecognitionTestModel.hpp"
+#include <limits>
 
 namespace av_speech_in_noise {
     class Track {
