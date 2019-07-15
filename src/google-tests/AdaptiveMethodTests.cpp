@@ -98,6 +98,10 @@ namespace av_speech_in_noise::tests {
         void submitCoordinateResponse() {
             method.submitResponse(coordinateResponse);
         }
+        
+        auto track(int n) {
+            return tracks.at(n);
+        }
     };
     
     TEST_F(
@@ -207,7 +211,7 @@ namespace av_speech_in_noise::tests {
         submitCoordinateResponseSelectsListInRangeAfterRemovingCompleteTracks
     ) {
         initialize();
-        tracks.at(2)->setComplete();
+        track(2)->setComplete();
         submitCoordinateResponse();
         assertRandomizerPassedIntegerBounds(0, 1);
     }
@@ -216,7 +220,7 @@ namespace av_speech_in_noise::tests {
         AdaptiveMethodTests,
         snrReturnsThatOfCurrentTrack
     ) {
-        tracks.at(0)->setX(1);
+        track(0)->setX(1);
         selectList(0);
         initialize();
         assertEqual(1, method.snr_dB());
