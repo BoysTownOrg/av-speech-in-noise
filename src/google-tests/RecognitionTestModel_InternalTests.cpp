@@ -165,6 +165,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         SubmittingCoordinateResponse submittingCoordinateResponse;
         SubmittingCorrectResponse submittingCorrectResponse;
         SubmittingIncorrectResponse submittingIncorrectResponse;
+        SubmittingFreeResponse submittingFreeResponse;
         
         RecognitionTestModel_InternalTests() {
             model.subscribe(&listener);
@@ -797,5 +798,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         submitIncorrectResponseSubscribesToTargetPlayerPlaybackCompletion
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitFreeResponseSubscribesToTargetPlayerPlaybackCompletion
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
     }
 }

@@ -79,6 +79,9 @@ namespace av_speech_in_noise::tests::recognition_test {
         void run(RecognitionTestModel &m) override {
             m.submitResponse(response_);
         }
+        void run(RecognitionTestModel_Internal &m) override {
+            m.submitResponse(response_);
+        }
         
         void setResponse(std::string s) {
             response_.response = std::move(s);
