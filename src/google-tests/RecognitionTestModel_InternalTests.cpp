@@ -82,7 +82,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
     };
     
-    class RecognitionTestModelTests3 : public ::testing::Test {
+    class RecognitionTestModel_InternalTests : public ::testing::Test {
     protected:
         ModelEventListenerStub listener;
         TargetPlayerStub targetPlayer{};
@@ -103,7 +103,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         PlayingTrial playingTrial;
         SubmittingCoordinateResponse submittingCoordinateResponse;
         
-        RecognitionTestModelTests3() {
+        RecognitionTestModel_InternalTests() {
             model.subscribe(&listener);
         }
         
@@ -348,7 +348,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
     };
     
-    TEST_F(RecognitionTestModelTests3, subscribesToPlayerEvents) {
+    TEST_F(RecognitionTestModel_InternalTests, subscribesToPlayerEvents) {
         assertEqual(
             static_cast<TargetPlayer::EventListener *>(&model),
             targetPlayer.listener()
@@ -360,28 +360,28 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
     
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationHidesTargetVideoWhenAuditoryOnly
     ) {
         assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
     }
     
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationShowsTargetVideoWhenAudioVisual
     ) {
         assertTargetVideoShownWhenAudioVisual(playingCalibration);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestClosesOutputFileOpensAndWritesTestInOrder
     ) {
         assertClosesOutputFileOpensAndWritesTestInOrder(initializingTest);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestOpensNewOutputFilePassingTestInformation
     ) {
         run(initializingTest);
@@ -389,47 +389,47 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playTrialPassesAudioDeviceToTargetPlayer
     ) {
         assertDevicePassedToTargetPlayer(playingTrial);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationPassesAudioDeviceToTargetPlayer
     ) {
         assertDevicePassedToTargetPlayer(playingCalibration);
     }
 
-    TEST_F(RecognitionTestModelTests3, playTrialPassesAudioDeviceToMaskerPlayer) {
+    TEST_F(RecognitionTestModel_InternalTests, playTrialPassesAudioDeviceToMaskerPlayer) {
         assertDevicePassedToMaskerPlayer(playingTrial);
     }
 
-    TEST_F(RecognitionTestModelTests3, playTrialFadesInMasker) {
+    TEST_F(RecognitionTestModel_InternalTests, playTrialFadesInMasker) {
         run(playingTrial);
         assertTrue(maskerPlayerFadedIn());
     }
 
-    TEST_F(RecognitionTestModelTests3, playCalibrationPlaysTarget) {
+    TEST_F(RecognitionTestModel_InternalTests, playCalibrationPlaysTarget) {
         run(playingCalibration);
         assertTargetPlayerPlayed();
     }
 
-    TEST_F(RecognitionTestModelTests3, fadeInCompletePlaysTarget) {
+    TEST_F(RecognitionTestModel_InternalTests, fadeInCompletePlaysTarget) {
         maskerPlayer.fadeInComplete();
         assertTargetPlayerPlayed();
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestPassesNextTargetToTargetPlayer
     ) {
         assertPassesNextTargetToPlayer(initializingTest);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         submittingCoordinateResponsePassesNextTargetToTargetPlayer
     ) {
         run(initializingTest);
@@ -437,7 +437,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationPassesAudioFileToTargetPlayer
     ) {
         playingCalibration.setFilePath("a");
@@ -446,7 +446,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestPassesMaskerFilePathToMaskerPlayer
     ) {
         setMaskerFilePath("a");
@@ -455,49 +455,49 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(initializingTest);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         submitCoordinateResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingCoordinateResponse);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         submitCoordinateResponseSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCoordinateResponse);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestSeeksToRandomMaskerPosition
     ) {
         assertMaskerPlayerSeekedToRandomTime(initializingTest);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         submitCoordinateResponseSeeksToRandomMaskerPosition
     ) {
         assertMaskerPlayerSeekedToRandomTime(submittingCoordinateResponse);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestSetsInitialMaskerPlayerLevel
     ) {
         setMaskerLevel_dB_SPL(1);
@@ -508,7 +508,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestSetsTargetPlayerLevel
     ) {
         setSnr_dB(2);
@@ -520,7 +520,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         submitCoordinateResponseSetsTargetPlayerLevel
     ) {
         setMaskerLevel_dB_SPL(3);
@@ -533,7 +533,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationSetsTargetPlayerLevel
     ) {
         playingCalibration.setLevel_dB_SPL(1);
@@ -543,49 +543,49 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertTargetPlayerLevelEquals_dB(1 - 2 - dB(3));
     }
 
-    TEST_F(RecognitionTestModelTests3, startTrialShowsTargetPlayerWhenAudioVisual) {
+    TEST_F(RecognitionTestModel_InternalTests, startTrialShowsTargetPlayerWhenAudioVisual) {
         initializingTest.setAudioVisual();
         run(initializingTest);
         run(playingTrial);
         assertTrue(targetPlayerVideoShown());
     }
 
-    TEST_F(RecognitionTestModelTests3, maskerFadeOutCompleteHidesTargetPlayer) {
+    TEST_F(RecognitionTestModel_InternalTests, maskerFadeOutCompleteHidesTargetPlayer) {
         maskerFadeOutComplete();
         assertTargetVideoOnlyHidden();
     }
 
-    TEST_F(RecognitionTestModelTests3, startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
+    TEST_F(RecognitionTestModel_InternalTests, startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
         initializingTest.setAuditoryOnly();
         run(initializingTest);
         run(playingTrial);
         assertTargetVideoNotShown();
     }
 
-    TEST_F(RecognitionTestModelTests3, initializeTestHidesTargetPlayer) {
+    TEST_F(RecognitionTestModel_InternalTests, initializeTestHidesTargetPlayer) {
         run(initializingTest);
         assertTargetVideoOnlyHidden();
     }
 
-    TEST_F(RecognitionTestModelTests3, targetPlaybackCompleteFadesOutMasker) {
+    TEST_F(RecognitionTestModel_InternalTests, targetPlaybackCompleteFadesOutMasker) {
         targetPlayer.playbackComplete();
         assertTrue(maskerPlayer.fadeOutCalled());
     }
 
-    TEST_F(RecognitionTestModelTests3, fadeOutCompleteNotifiesTrialComplete) {
+    TEST_F(RecognitionTestModel_InternalTests, fadeOutCompleteNotifiesTrialComplete) {
         maskerFadeOutComplete();
         assertTrue(listener.notified());
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         submitCoordinateResponseSavesOutputFileAfterWritingTrial
     ) {
         assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestThrowsRequestFailureIfFileFailsToOpen
     ) {
         outputFile.throwOnOpen();
@@ -593,7 +593,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile
     ) {
         playingCalibration.setFilePath("a");
@@ -602,7 +602,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile
     ) {
         setMaskerFilePath("a");
@@ -611,21 +611,21 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playTrialWithInvalidAudioDeviceThrowsRequestFailure
     ) {
         assertThrowsRequestFailureWhenInvalidAudioDevice(playingTrial);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationWithInvalidAudioDeviceThrowsRequestFailure
     ) {
         assertThrowsRequestFailureWhenInvalidAudioDevice(playingCalibration);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playTrialDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
         runIgnoringFailureWithTrialInProgress(playingTrial);
@@ -633,20 +633,20 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress
     ) {
         runIgnoringFailureWithTrialInProgress(playingCalibration);
         assertFalse(targetPlayer.setDeviceCalled());
     }
 
-    TEST_F(RecognitionTestModelTests3, playTrialDoesNotPlayIfTrialInProgress) {
+    TEST_F(RecognitionTestModel_InternalTests, playTrialDoesNotPlayIfTrialInProgress) {
         runIgnoringFailureWithTrialInProgress(playingTrial);
         assertMaskerPlayerNotPlayed();
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationDoesNotPlayIfTrialInProgress
     ) {
         runIgnoringFailureWithTrialInProgress(playingCalibration);
@@ -654,28 +654,28 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestThrowsRequestFailureIfTrialInProgress
     ) {
         assertThrowsRequestFailureWhenTrialInProgress(initializingTest);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playTrialThrowsRequestFailureIfTrialInProgress
     ) {
         assertThrowsRequestFailureWhenTrialInProgress(playingTrial);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         playCalibrationThrowsRequestFailureIfTrialInProgress
     ) {
         assertThrowsRequestFailureWhenTrialInProgress(playingCalibration);
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestDoesNotLoadMaskerIfTrialInProgress
     ) {
         setMaskerFilePath("a");
@@ -684,7 +684,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress
     ) {
         initializingTest.setAuditoryOnly();
@@ -693,7 +693,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         audioDevicesReturnsOutputAudioDeviceDescriptions
     ) {
         maskerPlayer.setOutputAudioDeviceDescriptions({"a", "b", "c"});
@@ -701,7 +701,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         testCompleteWhenComplete
     ) {
         run(initializingTest);
@@ -711,7 +711,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     }
 
     TEST_F(
-        RecognitionTestModelTests3,
+        RecognitionTestModel_InternalTests,
         submitCoordinateResponseDoesNotLoadNextTargetWhenComplete
     ) {
         testMethod.setNextTarget("a");

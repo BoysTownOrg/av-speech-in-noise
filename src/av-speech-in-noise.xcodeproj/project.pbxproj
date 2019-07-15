@@ -32,7 +32,7 @@
 		264E7E4B224E6467008A595F /* OutputFilePathTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264E7E4A224E6467008A595F /* OutputFilePathTests.cpp */; };
 		264E7E4E224E6F30008A595F /* OutputFilePathImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264E7E4C224E6F30008A595F /* OutputFilePathImpl.cpp */; };
 		264E7E4F224E6F30008A595F /* OutputFilePathImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 264E7E4D224E6F30008A595F /* OutputFilePathImpl.hpp */; };
-		264F07C222D91102007B4126 /* RecognitionTestModelTests3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264F07C122D91102007B4126 /* RecognitionTestModelTests3.cpp */; };
+		264F07C222D91102007B4126 /* RecognitionTestModel_InternalTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264F07C122D91102007B4126 /* RecognitionTestModel_InternalTests.cpp */; };
 		264F07C522D93330007B4126 /* RecognitionTestModel_Internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 264F07C322D93330007B4126 /* RecognitionTestModel_Internal.cpp */; };
 		264F07C622D93330007B4126 /* RecognitionTestModel_Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 264F07C422D93330007B4126 /* RecognitionTestModel_Internal.hpp */; };
 		2656B62722401D3F0058A23D /* MediaToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2656B62622401D3F0058A23D /* MediaToolbox.framework */; };
@@ -129,7 +129,7 @@
 		264E7E4C224E6F30008A595F /* OutputFilePathImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutputFilePathImpl.cpp; sourceTree = "<group>"; };
 		264E7E4D224E6F30008A595F /* OutputFilePathImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFilePathImpl.hpp; sourceTree = "<group>"; };
 		264E7E50224E7065008A595F /* LogString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogString.h; sourceTree = "<group>"; };
-		264F07C122D91102007B4126 /* RecognitionTestModelTests3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecognitionTestModelTests3.cpp; sourceTree = "<group>"; };
+		264F07C122D91102007B4126 /* RecognitionTestModel_InternalTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecognitionTestModel_InternalTests.cpp; sourceTree = "<group>"; };
 		264F07C322D93330007B4126 /* RecognitionTestModel_Internal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecognitionTestModel_Internal.cpp; sourceTree = "<group>"; };
 		264F07C422D93330007B4126 /* RecognitionTestModel_Internal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RecognitionTestModel_Internal.hpp; sourceTree = "<group>"; };
 		2656B62422401D2C0058A23D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -387,7 +387,7 @@
 				26788E0222D4FBC100E89037 /* TrackStub.h */,
 				2610801622D685DC001AE6A5 /* PresenterTests.h */,
 				26D3526B22D7DB7B0028D7E6 /* RecognitionTestModelTests2.cpp */,
-				264F07C122D91102007B4126 /* RecognitionTestModelTests3.cpp */,
+				264F07C122D91102007B4126 /* RecognitionTestModel_InternalTests.cpp */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";
@@ -729,7 +729,7 @@
 				26FDD2D6224AC0840090BDD5 /* OutputFileTests.cpp in Sources */,
 				26B22D352260EE6400D528F1 /* AdaptiveTrackTests.cpp in Sources */,
 				26FC6B0721DA810C00289A0A /* PresenterTests.cpp in Sources */,
-				264F07C222D91102007B4126 /* RecognitionTestModelTests3.cpp in Sources */,
+				264F07C222D91102007B4126 /* RecognitionTestModel_InternalTests.cpp in Sources */,
 				26688C362273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp in Sources */,
 				2645BEC822676AD7002E8C6C /* ResponseEvaluatorTests.cpp in Sources */,
 				26EE86C02242E8DE00C08622 /* TargetPlayerImpl.cpp in Sources */,
