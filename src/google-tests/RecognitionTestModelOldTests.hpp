@@ -73,21 +73,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
     };
 
-    class SubmittingFreeResponse : public SubmittingResponse {
-        FreeResponse response_;
-    public:
-        void run(RecognitionTestModel &m) override {
-            m.submitResponse(response_);
-        }
-        void run(RecognitionTestModel_Internal &m) override {
-            m.submitResponse(response_);
-        }
-        
-        void setResponse(std::string s) {
-            response_.response = std::move(s);
-        }
-    };
-
     class ConditionUseCase : public virtual UseCase {
     public:
         virtual void setAuditoryOnly() = 0;
@@ -256,90 +241,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         
         std::string receivedTargetListDirectory() override {
             return targetListSetReader->directory();
-        }
-    };
-
-    class InitializingFixedLevelTest : public InitializingTestUseCase
-    {
-        FixedLevelTest test_;
-        TargetListStub *targetList;
-    public:
-        explicit InitializingFixedLevelTest(
-            TargetListStub *targetList
-        ) :
-            targetList{targetList}
-        {
-            test_.trials = 3;
-        }
-        
-        void run(RecognitionTestModel &m) override {
-            m.initializeTest(test_);
-        }
-        
-        auto &common() {
-            return test_.common;
-        }
-        
-        void setSnr_dB(int x) override {
-            test_.snr_dB = x;
-        }
-        
-        void setTrials(int n) {
-            test_.trials = n;
-        }
-        
-        void setNextTarget(std::string s) override {
-            targetList->setNext(std::move(s));
-        }
-        
-        void setCurrentTarget(std::string s) override {
-            targetList->setCurrent(std::move(s));
-        }
-        
-        void setCurrentTargetWhenNext(std::string s) {
-            targetList->setCurrentTargetWhenNext(std::move(s));
-        }
-        
-        void setMaskerLevel_dB_SPL(int x) {
-            common().maskerLevel_dB_SPL = x;
-        }
-        
-        void setFullScaleLevel_dB_SPL(int x) {
-            common().fullScaleLevel_dB_SPL = x;
-        }
-        
-        void setAudioVisual() override {
-            common().condition = Condition::audioVisual;
-        }
-        
-        void setAuditoryOnly() override {
-            common().condition = Condition::auditoryOnly;
-        }
-        
-        void setMaskerFilePath(std::string s) override {
-            common().maskerFilePath = std::move(s);
-        }
-        
-        void setTargetListDirectory(std::string s) override {
-            common().targetListDirectory = std::move(s);
-        }
-        
-        auto &test() const {
-            return test_;
-        }
-        
-        const TestInformation &testInformation() override {
-            return test_.information;
-        }
-        
-        const coordinate_response_measure::Trial &
-            writtenCoordinateResponseTrial(OutputFileStub &file
-        ) override {
-            return file.writtenFixedLevelTrial2();
-        }
-        
-        std::string receivedTargetListDirectory() override {
-            return targetList->directory();
         }
     };
 
