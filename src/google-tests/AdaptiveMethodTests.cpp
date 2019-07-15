@@ -183,4 +183,13 @@ namespace av_speech_in_noise::tests {
         method.submitResponse(coordinate_response_measure::SubjectResponse{});
         assertNextEquals("a");
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        randomizerPassedIntegerBoundsOfLists
+    ) {
+        initialize();
+        assertEqual(0, randomizer.lowerIntBound());
+        assertEqual(2, randomizer.upperIntBound());
+    }
 }

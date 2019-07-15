@@ -93,14 +93,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestSelectsRandomListInRange
-    ) {
-        run(initializingAdaptiveTest);
-        assertRandomizerPassedIntegerBounds(0, 2);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCoordinateResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
     ) {
         assertSelectsRandomListInRangeAfterRemovingCompleteTracks(submittingCoordinateResponse);
