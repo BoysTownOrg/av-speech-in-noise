@@ -4,6 +4,7 @@
 #include "RandomizerStub.h"
 #include "ResponseEvaluatorStub.h"
 #include "assert-utility.h"
+#include <recognition-test/AdaptiveMethod.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 
