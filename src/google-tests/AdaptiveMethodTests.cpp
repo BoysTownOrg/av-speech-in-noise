@@ -324,4 +324,19 @@ namespace av_speech_in_noise::tests {
         writeCoordinateResponse();
         assertEqual(4, outputFile.writtenAdaptiveCoordinateResponseTrial().SNR_dB);
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        writeCoordinateResponsePassesCorrectColor
+    ) {
+        using coordinate_response_measure::Color;
+        
+        initialize();
+        evaluator.setCorrectColor(Color::blue);
+        writeCoordinateResponse();
+        assertEqual(
+            Color::blue,
+            writtenCoordinateResponseTrial().correctColor
+        );
+    }
 }
