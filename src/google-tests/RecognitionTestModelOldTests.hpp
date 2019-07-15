@@ -250,46 +250,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
     };
 
-    class SnrUseCase {
-    public:
-        virtual ~SnrUseCase() = default;
-        virtual void setSnr(InitializingAdaptiveTest &, int) = 0;
-        virtual int value(const Track::Settings &) = 0;
-    };
-
-    class SettingStartingSnr : public SnrUseCase {
-    public:
-        void setSnr(InitializingAdaptiveTest &test, int x) override {
-            test.setStartingSnr_dB(x);
-        }
-        
-        int value(const Track::Settings & s) override {
-            return s.startingX;
-        }
-    };
-
-    class SettingCeilingSnr : public SnrUseCase {
-    public:
-        void setSnr(InitializingAdaptiveTest &test, int x) override {
-            test.setCeilingSnr_dB(x);
-        }
-        
-        int value(const Track::Settings & s) override {
-            return s.ceiling;
-        }
-    };
-
-    class SettingFloorSnr : public SnrUseCase {
-    public:
-        void setSnr(InitializingAdaptiveTest &test, int x) override {
-            test.setFloorSnr_dB(x);
-        }
-        
-        int value(const Track::Settings & s) override {
-            return s.floor;
-        }
-    };
-
     class InitializingFixedLevelTest : public InitializingTestUseCase
     {
         FixedLevelTest test_;
