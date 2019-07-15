@@ -67,4 +67,14 @@ namespace av_speech_in_noise::tests {
                 snrTrackFactoryParameters().at(i)
             );
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        initializeCreatesEachSnrTrackWithSnr
+    ) {
+        test.startingSnr_dB = 1;
+        initialize();
+        for (int i = 0; i < 3; ++i)
+            assertEqual(1, snrTrackFactoryParameters().at(i).startingX);
+    }
 }
