@@ -806,4 +806,25 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
     }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitCorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitIncorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitFreeResponseSeeksToRandomMaskerPositionWithinTrialDuration
+    ) {
+        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingFreeResponse);
+    }
 }

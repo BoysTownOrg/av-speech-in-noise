@@ -33,27 +33,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelOldTests,
-        submitCorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration
-    ) {
-        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
-        submitIncorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration
-    ) {
-        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
-        submitTypedResponseSeeksToRandomMaskerPositionWithinTrialDuration
-    ) {
-        assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitCorrectResponseSeeksToRandomMaskerPosition
     ) {
         assertMaskerPlayerSeekedToRandomTime(submittingCorrectResponse);
