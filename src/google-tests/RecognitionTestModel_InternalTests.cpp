@@ -827,4 +827,25 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertSeeksToRandomMaskerPositionWithinTrialDuration(submittingFreeResponse);
     }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitCorrectResponseSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitIncorrectResponseSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitFreeResponseSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
+    }
 }
