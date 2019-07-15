@@ -359,4 +359,14 @@ namespace av_speech_in_noise::tests {
         writeCoordinateResponse();
         assertTrue(writtenCoordinateResponseTrial().correct);
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        writeIncorrectCoordinateResponse
+    ) {
+        initialize();
+        evaluator.setIncorrect();
+        writeCoordinateResponse();
+        assertFalse(writtenCoordinateResponseTrial().correct);
+    }
 }

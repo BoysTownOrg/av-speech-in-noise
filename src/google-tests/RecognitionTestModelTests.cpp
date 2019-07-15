@@ -265,13 +265,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesIncorrectTrialForAdaptiveTest
-    ) {
-        assertWritesIncorrectEvaluation(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCoordinateResponseWritesIncorrectTrialForFixedLevelTest
     ) {
         assertWritesIncorrectEvaluation(initializingFixedLevelTest);
