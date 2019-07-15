@@ -15,13 +15,6 @@ namespace av_speech_in_noise {
         virtual std::string current() = 0;
     };
     
-    class TargetListReader {
-    public:
-        virtual ~TargetListReader() = default;
-        using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
-        virtual lists_type read(std::string directory) = 0;
-    };
-    
     class ResponseEvaluator {
     public:
         virtual ~ResponseEvaluator() = default;

@@ -27,6 +27,13 @@ namespace av_speech_in_noise {
         virtual std::shared_ptr<Track> make(const Track::Settings &) = 0;
     };
     
+    class TargetListReader {
+    public:
+        virtual ~TargetListReader() = default;
+        using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
+        virtual lists_type read(std::string directory) = 0;
+    };
+    
     class AdaptiveMethod : public IAdaptiveMethod {
         struct TargetListWithTrack {
             TargetList *list;
