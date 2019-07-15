@@ -377,11 +377,8 @@ namespace av_speech_in_noise::tests::recognition_test {
             &snrTrackFactory,
             &randomizer
         };
-        InitializingFixedLevelTest initializingFixedLevelTest{&targetList};
-        SubmittingCoordinateResponse submittingCoordinateResponse{};
         SubmittingCorrectResponse submittingCorrectResponse{};
         SubmittingIncorrectResponse submittingIncorrectResponse{};
-        SubmittingFreeResponse submittingFreeResponse{};
         
         void initializeAdaptiveTest() {
             run(initializingAdaptiveTest);
@@ -391,80 +388,12 @@ namespace av_speech_in_noise::tests::recognition_test {
             useCase.run(model);
         }
         
-        void submitCoordinateResponse() {
-            run(submittingCoordinateResponse);
-        }
-        
-        auto targetPlayerLevel_dB() {
-            return targetPlayer.level_dB();
-        }
-        
-        template<typename T>
-        void setTargetPlayerRms(T &&x) {
-            targetPlayer.setRms(std::forward<T>(x));
-        }
-        
         auto targetFilePath() {
             return targetPlayer.filePath();
         }
         
         void assertTargetFilePathEquals(std::string what) {
             assertEqual(std::move(what), targetFilePath());
-        }
-        
-        auto &outputFileLog() {
-            return outputFile.log();
-        }
-        
-        auto writtenFreeResponseTrial() {
-            return outputFile.writtenFreeResponseTrial();
-        }
-        
-        void initializeFixedLevelTest() {
-            run(initializingFixedLevelTest);
-        }
-        
-        void selectList(int n) {
-            randomizer.setRandomInt(n);
-        }
-        
-        void assertRandomizerPassedIntegerBounds(int a, int b) {
-            assertEqual(a, randomizer.lowerIntBound());
-            assertEqual(b, randomizer.upperIntBound());
-        }
-        
-        void setMaskerLevel_dB_SPL(int x) {
-            initializingAdaptiveTest.setMaskerLevel_dB_SPL(x);
-            initializingFixedLevelTest.setMaskerLevel_dB_SPL(x);
-        }
-        
-        void setSnr_dB(int x) {
-            initializingFixedLevelTest.setSnr_dB(x);
-        }
-        
-        void setTestingFullScaleLevel_dB_SPL(int x) {
-            initializingAdaptiveTest.setFullScaleLevel_dB_SPL(x);
-            initializingFixedLevelTest.setFullScaleLevel_dB_SPL(x);
-        }
-        
-        auto snrTrackFactoryParameters() {
-            return snrTrackFactory.parameters();
-        }
-        
-        bool targetPlayerPlaybackCompletionSubscribed() {
-            return targetPlayer.playbackCompletionSubscribedTo();
-        }
-        
-        auto maskerPlayerSecondsSeeked() {
-            return maskerPlayer.secondsSeeked();
-        }
-        
-        void setCorrectResponse() {
-            evaluator.setCorrect();
-        }
-        
-        void setIncorrectResponse() {
-            evaluator.setIncorrect();
         }
         
         void assertPushesSnrTrackDown(UseCase &useCase) {
