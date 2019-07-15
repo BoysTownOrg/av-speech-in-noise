@@ -25,7 +25,7 @@ namespace av_speech_in_noise::tests {
         AdaptiveTest test;
         TrackingRule targetLevelRule_;
         std::vector<std::shared_ptr<TargetListStub>> lists;
-        std::vector<std::shared_ptr<Track>> tracks;
+        std::vector<std::shared_ptr<TrackStub>> tracks;
         
         AdaptiveMethodTests() {
             test.targetLevelRule = &targetLevelRule_;
@@ -34,7 +34,7 @@ namespace av_speech_in_noise::tests {
                 tracks.push_back(std::make_shared<TrackStub>());
             }
             targetListSetReader.setTargetLists({lists.begin(), lists.end()});
-            snrTrackFactory.setTracks(tracks);
+            snrTrackFactory.setTracks({tracks.begin(), tracks.end()});
         }
     public:
         auto snrTrackFactoryParameters() const {
@@ -191,5 +191,16 @@ namespace av_speech_in_noise::tests {
         initialize();
         assertEqual(0, randomizer.lowerIntBound());
         assertEqual(2, randomizer.upperIntBound());
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        submitCoordinateResponseSelectsListInRangeAfterRemovingCompleteTracks
+    ) {
+        initialize();
+        tracks.at(2)->setComplete();
+        method.submitResponse(coordinate_response_measure::SubjectResponse{});
+        assertEqual(0, randomizer.lowerIntBound());
+        assertEqual(1, randomizer.upperIntBound());
     }
 }
