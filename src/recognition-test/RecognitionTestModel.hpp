@@ -3,7 +3,6 @@
 
 #include <av-speech-in-noise/Model.h>
 #include <vector>
-#include <memory>
 #include <string>
 
 namespace av_speech_in_noise {

@@ -3,6 +3,7 @@
 
 #include "RecognitionTestModel.hpp"
 #include <limits>
+#include <memory>
 
 namespace av_speech_in_noise {
     class Track {
