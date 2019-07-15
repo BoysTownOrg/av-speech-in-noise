@@ -309,14 +309,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponsePushesSnrDownWhenEvaluationIsCorrectForAdaptiveTest
-    ) {
-        setCorrectResponse();
-        assertPushesSnrTrackDown(submittingCoordinateResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCorrectResponsePushesSnrDownForAdaptiveTest
     ) {
         assertPushesSnrTrackDown(submittingCorrectResponse);
