@@ -163,6 +163,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         InitializingTest initializingTest{&testMethod};
         PlayingTrial playingTrial;
         SubmittingCoordinateResponse submittingCoordinateResponse;
+        SubmittingCorrectResponse submittingCorrectResponse;
         
         RecognitionTestModel_InternalTests() {
             model.subscribe(&listener);
@@ -781,5 +782,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         testMethod.setNextTarget("b");
         run(submittingCoordinateResponse);
         assertTargetFilePathEquals("a");
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitCorrectResponseSubscribesToTargetPlayerPlaybackCompletion
+    ) {
+        run(submittingCorrectResponse);
+        assertTrue(targetPlayerPlaybackCompletionSubscribed());
     }
 }

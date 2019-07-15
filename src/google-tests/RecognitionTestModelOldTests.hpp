@@ -58,6 +58,9 @@ namespace av_speech_in_noise::tests::recognition_test {
         void run(RecognitionTestModel &m) override {
             m.submitCorrectResponse();
         }
+        void run(RecognitionTestModel_Internal &m) override {
+            m.submitCorrectResponse();
+        }
     };
 
     class SubmittingIncorrectResponse : public UseCase {

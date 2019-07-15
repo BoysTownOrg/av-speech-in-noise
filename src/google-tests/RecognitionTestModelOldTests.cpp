@@ -33,13 +33,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelOldTests,
-        submitCorrectResponseSubscribesToTargetPlaybackCompletionNotification
-    ) {
-        assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitIncorrectResponseSubscribesToTargetPlaybackCompletionNotification
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
