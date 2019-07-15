@@ -588,60 +588,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
         }
         
-        auto writtenCoordinateResponseTrial(InitializingTestUseCase &useCase) {
-            return useCase.writtenCoordinateResponseTrial(outputFile);
-        }
-        
-        void assertWritesSubjectNumber(InitializingTestUseCase &useCase) {
-            run(useCase);
-            submittingCoordinateResponse.setNumber(1);
-            submitCoordinateResponse();
-            assertEqual(1, writtenCoordinateResponseTrial(useCase).subjectNumber);
-        }
-        
-        void assertWritesCorrectNumber(InitializingTestUseCase &useCase) {
-            run(useCase);
-            evaluator.setCorrectNumber(1);
-            submitCoordinateResponse();
-            assertEqual(1, writtenCoordinateResponseTrial(useCase).correctNumber);
-        }
-        
-        void assertWritesCorrectEvaluation(InitializingTestUseCase &useCase) {
-            run(useCase);
-            setCorrectResponse();
-            submitCoordinateResponse();
-            assertTrue(writtenCoordinateResponseTrial(useCase).correct);
-        }
-        
-        void assertWritesIncorrectEvaluation(InitializingTestUseCase &useCase) {
-            run(useCase);
-            setIncorrectResponse();
-            submitCoordinateResponse();
-            assertFalse(writtenCoordinateResponseTrial(useCase).correct);
-        }
-        
-        void assertCoordinateResponsePassedToEvaluator(UseCase &useCase) {
-            run(useCase);
-            run(submittingCoordinateResponse);
-            assertEqual(&submittingCoordinateResponse.response(), evaluator.response());
-        }
-        
-        void assertCoordinateResponsePassesCurrentTargetToEvaluator(
-            InitializingTestUseCase &initializingTest
-        ) {
-            initializingTest.setCurrentTarget("a");
-            run(initializingTest);
-            submitCoordinateResponse();
-            assertEqual("a", evaluator.correctColorFilePath());
-            assertEqual("a", evaluator.correctNumberFilePath());
-        }
-        
-        void assertTargetListPassed(InitializingTestUseCase &useCase) {
-            useCase.setTargetListDirectory("a");
-            run(useCase);
-            assertEqual("a", useCase.receivedTargetListDirectory());
-        }
-        
         void assertCurrentTargetPassedToEvaluator(
             InitializingTestUseCase &initializingTest,
             UseCase &useCase
