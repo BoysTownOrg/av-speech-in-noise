@@ -277,7 +277,7 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         AdaptiveMethodTests,
-        writeLastCoordinateResponsePassesSubjectColor
+        writeCoordinateResponsePassesSubjectColor
     ) {
         using coordinate_response_measure::Color;
         
@@ -292,11 +292,23 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         AdaptiveMethodTests,
-        writeLastCoordinateResponsePassesSubjectNumber
+        writeCoordinateResponsePassesSubjectNumber
     ) {
         initialize();
         coordinateResponse.number = 1;
         writeCoordinateResponse();
         assertEqual(1, writtenCoordinateResponseTrial().subjectNumber);
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        writeCoordinateResponsePassesReversalsAfterUpdatingTrack
+    ) {
+        selectList(1);
+        initialize();
+        track(1)->setReversalsWhenUpdated(3);
+        selectList(2);
+        writeCoordinateResponse();
+        assertEqual(3, outputFile.writtenAdaptiveCoordinateResponseTrial().reversals);
     }
 }

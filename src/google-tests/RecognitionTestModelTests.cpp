@@ -244,18 +244,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponseWritesReversalsForAdaptiveTestAfterUpdatingTrack
-    ) {
-        initializingAdaptiveTest.selectList(1);
-        run(initializingAdaptiveTest);
-        initializingAdaptiveTest.snrTrack(1)->setReversalsWhenUpdated(3);
-        initializingAdaptiveTest.selectList(2);
-        run(submittingCoordinateResponse);
-        assertEqual(3, writtenAdaptiveCoordinateResponseTrial().reversals);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCoordinateResponseWritesSnrBeforeUpdatingForAdaptiveTest
     ) {
         initializingAdaptiveTest.selectList(1);
