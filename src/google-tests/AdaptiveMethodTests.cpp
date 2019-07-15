@@ -106,6 +106,19 @@ namespace av_speech_in_noise::tests {
         void setCurrentForTarget(int n, std::string s) {
             lists.at(n)->setCurrent(std::move(s));
         }
+        
+        void writeLastCoordinateResponse() {
+            method.writeLastCoordinateResponse(&outputFile);
+        }
+        
+        auto writtenCoordinateResponseTrial() const {
+            return outputFile.writtenAdaptiveCoordinateResponseTrial2();
+        }
+        
+        void writeCoordinateResponse() {
+            submitCoordinateResponse();
+            writeLastCoordinateResponse();
+        }
     };
     
     TEST_F(
@@ -266,13 +279,14 @@ namespace av_speech_in_noise::tests {
         AdaptiveMethodTests,
         writeLastCoordinateResponsePassesSubjectColor
     ) {
+        using coordinate_response_measure::Color;
+        
         initialize();
-        coordinateResponse.color = coordinate_response_measure::Color::blue;
-        submitCoordinateResponse();
-        method.writeLastCoordinateResponse(&outputFile);
+        coordinateResponse.color = Color::blue;
+        writeCoordinateResponse();
         assertEqual(
-            coordinate_response_measure::Color::blue,
-            outputFile.writtenAdaptiveCoordinateResponseTrial2().subjectColor
+            Color::blue,
+            writtenCoordinateResponseTrial().subjectColor
         );
     }
 
@@ -282,11 +296,7 @@ namespace av_speech_in_noise::tests {
     ) {
         initialize();
         coordinateResponse.number = 1;
-        submitCoordinateResponse();
-        method.writeLastCoordinateResponse(&outputFile);
-        assertEqual(
-            1,
-            outputFile.writtenAdaptiveCoordinateResponseTrial2().subjectNumber
-        );
+        writeCoordinateResponse();
+        assertEqual(1, writtenCoordinateResponseTrial().subjectNumber);
     }
 }
