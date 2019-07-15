@@ -1,7 +1,7 @@
 #ifndef adaptive_track_AdaptiveTrack_hpp
 #define adaptive_track_AdaptiveTrack_hpp
 
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/AdaptiveMethod.hpp>
 
 namespace adaptive_track {
     class AdaptiveTrack : public av_speech_in_noise::Track {

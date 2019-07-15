@@ -1,7 +1,7 @@
 #ifndef TrackStub_h
 #define TrackStub_h
 
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/AdaptiveMethod.hpp>
 
 namespace av_speech_in_noise::tests {
     class TrackStub : public Track {

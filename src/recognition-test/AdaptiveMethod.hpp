@@ -4,6 +4,28 @@
 #include "RecognitionTestModel.hpp"
 
 namespace av_speech_in_noise {
+    class Track {
+    public:
+        virtual ~Track() = default;
+        struct Settings {
+            const TrackingRule *rule;
+            int startingX;
+            int ceiling = std::numeric_limits<int>::max();
+            int floor = std::numeric_limits<int>::min();
+        };
+        virtual void pushDown() = 0;
+        virtual void pushUp() = 0;
+        virtual int x() = 0;
+        virtual bool complete() = 0;
+        virtual int reversals() = 0;
+    };
+    
+    class TrackFactory {
+    public:
+        virtual ~TrackFactory() = default;
+        virtual std::shared_ptr<Track> make(const Track::Settings &) = 0;
+    };
+    
     class AdaptiveMethod : public IAdaptiveMethod {
         struct TargetListWithTrack {
             TargetList *list;
