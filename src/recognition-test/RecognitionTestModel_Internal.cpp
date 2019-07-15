@@ -238,12 +238,6 @@ namespace av_speech_in_noise {
             preparePlayersForNextTrial();
     }
     
-    void RecognitionTestModel_Internal::submitResponse_(
-        const coordinate_response_measure::SubjectResponse &response
-    ) {
-        testMethod->submitResponse(response);
-    }
-    
     void RecognitionTestModel_Internal::submitCorrectResponse() {
         submitCorrectResponse_();
     }

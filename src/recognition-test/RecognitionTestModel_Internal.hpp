@@ -3,6 +3,7 @@
 
 #include "RecognitionTestModel.hpp"
 #include <string>
+#include <vector>
 
 namespace av_speech_in_noise {
     class InvalidAudioDevice {};
