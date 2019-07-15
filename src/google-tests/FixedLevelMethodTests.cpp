@@ -13,9 +13,23 @@ namespace av_speech_in_noise::tests {
         OutputFileStub outputFile;
         FixedLevelMethod method{&targetList, &evaluator};
         FixedLevelTest test;
+        coordinate_response_measure::SubjectResponse coordinateResponse;
         
         void initialize() {
             method.initialize(test);
+        }
+        
+        void writeCoordinateResponse() {
+            submitCoordinateResponse();
+            writeLastCoordinateResponse();
+        }
+        
+        void submitCoordinateResponse() {
+            method.submitResponse(coordinateResponse);
+        }
+        
+        void writeLastCoordinateResponse() {
+            method.writeLastCoordinateResponse(&outputFile);
         }
     };
     
@@ -40,5 +54,11 @@ namespace av_speech_in_noise::tests {
         test.snr_dB = 1;
         initialize();
         assertEqual(1, method.snr_dB());
+    }
+    
+    TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesSubjectColor) {
+        coordinateResponse.color = coordinate_response_measure::Color::blue;
+        writeCoordinateResponse();
+        assertEqual(coordinate_response_measure::Color::blue, outputFile.writtenFixedLevelTrial2().subjectColor);
     }
 }

@@ -133,13 +133,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelOldTests,
-        initializeFixedLevelTestSetsTargetPlayerLevel
-    ) {
-        assertSetsTargetLevel(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitTypedResponseSetsTargetPlayerLevelForAdaptiveTest
     ) {
         assertSetsTargetLevel(initializingAdaptiveTest, submittingFreeResponse);
@@ -196,13 +189,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         evaluator.setFileName("a");
         run(submittingFreeResponse);
         assertEqual("a", writtenFreeResponseTrial().target);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
-        submitCoordinateResponseWritesColorForFixedLevelTest
-    ) {
-        assertWritesSubjectColor(initializingFixedLevelTest);
     }
 
     TEST_F(
