@@ -411,10 +411,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             return outputFile.log();
         }
         
-        auto writtenAdaptiveCoordinateResponseTrial() {
-            return outputFile.writtenAdaptiveCoordinateResponseTrial();
-        }
-        
         auto writtenFreeResponseTrial() {
             return outputFile.writtenFreeResponseTrial();
         }
@@ -425,22 +421,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         
         void selectList(int n) {
             randomizer.setRandomInt(n);
-        }
-        
-        auto targetLevelRule() {
-            return initializingAdaptiveTest.targetLevelRule();
-        }
-        
-        void assertSettingsContainTargetLevelRule(const Track::Settings &s) {
-            assertEqual(targetLevelRule(), s.rule);
-        }
-        
-        auto &adaptiveTestSettings() const {
-            return initializingAdaptiveTest.test();
-        }
-        
-        auto &fixedLevelTestSettings() const {
-            return initializingFixedLevelTest.test();
         }
         
         void assertRandomizerPassedIntegerBounds(int a, int b) {
@@ -575,10 +555,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         void assertOutputFilePassedTestInformation(InitializingTestUseCase &useCase) {
             run(useCase);
             assertEqual(outputFile.openNewFileParameters(), &useCase.testInformation());
-        }
-        
-        void assertOutputFileLog(std::string s) {
-            assertEqual(std::move(s), outputFileLog());
         }
         
         void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
