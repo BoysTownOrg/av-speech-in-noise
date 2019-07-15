@@ -417,4 +417,16 @@ namespace av_speech_in_noise::tests {
         assertFalse(snrTrackPushedDown(1));
         assertTrue(snrTrackPushedUp(1));
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        submitCoordinateResponseSelectsListAmongThoseWithIncompleteTracks
+    ) {
+        initialize();
+        setNextForList(2, "a");
+        track(1)->setComplete();
+        selectList(1);
+        submitCoordinateResponse();
+        assertNextEquals("a");
+    }
 }
