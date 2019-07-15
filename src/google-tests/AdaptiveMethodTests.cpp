@@ -402,7 +402,7 @@ namespace av_speech_in_noise::tests {
         selectList(1);
         initialize();
         track(1)->setX(4);
-        track(1)->setXWhenUpdated(4);
+        track(1)->setXWhenUpdated(3);
         selectList(2);
         writeCoordinateResponse();
         assertEqual(4, outputFile.writtenAdaptiveCoordinateResponseTrial().SNR_dB);
