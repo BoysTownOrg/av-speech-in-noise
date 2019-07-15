@@ -39,6 +39,8 @@
 		26688C332273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26688C312273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp */; };
 		26688C342273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 26688C322273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp */; };
 		26688C362273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26688C352273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp */; };
+		266BF63922DCD2AB001D0035 /* AdaptiveMethod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 266BF63722DCD2AB001D0035 /* AdaptiveMethod.cpp */; };
+		266BF63A22DCD2AB001D0035 /* AdaptiveMethod.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 266BF63822DCD2AB001D0035 /* AdaptiveMethod.hpp */; };
 		26788E0022D4FA6700E89037 /* AdaptiveMethodTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26788DFF22D4FA6700E89037 /* AdaptiveMethodTests.cpp */; };
 		26955FF92236F21A00664A2C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F84421E003B600F378DE /* CoreAudio.framework */; };
 		269C4C7D2253B8A00059AD5F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2656B62422401D2C0058A23D /* CoreMedia.framework */; };
@@ -134,6 +136,8 @@
 		26688C322273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SubdirectoryTargetListReader.hpp; sourceTree = "<group>"; };
 		26688C352273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SubdirectoryTargetListReaderTests.cpp; sourceTree = "<group>"; };
 		26688C372273A53D00CAE9EB /* TargetListStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TargetListStub.h; sourceTree = "<group>"; };
+		266BF63722DCD2AB001D0035 /* AdaptiveMethod.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AdaptiveMethod.cpp; sourceTree = "<group>"; };
+		266BF63822DCD2AB001D0035 /* AdaptiveMethod.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AdaptiveMethod.hpp; sourceTree = "<group>"; };
 		26788DFF22D4FA6700E89037 /* AdaptiveMethodTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AdaptiveMethodTests.cpp; sourceTree = "<group>"; };
 		26788E0122D4FB4500E89037 /* TargetListSetReaderStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TargetListSetReaderStub.h; sourceTree = "<group>"; };
 		26788E0222D4FBC100E89037 /* TrackStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TrackStub.h; sourceTree = "<group>"; };
@@ -297,6 +301,8 @@
 				2645BECA2267705D002E8C6C /* ResponseEvaluatorImpl.hpp */,
 				264F07C322D93330007B4126 /* RecognitionTestModel_Internal.cpp */,
 				264F07C422D93330007B4126 /* RecognitionTestModel_Internal.hpp */,
+				266BF63722DCD2AB001D0035 /* AdaptiveMethod.cpp */,
+				266BF63822DCD2AB001D0035 /* AdaptiveMethod.hpp */,
 			);
 			path = "recognition-test";
 			sourceTree = "<group>";
@@ -435,6 +441,7 @@
 			files = (
 				26B22D3B2260FE4100D528F1 /* AdaptiveTrack.hpp in Headers */,
 				264E7E4F224E6F30008A595F /* OutputFilePathImpl.hpp in Headers */,
+				266BF63A22DCD2AB001D0035 /* AdaptiveMethod.hpp in Headers */,
 				2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */,
 				264F07C622D93330007B4126 /* RecognitionTestModel_Internal.hpp in Headers */,
 				26688C342273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp in Headers */,
@@ -681,6 +688,7 @@
 				2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */,
 				26688C332273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp in Sources */,
 				26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */,
+				266BF63922DCD2AB001D0035 /* AdaptiveMethod.cpp in Sources */,
 				264E7E4E224E6F30008A595F /* OutputFilePathImpl.cpp in Sources */,
 				2645BECB2267705D002E8C6C /* ResponseEvaluatorImpl.cpp in Sources */,
 			);
