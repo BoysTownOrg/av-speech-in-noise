@@ -431,6 +431,10 @@ namespace av_speech_in_noise::tests::recognition_test {
             run(useCase);
             assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
         }
+        
+        auto writtenFreeResponseTrial() {
+            return outputFile.writtenFreeResponseTrial();
+        }
     };
     
     TEST_F(RecognitionTestModel_InternalTests, subscribesToPlayerEvents) {
@@ -915,7 +919,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         submittingFreeResponse.setResponse("a");
         run(submittingFreeResponse);
-        assertEqual("a", outputFile.writtenFreeResponseTrial().response);
+        assertEqual("a", writtenFreeResponseTrial().response);
     }
     
     TEST_F(
@@ -924,7 +928,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         evaluator.setFileName("a");
         run(submittingFreeResponse);
-        assertEqual("a", outputFile.writtenFreeResponseTrial().target);
+        assertEqual("a", writtenFreeResponseTrial().target);
     }
     
     TEST_F(
