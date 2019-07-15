@@ -317,6 +317,16 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         AdaptiveMethodTests,
+        writeCoordinateResponsePassesCorrectNumber
+    ) {
+        initialize();
+        evaluator.setCorrectNumber(1);
+        writeCoordinateResponse();
+        assertEqual(1, writtenCoordinateResponseTrial().correctNumber);
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
         writeCoordinateResponsePassesReversalsAfterUpdatingTrack
     ) {
         selectList(1);
