@@ -516,27 +516,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             maskerPlayer.setPlaying();
         }
         
-        bool targetPlayerVideoHidden() {
-            return targetPlayer.videoHidden();
-        }
-        
-        bool targetPlayerVideoShown() {
-            return targetPlayer.videoShown();
-        }
-        
-        void assertTargetVideoOnlyShown() {
-            assertTargetVideoNotHidden();
-            assertTrue(targetPlayerVideoShown());
-        }
-        
-        void assertTargetVideoNotHidden() {
-            assertFalse(targetPlayerVideoHidden());
-        }
-        
-        void assertTargetVideoNotShown() {
-            assertFalse(targetPlayerVideoShown());
-        }
-        
         void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
             setTrialInProgress();
             assertCallThrowsRequestFailure(useCase, "Trial in progress.");
@@ -562,45 +541,6 @@ namespace av_speech_in_noise::tests::recognition_test {
                 run(useCase);
             } catch (const RecognitionTestModel::RequestFailure &) {
             }
-        }
-        
-        template<typename T>
-        void assertDevicePassedToPlayer(
-            const T &player,
-            AudioDeviceUseCase &useCase
-        ) {
-            useCase.setAudioDevice("a");
-            run(useCase);
-            assertEqual("a", player.device());
-        }
-        
-        void assertDevicePassedToTargetPlayer(AudioDeviceUseCase &useCase) {
-            assertDevicePassedToPlayer(targetPlayer, useCase);
-        }
-        
-        void assertDevicePassedToMaskerPlayer(AudioDeviceUseCase &useCase) {
-            assertDevicePassedToPlayer(maskerPlayer, useCase);
-        }
-        
-        void assertThrowsRequestFailureWhenInvalidAudioDevice(
-            AudioDeviceUseCase &useCase
-        ) {
-            throwInvalidAudioDeviceWhenSet();
-            useCase.setAudioDevice("a");
-            assertCallThrowsRequestFailure(
-                useCase,
-                "'a' is not a valid audio device."
-            );
-        }
-        
-        void throwInvalidAudioDeviceWhenSet() {
-            maskerPlayer.throwInvalidAudioDeviceWhenDeviceSet();
-            targetPlayer.throwInvalidAudioDeviceWhenDeviceSet();
-        }
-        
-        void assertTargetFileLoadedPriorToRmsQuery(UseCase &useCase) {
-            run(useCase);
-            assertEqual("loadFile rms ", targetPlayer.log());
         }
     
         double dB(double x) {
