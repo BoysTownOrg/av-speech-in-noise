@@ -1,9 +1,10 @@
+#include "ModelEventListenerStub.h"
 #include "assert-utility.h"
-#include "RecognitionTestModelOldTests.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests::recognition_test {
+    
     class AdaptiveMethodStub : public IAdaptiveMethod {
         const AdaptiveTest *test_{};
     public:

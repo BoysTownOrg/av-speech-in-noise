@@ -142,6 +142,7 @@
 		266BF63822DCD2AB001D0035 /* AdaptiveMethod.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AdaptiveMethod.hpp; sourceTree = "<group>"; };
 		266BF63B22DCD325001D0035 /* FixedLevelMethod.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FixedLevelMethod.cpp; sourceTree = "<group>"; };
 		266BF63C22DCD325001D0035 /* FixedLevelMethod.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FixedLevelMethod.hpp; sourceTree = "<group>"; };
+		266BF63F22DCFF0C001D0035 /* ModelEventListenerStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelEventListenerStub.h; sourceTree = "<group>"; };
 		26788DFF22D4FA6700E89037 /* AdaptiveMethodTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AdaptiveMethodTests.cpp; sourceTree = "<group>"; };
 		26788E0122D4FB4500E89037 /* TargetListSetReaderStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TargetListSetReaderStub.h; sourceTree = "<group>"; };
 		26788E0222D4FBC100E89037 /* TrackStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TrackStub.h; sourceTree = "<group>"; };
@@ -388,6 +389,7 @@
 				2610801622D685DC001AE6A5 /* PresenterTests.h */,
 				26D3526B22D7DB7B0028D7E6 /* RecognitionTestModelTests.cpp */,
 				264F07C122D91102007B4126 /* RecognitionTestModel_InternalTests.cpp */,
+				266BF63F22DCFF0C001D0035 /* ModelEventListenerStub.h */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";

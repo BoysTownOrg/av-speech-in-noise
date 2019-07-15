@@ -19,18 +19,6 @@
 #include <cmath>
 
 namespace av_speech_in_noise::tests::recognition_test {
-    class ModelEventListenerStub : public Model::EventListener {
-        bool notified_{};
-    public:
-        void trialComplete() override {
-            notified_ = true;
-        }
-        
-        auto notified() const {
-            return notified_;
-        }
-    };
-
     class UseCase {
     public:
         virtual ~UseCase() = default;
@@ -475,7 +463,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             &fixedLevelMethod,
             &internalModel
         };
-        ModelEventListenerStub listener{};
         InitializingAdaptiveTest initializingAdaptiveTest{
             &targetListSetReader,
             &snrTrackFactory,
@@ -491,10 +478,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         SettingStartingSnr settingStartingSnr{};
         SettingCeilingSnr settingCeilingSnr{};
         SettingFloorSnr settingFloorSnr{};
-        
-        RecognitionTestModelOldTests() {
-            model.subscribe(&listener);
-        }
         
         void initializeAdaptiveTest() {
             run(initializingAdaptiveTest);
