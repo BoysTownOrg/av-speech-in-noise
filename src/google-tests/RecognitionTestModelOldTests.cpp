@@ -3,13 +3,6 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelOldTests,
-        initializeFixedLevelTestPassesNextTargetToTargetPlayer
-    ) {
-        assertNextTargetPassedToPlayer(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitCorrectResponseLoadsNextTargetForFixedLevelTest
     ) {
         assertNextTargetPassedToPlayer(

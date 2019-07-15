@@ -30,4 +30,9 @@ namespace av_speech_in_noise::tests {
         initialize();
         assertEqual("a", targetList.directory());
     }
+    
+    TEST_F(FixedLevelMethodTests, nextReturnsNextTarget) {
+        targetList.setNext("a");
+        assertEqual("a", method.next());
+    }
 }
