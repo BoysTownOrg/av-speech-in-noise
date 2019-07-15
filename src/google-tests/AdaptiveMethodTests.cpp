@@ -252,4 +252,13 @@ namespace av_speech_in_noise::tests {
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        submitCoordinateResponsePassesResponseToEvaluator
+    ) {
+        initialize();
+        submitCoordinateResponse();
+        assertEqual(&std::as_const(coordinateResponse), evaluator.response());
+    }
 }
