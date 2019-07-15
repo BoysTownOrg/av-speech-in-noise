@@ -23,6 +23,7 @@ namespace av_speech_in_noise::tests {
             &randomizer
         };
         AdaptiveTest test;
+        coordinate_response_measure::SubjectResponse coordinateResponse;
         TrackingRule targetLevelRule_;
         std::vector<std::shared_ptr<TargetListStub>> lists;
         std::vector<std::shared_ptr<TrackStub>> tracks;
@@ -87,6 +88,15 @@ namespace av_speech_in_noise::tests {
         
         void setNextForList(int n, std::string s) {
             lists.at(n)->setNext(std::move(s));
+        }
+        
+        void assertRandomizerPassedIntegerBounds(int a, int b) {
+            assertEqual(a, randomizer.lowerIntBound());
+            assertEqual(b, randomizer.upperIntBound());
+        }
+        
+        void submitCoordinateResponse() {
+            method.submitResponse(coordinateResponse);
         }
     };
     
@@ -175,12 +185,12 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         AdaptiveMethodTests,
-        nextReturnsNextFilePathAfterSubmitCoordinateResponse
+        nextReturnsNextFilePathAfterCoordinateResponse
     ) {
         initialize();
         setNextForList(1, "a");
         selectList(1);
-        method.submitResponse(coordinate_response_measure::SubjectResponse{});
+        submitCoordinateResponse();
         assertNextEquals("a");
     }
 
@@ -189,8 +199,7 @@ namespace av_speech_in_noise::tests {
         randomizerPassedIntegerBoundsOfLists
     ) {
         initialize();
-        assertEqual(0, randomizer.lowerIntBound());
-        assertEqual(2, randomizer.upperIntBound());
+        assertRandomizerPassedIntegerBounds(0, 2);
     }
 
     TEST_F(
@@ -199,8 +208,7 @@ namespace av_speech_in_noise::tests {
     ) {
         initialize();
         tracks.at(2)->setComplete();
-        method.submitResponse(coordinate_response_measure::SubjectResponse{});
-        assertEqual(0, randomizer.lowerIntBound());
-        assertEqual(1, randomizer.upperIntBound());
+        submitCoordinateResponse();
+        assertRandomizerPassedIntegerBounds(0, 1);
     }
 }
