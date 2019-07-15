@@ -108,4 +108,17 @@ namespace av_speech_in_noise::tests {
         submitCoordinateResponse();
         assertEqual(&std::as_const(coordinateResponse), evaluator.response());
     }
+    
+    TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesCurrentToEvaluator) {
+        targetList.setCurrent("a");
+        submitCoordinateResponse();
+        assertEqual("a", evaluator.correctColorFilePath());
+        assertEqual("a", evaluator.correctNumberFilePath());
+    }
+    
+    TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesCorrectTargetToEvaluator) {
+        targetList.setCurrent("a");
+        submitCoordinateResponse();
+        assertEqual("a", evaluator.correctFilePath());
+    }
 }
