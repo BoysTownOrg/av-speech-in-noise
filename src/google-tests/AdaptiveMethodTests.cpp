@@ -139,6 +139,10 @@ namespace av_speech_in_noise::tests {
         void setCorrectCoordinateResponse() {
             evaluator.setCorrect();
         }
+        
+        void setIncorrectCoordinateResponse() {
+            evaluator.setIncorrect();
+        }
     };
     
     TEST_F(
@@ -383,7 +387,7 @@ namespace av_speech_in_noise::tests {
         writeIncorrectCoordinateResponse
     ) {
         initialize();
-        evaluator.setIncorrect();
+        setIncorrectCoordinateResponse();
         writeCoordinateResponse();
         assertFalse(writtenCoordinateResponseTrialCorrect());
     }
@@ -407,7 +411,7 @@ namespace av_speech_in_noise::tests {
     ) {
         selectList(1);
         initialize();
-        evaluator.setIncorrect();
+        setIncorrectCoordinateResponse();
         selectList(2);
         submitCoordinateResponse();
         assertFalse(snrTrackPushedDown(1));
