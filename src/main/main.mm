@@ -4,6 +4,9 @@
 #include "common-objc.h"
 #include <presentation/Presenter.h>
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/RecognitionTestModel_Internal.hpp>
+#include <recognition-test/AdaptiveMethod.hpp>
+#include <recognition-test/FixedLevelMethod.hpp>
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
 #include <recognition-test/ResponseEvaluatorImpl.hpp>
@@ -203,7 +206,7 @@ int main() {
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetListFactory targetListFactory{&fileExtensions, &randomizer};
     target_list::SubdirectoryTargetListReader targetListReader{&targetListFactory, &reader};
-    target_list::RandomizedFiniteTargetList finiteTargetList{&fileExtensions, &randomizer};
+    target_list::RandomizedTargetList fixedLevelTargetList{&fileExtensions, &randomizer};
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
@@ -231,15 +234,18 @@ int main() {
         &responseEvaluator,
         &randomizer
     };
-    FixedLevelMethod fixedLevelMethod{&finiteTargetList, &responseEvaluator};
-    RecognitionTestModel model{
-        &adaptiveMethod,
-        &fixedLevelMethod,
+    FixedLevelMethod fixedLevelMethod{&fixedLevelTargetList, &responseEvaluator};
+    RecognitionTestModel_Internal model_internal{
         &targetPlayer,
         &maskerPlayer,
         &responseEvaluator,
         &outputFile,
         &randomizer
+    };
+    RecognitionTestModel model{
+        &adaptiveMethod,
+        &fixedLevelMethod,
+        &model_internal
     };
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
     auto testerWindowViewMargin = 15;
