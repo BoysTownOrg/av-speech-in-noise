@@ -349,4 +349,14 @@ namespace av_speech_in_noise::tests {
         writeCoordinateResponse();
         assertEqual(4, outputFile.writtenAdaptiveCoordinateResponseTrial().SNR_dB);
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        writeCorrectCoordinateResponse
+    ) {
+        initialize();
+        evaluator.setCorrect();
+        writeCoordinateResponse();
+        assertTrue(writtenCoordinateResponseTrial().correct);
+    }
 }
