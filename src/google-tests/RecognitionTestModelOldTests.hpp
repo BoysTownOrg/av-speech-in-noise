@@ -394,10 +394,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         void submitCoordinateResponse() {
             run(submittingCoordinateResponse);
         }
-    
-        double dB(double x) {
-            return 20 * std::log10(x);
-        }
         
         auto targetPlayerLevel_dB() {
             return targetPlayer.level_dB();
@@ -471,28 +467,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             evaluator.setIncorrect();
         }
         
-        void assertTestIncompleteAfterCoordinateResponse() {
-            submitCoordinateResponse();
-            assertTestIncomplete();
-        }
-        
-        void assertTestCompleteAfterCoordinateResponse() {
-            submitCoordinateResponse();
-            assertTestComplete();
-        }
-        
-        void assertTestIncomplete() {
-            assertFalse(testComplete());
-        }
-        
-        bool testComplete() {
-            return model.testComplete();
-        }
-        
-        void assertTestComplete() {
-            assertTrue(testComplete());
-        }
-        
         void assertPushesSnrTrackDown(UseCase &useCase) {
             initializingAdaptiveTest.selectList(1);
             run(initializingAdaptiveTest);
@@ -511,24 +485,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             assertFalse(initializingAdaptiveTest.snrTrackPushedDown(1));
         }
         
-        void assertSelectsRandomListInRangeAfterRemovingCompleteTracks(UseCase &useCase) {
-            run(initializingAdaptiveTest);
-            initializingAdaptiveTest.setSnrTrackComplete(2);
-            run(useCase);
-            assertRandomizerPassedIntegerBounds(0, 1);
-        }
-        
-        void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
-            run(useCase);
-            assertTrue(targetPlayerPlaybackCompletionSubscribed());
-        }
-        
-        void assertMaskerPlayerSeekedToRandomTime(UseCase &useCase) {
-            randomizer.setRandomFloat(1);
-            run(useCase);
-            assertEqual(1., maskerPlayerSecondsSeeked());
-        }
-        
         void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
             run(initializingAdaptiveTest);
             initializingAdaptiveTest.setTargetListNext(2, "a");
@@ -537,74 +493,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             initializingAdaptiveTest.selectList(1);
             run(useCase);
             assertTargetFilePathEquals("a");
-        }
-        
-        void assertNextTargetPassedToPlayer(InitializingTestUseCase &useCase) {
-            useCase.setNextTarget("a");
-            run(useCase);
-            assertTargetFilePathEquals("a");
-        }
-        
-        void assertNextTargetPassedToPlayer(InitializingTestUseCase &initializeTest, UseCase &useCase) {
-            run(initializeTest);
-            initializeTest.setNextTarget("a");
-            run(useCase);
-            assertTargetFilePathEquals("a");
-        }
-        
-        void assertSeeksToRandomMaskerPositionWithinTrialDuration(UseCase &useCase) {
-            targetPlayer.setDurationSeconds(1);
-            maskerPlayer.setFadeTimeSeconds(2);
-            maskerPlayer.setDurationSeconds(3);
-            run(useCase);
-            assertEqual(0., randomizer.lowerFloatBound());
-            assertEqual(3. - 2 - 1 - 2, randomizer.upperFloatBound());
-        }
-        
-        void assertOutputFilePassedTestInformation(InitializingTestUseCase &useCase) {
-            run(useCase);
-            assertEqual(outputFile.openNewFileParameters(), &useCase.testInformation());
-        }
-        
-        void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
-            run(useCase);
-            assertTrue(outputFileLog().endsWith("save "));
-        }
-        
-        void assertSetsTargetLevel(InitializingTestUseCase &useCase) {
-            useCase.setSnr_dB(2);
-            setMaskerLevel_dB_SPL(3);
-            setTestingFullScaleLevel_dB_SPL(4);
-            maskerPlayer.setRms(5);
-            run(useCase);
-            assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
-        }
-        
-        void assertTargetPlayerLevelEquals_dB(double x) {
-            assertEqual(x, targetPlayerLevel_dB());
-        }
-        
-        void assertSetsTargetLevel(
-            InitializingTestUseCase &initializingTest,
-            UseCase &useCase
-        ) {
-            setMaskerLevel_dB_SPL(3);
-            setTestingFullScaleLevel_dB_SPL(4);
-            run(initializingTest);
-            maskerPlayer.setRms(5);
-            initializingTest.setSnr_dB(2);
-            run(useCase);
-            assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
-        }
-        
-        void assertCurrentTargetPassedToEvaluator(
-            InitializingTestUseCase &initializingTest,
-            UseCase &useCase
-        ) {
-            run(initializingTest);
-            initializingTest.setCurrentTarget("a");
-            run(useCase);
-            assertEqual("a", evaluator.filePathForFileName());
         }
     };
 }
