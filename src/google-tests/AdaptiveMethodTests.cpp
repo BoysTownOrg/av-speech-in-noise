@@ -254,6 +254,7 @@ namespace av_speech_in_noise::tests {
         selectList(1);
         initialize();
         setCurrentForTarget(1, "a");
+        selectList(2);
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
@@ -266,6 +267,7 @@ namespace av_speech_in_noise::tests {
         selectList(1);
         initialize();
         setCurrentForTarget(1, "a");
+        selectList(2);
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctFilePath());
     }

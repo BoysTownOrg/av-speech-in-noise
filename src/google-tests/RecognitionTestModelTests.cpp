@@ -279,29 +279,9 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        submitCoordinateResponsePassesSubjectResponseToEvaluatorForAdaptiveTest
-    ) {
-        assertCoordinateResponsePassedToEvaluator(initializingAdaptiveTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         submitCoordinateResponsePassesSubjectResponseToEvaluatorForFixedLevelTest
     ) {
         assertCoordinateResponsePassedToEvaluator(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
-        submitCoordinateResponsePassesPreviousTargetToEvaluatorForNumberAndColorForAdaptiveTest
-    ) {
-        initializingAdaptiveTest.selectList(1);
-        run(initializingAdaptiveTest);
-        initializingAdaptiveTest.setTargetListCurrent(1, "a");
-        initializingAdaptiveTest.selectList(2);
-        submitCoordinateResponse();
-        assertEqual("a", evaluator.correctColorFilePath());
-        assertEqual("a", evaluator.correctNumberFilePath());
     }
 
     TEST_F(
