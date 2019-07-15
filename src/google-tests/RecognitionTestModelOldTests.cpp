@@ -3,31 +3,11 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelOldTests,
-        submitCorrectResponseLoadsNextTargetForFixedLevelTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingFixedLevelTest,
-            submittingCorrectResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitCorrectResponseLoadsNextTargetForAdaptiveTest
     ) {
         assertNextTargetPassedToPlayer(
             initializingAdaptiveTest,
             submittingCorrectResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
-        submitIncorrectResponseLoadsNextTargetForFixedLevelTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingFixedLevelTest,
-            submittingIncorrectResponse
         );
     }
 
@@ -43,29 +23,12 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelOldTests,
-        submitTypedResponseLoadsNextTargetForFixedLevelTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingFixedLevelTest,
-            submittingFreeResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitTypedResponseLoadsNextTargetForAdaptiveTest
     ) {
         assertNextTargetPassedToPlayer(
             initializingAdaptiveTest,
             submittingFreeResponse
         );
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
-        submitIncorrectResponseSelectsRandomListInRangeAfterRemovingCompleteTracks
-    ) {
-        assertSelectsRandomListInRangeAfterRemovingCompleteTracks(submittingIncorrectResponse);
     }
 
     TEST_F(

@@ -285,6 +285,16 @@ namespace av_speech_in_noise::tests {
 
     TEST_F(
         AdaptiveMethodTests,
+        incorrectResponseSelectsListInRangeAfterRemovingCompleteTracks
+    ) {
+        initialize();
+        setSnrTrackComplete(2);
+        method.submitIncorrectResponse();
+        assertRandomizerPassedIntegerBounds(0, 1);
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
         snrReturnsThatOfCurrentTrack
     ) {
         track(0)->setX(1);
