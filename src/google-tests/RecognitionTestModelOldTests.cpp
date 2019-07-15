@@ -3,15 +3,6 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelOldTests,
-        submitFreeResponseWritesResponse
-    ) {
-        submittingFreeResponse.setResponse("a");
-        run(submittingFreeResponse);
-        assertEqual("a", writtenFreeResponseTrial().response);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTargetForFixedLevelTest
     ) {
         run(initializingFixedLevelTest);

@@ -897,4 +897,13 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
     }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitFreeResponseWritesResponse
+    ) {
+        submittingFreeResponse.setResponse("a");
+        run(submittingFreeResponse);
+        assertEqual("a", outputFile.writtenFreeResponseTrial().response);
+    }
 }
