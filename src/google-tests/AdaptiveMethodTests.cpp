@@ -72,6 +72,22 @@ namespace av_speech_in_noise::tests {
             for (int i = 0; i < n; ++i)
                 (this->*f)(snrTrackFactoryParameters(i));
         }
+        
+        void selectList(int n) {
+            randomizer.setRandomInt(n);
+        }
+        
+        std::string next() {
+            return method.next();
+        }
+        
+        void assertNextEquals(std::string s) {
+            assertEqual(std::move(s), next());
+        }
+        
+        void setNextForList(int n, std::string s) {
+            lists.at(n)->setNext(std::move(s));
+        }
     };
     
     TEST_F(
@@ -151,10 +167,10 @@ namespace av_speech_in_noise::tests {
         AdaptiveMethodTests,
         nextReturnsNextFilePathAfterInitialize
     ) {
-        lists.at(0)->setNext("a");
-        randomizer.setRandomInt(0);
+        setNextForList(0, "a");
+        selectList(0);
         initialize();
-        assertEqual("a", method.next());
+        assertNextEquals("a");
     }
 
     TEST_F(
@@ -162,9 +178,9 @@ namespace av_speech_in_noise::tests {
         nextReturnsNextFilePathAfterSubmitCoordinateResponse
     ) {
         initialize();
-        lists.at(1)->setNext("a");
-        randomizer.setRandomInt(1);
+        setNextForList(1, "a");
+        selectList(1);
         method.submitResponse(coordinate_response_measure::SubjectResponse{});
-        assertEqual("a", method.next());
+        assertNextEquals("a");
     }
 }
