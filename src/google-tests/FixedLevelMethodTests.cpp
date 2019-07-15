@@ -35,6 +35,10 @@ namespace av_speech_in_noise::tests {
         auto blueColor() {
             return coordinate_response_measure::Color::blue;
         }
+        
+        auto writtenFixedLevelTrial() {
+            return outputFile.writtenFixedLevelTrial2();
+        }
     };
     
     TEST_F(FixedLevelMethodTests, writeTestPassesSettings) {
@@ -63,12 +67,12 @@ namespace av_speech_in_noise::tests {
     TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesSubjectColor) {
         coordinateResponse.color = blueColor();
         writeCoordinateResponse();
-        assertEqual(blueColor(), outputFile.writtenFixedLevelTrial2().subjectColor);
+        assertEqual(blueColor(), writtenFixedLevelTrial().subjectColor);
     }
     
     TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesSubjectNumber) {
         coordinateResponse.number = 1;
         writeCoordinateResponse();
-        assertEqual(1, outputFile.writtenFixedLevelTrial2().subjectNumber);
+        assertEqual(1, writtenFixedLevelTrial().subjectNumber);
     }
 }
