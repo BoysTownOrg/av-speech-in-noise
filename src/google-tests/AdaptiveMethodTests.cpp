@@ -237,4 +237,15 @@ namespace av_speech_in_noise::tests {
         assertEqual("a", evaluator.correctColorFilePath());
         assertEqual("a", evaluator.correctNumberFilePath());
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        submitCoordinateResponsePassesCorrectFilePathToEvaluator
+    ) {
+        selectList(1);
+        initialize();
+        lists.at(1)->setCurrent("a");
+        submitCoordinateResponse();
+        assertEqual("a", evaluator.correctFilePath());
+    }
 }
