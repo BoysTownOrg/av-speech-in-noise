@@ -223,7 +223,6 @@ namespace av_speech_in_noise::tests::recognition_test {
     class RecognitionTestModelOldTests : public ::testing::Test {
     protected:
         TargetListSetReaderStub targetListSetReader{};
-        TargetListStub targetList{};
         TargetPlayerStub targetPlayer{};
         MaskerPlayerStub maskerPlayer{};
         OutputFileStub outputFile{};
@@ -236,7 +235,6 @@ namespace av_speech_in_noise::tests::recognition_test {
             &evaluator,
             &randomizer
         };
-        FixedLevelMethod fixedLevelMethod{&targetList, &evaluator};
         RecognitionTestModel_Internal internalModel{
             &targetPlayer,
             &maskerPlayer,
@@ -246,7 +244,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         };
         RecognitionTestModel model{
             &adaptiveMethod,
-            &fixedLevelMethod,
+            nullptr,
             &internalModel
         };
         InitializingAdaptiveTest initializingAdaptiveTest{
