@@ -29,30 +29,6 @@ namespace av_speech_in_noise::tests::recognition_test {
     class SubmittingResponse : public virtual UseCase {
     };
 
-    class SubmittingCoordinateResponse : public SubmittingResponse {
-        coordinate_response_measure::SubjectResponse response_{};
-    public:
-        void run(RecognitionTestModel &m) override {
-            m.submitResponse(response_);
-        }
-        
-        void run(RecognitionTestModel_Internal &m) override {
-            m.submitResponse(response_);
-        }
-        
-        void setNumber(int n) {
-            response_.number = n;
-        }
-        
-        void setColor(coordinate_response_measure::Color c) {
-            response_.color = c;
-        }
-        
-        auto &response() const {
-            return response_;
-        }
-    };
-
     class SubmittingCorrectResponse : public UseCase {
     public:
         void run(RecognitionTestModel &m) override {
