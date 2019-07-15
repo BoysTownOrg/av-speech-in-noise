@@ -211,4 +211,14 @@ namespace av_speech_in_noise::tests {
         submitCoordinateResponse();
         assertRandomizerPassedIntegerBounds(0, 1);
     }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        snrReturnsThatOfCurrentTrack
+    ) {
+        tracks.at(0)->setX(1);
+        selectList(0);
+        initialize();
+        assertEqual(1, method.snr_dB());
+    }
 }
