@@ -789,15 +789,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         RecognitionTestModel_InternalTests,
         submitCorrectResponseSubscribesToTargetPlayerPlaybackCompletion
     ) {
-        run(submittingCorrectResponse);
-        assertTrue(targetPlayerPlaybackCompletionSubscribed());
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);
     }
 
     TEST_F(
         RecognitionTestModel_InternalTests,
         submitIncorrectResponseSubscribesToTargetPlayerPlaybackCompletion
     ) {
-        run(submittingIncorrectResponse);
-        assertTrue(targetPlayerPlaybackCompletionSubscribed());
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
     }
 }
