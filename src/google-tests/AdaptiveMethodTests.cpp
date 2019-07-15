@@ -143,6 +143,32 @@ namespace av_speech_in_noise::tests {
         void setIncorrectCoordinateResponse() {
             evaluator.setIncorrect();
         }
+        
+        void setSnrTrackComplete(int n) {
+            track(n)->setComplete();
+        }
+        
+        void assertTestIncompleteAfterCoordinateResponse() {
+            submitCoordinateResponse();
+            assertTestIncomplete();
+        }
+        
+        void assertTestCompleteAfterCoordinateResponse() {
+            submitCoordinateResponse();
+            assertTestComplete();
+        }
+        
+        void assertTestIncomplete() {
+            assertFalse(testComplete());
+        }
+        
+        bool testComplete() {
+            return method.complete();
+        }
+        
+        void assertTestComplete() {
+            assertTrue(testComplete());
+        }
     };
     
     TEST_F(
@@ -428,5 +454,18 @@ namespace av_speech_in_noise::tests {
         selectList(1);
         submitCoordinateResponse();
         assertNextEquals("a");
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        completeWhenAllTracksComplete
+    ) {
+        initialize();
+        setSnrTrackComplete(0);
+        assertTestIncompleteAfterCoordinateResponse();
+        setSnrTrackComplete(1);
+        assertTestIncompleteAfterCoordinateResponse();
+        setSnrTrackComplete(2);
+        assertTestCompleteAfterCoordinateResponse();
     }
 }

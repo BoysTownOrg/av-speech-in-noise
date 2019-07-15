@@ -337,19 +337,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelTests,
-        testCompleteWhenAllTracksComplete
-    ) {
-        run(initializingAdaptiveTest);
-        initializingAdaptiveTest.setSnrTrackComplete(0);
-        assertTestIncompleteAfterCoordinateResponse();
-        initializingAdaptiveTest.setSnrTrackComplete(1);
-        assertTestIncompleteAfterCoordinateResponse();
-        initializingAdaptiveTest.setSnrTrackComplete(2);
-        assertTestCompleteAfterCoordinateResponse();
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         fixedLevelTestCompleteAfterTrials
     ) {
         initializingFixedLevelTest.setTrials(3);
