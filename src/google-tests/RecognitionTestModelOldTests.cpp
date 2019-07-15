@@ -3,36 +3,6 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelOldTests,
-        submitCorrectResponseLoadsNextTargetForAdaptiveTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingAdaptiveTest,
-            submittingCorrectResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
-        submitIncorrectResponseLoadsNextTargetForAdaptiveTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingAdaptiveTest,
-            submittingIncorrectResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
-        submitTypedResponseLoadsNextTargetForAdaptiveTest
-    ) {
-        assertNextTargetPassedToPlayer(
-            initializingAdaptiveTest,
-            submittingFreeResponse
-        );
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitFreeResponseWritesResponse
     ) {
         submittingFreeResponse.setResponse("a");

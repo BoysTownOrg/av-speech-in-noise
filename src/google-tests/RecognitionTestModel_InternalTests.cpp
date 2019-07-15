@@ -512,6 +512,30 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModel_InternalTests,
+        submittingCorrectResponsePassesNextTargetToTargetPlayer
+    ) {
+        run(initializingTest);
+        assertPassesNextTargetToPlayer(submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submittingIncorrectResponsePassesNextTargetToTargetPlayer
+    ) {
+        run(initializingTest);
+        assertPassesNextTargetToPlayer(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submittingFreeResponsePassesNextTargetToTargetPlayer
+    ) {
+        run(initializingTest);
+        assertPassesNextTargetToPlayer(submittingFreeResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
         playCalibrationPassesAudioFileToTargetPlayer
     ) {
         playingCalibration.setFilePath("a");
