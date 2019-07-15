@@ -3,14 +3,6 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelOldTests,
-        initializeFixedLevelTestWritesTestSettings
-    ) {
-        run(initializingFixedLevelTest);
-        assertEqual(outputFile.fixedLevelTest(), &fixedLevelTestSettings());
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         initializeFixedLevelTestPassesTargetListDirectory
     ) {
         assertTargetListPassed(initializingFixedLevelTest);
