@@ -3,14 +3,6 @@
 namespace av_speech_in_noise::tests::recognition_test {
     TEST_F(
         RecognitionTestModelTests,
-        initializeAdaptiveTestWritesTestSettings
-    ) {
-        run(initializingAdaptiveTest);
-        assertEqual(outputFile.adaptiveTest(), &adaptiveTestSettings());
-    }
-
-    TEST_F(
-        RecognitionTestModelTests,
         initializeFixedLevelTestWritesTestSettings
     ) {
         run(initializingFixedLevelTest);

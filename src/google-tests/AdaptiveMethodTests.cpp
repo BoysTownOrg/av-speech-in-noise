@@ -3,6 +3,7 @@
 #include "TrackStub.h"
 #include "RandomizerStub.h"
 #include "ResponseEvaluatorStub.h"
+#include "OutputFileStub.h"
 #include "assert-utility.h"
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <gtest/gtest.h>
@@ -14,6 +15,7 @@ namespace av_speech_in_noise::tests {
         TrackFactoryStub snrTrackFactory;
         ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
+        OutputFileStub outputFile;
         AdaptiveMethod method{
             &targetListSetReader,
             &snrTrackFactory,
@@ -125,5 +127,14 @@ namespace av_speech_in_noise::tests {
             3,
             &AdaptiveMethodTests::assertFloorEqualsOne
         );
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        writeTestParametersPassesToOutputFile
+    ) {
+        initialize();
+        method.writeTestingParameters(&outputFile);
+        assertEqual(&std::as_const(test), outputFile.adaptiveTest());
     }
 }
