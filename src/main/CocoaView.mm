@@ -432,9 +432,10 @@ void CocoaSubjectView::addNumberButton(NSColor *color, int number, int row, std:
     auto attrsDictionary = [NSDictionary
         dictionaryWithObjectsAndKeys:
         color, NSForegroundColorAttributeName,
-        NSColor.blackColor, NSBackgroundColorAttributeName,
+        [NSNumber numberWithFloat: -4.0], NSStrokeWidthAttributeName,
+        NSColor.blackColor, NSStrokeColorAttributeName,
         style, NSParagraphStyleAttributeName,
-        [NSFont fontWithName:@"Courier" size:36], NSFontAttributeName,
+        [NSFont fontWithName:@"Arial-Black" size:48], NSFontAttributeName,
         nil
     ];
     auto attrString = [[NSAttributedString alloc]
@@ -465,13 +466,11 @@ void CocoaSubjectView::addNextTrialButton() {
         attributes:attrsDictionary
     ];
     [button setAttributedTitle:attrString];
-    constexpr auto height = 100;
-    constexpr auto width = 400;
     [button setFrame:NSMakeRect(
-        (nextTrialButton.frame.size.width - width)/2.,
-        (nextTrialButton.frame.size.height - height)/2.,
-        width,
-        height
+        0,
+        0,
+        nextTrialButton.frame.size.width,
+        nextTrialButton.frame.size.height
     )];
     [nextTrialButton addSubview:button];
 }
