@@ -63,6 +63,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
         
         void submitCorrectResponse() {
+            log_.insert("submitCorrectResponse ");
             submittedCorrectResponse_ = true;
         }
         
@@ -1077,6 +1078,15 @@ namespace av_speech_in_noise::tests::recognition_test {
         run(initializingTest);
         run(submittingIncorrectResponse);
         assertTrue(testMethod.log().contains("submitIncorrectResponse next "));
+    }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitCorrectResponseQueriesNextTargetAfterSubmittingResponse
+    ) {
+        run(initializingTest);
+        run(submittingCorrectResponse);
+        assertTrue(testMethod.log().contains("submitCorrectResponse next "));
     }
     
     TEST_F(
