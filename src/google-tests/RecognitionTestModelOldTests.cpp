@@ -193,13 +193,6 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModelOldTests,
-        submitCoordinateResponseWritesCorrectColorForFixedLevelTest
-    ) {
-        assertWritesCorrectColor(initializingFixedLevelTest);
-    }
-
-    TEST_F(
-        RecognitionTestModelOldTests,
         submitCoordinateResponseWritesCorrectNumberForFixedLevelTest
     ) {
         assertWritesCorrectNumber(initializingFixedLevelTest);
