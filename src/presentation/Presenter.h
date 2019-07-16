@@ -43,6 +43,7 @@ namespace av_speech_in_noise {
                 virtual void browseForTargetList() = 0;
                 virtual void browseForMasker() = 0;
                 virtual void browseForCalibration() = 0;
+                virtual void browseForTrackSettingsFile() = 0;
             };
             
             virtual ~TestSetup() = default;
@@ -64,6 +65,7 @@ namespace av_speech_in_noise {
             virtual void setMasker(std::string) = 0;
             virtual void setTargetListDirectory(std::string) = 0;
             virtual void setCalibrationFilePath(std::string) = 0;
+            virtual void setTrackSettingsFile(std::string) = 0;
             virtual void populateConditionMenu(std::vector<std::string>) = 0;
             virtual void populateMethodMenu(std::vector<std::string>) = 0;
         };
@@ -133,6 +135,7 @@ namespace av_speech_in_noise {
             void setMasker(std::string);
             void setStimulusList(std::string);
             void setCalibrationFilePath(std::string);
+            void setTrackSettingsFile(std::string);
             AdaptiveTest adaptiveTest();
             FixedLevelTest fixedLevelTest();
             Calibration calibrationParameters();
@@ -145,6 +148,7 @@ namespace av_speech_in_noise {
             void browseForMasker() override;
             void confirmTestSetup() override;
             void browseForCalibration() override;
+            void browseForTrackSettingsFile() override;
         private:
             TestInformation testInformation();
             CommonTest commonTest();
@@ -280,6 +284,7 @@ namespace av_speech_in_noise {
         void submitExperimenterResponse();
         void browseForMasker();
         void browseForCalibration();
+        void browseForTrackSettingsFile();
         void confirmTestSetup();
         void playCalibration();
         void submitPassedTrial();

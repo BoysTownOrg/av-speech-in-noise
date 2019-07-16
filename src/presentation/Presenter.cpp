@@ -236,6 +236,14 @@ namespace av_speech_in_noise {
         );
     }
     
+    void Presenter::browseForTrackSettingsFile() {
+        applyIfBrowseNotCancelled(
+            view->browseForOpeningFile(),
+            &TestSetup::setTrackSettingsFile
+        );
+    }
+    
+    
 
     Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         view->populateConditionMenu({
@@ -370,8 +378,16 @@ namespace av_speech_in_noise {
         parent->browseForCalibration();
     }
     
+    void Presenter::TestSetup::browseForTrackSettingsFile() {
+        parent->browseForTrackSettingsFile();
+    }
+    
     void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
         view->setCalibrationFilePath(std::move(s));
+    }
+    
+    void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
+        view->setTrackSettingsFile(std::move(s));
     }
     
     bool Presenter::TestSetup::adaptiveClosedSet() {
@@ -393,7 +409,6 @@ namespace av_speech_in_noise {
     bool Presenter::TestSetup::fixedLevelClosedSet() {
         return method(Method::fixedLevelClosedSet);
     }
-
 
     Presenter::Subject::Subject(View::Subject *view) :
         view{view}

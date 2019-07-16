@@ -311,7 +311,7 @@ namespace av_speech_in_noise::tests::presentation {
                 masker_ = std::move(s);
             }
             
-            void setTrackSettingsFile(std::string s) {
+            void setTrackSettingsFile(std::string s) override {
                 trackSettingsFile_ = std::move(s);
             }
             
@@ -373,6 +373,10 @@ namespace av_speech_in_noise::tests::presentation {
             
             void browseForTargetList() {
                 listener_->browseForTargetList();
+            }
+            
+            void browseForTrackSettingsFile() {
+                listener_->browseForTrackSettingsFile();
             }
             
             void browseForCalibration() {
@@ -1191,6 +1195,29 @@ namespace av_speech_in_noise::tests::presentation {
         }
     };
 
+    class BrowsingForTrackSettingsFile : public BrowsingEnteredPathUseCase {
+        ViewStub::TestSetupViewStub *view;
+    public:
+        explicit BrowsingForTrackSettingsFile(ViewStub::TestSetupViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->browseForTrackSettingsFile();
+        }
+
+        void setResult(ViewStub &view, std::string s) override {
+            view.setBrowseForOpeningFileResult(s);
+        }
+        
+        std::string entry() override {
+            return view->trackSettingsFile();
+        }
+        
+        void setEntry(std::string s) override {
+            view->setTrackSettingsFile(std::move(s));
+        }
+    };
+
     class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
         ViewStub::TestSetupViewStub *view;
     public:
@@ -1276,6 +1303,7 @@ namespace av_speech_in_noise::tests::presentation {
             &subject,
             &experimenter
         };
+        BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
         BrowsingForTargetList browsingForTargetList{&setupView};
         BrowsingForMasker browsingForMasker{&setupView};
         BrowsingForCalibration browsingForCalibration{&setupView};
