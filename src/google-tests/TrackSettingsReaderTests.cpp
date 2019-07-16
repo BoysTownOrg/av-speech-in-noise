@@ -1,6 +1,7 @@
 #include <av-speech-in-noise/Model.h>
 #include <string>
 #include <sstream>
+#include <map>
 
 namespace av_speech_in_noise {
     namespace {
@@ -28,13 +29,8 @@ namespace av_speech_in_noise {
             }
             
             void resetLine_() {
-                line_ = std::stringstream{lastLine_};
-            }
-            
-            void ignore(int n) {
-                std::string ignore_;
-                for (int i = 0; i < n; ++i)
-                    line_ >> ignore_;
+                auto found = lastLine_.find(':');
+                line_ = std::stringstream{lastLine_.substr(found+1)};
             }
             
             int value() {
@@ -51,6 +47,12 @@ namespace av_speech_in_noise {
     }
     
     class TrackSettingsReader {
+        std::map<std::string, void(TrackSettingsReader::*)(TrackingSequence &, int)> propertyApplication {
+            {"up", &TrackSettingsReader::applyToUp},
+            {"down", &TrackSettingsReader::applyToDown},
+            {"reversals per step size", &TrackSettingsReader::applyToRunCount},
+            {"step sizes (dB)", &TrackSettingsReader::applyToStepSize}
+        };
         std::string contents;
     public:
         explicit TrackSettingsReader(std::string s) : contents{std::move(s)} {}
@@ -58,7 +60,6 @@ namespace av_speech_in_noise {
         TrackingRule trackingRule() {
             auto stream_ = Stream{contents};
             stream_.nextLine();
-            stream_.ignore(1);
             TrackingRule rule;
             stream_.value();
             while (!stream_.failed()) {
@@ -66,33 +67,36 @@ namespace av_speech_in_noise {
                 stream_.value();
             }
             stream_.resetLine();
-            if ("up" == stream_.propertyName()) {
-                stream_.ignore(1);
-                for (auto &sequence : rule)
-                    sequence.up = stream_.value();
-                stream_.nextLine();
-                stream_.ignore(1);
-                for (auto &sequence : rule)
-                    sequence.down = stream_.value();
-            }
-            else {
-                stream_.ignore(1);
-                for (auto &sequence : rule)
-                    sequence.down = stream_.value();
-                stream_.nextLine();
-                stream_.ignore(1);
-                for (auto &sequence : rule)
-                    sequence.up = stream_.value();
-            }
+            auto f = propertyApplication.at(stream_.propertyName());
+            for (auto &sequence : rule)
+                (this->*f)(sequence, stream_.value());
             stream_.nextLine();
-            stream_.ignore(4);
+            f = propertyApplication.at(stream_.propertyName());
+            for (auto &sequence : rule)
+                (this->*f)(sequence, stream_.value());
+            stream_.nextLine();
             for (auto &sequence : rule)
                 sequence.runCount = stream_.value();
             stream_.nextLine();
-            stream_.ignore(3);
             for (auto &sequence : rule)
                 sequence.stepSize = stream_.value();
             return rule;
+        }
+        
+        void applyToUp(TrackingSequence &sequence, int x) {
+            sequence.up = x;
+        }
+        
+        void applyToDown(TrackingSequence &sequence, int x) {
+            sequence.down = x;
+        }
+        
+        void applyToRunCount(TrackingSequence &sequence, int x) {
+            sequence.runCount = x;
+        }
+        
+        void applyToStepSize(TrackingSequence &sequence, int x) {
+            sequence.stepSize = x;
         }
     };
 }
