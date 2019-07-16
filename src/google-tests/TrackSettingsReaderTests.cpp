@@ -22,6 +22,10 @@ namespace av_speech_in_noise {
                     failed_ = true;
                 return x;
             }
+            
+            auto failed() const {
+                return failed_;
+            }
         };
     }
     
@@ -35,16 +39,17 @@ namespace av_speech_in_noise {
             std::string line;
             std::getline(stream, line);
             auto line_ = std::stringstream{line};
-            std::string ignore;
-            line_ >> ignore;
+            auto stream_ = Stream{line};
+            stream_.ignore(1);
             TrackingRule rule;
-            int value{};
-            while (line_ >> value) {
+            int value = stream_.value();
+            while (!stream_.failed()) {
                 rule.push_back({});
                 rule.back().up = value;
+                value = stream_.value();
             }
             std::getline(stream, line);
-            auto stream_ = Stream{line};
+            stream_ = Stream{line};
             stream_.ignore(1);
             for (auto &sequence : rule)
                 sequence.down = stream_.value();
