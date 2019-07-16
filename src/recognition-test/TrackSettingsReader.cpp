@@ -45,12 +45,28 @@ namespace av_speech_in_noise {
         };
     }
     
+    static void applyToUp(TrackingSequence &sequence, int x) {
+        sequence.up = x;
+    }
+
+    static void applyToDown(TrackingSequence &sequence, int x) {
+        sequence.down = x;
+    }
+
+    static void applyToRunCount(TrackingSequence &sequence, int x) {
+        sequence.runCount = x;
+    }
+
+    static void applyToStepSize(TrackingSequence &sequence, int x) {
+        sequence.stepSize = x;
+    }
+    
     TrackSettingsReader::TrackSettingsReader(std::string s) :
         propertyApplication{
-            {propertyName(Property::up), &TrackSettingsReader::applyToUp},
-            {propertyName(Property::down), &TrackSettingsReader::applyToDown},
-            {propertyName(Property::reversalsPerStepSize), &TrackSettingsReader::applyToRunCount},
-            {propertyName(Property::stepSizes), &TrackSettingsReader::applyToStepSize}
+            {propertyName(Property::up), &applyToUp},
+            {propertyName(Property::down), &applyToDown},
+            {propertyName(Property::reversalsPerStepSize), &applyToRunCount},
+            {propertyName(Property::stepSizes), &applyToStepSize}
         },
         contents{std::move(s)} {}
     
@@ -67,7 +83,7 @@ namespace av_speech_in_noise {
         for (int i = 0; i < 4; ++i) {
             auto f = propertyApplication.at(stream_.propertyName());
             for (auto &sequence : rule)
-                (this->*f)(sequence, stream_.value());
+                (*f)(sequence, stream_.value());
             stream_.nextLine();
         }
         return rule;

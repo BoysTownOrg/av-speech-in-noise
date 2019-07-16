@@ -9,7 +9,7 @@ namespace av_speech_in_noise {
     class TrackSettingsReader {
         std::map<
             std::string,
-            void(TrackSettingsReader::*)(TrackingSequence &, int)
+            void(*)(TrackingSequence &, int)
         > propertyApplication;
         std::string contents;
     public:
@@ -35,22 +35,6 @@ namespace av_speech_in_noise {
         
         explicit TrackSettingsReader(std::string);
         TrackingRule trackingRule();
-    private:
-        void applyToUp(TrackingSequence &sequence, int x) {
-            sequence.up = x;
-        }
-        
-        void applyToDown(TrackingSequence &sequence, int x) {
-            sequence.down = x;
-        }
-        
-        void applyToRunCount(TrackingSequence &sequence, int x) {
-            sequence.runCount = x;
-        }
-        
-        void applyToStepSize(TrackingSequence &sequence, int x) {
-            sequence.stepSize = x;
-        }
     };
 }
 
