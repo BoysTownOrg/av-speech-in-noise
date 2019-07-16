@@ -10,51 +10,51 @@ namespace av_speech_in_noise {
         
         TrackingRule trackingRule() {
             std::stringstream stream{contents};
-            std::stringstream line_;
-            std::string ignore;
             std::string line;
+            std::getline(stream, line);
+            auto line_ = std::stringstream{line};
+            std::string ignore;
+            line_ >> ignore;
             int value;
-            int value2;
-            bool twoSequences{};
+            line_ >> value;
+            TrackingRule rule;
             TrackingSequence first;
-            TrackingSequence second;
-            std::getline(stream, line);
-            line_ = std::stringstream{line};
-            line_ >> ignore;
-            line_ >> value;
-            if (line_ >> value2) {
-                second.up = value2;
-                twoSequences = true;
-            }
             first.up = value;
+            while (line_ >> value) {
+                rule.push_back({});
+                rule.back().up = value;
+            }
             std::getline(stream, line);
             line_ = std::stringstream{line};
             line_ >> ignore;
             line_ >> value;
-            if (line_ >> value2)
-                second.down = value2;
             first.down = value;
+            for (size_t i = 0; i < rule.size(); ++i) {
+                line_ >> value;
+                rule.at(i).down = value;
+            }
             std::getline(stream, line);
             line_ = std::stringstream{line};
-            line_ >> ignore;
-            line_ >> ignore;
-            line_ >> ignore;
-            line_ >> ignore;
+            for (int i = 0; i < 4; ++i)
+                line_ >> ignore;
             line_ >> value;
-            if (line_ >> value2)
-                second.runCount = value2;
             first.runCount = value;
+            for (size_t i = 0; i < rule.size(); ++i) {
+                line_ >> value;
+                rule.at(i).runCount = value;
+            }
             std::getline(stream, line);
             line_ = std::stringstream{line};
-            line_ >> ignore;
-            line_ >> ignore;
-            line_ >> ignore;
+            for (int i = 0; i < 3; ++i)
+                line_ >> ignore;
             line_ >> value;
-            if (line_ >> value2)
-                second.stepSize = value2;
             first.stepSize = value;
-            if (twoSequences)
-                return {first, second};
+            for (size_t i = 0; i < rule.size(); ++i) {
+                line_ >> value;
+                rule.at(i).stepSize = value;
+            }
+            if (rule.size())
+                return {first, rule.at(0)};
             else
                 return {first};
         }
