@@ -9,15 +9,29 @@
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests {
+    class TrackSettingsReaderStub : public TrackSettingsReader {
+        std::string filePath_{};
+    public:
+        auto filePath() const {
+            return filePath_;
+        }
+        
+        void read(std::string s) override {
+            filePath_ = std::move(s);
+        }
+    };
+    
     class AdaptiveMethodTests : public ::testing::Test {
     protected:
         TargetListSetReaderStub targetListSetReader;
+        TrackSettingsReaderStub trackSettingsReader;
         TrackFactoryStub snrTrackFactory;
         ResponseEvaluatorStub evaluator;
         RandomizerStub randomizer;
         OutputFileStub outputFile;
         AdaptiveMethod method{
             &targetListSetReader,
+            &trackSettingsReader,
             &snrTrackFactory,
             &evaluator,
             &randomizer
@@ -242,6 +256,15 @@ namespace av_speech_in_noise::tests {
         test.common.targetListDirectory = "a";
         initialize();
         assertEqual("a", targetListSetReader.directory());
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        initializePassesTrackSettingsFile
+    ) {
+        test.trackSettingsFile = "a";
+        initialize();
+        assertEqual("a", trackSettingsReader.filePath());
     }
 
     TEST_F(

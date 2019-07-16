@@ -22,6 +22,12 @@ namespace av_speech_in_noise {
         virtual int reversals() = 0;
     };
     
+    class TrackSettingsReader {
+    public:
+        virtual ~TrackSettingsReader() = default;
+        virtual void read(std::string) = 0;
+    };
+    
     class TrackFactory {
     public:
         virtual ~TrackFactory() = default;
@@ -46,6 +52,7 @@ namespace av_speech_in_noise {
         coordinate_response_measure::AdaptiveTrial lastTrial{};
         const AdaptiveTest *test{};
         TargetListReader *targetListSetReader;
+        TrackSettingsReader *trackSettingsReader;
         TrackFactory *snrTrackFactory;
         ResponseEvaluator *evaluator;
         Randomizer *randomizer;
@@ -54,6 +61,7 @@ namespace av_speech_in_noise {
     public:
         AdaptiveMethod(
             TargetListReader *,
+            TrackSettingsReader *,
             TrackFactory *,
             ResponseEvaluator *,
             Randomizer *

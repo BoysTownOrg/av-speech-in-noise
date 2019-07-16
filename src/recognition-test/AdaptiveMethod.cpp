@@ -4,17 +4,20 @@
 namespace av_speech_in_noise {
     AdaptiveMethod::AdaptiveMethod(
         TargetListReader *targetListSetReader,
+        TrackSettingsReader *trackSettingsReader,
         TrackFactory *snrTrackFactory,
         ResponseEvaluator *evaluator,
         Randomizer *randomizer
     ) :
         targetListSetReader{targetListSetReader},
+        trackSettingsReader{trackSettingsReader},
         snrTrackFactory{snrTrackFactory},
         evaluator{evaluator},
         randomizer{randomizer} {}
     
     void AdaptiveMethod::initialize(const AdaptiveTest &p) {
         test = &p;
+        trackSettingsReader->read(p.trackSettingsFile);
         trackSettings.ceiling = p.ceilingSnr_dB;
         trackSettings.rule = p.targetLevelRule;
         trackSettings.startingX = p.startingSnr_dB;
