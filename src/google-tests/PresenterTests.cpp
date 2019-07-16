@@ -272,6 +272,10 @@ namespace av_speech_in_noise::tests::presentation {
         assertPassesTrackSettingsFile(confirmingAdaptiveClosedSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTrackSettingsFile) {
+        assertPassesTrackSettingsFile(confirmingAdaptiveOpenSetTest);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesAudioVisualCondition) {
         assertAudioVisualConditionPassedToModel(confirmingAdaptiveClosedSetTest);
     }
