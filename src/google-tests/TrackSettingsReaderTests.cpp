@@ -23,14 +23,15 @@ namespace av_speech_in_noise {
             }
             
             std::string propertyName() {
-                auto found = lastLine_.find(':');
-                auto s = lastLine_.substr(0, found);
-                return s;
+                return lastLine_.substr(0, findPropertyNameDelimiter());
             }
             
             void resetLine_() {
-                auto found = lastLine_.find(':');
-                line_ = std::stringstream{lastLine_.substr(found+1)};
+                line_ = std::stringstream{lastLine_.substr(findPropertyNameDelimiter()+1)};
+            }
+            
+            std::string::size_type findPropertyNameDelimiter() {
+                return lastLine_.find(':');
             }
             
             int value() {
