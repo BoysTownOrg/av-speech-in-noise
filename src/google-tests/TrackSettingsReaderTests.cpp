@@ -47,16 +47,38 @@ namespace av_speech_in_noise {
         };
     }
     
+    enum class TrackProperty {
+        up,
+        down,
+        reversalsPerStepSize,
+        stepSizes
+    };
+
+    constexpr const char *propertyName(TrackProperty p) {
+        switch (p) {
+            case TrackProperty::up:
+                return "up";
+            case TrackProperty::down:
+                return "down";
+            case TrackProperty::reversalsPerStepSize:
+                return "reversals per step size";
+            case TrackProperty::stepSizes:
+                return "step sizes (dB)";
+        }
+    }
+    
     class TrackSettingsReader {
         std::map<std::string, void(TrackSettingsReader::*)(TrackingSequence &, int)> propertyApplication {
-            {"up", &TrackSettingsReader::applyToUp},
-            {"down", &TrackSettingsReader::applyToDown},
-            {"reversals per step size", &TrackSettingsReader::applyToRunCount},
-            {"step sizes (dB)", &TrackSettingsReader::applyToStepSize}
+            {propertyName(TrackProperty::up), &TrackSettingsReader::applyToUp},
+            {propertyName(TrackProperty::down), &TrackSettingsReader::applyToDown},
+            {propertyName(TrackProperty::reversalsPerStepSize), &TrackSettingsReader::applyToRunCount},
+            {propertyName(TrackProperty::stepSizes), &TrackSettingsReader::applyToStepSize}
         };
         std::string contents;
     public:
-        explicit TrackSettingsReader(std::string s) : contents{std::move(s)} {}
+        
+        explicit TrackSettingsReader(std::string s) :
+            contents{std::move(s)} {}
         
         TrackingRule trackingRule() {
             auto stream_ = Stream{contents};
@@ -108,6 +130,10 @@ namespace av_speech_in_noise::tests {
             TrackSettingsReader reader{std::move(s)};
             assertEqual(expected, reader.trackingRule());
         }
+        
+        std::string propertyEntry(TrackProperty p, std::string s) {
+            return std::string{propertyName(p)} + ": " + s;
+        }
     };
     
     TEST_F(TrackSettingsReaderTests, oneSequence) {
@@ -117,10 +143,10 @@ namespace av_speech_in_noise::tests {
         first.runCount = 3;
         first.stepSize = 4;
         assertFileContentsYield(
-            "up: 1\n"
-            "down: 2\n"
-            "reversals per step size: 3\n"
-            "step sizes (dB): 4",
+            propertyEntry(TrackProperty::up, "1\n") +
+            propertyEntry(TrackProperty::down, "2\n") +
+            propertyEntry(TrackProperty::reversalsPerStepSize, "3\n") +
+            propertyEntry(TrackProperty::stepSizes, "4\n"),
             {first}
         );
     }
