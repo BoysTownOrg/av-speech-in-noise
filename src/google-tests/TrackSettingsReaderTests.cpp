@@ -3,6 +3,28 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
+    namespace {
+        class Stream {
+            std::stringstream stream;
+            bool failed_{};
+        public:
+            explicit Stream(std::string s) : stream{std::move(s)} {}
+            
+            void ignore(int n) {
+                std::string ignore_;
+                for (int i = 0; i < n; ++i)
+                    stream >> ignore_;
+            }
+            
+            int value() {
+                int x;
+                if (!(stream >> x))
+                    failed_ = true;
+                return x;
+            }
+        };
+    }
+    
     class TrackSettingsReader {
         std::string contents;
     public:
@@ -22,31 +44,20 @@ namespace av_speech_in_noise {
                 rule.back().up = value;
             }
             std::getline(stream, line);
-            line_ = std::stringstream{line};
-            line_ >> ignore;
-            for (size_t i = 0; i < rule.size(); ++i) {
-                int value{};
-                line_ >> value;
-                rule.at(i).down = value;
-            }
+            auto stream_ = Stream{line};
+            stream_.ignore(1);
+            for (auto &sequence : rule)
+                sequence.down = stream_.value();
             std::getline(stream, line);
-            line_ = std::stringstream{line};
-            for (int i = 0; i < 4; ++i)
-                line_ >> ignore;
-            for (size_t i = 0; i < rule.size(); ++i) {
-                int value{};
-                line_ >> value;
-                rule.at(i).runCount = value;
-            }
+            stream_ = Stream{line};
+            stream_.ignore(4);
+            for (auto &sequence : rule)
+                sequence.runCount = stream_.value();
             std::getline(stream, line);
-            line_ = std::stringstream{line};
-            for (int i = 0; i < 3; ++i)
-                line_ >> ignore;
-            for (size_t i = 0; i < rule.size(); ++i) {
-                int value{};
-                line_ >> value;
-                rule.at(i).stepSize = value;
-            }
+            stream_ = Stream{line};
+            stream_.ignore(3);
+            for (auto &sequence : rule)
+                sequence.stepSize = stream_.value();
             return rule;
         }
     };
