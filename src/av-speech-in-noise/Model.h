@@ -60,6 +60,17 @@ namespace av_speech_in_noise {
         int down;
         int up;
     };
+
+    constexpr bool operator ==(
+        const TrackingSequence &a,
+        const TrackingSequence &b
+    ) {
+        return
+            a.down == b.down &&
+            a.up == b.up &&
+            a.runCount == b.runCount &&
+            a.stepSize == b.stepSize;
+    }
     
     using TrackingRule = typename std::vector<TrackingSequence>;
     
