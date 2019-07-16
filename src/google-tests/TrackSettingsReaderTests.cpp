@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests {
+    using Property = TrackSettingsReader::Property;
+    
     class TrackSettingsReaderTests : public ::testing::Test {
     protected:
         void assertFileContentsYield(
@@ -20,29 +22,32 @@ namespace av_speech_in_noise::tests {
             return result;
         }
         
-        std::string propertyEntry(TrackSettingsReader::Property p, std::string s) {
-            return std::string{TrackSettingsReader::propertyName(p)} + ": " + std::move(s);
+        std::string propertyEntry(Property p, std::string s) {
+            return
+                std::string{TrackSettingsReader::propertyName(p)} +
+                ": " +
+                std::move(s);
         }
         
-        std::string propertyEntryWithNewline(TrackSettingsReader::Property p, std::string s) {
+        std::string propertyEntryWithNewline(Property p, std::string s) {
             return propertyEntry(p, std::move(s)) + '\n';
         }
     };
     
     TEST_F(TrackSettingsReaderTests, oneSequence) {
-        TrackingSequence first;
-        first.up = 1;
-        first.down = 2;
-        first.runCount = 3;
-        first.stepSize = 4;
+        TrackingSequence sequence;
+        sequence.up = 1;
+        sequence.down = 2;
+        sequence.runCount = 3;
+        sequence.stepSize = 4;
         assertFileContentsYield(
             {
-                propertyEntryWithNewline(TrackSettingsReader::Property::up, "1"),
-                propertyEntryWithNewline(TrackSettingsReader::Property::down, "2"),
-                propertyEntryWithNewline(TrackSettingsReader::Property::reversalsPerStepSize, "3"),
-                propertyEntry(TrackSettingsReader::Property::stepSizes, "4")
+                propertyEntryWithNewline(Property::up, "1"),
+                propertyEntryWithNewline(Property::down, "2"),
+                propertyEntryWithNewline(Property::reversalsPerStepSize, "3"),
+                propertyEntry(Property::stepSizes, "4")
             },
-            {first}
+            {sequence}
         );
     }
     
@@ -59,29 +64,29 @@ namespace av_speech_in_noise::tests {
         second.stepSize = 8;
         assertFileContentsYield(
             {
-                propertyEntryWithNewline(TrackSettingsReader::Property::up, "1 2"),
-                propertyEntryWithNewline(TrackSettingsReader::Property::down, "3 4"),
-                propertyEntryWithNewline(TrackSettingsReader::Property::reversalsPerStepSize, "5 6"),
-                propertyEntry(TrackSettingsReader::Property::stepSizes, "7 8")
+                propertyEntryWithNewline(Property::up, "1 2"),
+                propertyEntryWithNewline(Property::down, "3 4"),
+                propertyEntryWithNewline(Property::reversalsPerStepSize, "5 6"),
+                propertyEntry(Property::stepSizes, "7 8")
             },
             {first, second}
         );
     }
     
     TEST_F(TrackSettingsReaderTests, differentPropertyOrder) {
-        TrackingSequence first;
-        first.up = 1;
-        first.down = 2;
-        first.runCount = 3;
-        first.stepSize = 4;
+        TrackingSequence sequence;
+        sequence.up = 1;
+        sequence.down = 2;
+        sequence.runCount = 3;
+        sequence.stepSize = 4;
         assertFileContentsYield(
             {
-                propertyEntryWithNewline(TrackSettingsReader::Property::down, "2"),
-                propertyEntryWithNewline(TrackSettingsReader::Property::up, "1"),
-                propertyEntryWithNewline(TrackSettingsReader::Property::reversalsPerStepSize, "3"),
-                propertyEntry(TrackSettingsReader::Property::stepSizes, "4")
+                propertyEntryWithNewline(Property::down, "2"),
+                propertyEntryWithNewline(Property::up, "1"),
+                propertyEntryWithNewline(Property::reversalsPerStepSize, "3"),
+                propertyEntry(Property::stepSizes, "4")
             },
-            {first}
+            {sequence}
         );
     }
 }
