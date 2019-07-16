@@ -598,6 +598,10 @@ namespace av_speech_in_noise::tests::presentation {
         assertCancellingBrowseDoesNotChangePath(browsingForCalibration);
     }
 
+    TEST_F(PresenterTests, browseForTrackSettingsFileCancelDoesNotChangeTrackSettingsFile) {
+        assertCancellingBrowseDoesNotChangePath(browsingForTrackSettingsFile);
+    }
+
     TEST_F(
         PresenterTests,
         completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest
