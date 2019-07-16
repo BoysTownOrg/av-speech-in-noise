@@ -11,13 +11,12 @@ namespace av_speech_in_noise {
         public:
             explicit Stream(std::string s) : parent{std::move(s)} {}
             
-            void nextLine() {
-                std::getline(parent, lastLine_);
+            bool nextLine() {
+                bool hasNext{};
+                if (std::getline(parent, lastLine_))
+                    hasNext = true;
                 resetLine_();
-            }
-            
-            void resetLine() {
-                resetLine_();
+                return hasNext;
             }
             
             std::string propertyName() {
@@ -26,6 +25,7 @@ namespace av_speech_in_noise {
             
             void resetLine_() {
                 line_ = std::stringstream{lastLine_.substr(findPropertyNameDelimiter()+1)};
+                failed_ = false;
             }
             
             std::string::size_type findPropertyNameDelimiter() {
@@ -59,6 +59,8 @@ namespace av_speech_in_noise {
         void applyToStepSize(TrackingSequence &sequence, int x) {
             sequence.stepSize = x;
         }
+
+        void nothing(TrackingSequence &, int) {}
         
         void(*propertyApplication(const std::string &s))(TrackingSequence &, int) {
             using Property = TrackSettingsReader::Property;
@@ -70,7 +72,7 @@ namespace av_speech_in_noise {
                 return applyToRunCount;
             if (s == TrackSettingsReader::propertyName(Property::stepSizes))
                 return applyToStepSize;
-            return {};
+            return nothing;
         }
     }
     
@@ -79,19 +81,24 @@ namespace av_speech_in_noise {
     
     TrackingRule TrackSettingsReader::trackingRule() {
         auto stream_ = Stream{contents};
-        stream_.nextLine();
         TrackingRule rule;
-        stream_.value();
-        while (!stream_.failed()) {
-            rule.push_back({});
-            stream_.value();
-        }
-        stream_.resetLine();
-        for (int i = 0; i < 4; ++i) {
+        while (stream_.nextLine()) {
+            auto sequenceCount{0U};
             auto f = propertyApplication(stream_.propertyName());
-            for (auto &sequence : rule)
-                (*f)(sequence, stream_.value());
-            stream_.nextLine();
+            auto value = stream_.value();
+            while (!stream_.failed()) {
+                if (sequenceCount < rule.size()) {
+                    auto &sequence = rule.at(sequenceCount);
+                    (*f)(sequence, value);
+                }
+                else {
+                    rule.push_back({});
+                    auto &sequence = rule.back();
+                    (*f)(sequence, value);
+                }
+                ++sequenceCount;
+                value = stream_.value();
+            }
         }
         return rule;
     }

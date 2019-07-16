@@ -89,4 +89,24 @@ namespace av_speech_in_noise::tests {
             {sequence}
         );
     }
+    
+    TEST_F(TrackSettingsReaderTests, ignoresAnyUninterpretableEntries) {
+        TrackingSequence sequence;
+        sequence.up = 1;
+        sequence.down = 2;
+        sequence.runCount = 3;
+        sequence.stepSize = 4;
+        assertFileContentsYield(
+            {
+                " \n",
+                propertyEntryWithNewline(Property::down, "2"),
+                propertyEntryWithNewline(Property::up, "1"),
+                "not: real\n",
+                propertyEntryWithNewline(Property::reversalsPerStepSize, "3"),
+                propertyEntryWithNewline(Property::stepSizes, "4"),
+                " \n"
+            },
+            {sequence}
+        );
+    }
 }
