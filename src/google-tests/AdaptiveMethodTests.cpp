@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests {
-    class TrackSettingsReaderStub : public TrackSettingsReader {
+    class TrackSettingsReaderStub : public ITrackSettingsReader {
         const TrackingRule *rule_{};
         std::string filePath_{};
     public:
@@ -49,7 +49,6 @@ namespace av_speech_in_noise::tests {
         std::vector<std::shared_ptr<TrackStub>> tracks;
         
         AdaptiveMethodTests() {
-            test.targetLevelRule = &targetLevelRule_;
             trackSettingsReader.setTrackingRule(&targetLevelRule_);
             for (int i = 0; i < 3; ++i) {
                 lists.push_back(std::make_shared<TargetListStub>());

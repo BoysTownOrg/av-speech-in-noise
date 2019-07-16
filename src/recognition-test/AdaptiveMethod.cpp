@@ -4,7 +4,7 @@
 namespace av_speech_in_noise {
     AdaptiveMethod::AdaptiveMethod(
         TargetListReader *targetListSetReader,
-        TrackSettingsReader *trackSettingsReader,
+        ITrackSettingsReader *trackSettingsReader,
         TrackFactory *snrTrackFactory,
         ResponseEvaluator *evaluator,
         Randomizer *randomizer
