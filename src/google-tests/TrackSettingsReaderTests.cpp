@@ -21,6 +21,12 @@ namespace av_speech_in_noise {
                 resetLine_();
             }
             
+            std::string propertyName() {
+                auto found = lastLine_.find(':');
+                auto s = lastLine_.substr(0, found);
+                return s;
+            }
+            
             void resetLine_() {
                 line_ = std::stringstream{lastLine_};
             }
@@ -60,13 +66,24 @@ namespace av_speech_in_noise {
                 stream_.value();
             }
             stream_.resetLine();
-            stream_.ignore(1);
-            for (auto &sequence : rule)
-                sequence.up = stream_.value();
-            stream_.nextLine();
-            stream_.ignore(1);
-            for (auto &sequence : rule)
-                sequence.down = stream_.value();
+            if ("up" == stream_.propertyName()) {
+                stream_.ignore(1);
+                for (auto &sequence : rule)
+                    sequence.up = stream_.value();
+                stream_.nextLine();
+                stream_.ignore(1);
+                for (auto &sequence : rule)
+                    sequence.down = stream_.value();
+            }
+            else {
+                stream_.ignore(1);
+                for (auto &sequence : rule)
+                    sequence.down = stream_.value();
+                stream_.nextLine();
+                stream_.ignore(1);
+                for (auto &sequence : rule)
+                    sequence.up = stream_.value();
+            }
             stream_.nextLine();
             stream_.ignore(4);
             for (auto &sequence : rule)
@@ -127,6 +144,21 @@ namespace av_speech_in_noise::tests {
             "reversals per step size: 5 6\n"
             "step sizes (dB): 7 8",
             {first, second}
+        );
+    }
+    
+    TEST_F(TrackSettingsReaderTests, differentPropertyOrder) {
+        TrackingSequence first;
+        first.up = 1;
+        first.down = 2;
+        first.runCount = 3;
+        first.stepSize = 4;
+        assertFileContentsYield(
+            "down: 2\n"
+            "up: 1\n"
+            "reversals per step size: 3\n"
+            "step sizes (dB): 4",
+            {first}
         );
     }
 }
