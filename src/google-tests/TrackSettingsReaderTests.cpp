@@ -15,11 +15,8 @@ namespace av_speech_in_noise {
             auto line_ = std::stringstream{line};
             std::string ignore;
             line_ >> ignore;
-            int value;
-            line_ >> value;
             TrackingRule rule;
-            TrackingSequence first;
-            first.up = value;
+            int value{};
             while (line_ >> value) {
                 rule.push_back({});
                 rule.back().up = value;
@@ -27,9 +24,8 @@ namespace av_speech_in_noise {
             std::getline(stream, line);
             line_ = std::stringstream{line};
             line_ >> ignore;
-            line_ >> value;
-            first.down = value;
             for (size_t i = 0; i < rule.size(); ++i) {
+                int value{};
                 line_ >> value;
                 rule.at(i).down = value;
             }
@@ -37,9 +33,8 @@ namespace av_speech_in_noise {
             line_ = std::stringstream{line};
             for (int i = 0; i < 4; ++i)
                 line_ >> ignore;
-            line_ >> value;
-            first.runCount = value;
             for (size_t i = 0; i < rule.size(); ++i) {
+                int value{};
                 line_ >> value;
                 rule.at(i).runCount = value;
             }
@@ -47,16 +42,12 @@ namespace av_speech_in_noise {
             line_ = std::stringstream{line};
             for (int i = 0; i < 3; ++i)
                 line_ >> ignore;
-            line_ >> value;
-            first.stepSize = value;
             for (size_t i = 0; i < rule.size(); ++i) {
+                int value{};
                 line_ >> value;
                 rule.at(i).stepSize = value;
             }
-            if (rule.size())
-                return {first, rule.at(0)};
-            else
-                return {first};
+            return rule;
         }
     };
 }
