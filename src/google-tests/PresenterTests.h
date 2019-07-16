@@ -220,10 +220,15 @@ namespace av_speech_in_noise::tests::presentation {
             std::string session_;
             std::string calibrationFilePath_;
             std::string method_;
+            std::string trackSettingsFile_;
             EventListener *listener_{};
             bool shown_{};
             bool hidden_{};
         public:
+            std::string trackSettingsFile() override {
+                return trackSettingsFile_;
+            }
+            
             std::string calibrationLevel_dB_SPL() override {
                 return calibrationLevel_;
             }
@@ -304,6 +309,10 @@ namespace av_speech_in_noise::tests::presentation {
 
             void setMasker(std::string s) override {
                 masker_ = std::move(s);
+            }
+            
+            void setTrackSettingsFile(std::string s) {
+                trackSettingsFile_ = std::move(s);
             }
             
             void setSession(std::string s) {
@@ -644,6 +653,7 @@ namespace av_speech_in_noise::tests::presentation {
     public:
         virtual int ceilingSnr_dB(ModelStub &) = 0;
         virtual int floorSnr_dB(ModelStub &) = 0;
+        virtual std::string trackSettingsFile(ModelStub &) = 0;
     };
     
     class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
@@ -711,6 +721,10 @@ namespace av_speech_in_noise::tests::presentation {
         int floorSnr_dB(ModelStub &m) override {
             return adaptiveTest(m).floorSnr_dB;
         }
+        
+        std::string trackSettingsFile(ModelStub &m) override {
+            return adaptiveTest(m).trackSettingsFile;
+        }
     };
     
     void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
@@ -773,6 +787,10 @@ namespace av_speech_in_noise::tests::presentation {
         int floorSnr_dB(ModelStub &m) override {
             return confirmingAdaptiveTest.floorSnr_dB(m);
         }
+        
+        std::string trackSettingsFile(ModelStub &m) override {
+            return confirmingAdaptiveTest.trackSettingsFile(m);
+        }
     };
     
     class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
@@ -830,6 +848,10 @@ namespace av_speech_in_noise::tests::presentation {
         
         int floorSnr_dB(ModelStub &m) override {
             return confirmingAdaptiveTest.floorSnr_dB(m);
+        }
+        
+        std::string trackSettingsFile(ModelStub &m) override {
+            return confirmingAdaptiveTest.trackSettingsFile(m);
         }
     };
     
@@ -1640,6 +1662,12 @@ namespace av_speech_in_noise::tests::presentation {
             run(useCase);
             const auto *expected = &Presenter::targetLevelRule;
             assertEqual(expected, adaptiveTest().targetLevelRule);
+        }
+        
+        void assertPassesTrackSettingsFile(ConfirmingAdaptiveTest_ &useCase) {
+            setupView.setTrackSettingsFile("e");
+            run(useCase);
+            assertEqual("e", useCase.trackSettingsFile(model));
         }
         
         void assertInvalidSnrShowsErrorMessage(UseCase &useCase) {

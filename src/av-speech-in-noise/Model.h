@@ -91,6 +91,7 @@ namespace av_speech_in_noise {
     struct AdaptiveTest {
         CommonTest common;
         TestInformation information;
+        std::string trackSettingsFile;
         const TrackingRule *targetLevelRule;
         int startingSnr_dB;
         int ceilingSnr_dB;

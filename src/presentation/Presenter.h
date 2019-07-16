@@ -55,6 +55,7 @@ namespace av_speech_in_noise {
             virtual std::string maskerFilePath() = 0;
             virtual std::string calibrationFilePath() = 0;
             virtual std::string targetListDirectory() = 0;
+            virtual std::string trackSettingsFile() = 0;
             virtual std::string testerId() = 0;
             virtual std::string subjectId() = 0;
             virtual std::string condition() = 0;
