@@ -48,6 +48,7 @@
 		268000BC22DE1784005D4B8E /* TrackSettingsInterpreterTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 268000BB22DE1784005D4B8E /* TrackSettingsInterpreterTests.cpp */; };
 		268000BF22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 268000BD22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp */; };
 		268000C022DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 268000BE22DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp */; };
+		268000C222DE7BC7005D4B8E /* TrackSettingsReaderTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 268000C122DE7BC7005D4B8E /* TrackSettingsReaderTests.cpp */; };
 		26955FF92236F21A00664A2C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F84421E003B600F378DE /* CoreAudio.framework */; };
 		269C4C7D2253B8A00059AD5F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2656B62422401D2C0058A23D /* CoreMedia.framework */; };
 		269C91942233204B00A80372 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 269C919222331FCE00A80372 /* main.mm */; };
@@ -154,6 +155,7 @@
 		268000BB22DE1784005D4B8E /* TrackSettingsInterpreterTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TrackSettingsInterpreterTests.cpp; sourceTree = "<group>"; };
 		268000BD22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TrackSettingsInterpreter.cpp; sourceTree = "<group>"; };
 		268000BE22DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TrackSettingsInterpreter.hpp; sourceTree = "<group>"; };
+		268000C122DE7BC7005D4B8E /* TrackSettingsReaderTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TrackSettingsReaderTests.cpp; sourceTree = "<group>"; };
 		26955FF82236A60200664A2C /* assert-utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "assert-utility.h"; sourceTree = "<group>"; };
 		269C919222331FCE00A80372 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		269C91952233212B00A80372 /* gtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = gtest_main.a; path = ../../../../../usr/local/lib/gtest_main.a; sourceTree = "<group>"; };
@@ -397,6 +399,7 @@
 				266BF63F22DCFF0C001D0035 /* ModelEventListenerStub.h */,
 				266BF64022DCFFBC001D0035 /* FixedLevelMethodTests.cpp */,
 				268000BB22DE1784005D4B8E /* TrackSettingsInterpreterTests.cpp */,
+				268000C122DE7BC7005D4B8E /* TrackSettingsReaderTests.cpp */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";
@@ -745,6 +748,7 @@
 				26688C362273A4BD00CAE9EB /* SubdirectoryTargetListReaderTests.cpp in Sources */,
 				2645BEC822676AD7002E8C6C /* ResponseEvaluatorTests.cpp in Sources */,
 				26EE86C02242E8DE00C08622 /* TargetPlayerImpl.cpp in Sources */,
+				268000C222DE7BC7005D4B8E /* TrackSettingsReaderTests.cpp in Sources */,
 				26D3526C22D7DB7B0028D7E6 /* RecognitionTestModelTests.cpp in Sources */,
 				26C2A325225D050E00E2919D /* AudioReaderTests.cpp in Sources */,
 				26A86BDE223A972200210C00 /* MaskerPlayerTests.cpp in Sources */,
