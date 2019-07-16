@@ -30,7 +30,11 @@ namespace av_speech_in_noise::tests {
         }
         
         std::string propertyEntryWithNewline(Property p, std::string s) {
-            return propertyEntry(p, std::move(s)) + '\n';
+            return withNewLine(propertyEntry(p, std::move(s)));
+        }
+        
+        std::string withNewLine(std::string s) {
+            return std::move(s) + '\n';
         }
     };
     
@@ -98,13 +102,13 @@ namespace av_speech_in_noise::tests {
         sequence.stepSize = 4;
         assertFileContentsYield(
             {
-                " \n",
+                withNewLine(" "),
                 propertyEntryWithNewline(Property::down, "2"),
                 propertyEntryWithNewline(Property::up, "1"),
-                "not: real\n",
+                withNewLine("not: real"),
                 propertyEntryWithNewline(Property::reversalsPerStepSize, "3"),
                 propertyEntryWithNewline(Property::stepSizes, "4"),
-                " \n"
+                withNewLine(" ")
             },
             {sequence}
         );
