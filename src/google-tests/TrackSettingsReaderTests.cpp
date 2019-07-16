@@ -7,14 +7,22 @@ namespace av_speech_in_noise {
         class Stream {
             std::stringstream parent;
             std::stringstream line_{};
+            std::string lastLine_{};
             bool failed_{};
         public:
             explicit Stream(std::string s) : parent{std::move(s)} {}
             
             void nextLine() {
-                std::string s;
-                std::getline(parent, s);
-                line_ = std::stringstream{s};
+                std::getline(parent, lastLine_);
+                resetLine_();
+            }
+            
+            void resetLine() {
+                resetLine_();
+            }
+            
+            void resetLine_() {
+                line_ = std::stringstream{lastLine_};
             }
             
             void ignore(int n) {
@@ -43,16 +51,18 @@ namespace av_speech_in_noise {
         
         TrackingRule trackingRule() {
             auto stream_ = Stream{contents};
-            std::stringstream stream{contents};
             stream_.nextLine();
             stream_.ignore(1);
             TrackingRule rule;
-            int value = stream_.value();
+            stream_.value();
             while (!stream_.failed()) {
                 rule.push_back({});
-                rule.back().up = value;
-                value = stream_.value();
+                stream_.value();
             }
+            stream_.resetLine();
+            stream_.ignore(1);
+            for (auto &sequence : rule)
+                sequence.up = stream_.value();
             stream_.nextLine();
             stream_.ignore(1);
             for (auto &sequence : rule)
