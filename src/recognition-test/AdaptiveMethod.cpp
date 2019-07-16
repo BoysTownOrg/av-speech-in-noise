@@ -17,9 +17,8 @@ namespace av_speech_in_noise {
     
     void AdaptiveMethod::initialize(const AdaptiveTest &p) {
         test = &p;
-        trackSettingsReader->read(p.trackSettingsFile);
+        trackSettings.rule = trackSettingsReader->read(p.trackSettingsFile);
         trackSettings.ceiling = p.ceilingSnr_dB;
-        trackSettings.rule = p.targetLevelRule;
         trackSettings.startingX = p.startingSnr_dB;
         trackSettings.floor = p.floorSnr_dB;
         lists = targetListSetReader->read(p.common.targetListDirectory);

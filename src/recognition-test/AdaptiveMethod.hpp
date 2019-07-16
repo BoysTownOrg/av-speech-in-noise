@@ -25,7 +25,7 @@ namespace av_speech_in_noise {
     class TrackSettingsReader {
     public:
         virtual ~TrackSettingsReader() = default;
-        virtual void read(std::string) = 0;
+        virtual const TrackingRule *read(std::string) = 0;
     };
     
     class TrackFactory {

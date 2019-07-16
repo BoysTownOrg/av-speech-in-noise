@@ -10,14 +10,20 @@
 
 namespace av_speech_in_noise::tests {
     class TrackSettingsReaderStub : public TrackSettingsReader {
+        const TrackingRule *rule_{};
         std::string filePath_{};
     public:
         auto filePath() const {
             return filePath_;
         }
         
-        void read(std::string s) override {
+        const TrackingRule *read(std::string s) override {
             filePath_ = std::move(s);
+            return rule_;
+        }
+        
+        void setTrackingRule(const TrackingRule *r) {
+            rule_ = r;
         }
     };
     
@@ -44,6 +50,7 @@ namespace av_speech_in_noise::tests {
         
         AdaptiveMethodTests() {
             test.targetLevelRule = &targetLevelRule_;
+            trackSettingsReader.setTrackingRule(&targetLevelRule_);
             for (int i = 0; i < 3; ++i) {
                 lists.push_back(std::make_shared<TargetListStub>());
                 tracks.push_back(std::make_shared<TrackStub>());
