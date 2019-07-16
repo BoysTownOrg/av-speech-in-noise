@@ -67,19 +67,12 @@ namespace av_speech_in_noise {
                 stream_.value();
             }
             stream_.resetLine();
-            auto f = propertyApplication.at(stream_.propertyName());
-            for (auto &sequence : rule)
-                (this->*f)(sequence, stream_.value());
-            stream_.nextLine();
-            f = propertyApplication.at(stream_.propertyName());
-            for (auto &sequence : rule)
-                (this->*f)(sequence, stream_.value());
-            stream_.nextLine();
-            for (auto &sequence : rule)
-                sequence.runCount = stream_.value();
-            stream_.nextLine();
-            for (auto &sequence : rule)
-                sequence.stepSize = stream_.value();
+            for (int i = 0; i < 4; ++i) {
+                auto f = propertyApplication.at(stream_.propertyName());
+                for (auto &sequence : rule)
+                    (this->*f)(sequence, stream_.value());
+                stream_.nextLine();
+            }
             return rule;
         }
         
