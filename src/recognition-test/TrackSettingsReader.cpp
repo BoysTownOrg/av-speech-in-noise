@@ -1,4 +1,5 @@
 #include "TrackSettingsReader.hpp"
+#include <sstream>
 
 namespace av_speech_in_noise {
     namespace {
@@ -43,6 +44,15 @@ namespace av_speech_in_noise {
             }
         };
     }
+    
+    TrackSettingsReader::TrackSettingsReader(std::string s) :
+        propertyApplication{
+            {propertyName(TrackProperty::up), &TrackSettingsReader::applyToUp},
+            {propertyName(TrackProperty::down), &TrackSettingsReader::applyToDown},
+            {propertyName(TrackProperty::reversalsPerStepSize), &TrackSettingsReader::applyToRunCount},
+            {propertyName(TrackProperty::stepSizes), &TrackSettingsReader::applyToStepSize}
+        },
+        contents{std::move(s)} {}
     
     TrackingRule TrackSettingsReader::trackingRule() {
         auto stream_ = Stream{contents};
