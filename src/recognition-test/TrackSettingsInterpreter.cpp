@@ -1,4 +1,4 @@
-#include "TrackSettingsReader.hpp"
+#include "TrackSettingsInterpreter.hpp"
 #include <sstream>
 
 namespace av_speech_in_noise {
@@ -64,23 +64,23 @@ namespace av_speech_in_noise {
         void nothing(TrackingSequence &, int) {}
         
         void(*propertyApplication(const std::string &s))(TrackingSequence &, int) {
-            using Property = TrackSettingsReader::Property;
-            if (s == TrackSettingsReader::propertyName(Property::up))
+            using Property = TrackSettingsInterpreter::Property;
+            if (s == TrackSettingsInterpreter::propertyName(Property::up))
                 return applyToUp;
-            if (s == TrackSettingsReader::propertyName(Property::down))
+            if (s == TrackSettingsInterpreter::propertyName(Property::down))
                 return applyToDown;
-            if (s == TrackSettingsReader::propertyName(Property::reversalsPerStepSize))
+            if (s == TrackSettingsInterpreter::propertyName(Property::reversalsPerStepSize))
                 return applyToRunCount;
-            if (s == TrackSettingsReader::propertyName(Property::stepSizes))
+            if (s == TrackSettingsInterpreter::propertyName(Property::stepSizes))
                 return applyToStepSize;
             return nothing;
         }
     }
     
-    TrackSettingsReader::TrackSettingsReader(std::string s) :
+    TrackSettingsInterpreter::TrackSettingsInterpreter(std::string s) :
         contents{std::move(s)} {}
     
-    TrackingRule TrackSettingsReader::trackingRule() {
+    TrackingRule TrackSettingsInterpreter::trackingRule() {
         auto stream = Stream{contents};
         TrackingRule rule;
         while (stream.nextLine()) {

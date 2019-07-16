@@ -1,17 +1,17 @@
 #include "assert-utility.h"
-#include <recognition-test/TrackSettingsReader.hpp>
+#include <recognition-test/TrackSettingsInterpreter.hpp>
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests {
-    using Property = TrackSettingsReader::Property;
+    using Property = TrackSettingsInterpreter::Property;
     
-    class TrackSettingsReaderTests : public ::testing::Test {
+    class TrackSettingsInterpreterTests : public ::testing::Test {
     protected:
         void assertFileContentsYield(
             std::vector<std::string> v,
             const TrackingRule &expected
         ) {
-            TrackSettingsReader reader{concatenate(std::move(v))};
+            TrackSettingsInterpreter reader{concatenate(std::move(v))};
             assertEqual(expected, reader.trackingRule());
         }
         
@@ -24,7 +24,7 @@ namespace av_speech_in_noise::tests {
         
         std::string propertyEntry(Property p, std::string s) {
             return
-                std::string{TrackSettingsReader::propertyName(p)} +
+                std::string{TrackSettingsInterpreter::propertyName(p)} +
                 ": " +
                 std::move(s);
         }
@@ -38,7 +38,7 @@ namespace av_speech_in_noise::tests {
         }
     };
     
-    TEST_F(TrackSettingsReaderTests, oneSequence) {
+    TEST_F(TrackSettingsInterpreterTests, oneSequence) {
         TrackingSequence sequence;
         sequence.up = 1;
         sequence.down = 2;
@@ -55,7 +55,7 @@ namespace av_speech_in_noise::tests {
         );
     }
     
-    TEST_F(TrackSettingsReaderTests, twoSequences) {
+    TEST_F(TrackSettingsInterpreterTests, twoSequences) {
         TrackingSequence first;
         first.up = 1;
         first.down = 3;
@@ -77,7 +77,7 @@ namespace av_speech_in_noise::tests {
         );
     }
     
-    TEST_F(TrackSettingsReaderTests, differentPropertyOrder) {
+    TEST_F(TrackSettingsInterpreterTests, differentPropertyOrder) {
         TrackingSequence sequence;
         sequence.up = 1;
         sequence.down = 2;
@@ -94,7 +94,7 @@ namespace av_speech_in_noise::tests {
         );
     }
     
-    TEST_F(TrackSettingsReaderTests, ignoresAnyUninterpretableEntries) {
+    TEST_F(TrackSettingsInterpreterTests, ignoresAnyUninterpretableEntries) {
         TrackingSequence sequence;
         sequence.up = 1;
         sequence.down = 2;

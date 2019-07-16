@@ -45,9 +45,9 @@
 		266BF63E22DCD325001D0035 /* FixedLevelMethod.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 266BF63C22DCD325001D0035 /* FixedLevelMethod.hpp */; };
 		266BF64122DCFFBC001D0035 /* FixedLevelMethodTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 266BF64022DCFFBC001D0035 /* FixedLevelMethodTests.cpp */; };
 		26788E0022D4FA6700E89037 /* AdaptiveMethodTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26788DFF22D4FA6700E89037 /* AdaptiveMethodTests.cpp */; };
-		268000BC22DE1784005D4B8E /* TrackSettingsReaderTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 268000BB22DE1784005D4B8E /* TrackSettingsReaderTests.cpp */; };
-		268000BF22DE4A0B005D4B8E /* TrackSettingsReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 268000BD22DE4A0B005D4B8E /* TrackSettingsReader.cpp */; };
-		268000C022DE4A0B005D4B8E /* TrackSettingsReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 268000BE22DE4A0B005D4B8E /* TrackSettingsReader.hpp */; };
+		268000BC22DE1784005D4B8E /* TrackSettingsInterpreterTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 268000BB22DE1784005D4B8E /* TrackSettingsInterpreterTests.cpp */; };
+		268000BF22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 268000BD22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp */; };
+		268000C022DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 268000BE22DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp */; };
 		26955FF92236F21A00664A2C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2646F84421E003B600F378DE /* CoreAudio.framework */; };
 		269C4C7D2253B8A00059AD5F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2656B62422401D2C0058A23D /* CoreMedia.framework */; };
 		269C91942233204B00A80372 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 269C919222331FCE00A80372 /* main.mm */; };
@@ -151,9 +151,9 @@
 		26788E0122D4FB4500E89037 /* TargetListSetReaderStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TargetListSetReaderStub.h; sourceTree = "<group>"; };
 		26788E0222D4FBC100E89037 /* TrackStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TrackStub.h; sourceTree = "<group>"; };
 		26788E0322D4FC5300E89037 /* RandomizerStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RandomizerStub.h; sourceTree = "<group>"; };
-		268000BB22DE1784005D4B8E /* TrackSettingsReaderTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TrackSettingsReaderTests.cpp; sourceTree = "<group>"; };
-		268000BD22DE4A0B005D4B8E /* TrackSettingsReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TrackSettingsReader.cpp; sourceTree = "<group>"; };
-		268000BE22DE4A0B005D4B8E /* TrackSettingsReader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TrackSettingsReader.hpp; sourceTree = "<group>"; };
+		268000BB22DE1784005D4B8E /* TrackSettingsInterpreterTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TrackSettingsInterpreterTests.cpp; sourceTree = "<group>"; };
+		268000BD22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TrackSettingsInterpreter.cpp; sourceTree = "<group>"; };
+		268000BE22DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TrackSettingsInterpreter.hpp; sourceTree = "<group>"; };
 		26955FF82236A60200664A2C /* assert-utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "assert-utility.h"; sourceTree = "<group>"; };
 		269C919222331FCE00A80372 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		269C91952233212B00A80372 /* gtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = gtest_main.a; path = ../../../../../usr/local/lib/gtest_main.a; sourceTree = "<group>"; };
@@ -315,8 +315,8 @@
 				266BF63822DCD2AB001D0035 /* AdaptiveMethod.hpp */,
 				266BF63B22DCD325001D0035 /* FixedLevelMethod.cpp */,
 				266BF63C22DCD325001D0035 /* FixedLevelMethod.hpp */,
-				268000BD22DE4A0B005D4B8E /* TrackSettingsReader.cpp */,
-				268000BE22DE4A0B005D4B8E /* TrackSettingsReader.hpp */,
+				268000BD22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp */,
+				268000BE22DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp */,
 			);
 			path = "recognition-test";
 			sourceTree = "<group>";
@@ -396,7 +396,7 @@
 				264F07C122D91102007B4126 /* RecognitionTestModel_InternalTests.cpp */,
 				266BF63F22DCFF0C001D0035 /* ModelEventListenerStub.h */,
 				266BF64022DCFFBC001D0035 /* FixedLevelMethodTests.cpp */,
-				268000BB22DE1784005D4B8E /* TrackSettingsReaderTests.cpp */,
+				268000BB22DE1784005D4B8E /* TrackSettingsInterpreterTests.cpp */,
 			);
 			path = "google-tests";
 			sourceTree = "<group>";
@@ -460,7 +460,7 @@
 				266BF63E22DCD325001D0035 /* FixedLevelMethod.hpp in Headers */,
 				2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */,
 				264F07C622D93330007B4126 /* RecognitionTestModel_Internal.hpp in Headers */,
-				268000C022DE4A0B005D4B8E /* TrackSettingsReader.hpp in Headers */,
+				268000C022DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp in Headers */,
 				26688C342273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp in Headers */,
 				2645BECC2267705D002E8C6C /* ResponseEvaluatorImpl.hpp in Headers */,
 			);
@@ -704,7 +704,7 @@
 				264F07C522D93330007B4126 /* RecognitionTestModel_Internal.cpp in Sources */,
 				2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */,
 				26688C332273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp in Sources */,
-				268000BF22DE4A0B005D4B8E /* TrackSettingsReader.cpp in Sources */,
+				268000BF22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp in Sources */,
 				26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */,
 				266BF63922DCD2AB001D0035 /* AdaptiveMethod.cpp in Sources */,
 				264E7E4E224E6F30008A595F /* OutputFilePathImpl.cpp in Sources */,
@@ -754,7 +754,7 @@
 				26EE86BB2242CFFB00C08622 /* TargetPlayerTests.cpp in Sources */,
 				26C2A326225D0B3400E2919D /* MaskerPlayerImpl.cpp in Sources */,
 				2646F83421DFDF5500F378DE /* TargetListTests.cpp in Sources */,
-				268000BC22DE1784005D4B8E /* TrackSettingsReaderTests.cpp in Sources */,
+				268000BC22DE1784005D4B8E /* TrackSettingsInterpreterTests.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

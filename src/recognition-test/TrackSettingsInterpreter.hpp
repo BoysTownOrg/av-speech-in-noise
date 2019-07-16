@@ -1,11 +1,11 @@
-#ifndef av_speech_in_noise_TrackSettingsReader_hpp
-#define av_speech_in_noise_TrackSettingsReader_hpp
+#ifndef av_speech_in_noise_TrackSettingsInterpreter_hpp
+#define av_speech_in_noise_TrackSettingsInterpreter_hpp
 
 #include <av-speech-in-noise/Model.h>
 #include <string>
 
 namespace av_speech_in_noise {
-    class TrackSettingsReader {
+    class TrackSettingsInterpreter {
         std::string contents;
     public:
         enum class Property {
@@ -28,7 +28,7 @@ namespace av_speech_in_noise {
             }
         }
         
-        explicit TrackSettingsReader(std::string);
+        explicit TrackSettingsInterpreter(std::string);
         TrackingRule trackingRule();
     };
 }
