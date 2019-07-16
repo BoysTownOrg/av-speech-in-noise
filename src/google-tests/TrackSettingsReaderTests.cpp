@@ -5,20 +5,27 @@
 namespace av_speech_in_noise {
     namespace {
         class Stream {
-            std::stringstream stream;
+            std::stringstream parent;
+            std::stringstream line_{};
             bool failed_{};
         public:
-            explicit Stream(std::string s) : stream{std::move(s)} {}
+            explicit Stream(std::string s) : parent{std::move(s)} {}
+            
+            void nextLine() {
+                std::string s;
+                std::getline(parent, s);
+                line_ = std::stringstream{s};
+            }
             
             void ignore(int n) {
                 std::string ignore_;
                 for (int i = 0; i < n; ++i)
-                    stream >> ignore_;
+                    line_ >> ignore_;
             }
             
             int value() {
                 int x;
-                if (!(stream >> x))
+                if (!(line_ >> x))
                     failed_ = true;
                 return x;
             }
@@ -35,11 +42,9 @@ namespace av_speech_in_noise {
         explicit TrackSettingsReader(std::string s) : contents{std::move(s)} {}
         
         TrackingRule trackingRule() {
+            auto stream_ = Stream{contents};
             std::stringstream stream{contents};
-            std::string line;
-            std::getline(stream, line);
-            auto line_ = std::stringstream{line};
-            auto stream_ = Stream{line};
+            stream_.nextLine();
             stream_.ignore(1);
             TrackingRule rule;
             int value = stream_.value();
@@ -48,18 +53,15 @@ namespace av_speech_in_noise {
                 rule.back().up = value;
                 value = stream_.value();
             }
-            std::getline(stream, line);
-            stream_ = Stream{line};
+            stream_.nextLine();
             stream_.ignore(1);
             for (auto &sequence : rule)
                 sequence.down = stream_.value();
-            std::getline(stream, line);
-            stream_ = Stream{line};
+            stream_.nextLine();
             stream_.ignore(4);
             for (auto &sequence : rule)
                 sequence.runCount = stream_.value();
-            std::getline(stream, line);
-            stream_ = Stream{line};
+            stream_.nextLine();
             stream_.ignore(3);
             for (auto &sequence : rule)
                 sequence.stepSize = stream_.value();
