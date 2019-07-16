@@ -146,7 +146,7 @@ namespace av_speech_in_noise::tests {
             propertyEntry(TrackProperty::up, "1\n") +
             propertyEntry(TrackProperty::down, "2\n") +
             propertyEntry(TrackProperty::reversalsPerStepSize, "3\n") +
-            propertyEntry(TrackProperty::stepSizes, "4\n"),
+            propertyEntry(TrackProperty::stepSizes, "4"),
             {first}
         );
     }
@@ -163,10 +163,10 @@ namespace av_speech_in_noise::tests {
         second.runCount = 6;
         second.stepSize = 8;
         assertFileContentsYield(
-            "up: 1 2\n"
-            "down: 3 4\n"
-            "reversals per step size: 5 6\n"
-            "step sizes (dB): 7 8",
+            propertyEntry(TrackProperty::up, "1 2\n") +
+            propertyEntry(TrackProperty::down, "3 4\n") +
+            propertyEntry(TrackProperty::reversalsPerStepSize, "5 6\n") +
+            propertyEntry(TrackProperty::stepSizes, "7 8"),
             {first, second}
         );
     }
@@ -178,10 +178,10 @@ namespace av_speech_in_noise::tests {
         first.runCount = 3;
         first.stepSize = 4;
         assertFileContentsYield(
-            "down: 2\n"
-            "up: 1\n"
-            "reversals per step size: 3\n"
-            "step sizes (dB): 4",
+            propertyEntry(TrackProperty::down, "2\n") +
+            propertyEntry(TrackProperty::up, "1\n") +
+            propertyEntry(TrackProperty::reversalsPerStepSize, "3\n") +
+            propertyEntry(TrackProperty::stepSizes, "4"),
             {first}
         );
     }
