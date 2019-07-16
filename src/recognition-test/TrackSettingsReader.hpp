@@ -7,15 +7,32 @@
 
 namespace av_speech_in_noise {
     class TrackSettingsReader {
-        std::map<std::string, void(TrackSettingsReader::*)(TrackingSequence &, int)> propertyApplication;
+        std::map<
+            std::string,
+            void(TrackSettingsReader::*)(TrackingSequence &, int)
+        > propertyApplication;
         std::string contents;
     public:
-        enum class TrackProperty {
+        enum class Property {
             up,
             down,
             reversalsPerStepSize,
             stepSizes
         };
+
+        static constexpr const char *propertyName(Property p) {
+            switch (p) {
+                case Property::up:
+                    return "up";
+                case Property::down:
+                    return "down";
+                case Property::reversalsPerStepSize:
+                    return "reversals per step size";
+                case Property::stepSizes:
+                    return "step sizes (dB)";
+            }
+        }
+        
         explicit TrackSettingsReader(std::string);
         TrackingRule trackingRule();
     private:
@@ -35,19 +52,6 @@ namespace av_speech_in_noise {
             sequence.stepSize = x;
         }
     };
-
-    constexpr const char *propertyName(TrackSettingsReader::TrackProperty p) {
-        switch (p) {
-            case TrackSettingsReader::TrackProperty::up:
-                return "up";
-            case TrackSettingsReader::TrackProperty::down:
-                return "down";
-            case TrackSettingsReader::TrackProperty::reversalsPerStepSize:
-                return "reversals per step size";
-            case TrackSettingsReader::TrackProperty::stepSizes:
-                return "step sizes (dB)";
-        }
-    }
 }
 
 #endif

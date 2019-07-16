@@ -47,10 +47,10 @@ namespace av_speech_in_noise {
     
     TrackSettingsReader::TrackSettingsReader(std::string s) :
         propertyApplication{
-            {propertyName(TrackProperty::up), &TrackSettingsReader::applyToUp},
-            {propertyName(TrackProperty::down), &TrackSettingsReader::applyToDown},
-            {propertyName(TrackProperty::reversalsPerStepSize), &TrackSettingsReader::applyToRunCount},
-            {propertyName(TrackProperty::stepSizes), &TrackSettingsReader::applyToStepSize}
+            {propertyName(Property::up), &TrackSettingsReader::applyToUp},
+            {propertyName(Property::down), &TrackSettingsReader::applyToDown},
+            {propertyName(Property::reversalsPerStepSize), &TrackSettingsReader::applyToRunCount},
+            {propertyName(Property::stepSizes), &TrackSettingsReader::applyToStepSize}
         },
         contents{std::move(s)} {}
     
