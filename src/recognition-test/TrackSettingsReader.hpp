@@ -3,14 +3,9 @@
 
 #include <av-speech-in-noise/Model.h>
 #include <string>
-#include <map>
 
 namespace av_speech_in_noise {
     class TrackSettingsReader {
-        std::map<
-            std::string,
-            void(*)(TrackingSequence &, int)
-        > propertyApplication;
         std::string contents;
     public:
         enum class Property {

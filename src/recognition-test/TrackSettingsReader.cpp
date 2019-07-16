@@ -43,31 +43,38 @@ namespace av_speech_in_noise {
                 return failed_;
             }
         };
-    }
     
-    static void applyToUp(TrackingSequence &sequence, int x) {
-        sequence.up = x;
-    }
+        void applyToUp(TrackingSequence &sequence, int x) {
+            sequence.up = x;
+        }
 
-    static void applyToDown(TrackingSequence &sequence, int x) {
-        sequence.down = x;
-    }
+        void applyToDown(TrackingSequence &sequence, int x) {
+            sequence.down = x;
+        }
 
-    static void applyToRunCount(TrackingSequence &sequence, int x) {
-        sequence.runCount = x;
-    }
+        void applyToRunCount(TrackingSequence &sequence, int x) {
+            sequence.runCount = x;
+        }
 
-    static void applyToStepSize(TrackingSequence &sequence, int x) {
-        sequence.stepSize = x;
+        void applyToStepSize(TrackingSequence &sequence, int x) {
+            sequence.stepSize = x;
+        }
+        
+        void(*propertyApplication(const std::string &s))(TrackingSequence &, int) {
+            using Property = TrackSettingsReader::Property;
+            if (s == TrackSettingsReader::propertyName(Property::up))
+                return applyToUp;
+            if (s == TrackSettingsReader::propertyName(Property::down))
+                return applyToDown;
+            if (s == TrackSettingsReader::propertyName(Property::reversalsPerStepSize))
+                return applyToRunCount;
+            if (s == TrackSettingsReader::propertyName(Property::stepSizes))
+                return applyToStepSize;
+            return {};
+        }
     }
     
     TrackSettingsReader::TrackSettingsReader(std::string s) :
-        propertyApplication{
-            {propertyName(Property::up), &applyToUp},
-            {propertyName(Property::down), &applyToDown},
-            {propertyName(Property::reversalsPerStepSize), &applyToRunCount},
-            {propertyName(Property::stepSizes), &applyToStepSize}
-        },
         contents{std::move(s)} {}
     
     TrackingRule TrackSettingsReader::trackingRule() {
@@ -81,7 +88,7 @@ namespace av_speech_in_noise {
         }
         stream_.resetLine();
         for (int i = 0; i < 4; ++i) {
-            auto f = propertyApplication.at(stream_.propertyName());
+            auto f = propertyApplication(stream_.propertyName());
             for (auto &sequence : rule)
                 (*f)(sequence, stream_.value());
             stream_.nextLine();
