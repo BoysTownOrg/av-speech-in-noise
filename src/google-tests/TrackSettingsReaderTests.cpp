@@ -17,17 +17,15 @@ namespace av_speech_in_noise {
         TextFileReader *reader;
         ITrackSettingsInterpreter *interpreter;
     public:
-        explicit TrackSettingsReader(
+        TrackSettingsReader(
             TextFileReader *reader,
-            ITrackSettingsInterpreter *interpreter = {}
+            ITrackSettingsInterpreter *interpreter
         ) :
             reader{reader},
             interpreter{interpreter} {}
         
         const TrackingRule *read(std::string filePath) override {
-            auto contents = reader->read(std::move(filePath));
-            if (interpreter)
-                interpreter->trackingRule(contents);
+            interpreter->trackingRule(reader->read(std::move(filePath)));
             return {};
         }
     };
@@ -69,22 +67,24 @@ namespace av_speech_in_noise::tests {
     };
     
     class TrackSettingsReaderTests : public ::testing::Test {
-    
+    protected:
+        TextFileReaderStub fileReader;
+        TrackSettingsInterpreterStub interpreter;
+        TrackSettingsReader reader{&fileReader, &interpreter};
+        
+        void read(std::string s = {}) {
+            reader.read(std::move(s));
+        }
     };
     
     TEST_F(TrackSettingsReaderTests, readPassesFilePathToFileReader) {
-        TextFileReaderStub fileReader;
-        TrackSettingsReader reader{&fileReader};
-        reader.read("a");
+        read("a");
         assertEqual("a", fileReader.filePath());
     }
     
     TEST_F(TrackSettingsReaderTests, readPassesContentsToInterpreter) {
-        TextFileReaderStub fileReader;
-        TrackSettingsInterpreterStub interpreter;
-        TrackSettingsReader reader{&fileReader, &interpreter};
         fileReader.setContents("a");
-        reader.read({});
+        read();
         assertEqual("a", interpreter.content());
     }
 }
