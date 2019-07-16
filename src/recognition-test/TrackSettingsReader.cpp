@@ -4,19 +4,18 @@
 namespace av_speech_in_noise {
     namespace {
         class Stream {
-            std::stringstream parent;
+            std::stringstream stream;
             std::stringstream line_{};
             std::string lastLine_{};
             bool failed_{};
         public:
-            explicit Stream(std::string s) : parent{std::move(s)} {}
+            explicit Stream(std::string s) : stream{std::move(s)} {}
             
             bool nextLine() {
-                bool hasNext{};
-                if (std::getline(parent, lastLine_))
-                    hasNext = true;
+                if (!std::getline(stream, lastLine_))
+                    return false;
                 resetLine_();
-                return hasNext;
+                return true;
             }
             
             std::string propertyName() {
@@ -24,7 +23,9 @@ namespace av_speech_in_noise {
             }
             
             void resetLine_() {
-                line_ = std::stringstream{lastLine_.substr(findPropertyNameDelimiter()+1)};
+                line_ = std::stringstream{
+                    lastLine_.substr(findPropertyNameDelimiter()+1)
+                };
                 failed_ = false;
             }
             
@@ -80,24 +81,19 @@ namespace av_speech_in_noise {
         contents{std::move(s)} {}
     
     TrackingRule TrackSettingsReader::trackingRule() {
-        auto stream_ = Stream{contents};
+        auto stream = Stream{contents};
         TrackingRule rule;
-        while (stream_.nextLine()) {
+        while (stream.nextLine()) {
             auto sequenceCount{0U};
-            auto f = propertyApplication(stream_.propertyName());
-            auto value = stream_.value();
-            while (!stream_.failed()) {
-                if (sequenceCount < rule.size()) {
-                    auto &sequence = rule.at(sequenceCount);
-                    (*f)(sequence, value);
-                }
-                else {
+            auto f = propertyApplication(stream.propertyName());
+            while (true) {
+                auto value = stream.value();
+                if (stream.failed())
+                    break;
+                if (sequenceCount == rule.size())
                     rule.push_back({});
-                    auto &sequence = rule.back();
-                    (*f)(sequence, value);
-                }
-                ++sequenceCount;
-                value = stream_.value();
+                auto &sequence = rule.at(sequenceCount++);
+                (*f)(sequence, value);
             }
         }
         return rule;
