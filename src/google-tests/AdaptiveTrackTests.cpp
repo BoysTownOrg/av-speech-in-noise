@@ -193,10 +193,9 @@ namespace adaptive_track::tests {
     TEST_F(AdaptiveTrackTests, floorActsAsLowerLimit) {
         setFloor(0);
         setFirstSequenceDown(1);
-        setFirstSequenceUp(2);
-        setFirstSequenceRunCount(3);
         setFirstSequenceStepSize(4);
         setStartingX(5);
+        setFirstSequenceRunCount(999);
         auto track = reset();
         assertXEquals(track, 5);
         pushDown(track);
@@ -207,8 +206,7 @@ namespace adaptive_track::tests {
 
     TEST_F(AdaptiveTrackTests, ceilingActsAsUpperLimit) {
         setFirstSequenceUp(1);
-        setFirstSequenceDown(2);
-        setFirstSequenceRunCount(3);
+        setFirstSequenceRunCount(999);
         setFirstSequenceStepSize(4);
         setStartingX(5);
         setCeiling(10);
@@ -224,8 +222,6 @@ namespace adaptive_track::tests {
         setFirstSequenceUp(1);
         setFirstSequenceDown(2);
         setFirstSequenceRunCount(3);
-        setFirstSequenceStepSize(4);
-        setStartingX(5);
         auto track = reset();
         assertIncomplete(track);
         pushDown(track);
