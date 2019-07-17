@@ -106,6 +106,10 @@ namespace adaptive_track::tests {
             firstSequence().stepSize = x;
         }
         
+        void setFirstSequenceRunCount(int x) {
+            firstSequence().runCount = x;
+        }
+        
         void pushDown(AdaptiveTrackFacade &track) {
             track.pushDown();
         }
@@ -151,7 +155,7 @@ namespace adaptive_track::tests {
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
         setStartingX(5);
-        firstSequence().runCount = 3;
+        setFirstSequenceRunCount(3);
         setFirstSequenceStepSize(4);
         firstSequence().up = 1;
         firstSequence().down = 2;
@@ -177,7 +181,7 @@ namespace adaptive_track::tests {
     TEST_F(AdaptiveTrackTests, floorActsAsLowerLimit) {
         setStartingX(5);
         setFloor(0);
-        firstSequence().runCount = 3;
+        setFirstSequenceRunCount(3);
         setFirstSequenceStepSize(4);
         firstSequence().up = 2;
         firstSequence().down = 1;
@@ -192,7 +196,7 @@ namespace adaptive_track::tests {
     TEST_F(AdaptiveTrackTests, ceilingActsAsUpperLimit) {
         setStartingX(5);
         setCeiling(10);
-        firstSequence().runCount = 3;
+        setFirstSequenceRunCount(3);
         setFirstSequenceStepSize(4);
         firstSequence().up = 1;
         firstSequence().down = 2;
@@ -206,7 +210,7 @@ namespace adaptive_track::tests {
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
         setStartingX(5);
-        firstSequence().runCount = 3;
+        setFirstSequenceRunCount(3);
         setFirstSequenceStepSize(4);
         firstSequence().up = 1;
         firstSequence().down = 2;
@@ -232,7 +236,7 @@ namespace adaptive_track::tests {
         setBumpLimit(3);
         setFirstSequenceStepSize(10 - 6);
         firstSequence().up = 2;
-        firstSequence().runCount = 999;
+        setFirstSequenceRunCount(999);
         auto track = reset();
         assertXEquals(track, 6);
         pushUp(track);
@@ -253,7 +257,7 @@ namespace adaptive_track::tests {
         setBumpLimit(3);
         setFirstSequenceStepSize(10 - 6);
         firstSequence().down = 2;
-        firstSequence().runCount = 999;
+        setFirstSequenceRunCount(999);
         auto track = reset();
         assertXEquals(track, -6);
         pushDown(track);
@@ -275,7 +279,7 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(10 - 6);
         firstSequence().down = 2;
         firstSequence().up = 999;
-        firstSequence().runCount = 999;
+        setFirstSequenceRunCount(999);
         auto track = reset();
         assertXEquals(track, -6);
         pushDown(track);
@@ -295,7 +299,7 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(10 - 6);
         firstSequence().up = 2;
         firstSequence().down = 999;
-        firstSequence().runCount = 999;
+        setFirstSequenceRunCount(999);
         auto track = reset();
         assertXEquals(track, 6);
         pushUp(track);
@@ -311,7 +315,7 @@ namespace adaptive_track::tests {
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure4) {
         setStartingX(0);
-        firstSequence().runCount = 8;
+        setFirstSequenceRunCount(8);
         setFirstSequenceStepSize(1);
         firstSequence().down = 1;
         firstSequence().up = 1;
@@ -323,7 +327,7 @@ namespace adaptive_track::tests {
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure5) {
         setStartingX(0);
-        firstSequence().runCount = 5;
+        setFirstSequenceRunCount(5);
         setFirstSequenceStepSize(1);
         firstSequence().down = 2;
         firstSequence().up = 1;
@@ -334,7 +338,7 @@ namespace adaptive_track::tests {
 
     TEST_F(AdaptiveTrackTests, twoSequences) {
         setStartingX(65);
-        firstSequence().runCount = 2;
+        setFirstSequenceRunCount(2);
         setFirstSequenceStepSize(8);
         firstSequence().down = 2;
         firstSequence().up = 1;
@@ -369,7 +373,7 @@ namespace adaptive_track::tests {
 
     TEST_F(AdaptiveTrackTests, threeSequences) {
         setStartingX(0);
-        firstSequence().runCount = 1;
+        setFirstSequenceRunCount(1);
         setFirstSequenceStepSize(10);
         firstSequence().down = 3;
         firstSequence().up = 1;
@@ -388,7 +392,7 @@ namespace adaptive_track::tests {
 
     TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
         setStartingX(65);
-        firstSequence().runCount = 2;
+        setFirstSequenceRunCount(2);
         setFirstSequenceStepSize(8);
         firstSequence().up = 1;
         firstSequence().down = 2;
@@ -423,7 +427,7 @@ namespace adaptive_track::tests {
     
     TEST_F(AdaptiveTrackTests, reversals) {
         setStartingX(0);
-        firstSequence().runCount = 1000;
+        setFirstSequenceRunCount(1000);
         firstSequence().down = 2;
         firstSequence().up = 1;
         auto track = reset();
