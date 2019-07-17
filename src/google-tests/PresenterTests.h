@@ -1617,6 +1617,11 @@ namespace av_speech_in_noise::tests::presentation {
             assertSetupViewHidden();
         }
         
+        void assertDoesNotHideTestSetupView(UseCase &useCase) {
+            run(useCase);
+            assertSetupViewNotHidden();
+        }
+        
         void assertShowsExperimenterView(UseCase &useCase) {
             run(useCase);
             assertExperimenterViewShown();

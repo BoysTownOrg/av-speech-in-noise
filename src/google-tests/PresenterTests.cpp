@@ -59,6 +59,14 @@ namespace av_speech_in_noise::tests::presentation {
 
     TEST_F(
         PresenterTests,
+        confirmAdaptiveClosedSetTestDoesNotHideSetupViewWhenTestComplete
+    ) {
+        setTestComplete();
+        assertDoesNotHideTestSetupView(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(
+        PresenterTests,
         confirmFixedLevelClosedSetTestShowsSubjectView
     ) {
         assertShowsSubjectView(confirmingFixedLevelClosedSetTest);

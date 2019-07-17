@@ -52,7 +52,8 @@ namespace av_speech_in_noise {
     
     void Presenter::confirmTestSetup_() {
         initializeTest();
-        switchToTestView();
+        if (!testComplete())
+            switchToTestView();
         trialCompletionHandler = getTrialCompletionHandler();
     }
     
@@ -77,8 +78,7 @@ namespace av_speech_in_noise {
     
     void Presenter::switchToTestView() {
         hideTestSetup();
-        if (!testComplete())
-            showTestView();
+        showTestView();
     }
     
     void Presenter::hideTestSetup() {
