@@ -22,10 +22,9 @@ namespace adaptive_track {
         if (complete_())
             return;
         
-        if (x_ == ceiling_)
-            ++bumpCount_;
-        else
-            bumpCount_ = 0;
+        bumpCount_ = x_ == ceiling_
+            ? bumpCount_ + 1
+            : 0;
         update(Direction::up, up, &AdaptiveTrack::stepUp);
     }
     
