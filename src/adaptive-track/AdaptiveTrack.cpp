@@ -4,7 +4,9 @@ namespace adaptive_track {
     AdaptiveTrack::AdaptiveTrack(const Settings &p) :
         x_{p.startingX},
         ceiling_{p.ceiling},
-        floor_{p.floor}
+        floor_{p.floor},
+        bumpLimit_{p.bumpLimit},
+        bumpCount_{0}
     {
         for (const auto &sequence : *p.rule)
             if (sequence.runCount) {
@@ -20,6 +22,8 @@ namespace adaptive_track {
         if (complete_())
             return;
         
+        if (x_ == ceiling_)
+            ++bumpCount_;
         update(Direction::up, up, &AdaptiveTrack::stepUp);
     }
     
@@ -98,7 +102,7 @@ namespace adaptive_track {
     }
 
     bool AdaptiveTrack::complete_() const {
-        return sequenceIndex == runCounts.size();
+        return sequenceIndex == runCounts.size() || bumpCount_ == bumpLimit_;
     }
 
     int AdaptiveTrack::reversals() {

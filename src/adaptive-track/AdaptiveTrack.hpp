@@ -23,6 +23,8 @@ namespace adaptive_track {
         int x_;
         int ceiling_;
         int floor_;
+        int bumpLimit_;
+        int bumpCount_;
         int sameDirectionConsecutiveCount{};
         int runCounter{};
         int reversals_{};
