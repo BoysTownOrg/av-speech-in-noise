@@ -73,10 +73,20 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     ]},
     calibrationLevel_dB_SPL_label{allocLabel(
         @"calibration level (dB SPL):",
-        NSMakeRect(350, 90, 150, labelHeight)
+        NSMakeRect(
+            filePathTextFieldWidth + textFieldLeadingEdge + 10,
+            60,
+            150,
+            labelHeight
+        )
     )},
     calibrationLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(505, 90, 80, labelHeight)
+        initWithFrame:NSMakeRect(
+            filePathTextFieldWidth + textFieldLeadingEdge + 150 + 10,
+            60,
+            80,
+            labelHeight
+        )
     ]},
     startingSnr_dB_label{allocLabel(
         @"starting SNR (dB):",
@@ -203,8 +213,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         action:@selector(playCalibration)
     ];
     [playCalibrationButton setFrame:NSMakeRect(
-        filePathTextFieldWidth + textFieldLeadingEdge + 10,
-        90,
+        filePathTextFieldWidth + textFieldLeadingEdge + buttonWidth + 10,
+        120,
         buttonWidth,
         buttonHeight
     )];
