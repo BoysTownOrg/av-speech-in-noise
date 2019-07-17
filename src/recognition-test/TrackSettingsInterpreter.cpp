@@ -78,6 +78,7 @@ namespace av_speech_in_noise {
     }
     
     const TrackingRule *TrackSettingsInterpreter::trackingRule(std::string s) {
+        rule_.clear();
         auto stream = Stream{std::move(s)};
         while (stream.nextLine()) {
             auto sequenceCount{0U};

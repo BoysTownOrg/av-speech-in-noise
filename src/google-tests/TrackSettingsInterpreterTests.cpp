@@ -7,11 +7,12 @@ namespace av_speech_in_noise::tests {
     
     class TrackSettingsInterpreterTests : public ::testing::Test {
     protected:
+        TrackSettingsInterpreter interpreter;
+        
         void assertFileContentsYield(
             std::vector<std::string> v,
             const TrackingRule &expected
         ) {
-            TrackSettingsInterpreter interpreter;
             assertEqual(
                 expected,
                 *interpreter.trackingRule(concatenate(std::move(v)))
@@ -114,6 +115,42 @@ namespace av_speech_in_noise::tests {
                 withNewLine(" ")
             },
             {sequence}
+        );
+    }
+    
+    TEST_F(TrackSettingsInterpreterTests, canBeUsedToInterpretMoreThanOnce) {
+        TrackingSequence firstCallFirst;
+        firstCallFirst.up = 1;
+        firstCallFirst.down = 2;
+        firstCallFirst.runCount = 3;
+        firstCallFirst.stepSize = 4;
+        TrackingSequence firstCallSecond;
+        firstCallSecond.up = 5;
+        firstCallSecond.down = 6;
+        firstCallSecond.runCount = 7;
+        firstCallSecond.stepSize = 8;
+        assertFileContentsYield(
+            {
+                propertyEntryWithNewline(Property::up, "1 5"),
+                propertyEntryWithNewline(Property::down, "2 6"),
+                propertyEntryWithNewline(Property::reversalsPerStepSize, "3 7"),
+                propertyEntry(Property::stepSizes, "4 8")
+            },
+            {firstCallFirst, firstCallSecond}
+        );
+        TrackingSequence secondCall;
+        secondCall.up = 9;
+        secondCall.down = 10;
+        secondCall.runCount = 11;
+        secondCall.stepSize = 12;
+        assertFileContentsYield(
+            {
+                propertyEntryWithNewline(Property::up, "9"),
+                propertyEntryWithNewline(Property::down, "10"),
+                propertyEntryWithNewline(Property::reversalsPerStepSize, "11"),
+                propertyEntry(Property::stepSizes, "12")
+            },
+            {secondCall}
         );
     }
 }
