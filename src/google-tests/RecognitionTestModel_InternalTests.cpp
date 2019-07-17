@@ -940,6 +940,16 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModel_InternalTests,
+        initializeTestDoesNotLoadNextTargetWhenComplete
+    ) {
+        testMethod.setNextTarget("a");
+        testMethod.setComplete();
+        run(initializingTest);
+        assertTargetFilePathEquals("");
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
         submitCorrectResponseSubscribesToTargetPlayerPlaybackCompletion
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);

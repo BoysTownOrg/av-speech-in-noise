@@ -68,7 +68,8 @@ namespace av_speech_in_noise {
         prepareMasker(common.maskerFilePath);
         targetPlayer->hideVideo();
         condition = common.condition;
-        preparePlayersForNextTrial();
+        if (!testMethod->complete())
+            preparePlayersForNextTrial();
         tryOpeningOutputFile(information);
         testMethod->writeTestingParameters(outputFile);
     }
