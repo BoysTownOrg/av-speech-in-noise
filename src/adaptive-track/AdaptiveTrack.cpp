@@ -83,6 +83,8 @@ namespace adaptive_track {
         if (complete_())
             return;
         
+        if (x_ == floor_)
+            ++bumpCount_;
         update(Direction::down, down, &AdaptiveTrack::stepDown);
     }
 
