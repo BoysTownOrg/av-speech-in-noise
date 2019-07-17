@@ -94,7 +94,7 @@ namespace adaptive_track::tests {
             settings.ceiling = x;
         }
         
-        void setBoundaryPushLimit(int n) {
+        void setBumpLimit(int n) {
             settings.bumpLimit = n;
         }
         
@@ -222,17 +222,15 @@ namespace adaptive_track::tests {
         track.assertComplete();
     }
 
-    TEST_F(AdaptiveTrackTests, completeIfCeilingPushedTooManyTimes) {
-        setStartingX(8);
+    TEST_F(AdaptiveTrackTests, completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
+        setStartingX(6);
         setCeiling(10);
-        setBoundaryPushLimit(3);
-        firstSequence().runCount = 3;
-        firstSequence().stepSize = 4;
+        setBumpLimit(3);
+        firstSequence().stepSize = 10 - 6;
         firstSequence().up = 2;
-        firstSequence().down = 1;
+        firstSequence().runCount = 999;
         auto track = reset();
-        assertXEquals(track, 8);
-        assertIncomplete(track);
+        assertXEquals(track, 6);
         pushUp(track);
         pushUp(track);
         assertXEquals(track, 10);
