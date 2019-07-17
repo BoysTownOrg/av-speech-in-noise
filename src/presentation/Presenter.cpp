@@ -14,11 +14,6 @@ namespace av_speech_in_noise {
     int Presenter::ceilingSnr_dB = 20;
     int Presenter::floorSnr_dB = -40;
     
-    TrackingRule Presenter::targetLevelRule = {
-        { 2, 4, 2, 1 },
-        { 8, 2, 2, 1 }
-    };
-    
     Presenter::Presenter(
         Model *model,
         View *view,

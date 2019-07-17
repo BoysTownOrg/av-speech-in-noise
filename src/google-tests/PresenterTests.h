@@ -1686,12 +1686,6 @@ namespace av_speech_in_noise::tests::presentation {
             );
         }
         
-        void assertPassesTargetLevelRule(UseCase &useCase) {
-            run(useCase);
-            const auto *expected = &Presenter::targetLevelRule;
-            assertEqual(expected, adaptiveTest().targetLevelRule);
-        }
-        
         void assertPassesTrackSettingsFile(ConfirmingAdaptiveTest_ &useCase) {
             setupView.setTrackSettingsFile("e");
             run(useCase);

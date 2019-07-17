@@ -292,7 +292,6 @@ namespace av_speech_in_noise {
         static int fullScaleLevel_dB_SPL;
         static int ceilingSnr_dB;
         static int floorSnr_dB;
-        static TrackingRule targetLevelRule;
         
     private:
         void proceedToNextTrialAfter(
