@@ -24,6 +24,8 @@ namespace adaptive_track {
         
         if (x_ == ceiling_)
             ++bumpCount_;
+        else
+            bumpCount_ = 0;
         update(Direction::up, up, &AdaptiveTrack::stepUp);
     }
     

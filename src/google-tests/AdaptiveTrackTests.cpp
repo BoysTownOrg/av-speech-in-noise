@@ -264,6 +264,26 @@ namespace adaptive_track::tests {
         track.assertComplete();
     }
 
+    TEST_F(AdaptiveTrackTests, incompleteIfPushedDownBumpLimitUnconsecutiveTimesAtFloor) {
+        setStartingX(-6);
+        setFloor(-10);
+        setBumpLimit(3);
+        firstSequence().stepSize = 10 - 6;
+        firstSequence().down = 2;
+        firstSequence().up = 3;
+        firstSequence().runCount = 999;
+        auto track = reset();
+        assertXEquals(track, -6);
+        pushDown(track);
+        pushDown(track);
+        assertXEquals(track, -10);
+        pushDown(track);
+        pushDown(track);
+        pushUp(track);
+        pushDown(track);
+        assertIncomplete(track);
+    }
+
     // see https://doi.org/10.1121/1.1912375
     TEST_F(AdaptiveTrackTests, LevittFigure4) {
         setStartingX(0);
