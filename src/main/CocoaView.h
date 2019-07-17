@@ -80,6 +80,8 @@ class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
     NSTextField *maskerFilePath_;
     NSTextField *calibrationFilePath_label;
     NSTextField *calibrationFilePath_;
+    NSTextField *trackSettingsFile_label;
+    NSTextField *trackSettingsFile_;
     NSTextField *condition_label;
     NSPopUpButton *conditionMenu;
     NSTextField *method_label;
@@ -107,6 +109,8 @@ public:
     std::string calibrationFilePath() override;
     void subscribe(EventListener *) override;
     std::string method() override;
+    std::string trackSettingsFile() override;
+    void setTrackSettingsFile(std::string) override;
     NSView *view();
     void confirm();
     void browseForTargetList();

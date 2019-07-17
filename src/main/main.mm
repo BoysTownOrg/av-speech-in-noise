@@ -6,6 +6,8 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/RecognitionTestModel_Internal.hpp>
 #include <recognition-test/AdaptiveMethod.hpp>
+#include <recognition-test/TrackSettingsReader.hpp>
+#include <recognition-test/TrackSettingsInterpreter.hpp>
 #include <recognition-test/FixedLevelMethod.hpp>
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
@@ -18,6 +20,7 @@
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <sys/stat.h>
 #include <fstream>
+#include <sstream>
 
 class MacOsDirectoryReader : public target_list::DirectoryReader
 {
@@ -196,6 +199,15 @@ public:
 }
 @end
 
+class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
+    std::string read(std::string s) override {
+        std::ifstream file{std::move(s)};
+        std::stringstream stream;
+        stream << file.rdbuf();
+        return stream.str();
+    }
+};
+
 int main() {
     using namespace av_speech_in_noise;
     MacOsDirectoryReader reader;
@@ -228,8 +240,15 @@ int main() {
     OutputFileImpl outputFile{&writer, &path};
     adaptive_track::AdaptiveTrackFactory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
+    TrackSettingsInterpreter trackSettingsInterpreter;
+    TextFileReaderImpl textFileReader;
+    TrackSettingsReader trackSettingsReader{
+        &textFileReader,
+        &trackSettingsInterpreter
+    };
     AdaptiveMethod adaptiveMethod{
         &targetListReader,
+        &trackSettingsReader,
         &snrTrackFactory,
         &responseEvaluator,
         &randomizer

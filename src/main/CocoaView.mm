@@ -106,14 +106,21 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     calibrationFilePath_{[[NSTextField alloc]
         initWithFrame:filePathTextFieldSizeAtHeight(120)
     ]},
+    trackSettingsFile_label{allocLabel(
+        @"track settings:",
+        NSMakeRect(0, 90, labelWidth, labelHeight)
+    )},
+    trackSettingsFile_{[[NSTextField alloc]
+        initWithFrame:filePathTextFieldSizeAtHeight(90)
+    ]},
     condition_label{allocLabel(
         @"condition:",
-        NSMakeRect(0, 90, labelWidth, labelHeight)
+        NSMakeRect(0, 60, labelWidth, labelHeight)
     )},
     conditionMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(
             textFieldLeadingEdge,
-            90,
+            60,
             menuWidth,
             labelHeight
         )
@@ -121,12 +128,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     ]},
     method_label{allocLabel(
         @"method:",
-        NSMakeRect(0, 60, labelWidth, labelHeight)
+        NSMakeRect(0, 30, labelWidth, labelHeight)
     )},
     methodMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(
             textFieldLeadingEdge,
-            60,
+            30,
             menuWidth,
             labelHeight
         )
@@ -211,6 +218,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     addSubview(targetListDirectory_);
     addSubview(maskerFilePath_label);
     addSubview(maskerFilePath_);
+    addSubview(trackSettingsFile_label);
+    addSubview(trackSettingsFile_);
     addSubview(calibrationFilePath_label);
     addSubview(calibrationFilePath_);
     addSubview(condition_label);
@@ -282,6 +291,14 @@ std::string CocoaTestSetupView::method() {
 
 std::string CocoaTestSetupView::condition() {
     return conditionMenu.titleOfSelectedItem.UTF8String;
+}
+
+std::string CocoaTestSetupView::trackSettingsFile() {
+    return stringValue(trackSettingsFile_);
+}
+
+void CocoaTestSetupView::setTrackSettingsFile(std::string s) {
+    [trackSettingsFile_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaTestSetupView::setTargetListDirectory(std::string s) {
@@ -799,4 +816,3 @@ void CocoaView::addSubview(NSView *view) {
 void CocoaView::center() {
     [window center];
 }
-
