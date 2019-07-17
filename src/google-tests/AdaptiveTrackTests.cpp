@@ -135,6 +135,10 @@ namespace adaptive_track::tests {
             track.assertIncomplete();
         }
         
+        void assertComplete(AdaptiveTrackFacade &track) {
+            track.assertComplete();
+        }
+        
         void push(AdaptiveTrackFacade &track, const std::string &s) {
             track.push(s);
         }
@@ -162,11 +166,11 @@ namespace adaptive_track::tests {
     }
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
-        setStartingX(5);
-        setFirstSequenceRunCount(3);
-        setFirstSequenceStepSize(4);
         setFirstSequenceUp(1);
         setFirstSequenceDown(2);
+        setFirstSequenceRunCount(3);
+        setFirstSequenceStepSize(4);
+        setStartingX(5);
         auto track = reset();
         pushDown(track);
         assertXEquals(track, 5);
@@ -187,12 +191,12 @@ namespace adaptive_track::tests {
     }
 
     TEST_F(AdaptiveTrackTests, floorActsAsLowerLimit) {
-        setStartingX(5);
         setFloor(0);
+        setFirstSequenceDown(1);
+        setFirstSequenceUp(2);
         setFirstSequenceRunCount(3);
         setFirstSequenceStepSize(4);
-        setFirstSequenceUp(2);
-        setFirstSequenceDown(1);
+        setStartingX(5);
         auto track = reset();
         assertXEquals(track, 5);
         pushDown(track);
@@ -202,12 +206,12 @@ namespace adaptive_track::tests {
     }
 
     TEST_F(AdaptiveTrackTests, ceilingActsAsUpperLimit) {
-        setStartingX(5);
-        setCeiling(10);
-        setFirstSequenceRunCount(3);
-        setFirstSequenceStepSize(4);
         setFirstSequenceUp(1);
         setFirstSequenceDown(2);
+        setFirstSequenceRunCount(3);
+        setFirstSequenceStepSize(4);
+        setStartingX(5);
+        setCeiling(10);
         auto track = reset();
         assertXEquals(track, 5);
         pushUp(track);
@@ -217,11 +221,11 @@ namespace adaptive_track::tests {
     }
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
-        setStartingX(5);
-        setFirstSequenceRunCount(3);
-        setFirstSequenceStepSize(4);
         setFirstSequenceUp(1);
         setFirstSequenceDown(2);
+        setFirstSequenceRunCount(3);
+        setFirstSequenceStepSize(4);
+        setStartingX(5);
         auto track = reset();
         assertIncomplete(track);
         pushDown(track);
@@ -235,18 +239,18 @@ namespace adaptive_track::tests {
         pushDown(track);
         assertIncomplete(track);
         pushUp(track);
-        track.assertComplete();
+        assertComplete(track);
     }
 
     TEST_F(AdaptiveTrackTests, completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
-        setStartingX(6);
+        setStartingX(8);
         setCeiling(10);
         setBumpLimit(3);
-        setFirstSequenceStepSize(10 - 6);
+        setFirstSequenceStepSize(4);
         setFirstSequenceUp(2);
         setFirstSequenceRunCount(999);
         auto track = reset();
-        assertXEquals(track, 6);
+        assertXEquals(track, 8);
         pushUp(track);
         pushUp(track);
         assertXEquals(track, 10);
@@ -256,18 +260,18 @@ namespace adaptive_track::tests {
         pushUp(track);
         assertIncomplete(track);
         pushUp(track);
-        track.assertComplete();
+        assertComplete(track);
     }
 
     TEST_F(AdaptiveTrackTests, completeIfPushedDownBumpLimitConsecutiveTimesAtFloor) {
-        setStartingX(-6);
+        setStartingX(-8);
         setFloor(-10);
         setBumpLimit(3);
-        setFirstSequenceStepSize(10 - 6);
+        setFirstSequenceStepSize(4);
         setFirstSequenceDown(2);
         setFirstSequenceRunCount(999);
         auto track = reset();
-        assertXEquals(track, -6);
+        assertXEquals(track, -8);
         pushDown(track);
         pushDown(track);
         assertXEquals(track, -10);
@@ -277,7 +281,7 @@ namespace adaptive_track::tests {
         pushDown(track);
         assertIncomplete(track);
         pushDown(track);
-        track.assertComplete();
+        assertComplete(track);
     }
 
     TEST_F(AdaptiveTrackTests, incompleteIfPushedDownBumpLimitUnconsecutiveTimesAtFloor) {
