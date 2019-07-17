@@ -12,6 +12,8 @@
 		2602F766227B86B100906002 /* libadaptive-track.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2602F75E227B80E500906002 /* libadaptive-track.dylib */; };
 		2614B5A222381DF80083987B /* CocoaView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A022381D850083987B /* CocoaView.mm */; };
 		2614B5A5223824FB0083987B /* AvFoundationPlayers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2614B5A3223824960083987B /* AvFoundationPlayers.mm */; };
+		261DADBE22DF64D200F13C32 /* TrackSettingsReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 261DADBC22DF64D200F13C32 /* TrackSettingsReader.cpp */; };
+		261DADBF22DF64D200F13C32 /* TrackSettingsReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 261DADBD22DF64D200F13C32 /* TrackSettingsReader.hpp */; };
 		2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2623A153224BD037007C99F2 /* OutputFileImpl.cpp */; };
 		2623A156224BD037007C99F2 /* OutputFileImpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2623A154224BD037007C99F2 /* OutputFileImpl.hpp */; };
 		2625356C2280D8F400652B36 /* libpresentation.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 26FC6B1621DAA3D800289A0A /* libpresentation.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -115,6 +117,8 @@
 		2614B5A022381D850083987B /* CocoaView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaView.mm; sourceTree = "<group>"; };
 		2614B5A3223824960083987B /* AvFoundationPlayers.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AvFoundationPlayers.mm; sourceTree = "<group>"; };
 		2615ECB72281F0B2006E12E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		261DADBC22DF64D200F13C32 /* TrackSettingsReader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TrackSettingsReader.cpp; sourceTree = "<group>"; };
+		261DADBD22DF64D200F13C32 /* TrackSettingsReader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TrackSettingsReader.hpp; sourceTree = "<group>"; };
 		2623A153224BD037007C99F2 /* OutputFileImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutputFileImpl.cpp; sourceTree = "<group>"; };
 		2623A154224BD037007C99F2 /* OutputFileImpl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutputFileImpl.hpp; sourceTree = "<group>"; };
 		2628CFE52256A51300AE5284 /* common-objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "common-objc.h"; sourceTree = "<group>"; };
@@ -319,6 +323,8 @@
 				266BF63C22DCD325001D0035 /* FixedLevelMethod.hpp */,
 				268000BD22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp */,
 				268000BE22DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp */,
+				261DADBC22DF64D200F13C32 /* TrackSettingsReader.cpp */,
+				261DADBD22DF64D200F13C32 /* TrackSettingsReader.hpp */,
 			);
 			path = "recognition-test";
 			sourceTree = "<group>";
@@ -465,6 +471,7 @@
 				264F07C622D93330007B4126 /* RecognitionTestModel_Internal.hpp in Headers */,
 				268000C022DE4A0B005D4B8E /* TrackSettingsInterpreter.hpp in Headers */,
 				26688C342273A16F00CAE9EB /* SubdirectoryTargetListReader.hpp in Headers */,
+				261DADBF22DF64D200F13C32 /* TrackSettingsReader.hpp in Headers */,
 				2645BECC2267705D002E8C6C /* ResponseEvaluatorImpl.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -707,6 +714,7 @@
 				264F07C522D93330007B4126 /* RecognitionTestModel_Internal.cpp in Sources */,
 				2623A155224BD037007C99F2 /* OutputFileImpl.cpp in Sources */,
 				26688C332273A16F00CAE9EB /* SubdirectoryTargetListReader.cpp in Sources */,
+				261DADBE22DF64D200F13C32 /* TrackSettingsReader.cpp in Sources */,
 				268000BF22DE4A0B005D4B8E /* TrackSettingsInterpreter.cpp in Sources */,
 				26A2237921DD354A007D6511 /* RecognitionTestModel.cpp in Sources */,
 				266BF63922DCD2AB001D0035 /* AdaptiveMethod.cpp in Sources */,
