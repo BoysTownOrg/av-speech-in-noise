@@ -77,7 +77,8 @@ namespace av_speech_in_noise {
     
     void Presenter::switchToTestView() {
         hideTestSetup();
-        showTestView();
+        if (!testComplete())
+            showTestView();
     }
     
     void Presenter::hideTestSetup() {
