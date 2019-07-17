@@ -21,15 +21,10 @@ namespace av_speech_in_noise {
         ITrackSettingsInterpreter *interpreter;
     public:
         TrackSettingsReader(
-            TextFileReader *reader,
-            ITrackSettingsInterpreter *interpreter
-        ) :
-            reader{reader},
-            interpreter{interpreter} {}
-        
-        const TrackingRule *read(std::string filePath) override {
-            return interpreter->trackingRule(reader->read(std::move(filePath)));
-        }
+            TextFileReader *,
+            ITrackSettingsInterpreter *
+        );
+        const TrackingRule *read(std::string filePath) override;
     };
 }
 
