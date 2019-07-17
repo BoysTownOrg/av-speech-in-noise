@@ -10,7 +10,7 @@ namespace av_speech_in_noise {
     class ITrackSettingsInterpreter {
     public:
         virtual ~ITrackSettingsInterpreter() = default;
-        virtual TrackingRule trackingRule(std::string) = 0;
+        virtual const TrackingRule *trackingRule(std::string) = 0;
     };
 
     class TrackSettingsReader : public ITrackSettingsReader {
@@ -25,8 +25,7 @@ namespace av_speech_in_noise {
             interpreter{interpreter} {}
         
         const TrackingRule *read(std::string filePath) override {
-            interpreter->trackingRule(reader->read(std::move(filePath)));
-            return {};
+            return interpreter->trackingRule(reader->read(std::move(filePath)));
         }
     };
 }
@@ -55,14 +54,19 @@ namespace av_speech_in_noise::tests {
     
     class TrackSettingsInterpreterStub : public ITrackSettingsInterpreter {
         std::string content_{};
+        const TrackingRule *trackingRule_{};
     public:
-        TrackingRule trackingRule(std::string s) override {
+        const TrackingRule *trackingRule(std::string s) override {
             content_ = std::move(s);
-            return {};
+            return trackingRule_;
         }
         
         auto content() const {
             return content_;
+        }
+        
+        void setTrackingRule(const TrackingRule *r) {
+            trackingRule_ = r;
         }
     };
     
@@ -72,8 +76,8 @@ namespace av_speech_in_noise::tests {
         TrackSettingsInterpreterStub interpreter;
         TrackSettingsReader reader{&fileReader, &interpreter};
         
-        void read(std::string s = {}) {
-            reader.read(std::move(s));
+        auto read(std::string s = {}) {
+            return reader.read(std::move(s));
         }
     };
     
@@ -86,5 +90,11 @@ namespace av_speech_in_noise::tests {
         fileReader.setContents("a");
         read();
         assertEqual("a", interpreter.content());
+    }
+    
+    TEST_F(TrackSettingsReaderTests, readReturnsInterpretedResult) {
+        TrackingRule trackingRule;
+        interpreter.setTrackingRule(&trackingRule);
+        assertEqual(&std::as_const(trackingRule), read());
     }
 }
