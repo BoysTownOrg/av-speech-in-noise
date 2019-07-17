@@ -216,19 +216,35 @@ int main() {
         {".mov", ".avi", ".wav"}
     };
     MersenneTwisterRandomizer randomizer;
-    target_list::RandomizedTargetListFactory targetListFactory{&fileExtensions, &randomizer};
-    target_list::SubdirectoryTargetListReader targetListReader{&targetListFactory, &reader};
-    target_list::RandomizedTargetList fixedLevelTargetList{&fileExtensions, &randomizer};
+    target_list::RandomizedTargetListFactory targetListFactory{
+        &fileExtensions,
+        &randomizer
+    };
+    target_list::SubdirectoryTargetListReader targetListReader{
+        &targetListFactory,
+        &reader
+    };
+    target_list::RandomizedTargetList fixedLevelTargetList{
+        &fileExtensions,
+        &randomizer
+    };
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
-    stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
+    stimulus_players::TargetPlayerImpl targetPlayer{
+        &videoPlayer,
+        &audioReader
+    };
     AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
-    stimulus_players::MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
+    stimulus_players::MaskerPlayerImpl maskerPlayer{
+        &audioPlayer,
+        &audioReader,
+        &timer
+    };
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
     TimeStampImpl timeStamp;
@@ -253,7 +269,10 @@ int main() {
         &responseEvaluator,
         &randomizer
     };
-    FixedLevelMethod fixedLevelMethod{&fixedLevelTargetList, &responseEvaluator};
+    FixedLevelMethod fixedLevelMethod{
+        &fixedLevelTargetList,
+        &responseEvaluator
+    };
     RecognitionTestModel_Internal model_internal{
         &targetPlayer,
         &maskerPlayer,
@@ -286,6 +305,9 @@ int main() {
     );
     testSetupView.setTargetListDirectory(
         "/Users/basset/Documents/Lalonde/Lalonde-coordinate-response/Seth Mars Attack"
+    );
+    testSetupView.setTrackSettingsFile(
+        "/Users/basset/Desktop/track-settings.txt"
     );
     CocoaExperimenterView experimenterView{testerContentFrame};
     CocoaView view{testerWindowFrame};
