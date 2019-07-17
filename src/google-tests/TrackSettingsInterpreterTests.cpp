@@ -11,7 +11,7 @@ namespace av_speech_in_noise::tests {
             std::vector<std::string> v,
             const TrackingRule &expected
         ) {
-            TrackSettingsInterpreter reader{concatenate(v)};
+            TrackSettingsInterpreter reader;
             assertEqual(expected, *reader.trackingRule(concatenate(std::move(v))));
         }
         

@@ -29,8 +29,6 @@ namespace av_speech_in_noise {
             }
         }
         
-        explicit TrackSettingsInterpreter(std::string);
-        TrackingRule trackingRule();
         const TrackingRule *trackingRule(std::string) override;
     };
 }

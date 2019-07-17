@@ -77,28 +77,6 @@ namespace av_speech_in_noise {
         }
     }
     
-    TrackSettingsInterpreter::TrackSettingsInterpreter(std::string s) :
-        contents{std::move(s)} {}
-    
-    TrackingRule TrackSettingsInterpreter::trackingRule() {
-        auto stream = Stream{contents};
-        TrackingRule rule;
-        while (stream.nextLine()) {
-            auto sequenceCount{0U};
-            auto f = propertyApplication(stream.propertyName());
-            while (true) {
-                auto value = stream.value();
-                if (stream.failed())
-                    break;
-                if (sequenceCount == rule.size())
-                    rule.push_back({});
-                auto &sequence = rule.at(sequenceCount++);
-                (*f)(sequence, value);
-            }
-        }
-        return rule;
-    }
-    
     const TrackingRule *TrackSettingsInterpreter::trackingRule(std::string s) {
         auto stream = Stream{std::move(s)};
         while (stream.nextLine()) {
