@@ -12,6 +12,7 @@ class CocoaTestSetupView;
 - (void) browseForTargetList;
 - (void) browseForMasker;
 - (void) browseForCalibration;
+- (void) browseForTrackSettings;
 - (void) playCalibration;
 @end
 
@@ -116,6 +117,7 @@ public:
     void browseForTargetList();
     void browseForMasker();
     void browseForCalibration();
+    void browseForTrackSettings();
     void playCalibration();
     void setMaskerLevel_dB_SPL(std::string);
     void setStartingSnr_dB(std::string);

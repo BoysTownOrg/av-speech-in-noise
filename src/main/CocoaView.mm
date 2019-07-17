@@ -175,6 +175,17 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         buttonWidth,
         buttonHeight
     )];
+    const auto browseForTrackSettingsButton = [NSButton
+        buttonWithTitle:@"browse"
+        target:actions
+        action:@selector(browseForTrackSettings)
+    ];
+    [browseForTrackSettingsButton setFrame:NSMakeRect(
+        filePathTextFieldWidth + textFieldLeadingEdge + 10,
+        90,
+        buttonWidth,
+        buttonHeight
+    )];
     const auto confirmButton = [NSButton
         buttonWithTitle:@"Confirm"
         target:actions
@@ -200,6 +211,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     addSubview(browseForMaskerButton);
     addSubview(browseForStimulusListButton);
     addSubview(browseForCalibrationButton);
+    addSubview(browseForTrackSettingsButton);
     addSubview(confirmButton);
     addSubview(playCalibrationButton);
     addSubview(subjectIdLabel);
@@ -359,6 +371,10 @@ void CocoaTestSetupView::browseForCalibration() {
     listener_->browseForCalibration();
 }
 
+void CocoaTestSetupView::browseForTrackSettings() {
+    listener_->browseForTrackSettingsFile();
+}
+
 void CocoaTestSetupView::playCalibration() {
     listener_->playCalibration();
 }
@@ -380,6 +396,10 @@ void CocoaTestSetupView::playCalibration() {
 
 - (void)browseForCalibration {
     controller->browseForCalibration();
+}
+
+- (void)browseForTrackSettings {
+    controller->browseForTrackSettings();
 }
 
 - (void)playCalibration { 
