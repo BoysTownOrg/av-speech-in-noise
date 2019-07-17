@@ -260,14 +260,6 @@ namespace av_speech_in_noise::tests::presentation {
         assertPassesFullScaleLevel(playingCalibration);
     }
 
-    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTargetLevelRule) {
-        assertPassesTargetLevelRule(confirmingAdaptiveClosedSetTest);
-    }
-
-    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTargetLevelRule) {
-        assertPassesTargetLevelRule(confirmingAdaptiveOpenSetTest);
-    }
-
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTrackSettingsFile) {
         assertPassesTrackSettingsFile(confirmingAdaptiveClosedSetTest);
     }

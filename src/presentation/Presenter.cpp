@@ -299,7 +299,6 @@ namespace av_speech_in_noise {
         p.information = testInformation();
         p.ceilingSnr_dB = ceilingSnr_dB;
         p.floorSnr_dB = floorSnr_dB;
-        p.targetLevelRule = &targetLevelRule;
         p.trackSettingsFile = view->trackSettingsFile();
         p.common = commonTest();
         return p;
