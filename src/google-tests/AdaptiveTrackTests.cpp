@@ -163,7 +163,26 @@ namespace adaptive_track::tests {
         assertXEquals(track, 5);
     }
 
-    TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize) {
+    TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize1Down1Up) {
+        setFirstSequenceUp(1);
+        setFirstSequenceDown(1);
+        setFirstSequenceStepSize(4);
+        setFirstSequenceRunCount(999);
+        setStartingX(5);
+        auto track = construct();
+        pushDown(track);
+        assertXEquals(track, 5 - 4);
+        pushUp(track);
+        assertXEquals(track, 5 - 4 + 4);
+        pushDown(track);
+        assertXEquals(track, 5 - 4 + 4 - 4);
+        pushDown(track);
+        assertXEquals(track, 5 - 4 + 4 - 4 - 4);
+        pushUp(track);
+        assertXEquals(track, 5 - 4 + 4 - 4 - 4 + 4);
+    }
+
+    TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize2Down1Up) {
         setFirstSequenceUp(1);
         setFirstSequenceDown(2);
         setFirstSequenceStepSize(4);
@@ -180,6 +199,8 @@ namespace adaptive_track::tests {
         assertXEquals(track, 5 - 4 + 4);
         pushDown(track);
         assertXEquals(track, 5 - 4 + 4 - 4);
+        pushUp(track);
+        assertXEquals(track, 5 - 4 + 4 - 4 + 4);
     }
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
