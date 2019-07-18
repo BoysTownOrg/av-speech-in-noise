@@ -12,14 +12,14 @@ namespace adaptive_track {
             if (sequence.runCount) {
                 stepSizes.push_back(sequence.stepSize);
                 runCounts.push_back(sequence.runCount);
-                up.push_back(sequence.up);
-                down.push_back(sequence.down);
+                up_.push_back(sequence.up);
+                down_.push_back(sequence.down);
             }
         stepSizes.push_back(0);
     }
     
-    void AdaptiveTrack::pushUp() {
-        update(Direction::up, ceiling_, up, &AdaptiveTrack::stepUp);
+    void AdaptiveTrack::up() {
+        update(Direction::up, ceiling_, up_, &AdaptiveTrack::stepUp);
     }
     
     void AdaptiveTrack::updateBumpCount(int bumpBoundary) {
@@ -85,8 +85,8 @@ namespace adaptive_track {
         }
     }
     
-    void AdaptiveTrack::pushDown() {
-        update(Direction::down, floor_, down, &AdaptiveTrack::stepDown);
+    void AdaptiveTrack::down() {
+        update(Direction::down, floor_, down_, &AdaptiveTrack::stepDown);
     }
 
     void AdaptiveTrack::stepDown() {

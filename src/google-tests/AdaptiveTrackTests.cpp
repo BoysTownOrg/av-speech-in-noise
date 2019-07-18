@@ -20,11 +20,11 @@ namespace adaptive_track::tests {
         }
         
         void pushDown() {
-            track.pushDown();
+            track.down();
         }
         
         void pushUp() {
-            track.pushUp();
+            track.up();
         }
         
         auto x() {

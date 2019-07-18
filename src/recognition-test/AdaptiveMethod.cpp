@@ -127,11 +127,11 @@ namespace av_speech_in_noise {
     }
     
     void AdaptiveMethod::correct() {
-        currentSnrTrack->pushDown();
+        currentSnrTrack->down();
     }
     
     void AdaptiveMethod::incorrect() {
-        currentSnrTrack->pushUp();
+        currentSnrTrack->up();
     }
     
     void AdaptiveMethod::writeTestingParameters(OutputFile *file) {

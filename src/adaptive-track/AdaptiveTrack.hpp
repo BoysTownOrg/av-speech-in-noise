@@ -17,8 +17,8 @@ namespace adaptive_track {
         };
         std::vector<int> runCounts;
         std::vector<int> stepSizes;
-        std::vector<int> up;
-        std::vector<int> down;
+        std::vector<int> up_;
+        std::vector<int> down_;
         std::size_t sequenceIndex{};
         int x_;
         int ceiling_;
@@ -33,8 +33,8 @@ namespace adaptive_track {
     public:
         explicit AdaptiveTrack(const Settings &);
         int x() override;
-        void pushUp() override;
-        void pushDown() override;
+        void up() override;
+        void down() override;
         bool complete() override;
         int reversals() override;
         

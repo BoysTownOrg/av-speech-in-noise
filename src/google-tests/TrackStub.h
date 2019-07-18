@@ -38,13 +38,13 @@ namespace av_speech_in_noise::tests {
             x_ = x;
         }
         
-        void pushDown() override {
+        void down() override {
             pushedDown_ = true;
             reversals_ = reversalsWhenUpdated_;
             x_ = xWhenUpdated_;
         }
         
-        void pushUp() override {
+        void up() override {
             pushedUp_ = true;
             reversals_ = reversalsWhenUpdated_;
             x_ = xWhenUpdated_;

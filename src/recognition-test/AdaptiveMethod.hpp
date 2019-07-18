@@ -16,8 +16,8 @@ namespace av_speech_in_noise {
             int floor = std::numeric_limits<int>::min();
             int bumpLimit = std::numeric_limits<int>::max();
         };
-        virtual void pushDown() = 0;
-        virtual void pushUp() = 0;
+        virtual void down() = 0;
+        virtual void up() = 0;
         virtual int x() = 0;
         virtual bool complete() = 0;
         virtual int reversals() = 0;
