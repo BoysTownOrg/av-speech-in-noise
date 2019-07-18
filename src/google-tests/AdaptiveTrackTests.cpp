@@ -515,4 +515,31 @@ namespace adaptive_track::tests {
         assertReversalsEqualsAfterDown(track, 2);
         assertReversalsEqualsAfterDown(track, 3);
     }
+    
+    TEST_F(AdaptiveTrackTests, sanityTest) {
+        setStartingX(0);
+        setFirstSequenceUp(1);
+        setFirstSequenceDown(2);
+        setFirstSequenceStepSize(3);
+        setBumpLimit(5);
+        setFloor(-10);
+        setFirstSequenceRunCount(999);
+        auto track = construct();
+        assertIncomplete(track);
+        assertXEqualsAfterDown(track, 0);
+        assertXEqualsAfterDown(track, 0 - 3);
+        assertXEqualsAfterDown(track, 0 - 3);
+        assertXEqualsAfterDown(track, 0 - 3 - 3);
+        assertXEqualsAfterDown(track, 0 - 3 - 3);
+        assertXEqualsAfterDown(track, 0 - 3 - 3 - 3);
+        assertXEqualsAfterDown(track, 0 - 3 - 3 - 3);
+        assertXEqualsAfterDown(track, -10);
+        assertIncompleteAfterDown(track);
+        assertIncompleteAfterDown(track);
+        assertIncompleteAfterDown(track);
+        assertIncompleteAfterDown(track);
+        assertCompleteAfterDown(track);
+        assertCompleteAfterUp(track);
+        assertXEquals(track, -10);
+    }
 }
