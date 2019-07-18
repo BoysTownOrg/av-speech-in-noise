@@ -282,6 +282,12 @@ namespace adaptive_track::tests {
         assertXEquals(track, 10);
     }
 
+    TEST_F(AdaptiveTrackTests, incompleteWhenNonZeroRunCount) {
+        setFirstSequenceRunCount(3);
+        auto track = construct();
+        assertIncomplete(track);
+    }
+
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
         setFirstSequenceUp(1);
         setFirstSequenceDown(1);
