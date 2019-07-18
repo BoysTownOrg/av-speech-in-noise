@@ -63,6 +63,7 @@ namespace adaptive_track::tests {
         av_speech_in_noise::TrackingRule rule;
         
         AdaptiveTrackTests() {
+            settings.rule = &rule;
             rule.resize(3);
             for (auto &sequence : rule)
                 sequence.runCount = 0;
@@ -80,8 +81,7 @@ namespace adaptive_track::tests {
             return rule.at(2);
         }
         
-        AdaptiveTrackFacade reset() {
-            settings.rule = &rule;
+        AdaptiveTrackFacade construct() {
             return AdaptiveTrackFacade{settings};
         }
         
@@ -150,19 +150,36 @@ namespace adaptive_track::tests {
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
         setStartingX(1);
-        auto track = reset();
+        auto track = construct();
         assertXEquals(track, 1);
     }
 
     TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoChanges) {
         setStartingX(5);
-        auto track = reset();
-        pushDown(track);
-        assertXEquals(track, 5);
+        auto track = construct();
         pushDown(track);
         assertXEquals(track, 5);
         pushUp(track);
         assertXEquals(track, 5);
+    }
+
+    TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize) {
+        setFirstSequenceUp(1);
+        setFirstSequenceDown(2);
+        setFirstSequenceStepSize(4);
+        setFirstSequenceRunCount(999);
+        setStartingX(5);
+        auto track = construct();
+        pushDown(track);
+        assertXEquals(track, 5);
+        pushDown(track);
+        assertXEquals(track, 5 - 4);
+        pushUp(track);
+        assertXEquals(track, 5 - 4 + 4);
+        pushDown(track);
+        assertXEquals(track, 5 - 4 + 4);
+        pushDown(track);
+        assertXEquals(track, 5 - 4 + 4 - 4);
     }
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
@@ -171,7 +188,7 @@ namespace adaptive_track::tests {
         setFirstSequenceRunCount(3);
         setFirstSequenceStepSize(4);
         setStartingX(5);
-        auto track = reset();
+        auto track = construct();
         pushDown(track);
         assertXEquals(track, 5);
         pushDown(track);
@@ -196,7 +213,7 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(4);
         setStartingX(5);
         setFirstSequenceRunCount(999);
-        auto track = reset();
+        auto track = construct();
         assertXEquals(track, 5);
         pushDown(track);
         assertXEquals(track, 5 - 4);
@@ -210,7 +227,7 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(4);
         setStartingX(5);
         setCeiling(10);
-        auto track = reset();
+        auto track = construct();
         assertXEquals(track, 5);
         pushUp(track);
         assertXEquals(track, 5 + 4);
@@ -222,7 +239,7 @@ namespace adaptive_track::tests {
         setFirstSequenceUp(1);
         setFirstSequenceDown(2);
         setFirstSequenceRunCount(3);
-        auto track = reset();
+        auto track = construct();
         assertIncomplete(track);
         pushDown(track);
         assertIncomplete(track);
@@ -245,7 +262,7 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(4);
         setFirstSequenceUp(2);
         setFirstSequenceRunCount(999);
-        auto track = reset();
+        auto track = construct();
         assertXEquals(track, 8);
         pushUp(track);
         pushUp(track);
@@ -266,7 +283,7 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(4);
         setFirstSequenceDown(2);
         setFirstSequenceRunCount(999);
-        auto track = reset();
+        auto track = construct();
         assertXEquals(track, -8);
         pushDown(track);
         pushDown(track);
@@ -288,7 +305,7 @@ namespace adaptive_track::tests {
         setFirstSequenceDown(2);
         setFirstSequenceUp(999);
         setFirstSequenceRunCount(999);
-        auto track = reset();
+        auto track = construct();
         assertXEquals(track, -6);
         pushDown(track);
         pushDown(track);
@@ -308,7 +325,7 @@ namespace adaptive_track::tests {
         setFirstSequenceUp(2);
         setFirstSequenceDown(999);
         setFirstSequenceRunCount(999);
-        auto track = reset();
+        auto track = construct();
         assertXEquals(track, 6);
         pushUp(track);
         pushUp(track);
@@ -327,7 +344,7 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(1);
         setFirstSequenceDown(1);
         setFirstSequenceUp(1);
-        auto track = reset();
+        auto track = construct();
         push(track, "dduuuudduuuddddduuudduu");
         assertXEquals(track, 1);
     }
@@ -339,7 +356,7 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(1);
         setFirstSequenceDown(2);
         setFirstSequenceUp(1);
-        auto track = reset();
+        auto track = construct();
         push(track, "dddduduududdddduuuddddd");
         assertXEquals(track, 1);
     }
@@ -354,7 +371,7 @@ namespace adaptive_track::tests {
         secondSequence().stepSize = 4;
         secondSequence().down = 2;
         secondSequence().up = 1;
-        auto track = reset();
+        auto track = construct();
         pushDown(track);
         assertXEquals(track, 65);
         pushDown(track);
@@ -393,7 +410,7 @@ namespace adaptive_track::tests {
         thirdSequence().stepSize = 2;
         thirdSequence().down = 3;
         thirdSequence().up = 1;
-        auto track = reset();
+        auto track = construct();
         push(track, "ddudddudddddudddddduddd");
         assertXEquals(track, 3);
     }
@@ -408,7 +425,7 @@ namespace adaptive_track::tests {
         secondSequence().stepSize = 4;
         secondSequence().up = 2;
         secondSequence().down = 1;
-        auto track = reset();
+        auto track = construct();
         pushDown(track);
         assertXEquals(track, 65);
         pushDown(track);
@@ -438,7 +455,7 @@ namespace adaptive_track::tests {
         setFirstSequenceRunCount(1000);
         setFirstSequenceDown(2);
         setFirstSequenceUp(1);
-        auto track = reset();
+        auto track = construct();
         assertReversalsEquals(track, 0);
         pushUp(track);
         assertReversalsEquals(track, 0);
