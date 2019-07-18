@@ -538,6 +538,17 @@ namespace adaptive_track::tests {
         assertIncompleteAfterDown(track);
         assertIncompleteAfterDown(track);
         assertIncompleteAfterDown(track);
+        assertIncompleteAfterUp(track);
+        assertXEquals(track, -7);
+        assertIncomplete(track);
+        assertXEqualsAfterDown(track, -7);
+        assertIncomplete(track);
+        assertXEqualsAfterDown(track, -10);
+        assertIncomplete(track);
+        assertIncompleteAfterDown(track);
+        assertIncompleteAfterDown(track);
+        assertIncompleteAfterDown(track);
+        assertIncompleteAfterDown(track);
         assertCompleteAfterDown(track);
         assertCompleteAfterUp(track);
         assertXEquals(track, -10);
