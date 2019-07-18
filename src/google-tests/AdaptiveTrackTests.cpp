@@ -146,6 +146,21 @@ namespace adaptive_track::tests {
         void assertReversalsEquals(AdaptiveTrackFacade &track, int n) {
             track.assertReversalsEquals(n);
         }
+        
+        void assertIncompleteAfterPushDown(AdaptiveTrackFacade &track) {
+            pushDown(track);
+            assertIncomplete(track);
+        }
+        
+        void assertIncompleteAfterPushUp(AdaptiveTrackFacade &track) {
+            pushUp(track);
+            assertIncomplete(track);
+        }
+        
+        void assertCompleteAfterPushUp(AdaptiveTrackFacade &track) {
+            pushUp(track);
+            assertComplete(track);
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
@@ -269,22 +284,13 @@ namespace adaptive_track::tests {
 
     TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
         setFirstSequenceUp(1);
-        setFirstSequenceDown(2);
+        setFirstSequenceDown(1);
         setFirstSequenceRunCount(3);
         auto track = construct();
-        assertIncomplete(track);
-        pushDown(track);
-        assertIncomplete(track);
-        pushDown(track);
-        assertIncomplete(track);
-        pushUp(track);
-        assertIncomplete(track);
-        pushDown(track);
-        assertIncomplete(track);
-        pushDown(track);
-        assertIncomplete(track);
-        pushUp(track);
-        assertComplete(track);
+        assertIncompleteAfterPushDown(track);
+        assertIncompleteAfterPushUp(track);
+        assertIncompleteAfterPushDown(track);
+        assertCompleteAfterPushUp(track);
     }
 
     TEST_F(AdaptiveTrackTests, completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
