@@ -145,6 +145,16 @@ namespace adaptive_track::tests {
             track.assertReversalsEquals(n);
         }
         
+        void assertReversalsEqualsAfterDown(AdaptiveTrackFacade &track, int n) {
+            down(track);
+            assertReversalsEquals(track, n);
+        }
+        
+        void assertReversalsEqualsAfterUp(AdaptiveTrackFacade &track, int n) {
+            up(track);
+            assertReversalsEquals(track, n);
+        }
+        
         void assertIncompleteAfterDown(AdaptiveTrackFacade &track) {
             down(track);
             assertIncomplete(track);
@@ -498,17 +508,11 @@ namespace adaptive_track::tests {
         setFirstSequenceUp(1);
         auto track = construct();
         assertReversalsEquals(track, 0);
-        up(track);
-        assertReversalsEquals(track, 0);
-        down(track);
-        assertReversalsEquals(track, 0);
-        down(track);
-        assertReversalsEquals(track, 1);
-        up(track);
-        assertReversalsEquals(track, 2);
-        down(track);
-        assertReversalsEquals(track, 2);
-        down(track);
-        assertReversalsEquals(track, 3);
+        assertReversalsEqualsAfterUp(track, 0);
+        assertReversalsEqualsAfterDown(track, 0);
+        assertReversalsEqualsAfterDown(track, 1);
+        assertReversalsEqualsAfterUp(track, 2);
+        assertReversalsEqualsAfterDown(track, 2);
+        assertReversalsEqualsAfterDown(track, 3);
     }
 }
