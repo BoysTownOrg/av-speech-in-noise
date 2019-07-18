@@ -65,8 +65,6 @@ namespace adaptive_track::tests {
         AdaptiveTrackTests() {
             settings.rule = &rule;
             rule.resize(3);
-            for (auto &sequence : rule)
-                sequence.runCount = 0;
         }
         
         auto &firstSequence() {
@@ -359,18 +357,12 @@ namespace adaptive_track::tests {
     }
 
     TEST_F(AdaptiveTrackTests, incompleteIfPushedDownBumpLimitUnconsecutiveTimesAtFloor) {
-        setStartingX(-6);
-        setFloor(-10);
+        setStartingX(-5);
+        setFloor(-5);
         setBumpLimit(3);
-        setFirstSequenceStepSize(10 - 6);
-        setFirstSequenceDown(2);
-        setFirstSequenceUp(999);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        assertXEquals(track, -6);
-        pushDown(track);
-        pushDown(track);
-        assertXEquals(track, -10);
+        assertXEquals(track, -5);
         pushDown(track);
         pushDown(track);
         pushUp(track);
@@ -379,18 +371,12 @@ namespace adaptive_track::tests {
     }
 
     TEST_F(AdaptiveTrackTests, incompleteIfPushedUpBumpLimitUnconsecutiveTimesAtCeiling) {
-        setStartingX(6);
-        setCeiling(10);
+        setStartingX(5);
+        setCeiling(5);
         setBumpLimit(3);
-        setFirstSequenceStepSize(10 - 6);
-        setFirstSequenceUp(2);
-        setFirstSequenceDown(999);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        assertXEquals(track, 6);
-        pushUp(track);
-        pushUp(track);
-        assertXEquals(track, 10);
+        assertXEquals(track, 5);
         pushUp(track);
         pushUp(track);
         pushDown(track);
