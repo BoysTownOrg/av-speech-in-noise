@@ -226,14 +226,12 @@ namespace adaptive_track::tests {
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
         setFirstSequenceUp(1);
-        setFirstSequenceDown(2);
+        setFirstSequenceDown(1);
         setFirstSequenceRunCount(3);
         setFirstSequenceStepSize(4);
         setStartingX(5);
         auto track = construct();
-        push(track, "dduddu");
-        assertXEquals(track, 5 - 4 + 4 - 4);
-        pushDown(track);
+        push(track, "dudu");
         assertXEquals(track, 5 - 4 + 4 - 4);
         pushDown(track);
         assertXEquals(track, 5 - 4 + 4 - 4);
@@ -256,11 +254,11 @@ namespace adaptive_track::tests {
     }
 
     TEST_F(AdaptiveTrackTests, ceilingActsAsUpperLimit) {
+        setCeiling(10);
         setFirstSequenceUp(1);
-        setFirstSequenceRunCount(999);
         setFirstSequenceStepSize(4);
         setStartingX(5);
-        setCeiling(10);
+        setFirstSequenceRunCount(999);
         auto track = construct();
         assertXEquals(track, 5);
         pushUp(track);
