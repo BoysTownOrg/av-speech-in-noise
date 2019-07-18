@@ -95,6 +95,7 @@ namespace av_speech_in_noise {
         int startingSnr_dB;
         int ceilingSnr_dB;
         int floorSnr_dB;
+        int trackBumpLimit;
     };
     
     struct FixedLevelTest {

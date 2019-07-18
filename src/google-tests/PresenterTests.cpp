@@ -256,6 +256,14 @@ namespace av_speech_in_noise::tests::presentation {
         assertPassesFloorSNR(confirmingAdaptiveOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTrackBumpLimit) {
+        assertPassesTrackBumpLimit(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTrackBumpLimit) {
+        assertPassesTrackBumpLimit(confirmingAdaptiveOpenSetTest);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesFullScaleLevel) {
         assertPassesFullScaleLevel(confirmingAdaptiveClosedSetTest);
     }

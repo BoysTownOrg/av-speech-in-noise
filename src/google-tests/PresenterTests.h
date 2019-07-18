@@ -657,6 +657,7 @@ namespace av_speech_in_noise::tests::presentation {
     public:
         virtual int ceilingSnr_dB(ModelStub &) = 0;
         virtual int floorSnr_dB(ModelStub &) = 0;
+        virtual int trackBumpLimit(ModelStub &) = 0;
         virtual std::string trackSettingsFile(ModelStub &) = 0;
     };
     
@@ -729,6 +730,10 @@ namespace av_speech_in_noise::tests::presentation {
         std::string trackSettingsFile(ModelStub &m) override {
             return adaptiveTest(m).trackSettingsFile;
         }
+        
+        int trackBumpLimit(ModelStub &m) override {
+            return adaptiveTest(m).trackBumpLimit;
+        }
     };
     
     void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
@@ -795,6 +800,10 @@ namespace av_speech_in_noise::tests::presentation {
         std::string trackSettingsFile(ModelStub &m) override {
             return confirmingAdaptiveTest.trackSettingsFile(m);
         }
+        
+        int trackBumpLimit(ModelStub &m) override {
+            return confirmingAdaptiveTest.trackBumpLimit(m);
+        }
     };
     
     class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
@@ -856,6 +865,10 @@ namespace av_speech_in_noise::tests::presentation {
         
         std::string trackSettingsFile(ModelStub &m) override {
             return confirmingAdaptiveTest.trackSettingsFile(m);
+        }
+        
+        int trackBumpLimit(ModelStub &m) override {
+            return confirmingAdaptiveTest.trackBumpLimit(m);
         }
     };
     
@@ -1688,6 +1701,14 @@ namespace av_speech_in_noise::tests::presentation {
             assertEqual(
                 Presenter::floorSnr_dB,
                 useCase.floorSnr_dB(model)
+            );
+        }
+        
+        void assertPassesTrackBumpLimit(ConfirmingAdaptiveTest_ &useCase) {
+            run(useCase);
+            assertEqual(
+                Presenter::trackBumpLimit,
+                useCase.trackBumpLimit(model)
             );
         }
         

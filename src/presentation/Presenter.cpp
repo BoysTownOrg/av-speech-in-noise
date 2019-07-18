@@ -13,6 +13,7 @@ namespace av_speech_in_noise {
     int Presenter::fullScaleLevel_dB_SPL = 119;
     int Presenter::ceilingSnr_dB = 20;
     int Presenter::floorSnr_dB = -40;
+    int Presenter::trackBumpLimit = 10;
     
     Presenter::Presenter(
         Model *model,
@@ -295,6 +296,7 @@ namespace av_speech_in_noise {
         p.information = testInformation();
         p.ceilingSnr_dB = ceilingSnr_dB;
         p.floorSnr_dB = floorSnr_dB;
+        p.trackBumpLimit = trackBumpLimit;
         p.trackSettingsFile = view->trackSettingsFile();
         p.common = commonTest();
         return p;
