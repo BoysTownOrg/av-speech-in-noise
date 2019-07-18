@@ -137,7 +137,7 @@ namespace adaptive_track::tests {
             track.assertComplete();
         }
         
-        void push(AdaptiveTrackFacade &track, const std::string &s) {
+        void update(AdaptiveTrackFacade &track, const std::string &s) {
             track.update(s);
         }
         
@@ -172,6 +172,11 @@ namespace adaptive_track::tests {
         
         void assertXEqualsAfterUp(AdaptiveTrackFacade &track, int x) {
             up(track);
+            assertXEquals(track, x);
+        }
+        
+        void assertXEqualsAfter(AdaptiveTrackFacade &track, const std::string &directions, int x) {
+            update(track, directions);
             assertXEquals(track, x);
         }
     };
@@ -240,8 +245,7 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(4);
         setStartingX(5);
         auto track = construct();
-        push(track, "dudu");
-        assertXEquals(track, 5 - 4 + 4 - 4);
+        assertXEqualsAfter(track, "dudu", 5 - 4 + 4 - 4);
         assertXEqualsAfterDown(track, 5 - 4 + 4 - 4);
         assertXEqualsAfterUp(track, 5 - 4 + 4 - 4);
     }
@@ -304,7 +308,7 @@ namespace adaptive_track::tests {
         setBumpLimit(3);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        push(track, "uuu");
+        update(track, "uuu");
         assertCompleteAfterUp(track);
     }
 
@@ -314,7 +318,7 @@ namespace adaptive_track::tests {
         setBumpLimit(3);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        push(track, "uuu");
+        update(track, "uuu");
         assertCompleteAfterDown(track);
     }
 
@@ -350,7 +354,7 @@ namespace adaptive_track::tests {
         setBumpLimit(3);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        push(track, "ddd");
+        update(track, "ddd");
         assertCompleteAfterDown(track);
     }
 
@@ -360,7 +364,7 @@ namespace adaptive_track::tests {
         setBumpLimit(3);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        push(track, "ddd");
+        update(track, "ddd");
         assertCompleteAfterUp(track);
     }
 
@@ -385,7 +389,7 @@ namespace adaptive_track::tests {
         setBumpLimit(3);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        push(track, "ddud");
+        update(track, "ddud");
         assertIncomplete(track);
     }
 
@@ -395,7 +399,7 @@ namespace adaptive_track::tests {
         setBumpLimit(3);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        push(track, "uudu");
+        update(track, "uudu");
         assertIncomplete(track);
     }
 
@@ -407,8 +411,7 @@ namespace adaptive_track::tests {
         setFirstSequenceDown(1);
         setFirstSequenceUp(1);
         auto track = construct();
-        push(track, "dduuuudduuuddddduuudduu");
-        assertXEquals(track, 1);
+        assertXEqualsAfter(track, "dduuuudduuuddddduuudduu", 1);
     }
 
     // see https://doi.org/10.1121/1.1912375
@@ -419,8 +422,7 @@ namespace adaptive_track::tests {
         setFirstSequenceDown(2);
         setFirstSequenceUp(1);
         auto track = construct();
-        push(track, "dddduduududdddduuuddddd");
-        assertXEquals(track, 1);
+        assertXEqualsAfter(track, "dddduduududdddduuuddddd", 1);
     }
 
     TEST_F(AdaptiveTrackTests, twoSequences) {
@@ -462,8 +464,7 @@ namespace adaptive_track::tests {
         thirdSequence().down = 3;
         thirdSequence().up = 1;
         auto track = construct();
-        push(track, "ddudddudddddudddddduddd");
-        assertXEquals(track, 3);
+        assertXEqualsAfter(track, "ddudddudddddudddddduddd", 3);
     }
 
     TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
