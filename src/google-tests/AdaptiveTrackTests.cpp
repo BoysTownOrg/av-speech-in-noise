@@ -189,21 +189,13 @@ namespace adaptive_track::tests {
         setFirstSequenceStepSize(4);
         setStartingX(5);
         auto track = construct();
+        push(track, "dduddu");
+        assertXEquals(track, 5 - 4 + 4 - 4);
         pushDown(track);
-        assertXEquals(track, 5);
-        pushDown(track);
-        assertXEquals(track, 5 - 4);
-        pushUp(track);
-        assertXEquals(track, 5 - 4 + 4);
-        pushDown(track);
-        assertXEquals(track, 5 - 4 + 4);
+        assertXEquals(track, 5 - 4 + 4 - 4);
         pushDown(track);
         assertXEquals(track, 5 - 4 + 4 - 4);
         pushUp(track);
-        assertXEquals(track, 5 - 4 + 4 - 4);
-        pushDown(track);
-        assertXEquals(track, 5 - 4 + 4 - 4);
-        pushDown(track);
         assertXEquals(track, 5 - 4 + 4 - 4);
     }
 
