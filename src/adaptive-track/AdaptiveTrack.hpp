@@ -25,7 +25,6 @@ namespace adaptive_track {
         int floor_;
         int bumpLimit_;
         int bumpCount_;
-        bool bumpedOut{};
         int sameDirectionConsecutiveCount{};
         int runCounter{};
         int reversals_{};
@@ -41,7 +40,12 @@ namespace adaptive_track {
         
     private:
         void updateBumpCount(int bumpBoundary);
-        void update(Direction, const std::vector<int> &, void(AdaptiveTrack::*)());
+        void update(
+            Direction,
+            int bumpBoundary,
+            const std::vector<int> &,
+            void(AdaptiveTrack::*)()
+        );
         void callIfConsecutiveCountMet(void(AdaptiveTrack::*)(), int threshold);
         bool consecutiveCountMet(int threshold);
         void stepDown();

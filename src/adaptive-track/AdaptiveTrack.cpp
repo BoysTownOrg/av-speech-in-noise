@@ -19,27 +19,25 @@ namespace adaptive_track {
     }
     
     void AdaptiveTrack::pushUp() {
-        updateBumpCount(ceiling_);
-        update(Direction::up, up, &AdaptiveTrack::stepUp);
+        update(Direction::up, ceiling_, up, &AdaptiveTrack::stepUp);
     }
     
     void AdaptiveTrack::updateBumpCount(int bumpBoundary) {
         bumpCount_ = x_ == bumpBoundary
             ? bumpCount_ + 1
             : 0;
-        
-        if (bumpCount_ == bumpLimit_)
-            bumpedOut = true;
     }
     
     void AdaptiveTrack::update(
         Direction direction,
+        int bumpBoundary,
         const std::vector<int> &thresholds,
         void(AdaptiveTrack::*whenThresholdMet)()
     ) {
         if (complete_())
             return;
         
+        updateBumpCount(bumpBoundary);
         updateConsecutiveCount(direction);
         callIfConsecutiveCountMet(whenThresholdMet, thresholds.at(sequenceIndex));
         previousDirection = direction;
@@ -88,8 +86,7 @@ namespace adaptive_track {
     }
     
     void AdaptiveTrack::pushDown() {
-        updateBumpCount(floor_);
-        update(Direction::down, down, &AdaptiveTrack::stepDown);
+        update(Direction::down, floor_, down, &AdaptiveTrack::stepDown);
     }
 
     void AdaptiveTrack::stepDown() {
@@ -108,7 +105,7 @@ namespace adaptive_track {
     }
 
     bool AdaptiveTrack::complete_() const {
-        return sequenceIndex == runCounts.size() || bumpedOut;
+        return sequenceIndex == runCounts.size() || bumpCount_ == bumpLimit_;
     }
 
     int AdaptiveTrack::reversals() {
