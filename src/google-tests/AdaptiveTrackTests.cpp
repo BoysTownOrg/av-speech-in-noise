@@ -164,6 +164,11 @@ namespace adaptive_track::tests {
             pushDown(track);
             assertComplete(track);
         }
+        
+        void assertXEqualsAfterPushDown(AdaptiveTrackFacade &track, int x) {
+            pushDown(track);
+            assertXEquals(track, x);
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
@@ -188,14 +193,11 @@ namespace adaptive_track::tests {
         setFirstSequenceRunCount(999);
         setStartingX(5);
         auto track = construct();
-        pushDown(track);
-        assertXEquals(track, 5 - 4);
+        assertXEqualsAfterPushDown(track, 5 - 4);
         pushUp(track);
         assertXEquals(track, 5 - 4 + 4);
-        pushDown(track);
-        assertXEquals(track, 5 - 4 + 4 - 4);
-        pushDown(track);
-        assertXEquals(track, 5 - 4 + 4 - 4 - 4);
+        assertXEqualsAfterPushDown(track, 5 - 4 + 4 - 4);
+        assertXEqualsAfterPushDown(track, 5 - 4 + 4 - 4 - 4);
         pushUp(track);
         assertXEquals(track, 5 - 4 + 4 - 4 - 4 + 4);
     }
@@ -207,16 +209,12 @@ namespace adaptive_track::tests {
         setFirstSequenceRunCount(999);
         setStartingX(5);
         auto track = construct();
-        pushDown(track);
-        assertXEquals(track, 5);
-        pushDown(track);
-        assertXEquals(track, 5 - 4);
+        assertXEqualsAfterPushDown(track, 5);
+        assertXEqualsAfterPushDown(track, 5 - 4);
         pushUp(track);
         assertXEquals(track, 5 - 4 + 4);
-        pushDown(track);
-        assertXEquals(track, 5 - 4 + 4);
-        pushDown(track);
-        assertXEquals(track, 5 - 4 + 4 - 4);
+        assertXEqualsAfterPushDown(track, 5 - 4 + 4);
+        assertXEqualsAfterPushDown(track, 5 - 4 + 4 - 4);
         pushUp(track);
         assertXEquals(track, 5 - 4 + 4 - 4 + 4);
     }
@@ -396,31 +394,23 @@ namespace adaptive_track::tests {
         assertCompleteAfterPushDown(track);
     }
 
-    TEST_F(AdaptiveTrackTests, incompleteIfPushedDownBumpLimitUnconsecutiveTimesAtFloor) {
+    TEST_F(AdaptiveTrackTests, incompleteIfPushedDownBumpLimitNonconsecutiveTimesAtFloor) {
         setStartingX(-5);
         setFloor(-5);
         setBumpLimit(3);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        assertXEquals(track, -5);
-        pushDown(track);
-        pushDown(track);
-        pushUp(track);
-        pushDown(track);
+        push(track, "ddud");
         assertIncomplete(track);
     }
 
-    TEST_F(AdaptiveTrackTests, incompleteIfPushedUpBumpLimitUnconsecutiveTimesAtCeiling) {
+    TEST_F(AdaptiveTrackTests, incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
         setStartingX(5);
         setCeiling(5);
         setBumpLimit(3);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        assertXEquals(track, 5);
-        pushUp(track);
-        pushUp(track);
-        pushDown(track);
-        pushUp(track);
+        push(track, "uudu");
         assertIncomplete(track);
     }
 
