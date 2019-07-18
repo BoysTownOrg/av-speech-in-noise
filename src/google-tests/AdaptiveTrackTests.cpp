@@ -161,6 +161,11 @@ namespace adaptive_track::tests {
             pushUp(track);
             assertComplete(track);
         }
+        
+        void assertCompleteAfterPushDown(AdaptiveTrackFacade &track) {
+            pushDown(track);
+            assertComplete(track);
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
@@ -327,6 +332,17 @@ namespace adaptive_track::tests {
     }
 
     TEST_F(AdaptiveTrackTests, completeIfPushedDownBumpLimitConsecutiveTimesAtFloor) {
+        setStartingX(-10);
+        setFloor(-10);
+        setBumpLimit(3);
+        setFirstSequenceRunCount(999);
+        auto track = construct();
+        assertIncompleteAfterPushDown(track);
+        assertIncompleteAfterPushDown(track);
+        assertCompleteAfterPushDown(track);
+    }
+
+    TEST_F(AdaptiveTrackTests, completeIfPushedDownBumpLimitConsecutiveTimesAtFloor2) {
         setStartingX(-8);
         setFloor(-10);
         setBumpLimit(3);
