@@ -226,14 +226,12 @@ namespace adaptive_track::tests {
         setFirstSequenceRunCount(999);
         setStartingX(5);
         auto track = construct();
-        pushDown(track);
-        assertXEquals(track, 5 - 4);
+        assertXEqualsAfterPushDown(track, 5 - 4);
         pushUp(track);
         assertXEquals(track, 5 - 4);
         pushUp(track);
         assertXEquals(track, 5 - 4 + 4);
-        pushDown(track);
-        assertXEquals(track, 5 - 4 + 4 - 4);
+        assertXEqualsAfterPushDown(track, 5 - 4 + 4 - 4);
         pushUp(track);
         assertXEquals(track, 5 - 4 + 4 - 4);
         pushUp(track);
@@ -249,8 +247,7 @@ namespace adaptive_track::tests {
         auto track = construct();
         push(track, "dudu");
         assertXEquals(track, 5 - 4 + 4 - 4);
-        pushDown(track);
-        assertXEquals(track, 5 - 4 + 4 - 4);
+        assertXEqualsAfterPushDown(track, 5 - 4 + 4 - 4);
         pushUp(track);
         assertXEquals(track, 5 - 4 + 4 - 4);
     }
@@ -263,10 +260,8 @@ namespace adaptive_track::tests {
         setFirstSequenceRunCount(999);
         auto track = construct();
         assertXEquals(track, 5);
-        pushDown(track);
-        assertXEquals(track, 5 - 4);
-        pushDown(track);
-        assertXEquals(track, 0);
+        assertXEqualsAfterPushDown(track, 5 - 4);
+        assertXEqualsAfterPushDown(track, 0);
     }
 
     TEST_F(AdaptiveTrackTests, ceilingActsAsUpperLimit) {
@@ -387,8 +382,7 @@ namespace adaptive_track::tests {
         setFirstSequenceRunCount(999);
         auto track = construct();
         assertXEquals(track, -5);
-        pushDown(track);
-        assertXEquals(track, -7);
+        assertXEqualsAfterPushDown(track, -7);
         assertIncompleteAfterPushDown(track);
         assertIncompleteAfterPushDown(track);
         assertCompleteAfterPushDown(track);
@@ -449,26 +443,18 @@ namespace adaptive_track::tests {
         secondSequence().down = 2;
         secondSequence().up = 1;
         auto track = construct();
-        pushDown(track);
-        assertXEquals(track, 65);
-        pushDown(track);
-        assertXEquals(track, 65 - 8);
-        pushDown(track);
-        assertXEquals(track, 65 - 8);
-        pushDown(track);
-        assertXEquals(track, 65 - 8 - 8);
+        assertXEqualsAfterPushDown(track, 65);
+        assertXEqualsAfterPushDown(track, 65 - 8);
+        assertXEqualsAfterPushDown(track, 65 - 8);
+        assertXEqualsAfterPushDown(track, 65 - 8 - 8);
         pushUp(track);
         assertXEquals(track, 65 - 8 - 8 + 8);
         pushUp(track);
         assertXEquals(track, 65 - 8 - 8 + 8 + 8);
-        pushDown(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8);
-        pushDown(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4);
-        pushDown(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4);
-        pushDown(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
+        assertXEqualsAfterPushDown(track, 65 - 8 - 8 + 8 + 8);
+        assertXEqualsAfterPushDown(track, 65 - 8 - 8 + 8 + 8 - 4);
+        assertXEqualsAfterPushDown(track, 65 - 8 - 8 + 8 + 8 - 4);
+        assertXEqualsAfterPushDown(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
         pushUp(track);
         assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
     }
@@ -503,24 +489,17 @@ namespace adaptive_track::tests {
         secondSequence().up = 2;
         secondSequence().down = 1;
         auto track = construct();
-        pushDown(track);
-        assertXEquals(track, 65);
-        pushDown(track);
-        assertXEquals(track, 65 - 8);
-        pushDown(track);
-        assertXEquals(track, 65 - 8);
-        pushDown(track);
-        assertXEquals(track, 65 - 8 - 8);
+        assertXEqualsAfterPushDown(track, 65);
+        assertXEqualsAfterPushDown(track, 65 - 8);
+        assertXEqualsAfterPushDown(track, 65 - 8);
+        assertXEqualsAfterPushDown(track, 65 - 8 - 8);
         pushUp(track);
         assertXEquals(track, 65 - 8 - 8 + 8);
         pushUp(track);
         assertXEquals(track, 65 - 8 - 8 + 8 + 8);
-        pushDown(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8);
-        pushDown(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4);
-        pushDown(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
+        assertXEqualsAfterPushDown(track, 65 - 8 - 8 + 8 + 8);
+        assertXEqualsAfterPushDown(track, 65 - 8 - 8 + 8 + 8 - 4);
+        assertXEqualsAfterPushDown(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
         pushUp(track);
         assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
         pushUp(track);
