@@ -313,6 +313,16 @@ namespace adaptive_track::tests {
         assertCompleteAfterPushUp(track);
     }
 
+    TEST_F(AdaptiveTrackTests, stillCompleteIfPushedUpBumpLimitPlusOneConsecutiveTimesAtCeiling) {
+        setStartingX(10);
+        setCeiling(10);
+        setBumpLimit(3);
+        setFirstSequenceRunCount(999);
+        auto track = construct();
+        push(track, "uuu");
+        assertCompleteAfterPushUp(track);
+    }
+
     TEST_F(AdaptiveTrackTests, completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling2) {
         setStartingX(5);
         setCeiling(7);
