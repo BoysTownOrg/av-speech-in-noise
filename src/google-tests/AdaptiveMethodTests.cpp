@@ -86,6 +86,10 @@ namespace av_speech_in_noise::tests {
             assertEqual(1, s.floor);
         }
         
+        void assertBumpLimitEqualsOne(const Track::Settings &s) {
+            assertEqual(1, s.bumpLimit);
+        }
+        
         void applyToSnrTrackFactoryParameters(
             int n,
             void(AdaptiveMethodTests::*f)(const Track::Settings &)
@@ -243,6 +247,18 @@ namespace av_speech_in_noise::tests {
         applyToSnrTrackFactoryParameters(
             3,
             &AdaptiveMethodTests::assertFloorEqualsOne
+        );
+    }
+
+    TEST_F(
+        AdaptiveMethodTests,
+        initializeCreatesEachSnrTrackWithBumpLimit
+    ) {
+        test.trackBumpLimit = 1;
+        initialize();
+        applyToSnrTrackFactoryParameters(
+            3,
+            &AdaptiveMethodTests::assertBumpLimitEqualsOne
         );
     }
 
