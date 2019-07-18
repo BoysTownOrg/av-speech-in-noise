@@ -169,6 +169,11 @@ namespace adaptive_track::tests {
             down(track);
             assertXEquals(track, x);
         }
+        
+        void assertXEqualsAfterUp(AdaptiveTrackFacade &track, int x) {
+            up(track);
+            assertXEquals(track, x);
+        }
     };
 
     TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
@@ -180,10 +185,8 @@ namespace adaptive_track::tests {
     TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoChanges) {
         setStartingX(5);
         auto track = construct();
-        down(track);
-        assertXEquals(track, 5);
-        up(track);
-        assertXEquals(track, 5);
+        assertXEqualsAfterDown(track, 5);
+        assertXEqualsAfterUp(track, 5);
     }
 
     TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize1Down1Up) {
@@ -194,12 +197,10 @@ namespace adaptive_track::tests {
         setStartingX(5);
         auto track = construct();
         assertXEqualsAfterDown(track, 5 - 4);
-        up(track);
-        assertXEquals(track, 5 - 4 + 4);
+        assertXEqualsAfterUp(track, 5 - 4 + 4);
         assertXEqualsAfterDown(track, 5 - 4 + 4 - 4);
         assertXEqualsAfterDown(track, 5 - 4 + 4 - 4 - 4);
-        up(track);
-        assertXEquals(track, 5 - 4 + 4 - 4 - 4 + 4);
+        assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 - 4 + 4);
     }
 
     TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize2Down1Up) {
@@ -211,12 +212,10 @@ namespace adaptive_track::tests {
         auto track = construct();
         assertXEqualsAfterDown(track, 5);
         assertXEqualsAfterDown(track, 5 - 4);
-        up(track);
-        assertXEquals(track, 5 - 4 + 4);
+        assertXEqualsAfterUp(track, 5 - 4 + 4);
         assertXEqualsAfterDown(track, 5 - 4 + 4);
         assertXEqualsAfterDown(track, 5 - 4 + 4 - 4);
-        up(track);
-        assertXEquals(track, 5 - 4 + 4 - 4 + 4);
+        assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 + 4);
     }
 
     TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize1Down2Up) {
@@ -227,15 +226,11 @@ namespace adaptive_track::tests {
         setStartingX(5);
         auto track = construct();
         assertXEqualsAfterDown(track, 5 - 4);
-        up(track);
-        assertXEquals(track, 5 - 4);
-        up(track);
-        assertXEquals(track, 5 - 4 + 4);
+        assertXEqualsAfterUp(track, 5 - 4);
+        assertXEqualsAfterUp(track, 5 - 4 + 4);
         assertXEqualsAfterDown(track, 5 - 4 + 4 - 4);
-        up(track);
-        assertXEquals(track, 5 - 4 + 4 - 4);
-        up(track);
-        assertXEquals(track, 5 - 4 + 4 - 4 + 4);
+        assertXEqualsAfterUp(track, 5 - 4 + 4 - 4);
+        assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 + 4);
     }
 
     TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
@@ -248,8 +243,7 @@ namespace adaptive_track::tests {
         push(track, "dudu");
         assertXEquals(track, 5 - 4 + 4 - 4);
         assertXEqualsAfterDown(track, 5 - 4 + 4 - 4);
-        up(track);
-        assertXEquals(track, 5 - 4 + 4 - 4);
+        assertXEqualsAfterUp(track, 5 - 4 + 4 - 4);
     }
 
     TEST_F(AdaptiveTrackTests, floorActsAsLowerLimit) {
@@ -272,10 +266,8 @@ namespace adaptive_track::tests {
         setFirstSequenceRunCount(999);
         auto track = construct();
         assertXEquals(track, 5);
-        up(track);
-        assertXEquals(track, 5 + 4);
-        up(track);
-        assertXEquals(track, 10);
+        assertXEqualsAfterUp(track, 5 + 4);
+        assertXEqualsAfterUp(track, 10);
     }
 
     TEST_F(AdaptiveTrackTests, incompleteWhenNonZeroRunCount) {
@@ -335,8 +327,7 @@ namespace adaptive_track::tests {
         setFirstSequenceRunCount(999);
         auto track = construct();
         assertXEquals(track, 5);
-        up(track);
-        assertXEquals(track, 7);
+        assertXEqualsAfterUp(track, 7);
         assertIncompleteAfterUp(track);
         assertIncompleteAfterUp(track);
         assertCompleteAfterUp(track);
@@ -447,16 +438,13 @@ namespace adaptive_track::tests {
         assertXEqualsAfterDown(track, 65 - 8);
         assertXEqualsAfterDown(track, 65 - 8);
         assertXEqualsAfterDown(track, 65 - 8 - 8);
-        up(track);
-        assertXEquals(track, 65 - 8 - 8 + 8);
-        up(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8);
+        assertXEqualsAfterUp(track, 65 - 8 - 8 + 8);
+        assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8);
         assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8);
         assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4);
         assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4);
         assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
-        up(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
+        assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
     }
 
     TEST_F(AdaptiveTrackTests, threeSequences) {
@@ -493,17 +481,13 @@ namespace adaptive_track::tests {
         assertXEqualsAfterDown(track, 65 - 8);
         assertXEqualsAfterDown(track, 65 - 8);
         assertXEqualsAfterDown(track, 65 - 8 - 8);
-        up(track);
-        assertXEquals(track, 65 - 8 - 8 + 8);
-        up(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8);
+        assertXEqualsAfterUp(track, 65 - 8 - 8 + 8);
+        assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8);
         assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8);
         assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4);
         assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
-        up(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
-        up(track);
-        assertXEquals(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
+        assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
+        assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
     }
     
     TEST_F(AdaptiveTrackTests, reversals) {
