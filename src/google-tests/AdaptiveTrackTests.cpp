@@ -300,24 +300,30 @@ namespace adaptive_track::tests {
     }
 
     TEST_F(AdaptiveTrackTests, completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
-        setStartingX(8);
+        setStartingX(10);
         setCeiling(10);
         setBumpLimit(3);
-        setFirstSequenceStepSize(4);
-        setFirstSequenceUp(2);
         setFirstSequenceRunCount(999);
         auto track = construct();
-        assertXEquals(track, 8);
+        assertIncompleteAfterPushUp(track);
+        assertIncompleteAfterPushUp(track);
+        assertCompleteAfterPushUp(track);
+    }
+
+    TEST_F(AdaptiveTrackTests, completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling2) {
+        setStartingX(5);
+        setCeiling(7);
+        setFirstSequenceStepSize(7 - 5);
+        setFirstSequenceUp(1);
+        setBumpLimit(3);
+        setFirstSequenceRunCount(999);
+        auto track = construct();
+        assertXEquals(track, 5);
         pushUp(track);
-        pushUp(track);
-        assertXEquals(track, 10);
-        assertIncomplete(track);
-        pushUp(track);
-        assertIncomplete(track);
-        pushUp(track);
-        assertIncomplete(track);
-        pushUp(track);
-        assertComplete(track);
+        assertXEquals(track, 7);
+        assertIncompleteAfterPushUp(track);
+        assertIncompleteAfterPushUp(track);
+        assertCompleteAfterPushUp(track);
     }
 
     TEST_F(AdaptiveTrackTests, completeIfPushedDownBumpLimitConsecutiveTimesAtFloor) {
