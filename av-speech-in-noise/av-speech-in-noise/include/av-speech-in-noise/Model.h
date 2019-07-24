@@ -21,13 +21,21 @@ namespace av_speech_in_noise {
         };
         
         struct Trial {
-            int SNR_dB;
             int correctNumber;
             int subjectNumber;
-            int reversals;
             Color correctColor;
             Color subjectColor;
             bool correct;
+        };
+        
+        struct AdaptiveTrial {
+            Trial trial;
+            int SNR_dB;
+            int reversals;
+        };
+        
+        struct FixedLevelTrial {
+            Trial trial;
         };
     }
     
@@ -52,6 +60,17 @@ namespace av_speech_in_noise {
         int down;
         int up;
     };
+
+    constexpr bool operator ==(
+        const TrackingSequence &a,
+        const TrackingSequence &b
+    ) {
+        return
+            a.down == b.down &&
+            a.up == b.up &&
+            a.runCount == b.runCount &&
+            a.stepSize == b.stepSize;
+    }
     
     using TrackingRule = typename std::vector<TrackingSequence>;
     
@@ -61,25 +80,29 @@ namespace av_speech_in_noise {
         std::string session;
     };
     
-    struct AdaptiveTest {
-        TestInformation information;
+    struct CommonTest {
         std::string targetListDirectory;
         std::string maskerFilePath;
-        const TrackingRule *targetLevelRule;
-        int startingSnr_dB;
         int maskerLevel_dB_SPL;
         int fullScaleLevel_dB_SPL;
         Condition condition;
     };
     
-    struct FixedLevelTest {
+    struct AdaptiveTest {
+        CommonTest common;
         TestInformation information;
-        std::string targetListDirectory;
-        std::string maskerFilePath;
+        std::string trackSettingsFile;
+        int startingSnr_dB;
+        int ceilingSnr_dB;
+        int floorSnr_dB;
+        int trackBumpLimit;
+    };
+    
+    struct FixedLevelTest {
+        CommonTest common;
+        TestInformation information;
         int snr_dB;
-        int maskerLevel_dB_SPL;
-        int fullScaleLevel_dB_SPL;
-        Condition condition;
+        int trials{30};
     };
     
     struct AudioSettings {
@@ -115,8 +138,8 @@ namespace av_speech_in_noise {
         virtual void subscribe(EventListener *) = 0;
         class RequestFailure : public std::runtime_error {
         public:
-            explicit RequestFailure(std::string s) :
-                std::runtime_error{ std::move(s) } {}
+            explicit RequestFailure(const std::string &s) :
+                std::runtime_error{s} {}
         };
         virtual void initializeTest(const AdaptiveTest &) = 0;
         virtual void initializeTest(const FixedLevelTest &) = 0;

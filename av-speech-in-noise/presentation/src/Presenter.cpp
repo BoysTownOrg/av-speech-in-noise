@@ -2,12 +2,18 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
-    int Presenter::fullScaleLevel_dB_SPL = 119;
+    namespace {
+        class BadInput : public std::runtime_error {
+        public:
+            explicit BadInput(const std::string &s) :
+                std::runtime_error{ s } {}
+        };
+    }
     
-    TrackingRule Presenter::targetLevelRule = {
-        { 2, 4, 1, 1 },
-        { 6, 2, 1, 1 }
-    };
+    int Presenter::fullScaleLevel_dB_SPL = 119;
+    int Presenter::ceilingSnr_dB = 20;
+    int Presenter::floorSnr_dB = -40;
+    int Presenter::trackBumpLimit = 10;
     
     Presenter::Presenter(
         Model *model,
@@ -17,6 +23,7 @@ namespace av_speech_in_noise {
         Experimenter *experimenter
     ) :
         fixedLevelOpenSetTrialCompletionHandler{experimenter},
+        fixedLevelClosedSetTrialCompletionHandler{subject},
         adaptiveOpenSetTrialCompletionHandler{experimenter},
         adaptiveClosedSetTrialCompletionHandler{subject},
         model{model},
@@ -46,19 +53,9 @@ namespace av_speech_in_noise {
     
     void Presenter::confirmTestSetup_() {
         initializeTest();
-        switchToTestView();
+        if (!testComplete())
+            switchToTestView();
         trialCompletionHandler = getTrialCompletionHandler();
-    }
-    
-    auto Presenter::getTrialCompletionHandler() -> TrialCompletionHandler * {
-        if (adaptiveClosedSet())
-            return &adaptiveClosedSetTrialCompletionHandler;
-        if (adaptiveOpenSet())
-            return &adaptiveOpenSetTrialCompletionHandler;
-        if (testSetup->fixedLevelOpenSet())
-            return &fixedLevelOpenSetTrialCompletionHandler;
-        else
-            return {};
     }
     
     void Presenter::initializeTest() {
@@ -85,15 +82,34 @@ namespace av_speech_in_noise {
         showTestView();
     }
     
+    void Presenter::hideTestSetup() {
+        testSetup->hide();
+    }
+    
     void Presenter::showTestView() {
-        if (adaptiveClosedSet())
+        if (closedSet())
             subject->show();
         else
             experimenter->show();
     }
     
-    void Presenter::hideTestSetup() {
-        testSetup->hide();
+    bool Presenter::closedSet() {
+        return adaptiveClosedSet() || fixedLevelClosedSet();
+    }
+    
+    bool Presenter::fixedLevelClosedSet() {
+        return testSetup->fixedLevelClosedSet();
+    }
+    
+    auto Presenter::getTrialCompletionHandler() -> TrialCompletionHandler * {
+        if (adaptiveClosedSet())
+            return &adaptiveClosedSetTrialCompletionHandler;
+        if (adaptiveOpenSet())
+            return &adaptiveOpenSetTrialCompletionHandler;
+        if (fixedLevelClosedSet())
+            return &fixedLevelClosedSetTrialCompletionHandler;
+        else
+            return &fixedLevelOpenSetTrialCompletionHandler;
     }
     
     void Presenter::showErrorMessage(std::string e) {
@@ -111,22 +127,43 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::submitSubjectResponse() {
+        submitSubjectResponse_();
+        if (testComplete())
+            switchToSetupView();
+        else
+            playTrial();
+    }
+    
+    void Presenter::submitSubjectResponse_() {
         model->submitResponse(subject->subjectResponse());
-        proceedToNextTrial();
     }
     
     void Presenter::submitExperimenterResponse() {
+        proceedToNextTrialAfter(&Presenter::submitExperimenterResponse_);
+    }
+    
+    void Presenter::submitExperimenterResponse_() {
         model->submitResponse(experimenter->openSetResponse());
-        proceedToNextTrial();
     }
     
     void Presenter::submitPassedTrial() {
+        proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
+    }
+    
+    void Presenter::submitPassedTrial_() {
         model->submitCorrectResponse();
-        proceedToNextTrial();
     }
     
     void Presenter::submitFailedTrial() {
+        proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
+    }
+    
+    void Presenter::submitFailedTrial_() {
         model->submitIncorrectResponse();
+    }
+    
+    void Presenter::proceedToNextTrialAfter(void(Presenter::*f)()) {
+        (this->*f)();
         proceedToNextTrial();
     }
     
@@ -196,6 +233,14 @@ namespace av_speech_in_noise {
         );
     }
     
+    void Presenter::browseForTrackSettingsFile() {
+        applyIfBrowseNotCancelled(
+            view->browseForOpeningFile(),
+            &TestSetup::setTrackSettingsFile
+        );
+    }
+    
+    
 
     Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         view->populateConditionMenu({
@@ -205,6 +250,7 @@ namespace av_speech_in_noise {
         view->populateMethodMenu({
             methodName(Method::adaptiveClosedSet),
             methodName(Method::adaptiveOpenSet),
+            methodName(Method::fixedLevelClosedSet),
             methodName(Method::fixedLevelOpenSet)
         });
         view->subscribe(this);
@@ -221,12 +267,8 @@ namespace av_speech_in_noise {
     FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
         FixedLevelTest p;
         p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
-        p.maskerLevel_dB_SPL = readMaskerLevel();
-        p.targetListDirectory = view->targetListDirectory();
-        p.maskerFilePath = view->maskerFilePath();
         p.information = testInformation();
-        p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
-        p.condition = readCondition();
+        p.common = commonTest();
         return p;
     }
     
@@ -238,16 +280,25 @@ namespace av_speech_in_noise {
         return p;
     }
     
+    CommonTest Presenter::TestSetup::commonTest() {
+        CommonTest p;
+        p.maskerLevel_dB_SPL = readMaskerLevel();
+        p.targetListDirectory = view->targetListDirectory();
+        p.maskerFilePath = view->maskerFilePath();
+        p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
+        p.condition = readCondition();
+        return p;
+    }
+    
     AdaptiveTest Presenter::TestSetup::adaptiveTest() {
         AdaptiveTest p;
         p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
-        p.maskerLevel_dB_SPL = readMaskerLevel();
-        p.maskerFilePath = view->maskerFilePath();
-        p.targetListDirectory = view->targetListDirectory();
         p.information = testInformation();
-        p.condition = readCondition();
-        p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
-        p.targetLevelRule = &targetLevelRule;
+        p.ceilingSnr_dB = ceilingSnr_dB;
+        p.floorSnr_dB = floorSnr_dB;
+        p.trackBumpLimit = trackBumpLimit;
+        p.trackSettingsFile = view->trackSettingsFile();
+        p.common = commonTest();
         return p;
     }
     
@@ -324,8 +375,16 @@ namespace av_speech_in_noise {
         parent->browseForCalibration();
     }
     
+    void Presenter::TestSetup::browseForTrackSettingsFile() {
+        parent->browseForTrackSettingsFile();
+    }
+    
     void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
         view->setCalibrationFilePath(std::move(s));
+    }
+    
+    void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
+        view->setTrackSettingsFile(std::move(s));
     }
     
     bool Presenter::TestSetup::adaptiveClosedSet() {
@@ -343,7 +402,10 @@ namespace av_speech_in_noise {
     bool Presenter::TestSetup::fixedLevelOpenSet() {
         return method(Method::fixedLevelOpenSet);
     }
-
+    
+    bool Presenter::TestSetup::fixedLevelClosedSet() {
+        return method(Method::fixedLevelClosedSet);
+    }
 
     Presenter::Subject::Subject(View::Subject *view) :
         view{view}
@@ -367,7 +429,6 @@ namespace av_speech_in_noise {
 
     void Presenter::Subject::submitResponse() {
         parent->submitSubjectResponse();
-        showNextTrialButton();
         hideResponseButtons();
     }
     

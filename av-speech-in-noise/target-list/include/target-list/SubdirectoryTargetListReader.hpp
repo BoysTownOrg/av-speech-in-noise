@@ -1,7 +1,7 @@
 #ifndef target_list_SubdirectoryTargetListReader_hpp
 #define target_list_SubdirectoryTargetListReader_hpp
 
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/AdaptiveMethod.hpp>
 #include <memory>
 
 namespace target_list {

@@ -4,6 +4,11 @@
 #include "common-objc.h"
 #include <presentation/Presenter.h>
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/RecognitionTestModel_Internal.hpp>
+#include <recognition-test/AdaptiveMethod.hpp>
+#include <recognition-test/TrackSettingsReader.hpp>
+#include <recognition-test/TrackSettingsInterpreter.hpp>
+#include <recognition-test/FixedLevelMethod.hpp>
 #include <recognition-test/OutputFileImpl.hpp>
 #include <recognition-test/OutputFilePathImpl.hpp>
 #include <recognition-test/ResponseEvaluatorImpl.hpp>
@@ -15,6 +20,7 @@
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <sys/stat.h>
 #include <fstream>
+#include <sstream>
 
 class MacOsDirectoryReader : public target_list::DirectoryReader
 {
@@ -91,6 +97,10 @@ public:
     
     void close() override {
         file.close();
+    }
+    
+    void save() override {
+        file.flush();
     }
 };
 
@@ -189,6 +199,15 @@ public:
 }
 @end
 
+class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
+    std::string read(std::string s) override {
+        std::ifstream file{std::move(s)};
+        std::stringstream stream;
+        stream << file.rdbuf();
+        return stream.str();
+    }
+};
+
 int main() {
     using namespace av_speech_in_noise;
     MacOsDirectoryReader reader;
@@ -197,39 +216,74 @@ int main() {
         {".mov", ".avi", ".wav"}
     };
     MersenneTwisterRandomizer randomizer;
-    target_list::RandomizedTargetListFactory targetListFactory{&fileExtensions, &randomizer};
-    target_list::SubdirectoryTargetListReader targetListReader{&targetListFactory, &reader};
-    target_list::RandomizedFiniteTargetList finiteTargetList{&fileExtensions, &randomizer};
+    target_list::RandomizedTargetListFactory targetListFactory{
+        &fileExtensions,
+        &randomizer
+    };
+    target_list::SubdirectoryTargetListReader targetListReader{
+        &targetListFactory,
+        &reader
+    };
+    target_list::RandomizedTargetList fixedLevelTargetList{
+        &fileExtensions,
+        &randomizer
+    };
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
-    stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
+    stimulus_players::TargetPlayerImpl targetPlayer{
+        &videoPlayer,
+        &audioReader
+    };
     AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
-    stimulus_players::MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
+    stimulus_players::MaskerPlayerImpl maskerPlayer{
+        &audioPlayer,
+        &audioReader,
+        &timer
+    };
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
     OutputFilePathImpl path{&timeStamp, &systemPath};
     path.setRelativeOutputDirectory(
-        "Documents/AVCoordinatedResponseMeasureResults"
+        "Documents/AVCoordinateResponseMeasureResults"
     );
     OutputFileImpl outputFile{&writer, &path};
     adaptive_track::AdaptiveTrackFactory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
-    RecognitionTestModel model{
+    TrackSettingsInterpreter trackSettingsInterpreter;
+    TextFileReaderImpl textFileReader;
+    TrackSettingsReader trackSettingsReader{
+        &textFileReader,
+        &trackSettingsInterpreter
+    };
+    AdaptiveMethod adaptiveMethod{
         &targetListReader,
-        &finiteTargetList,
+        &trackSettingsReader,
+        &snrTrackFactory,
+        &responseEvaluator,
+        &randomizer
+    };
+    FixedLevelMethod fixedLevelMethod{
+        &fixedLevelTargetList,
+        &responseEvaluator
+    };
+    RecognitionTestModel_Internal model_internal{
         &targetPlayer,
         &maskerPlayer,
-        &snrTrackFactory,
         &responseEvaluator,
         &outputFile,
         &randomizer
+    };
+    RecognitionTestModel model{
+        &adaptiveMethod,
+        &fixedLevelMethod,
+        &model_internal
     };
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
     auto testerWindowViewMargin = 15;
@@ -242,7 +296,7 @@ int main() {
     CocoaTestSetupView testSetupView{testerContentFrame};
     testSetupView.setMaskerLevel_dB_SPL("65");
     testSetupView.setCalibrationLevel_dB_SPL("65");
-    testSetupView.setStartingSnr_dB("10");
+    testSetupView.setStartingSnr_dB("5");
     testSetupView.setMasker(
         "/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav"
     );
@@ -251,6 +305,9 @@ int main() {
     );
     testSetupView.setTargetListDirectory(
         "/Users/basset/Documents/Lalonde/Lalonde-coordinate-response/Seth Mars Attack"
+    );
+    testSetupView.setTrackSettingsFile(
+        "/Users/basset/Desktop/track-settings.txt"
     );
     CocoaExperimenterView experimenterView{testerContentFrame};
     CocoaView view{testerWindowFrame};

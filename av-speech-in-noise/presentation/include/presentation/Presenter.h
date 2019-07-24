@@ -1,5 +1,5 @@
-#ifndef presentation_Presenter_h
-#define presentation_Presenter_h
+#ifndef av_speech_in_noise_Presenter_h
+#define av_speech_in_noise_Presenter_h
 
 #include <av-speech-in-noise/Model.h>
 #include <vector>
@@ -43,6 +43,7 @@ namespace av_speech_in_noise {
                 virtual void browseForTargetList() = 0;
                 virtual void browseForMasker() = 0;
                 virtual void browseForCalibration() = 0;
+                virtual void browseForTrackSettingsFile() = 0;
             };
             
             virtual ~TestSetup() = default;
@@ -55,6 +56,7 @@ namespace av_speech_in_noise {
             virtual std::string maskerFilePath() = 0;
             virtual std::string calibrationFilePath() = 0;
             virtual std::string targetListDirectory() = 0;
+            virtual std::string trackSettingsFile() = 0;
             virtual std::string testerId() = 0;
             virtual std::string subjectId() = 0;
             virtual std::string condition() = 0;
@@ -63,8 +65,9 @@ namespace av_speech_in_noise {
             virtual void setMasker(std::string) = 0;
             virtual void setTargetListDirectory(std::string) = 0;
             virtual void setCalibrationFilePath(std::string) = 0;
-            virtual void populateConditionMenu(std::vector<std::string> items) = 0;
-            virtual void populateMethodMenu(std::vector<std::string> items) = 0;
+            virtual void setTrackSettingsFile(std::string) = 0;
+            virtual void populateConditionMenu(std::vector<std::string>) = 0;
+            virtual void populateMethodMenu(std::vector<std::string>) = 0;
         };
         
         class Experimenter {
@@ -104,7 +107,8 @@ namespace av_speech_in_noise {
     enum class Method {
         adaptiveOpenSet,
         adaptiveClosedSet,
-        fixedLevelOpenSet
+        fixedLevelOpenSet,
+        fixedLevelClosedSet
     };
     
     constexpr const char *methodName(Method c) {
@@ -115,6 +119,8 @@ namespace av_speech_in_noise {
             return "adaptive closed-set";
         case Method::fixedLevelOpenSet:
             return "fixed-level open-set";
+        case Method::fixedLevelClosedSet:
+            return "fixed-level closed-set";
         }
     }
 
@@ -129,19 +135,23 @@ namespace av_speech_in_noise {
             void setMasker(std::string);
             void setStimulusList(std::string);
             void setCalibrationFilePath(std::string);
+            void setTrackSettingsFile(std::string);
             AdaptiveTest adaptiveTest();
             FixedLevelTest fixedLevelTest();
             Calibration calibrationParameters();
             bool adaptiveClosedSet();
             bool adaptiveOpenSet();
             bool fixedLevelOpenSet();
+            bool fixedLevelClosedSet();
             void playCalibration() override;
             void browseForTargetList() override;
             void browseForMasker() override;
             void confirmTestSetup() override;
             void browseForCalibration() override;
+            void browseForTrackSettingsFile() override;
         private:
             TestInformation testInformation();
+            CommonTest commonTest();
             Condition readCondition();
             bool method(Method m);
             int readMaskerLevel();
@@ -183,13 +193,12 @@ namespace av_speech_in_noise {
             void showResponseSubmission();
             FreeResponse openSetResponse();
             void playTrial() override;
-            void prepareNextEvaluatedTrial();
-            
             void submitPassedTrial() override;
             void submitResponse() override;
             void submitFailedTrial() override;
             
         private:
+            void prepareNextEvaluatedTrial();
             void showNextTrialButton();
             Presenter *parent;
         };
@@ -245,6 +254,21 @@ namespace av_speech_in_noise {
             }
         };
         
+        class FixedLevelClosedSetTestTrialCompletionHandler :
+            public TrialCompletionHandler
+        {
+            Subject *subject;
+        public:
+            explicit FixedLevelClosedSetTestTrialCompletionHandler(
+                Subject *subject
+            ) :
+                subject{subject} {}
+            
+            void showResponseView() override {
+                subject->showResponseButtons();
+            }
+        };
+        
         Presenter(
             Model *,
             View *,
@@ -260,21 +284,27 @@ namespace av_speech_in_noise {
         void submitExperimenterResponse();
         void browseForMasker();
         void browseForCalibration();
+        void browseForTrackSettingsFile();
         void confirmTestSetup();
         void playCalibration();
         void submitPassedTrial();
         void submitFailedTrial();
         static int fullScaleLevel_dB_SPL;
-        static TrackingRule targetLevelRule;
+        static int ceilingSnr_dB;
+        static int floorSnr_dB;
+        static int trackBumpLimit;
         
     private:
+        void proceedToNextTrialAfter(
+            void(Presenter::*f)()
+        );
+        void submitFailedTrial_();
+        void submitPassedTrial_();
+        void submitExperimenterResponse_();
+        void submitSubjectResponse_();
         void hideTestView();
         void switchToSetupView();
         void showErrorMessage(std::string);
-        class BadInput : public std::runtime_error {
-        public:
-            explicit BadInput(std::string s) : std::runtime_error{ std::move(s) } {}
-        };
         void playCalibration_();
         void showTestSetup();
         bool testComplete();
@@ -283,6 +313,8 @@ namespace av_speech_in_noise {
         bool adaptiveClosedSet();
         bool adaptiveOpenSet();
         bool adaptiveTest();
+        bool closedSet();
+        bool fixedLevelClosedSet();
         void initializeTest();
         void showTestView();
         void switchToTestView();
@@ -294,6 +326,7 @@ namespace av_speech_in_noise {
         TrialCompletionHandler *getTrialCompletionHandler();
         
         FixedLevelOpenSetTestTrialCompletionHandler fixedLevelOpenSetTrialCompletionHandler;
+        FixedLevelClosedSetTestTrialCompletionHandler fixedLevelClosedSetTrialCompletionHandler;
         AdaptiveOpenSetTestTrialCompletionHandler adaptiveOpenSetTrialCompletionHandler;
         AdaptiveClosedSetTestTrialCompletionHandler adaptiveClosedSetTrialCompletionHandler;
         Model *model;

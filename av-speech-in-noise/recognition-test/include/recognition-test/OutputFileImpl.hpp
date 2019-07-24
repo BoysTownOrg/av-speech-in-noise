@@ -11,6 +11,7 @@ namespace av_speech_in_noise {
         virtual void open(std::string) = 0;
         virtual bool failed() = 0;
         virtual void close() = 0;
+        virtual void save() = 0;
     };
     
     class OutputFilePath {
@@ -24,18 +25,24 @@ namespace av_speech_in_noise {
     class OutputFileImpl : public OutputFile {
         Writer *writer;
         OutputFilePath *path;
+        bool justWroteFixedLevelCoordinateResponseTrial{};
+        bool justWroteAdaptiveCoordinateResponseTrial{};
+        bool justWroteFreeResponseTrial{};
     public:
         OutputFileImpl(Writer *, OutputFilePath *);
         void writeTest(const AdaptiveTest &) override;
-        void writeTrial(const coordinate_response_measure::Trial &) override;
-        void writeCoordinateResponseTrialHeading() override;
-        void writeFreeResponseTrialHeading() override;
+        void writeTrial(const coordinate_response_measure::AdaptiveTrial &) override;
+        void writeTrial(const coordinate_response_measure::FixedLevelTrial &) override;
         void openNewFile(const TestInformation &) override;
         void close() override;
         void writeTest(const FixedLevelTest &) override;
         void writeTrial(const FreeResponseTrial &) override;
+        void save() override;
         
     private:
+        void writeFixedLevelCoordinateResponseTrialHeading();
+        void writeAdaptiveCoordinateResponseTrialHeading();
+        void writeFreeResponseTrialHeading();
         void write(std::string);
         std::string evaluation(const coordinate_response_measure::Trial &);
         std::string formatTest(const AdaptiveTest &);

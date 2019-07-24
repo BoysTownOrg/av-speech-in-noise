@@ -73,10 +73,20 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     ]},
     calibrationLevel_dB_SPL_label{allocLabel(
         @"calibration level (dB SPL):",
-        NSMakeRect(350, 90, 150, labelHeight)
+        NSMakeRect(
+            filePathTextFieldWidth + textFieldLeadingEdge + 10,
+            60,
+            150,
+            labelHeight
+        )
     )},
     calibrationLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(505, 90, 80, labelHeight)
+        initWithFrame:NSMakeRect(
+            filePathTextFieldWidth + textFieldLeadingEdge + 150 + 10,
+            60,
+            80,
+            labelHeight
+        )
     ]},
     startingSnr_dB_label{allocLabel(
         @"starting SNR (dB):",
@@ -106,14 +116,21 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     calibrationFilePath_{[[NSTextField alloc]
         initWithFrame:filePathTextFieldSizeAtHeight(120)
     ]},
+    trackSettingsFile_label{allocLabel(
+        @"track settings:",
+        NSMakeRect(0, 90, labelWidth, labelHeight)
+    )},
+    trackSettingsFile_{[[NSTextField alloc]
+        initWithFrame:filePathTextFieldSizeAtHeight(90)
+    ]},
     condition_label{allocLabel(
         @"condition:",
-        NSMakeRect(0, 90, labelWidth, labelHeight)
+        NSMakeRect(0, 60, labelWidth, labelHeight)
     )},
     conditionMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(
             textFieldLeadingEdge,
-            90,
+            60,
             menuWidth,
             labelHeight
         )
@@ -121,12 +138,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     ]},
     method_label{allocLabel(
         @"method:",
-        NSMakeRect(0, 60, labelWidth, labelHeight)
+        NSMakeRect(0, 30, labelWidth, labelHeight)
     )},
     methodMenu{[[NSPopUpButton alloc]
         initWithFrame:NSMakeRect(
             textFieldLeadingEdge,
-            60,
+            30,
             menuWidth,
             labelHeight
         )
@@ -168,6 +185,17 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         buttonWidth,
         buttonHeight
     )];
+    const auto browseForTrackSettingsButton = [NSButton
+        buttonWithTitle:@"browse"
+        target:actions
+        action:@selector(browseForTrackSettings)
+    ];
+    [browseForTrackSettingsButton setFrame:NSMakeRect(
+        filePathTextFieldWidth + textFieldLeadingEdge + 10,
+        90,
+        buttonWidth,
+        buttonHeight
+    )];
     const auto confirmButton = [NSButton
         buttonWithTitle:@"Confirm"
         target:actions
@@ -185,14 +213,15 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         action:@selector(playCalibration)
     ];
     [playCalibrationButton setFrame:NSMakeRect(
-        filePathTextFieldWidth + textFieldLeadingEdge + 10,
-        90,
+        filePathTextFieldWidth + textFieldLeadingEdge + buttonWidth + 10,
+        120,
         buttonWidth,
         buttonHeight
     )];
     addSubview(browseForMaskerButton);
     addSubview(browseForStimulusListButton);
     addSubview(browseForCalibrationButton);
+    addSubview(browseForTrackSettingsButton);
     addSubview(confirmButton);
     addSubview(playCalibrationButton);
     addSubview(subjectIdLabel);
@@ -211,6 +240,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     addSubview(targetListDirectory_);
     addSubview(maskerFilePath_label);
     addSubview(maskerFilePath_);
+    addSubview(trackSettingsFile_label);
+    addSubview(trackSettingsFile_);
     addSubview(calibrationFilePath_label);
     addSubview(calibrationFilePath_);
     addSubview(condition_label);
@@ -284,6 +315,14 @@ std::string CocoaTestSetupView::condition() {
     return conditionMenu.titleOfSelectedItem.UTF8String;
 }
 
+std::string CocoaTestSetupView::trackSettingsFile() {
+    return stringValue(trackSettingsFile_);
+}
+
+void CocoaTestSetupView::setTrackSettingsFile(std::string s) {
+    [trackSettingsFile_ setStringValue:asNsString(std::move(s))];
+}
+
 void CocoaTestSetupView::setTargetListDirectory(std::string s) {
     [targetListDirectory_ setStringValue:asNsString(std::move(s))];
 }
@@ -342,6 +381,10 @@ void CocoaTestSetupView::browseForCalibration() {
     listener_->browseForCalibration();
 }
 
+void CocoaTestSetupView::browseForTrackSettings() {
+    listener_->browseForTrackSettingsFile();
+}
+
 void CocoaTestSetupView::playCalibration() {
     listener_->playCalibration();
 }
@@ -365,6 +408,10 @@ void CocoaTestSetupView::playCalibration() {
     controller->browseForCalibration();
 }
 
+- (void)browseForTrackSettings {
+    controller->browseForTrackSettings();
+}
+
 - (void)playCalibration { 
     controller->playCalibration();
 }
@@ -374,7 +421,8 @@ static auto greenColor = NSColor.greenColor;
 static auto redColor = NSColor.redColor;
 static auto blueColor = NSColor.blueColor;
 static auto whiteColor = NSColor.whiteColor;
-static constexpr auto responseNumbers = 8;
+static constexpr int numbers[] {1, 2, 3, 4, 5, 6, 8, 9};
+static constexpr auto responseNumbers = std::size(numbers);
 static constexpr auto responseColors = 4;
 
 CocoaSubjectView::CocoaSubjectView(NSRect r) :
@@ -406,12 +454,12 @@ CocoaSubjectView::CocoaSubjectView(NSRect r) :
 }
 
 void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
-    for (int i = 0; i < responseNumbers; ++i)
-        addNumberButton(color, i, row);
+    for (std::size_t col = 0; col < responseNumbers; ++col)
+        addNumberButton(color, numbers[col], row, col);
 }
 
-void CocoaSubjectView::addNumberButton(NSColor *color, int i, int row) {
-    auto title = asNsString(std::to_string(i+1));
+void CocoaSubjectView::addNumberButton(NSColor *color, int number, int row, std::size_t col) {
+    auto title = asNsString(std::to_string(number));
     const auto button = [NSButton
         buttonWithTitle:title
         target:actions
@@ -420,7 +468,7 @@ void CocoaSubjectView::addNumberButton(NSColor *color, int i, int row) {
     auto responseWidth = responseButtons.frame.size.width/responseNumbers;
     auto responseHeight = responseButtons.frame.size.height/responseColors;
     [button setFrame:NSMakeRect(
-        responseWidth*i,
+        responseWidth*col,
         responseHeight*row,
         responseWidth,
         responseHeight
@@ -431,8 +479,10 @@ void CocoaSubjectView::addNumberButton(NSColor *color, int i, int row) {
     auto attrsDictionary = [NSDictionary
         dictionaryWithObjectsAndKeys:
         color, NSForegroundColorAttributeName,
+        [NSNumber numberWithFloat: -4.0], NSStrokeWidthAttributeName,
+        NSColor.blackColor, NSStrokeColorAttributeName,
         style, NSParagraphStyleAttributeName,
-        [NSFont fontWithName:@"Courier" size:36], NSFontAttributeName,
+        [NSFont fontWithName:@"Arial-Black" size:48], NSFontAttributeName,
         nil
     ];
     auto attrString = [[NSAttributedString alloc]
@@ -463,13 +513,11 @@ void CocoaSubjectView::addNextTrialButton() {
         attributes:attrsDictionary
     ];
     [button setAttributedTitle:attrString];
-    constexpr auto height = 100;
-    constexpr auto width = 400;
     [button setFrame:NSMakeRect(
-        (nextTrialButton.frame.size.width - width)/2.,
-        (nextTrialButton.frame.size.height - height)/2.,
-        width,
-        height
+        0,
+        0,
+        nextTrialButton.frame.size.width,
+        nextTrialButton.frame.size.height
     )];
     [nextTrialButton addSubview:button];
 }
@@ -798,4 +846,3 @@ void CocoaView::addSubview(NSView *view) {
 void CocoaView::center() {
     [window center];
 }
-

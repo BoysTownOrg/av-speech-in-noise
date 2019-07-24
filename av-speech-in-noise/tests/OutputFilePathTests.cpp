@@ -83,7 +83,7 @@ namespace {
         std::string directoryCreated_{};
     public:
         void setHomeDirectory(std::string s) {
-            homeDirectory_ = s;
+            homeDirectory_ = std::move(s);
         }
         
         std::string homeDirectory() override {
@@ -95,7 +95,7 @@ namespace {
         }
         
         void createDirectory(std::string s) override {
-            directoryCreated_ = s;
+            directoryCreated_ = std::move(s);
         }
     };
 

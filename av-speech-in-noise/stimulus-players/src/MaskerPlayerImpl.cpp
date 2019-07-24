@@ -56,9 +56,28 @@ namespace stimulus_players {
     double MaskerPlayerImpl::fadeTimeSeconds() {
         return fadeInOutSeconds.load();
     }
+    
+    template<typename T>
+    T rms(const std::vector<T> &x) {
+        return std::sqrt(
+            std::accumulate(
+                x.begin(),
+                x.end(),
+                T{ 0 },
+                [](T a, T b) { return a += b * b; }
+            ) / x.size()
+        );
+    }
 
     void MaskerPlayerImpl::loadFile(std::string filePath) {
         player->loadFile(filePath_ = std::move(filePath));
+        auto audio = readAudio_();
+        if (audio.empty())
+            rms_ = 0;
+        else {
+            auto firstChannel = audio.front();
+            rms_ = ::stimulus_players::rms(firstChannel);
+        }
     }
 
     bool MaskerPlayerImpl::playing() {
@@ -74,7 +93,7 @@ namespace stimulus_players {
     }
     
     void MaskerPlayerImpl::setAudioDevice(std::string device) {
-        player->setDevice(findDeviceIndex(device));
+        player->setDevice(findDeviceIndex(std::move(device)));
     }
     
     int MaskerPlayerImpl::findDeviceIndex(const std::string &device) {
@@ -88,26 +107,9 @@ namespace stimulus_players {
             throw av_speech_in_noise::InvalidAudioDevice{};
         return gsl::narrow<int>(found - devices_.begin());
     }
-    
-    template<typename T>
-    T rms(const std::vector<T> &x) {
-        return std::sqrt(
-            std::accumulate(
-                x.begin(),
-                x.end(),
-                T{ 0 },
-                [](T a, T b) { return a += b * b; }
-            ) / x.size()
-        );
-    }
 
     double MaskerPlayerImpl::rms() {
-        auto audio = readAudio_();
-        if (audio.empty())
-            return 0;
-        
-        auto firstChannel = audio.front();
-        return ::stimulus_players::rms(firstChannel);
+        return rms_;
     }
 
     std::vector<std::vector<float>> MaskerPlayerImpl::readAudio_() {

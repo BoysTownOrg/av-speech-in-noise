@@ -155,7 +155,7 @@ namespace {
     class VectorFacade {
         std::vector<T> v;
     public:
-        VectorFacade(std::vector<T> v) : v{std::move(v)} {}
+        explicit VectorFacade(std::vector<T> v) : v{std::move(v)} {}
         
         std::vector<T> elementWiseProduct(std::vector<T> y) {
             std::vector<T> product;
@@ -170,7 +170,7 @@ namespace {
         }
         
         VectorFacade<T> subvector(int b, int e) {
-            return std::vector<T>{v.begin() + b, v.begin() + e};
+            return VectorFacade<T>{{v.begin() + b, v.begin() + e}};
         }
     };
     
@@ -203,7 +203,7 @@ namespace {
     protected:
         AudioPlayerStub audioPlayer;
         MaskerPlayerListenerStub listener;
-        AudioReaderStub audioReader;
+        stimulus_players::tests::AudioReaderStub audioReader;
         TimerStub timer;
         stimulus_players::MaskerPlayerImpl player{
             &audioPlayer,
@@ -350,14 +350,14 @@ namespace {
         }
         
         void assertLeftChannelEquals(std::vector<float> x) {
-            assertChannelEqual(leftChannel, x);
+            assertChannelEqual(leftChannel, std::move(x));
         }
         
         void assertChannelEqual(
             const std::vector<float> &channel,
             std::vector<float> x
         ) {
-            assertEqual(x, channel, 1e-6f);
+            assertEqual(std::move(x), channel, 1e-6f);
         }
         
         void assertFillingStereoChannelsMultipliesBy(
@@ -376,7 +376,7 @@ namespace {
         }
         
         void assertRightChannelEquals(std::vector<float> x) {
-            assertChannelEqual(rightChannel, x);
+            assertChannelEqual(rightChannel, std::move(x));
         }
         
         void assertFadeInNotCompletedAfterMonoFill() {
@@ -461,6 +461,10 @@ namespace {
         void setSampleRateHz(double x) {
             audioPlayer.setSampleRateHz(x);
         }
+        
+        void loadFile(std::string s = {}) {
+            player.loadFile(std::move(s));
+        }
     };
 
     TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -484,7 +488,7 @@ namespace {
     }
 
     TEST_F(MaskerPlayerTests, loadFileLoadsVideoFile) {
-        player.loadFile("a");
+        loadFile("a");
         assertEqual("a", audioPlayer.filePath());
     }
 
@@ -511,7 +515,7 @@ namespace {
         
         fadeIn();
         assertFillingLeftChannelMultipliesBy_Buffered(
-            halfHannWindow(halfWindowLength),
+            VectorFacade<float>{halfHannWindow(halfWindowLength)},
             halfWindowLength/framesPerBuffer,
             framesPerBuffer
         );
@@ -524,7 +528,7 @@ namespace {
     
         fadeIn();
         assertFillingLeftChannelMultipliesBy(
-            halfHannWindow(halfWindowLength),
+            VectorFacade<float>{halfHannWindow(halfWindowLength)},
             halfWindowLength
         );
     }
@@ -540,7 +544,7 @@ namespace {
         
         fadeIn();
         assertFillingStereoChannelsMultipliesBy_Buffered(
-            halfHannWindow(halfWindowLength),
+            VectorFacade<float>{halfHannWindow(halfWindowLength)},
             halfWindowLength/framesPerBuffer,
             framesPerBuffer
         );
@@ -553,7 +557,7 @@ namespace {
     
         fadeIn();
         assertFillingStereoChannelsMultipliesBy(
-            halfHannWindow(halfWindowLength),
+            VectorFacade<float>{halfHannWindow(halfWindowLength)},
             halfWindowLength
         );
     }
@@ -578,7 +582,7 @@ namespace {
         
         fadeOut();
         assertFillingLeftChannelMultipliesBy_Buffered(
-            backHalfHannWindow(halfWindowLength),
+            VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
             halfWindowLength/framesPerBuffer,
             framesPerBuffer
         );
@@ -592,7 +596,7 @@ namespace {
     
         fadeOut();
         assertFillingLeftChannelMultipliesBy(
-            backHalfHannWindow(halfWindowLength),
+            VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
             halfWindowLength
         );
     }
@@ -754,19 +758,20 @@ namespace {
             { 4, 5, 6 },
             { 7, 8, 9 }
         });
+        loadFile();
         assertEqual(std::sqrt((1*1 + 2*2 + 3*3)/3.), player.rms(), 1e-6);
     }
 
     TEST_F(MaskerPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
-        player.loadFile("a");
+        loadFile("a");
         player.rms();
         assertEqual("a", audioReader.filePath());
     }
 
-    TEST_F(MaskerPlayerTests, rmsThrowsInvalidAudioFileWhenAudioReaderThrows) {
+    TEST_F(MaskerPlayerTests, loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
         audioReader.throwOnRead();
         try {
-            player.rms();
+            loadFile();
             FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
         } catch(const av_speech_in_noise::InvalidAudioFile &) {
         

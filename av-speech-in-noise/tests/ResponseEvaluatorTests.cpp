@@ -2,9 +2,9 @@
 #include <recognition-test/ResponseEvaluatorImpl.hpp>
 #include <gtest/gtest.h>
 
-namespace {
-    using namespace av_speech_in_noise;
-    using namespace av_speech_in_noise::coordinate_response_measure;
+namespace av_speech_in_noise::tests::response_evaluation {
+    using coordinate_response_measure::SubjectResponse;
+    using coordinate_response_measure::Color;
     
     class ResponseEvaluatorTests : public ::testing::Test {
     protected:
@@ -94,5 +94,19 @@ namespace {
         assertEqual("b", evaluator.fileName("a/b"));
         assertEqual("a", evaluator.fileName("a"));
         assertEqual("c.txt", evaluator.fileName("a/b/c.txt"));
+    }
+    
+    TEST_F(ResponseEvaluatorTests, onlyEvaluatesFirstPartOfFileName) {
+        assertCorrect("blue2_3.mov", { 2, Color::blue });
+        assertCorrect("a/blue2_3.mov", { 2, Color::blue });
+        assertIncorrect("blue2_3.mov", { 3, Color::blue });
+        assertIncorrect("a/blue2_3.mov", { 3, Color::blue });
+    }
+    
+    TEST_F(ResponseEvaluatorTests, miscellaneous) {
+        assertCorrect("a/b/c/blue9-3.mov", { 9, Color::blue });
+        assertCorrect("a/b/c/red8 4.mov", { 8, Color::red });
+        assertIncorrect("a/b/c/blue9-3.mov", { 3, Color::blue });
+        assertIncorrect("a/b/c/red8 4.mov", { 4, Color::red });
     }
 }

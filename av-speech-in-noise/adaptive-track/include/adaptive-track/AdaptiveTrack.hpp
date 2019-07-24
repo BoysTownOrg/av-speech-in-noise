@@ -1,7 +1,7 @@
 #ifndef adaptive_track_AdaptiveTrack_hpp
 #define adaptive_track_AdaptiveTrack_hpp
 
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/AdaptiveMethod.hpp>
 
 namespace adaptive_track {
     class AdaptiveTrack : public av_speech_in_noise::Track {
@@ -17,10 +17,14 @@ namespace adaptive_track {
         };
         std::vector<int> runCounts;
         std::vector<int> stepSizes;
-        std::vector<int> up;
-        std::vector<int> down;
+        std::vector<int> up_;
+        std::vector<int> down_;
         std::size_t sequenceIndex{};
-        int x_{};
+        int x_;
+        int ceiling_;
+        int floor_;
+        int bumpLimit_;
+        int bumpCount_;
         int sameDirectionConsecutiveCount{};
         int runCounter{};
         int reversals_{};
@@ -29,12 +33,21 @@ namespace adaptive_track {
     public:
         explicit AdaptiveTrack(const Settings &);
         int x() override;
-        void pushUp() override;
-        void pushDown() override;
+        void up() override;
+        void down() override;
         bool complete() override;
         int reversals() override;
         
     private:
+        void updateBumpCount(int bumpBoundary);
+        void update(
+            Direction,
+            int bumpBoundary,
+            const std::vector<int> &,
+            void(AdaptiveTrack::*)()
+        );
+        void callIfConsecutiveCountMet(void(AdaptiveTrack::*)(), int threshold);
+        bool consecutiveCountMet(int threshold);
         void stepDown();
         void stepUp();
         int stepSize();
