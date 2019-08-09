@@ -69,7 +69,7 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
 public:
     AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
-    void setSampleRate(double x) {}
+    void setSampleRate(double) {}
     std::vector<gsl::span<float>> &audio() { return audio_; }
     void fillAudioBuffer();
     void play() override;
