@@ -586,6 +586,11 @@ namespace av_speech_in_noise::tests::presentation {
         assertSubjectViewHidden();
     }
 
+    TEST_F(PresenterTests, exitTestHidesSubjectView) {
+        exitTest();
+        assertSubjectViewHidden();
+    }
+
     TEST_F(PresenterTests, browseForTrackSettingsFileUpdatesTrackSettingsFile) {
         assertBrowseResultPassedToEntry(browsingForTrackSettingsFile);
     }

@@ -79,6 +79,7 @@ namespace av_speech_in_noise {
                 virtual void submitPassedTrial() = 0;
                 virtual void submitFailedTrial() = 0;
                 virtual void submitResponse() = 0;
+                virtual void exitTest() = 0;
             };
             
             virtual ~Experimenter() = default;
@@ -196,6 +197,7 @@ namespace av_speech_in_noise {
             void submitPassedTrial() override;
             void submitResponse() override;
             void submitFailedTrial() override;
+            void exitTest() override;
             
         private:
             void prepareNextEvaluatedTrial();
@@ -289,6 +291,7 @@ namespace av_speech_in_noise {
         void playCalibration();
         void submitPassedTrial();
         void submitFailedTrial();
+        void exitTest();
         static int fullScaleLevel_dB_SPL;
         static int ceilingSnr_dB;
         static int floorSnr_dB;

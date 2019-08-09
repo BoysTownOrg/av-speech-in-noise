@@ -598,6 +598,10 @@ namespace av_speech_in_noise::tests::presentation {
             void submitResponse() {
                 listener_->submitResponse();
             }
+
+            void exitTest() {
+                listener_->exitTest();
+            }
         };
     };
     
@@ -1346,6 +1350,10 @@ namespace av_speech_in_noise::tests::presentation {
         
         void respondFromExperimenter() {
             experimenterView.submitResponse();
+        }
+        
+        void exitTest() {
+            experimenterView.exitTest();
         }
         
         void playCalibration() {

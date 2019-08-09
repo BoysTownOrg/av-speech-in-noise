@@ -172,6 +172,10 @@ namespace av_speech_in_noise {
             switchToSetupView();
     }
     
+    void Presenter::exitTest() {
+        subject->hide();
+    }
+    
     bool Presenter::testComplete() {
         return model->testComplete();
     }
@@ -506,6 +510,10 @@ namespace av_speech_in_noise {
     void Presenter::Experimenter::submitFailedTrial() {
         parent->submitFailedTrial();
         prepareNextEvaluatedTrial();
+    }
+    
+    void Presenter::Experimenter::exitTest() {
+        parent->exitTest();
     }
     
     void Presenter::Experimenter::hide() { 
