@@ -624,6 +624,17 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
         buttonWidth,
         buttonHeight
     )];
+    const auto exitTestButton_ = [NSButton
+        buttonWithTitle:@"exit test"
+        target:actions
+        action:@selector(exitTest)
+    ];
+    [exitTestButton_ setFrame:NSMakeRect(
+        r.size.width - buttonWidth,
+        0,
+        buttonWidth,
+        buttonHeight
+    )];
     const auto submitResponse_ = [NSButton
         buttonWithTitle:@"submit"
         target:actions
@@ -665,6 +676,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     [view_ addSubview:nextTrialButton];
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
+    [view_ addSubview:exitTestButton_];
     [evaluationButtons setHidden:YES];
     [nextTrialButton setHidden:YES];
     [responseSubmission setHidden:YES];
@@ -732,6 +744,10 @@ void CocoaExperimenterView::submitFailedTrial() {
     listener_->submitFailedTrial();
 }
 
+void CocoaExperimenterView::exitTest() {
+    listener_->exitTest();
+}
+
 @implementation ExperimenterViewActions
 @synthesize controller;
 
@@ -749,6 +765,10 @@ void CocoaExperimenterView::submitFailedTrial() {
 
 - (void)submitFailedTrial {
     controller->submitFailedTrial();
+}
+
+- (void)exitTest {
+    controller->exitTest();
 }
 @end
 
