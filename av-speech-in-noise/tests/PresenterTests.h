@@ -1088,6 +1088,17 @@ namespace av_speech_in_noise::tests::presentation {
         }
     };
     
+    class ExitingTest : public UseCase {
+        ViewStub::ExperimenterViewStub *view;
+    public:
+        explicit ExitingTest(ViewStub::ExperimenterViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->exitTest();
+        }
+    };
+    
     class SubmittingPassedTrial : public TrialSubmission {
         ViewStub::ExperimenterViewStub *view;
     public:
@@ -1335,6 +1346,7 @@ namespace av_speech_in_noise::tests::presentation {
         RespondingFromExperimenter respondingFromExperimenter{&experimenterView};
         SubmittingPassedTrial submittingPassedTrial{&experimenterView};
         SubmittingFailedTrial submittingFailedTrial{&experimenterView};
+        ExitingTest exitingTest{&experimenterView};
         
         std::string auditoryOnlyConditionName() {
             return conditionName(Condition::auditoryOnly);
@@ -1601,6 +1613,10 @@ namespace av_speech_in_noise::tests::presentation {
         
         void assertCompleteTestHidesExperimenterView(TrialSubmission &useCase) {
             setTestComplete();
+            assertHidesExperimenterView(useCase);
+        }
+        
+        void assertHidesExperimenterView(UseCase &useCase) {
             run(useCase);
             assertExperimenterViewHidden();
         }

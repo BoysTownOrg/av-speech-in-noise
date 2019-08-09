@@ -592,8 +592,7 @@ namespace av_speech_in_noise::tests::presentation {
     }
 
     TEST_F(PresenterTests, exitTestHidesExperimenterView) {
-        exitTest();
-        assertExperimenterViewHidden();
+        assertHidesExperimenterView(exitingTest);
     }
 
     TEST_F(PresenterTests, exitTestShowsTestSetupView) {
