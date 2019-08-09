@@ -596,6 +596,11 @@ namespace av_speech_in_noise::tests::presentation {
         assertExperimenterViewHidden();
     }
 
+    TEST_F(PresenterTests, exitTestShowsTestSetupView) {
+        exitTest();
+        assertSetupViewShown();
+    }
+
     TEST_F(PresenterTests, browseForTrackSettingsFileUpdatesTrackSettingsFile) {
         assertBrowseResultPassedToEntry(browsingForTrackSettingsFile);
     }
