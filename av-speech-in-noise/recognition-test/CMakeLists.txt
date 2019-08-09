@@ -1,9 +1,14 @@
 set(
     SOURCES
+    "src/AdaptiveMethod.cpp"
+    "src/FixedLevelMethod.cpp"
     "src/OutputFileImpl.cpp"
     "src/OutputFilePathImpl.cpp"
+    "src/RecognitionTestModel_Internal.cpp"
     "src/RecognitionTestModel.cpp"
     "src/ResponseEvaluatorImpl.cpp"
+    "src/TrackSettingsInterpreter.cpp"
+    "src/TrackSettingsReader.cpp"
 )
 
 add_library(recognition-test ${SOURCES})

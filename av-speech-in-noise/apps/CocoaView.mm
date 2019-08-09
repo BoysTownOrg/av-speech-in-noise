@@ -1,5 +1,6 @@
 #include "CocoaView.h"
 #include "common-objc.h"
+#include <iterator>
 
 static NSTextField *allocLabel(NSString *label, NSRect frame) {
     const auto text = [[NSTextField alloc] initWithFrame:frame];
@@ -421,7 +422,7 @@ static auto greenColor = NSColor.greenColor;
 static auto redColor = NSColor.redColor;
 static auto blueColor = NSColor.blueColor;
 static auto whiteColor = NSColor.whiteColor;
-static constexpr int numbers[] {1, 2, 3, 4, 5, 6, 8, 9};
+static constexpr int numbers[] = {1, 2, 3, 4, 5, 6, 8, 9};
 static constexpr auto responseNumbers = std::size(numbers);
 static constexpr auto responseColors = 4;
 
