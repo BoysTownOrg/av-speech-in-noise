@@ -93,19 +93,19 @@ namespace av_speech_in_noise {
     
     void OutputFileImpl::writeAdaptiveCoordinateResponseTrialHeading() {
         FormattedStream stream;
-        stream.insert("SNR (dB)");
+        stream.insert(headingItemName(HeadingItem::snr_dB));
         stream.insertCommaAndSpace();
-        stream.insert("correct number");
+        stream.insert(headingItemName(HeadingItem::correctNumber));
         stream.insertCommaAndSpace();
-        stream.insert("subject number");
+        stream.insert(headingItemName(HeadingItem::subjectNumber));
         stream.insertCommaAndSpace();
-        stream.insert("correct color");
+        stream.insert(headingItemName(HeadingItem::correctColor));
         stream.insertCommaAndSpace();
-        stream.insert("subject color");
+        stream.insert(headingItemName(HeadingItem::subjectColor));
         stream.insertCommaAndSpace();
-        stream.insert("evaluation");
+        stream.insert(headingItemName(HeadingItem::evaluation));
         stream.insertCommaAndSpace();
-        stream.insert("reversals");
+        stream.insert(headingItemName(HeadingItem::reversals));
         stream.insertNewLine();
         write(stream.str());
     }
@@ -130,15 +130,15 @@ namespace av_speech_in_noise {
     
     void OutputFileImpl::writeFixedLevelCoordinateResponseTrialHeading() {
         FormattedStream stream;
-        stream.insert("correct number");
+        stream.insert(headingItemName(HeadingItem::correctNumber));
         stream.insertCommaAndSpace();
-        stream.insert("subject number");
+        stream.insert(headingItemName(HeadingItem::subjectNumber));
         stream.insertCommaAndSpace();
-        stream.insert("correct color");
+        stream.insert(headingItemName(HeadingItem::correctColor));
         stream.insertCommaAndSpace();
-        stream.insert("subject color");
+        stream.insert(headingItemName(HeadingItem::subjectColor));
         stream.insertCommaAndSpace();
-        stream.insert("evaluation");
+        stream.insert(headingItemName(HeadingItem::evaluation));
         stream.insertNewLine();
         write(stream.str());
     }

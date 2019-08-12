@@ -4,6 +4,35 @@
 #include "RecognitionTestModel.hpp"
 
 namespace av_speech_in_noise {
+    enum class HeadingItem {
+        snr_dB,
+        correctNumber,
+        subjectNumber,
+        correctColor,
+        subjectColor,
+        evaluation,
+        reversals
+    };
+    
+    constexpr const char *headingItemName(HeadingItem i) {
+        switch (i) {
+            case HeadingItem::snr_dB:
+                return "SNR (dB)";
+            case HeadingItem::correctNumber:
+                return "correct number";
+            case HeadingItem::subjectNumber:
+                return "subject number";
+            case HeadingItem::correctColor:
+                return "correct color";
+            case HeadingItem::subjectColor:
+                return "subject color";
+            case HeadingItem::evaluation:
+                return "evaluation";
+            case HeadingItem::reversals:
+                return "reversals";
+        }
+    }
+
     class Writer {
     public:
         virtual ~Writer() = default;

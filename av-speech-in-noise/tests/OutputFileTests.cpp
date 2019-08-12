@@ -303,21 +303,21 @@ namespace av_speech_in_noise::tests::output_file {
         }
 
         void assertAdaptiveCoordinateHeadingAtLine(int n) {
-            assertNthEntryOfLine("SNR (dB)", 1, n);
-            assertNthEntryOfLine("correct number", 2, n);
-            assertNthEntryOfLine("subject number", 3, n);
-            assertNthEntryOfLine("correct color", 4, n);
-            assertNthEntryOfLine("subject color", 5, n);
-            assertNthEntryOfLine("evaluation", writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
-            assertNthEntryOfLine("reversals", 7, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::snr_dB), 1, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::correctNumber), 2, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::subjectNumber), 3, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::correctColor), 4, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::subjectColor), 5, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::evaluation), writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::reversals), 7, n);
         }
 
         void assertFixedLevelCoordinateResponseHeadingAtLine(int n) {
-            assertNthEntryOfLine("correct number", 1, n);
-            assertNthEntryOfLine("subject number", 2, n);
-            assertNthEntryOfLine("correct color", 3, n);
-            assertNthEntryOfLine("subject color", 4, n);
-            assertNthEntryOfLine("evaluation", writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::correctNumber), 1, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::subjectNumber), 2, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::correctColor), 3, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::subjectColor), 4, n);
+            assertNthEntryOfLine(headingItemName(HeadingItem::evaluation), writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), n);
         }
     };
 
