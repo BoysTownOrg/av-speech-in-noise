@@ -311,6 +311,14 @@ namespace av_speech_in_noise::tests::output_file {
             assertNthEntryOfLine("evaluation", writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
             assertNthEntryOfLine("reversals", 7, n);
         }
+
+        void assertFixedLevelCoordinateResponseHeadingAtLine(int n) {
+            assertNthEntryOfLine("correct number", 1, n);
+            assertNthEntryOfLine("subject number", 2, n);
+            assertNthEntryOfLine("correct color", 3, n);
+            assertNthEntryOfLine("subject color", 4, n);
+            assertNthEntryOfLine("evaluation", writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), n);
+        }
     };
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
@@ -320,11 +328,7 @@ namespace av_speech_in_noise::tests::output_file {
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
         run(writingFixedLevelCoordinateResponseTrial);
-        assertNthEntryOfFirstLine("correct number", 1);
-        assertNthEntryOfFirstLine("subject number", 2);
-        assertNthEntryOfFirstLine("correct color", 3);
-        assertNthEntryOfFirstLine("subject color", 4);
-        assertNthEntryOfFirstLine("evaluation", writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex());
+        assertFixedLevelCoordinateResponseHeadingAtLine(1);
     }
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
@@ -375,11 +379,7 @@ namespace av_speech_in_noise::tests::output_file {
         run(writingFixedLevelCoordinateResponseTrial);
         openNewFile();
         run(writingFixedLevelCoordinateResponseTrial);
-        assertNthEntryOfThirdLine("correct number", 1);
-        assertNthEntryOfThirdLine("subject number", 2);
-        assertNthEntryOfThirdLine("correct color", 3);
-        assertNthEntryOfThirdLine("subject color", 4);
-        assertNthEntryOfThirdLine("evaluation", writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex());
+        assertFixedLevelCoordinateResponseHeadingAtLine(3);
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
