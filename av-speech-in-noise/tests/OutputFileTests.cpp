@@ -242,14 +242,21 @@ namespace av_speech_in_noise::tests::output_file {
             return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
         }
 
-        std::string::size_type find_nth_element(const std::string &content, int n, char what) {
+        std::string::size_type find_nth_element(
+            const std::string &content, 
+            int n, 
+            char what
+        ) {
             auto found = std::string::npos;
             for (int i = 0; i < n; ++i)
                 found = content.find(what, found + 1U);
             return found;
         }
 
-        std::string upUntilFirstOfAny(const std::string &content, std::vector<char> v) {
+        std::string upUntilFirstOfAny(
+            const std::string &content, 
+            std::vector<char> v
+        ) {
             return content.substr(0, content.find_first_of({v.begin(), v.end()}));
         }
         
@@ -275,15 +282,15 @@ namespace av_speech_in_noise::tests::output_file {
         }
         
         void assertNthEntryOfFirstLine(std::string what, int n) {
-            assertEqual(std::move(what), nthWrittenEntryOfLine(n, 1));
+            assertNthEntryOfLine(std::move(what), n, 1);
         }
         
         void assertNthEntryOfSecondLine(std::string what, int n) {
-            assertEqual(std::move(what), nthWrittenEntryOfLine(n, 2));
+            assertNthEntryOfLine(std::move(what), n, 2);
         }
         
         void assertNthEntryOfThirdLine(std::string what, int n) {
-            assertEqual(std::move(what), nthWrittenEntryOfLine(n, 3));
+            assertNthEntryOfLine(std::move(what), n, 3);
         }
         
         void assertNthEntryOfLine(std::string what, int n, int line) {
@@ -312,7 +319,11 @@ namespace av_speech_in_noise::tests::output_file {
             assertNthEntryOfLine(HeadingItem::subjectNumber, 3, n);
             assertNthEntryOfLine(HeadingItem::correctColor, 4, n);
             assertNthEntryOfLine(HeadingItem::subjectColor, 5, n);
-            assertNthEntryOfLine(HeadingItem::evaluation, writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
+            assertNthEntryOfLine(
+                HeadingItem::evaluation, 
+                writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), 
+                n
+            );
             assertNthEntryOfLine(HeadingItem::reversals, 7, n);
         }
 
@@ -321,7 +332,11 @@ namespace av_speech_in_noise::tests::output_file {
             assertNthEntryOfLine(HeadingItem::subjectNumber, 2, n);
             assertNthEntryOfLine(HeadingItem::correctColor, 3, n);
             assertNthEntryOfLine(HeadingItem::subjectColor, 4, n);
-            assertNthEntryOfLine(HeadingItem::evaluation, writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), n);
+            assertNthEntryOfLine(
+                HeadingItem::evaluation, 
+                writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), 
+                n
+            );
         }
     };
 
@@ -336,39 +351,41 @@ namespace av_speech_in_noise::tests::output_file {
     }
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
+        using coordinate_response_measure::Color;
         writingAdaptiveCoordinateResponseTrial.trial().SNR_dB = 1;
         writingAdaptiveCoordinateResponseTrial.trial().trial.correctNumber = 2;
         writingAdaptiveCoordinateResponseTrial.trial().trial.subjectNumber = 3;
         writingAdaptiveCoordinateResponseTrial.trial().trial.correctColor =
-            coordinate_response_measure::Color::green;
+            Color::green;
         writingAdaptiveCoordinateResponseTrial.trial().trial.subjectColor =
-            coordinate_response_measure::Color::red;
+            Color::red;
         writingAdaptiveCoordinateResponseTrial.trial().reversals = 4;
         run(writingAdaptiveCoordinateResponseTrial);
         assertNthEntryOfSecondLine("1", 1);
         assertNthEntryOfSecondLine("2", 2);
         assertNthEntryOfSecondLine("3", 3);
-        assertNthEntryOfSecondLine(colorName(coordinate_response_measure::Color::green), 4);
-        assertNthEntryOfSecondLine(colorName(coordinate_response_measure::Color::red), 5);
+        assertNthEntryOfSecondLine(colorName(Color::green), 4);
+        assertNthEntryOfSecondLine(colorName(Color::red), 5);
         assertNthEntryOfSecondLine("4", 7);
     }
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
+        using coordinate_response_measure::Color;
         run(writingAdaptiveCoordinateResponseTrial);
         writingAdaptiveCoordinateResponseTrial.trial().SNR_dB = 1;
         writingAdaptiveCoordinateResponseTrial.trial().trial.correctNumber = 2;
         writingAdaptiveCoordinateResponseTrial.trial().trial.subjectNumber = 3;
         writingAdaptiveCoordinateResponseTrial.trial().trial.correctColor =
-            coordinate_response_measure::Color::green;
+            Color::green;
         writingAdaptiveCoordinateResponseTrial.trial().trial.subjectColor =
-            coordinate_response_measure::Color::red;
+            Color::red;
         writingAdaptiveCoordinateResponseTrial.trial().reversals = 4;
         run(writingAdaptiveCoordinateResponseTrial);
         assertNthEntryOfThirdLine("1", 1);
         assertNthEntryOfThirdLine("2", 2);
         assertNthEntryOfThirdLine("3", 3);
-        assertNthEntryOfThirdLine(colorName(coordinate_response_measure::Color::green), 4);
-        assertNthEntryOfThirdLine(colorName(coordinate_response_measure::Color::red), 5);
+        assertNthEntryOfThirdLine(colorName(Color::green), 4);
+        assertNthEntryOfThirdLine(colorName(Color::red), 5);
         assertNthEntryOfThirdLine("4", 7);
     }
 
@@ -387,32 +404,34 @@ namespace av_speech_in_noise::tests::output_file {
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
+        using coordinate_response_measure::Color;
         writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;
         writingFixedLevelCoordinateResponseTrial.trial().trial.correctColor =
-            coordinate_response_measure::Color::green;
+            Color::green;
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectColor =
-            coordinate_response_measure::Color::red;
+            Color::red;
         run(writingFixedLevelCoordinateResponseTrial);
         assertNthEntryOfSecondLine("2", 1);
         assertNthEntryOfSecondLine("3", 2);
-        assertNthEntryOfSecondLine(colorName(coordinate_response_measure::Color::green), 3);
-        assertNthEntryOfSecondLine(colorName(coordinate_response_measure::Color::red), 4);
+        assertNthEntryOfSecondLine(colorName(Color::green), 3);
+        assertNthEntryOfSecondLine(colorName(Color::red), 4);
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
+        using coordinate_response_measure::Color;
         run(writingFixedLevelCoordinateResponseTrial);
         writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;
         writingFixedLevelCoordinateResponseTrial.trial().trial.correctColor =
-            coordinate_response_measure::Color::green;
+            Color::green;
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectColor =
-            coordinate_response_measure::Color::red;
+            Color::red;
         run(writingFixedLevelCoordinateResponseTrial);
         assertNthEntryOfThirdLine("2", 1);
         assertNthEntryOfThirdLine("3", 2);
-        assertNthEntryOfThirdLine(colorName(coordinate_response_measure::Color::green), 3);
-        assertNthEntryOfThirdLine(colorName(coordinate_response_measure::Color::red), 4);
+        assertNthEntryOfThirdLine(colorName(Color::green), 3);
+        assertNthEntryOfThirdLine(colorName(Color::red), 4);
     }
 
     TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
