@@ -87,10 +87,9 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::showTestView() {
+        experimenter->show();
         if (closedSet())
             subject->show();
-        else
-            experimenter->show();
     }
     
     bool Presenter::closedSet() {

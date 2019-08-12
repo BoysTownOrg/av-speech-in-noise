@@ -88,16 +88,16 @@ namespace av_speech_in_noise::tests::presentation {
 
     TEST_F(
         PresenterTests,
-        confirmAdaptiveClosedSetTestDoesNotShowExperimenterView
+        confirmAdaptiveClosedSetTestShowsExperimenterView
     ) {
-        assertDoesNotShowExperimenterView(confirmingAdaptiveClosedSetTest);
+        assertShowsExperimenterView(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(
         PresenterTests,
-        confirmFixedLevelClosedSetTestDoesNotShowExperimenterView
+        confirmFixedLevelClosedSetTestShowsExperimenterView
     ) {
-        assertDoesNotShowExperimenterView(confirmingFixedLevelClosedSetTest);
+        assertShowsExperimenterView(confirmingFixedLevelClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
