@@ -181,6 +181,7 @@ namespace av_speech_in_noise {
         if (writer->failed())
             throw OpenFailure{};
         justWroteAdaptiveCoordinateResponseTrial = false;
+        justWroteFixedLevelCoordinateResponseTrial = false;
     }
     
     std::string OutputFileImpl::generateNewFilePath(const TestInformation &test) {

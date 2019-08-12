@@ -369,6 +369,17 @@ namespace av_speech_in_noise::tests::output_file {
         assertNthEntryOfThirdLine("reversals", 7);
     }
 
+    TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+        run(writingFixedLevelCoordinateResponseTrial);
+        openNewFile();
+        run(writingFixedLevelCoordinateResponseTrial);
+        assertNthEntryOfThirdLine("correct number", 1);
+        assertNthEntryOfThirdLine("subject number", 2);
+        assertNthEntryOfThirdLine("correct color", 3);
+        assertNthEntryOfThirdLine("subject color", 4);
+        assertNthEntryOfThirdLine("evaluation", writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex());
+    }
+
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
         writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;
