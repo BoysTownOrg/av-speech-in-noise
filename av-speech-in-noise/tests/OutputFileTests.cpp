@@ -286,6 +286,10 @@ namespace av_speech_in_noise::tests::output_file {
             assertEqual(std::move(what), nthWrittenEntryOfLine(n, 3));
         }
         
+        void assertNthEntryOfLine(std::string what, int n, int line) {
+            assertEqual(std::move(what), nthWrittenEntryOfLine(n, line));
+        }
+        
         void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
             useCase.incorrect();
             run(useCase);
@@ -297,17 +301,21 @@ namespace av_speech_in_noise::tests::output_file {
             run(useCase);
             assertNthEntryOfSecondLine("correct", useCase.evaluationEntryIndex());
         }
+
+        void assertAdaptiveCoordinateHeadingAtLine(int n) {
+            assertNthEntryOfLine("SNR (dB)", 1, n);
+            assertNthEntryOfLine("correct number", 2, n);
+            assertNthEntryOfLine("subject number", 3, n);
+            assertNthEntryOfLine("correct color", 4, n);
+            assertNthEntryOfLine("subject color", 5, n);
+            assertNthEntryOfLine("evaluation", writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
+            assertNthEntryOfLine("reversals", 7, n);
+        }
     };
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
         run(writingAdaptiveCoordinateResponseTrial);
-        assertNthEntryOfFirstLine("SNR (dB)", 1);
-        assertNthEntryOfFirstLine("correct number", 2);
-        assertNthEntryOfFirstLine("subject number", 3);
-        assertNthEntryOfFirstLine("correct color", 4);
-        assertNthEntryOfFirstLine("subject color", 5);
-        assertNthEntryOfFirstLine("evaluation", writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex());
-        assertNthEntryOfFirstLine("reversals", 7);
+        assertAdaptiveCoordinateHeadingAtLine(1);
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
@@ -360,13 +368,7 @@ namespace av_speech_in_noise::tests::output_file {
         run(writingAdaptiveCoordinateResponseTrial);
         openNewFile();
         run(writingAdaptiveCoordinateResponseTrial);
-        assertNthEntryOfThirdLine("SNR (dB)", 1);
-        assertNthEntryOfThirdLine("correct number", 2);
-        assertNthEntryOfThirdLine("subject number", 3);
-        assertNthEntryOfThirdLine("correct color", 4);
-        assertNthEntryOfThirdLine("subject color", 5);
-        assertNthEntryOfThirdLine("evaluation", writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex());
-        assertNthEntryOfThirdLine("reversals", 7);
+        assertAdaptiveCoordinateHeadingAtLine(3);
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
