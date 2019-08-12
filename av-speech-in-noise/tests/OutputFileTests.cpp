@@ -403,12 +403,11 @@ namespace av_speech_in_noise::tests::output_file {
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
         using coordinate_response_measure::Color;
-        writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
-        writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;
-        writingFixedLevelCoordinateResponseTrial.trial().trial.correctColor =
-            Color::green;
-        writingFixedLevelCoordinateResponseTrial.trial().trial.subjectColor =
-            Color::red;
+        auto &trial = writingFixedLevelCoordinateResponseTrial.trial();
+        trial.trial.correctNumber = 2;
+        trial.trial.subjectNumber = 3;
+        trial.trial.correctColor = Color::green;
+        trial.trial.subjectColor = Color::red;
         run(writingFixedLevelCoordinateResponseTrial);
         assertNthEntryOfSecondLine("2", 1);
         assertNthEntryOfSecondLine("3", 2);
@@ -419,12 +418,11 @@ namespace av_speech_in_noise::tests::output_file {
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
         using coordinate_response_measure::Color;
         run(writingFixedLevelCoordinateResponseTrial);
-        writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
-        writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;
-        writingFixedLevelCoordinateResponseTrial.trial().trial.correctColor =
-            Color::green;
-        writingFixedLevelCoordinateResponseTrial.trial().trial.subjectColor =
-            Color::red;
+        auto &trial = writingFixedLevelCoordinateResponseTrial.trial();
+        trial.trial.correctNumber = 2;
+        trial.trial.subjectNumber = 3;
+        trial.trial.correctColor = Color::green;
+        trial.trial.subjectColor = Color::red;
         run(writingFixedLevelCoordinateResponseTrial);
         assertNthEntryOfThirdLine("2", 1);
         assertNthEntryOfThirdLine("3", 2);
