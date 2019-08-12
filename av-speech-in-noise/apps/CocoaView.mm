@@ -600,13 +600,13 @@ void CocoaSubjectView::hide() {
 CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
     nextTrialButton{[[NSView alloc]
-        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
     ]},
     evaluationButtons{[[NSView alloc]
-        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
     ]},
     responseSubmission{[[NSView alloc]
-        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
     ]},
     response_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
@@ -630,8 +630,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
         action:@selector(exitTest)
     ];
     [exitTestButton_ setFrame:NSMakeRect(
-        r.size.width - buttonWidth,
         0,
+        r.size.height -  buttonHeight,
         buttonWidth,
         buttonHeight
     )];
