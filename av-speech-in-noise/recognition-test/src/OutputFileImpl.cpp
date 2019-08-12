@@ -180,6 +180,7 @@ namespace av_speech_in_noise {
         writer->open(generateNewFilePath(test));
         if (writer->failed())
             throw OpenFailure{};
+        justWroteAdaptiveCoordinateResponseTrial = false;
     }
     
     std::string OutputFileImpl::generateNewFilePath(const TestInformation &test) {

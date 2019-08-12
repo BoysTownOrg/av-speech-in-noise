@@ -356,6 +356,19 @@ namespace av_speech_in_noise::tests::output_file {
         assertNthEntryOfThirdLine("4", 7);
     }
 
+    TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+        run(writingAdaptiveCoordinateResponseTrial);
+        openNewFile();
+        run(writingAdaptiveCoordinateResponseTrial);
+        assertNthEntryOfThirdLine("SNR (dB)", 1);
+        assertNthEntryOfThirdLine("correct number", 2);
+        assertNthEntryOfThirdLine("subject number", 3);
+        assertNthEntryOfThirdLine("correct color", 4);
+        assertNthEntryOfThirdLine("subject color", 5);
+        assertNthEntryOfThirdLine("evaluation", writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex());
+        assertNthEntryOfThirdLine("reversals", 7);
+    }
+
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
         writingFixedLevelCoordinateResponseTrial.trial().trial.correctNumber = 2;
         writingFixedLevelCoordinateResponseTrial.trial().trial.subjectNumber = 3;
