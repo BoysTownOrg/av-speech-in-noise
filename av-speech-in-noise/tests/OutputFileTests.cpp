@@ -290,6 +290,10 @@ namespace av_speech_in_noise::tests::output_file {
             assertEqual(std::move(what), nthWrittenEntryOfLine(n, line));
         }
         
+        void assertNthEntryOfLine(HeadingItem item, int n, int line) {
+            assertEqual(headingItemName(item), nthWrittenEntryOfLine(n, line));
+        }
+        
         void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
             useCase.incorrect();
             run(useCase);
@@ -303,21 +307,21 @@ namespace av_speech_in_noise::tests::output_file {
         }
 
         void assertAdaptiveCoordinateHeadingAtLine(int n) {
-            assertNthEntryOfLine(headingItemName(HeadingItem::snr_dB), 1, n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::correctNumber), 2, n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::subjectNumber), 3, n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::correctColor), 4, n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::subjectColor), 5, n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::evaluation), writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::reversals), 7, n);
+            assertNthEntryOfLine(HeadingItem::snr_dB, 1, n);
+            assertNthEntryOfLine(HeadingItem::correctNumber, 2, n);
+            assertNthEntryOfLine(HeadingItem::subjectNumber, 3, n);
+            assertNthEntryOfLine(HeadingItem::correctColor, 4, n);
+            assertNthEntryOfLine(HeadingItem::subjectColor, 5, n);
+            assertNthEntryOfLine(HeadingItem::evaluation, writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
+            assertNthEntryOfLine(HeadingItem::reversals, 7, n);
         }
 
         void assertFixedLevelCoordinateResponseHeadingAtLine(int n) {
-            assertNthEntryOfLine(headingItemName(HeadingItem::correctNumber), 1, n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::subjectNumber), 2, n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::correctColor), 3, n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::subjectColor), 4, n);
-            assertNthEntryOfLine(headingItemName(HeadingItem::evaluation), writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), n);
+            assertNthEntryOfLine(HeadingItem::correctNumber, 1, n);
+            assertNthEntryOfLine(HeadingItem::subjectNumber, 2, n);
+            assertNthEntryOfLine(HeadingItem::correctColor, 3, n);
+            assertNthEntryOfLine(HeadingItem::subjectColor, 4, n);
+            assertNthEntryOfLine(HeadingItem::evaluation, writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), n);
         }
     };
 
