@@ -506,7 +506,16 @@ namespace av_speech_in_noise::tests::presentation {
             bool responseSubmissionShown_{};
             bool responseSubmissionHidden_{};
             bool evaluationButtonsHidden_{};
+            bool exitTestButtonHidden_{};
         public:
+            void hideExitTestButton() override {
+                exitTestButtonHidden_ = true;
+            }
+
+            auto exitTestButtonHidden() const {
+                return exitTestButtonHidden_;
+            }
+
             void submitFailedTrial() {
                 listener_->submitFailedTrial();
             }
@@ -1590,6 +1599,15 @@ namespace av_speech_in_noise::tests::presentation {
         void assertHidesPlayTrialButton(PlayingTrial &useCase) {
             run(useCase);
             assertTrue(useCase.nextTrialButtonHidden());
+        }
+        
+        void assertHidesExitTestButton(PlayingTrial &useCase) {
+            run(useCase);
+            assertTrue(exitTestButtonHidden());
+        }
+
+        bool exitTestButtonHidden() {
+            return experimenterView.exitTestButtonHidden();
         }
         
         void assertConfirmTestSetupShowsNextTrialButton(

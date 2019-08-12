@@ -121,6 +121,7 @@ namespace av_speech_in_noise {
         AudioSettings p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
+        experimenter->hideExitTestButton();
     }
     
     void Presenter::trialComplete() {
@@ -487,6 +488,10 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::showNextTrialButton() {
         view->showNextTrialButton();
+    }
+    
+    void Presenter::Experimenter::hideExitTestButton() {
+        view->hideExitTestButton();
     }
     
     void Presenter::Experimenter::playTrial() {

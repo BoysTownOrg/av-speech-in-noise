@@ -424,6 +424,10 @@ namespace av_speech_in_noise::tests::presentation {
         assertHidesPlayTrialButton(playingTrialFromExperimenter);
     }
 
+    TEST_F(PresenterTests, playingTrialFromSubjectHidesExitTestButton) {
+        assertHidesExitTestButton(playingTrialFromSubject);
+    }
+
     TEST_F(PresenterTests, playingTrialFromSubjectPassesAudioDevice) {
         assertAudioDevicePassedToTrial(playingTrialFromSubject);
     }
