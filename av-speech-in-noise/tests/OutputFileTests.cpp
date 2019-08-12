@@ -348,8 +348,8 @@ namespace av_speech_in_noise::tests::output_file {
         assertNthEntryOfSecondLine("1", 1);
         assertNthEntryOfSecondLine("2", 2);
         assertNthEntryOfSecondLine("3", 3);
-        assertNthEntryOfSecondLine("green", 4);
-        assertNthEntryOfSecondLine("red", 5);
+        assertNthEntryOfSecondLine(colorName(coordinate_response_measure::Color::green), 4);
+        assertNthEntryOfSecondLine(colorName(coordinate_response_measure::Color::red), 5);
         assertNthEntryOfSecondLine("4", 7);
     }
 
@@ -367,8 +367,8 @@ namespace av_speech_in_noise::tests::output_file {
         assertNthEntryOfThirdLine("1", 1);
         assertNthEntryOfThirdLine("2", 2);
         assertNthEntryOfThirdLine("3", 3);
-        assertNthEntryOfThirdLine("green", 4);
-        assertNthEntryOfThirdLine("red", 5);
+        assertNthEntryOfThirdLine(colorName(coordinate_response_measure::Color::green), 4);
+        assertNthEntryOfThirdLine(colorName(coordinate_response_measure::Color::red), 5);
         assertNthEntryOfThirdLine("4", 7);
     }
 
@@ -396,8 +396,8 @@ namespace av_speech_in_noise::tests::output_file {
         run(writingFixedLevelCoordinateResponseTrial);
         assertNthEntryOfSecondLine("2", 1);
         assertNthEntryOfSecondLine("3", 2);
-        assertNthEntryOfSecondLine("green", 3);
-        assertNthEntryOfSecondLine("red", 4);
+        assertNthEntryOfSecondLine(colorName(coordinate_response_measure::Color::green), 3);
+        assertNthEntryOfSecondLine(colorName(coordinate_response_measure::Color::red), 4);
     }
 
     TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
@@ -411,8 +411,8 @@ namespace av_speech_in_noise::tests::output_file {
         run(writingFixedLevelCoordinateResponseTrial);
         assertNthEntryOfThirdLine("2", 1);
         assertNthEntryOfThirdLine("3", 2);
-        assertNthEntryOfThirdLine("green", 3);
-        assertNthEntryOfThirdLine("red", 4);
+        assertNthEntryOfThirdLine(colorName(coordinate_response_measure::Color::green), 3);
+        assertNthEntryOfThirdLine(colorName(coordinate_response_measure::Color::red), 4);
     }
 
     TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
