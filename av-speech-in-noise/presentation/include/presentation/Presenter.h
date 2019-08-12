@@ -192,6 +192,7 @@ namespace av_speech_in_noise {
             void hide();
             void showEvaluationButtons();
             void showResponseSubmission();
+            void showNextTrialButton();
             FreeResponse openSetResponse();
             void playTrial() override;
             void submitPassedTrial() override;
@@ -201,7 +202,6 @@ namespace av_speech_in_noise {
             
         private:
             void prepareNextEvaluatedTrial();
-            void showNextTrialButton();
             Presenter *parent;
         };
         

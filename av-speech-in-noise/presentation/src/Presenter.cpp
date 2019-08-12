@@ -90,6 +90,8 @@ namespace av_speech_in_noise {
         experimenter->show();
         if (closedSet())
             subject->show();
+        else
+            experimenter->showNextTrialButton();
     }
     
     bool Presenter::closedSet() {
@@ -480,7 +482,6 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::show() { 
         view->show();
-        showNextTrialButton();
     }
     
     void Presenter::Experimenter::showNextTrialButton() {
