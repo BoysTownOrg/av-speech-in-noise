@@ -30,7 +30,8 @@ namespace av_speech_in_noise {
         view{view},
         testSetup{testSetup},
         subject{subject},
-        experimenter{experimenter}
+        experimenter{experimenter},
+        trialCompletionHandler{&adaptiveClosedSetTrialCompletionHandler}
     {
         model->subscribe(this);
         testSetup->becomeChild(this);
@@ -87,10 +88,11 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::showTestView() {
+        experimenter->show();
         if (closedSet())
             subject->show();
         else
-            experimenter->show();
+            experimenter->showNextTrialButton();
     }
     
     bool Presenter::closedSet() {
@@ -120,10 +122,12 @@ namespace av_speech_in_noise {
         AudioSettings p;
         p.audioDevice = view->audioDevice();
         model->playTrial(p);
+        experimenter->hideExitTestButton();
     }
     
     void Presenter::trialComplete() {
         trialCompletionHandler->showResponseView();
+        experimenter->showExitTestButton();
     }
     
     void Presenter::submitSubjectResponse() {
@@ -170,6 +174,10 @@ namespace av_speech_in_noise {
     void Presenter::proceedToNextTrial() {
         if (testComplete())
             switchToSetupView();
+    }
+    
+    void Presenter::exitTest() {
+        switchToSetupView();
     }
     
     bool Presenter::testComplete() {
@@ -419,6 +427,7 @@ namespace av_speech_in_noise {
     }
     
     void Presenter::Subject::hide() {
+        hideResponseButtons();
         view->hide();
     }
 
@@ -477,11 +486,18 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::show() { 
         view->show();
-        showNextTrialButton();
     }
     
     void Presenter::Experimenter::showNextTrialButton() {
         view->showNextTrialButton();
+    }
+    
+    void Presenter::Experimenter::hideExitTestButton() {
+        view->hideExitTestButton();
+    }
+    
+    void Presenter::Experimenter::showExitTestButton() {
+        view->showExitTestButton();
     }
     
     void Presenter::Experimenter::playTrial() {
@@ -506,6 +522,10 @@ namespace av_speech_in_noise {
     void Presenter::Experimenter::submitFailedTrial() {
         parent->submitFailedTrial();
         prepareNextEvaluatedTrial();
+    }
+    
+    void Presenter::Experimenter::exitTest() {
+        parent->exitTest();
     }
     
     void Presenter::Experimenter::hide() { 

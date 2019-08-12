@@ -88,16 +88,16 @@ namespace av_speech_in_noise::tests::presentation {
 
     TEST_F(
         PresenterTests,
-        confirmAdaptiveClosedSetTestDoesNotShowExperimenterView
+        confirmAdaptiveClosedSetTestShowsExperimenterView
     ) {
-        assertDoesNotShowExperimenterView(confirmingAdaptiveClosedSetTest);
+        assertShowsExperimenterView(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(
         PresenterTests,
-        confirmFixedLevelClosedSetTestDoesNotShowExperimenterView
+        confirmFixedLevelClosedSetTestShowsExperimenterView
     ) {
-        assertDoesNotShowExperimenterView(confirmingFixedLevelClosedSetTest);
+        assertShowsExperimenterView(confirmingFixedLevelClosedSetTest);
     }
 
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
@@ -424,6 +424,10 @@ namespace av_speech_in_noise::tests::presentation {
         assertHidesPlayTrialButton(playingTrialFromExperimenter);
     }
 
+    TEST_F(PresenterTests, playingTrialFromSubjectHidesExitTestButton) {
+        assertHidesExitTestButton(playingTrialFromSubject);
+    }
+
     TEST_F(PresenterTests, playingTrialFromSubjectPassesAudioDevice) {
         assertAudioDevicePassedToTrial(playingTrialFromSubject);
     }
@@ -586,6 +590,25 @@ namespace av_speech_in_noise::tests::presentation {
         assertSubjectViewHidden();
     }
 
+    TEST_F(PresenterTests, exitTestHidesSubjectView) {
+        exitTest();
+        assertSubjectViewHidden();
+    }
+
+    TEST_F(PresenterTests, exitTestHidesExperimenterView) {
+        assertHidesExperimenterView(exitingTest);
+    }
+
+    TEST_F(PresenterTests, exitTestHidesResponseButtons) {
+        run(exitingTest);
+        assertTrue(respondingFromSubject.responseViewHidden());
+    }
+
+    TEST_F(PresenterTests, exitTestShowsTestSetupView) {
+        exitTest();
+        assertSetupViewShown();
+    }
+
     TEST_F(PresenterTests, browseForTrackSettingsFileUpdatesTrackSettingsFile) {
         assertBrowseResultPassedToEntry(browsingForTrackSettingsFile);
     }
@@ -616,6 +639,14 @@ namespace av_speech_in_noise::tests::presentation {
 
     TEST_F(PresenterTests, browseForTrackSettingsFileCancelDoesNotChangeTrackSettingsFile) {
         assertCancellingBrowseDoesNotChangePath(browsingForTrackSettingsFile);
+    }
+
+    TEST_F(
+        PresenterTests,
+        completingTrialShowsExitTestButton
+    ) {
+        completeTrial();
+        assertTrue(exitTestButtonShown());
     }
 
     TEST_F(

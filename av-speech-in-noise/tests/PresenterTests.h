@@ -506,7 +506,25 @@ namespace av_speech_in_noise::tests::presentation {
             bool responseSubmissionShown_{};
             bool responseSubmissionHidden_{};
             bool evaluationButtonsHidden_{};
+            bool exitTestButtonHidden_{};
+            bool exitTestButtonShown_{};
         public:
+            void showExitTestButton() override {
+                exitTestButtonShown_ = true;
+            }
+
+            void hideExitTestButton() override {
+                exitTestButtonHidden_ = true;
+            }
+
+            auto exitTestButtonShown() const {
+                return exitTestButtonShown_;
+            }
+
+            auto exitTestButtonHidden() const {
+                return exitTestButtonHidden_;
+            }
+
             void submitFailedTrial() {
                 listener_->submitFailedTrial();
             }
@@ -597,6 +615,10 @@ namespace av_speech_in_noise::tests::presentation {
             
             void submitResponse() {
                 listener_->submitResponse();
+            }
+
+            void exitTest() {
+                listener_->exitTest();
             }
         };
     };
@@ -1084,6 +1106,17 @@ namespace av_speech_in_noise::tests::presentation {
         }
     };
     
+    class ExitingTest : public UseCase {
+        ViewStub::ExperimenterViewStub *view;
+    public:
+        explicit ExitingTest(ViewStub::ExperimenterViewStub *view) :
+            view{view} {}
+        
+        void run() override {
+            view->exitTest();
+        }
+    };
+    
     class SubmittingPassedTrial : public TrialSubmission {
         ViewStub::ExperimenterViewStub *view;
     public:
@@ -1331,6 +1364,7 @@ namespace av_speech_in_noise::tests::presentation {
         RespondingFromExperimenter respondingFromExperimenter{&experimenterView};
         SubmittingPassedTrial submittingPassedTrial{&experimenterView};
         SubmittingFailedTrial submittingFailedTrial{&experimenterView};
+        ExitingTest exitingTest{&experimenterView};
         
         std::string auditoryOnlyConditionName() {
             return conditionName(Condition::auditoryOnly);
@@ -1346,6 +1380,10 @@ namespace av_speech_in_noise::tests::presentation {
         
         void respondFromExperimenter() {
             experimenterView.submitResponse();
+        }
+        
+        void exitTest() {
+            experimenterView.exitTest();
         }
         
         void playCalibration() {
@@ -1572,6 +1610,19 @@ namespace av_speech_in_noise::tests::presentation {
             assertTrue(useCase.nextTrialButtonHidden());
         }
         
+        void assertHidesExitTestButton(PlayingTrial &useCase) {
+            run(useCase);
+            assertTrue(exitTestButtonHidden());
+        }
+
+        bool exitTestButtonHidden() {
+            return experimenterView.exitTestButtonHidden();
+        }
+
+        bool exitTestButtonShown() {
+            return experimenterView.exitTestButtonShown();
+        }
+        
         void assertConfirmTestSetupShowsNextTrialButton(
             ConfirmingTestSetup &confirmingTest,
             PlayingTrial &playingTrial
@@ -1593,6 +1644,10 @@ namespace av_speech_in_noise::tests::presentation {
         
         void assertCompleteTestHidesExperimenterView(TrialSubmission &useCase) {
             setTestComplete();
+            assertHidesExperimenterView(useCase);
+        }
+        
+        void assertHidesExperimenterView(UseCase &useCase) {
             run(useCase);
             assertExperimenterViewHidden();
         }

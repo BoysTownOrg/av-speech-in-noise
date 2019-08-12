@@ -600,13 +600,13 @@ void CocoaSubjectView::hide() {
 CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
     nextTrialButton{[[NSView alloc]
-        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
     ]},
     evaluationButtons{[[NSView alloc]
-        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
     ]},
     responseSubmission{[[NSView alloc]
-        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
     ]},
     response_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
@@ -621,6 +621,17 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     [nextTrialButton_ setFrame:NSMakeRect(
         r.size.width - buttonWidth,
         0,
+        buttonWidth,
+        buttonHeight
+    )];
+    exitTestButton_ = [NSButton
+        buttonWithTitle:@"exit test"
+        target:actions
+        action:@selector(exitTest)
+    ];
+    [exitTestButton_ setFrame:NSMakeRect(
+        0,
+        r.size.height -  buttonHeight,
         buttonWidth,
         buttonHeight
     )];
@@ -665,6 +676,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     [view_ addSubview:nextTrialButton];
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
+    [view_ addSubview:exitTestButton_];
     [evaluationButtons setHidden:YES];
     [nextTrialButton setHidden:YES];
     [responseSubmission setHidden:YES];
@@ -682,6 +694,14 @@ void CocoaExperimenterView::showNextTrialButton() {
 
 void CocoaExperimenterView::hideNextTrialButton() {
     [nextTrialButton setHidden:YES];
+}
+
+void CocoaExperimenterView::showExitTestButton() {
+    [exitTestButton_ setHidden:NO];
+}
+
+void CocoaExperimenterView::hideExitTestButton() {
+    [exitTestButton_ setHidden:YES];
 }
 
 void CocoaExperimenterView::show() {
@@ -732,6 +752,10 @@ void CocoaExperimenterView::submitFailedTrial() {
     listener_->submitFailedTrial();
 }
 
+void CocoaExperimenterView::exitTest() {
+    listener_->exitTest();
+}
+
 @implementation ExperimenterViewActions
 @synthesize controller;
 
@@ -749,6 +773,10 @@ void CocoaExperimenterView::submitFailedTrial() {
 
 - (void)submitFailedTrial {
     controller->submitFailedTrial();
+}
+
+- (void)exitTest {
+    controller->exitTest();
 }
 @end
 

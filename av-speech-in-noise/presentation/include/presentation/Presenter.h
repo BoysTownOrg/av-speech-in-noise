@@ -79,12 +79,15 @@ namespace av_speech_in_noise {
                 virtual void submitPassedTrial() = 0;
                 virtual void submitFailedTrial() = 0;
                 virtual void submitResponse() = 0;
+                virtual void exitTest() = 0;
             };
             
             virtual ~Experimenter() = default;
             virtual void subscribe(EventListener *) = 0;
             virtual void showNextTrialButton() = 0;
             virtual void hideNextTrialButton() = 0;
+            virtual void hideExitTestButton() = 0;
+            virtual void showExitTestButton() = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
             virtual void showEvaluationButtons() = 0;
@@ -191,15 +194,18 @@ namespace av_speech_in_noise {
             void hide();
             void showEvaluationButtons();
             void showResponseSubmission();
+            void showNextTrialButton();
+            void hideExitTestButton();
+            void showExitTestButton();
             FreeResponse openSetResponse();
             void playTrial() override;
             void submitPassedTrial() override;
             void submitResponse() override;
             void submitFailedTrial() override;
+            void exitTest() override;
             
         private:
             void prepareNextEvaluatedTrial();
-            void showNextTrialButton();
             Presenter *parent;
         };
         
@@ -289,6 +295,7 @@ namespace av_speech_in_noise {
         void playCalibration();
         void submitPassedTrial();
         void submitFailedTrial();
+        void exitTest();
         static int fullScaleLevel_dB_SPL;
         static int ceilingSnr_dB;
         static int floorSnr_dB;
