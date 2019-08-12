@@ -352,14 +352,13 @@ namespace av_speech_in_noise::tests::output_file {
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
         using coordinate_response_measure::Color;
-        writingAdaptiveCoordinateResponseTrial.trial().SNR_dB = 1;
-        writingAdaptiveCoordinateResponseTrial.trial().trial.correctNumber = 2;
-        writingAdaptiveCoordinateResponseTrial.trial().trial.subjectNumber = 3;
-        writingAdaptiveCoordinateResponseTrial.trial().trial.correctColor =
-            Color::green;
-        writingAdaptiveCoordinateResponseTrial.trial().trial.subjectColor =
-            Color::red;
-        writingAdaptiveCoordinateResponseTrial.trial().reversals = 4;
+        auto &trial = writingAdaptiveCoordinateResponseTrial.trial();
+        trial.SNR_dB = 1;
+        trial.trial.correctNumber = 2;
+        trial.trial.subjectNumber = 3;
+        trial.trial.correctColor = Color::green;
+        trial.trial.subjectColor = Color::red;
+        trial.reversals = 4;
         run(writingAdaptiveCoordinateResponseTrial);
         assertNthEntryOfSecondLine("1", 1);
         assertNthEntryOfSecondLine("2", 2);
@@ -372,14 +371,13 @@ namespace av_speech_in_noise::tests::output_file {
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
         using coordinate_response_measure::Color;
         run(writingAdaptiveCoordinateResponseTrial);
-        writingAdaptiveCoordinateResponseTrial.trial().SNR_dB = 1;
-        writingAdaptiveCoordinateResponseTrial.trial().trial.correctNumber = 2;
-        writingAdaptiveCoordinateResponseTrial.trial().trial.subjectNumber = 3;
-        writingAdaptiveCoordinateResponseTrial.trial().trial.correctColor =
-            Color::green;
-        writingAdaptiveCoordinateResponseTrial.trial().trial.subjectColor =
-            Color::red;
-        writingAdaptiveCoordinateResponseTrial.trial().reversals = 4;
+        auto &trial = writingAdaptiveCoordinateResponseTrial.trial();
+        trial.SNR_dB = 1;
+        trial.trial.correctNumber = 2;
+        trial.trial.subjectNumber = 3;
+        trial.trial.correctColor = Color::green;
+        trial.trial.subjectColor = Color::red;
+        trial.reversals = 4;
         run(writingAdaptiveCoordinateResponseTrial);
         assertNthEntryOfThirdLine("1", 1);
         assertNthEntryOfThirdLine("2", 2);
