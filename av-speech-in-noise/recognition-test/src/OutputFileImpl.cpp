@@ -146,22 +146,6 @@ namespace av_speech_in_noise {
     std::string OutputFileImpl::evaluation(const coordinate_response_measure::Trial &trial) {
         return trial.correct ? "correct" : "incorrect";
     }
-
-    std::string OutputFileImpl::colorName(coordinate_response_measure::Color c) {
-        switch (c) {
-        case coordinate_response_measure::Color::green:
-            return "green";
-        case coordinate_response_measure::Color::red:
-            return "red";
-        case coordinate_response_measure::Color::blue:
-            return "blue";
-        case coordinate_response_measure::Color::white:
-            return "white";
-        case coordinate_response_measure::Color::notAColor:
-            return "not a color";
-        }
-        return "unknown";
-    }
     
     void OutputFileImpl::writeFreeResponseTrialHeading() {
         write(formatOpenSetTrialHeading());

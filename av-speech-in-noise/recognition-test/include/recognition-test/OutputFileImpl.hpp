@@ -33,6 +33,22 @@ namespace av_speech_in_noise {
         }
     }
 
+    constexpr const char *colorName(coordinate_response_measure::Color c) {
+        switch (c) {
+        case coordinate_response_measure::Color::green:
+            return "green";
+        case coordinate_response_measure::Color::red:
+            return "red";
+        case coordinate_response_measure::Color::blue:
+            return "blue";
+        case coordinate_response_measure::Color::white:
+            return "white";
+        case coordinate_response_measure::Color::notAColor:
+            return "not a color";
+        }
+        return "unknown";
+    }
+
     class Writer {
     public:
         virtual ~Writer() = default;
@@ -81,7 +97,6 @@ namespace av_speech_in_noise {
         std::string formatCoordinateResponseTrialHeading();
         std::string formatOpenSetTrialHeading();
         std::string generateNewFilePath(const TestInformation &);
-        std::string colorName(coordinate_response_measure::Color);
     };
 }
 
