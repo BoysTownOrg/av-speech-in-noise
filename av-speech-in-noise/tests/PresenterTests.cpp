@@ -643,6 +643,14 @@ namespace av_speech_in_noise::tests::presentation {
 
     TEST_F(
         PresenterTests,
+        completingTrialShowsExitTestButton
+    ) {
+        completeTrial();
+        assertTrue(exitTestButtonShown());
+    }
+
+    TEST_F(
+        PresenterTests,
         completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest
     ) {
         assertCompleteTrialShowsResponseView(

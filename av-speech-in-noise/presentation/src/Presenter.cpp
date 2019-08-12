@@ -30,7 +30,8 @@ namespace av_speech_in_noise {
         view{view},
         testSetup{testSetup},
         subject{subject},
-        experimenter{experimenter}
+        experimenter{experimenter},
+        trialCompletionHandler{&adaptiveClosedSetTrialCompletionHandler}
     {
         model->subscribe(this);
         testSetup->becomeChild(this);
@@ -126,6 +127,7 @@ namespace av_speech_in_noise {
     
     void Presenter::trialComplete() {
         trialCompletionHandler->showResponseView();
+        experimenter->showExitTestButton();
     }
     
     void Presenter::submitSubjectResponse() {
@@ -492,6 +494,10 @@ namespace av_speech_in_noise {
     
     void Presenter::Experimenter::hideExitTestButton() {
         view->hideExitTestButton();
+    }
+    
+    void Presenter::Experimenter::showExitTestButton() {
+        view->showExitTestButton();
     }
     
     void Presenter::Experimenter::playTrial() {

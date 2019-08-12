@@ -87,6 +87,7 @@ namespace av_speech_in_noise {
             virtual void showNextTrialButton() = 0;
             virtual void hideNextTrialButton() = 0;
             virtual void hideExitTestButton() = 0;
+            virtual void showExitTestButton() = 0;
             virtual void show() = 0;
             virtual void hide() = 0;
             virtual void showEvaluationButtons() = 0;
@@ -195,6 +196,7 @@ namespace av_speech_in_noise {
             void showResponseSubmission();
             void showNextTrialButton();
             void hideExitTestButton();
+            void showExitTestButton();
             FreeResponse openSetResponse();
             void playTrial() override;
             void submitPassedTrial() override;
