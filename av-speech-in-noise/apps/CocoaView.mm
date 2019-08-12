@@ -624,7 +624,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
         buttonWidth,
         buttonHeight
     )];
-    const auto exitTestButton_ = [NSButton
+    exitTestButton_ = [NSButton
         buttonWithTitle:@"exit test"
         target:actions
         action:@selector(exitTest)
@@ -694,6 +694,14 @@ void CocoaExperimenterView::showNextTrialButton() {
 
 void CocoaExperimenterView::hideNextTrialButton() {
     [nextTrialButton setHidden:YES];
+}
+
+void CocoaExperimenterView::showExitTestButton() {
+    [exitTestButton_ setHidden:NO];
+}
+
+void CocoaExperimenterView::hideExitTestButton() {
+    [exitTestButton_ setHidden:YES];
 }
 
 void CocoaExperimenterView::show() {

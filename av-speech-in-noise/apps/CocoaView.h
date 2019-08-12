@@ -40,6 +40,7 @@ class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
     NSView *nextTrialButton;
     NSView *evaluationButtons;
     NSView *responseSubmission;
+    NSButton *exitTestButton_;
     NSTextField *response_;
     EventListener *listener_{};
     ExperimenterViewActions *actions;
@@ -54,6 +55,8 @@ public:
     void subscribe(EventListener *) override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
+    void showExitTestButton() override;
+    void hideExitTestButton() override;
     void show() override;
     void hide() override;
     void showEvaluationButtons() override;
