@@ -43,4 +43,23 @@ namespace target_list {
     ) {
         return reader->subDirectories(std::move(directory));
     }
+
+    FileIdentifierFilterDecorator::FileIdentifierFilterDecorator(
+        DirectoryReader *reader,
+        std::string identifier
+    ) :
+        identifier{std::move(identifier)},
+        reader{reader} {}
+
+    std::vector<std::string> FileIdentifierFilterDecorator::filesIn(
+        std::string directory
+    ) {
+        return reader->filesIn(std::move(directory));
+    }
+    
+    std::vector<std::string> FileIdentifierFilterDecorator::subDirectories(
+        std::string directory
+    ) {
+        return reader->subDirectories(std::move(directory));
+    }
 }

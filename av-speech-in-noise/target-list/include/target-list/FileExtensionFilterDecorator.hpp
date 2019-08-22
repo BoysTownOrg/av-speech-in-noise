@@ -18,6 +18,15 @@ namespace target_list {
         );
         std::vector<std::string> filtered(std::vector<std::string>);
     };
+
+    class FileIdentifierFilterDecorator : public DirectoryReader {
+        std::string identifier;
+        DirectoryReader *reader;
+    public:
+        FileIdentifierFilterDecorator(DirectoryReader *, std::string identifier);
+        std::vector<std::string> filesIn(std::string directory) override;
+        std::vector<std::string> subDirectories(std::string directory) override;
+    };
 }
 
 #endif

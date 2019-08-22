@@ -240,4 +240,22 @@ namespace {
         reader.setSubDirectories({ "a", "b", "c" });
         assertEqual({ "a", "b", "c" }, decorator.subDirectories({}));
     }
+    
+    
+    class FileIdentifierFilterDecoratorTests : public ::testing::Test {
+    protected:
+        DirectoryReaderStub reader;
+        
+        target_list::FileIdentifierFilterDecorator construct(
+            std::string indentifier = {}
+        ) {
+            return {&reader, std::move(indentifier)};
+        }
+    };
+
+    TEST_F(FileIdentifierFilterDecoratorTests, passesDirectoryToDecoratedForFiles) {
+        auto decorator = construct();
+        decorator.filesIn("a");
+        assertEqual("a", reader.directory());
+    }
 }
