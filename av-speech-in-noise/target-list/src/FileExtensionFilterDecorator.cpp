@@ -76,4 +76,24 @@ namespace target_list {
     ) {
         return reader->subDirectories(std::move(directory));
     }
+    
+    RandomSubsetFilesDecorator::RandomSubsetFilesDecorator(
+        DirectoryReader *reader, 
+        Randomizer *randomizer, 
+        int
+    ) :
+        reader{reader},
+        randomizer{randomizer} {}
+    
+    std::vector<std::string> RandomSubsetFilesDecorator::filesIn(
+        std::string directory
+    ) { 
+        reader->filesIn(std::move(directory));
+        randomizer->shuffle({}, {});
+        return {directory}; 
+    }
+    
+    std::vector<std::string> RandomSubsetFilesDecorator::subDirectories(
+        std::string directory
+    ) {return {directory};}
 }

@@ -272,8 +272,27 @@ namespace {
     }
 
     TEST_F(FileIdentifierFilterDecoratorTests, returnsFilteredFiles) {
-        auto decorator = construct({"x"});
+        auto decorator = construct("x");
         reader.setFileNames({ "ax.j", "b.c", "d.e", "xf.c", "g.h" });
         assertEqual({ "ax.j", "xf.c" }, decorator.filesIn({}));
+    }
+    
+    
+    class RandomSubsetFilesDecoratorTests : public ::testing::Test {
+    protected:
+        DirectoryReaderStub reader;
+        RandomizerStub randomizer;
+        
+        target_list::RandomSubsetFilesDecorator construct(
+            int N = {}
+        ) {
+            return {&reader, &randomizer, N};
+        }
+    };
+
+    TEST_F(RandomSubsetFilesDecoratorTests, passesDirectoryToDecoratedForFiles) {
+        auto decorator = construct();
+        decorator.filesIn("a");
+        assertEqual("a", reader.directory());
     }
 }
