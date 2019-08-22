@@ -81,10 +81,11 @@ namespace target_list {
     RandomSubsetFilesDecorator::RandomSubsetFilesDecorator(
         DirectoryReader *reader, 
         Randomizer *randomizer, 
-        int
+        int N
     ) :
         reader{reader},
-        randomizer{randomizer} {}
+        randomizer{randomizer},
+        N{N} {}
     
     std::vector<std::string> RandomSubsetFilesDecorator::filesIn(
         std::string directory
@@ -93,7 +94,10 @@ namespace target_list {
         std::vector<int> indices(files.size());
         std::iota(indices.begin(), indices.end(), 0);
         randomizer->shuffle(indices.begin(), indices.end());
-        return {directory};
+        std::vector<std::string> subset;
+        for (int i = 0; i < N; ++i)
+            subset.push_back(files.at(indices.at(i)));
+        return subset;
     }
     
     std::vector<std::string> RandomSubsetFilesDecorator::subDirectories(

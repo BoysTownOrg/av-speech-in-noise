@@ -3,11 +3,13 @@
 #include <target-list/RandomizedTargetList.hpp>
 #include <target-list/FileExtensionFilterDecorator.hpp>
 #include <gtest/gtest.h>
+#include <algorithm>
 
 namespace {
     class RandomizerStub : public target_list::Randomizer {
         std::vector<std::string> toShuffle_;
         std::vector<int> shuffledInts_;
+        int rotateToTheLeft_{};
     public:
         auto toShuffle() const {
             return toShuffle_;
@@ -23,6 +25,11 @@ namespace {
         
         void shuffle(int_shuffle_iterator begin, int_shuffle_iterator end) override {
             shuffledInts_ = {begin, end};
+            std::rotate(begin, begin + rotateToTheLeft_, end);
+        }
+
+        void rotateToTheLeft(int N) {
+            rotateToTheLeft_ = N;
         }
     };
 
@@ -330,5 +337,12 @@ namespace {
         reader.setFileNames({"a", "b", "c"});
         decorator.filesIn({});
         assertHasBeenShuffled({ 0, 1, 2 });
+    }
+
+    TEST_F(RandomSubsetFilesDecoratorTests, returnsFirstNShuffledIndexedFiles) {
+        auto decorator = construct(3);
+        reader.setFileNames({"a", "b", "c", "d", "e"});
+        randomizer.rotateToTheLeft(2);
+        assertEqual({ "c", "d", "e" }, decorator.filesIn({}));
     }
 }
