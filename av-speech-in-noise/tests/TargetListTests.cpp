@@ -301,4 +301,10 @@ namespace {
         decorator.subDirectories("a");
         assertEqual("a", reader.directory());
     }
+
+    TEST_F(RandomSubsetFilesDecoratorTests, returnsSubdirectories) {
+        auto decorator = construct();
+        reader.setSubDirectories({ "a", "b", "c" });
+        assertEqual({ "a", "b", "c" }, decorator.subDirectories({}));
+    }
 }
