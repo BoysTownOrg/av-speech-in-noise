@@ -295,4 +295,10 @@ namespace {
         decorator.filesIn("a");
         assertEqual("a", reader.directory());
     }
+
+    TEST_F(RandomSubsetFilesDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
+        auto decorator = construct();
+        decorator.subDirectories("a");
+        assertEqual("a", reader.directory());
+    }
 }
