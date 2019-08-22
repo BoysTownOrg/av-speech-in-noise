@@ -12,6 +12,8 @@ namespace target_list {
         virtual ~Randomizer() = default;
         using shuffle_iterator = std::vector<std::string>::iterator;
         virtual void shuffle(shuffle_iterator begin, shuffle_iterator end) = 0;
+        using int_shuffle_iterator = std::vector<int>::iterator;
+        virtual void shuffle(int_shuffle_iterator begin, int_shuffle_iterator end) = 0;
     };
 
     class RandomizedTargetList : public av_speech_in_noise::TargetList {

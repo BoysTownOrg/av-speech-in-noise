@@ -7,13 +7,22 @@
 namespace {
     class RandomizerStub : public target_list::Randomizer {
         std::vector<std::string> toShuffle_;
+        std::vector<int> shuffledInts_;
     public:
         auto toShuffle() const {
             return toShuffle_;
         }
+
+        auto shuffledInts() const {
+            return shuffledInts_;
+        }
         
         void shuffle(shuffle_iterator begin, shuffle_iterator end) override {
             toShuffle_ = {begin, end};
+        }
+        
+        void shuffle(int_shuffle_iterator begin, int_shuffle_iterator end) override {
+            shuffledInts_ = {begin, end};
         }
     };
 
@@ -288,6 +297,14 @@ namespace {
         ) {
             return {&reader, &randomizer, N};
         }
+        
+        auto shuffled() {
+            return randomizer.shuffledInts();
+        }
+        
+        void assertHasBeenShuffled(std::vector<int> v) {
+            assertEqual(std::move(v), shuffled());
+        }
     };
 
     TEST_F(RandomSubsetFilesDecoratorTests, passesDirectoryToDecoratedForFiles) {
@@ -306,5 +323,12 @@ namespace {
         auto decorator = construct();
         reader.setSubDirectories({ "a", "b", "c" });
         assertEqual({ "a", "b", "c" }, decorator.subDirectories({}));
+    }
+
+    TEST_F(RandomSubsetFilesDecoratorTests, passesFileNumberRangeToRandomizer) {
+        auto decorator = construct();
+        reader.setFileNames({"a", "b", "c"});
+        decorator.filesIn({});
+        assertHasBeenShuffled({ 0, 1, 2 });
     }
 }

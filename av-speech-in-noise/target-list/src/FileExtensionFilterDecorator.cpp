@@ -1,4 +1,5 @@
 #include "FileExtensionFilterDecorator.hpp"
+#include <numeric>
 
 namespace target_list {
     FileExtensionFilterDecorator::FileExtensionFilterDecorator(
@@ -79,16 +80,20 @@ namespace target_list {
     
     RandomSubsetFilesDecorator::RandomSubsetFilesDecorator(
         DirectoryReader *reader, 
-        Randomizer *, 
+        Randomizer *randomizer, 
         int
     ) :
-        reader{reader} {}
+        reader{reader},
+        randomizer{randomizer} {}
     
     std::vector<std::string> RandomSubsetFilesDecorator::filesIn(
         std::string directory
     ) { 
-        reader->filesIn(std::move(directory));
-        return {directory}; 
+        auto files = reader->filesIn(std::move(directory));
+        std::vector<int> indices(files.size());
+        std::iota(indices.begin(), indices.end(), 0);
+        randomizer->shuffle(indices.begin(), indices.end());
+        return {directory};
     }
     
     std::vector<std::string> RandomSubsetFilesDecorator::subDirectories(

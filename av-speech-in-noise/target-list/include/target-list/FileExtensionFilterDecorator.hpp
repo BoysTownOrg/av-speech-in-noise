@@ -35,6 +35,7 @@ namespace target_list {
 
     class RandomSubsetFilesDecorator : public DirectoryReader {
         DirectoryReader *reader;
+        Randomizer *randomizer;
     public:
         RandomSubsetFilesDecorator(DirectoryReader *, Randomizer *, int);
         std::vector<std::string> filesIn(std::string directory) override;
