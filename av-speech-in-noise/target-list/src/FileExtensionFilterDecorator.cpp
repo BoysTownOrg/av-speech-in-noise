@@ -54,7 +54,21 @@ namespace target_list {
     std::vector<std::string> FileIdentifierFilterDecorator::filesIn(
         std::string directory
     ) {
-        return reader->filesIn(std::move(directory));
+        return filtered(reader->filesIn(std::move(directory)));
+    }
+    
+    std::vector<std::string> FileIdentifierFilterDecorator::filtered(
+        std::vector<std::string> files
+    ) {
+        std::vector<std::string> filtered_{};
+        for (const auto &file : files)
+            if (containsIdentifier(file))
+                filtered_.push_back(file);
+        return filtered_;
+    }
+
+    bool FileIdentifierFilterDecorator::containsIdentifier(const std::string &file) {
+        return file.find(identifier) != std::string::npos;
     }
     
     std::vector<std::string> FileIdentifierFilterDecorator::subDirectories(

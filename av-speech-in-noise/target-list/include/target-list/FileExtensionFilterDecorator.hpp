@@ -26,6 +26,11 @@ namespace target_list {
         FileIdentifierFilterDecorator(DirectoryReader *, std::string identifier);
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
+    private:
+        bool containsIdentifier(
+            const std::string &
+        );
+        std::vector<std::string> filtered(std::vector<std::string>);
     };
 }
 
