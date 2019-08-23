@@ -6,12 +6,25 @@
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests {
+    class TestConcluderStub : public TestConcluder {
+        bool complete_{};
+    public:
+        void setComplete() {
+            complete_ = true;
+        }
+
+        bool complete(TargetList *) override {
+            return complete_;
+        }
+    };
+
     class FixedLevelMethodTests : public ::testing::Test {
     protected:
         ResponseEvaluatorStub evaluator{};
         TargetListStub targetList{};
+        TestConcluderStub testConcluder{};
         OutputFileStub outputFile;
-        FixedLevelMethod method{&targetList, &evaluator};
+        FixedLevelMethod method{&targetList, &evaluator, &testConcluder};
         FixedLevelTest test;
         coordinate_response_measure::SubjectResponse coordinateResponse;
         
@@ -68,6 +81,10 @@ namespace av_speech_in_noise::tests {
         
         void assertTestComplete() {
             assertTrue(testComplete());
+        }
+
+        void setTestComplete() {
+            testConcluder.setComplete();
         }
     };
     
@@ -153,6 +170,13 @@ namespace av_speech_in_noise::tests {
         initialize();
         assertTestIncompleteAfterCoordinateResponse();
         assertTestIncompleteAfterCoordinateResponse();
+        assertTestCompleteAfterCoordinateResponse();
+    }
+    
+    TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
+        initialize();
+        assertTestIncompleteAfterCoordinateResponse();
+        setTestComplete();
         assertTestCompleteAfterCoordinateResponse();
     }
 }

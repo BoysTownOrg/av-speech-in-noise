@@ -4,16 +4,23 @@
 #include "RecognitionTestModel.hpp"
 
 namespace av_speech_in_noise {
+    class TestConcluder {
+    public:
+        virtual ~TestConcluder() = default;
+        virtual bool complete(TargetList *) = 0;
+    };
+
     class FixedLevelMethod : public IFixedLevelMethod {
         coordinate_response_measure::FixedLevelTrial lastTrial{};
         const FixedLevelTest *test{};
         TargetList *targetList;
         ResponseEvaluator *evaluator;
+        TestConcluder *concluder;
         int snr_dB_{};
         int trials_{};
         bool complete_{};
     public:
-        FixedLevelMethod(TargetList *, ResponseEvaluator *);
+        FixedLevelMethod(TargetList *, ResponseEvaluator *, TestConcluder * = {});
         void initialize(const FixedLevelTest &) override;
         int snr_dB() override;
         std::string next() override;

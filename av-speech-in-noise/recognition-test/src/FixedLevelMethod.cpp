@@ -3,10 +3,12 @@
 namespace av_speech_in_noise {
     FixedLevelMethod::FixedLevelMethod(
         TargetList *targetList,
-        ResponseEvaluator *evaluator
+        ResponseEvaluator *evaluator,
+        TestConcluder *concluder
     ) :
         targetList{targetList},
-        evaluator{evaluator} {}
+        evaluator{evaluator},
+        concluder{concluder} {}
     
     void FixedLevelMethod::initialize(const FixedLevelTest &p) {
         test = &p;
@@ -21,7 +23,7 @@ namespace av_speech_in_noise {
     }
     
     bool FixedLevelMethod::complete() {
-        return complete_;
+        return complete_ || concluder->complete({});
     }
     
     std::string FixedLevelMethod::next() {
