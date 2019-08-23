@@ -370,15 +370,15 @@ namespace {
     }
     
     
-    class DirectoryReaderCompositeDecoratorTests : public ::testing::Test {
+    class DirectoryReaderCompositeTests : public ::testing::Test {
     protected:
         std::vector<DirectoryReaderStub> decorated;
 
-        target_list::DirectoryReaderCompositeDecorator construct() {
+        target_list::DirectoryReaderComposite construct() {
             std::vector<target_list::DirectoryReader *> ptrs;
             for (auto &d : decorated)
                 ptrs.push_back(&d);
-            return target_list::DirectoryReaderCompositeDecorator{ptrs};
+            return target_list::DirectoryReaderComposite{ptrs};
         }
 
         void setDecoratedCount(int N) {
@@ -399,14 +399,14 @@ namespace {
         }
     };
 
-    TEST_F(DirectoryReaderCompositeDecoratorTests, filesInPassesDirectoryToEach) {
+    TEST_F(DirectoryReaderCompositeTests, filesInPassesDirectoryToEach) {
         setDecoratedCount(3);
         auto reader = construct();
         reader.filesIn("a");
         assertEachDecoratedDirectory("a", 3);
     }
 
-    TEST_F(DirectoryReaderCompositeDecoratorTests, filesInPassesCollectsFilesFromEach) {
+    TEST_F(DirectoryReaderCompositeTests, filesInPassesCollectsFilesFromEach) {
         setDecoratedCount(3);
         setFileNamesForDecorated({ "a" }, 0);
         setFileNamesForDecorated({ "b", "c", "d" }, 1);
@@ -415,14 +415,14 @@ namespace {
         assertEqual({"a", "b", "c", "d", "e", "f"}, reader.filesIn({}));
     }
 
-    TEST_F(DirectoryReaderCompositeDecoratorTests, passesDirectoryToFirstDecoratedForSubdirectories) {
+    TEST_F(DirectoryReaderCompositeTests, passesDirectoryToFirstDecoratedForSubdirectories) {
         setDecoratedCount(3);
         auto reader = construct();
         reader.subDirectories("a");
         assertEqual("a", decoratedAt(0).directory());
     }
 
-    TEST_F(DirectoryReaderCompositeDecoratorTests, returnsSubdirectoriesFromFirstDecorated) {
+    TEST_F(DirectoryReaderCompositeTests, returnsSubdirectoriesFromFirstDecorated) {
         setDecoratedCount(3);
         auto reader = construct();
         decoratedAt(0).setSubDirectories({ "a", "b", "c" });

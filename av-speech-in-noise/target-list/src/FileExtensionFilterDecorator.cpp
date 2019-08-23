@@ -106,18 +106,18 @@ namespace target_list {
         return reader->subDirectories(std::move(directory));
     }
 
-    DirectoryReaderCompositeDecorator::DirectoryReaderCompositeDecorator(
+    DirectoryReaderComposite::DirectoryReaderComposite(
         std::vector<DirectoryReader *> readers
     ) :
         readers{std::move(readers)} {}
     
-    std::vector<std::string> DirectoryReaderCompositeDecorator::subDirectories(
+    std::vector<std::string> DirectoryReaderComposite::subDirectories(
         std::string directory
     ) {
         return readers.front()->subDirectories(std::move(directory));
     }
     
-    std::vector<std::string> DirectoryReaderCompositeDecorator::filesIn(
+    std::vector<std::string> DirectoryReaderComposite::filesIn(
         std::string directory
     ) { 
         std::vector<std::string> files;

@@ -44,10 +44,10 @@ namespace target_list {
         std::vector<std::string> subDirectories(std::string directory) override;
     };
 
-    class DirectoryReaderCompositeDecorator : public DirectoryReader {
+    class DirectoryReaderComposite : public DirectoryReader {
         std::vector<DirectoryReader *> readers;
     public:
-        explicit DirectoryReaderCompositeDecorator(std::vector<DirectoryReader *>);
+        explicit DirectoryReaderComposite(std::vector<DirectoryReader *>);
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
     };

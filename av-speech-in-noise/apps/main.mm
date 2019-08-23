@@ -228,14 +228,20 @@ int main() {
         &fileExtensions,
         &randomizer
     };
-    target_list::FileIdentifierFilterDecorator oneHundredMsStimuli{&reader, "100"};
-    target_list::FileIdentifierFilterDecorator twoHundredMsStimuli{&reader, "200"};
-    target_list::FileIdentifierFilterDecorator threeHundredMsStimuli{&reader, "300"};
-    target_list::FileIdentifierFilterDecorator fourHundredMsStimuli{&reader, "400"};
+    target_list::FileIdentifierFilterDecorator oneHundredMsStimuli{&fileExtensions, "100"};
+    target_list::FileIdentifierFilterDecorator twoHundredMsStimuli{&fileExtensions, "200"};
+    target_list::FileIdentifierFilterDecorator threeHundredMsStimuli{&fileExtensions, "300"};
+    target_list::FileIdentifierFilterDecorator fourHundredMsStimuli{&fileExtensions, "400"};
     target_list::RandomSubsetFilesDecorator randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomizer, 30};
     target_list::RandomSubsetFilesDecorator randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomizer, 30};
     target_list::RandomSubsetFilesDecorator randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomizer, 30};
     target_list::RandomSubsetFilesDecorator randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomizer, 30};
+    target_list::DirectoryReaderComposite composite{{
+        &randomSubsetOneHundredMsStimuli, 
+        &randomSubsetTwoHundredMsStimuli, 
+        &randomSubsetThreeHundredMsStimuli, 
+        &randomSubsetFourHundredMsStimuli
+    }};
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
