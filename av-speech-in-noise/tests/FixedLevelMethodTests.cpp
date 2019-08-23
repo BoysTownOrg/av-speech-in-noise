@@ -254,4 +254,28 @@ namespace av_speech_in_noise::tests { namespace {
         assertIncompleteAfterResponse();
         assertCompleteAfterResponse();
     }
+
+    class EmptyTargetListTestConcluderTests : public ::testing::Test {
+    protected:
+        TargetListStub targetList;
+        EmptyTargetListTestConcluder testConcluder;
+
+        bool complete() {
+            return testConcluder.complete(&targetList);
+        }
+
+        void assertIncomplete() {
+            assertFalse(complete());
+        }
+
+        void assertComplete() {
+            assertTrue(complete());
+        }
+    };
+
+    TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
+        assertIncomplete();
+        targetList.setEmpty();
+        assertComplete();
+    }
 }}

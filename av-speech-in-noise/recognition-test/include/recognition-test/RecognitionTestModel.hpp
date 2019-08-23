@@ -12,6 +12,7 @@ namespace av_speech_in_noise {
         virtual void loadFromDirectory(std::string directory) = 0;
         virtual std::string next() = 0;
         virtual std::string current() = 0;
+        virtual bool empty() {return false;}
     };
     
     class ResponseEvaluator {
