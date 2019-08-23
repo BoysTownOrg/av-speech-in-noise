@@ -371,8 +371,9 @@ namespace {
     
     
     class DirectoryReaderCompositeDecoratorTests : public ::testing::Test {
-        std::vector<DirectoryReaderStub> decorated;
     protected:
+        std::vector<DirectoryReaderStub> decorated;
+
         target_list::DirectoryReaderCompositeDecorator construct() {
             std::vector<target_list::DirectoryReader *> ptrs;
             for (auto &d : decorated)
@@ -395,5 +396,14 @@ namespace {
         auto reader = construct();
         reader.filesIn("a");
         assertEachDecoratedDirectory("a", 3);
+    }
+
+    TEST_F(DirectoryReaderCompositeDecoratorTests, filesInPassesCollectsFilesFromEach) {
+        setDecoratedCount(3);
+        decorated.at(0).setFileNames({ "a" });
+        decorated.at(1).setFileNames({ "b", "c", "d" });
+        decorated.at(2).setFileNames({ "e", "f" });
+        auto reader = construct();
+        assertEqual({"a", "b", "c", "d", "e", "f"}, reader.filesIn({}));
     }
 }

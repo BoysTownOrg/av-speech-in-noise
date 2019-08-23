@@ -120,8 +120,11 @@ namespace target_list {
     std::vector<std::string> DirectoryReaderCompositeDecorator::filesIn(
         std::string directory
     ) { 
-        for (auto r : readers)
-            r->filesIn(directory);
-        return {};
+        std::vector<std::string> files;
+        for (auto r : readers) {
+            auto next = r->filesIn(directory);
+            files.insert(files.end(), next.begin(), next.end());
+        }
+        return files;
     }
 }
