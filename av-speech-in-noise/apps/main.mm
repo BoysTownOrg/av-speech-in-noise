@@ -317,6 +317,7 @@ int main() {
     RecognitionTestModel model{
         &adaptiveMethod,
         &fixedLevelMethod,
+        &fixedLevelMethodWithFiniteTargets,
         &model_internal
     };
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);

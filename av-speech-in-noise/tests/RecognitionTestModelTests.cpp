@@ -204,10 +204,12 @@ namespace av_speech_in_noise::tests::recognition_test {
     protected:
         AdaptiveMethodStub adaptiveMethod;
         FixedLevelMethodStub fixedLevelMethod;
+        FixedLevelMethodStub fixedLevelMethodWithFiniteTargets;
         RecognitionTestModel_InternalStub internalModel;
         RecognitionTestModel model{
             &adaptiveMethod,
             &fixedLevelMethod,
+            &fixedLevelMethodWithFiniteTargets,
             &internalModel
         };
         AdaptiveTest adaptiveTest;
@@ -221,6 +223,10 @@ namespace av_speech_in_noise::tests::recognition_test {
         
         void initializeFixedLevelTest() {
             model.initializeTest(fixedLevelTest);
+        }
+
+        void initializeFixedLevelTestWithFiniteTargets() {
+            model.initializeTestWithFiniteTargets(fixedLevelTest);
         }
         
         void initializeAdaptiveTest() {
@@ -266,6 +272,14 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         initializeFixedLevelTest();
         assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestWithFiniteTargetsInitializesFixedLevelMethodWithFiniteTargets
+    ) {
+        initializeFixedLevelTestWithFiniteTargets();
+        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethodWithFiniteTargets.test());
     }
     
     TEST_F(

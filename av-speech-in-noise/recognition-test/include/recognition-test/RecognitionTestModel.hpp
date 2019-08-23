@@ -106,15 +106,18 @@ namespace av_speech_in_noise {
     class RecognitionTestModel : public Model {
         IAdaptiveMethod *adaptiveMethod;
         IFixedLevelMethod *fixedLevelMethod;
+        IFixedLevelMethod *fixedLevelMethodWithFiniteTargets;
         IRecognitionTestModel_Internal *model;
     public:
         RecognitionTestModel(
             IAdaptiveMethod *,
             IFixedLevelMethod *,
+            IFixedLevelMethod *,
             IRecognitionTestModel_Internal *
         );
         void initializeTest(const AdaptiveTest &) override;
         void initializeTest(const FixedLevelTest &) override;
+        void initializeTestWithFiniteTargets(const FixedLevelTest &);
         void playTrial(const AudioSettings &) override;
         void submitResponse(const coordinate_response_measure::SubjectResponse &) override;
         bool testComplete() override;
