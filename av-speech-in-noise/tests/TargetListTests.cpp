@@ -421,4 +421,11 @@ namespace {
         reader.subDirectories("a");
         assertEqual("a", decoratedAt(0).directory());
     }
+
+    TEST_F(DirectoryReaderCompositeDecoratorTests, returnsSubdirectoriesFromFirstDecorated) {
+        setDecoratedCount(3);
+        auto reader = construct();
+        decoratedAt(0).setSubDirectories({ "a", "b", "c" });
+        assertEqual({ "a", "b", "c" }, reader.subDirectories({}));
+    }
 }

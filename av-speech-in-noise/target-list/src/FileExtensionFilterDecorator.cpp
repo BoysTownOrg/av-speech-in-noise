@@ -114,8 +114,7 @@ namespace target_list {
     std::vector<std::string> DirectoryReaderCompositeDecorator::subDirectories(
         std::string directory
     ) {
-        readers.front()->subDirectories(std::move(directory));
-        return {};
+        return readers.front()->subDirectories(std::move(directory));
     }
     
     std::vector<std::string> DirectoryReaderCompositeDecorator::filesIn(
