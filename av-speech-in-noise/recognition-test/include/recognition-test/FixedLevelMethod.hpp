@@ -8,6 +8,7 @@ namespace av_speech_in_noise {
     public:
         virtual ~TestConcluder() = default;
         virtual bool complete(TargetList *) = 0;
+        virtual void submitResponse() = 0;
         virtual void initialize(const FixedLevelTest &) = 0;
     };
 
@@ -18,7 +19,7 @@ namespace av_speech_in_noise {
             trials_ = p.trials;
         }
 
-        void submitResponse() {
+        void submitResponse() override {
             --trials_;
         }
 

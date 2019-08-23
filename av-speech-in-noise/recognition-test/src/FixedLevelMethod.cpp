@@ -46,6 +46,7 @@ namespace av_speech_in_noise {
         lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
         lastTrial.trial.correct = evaluator->correct(current_, response);
         updateCompletion();
+        concluder->submitResponse();
     }
     
     std::string FixedLevelMethod::current() {
