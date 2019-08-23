@@ -35,8 +35,6 @@ namespace av_speech_in_noise {
         ResponseEvaluator *evaluator;
         TestConcluder *concluder;
         int snr_dB_{};
-        int trials_{};
-        bool complete_{};
     public:
         FixedLevelMethod(TargetList *, ResponseEvaluator *, TestConcluder * = {});
         void initialize(const FixedLevelTest &) override;
@@ -52,8 +50,6 @@ namespace av_speech_in_noise {
             const coordinate_response_measure::SubjectResponse &
         ) override;
         void submitResponse(const FreeResponse &) override;
-    private:
-        void updateCompletion();
     };
 }
 #endif

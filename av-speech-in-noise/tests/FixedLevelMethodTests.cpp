@@ -5,7 +5,7 @@
 #include <recognition-test/FixedLevelMethod.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise::tests { namespace {
     class TestConcluderStub : public TestConcluder {
         const FixedLevelTest *test_{};
         TargetList *targetList_{};
@@ -199,14 +199,6 @@ namespace av_speech_in_noise::tests {
         assertEqual("a", evaluator.correctFilePath());
     }
     
-    TEST_F(FixedLevelMethodTests, completeWhenTrialsExhausted) {
-        test.trials = 3;
-        initialize();
-        assertTestIncompleteAfterCoordinateResponse();
-        assertTestIncompleteAfterCoordinateResponse();
-        assertTestCompleteAfterCoordinateResponse();
-    }
-    
     TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
         initialize();
         assertTestIncompleteAfterCoordinateResponse();
@@ -262,4 +254,4 @@ namespace av_speech_in_noise::tests {
         assertIncompleteAfterResponse();
         assertCompleteAfterResponse();
     }
-}
+}}
