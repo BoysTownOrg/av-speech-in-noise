@@ -414,4 +414,11 @@ namespace {
         auto reader = construct();
         assertEqual({"a", "b", "c", "d", "e", "f"}, reader.filesIn({}));
     }
+
+    TEST_F(DirectoryReaderCompositeDecoratorTests, passesDirectoryToFirstDecoratedForSubdirectories) {
+        setDecoratedCount(3);
+        auto reader = construct();
+        reader.subDirectories("a");
+        assertEqual("a", decoratedAt(0).directory());
+    }
 }
