@@ -8,9 +8,14 @@
 namespace av_speech_in_noise::tests {
     class TestConcluderStub : public TestConcluder {
         const FixedLevelTest *test_{};
+        TargetList *targetList_{};
         bool complete_{};
         bool responseSubmitted_{};
     public:
+        auto targetList() const {
+            return targetList_;
+        }
+
         auto responseSubmitted() const {
             return responseSubmitted_;
         }
@@ -23,7 +28,8 @@ namespace av_speech_in_noise::tests {
             complete_ = true;
         }
 
-        bool complete(TargetList *) override {
+        bool complete(TargetList *t) override {
+            targetList_ = t;
             return complete_;
         }
 
@@ -206,6 +212,11 @@ namespace av_speech_in_noise::tests {
         assertTestIncompleteAfterCoordinateResponse();
         setTestComplete();
         assertTestCompleteAfterCoordinateResponse();
+    }
+    
+    TEST_F(FixedLevelMethodTests, completeQueryPassesTargetListToConcluder) {
+        testComplete();
+        assertEqual(static_cast<TargetList *>(&targetList), testConcluder.targetList());
     }
 
     class FixedTrialTestConcluderTests : public ::testing::Test {

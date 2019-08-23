@@ -24,7 +24,7 @@ namespace av_speech_in_noise {
     }
     
     bool FixedLevelMethod::complete() {
-        return complete_ || concluder->complete({});
+        return complete_ || concluder->complete(targetList);
     }
     
     std::string FixedLevelMethod::next() {
