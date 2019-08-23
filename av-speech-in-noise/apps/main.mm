@@ -228,20 +228,32 @@ int main() {
         &fileExtensions,
         &randomizer
     };
-    target_list::FileIdentifierFilterDecorator oneHundredMsStimuli{&fileExtensions, "100"};
-    target_list::FileIdentifierFilterDecorator twoHundredMsStimuli{&fileExtensions, "200"};
-    target_list::FileIdentifierFilterDecorator threeHundredMsStimuli{&fileExtensions, "300"};
-    target_list::FileIdentifierFilterDecorator fourHundredMsStimuli{&fileExtensions, "400"};
-    target_list::RandomSubsetFilesDecorator randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomizer, 30};
+    target_list::FileIdentifierFilterDecorator 
+        oneHundredMsStimuli{&fileExtensions, "100ms"};
+    target_list::FileIdentifierFilterDecorator 
+        twoHundredMsStimuli{&fileExtensions, "200ms"};
+    target_list::FileIdentifierFilterDecorator 
+        threeHundredMsStimuli{&fileExtensions, "300ms"};
+    target_list::FileIdentifierFilterDecorator 
+        fourHundredMsStimuli{&fileExtensions, "400ms"};
+    target_list::RandomSubsetFilesDecorator 
+        randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomizer, 30};
+    target_list::RandomSubsetFilesDecorator 
+        randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomizer, 30};
+    target_list::RandomSubsetFilesDecorator 
+        randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomizer, 30};
+    target_list::RandomSubsetFilesDecorator 
+        randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomizer, 30};
     target_list::DirectoryReaderComposite composite{{
         &randomSubsetOneHundredMsStimuli, 
         &randomSubsetTwoHundredMsStimuli, 
         &randomSubsetThreeHundredMsStimuli, 
         &randomSubsetFourHundredMsStimuli
     }};
+    target_list::RandomizedFiniteTargetList finiteTargetList{
+        &composite,
+        &randomizer
+    };
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
@@ -283,9 +295,17 @@ int main() {
         &responseEvaluator,
         &randomizer
     };
+    EmptyTargetListTestConcluder completesWhenTargetsEmpty;
+    FixedLevelMethod fixedLevelMethodWithFiniteTargets{
+        &finiteTargetList,
+        &responseEvaluator,
+        &completesWhenTargetsEmpty
+    };
+    FixedTrialTestConcluder fixedTrials;
     FixedLevelMethod fixedLevelMethod{
         &fixedLevelTargetList,
-        &responseEvaluator
+        &responseEvaluator,
+        &fixedTrials
     };
     RecognitionTestModel_Internal model_internal{
         &targetPlayer,
