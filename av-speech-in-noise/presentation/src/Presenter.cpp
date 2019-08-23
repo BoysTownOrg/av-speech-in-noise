@@ -63,7 +63,7 @@ namespace av_speech_in_noise {
         if (adaptiveTest())
             model->initializeTest(testSetup->adaptiveTest());
         else if (finiteTargets())
-            model->initializeTestWithFiniteTargets({});
+            model->initializeTestWithFiniteTargets(testSetup->fixedLevelTest());
         else
             model->initializeTest(testSetup->fixedLevelTest());
     }

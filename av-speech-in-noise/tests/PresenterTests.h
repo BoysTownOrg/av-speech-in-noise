@@ -39,7 +39,8 @@ namespace av_speech_in_noise::tests::presentation {
             return initializedWithFiniteTargets_;
         }
 
-        void initializeTestWithFiniteTargets(const FixedLevelTest &) override {
+        void initializeTestWithFiniteTargets(const FixedLevelTest &p) override {
+            fixedLevelTest_ = p;
             initializedWithFiniteTargets_ = true;
         }
 
@@ -238,7 +239,7 @@ namespace av_speech_in_noise::tests::presentation {
             bool usingTargetsWithoutReplacement() override {
                 return useFiniteTargets_;
             }
-            
+
             void useFiniteTargets() {
                 useFiniteTargets_ = true;
             }

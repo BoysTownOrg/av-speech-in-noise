@@ -139,6 +139,14 @@ namespace av_speech_in_noise::tests::presentation {
         assertStartingSnrPassedToModel(confirmingFixedLevelClosedSetTest);
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestWithFiniteTargetsPassesStartingSnr) {
+        setStartingSnr("1");
+        setMethod(&setupView, Method::fixedLevelClosedSet);
+        setupView.useFiniteTargets();
+        setupView.confirmTestSetup();
+        assertEqual(1, model.fixedLevelTest().snr_dB);
+    }
+
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMaskerLevel) {
         assertMaskerLevelPassedToModel(confirmingAdaptiveClosedSetTest);
     }
