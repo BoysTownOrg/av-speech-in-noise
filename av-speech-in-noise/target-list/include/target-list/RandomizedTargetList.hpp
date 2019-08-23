@@ -28,6 +28,7 @@ namespace target_list {
         void loadFromDirectory(std::string) override;
         std::string next() override;
         std::string current() override;
+        bool empty() override;
     private:
         std::string fullPath(std::string file);
         void shuffle();
@@ -56,7 +57,7 @@ namespace target_list {
         Randomizer *randomizer;
     public:
         RandomizedFiniteTargetList(DirectoryReader *, Randomizer *);
-        bool empty();
+        bool empty() override;
         void loadFromDirectory(std::string directory) override;
         std::string next() override;
         std::string current() override;

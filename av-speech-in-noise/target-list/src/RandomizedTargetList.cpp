@@ -29,6 +29,10 @@ namespace target_list {
         return fullPath(currentFile_ = std::move(nextFile_));
     }
     
+    bool RandomizedTargetList::empty() {
+        return empty_();
+    }
+    
     bool RandomizedTargetList::empty_() {
         return files.empty();
     }

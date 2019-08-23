@@ -60,6 +60,17 @@ namespace {
         }
     };
 
+    TEST_F(TargetListTests, emptyOnlyWhenNoFilesLoaded) {
+        assertTrue(list.empty());
+        setFileNames({ "a", "b" });
+        loadFromDirectory();
+        assertFalse(list.empty());
+        next();
+        assertFalse(list.empty());
+        next();
+        assertFalse(list.empty());
+    }
+
     TEST_F(
         TargetListTests,
         loadFromDirectoryPassesDirectoryToDirectoryReader
@@ -169,7 +180,7 @@ namespace {
 
     TEST_F(
         FiniteTargetListTests,
-        testCompleteWhenStimulusFilesExhausted
+        emptyWhenStimulusFilesExhausted
     ) {
         setFileNames({ "a", "b", "c" });
         loadFromDirectory();
