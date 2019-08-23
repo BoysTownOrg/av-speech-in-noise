@@ -368,4 +368,32 @@ namespace {
         randomizer.rotateToTheLeft(2);
         assertEqual({ "c", "d", "e" }, decorator.filesIn({}));
     }
+    
+    
+    class DirectoryReaderCompositeDecoratorTests : public ::testing::Test {
+        std::vector<DirectoryReaderStub> decorated;
+    protected:
+        target_list::DirectoryReaderCompositeDecorator construct() {
+            std::vector<target_list::DirectoryReader *> ptrs;
+            for (auto &d : decorated)
+                ptrs.push_back(&d);
+            return target_list::DirectoryReaderCompositeDecorator{ptrs};
+        }
+
+        void setDecoratedCount(int N) {
+            decorated.resize(N);
+        }
+
+        void assertEachDecoratedDirectory(const std::string &expected, int N) {
+            for (int i = 0; i < N; ++i)
+                assertEqual(expected, decorated.at(i).directory());
+        }
+    };
+
+    TEST_F(DirectoryReaderCompositeDecoratorTests, filesInPassesDirectoryToEach) {
+        setDecoratedCount(3);
+        auto reader = construct();
+        reader.filesIn("a");
+        assertEachDecoratedDirectory("a", 3);
+    }
 }

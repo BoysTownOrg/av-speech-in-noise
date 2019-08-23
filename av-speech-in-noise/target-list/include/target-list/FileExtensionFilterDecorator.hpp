@@ -2,6 +2,7 @@
 #define target_list_FileFilterDecorator_hpp
 
 #include <target-list/RandomizedTargetList.hpp>
+#include <vector>
 
 namespace target_list {
     class FileExtensionFilterDecorator : public DirectoryReader {
@@ -39,6 +40,14 @@ namespace target_list {
         int N;
     public:
         RandomSubsetFilesDecorator(DirectoryReader *, Randomizer *, int);
+        std::vector<std::string> filesIn(std::string directory) override;
+        std::vector<std::string> subDirectories(std::string directory) override;
+    };
+
+    class DirectoryReaderCompositeDecorator : public DirectoryReader {
+        std::vector<DirectoryReader *> readers;
+    public:
+        explicit DirectoryReaderCompositeDecorator(std::vector<DirectoryReader *>);
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
     };
