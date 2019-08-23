@@ -389,6 +389,14 @@ namespace {
             for (int i = 0; i < N; ++i)
                 assertEqual(expected, decorated.at(i).directory());
         }
+
+        auto &decoratedAt(int n) {
+            return decorated.at(n);
+        }
+
+        void setFileNamesForDecorated(std::vector<std::string> v, int n) {
+            decoratedAt(n).setFileNames(std::move(v));
+        }
     };
 
     TEST_F(DirectoryReaderCompositeDecoratorTests, filesInPassesDirectoryToEach) {
@@ -400,9 +408,9 @@ namespace {
 
     TEST_F(DirectoryReaderCompositeDecoratorTests, filesInPassesCollectsFilesFromEach) {
         setDecoratedCount(3);
-        decorated.at(0).setFileNames({ "a" });
-        decorated.at(1).setFileNames({ "b", "c", "d" });
-        decorated.at(2).setFileNames({ "e", "f" });
+        setFileNamesForDecorated({ "a" }, 0);
+        setFileNamesForDecorated({ "b", "c", "d" }, 1);
+        setFileNamesForDecorated({ "e", "f" }, 2);
         auto reader = construct();
         assertEqual({"a", "b", "c", "d", "e", "f"}, reader.filesIn({}));
     }
