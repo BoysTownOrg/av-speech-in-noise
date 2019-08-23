@@ -198,6 +198,30 @@ namespace av_speech_in_noise::tests::recognition_test {
                 return method;
             }
         };
+        
+        class InitializingFixedLevelTestWithFiniteTargets : public InitializingTestUseCase {
+            FixedLevelTest test;
+            FixedLevelMethodStub *method;
+        public:
+            explicit InitializingFixedLevelTestWithFiniteTargets(FixedLevelMethodStub *method) :
+                method{method} {}
+            
+            void run(RecognitionTestModel &model) override {
+                model.initializeTestWithFiniteTargets(test);
+            }
+            
+            const CommonTest &commonTest() override {
+                return test.common;
+            }
+            
+            const TestInformation &testInformation() override {
+                return test.information;
+            }
+            
+            const TestMethod *testMethod() override {
+                return method;
+            }
+        };
     }
     
     class RecognitionTestModelTests : public ::testing::Test {
@@ -220,6 +244,8 @@ namespace av_speech_in_noise::tests::recognition_test {
         internal_::InitializingFixedLevelTest initializingFixedLevelTest{
             &fixedLevelMethod
         };
+        internal_::InitializingFixedLevelTestWithFiniteTargets
+            initializingFixedLevelTestWithFiniteTargets{&fixedLevelMethodWithFiniteTargets};
         
         void initializeFixedLevelTest() {
             model.initializeTest(fixedLevelTest);
@@ -295,6 +321,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         initializeFixedLevelTestInitializesInternalModel
     ) {
         assertInitializesInternalModel(initializingFixedLevelTest);
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestWithFiniteTargetsInitializesInternalModel
+    ) {
+        assertInitializesInternalModel(initializingFixedLevelTestWithFiniteTargets);
     }
     
     TEST_F(

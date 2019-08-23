@@ -22,6 +22,7 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel::initializeTestWithFiniteTargets(const FixedLevelTest &p) {
         fixedLevelMethodWithFiniteTargets->initialize(p);
+        model->initialize(fixedLevelMethodWithFiniteTargets, p.common, p.information);
     }
     
     void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
