@@ -33,7 +33,7 @@ namespace {
         }
     };
 
-    class TargetListTests : public ::testing::Test {
+    class RandomizedTargetListTests : public ::testing::Test {
     protected:
         DirectoryReaderStub reader;
         RandomizerStub randomizer;
@@ -58,21 +58,33 @@ namespace {
         void assertHasBeenShuffled(std::vector<std::string> v) {
             assertEqual(std::move(v), shuffled());
         }
+
+        void assertEmpty() {
+            assertTrue(empty());
+        }
+
+        bool empty() {
+            return list.empty();
+        }
+
+        void assertNotEmpty() {
+            assertFalse(empty());
+        }
     };
 
-    TEST_F(TargetListTests, emptyOnlyWhenNoFilesLoaded) {
-        assertTrue(list.empty());
+    TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
+        assertEmpty();
         setFileNames({ "a", "b" });
         loadFromDirectory();
-        assertFalse(list.empty());
+        assertNotEmpty();
         next();
-        assertFalse(list.empty());
+        assertNotEmpty();
         next();
-        assertFalse(list.empty());
+        assertNotEmpty();
     }
 
     TEST_F(
-        TargetListTests,
+        RandomizedTargetListTests,
         loadFromDirectoryPassesDirectoryToDirectoryReader
     ) {
         loadFromDirectory("a");
@@ -80,7 +92,7 @@ namespace {
     }
 
     TEST_F(
-        TargetListTests,
+        RandomizedTargetListTests,
         loadFromDirectoryShufflesFileNames
     ) {
         setFileNames({ "a", "b", "c" });
@@ -89,7 +101,7 @@ namespace {
     }
 
     TEST_F(
-        TargetListTests,
+        RandomizedTargetListTests,
         nextShufflesNextSetNotIncludingCurrent
     ) {
         setFileNames({ "a", "b", "c", "d" });
@@ -99,7 +111,7 @@ namespace {
     }
 
     TEST_F(
-        TargetListTests,
+        RandomizedTargetListTests,
         nextReplacesSecondToLastTarget
     ) {
         setFileNames({ "a", "b", "c", "d", "e" });
@@ -110,7 +122,7 @@ namespace {
     }
 
     TEST_F(
-        TargetListTests,
+        RandomizedTargetListTests,
         nextReturnsFullPathToFile
     ) {
         setFileNames({ "a", "b", "c" });
@@ -121,7 +133,7 @@ namespace {
     }
 
     TEST_F(
-        TargetListTests,
+        RandomizedTargetListTests,
         currentReturnsFullPathToFile
     ) {
         setFileNames({ "a", "b", "c" });
@@ -131,7 +143,7 @@ namespace {
     }
 
     TEST_F(
-        TargetListTests,
+        RandomizedTargetListTests,
         nextReturnsEmptyIfNoFiles
     ) {
         setFileNames({});
@@ -139,7 +151,7 @@ namespace {
         assertEqual("", next());
     }
 
-    class FiniteTargetListTests : public ::testing::Test {
+    class FiniteRandomizedTargetListTests : public ::testing::Test {
     protected:
         DirectoryReaderStub reader;
         RandomizerStub randomizer;
@@ -171,7 +183,7 @@ namespace {
     };
 
     TEST_F(
-        FiniteTargetListTests,
+        FiniteRandomizedTargetListTests,
         loadFromDirectoryPassesDirectoryToDirectoryReader
     ) {
         loadFromDirectory("a");
@@ -179,7 +191,7 @@ namespace {
     }
 
     TEST_F(
-        FiniteTargetListTests,
+        FiniteRandomizedTargetListTests,
         emptyWhenStimulusFilesExhausted
     ) {
         setFileNames({ "a", "b", "c" });
@@ -194,7 +206,7 @@ namespace {
     }
 
     TEST_F(
-        FiniteTargetListTests,
+        FiniteRandomizedTargetListTests,
         nextReturnsFullPathToFileAtFront
     ) {
         setFileNames({ "a", "b", "c" });
@@ -205,7 +217,7 @@ namespace {
     }
 
     TEST_F(
-        FiniteTargetListTests,
+        FiniteRandomizedTargetListTests,
         loadFromDirectoryShufflesFileNames
     ) {
         setFileNames({ "a", "b", "c" });
@@ -214,7 +226,7 @@ namespace {
     }
 
     TEST_F(
-        FiniteTargetListTests,
+        FiniteRandomizedTargetListTests,
         currentReturnsFullPathToFile
     ) {
         setFileNames({ "a", "b", "c" });
@@ -224,7 +236,7 @@ namespace {
     }
 
     TEST_F(
-        FiniteTargetListTests,
+        FiniteRandomizedTargetListTests,
         nextReturnsEmptyIfNoFiles
     ) {
         setFileNames({});
