@@ -7,14 +7,23 @@
 
 namespace av_speech_in_noise::tests {
     class TestConcluderStub : public TestConcluder {
+        const FixedLevelTest *test_{};
         bool complete_{};
     public:
+        auto test() const {
+            return test_;
+        }
+
         void setComplete() {
             complete_ = true;
         }
 
         bool complete(TargetList *) override {
             return complete_;
+        }
+
+        void initialize(const FixedLevelTest &p) override {
+            test_ = &p;
         }
     };
 
@@ -92,6 +101,11 @@ namespace av_speech_in_noise::tests {
         initialize();
         method.writeTestingParameters(&outputFile);
         assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+    }
+    
+    TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
+        initialize();
+        assertEqual(&std::as_const(test), testConcluder.test());
     }
     
     TEST_F(FixedLevelMethodTests, initializePassesTargetList) {

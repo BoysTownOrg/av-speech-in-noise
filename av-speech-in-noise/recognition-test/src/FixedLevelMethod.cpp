@@ -16,6 +16,7 @@ namespace av_speech_in_noise {
         trials_ = p.trials;
         targetList->loadFromDirectory(p.common.targetListDirectory);
         updateCompletion();
+        concluder->initialize(p);
     }
     
     void FixedLevelMethod::updateCompletion() {

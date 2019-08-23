@@ -8,12 +8,13 @@ namespace av_speech_in_noise {
     public:
         virtual ~TestConcluder() = default;
         virtual bool complete(TargetList *) = 0;
+        virtual void initialize(const FixedLevelTest &) = 0;
     };
 
     class FixedTrialTestConcluder : public TestConcluder {
         int trials_{};
     public:
-        void initialize(const FixedLevelTest &p) {
+        void initialize(const FixedLevelTest &p) override {
             trials_ = p.trials;
         }
 
