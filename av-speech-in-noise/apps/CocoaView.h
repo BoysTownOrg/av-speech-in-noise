@@ -98,6 +98,7 @@ public:
     CocoaTestSetupView(NSRect);
     void show() override;
     void hide() override;
+    bool usingTargetsWithoutReplacement() override {return true;}
     std::string maskerLevel_dB_SPL() override;
     std::string calibrationLevel_dB_SPL() override;
     std::string maskerFilePath() override;
