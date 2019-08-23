@@ -100,6 +100,13 @@ namespace av_speech_in_noise::tests::presentation {
         assertShowsExperimenterView(confirmingFixedLevelClosedSetTest);
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestWithFiniteTargetsInitializesModel) {
+        setMethod(&setupView, Method::fixedLevelClosedSet);
+        setupView.useFiniteTargets();
+        setupView.confirmTestSetup();
+        assertTrue(model.initializedWithFiniteTargets());
+    }
+
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
         assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveClosedSetTest);
     }

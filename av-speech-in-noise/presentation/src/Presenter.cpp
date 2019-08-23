@@ -62,6 +62,8 @@ namespace av_speech_in_noise {
     void Presenter::initializeTest() {
         if (adaptiveTest())
             model->initializeTest(testSetup->adaptiveTest());
+        else if (finiteTargets())
+            model->initializeTestWithFiniteTargets({});
         else
             model->initializeTest(testSetup->fixedLevelTest());
     }
@@ -76,6 +78,10 @@ namespace av_speech_in_noise {
     
     bool Presenter::adaptiveOpenSet() {
         return testSetup->adaptiveOpenSet();
+    }
+
+    bool Presenter::finiteTargets() {
+        return testSetup->finiteTargets();
     }
     
     void Presenter::switchToTestView() {
@@ -413,6 +419,10 @@ namespace av_speech_in_noise {
     
     bool Presenter::TestSetup::fixedLevelClosedSet() {
         return method(Method::fixedLevelClosedSet);
+    }
+
+    bool Presenter::TestSetup::finiteTargets() {
+        return view->usingTargetsWithoutReplacement();
     }
 
     Presenter::Subject::Subject(View::Subject *view) :

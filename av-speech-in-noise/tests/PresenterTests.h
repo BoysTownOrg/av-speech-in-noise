@@ -33,7 +33,16 @@ namespace av_speech_in_noise::tests::presentation {
         bool adaptiveTestInitialized_{};
         bool correctResponseSubmitted_{};
         bool incorrectResponseSubmitted_{};
+        bool initializedWithFiniteTargets_{};
     public:
+        auto initializedWithFiniteTargets() const {
+            return initializedWithFiniteTargets_;
+        }
+
+        void initializeTestWithFiniteTargets(const FixedLevelTest &) override {
+            initializedWithFiniteTargets_ = true;
+        }
+
         auto incorrectResponseSubmitted() const {
             return incorrectResponseSubmitted_;
         }
@@ -224,7 +233,16 @@ namespace av_speech_in_noise::tests::presentation {
             EventListener *listener_{};
             bool shown_{};
             bool hidden_{};
+            bool useFiniteTargets_{};
         public:
+            bool usingTargetsWithoutReplacement() override {
+                return useFiniteTargets_;
+            }
+            
+            void useFiniteTargets() {
+                useFiniteTargets_ = true;
+            }
+
             std::string trackSettingsFile() override {
                 return trackSettingsFile_;
             }
@@ -1827,6 +1845,10 @@ namespace av_speech_in_noise::tests::presentation {
         }
         
         void initializeTest(const FixedLevelTest &) override {
+            throw RequestFailure{errorMessage};
+        }
+        
+        void initializeTestWithFiniteTargets(const FixedLevelTest &) override {
             throw RequestFailure{errorMessage};
         }
         
