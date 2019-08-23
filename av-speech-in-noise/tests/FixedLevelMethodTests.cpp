@@ -179,4 +179,48 @@ namespace av_speech_in_noise::tests {
         setTestComplete();
         assertTestCompleteAfterCoordinateResponse();
     }
+
+    class FixedTrialTestConcluderTests : public ::testing::Test {
+    protected:
+        FixedTrialTestConcluder testConcluder{};
+        FixedLevelTest test;
+        
+        void initialize() {
+            testConcluder.initialize(test);
+        }
+        
+        void assertIncompleteAfterResponse() {
+            submitResponse();
+            assertIncomplete();
+        }
+
+        void submitResponse() {
+            testConcluder.submitResponse();
+        }
+        
+        void assertCompleteAfterResponse() {
+            submitResponse();
+            assertComplete();
+        }
+        
+        void assertIncomplete() {
+            assertFalse(complete());
+        }
+        
+        bool complete() {
+            return testConcluder.complete({});
+        }
+        
+        void assertComplete() {
+            assertTrue(complete());
+        }
+    };
+    
+    TEST_F(FixedTrialTestConcluderTests, completeWhenTrialsExhausted) {
+        test.trials = 3;
+        initialize();
+        assertIncompleteAfterResponse();
+        assertIncompleteAfterResponse();
+        assertCompleteAfterResponse();
+    }
 }

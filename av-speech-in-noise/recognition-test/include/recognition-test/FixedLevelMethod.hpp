@@ -10,6 +10,22 @@ namespace av_speech_in_noise {
         virtual bool complete(TargetList *) = 0;
     };
 
+    class FixedTrialTestConcluder : public TestConcluder {
+        int trials_{};
+    public:
+        void initialize(const FixedLevelTest &p) {
+            trials_ = p.trials;
+        }
+
+        void submitResponse() {
+            --trials_;
+        }
+
+        bool complete(TargetList *) override { 
+            return trials_ == 0; 
+        }
+    };
+
     class FixedLevelMethod : public IFixedLevelMethod {
         coordinate_response_measure::FixedLevelTrial lastTrial{};
         const FixedLevelTest *test{};
