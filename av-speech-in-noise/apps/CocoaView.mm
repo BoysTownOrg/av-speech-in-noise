@@ -137,7 +137,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         )
         pullsDown:NO
     ]},
-    finiteTargets_{[[NSButton alloc] initWithFrame:NSMakeRect(0, 60 + textFieldLeadingEdge + 20, menuWidth, labelHeight)]},
+    finiteTargets_{[[NSButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge + menuWidth + 20, 60, menuWidth, labelHeight)]},
     method_label{allocLabel(
         @"method:",
         NSMakeRect(0, 30, labelWidth, labelHeight)
@@ -155,6 +155,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
 {
     actions.controller = this;
     [finiteTargets_ setButtonType:NSButtonTypeSwitch];
+    [finiteTargets_ setTitle:@"targets without replacement"];
     const auto browseForStimulusListButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
@@ -249,6 +250,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     addSubview(calibrationFilePath_);
     addSubview(condition_label);
     addSubview(conditionMenu);
+    addSubview(finiteTargets_);
     addSubview(method_label);
     addSubview(methodMenu);
     [view_ setHidden:NO];
