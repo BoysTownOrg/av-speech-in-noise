@@ -1,5 +1,6 @@
 #include "ModelEventListenerStub.h"
 #include "TargetListStub.h"
+#include "TestConcluderStub.h"
 #include "assert-utility.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
@@ -31,10 +32,16 @@ namespace av_speech_in_noise::tests::recognition_test {
     class FixedLevelMethodStub : public IFixedLevelMethod {
         const FixedLevelTest *test_{};
         TargetList *targetList_{};
+        TestConcluder *testConcluder_{};
     public:
-        void initialize(const FixedLevelTest &t, TargetList *list) {
+        void initialize(const FixedLevelTest &t, TargetList *list, TestConcluder *concluder) {
+            testConcluder_ = concluder;
             targetList_ = list;
             test_ = &t;
+        }
+
+        auto testConcluder() const {
+            return testConcluder_;
         }
 
         auto targetList() const {
@@ -237,12 +244,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         FixedLevelMethodStub fixedLevelMethod;
         TargetListStub infiniteTargetList;
         TargetListStub finiteTargetList;
+        TestConcluderStub emptyTargetListTestConcluder;
         RecognitionTestModel_InternalStub internalModel;
         RecognitionTestModel model{
             &adaptiveMethod,
             &fixedLevelMethod,
             &infiniteTargetList,
             &finiteTargetList,
+            &emptyTargetListTestConcluder,
             &internalModel
         };
         AdaptiveTest adaptiveTest;
@@ -336,6 +345,17 @@ namespace av_speech_in_noise::tests::recognition_test {
         assertEqual(
             static_cast<TargetList *>(&finiteTargetList), 
             fixedLevelMethod.targetList()
+        );
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestWithFiniteTargetsInitializesWithEmptyTargetListTestConcluder
+    ) {
+        initializeFixedLevelTestWithFiniteTargets();
+        assertEqual(
+            static_cast<TestConcluder *>(&emptyTargetListTestConcluder), 
+            fixedLevelMethod.testConcluder()
         );
     }
     

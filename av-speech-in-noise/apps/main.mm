@@ -313,6 +313,7 @@ int main() {
         &fixedLevelMethod,
         &fixedLevelTargetList,
         &finiteTargetList,
+        &completesWhenTargetsEmpty,
         &model_internal
     };
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);

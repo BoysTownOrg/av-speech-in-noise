@@ -116,6 +116,7 @@ namespace av_speech_in_noise {
         IFixedLevelMethod *fixedLevelMethod;
         TargetList *infiniteTargetList;
         TargetList *finiteTargetList;
+        TestConcluder *completesWhenTargetsEmpty;
         IRecognitionTestModel_Internal *model;
     public:
         RecognitionTestModel(
@@ -123,6 +124,7 @@ namespace av_speech_in_noise {
             IFixedLevelMethod *,
             TargetList *infiniteTargetList,
             TargetList *finiteTargetList,
+            TestConcluder *completesWhenTargetsEmpty,
             IRecognitionTestModel_Internal *
         );
         void initializeTest(const AdaptiveTest &) override;
