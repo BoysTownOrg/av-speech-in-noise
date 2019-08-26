@@ -298,8 +298,7 @@ int main() {
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
     FixedTrialTestConcluder fixedTrials;
     FixedLevelMethod fixedLevelMethod{
-        &responseEvaluator,
-        &fixedTrials
+        &responseEvaluator
     };
     RecognitionTestModel_Internal model_internal{
         &targetPlayer,

@@ -13,7 +13,7 @@ namespace av_speech_in_noise::tests { namespace {
         TargetListStub targetList{};
         TestConcluderStub testConcluder{};
         OutputFileStub outputFile;
-        FixedLevelMethod method{&evaluator, &testConcluder};
+        FixedLevelMethod method{&evaluator};
         FixedLevelTest test;
         coordinate_response_measure::SubjectResponse coordinateResponse;
         

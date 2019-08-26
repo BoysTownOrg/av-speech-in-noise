@@ -2,17 +2,16 @@
 
 namespace av_speech_in_noise {
     FixedLevelMethod::FixedLevelMethod(
-        ResponseEvaluator *evaluator,
-        TestConcluder *concluder
+        ResponseEvaluator *evaluator
     ) :
-        evaluator{evaluator},
-        concluder{concluder} {}
+        evaluator{evaluator} {}
     
     void FixedLevelMethod::initialize(
         const FixedLevelTest &p, 
         TargetList *list,
-        TestConcluder *
+        TestConcluder *concluder_
     ) {
+        concluder = concluder_;
         targetList = list;
         test = &p;
         snr_dB_ = p.snr_dB;
