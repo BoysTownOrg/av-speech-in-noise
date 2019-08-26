@@ -53,7 +53,7 @@ namespace av_speech_in_noise::tests { namespace {
         coordinate_response_measure::SubjectResponse coordinateResponse;
         
         void initialize() {
-            method.initialize(test, &targetList);
+            method.initialize(test, &targetList, &testConcluder);
         }
         
         void writeCoordinateResponse() {

@@ -71,6 +71,14 @@ namespace av_speech_in_noise {
         ) = 0;
     };
     
+    class TestConcluder {
+    public:
+        virtual ~TestConcluder() = default;
+        virtual bool complete(TargetList *) = 0;
+        virtual void submitResponse() = 0;
+        virtual void initialize(const FixedLevelTest &) = 0;
+    };
+    
     class IAdaptiveMethod : public virtual TestMethod {
     public:
         virtual void initialize(const AdaptiveTest &) = 0;
@@ -78,7 +86,7 @@ namespace av_speech_in_noise {
     
     class IFixedLevelMethod : public virtual TestMethod {
     public:
-        virtual void initialize(const FixedLevelTest &, TargetList *) = 0;
+        virtual void initialize(const FixedLevelTest &, TargetList *, TestConcluder *) = 0;
     };
     
     class IRecognitionTestModel_Internal {
