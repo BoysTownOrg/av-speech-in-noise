@@ -78,7 +78,7 @@ namespace av_speech_in_noise {
     
     class IFixedLevelMethod : public virtual TestMethod {
     public:
-        virtual void initialize(const FixedLevelTest &) = 0;
+        virtual void initialize(const FixedLevelTest &, TargetList *) = 0;
     };
     
     class IRecognitionTestModel_Internal {

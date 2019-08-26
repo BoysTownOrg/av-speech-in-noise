@@ -50,7 +50,7 @@ namespace av_speech_in_noise {
         int snr_dB_{};
     public:
         FixedLevelMethod(TargetList *, ResponseEvaluator *, TestConcluder *);
-        void initialize(const FixedLevelTest &) override;
+        void initialize(const FixedLevelTest &, TargetList *) override;
         int snr_dB() override;
         std::string next() override;
         bool complete() override;

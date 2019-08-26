@@ -10,7 +10,9 @@ namespace av_speech_in_noise {
         evaluator{evaluator},
         concluder{concluder} {}
     
-    void FixedLevelMethod::initialize(const FixedLevelTest &p) {
+    void FixedLevelMethod::initialize(const FixedLevelTest &p, TargetList *list) {
+        if (list)
+            targetList = list;
         test = &p;
         snr_dB_ = p.snr_dB;
         targetList->loadFromDirectory(p.common.targetListDirectory);
