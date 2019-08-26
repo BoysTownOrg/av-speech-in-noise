@@ -9,9 +9,9 @@
 namespace av_speech_in_noise::tests { namespace {
     class FixedLevelMethodTests : public ::testing::Test {
     protected:
-        ResponseEvaluatorStub evaluator{};
-        TargetListStub targetList{};
-        TestConcluderStub testConcluder{};
+        ResponseEvaluatorStub evaluator;
+        TargetListStub targetList;
+        TestConcluderStub testConcluder;
         OutputFileStub outputFile;
         FixedLevelMethod method{&evaluator};
         FixedLevelTest test;
@@ -77,18 +77,12 @@ namespace av_speech_in_noise::tests { namespace {
         }
     };
     
-    TEST_F(FixedLevelMethodTests, writeTestPassesSettings) {
-        initialize();
-        method.writeTestingParameters(&outputFile);
-        assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
-    }
-    
     TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
         initialize();
         assertEqual(&std::as_const(test), testConcluder.test());
     }
     
-    TEST_F(FixedLevelMethodTests, initializePassesTargetList) {
+    TEST_F(FixedLevelMethodTests, initializePassesTargetListDirectory) {
         test.common.targetListDirectory = "a";
         initialize();
         assertEqual("a", targetList.directory());
@@ -142,6 +136,12 @@ namespace av_speech_in_noise::tests { namespace {
         assertFalse(writtenFixedLevelTrialCorrect());
     }
     
+    TEST_F(FixedLevelMethodTests, writeTestPassesSettings) {
+        initialize();
+        method.writeTestingParameters(&outputFile);
+        assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+    }
+    
     TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesResponse) {
         submitCoordinateResponse();
         assertEqual(&std::as_const(coordinateResponse), evaluator.response());
@@ -174,7 +174,10 @@ namespace av_speech_in_noise::tests { namespace {
     
     TEST_F(FixedLevelMethodTests, completeQueryPassesTargetListToConcluder) {
         testComplete();
-        assertEqual(static_cast<TargetList *>(&targetList), testConcluder.targetList());
+        assertEqual(
+            static_cast<TargetList *>(&targetList), 
+            testConcluder.targetList()
+        );
     }
 
     class FixedTrialTestConcluderTests : public ::testing::Test {
