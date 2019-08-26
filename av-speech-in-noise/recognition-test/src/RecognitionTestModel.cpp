@@ -7,7 +7,6 @@ namespace av_speech_in_noise {
         IFixedLevelMethod *fixedLevelMethod,
         TargetList *infiniteTargetList,
         TargetList *finiteTargetList,
-        IFixedLevelMethod *,
         IRecognitionTestModel_Internal *model
     ) :
         adaptiveMethod{adaptiveMethod},

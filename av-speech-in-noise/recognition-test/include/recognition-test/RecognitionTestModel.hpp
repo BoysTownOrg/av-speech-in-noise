@@ -115,7 +115,6 @@ namespace av_speech_in_noise {
             IFixedLevelMethod *,
             TargetList *infiniteTargetList,
             TargetList *finiteTargetList,
-            IFixedLevelMethod *,
             IRecognitionTestModel_Internal *
         );
         void initializeTest(const AdaptiveTest &) override;

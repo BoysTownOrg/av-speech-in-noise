@@ -237,14 +237,12 @@ namespace av_speech_in_noise::tests::recognition_test {
         FixedLevelMethodStub fixedLevelMethod;
         TargetListStub infiniteTargetList;
         TargetListStub finiteTargetList;
-        FixedLevelMethodStub fixedLevelMethodWithFiniteTargets;
         RecognitionTestModel_InternalStub internalModel;
         RecognitionTestModel model{
             &adaptiveMethod,
             &fixedLevelMethod,
             &infiniteTargetList,
             &finiteTargetList,
-            &fixedLevelMethodWithFiniteTargets,
             &internalModel
         };
         AdaptiveTest adaptiveTest;

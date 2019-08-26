@@ -296,11 +296,6 @@ int main() {
         &randomizer
     };
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
-    FixedLevelMethod fixedLevelMethodWithFiniteTargets{
-        &finiteTargetList,
-        &responseEvaluator,
-        &completesWhenTargetsEmpty
-    };
     FixedTrialTestConcluder fixedTrials;
     FixedLevelMethod fixedLevelMethod{
         &fixedLevelTargetList,
@@ -319,7 +314,6 @@ int main() {
         &fixedLevelMethod,
         &fixedLevelTargetList,
         &finiteTargetList,
-        &fixedLevelMethodWithFiniteTargets,
         &model_internal
     };
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
