@@ -2,11 +2,9 @@
 
 namespace av_speech_in_noise {
     FixedLevelMethod::FixedLevelMethod(
-        TargetList *targetList,
         ResponseEvaluator *evaluator,
         TestConcluder *concluder
     ) :
-        targetList{targetList},
         evaluator{evaluator},
         concluder{concluder} {}
     

@@ -298,7 +298,6 @@ int main() {
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
     FixedTrialTestConcluder fixedTrials;
     FixedLevelMethod fixedLevelMethod{
-        &fixedLevelTargetList,
         &responseEvaluator,
         &fixedTrials
     };

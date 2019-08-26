@@ -48,14 +48,12 @@ namespace av_speech_in_noise::tests { namespace {
         TargetListStub targetList{};
         TestConcluderStub testConcluder{};
         OutputFileStub outputFile;
-        FixedLevelMethod method{&targetList, &evaluator, &testConcluder};
+        FixedLevelMethod method{&evaluator, &testConcluder};
         FixedLevelTest test;
         coordinate_response_measure::SubjectResponse coordinateResponse;
         
-        void initialize(TargetList *list = {}) {
-            if (!list)
-                list = &targetList;
-            method.initialize(test, list);
+        void initialize() {
+            method.initialize(test, &targetList);
         }
         
         void writeCoordinateResponse() {
@@ -132,14 +130,8 @@ namespace av_speech_in_noise::tests { namespace {
     }
     
     TEST_F(FixedLevelMethodTests, nextReturnsNextTarget) {
+        initialize();
         targetList.setNext("a");
-        assertEqual("a", method.next());
-    }
-    
-    TEST_F(FixedLevelMethodTests, nextReturnsNextTargetAfterInitializingWithNewList) {
-        TargetListStub newTargetList;
-        initialize(&newTargetList);
-        newTargetList.setNext("a");
         assertEqual("a", method.next());
     }
     
