@@ -9,7 +9,7 @@ namespace av_speech_in_noise::tests { namespace {
     class AdaptiveMethodStub : public IAdaptiveMethod {
         const AdaptiveTest *test_{};
     public:
-        void initialize(const AdaptiveTest &t) {
+        void initialize(const AdaptiveTest &t) override {
             test_ = &t;
         }
         
@@ -17,16 +17,18 @@ namespace av_speech_in_noise::tests { namespace {
             return test_;
         }
         
-        bool complete()  {return {};}
-        std::string next()  {return {};}
-        std::string current()  {return {};}
-        int snr_dB()  {return {};}
-        void submitCorrectResponse()  {}
-        void submitIncorrectResponse()  {}
-        void submitResponse(const FreeResponse &)  {}
-        void writeTestingParameters(OutputFile *)  {}
-        void writeLastCoordinateResponse(OutputFile *)  {}
-        void submitResponse(const coordinate_response_measure::SubjectResponse &)  {}
+        bool complete() override {return {};}
+        std::string next() override {return {};}
+        std::string current() override {return {};}
+        int snr_dB() override {return {};}
+        void submitCorrectResponse() override {}
+        void submitIncorrectResponse() override {}
+        void submitResponse(const FreeResponse &) override {}
+        void writeTestingParameters(OutputFile *) override {}
+        void writeLastCoordinateResponse(OutputFile *) override {}
+        void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) override {}
     };
     
     class FixedLevelMethodStub : public IFixedLevelMethod {
@@ -34,7 +36,11 @@ namespace av_speech_in_noise::tests { namespace {
         TargetList *targetList_{};
         TestConcluder *testConcluder_{};
     public:
-        void initialize(const FixedLevelTest &t, TargetList *list, TestConcluder *concluder) {
+        void initialize(
+            const FixedLevelTest &t, 
+            TargetList *list, 
+            TestConcluder *concluder
+        ) override {
             testConcluder_ = concluder;
             targetList_ = list;
             test_ = &t;
@@ -52,16 +58,18 @@ namespace av_speech_in_noise::tests { namespace {
             return test_;
         }
         
-        bool complete()  {return {};}
-        std::string next()  {return {};}
-        std::string current()  {return {};}
-        int snr_dB()  {return {};}
-        void submitCorrectResponse() {}
-        void submitIncorrectResponse() {}
-        void submitResponse(const FreeResponse &) {}
-        void writeTestingParameters(OutputFile *) {}
-        void writeLastCoordinateResponse(OutputFile *) {}
-        void submitResponse(const coordinate_response_measure::SubjectResponse &) {}
+        bool complete() override { return {}; }
+        std::string next() override { return {}; }
+        std::string current() override { return {}; }
+        int snr_dB() override { return {}; }
+        void submitCorrectResponse() override {}
+        void submitIncorrectResponse() override {}
+        void submitResponse(const FreeResponse &) override {}
+        void writeTestingParameters(OutputFile *) override {}
+        void writeLastCoordinateResponse(OutputFile *) override {}
+        void submitResponse(
+            const coordinate_response_measure::SubjectResponse &
+        ) override {}
     };
     
     class RecognitionTestModel_InternalStub :
@@ -82,41 +90,35 @@ namespace av_speech_in_noise::tests { namespace {
             TestMethod *tm,
             const CommonTest &ct,
             const TestInformation &ti
-        ) {
+        ) override {
             testMethod_ = tm;
             commonTest_ = &ct;
             testInformation_ = &ti;
         }
         
-        void playTrial(const AudioSettings &s) {
+        void playTrial(const AudioSettings &s) override {
             playTrialSettings_ = &s;
         }
         
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &p
-        ) {
+        ) override {
             coordinateResponse_ = &p;
         }
         
-        bool testComplete() { return complete_; }
+        bool testComplete() override { return complete_; }
         
-        std::vector<std::string> audioDevices() { return audioDevices_; }
+        std::vector<std::string> audioDevices() override { 
+            return audioDevices_; 
+        }
         
-        void subscribe(Model::EventListener *e) {
+        void subscribe(Model::EventListener *e) override {
             listener_ = e;
         }
         
-        void playCalibration(const Calibration &c) {
+        void playCalibration(const Calibration &c) override {
             calibration_ = &c;
         }
-        
-        void submitCorrectResponse()  {}
-        
-        void submitIncorrectResponse()  {}
-        
-        void submitResponse(const FreeResponse &)  {}
-        
-        void throwIfTrialInProgress()  {}
         
         auto coordinateResponse() const {
             return coordinateResponse_;
@@ -153,6 +155,11 @@ namespace av_speech_in_noise::tests { namespace {
         auto listener() const {
             return listener_;
         }
+        
+        void submitCorrectResponse() override {}
+        void submitIncorrectResponse() override {}
+        void submitResponse(const FreeResponse &) override {}
+        void throwIfTrialInProgress() override {}
     };
     
     class InitializingTestUseCase {
@@ -212,11 +219,15 @@ namespace av_speech_in_noise::tests { namespace {
         }
     };
     
-    class InitializingFixedLevelTestWithFiniteTargets : public InitializingTestUseCase {
+    class InitializingFixedLevelTestWithFiniteTargets : 
+        public InitializingTestUseCase 
+    {
         FixedLevelTest test;
         FixedLevelMethodStub *method;
     public:
-        explicit InitializingFixedLevelTestWithFiniteTargets(FixedLevelMethodStub *method) :
+        explicit InitializingFixedLevelTestWithFiniteTargets(
+            FixedLevelMethodStub *method
+        ) :
             method{method} {}
         
         void run(RecognitionTestModel &model) override {
@@ -256,9 +267,7 @@ namespace av_speech_in_noise::tests { namespace {
         };
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
-        InitializingAdaptiveTest initializingAdaptiveTest{
-            &adaptiveMethod
-        };
+        InitializingAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
         InitializingFixedLevelTest initializingFixedLevelTest{
             &fixedLevelMethod
         };
@@ -304,17 +313,19 @@ namespace av_speech_in_noise::tests { namespace {
         }
     };
     
-    TEST_F(RecognitionTestModelTests, submitResponsePassesCoordinateResponse) {
-        coordinate_response_measure::SubjectResponse response;
-        model.submitResponse(response);
-        assertEqual(&std::as_const(response), internalModel.coordinateResponse());
-    }
-    
     TEST_F(
         RecognitionTestModelTests,
         initializeFixedLevelTestInitializesFixedLevelMethod
     ) {
         initializeFixedLevelTest();
+        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestWithFiniteTargetsInitializesFixedLevelMethod
+    ) {
+        initializeFixedLevelTestWithFiniteTargets();
         assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
     }
     
@@ -331,14 +342,6 @@ namespace av_speech_in_noise::tests { namespace {
     
     TEST_F(
         RecognitionTestModelTests,
-        initializeFixedLevelTestWithFiniteTargetsInitializesFixedLevelMethodWithFiniteTargets
-    ) {
-        initializeFixedLevelTestWithFiniteTargets();
-        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
-    }
-    
-    TEST_F(
-        RecognitionTestModelTests,
         initializeFixedLevelTestWithFiniteTargetsInitializesWithFiniteTargets
     ) {
         initializeFixedLevelTestWithFiniteTargets();
@@ -350,22 +353,22 @@ namespace av_speech_in_noise::tests { namespace {
     
     TEST_F(
         RecognitionTestModelTests,
-        initializeFixedLevelTestWithFiniteTargetsInitializesWithEmptyTargetListTestConcluder
+        initializeFixedLevelTestInitializesWithFixedTrialTestConcluder
     ) {
-        initializeFixedLevelTestWithFiniteTargets();
+        initializeFixedLevelTest();
         assertEqual(
-            static_cast<TestConcluder *>(&emptyTargetListTestConcluder), 
+            static_cast<TestConcluder *>(&fixedTrialTestConcluder), 
             fixedLevelMethod.testConcluder()
         );
     }
     
     TEST_F(
         RecognitionTestModelTests,
-        initializeFixedLevelTestInitializesWithFixedTrialTestConcluder
+        initializeFixedLevelTestWithFiniteTargetsInitializesWithEmptyTargetListTestConcluder
     ) {
-        initializeFixedLevelTest();
+        initializeFixedLevelTestWithFiniteTargets();
         assertEqual(
-            static_cast<TestConcluder *>(&fixedTrialTestConcluder), 
+            static_cast<TestConcluder *>(&emptyTargetListTestConcluder), 
             fixedLevelMethod.testConcluder()
         );
     }
@@ -397,6 +400,12 @@ namespace av_speech_in_noise::tests { namespace {
         initializeAdaptiveTestInitializesInternalModel
     ) {
         assertInitializesInternalModel(initializingAdaptiveTest);
+    }
+    
+    TEST_F(RecognitionTestModelTests, submitResponsePassesCoordinateResponse) {
+        coordinate_response_measure::SubjectResponse response;
+        model.submitResponse(response);
+        assertEqual(&std::as_const(response), internalModel.coordinateResponse());
     }
     
     TEST_F(RecognitionTestModelTests, playTrialPassesAudioSettings) {
