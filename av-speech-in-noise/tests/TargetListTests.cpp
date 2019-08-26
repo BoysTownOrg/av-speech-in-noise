@@ -251,6 +251,13 @@ namespace {
         return reader.filesIn(std::move(directory));
     }
     
+    std::vector<std::string> subDirectories(
+        target_list::DirectoryReader &reader, 
+        std::string directory = {}
+    ) {
+        return reader.subDirectories(std::move(directory));
+    }
+    
     class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:
         DirectoryReaderStub reader;
@@ -270,7 +277,7 @@ namespace {
 
     TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
         auto decorator = construct();
-        decorator.subDirectories({"a"});
+        subDirectories(decorator, "a");
         assertEqual("a", reader.directory());
     }
 
