@@ -243,6 +243,7 @@ namespace av_speech_in_noise::tests::recognition_test {
         AdaptiveMethodStub adaptiveMethod;
         FixedLevelMethodStub fixedLevelMethod;
         TargetListStub infiniteTargetList;
+        TestConcluderStub fixedTrialTestConcluder;
         TargetListStub finiteTargetList;
         TestConcluderStub emptyTargetListTestConcluder;
         RecognitionTestModel_InternalStub internalModel;
@@ -250,6 +251,7 @@ namespace av_speech_in_noise::tests::recognition_test {
             &adaptiveMethod,
             &fixedLevelMethod,
             &infiniteTargetList,
+            &fixedTrialTestConcluder,
             &finiteTargetList,
             &emptyTargetListTestConcluder,
             &internalModel
@@ -355,6 +357,17 @@ namespace av_speech_in_noise::tests::recognition_test {
         initializeFixedLevelTestWithFiniteTargets();
         assertEqual(
             static_cast<TestConcluder *>(&emptyTargetListTestConcluder), 
+            fixedLevelMethod.testConcluder()
+        );
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestInitializesWithFixedTrialTestConcluder
+    ) {
+        initializeFixedLevelTest();
+        assertEqual(
+            static_cast<TestConcluder *>(&fixedTrialTestConcluder), 
             fixedLevelMethod.testConcluder()
         );
     }

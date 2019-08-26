@@ -115,6 +115,7 @@ namespace av_speech_in_noise {
         IAdaptiveMethod *adaptiveMethod;
         IFixedLevelMethod *fixedLevelMethod;
         TargetList *infiniteTargetList;
+        TestConcluder *fixedTrialTestConcluder;
         TargetList *finiteTargetList;
         TestConcluder *completesWhenTargetsEmpty;
         IRecognitionTestModel_Internal *model;
@@ -123,6 +124,7 @@ namespace av_speech_in_noise {
             IAdaptiveMethod *,
             IFixedLevelMethod *,
             TargetList *infiniteTargetList,
+            TestConcluder *fixedTrialTestConcluder,
             TargetList *finiteTargetList,
             TestConcluder *completesWhenTargetsEmpty,
             IRecognitionTestModel_Internal *

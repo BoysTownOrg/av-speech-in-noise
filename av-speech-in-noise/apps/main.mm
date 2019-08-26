@@ -312,6 +312,7 @@ int main() {
         &adaptiveMethod,
         &fixedLevelMethod,
         &fixedLevelTargetList,
+        &fixedTrials,
         &finiteTargetList,
         &completesWhenTargetsEmpty,
         &model_internal
