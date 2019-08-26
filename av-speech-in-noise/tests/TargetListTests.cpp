@@ -244,6 +244,12 @@ namespace {
         assertEqual("", next());
     }
     
+    std::vector<std::string> filesIn(
+        target_list::DirectoryReader &reader, 
+        std::string directory = {}
+    ) {
+        return reader.filesIn(std::move(directory));
+    }
     
     class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:
@@ -258,7 +264,7 @@ namespace {
 
     TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecoratedForFiles) {
         auto decorator = construct();
-        decorator.filesIn({"a"});
+        filesIn(decorator, "a");
         assertEqual("a", reader.directory());
     }
 
@@ -271,7 +277,7 @@ namespace {
     TEST_F(FileExtensionFilterDecoratorTests, returnsFilteredFiles) {
         auto decorator = construct({".c", ".h"});
         reader.setFileNames({ "a", "b.c", "d.e", "f.c", "g.h" });
-        assertEqual({ "b.c", "f.c", "g.h" }, decorator.filesIn({}));
+        assertEqual({ "b.c", "f.c", "g.h" }, filesIn(decorator));
     }
 
     TEST_F(FileExtensionFilterDecoratorTests, returnsSubdirectories) {
