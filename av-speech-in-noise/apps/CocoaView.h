@@ -90,6 +90,7 @@ class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
     NSTextField *trackSettingsFile_;
     NSTextField *condition_label;
     NSPopUpButton *conditionMenu;
+    NSButton *finiteTargets_;
     NSTextField *method_label;
     NSPopUpButton *methodMenu;
     SetupViewActions *actions;
@@ -98,7 +99,7 @@ public:
     CocoaTestSetupView(NSRect);
     void show() override;
     void hide() override;
-    bool usingTargetsWithoutReplacement() override {return true;}
+    bool usingTargetsWithoutReplacement() override;
     std::string maskerLevel_dB_SPL() override;
     std::string calibrationLevel_dB_SPL() override;
     std::string maskerFilePath() override;

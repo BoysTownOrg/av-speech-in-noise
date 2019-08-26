@@ -137,6 +137,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         )
         pullsDown:NO
     ]},
+    finiteTargets_{[[NSButton alloc] initWithFrame:NSMakeRect(0, 60 + textFieldLeadingEdge + 20, menuWidth, labelHeight)]},
     method_label{allocLabel(
         @"method:",
         NSMakeRect(0, 30, labelWidth, labelHeight)
@@ -153,6 +154,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     actions{[SetupViewActions alloc]}
 {
     actions.controller = this;
+    [finiteTargets_ setButtonType:NSButtonTypeSwitch];
     const auto browseForStimulusListButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
@@ -278,6 +280,10 @@ const char *CocoaTestSetupView::stringValue(NSTextField *field) {
 
 std::string CocoaTestSetupView::maskerLevel_dB_SPL() {
     return stringValue(maskerLevel_dB_SPL_);
+}
+
+bool CocoaTestSetupView::usingTargetsWithoutReplacement() {
+    return finiteTargets_.state == NSControlStateValueOn;
 }
 
 std::string CocoaTestSetupView::calibrationLevel_dB_SPL() {
