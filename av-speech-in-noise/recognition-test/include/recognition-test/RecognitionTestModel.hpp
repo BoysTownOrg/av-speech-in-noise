@@ -107,13 +107,14 @@ namespace av_speech_in_noise {
         IAdaptiveMethod *adaptiveMethod;
         IFixedLevelMethod *fixedLevelMethod;
         TargetList *infiniteTargetList;
-        IFixedLevelMethod *fixedLevelMethodWithFiniteTargets;
+        TargetList *finiteTargetList;
         IRecognitionTestModel_Internal *model;
     public:
         RecognitionTestModel(
             IAdaptiveMethod *,
             IFixedLevelMethod *,
             TargetList *infiniteTargetList,
+            TargetList *finiteTargetList,
             IFixedLevelMethod *,
             IRecognitionTestModel_Internal *
         );

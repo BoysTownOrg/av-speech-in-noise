@@ -236,12 +236,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         AdaptiveMethodStub adaptiveMethod;
         FixedLevelMethodStub fixedLevelMethod;
         TargetListStub infiniteTargetList;
+        TargetListStub finiteTargetList;
         FixedLevelMethodStub fixedLevelMethodWithFiniteTargets;
         RecognitionTestModel_InternalStub internalModel;
         RecognitionTestModel model{
             &adaptiveMethod,
             &fixedLevelMethod,
             &infiniteTargetList,
+            &finiteTargetList,
             &fixedLevelMethodWithFiniteTargets,
             &internalModel
         };
@@ -254,7 +256,7 @@ namespace av_speech_in_noise::tests::recognition_test {
             &fixedLevelMethod
         };
         internal_::InitializingFixedLevelTestWithFiniteTargets
-            initializingFixedLevelTestWithFiniteTargets{&fixedLevelMethodWithFiniteTargets};
+            initializingFixedLevelTestWithFiniteTargets{&fixedLevelMethod};
         
         void initializeFixedLevelTest() {
             model.initializeTest(fixedLevelTest);
@@ -325,7 +327,18 @@ namespace av_speech_in_noise::tests::recognition_test {
         initializeFixedLevelTestWithFiniteTargetsInitializesFixedLevelMethodWithFiniteTargets
     ) {
         initializeFixedLevelTestWithFiniteTargets();
-        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethodWithFiniteTargets.test());
+        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestWithFiniteTargetsInitializesWithFiniteTargets
+    ) {
+        initializeFixedLevelTestWithFiniteTargets();
+        assertEqual(
+            static_cast<TargetList *>(&finiteTargetList), 
+            fixedLevelMethod.targetList()
+        );
     }
     
     TEST_F(

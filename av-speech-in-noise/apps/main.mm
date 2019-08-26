@@ -318,6 +318,7 @@ int main() {
         &adaptiveMethod,
         &fixedLevelMethod,
         &fixedLevelTargetList,
+        &finiteTargetList,
         &fixedLevelMethodWithFiniteTargets,
         &model_internal
     };
