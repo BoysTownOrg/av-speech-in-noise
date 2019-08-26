@@ -1,4 +1,5 @@
 #include "ModelEventListenerStub.h"
+#include "TargetListStub.h"
 #include "assert-utility.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
@@ -29,9 +30,15 @@ namespace av_speech_in_noise::tests::recognition_test {
     
     class FixedLevelMethodStub : public IFixedLevelMethod {
         const FixedLevelTest *test_{};
+        TargetList *targetList_{};
     public:
-        void initialize(const FixedLevelTest &t) {
+        void initialize(const FixedLevelTest &t, TargetList *list) {
+            targetList_ = list;
             test_ = &t;
+        }
+
+        auto targetList() const {
+            return targetList_;
         }
         
         auto test() const {
@@ -228,11 +235,13 @@ namespace av_speech_in_noise::tests::recognition_test {
     protected:
         AdaptiveMethodStub adaptiveMethod;
         FixedLevelMethodStub fixedLevelMethod;
+        TargetListStub infiniteTargetList;
         FixedLevelMethodStub fixedLevelMethodWithFiniteTargets;
         RecognitionTestModel_InternalStub internalModel;
         RecognitionTestModel model{
             &adaptiveMethod,
             &fixedLevelMethod,
+            &infiniteTargetList,
             &fixedLevelMethodWithFiniteTargets,
             &internalModel
         };
@@ -298,6 +307,17 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         initializeFixedLevelTest();
         assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
+    }
+    
+    TEST_F(
+        RecognitionTestModelTests,
+        initializeFixedLevelTestInitializesWithInfiniteTargetList
+    ) {
+        initializeFixedLevelTest();
+        assertEqual(
+            static_cast<TargetList *>(&infiniteTargetList), 
+            fixedLevelMethod.targetList()
+        );
     }
     
     TEST_F(

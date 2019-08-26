@@ -317,6 +317,7 @@ int main() {
     RecognitionTestModel model{
         &adaptiveMethod,
         &fixedLevelMethod,
+        &fixedLevelTargetList,
         &fixedLevelMethodWithFiniteTargets,
         &model_internal
     };
