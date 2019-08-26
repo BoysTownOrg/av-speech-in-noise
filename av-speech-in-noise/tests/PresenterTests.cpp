@@ -100,6 +100,13 @@ namespace av_speech_in_noise::tests::presentation {
         assertShowsExperimenterView(confirmingFixedLevelClosedSetTest);
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestWithFiniteTargetsInitializesModel) {
+        setMethod(&setupView, Method::fixedLevelClosedSet);
+        setupView.useFiniteTargets();
+        setupView.confirmTestSetup();
+        assertTrue(model.initializedWithFiniteTargets());
+    }
+
     TEST_F(PresenterTests, confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
         assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveClosedSetTest);
     }
@@ -130,6 +137,14 @@ namespace av_speech_in_noise::tests::presentation {
 
     TEST_F(PresenterTests, confirmFixedLevelClosedSetTestPassesStartingSnr) {
         assertStartingSnrPassedToModel(confirmingFixedLevelClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestWithFiniteTargetsPassesStartingSnr) {
+        setStartingSnr("1");
+        setMethod(&setupView, Method::fixedLevelClosedSet);
+        setupView.useFiniteTargets();
+        setupView.confirmTestSetup();
+        assertEqual(1, model.fixedLevelTest().snr_dB);
     }
 
     TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMaskerLevel) {

@@ -5,16 +5,29 @@ namespace av_speech_in_noise {
     RecognitionTestModel::RecognitionTestModel(
         IAdaptiveMethod *adaptiveMethod,
         IFixedLevelMethod *fixedLevelMethod,
+        TargetList *infiniteTargetList,
+        TestConcluder *fixedTrialTestConcluder,
+        TargetList *finiteTargetList,
+        TestConcluder *completesWhenTargetsEmpty,
         IRecognitionTestModel_Internal *model
     ) :
         adaptiveMethod{adaptiveMethod},
         fixedLevelMethod{fixedLevelMethod},
+        infiniteTargetList{infiniteTargetList},
+        fixedTrialTestConcluder{fixedTrialTestConcluder},
+        finiteTargetList{finiteTargetList},
+        completesWhenTargetsEmpty{completesWhenTargetsEmpty},
         model{model}
     {
     }
     
     void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
-        fixedLevelMethod->initialize(p);
+        fixedLevelMethod->initialize(p, infiniteTargetList, fixedTrialTestConcluder);
+        model->initialize(fixedLevelMethod, p.common, p.information);
+    }
+    
+    void RecognitionTestModel::initializeTestWithFiniteTargets(const FixedLevelTest &p) {
+        fixedLevelMethod->initialize(p, finiteTargetList, completesWhenTargetsEmpty);
         model->initialize(fixedLevelMethod, p.common, p.information);
     }
     

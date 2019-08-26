@@ -2,26 +2,25 @@
 
 namespace av_speech_in_noise {
     FixedLevelMethod::FixedLevelMethod(
-        TargetList *targetList,
         ResponseEvaluator *evaluator
     ) :
-        targetList{targetList},
         evaluator{evaluator} {}
     
-    void FixedLevelMethod::initialize(const FixedLevelTest &p) {
+    void FixedLevelMethod::initialize(
+        const FixedLevelTest &p, 
+        TargetList *list,
+        TestConcluder *concluder_
+    ) {
+        concluder = concluder_;
+        targetList = list;
         test = &p;
         snr_dB_ = p.snr_dB;
-        trials_ = p.trials;
         targetList->loadFromDirectory(p.common.targetListDirectory);
-        updateCompletion();
-    }
-    
-    void FixedLevelMethod::updateCompletion() {
-        complete_ = trials_ == 0;
+        concluder->initialize(p);
     }
     
     bool FixedLevelMethod::complete() {
-        return complete_;
+        return concluder->complete(targetList);
     }
     
     std::string FixedLevelMethod::next() {
@@ -35,14 +34,13 @@ namespace av_speech_in_noise {
     void FixedLevelMethod::submitResponse(
         const coordinate_response_measure::SubjectResponse &response
     ) {
-        --trials_;
         auto current_ = current();
         lastTrial.trial.subjectColor = response.color;
         lastTrial.trial.subjectNumber = response.number;
         lastTrial.trial.correctColor = evaluator->correctColor(current_);
         lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
         lastTrial.trial.correct = evaluator->correct(current_, response);
-        updateCompletion();
+        concluder->submitResponse();
     }
     
     std::string FixedLevelMethod::current() {

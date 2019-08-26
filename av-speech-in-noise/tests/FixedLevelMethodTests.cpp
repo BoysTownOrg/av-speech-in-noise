@@ -1,22 +1,24 @@
 #include "ResponseEvaluatorStub.h"
 #include "TargetListStub.h"
 #include "OutputFileStub.h"
+#include "TestConcluderStub.h"
 #include "assert-utility.h"
 #include <recognition-test/FixedLevelMethod.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise::tests { namespace {
     class FixedLevelMethodTests : public ::testing::Test {
     protected:
-        ResponseEvaluatorStub evaluator{};
-        TargetListStub targetList{};
+        ResponseEvaluatorStub evaluator;
+        TargetListStub targetList;
+        TestConcluderStub testConcluder;
         OutputFileStub outputFile;
-        FixedLevelMethod method{&targetList, &evaluator};
+        FixedLevelMethod method{&evaluator};
         FixedLevelTest test;
         coordinate_response_measure::SubjectResponse coordinateResponse;
         
         void initialize() {
-            method.initialize(test);
+            method.initialize(test, &targetList, &testConcluder);
         }
         
         void writeCoordinateResponse() {
@@ -69,21 +71,25 @@ namespace av_speech_in_noise::tests {
         void assertTestComplete() {
             assertTrue(testComplete());
         }
+
+        void setTestComplete() {
+            testConcluder.setComplete();
+        }
     };
     
-    TEST_F(FixedLevelMethodTests, writeTestPassesSettings) {
+    TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
         initialize();
-        method.writeTestingParameters(&outputFile);
-        assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+        assertEqual(&std::as_const(test), testConcluder.test());
     }
     
-    TEST_F(FixedLevelMethodTests, initializePassesTargetList) {
+    TEST_F(FixedLevelMethodTests, initializePassesTargetListDirectory) {
         test.common.targetListDirectory = "a";
         initialize();
         assertEqual("a", targetList.directory());
     }
     
     TEST_F(FixedLevelMethodTests, nextReturnsNextTarget) {
+        initialize();
         targetList.setNext("a");
         assertEqual("a", method.next());
     }
@@ -130,12 +136,26 @@ namespace av_speech_in_noise::tests {
         assertFalse(writtenFixedLevelTrialCorrect());
     }
     
+    TEST_F(FixedLevelMethodTests, writeTestPassesSettings) {
+        initialize();
+        method.writeTestingParameters(&outputFile);
+        assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+    }
+    
     TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesResponse) {
+        initialize();
         submitCoordinateResponse();
         assertEqual(&std::as_const(coordinateResponse), evaluator.response());
     }
     
+    TEST_F(FixedLevelMethodTests, submitCoordinateResponseSubmitsResponseToConcluder) {
+        initialize();
+        submitCoordinateResponse();
+        assertTrue(testConcluder.responseSubmitted());
+    }
+    
     TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesCurrentToEvaluator) {
+        initialize();
         setCurrentTarget("a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctColorFilePath());
@@ -143,16 +163,92 @@ namespace av_speech_in_noise::tests {
     }
     
     TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesCorrectTargetToEvaluator) {
+        initialize();
         setCurrentTarget("a");
         submitCoordinateResponse();
         assertEqual("a", evaluator.correctFilePath());
     }
     
-    TEST_F(FixedLevelMethodTests, completeWhenTrialsExhausted) {
-        test.trials = 3;
+    TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
         initialize();
         assertTestIncompleteAfterCoordinateResponse();
-        assertTestIncompleteAfterCoordinateResponse();
+        setTestComplete();
         assertTestCompleteAfterCoordinateResponse();
     }
-}
+    
+    TEST_F(FixedLevelMethodTests, completeQueryPassesTargetListToConcluder) {
+        testComplete();
+        assertEqual(
+            static_cast<TargetList *>(&targetList), 
+            testConcluder.targetList()
+        );
+    }
+
+    class FixedTrialTestConcluderTests : public ::testing::Test {
+    protected:
+        FixedTrialTestConcluder testConcluder{};
+        FixedLevelTest test;
+        
+        void initialize() {
+            testConcluder.initialize(test);
+        }
+        
+        void assertIncompleteAfterResponse() {
+            submitResponse();
+            assertIncomplete();
+        }
+
+        void submitResponse() {
+            testConcluder.submitResponse();
+        }
+        
+        void assertCompleteAfterResponse() {
+            submitResponse();
+            assertComplete();
+        }
+        
+        void assertIncomplete() {
+            assertFalse(complete());
+        }
+        
+        bool complete() {
+            return testConcluder.complete({});
+        }
+        
+        void assertComplete() {
+            assertTrue(complete());
+        }
+    };
+    
+    TEST_F(FixedTrialTestConcluderTests, completeWhenTrialsExhausted) {
+        test.trials = 3;
+        initialize();
+        assertIncompleteAfterResponse();
+        assertIncompleteAfterResponse();
+        assertCompleteAfterResponse();
+    }
+
+    class EmptyTargetListTestConcluderTests : public ::testing::Test {
+    protected:
+        TargetListStub targetList;
+        EmptyTargetListTestConcluder testConcluder;
+
+        bool complete() {
+            return testConcluder.complete(&targetList);
+        }
+
+        void assertIncomplete() {
+            assertFalse(complete());
+        }
+
+        void assertComplete() {
+            assertTrue(complete());
+        }
+    };
+
+    TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
+        assertIncomplete();
+        targetList.setEmpty();
+        assertComplete();
+    }
+}}

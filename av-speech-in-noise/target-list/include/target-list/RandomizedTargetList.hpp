@@ -12,6 +12,8 @@ namespace target_list {
         virtual ~Randomizer() = default;
         using shuffle_iterator = std::vector<std::string>::iterator;
         virtual void shuffle(shuffle_iterator begin, shuffle_iterator end) = 0;
+        using int_shuffle_iterator = std::vector<int>::iterator;
+        virtual void shuffle(int_shuffle_iterator begin, int_shuffle_iterator end) = 0;
     };
 
     class RandomizedTargetList : public av_speech_in_noise::TargetList {
@@ -26,6 +28,7 @@ namespace target_list {
         void loadFromDirectory(std::string) override;
         std::string next() override;
         std::string current() override;
+        bool empty() override;
     private:
         std::string fullPath(std::string file);
         void shuffle();
@@ -54,7 +57,7 @@ namespace target_list {
         Randomizer *randomizer;
     public:
         RandomizedFiniteTargetList(DirectoryReader *, Randomizer *);
-        bool empty();
+        bool empty() override;
         void loadFromDirectory(std::string directory) override;
         std::string next() override;
         std::string current() override;

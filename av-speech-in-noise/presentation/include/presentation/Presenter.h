@@ -62,6 +62,7 @@ namespace av_speech_in_noise {
             virtual std::string condition() = 0;
             virtual std::string session() = 0;
             virtual std::string method() = 0;
+            virtual bool usingTargetsWithoutReplacement() = 0;
             virtual void setMasker(std::string) = 0;
             virtual void setTargetListDirectory(std::string) = 0;
             virtual void setCalibrationFilePath(std::string) = 0;
@@ -146,6 +147,7 @@ namespace av_speech_in_noise {
             bool adaptiveOpenSet();
             bool fixedLevelOpenSet();
             bool fixedLevelClosedSet();
+            bool finiteTargets();
             void playCalibration() override;
             void browseForTargetList() override;
             void browseForMasker() override;
@@ -302,6 +304,7 @@ namespace av_speech_in_noise {
         static int trackBumpLimit;
         
     private:
+        bool finiteTargets();
         void proceedToNextTrialAfter(
             void(Presenter::*f)()
         );

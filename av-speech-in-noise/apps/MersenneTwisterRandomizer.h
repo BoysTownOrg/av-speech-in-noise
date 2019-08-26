@@ -14,6 +14,10 @@ public:
     void shuffle(shuffle_iterator begin, shuffle_iterator end) override {
         std::shuffle(begin, end, engine);
     }
+
+    void shuffle(int_shuffle_iterator begin, int_shuffle_iterator end) override {
+        std::shuffle(begin, end, engine);
+    }
     
     double randomFloatBetween(double a, double b) override {
         std::uniform_real_distribution<> distribution{a, b};

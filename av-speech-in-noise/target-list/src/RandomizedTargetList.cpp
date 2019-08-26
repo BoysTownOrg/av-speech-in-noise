@@ -18,10 +18,6 @@ namespace target_list {
         randomizer->shuffle(files.begin(), files.end());
     }
     
-    bool RandomizedTargetList::empty_() {
-        return files.empty();
-    }
-    
     std::string RandomizedTargetList::next() {
         if (empty_())
             return "";
@@ -31,6 +27,14 @@ namespace target_list {
         replaceLastFile();
         shuffle();
         return fullPath(currentFile_ = std::move(nextFile_));
+    }
+    
+    bool RandomizedTargetList::empty() {
+        return empty_();
+    }
+    
+    bool RandomizedTargetList::empty_() {
+        return files.empty();
     }
     
     void RandomizedTargetList::replaceLastFile() {

@@ -12,6 +12,7 @@ namespace av_speech_in_noise {
         virtual void loadFromDirectory(std::string directory) = 0;
         virtual std::string next() = 0;
         virtual std::string current() = 0;
+        virtual bool empty() = 0;
     };
     
     class ResponseEvaluator {
@@ -70,6 +71,14 @@ namespace av_speech_in_noise {
         ) = 0;
     };
     
+    class TestConcluder {
+    public:
+        virtual ~TestConcluder() = default;
+        virtual bool complete(TargetList *) = 0;
+        virtual void submitResponse() = 0;
+        virtual void initialize(const FixedLevelTest &) = 0;
+    };
+    
     class IAdaptiveMethod : public virtual TestMethod {
     public:
         virtual void initialize(const AdaptiveTest &) = 0;
@@ -77,7 +86,7 @@ namespace av_speech_in_noise {
     
     class IFixedLevelMethod : public virtual TestMethod {
     public:
-        virtual void initialize(const FixedLevelTest &) = 0;
+        virtual void initialize(const FixedLevelTest &, TargetList *, TestConcluder *) = 0;
     };
     
     class IRecognitionTestModel_Internal {
@@ -105,15 +114,24 @@ namespace av_speech_in_noise {
     class RecognitionTestModel : public Model {
         IAdaptiveMethod *adaptiveMethod;
         IFixedLevelMethod *fixedLevelMethod;
+        TargetList *infiniteTargetList;
+        TestConcluder *fixedTrialTestConcluder;
+        TargetList *finiteTargetList;
+        TestConcluder *completesWhenTargetsEmpty;
         IRecognitionTestModel_Internal *model;
     public:
         RecognitionTestModel(
             IAdaptiveMethod *,
             IFixedLevelMethod *,
+            TargetList *infiniteTargetList,
+            TestConcluder *fixedTrialTestConcluder,
+            TargetList *finiteTargetList,
+            TestConcluder *completesWhenTargetsEmpty,
             IRecognitionTestModel_Internal *
         );
         void initializeTest(const AdaptiveTest &) override;
         void initializeTest(const FixedLevelTest &) override;
+        void initializeTestWithFiniteTargets(const FixedLevelTest &) override;
         void playTrial(const AudioSettings &) override;
         void submitResponse(const coordinate_response_measure::SubjectResponse &) override;
         bool testComplete() override;

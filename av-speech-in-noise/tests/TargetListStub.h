@@ -12,7 +12,16 @@ namespace av_speech_in_noise::tests {
         std::string next_{};
         std::string current_{};
         bool nextCalled_{};
+        bool empty_{};
     public:
+        void setEmpty() {
+            empty_ = true;
+        }
+
+        bool empty() override {
+            return empty_;
+        }
+
         std::string current() override {
             return current_;
         }
