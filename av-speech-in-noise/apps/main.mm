@@ -265,7 +265,7 @@ int main() {
         &responseEvaluator,
         &randomizer
     };
-    target_list::RandomizedTargetList fixedLevelTargetList{
+    target_list::RandomizedTargetList infiniteTargetList{
         &fileExtensions,
         &randomizer
     };
@@ -310,7 +310,7 @@ int main() {
     RecognitionTestModel model{
         &adaptiveMethod,
         &fixedLevelMethod,
-        &fixedLevelTargetList,
+        &infiniteTargetList,
         &fixedTrials,
         &finiteTargetList,
         &completesWhenTargetsEmpty,
