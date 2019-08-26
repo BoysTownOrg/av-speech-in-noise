@@ -224,36 +224,6 @@ int main() {
         &targetListFactory,
         &reader
     };
-    target_list::RandomizedTargetList fixedLevelTargetList{
-        &fileExtensions,
-        &randomizer
-    };
-    target_list::FileIdentifierFilterDecorator 
-        oneHundredMsStimuli{&fileExtensions, "100ms"};
-    target_list::FileIdentifierFilterDecorator 
-        twoHundredMsStimuli{&fileExtensions, "200ms"};
-    target_list::FileIdentifierFilterDecorator 
-        threeHundredMsStimuli{&fileExtensions, "300ms"};
-    target_list::FileIdentifierFilterDecorator 
-        fourHundredMsStimuli{&fileExtensions, "400ms"};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomizer, 30};
-    target_list::DirectoryReaderComposite composite{{
-        &randomSubsetOneHundredMsStimuli, 
-        &randomSubsetTwoHundredMsStimuli, 
-        &randomSubsetThreeHundredMsStimuli, 
-        &randomSubsetFourHundredMsStimuli
-    }};
-    target_list::RandomizedFiniteTargetList finiteTargetList{
-        &composite,
-        &randomizer
-    };
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
@@ -293,6 +263,36 @@ int main() {
         &trackSettingsReader,
         &snrTrackFactory,
         &responseEvaluator,
+        &randomizer
+    };
+    target_list::RandomizedTargetList fixedLevelTargetList{
+        &fileExtensions,
+        &randomizer
+    };
+    target_list::FileIdentifierFilterDecorator 
+        oneHundredMsStimuli{&fileExtensions, "100ms"};
+    target_list::FileIdentifierFilterDecorator 
+        twoHundredMsStimuli{&fileExtensions, "200ms"};
+    target_list::FileIdentifierFilterDecorator 
+        threeHundredMsStimuli{&fileExtensions, "300ms"};
+    target_list::FileIdentifierFilterDecorator 
+        fourHundredMsStimuli{&fileExtensions, "400ms"};
+    target_list::RandomSubsetFilesDecorator 
+        randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomizer, 30};
+    target_list::RandomSubsetFilesDecorator 
+        randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomizer, 30};
+    target_list::RandomSubsetFilesDecorator 
+        randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomizer, 30};
+    target_list::RandomSubsetFilesDecorator 
+        randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomizer, 30};
+    target_list::DirectoryReaderComposite composite{{
+        &randomSubsetOneHundredMsStimuli, 
+        &randomSubsetTwoHundredMsStimuli, 
+        &randomSubsetThreeHundredMsStimuli, 
+        &randomSubsetFourHundredMsStimuli
+    }};
+    target_list::RandomizedFiniteTargetList finiteTargetList{
+        &composite,
         &randomizer
     };
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
