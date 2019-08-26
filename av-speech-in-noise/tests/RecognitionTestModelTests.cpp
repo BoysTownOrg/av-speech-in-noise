@@ -5,7 +5,7 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests::recognition_test {
+namespace av_speech_in_noise::tests { namespace {
     class AdaptiveMethodStub : public IAdaptiveMethod {
         const AdaptiveTest *test_{};
     public:
@@ -155,88 +155,86 @@ namespace av_speech_in_noise::tests::recognition_test {
         }
     };
     
-    namespace internal_ {
-        class InitializingTestUseCase {
-        public:
-            virtual ~InitializingTestUseCase() = default;
-            virtual void run(RecognitionTestModel &) = 0;
-            virtual const CommonTest &commonTest() = 0;
-            virtual const TestInformation &testInformation() = 0;
-            virtual const TestMethod *testMethod() = 0;
-        };
+    class InitializingTestUseCase {
+    public:
+        virtual ~InitializingTestUseCase() = default;
+        virtual void run(RecognitionTestModel &) = 0;
+        virtual const CommonTest &commonTest() = 0;
+        virtual const TestInformation &testInformation() = 0;
+        virtual const TestMethod *testMethod() = 0;
+    };
+    
+    class InitializingAdaptiveTest : public InitializingTestUseCase {
+        AdaptiveTest test;
+        AdaptiveMethodStub *method;
+    public:
+        explicit InitializingAdaptiveTest(AdaptiveMethodStub *method) :
+            method{method} {}
         
-        class InitializingAdaptiveTest : public InitializingTestUseCase {
-            AdaptiveTest test;
-            AdaptiveMethodStub *method;
-        public:
-            explicit InitializingAdaptiveTest(AdaptiveMethodStub *method) :
-                method{method} {}
-            
-            void run(RecognitionTestModel &model) override {
-                model.initializeTest(test);
-            }
-            
-            const CommonTest &commonTest() override {
-                return test.common;
-            }
-            
-            const TestInformation &testInformation() override {
-                return test.information;
-            }
-            
-            const TestMethod *testMethod() override {
-                return method;
-            }
-        };
+        void run(RecognitionTestModel &model) override {
+            model.initializeTest(test);
+        }
         
-        class InitializingFixedLevelTest : public InitializingTestUseCase {
-            FixedLevelTest test;
-            FixedLevelMethodStub *method;
-        public:
-            explicit InitializingFixedLevelTest(FixedLevelMethodStub *method) :
-                method{method} {}
-            
-            void run(RecognitionTestModel &model) override {
-                model.initializeTest(test);
-            }
-            
-            const CommonTest &commonTest() override {
-                return test.common;
-            }
-            
-            const TestInformation &testInformation() override {
-                return test.information;
-            }
-            
-            const TestMethod *testMethod() override {
-                return method;
-            }
-        };
+        const CommonTest &commonTest() override {
+            return test.common;
+        }
         
-        class InitializingFixedLevelTestWithFiniteTargets : public InitializingTestUseCase {
-            FixedLevelTest test;
-            FixedLevelMethodStub *method;
-        public:
-            explicit InitializingFixedLevelTestWithFiniteTargets(FixedLevelMethodStub *method) :
-                method{method} {}
-            
-            void run(RecognitionTestModel &model) override {
-                model.initializeTestWithFiniteTargets(test);
-            }
-            
-            const CommonTest &commonTest() override {
-                return test.common;
-            }
-            
-            const TestInformation &testInformation() override {
-                return test.information;
-            }
-            
-            const TestMethod *testMethod() override {
-                return method;
-            }
-        };
-    }
+        const TestInformation &testInformation() override {
+            return test.information;
+        }
+        
+        const TestMethod *testMethod() override {
+            return method;
+        }
+    };
+    
+    class InitializingFixedLevelTest : public InitializingTestUseCase {
+        FixedLevelTest test;
+        FixedLevelMethodStub *method;
+    public:
+        explicit InitializingFixedLevelTest(FixedLevelMethodStub *method) :
+            method{method} {}
+        
+        void run(RecognitionTestModel &model) override {
+            model.initializeTest(test);
+        }
+        
+        const CommonTest &commonTest() override {
+            return test.common;
+        }
+        
+        const TestInformation &testInformation() override {
+            return test.information;
+        }
+        
+        const TestMethod *testMethod() override {
+            return method;
+        }
+    };
+    
+    class InitializingFixedLevelTestWithFiniteTargets : public InitializingTestUseCase {
+        FixedLevelTest test;
+        FixedLevelMethodStub *method;
+    public:
+        explicit InitializingFixedLevelTestWithFiniteTargets(FixedLevelMethodStub *method) :
+            method{method} {}
+        
+        void run(RecognitionTestModel &model) override {
+            model.initializeTestWithFiniteTargets(test);
+        }
+        
+        const CommonTest &commonTest() override {
+            return test.common;
+        }
+        
+        const TestInformation &testInformation() override {
+            return test.information;
+        }
+        
+        const TestMethod *testMethod() override {
+            return method;
+        }
+    };
     
     class RecognitionTestModelTests : public ::testing::Test {
     protected:
@@ -258,13 +256,13 @@ namespace av_speech_in_noise::tests::recognition_test {
         };
         AdaptiveTest adaptiveTest;
         FixedLevelTest fixedLevelTest;
-        internal_::InitializingAdaptiveTest initializingAdaptiveTest{
+        InitializingAdaptiveTest initializingAdaptiveTest{
             &adaptiveMethod
         };
-        internal_::InitializingFixedLevelTest initializingFixedLevelTest{
+        InitializingFixedLevelTest initializingFixedLevelTest{
             &fixedLevelMethod
         };
-        internal_::InitializingFixedLevelTestWithFiniteTargets
+        InitializingFixedLevelTestWithFiniteTargets
             initializingFixedLevelTestWithFiniteTargets{&fixedLevelMethod};
         
         void initializeFixedLevelTest() {
@@ -283,12 +281,12 @@ namespace av_speech_in_noise::tests::recognition_test {
             return model.testComplete();
         }
         
-        void run(internal_::InitializingTestUseCase &useCase) {
+        void run(InitializingTestUseCase &useCase) {
             useCase.run(model);
         }
         
         void assertInitializesInternalModel(
-            internal_::InitializingTestUseCase &useCase
+            InitializingTestUseCase &useCase
         ) {
             run(useCase);
             assertEqual(
@@ -438,4 +436,4 @@ namespace av_speech_in_noise::tests::recognition_test {
             internalModel.listener()
         );
     }
-}
+}}
