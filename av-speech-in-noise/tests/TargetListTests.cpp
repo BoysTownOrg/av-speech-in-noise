@@ -257,6 +257,10 @@ namespace {
     ) {
         return reader.subDirectories(std::move(directory));
     }
+
+    std::string directory(DirectoryReaderStub &reader) {
+        return reader.directory();
+    }
     
     class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:
@@ -272,13 +276,13 @@ namespace {
     TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecoratedForFiles) {
         auto decorator = construct();
         filesIn(decorator, "a");
-        assertEqual("a", reader.directory());
+        assertEqual("a", directory(reader));
     }
 
     TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
         auto decorator = construct();
         subDirectories(decorator, "a");
-        assertEqual("a", reader.directory());
+        assertEqual("a", directory(reader));
     }
 
     TEST_F(FileExtensionFilterDecoratorTests, returnsFilteredFiles) {
@@ -290,7 +294,7 @@ namespace {
     TEST_F(FileExtensionFilterDecoratorTests, returnsSubdirectories) {
         auto decorator = construct();
         reader.setSubDirectories({ "a", "b", "c" });
-        assertEqual({ "a", "b", "c" }, decorator.subDirectories({}));
+        assertEqual({ "a", "b", "c" }, subDirectories(decorator));
     }
     
     
@@ -308,25 +312,25 @@ namespace {
     TEST_F(FileIdentifierFilterDecoratorTests, passesDirectoryToDecoratedForFiles) {
         auto decorator = construct();
         decorator.filesIn("a");
-        assertEqual("a", reader.directory());
+        assertEqual("a", directory(reader));
     }
 
     TEST_F(FileIdentifierFilterDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
         auto decorator = construct();
         decorator.subDirectories("a");
-        assertEqual("a", reader.directory());
+        assertEqual("a", directory(reader));
     }
 
     TEST_F(FileIdentifierFilterDecoratorTests, returnsSubdirectories) {
         auto decorator = construct();
         reader.setSubDirectories({ "a", "b", "c" });
-        assertEqual({ "a", "b", "c" }, decorator.subDirectories({}));
+        assertEqual({ "a", "b", "c" }, subDirectories(decorator));
     }
 
     TEST_F(FileIdentifierFilterDecoratorTests, returnsFilteredFiles) {
         auto decorator = construct("x");
         reader.setFileNames({ "ax.j", "b.c", "d.e", "xf.c", "g.h" });
-        assertEqual({ "ax.j", "xf.c" }, decorator.filesIn({}));
+        assertEqual({ "ax.j", "xf.c" }, filesIn(decorator));
     }
     
     
@@ -352,26 +356,26 @@ namespace {
 
     TEST_F(RandomSubsetFilesDecoratorTests, passesDirectoryToDecoratedForFiles) {
         auto decorator = construct();
-        decorator.filesIn("a");
-        assertEqual("a", reader.directory());
+        filesIn(decorator, "a");
+        assertEqual("a", directory(reader));
     }
 
     TEST_F(RandomSubsetFilesDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
         auto decorator = construct();
-        decorator.subDirectories("a");
-        assertEqual("a", reader.directory());
+        subDirectories(decorator, "a");
+        assertEqual("a", directory(reader));
     }
 
     TEST_F(RandomSubsetFilesDecoratorTests, returnsSubdirectories) {
         auto decorator = construct();
         reader.setSubDirectories({ "a", "b", "c" });
-        assertEqual({ "a", "b", "c" }, decorator.subDirectories({}));
+        assertEqual({ "a", "b", "c" }, subDirectories(decorator));
     }
 
     TEST_F(RandomSubsetFilesDecoratorTests, passesFileNumberRangeToRandomizer) {
         auto decorator = construct();
         reader.setFileNames({"a", "b", "c"});
-        decorator.filesIn({});
+        filesIn(decorator);
         assertHasBeenShuffled({ 0, 1, 2 });
     }
 
@@ -379,9 +383,8 @@ namespace {
         auto decorator = construct(3);
         reader.setFileNames({"a", "b", "c", "d", "e"});
         randomizer.rotateToTheLeft(2);
-        assertEqual({ "c", "d", "e" }, decorator.filesIn({}));
+        assertEqual({ "c", "d", "e" }, filesIn(decorator));
     }
-    
     
     class DirectoryReaderCompositeTests : public ::testing::Test {
     protected:
@@ -415,7 +418,7 @@ namespace {
     TEST_F(DirectoryReaderCompositeTests, filesInPassesDirectoryToEach) {
         setDecoratedCount(3);
         auto reader = construct();
-        reader.filesIn("a");
+        filesIn(reader, "a");
         assertEachDecoratedDirectory("a", 3);
     }
 
@@ -425,20 +428,20 @@ namespace {
         setFileNamesForDecorated({ "b", "c", "d" }, 1);
         setFileNamesForDecorated({ "e", "f" }, 2);
         auto reader = construct();
-        assertEqual({"a", "b", "c", "d", "e", "f"}, reader.filesIn({}));
+        assertEqual({"a", "b", "c", "d", "e", "f"}, filesIn(reader));
     }
 
     TEST_F(DirectoryReaderCompositeTests, passesDirectoryToFirstDecoratedForSubdirectories) {
         setDecoratedCount(3);
         auto reader = construct();
-        reader.subDirectories("a");
-        assertEqual("a", decoratedAt(0).directory());
+        subDirectories(reader, "a");
+        assertEqual("a", directory(decoratedAt(0)));
     }
 
     TEST_F(DirectoryReaderCompositeTests, returnsSubdirectoriesFromFirstDecorated) {
         setDecoratedCount(3);
         auto reader = construct();
         decoratedAt(0).setSubDirectories({ "a", "b", "c" });
-        assertEqual({ "a", "b", "c" }, reader.subDirectories({}));
+        assertEqual({ "a", "b", "c" }, subDirectories(reader));
     }
 }
