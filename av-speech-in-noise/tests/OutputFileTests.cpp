@@ -364,11 +364,13 @@ namespace av_speech_in_noise::tests { namespace {
             trial.trial.subjectNumber = 3;
             trial.trial.correctColor = Color::green;
             trial.trial.subjectColor = Color::red;
+            trial.trial.stimulus = "a";
             run(writingFixedLevelCoordinateResponseTrial);
             assertNthEntryOfLine("2", 1, n);
             assertNthEntryOfLine("3", 2, n);
             assertNthEntryOfLine(colorName(Color::green), 3, n);
             assertNthEntryOfLine(colorName(Color::red), 4, n);
+            assertNthEntryOfLine("a", 6, n);
         }
     };
 

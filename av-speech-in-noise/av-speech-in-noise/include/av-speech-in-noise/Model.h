@@ -21,6 +21,7 @@ namespace av_speech_in_noise {
         };
         
         struct Trial {
+            std::string stimulus;
             int correctNumber;
             int subjectNumber;
             Color correctColor;
