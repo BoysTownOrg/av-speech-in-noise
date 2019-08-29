@@ -373,6 +373,10 @@ namespace av_speech_in_noise::tests { namespace {
             assertNthEntryOfLine(colorName(Color::red), 4, n);
             assertNthEntryOfLine("a", 6, n);
         }
+
+        void assertWriterContainsEntry(std::string label, std::string what) {
+            assertWriterContains(label + ": " + what + "\n");
+        }
     };
 
     TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
@@ -467,10 +471,10 @@ namespace av_speech_in_noise::tests { namespace {
         adaptiveTest.common.maskerLevel_dB_SPL = 1;
         adaptiveTest.startingSnr_dB = 2;
         file.writeTest(adaptiveTest);
-        assertWriterContains("masker: a\n");
-        assertWriterContains("targets: d\n");
-        assertWriterContains("masker level (dB SPL): 1\n");
-        assertWriterContains("starting SNR (dB): 2\n");
+        assertWriterContainsEntry("masker", "a");
+        assertWriterContainsEntry("targets", "d");
+        assertWriterContainsEntry("masker level (dB SPL)", "1");
+        assertWriterContainsEntry("starting SNR (dB)", "2");
         assertWrittenLast("\n\n");
     }
 
