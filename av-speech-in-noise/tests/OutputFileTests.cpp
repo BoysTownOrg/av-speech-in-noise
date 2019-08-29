@@ -89,6 +89,7 @@ namespace av_speech_in_noise::tests { namespace {
     public:
         virtual void setCondition(Condition) = 0;
         virtual void setTestInfo(const TestInformation &) = 0;
+        virtual void setCommonTest(const CommonTest &) = 0;
     };
     
     class WritingAdaptiveTest : public WritingTestUseCase {
@@ -102,6 +103,10 @@ namespace av_speech_in_noise::tests { namespace {
             test.information = p;
         }
         
+        void setCommonTest(const CommonTest &p) override {
+            test.common = p;
+        }
+        
         void run(OutputFileImpl &file) override {
             file.writeTest(test);
         }
@@ -112,6 +117,10 @@ namespace av_speech_in_noise::tests { namespace {
     public:
         void setCondition(Condition c) override {
             test.common.condition = c;
+        }
+        
+        void setCommonTest(const CommonTest &p) override {
+            test.common = p;
         }
         
         void setTestInfo(const TestInformation &p) override {
@@ -278,6 +287,19 @@ namespace av_speech_in_noise::tests { namespace {
             assertColonDelimitedEntryWritten("subject", "a");
             assertColonDelimitedEntryWritten("tester", "b");
             assertColonDelimitedEntryWritten("session", "c");
+        }
+
+        void assertCommonTestWritten(WritingTestUseCase &useCase) {
+            CommonTest common;
+            common.maskerFilePath = "a";
+            common.targetListDirectory = "d";
+            common.maskerLevel_dB_SPL = 1;
+            useCase.setCommonTest(common);
+            useCase.run(file);
+            assertColonDelimitedEntryWritten("masker", "a");
+            assertColonDelimitedEntryWritten("targets", "d");
+            assertColonDelimitedEntryWritten("masker level (dB SPL)", "1");
+            assertWrittenLast("\n\n");
         }
         
         void assertNthEntryOfFirstLine(std::string what, int n) {
@@ -464,28 +486,24 @@ namespace av_speech_in_noise::tests { namespace {
         assertNthEntryOfFirstLine("response", 2);
     }
 
+    TEST_F(OutputFileTests, writeCommonAdaptiveTest) {
+        assertCommonTestWritten(writingAdaptiveTest);
+    }
+
+    TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
+        assertCommonTestWritten(writingFixedLevelTest);
+    }
+
     TEST_F(OutputFileTests, writeAdaptiveTest) {
-        adaptiveTest.common.maskerFilePath = "a";
-        adaptiveTest.common.targetListDirectory = "d";
-        adaptiveTest.common.maskerLevel_dB_SPL = 1;
         adaptiveTest.startingSnr_dB = 2;
         file.writeTest(adaptiveTest);
-        assertColonDelimitedEntryWritten("masker", "a");
-        assertColonDelimitedEntryWritten("targets", "d");
-        assertColonDelimitedEntryWritten("masker level (dB SPL)", "1");
         assertColonDelimitedEntryWritten("starting SNR (dB)", "2");
         assertWrittenLast("\n\n");
     }
 
     TEST_F(OutputFileTests, writeFixedLevelTest) {
-        fixedLevelTest.common.maskerFilePath = "a";
-        fixedLevelTest.common.targetListDirectory = "d";
-        fixedLevelTest.common.maskerLevel_dB_SPL = 1;
         fixedLevelTest.snr_dB = 2;
         file.writeTest(fixedLevelTest);
-        assertColonDelimitedEntryWritten("masker", "a");
-        assertColonDelimitedEntryWritten("targets", "d");
-        assertColonDelimitedEntryWritten("masker level (dB SPL)", "1");
         assertColonDelimitedEntryWritten("SNR (dB)", "2");
         assertWrittenLast("\n\n");
     }
