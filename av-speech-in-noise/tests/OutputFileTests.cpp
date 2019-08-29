@@ -219,8 +219,7 @@ namespace av_speech_in_noise::tests { namespace {
         }
         
         void assertWriterContainsConditionName(Condition c) {
-            std::string name = conditionName(c);
-            assertWriterContains("condition: " + name + "\n");
+            assertWriterContainsEntry("condition", conditionName(c));
         }
         
         void assertWriterContains(std::string s) {
