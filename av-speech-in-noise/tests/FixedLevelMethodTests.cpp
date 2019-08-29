@@ -125,6 +125,12 @@ namespace av_speech_in_noise::tests { namespace {
         assertEqual(1, writtenFixedLevelTrial().correctNumber);
     }
     
+    TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesStimulus) {
+        setCurrentTarget("a");
+        writeCoordinateResponse();
+        assertEqual("a", writtenFixedLevelTrial().stimulus);
+    }
+    
     TEST_F(FixedLevelMethodTests, writeCorrectCoordinateResponse) {
         evaluator.setCorrect();
         writeCoordinateResponse();

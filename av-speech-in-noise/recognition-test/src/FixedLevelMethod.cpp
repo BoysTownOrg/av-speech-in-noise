@@ -40,6 +40,7 @@ namespace av_speech_in_noise {
         lastTrial.trial.correctColor = evaluator->correctColor(current_);
         lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
         lastTrial.trial.correct = evaluator->correct(current_, response);
+        lastTrial.trial.stimulus = current_;
         concluder->submitResponse();
     }
     
