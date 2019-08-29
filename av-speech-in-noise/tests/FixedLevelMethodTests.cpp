@@ -22,6 +22,7 @@ namespace av_speech_in_noise::tests { namespace {
         }
         
         void writeCoordinateResponse() {
+            initialize();
             submitCoordinateResponse();
             writeLastCoordinateResponse();
         }

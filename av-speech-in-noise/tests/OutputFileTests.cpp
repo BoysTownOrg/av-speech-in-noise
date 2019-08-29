@@ -219,7 +219,7 @@ namespace av_speech_in_noise::tests { namespace {
         }
         
         void assertWriterContainsConditionName(Condition c) {
-            assertWriterContainsEntry("condition", conditionName(c));
+            assertColonDelimitedEntryWritten("condition", conditionName(c));
         }
         
         void assertWriterContains(std::string s) {
@@ -230,7 +230,7 @@ namespace av_speech_in_noise::tests { namespace {
             assertTrue(written().endsWith(std::move(s)));
         }
         
-        std::string nthWrittenEntryOfLine(int n, int line) {
+        std::string nthCommaDelimitedEntryOfLine(int n, int line) {
             std::string written_ = written();
             auto precedingNewLine = find_nth_element(written_, line - 1, '\n');
             auto line_ = written_.substr(precedingNewLine + 1);
@@ -275,29 +275,29 @@ namespace av_speech_in_noise::tests { namespace {
             info.session = "c";
             useCase.setTestInfo(info);
             useCase.run(file);
-            assertWriterContainsEntry("subject", "a");
-            assertWriterContainsEntry("tester", "b");
-            assertWriterContainsEntry("session", "c");
+            assertColonDelimitedEntryWritten("subject", "a");
+            assertColonDelimitedEntryWritten("tester", "b");
+            assertColonDelimitedEntryWritten("session", "c");
         }
         
         void assertNthEntryOfFirstLine(std::string what, int n) {
-            assertNthEntryOfLine(std::move(what), n, 1);
+            assertNthCommaDelimitedEntryOfLine(std::move(what), n, 1);
         }
         
         void assertNthEntryOfSecondLine(std::string what, int n) {
-            assertNthEntryOfLine(std::move(what), n, 2);
+            assertNthCommaDelimitedEntryOfLine(std::move(what), n, 2);
         }
         
         void assertNthEntryOfThirdLine(std::string what, int n) {
-            assertNthEntryOfLine(std::move(what), n, 3);
+            assertNthCommaDelimitedEntryOfLine(std::move(what), n, 3);
         }
         
-        void assertNthEntryOfLine(std::string what, int n, int line) {
-            assertEqual(std::move(what), nthWrittenEntryOfLine(n, line));
+        void assertNthCommaDelimitedEntryOfLine(std::string what, int n, int line) {
+            assertEqual(std::move(what), nthCommaDelimitedEntryOfLine(n, line));
         }
         
-        void assertNthEntryOfLine(HeadingItem item, int n, int line) {
-            assertEqual(headingItemName(item), nthWrittenEntryOfLine(n, line));
+        void assertNthCommaDelimitedEntryOfLine(HeadingItem item, int n, int line) {
+            assertEqual(headingItemName(item), nthCommaDelimitedEntryOfLine(n, line));
         }
         
         void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
@@ -313,30 +313,30 @@ namespace av_speech_in_noise::tests { namespace {
         }
 
         void assertAdaptiveCoordinateHeadingAtLine(int n) {
-            assertNthEntryOfLine(HeadingItem::snr_dB, 1, n);
-            assertNthEntryOfLine(HeadingItem::correctNumber, 2, n);
-            assertNthEntryOfLine(HeadingItem::subjectNumber, 3, n);
-            assertNthEntryOfLine(HeadingItem::correctColor, 4, n);
-            assertNthEntryOfLine(HeadingItem::subjectColor, 5, n);
-            assertNthEntryOfLine(
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::correctNumber, 2, n);
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectNumber, 3, n);
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::correctColor, 4, n);
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectColor, 5, n);
+            assertNthCommaDelimitedEntryOfLine(
                 HeadingItem::evaluation, 
                 writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), 
                 n
             );
-            assertNthEntryOfLine(HeadingItem::reversals, 7, n);
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::reversals, 7, n);
         }
 
         void assertFixedLevelCoordinateResponseHeadingAtLine(int n) {
-            assertNthEntryOfLine(HeadingItem::correctNumber, 1, n);
-            assertNthEntryOfLine(HeadingItem::subjectNumber, 2, n);
-            assertNthEntryOfLine(HeadingItem::correctColor, 3, n);
-            assertNthEntryOfLine(HeadingItem::subjectColor, 4, n);
-            assertNthEntryOfLine(
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::correctNumber, 1, n);
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectNumber, 2, n);
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::correctColor, 3, n);
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectColor, 4, n);
+            assertNthCommaDelimitedEntryOfLine(
                 HeadingItem::evaluation, 
                 writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), 
                 n
             );
-            assertNthEntryOfLine(HeadingItem::stimulus, 6, n);
+            assertNthCommaDelimitedEntryOfLine(HeadingItem::stimulus, 6, n);
         }
 
         void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {
@@ -349,12 +349,12 @@ namespace av_speech_in_noise::tests { namespace {
             trial.trial.subjectColor = Color::red;
             trial.reversals = 4;
             run(writingAdaptiveCoordinateResponseTrial);
-            assertNthEntryOfLine("1", 1, n);
-            assertNthEntryOfLine("2", 2, n);
-            assertNthEntryOfLine("3", 3, n);
-            assertNthEntryOfLine(colorName(Color::green), 4, n);
-            assertNthEntryOfLine(colorName(Color::red), 5, n);
-            assertNthEntryOfLine("4", 7, n);
+            assertNthCommaDelimitedEntryOfLine("1", 1, n);
+            assertNthCommaDelimitedEntryOfLine("2", 2, n);
+            assertNthCommaDelimitedEntryOfLine("3", 3, n);
+            assertNthCommaDelimitedEntryOfLine(colorName(Color::green), 4, n);
+            assertNthCommaDelimitedEntryOfLine(colorName(Color::red), 5, n);
+            assertNthCommaDelimitedEntryOfLine("4", 7, n);
         }
 
         void assertWritesFixedLevelCoordinateResponseTrialOnLine(int n) {
@@ -366,14 +366,14 @@ namespace av_speech_in_noise::tests { namespace {
             trial.trial.subjectColor = Color::red;
             trial.trial.stimulus = "a";
             run(writingFixedLevelCoordinateResponseTrial);
-            assertNthEntryOfLine("2", 1, n);
-            assertNthEntryOfLine("3", 2, n);
-            assertNthEntryOfLine(colorName(Color::green), 3, n);
-            assertNthEntryOfLine(colorName(Color::red), 4, n);
-            assertNthEntryOfLine("a", 6, n);
+            assertNthCommaDelimitedEntryOfLine("2", 1, n);
+            assertNthCommaDelimitedEntryOfLine("3", 2, n);
+            assertNthCommaDelimitedEntryOfLine(colorName(Color::green), 3, n);
+            assertNthCommaDelimitedEntryOfLine(colorName(Color::red), 4, n);
+            assertNthCommaDelimitedEntryOfLine("a", 6, n);
         }
 
-        void assertWriterContainsEntry(std::string label, std::string what) {
+        void assertColonDelimitedEntryWritten(std::string label, std::string what) {
             assertWriterContains(label + ": " + what + "\n");
         }
     };
@@ -470,10 +470,10 @@ namespace av_speech_in_noise::tests { namespace {
         adaptiveTest.common.maskerLevel_dB_SPL = 1;
         adaptiveTest.startingSnr_dB = 2;
         file.writeTest(adaptiveTest);
-        assertWriterContainsEntry("masker", "a");
-        assertWriterContainsEntry("targets", "d");
-        assertWriterContainsEntry("masker level (dB SPL)", "1");
-        assertWriterContainsEntry("starting SNR (dB)", "2");
+        assertColonDelimitedEntryWritten("masker", "a");
+        assertColonDelimitedEntryWritten("targets", "d");
+        assertColonDelimitedEntryWritten("masker level (dB SPL)", "1");
+        assertColonDelimitedEntryWritten("starting SNR (dB)", "2");
         assertWrittenLast("\n\n");
     }
 
@@ -483,10 +483,10 @@ namespace av_speech_in_noise::tests { namespace {
         fixedLevelTest.common.maskerLevel_dB_SPL = 1;
         fixedLevelTest.snr_dB = 2;
         file.writeTest(fixedLevelTest);
-        assertWriterContainsEntry("masker", "a");
-        assertWriterContainsEntry("targets", "d");
-        assertWriterContainsEntry("masker level (dB SPL)", "1");
-        assertWriterContainsEntry("SNR (dB)", "2");
+        assertColonDelimitedEntryWritten("masker", "a");
+        assertColonDelimitedEntryWritten("targets", "d");
+        assertColonDelimitedEntryWritten("masker level (dB SPL)", "1");
+        assertColonDelimitedEntryWritten("SNR (dB)", "2");
         assertWrittenLast("\n\n");
     }
 
