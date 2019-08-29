@@ -123,6 +123,8 @@ namespace av_speech_in_noise {
         stream.insert(colorName(trial.trial.subjectColor));
         stream.insertCommaAndSpace();
         stream.insert(evaluation(trial.trial));
+        stream.insertCommaAndSpace();
+        stream.insert(trial.trial.stimulus);
         stream.insertNewLine();
         write(stream.str());
         justWroteFixedLevelCoordinateResponseTrial = true;
@@ -139,6 +141,8 @@ namespace av_speech_in_noise {
         stream.insert(headingItemName(HeadingItem::subjectColor));
         stream.insertCommaAndSpace();
         stream.insert(headingItemName(HeadingItem::evaluation));
+        stream.insertCommaAndSpace();
+        stream.insert(headingItemName(HeadingItem::stimulus));
         stream.insertNewLine();
         write(stream.str());
     }

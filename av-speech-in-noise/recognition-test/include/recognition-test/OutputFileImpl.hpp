@@ -11,6 +11,7 @@ namespace av_speech_in_noise {
         correctColor,
         subjectColor,
         evaluation,
+        stimulus,
         reversals
     };
     
@@ -28,6 +29,8 @@ namespace av_speech_in_noise {
                 return "subject color";
             case HeadingItem::evaluation:
                 return "evaluation";
+            case HeadingItem::stimulus:
+                return "stimulus";
             case HeadingItem::reversals:
                 return "reversals";
         }

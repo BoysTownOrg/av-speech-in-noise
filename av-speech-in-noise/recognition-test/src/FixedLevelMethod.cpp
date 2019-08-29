@@ -35,11 +35,14 @@ namespace av_speech_in_noise {
         const coordinate_response_measure::SubjectResponse &response
     ) {
         auto current_ = current();
-        lastTrial.trial.subjectColor = response.color;
-        lastTrial.trial.subjectNumber = response.number;
-        lastTrial.trial.correctColor = evaluator->correctColor(current_);
-        lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
-        lastTrial.trial.correct = evaluator->correct(current_, response);
+        coordinate_response_measure::Trial trial;
+        trial.subjectColor = response.color;
+        trial.subjectNumber = response.number;
+        trial.correctColor = evaluator->correctColor(current_);
+        trial.correctNumber = evaluator->correctNumber(current_);
+        trial.correct = evaluator->correct(current_, response);
+        trial.stimulus = current_;
+        lastTrial.trial = trial;
         concluder->submitResponse();
     }
     
