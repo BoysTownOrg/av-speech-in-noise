@@ -484,10 +484,10 @@ namespace av_speech_in_noise::tests { namespace {
         fixedLevelTest.common.maskerLevel_dB_SPL = 1;
         fixedLevelTest.snr_dB = 2;
         file.writeTest(fixedLevelTest);
-        assertWriterContains("masker: a\n");
-        assertWriterContains("targets: d\n");
-        assertWriterContains("masker level (dB SPL): 1\n");
-        assertWriterContains("SNR (dB): 2\n");
+        assertWriterContainsEntry("masker", "a");
+        assertWriterContainsEntry("targets", "d");
+        assertWriterContainsEntry("masker level (dB SPL)", "1");
+        assertWriterContainsEntry("SNR (dB)", "2");
         assertWrittenLast("\n\n");
     }
 
