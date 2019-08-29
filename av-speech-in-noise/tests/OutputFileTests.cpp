@@ -337,6 +337,7 @@ namespace av_speech_in_noise::tests { namespace {
                 writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), 
                 n
             );
+            assertNthEntryOfLine(HeadingItem::stimulus, 6, n);
         }
 
         void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {

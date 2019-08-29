@@ -141,6 +141,8 @@ namespace av_speech_in_noise {
         stream.insert(headingItemName(HeadingItem::subjectColor));
         stream.insertCommaAndSpace();
         stream.insert(headingItemName(HeadingItem::evaluation));
+        stream.insertCommaAndSpace();
+        stream.insert(headingItemName(HeadingItem::stimulus));
         stream.insertNewLine();
         write(stream.str());
     }
