@@ -275,9 +275,9 @@ namespace av_speech_in_noise::tests { namespace {
             info.session = "c";
             useCase.setTestInfo(info);
             useCase.run(file);
-            assertWriterContains("subject: a\n");
-            assertWriterContains("tester: b\n");
-            assertWriterContains("session: c\n");
+            assertWriterContainsEntry("subject", "a");
+            assertWriterContainsEntry("tester", "b");
+            assertWriterContainsEntry("session", "c");
         }
         
         void assertNthEntryOfFirstLine(std::string what, int n) {
