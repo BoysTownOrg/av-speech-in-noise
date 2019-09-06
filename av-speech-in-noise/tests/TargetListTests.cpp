@@ -332,6 +332,12 @@ namespace {
         reader.setFileNames({ "ax.j", "b.c", "d.e", "xf.c", "g.h" });
         assertEqual({ "ax.j", "xf.c" }, filesIn(decorator));
     }
+
+    TEST_F(FileIdentifierFilterDecoratorTests, returnsFilesThatEndWithIdentifier) {
+        auto decorator = construct("x");
+        reader.setFileNames({ "ax.j", "b.c", "d.e", "fx.c", "g.h" });
+        assertEqual({ "ax.j", "fx.c" }, filesIn(decorator));
+    }
     
     
     class RandomSubsetFilesDecoratorTests : public ::testing::Test {
