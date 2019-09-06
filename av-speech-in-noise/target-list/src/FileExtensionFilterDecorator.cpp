@@ -4,14 +4,16 @@
 namespace target_list {
     FileFilterDecorator::FileFilterDecorator(
         DirectoryReader *reader,
-        FileFilter *
+        FileFilter *filter
     ) :
-        reader{reader} {}
+        reader{reader},
+        filter{filter} {}
 
     std::vector<std::string> FileFilterDecorator::filesIn(
         std::string directory
     ) {
-        return reader->filesIn(std::move(directory));
+        reader->filesIn(std::move(directory));
+        return filter->filter({});
     }
 
     std::vector<std::string> FileFilterDecorator::subDirectories(

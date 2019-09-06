@@ -8,10 +8,12 @@ namespace target_list {
     class FileFilter {
     public:
         virtual ~FileFilter() = default;
+        virtual std::vector<std::string> filter(std::vector<std::string>) = 0;
     };
 
     class FileFilterDecorator : public DirectoryReader {
         DirectoryReader *reader;
+        FileFilter *filter;
     public:
         FileFilterDecorator(DirectoryReader *, FileFilter *);
         std::vector<std::string> filesIn(std::string directory) override;
