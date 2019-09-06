@@ -31,10 +31,10 @@ namespace target_list {
     std::vector<std::string> FileExtensionFilterDecorator::filesIn(
         std::string directory
     ) {
-        return filtered(reader->filesIn(std::move(directory)));
+        return filter(reader->filesIn(std::move(directory)));
     }
     
-    std::vector<std::string> FileExtensionFilterDecorator::filtered(
+    std::vector<std::string> FileExtensionFilterDecorator::filter(
         std::vector<std::string> files
     ) {
         std::vector<std::string> filtered_{};
@@ -85,7 +85,12 @@ namespace target_list {
     std::vector<std::string> FileIdentifierExcluderFilterDecorator::filesIn(
         std::string directory
     ) {
-        auto files = reader->filesIn(std::move(directory));
+        return filter(reader->filesIn(std::move(directory)));
+    }
+
+    std::vector<std::string> FileIdentifierExcluderFilterDecorator::filter(
+        std::vector<std::string> files
+    ) {
         std::vector<std::string> filtered_{};
         for (const auto &file : files) {
             bool exclude = false;
@@ -116,10 +121,10 @@ namespace target_list {
     std::vector<std::string> FileIdentifierFilterDecorator::filesIn(
         std::string directory
     ) {
-        return filtered(reader->filesIn(std::move(directory)));
+        return filter(reader->filesIn(std::move(directory)));
     }
     
-    std::vector<std::string> FileIdentifierFilterDecorator::filtered(
+    std::vector<std::string> FileIdentifierFilterDecorator::filter(
         std::vector<std::string> files
     ) {
         std::vector<std::string> filtered_{};
@@ -147,11 +152,16 @@ namespace target_list {
         reader{reader},
         randomizer{randomizer},
         N{N} {}
-    
+
     std::vector<std::string> RandomSubsetFilesDecorator::filesIn(
         std::string directory
-    ) { 
-        auto files = reader->filesIn(std::move(directory));
+    ) {
+        return filter(reader->filesIn(std::move(directory)));
+    }
+    
+    std::vector<std::string> RandomSubsetFilesDecorator::filter(
+        std::vector<std::string> files
+    ) {
         std::vector<int> indices(files.size());
         std::iota(indices.begin(), indices.end(), 0);
         randomizer->shuffle(indices.begin(), indices.end());

@@ -27,12 +27,12 @@ namespace target_list {
         FileExtensionFilterDecorator(DirectoryReader *, std::vector<std::string> filters);
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
+        std::vector<std::string> filter(std::vector<std::string>);
     private:
         bool endingMatchesFilter(
             const std::string &,
             const std::string &filter
         );
-        std::vector<std::string> filtered(std::vector<std::string>);
     };
 
     class FileIdentifierFilterDecorator : public DirectoryReader {
@@ -42,11 +42,11 @@ namespace target_list {
         FileIdentifierFilterDecorator(DirectoryReader *, std::string identifier);
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
+        std::vector<std::string> filter(std::vector<std::string>);
     private:
         bool containsIdentifier(
             const std::string &
         );
-        std::vector<std::string> filtered(std::vector<std::string>);
     };
 
     class FileIdentifierExcluderFilterDecorator : public DirectoryReader {
@@ -59,6 +59,7 @@ namespace target_list {
         );
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
+        std::vector<std::string> filter(std::vector<std::string>);
     };
 
     class RandomSubsetFilesDecorator : public DirectoryReader {
@@ -69,6 +70,7 @@ namespace target_list {
         RandomSubsetFilesDecorator(DirectoryReader *, Randomizer *, int);
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
+        std::vector<std::string> filter(std::vector<std::string>);
     };
 
     class DirectoryReaderComposite : public DirectoryReader {
