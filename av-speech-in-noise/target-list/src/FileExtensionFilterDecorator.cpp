@@ -45,6 +45,48 @@ namespace target_list {
         return reader->subDirectories(std::move(directory));
     }
 
+    FileIdentifierExcluderFilterDecorator::FileIdentifierExcluderFilterDecorator(
+        DirectoryReader *reader,
+        std::vector<std::string> identifiers
+    ) : 
+        identifiers{std::move(identifiers)},
+        reader{reader} {}
+
+    static bool endsWith(const std::string &s, const std::string &what) {
+        auto found = s.find('.');
+        auto withoutExtension = s.substr(0, found);
+        return withoutExtension.length() >= what.length() &&
+            0 == withoutExtension.compare(
+                withoutExtension.length() - what.length(),
+                what.length(),
+                what
+            );
+    }
+
+    std::vector<std::string> FileIdentifierExcluderFilterDecorator::filesIn(
+        std::string directory
+    ) {
+        auto files = reader->filesIn(std::move(directory));
+        std::vector<std::string> filtered_{};
+        for (const auto &file : files) {
+            bool exclude = false;
+            for (const auto &identifier : identifiers)
+                if (endsWith(file, identifier)) {
+                    exclude = true;
+                    break;
+                }
+            if (!exclude)
+                filtered_.push_back(file);
+        }
+        return filtered_;
+    }
+    
+    std::vector<std::string> FileIdentifierExcluderFilterDecorator::subDirectories(
+        std::string directory
+    ) {
+        return reader->subDirectories(std::move(directory));
+    }
+
     FileIdentifierFilterDecorator::FileIdentifierFilterDecorator(
         DirectoryReader *reader,
         std::string identifier

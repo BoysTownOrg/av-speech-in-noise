@@ -34,6 +34,18 @@ namespace target_list {
         std::vector<std::string> filtered(std::vector<std::string>);
     };
 
+    class FileIdentifierExcluderFilterDecorator : public DirectoryReader {
+        std::vector<std::string> identifiers;
+        DirectoryReader *reader;
+    public:
+        FileIdentifierExcluderFilterDecorator(
+            DirectoryReader *,
+            std::vector<std::string> identifiers
+        );
+        std::vector<std::string> filesIn(std::string directory) override;
+        std::vector<std::string> subDirectories(std::string directory) override;
+    };
+
     class RandomSubsetFilesDecorator : public DirectoryReader {
         DirectoryReader *reader;
         Randomizer *randomizer;

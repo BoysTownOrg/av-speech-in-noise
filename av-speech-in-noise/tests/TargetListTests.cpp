@@ -339,6 +339,23 @@ namespace {
         assertEqual({ "ax.j", "fx.c" }, filesIn(decorator));
     }
     
+    class FileIdentifierExcluderFilterDecoratorTests : public ::testing::Test {
+    protected:
+        DirectoryReaderStub reader;
+        
+        target_list::FileIdentifierExcluderFilterDecorator construct(
+            std::vector<std::string> indentifiers = {}
+        ) {
+            return {&reader, std::move(indentifiers)};
+        }
+    };
+
+    TEST_F(FileIdentifierExcluderFilterDecoratorTests, returnsFilesThatDontEndWithIdentifiers) {
+        auto decorator = construct({"1", "2", "3"});
+        reader.setFileNames({ "ax.j", "b1.c", "d.e", "fx2.c", "g3.h" });
+        assertEqual({ "ax.j", "d.e" }, filesIn(decorator));
+    }
+    
     
     class RandomSubsetFilesDecoratorTests : public ::testing::Test {
     protected:
