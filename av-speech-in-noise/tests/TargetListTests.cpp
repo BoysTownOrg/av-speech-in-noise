@@ -350,6 +350,24 @@ namespace {
         }
     };
 
+    TEST_F(FileIdentifierExcluderFilterDecoratorTests, passesDirectoryToDecoratedForFiles) {
+        auto decorator = construct();
+        decorator.filesIn("a");
+        assertEqual("a", directory(reader));
+    }
+
+    TEST_F(FileIdentifierExcluderFilterDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
+        auto decorator = construct();
+        decorator.subDirectories("a");
+        assertEqual("a", directory(reader));
+    }
+
+    TEST_F(FileIdentifierExcluderFilterDecoratorTests, returnsSubdirectories) {
+        auto decorator = construct();
+        reader.setSubDirectories({ "a", "b", "c" });
+        assertEqual({ "a", "b", "c" }, subDirectories(decorator));
+    }
+
     TEST_F(FileIdentifierExcluderFilterDecoratorTests, returnsFilesThatDontEndWithIdentifiers) {
         auto decorator = construct({"1", "2", "3"});
         reader.setFileNames({ "ax.j", "b1.c", "d.e", "fx2.c", "g3.h" });
