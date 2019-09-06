@@ -20,14 +20,14 @@ namespace target_list {
         std::vector<std::string> subDirectories(std::string directory) override;
     };
 
-    class FileExtensionFilterDecorator : public DirectoryReader {
+    class FileExtensionFilterDecorator : public DirectoryReader, public FileFilter {
         std::vector<std::string> filters;
         DirectoryReader *reader;
     public:
         FileExtensionFilterDecorator(DirectoryReader *, std::vector<std::string> filters);
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
-        std::vector<std::string> filter(std::vector<std::string>);
+        std::vector<std::string> filter(std::vector<std::string>) override;
     private:
         bool endingMatchesFilter(
             const std::string &,
@@ -35,21 +35,21 @@ namespace target_list {
         );
     };
 
-    class FileIdentifierFilterDecorator : public DirectoryReader {
+    class FileIdentifierFilterDecorator : public DirectoryReader, public FileFilter {
         std::string identifier;
         DirectoryReader *reader;
     public:
         FileIdentifierFilterDecorator(DirectoryReader *, std::string identifier);
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
-        std::vector<std::string> filter(std::vector<std::string>);
+        std::vector<std::string> filter(std::vector<std::string>) override;
     private:
         bool containsIdentifier(
             const std::string &
         );
     };
 
-    class FileIdentifierExcluderFilterDecorator : public DirectoryReader {
+    class FileIdentifierExcluderFilterDecorator : public DirectoryReader, public FileFilter {
         std::vector<std::string> identifiers;
         DirectoryReader *reader;
     public:
@@ -59,18 +59,18 @@ namespace target_list {
         );
         std::vector<std::string> filesIn(std::string directory) override;
         std::vector<std::string> subDirectories(std::string directory) override;
-        std::vector<std::string> filter(std::vector<std::string>);
+        std::vector<std::string> filter(std::vector<std::string>) override;
     };
 
-    class RandomSubsetFilesDecorator : public DirectoryReader {
+    class RandomSubsetFilesDecorator : public FileFilter {
         DirectoryReader *reader;
         Randomizer *randomizer;
         int N;
     public:
         RandomSubsetFilesDecorator(DirectoryReader *, Randomizer *, int);
-        std::vector<std::string> filesIn(std::string directory) override;
-        std::vector<std::string> subDirectories(std::string directory) override;
-        std::vector<std::string> filter(std::vector<std::string>);
+        std::vector<std::string> filesIn(std::string directory);
+        std::vector<std::string> subDirectories(std::string directory);
+        std::vector<std::string> filter(std::vector<std::string>) override;
     };
 
     class DirectoryReaderComposite : public DirectoryReader {

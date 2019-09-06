@@ -251,6 +251,13 @@ namespace {
         return reader.filesIn(std::move(directory));
     }
     
+    std::vector<std::string> filter(
+        target_list::FileFilter &filter_, 
+        std::vector<std::string> files = {}
+    ) {
+        return filter_.filter(std::move(files));
+    }
+    
     std::vector<std::string> subDirectories(
         target_list::DirectoryReader &reader, 
         std::string directory = {}
@@ -446,36 +453,16 @@ namespace {
         }
     };
 
-    TEST_F(RandomSubsetFilesDecoratorTests, passesDirectoryToDecoratedForFiles) {
-        auto decorator = construct();
-        filesIn(decorator, "a");
-        assertEqual("a", directory(reader));
-    }
-
-    TEST_F(RandomSubsetFilesDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
-        auto decorator = construct();
-        subDirectories(decorator, "a");
-        assertEqual("a", directory(reader));
-    }
-
-    TEST_F(RandomSubsetFilesDecoratorTests, returnsSubdirectories) {
-        auto decorator = construct();
-        reader.setSubDirectories({ "a", "b", "c" });
-        assertEqual({ "a", "b", "c" }, subDirectories(decorator));
-    }
-
     TEST_F(RandomSubsetFilesDecoratorTests, passesFileNumberRangeToRandomizer) {
         auto decorator = construct();
-        reader.setFileNames({"a", "b", "c"});
-        filesIn(decorator);
+        filter(decorator, {"a", "b", "c"});
         assertHasBeenShuffled({ 0, 1, 2 });
     }
 
     TEST_F(RandomSubsetFilesDecoratorTests, returnsFirstNShuffledIndexedFiles) {
         auto decorator = construct(3);
-        reader.setFileNames({"a", "b", "c", "d", "e"});
         randomizer.rotateToTheLeft(2);
-        assertEqual({ "c", "d", "e" }, filesIn(decorator));
+        assertEqual({ "c", "d", "e" }, filter(decorator, {"a", "b", "c", "d", "e"}));
     }
     
     class DirectoryReaderCompositeTests : public ::testing::Test {
