@@ -193,6 +193,7 @@ TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
 }
 
 TEST_F(FixedLevelMethodTests, completeQueryPassesTargetListToConcluder) {
+    initialize();
     testComplete();
     assertEqual(
         static_cast<TargetList *>(&targetList),
