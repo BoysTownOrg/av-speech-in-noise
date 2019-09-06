@@ -282,6 +282,11 @@ namespace {
         subDirectories(decorator, "a");
         assertEqual("a", directory(reader));
     }
+
+    TEST_F(FileFilterDecoratorTests, returnsSubdirectories) {
+        reader.setSubDirectories({ "a", "b", "c" });
+        assertEqual({ "a", "b", "c" }, subDirectories(decorator));
+    }
     
     class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:
