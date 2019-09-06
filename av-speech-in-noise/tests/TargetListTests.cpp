@@ -264,12 +264,18 @@ namespace {
 
     class FileFilterStub : public target_list::FileFilter {
         std::vector<std::string> filtered_;
+        std::vector<std::string> files_;
     public:
+        auto files() const {
+            return files_;
+        }
+
         void setFiltered(std::vector<std::string> f) {
             filtered_ = std::move(f);
         }
 
-        std::vector<std::string> filter(std::vector<std::string>) {
+        std::vector<std::string> filter(std::vector<std::string> f) {
+            files_ = std::move(f);
             return filtered_;
         }
     };
@@ -289,6 +295,12 @@ namespace {
     TEST_F(FileFilterDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
         subDirectories(decorator, "a");
         assertEqual("a", directory(reader));
+    }
+
+    TEST_F(FileFilterDecoratorTests, passesFilesToFilter) {
+        reader.setFileNames({ "a", "b", "c" });
+        filesIn(decorator);
+        assertEqual({ "a", "b", "c" }, filter.files());
     }
 
     TEST_F(FileFilterDecoratorTests, returnsFilteredFiles) {

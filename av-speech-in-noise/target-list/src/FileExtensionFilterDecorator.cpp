@@ -12,8 +12,7 @@ namespace target_list {
     std::vector<std::string> FileFilterDecorator::filesIn(
         std::string directory
     ) {
-        reader->filesIn(std::move(directory));
-        return filter->filter({});
+        return filter->filter(reader->filesIn(std::move(directory)));
     }
 
     std::vector<std::string> FileFilterDecorator::subDirectories(
