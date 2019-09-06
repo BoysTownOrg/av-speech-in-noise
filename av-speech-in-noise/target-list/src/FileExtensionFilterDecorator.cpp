@@ -2,6 +2,24 @@
 #include <numeric>
 
 namespace target_list {
+    FileFilterDecorator::FileFilterDecorator(
+        DirectoryReader *reader,
+        FileFilter *
+    ) :
+        reader{reader} {}
+
+    std::vector<std::string> FileFilterDecorator::filesIn(
+        std::string directory
+    ) {
+        return reader->filesIn(std::move(directory));
+    }
+
+    std::vector<std::string> FileFilterDecorator::subDirectories(
+        std::string
+    ) {
+        return {};
+    }
+
     FileExtensionFilterDecorator::FileExtensionFilterDecorator(
         DirectoryReader *reader,
         std::vector<std::string> filters

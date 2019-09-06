@@ -261,6 +261,22 @@ namespace {
     std::string directory(DirectoryReaderStub &reader) {
         return reader.directory();
     }
+
+    class FileFilterStub : public target_list::FileFilter {
+
+    };
+    
+    class FileFilterDecoratorTests : public ::testing::Test {
+    protected:
+        DirectoryReaderStub reader;
+        FileFilterStub filter;
+        target_list::FileFilterDecorator decorator{&reader, &filter};
+    };
+
+    TEST_F(FileFilterDecoratorTests, passesDirectoryToDecoratedForFiles) {
+        filesIn(decorator, "a");
+        assertEqual("a", directory(reader));
+    }
     
     class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:

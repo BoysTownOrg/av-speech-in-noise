@@ -5,6 +5,19 @@
 #include <vector>
 
 namespace target_list {
+    class FileFilter {
+    public:
+        virtual ~FileFilter() = default;
+    };
+
+    class FileFilterDecorator : public DirectoryReader {
+        DirectoryReader *reader;
+    public:
+        FileFilterDecorator(DirectoryReader *, FileFilter *);
+        std::vector<std::string> filesIn(std::string directory) override;
+        std::vector<std::string> subDirectories(std::string directory) override;
+    };
+
     class FileExtensionFilterDecorator : public DirectoryReader {
         std::vector<std::string> filters;
         DirectoryReader *reader;
