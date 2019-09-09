@@ -322,61 +322,37 @@ namespace {
     
     class FileExtensionFilterDecoratorTests : public ::testing::Test {
     protected:
-        DirectoryReaderStub reader;
         
         target_list::FileExtensionFilterDecorator construct(
             std::vector<std::string> filters = {}
         ) {
-            return {&reader, std::move(filters)};
+            return target_list::FileExtensionFilterDecorator{std::move(filters)};
         }
     };
 
-    TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecoratedForFiles) {
-        auto decorator = construct();
-        filesIn(decorator, "a");
-        assertEqual("a", directory(reader));
-    }
-
-    TEST_F(FileExtensionFilterDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
-        auto decorator = construct();
-        subDirectories(decorator, "a");
-        assertEqual("a", directory(reader));
-    }
-
     TEST_F(FileExtensionFilterDecoratorTests, returnsFilteredFiles) {
         auto decorator = construct({".c", ".h"});
-        reader.setFileNames({ "a", "b.c", "d.e", "f.c", "g.h" });
-        assertEqual({ "b.c", "f.c", "g.h" }, filesIn(decorator));
+        assertEqual({ "b.c", "f.c", "g.h" }, filter(decorator, {"a", "b.c", "d.e", "f.c", "g.h"}));
     }
-
-    TEST_F(FileExtensionFilterDecoratorTests, returnsSubdirectories) {
-        auto decorator = construct();
-        reader.setSubDirectories({ "a", "b", "c" });
-        assertEqual({ "a", "b", "c" }, subDirectories(decorator));
-    }
-    
     
     class FileIdentifierFilterDecoratorTests : public ::testing::Test {
     protected:
-        DirectoryReaderStub reader;
         
         target_list::FileIdentifierFilterDecorator construct(
             std::string indentifier = {}
         ) {
-            return {&reader, std::move(indentifier)};
+            return target_list::FileIdentifierFilterDecorator{std::move(indentifier)};
         }
     };
 
     TEST_F(FileIdentifierFilterDecoratorTests, returnsFilteredFiles) {
         auto decorator = construct("x");
-        reader.setFileNames({ "ax.j", "b.c", "d.e", "xf.c", "g.h" });
-        assertEqual({ "ax.j", "xf.c" }, filesIn(decorator));
+        assertEqual({ "ax.j", "xf.c" }, filter(decorator, {"ax.j", "b.c", "d.e", "xf.c", "g.h"}));
     }
 
     TEST_F(FileIdentifierFilterDecoratorTests, returnsFilesThatEndWithIdentifier) {
         auto decorator = construct("x");
-        reader.setFileNames({ "ax.j", "b.c", "d.e", "fx.c", "g.h" });
-        assertEqual({ "ax.j", "fx.c" }, filesIn(decorator));
+        assertEqual({ "ax.j", "fx.c" }, filter(decorator, {"ax.j", "b.c", "d.e", "fx.c", "g.h"}));
     }
     
     class FileIdentifierExcluderFilterDecoratorTests : public ::testing::Test {
@@ -385,7 +361,7 @@ namespace {
         target_list::FileIdentifierExcluderFilterDecorator construct(
             std::vector<std::string> indentifiers = {}
         ) {
-            return {std::move(indentifiers)};
+            return target_list::FileIdentifierExcluderFilterDecorator{std::move(indentifiers)};
         }
     };
 

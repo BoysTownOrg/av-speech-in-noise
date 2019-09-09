@@ -22,17 +22,9 @@ namespace target_list {
     }
 
     FileExtensionFilterDecorator::FileExtensionFilterDecorator(
-        DirectoryReader *reader,
         std::vector<std::string> filters
     ) :
-        filters{std::move(filters)},
-        reader{reader} {}
-
-    std::vector<std::string> FileExtensionFilterDecorator::filesIn(
-        std::string directory
-    ) {
-        return filter(reader->filesIn(std::move(directory)));
-    }
+        filters{std::move(filters)} {}
     
     std::vector<std::string> FileExtensionFilterDecorator::filter(
         std::vector<std::string> files
@@ -56,12 +48,6 @@ namespace target_list {
                 filter.length(),
                 filter
             );
-    }
-    
-    std::vector<std::string> FileExtensionFilterDecorator::subDirectories(
-        std::string directory
-    ) {
-        return reader->subDirectories(std::move(directory));
     }
 
     FileIdentifierExcluderFilterDecorator::FileIdentifierExcluderFilterDecorator(
@@ -98,17 +84,9 @@ namespace target_list {
     }
 
     FileIdentifierFilterDecorator::FileIdentifierFilterDecorator(
-        DirectoryReader *reader,
         std::string identifier
     ) :
-        identifier{std::move(identifier)},
-        reader{reader} {}
-
-    std::vector<std::string> FileIdentifierFilterDecorator::filesIn(
-        std::string directory
-    ) {
-        return filter(reader->filesIn(std::move(directory)));
-    }
+        identifier{std::move(identifier)} {}
     
     std::vector<std::string> FileIdentifierFilterDecorator::filter(
         std::vector<std::string> files
@@ -122,12 +100,6 @@ namespace target_list {
 
     bool FileIdentifierFilterDecorator::containsIdentifier(const std::string &file) {
         return file.find(identifier) != std::string::npos;
-    }
-    
-    std::vector<std::string> FileIdentifierFilterDecorator::subDirectories(
-        std::string directory
-    ) {
-        return reader->subDirectories(std::move(directory));
     }
     
     RandomSubsetFilesDecorator::RandomSubsetFilesDecorator(

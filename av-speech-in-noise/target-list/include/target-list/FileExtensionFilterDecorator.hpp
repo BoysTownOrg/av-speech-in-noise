@@ -20,13 +20,10 @@ namespace target_list {
         std::vector<std::string> subDirectories(std::string directory) override;
     };
 
-    class FileExtensionFilterDecorator : public DirectoryReader, public FileFilter {
+    class FileExtensionFilterDecorator : public FileFilter {
         std::vector<std::string> filters;
-        DirectoryReader *reader;
     public:
-        FileExtensionFilterDecorator(DirectoryReader *, std::vector<std::string> filters);
-        std::vector<std::string> filesIn(std::string directory) override;
-        std::vector<std::string> subDirectories(std::string directory) override;
+        explicit FileExtensionFilterDecorator(std::vector<std::string> filters);
         std::vector<std::string> filter(std::vector<std::string>) override;
     private:
         bool endingMatchesFilter(
@@ -35,13 +32,10 @@ namespace target_list {
         );
     };
 
-    class FileIdentifierFilterDecorator : public DirectoryReader, public FileFilter {
+    class FileIdentifierFilterDecorator : public FileFilter {
         std::string identifier;
-        DirectoryReader *reader;
     public:
-        FileIdentifierFilterDecorator(DirectoryReader *, std::string identifier);
-        std::vector<std::string> filesIn(std::string directory) override;
-        std::vector<std::string> subDirectories(std::string directory) override;
+        explicit FileIdentifierFilterDecorator(std::string identifier);
         std::vector<std::string> filter(std::vector<std::string>) override;
     private:
         bool containsIdentifier(
@@ -52,7 +46,7 @@ namespace target_list {
     class FileIdentifierExcluderFilterDecorator : public FileFilter {
         std::vector<std::string> identifiers;
     public:
-        FileIdentifierExcluderFilterDecorator(
+        explicit FileIdentifierExcluderFilterDecorator(
             std::vector<std::string> identifiers
         );
         std::vector<std::string> filter(std::vector<std::string>) override;

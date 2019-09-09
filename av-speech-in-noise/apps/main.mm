@@ -211,9 +211,12 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
 int main() {
     using namespace av_speech_in_noise;
     MacOsDirectoryReader reader;
-    target_list::FileExtensionFilterDecorator fileExtensions{
-        &reader,
+    target_list::FileExtensionFilterDecorator fileExtensions_{
         {".mov", ".avi", ".wav"}
+    };
+    target_list::FileFilterDecorator fileExtensions{
+        &reader,
+        &fileExtensions_
     };
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetListFactory targetListFactory{
@@ -272,13 +275,13 @@ int main() {
     target_list::FileIdentifierExcluderFilterDecorator 
         originalStimuli_{{"100", "200", "300", "400"}};
     target_list::FileIdentifierFilterDecorator 
-        oneHundredMsStimuli_{nullptr, "100"};
+        oneHundredMsStimuli_{"100"};
     target_list::FileIdentifierFilterDecorator 
-        twoHundredMsStimuli_{nullptr, "200"};
+        twoHundredMsStimuli_{"200"};
     target_list::FileIdentifierFilterDecorator 
-        threeHundredMsStimuli_{nullptr, "300"};
+        threeHundredMsStimuli_{"300"};
     target_list::FileIdentifierFilterDecorator 
-        fourHundredMsStimuli_{nullptr, "400"};
+        fourHundredMsStimuli_{"400"};
     target_list::FileFilterDecorator 
         originalStimuli{&fileExtensions, &originalStimuli_};
     target_list::FileFilterDecorator 
