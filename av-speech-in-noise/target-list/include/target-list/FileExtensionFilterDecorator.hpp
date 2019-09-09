@@ -53,20 +53,16 @@ namespace target_list {
         std::vector<std::string> identifiers;
     public:
         FileIdentifierExcluderFilterDecorator(
-            DirectoryReader *,
             std::vector<std::string> identifiers
         );
         std::vector<std::string> filter(std::vector<std::string>) override;
     };
 
     class RandomSubsetFilesDecorator : public FileFilter {
-        DirectoryReader *reader;
         Randomizer *randomizer;
         int N;
     public:
-        RandomSubsetFilesDecorator(DirectoryReader *, Randomizer *, int);
-        std::vector<std::string> filesIn(std::string directory);
-        std::vector<std::string> subDirectories(std::string directory);
+        RandomSubsetFilesDecorator(Randomizer *, int);
         std::vector<std::string> filter(std::vector<std::string>) override;
     };
 

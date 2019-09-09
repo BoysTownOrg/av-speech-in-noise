@@ -65,7 +65,6 @@ namespace target_list {
     }
 
     FileIdentifierExcluderFilterDecorator::FileIdentifierExcluderFilterDecorator(
-        DirectoryReader *,
         std::vector<std::string> identifiers
     ) : 
         identifiers{std::move(identifiers)} {}
@@ -132,19 +131,11 @@ namespace target_list {
     }
     
     RandomSubsetFilesDecorator::RandomSubsetFilesDecorator(
-        DirectoryReader *reader, 
         Randomizer *randomizer, 
         int N
     ) :
-        reader{reader},
         randomizer{randomizer},
         N{N} {}
-
-    std::vector<std::string> RandomSubsetFilesDecorator::filesIn(
-        std::string directory
-    ) {
-        return filter(reader->filesIn(std::move(directory)));
-    }
     
     std::vector<std::string> RandomSubsetFilesDecorator::filter(
         std::vector<std::string> files
@@ -156,12 +147,6 @@ namespace target_list {
         for (int i = 0; i < N; ++i)
             subset.push_back(files.at(indices.at(i)));
         return subset;
-    }
-    
-    std::vector<std::string> RandomSubsetFilesDecorator::subDirectories(
-        std::string directory
-    ) {
-        return reader->subDirectories(std::move(directory));
     }
 
     DirectoryReaderComposite::DirectoryReaderComposite(

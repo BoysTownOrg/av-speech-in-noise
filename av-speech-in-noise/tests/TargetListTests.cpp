@@ -381,31 +381,28 @@ namespace {
     
     class FileIdentifierExcluderFilterDecoratorTests : public ::testing::Test {
     protected:
-        DirectoryReaderStub reader;
         
         target_list::FileIdentifierExcluderFilterDecorator construct(
             std::vector<std::string> indentifiers = {}
         ) {
-            return {&reader, std::move(indentifiers)};
+            return {std::move(indentifiers)};
         }
     };
 
     TEST_F(FileIdentifierExcluderFilterDecoratorTests, returnsFilesThatDontEndWithIdentifiers) {
         auto decorator = construct({"1", "2", "3"});
-        reader.setFileNames({ "ax.j", "b1.c", "d.e", "fx2.c", "g3.h" });
         assertEqual({ "ax.j", "d.e" }, filter(decorator, {"ax.j", "b1.c", "d.e", "fx2.c", "g3.h"}));
     }
     
     
     class RandomSubsetFilesDecoratorTests : public ::testing::Test {
     protected:
-        DirectoryReaderStub reader;
         RandomizerStub randomizer;
         
         target_list::RandomSubsetFilesDecorator construct(
             int N = {}
         ) {
-            return {&reader, &randomizer, N};
+            return {&randomizer, N};
         }
         
         auto shuffled() {

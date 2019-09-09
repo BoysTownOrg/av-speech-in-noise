@@ -270,25 +270,37 @@ int main() {
         &randomizer
     };
     target_list::FileIdentifierExcluderFilterDecorator 
-        originalStimuli{&fileExtensions, {"100", "200", "300", "400"}};
+        originalStimuli_{{"100", "200", "300", "400"}};
     target_list::FileIdentifierFilterDecorator 
-        oneHundredMsStimuli{&fileExtensions, "100"};
+        oneHundredMsStimuli_{nullptr, "100"};
     target_list::FileIdentifierFilterDecorator 
-        twoHundredMsStimuli{&fileExtensions, "200"};
+        twoHundredMsStimuli_{nullptr, "200"};
     target_list::FileIdentifierFilterDecorator 
-        threeHundredMsStimuli{&fileExtensions, "300"};
+        threeHundredMsStimuli_{nullptr, "300"};
     target_list::FileIdentifierFilterDecorator 
-        fourHundredMsStimuli{&fileExtensions, "400"};
+        fourHundredMsStimuli_{nullptr, "400"};
+    target_list::FileFilterDecorator 
+        originalStimuli{&fileExtensions, &originalStimuli_};
+    target_list::FileFilterDecorator 
+        oneHundredMsStimuli{&fileExtensions, &oneHundredMsStimuli_};
+    target_list::FileFilterDecorator 
+        twoHundredMsStimuli{&fileExtensions, &twoHundredMsStimuli_};
+    target_list::FileFilterDecorator 
+        threeHundredMsStimuli{&fileExtensions, &threeHundredMsStimuli_};
+    target_list::FileFilterDecorator 
+        fourHundredMsStimuli{&fileExtensions, &fourHundredMsStimuli_};
     target_list::RandomSubsetFilesDecorator 
-        randomSubsetOriginalStimuli{&originalStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomizer, 30};
+        randomSubsetStimuli{&randomizer, 30};
+    target_list::FileFilterDecorator 
+        randomSubsetOriginalStimuli{&originalStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator 
+        randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator 
+        randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator 
+        randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator 
+        randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomSubsetStimuli};
     target_list::DirectoryReaderComposite composite{{
         &randomSubsetOriginalStimuli,
         &randomSubsetOneHundredMsStimuli, 
