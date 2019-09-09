@@ -1,4 +1,5 @@
 #include "FileExtensionFilterDecorator.hpp"
+#include <gsl/gsl>
 #include <numeric>
 
 namespace target_list {
@@ -108,6 +109,8 @@ RandomSubsetFiles::RandomSubsetFiles(
 std::vector<std::string> RandomSubsetFiles::filter(
     std::vector<std::string> files
 ) {
+    if (files.size() < gsl::narrow<size_t>(N))
+        return files;
     std::vector<int> indices(files.size());
     std::iota(indices.begin(), indices.end(), 0);
     randomizer->shuffle(indices.begin(), indices.end());

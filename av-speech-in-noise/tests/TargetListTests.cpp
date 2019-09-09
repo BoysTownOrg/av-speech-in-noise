@@ -416,6 +416,14 @@ TEST_F(RandomSubsetFilesTests, returnsFirstNShuffledIndexedFiles) {
     );
 }
 
+TEST_F(RandomSubsetFilesTests, returnsAllFilesIfLessThanAvailable) {
+    auto decorator = construct(5);
+    assertEqual(
+         {"a", "b", "c"},
+         filter(decorator, {"a", "b", "c"})
+    );
+}
+
 class DirectoryReaderCompositeTests : public ::testing::Test {
 protected:
     std::vector<DirectoryReaderStub> decorated;
