@@ -1,4 +1,4 @@
-#include "FileExtensionFilterDecorator.hpp"
+#include "FileFilterDecorator.hpp"
 #include <gsl/gsl>
 #include <numeric>
 
