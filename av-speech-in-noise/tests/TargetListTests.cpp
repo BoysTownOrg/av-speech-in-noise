@@ -323,16 +323,16 @@ TEST_F(FileFilterDecoratorTests, returnsSubdirectories) {
     assertEqual({ "a", "b", "c" }, subDirectories(decorator));
 }
 
-class FileExtensionFilterDecoratorTests : public ::testing::Test {
+class FileExtensionFilterTests : public ::testing::Test {
 protected:
-    FileExtensionFilterDecorator construct(
+    FileExtensionFilter construct(
         std::vector<std::string> filters = {}
     ) {
-        return FileExtensionFilterDecorator{std::move(filters)};
+        return FileExtensionFilter{std::move(filters)};
     }
 };
 
-TEST_F(FileExtensionFilterDecoratorTests, returnsFilteredFiles) {
+TEST_F(FileExtensionFilterTests, returnsFilteredFiles) {
     auto decorator = construct({".c", ".h"});
     assertEqual(
         { "b.c", "f.c", "g.h" },
@@ -340,16 +340,16 @@ TEST_F(FileExtensionFilterDecoratorTests, returnsFilteredFiles) {
     );
 }
 
-class FileIdentifierFilterDecoratorTests : public ::testing::Test {
+class FileIdentifierFilterTests : public ::testing::Test {
 protected:
-    FileIdentifierFilterDecorator construct(
+    FileIdentifierFilter construct(
         std::string indentifier = {}
     ) {
-        return FileIdentifierFilterDecorator{std::move(indentifier)};
+        return FileIdentifierFilter{std::move(indentifier)};
     }
 };
 
-TEST_F(FileIdentifierFilterDecoratorTests, returnsFilteredFiles) {
+TEST_F(FileIdentifierFilterTests, returnsFilteredFiles) {
     auto decorator = construct("x");
     assertEqual(
         { "ax.j", "xf.c" },
@@ -357,7 +357,7 @@ TEST_F(FileIdentifierFilterDecoratorTests, returnsFilteredFiles) {
     );
 }
 
-TEST_F(FileIdentifierFilterDecoratorTests, returnsFilesThatEndWithIdentifier) {
+TEST_F(FileIdentifierFilterTests, returnsFilesThatEndWithIdentifier) {
     auto decorator = construct("x");
     assertEqual(
         { "ax.j", "fx.c" },

@@ -211,7 +211,7 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
 int main() {
     using namespace av_speech_in_noise;
     MacOsDirectoryReader reader;
-    target_list::FileExtensionFilterDecorator fileExtensions_{
+    target_list::FileExtensionFilter fileExtensions_{
         {".mov", ".avi", ".wav"}
     };
     target_list::FileFilterDecorator fileExtensions{
@@ -274,13 +274,13 @@ int main() {
     };
     target_list::FileIdentifierExcluderFilterDecorator 
         originalStimuli_{{"100", "200", "300", "400"}};
-    target_list::FileIdentifierFilterDecorator 
+    target_list::FileIdentifierFilter 
         oneHundredMsStimuli_{"100"};
-    target_list::FileIdentifierFilterDecorator 
+    target_list::FileIdentifierFilter 
         twoHundredMsStimuli_{"200"};
-    target_list::FileIdentifierFilterDecorator 
+    target_list::FileIdentifierFilter 
         threeHundredMsStimuli_{"300"};
-    target_list::FileIdentifierFilterDecorator 
+    target_list::FileIdentifierFilter 
         fourHundredMsStimuli_{"400"};
     target_list::FileFilterDecorator 
         originalStimuli{&fileExtensions, &originalStimuli_};

@@ -21,12 +21,12 @@ std::vector<std::string> FileFilterDecorator::subDirectories(
     return reader->subDirectories(std::move(directory));
 }
 
-FileExtensionFilterDecorator::FileExtensionFilterDecorator(
+FileExtensionFilter::FileExtensionFilter(
     std::vector<std::string> filters
 ) :
     filters{std::move(filters)} {}
 
-std::vector<std::string> FileExtensionFilterDecorator::filter(
+std::vector<std::string> FileExtensionFilter::filter(
     std::vector<std::string> files
 ) {
     std::vector<std::string> filtered_{};
@@ -37,7 +37,7 @@ std::vector<std::string> FileExtensionFilterDecorator::filter(
     return filtered_;
 }
 
-bool FileExtensionFilterDecorator::endingMatchesFilter(
+bool FileExtensionFilter::endingMatchesFilter(
     const std::string &file,
     const std::string &filter
 ) {
@@ -83,12 +83,12 @@ std::vector<std::string> FileIdentifierExcluderFilterDecorator::filter(
     return filtered_;
 }
 
-FileIdentifierFilterDecorator::FileIdentifierFilterDecorator(
+FileIdentifierFilter::FileIdentifierFilter(
     std::string identifier
 ) :
     identifier{std::move(identifier)} {}
 
-std::vector<std::string> FileIdentifierFilterDecorator::filter(
+std::vector<std::string> FileIdentifierFilter::filter(
     std::vector<std::string> files
 ) {
     std::vector<std::string> filtered_{};
@@ -98,7 +98,7 @@ std::vector<std::string> FileIdentifierFilterDecorator::filter(
     return filtered_;
 }
 
-bool FileIdentifierFilterDecorator::containsIdentifier(
+bool FileIdentifierFilter::containsIdentifier(
     const std::string &file
 ) {
     return file.find(identifier) != std::string::npos;
