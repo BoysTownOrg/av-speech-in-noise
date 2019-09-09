@@ -43,10 +43,10 @@ private:
     );
 };
 
-class FileIdentifierExcluderFilterDecorator : public FileFilter {
+class FileIdentifierExcluderFilter : public FileFilter {
     std::vector<std::string> identifiers;
 public:
-    explicit FileIdentifierExcluderFilterDecorator(
+    explicit FileIdentifierExcluderFilter(
         std::vector<std::string> identifiers
     );
     std::vector<std::string> filter(std::vector<std::string>) override;

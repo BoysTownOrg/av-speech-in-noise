@@ -365,16 +365,16 @@ TEST_F(FileIdentifierFilterTests, returnsFilesThatEndWithIdentifier) {
     );
 }
 
-class FileIdentifierExcluderFilterDecoratorTests : public ::testing::Test {
+class FileIdentifierExcluderFilterTests : public ::testing::Test {
 protected:
-    FileIdentifierExcluderFilterDecorator construct(
+    FileIdentifierExcluderFilter construct(
         std::vector<std::string> indentifiers = {}
     ) {
-        return FileIdentifierExcluderFilterDecorator{std::move(indentifiers)};
+        return FileIdentifierExcluderFilter{std::move(indentifiers)};
     }
 };
 
-TEST_F(FileIdentifierExcluderFilterDecoratorTests, returnsFilesThatDontEndWithIdentifiers) {
+TEST_F(FileIdentifierExcluderFilterTests, returnsFilesThatDontEndWithIdentifiers) {
     auto decorator = construct({"1", "2", "3"});
     assertEqual(
          {"ax.j", "d.e" },

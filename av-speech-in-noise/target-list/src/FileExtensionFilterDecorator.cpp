@@ -50,7 +50,7 @@ bool FileExtensionFilter::endingMatchesFilter(
         );
 }
 
-FileIdentifierExcluderFilterDecorator::FileIdentifierExcluderFilterDecorator(
+FileIdentifierExcluderFilter::FileIdentifierExcluderFilter(
     std::vector<std::string> identifiers
 ) :
     identifiers{std::move(identifiers)} {}
@@ -66,7 +66,7 @@ static bool endsWith(const std::string &s, const std::string &what) {
         );
 }
 
-std::vector<std::string> FileIdentifierExcluderFilterDecorator::filter(
+std::vector<std::string> FileIdentifierExcluderFilter::filter(
     std::vector<std::string> files
 ) {
     std::vector<std::string> filtered_{};

@@ -272,7 +272,7 @@ int main() {
         &fileExtensions,
         &randomizer
     };
-    target_list::FileIdentifierExcluderFilterDecorator 
+    target_list::FileIdentifierExcluderFilter 
         originalStimuli_{{"100", "200", "300", "400"}};
     target_list::FileIdentifierFilter 
         oneHundredMsStimuli_{"100"};
