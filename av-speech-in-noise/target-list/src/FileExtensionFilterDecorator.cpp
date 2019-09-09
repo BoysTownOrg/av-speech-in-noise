@@ -26,18 +26,7 @@ FileExtensionFilter::FileExtensionFilter(
 ) :
     filters{std::move(filters)} {}
 
-std::vector<std::string> FileExtensionFilter::filter(
-    std::vector<std::string> files
-) {
-    std::vector<std::string> filtered_{};
-    for (const auto &file : files)
-        for (const auto &filter : filters)
-            if (endingMatchesFilter(file, filter))
-                filtered_.push_back(file);
-    return filtered_;
-}
-
-bool FileExtensionFilter::endingMatchesFilter(
+static bool endingMatchesFilter(
     const std::string &file,
     const std::string &filter
 ) {
@@ -50,20 +39,25 @@ bool FileExtensionFilter::endingMatchesFilter(
         );
 }
 
+std::vector<std::string> FileExtensionFilter::filter(
+    std::vector<std::string> files
+) {
+    std::vector<std::string> filtered_{};
+    for (const auto &file : files)
+        for (const auto &filter : filters)
+            if (endingMatchesFilter(file, filter))
+                filtered_.push_back(file);
+    return filtered_;
+}
+
 FileIdentifierExcluderFilter::FileIdentifierExcluderFilter(
     std::vector<std::string> identifiers
 ) :
     identifiers{std::move(identifiers)} {}
 
 static bool endsWith(const std::string &s, const std::string &what) {
-    auto found = s.find('.');
-    auto withoutExtension = s.substr(0, found);
-    return withoutExtension.length() >= what.length() &&
-        0 == withoutExtension.compare(
-            withoutExtension.length() - what.length(),
-            what.length(),
-            what
-        );
+    auto withoutExtension = s.substr(0, s.find('.'));
+    return endingMatchesFilter(withoutExtension, what);
 }
 
 std::vector<std::string> FileIdentifierExcluderFilter::filter(

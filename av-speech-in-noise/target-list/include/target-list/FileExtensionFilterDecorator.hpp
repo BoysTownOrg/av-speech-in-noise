@@ -3,6 +3,7 @@
 
 #include <target-list/RandomizedTargetList.hpp>
 #include <vector>
+#include <string>
 
 namespace target_list {
 class FileFilter {
@@ -25,11 +26,6 @@ class FileExtensionFilter : public FileFilter {
 public:
     explicit FileExtensionFilter(std::vector<std::string> filters);
     std::vector<std::string> filter(std::vector<std::string>) override;
-private:
-    bool endingMatchesFilter(
-        const std::string &,
-        const std::string &filter
-    );
 };
 
 class FileIdentifierFilter : public FileFilter {
@@ -38,17 +34,13 @@ public:
     explicit FileIdentifierFilter(std::string identifier);
     std::vector<std::string> filter(std::vector<std::string>) override;
 private:
-    bool containsIdentifier(
-        const std::string &
-    );
+    bool containsIdentifier(const std::string &);
 };
 
 class FileIdentifierExcluderFilter : public FileFilter {
     std::vector<std::string> identifiers;
 public:
-    explicit FileIdentifierExcluderFilter(
-        std::vector<std::string> identifiers
-    );
+    explicit FileIdentifierExcluderFilter(std::vector<std::string> identifiers);
     std::vector<std::string> filter(std::vector<std::string>) override;
 };
 
