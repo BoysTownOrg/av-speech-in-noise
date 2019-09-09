@@ -16,7 +16,7 @@
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
 #include <target-list/RandomizedTargetList.hpp>
-#include <target-list/FileExtensionFilterDecorator.hpp>
+#include <target-list/FileFilterDecorator.hpp>
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <sys/stat.h>
 #include <fstream>
@@ -211,9 +211,12 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
 int main() {
     using namespace av_speech_in_noise;
     MacOsDirectoryReader reader;
-    target_list::FileExtensionFilterDecorator fileExtensions{
-        &reader,
+    target_list::FileExtensionFilter fileExtensions_{
         {".mov", ".avi", ".wav"}
+    };
+    target_list::FileFilterDecorator fileExtensions{
+        &reader,
+        &fileExtensions_
     };
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetListFactory targetListFactory{
@@ -269,23 +272,40 @@ int main() {
         &fileExtensions,
         &randomizer
     };
-    target_list::FileIdentifierFilterDecorator 
-        oneHundredMsStimuli{&fileExtensions, "100ms"};
-    target_list::FileIdentifierFilterDecorator 
-        twoHundredMsStimuli{&fileExtensions, "200ms"};
-    target_list::FileIdentifierFilterDecorator 
-        threeHundredMsStimuli{&fileExtensions, "300ms"};
-    target_list::FileIdentifierFilterDecorator 
-        fourHundredMsStimuli{&fileExtensions, "400ms"};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomizer, 30};
-    target_list::RandomSubsetFilesDecorator 
-        randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomizer, 30};
+    target_list::FileIdentifierExcluderFilter 
+        originalStimuli_{{"100", "200", "300", "400"}};
+    target_list::FileIdentifierFilter 
+        oneHundredMsStimuli_{"100"};
+    target_list::FileIdentifierFilter 
+        twoHundredMsStimuli_{"200"};
+    target_list::FileIdentifierFilter 
+        threeHundredMsStimuli_{"300"};
+    target_list::FileIdentifierFilter 
+        fourHundredMsStimuli_{"400"};
+    target_list::FileFilterDecorator 
+        originalStimuli{&fileExtensions, &originalStimuli_};
+    target_list::FileFilterDecorator 
+        oneHundredMsStimuli{&fileExtensions, &oneHundredMsStimuli_};
+    target_list::FileFilterDecorator 
+        twoHundredMsStimuli{&fileExtensions, &twoHundredMsStimuli_};
+    target_list::FileFilterDecorator 
+        threeHundredMsStimuli{&fileExtensions, &threeHundredMsStimuli_};
+    target_list::FileFilterDecorator 
+        fourHundredMsStimuli{&fileExtensions, &fourHundredMsStimuli_};
+    target_list::RandomSubsetFiles 
+        randomSubsetStimuli{&randomizer, 30};
+    target_list::FileFilterDecorator 
+        randomSubsetOriginalStimuli{&originalStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator 
+        randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator 
+        randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator 
+        randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator 
+        randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomSubsetStimuli};
     target_list::DirectoryReaderComposite composite{{
+        &randomSubsetOriginalStimuli,
         &randomSubsetOneHundredMsStimuli, 
         &randomSubsetTwoHundredMsStimuli, 
         &randomSubsetThreeHundredMsStimuli, 

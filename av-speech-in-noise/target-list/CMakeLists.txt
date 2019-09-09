@@ -1,6 +1,6 @@
 set(
     SOURCES
-    "src/FileExtensionFilterDecorator.cpp"
+    "src/FileFilterDecorator.cpp"
     "src/RandomizedTargetList.cpp"
     "src/SubdirectoryTargetListReader.cpp"
 )
