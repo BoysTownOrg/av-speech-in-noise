@@ -104,14 +104,14 @@ bool FileIdentifierFilter::containsIdentifier(
     return file.find(identifier) != std::string::npos;
 }
 
-RandomSubsetFilesDecorator::RandomSubsetFilesDecorator(
+RandomSubsetFiles::RandomSubsetFiles(
     Randomizer *randomizer,
     int N
 ) :
     randomizer{randomizer},
     N{N} {}
 
-std::vector<std::string> RandomSubsetFilesDecorator::filter(
+std::vector<std::string> RandomSubsetFiles::filter(
     std::vector<std::string> files
 ) {
     std::vector<int> indices(files.size());

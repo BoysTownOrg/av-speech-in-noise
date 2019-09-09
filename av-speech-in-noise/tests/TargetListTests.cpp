@@ -382,11 +382,11 @@ TEST_F(FileIdentifierExcluderFilterTests, returnsFilesThatDontEndWithIdentifiers
     );
 }
 
-class RandomSubsetFilesDecoratorTests : public ::testing::Test {
+class RandomSubsetFilesTests : public ::testing::Test {
 protected:
     RandomizerStub randomizer;
 
-    RandomSubsetFilesDecorator construct(
+    RandomSubsetFiles construct(
         int N = {}
     ) {
         return {&randomizer, N};
@@ -401,13 +401,13 @@ protected:
     }
 };
 
-TEST_F(RandomSubsetFilesDecoratorTests, passesFileNumberRangeToRandomizer) {
+TEST_F(RandomSubsetFilesTests, passesFileNumberRangeToRandomizer) {
     auto decorator = construct();
     filter(decorator, {"a", "b", "c"});
     assertHasBeenShuffled({ 0, 1, 2 });
 }
 
-TEST_F(RandomSubsetFilesDecoratorTests, returnsFirstNShuffledIndexedFiles) {
+TEST_F(RandomSubsetFilesTests, returnsFirstNShuffledIndexedFiles) {
     auto decorator = construct(3);
     randomizer.rotateToTheLeft(2);
     assertEqual(

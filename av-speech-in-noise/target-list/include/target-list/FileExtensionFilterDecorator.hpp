@@ -52,11 +52,11 @@ public:
     std::vector<std::string> filter(std::vector<std::string>) override;
 };
 
-class RandomSubsetFilesDecorator : public FileFilter {
+class RandomSubsetFiles : public FileFilter {
     Randomizer *randomizer;
     int N;
 public:
-    RandomSubsetFilesDecorator(Randomizer *, int);
+    RandomSubsetFiles(Randomizer *, int);
     std::vector<std::string> filter(std::vector<std::string>) override;
 };
 

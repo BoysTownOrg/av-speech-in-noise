@@ -292,7 +292,7 @@ int main() {
         threeHundredMsStimuli{&fileExtensions, &threeHundredMsStimuli_};
     target_list::FileFilterDecorator 
         fourHundredMsStimuli{&fileExtensions, &fourHundredMsStimuli_};
-    target_list::RandomSubsetFilesDecorator 
+    target_list::RandomSubsetFiles 
         randomSubsetStimuli{&randomizer, 30};
     target_list::FileFilterDecorator 
         randomSubsetOriginalStimuli{&originalStimuli, &randomSubsetStimuli};
