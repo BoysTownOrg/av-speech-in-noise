@@ -49,16 +49,13 @@ namespace target_list {
         );
     };
 
-    class FileIdentifierExcluderFilterDecorator : public DirectoryReader, public FileFilter {
+    class FileIdentifierExcluderFilterDecorator : public FileFilter {
         std::vector<std::string> identifiers;
-        DirectoryReader *reader;
     public:
         FileIdentifierExcluderFilterDecorator(
             DirectoryReader *,
             std::vector<std::string> identifiers
         );
-        std::vector<std::string> filesIn(std::string directory) override;
-        std::vector<std::string> subDirectories(std::string directory) override;
         std::vector<std::string> filter(std::vector<std::string>) override;
     };
 

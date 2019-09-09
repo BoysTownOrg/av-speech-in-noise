@@ -65,11 +65,10 @@ namespace target_list {
     }
 
     FileIdentifierExcluderFilterDecorator::FileIdentifierExcluderFilterDecorator(
-        DirectoryReader *reader,
+        DirectoryReader *,
         std::vector<std::string> identifiers
     ) : 
-        identifiers{std::move(identifiers)},
-        reader{reader} {}
+        identifiers{std::move(identifiers)} {}
 
     static bool endsWith(const std::string &s, const std::string &what) {
         auto found = s.find('.');
@@ -80,12 +79,6 @@ namespace target_list {
                 what.length(),
                 what
             );
-    }
-
-    std::vector<std::string> FileIdentifierExcluderFilterDecorator::filesIn(
-        std::string directory
-    ) {
-        return filter(reader->filesIn(std::move(directory)));
     }
 
     std::vector<std::string> FileIdentifierExcluderFilterDecorator::filter(
@@ -103,12 +96,6 @@ namespace target_list {
                 filtered_.push_back(file);
         }
         return filtered_;
-    }
-    
-    std::vector<std::string> FileIdentifierExcluderFilterDecorator::subDirectories(
-        std::string directory
-    ) {
-        return reader->subDirectories(std::move(directory));
     }
 
     FileIdentifierFilterDecorator::FileIdentifierFilterDecorator(
