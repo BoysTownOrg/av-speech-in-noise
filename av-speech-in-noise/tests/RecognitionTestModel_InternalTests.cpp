@@ -750,6 +750,27 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModel_InternalTests,
+        submitCorrectResponseSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitIncorrectResponseSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitFreeResponseSeeksToRandomMaskerPosition
+    ) {
+        assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
         initializeTestSetsInitialMaskerPlayerLevel
     ) {
         setMaskerLevel_dB_SPL(1);
@@ -1027,27 +1048,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         submitFreeResponseSubscribesToTargetPlayerPlaybackCompletion
     ) {
         assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModel_InternalTests,
-        submitCorrectResponseSeeksToRandomMaskerPosition
-    ) {
-        assertMaskerPlayerSeekedToRandomTime(submittingCorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModel_InternalTests,
-        submitIncorrectResponseSeeksToRandomMaskerPosition
-    ) {
-        assertMaskerPlayerSeekedToRandomTime(submittingIncorrectResponse);
-    }
-
-    TEST_F(
-        RecognitionTestModel_InternalTests,
-        submitFreeResponseSeeksToRandomMaskerPosition
-    ) {
-        assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
     }
     
     TEST_F(
