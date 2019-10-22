@@ -1113,6 +1113,13 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    submitIncorrectResponseWritesTarget
+) {
+    assertWritesTarget(submittingIncorrectResponse);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
 ) {
     run(initializingTest);
