@@ -195,6 +195,26 @@ public:
     }
 };
 
+class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
+    open_set::AdaptiveTrial trial_{};
+public:
+    void incorrect() override {
+        trial_.correct = false;
+    }
+
+    void correct() override {
+        trial_.correct = true;
+    }
+
+    void run(av_speech_in_noise::OutputFileImpl &file) override {
+        file.writeTrial(trial_);
+    }
+
+    int evaluationEntryIndex() override {
+        return 2;
+    }
+};
+
 class OutputFileTests : public ::testing::Test {
 protected:
     WriterStub writer;
@@ -204,6 +224,7 @@ protected:
         writingAdaptiveCoordinateResponseTrial;
     WritingFixedLevelCoordinateResponseTrial
         writingFixedLevelCoordinateResponseTrial;
+    WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     FreeResponseTrial freeResponseTrial;
     open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
@@ -538,12 +559,16 @@ TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
 
-TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
-    assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
-}
-
 TEST_F(OutputFileTests, writeIncorrectFixedLevelCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(writingFixedLevelCoordinateResponseTrial);
+}
+
+TEST_F(OutputFileTests, writeIncorrectOpenSetAdaptiveTrial) {
+    assertIncorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
+}
+
+TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
+    assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
 
 TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {

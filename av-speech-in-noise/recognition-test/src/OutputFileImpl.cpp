@@ -69,6 +69,12 @@ void OutputFileImpl::write(std::string s) {
 }
 
 static std::string evaluation(
+    const open_set::AdaptiveTrial &trial
+) {
+    return trial.correct ? "correct" : "incorrect";
+}
+
+static std::string evaluation(
     const coordinate_response_measure::Trial &trial
 ) {
     return trial.correct ? "correct" : "incorrect";
@@ -126,6 +132,8 @@ static std::string formatTrial(const FreeResponseTrial &trial) {
 static std::string formatTrial(const open_set::AdaptiveTrial &trial) {
     FormattedStream stream;
     stream.insert(trial.target);
+    stream.insertCommaAndSpace();
+    stream.insert(evaluation(trial));
     stream.insertNewLine();
     return stream.str();
 }
