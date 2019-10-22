@@ -162,18 +162,18 @@ void OutputFileImpl::writeFreeResponseTrialHeading() {
 
 std::string OutputFileImpl::formatOpenSetTrialHeading() {
     FormattedStream stream;
-    stream.insert("target");
+    stream.insert(headingItemName(HeadingItem::target));
     stream.insertCommaAndSpace();
-    stream.insert("response");
+    stream.insert(headingItemName(HeadingItem::freeResponse));
     stream.insertNewLine();
     return stream.str();
 }
 
 static std::string formatEvaluatedTrialHeading() {
     FormattedStream stream;
-    stream.insert("target");
+    stream.insert(headingItemName(HeadingItem::target));
     stream.insertCommaAndSpace();
-    stream.insert("evaluation");
+    stream.insert(headingItemName(HeadingItem::evaluation));
     stream.insertNewLine();
     return stream.str();
 }

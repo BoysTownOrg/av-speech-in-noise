@@ -205,7 +205,7 @@ protected:
     WritingFixedLevelCoordinateResponseTrial
         writingFixedLevelCoordinateResponseTrial;
     FreeResponseTrial freeResponseTrial;
-    open_set::AdaptiveTrial evaluatedTrial;
+    open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     TestInformation testInformation;
@@ -224,13 +224,13 @@ protected:
         file.writeTrial(freeResponseTrial);
     }
 
-    void writeCorrectResponseTrial() {
-        setEvaluatedTrialCorrect();
-        file.writeTrial(evaluatedTrial);
+    void writeCorrectOpenSetAdaptiveTrial() {
+        setOpenSetAdaptiveTrialCorrect();
+        file.writeTrial(openSetAdaptiveTrial);
     }
 
-    void setEvaluatedTrialCorrect() {
-        evaluatedTrial.correct = true;
+    void setOpenSetAdaptiveTrialCorrect() {
+        openSetAdaptiveTrial.correct = true;
     }
 
     const auto &written() {
@@ -425,14 +425,14 @@ TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
 
 TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
     writeFreeResponseTrial();
-    assertNthEntryOfFirstLine("target", 1);
-    assertNthEntryOfFirstLine("response", 2);
+    assertNthEntryOfFirstLine(headingItemName(HeadingItem::target), 1);
+    assertNthEntryOfFirstLine(headingItemName(HeadingItem::freeResponse), 2);
 }
 
-TEST_F(OutputFileTests, writeCorrectResponseTrialHeading) {
-    writeCorrectResponseTrial();
-    assertNthEntryOfFirstLine("target", 1);
-    assertNthEntryOfFirstLine("evaluation", 2);
+TEST_F(OutputFileTests, writeCorrectOpenSetAdaptiveTrialHeading) {
+    writeCorrectOpenSetAdaptiveTrial();
+    assertNthEntryOfFirstLine(headingItemName(HeadingItem::target), 1);
+    assertNthEntryOfFirstLine(headingItemName(HeadingItem::evaluation), 2);
 }
 
 TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {

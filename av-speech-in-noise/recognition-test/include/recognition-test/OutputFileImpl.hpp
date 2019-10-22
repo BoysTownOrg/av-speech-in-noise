@@ -13,7 +13,9 @@ enum class HeadingItem {
     subjectColor,
     evaluation,
     stimulus,
-    reversals
+    reversals,
+    target,
+    freeResponse
 };
 
 constexpr const char *headingItemName(HeadingItem i) {
@@ -32,8 +34,12 @@ constexpr const char *headingItemName(HeadingItem i) {
             return "evaluation";
         case HeadingItem::stimulus:
             return "stimulus";
+        case HeadingItem::target:
+            return "target";
         case HeadingItem::reversals:
             return "reversals";
+        case HeadingItem::freeResponse:
+            return "freeResponse";
     }
 }
 
