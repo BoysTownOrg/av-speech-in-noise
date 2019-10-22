@@ -68,11 +68,13 @@ void OutputFileImpl::write(std::string s) {
     writer->write(std::move(s));
 }
 
-void OutputFileImpl::writeTrial(
-    const coordinate_response_measure::AdaptiveTrial &trial
+static std::string evaluation(
+    const coordinate_response_measure::Trial &trial
 ) {
-    if (!justWroteAdaptiveCoordinateResponseTrial)
-        writeAdaptiveCoordinateResponseTrialHeading();
+    return trial.correct ? "correct" : "incorrect";
+}
+
+static std::string formatTrial(const coordinate_response_measure::AdaptiveTrial &trial) {
     FormattedStream stream;
     stream.insert(trial.SNR_dB);
     stream.insertCommaAndSpace();
@@ -88,7 +90,15 @@ void OutputFileImpl::writeTrial(
     stream.insertCommaAndSpace();
     stream.insert(trial.reversals);
     stream.insertNewLine();
-    write(stream.str());
+    return stream.str();
+}
+
+void OutputFileImpl::writeTrial(
+    const coordinate_response_measure::AdaptiveTrial &trial
+) {
+    if (!justWroteAdaptiveCoordinateResponseTrial)
+        writeAdaptiveCoordinateResponseTrialHeading();
+    write(formatTrial(trial));
     justWroteAdaptiveCoordinateResponseTrial = true;
 }
 
@@ -148,12 +158,6 @@ void OutputFileImpl::writeFixedLevelCoordinateResponseTrialHeading() {
     stream.insert(headingItemName(HeadingItem::stimulus));
     stream.insertNewLine();
     write(stream.str());
-}
-
-std::string OutputFileImpl::evaluation(
-    const coordinate_response_measure::Trial &trial
-) {
-    return trial.correct ? "correct" : "incorrect";
 }
 
 void OutputFileImpl::writeFreeResponseTrialHeading() {
@@ -252,19 +256,19 @@ void OutputFileImpl::writeTrial(const open_set::AdaptiveTrial &trial) {
     write(av_speech_in_noise::formatTrial(trial));
 }
 
-void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
-    if (!justWroteFreeResponseTrial)
-        writeFreeResponseTrialHeading();
-    write(formatTrial(trial));
-    justWroteFreeResponseTrial = true;
-}
-
-std::string OutputFileImpl::formatTrial(const FreeResponseTrial &trial) {
+static std::string formatTrial(const FreeResponseTrial &trial) {
     FormattedStream stream;
     stream.insert(trial.target);
     stream.insertCommaAndSpace();
     stream.insert(trial.response);
     stream.insertNewLine();
     return stream.str();
+}
+
+void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
+    if (!justWroteFreeResponseTrial)
+        writeFreeResponseTrialHeading();
+    write(formatTrial(trial));
+    justWroteFreeResponseTrial = true;
 }
 }

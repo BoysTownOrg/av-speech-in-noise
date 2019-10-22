@@ -104,11 +104,8 @@ private:
     void writeAdaptiveCoordinateResponseTrialHeading();
     void writeFreeResponseTrialHeading();
     void write(std::string);
-    std::string evaluation(const coordinate_response_measure::Trial &);
     std::string formatTest(const AdaptiveTest &);
     std::string formatTest(const FixedLevelTest &);
-    std::string formatTrial(const coordinate_response_measure::Trial &);
-    std::string formatTrial(const FreeResponseTrial &);
     std::string formatCoordinateResponseTrialHeading();
     std::string formatOpenSetTrialHeading();
     std::string generateNewFilePath(const TestInformation &);
