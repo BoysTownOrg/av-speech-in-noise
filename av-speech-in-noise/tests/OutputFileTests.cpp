@@ -369,6 +369,11 @@ protected:
         assertNthCommaDelimitedEntryOfLine(HeadingItem::stimulus, 6, n);
     }
 
+    void assertFreeResponseHeadingAtLine(int n) {
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 1, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::freeResponse, 2, n);
+    }
+
     void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {
         using coordinate_response_measure::Color;
         auto &trial = writingAdaptiveCoordinateResponseTrial.trial();
@@ -504,6 +509,16 @@ TEST_F(
     openNewFile();
     run(writingFixedLevelCoordinateResponseTrial);
     assertFixedLevelCoordinateResponseHeadingAtLine(3);
+}
+
+TEST_F(
+    OutputFileTests,
+    writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened
+) {
+    writeFreeResponseTrial();
+    openNewFile();
+    writeFreeResponseTrial();
+    assertFreeResponseHeadingAtLine(3);
 }
 
 TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {

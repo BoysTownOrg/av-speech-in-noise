@@ -262,6 +262,7 @@ void OutputFileImpl::openNewFile(const TestInformation &test) {
         throw OpenFailure{};
     justWroteAdaptiveCoordinateResponseTrial = false;
     justWroteFixedLevelCoordinateResponseTrial = false;
+    justWroteFreeResponseTrial = false;
 }
 
 std::string OutputFileImpl::generateNewFilePath(const TestInformation &test) {
