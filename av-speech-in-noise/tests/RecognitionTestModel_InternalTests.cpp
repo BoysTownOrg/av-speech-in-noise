@@ -98,6 +98,12 @@ public:
     virtual void run(RecognitionTestModel_Internal &) = 0;
 };
 
+class TargetWritingUseCase : public virtual UseCase {
+public:
+    virtual ~TargetWritingUseCase() = default;
+    virtual std::string writtenTarget(OutputFileStub &) = 0;
+};
+
 class SubmittingResponse : public virtual UseCase {
 };
 
@@ -196,13 +202,20 @@ public:
     }
 };
 
-class SubmittingFreeResponse : public SubmittingResponse {
+class SubmittingFreeResponse :
+    public SubmittingResponse,
+    public TargetWritingUseCase
+{
     FreeResponse response_;
 public:
     void run(RecognitionTestModel_Internal &m) override {
         m.submitResponse(response_);
     }
-    
+
+    std::string writtenTarget(OutputFileStub &file) override {
+        return file.writtenFreeResponseTrial().target;
+    }
+
     void setResponse(std::string s) {
         response_.response = std::move(s);
     }
@@ -228,17 +241,25 @@ public:
     }
 };
 
-class SubmittingCorrectResponse : public UseCase {
+class SubmittingCorrectResponse : public TargetWritingUseCase {
 public:
     void run(RecognitionTestModel_Internal &m) override {
         m.submitCorrectResponse();
     }
+
+    std::string writtenTarget(OutputFileStub &file) override {
+        return file.writtenOpenSetAdaptiveTrial().target;
+    }
 };
 
-class SubmittingIncorrectResponse : public UseCase {
+class SubmittingIncorrectResponse : public TargetWritingUseCase {
 public:
     void run(RecognitionTestModel_Internal &m) override {
         m.submitIncorrectResponse();
+    }
+
+    std::string writtenTarget(OutputFileStub &file) override {
+        return file.writtenOpenSetAdaptiveTrial().target;
     }
 };
 
@@ -535,6 +556,12 @@ protected:
         testMethod.setNextTarget("b");
         run(useCase);
         assertTargetFilePathEquals("a");
+    }
+
+    void assertWritesTarget(TargetWritingUseCase &useCase) {
+        evaluator.setFileName("a");
+        run(useCase);
+        assertEqual("a", useCase.writtenTarget(outputFile));
     }
 };
 
@@ -1074,18 +1101,14 @@ TEST_F(
     RecognitionTestModel_InternalTests,
     submitFreeResponseWritesTarget
 ) {
-    evaluator.setFileName("a");
-    run(submittingFreeResponse);
-    assertEqual("a", writtenFreeResponseTrial().target);
+    assertWritesTarget(submittingFreeResponse);
 }
 
 TEST_F(
     RecognitionTestModel_InternalTests,
     submitCorrectResponseWritesTarget
 ) {
-    evaluator.setFileName("a");
-    run(submittingCorrectResponse);
-    assertEqual("a", writtenOpenSetAdaptiveTrial().target);
+    assertWritesTarget(submittingCorrectResponse);
 }
 
 TEST_F(
