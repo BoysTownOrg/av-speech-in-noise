@@ -90,7 +90,7 @@ public:
     void close() override;
     void writeTest(const FixedLevelTest &) override;
     void writeTrial(const FreeResponseTrial &) override;
-    void writeTrial(const EvaluatedTrial &);
+    void writeTrial(const open_set::AdaptiveTrial &);
     void save() override;
 
 private:

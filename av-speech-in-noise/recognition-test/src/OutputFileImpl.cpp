@@ -240,7 +240,7 @@ void OutputFileImpl::save() {
     writer->save();
 }
 
-void OutputFileImpl::writeTrial(const EvaluatedTrial &) {
+void OutputFileImpl::writeTrial(const open_set::AdaptiveTrial &) {
     write(formatEvaluatedTrialHeading());
 }
 

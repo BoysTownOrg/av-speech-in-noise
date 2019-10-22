@@ -205,7 +205,7 @@ protected:
     WritingFixedLevelCoordinateResponseTrial
         writingFixedLevelCoordinateResponseTrial;
     FreeResponseTrial freeResponseTrial;
-    EvaluatedTrial evaluatedTrial;
+    open_set::AdaptiveTrial evaluatedTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     TestInformation testInformation;
@@ -423,6 +423,18 @@ TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
     assertFixedLevelCoordinateResponseHeadingAtLine(1);
 }
 
+TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
+    writeFreeResponseTrial();
+    assertNthEntryOfFirstLine("target", 1);
+    assertNthEntryOfFirstLine("response", 2);
+}
+
+TEST_F(OutputFileTests, writeCorrectResponseTrialHeading) {
+    writeCorrectResponseTrial();
+    assertNthEntryOfFirstLine("target", 1);
+    assertNthEntryOfFirstLine("evaluation", 2);
+}
+
 TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
     assertWritesAdaptiveCoordinateResponseTrialOnLine(2);
 }
@@ -503,18 +515,6 @@ TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
     writeFreeResponseTrial();
     assertNthEntryOfThirdLine("a", 1);
     assertNthEntryOfThirdLine("b", 2);
-}
-
-TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
-    writeFreeResponseTrial();
-    assertNthEntryOfFirstLine("target", 1);
-    assertNthEntryOfFirstLine("response", 2);
-}
-
-TEST_F(OutputFileTests, writeCorrectResponseTrialHeading) {
-    writeCorrectResponseTrial();
-    assertNthEntryOfFirstLine("target", 1);
-    assertNthEntryOfFirstLine("evaluation", 2);
 }
 
 TEST_F(OutputFileTests, writeCommonAdaptiveTest) {
