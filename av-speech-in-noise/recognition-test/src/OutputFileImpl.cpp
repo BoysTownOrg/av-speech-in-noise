@@ -163,6 +163,15 @@ namespace av_speech_in_noise {
         stream.insertNewLine();
         return stream.str();
     }
+
+    static std::string formatEvaluatedTrialHeading() {
+        FormattedStream stream;
+        stream.insert("target");
+        stream.insertCommaAndSpace();
+        stream.insert("evaluation");
+        stream.insertNewLine();
+        return stream.str();
+    }
     
     void OutputFileImpl::openNewFile(const TestInformation &test) {
         writer->open(generateNewFilePath(test));
@@ -226,6 +235,10 @@ namespace av_speech_in_noise {
         writer->save();
     }
     
+    void OutputFileImpl::writeTrial(const EvaluatedTrial &) {
+        write(formatEvaluatedTrialHeading());
+    }
+
     void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
         if (!justWroteFreeResponseTrial)
             writeFreeResponseTrialHeading();

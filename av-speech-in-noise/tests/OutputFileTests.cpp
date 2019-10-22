@@ -205,6 +205,7 @@ protected:
     WritingFixedLevelCoordinateResponseTrial
         writingFixedLevelCoordinateResponseTrial;
     FreeResponseTrial freeResponseTrial;
+    EvaluatedTrial evaluatedTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     TestInformation testInformation;
@@ -221,6 +222,15 @@ protected:
 
     void writeFreeResponseTrial() {
         file.writeTrial(freeResponseTrial);
+    }
+
+    void writeCorrectResponseTrial() {
+        setEvaluatedTrialCorrect();
+        file.writeTrial(evaluatedTrial);
+    }
+
+    void setEvaluatedTrialCorrect() {
+        evaluatedTrial.correct = true;
     }
 
     const auto &written() {
@@ -499,6 +509,12 @@ TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
     writeFreeResponseTrial();
     assertNthEntryOfFirstLine("target", 1);
     assertNthEntryOfFirstLine("response", 2);
+}
+
+TEST_F(OutputFileTests, writeCorrectResponseTrialHeading) {
+    writeCorrectResponseTrial();
+    assertNthEntryOfFirstLine("target", 1);
+    assertNthEntryOfFirstLine("evaluation", 2);
 }
 
 TEST_F(OutputFileTests, writeCommonAdaptiveTest) {

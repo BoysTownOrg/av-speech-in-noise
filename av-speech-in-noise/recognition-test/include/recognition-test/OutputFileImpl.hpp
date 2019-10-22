@@ -85,6 +85,7 @@ namespace av_speech_in_noise {
         void close() override;
         void writeTest(const FixedLevelTest &) override;
         void writeTrial(const FreeResponseTrial &) override;
+        void writeTrial(const EvaluatedTrial &);
         void save() override;
         
     private:
