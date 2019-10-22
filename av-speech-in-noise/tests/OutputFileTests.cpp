@@ -524,6 +524,16 @@ TEST_F(
     assertFreeResponseHeadingAtLine(3);
 }
 
+TEST_F(
+    OutputFileTests,
+    writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened
+) {
+    writeOpenSetAdaptiveTrial();
+    openNewFile();
+    writeOpenSetAdaptiveTrial();
+    assertOpenSetAdaptiveHeadingAtLine(3);
+}
+
 TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
