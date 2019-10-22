@@ -1059,27 +1059,6 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
-    submitCorrectResponseSubscribesToTargetPlayerPlaybackCompletion
-) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);
-}
-
-TEST_F(
-    RecognitionTestModel_InternalTests,
-    submitIncorrectResponseSubscribesToTargetPlayerPlaybackCompletion
-) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
-}
-
-TEST_F(
-    RecognitionTestModel_InternalTests,
-    submitFreeResponseSubscribesToTargetPlayerPlaybackCompletion
-) {
-    assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
-}
-
-TEST_F(
-    RecognitionTestModel_InternalTests,
     submitFreeResponseWritesResponse
 ) {
     submittingFreeResponse.setResponse("a");
