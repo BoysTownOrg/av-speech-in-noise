@@ -411,6 +411,12 @@ protected:
         assertNthCommaDelimitedEntryOfLine("b", 2, n);
     }
 
+    void assertWritesOpenSetAdaptiveTrialOnLine(int n) {
+        openSetAdaptiveTrial.target = "a";
+        writeOpenSetAdaptiveTrial();
+        assertNthCommaDelimitedEntryOfLine("a", 1, n);
+    }
+
     void assertColonDelimitedEntryWritten(std::string label, std::string what) {
         assertWriterContains(label + ": " + what + "\n");
     }
@@ -451,9 +457,7 @@ TEST_F(OutputFileTests, writeFreeResponseTrial) {
 }
 
 TEST_F(OutputFileTests, writeOpenSetAdaptiveTrial) {
-    openSetAdaptiveTrial.target = "a";
-    writeOpenSetAdaptiveTrial();
-    assertNthEntryOfSecondLine("a", 1);
+    assertWritesOpenSetAdaptiveTrialOnLine(2);
 }
 
 TEST_F(
@@ -475,6 +479,11 @@ TEST_F(
 TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
     writeFreeResponseTrial();
     assertWritesFreeResponseTrialOnLine(3);
+}
+
+TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
+    writeOpenSetAdaptiveTrial();
+    assertWritesOpenSetAdaptiveTrialOnLine(3);
 }
 
 TEST_F(

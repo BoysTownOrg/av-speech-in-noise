@@ -210,8 +210,10 @@ void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
 }
 
 void OutputFileImpl::writeTrial(const open_set::AdaptiveTrial &trial) {
-    write(formatOpenSetAdaptiveTrialHeading());
+    if (!justWroteOpenSetAdaptiveTrial)
+        write(formatOpenSetAdaptiveTrialHeading());
     write(formatTrial(trial));
+    justWroteOpenSetAdaptiveTrial = true;
 }
 
 void OutputFileImpl::writeTest(const AdaptiveTest &test) {

@@ -83,6 +83,7 @@ class OutputFileImpl : public OutputFile {
     bool justWroteFixedLevelCoordinateResponseTrial{};
     bool justWroteAdaptiveCoordinateResponseTrial{};
     bool justWroteFreeResponseTrial{};
+    bool justWroteOpenSetAdaptiveTrial{};
 public:
     OutputFileImpl(Writer *, OutputFilePath *);
     void openNewFile(const TestInformation &) override;
