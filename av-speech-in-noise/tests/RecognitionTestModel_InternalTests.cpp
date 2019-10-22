@@ -951,6 +951,13 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModel_InternalTests,
+        submitCorrectResponseDoesNotLoadNextTargetWhenComplete
+    ) {
+        assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
         initializeTestDoesNotLoadNextTargetWhenComplete
     ) {
         testMethod.setNextTarget("a");

@@ -245,7 +245,8 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel_Internal::submitCorrectResponse_() {
         testMethod->submitCorrectResponse();
-        preparePlayersForNextTrial();
+        if (!testMethod->complete())
+            preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel_Internal::submitIncorrectResponse() {
