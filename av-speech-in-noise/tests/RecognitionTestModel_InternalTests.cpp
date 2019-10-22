@@ -680,6 +680,27 @@ namespace av_speech_in_noise::tests::recognition_test {
 
     TEST_F(
         RecognitionTestModel_InternalTests,
+        submitFreeResponseSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitCorrectResponseSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitIncorrectResponseSubscribesToTargetPlaybackCompletionNotification
+    ) {
+        assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
+    }
+
+    TEST_F(
+        RecognitionTestModel_InternalTests,
         initializeTestSeeksToRandomMaskerPositionWithinTrialDuration
     ) {
         assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
