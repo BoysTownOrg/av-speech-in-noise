@@ -48,6 +48,7 @@ namespace av_speech_in_noise {
             const coordinate_response_measure::FixedLevelTrial &
         ) = 0;
         virtual void writeTrial(const FreeResponseTrial &) = 0;
+        virtual void writeTrial(const open_set::AdaptiveTrial &) = 0;
         virtual void writeTest(const AdaptiveTest &) = 0;
         virtual void writeTest(const FixedLevelTest &) = 0;
         virtual void close() = 0;

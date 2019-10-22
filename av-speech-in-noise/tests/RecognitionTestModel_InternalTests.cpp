@@ -524,6 +524,10 @@ protected:
         return outputFile.writtenFreeResponseTrial();
     }
 
+    auto writtenOpenSetAdaptiveTrial() {
+        return outputFile.writtenOpenSetAdaptiveTrial();
+    }
+
     void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
         testMethod.setNextTarget("a");
         run(initializingTest);
@@ -1073,6 +1077,15 @@ TEST_F(
     evaluator.setFileName("a");
     run(submittingFreeResponse);
     assertEqual("a", writtenFreeResponseTrial().target);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
+    submitCorrectResponseWritesTarget
+) {
+    evaluator.setFileName("a");
+    run(submittingCorrectResponse);
+    assertEqual("a", writtenOpenSetAdaptiveTrial().target);
 }
 
 TEST_F(

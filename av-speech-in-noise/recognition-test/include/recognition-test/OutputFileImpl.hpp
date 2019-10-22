@@ -98,7 +98,7 @@ public:
         const coordinate_response_measure::FixedLevelTrial &
     ) override;
     void writeTrial(const FreeResponseTrial &) override;
-    void writeTrial(const open_set::AdaptiveTrial &);
+    void writeTrial(const open_set::AdaptiveTrial &) override;
 
 private:
     void write(std::string);
