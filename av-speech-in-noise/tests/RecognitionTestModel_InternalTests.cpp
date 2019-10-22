@@ -523,6 +523,15 @@ namespace av_speech_in_noise::tests::recognition_test {
         auto writtenFreeResponseTrial() {
             return outputFile.writtenFreeResponseTrial();
         }
+
+        void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
+            testMethod.setNextTarget("a");
+            run(initializingTest);
+            testMethod.setComplete();
+            testMethod.setNextTarget("b");
+            run(useCase);
+            assertTargetFilePathEquals("a");
+        }
     };
     
     TEST_F(RecognitionTestModel_InternalTests, subscribesToPlayerEvents) {
@@ -930,24 +939,14 @@ namespace av_speech_in_noise::tests::recognition_test {
         RecognitionTestModel_InternalTests,
         submitCoordinateResponseDoesNotLoadNextTargetWhenComplete
     ) {
-        testMethod.setNextTarget("a");
-        run(initializingTest);
-        testMethod.setComplete();
-        testMethod.setNextTarget("b");
-        run(submittingCoordinateResponse);
-        assertTargetFilePathEquals("a");
+        assertResponseDoesNotLoadNextTargetWhenComplete(submittingCoordinateResponse);
     }
 
     TEST_F(
         RecognitionTestModel_InternalTests,
         submitFreeResponseDoesNotLoadNextTargetWhenComplete
     ) {
-        testMethod.setNextTarget("a");
-        run(initializingTest);
-        testMethod.setComplete();
-        testMethod.setNextTarget("b");
-        run(submittingFreeResponse);
-        assertTargetFilePathEquals("a");
+        assertResponseDoesNotLoadNextTargetWhenComplete(submittingFreeResponse);
     }
 
     TEST_F(
