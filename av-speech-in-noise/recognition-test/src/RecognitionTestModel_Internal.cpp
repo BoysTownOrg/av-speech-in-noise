@@ -243,6 +243,10 @@ void RecognitionTestModel_Internal::fadeOutComplete() {
     listener_->trialComplete();
 }
 
+static std::string targetName(ResponseEvaluator *evaluator, TestMethod *testMethod) {
+    return evaluator->fileName(testMethod->current());
+}
+
 void RecognitionTestModel_Internal::submitResponse(
     const coordinate_response_measure::SubjectResponse &response
 ) {
@@ -258,7 +262,7 @@ void RecognitionTestModel_Internal::submitCorrectResponse() {
 
 void RecognitionTestModel_Internal::submitCorrectResponse_() {
     open_set::AdaptiveTrial trial;
-    trial.target = evaluator->fileName(testMethod->current());
+    trial.target = targetName(evaluator, testMethod);
     outputFile->writeTrial(trial);
     outputFile->save();
     testMethod->submitCorrectResponse();
@@ -291,7 +295,7 @@ void RecognitionTestModel_Internal::submitResponse(
 void RecognitionTestModel_Internal::writeTrial(const FreeResponse &p) {
     FreeResponseTrial trial;
     trial.response = p.response;
-    trial.target = evaluator->fileName(testMethod->current());
+    trial.target = targetName(evaluator, testMethod);
     outputFile->writeTrial(trial);
     outputFile->save();
 }
