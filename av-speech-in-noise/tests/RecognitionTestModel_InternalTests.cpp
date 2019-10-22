@@ -888,6 +888,13 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    submitIncorrectResponseSavesOutputFileAfterWritingTrial
+) {
+    assertSavesOutputFileAfterWritingTrial(submittingIncorrectResponse);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     initializeTestThrowsRequestFailureIfFileFailsToOpen
 ) {
     outputFile.throwOnOpen();
