@@ -145,6 +145,7 @@ namespace av_speech_in_noise {
         );
         void loadTargetFile(std::string);
         void setTargetLevel_dB(double);
+        void prepareNextTrialIfNeeded();
     };
 }
 

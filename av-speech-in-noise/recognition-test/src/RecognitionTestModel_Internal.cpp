@@ -235,8 +235,7 @@ namespace av_speech_in_noise {
         testMethod->submitResponse(response);
         testMethod->writeLastCoordinateResponse(outputFile);
         outputFile->save();
-        if (!testMethod->complete())
-            preparePlayersForNextTrial();
+        prepareNextTrialIfNeeded();
     }
     
     void RecognitionTestModel_Internal::submitCorrectResponse() {
@@ -245,6 +244,10 @@ namespace av_speech_in_noise {
     
     void RecognitionTestModel_Internal::submitCorrectResponse_() {
         testMethod->submitCorrectResponse();
+        prepareNextTrialIfNeeded();
+    }
+
+    void RecognitionTestModel_Internal::prepareNextTrialIfNeeded() {
         if (!testMethod->complete())
             preparePlayersForNextTrial();
     }
@@ -261,8 +264,7 @@ namespace av_speech_in_noise {
     void RecognitionTestModel_Internal::submitResponse(const FreeResponse &response) {
         writeTrial(response);
         testMethod->submitResponse(response);
-        if (!testMethod->complete())
-            preparePlayersForNextTrial();
+        prepareNextTrialIfNeeded();
     }
     
     void RecognitionTestModel_Internal::writeTrial(const FreeResponse &p) {
