@@ -260,7 +260,8 @@ namespace av_speech_in_noise {
     void RecognitionTestModel_Internal::submitResponse(const FreeResponse &response) {
         writeTrial(response);
         testMethod->submitResponse(response);
-        preparePlayersForNextTrial();
+        if (!testMethod->complete())
+            preparePlayersForNextTrial();
     }
     
     void RecognitionTestModel_Internal::writeTrial(const FreeResponse &p) {
