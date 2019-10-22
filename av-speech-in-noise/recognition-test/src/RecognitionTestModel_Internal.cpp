@@ -247,12 +247,16 @@ static std::string targetName(ResponseEvaluator *evaluator, TestMethod *testMeth
     return evaluator->fileName(testMethod->current());
 }
 
+static void save(OutputFile *file) {
+    file->save();
+}
+
 void RecognitionTestModel_Internal::submitResponse(
     const coordinate_response_measure::SubjectResponse &response
 ) {
     testMethod->submitResponse(response);
     testMethod->writeLastCoordinateResponse(outputFile);
-    outputFile->save();
+    save(outputFile);
     prepareNextTrialIfNeeded();
 }
 
@@ -264,7 +268,7 @@ void RecognitionTestModel_Internal::submitCorrectResponse_() {
     open_set::AdaptiveTrial trial;
     trial.target = targetName(evaluator, testMethod);
     outputFile->writeTrial(trial);
-    outputFile->save();
+    save(outputFile);
     testMethod->submitCorrectResponse();
     prepareNextTrialIfNeeded();
 }
@@ -279,7 +283,7 @@ void RecognitionTestModel_Internal::submitIncorrectResponse() {
 }
 
 void RecognitionTestModel_Internal::submitIncorrectResponse_() {
-    outputFile->save();
+    save(outputFile);
     testMethod->submitIncorrectResponse();
     prepareNextTrialIfNeeded();
 }
@@ -297,7 +301,7 @@ void RecognitionTestModel_Internal::writeTrial(const FreeResponse &p) {
     trial.response = p.response;
     trial.target = targetName(evaluator, testMethod);
     outputFile->writeTrial(trial);
-    outputFile->save();
+    save(outputFile);
 }
 
 void RecognitionTestModel_Internal::playCalibration(const Calibration &p) {
