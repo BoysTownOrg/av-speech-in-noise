@@ -403,6 +403,14 @@ protected:
         assertNthCommaDelimitedEntryOfLine("a", 6, n);
     }
 
+    void assertWritesFreeResponseTrialOnLine(int n) {
+        freeResponseTrial.target = "a";
+        freeResponseTrial.response = "b";
+        writeFreeResponseTrial();
+        assertNthCommaDelimitedEntryOfLine("a", 1, n);
+        assertNthCommaDelimitedEntryOfLine("b", 2, n);
+    }
+
     void assertColonDelimitedEntryWritten(std::string label, std::string what) {
         assertWriterContains(label + ": " + what + "\n");
     }
@@ -439,11 +447,7 @@ TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
 }
 
 TEST_F(OutputFileTests, writeFreeResponseTrial) {
-    freeResponseTrial.target = "a";
-    freeResponseTrial.response = "b";
-    writeFreeResponseTrial();
-    assertNthEntryOfSecondLine("a", 1);
-    assertNthEntryOfSecondLine("b", 2);
+    assertWritesFreeResponseTrialOnLine(2);
 }
 
 TEST_F(OutputFileTests, writeOpenSetAdaptiveTrial) {
@@ -458,6 +462,19 @@ TEST_F(
 ) {
     run(writingAdaptiveCoordinateResponseTrial);
     assertWritesAdaptiveCoordinateResponseTrialOnLine(3);
+}
+
+TEST_F(
+    OutputFileTests,
+    writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice
+) {
+    run(writingFixedLevelCoordinateResponseTrial);
+    assertWritesFixedLevelCoordinateResponseTrialOnLine(3);
+}
+
+TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
+    writeFreeResponseTrial();
+    assertWritesFreeResponseTrialOnLine(3);
 }
 
 TEST_F(
@@ -480,14 +497,6 @@ TEST_F(
     assertFixedLevelCoordinateResponseHeadingAtLine(3);
 }
 
-TEST_F(
-    OutputFileTests,
-    writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice
-) {
-    run(writingFixedLevelCoordinateResponseTrial);
-    assertWritesFixedLevelCoordinateResponseTrialOnLine(3);
-}
-
 TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
@@ -507,15 +516,6 @@ TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
 TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
     coordinate_response_measure::AdaptiveTrial uninitialized;
     file.writeTrial(uninitialized);
-}
-
-TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
-    writeFreeResponseTrial();
-    freeResponseTrial.target = "a";
-    freeResponseTrial.response = "b";
-    writeFreeResponseTrial();
-    assertNthEntryOfThirdLine("a", 1);
-    assertNthEntryOfThirdLine("b", 2);
 }
 
 TEST_F(OutputFileTests, writeCommonAdaptiveTest) {
