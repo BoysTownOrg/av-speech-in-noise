@@ -1042,6 +1042,13 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    submitIncorrectResponseDoesNotLoadNextTargetWhenComplete
+) {
+    assertResponseDoesNotLoadNextTargetWhenComplete(submittingIncorrectResponse);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     initializeTestDoesNotLoadNextTargetWhenComplete
 ) {
     testMethod.setNextTarget("a");

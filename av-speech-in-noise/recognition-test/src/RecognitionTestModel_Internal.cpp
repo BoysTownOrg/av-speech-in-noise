@@ -274,7 +274,7 @@ void RecognitionTestModel_Internal::submitIncorrectResponse() {
 void RecognitionTestModel_Internal::submitIncorrectResponse_() {
     outputFile->save();
     testMethod->submitIncorrectResponse();
-    preparePlayersForNextTrial();
+    prepareNextTrialIfNeeded();
 }
 
 void RecognitionTestModel_Internal::submitResponse(
