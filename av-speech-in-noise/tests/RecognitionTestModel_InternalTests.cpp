@@ -1131,6 +1131,17 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    submitCorrectResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
+) {
+    run(initializingTest);
+    testMethod.setCurrent("a");
+    testMethod.setCurrentWhenNext("b");
+    run(submittingCorrectResponse);
+    assertEqual("a", evaluator.filePathForFileName());
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     submitCoordinateResponseWritesTrialAfterSubmittingResponse
 ) {
     run(initializingTest);
