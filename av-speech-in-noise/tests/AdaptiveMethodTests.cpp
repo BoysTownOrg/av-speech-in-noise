@@ -8,7 +8,7 @@
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise::tests { namespace {
 class TrackSettingsReaderStub : public ITrackSettingsReader {
     const TrackingRule *rule_{};
     std::string filePath_{};
@@ -27,6 +27,27 @@ public:
     }
 };
 
+class UseCase {
+public:
+    virtual ~UseCase() = default;
+    virtual void run(AdaptiveMethod &) = 0;
+};
+
+class SubmittingCoordinateResponse : public UseCase {
+    coordinate_response_measure::SubjectResponse response_{};
+public:
+    void run(AdaptiveMethod &method) override {
+        method.submitResponse(response_);
+    }
+};
+
+class SubmittingCorrectResponse : public UseCase {
+public:
+    void run(AdaptiveMethod &method) override {
+        method.submitCorrectResponse();
+    }
+};
+
 class AdaptiveMethodTests : public ::testing::Test {
 protected:
     TargetListSetReaderStub targetListSetReader;
@@ -42,6 +63,8 @@ protected:
         &evaluator,
         &randomizer
     };
+    SubmittingCoordinateResponse submittingCoordinateResponse;
+    SubmittingCorrectResponse submittingCorrectResponse;
     AdaptiveTest test;
     coordinate_response_measure::SubjectResponse coordinateResponse;
     TrackingRule targetLevelRule_;
@@ -197,6 +220,17 @@ public:
     void assertTestComplete() {
         assertTrue(testComplete());
     }
+
+    void run(UseCase &useCase) {
+        useCase.run(method);
+    }
+
+    void assertSelectsListInRangeAfterRemovingCompleteTracks(UseCase &useCase) {
+        initialize();
+        setSnrTrackComplete(2);
+        run(useCase);
+        assertRandomizerPassedIntegerBounds(0, 1);
+    }
 };
 
 TEST_F(
@@ -326,20 +360,14 @@ TEST_F(
     AdaptiveMethodTests,
     submitCoordinateResponseSelectsListInRangeAfterRemovingCompleteTracks
 ) {
-    initialize();
-    setSnrTrackComplete(2);
-    submitCoordinateResponse();
-    assertRandomizerPassedIntegerBounds(0, 1);
+    assertSelectsListInRangeAfterRemovingCompleteTracks(submittingCoordinateResponse);
 }
 
 TEST_F(
     AdaptiveMethodTests,
     submitCorrectResponseSelectsListInRangeAfterRemovingCompleteTracks
 ) {
-    initialize();
-    setSnrTrackComplete(2);
-    submitCorrectResponse();
-    assertRandomizerPassedIntegerBounds(0, 1);
+    assertSelectsListInRangeAfterRemovingCompleteTracks(submittingCorrectResponse);
 }
 
 TEST_F(
@@ -585,4 +613,4 @@ TEST_F(
     setSnrTrackComplete(2);
     assertTestCompleteAfterCoordinateResponse();
 }
-}
+}}
