@@ -240,8 +240,16 @@ void OutputFileImpl::save() {
     writer->save();
 }
 
-void OutputFileImpl::writeTrial(const open_set::AdaptiveTrial &) {
+static std::string formatTrial(const open_set::AdaptiveTrial &trial) {
+    FormattedStream stream;
+    stream.insert(trial.target);
+    stream.insertNewLine();
+    return stream.str();
+}
+
+void OutputFileImpl::writeTrial(const open_set::AdaptiveTrial &trial) {
     write(formatEvaluatedTrialHeading());
+    write(av_speech_in_noise::formatTrial(trial));
 }
 
 void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {

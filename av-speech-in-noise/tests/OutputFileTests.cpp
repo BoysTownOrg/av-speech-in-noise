@@ -224,13 +224,8 @@ protected:
         file.writeTrial(freeResponseTrial);
     }
 
-    void writeCorrectOpenSetAdaptiveTrial() {
-        setOpenSetAdaptiveTrialCorrect();
+    void writeOpenSetAdaptiveTrial() {
         file.writeTrial(openSetAdaptiveTrial);
-    }
-
-    void setOpenSetAdaptiveTrialCorrect() {
-        openSetAdaptiveTrial.correct = true;
     }
 
     const auto &written() {
@@ -429,14 +424,32 @@ TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
     assertNthEntryOfFirstLine(headingItemName(HeadingItem::freeResponse), 2);
 }
 
-TEST_F(OutputFileTests, writeCorrectOpenSetAdaptiveTrialHeading) {
-    writeCorrectOpenSetAdaptiveTrial();
+TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialHeading) {
+    writeOpenSetAdaptiveTrial();
     assertNthEntryOfFirstLine(headingItemName(HeadingItem::target), 1);
     assertNthEntryOfFirstLine(headingItemName(HeadingItem::evaluation), 2);
 }
 
 TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
     assertWritesAdaptiveCoordinateResponseTrialOnLine(2);
+}
+
+TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
+    assertWritesFixedLevelCoordinateResponseTrialOnLine(2);
+}
+
+TEST_F(OutputFileTests, writeFreeResponseTrial) {
+    freeResponseTrial.target = "a";
+    freeResponseTrial.response = "b";
+    writeFreeResponseTrial();
+    assertNthEntryOfSecondLine("a", 1);
+    assertNthEntryOfSecondLine("b", 2);
+}
+
+TEST_F(OutputFileTests, writeOpenSetAdaptiveTrial) {
+    openSetAdaptiveTrial.target = "a";
+    writeOpenSetAdaptiveTrial();
+    assertNthEntryOfSecondLine("a", 1);
 }
 
 TEST_F(
@@ -467,10 +480,6 @@ TEST_F(
     assertFixedLevelCoordinateResponseHeadingAtLine(3);
 }
 
-TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
-    assertWritesFixedLevelCoordinateResponseTrialOnLine(2);
-}
-
 TEST_F(
     OutputFileTests,
     writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice
@@ -498,14 +507,6 @@ TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
 TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
     coordinate_response_measure::AdaptiveTrial uninitialized;
     file.writeTrial(uninitialized);
-}
-
-TEST_F(OutputFileTests, writeFreeResponseTrial) {
-    freeResponseTrial.target = "a";
-    freeResponseTrial.response = "b";
-    writeFreeResponseTrial();
-    assertNthEntryOfSecondLine("a", 1);
-    assertNthEntryOfSecondLine("b", 2);
 }
 
 TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {

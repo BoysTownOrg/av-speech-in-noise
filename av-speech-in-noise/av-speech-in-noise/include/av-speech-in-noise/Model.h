@@ -129,6 +129,7 @@ struct FreeResponseTrial {
 
 namespace open_set {
 struct AdaptiveTrial {
+    std::string target;
     bool correct;
 };
 }
