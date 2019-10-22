@@ -85,24 +85,21 @@ class OutputFileImpl : public OutputFile {
     bool justWroteFreeResponseTrial{};
 public:
     OutputFileImpl(Writer *, OutputFilePath *);
+    void openNewFile(const TestInformation &) override;
+    void close() override;
+    void save() override;
     void writeTest(const AdaptiveTest &) override;
+    void writeTest(const FixedLevelTest &) override;
     void writeTrial(
         const coordinate_response_measure::AdaptiveTrial &
     ) override;
     void writeTrial(
         const coordinate_response_measure::FixedLevelTrial &
     ) override;
-    void openNewFile(const TestInformation &) override;
-    void close() override;
-    void writeTest(const FixedLevelTest &) override;
     void writeTrial(const FreeResponseTrial &) override;
     void writeTrial(const open_set::AdaptiveTrial &);
-    void save() override;
 
 private:
-    void writeFixedLevelCoordinateResponseTrialHeading();
-    void writeAdaptiveCoordinateResponseTrialHeading();
-    void writeFreeResponseTrialHeading();
     void write(std::string);
     std::string formatTest(const AdaptiveTest &);
     std::string formatTest(const FixedLevelTest &);

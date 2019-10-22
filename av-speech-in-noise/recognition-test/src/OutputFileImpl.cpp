@@ -188,7 +188,7 @@ void OutputFileImpl::writeTrial(
     const coordinate_response_measure::AdaptiveTrial &trial
 ) {
     if (!justWroteAdaptiveCoordinateResponseTrial)
-        writeAdaptiveCoordinateResponseTrialHeading();
+        write(formatAdaptiveCoordinateResponseTrialHeading());
     write(formatTrial(trial));
     justWroteAdaptiveCoordinateResponseTrial = true;
 }
@@ -197,33 +197,21 @@ void OutputFileImpl::writeTrial(
     const coordinate_response_measure::FixedLevelTrial &trial
 ) {
     if (!justWroteFixedLevelCoordinateResponseTrial)
-        writeFixedLevelCoordinateResponseTrialHeading();
+        write(formatFixedLevelCoordinateResponseTrialHeading());
     write(formatTrial(trial));
     justWroteFixedLevelCoordinateResponseTrial = true;
+}
+
+void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
+    if (!justWroteFreeResponseTrial)
+        write(formatOpenSetFreeResponseTrialHeading());
+    write(formatTrial(trial));
+    justWroteFreeResponseTrial = true;
 }
 
 void OutputFileImpl::writeTrial(const open_set::AdaptiveTrial &trial) {
     write(formatOpenSetAdaptiveTrialHeading());
     write(formatTrial(trial));
-}
-
-void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
-    if (!justWroteFreeResponseTrial)
-        writeFreeResponseTrialHeading();
-    write(formatTrial(trial));
-    justWroteFreeResponseTrial = true;
-}
-
-void OutputFileImpl::writeAdaptiveCoordinateResponseTrialHeading() {
-    write(formatAdaptiveCoordinateResponseTrialHeading());
-}
-
-void OutputFileImpl::writeFixedLevelCoordinateResponseTrialHeading() {
-    write(formatFixedLevelCoordinateResponseTrialHeading());
-}
-
-void OutputFileImpl::writeFreeResponseTrialHeading() {
-    write(formatOpenSetFreeResponseTrialHeading());
 }
 
 void OutputFileImpl::writeTest(const AdaptiveTest &test) {
