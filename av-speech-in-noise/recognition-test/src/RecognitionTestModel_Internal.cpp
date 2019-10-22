@@ -243,6 +243,7 @@ namespace av_speech_in_noise {
     }
     
     void RecognitionTestModel_Internal::submitCorrectResponse_() {
+        outputFile->save();
         testMethod->submitCorrectResponse();
         prepareNextTrialIfNeeded();
     }

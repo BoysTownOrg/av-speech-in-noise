@@ -881,7 +881,7 @@ namespace av_speech_in_noise::tests::recognition_test {
     
     TEST_F(
         RecognitionTestModel_InternalTests,
-        DISABLED_submitCorrectResponseSavesOutputFileAfterWritingTrial
+        submitCorrectResponseSavesOutputFileAfterWritingTrial
     ) {
         assertSavesOutputFileAfterWritingTrial(submittingCorrectResponse);
     }
