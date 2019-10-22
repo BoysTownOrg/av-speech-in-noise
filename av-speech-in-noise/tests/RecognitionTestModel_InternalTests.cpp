@@ -1142,6 +1142,13 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    submitIncorrectResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
+) {
+    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(submittingIncorrectResponse);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     submitCoordinateResponseWritesTrialAfterSubmittingResponse
 ) {
     run(initializingTest);
