@@ -575,6 +575,10 @@ TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
     assertCorrectTrialWritesEvaluation(writingFixedLevelCoordinateResponseTrial);
 }
 
+TEST_F(OutputFileTests, writeCorrectOpenSetAdaptiveTrial) {
+    assertCorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
+}
+
 TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
     coordinate_response_measure::AdaptiveTrial uninitialized;
     file.writeTrial(uninitialized);

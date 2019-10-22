@@ -68,16 +68,24 @@ void OutputFileImpl::write(std::string s) {
     writer->write(std::move(s));
 }
 
+constexpr const char * correct() {
+    return "correct";
+}
+
+constexpr const char * incorrect() {
+    return "incorrect";
+}
+
 static std::string evaluation(
     const open_set::AdaptiveTrial &trial
 ) {
-    return trial.correct ? "correct" : "incorrect";
+    return trial.correct ? correct() : incorrect();
 }
 
 static std::string evaluation(
     const coordinate_response_measure::Trial &trial
 ) {
-    return trial.correct ? "correct" : "incorrect";
+    return trial.correct ? correct() : incorrect();
 }
 
 static std::string formatTrial(
