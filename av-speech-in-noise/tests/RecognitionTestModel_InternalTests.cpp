@@ -871,6 +871,13 @@ namespace av_speech_in_noise::tests::recognition_test {
     ) {
         assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
     }
+    
+    TEST_F(
+        RecognitionTestModel_InternalTests,
+        submitFreeResponseSavesOutputFileAfterWritingTrial
+    ) {
+        assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
+    }
 
     TEST_F(
         RecognitionTestModel_InternalTests,
@@ -1077,13 +1084,6 @@ namespace av_speech_in_noise::tests::recognition_test {
         testMethod.setCurrentWhenNext("b");
         run(submittingFreeResponse);
         assertEqual("a", evaluator.filePathForFileName());
-    }
-    
-    TEST_F(
-        RecognitionTestModel_InternalTests,
-        submitFreeResponseSavesOutputFileAfterWritingTrial
-    ) {
-        assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
     }
     
     TEST_F(
