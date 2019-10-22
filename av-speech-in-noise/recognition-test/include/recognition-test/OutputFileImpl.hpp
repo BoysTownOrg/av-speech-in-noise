@@ -106,8 +106,6 @@ private:
     void write(std::string);
     std::string formatTest(const AdaptiveTest &);
     std::string formatTest(const FixedLevelTest &);
-    std::string formatCoordinateResponseTrialHeading();
-    std::string formatOpenSetTrialHeading();
     std::string generateNewFilePath(const TestInformation &);
 };
 }
