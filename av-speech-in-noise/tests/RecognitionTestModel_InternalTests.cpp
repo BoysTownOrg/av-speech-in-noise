@@ -563,6 +563,14 @@ protected:
         run(useCase);
         assertEqual("a", useCase.writtenTarget(outputFile));
     }
+
+    void assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(UseCase &useCase) {
+        run(initializingTest);
+        testMethod.setCurrent("a");
+        testMethod.setCurrentWhenNext("b");
+        run(useCase);
+        assertEqual("a", evaluator.filePathForFileName());
+    }
 };
 
 TEST_F(RecognitionTestModel_InternalTests, subscribesToPlayerEvents) {
@@ -1122,22 +1130,14 @@ TEST_F(
     RecognitionTestModel_InternalTests,
     submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
 ) {
-    run(initializingTest);
-    testMethod.setCurrent("a");
-    testMethod.setCurrentWhenNext("b");
-    run(submittingFreeResponse);
-    assertEqual("a", evaluator.filePathForFileName());
+    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(submittingFreeResponse);
 }
 
 TEST_F(
     RecognitionTestModel_InternalTests,
     submitCorrectResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
 ) {
-    run(initializingTest);
-    testMethod.setCurrent("a");
-    testMethod.setCurrentWhenNext("b");
-    run(submittingCorrectResponse);
-    assertEqual("a", evaluator.filePathForFileName());
+    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(submittingCorrectResponse);
 }
 
 TEST_F(
