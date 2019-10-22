@@ -48,6 +48,13 @@ public:
     }
 };
 
+class SubmittingIncorrectResponse : public UseCase {
+public:
+    void run(AdaptiveMethod &method) override {
+        method.submitIncorrectResponse();
+    }
+};
+
 class AdaptiveMethodTests : public ::testing::Test {
 protected:
     TargetListSetReaderStub targetListSetReader;
@@ -65,6 +72,7 @@ protected:
     };
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectResponse submittingCorrectResponse;
+    SubmittingIncorrectResponse submittingIncorrectResponse;
     AdaptiveTest test;
     coordinate_response_measure::SubjectResponse coordinateResponse;
     TrackingRule targetLevelRule_;
@@ -368,6 +376,13 @@ TEST_F(
     submitCorrectResponseSelectsListInRangeAfterRemovingCompleteTracks
 ) {
     assertSelectsListInRangeAfterRemovingCompleteTracks(submittingCorrectResponse);
+}
+
+TEST_F(
+    AdaptiveMethodTests,
+    submitIncorrectResponseSelectsListInRangeAfterRemovingCompleteTracks
+) {
+    assertSelectsListInRangeAfterRemovingCompleteTracks(submittingIncorrectResponse);
 }
 
 TEST_F(
