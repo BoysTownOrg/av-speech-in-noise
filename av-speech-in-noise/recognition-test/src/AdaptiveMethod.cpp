@@ -159,8 +159,12 @@ static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
     trial.SNR_dB = track->x();
 }
 
+static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
+    trial.correct = c;
+}
+
 void AdaptiveMethod::submitIncorrectResponse() {
-    lastOpenSetTrial.correct = false;
+    assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
@@ -168,7 +172,7 @@ void AdaptiveMethod::submitIncorrectResponse() {
 }
 
 void AdaptiveMethod::submitCorrectResponse() {
-    lastOpenSetTrial.correct = true;
+    assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
