@@ -151,15 +151,19 @@ void AdaptiveMethod::writeLastIncorrectResponse(OutputFile *file) {
     file->writeTrial(lastOpenSetTrial);
 }
 
+static void assignReversals(open_set::AdaptiveTrial &trial, Track *track) {
+    trial.reversals = track->reversals();
+}
+
 void AdaptiveMethod::submitIncorrectResponse() {
     incorrect();
-    lastOpenSetTrial.reversals = currentSnrTrack->reversals();
+    assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
 }
 
 void AdaptiveMethod::submitCorrectResponse() {
     correct();
-    lastOpenSetTrial.reversals = currentSnrTrack->reversals();
+    assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
 }
 
