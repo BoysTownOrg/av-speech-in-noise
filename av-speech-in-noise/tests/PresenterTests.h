@@ -1251,8 +1251,8 @@ namespace av_speech_in_noise::tests::presentation {
             view->setMasker(std::move(s));
         }
         
-        void setResult(ViewStub &view, std::string s) override {
-            return view.setBrowseForOpeningFileResult(s);
+        void setResult(ViewStub &view_, std::string s) override {
+            return view_.setBrowseForOpeningFileResult(s);
         }
         
         void run() override {
@@ -1270,8 +1270,8 @@ namespace av_speech_in_noise::tests::presentation {
             view->browseForTrackSettingsFile();
         }
 
-        void setResult(ViewStub &view, std::string s) override {
-            view.setBrowseForOpeningFileResult(s);
+        void setResult(ViewStub &view_, std::string s) override {
+            view_.setBrowseForOpeningFileResult(s);
         }
         
         std::string entry() override {
@@ -1293,8 +1293,8 @@ namespace av_speech_in_noise::tests::presentation {
             view->browseForTargetList();
         }
 
-        void setResult(ViewStub &view, std::string s) override {
-            view.setBrowseForDirectoryResult(s);
+        void setResult(ViewStub &view_, std::string s) override {
+            view_.setBrowseForDirectoryResult(s);
         }
         
         std::string entry() override {
@@ -1320,8 +1320,8 @@ namespace av_speech_in_noise::tests::presentation {
             view->setCalibrationFilePath(std::move(s));
         }
         
-        void setResult(ViewStub &view, std::string s) override {
-            return view.setBrowseForOpeningFileResult(s);
+        void setResult(ViewStub &view_, std::string s) override {
+            return view_.setBrowseForOpeningFileResult(s);
         }
         
         void run() override {
