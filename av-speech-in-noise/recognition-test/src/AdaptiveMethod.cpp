@@ -160,6 +160,7 @@ static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
 }
 
 void AdaptiveMethod::submitIncorrectResponse() {
+    lastOpenSetTrial.correct = false;
     assignSnr(lastOpenSetTrial, currentSnrTrack);
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
