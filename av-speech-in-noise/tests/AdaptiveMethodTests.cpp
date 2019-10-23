@@ -179,6 +179,10 @@ public:
         method.writeLastCoordinateResponse(&outputFile);
     }
     
+    void writeLastCorrectResponse() {
+        method.writeLastCorrectResponse(&outputFile);
+    }
+    
     auto writtenCoordinateResponseTrial() const {
         return outputFile.writtenAdaptiveCoordinateResponseTrial2();
     }
@@ -186,6 +190,11 @@ public:
     void writeCoordinateResponse() {
         submitCoordinateResponse();
         writeLastCoordinateResponse();
+    }
+
+    void writeCorrectResponse() {
+        submitCorrectResponse();
+        writeLastCorrectResponse();
     }
     
     auto blueColor() {
@@ -511,6 +520,18 @@ TEST_F(
     selectList(2);
     writeCoordinateResponse();
     assertEqual(3, outputFile.writtenAdaptiveCoordinateResponseTrial().reversals);
+}
+
+TEST_F(
+    AdaptiveMethodTests,
+    writeCorrectResponsePassesReversalsAfterUpdatingTrack
+) {
+    selectList(1);
+    initialize();
+    track(1)->setReversalsWhenUpdated(3);
+    selectList(2);
+    writeCorrectResponse();
+    assertEqual(3, outputFile.writtenOpenSetAdaptiveTrial().reversals);
 }
 
 TEST_F(

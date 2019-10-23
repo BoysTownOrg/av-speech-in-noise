@@ -51,6 +51,7 @@ namespace av_speech_in_noise {
         std::vector<TargetListWithTrack> targetListsWithTracks{};
         Track::Settings trackSettings{};
         coordinate_response_measure::AdaptiveTrial lastTrial{};
+        open_set::AdaptiveTrial lastOpenSetTrial{};
         const AdaptiveTest *test{};
         TargetListReader *targetListSetReader;
         ITrackSettingsReader *trackSettingsReader;
@@ -75,6 +76,7 @@ namespace av_speech_in_noise {
         std::string next() override;
         std::string current() override;
         void writeLastCoordinateResponse(OutputFile *) override;
+        void writeLastCorrectResponse(OutputFile *);
         void writeTestingParameters(OutputFile *) override;
         void submitResponse(
             const coordinate_response_measure::SubjectResponse &
