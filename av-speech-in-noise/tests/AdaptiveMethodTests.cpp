@@ -708,12 +708,21 @@ TEST_F(
 
 TEST_F(
     AdaptiveMethodTests,
-    writeCorrectCoordinateResponse
+    writeCorrectCoordinateResponseIsCorrect
 ) {
     initialize();
     setCorrectCoordinateResponse();
     writeCoordinateResponse();
     assertTrue(writtenCoordinateResponseTrialCorrect());
+}
+
+TEST_F(
+    AdaptiveMethodTests,
+    writeCorrectResponseIsCorrect
+) {
+    initialize();
+    writeCorrectResponse();
+    assertTrue(outputFile.writtenOpenSetAdaptiveTrial().correct);
 }
 
 TEST_F(

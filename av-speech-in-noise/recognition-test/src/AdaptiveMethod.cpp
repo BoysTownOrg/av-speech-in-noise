@@ -167,6 +167,7 @@ void AdaptiveMethod::submitIncorrectResponse() {
 }
 
 void AdaptiveMethod::submitCorrectResponse() {
+    lastOpenSetTrial.correct = true;
     assignSnr(lastOpenSetTrial, currentSnrTrack);
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
