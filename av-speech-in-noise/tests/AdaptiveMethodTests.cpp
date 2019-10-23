@@ -701,6 +701,13 @@ TEST_F(
 
 TEST_F(
     AdaptiveMethodTests,
+    writeIncorrectResponsePassesSnrBeforeUpdatingTrack
+) {
+    assertWritesPreUpdatedSnr(writingIncorrectResponse);
+}
+
+TEST_F(
+    AdaptiveMethodTests,
     writeCorrectCoordinateResponse
 ) {
     initialize();

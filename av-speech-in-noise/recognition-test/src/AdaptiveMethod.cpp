@@ -156,6 +156,7 @@ static void assignReversals(open_set::AdaptiveTrial &trial, Track *track) {
 }
 
 void AdaptiveMethod::submitIncorrectResponse() {
+    lastOpenSetTrial.SNR_dB = currentSnrTrack->x();
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
