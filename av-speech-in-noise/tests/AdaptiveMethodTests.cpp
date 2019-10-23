@@ -16,12 +16,12 @@ public:
     auto filePath() const {
         return filePath_;
     }
-    
+
     const TrackingRule *read(std::string s) override {
         filePath_ = std::move(s);
         return rule_;
     }
-    
+
     void setTrackingRule(const TrackingRule *r) {
         rule_ = r;
     }
@@ -63,6 +63,27 @@ public:
     }
 };
 
+class ReversalWritingUseCase : public virtual UseCase {
+public:
+    virtual int writtenReversals(OutputFileStub &) = 0;
+};
+
+class WritingCoordinateResponse : public ReversalWritingUseCase {
+    coordinate_response_measure::SubjectResponse response_{};
+    OutputFile &file_;
+public:
+    explicit WritingCoordinateResponse(OutputFile &file_) : file_{file_} {}
+
+    void run(AdaptiveMethod &method) override {
+        method.submitResponse(response_);
+        method.writeLastCoordinateResponse(&file_);
+    }
+
+    int writtenReversals(OutputFileStub &file) override {
+        return file.writtenAdaptiveCoordinateResponseTrial().reversals;
+    }
+};
+
 class AdaptiveMethodTests : public ::testing::Test {
 protected:
     TargetListSetReaderStub targetListSetReader;
@@ -82,12 +103,13 @@ protected:
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
+    WritingCoordinateResponse writingCoordinateResponse{outputFile};
     AdaptiveTest test;
     coordinate_response_measure::SubjectResponse coordinateResponse;
     TrackingRule targetLevelRule_;
     std::vector<std::shared_ptr<TargetListStub>> lists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
-    
+
     AdaptiveMethodTests() {
         trackSettingsReader.setTrackingRule(&targetLevelRule_);
         for (int i = 0; i < 3; ++i) {
@@ -101,35 +123,35 @@ public:
     auto snrTrackFactoryParameters() const {
         return snrTrackFactory.parameters();
     }
-    
+
     auto snrTrackFactoryParameters(int x) const {
         return snrTrackFactoryParameters().at(x);
     }
-    
+
     void initialize() {
         method.initialize(test);
     }
-    
+
     void assertPassedTargetLevelRule(const Track::Settings &s) {
         assertEqual(&std::as_const(targetLevelRule_), s.rule);
     }
-    
+
     void assertStartingXEqualsOne(const Track::Settings &s) {
         assertEqual(1, s.startingX);
     }
-    
+
     void assertCeilingEqualsOne(const Track::Settings &s) {
         assertEqual(1, s.ceiling);
     }
-    
+
     void assertFloorEqualsOne(const Track::Settings &s) {
         assertEqual(1, s.floor);
     }
-    
+
     void assertBumpLimitEqualsOne(const Track::Settings &s) {
         assertEqual(1, s.bumpLimit);
     }
-    
+
     void applyToSnrTrackFactoryParameters(
         int n,
         void(AdaptiveMethodTests::*f)(const Track::Settings &)
@@ -137,32 +159,32 @@ public:
         for (int i = 0; i < n; ++i)
             (this->*f)(snrTrackFactoryParameters(i));
     }
-    
+
     void selectList(int n) {
         randomizer.setRandomInt(n);
     }
-    
+
     std::string next() {
         return method.next();
     }
-    
+
     void assertNextEquals(std::string s) {
         assertEqual(std::move(s), next());
     }
-    
+
     void setNextForList(int n, std::string s) {
         lists.at(n)->setNext(std::move(s));
     }
-    
+
     void assertRandomizerPassedIntegerBounds(int a, int b) {
         assertEqual(a, randomizer.lowerIntBound());
         assertEqual(b, randomizer.upperIntBound());
     }
-    
+
     void submitCoordinateResponse() {
         method.submitResponse(coordinateResponse);
     }
-    
+
     void submitCorrectResponse() {
         method.submitCorrectResponse();
     }
@@ -170,23 +192,23 @@ public:
     void submitIncorrectResponse() {
         method.submitIncorrectResponse();
     }
-    
+
     auto track(int n) {
         return tracks.at(n);
     }
-    
+
     void setCurrentForTarget(int n, std::string s) {
         lists.at(n)->setCurrent(std::move(s));
     }
-    
+
     void writeLastCoordinateResponse() {
         method.writeLastCoordinateResponse(&outputFile);
     }
-    
+
     void writeLastCorrectResponse() {
         method.writeLastCorrectResponse(&outputFile);
     }
-    
+
     void writeLastIncorrectResponse() {
         method.writeLastIncorrectResponse(&outputFile);
     }
@@ -194,7 +216,7 @@ public:
     auto writtenCoordinateResponseTrial() const {
         return outputFile.writtenAdaptiveCoordinateResponseTrial2();
     }
-    
+
     void writeCoordinateResponse() {
         submitCoordinateResponse();
         writeLastCoordinateResponse();
@@ -209,53 +231,62 @@ public:
         submitIncorrectResponse();
         writeLastIncorrectResponse();
     }
-    
+
+    void assertWritesUpdatedReversals(ReversalWritingUseCase &useCase) {
+        selectList(1);
+        initialize();
+        track(1)->setReversalsWhenUpdated(3);
+        selectList(2);
+        run(useCase);
+        assertEqual(3, useCase.writtenReversals(outputFile));
+    }
+
     auto blueColor() {
         return coordinate_response_measure::Color::blue;
     }
-    
+
     bool writtenCoordinateResponseTrialCorrect() {
         return writtenCoordinateResponseTrial().correct;
     }
-    
+
     bool snrTrackPushedDown(int n) {
         return track(n)->pushedDown();
     }
-    
+
     bool snrTrackPushedUp(int n) {
         return track(n)->pushedUp();
     }
-    
+
     void setCorrectCoordinateResponse() {
         evaluator.setCorrect();
     }
-    
+
     void setIncorrectCoordinateResponse() {
         evaluator.setIncorrect();
     }
-    
+
     void setSnrTrackComplete(int n) {
         track(n)->setComplete();
     }
-    
+
     void assertTestIncompleteAfterCoordinateResponse() {
         submitCoordinateResponse();
         assertTestIncomplete();
     }
-    
+
     void assertTestCompleteAfterCoordinateResponse() {
         submitCoordinateResponse();
         assertTestComplete();
     }
-    
+
     void assertTestIncomplete() {
         assertFalse(testComplete());
     }
-    
+
     bool testComplete() {
         return method.complete();
     }
-    
+
     void assertTestComplete() {
         assertTrue(testComplete());
     }
@@ -527,12 +558,7 @@ TEST_F(
     AdaptiveMethodTests,
     writeCoordinateResponsePassesReversalsAfterUpdatingTrack
 ) {
-    selectList(1);
-    initialize();
-    track(1)->setReversalsWhenUpdated(3);
-    selectList(2);
-    writeCoordinateResponse();
-    assertEqual(3, outputFile.writtenAdaptiveCoordinateResponseTrial().reversals);
+    assertWritesUpdatedReversals(writingCoordinateResponse);
 }
 
 TEST_F(
