@@ -376,6 +376,14 @@ TEST_F(
 
 TEST_F(
     AdaptiveMethodTests,
+    nextReturnsNextFilePathAfterIncorrectResponse
+) {
+    initialize();
+    assertNextReturnsNextFilePathAfter(submittingIncorrectResponse);
+}
+
+TEST_F(
+    AdaptiveMethodTests,
     randomizerPassedIntegerBoundsOfLists
 ) {
     initialize();
