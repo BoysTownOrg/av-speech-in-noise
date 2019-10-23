@@ -358,6 +358,17 @@ TEST_F(
 
 TEST_F(
     AdaptiveMethodTests,
+    nextReturnsNextFilePathAfterCorrectResponse
+) {
+    initialize();
+    setNextForList(1, "a");
+    selectList(1);
+    submitCorrectResponse();
+    assertNextEquals("a");
+}
+
+TEST_F(
+    AdaptiveMethodTests,
     randomizerPassedIntegerBoundsOfLists
 ) {
     initialize();
