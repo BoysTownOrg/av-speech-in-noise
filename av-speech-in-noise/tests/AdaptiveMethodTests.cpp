@@ -386,6 +386,15 @@ public:
         assertFalse(snrTrackPushedDown(1));
         assertTrue(snrTrackPushedUp(1));
     }
+
+    void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
+        initialize();
+        setNextForList(2, "a");
+        setSnrTrackComplete(1);
+        selectList(1);
+        run(useCase);
+        assertNextEquals("a");
+    }
 };
 
 TEST_F(
@@ -718,36 +727,21 @@ TEST_F(
     AdaptiveMethodTests,
     submitCoordinateResponseSelectsListAmongThoseWithIncompleteTracks
 ) {
-    initialize();
-    setNextForList(2, "a");
-    setSnrTrackComplete(1);
-    selectList(1);
-    submitCoordinateResponse();
-    assertNextEquals("a");
+    assertSelectsListAmongThoseWithIncompleteTracks(submittingCoordinateResponse);
 }
 
 TEST_F(
     AdaptiveMethodTests,
     submitCorrectResponseSelectsListAmongThoseWithIncompleteTracks
 ) {
-    initialize();
-    setNextForList(2, "a");
-    setSnrTrackComplete(1);
-    selectList(1);
-    method.submitCorrectResponse();
-    assertNextEquals("a");
+    assertSelectsListAmongThoseWithIncompleteTracks(submittingCorrectResponse);
 }
 
 TEST_F(
     AdaptiveMethodTests,
     submitIncorrectResponseSelectsListAmongThoseWithIncompleteTracks
 ) {
-    initialize();
-    setNextForList(2, "a");
-    setSnrTrackComplete(1);
-    selectList(1);
-    method.submitIncorrectResponse();
-    assertNextEquals("a");
+    assertSelectsListAmongThoseWithIncompleteTracks(submittingIncorrectResponse);
 }
 
 TEST_F(
