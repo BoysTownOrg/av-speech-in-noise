@@ -33,6 +33,14 @@ public:
     virtual void run(AdaptiveMethod &) = 0;
 };
 
+class Initializing : public UseCase {
+    AdaptiveTest test_{};
+public:
+    void run(AdaptiveMethod &method) override {
+        method.initialize(test_);
+    }
+};
+
 class SubmittingCoordinateResponse : public UseCase {
     coordinate_response_measure::SubjectResponse response_{};
 public:
@@ -70,6 +78,7 @@ protected:
         &evaluator,
         &randomizer
     };
+    Initializing initializing;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
@@ -239,6 +248,13 @@ public:
         run(useCase);
         assertRandomizerPassedIntegerBounds(0, 1);
     }
+
+    void assertNextReturnsNextFilePathAfter(UseCase &useCase) {
+        setNextForList(1, "a");
+        selectList(1);
+        run(useCase);
+        assertNextEquals("a");
+    }
 };
 
 TEST_F(
@@ -339,10 +355,7 @@ TEST_F(
     AdaptiveMethodTests,
     nextReturnsNextFilePathAfterInitialize
 ) {
-    setNextForList(0, "a");
-    selectList(0);
-    initialize();
-    assertNextEquals("a");
+    assertNextReturnsNextFilePathAfter(initializing);
 }
 
 TEST_F(
@@ -350,10 +363,7 @@ TEST_F(
     nextReturnsNextFilePathAfterCoordinateResponse
 ) {
     initialize();
-    setNextForList(1, "a");
-    selectList(1);
-    submitCoordinateResponse();
-    assertNextEquals("a");
+    assertNextReturnsNextFilePathAfter(submittingCoordinateResponse);
 }
 
 TEST_F(
@@ -361,10 +371,7 @@ TEST_F(
     nextReturnsNextFilePathAfterCorrectResponse
 ) {
     initialize();
-    setNextForList(1, "a");
-    selectList(1);
-    submitCorrectResponse();
-    assertNextEquals("a");
+    assertNextReturnsNextFilePathAfter(submittingCorrectResponse);
 }
 
 TEST_F(
