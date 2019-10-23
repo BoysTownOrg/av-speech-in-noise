@@ -49,6 +49,19 @@ public:
     }
 };
 
+class SubmittingCorrectCoordinateResponse : public UseCase {
+    coordinate_response_measure::SubjectResponse response_{};
+    ResponseEvaluatorStub &evaluator;
+public:
+    explicit SubmittingCorrectCoordinateResponse(ResponseEvaluatorStub &evaluator) :
+        evaluator{evaluator} {}
+
+    void run(AdaptiveMethod &method) override {
+        evaluator.setCorrect();
+        method.submitResponse(response_);
+    }
+};
+
 class SubmittingCorrectResponse : public UseCase {
 public:
     void run(AdaptiveMethod &method) override {
@@ -131,6 +144,7 @@ protected:
     };
     Initializing initializing;
     SubmittingCoordinateResponse submittingCoordinateResponse;
+    SubmittingCorrectCoordinateResponse submittingCorrectCoordinateResponse{evaluator};
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
     WritingCoordinateResponse writingCoordinateResponse{outputFile};
@@ -339,6 +353,15 @@ public:
         selectList(1);
         run(useCase);
         assertNextEquals("a");
+    }
+
+    void assertPushesSnrTrackDown(UseCase &useCase) {
+        selectList(1);
+        initialize();
+        selectList(2);
+        run(useCase);
+        assertTrue(snrTrackPushedDown(1));
+        assertFalse(snrTrackPushedUp(1));
     }
 };
 
@@ -644,25 +667,14 @@ TEST_F(
     AdaptiveMethodTests,
     submitCorrectCoordinateResponsePushesSnrTrackDown
 ) {
-    selectList(1);
-    initialize();
-    setCorrectCoordinateResponse();
-    selectList(2);
-    submitCoordinateResponse();
-    assertTrue(snrTrackPushedDown(1));
-    assertFalse(snrTrackPushedUp(1));
+    assertPushesSnrTrackDown(submittingCorrectCoordinateResponse);
 }
 
 TEST_F(
     AdaptiveMethodTests,
     submitCorrectResponsePushesSnrTrackDown
 ) {
-    selectList(1);
-    initialize();
-    selectList(2);
-    method.submitCorrectResponse();
-    assertTrue(snrTrackPushedDown(1));
-    assertFalse(snrTrackPushedUp(1));
+    assertPushesSnrTrackDown(submittingCorrectResponse);
 }
 
 TEST_F(
