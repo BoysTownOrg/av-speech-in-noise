@@ -162,6 +162,7 @@ void AdaptiveMethod::submitIncorrectResponse() {
 }
 
 void AdaptiveMethod::submitCorrectResponse() {
+    lastOpenSetTrial.SNR_dB = currentSnrTrack->x();
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
