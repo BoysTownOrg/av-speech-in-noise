@@ -166,6 +166,10 @@ public:
     void submitCorrectResponse() {
         method.submitCorrectResponse();
     }
+
+    void submitIncorrectResponse() {
+        method.submitIncorrectResponse();
+    }
     
     auto track(int n) {
         return tracks.at(n);
@@ -183,6 +187,10 @@ public:
         method.writeLastCorrectResponse(&outputFile);
     }
     
+    void writeLastIncorrectResponse() {
+        method.writeLastIncorrectResponse(&outputFile);
+    }
+
     auto writtenCoordinateResponseTrial() const {
         return outputFile.writtenAdaptiveCoordinateResponseTrial2();
     }
@@ -195,6 +203,11 @@ public:
     void writeCorrectResponse() {
         submitCorrectResponse();
         writeLastCorrectResponse();
+    }
+
+    void writeIncorrectResponse() {
+        submitIncorrectResponse();
+        writeLastIncorrectResponse();
     }
     
     auto blueColor() {
@@ -531,6 +544,18 @@ TEST_F(
     track(1)->setReversalsWhenUpdated(3);
     selectList(2);
     writeCorrectResponse();
+    assertEqual(3, outputFile.writtenOpenSetAdaptiveTrial().reversals);
+}
+
+TEST_F(
+    AdaptiveMethodTests,
+    writeIncorrectResponsePassesReversalsAfterUpdatingTrack
+) {
+    selectList(1);
+    initialize();
+    track(1)->setReversalsWhenUpdated(3);
+    selectList(2);
+    writeIncorrectResponse();
     assertEqual(3, outputFile.writtenOpenSetAdaptiveTrial().reversals);
 }
 

@@ -79,6 +79,7 @@ public:
     std::string current() override;
     void writeLastCoordinateResponse(OutputFile *) override;
     void writeLastCorrectResponse(OutputFile *);
+    void writeLastIncorrectResponse(OutputFile *);
     void writeTestingParameters(OutputFile *) override;
     void submitResponse(
         const coordinate_response_measure::SubjectResponse &

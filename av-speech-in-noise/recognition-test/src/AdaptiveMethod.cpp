@@ -147,8 +147,14 @@ namespace av_speech_in_noise {
         file->writeTrial(lastOpenSetTrial);
     }
     
+    void AdaptiveMethod::writeLastIncorrectResponse(OutputFile *file) {
+        file->writeTrial(lastOpenSetTrial);
+    }
+    
     void AdaptiveMethod::submitIncorrectResponse() {
-        selectNextListAfter(&AdaptiveMethod::incorrect);
+        incorrect();
+        lastOpenSetTrial.reversals = currentSnrTrack->reversals();
+        selectNextList();
     }
     
     void AdaptiveMethod::submitCorrectResponse() {
