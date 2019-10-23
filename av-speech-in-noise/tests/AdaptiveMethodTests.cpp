@@ -84,6 +84,21 @@ public:
     }
 };
 
+class WritingCorrectResponse : public ReversalWritingUseCase {
+    OutputFile &file_;
+public:
+    explicit WritingCorrectResponse(OutputFile &file_) : file_{file_} {}
+
+    void run(AdaptiveMethod &method) override {
+        method.submitCorrectResponse();
+        method.writeLastCorrectResponse(&file_);
+    }
+
+    int writtenReversals(OutputFileStub &file) override {
+        return file.writtenOpenSetAdaptiveTrial().reversals;
+    }
+};
+
 class AdaptiveMethodTests : public ::testing::Test {
 protected:
     TargetListSetReaderStub targetListSetReader;
@@ -104,6 +119,7 @@ protected:
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
     WritingCoordinateResponse writingCoordinateResponse{outputFile};
+    WritingCorrectResponse writingCorrectResponse{outputFile};
     AdaptiveTest test;
     coordinate_response_measure::SubjectResponse coordinateResponse;
     TrackingRule targetLevelRule_;
@@ -565,12 +581,7 @@ TEST_F(
     AdaptiveMethodTests,
     writeCorrectResponsePassesReversalsAfterUpdatingTrack
 ) {
-    selectList(1);
-    initialize();
-    track(1)->setReversalsWhenUpdated(3);
-    selectList(2);
-    writeCorrectResponse();
-    assertEqual(3, outputFile.writtenOpenSetAdaptiveTrial().reversals);
+    assertWritesUpdatedReversals(writingCorrectResponse);
 }
 
 TEST_F(
