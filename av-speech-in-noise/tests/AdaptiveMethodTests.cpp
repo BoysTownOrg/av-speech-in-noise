@@ -62,6 +62,19 @@ public:
     }
 };
 
+class SubmittingIncorrectCoordinateResponse : public UseCase {
+    coordinate_response_measure::SubjectResponse response_{};
+    ResponseEvaluatorStub &evaluator;
+public:
+    explicit SubmittingIncorrectCoordinateResponse(ResponseEvaluatorStub &evaluator) :
+        evaluator{evaluator} {}
+
+    void run(AdaptiveMethod &method) override {
+        evaluator.setIncorrect();
+        method.submitResponse(response_);
+    }
+};
+
 class SubmittingCorrectResponse : public UseCase {
 public:
     void run(AdaptiveMethod &method) override {
@@ -145,6 +158,7 @@ protected:
     Initializing initializing;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectCoordinateResponse submittingCorrectCoordinateResponse{evaluator};
+    SubmittingIncorrectCoordinateResponse submittingIncorrectCoordinateResponse{evaluator};
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
     WritingCoordinateResponse writingCoordinateResponse{outputFile};
@@ -362,6 +376,15 @@ public:
         run(useCase);
         assertTrue(snrTrackPushedDown(1));
         assertFalse(snrTrackPushedUp(1));
+    }
+
+    void assertPushesSnrTrackUp(UseCase &useCase) {
+        selectList(1);
+        initialize();
+        selectList(2);
+        run(useCase);
+        assertFalse(snrTrackPushedDown(1));
+        assertTrue(snrTrackPushedUp(1));
     }
 };
 
@@ -681,25 +704,14 @@ TEST_F(
     AdaptiveMethodTests,
     submitIncorrectCoordinateResponsePushesSnrTrackUp
 ) {
-    selectList(1);
-    initialize();
-    setIncorrectCoordinateResponse();
-    selectList(2);
-    submitCoordinateResponse();
-    assertFalse(snrTrackPushedDown(1));
-    assertTrue(snrTrackPushedUp(1));
+    assertPushesSnrTrackUp(submittingIncorrectCoordinateResponse);
 }
 
 TEST_F(
     AdaptiveMethodTests,
     submitIncorrectResponsePushesSnrTrackDown
 ) {
-    selectList(1);
-    initialize();
-    selectList(2);
-    method.submitIncorrectResponse();
-    assertFalse(snrTrackPushedDown(1));
-    assertTrue(snrTrackPushedUp(1));
+    assertPushesSnrTrackUp(submittingIncorrectResponse);
 }
 
 TEST_F(
