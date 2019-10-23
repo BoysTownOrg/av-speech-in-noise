@@ -89,12 +89,13 @@ public:
     }
 };
 
-class ReversalWritingUseCase : public virtual UseCase {
+class WritingResponseUseCase : public virtual UseCase {
 public:
     virtual int writtenReversals(OutputFileStub &) = 0;
+    virtual int writtenSnr(OutputFileStub &) = 0;
 };
 
-class WritingCoordinateResponse : public ReversalWritingUseCase {
+class WritingCoordinateResponse : public WritingResponseUseCase {
     coordinate_response_measure::SubjectResponse response_{};
     OutputFile &file_;
 public:
@@ -108,9 +109,13 @@ public:
     int writtenReversals(OutputFileStub &file) override {
         return file.writtenAdaptiveCoordinateResponseTrial().reversals;
     }
+
+    int writtenSnr(OutputFileStub &file) override {
+        return file.writtenAdaptiveCoordinateResponseTrial().SNR_dB;
+    }
 };
 
-class WritingCorrectResponse : public ReversalWritingUseCase {
+class WritingCorrectResponse : public WritingResponseUseCase {
     OutputFile &file_;
 public:
     explicit WritingCorrectResponse(OutputFile &file_) : file_{file_} {}
@@ -123,9 +128,13 @@ public:
     int writtenReversals(OutputFileStub &file) override {
         return file.writtenOpenSetAdaptiveTrial().reversals;
     }
+
+    int writtenSnr(OutputFileStub &file) override {
+        return file.writtenOpenSetAdaptiveTrial().SNR_dB;
+    }
 };
 
-class WritingIncorrectResponse : public ReversalWritingUseCase {
+class WritingIncorrectResponse : public WritingResponseUseCase {
     OutputFile &file_;
 public:
     explicit WritingIncorrectResponse(OutputFile &file_) : file_{file_} {}
@@ -137,6 +146,10 @@ public:
 
     int writtenReversals(OutputFileStub &file) override {
         return file.writtenOpenSetAdaptiveTrial().reversals;
+    }
+
+    int writtenSnr(OutputFileStub &file) override {
+        return file.writtenOpenSetAdaptiveTrial().SNR_dB;
     }
 };
 
@@ -292,13 +305,23 @@ public:
         writeLastIncorrectResponse();
     }
 
-    void assertWritesUpdatedReversals(ReversalWritingUseCase &useCase) {
+    void assertWritesUpdatedReversals(WritingResponseUseCase &useCase) {
         selectList(1);
         initialize();
         track(1)->setReversalsWhenUpdated(3);
         selectList(2);
         run(useCase);
         assertEqual(3, useCase.writtenReversals(outputFile));
+    }
+
+    void assertWritesPreUpdatedSnr(WritingResponseUseCase &useCase) {
+        selectList(1);
+        initialize();
+        track(1)->setX(4);
+        track(1)->setXWhenUpdated(3);
+        selectList(2);
+        run(useCase);
+        assertEqual(4, useCase.writtenSnr(outputFile));
     }
 
     auto blueColor() {
@@ -666,26 +689,14 @@ TEST_F(
     AdaptiveMethodTests,
     writeCoordinateResponsePassesSnrBeforeUpdatingTrack
 ) {
-    selectList(1);
-    initialize();
-    track(1)->setX(4);
-    track(1)->setXWhenUpdated(3);
-    selectList(2);
-    writeCoordinateResponse();
-    assertEqual(4, outputFile.writtenAdaptiveCoordinateResponseTrial().SNR_dB);
+    assertWritesPreUpdatedSnr(writingCoordinateResponse);
 }
 
 TEST_F(
     AdaptiveMethodTests,
     writeCorrectResponsePassesSnrBeforeUpdatingTrack
 ) {
-    selectList(1);
-    initialize();
-    track(1)->setX(4);
-    track(1)->setXWhenUpdated(3);
-    selectList(2);
-    writeCorrectResponse();
-    assertEqual(4, outputFile.writtenOpenSetAdaptiveTrial().SNR_dB);
+    assertWritesPreUpdatedSnr(writingCorrectResponse);
 }
 
 TEST_F(
