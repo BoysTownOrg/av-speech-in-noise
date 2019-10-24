@@ -23,8 +23,6 @@ public:
         virtual void subscribe(EventListener *) = 0;
         virtual void showNextTrialButton() = 0;
         virtual void hideNextTrialButton() = 0;
-        virtual void hideExitTestButton() = 0;
-        virtual void showExitTestButton() = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void showEvaluationButtons() = 0;
@@ -181,8 +179,6 @@ public:
         void showEvaluationButtons();
         void showResponseSubmission();
         void showNextTrialButton();
-        void hideExitTestButton();
-        void showExitTestButton();
         FreeResponse openSetResponse();
         void playTrial() override;
         void submitPassedTrial() override;

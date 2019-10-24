@@ -525,25 +525,7 @@ public:
         bool responseSubmissionShown_{};
         bool responseSubmissionHidden_{};
         bool evaluationButtonsHidden_{};
-        bool exitTestButtonHidden_{};
-        bool exitTestButtonShown_{};
     public:
-        void showExitTestButton() override {
-            exitTestButtonShown_ = true;
-        }
-
-        void hideExitTestButton() override {
-            exitTestButtonHidden_ = true;
-        }
-
-        auto exitTestButtonShown() const {
-            return exitTestButtonShown_;
-        }
-
-        auto exitTestButtonHidden() const {
-            return exitTestButtonHidden_;
-        }
-
         void submitFailedTrial() {
             listener_->submitFailedTrial();
         }

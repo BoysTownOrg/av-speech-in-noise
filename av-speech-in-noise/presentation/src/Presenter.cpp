@@ -143,6 +143,7 @@ void Presenter::playTrial() {
 void Presenter::trialComplete() {
     trialCompletionHandler_->showResponseView();
     experimenter->showExitTestButton();
+    experimenter2->showExitTestButton();
 }
 
 void Presenter::submitSubjectResponse() {
@@ -210,6 +211,8 @@ void Presenter::showTestSetup() {
 
 void Presenter::hideTestView() {
     experimenter->hide();
+    testing->hide();
+    experimenter2->hide();
     subject->hide();
 }
 
@@ -582,14 +585,6 @@ void Presenter::Testing::show() {
 
 void Presenter::Testing::showNextTrialButton() {
     view->showNextTrialButton();
-}
-
-void Presenter::Testing::hideExitTestButton() {
-    view->hideExitTestButton();
-}
-
-void Presenter::Testing::showExitTestButton() {
-    view->showExitTestButton();
 }
 
 void Presenter::Testing::playTrial() {
