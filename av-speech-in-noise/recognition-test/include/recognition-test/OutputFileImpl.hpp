@@ -39,7 +39,7 @@ constexpr const char *headingItemName(HeadingItem i) {
         case HeadingItem::reversals:
             return "reversals";
         case HeadingItem::freeResponse:
-            return "freeResponse";
+            return "response";
     }
 }
 

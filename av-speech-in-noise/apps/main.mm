@@ -2,7 +2,7 @@
 #include "AvFoundationPlayers.h"
 #include "CocoaView.h"
 #include "common-objc.h"
-#include <presentation/Presenter.h>
+#include <presentation/Presenter.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/RecognitionTestModel_Internal.hpp>
 #include <recognition-test/AdaptiveMethod.hpp>
