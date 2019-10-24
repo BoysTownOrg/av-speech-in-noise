@@ -1592,16 +1592,20 @@ protected:
         return testingView.shown();
     }
     
-    void assertExperimenterViewNotShown() {
-        assertFalse(experimenterViewShown());
-    }
-    
     void assertExperimenterViewHidden() {
         assertTrue(experimenterViewHidden());
     }
     
+    void assertTestingViewHidden() {
+        assertTrue(testingViewHidden());
+    }
+    
     bool experimenterViewHidden() {
         return experimenterView.hidden();
+    }
+    
+    bool testingViewHidden() {
+        return testingView.hidden();
     }
     
     void assertExperimenterViewNotHidden() {
@@ -1817,9 +1821,19 @@ protected:
         assertHidesExperimenterView(useCase);
     }
     
+    void assertCompleteTestHidesTestingView(TrialSubmission &useCase) {
+        setTestComplete();
+        assertHidesTestingView(useCase);
+    }
+    
     void assertHidesExperimenterView(UseCase &useCase) {
         run(useCase);
         assertExperimenterViewHidden();
+    }
+    
+    void assertHidesTestingView(UseCase &useCase) {
+        run(useCase);
+        assertTestingViewHidden();
     }
     
     void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
@@ -1977,11 +1991,6 @@ protected:
     void assertShowsSubjectView(UseCase &useCase) {
         run(useCase);
         assertSubjectViewShown();
-    }
-    
-    void assertDoesNotShowExperimenterView(UseCase &useCase) {
-        run(useCase);
-        assertExperimenterViewNotShown();
     }
     
     void assertDoesNotInitializeAdaptiveTest(UseCase &useCase) {
