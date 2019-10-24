@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_MASKERPLAYERIMPL_HPP_
 #define AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_MASKERPLAYERIMPL_HPP_
 
-#include "AudioReader.h"
+#include "AudioReader.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/RecognitionTestModel_Internal.hpp>
 #include <gsl/gsl>

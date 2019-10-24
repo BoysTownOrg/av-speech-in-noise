@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_AUDIOREADERIMPL_HPP_
 #define AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_AUDIOREADERIMPL_HPP_
 
-#include "AudioReader.h"
+#include "AudioReader.hpp"
 #include <string>
 #include <vector>
 #include <memory>
