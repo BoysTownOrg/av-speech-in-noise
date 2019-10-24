@@ -109,33 +109,6 @@ public:
         virtual void showExitTestButton() = 0;
     };
 
-    class Experimenter {
-    public:
-        class EventListener {
-        public:
-            virtual ~EventListener() = default;
-            virtual void playTrial() = 0;
-            virtual void submitPassedTrial() = 0;
-            virtual void submitFailedTrial() = 0;
-            virtual void submitResponse() = 0;
-            virtual void exitTest() = 0;
-        };
-
-        virtual ~Experimenter() = default;
-        virtual void subscribe(EventListener *) = 0;
-        virtual void showNextTrialButton() = 0;
-        virtual void hideNextTrialButton() = 0;
-        virtual void hideExitTestButton() = 0;
-        virtual void showExitTestButton() = 0;
-        virtual void show() = 0;
-        virtual void hide() = 0;
-        virtual void showEvaluationButtons() = 0;
-        virtual void hideEvaluationButtons() = 0;
-        virtual void showResponseSubmission() = 0;
-        virtual void hideResponseSubmission() = 0;
-        virtual std::string response() = 0;
-    };
-
     virtual ~View() = default;
     virtual void eventLoop() = 0;
     virtual std::string browseForDirectory() = 0;
@@ -259,30 +232,6 @@ public:
         void exitTest() override;
 
     private:
-        Presenter *parent;
-    };
-
-    class Experimenter : public View::Experimenter::EventListener {
-        View::Experimenter *view;
-    public:
-        explicit Experimenter(View::Experimenter *);
-        void becomeChild(Presenter *parent);
-        void show();
-        void hide();
-        void showEvaluationButtons();
-        void showResponseSubmission();
-        void showNextTrialButton();
-        void hideExitTestButton();
-        void showExitTestButton();
-        FreeResponse openSetResponse();
-        void playTrial() override;
-        void submitPassedTrial() override;
-        void submitResponse() override;
-        void submitFailedTrial() override;
-        void exitTest() override;
-
-    private:
-        void prepareNextEvaluatedTrial();
         Presenter *parent;
     };
 

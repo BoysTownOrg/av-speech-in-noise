@@ -667,47 +667,6 @@ public:
             listener_->exitTest();
         }
     };
-    
-    class ExperimenterViewStub : public Experimenter {
-        std::string response_;
-    public:
-        void showExitTestButton() override {
-        }
-
-        void hideExitTestButton() override {
-        }
-        
-        void showNextTrialButton() override {
-        }
-        
-        void show() override {
-        }
-        
-        void subscribe(EventListener *) override {
-        }
-        
-        void hideNextTrialButton() override {
-        }
-        
-        void hide() override {
-        }
-        
-        void showEvaluationButtons() override {
-        }
-        
-        std::string response() override {
-            return response_;
-        }
-        
-        void showResponseSubmission() override {
-        }
-        
-        void hideResponseSubmission() override {
-        }
-        
-        void hideEvaluationButtons() override {
-        }
-    };
 };
 
 class UseCase {
@@ -1410,7 +1369,6 @@ protected:
     ModelStub model;
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
-    ViewStub::ExperimenterViewStub experimenterView;
     ViewStub::Experimenter2ViewStub experimenter2View;
     ViewStub::TestingViewStub testingView;
     ViewStub view;
@@ -1436,7 +1394,6 @@ protected:
     ViewStub view;
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
-    ViewStub::ExperimenterViewStub experimenterView;
     ViewStub::Experimenter2ViewStub experimenter2View;
     ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
@@ -1998,7 +1955,6 @@ protected:
     ViewStub view;
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
-    ViewStub::ExperimenterViewStub experimenterView;
     ViewStub::Experimenter2ViewStub experimenter2View;
     ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
