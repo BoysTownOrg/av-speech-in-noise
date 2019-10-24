@@ -106,6 +106,7 @@ void Presenter::showTestView() {
         subject->show();
     else {
         testing->show();
+        testing->showNextTrialButton();
         experimenter->showNextTrialButton();
     }
 }

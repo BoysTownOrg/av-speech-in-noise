@@ -690,10 +690,6 @@ public:
             exitTestButtonHidden_ = true;
         }
         
-        auto evaluationButtonsHidden() const {
-            return evaluationButtonsHidden_;
-        }
-        
         auto nextTrialButtonShown() const {
             return nextTrialButtonShown_;
         }
@@ -1354,9 +1350,12 @@ public:
 };
 
 class PlayingTrialFromExperimenter : public PlayingTrial {
-    ViewStub::ExperimenterViewStub *view;
+    ViewStub::TestingViewStub *view;
 public:
-    explicit PlayingTrialFromExperimenter(ViewStub::ExperimenterViewStub *view) :
+    explicit PlayingTrialFromExperimenter(
+        ViewStub::ExperimenterViewStub *,
+        ViewStub::TestingViewStub *view
+    ) :
         view{view} {}
     
     void run() override {
@@ -1534,7 +1533,7 @@ protected:
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
-    PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView};
+    PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView, &testingView};
     RespondingFromSubject respondingFromSubject{&subjectView};
     RespondingFromExperimenter respondingFromExperimenter{&experimenterView, &testingView};
     SubmittingPassedTrial submittingPassedTrial{&experimenterView, &testingView};
