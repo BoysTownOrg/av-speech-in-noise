@@ -211,7 +211,7 @@ public:
     }
 
     int evaluationEntryIndex() override {
-        return 2;
+        return 3;
     }
 };
 
@@ -445,9 +445,13 @@ protected:
     }
 
     void assertWritesOpenSetAdaptiveTrialOnLine(int n) {
+        openSetAdaptiveTrial.SNR_dB = 11;
         openSetAdaptiveTrial.target = "a";
+        openSetAdaptiveTrial.reversals = 22;
         writeOpenSetAdaptiveTrial();
-        assertNthCommaDelimitedEntryOfLine("a", 1, n);
+        assertNthCommaDelimitedEntryOfLine("11", 1, n);
+        assertNthCommaDelimitedEntryOfLine("a", 2, n);
+        assertNthCommaDelimitedEntryOfLine("22", 4, n);
     }
 
     void assertColonDelimitedEntryWritten(std::string label, std::string what) {

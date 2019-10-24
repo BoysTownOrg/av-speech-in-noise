@@ -139,9 +139,13 @@ static std::string formatTrial(const FreeResponseTrial &trial) {
 
 static std::string formatTrial(const open_set::AdaptiveTrial &trial) {
     FormattedStream stream;
+    stream.insert(trial.SNR_dB);
+    stream.insertCommaAndSpace();
     stream.insert(trial.target);
     stream.insertCommaAndSpace();
     stream.insert(evaluation(trial));
+    stream.insertCommaAndSpace();
+    stream.insert(trial.reversals);
     stream.insertNewLine();
     return stream.str();
 }
