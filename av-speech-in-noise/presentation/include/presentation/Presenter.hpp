@@ -9,7 +9,7 @@ namespace av_speech_in_noise {
 class View {
 public:
     virtual ~View() = default;
-    
+
     class Subject {
     public:
         class EventListener {
@@ -18,7 +18,7 @@ public:
             virtual void playTrial() = 0;
             virtual void submitResponse() = 0;
         };
-        
+
         virtual ~Subject() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual std::string numberResponse() = 0;
@@ -45,7 +45,7 @@ public:
             virtual void browseForCalibration() = 0;
             virtual void browseForTrackSettingsFile() = 0;
         };
-        
+
         virtual ~TestSetup() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
@@ -70,7 +70,7 @@ public:
         virtual void populateConditionMenu(std::vector<std::string>) = 0;
         virtual void populateMethodMenu(std::vector<std::string>) = 0;
     };
-    
+
     class Experimenter {
     public:
         class EventListener {
@@ -82,7 +82,7 @@ public:
             virtual void submitResponse() = 0;
             virtual void exitTest() = 0;
         };
-        
+
         virtual ~Experimenter() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void showNextTrialButton() = 0;
@@ -97,7 +97,7 @@ public:
         virtual void hideResponseSubmission() = 0;
         virtual std::string response() = 0;
     };
-    
+
     virtual void eventLoop() = 0;
     virtual std::string browseForDirectory() = 0;
     virtual std::string browseForOpeningFile() = 0;
@@ -163,11 +163,11 @@ public:
         int readCalibrationLevel();
         int readInteger(std::string x, std::string identifier);
         bool auditoryOnly();
-        
+
         View::TestSetup *view;
         Presenter *parent;
     };
-    
+
     class Subject : public View::Subject::EventListener {
     public:
         explicit Subject(View::Subject *);
@@ -182,11 +182,11 @@ public:
         void hideResponseButtons();
         void showNextTrialButton();
         coordinate_response_measure::Color colorResponse();
-        
+
         View::Subject *view;
         Presenter *parent;
     };
-    
+
     class Experimenter : public View::Experimenter::EventListener {
         View::Experimenter *view;
     public:
@@ -205,18 +205,18 @@ public:
         void submitResponse() override;
         void submitFailedTrial() override;
         void exitTest() override;
-        
+
     private:
         void prepareNextEvaluatedTrial();
         Presenter *parent;
     };
-    
+
     class TrialCompletionHandler {
     public:
         virtual ~TrialCompletionHandler() = default;
         virtual void showResponseView() = 0;
     };
-    
+
     class AdaptiveClosedSetTestTrialCompletionHandler :
         public TrialCompletionHandler
     {
@@ -226,12 +226,12 @@ public:
             Subject *subject
         ) :
             subject{subject} {}
-        
+
         void showResponseView() override {
             subject->showResponseButtons();
         }
     };
-    
+
     class AdaptiveOpenSetTestTrialCompletionHandler :
         public TrialCompletionHandler
     {
@@ -241,12 +241,12 @@ public:
             Experimenter *experimenter
         ) :
             experimenter{experimenter} {}
-        
+
         void showResponseView() override {
             experimenter->showEvaluationButtons();
         }
     };
-    
+
     class FixedLevelOpenSetTestTrialCompletionHandler :
         public TrialCompletionHandler
     {
@@ -256,12 +256,12 @@ public:
             Experimenter *experimenter
         ) :
             experimenter{experimenter} {}
-        
+
         void showResponseView() override {
             experimenter->showResponseSubmission();
         }
     };
-    
+
     class FixedLevelClosedSetTestTrialCompletionHandler :
         public TrialCompletionHandler
     {
@@ -271,12 +271,12 @@ public:
             Subject *subject
         ) :
             subject{subject} {}
-        
+
         void showResponseView() override {
             subject->showResponseButtons();
         }
     };
-    
+
     Presenter(
         Model *,
         View *,
@@ -302,7 +302,7 @@ public:
     static int ceilingSnr_dB;
     static int floorSnr_dB;
     static int trackBumpLimit;
-    
+
 private:
     bool finiteTargets();
     void proceedToNextTrialAfter(
@@ -334,7 +334,7 @@ private:
         void(TestSetup::*f)(std::string)
     );
     TrialCompletionHandler *getTrialCompletionHandler();
-    
+
     FixedLevelOpenSetTestTrialCompletionHandler fixedLevelOpenSetTrialCompletionHandler;
     FixedLevelClosedSetTestTrialCompletionHandler fixedLevelClosedSetTrialCompletionHandler;
     AdaptiveOpenSetTestTrialCompletionHandler adaptiveOpenSetTrialCompletionHandler;
