@@ -270,9 +270,9 @@ void RecognitionTestModel_Internal::submitCorrectResponse_() {
     open_set::AdaptiveTrial trial;
     trial.target = targetName(evaluator, testMethod);
     outputFile->writeTrial(trial);
-    save(outputFile);
     testMethod->submitCorrectResponse();
     testMethod->writeLastCorrectResponse(outputFile);
+    save(outputFile);
     prepareNextTrialIfNeeded();
 }
 
@@ -286,12 +286,9 @@ void RecognitionTestModel_Internal::submitIncorrectResponse() {
 }
 
 void RecognitionTestModel_Internal::submitIncorrectResponse_() {
-    open_set::AdaptiveTrial trial;
-    trial.target = targetName(evaluator, testMethod);
-    outputFile->writeTrial(trial);
-    save(outputFile);
     testMethod->submitIncorrectResponse();
     testMethod->writeLastIncorrectResponse(outputFile);
+    save(outputFile);
     prepareNextTrialIfNeeded();
 }
 

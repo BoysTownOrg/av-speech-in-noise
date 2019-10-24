@@ -1129,13 +1129,6 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
-    submitIncorrectResponseWritesTarget
-) {
-    assertWritesTarget(submittingIncorrectResponse);
-}
-
-TEST_F(
-    RecognitionTestModel_InternalTests,
     submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
 ) {
     assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(submittingFreeResponse);
@@ -1146,13 +1139,6 @@ TEST_F(
     submitCorrectResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
 ) {
     assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(submittingCorrectResponse);
-}
-
-TEST_F(
-    RecognitionTestModel_InternalTests,
-    submitIncorrectResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget
-) {
-    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(submittingIncorrectResponse);
 }
 
 TEST_F(
