@@ -372,6 +372,7 @@ int main() {
         "/Users/basset/Desktop/track-settings.txt"
     );
     CocoaExperimenterView experimenterView{testerContentFrame};
+    CocoaTestingView testingView{testerContentFrame};
     CocoaView view{testerWindowFrame};
     view.addSubview(testSetupView.view());
     view.addSubview(experimenterView.view());
@@ -394,12 +395,14 @@ int main() {
     Presenter::Subject subject{&subjectView};
     Presenter::TestSetup testSetup{&testSetupView};
     Presenter::Experimenter experimenter{&experimenterView};
+    Presenter::Testing testing{&testingView};
     Presenter presenter{
         &model,
         &view,
         &testSetup,
         &subject,
-        &experimenter
+        &experimenter,
+        &testing
     };
     presenter.run();
 }
