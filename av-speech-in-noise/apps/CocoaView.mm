@@ -880,6 +880,10 @@ void CocoaView::addSubview(NSView *view) {
     [window.contentView addSubview:view];
 }
 
+void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {
+    [window setDelegate:delegate];
+}
+
 void CocoaView::center() {
     [window center];
 }

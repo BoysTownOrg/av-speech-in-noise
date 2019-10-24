@@ -208,6 +208,17 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
     }
 };
 
+@interface WindowDelegate : NSObject<NSWindowDelegate>
+- (void)windowWillClose:(NSNotification *)notification;
+@end
+
+@implementation WindowDelegate
+- (void)windowWillClose:(NSNotification *) __unused notification
+{
+    [NSApp terminate:self];
+}
+@end
+
 int main() {
     using namespace av_speech_in_noise;
     MacOsDirectoryReader reader;
@@ -365,6 +376,8 @@ int main() {
     view.addSubview(testSetupView.view());
     view.addSubview(experimenterView.view());
     view.center();
+    auto delegate = [WindowDelegate alloc];
+    view.setDelegate(delegate);
     auto subjectScreenSize = subjectScreenFrame.size;
     auto subjectViewHeight = subjectScreenSize.height / 4;
     auto subjectScreenWidth = subjectScreenSize.width;

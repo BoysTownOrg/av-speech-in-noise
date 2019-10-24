@@ -10,6 +10,7 @@ namespace av_speech_in_noise::tests {
         coordinate_response_measure::Trial writtenAdaptiveCoordinateResponseTrial2_{};
         coordinate_response_measure::Trial writtenFixedLevelTrial2_{};
         FreeResponseTrial writtenFreeResponseTrial_{};
+        open_set::AdaptiveTrial writtenOpenSetAdaptiveTrial_{};
         LogString log_{};
         const AdaptiveTest *adaptiveTest_{};
         const FixedLevelTest *fixedLevelTest_{};
@@ -58,6 +59,11 @@ namespace av_speech_in_noise::tests {
             writtenFreeResponseTrial_ = p;
         }
 
+        void writeTrial(const open_set::AdaptiveTrial &p) override {
+            addToLog("writeTrial ");
+            writtenOpenSetAdaptiveTrial_ = p;
+        }
+
         void writeTrial(const coordinate_response_measure::FixedLevelTrial &trial) override {
             addToLog("writeTrial ");
             writtenFixedLevelTrial2_ = trial.trial;
@@ -97,6 +103,10 @@ namespace av_speech_in_noise::tests {
 
         auto &writtenFreeResponseTrial() const {
             return writtenFreeResponseTrial_;
+        }
+
+        auto &writtenOpenSetAdaptiveTrial() const {
+            return writtenOpenSetAdaptiveTrial_;
         }
     };
 }

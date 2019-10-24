@@ -180,6 +180,7 @@ public:
     std::string audioDevice() override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
     void addSubview(NSView *);
+    void setDelegate(id<NSWindowDelegate>);
     void center();
 private:
     std::string browseModal(NSOpenPanel *panel);

@@ -195,6 +195,26 @@ public:
     }
 };
 
+class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
+    open_set::AdaptiveTrial trial_{};
+public:
+    void incorrect() override {
+        trial_.correct = false;
+    }
+
+    void correct() override {
+        trial_.correct = true;
+    }
+
+    void run(av_speech_in_noise::OutputFileImpl &file) override {
+        file.writeTrial(trial_);
+    }
+
+    int evaluationEntryIndex() override {
+        return 3;
+    }
+};
+
 class OutputFileTests : public ::testing::Test {
 protected:
     WriterStub writer;
@@ -204,7 +224,9 @@ protected:
         writingAdaptiveCoordinateResponseTrial;
     WritingFixedLevelCoordinateResponseTrial
         writingFixedLevelCoordinateResponseTrial;
+    WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     FreeResponseTrial freeResponseTrial;
+    open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     TestInformation testInformation;
@@ -221,6 +243,10 @@ protected:
 
     void writeFreeResponseTrial() {
         file.writeTrial(freeResponseTrial);
+    }
+
+    void writeOpenSetAdaptiveTrial() {
+        file.writeTrial(openSetAdaptiveTrial);
     }
 
     const auto &written() {
@@ -364,6 +390,18 @@ protected:
         assertNthCommaDelimitedEntryOfLine(HeadingItem::stimulus, 6, n);
     }
 
+    void assertFreeResponseHeadingAtLine(int n) {
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 1, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::freeResponse, 2, n);
+    }
+
+    void assertOpenSetAdaptiveHeadingAtLine(int n) {
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 2, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation, 3, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::reversals, 4, n);
+    }
+
     void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {
         using coordinate_response_measure::Color;
         auto &trial = writingAdaptiveCoordinateResponseTrial.trial();
@@ -398,6 +436,24 @@ protected:
         assertNthCommaDelimitedEntryOfLine("a", 6, n);
     }
 
+    void assertWritesFreeResponseTrialOnLine(int n) {
+        freeResponseTrial.target = "a";
+        freeResponseTrial.response = "b";
+        writeFreeResponseTrial();
+        assertNthCommaDelimitedEntryOfLine("a", 1, n);
+        assertNthCommaDelimitedEntryOfLine("b", 2, n);
+    }
+
+    void assertWritesOpenSetAdaptiveTrialOnLine(int n) {
+        openSetAdaptiveTrial.SNR_dB = 11;
+        openSetAdaptiveTrial.target = "a";
+        openSetAdaptiveTrial.reversals = 22;
+        writeOpenSetAdaptiveTrial();
+        assertNthCommaDelimitedEntryOfLine("11", 1, n);
+        assertNthCommaDelimitedEntryOfLine("a", 2, n);
+        assertNthCommaDelimitedEntryOfLine("22", 4, n);
+    }
+
     void assertColonDelimitedEntryWritten(std::string label, std::string what) {
         assertWriterContains(label + ": " + what + "\n");
     }
@@ -413,8 +469,30 @@ TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
     assertFixedLevelCoordinateResponseHeadingAtLine(1);
 }
 
+TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
+    writeFreeResponseTrial();
+    assertFreeResponseHeadingAtLine(1);
+}
+
+TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialHeading) {
+    writeOpenSetAdaptiveTrial();
+    assertOpenSetAdaptiveHeadingAtLine(1);
+}
+
 TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
     assertWritesAdaptiveCoordinateResponseTrialOnLine(2);
+}
+
+TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
+    assertWritesFixedLevelCoordinateResponseTrialOnLine(2);
+}
+
+TEST_F(OutputFileTests, writeFreeResponseTrial) {
+    assertWritesFreeResponseTrialOnLine(2);
+}
+
+TEST_F(OutputFileTests, writeOpenSetAdaptiveTrial) {
+    assertWritesOpenSetAdaptiveTrialOnLine(2);
 }
 
 TEST_F(
@@ -423,6 +501,24 @@ TEST_F(
 ) {
     run(writingAdaptiveCoordinateResponseTrial);
     assertWritesAdaptiveCoordinateResponseTrialOnLine(3);
+}
+
+TEST_F(
+    OutputFileTests,
+    writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice
+) {
+    run(writingFixedLevelCoordinateResponseTrial);
+    assertWritesFixedLevelCoordinateResponseTrialOnLine(3);
+}
+
+TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
+    writeFreeResponseTrial();
+    assertWritesFreeResponseTrialOnLine(3);
+}
+
+TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
+    writeOpenSetAdaptiveTrial();
+    assertWritesOpenSetAdaptiveTrialOnLine(3);
 }
 
 TEST_F(
@@ -445,60 +541,53 @@ TEST_F(
     assertFixedLevelCoordinateResponseHeadingAtLine(3);
 }
 
-TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
-    assertWritesFixedLevelCoordinateResponseTrialOnLine(2);
+TEST_F(
+    OutputFileTests,
+    writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened
+) {
+    writeFreeResponseTrial();
+    openNewFile();
+    writeFreeResponseTrial();
+    assertFreeResponseHeadingAtLine(3);
 }
 
 TEST_F(
     OutputFileTests,
-    writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice
+    writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened
 ) {
-    run(writingFixedLevelCoordinateResponseTrial);
-    assertWritesFixedLevelCoordinateResponseTrialOnLine(3);
+    writeOpenSetAdaptiveTrial();
+    openNewFile();
+    writeOpenSetAdaptiveTrial();
+    assertOpenSetAdaptiveHeadingAtLine(3);
 }
 
 TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
 
-TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
-    assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
-}
-
 TEST_F(OutputFileTests, writeIncorrectFixedLevelCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(writingFixedLevelCoordinateResponseTrial);
+}
+
+TEST_F(OutputFileTests, writeIncorrectOpenSetAdaptiveTrial) {
+    assertIncorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
+}
+
+TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
+    assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
 
 TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
     assertCorrectTrialWritesEvaluation(writingFixedLevelCoordinateResponseTrial);
 }
 
+TEST_F(OutputFileTests, writeCorrectOpenSetAdaptiveTrial) {
+    assertCorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
+}
+
 TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
     coordinate_response_measure::AdaptiveTrial uninitialized;
     file.writeTrial(uninitialized);
-}
-
-TEST_F(OutputFileTests, writeFreeResponseTrial) {
-    freeResponseTrial.target = "a";
-    freeResponseTrial.response = "b";
-    writeFreeResponseTrial();
-    assertNthEntryOfSecondLine("a", 1);
-    assertNthEntryOfSecondLine("b", 2);
-}
-
-TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
-    writeFreeResponseTrial();
-    freeResponseTrial.target = "a";
-    freeResponseTrial.response = "b";
-    writeFreeResponseTrial();
-    assertNthEntryOfThirdLine("a", 1);
-    assertNthEntryOfThirdLine("b", 2);
-}
-
-TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
-    writeFreeResponseTrial();
-    assertNthEntryOfFirstLine("target", 1);
-    assertNthEntryOfFirstLine("response", 2);
 }
 
 TEST_F(OutputFileTests, writeCommonAdaptiveTest) {

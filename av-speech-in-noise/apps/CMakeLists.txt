@@ -1,9 +1,3 @@
-set(
-	SOURCES
-	"AvFoundationPlayers.mm"
-	"CocoaView.mm"
-	"main.mm"
-)
 find_library(AV_FOUNDATION AVFoundation)
 if (NOT AV_FOUNDATION)
     message(FATAL_ERROR "AVFoundation not found")
@@ -24,7 +18,21 @@ find_library(MEDIA_TOOLBOX MediaToolbox)
 if (NOT MEDIA_TOOLBOX)
     message(MEDIA_TOOLBOX "MediaToolbox not found")
 endif()
-add_executable(AvSpeechInNoise MACOSX_BUNDLE ${SOURCES})
-target_compile_options(AvSpeechInNoise PRIVATE -Wall -Wextra -pedantic -Werror)
+add_executable(AvSpeechInNoise MACOSX_BUNDLE 
+    AvFoundationPlayers.mm
+    CocoaView.mm
+    main.mm
+)
 target_compile_features(AvSpeechInNoise PRIVATE cxx_std_17)
-target_link_libraries(AvSpeechInNoise recognition-test stimulus-players presentation target-list adaptive-track ${AV_FOUNDATION} ${CORE_AUDIO} ${COCOA} ${CORE_MEDIA} ${MEDIA_TOOLBOX})
+target_link_libraries(AvSpeechInNoise 
+    recognition-test 
+    stimulus-players 
+    presentation 
+    target-list 
+    adaptive-track 
+    ${AV_FOUNDATION} 
+    ${CORE_AUDIO} 
+    ${COCOA} 
+    ${CORE_MEDIA} 
+    ${MEDIA_TOOLBOX}
+)
