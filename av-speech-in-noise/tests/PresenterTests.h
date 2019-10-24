@@ -1507,10 +1507,14 @@ protected:
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
     ViewStub::ExperimenterViewStub experimenterView;
+    ViewStub::Experimenter2ViewStub experimenter2View;
+    ViewStub::TestingViewStub testingView;
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Subject subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
+    Presenter::Experimenter2 experimenter2{&experimenter2View};
+    Presenter::Testing testing{&testingView};
     
     Presenter construct() {
         return {&model, &view, &testSetup, &subject, &experimenter};
@@ -1530,8 +1534,12 @@ protected:
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
     ViewStub::ExperimenterViewStub experimenterView;
+    ViewStub::Experimenter2ViewStub experimenter2View;
+    ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
+    Presenter::Experimenter2 experimenter2{&experimenter2View};
+    Presenter::Testing testing{&testingView};
     Presenter::Subject subject{&subjectView};
     Presenter presenter{
         &model,
