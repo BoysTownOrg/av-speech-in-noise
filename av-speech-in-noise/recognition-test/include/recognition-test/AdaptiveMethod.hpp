@@ -78,7 +78,7 @@ public:
     std::string next() override;
     std::string current() override;
     void writeLastCoordinateResponse(OutputFile *) override;
-    void writeLastCorrectResponse(OutputFile *);
+    void writeLastCorrectResponse(OutputFile *) override;
     void writeLastIncorrectResponse(OutputFile *);
     void writeTestingParameters(OutputFile *) override;
     void submitResponse(

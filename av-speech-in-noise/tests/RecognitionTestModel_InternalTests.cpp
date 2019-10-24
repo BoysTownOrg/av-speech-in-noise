@@ -82,6 +82,10 @@ public:
         log_.insert("writeLastCoordinateResponse ");
     }
 
+    void writeLastCorrectResponse(OutputFile *) {
+        log_.insert("writeLastCorrectResponse ");
+    }
+
     void submitResponse(const coordinate_response_measure::SubjectResponse &) {
         log_.insert("submitResponse ");
     }
@@ -1158,6 +1162,15 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    submitCorrectResponseWritesTrialAfterSubmittingResponse
+) {
+    run(initializingTest);
+    run(submittingCorrectResponse);
+    assertTrue(testMethod.log().contains("submitCorrectResponse writeLastCorrectResponse "));
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse
 ) {
     run(initializingTest);
@@ -1176,11 +1189,11 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
-    submitCorrectResponseQueriesNextTargetAfterSubmittingResponse
+    submitCorrectResponseQueriesNextTargetAfterWritingResponse
 ) {
     run(initializingTest);
     run(submittingCorrectResponse);
-    assertTrue(testMethod.log().contains("submitCorrectResponse next "));
+    assertTrue(testMethod.log().contains("writeLastCorrectResponse next "));
 }
 
 TEST_F(
