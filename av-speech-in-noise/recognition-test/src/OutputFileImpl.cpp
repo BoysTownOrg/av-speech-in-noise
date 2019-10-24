@@ -193,9 +193,13 @@ static std::string formatFixedLevelCoordinateResponseTrialHeading() {
 
 static std::string formatOpenSetAdaptiveTrialHeading() {
     FormattedStream stream;
+    stream.insert(headingItemName(HeadingItem::snr_dB));
+    stream.insertCommaAndSpace();
     stream.insert(headingItemName(HeadingItem::target));
     stream.insertCommaAndSpace();
     stream.insert(headingItemName(HeadingItem::evaluation));
+    stream.insertCommaAndSpace();
+    stream.insert(headingItemName(HeadingItem::reversals));
     stream.insertNewLine();
     return stream.str();
 }

@@ -396,8 +396,10 @@ protected:
     }
 
     void assertOpenSetAdaptiveHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 1, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation, 2, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 2, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation, 3, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::reversals, 4, n);
     }
 
     void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {
