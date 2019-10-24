@@ -579,6 +579,12 @@ protected:
         run(useCase);
         assertEqual("a", evaluator.filePathForFileName());
     }
+
+    void assertTestMethodLogContains(UseCase &useCase, const std::string &what) {
+        run(initializingTest);
+        run(useCase);
+        assertTrue(testMethod.log().contains(what));
+    }
 };
 
 TEST_F(RecognitionTestModel_InternalTests, subscribesToPlayerEvents) {
@@ -1131,54 +1137,60 @@ TEST_F(
     RecognitionTestModel_InternalTests,
     submitCoordinateResponseWritesTrialAfterSubmittingResponse
 ) {
-    run(initializingTest);
-    run(submittingCoordinateResponse);
-    assertTrue(testMethod.log().contains("submitResponse writeLastCoordinateResponse "));
+    assertTestMethodLogContains(
+        submittingCoordinateResponse,
+        "submitResponse writeLastCoordinateResponse "
+    );
 }
 
 TEST_F(
     RecognitionTestModel_InternalTests,
     submitCorrectResponseWritesTrialAfterSubmittingResponse
 ) {
-    run(initializingTest);
-    run(submittingCorrectResponse);
-    assertTrue(testMethod.log().contains("submitCorrectResponse writeLastCorrectResponse "));
+    assertTestMethodLogContains(
+        submittingCorrectResponse,
+        "submitCorrectResponse writeLastCorrectResponse "
+    );
 }
 
 TEST_F(
     RecognitionTestModel_InternalTests,
     submitIncorrectResponseWritesTrialAfterSubmittingResponse
 ) {
-    run(initializingTest);
-    run(submittingIncorrectResponse);
-    assertTrue(testMethod.log().contains("submitIncorrectResponse writeLastIncorrectResponse "));
+    assertTestMethodLogContains(
+        submittingIncorrectResponse,
+        "submitIncorrectResponse writeLastIncorrectResponse "
+    );
 }
 
 TEST_F(
     RecognitionTestModel_InternalTests,
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse
 ) {
-    run(initializingTest);
-    run(submittingCoordinateResponse);
-    assertTrue(testMethod.log().contains("writeLastCoordinateResponse next "));
+    assertTestMethodLogContains(
+        submittingCoordinateResponse,
+        "writeLastCoordinateResponse next "
+    );
 }
 
 TEST_F(
     RecognitionTestModel_InternalTests,
     submitIncorrectResponseQueriesNextTargetAfterWritingResponse
 ) {
-    run(initializingTest);
-    run(submittingIncorrectResponse);
-    assertTrue(testMethod.log().contains("writeLastIncorrectResponse next "));
+    assertTestMethodLogContains(
+        submittingIncorrectResponse,
+        "writeLastIncorrectResponse next "
+    );
 }
 
 TEST_F(
     RecognitionTestModel_InternalTests,
     submitCorrectResponseQueriesNextTargetAfterWritingResponse
 ) {
-    run(initializingTest);
-    run(submittingCorrectResponse);
-    assertTrue(testMethod.log().contains("writeLastCorrectResponse next "));
+    assertTestMethodLogContains(
+        submittingCorrectResponse,
+        "writeLastCorrectResponse next "
+    );
 }
 
 TEST_F(
