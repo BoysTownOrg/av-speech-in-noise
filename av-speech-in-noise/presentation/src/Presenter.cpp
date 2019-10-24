@@ -20,7 +20,6 @@ Presenter::Presenter(
     View *view,
     TestSetup *testSetup,
     Subject *subject,
-    Experimenter *,
     Experimenter2 *experimenter2,
     Testing *testing
 ) :
