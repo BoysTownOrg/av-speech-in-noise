@@ -361,7 +361,9 @@ public:
         View *,
         TestSetup *,
         Subject *,
-        Experimenter *
+        Experimenter *,
+        Experimenter2 * = {},
+        Testing * = {}
     );
     void trialComplete() override;
     void run();

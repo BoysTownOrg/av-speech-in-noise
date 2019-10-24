@@ -20,7 +20,9 @@ Presenter::Presenter(
     View *view,
     TestSetup *testSetup,
     Subject *subject,
-    Experimenter *experimenter
+    Experimenter *experimenter,
+    Experimenter2 *,
+    Testing *
 ) :
     fixedLevelOpenSetTrialCompletionHandler{experimenter},
     fixedLevelClosedSetTrialCompletionHandler{subject},

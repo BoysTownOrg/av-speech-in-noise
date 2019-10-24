@@ -1517,7 +1517,7 @@ protected:
     Presenter::Testing testing{&testingView};
     
     Presenter construct() {
-        return {&model, &view, &testSetup, &subject, &experimenter};
+        return {&model, &view, &testSetup, &subject, &experimenter, &experimenter2, &testing};
     }
 };
 
@@ -1546,7 +1546,9 @@ protected:
         &view,
         &testSetup,
         &subject,
-        &experimenter
+        &experimenter,
+        &experimenter2,
+        &testing
     };
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
     BrowsingForTargetList browsingForTargetList{&setupView};
