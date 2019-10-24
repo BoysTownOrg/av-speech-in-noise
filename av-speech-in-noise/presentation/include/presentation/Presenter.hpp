@@ -311,14 +311,18 @@ public:
         public TrialCompletionHandler
     {
         Experimenter *experimenter;
+        Testing *testing;
     public:
         explicit AdaptiveOpenSetTestTrialCompletionHandler(
-            Experimenter *experimenter
+            Experimenter *experimenter,
+            Testing *testing
         ) :
-            experimenter{experimenter} {}
+            experimenter{experimenter},
+            testing{testing} {}
 
         void showResponseView() override {
             experimenter->showEvaluationButtons();
+            testing->showEvaluationButtons();
         }
     };
 

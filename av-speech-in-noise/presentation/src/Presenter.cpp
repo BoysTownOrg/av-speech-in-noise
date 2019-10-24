@@ -26,7 +26,7 @@ Presenter::Presenter(
 ) :
     fixedLevelOpenSetTrialCompletionHandler{experimenter, testing},
     fixedLevelClosedSetTrialCompletionHandler{subject},
-    adaptiveOpenSetTrialCompletionHandler{experimenter},
+    adaptiveOpenSetTrialCompletionHandler{experimenter, testing},
     adaptiveClosedSetTrialCompletionHandler{subject},
     model{model},
     view{view},
