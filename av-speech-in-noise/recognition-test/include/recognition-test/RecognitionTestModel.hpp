@@ -68,6 +68,7 @@ namespace av_speech_in_noise {
         virtual void writeTestingParameters(OutputFile *) = 0;
         virtual void writeLastCoordinateResponse(OutputFile *) = 0;
         virtual void writeLastCorrectResponse(OutputFile *) = 0;
+        virtual void writeLastIncorrectResponse(OutputFile *) = 0;
         virtual void submitResponse(
             const coordinate_response_measure::SubjectResponse &
         ) = 0;

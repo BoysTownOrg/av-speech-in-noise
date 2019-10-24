@@ -12,6 +12,7 @@ class NullTestMethod : public TestMethod {
     void submitIncorrectResponse() override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
+    void writeLastIncorrectResponse(OutputFile *) override {}
     void writeTestingParameters(OutputFile *) override {}
     void submitResponse(
         const coordinate_response_measure::SubjectResponse &
@@ -290,6 +291,7 @@ void RecognitionTestModel_Internal::submitIncorrectResponse_() {
     outputFile->writeTrial(trial);
     save(outputFile);
     testMethod->submitIncorrectResponse();
+    testMethod->writeLastIncorrectResponse(outputFile);
     prepareNextTrialIfNeeded();
 }
 
