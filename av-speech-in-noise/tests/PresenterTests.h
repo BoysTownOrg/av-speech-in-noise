@@ -729,18 +729,6 @@ public:
         void hideEvaluationButtons() override {
             evaluationButtonsHidden_ = true;
         }
-        
-        void setResponse(std::string s) {
-            response_ = std::move(s);
-        }
-        
-        void submitResponse() {
-            listener_->submitResponse();
-        }
-
-        void exitTest() {
-            listener_->exitTest();
-        }
     };
 };
 
@@ -1231,9 +1219,9 @@ public:
 };
 
 class ExitingTest : public UseCase {
-    ViewStub::ExperimenterViewStub *view;
+    ViewStub::Experimenter2ViewStub *view;
 public:
-    explicit ExitingTest(ViewStub::ExperimenterViewStub *view) :
+    explicit ExitingTest(ViewStub::Experimenter2ViewStub *view) :
         view{view} {}
     
     void run() override {
@@ -1506,7 +1494,7 @@ protected:
     RespondingFromExperimenter respondingFromExperimenter{&experimenterView, &testingView};
     SubmittingPassedTrial submittingPassedTrial{&experimenterView, &testingView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};
-    ExitingTest exitingTest{&experimenterView};
+    ExitingTest exitingTest{&experimenter2View};
     
     std::string auditoryOnlyConditionName() {
         return conditionName(Condition::auditoryOnly);
@@ -1521,11 +1509,11 @@ protected:
     }
     
     void respondFromExperimenter() {
-        experimenterView.submitResponse();
+        testingView.submitResponse();
     }
     
     void exitTest() {
-        experimenterView.exitTest();
+        experimenter2View.exitTest();
     }
     
     void playCalibration() {
