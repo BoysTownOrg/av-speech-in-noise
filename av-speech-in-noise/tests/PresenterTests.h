@@ -689,10 +689,6 @@ public:
         void hideExitTestButton() override {
             exitTestButtonHidden_ = true;
         }
-
-        void submitFailedTrial() {
-            listener_->submitFailedTrial();
-        }
         
         auto responseSubmissionHidden() const {
             return responseSubmissionHidden_;
@@ -1249,9 +1245,12 @@ public:
 };
 
 class RespondingFromExperimenter : public TrialSubmission {
-    ViewStub::ExperimenterViewStub *view;
+    ViewStub::TestingViewStub *view;
 public:
-    explicit RespondingFromExperimenter(ViewStub::ExperimenterViewStub *view) :
+    explicit RespondingFromExperimenter(
+        ViewStub::ExperimenterViewStub *,
+        ViewStub::TestingViewStub *view
+    ) :
         view{view} {}
     
     void run() override {
@@ -1538,7 +1537,7 @@ protected:
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView};
     RespondingFromSubject respondingFromSubject{&subjectView};
-    RespondingFromExperimenter respondingFromExperimenter{&experimenterView};
+    RespondingFromExperimenter respondingFromExperimenter{&experimenterView, &testingView};
     SubmittingPassedTrial submittingPassedTrial{&experimenterView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenterView};

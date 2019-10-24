@@ -326,14 +326,18 @@ public:
         public TrialCompletionHandler
     {
         Experimenter *experimenter;
+        Testing *testing;
     public:
         explicit FixedLevelOpenSetTestTrialCompletionHandler(
-            Experimenter *experimenter
+            Experimenter *experimenter,
+            Testing *testing
         ) :
-            experimenter{experimenter} {}
+            experimenter{experimenter},
+            testing{testing} {}
 
         void showResponseView() override {
             experimenter->showResponseSubmission();
+            testing->showResponseSubmission();
         }
     };
 

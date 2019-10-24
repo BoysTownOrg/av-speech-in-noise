@@ -24,7 +24,7 @@ Presenter::Presenter(
     Experimenter2 *experimenter2,
     Testing *testing
 ) :
-    fixedLevelOpenSetTrialCompletionHandler{experimenter},
+    fixedLevelOpenSetTrialCompletionHandler{experimenter, testing},
     fixedLevelClosedSetTrialCompletionHandler{subject},
     adaptiveOpenSetTrialCompletionHandler{experimenter},
     adaptiveClosedSetTrialCompletionHandler{subject},
