@@ -95,6 +95,11 @@ public:
     virtual int writtenSnr(OutputFileStub &) = 0;
 };
 
+class WritingTargetUseCase : public virtual UseCase {
+public:
+    virtual std::string writtenTarget(OutputFileStub &) = 0;
+};
+
 class WritingCoordinateResponse : public WritingResponseUseCase {
     coordinate_response_measure::SubjectResponse response_{};
     OutputFile &file_;
@@ -115,7 +120,10 @@ public:
     }
 };
 
-class WritingCorrectResponse : public WritingResponseUseCase {
+class WritingCorrectResponse :
+    public WritingResponseUseCase,
+    public WritingTargetUseCase
+{
     OutputFile &file_;
 public:
     explicit WritingCorrectResponse(OutputFile &file_) : file_{file_} {}
@@ -132,9 +140,16 @@ public:
     int writtenSnr(OutputFileStub &file) override {
         return file.writtenOpenSetAdaptiveTrial().SNR_dB;
     }
+
+    std::string writtenTarget(OutputFileStub &file) override {
+        return file.writtenOpenSetAdaptiveTrial().target;
+    }
 };
 
-class WritingIncorrectResponse : public WritingResponseUseCase {
+class WritingIncorrectResponse :
+    public WritingResponseUseCase,
+    public WritingTargetUseCase
+{
     OutputFile &file_;
 public:
     explicit WritingIncorrectResponse(OutputFile &file_) : file_{file_} {}
@@ -150,6 +165,10 @@ public:
 
     int writtenSnr(OutputFileStub &file) override {
         return file.writtenOpenSetAdaptiveTrial().SNR_dB;
+    }
+
+    std::string writtenTarget(OutputFileStub &file) override {
+        return file.writtenOpenSetAdaptiveTrial().target;
     }
 };
 
@@ -417,6 +436,13 @@ public:
         selectList(1);
         run(useCase);
         assertNextEquals("a");
+    }
+
+    void assertWritesTarget(WritingTargetUseCase &useCase) {
+        initialize();
+        evaluator.setFileName("a");
+        run(useCase);
+        assertEqual("a", useCase.writtenTarget(outputFile));
     }
 };
 
@@ -742,6 +768,13 @@ TEST_F(
     initialize();
     writeIncorrectResponse();
     assertFalse(outputFile.writtenOpenSetAdaptiveTrial().correct);
+}
+
+TEST_F(
+    AdaptiveMethodTests,
+    writeCorrectResponseWritesTarget
+) {
+    assertWritesTarget(writingCorrectResponse);
 }
 
 TEST_F(

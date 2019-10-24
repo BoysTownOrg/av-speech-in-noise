@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
-namespace av_speech_in_noise::tests::recognition_test {
+namespace av_speech_in_noise::tests::recognition_test { namespace {
 class TestMethodStub : public TestMethod {
     LogString log_{};
     std::string current_{};
@@ -1200,4 +1200,4 @@ TEST_F(
     run(submittingIncorrectResponse);
     assertTrue(testMethod.submittedIncorrectResponse());
 }
-}
+}}
