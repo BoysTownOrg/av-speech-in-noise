@@ -2067,9 +2067,13 @@ protected:
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
     ViewStub::ExperimenterViewStub experimenterView;
+    ViewStub::Experimenter2ViewStub experimenter2View;
+    ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Subject subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
+    Presenter::Experimenter2 experimenter2{&experimenter2View};
+    Presenter::Testing testing{&testingView};
     
     void useFailingModel(std::string s = {}) {
         failure.setErrorMessage(std::move(s));
@@ -2082,7 +2086,9 @@ protected:
             &view,
             &testSetup,
             &subject,
-            &experimenter
+            &experimenter,
+            &experimenter2,
+            &testing
         };
         setupView.confirmTestSetup();
     }
