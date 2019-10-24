@@ -6,7 +6,7 @@ namespace {
 class BadInput : public std::runtime_error {
 public:
     explicit BadInput(const std::string &s) :
-        std::runtime_error{ s } {}
+        std::runtime_error{s} {}
 };
 }
 
@@ -31,7 +31,7 @@ Presenter::Presenter(
     testSetup{testSetup},
     subject{subject},
     experimenter{experimenter},
-    trialCompletionHandler{&adaptiveClosedSetTrialCompletionHandler}
+    trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler}
 {
     model->subscribe(this);
     testSetup->becomeChild(this);
@@ -56,7 +56,7 @@ void Presenter::confirmTestSetup_() {
     initializeTest();
     if (!testComplete())
         switchToTestView();
-    trialCompletionHandler = getTrialCompletionHandler();
+    trialCompletionHandler_ = trialCompletionHandler();
 }
 
 void Presenter::initializeTest() {
@@ -109,7 +109,7 @@ bool Presenter::fixedLevelClosedSet() {
     return testSetup->fixedLevelClosedSet();
 }
 
-auto Presenter::getTrialCompletionHandler() -> TrialCompletionHandler * {
+auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
     if (adaptiveClosedSet())
         return &adaptiveClosedSetTrialCompletionHandler;
     if (adaptiveOpenSet())
@@ -132,7 +132,7 @@ void Presenter::playTrial() {
 }
 
 void Presenter::trialComplete() {
-    trialCompletionHandler->showResponseView();
+    trialCompletionHandler_->showResponseView();
     experimenter->showExitTestButton();
 }
 
@@ -558,5 +558,105 @@ void Presenter::Experimenter::submitResponse() {
 
 FreeResponse Presenter::Experimenter::openSetResponse() {
     return {view->response()};
+}
+
+
+Presenter::Testing::Testing(View::Testing *view) :
+    view{view}
+{
+    view->subscribe(this);
+}
+
+void Presenter::Testing::show() {
+    view->show();
+}
+
+void Presenter::Testing::showNextTrialButton() {
+    view->showNextTrialButton();
+}
+
+void Presenter::Testing::hideExitTestButton() {
+    view->hideExitTestButton();
+}
+
+void Presenter::Testing::showExitTestButton() {
+    view->showExitTestButton();
+}
+
+void Presenter::Testing::playTrial() {
+    parent->playTrial();
+    view->hideNextTrialButton();
+}
+
+void Presenter::Testing::becomeChild(Presenter *p) {
+    parent = p;
+}
+
+void Presenter::Testing::submitPassedTrial() {
+    parent->submitPassedTrial();
+    prepareNextEvaluatedTrial();
+}
+
+void Presenter::Testing::prepareNextEvaluatedTrial() {
+    view->hideEvaluationButtons();
+    showNextTrialButton();
+}
+
+void Presenter::Testing::submitFailedTrial() {
+    parent->submitFailedTrial();
+    prepareNextEvaluatedTrial();
+}
+
+void Presenter::Testing::hide() {
+    view->hide();
+}
+
+void Presenter::Testing::showEvaluationButtons() {
+    view->showEvaluationButtons();
+}
+
+void Presenter::Testing::showResponseSubmission() {
+    view->showResponseSubmission();
+}
+
+void Presenter::Testing::submitResponse() {
+    parent->submitExperimenterResponse();
+    view->hideResponseSubmission();
+    showNextTrialButton();
+}
+
+FreeResponse Presenter::Testing::openSetResponse() {
+    return {view->response()};
+}
+
+
+Presenter::Experimenter2::Experimenter2(View::Experimenter2 *view) :
+    view{view}
+{
+    view->subscribe(this);
+}
+
+void Presenter::Experimenter2::show() {
+    view->show();
+}
+
+void Presenter::Experimenter2::hideExitTestButton() {
+    view->hideExitTestButton();
+}
+
+void Presenter::Experimenter2::showExitTestButton() {
+    view->showExitTestButton();
+}
+
+void Presenter::Experimenter2::becomeChild(Presenter *p) {
+    parent = p;
+}
+
+void Presenter::Experimenter2::exitTest() {
+    parent->exitTest();
+}
+
+void Presenter::Experimenter2::hide() {
+    view->hide();
 }
 }

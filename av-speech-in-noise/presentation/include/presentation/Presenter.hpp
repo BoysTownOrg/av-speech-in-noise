@@ -8,7 +8,31 @@
 namespace av_speech_in_noise {
 class View {
 public:
-    virtual ~View() = default;
+    class Testing {
+    public:
+        class EventListener {
+        public:
+            virtual ~EventListener() = default;
+            virtual void playTrial() = 0;
+            virtual void submitPassedTrial() = 0;
+            virtual void submitFailedTrial() = 0;
+            virtual void submitResponse() = 0;
+        };
+
+        virtual ~Testing() = default;
+        virtual void subscribe(EventListener *) = 0;
+        virtual void showNextTrialButton() = 0;
+        virtual void hideNextTrialButton() = 0;
+        virtual void hideExitTestButton() = 0;
+        virtual void showExitTestButton() = 0;
+        virtual void show() = 0;
+        virtual void hide() = 0;
+        virtual void showEvaluationButtons() = 0;
+        virtual void hideEvaluationButtons() = 0;
+        virtual void showResponseSubmission() = 0;
+        virtual void hideResponseSubmission() = 0;
+        virtual std::string response() = 0;
+    };
 
     class Subject {
     public:
@@ -71,6 +95,22 @@ public:
         virtual void populateMethodMenu(std::vector<std::string>) = 0;
     };
 
+    class Experimenter2 {
+    public:
+        class EventListener {
+        public:
+            virtual ~EventListener() = default;
+            virtual void exitTest() = 0;
+        };
+
+        virtual ~Experimenter2() = default;
+        virtual void subscribe(EventListener *) = 0;
+        virtual void show() = 0;
+        virtual void hide() = 0;
+        virtual void hideExitTestButton() = 0;
+        virtual void showExitTestButton() = 0;
+    };
+
     class Experimenter {
     public:
         class EventListener {
@@ -98,6 +138,7 @@ public:
         virtual std::string response() = 0;
     };
 
+    virtual ~View() = default;
     virtual void eventLoop() = 0;
     virtual std::string browseForDirectory() = 0;
     virtual std::string browseForOpeningFile() = 0;
@@ -130,6 +171,29 @@ constexpr const char *methodName(Method c) {
 
 class Presenter : public Model::EventListener {
 public:
+    class Testing : public View::Testing::EventListener {
+        View::Testing *view;
+    public:
+        explicit Testing(View::Testing *);
+        void becomeChild(Presenter *parent);
+        void show();
+        void hide();
+        void showEvaluationButtons();
+        void showResponseSubmission();
+        void showNextTrialButton();
+        void hideExitTestButton();
+        void showExitTestButton();
+        FreeResponse openSetResponse();
+        void playTrial() override;
+        void submitPassedTrial() override;
+        void submitResponse() override;
+        void submitFailedTrial() override;
+
+    private:
+        void prepareNextEvaluatedTrial();
+        Presenter *parent;
+    };
+
     class TestSetup : public View::TestSetup::EventListener {
     public:
         explicit TestSetup(View::TestSetup *);
@@ -184,6 +248,21 @@ public:
         coordinate_response_measure::Color colorResponse();
 
         View::Subject *view;
+        Presenter *parent;
+    };
+
+    class Experimenter2 : public View::Experimenter2::EventListener {
+        View::Experimenter2 *view;
+    public:
+        explicit Experimenter2(View::Experimenter2 *);
+        void becomeChild(Presenter *parent);
+        void show();
+        void hide();
+        void hideExitTestButton();
+        void showExitTestButton();
+        void exitTest() override;
+
+    private:
         Presenter *parent;
     };
 
@@ -333,18 +412,22 @@ private:
         std::string s,
         void(TestSetup::*f)(std::string)
     );
-    TrialCompletionHandler *getTrialCompletionHandler();
+    TrialCompletionHandler *trialCompletionHandler();
 
-    FixedLevelOpenSetTestTrialCompletionHandler fixedLevelOpenSetTrialCompletionHandler;
-    FixedLevelClosedSetTestTrialCompletionHandler fixedLevelClosedSetTrialCompletionHandler;
-    AdaptiveOpenSetTestTrialCompletionHandler adaptiveOpenSetTrialCompletionHandler;
-    AdaptiveClosedSetTestTrialCompletionHandler adaptiveClosedSetTrialCompletionHandler;
+    FixedLevelOpenSetTestTrialCompletionHandler
+        fixedLevelOpenSetTrialCompletionHandler;
+    FixedLevelClosedSetTestTrialCompletionHandler
+        fixedLevelClosedSetTrialCompletionHandler;
+    AdaptiveOpenSetTestTrialCompletionHandler
+        adaptiveOpenSetTrialCompletionHandler;
+    AdaptiveClosedSetTestTrialCompletionHandler
+        adaptiveClosedSetTrialCompletionHandler;
     Model *model;
     View *view;
     TestSetup *testSetup;
     Subject *subject;
     Experimenter *experimenter;
-    TrialCompletionHandler *trialCompletionHandler{};
+    TrialCompletionHandler *trialCompletionHandler_{};
 };
 }
 
