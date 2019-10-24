@@ -32,7 +32,6 @@ Presenter::Presenter(
     view{view},
     testSetup{testSetup},
     subject{subject},
-    experimenter{experimenter},
     experimenter2{experimenter2},
     testing{testing},
     trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler}
@@ -100,14 +99,12 @@ void Presenter::hideTestSetup() {
 }
 
 void Presenter::showTestView() {
-    experimenter->show();
     experimenter2->show();
     if (closedSet())
         subject->show();
     else {
         testing->show();
         testing->showNextTrialButton();
-        experimenter->showNextTrialButton();
     }
 }
 
@@ -138,13 +135,11 @@ void Presenter::playTrial() {
     AudioSettings p;
     p.audioDevice = view->audioDevice();
     model->playTrial(p);
-    experimenter->hideExitTestButton();
     experimenter2->hideExitTestButton();
 }
 
 void Presenter::trialComplete() {
     trialCompletionHandler_->showResponseView();
-    experimenter->showExitTestButton();
     experimenter2->showExitTestButton();
 }
 
@@ -212,7 +207,6 @@ void Presenter::showTestSetup() {
 }
 
 void Presenter::hideTestView() {
-    experimenter->hide();
     testing->hide();
     experimenter2->hide();
     subject->hide();

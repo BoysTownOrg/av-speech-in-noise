@@ -670,48 +670,29 @@ public:
     
     class ExperimenterViewStub : public Experimenter {
         std::string response_;
-        EventListener *listener_{};
-        bool nextTrialButtonShown_{};
-        bool shown_{};
-        bool nextTrialButtonHidden_{};
-        bool hidden_{};
-        bool evaluationButtonsShown_{};
-        bool responseSubmissionShown_{};
-        bool responseSubmissionHidden_{};
-        bool evaluationButtonsHidden_{};
-        bool exitTestButtonHidden_{};
-        bool exitTestButtonShown_{};
     public:
         void showExitTestButton() override {
-            exitTestButtonShown_ = true;
         }
 
         void hideExitTestButton() override {
-            exitTestButtonHidden_ = true;
         }
         
         void showNextTrialButton() override {
-            nextTrialButtonShown_ = true;
         }
         
         void show() override {
-            shown_ = true;
         }
         
-        void subscribe(EventListener *e) override {
-            listener_ = e;
+        void subscribe(EventListener *) override {
         }
         
         void hideNextTrialButton() override {
-            nextTrialButtonHidden_ = true;
         }
         
         void hide() override {
-            hidden_ = true;
         }
         
         void showEvaluationButtons() override {
-            evaluationButtonsShown_ = true;
         }
         
         std::string response() override {
@@ -719,15 +700,12 @@ public:
         }
         
         void showResponseSubmission() override {
-            responseSubmissionShown_ = true;
         }
         
         void hideResponseSubmission() override {
-            responseSubmissionHidden_ = true;
         }
         
         void hideEvaluationButtons() override {
-            evaluationButtonsHidden_ = true;
         }
     };
 };
@@ -1196,7 +1174,6 @@ class RespondingFromExperimenter : public TrialSubmission {
     ViewStub::TestingViewStub *view;
 public:
     explicit RespondingFromExperimenter(
-        ViewStub::ExperimenterViewStub *,
         ViewStub::TestingViewStub *view
     ) :
         view{view} {}
@@ -1233,7 +1210,6 @@ class SubmittingPassedTrial : public TrialSubmission {
     ViewStub::TestingViewStub *view;
 public:
     explicit SubmittingPassedTrial(
-        ViewStub::ExperimenterViewStub *,
         ViewStub::TestingViewStub *view
     ) :
         view{view} {}
@@ -1309,7 +1285,6 @@ class PlayingTrialFromExperimenter : public PlayingTrial {
     ViewStub::TestingViewStub *view;
 public:
     explicit PlayingTrialFromExperimenter(
-        ViewStub::ExperimenterViewStub *,
         ViewStub::TestingViewStub *view
     ) :
         view{view} {}
@@ -1489,10 +1464,10 @@ protected:
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
-    PlayingTrialFromExperimenter playingTrialFromExperimenter{&experimenterView, &testingView};
+    PlayingTrialFromExperimenter playingTrialFromExperimenter{&testingView};
     RespondingFromSubject respondingFromSubject{&subjectView};
-    RespondingFromExperimenter respondingFromExperimenter{&experimenterView, &testingView};
-    SubmittingPassedTrial submittingPassedTrial{&experimenterView, &testingView};
+    RespondingFromExperimenter respondingFromExperimenter{&testingView};
+    SubmittingPassedTrial submittingPassedTrial{&testingView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenter2View};
     

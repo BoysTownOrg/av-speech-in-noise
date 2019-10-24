@@ -432,7 +432,6 @@ private:
     View *view;
     TestSetup *testSetup;
     Subject *subject;
-    Experimenter *experimenter;
     Experimenter2 *experimenter2;
     Testing *testing;
     TrialCompletionHandler *trialCompletionHandler_{};
