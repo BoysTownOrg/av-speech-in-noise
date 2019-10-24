@@ -20,7 +20,7 @@ Presenter::Presenter(
     View *view,
     TestSetup *testSetup,
     Subject *subject,
-    Experimenter2 *experimenter2,
+    Experimenter *experimenter2,
     Testing *testing
 ) :
     fixedLevelOpenSetTrialCompletionHandler{testing},
@@ -555,33 +555,33 @@ FreeResponse Presenter::Testing::openSetResponse() {
 }
 
 
-Presenter::Experimenter2::Experimenter2(View::Experimenter2 *view) :
+Presenter::Experimenter::Experimenter(View::Experimenter *view) :
     view{view}
 {
     view->subscribe(this);
 }
 
-void Presenter::Experimenter2::show() {
+void Presenter::Experimenter::show() {
     view->show();
 }
 
-void Presenter::Experimenter2::hideExitTestButton() {
+void Presenter::Experimenter::hideExitTestButton() {
     view->hideExitTestButton();
 }
 
-void Presenter::Experimenter2::showExitTestButton() {
+void Presenter::Experimenter::showExitTestButton() {
     view->showExitTestButton();
 }
 
-void Presenter::Experimenter2::becomeChild(Presenter *p) {
+void Presenter::Experimenter::becomeChild(Presenter *p) {
     parent = p;
 }
 
-void Presenter::Experimenter2::exitTest() {
+void Presenter::Experimenter::exitTest() {
     parent->exitTest();
 }
 
-void Presenter::Experimenter2::hide() {
+void Presenter::Experimenter::hide() {
     view->hide();
 }
 }

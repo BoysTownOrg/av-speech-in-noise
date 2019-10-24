@@ -619,7 +619,7 @@ public:
         }
     };
     
-    class Experimenter2ViewStub : public Experimenter2 {
+    class Experimenter2ViewStub : public Experimenter {
         std::string response_;
         EventListener *listener_{};
         bool shown_{};
@@ -1374,7 +1374,7 @@ protected:
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Subject subject{&subjectView};
-    Presenter::Experimenter2 experimenter2{&experimenter2View};
+    Presenter::Experimenter experimenter2{&experimenter2View};
     Presenter::Testing testing{&testingView};
     
     Presenter construct() {
@@ -1397,7 +1397,7 @@ protected:
     ViewStub::Experimenter2ViewStub experimenter2View;
     ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::Experimenter2 experimenter2{&experimenter2View};
+    Presenter::Experimenter experimenter2{&experimenter2View};
     Presenter::Testing testing{&testingView};
     Presenter::Subject subject{&subjectView};
     Presenter presenter{
@@ -1959,7 +1959,7 @@ protected:
     ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Subject subject{&subjectView};
-    Presenter::Experimenter2 experimenter2{&experimenter2View};
+    Presenter::Experimenter experimenter2{&experimenter2View};
     Presenter::Testing testing{&testingView};
     
     void useFailingModel(std::string s = {}) {

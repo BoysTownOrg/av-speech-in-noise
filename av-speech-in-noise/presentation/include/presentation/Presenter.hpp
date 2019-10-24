@@ -93,7 +93,7 @@ public:
         virtual void populateMethodMenu(std::vector<std::string>) = 0;
     };
 
-    class Experimenter2 {
+    class Experimenter {
     public:
         class EventListener {
         public:
@@ -101,7 +101,7 @@ public:
             virtual void exitTest() = 0;
         };
 
-        virtual ~Experimenter2() = default;
+        virtual ~Experimenter() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
@@ -220,10 +220,10 @@ public:
         Presenter *parent;
     };
 
-    class Experimenter2 : public View::Experimenter2::EventListener {
-        View::Experimenter2 *view;
+    class Experimenter : public View::Experimenter::EventListener {
+        View::Experimenter *view;
     public:
-        explicit Experimenter2(View::Experimenter2 *);
+        explicit Experimenter(View::Experimenter *);
         void becomeChild(Presenter *parent);
         void show();
         void hide();
@@ -306,7 +306,7 @@ public:
         View *,
         TestSetup *,
         Subject *,
-        Experimenter2 *,
+        Experimenter *,
         Testing *
     );
     void trialComplete() override;
@@ -372,7 +372,7 @@ private:
     View *view;
     TestSetup *testSetup;
     Subject *subject;
-    Experimenter2 *experimenter2;
+    Experimenter *experimenter2;
     Testing *testing;
     TrialCompletionHandler *trialCompletionHandler_{};
 };
