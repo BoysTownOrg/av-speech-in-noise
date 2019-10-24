@@ -267,9 +267,6 @@ void RecognitionTestModel_Internal::submitCorrectResponse() {
 }
 
 void RecognitionTestModel_Internal::submitCorrectResponse_() {
-    open_set::AdaptiveTrial trial;
-    trial.target = targetName(evaluator, testMethod);
-    outputFile->writeTrial(trial);
     testMethod->submitCorrectResponse();
     testMethod->writeLastCorrectResponse(outputFile);
     save(outputFile);
