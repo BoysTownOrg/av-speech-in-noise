@@ -2,7 +2,7 @@
 #define PresenterTests_h
 
 #include "assert-utility.h"
-#include <presentation/Presenter.h>
+#include <presentation/Presenter.hpp>
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests::presentation {

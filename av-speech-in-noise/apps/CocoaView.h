@@ -1,7 +1,7 @@
 #ifndef CocoaView_h
 #define CocoaView_h
 
-#include <presentation/Presenter.h>
+#include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 
 class CocoaTestSetupView;
