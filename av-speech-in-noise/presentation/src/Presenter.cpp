@@ -138,6 +138,7 @@ void Presenter::playTrial() {
     p.audioDevice = view->audioDevice();
     model->playTrial(p);
     experimenter->hideExitTestButton();
+    experimenter2->hideExitTestButton();
 }
 
 void Presenter::trialComplete() {

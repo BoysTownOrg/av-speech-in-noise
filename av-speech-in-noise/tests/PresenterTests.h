@@ -690,14 +690,6 @@ public:
             exitTestButtonHidden_ = true;
         }
 
-        auto exitTestButtonShown() const {
-            return exitTestButtonShown_;
-        }
-
-        auto exitTestButtonHidden() const {
-            return exitTestButtonHidden_;
-        }
-
         void submitFailedTrial() {
             listener_->submitFailedTrial();
         }
@@ -1314,9 +1306,11 @@ public:
 };
 
 class SubmittingFailedTrial : public TrialSubmission {
-    ViewStub::ExperimenterViewStub *view;
+    ViewStub::TestingViewStub *view;
 public:
-    explicit SubmittingFailedTrial(ViewStub::ExperimenterViewStub *view) :
+    explicit SubmittingFailedTrial(
+        ViewStub::TestingViewStub *view
+    ) :
         view{view} {}
     
     void run() override {
@@ -1546,7 +1540,7 @@ protected:
     RespondingFromSubject respondingFromSubject{&subjectView};
     RespondingFromExperimenter respondingFromExperimenter{&experimenterView};
     SubmittingPassedTrial submittingPassedTrial{&experimenterView};
-    SubmittingFailedTrial submittingFailedTrial{&experimenterView};
+    SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenterView};
     
     std::string auditoryOnlyConditionName() {
@@ -1799,11 +1793,11 @@ protected:
     }
 
     bool exitTestButtonHidden() {
-        return experimenterView.exitTestButtonHidden();
+        return experimenter2View.exitTestButtonHidden();
     }
 
     bool exitTestButtonShown() {
-        return experimenterView.exitTestButtonShown();
+        return experimenter2View.exitTestButtonShown();
     }
     
     void assertConfirmTestSetupShowsNextTrialButton(
