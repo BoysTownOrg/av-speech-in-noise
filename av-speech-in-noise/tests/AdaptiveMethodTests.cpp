@@ -444,6 +444,15 @@ public:
         run(useCase);
         assertEqual("a", useCase.writtenTarget(outputFile));
     }
+
+    void assertPassesCurrentTargetToEvaluatorForFileName(UseCase &useCase) {
+        selectList(1);
+        initialize();
+        setCurrentForTarget(1, "a");
+        selectList(2);
+        run(useCase);
+        assertEqual("a", evaluator.filePathForFileName());
+    }
 };
 
 TEST_F(
@@ -788,24 +797,14 @@ TEST_F(
     AdaptiveMethodTests,
     submitCorrectResponsePassesCurrentToEvaluator
 ) {
-    selectList(1);
-    initialize();
-    setCurrentForTarget(1, "a");
-    selectList(2);
-    run(submittingCorrectResponse);
-    assertEqual("a", evaluator.filePathForFileName());
+    assertPassesCurrentTargetToEvaluatorForFileName(submittingCorrectResponse);
 }
 
 TEST_F(
     AdaptiveMethodTests,
     submitIncorrectResponsePassesCurrentToEvaluator
 ) {
-    selectList(1);
-    initialize();
-    setCurrentForTarget(1, "a");
-    selectList(2);
-    run(submittingIncorrectResponse);
-    assertEqual("a", evaluator.filePathForFileName());
+    assertPassesCurrentTargetToEvaluatorForFileName(submittingIncorrectResponse);
 }
 
 TEST_F(
