@@ -2,7 +2,7 @@
 #define av_speech_in_noise_OutputFilePathImpl_hpp
 
 #include "OutputFileImpl.hpp"
-#include <av-speech-in-noise/Model.h>
+#include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
     class TimeStamp {

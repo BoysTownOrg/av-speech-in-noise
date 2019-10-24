@@ -1,7 +1,7 @@
-#ifndef av_speech_in_noise_RecognitionTestModel_hpp
-#define av_speech_in_noise_RecognitionTestModel_hpp
+#ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RECOGNITIONTESTMODEL_HPP_
+#define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RECOGNITIONTESTMODEL_HPP_
 
-#include <av-speech-in-noise/Model.h>
+#include <av-speech-in-noise/Model.hpp>
 #include <vector>
 #include <string>
 
