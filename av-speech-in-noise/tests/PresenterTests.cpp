@@ -38,6 +38,14 @@ namespace av_speech_in_noise::tests::presentation {
         assertShowsExperimenterView(confirmingAdaptiveOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTestingView) {
+        assertShowsTestingView(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTestingView) {
+        assertShowsTestingView(confirmingFixedLevelOpenSetTest);
+    }
+
     TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsExperimenterView) {
         assertShowsExperimenterView(confirmingFixedLevelOpenSetTest);
     }

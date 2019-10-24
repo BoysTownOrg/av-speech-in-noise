@@ -690,18 +690,6 @@ public:
             exitTestButtonHidden_ = true;
         }
         
-        auto nextTrialButtonShown() const {
-            return nextTrialButtonShown_;
-        }
-        
-        auto evaluationButtonsShown() const {
-            return evaluationButtonsShown_;
-        }
-        
-        auto responseSubmissionShown() const {
-            return responseSubmissionShown_;
-        }
-        
         void showNextTrialButton() override {
             nextTrialButtonShown_ = true;
         }
@@ -1592,8 +1580,16 @@ protected:
         assertTrue(experimenterViewShown());
     }
     
+    void assertTestingViewShown() {
+        assertTrue(testingViewShown());
+    }
+    
     bool experimenterViewShown() {
-        return experimenterView.shown();
+        return experimenterView.shown() && experimenter2View.shown();
+    }
+    
+    bool testingViewShown() {
+        return testingView.shown();
     }
     
     void assertExperimenterViewNotShown() {
@@ -1867,6 +1863,11 @@ protected:
     void assertShowsExperimenterView(UseCase &useCase) {
         run(useCase);
         assertExperimenterViewShown();
+    }
+    
+    void assertShowsTestingView(UseCase &useCase) {
+        run(useCase);
+        assertTestingViewShown();
     }
     
     void assertDoesNotShowSubjectView(UseCase &useCase) {
