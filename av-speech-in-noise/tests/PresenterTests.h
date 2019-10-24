@@ -694,10 +694,6 @@ public:
             nextTrialButtonShown_ = true;
         }
         
-        auto hidden() const {
-            return hidden_;
-        }
-        
         void show() override {
             shown_ = true;
         }
@@ -732,14 +728,6 @@ public:
         
         void hideEvaluationButtons() override {
             evaluationButtonsHidden_ = true;
-        }
-        
-        void playTrial() {
-            listener_->playTrial();
-        }
-        
-        auto nextTrialButtonHidden() const {
-            return nextTrialButtonHidden_;
         }
         
         void submitPassedTrial() {
@@ -1597,7 +1585,7 @@ protected:
     }
     
     bool experimenterViewHidden() {
-        return experimenterView.hidden() && experimenter2View.hidden();
+        return experimenter2View.hidden();
     }
     
     bool testingViewHidden() {
