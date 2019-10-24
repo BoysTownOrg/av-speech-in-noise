@@ -310,18 +310,14 @@ public:
     class AdaptiveOpenSetTestTrialCompletionHandler :
         public TrialCompletionHandler
     {
-        Experimenter *experimenter;
         Testing *testing;
     public:
         explicit AdaptiveOpenSetTestTrialCompletionHandler(
-            Experimenter *experimenter,
             Testing *testing
         ) :
-            experimenter{experimenter},
             testing{testing} {}
 
         void showResponseView() override {
-            experimenter->showEvaluationButtons();
             testing->showEvaluationButtons();
         }
     };
@@ -329,18 +325,14 @@ public:
     class FixedLevelOpenSetTestTrialCompletionHandler :
         public TrialCompletionHandler
     {
-        Experimenter *experimenter;
         Testing *testing;
     public:
         explicit FixedLevelOpenSetTestTrialCompletionHandler(
-            Experimenter *experimenter,
             Testing *testing
         ) :
-            experimenter{experimenter},
             testing{testing} {}
 
         void showResponseView() override {
-            experimenter->showResponseSubmission();
             testing->showResponseSubmission();
         }
     };

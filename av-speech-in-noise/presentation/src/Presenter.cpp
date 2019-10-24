@@ -20,13 +20,13 @@ Presenter::Presenter(
     View *view,
     TestSetup *testSetup,
     Subject *subject,
-    Experimenter *experimenter,
+    Experimenter *,
     Experimenter2 *experimenter2,
     Testing *testing
 ) :
-    fixedLevelOpenSetTrialCompletionHandler{experimenter, testing},
+    fixedLevelOpenSetTrialCompletionHandler{testing},
     fixedLevelClosedSetTrialCompletionHandler{subject},
-    adaptiveOpenSetTrialCompletionHandler{experimenter, testing},
+    adaptiveOpenSetTrialCompletionHandler{testing},
     adaptiveClosedSetTrialCompletionHandler{subject},
     model{model},
     view{view},
@@ -39,7 +39,6 @@ Presenter::Presenter(
     model->subscribe(this);
     testSetup->becomeChild(this);
     subject->becomeChild(this);
-    experimenter->becomeChild(this);
     experimenter2->becomeChild(this);
     testing->becomeChild(this);
     view->populateAudioDeviceMenu(model->audioDevices());
