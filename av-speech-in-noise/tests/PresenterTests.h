@@ -730,10 +730,6 @@ public:
             evaluationButtonsHidden_ = true;
         }
         
-        void submitPassedTrial() {
-            listener_->submitPassedTrial();
-        }
-        
         void setResponse(std::string s) {
             response_ = std::move(s);
         }

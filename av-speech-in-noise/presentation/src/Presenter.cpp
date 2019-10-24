@@ -165,7 +165,7 @@ void Presenter::submitExperimenterResponse() {
 }
 
 void Presenter::submitExperimenterResponse_() {
-    model->submitResponse(experimenter->openSetResponse());
+    model->submitResponse(testing->openSetResponse());
 }
 
 void Presenter::submitPassedTrial() {

@@ -496,7 +496,7 @@ namespace av_speech_in_noise::tests::presentation {
     }
 
     TEST_F(PresenterTests, experimenterResponsePassesResponse) {
-        experimenterView.setResponse("a");
+        testingView.setResponse("a");
         respondFromExperimenter();
         assertEqual("a", model.freeResponse().response);
     }
