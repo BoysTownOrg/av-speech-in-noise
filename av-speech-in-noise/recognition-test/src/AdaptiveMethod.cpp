@@ -168,6 +168,7 @@ void AdaptiveMethod::submitIncorrectResponse() {
     assignSnr(lastOpenSetTrial, currentSnrTrack);
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
+    lastOpenSetTrial.target = evaluator->fileName({});
     selectNextList();
 }
 

@@ -779,6 +779,13 @@ TEST_F(
 
 TEST_F(
     AdaptiveMethodTests,
+    writeIncorrectResponseWritesTarget
+) {
+    assertWritesTarget(writingIncorrectResponse);
+}
+
+TEST_F(
+    AdaptiveMethodTests,
     submitCorrectCoordinateResponsePushesSnrTrackDown
 ) {
     assertPushesSnrTrackDown(submittingCorrectCoordinateResponse);
