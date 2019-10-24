@@ -694,10 +694,6 @@ public:
             nextTrialButtonShown_ = true;
         }
         
-        auto shown() const {
-            return shown_;
-        }
-        
         auto hidden() const {
             return hidden_;
         }
@@ -1585,7 +1581,7 @@ protected:
     }
     
     bool experimenterViewShown() {
-        return experimenterView.shown() && experimenter2View.shown();
+        return experimenter2View.shown();
     }
     
     bool testingViewShown() {
@@ -1601,7 +1597,7 @@ protected:
     }
     
     bool experimenterViewHidden() {
-        return experimenterView.hidden();
+        return experimenterView.hidden() && experimenter2View.hidden();
     }
     
     bool testingViewHidden() {
@@ -1610,6 +1606,10 @@ protected:
     
     void assertExperimenterViewNotHidden() {
         assertFalse(experimenterViewHidden());
+    }
+    
+    void assertTestingViewNotHidden() {
+        assertFalse(testingViewHidden());
     }
     
     void assertSubjectViewShown() {
@@ -1845,6 +1845,11 @@ protected:
     void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
         run(useCase);
         assertExperimenterViewNotHidden();
+    }
+    
+    void assertDoesNotHideTestingView(TrialSubmission &useCase) {
+        run(useCase);
+        assertTestingViewNotHidden();
     }
     
     void assertShowsNextTrialButton(TrialSubmission &useCase) {
