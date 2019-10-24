@@ -798,6 +798,18 @@ TEST_F(
 
 TEST_F(
     AdaptiveMethodTests,
+    submitIncorrectResponsePassesCurrentToEvaluator
+) {
+    selectList(1);
+    initialize();
+    setCurrentForTarget(1, "a");
+    selectList(2);
+    run(submittingIncorrectResponse);
+    assertEqual("a", evaluator.filePathForFileName());
+}
+
+TEST_F(
+    AdaptiveMethodTests,
     submitCorrectCoordinateResponsePushesSnrTrackDown
 ) {
     assertPushesSnrTrackDown(submittingCorrectCoordinateResponse);

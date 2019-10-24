@@ -163,25 +163,21 @@ static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
     trial.correct = c;
 }
 
-static void assignTarget(open_set::AdaptiveTrial &trial, ResponseEvaluator *evaluator) {
-    trial.target = evaluator->fileName({});
-}
-
 void AdaptiveMethod::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
+    lastOpenSetTrial.target = evaluator->fileName(current());
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
-    assignTarget(lastOpenSetTrial, evaluator);
     selectNextList();
 }
 
 void AdaptiveMethod::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
+    lastOpenSetTrial.target = evaluator->fileName(current());
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
-    lastOpenSetTrial.target = evaluator->fileName(current());
     selectNextList();
 }
 
