@@ -2,305 +2,305 @@
 #include <cmath>
 
 namespace stimulus_players {
-    MaskerPlayerImpl::MaskerPlayerImpl(
-        AudioPlayer *player,
-        AudioReader *reader,
-        Timer *timer
-    ) :
-        audioThread{player},
-        mainThread{player, timer},
-        player{player},
-        reader{reader}
-    {
-        player->subscribe(this);
-        timer->subscribe(this);
-        mainThread.setSharedAtomics(this);
-        audioThread.setSharedAtomics(this);
-    }
-    
-    MaskerPlayerImpl::MainThread::MainThread(
-        AudioPlayer *player,
-        Timer *timer
-    ) :
-        player{player},
-        timer{timer} {}
+MaskerPlayerImpl::MaskerPlayerImpl(
+    AudioPlayer *player,
+    AudioReader *reader,
+    Timer *timer
+) :
+    audioThread{player},
+    mainThread{player, timer},
+    player{player},
+    reader{reader}
+{
+    player->subscribe(this);
+    timer->subscribe(this);
+    mainThread.setSharedAtomics(this);
+    audioThread.setSharedAtomics(this);
+}
 
-    void MaskerPlayerImpl::MainThread::setSharedAtomics(MaskerPlayerImpl *p) {
-        sharedAtomics = p;
-    }
-    
-    MaskerPlayerImpl::AudioThread::AudioThread(AudioPlayer *player) :
-        player{player}
-    {}
+MaskerPlayerImpl::MainThread::MainThread(
+    AudioPlayer *player,
+    Timer *timer
+) :
+    player{player},
+    timer{timer} {}
 
-    void MaskerPlayerImpl::AudioThread::setSharedAtomics(MaskerPlayerImpl *p) {
-        sharedAtomics = p;
-    }
+void MaskerPlayerImpl::MainThread::setSharedAtomics(MaskerPlayerImpl *p) {
+    sharedAtomics = p;
+}
 
-    void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
-        mainThread.subscribe(e);
-    }
-    
-    void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
-        listener = e;
-    }
-    
-    double MaskerPlayerImpl::durationSeconds() {
-        return player->durationSeconds();
-    }
-    
-    void MaskerPlayerImpl::seekSeconds(double x) {
-        player->seekSeconds(x);
-    }
-    
-    double MaskerPlayerImpl::fadeTimeSeconds() {
-        return fadeInOutSeconds.load();
-    }
-    
-    template<typename T>
-    T rms(const std::vector<T> &x) {
-        return std::sqrt(
-            std::accumulate(
-                x.begin(),
-                x.end(),
-                T{ 0 },
-                [](T a, T b) { return a += b * b; }
-            ) / x.size()
-        );
-    }
+MaskerPlayerImpl::AudioThread::AudioThread(AudioPlayer *player) :
+    player{player}
+{}
 
-    void MaskerPlayerImpl::loadFile(std::string filePath) {
-        player->loadFile(filePath_ = std::move(filePath));
-        auto audio = readAudio_();
-        if (audio.empty())
-            rms_ = 0;
-        else {
-            auto firstChannel = audio.front();
-            rms_ = ::stimulus_players::rms(firstChannel);
-        }
-    }
+void MaskerPlayerImpl::AudioThread::setSharedAtomics(MaskerPlayerImpl *p) {
+    sharedAtomics = p;
+}
 
-    bool MaskerPlayerImpl::playing() {
-        return player->playing();
-    }
+void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
+    mainThread.subscribe(e);
+}
 
-    void MaskerPlayerImpl::setLevel_dB(double x) {
-        levelScalar.store(std::pow(10, x/20));
-    }
-    
-    void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
-        fadeInOutSeconds.store(x);
-    }
-    
-    void MaskerPlayerImpl::setAudioDevice(std::string device) {
-        player->setDevice(findDeviceIndex(std::move(device)));
-    }
-    
-    int MaskerPlayerImpl::findDeviceIndex(const std::string &device) {
-        auto devices_ = audioDeviceDescriptions_();
-        auto found = std::find(
-            devices_.begin(),
-            devices_.end(),
-            device
-        );
-        if (found == devices_.end())
-            throw av_speech_in_noise::InvalidAudioDevice{};
-        return gsl::narrow<int>(found - devices_.begin());
-    }
+void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
+    listener = e;
+}
 
-    double MaskerPlayerImpl::rms() {
-        return rms_;
-    }
+double MaskerPlayerImpl::durationSeconds() {
+    return player->durationSeconds();
+}
 
-    std::vector<std::vector<float>> MaskerPlayerImpl::readAudio_() {
-        try {
-            return reader->read(filePath_);
-        } catch (const AudioReader::InvalidFile &) {
-            throw av_speech_in_noise::InvalidAudioFile{};
-        }
-    }
-    
-    std::vector<std::string> MaskerPlayerImpl::audioDeviceDescriptions_() {
-        std::vector<std::string> descriptions{};
-        for (int i = 0; i < player->deviceCount(); ++i)
-            descriptions.push_back(player->deviceDescription(i));
-        return descriptions;
-    }
-    
-    std::vector<std::string> MaskerPlayerImpl::outputAudioDeviceDescriptions() {
-        std::vector<std::string> descriptions{};
-        for (int i = 0; i < player->deviceCount(); ++i)
-            if (player->outputDevice(i))
-                descriptions.push_back(player->deviceDescription(i));
-        return descriptions;
-    }
-    
-    void MaskerPlayerImpl::fadeIn() {
-        mainThread.fadeIn();
-    }
-    
-    void MaskerPlayerImpl::MainThread::fadeIn() {
-        if (fading())
-            return;
-        
-        fadingIn = true;
-        sharedAtomics->pleaseFadeIn.store(true);
-        player->play();
-        scheduleCallbackAfterSeconds(0.1);
-    }
-    
-    void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
-        timer->scheduleCallbackAfterSeconds(x);
-    }
-    
-    bool MaskerPlayerImpl::MainThread::fading() {
-        return fadingIn || fadingOut;
-    }
+void MaskerPlayerImpl::seekSeconds(double x) {
+    player->seekSeconds(x);
+}
 
-    void MaskerPlayerImpl::fadeOut() {
-        mainThread.fadeOut();
-    }
+double MaskerPlayerImpl::fadeTimeSeconds() {
+    return fadeInOutSeconds.load();
+}
 
-    void MaskerPlayerImpl::MainThread::fadeOut() {
-        if (fading())
-            return;
-        
-        fadingOut = true;
-        sharedAtomics->pleaseFadeOut.store(true);
-        scheduleCallbackAfterSeconds(0.1);
-    }
-    
-    void MaskerPlayerImpl::callback() {
-        mainThread.callback();
-    }
+template<typename T>
+T rms(const std::vector<T> &x) {
+    return std::sqrt(
+        std::accumulate(
+            x.begin(),
+            x.end(),
+            T{ 0 },
+            [](T a, T b) { return a += b * b; }
+        ) / x.size()
+    );
+}
 
-    void MaskerPlayerImpl::MainThread::callback() {
-        auto expectedFadeInComplete = true;
-        if (sharedAtomics->fadeInComplete.compare_exchange_strong(
-            expectedFadeInComplete,
-            false
-        )) {
-            fadingIn = false;
-            listener->fadeInComplete();
-            return;
-        }
-        
-        auto expectedFadeOutComplete = true;
-        if (sharedAtomics->fadeOutComplete.compare_exchange_strong(
-            expectedFadeOutComplete,
-            false
-        )) {
-            fadingOut = false;
-            listener->fadeOutComplete();
-            player->stop();
-            return;
-        }
-        
-        scheduleCallbackAfterSeconds(0.1);
-    }
-    
-    // real-time audio thread
-    void MaskerPlayerImpl::fillAudioBuffer(
-        const std::vector<gsl::span<float>> &audio
-    ) {
-        audioThread.fillAudioBuffer(audio);
-    }
-
-    void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
-        const std::vector<gsl::span<float>> &audio
-    ) {
-        checkForFadeIn();
-        checkForFadeOut();
-        scaleAudio(audio);
-    }
-    
-    void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
-        auto expected = true;
-        if (sharedAtomics->pleaseFadeIn.compare_exchange_strong(expected, false))
-            prepareToFadeIn();
-    }
-    
-    void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
-        updateWindowLength();
-        hannCounter = 0;
-        fadingIn = true;
-    }
-    
-    void MaskerPlayerImpl::AudioThread::updateWindowLength() {
-        halfWindowLength = levelTransitionSamples();
-    }
-    
-    void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
-        auto expected = true;
-        if (sharedAtomics->pleaseFadeOut.compare_exchange_strong(expected, false))
-            prepareToFadeOut();
-    }
-    
-    void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
-        updateWindowLength();
-        hannCounter = halfWindowLength;
-        fadingOut = true;
-    }
-
-    int MaskerPlayerImpl::AudioThread::levelTransitionSamples() {
-        return sharedAtomics->fadeInOutSeconds.load() * player->sampleRateHz();
-    }
-    
-    void MaskerPlayerImpl::AudioThread::scaleAudio(
-        const std::vector<gsl::span<float>> &audio
-    ) {
-        if (audio.size() == 0)
-            return;
-        
+void MaskerPlayerImpl::loadFile(std::string filePath) {
+    player->loadFile(filePath_ = std::move(filePath));
+    auto audio = readAudio_();
+    if (audio.empty())
+        rms_ = 0;
+    else {
         auto firstChannel = audio.front();
-        auto levelScalar_ = sharedAtomics->levelScalar.load();
-        for (int i = 0; i < firstChannel.size(); ++i) {
-            auto fadeScalar_ = fadeScalar();
-            updateFadeState();
-            for (size_t channel = 0; channel < audio.size(); ++channel)
-                audio.at(channel).at(i) *= fadeScalar_ * levelScalar_;
-        }
+        rms_ = ::stimulus_players::rms(firstChannel);
     }
-    
-    static const auto pi = std::acos(-1);
-    
-    double MaskerPlayerImpl::AudioThread::fadeScalar() {
-        const auto squareRoot = halfWindowLength
-            ? std::sin((pi*hannCounter) / (2*halfWindowLength))
-            : 1;
-        return squareRoot * squareRoot;
+}
+
+bool MaskerPlayerImpl::playing() {
+    return player->playing();
+}
+
+void MaskerPlayerImpl::setLevel_dB(double x) {
+    levelScalar.store(std::pow(10, x/20));
+}
+
+void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
+    fadeInOutSeconds.store(x);
+}
+
+void MaskerPlayerImpl::setAudioDevice(std::string device) {
+    player->setDevice(findDeviceIndex(std::move(device)));
+}
+
+int MaskerPlayerImpl::findDeviceIndex(const std::string &device) {
+    auto devices_ = audioDeviceDescriptions_();
+    auto found = std::find(
+        devices_.begin(),
+        devices_.end(),
+        device
+    );
+    if (found == devices_.end())
+        throw av_speech_in_noise::InvalidAudioDevice{};
+    return gsl::narrow<int>(found - devices_.begin());
+}
+
+double MaskerPlayerImpl::rms() {
+    return rms_;
+}
+
+std::vector<std::vector<float>> MaskerPlayerImpl::readAudio_() {
+    try {
+        return reader->read(filePath_);
+    } catch (const AudioReader::InvalidFile &) {
+        throw av_speech_in_noise::InvalidAudioFile{};
     }
-    
-    void MaskerPlayerImpl::AudioThread::updateFadeState() {
-        checkForFadeInComplete();
-        checkForFadeOutComplete();
-        advanceCounterIfStillFading();
+}
+
+std::vector<std::string> MaskerPlayerImpl::audioDeviceDescriptions_() {
+    std::vector<std::string> descriptions{};
+    for (int i = 0; i < player->deviceCount(); ++i)
+        descriptions.push_back(player->deviceDescription(i));
+    return descriptions;
+}
+
+std::vector<std::string> MaskerPlayerImpl::outputAudioDeviceDescriptions() {
+    std::vector<std::string> descriptions{};
+    for (int i = 0; i < player->deviceCount(); ++i)
+        if (player->outputDevice(i))
+            descriptions.push_back(player->deviceDescription(i));
+    return descriptions;
+}
+
+void MaskerPlayerImpl::fadeIn() {
+    mainThread.fadeIn();
+}
+
+void MaskerPlayerImpl::MainThread::fadeIn() {
+    if (fading())
+        return;
+
+    fadingIn = true;
+    sharedAtomics->pleaseFadeIn.store(true);
+    player->play();
+    scheduleCallbackAfterSeconds(0.1);
+}
+
+void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
+    timer->scheduleCallbackAfterSeconds(x);
+}
+
+bool MaskerPlayerImpl::MainThread::fading() {
+    return fadingIn || fadingOut;
+}
+
+void MaskerPlayerImpl::fadeOut() {
+    mainThread.fadeOut();
+}
+
+void MaskerPlayerImpl::MainThread::fadeOut() {
+    if (fading())
+        return;
+
+    fadingOut = true;
+    sharedAtomics->pleaseFadeOut.store(true);
+    scheduleCallbackAfterSeconds(0.1);
+}
+
+void MaskerPlayerImpl::callback() {
+    mainThread.callback();
+}
+
+void MaskerPlayerImpl::MainThread::callback() {
+    auto expectedFadeInComplete = true;
+    if (sharedAtomics->fadeInComplete.compare_exchange_strong(
+        expectedFadeInComplete,
+        false
+    )) {
+        fadingIn = false;
+        listener->fadeInComplete();
+        return;
     }
-    
-    void MaskerPlayerImpl::AudioThread::checkForFadeInComplete() {
-        if (doneFadingIn()) {
-            sharedAtomics->fadeInComplete.store(true);
-            fadingIn = false;
-        }
+
+    auto expectedFadeOutComplete = true;
+    if (sharedAtomics->fadeOutComplete.compare_exchange_strong(
+        expectedFadeOutComplete,
+        false
+    )) {
+        fadingOut = false;
+        listener->fadeOutComplete();
+        player->stop();
+        return;
     }
-    
-    bool MaskerPlayerImpl::AudioThread::doneFadingIn() {
-        return fadingIn && hannCounter == halfWindowLength;
+
+    scheduleCallbackAfterSeconds(0.1);
+}
+
+// real-time audio thread
+void MaskerPlayerImpl::fillAudioBuffer(
+    const std::vector<gsl::span<float>> &audio
+) {
+    audioThread.fillAudioBuffer(audio);
+}
+
+void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
+    const std::vector<gsl::span<float>> &audio
+) {
+    checkForFadeIn();
+    checkForFadeOut();
+    scaleAudio(audio);
+}
+
+void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
+    auto expected = true;
+    if (sharedAtomics->pleaseFadeIn.compare_exchange_strong(expected, false))
+        prepareToFadeIn();
+}
+
+void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
+    updateWindowLength();
+    hannCounter = 0;
+    fadingIn = true;
+}
+
+void MaskerPlayerImpl::AudioThread::updateWindowLength() {
+    halfWindowLength = levelTransitionSamples();
+}
+
+void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
+    auto expected = true;
+    if (sharedAtomics->pleaseFadeOut.compare_exchange_strong(expected, false))
+        prepareToFadeOut();
+}
+
+void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
+    updateWindowLength();
+    hannCounter = halfWindowLength;
+    fadingOut = true;
+}
+
+int MaskerPlayerImpl::AudioThread::levelTransitionSamples() {
+    return sharedAtomics->fadeInOutSeconds.load() * player->sampleRateHz();
+}
+
+void MaskerPlayerImpl::AudioThread::scaleAudio(
+    const std::vector<gsl::span<float>> &audio
+) {
+    if (audio.size() == 0)
+        return;
+
+    auto firstChannel = audio.front();
+    auto levelScalar_ = sharedAtomics->levelScalar.load();
+    for (int i = 0; i < firstChannel.size(); ++i) {
+        auto fadeScalar_ = fadeScalar();
+        updateFadeState();
+        for (size_t channel = 0; channel < audio.size(); ++channel)
+            audio.at(channel).at(i) *= fadeScalar_ * levelScalar_;
     }
-    
-    bool MaskerPlayerImpl::AudioThread::doneFadingOut() {
-        return fadingOut && hannCounter == 2*halfWindowLength;
+}
+
+static const auto pi = std::acos(-1);
+
+double MaskerPlayerImpl::AudioThread::fadeScalar() {
+    const auto squareRoot = halfWindowLength
+        ? std::sin((pi*hannCounter) / (2*halfWindowLength))
+        : 1;
+    return squareRoot * squareRoot;
+}
+
+void MaskerPlayerImpl::AudioThread::updateFadeState() {
+    checkForFadeInComplete();
+    checkForFadeOutComplete();
+    advanceCounterIfStillFading();
+}
+
+void MaskerPlayerImpl::AudioThread::checkForFadeInComplete() {
+    if (doneFadingIn()) {
+        sharedAtomics->fadeInComplete.store(true);
+        fadingIn = false;
     }
-    
-    void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
-        if (doneFadingOut()) {
-            sharedAtomics->fadeOutComplete.store(true);
-            fadingOut = false;
-        }
+}
+
+bool MaskerPlayerImpl::AudioThread::doneFadingIn() {
+    return fadingIn && hannCounter == halfWindowLength;
+}
+
+bool MaskerPlayerImpl::AudioThread::doneFadingOut() {
+    return fadingOut && hannCounter == 2*halfWindowLength;
+}
+
+void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
+    if (doneFadingOut()) {
+        sharedAtomics->fadeOutComplete.store(true);
+        fadingOut = false;
     }
-    
-    void MaskerPlayerImpl::AudioThread::advanceCounterIfStillFading() {
-        if (fadingIn || fadingOut)
-            ++hannCounter;
-    }
+}
+
+void MaskerPlayerImpl::AudioThread::advanceCounterIfStillFading() {
+    if (fadingIn || fadingOut)
+        ++hannCounter;
+}
 }
