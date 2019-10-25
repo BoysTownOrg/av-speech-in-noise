@@ -690,6 +690,15 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    submittingCorrectResponseIncrementsTrialNumber
+) {
+    run(initializingTest);
+    run(submittingCorrectResponse);
+    assertTrialNumber(2);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     submittingCoordinateResponsePassesNextTargetToTargetPlayer
 ) {
     run(initializingTest);
