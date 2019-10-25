@@ -585,6 +585,10 @@ protected:
         run(useCase);
         assertTrue(testMethod.log().contains(what));
     }
+
+    void assertTrialNumber(int n) {
+        assertEqual(n, model.trialNumber());
+    }
 };
 
 TEST_F(RecognitionTestModel_InternalTests, subscribesToPlayerEvents) {
@@ -672,7 +676,7 @@ TEST_F(
     initializingTestResetsTrialNumber
 ) {
     run(initializingTest);
-    assertEqual(1, model.trialNumber());
+    assertTrialNumber(1);
 }
 
 TEST_F(
@@ -681,7 +685,7 @@ TEST_F(
 ) {
     run(initializingTest);
     run(submittingCoordinateResponse);
-    assertEqual(2, model.trialNumber());
+    assertTrialNumber(2);
 }
 
 TEST_F(
