@@ -57,6 +57,7 @@ void RecognitionTestModel_Internal::initialize(
     throwIfTrialInProgress();
     testMethod = testMethod_;
     prepareCommonTest(common, information);
+    trialNumber_ = 1;
 }
 
 bool RecognitionTestModel_Internal::trialInProgress() {
@@ -357,5 +358,9 @@ bool RecognitionTestModel_Internal::testComplete() {
 
 std::vector<std::string> RecognitionTestModel_Internal::audioDevices() {
     return maskerPlayer->outputAudioDeviceDescriptions();
+}
+
+int RecognitionTestModel_Internal::trialNumber() {
+    return trialNumber_;
 }
 }
