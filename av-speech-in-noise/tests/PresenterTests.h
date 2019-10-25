@@ -1374,11 +1374,11 @@ protected:
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Subject subject{&subjectView};
-    Presenter::Experimenter experimenter2{&experimenter2View};
+    Presenter::Experimenter experimenter{&experimenter2View};
     Presenter::Testing testing{&testingView};
     
     Presenter construct() {
-        return {&model, &view, &testSetup, &subject, &experimenter2, &testing};
+        return {&model, &view, &testSetup, &subject, &experimenter, &testing};
     }
 };
 
@@ -1397,7 +1397,7 @@ protected:
     ViewStub::Experimenter2ViewStub experimenter2View;
     ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::Experimenter experimenter2{&experimenter2View};
+    Presenter::Experimenter experimenter{&experimenter2View};
     Presenter::Testing testing{&testingView};
     Presenter::Subject subject{&subjectView};
     Presenter presenter{
@@ -1405,7 +1405,7 @@ protected:
         &view,
         &testSetup,
         &subject,
-        &experimenter2,
+        &experimenter,
         &testing
     };
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
@@ -1959,7 +1959,7 @@ protected:
     ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Subject subject{&subjectView};
-    Presenter::Experimenter experimenter2{&experimenter2View};
+    Presenter::Experimenter experimenter{&experimenter2View};
     Presenter::Testing testing{&testingView};
     
     void useFailingModel(std::string s = {}) {
@@ -1973,7 +1973,7 @@ protected:
             &view,
             &testSetup,
             &subject,
-            &experimenter2,
+            &experimenter,
             &testing
         };
         setupView.confirmTestSetup();

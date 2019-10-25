@@ -372,7 +372,7 @@ private:
     View *view;
     TestSetup *testSetup;
     Subject *subject;
-    Experimenter *experimenter2;
+    Experimenter *experimenter;
     Testing *testing;
     TrialCompletionHandler *trialCompletionHandler_{};
 };

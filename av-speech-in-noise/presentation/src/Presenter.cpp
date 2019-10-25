@@ -20,7 +20,7 @@ Presenter::Presenter(
     View *view,
     TestSetup *testSetup,
     Subject *subject,
-    Experimenter *experimenter2,
+    Experimenter *experimenter,
     Testing *testing
 ) :
     fixedLevelOpenSetTrialCompletionHandler{testing},
@@ -31,14 +31,14 @@ Presenter::Presenter(
     view{view},
     testSetup{testSetup},
     subject{subject},
-    experimenter2{experimenter2},
+    experimenter{experimenter},
     testing{testing},
     trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler}
 {
     model->subscribe(this);
     testSetup->becomeChild(this);
     subject->becomeChild(this);
-    experimenter2->becomeChild(this);
+    experimenter->becomeChild(this);
     testing->becomeChild(this);
     view->populateAudioDeviceMenu(model->audioDevices());
 }
@@ -97,7 +97,7 @@ void Presenter::hideTestSetup() {
 }
 
 void Presenter::showTestView() {
-    experimenter2->show();
+    experimenter->show();
     if (closedSet())
         subject->show();
     else {
@@ -133,12 +133,12 @@ void Presenter::playTrial() {
     AudioSettings p;
     p.audioDevice = view->audioDevice();
     model->playTrial(p);
-    experimenter2->hideExitTestButton();
+    experimenter->hideExitTestButton();
 }
 
 void Presenter::trialComplete() {
     trialCompletionHandler_->showResponseView();
-    experimenter2->showExitTestButton();
+    experimenter->showExitTestButton();
 }
 
 void Presenter::submitSubjectResponse() {
@@ -206,7 +206,7 @@ void Presenter::showTestSetup() {
 
 void Presenter::hideTestView() {
     testing->hide();
-    experimenter2->hide();
+    experimenter->hide();
     subject->hide();
 }
 

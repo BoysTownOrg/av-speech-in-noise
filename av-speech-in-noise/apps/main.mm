@@ -349,6 +349,18 @@ int main() {
     };
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
     auto testerWindowViewMargin = 15;
+    auto testingContentFrame = NSMakeRect(
+        testerWindowViewMargin + 100,
+        testerWindowViewMargin,
+        testerWindowFrame.size.width - testerWindowViewMargin * 2 - 100,
+        testerWindowFrame.size.height - testerWindowViewMargin * 2
+    );
+    auto experimenterContentFrame = NSMakeRect(
+        testerWindowViewMargin,
+        testerWindowViewMargin,
+        testerWindowViewMargin + 100,
+        testerWindowFrame.size.height - testerWindowViewMargin * 2
+    );
     auto testerContentFrame = NSMakeRect(
         testerWindowViewMargin,
         testerWindowViewMargin,
@@ -371,11 +383,12 @@ int main() {
     testSetupView.setTrackSettingsFile(
         "/Users/basset/Desktop/track-settings.txt"
     );
-    CocoaExperimenterView experimenterView{testerContentFrame};
-    CocoaTestingView testingView{testerContentFrame};
+    CocoaExperimenterView experimenterView{experimenterContentFrame};
+    CocoaTestingView testingView{testingContentFrame};
     CocoaView view{testerWindowFrame};
     view.addSubview(testSetupView.view());
     view.addSubview(experimenterView.view());
+    view.addSubview(testingView.view());
     view.center();
     auto delegate = [WindowDelegate alloc];
     view.setDelegate(delegate);
