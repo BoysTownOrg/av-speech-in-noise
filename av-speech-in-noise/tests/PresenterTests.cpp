@@ -701,7 +701,19 @@ namespace av_speech_in_noise::tests::presentation {
     }
 
     TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTrialNumber) {
+        assertShowsTrialNumber(confirmingFixedLevelOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTrialNumber) {
+        assertShowsTrialNumber(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsTrialNumber) {
         assertShowsTrialNumber(confirmingFixedLevelClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsTrialNumber) {
+        assertShowsTrialNumber(confirmingAdaptiveClosedSetTest);
     }
 
     TEST_F(
