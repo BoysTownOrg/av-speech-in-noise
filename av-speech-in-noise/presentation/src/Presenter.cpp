@@ -182,6 +182,7 @@ void Presenter::proceedToNextTrialAfter(void(Presenter::*f)()) {
 }
 
 void Presenter::proceedToNextTrial() {
+    experimenter->display("Trial " + std::to_string(model->trialNumber()));
     if (testComplete())
         switchToSetupView();
 }

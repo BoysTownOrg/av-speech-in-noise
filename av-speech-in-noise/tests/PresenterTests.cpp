@@ -716,6 +716,10 @@ namespace av_speech_in_noise::tests::presentation {
         assertShowsTrialNumber(confirmingAdaptiveClosedSetTest);
     }
 
+    TEST_F(PresenterTests, submittingResponseFromExperimenterShowsTrialNumber) {
+        assertShowsTrialNumber(respondingFromExperimenter);
+    }
+
     TEST_F(
         PresenterTests,
         completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest
