@@ -532,6 +532,8 @@ void Presenter::Testing::submitFailedTrial() {
 }
 
 void Presenter::Testing::hide() {
+    view->hideEvaluationButtons();
+    view->hideResponseSubmission();
     view->hide();
 }
 
