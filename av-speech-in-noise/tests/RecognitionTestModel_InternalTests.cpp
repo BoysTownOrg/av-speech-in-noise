@@ -589,6 +589,11 @@ protected:
     void assertTrialNumber(int n) {
         assertEqual(n, model.trialNumber());
     }
+
+    void assertYieldsTrialNumber(UseCase &useCase, int n) {
+        run(useCase);
+        assertTrialNumber(n);
+    }
 };
 
 TEST_F(RecognitionTestModel_InternalTests, subscribesToPlayerEvents) {
@@ -675,8 +680,7 @@ TEST_F(
     RecognitionTestModel_InternalTests,
     initializingTestResetsTrialNumber
 ) {
-    run(initializingTest);
-    assertTrialNumber(1);
+    assertYieldsTrialNumber(initializingTest, 1);
 }
 
 TEST_F(
@@ -684,8 +688,7 @@ TEST_F(
     submittingCoordinateResponseIncrementsTrialNumber
 ) {
     run(initializingTest);
-    run(submittingCoordinateResponse);
-    assertTrialNumber(2);
+    assertYieldsTrialNumber(submittingCoordinateResponse, 2);
 }
 
 TEST_F(
@@ -693,8 +696,7 @@ TEST_F(
     submittingCorrectResponseIncrementsTrialNumber
 ) {
     run(initializingTest);
-    run(submittingCorrectResponse);
-    assertTrialNumber(2);
+    assertYieldsTrialNumber(submittingCorrectResponse, 2);
 }
 
 TEST_F(
