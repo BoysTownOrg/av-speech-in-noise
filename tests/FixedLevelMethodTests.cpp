@@ -6,10 +6,9 @@
 #include <recognition-test/FixedLevelMethod.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
-namespace {
+namespace av_speech_in_noise::tests { namespace {
 class FixedLevelMethodTests : public ::testing::Test {
-  protected:
+protected:
     ResponseEvaluatorStub evaluator;
     TargetListStub targetList;
     TestConcluderStub testConcluder;
@@ -18,7 +17,9 @@ class FixedLevelMethodTests : public ::testing::Test {
     FixedLevelTest test;
     coordinate_response_measure::SubjectResponse coordinateResponse;
 
-    void initialize() { method.initialize(test, &targetList, &testConcluder); }
+    void initialize() {
+        method.initialize(test, &targetList, &testConcluder);
+    }
 
     void writeCoordinateResponse() {
         initialize();
@@ -34,7 +35,9 @@ class FixedLevelMethodTests : public ::testing::Test {
         method.writeLastCoordinateResponse(&outputFile);
     }
 
-    auto blueColor() { return coordinate_response_measure::Color::blue; }
+    auto blueColor() {
+        return coordinate_response_measure::Color::blue;
+    }
 
     auto writtenFixedLevelTrial() {
         return outputFile.writtenFixedLevelTrial2();
@@ -58,13 +61,21 @@ class FixedLevelMethodTests : public ::testing::Test {
         assertTestComplete();
     }
 
-    void assertTestIncomplete() { assertFalse(testComplete()); }
+    void assertTestIncomplete() {
+        assertFalse(testComplete());
+    }
 
-    bool testComplete() { return method.complete(); }
+    bool testComplete() {
+        return method.complete();
+    }
+    
+    void assertTestComplete() {
+        assertTrue(testComplete());
+    }
 
-    void assertTestComplete() { assertTrue(testComplete()); }
-
-    void setTestComplete() { testConcluder.setComplete(); }
+    void setTestComplete() {
+        testConcluder.setComplete();
+    }
 };
 
 TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
@@ -145,14 +156,18 @@ TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesResponse) {
 }
 
 TEST_F(
-    FixedLevelMethodTests, submitCoordinateResponseSubmitsResponseToConcluder) {
+    FixedLevelMethodTests,
+    submitCoordinateResponseSubmitsResponseToConcluder
+) {
     initialize();
     submitCoordinateResponse();
     assertTrue(testConcluder.responseSubmitted());
 }
 
 TEST_F(
-    FixedLevelMethodTests, submitCoordinateResponsePassesCurrentToEvaluator) {
+    FixedLevelMethodTests,
+    submitCoordinateResponsePassesCurrentToEvaluator
+) {
     initialize();
     setCurrentTarget("a");
     submitCoordinateResponse();
@@ -160,8 +175,10 @@ TEST_F(
     assertEqual("a", evaluator.correctNumberFilePath());
 }
 
-TEST_F(FixedLevelMethodTests,
-    submitCoordinateResponsePassesCorrectTargetToEvaluator) {
+TEST_F(
+    FixedLevelMethodTests,
+    submitCoordinateResponsePassesCorrectTargetToEvaluator
+) {
     initialize();
     setCurrentTarget("a");
     submitCoordinateResponse();
@@ -179,33 +196,45 @@ TEST_F(FixedLevelMethodTests, completeQueryPassesTargetListToConcluder) {
     initialize();
     testComplete();
     assertEqual(
-        static_cast<TargetList *>(&targetList), testConcluder.targetList());
+        static_cast<TargetList *>(&targetList),
+        testConcluder.targetList()
+    );
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {
-  protected:
+protected:
     FixedTrialTestConcluder testConcluder{};
     FixedLevelTest test;
 
-    void initialize() { testConcluder.initialize(test); }
+    void initialize() {
+        testConcluder.initialize(test);
+    }
 
     void assertIncompleteAfterResponse() {
         submitResponse();
         assertIncomplete();
     }
 
-    void submitResponse() { testConcluder.submitResponse(); }
+    void submitResponse() {
+        testConcluder.submitResponse();
+    }
 
     void assertCompleteAfterResponse() {
         submitResponse();
         assertComplete();
     }
 
-    void assertIncomplete() { assertFalse(complete()); }
+    void assertIncomplete() {
+        assertFalse(complete());
+    }
 
-    bool complete() { return testConcluder.complete({}); }
+    bool complete() {
+        return testConcluder.complete({});
+    }
 
-    void assertComplete() { assertTrue(complete()); }
+    void assertComplete() {
+        assertTrue(complete());
+    }
 };
 
 TEST_F(FixedTrialTestConcluderTests, completeWhenTrialsExhausted) {
@@ -217,15 +246,21 @@ TEST_F(FixedTrialTestConcluderTests, completeWhenTrialsExhausted) {
 }
 
 class EmptyTargetListTestConcluderTests : public ::testing::Test {
-  protected:
+protected:
     TargetListStub targetList;
     EmptyTargetListTestConcluder testConcluder;
 
-    bool complete() { return testConcluder.complete(&targetList); }
+    bool complete() {
+        return testConcluder.complete(&targetList);
+    }
 
-    void assertIncomplete() { assertFalse(complete()); }
+    void assertIncomplete() {
+        assertFalse(complete());
+    }
 
-    void assertComplete() { assertTrue(complete()); }
+    void assertComplete() {
+        assertTrue(complete());
+    }
 };
 
 TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
@@ -233,5 +268,4 @@ TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
     targetList.setEmpty();
     assertComplete();
 }
-}
-}
+}}

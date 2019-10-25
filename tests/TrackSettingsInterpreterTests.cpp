@@ -2,18 +2,21 @@
 #include <recognition-test/TrackSettingsInterpreter.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
-namespace {
+namespace av_speech_in_noise::tests { namespace {
 using Property = TrackSettingsInterpreter::Property;
 
 class TrackSettingsInterpreterTests : public ::testing::Test {
-  protected:
+protected:
     TrackSettingsInterpreter interpreter;
 
     void assertFileContentsYield(
-        std::vector<std::string> v, const TrackingRule &expected) {
+        std::vector<std::string> v,
+        const TrackingRule &expected
+    ) {
         assertEqual(
-            expected, *interpreter.trackingRule(concatenate(std::move(v))));
+            expected,
+            *interpreter.trackingRule(concatenate(std::move(v)))
+        );
     }
 
     std::string concatenate(std::vector<std::string> v) {
@@ -24,7 +27,9 @@ class TrackSettingsInterpreterTests : public ::testing::Test {
     }
 
     std::string propertyEntry(Property p, std::string s) {
-        return std::string{TrackSettingsInterpreter::propertyName(p)} + ": " +
+        return
+            std::string{TrackSettingsInterpreter::propertyName(p)} +
+            ": " +
             std::move(s);
     }
 
@@ -32,7 +37,9 @@ class TrackSettingsInterpreterTests : public ::testing::Test {
         return withNewLine(propertyEntry(p, std::move(s)));
     }
 
-    std::string withNewLine(std::string s) { return std::move(s) + '\n'; }
+    std::string withNewLine(std::string s) {
+        return std::move(s) + '\n';
+    }
 };
 
 TEST_F(TrackSettingsInterpreterTests, oneSequence) {
@@ -42,11 +49,14 @@ TEST_F(TrackSettingsInterpreterTests, oneSequence) {
     sequence.runCount = 3;
     sequence.stepSize = 4;
     assertFileContentsYield(
-        {propertyEntryWithNewline(Property::up, "1"),
+        {
+            propertyEntryWithNewline(Property::up, "1"),
             propertyEntryWithNewline(Property::down, "2"),
             propertyEntryWithNewline(Property::reversalsPerStepSize, "3"),
-            propertyEntry(Property::stepSizes, "4")},
-        {sequence});
+            propertyEntry(Property::stepSizes, "4")
+        },
+        {sequence}
+    );
 }
 
 TEST_F(TrackSettingsInterpreterTests, twoSequences) {
@@ -61,11 +71,14 @@ TEST_F(TrackSettingsInterpreterTests, twoSequences) {
     second.runCount = 6;
     second.stepSize = 8;
     assertFileContentsYield(
-        {propertyEntryWithNewline(Property::up, "1 2"),
+        {
+            propertyEntryWithNewline(Property::up, "1 2"),
             propertyEntryWithNewline(Property::down, "3 4"),
             propertyEntryWithNewline(Property::reversalsPerStepSize, "5 6"),
-            propertyEntry(Property::stepSizes, "7 8")},
-        {first, second});
+            propertyEntry(Property::stepSizes, "7 8")
+        },
+        {first, second}
+    );
 }
 
 TEST_F(TrackSettingsInterpreterTests, differentPropertyOrder) {
@@ -75,11 +88,14 @@ TEST_F(TrackSettingsInterpreterTests, differentPropertyOrder) {
     sequence.runCount = 3;
     sequence.stepSize = 4;
     assertFileContentsYield(
-        {propertyEntryWithNewline(Property::down, "2"),
+        {
+            propertyEntryWithNewline(Property::down, "2"),
             propertyEntryWithNewline(Property::up, "1"),
             propertyEntryWithNewline(Property::reversalsPerStepSize, "3"),
-            propertyEntry(Property::stepSizes, "4")},
-        {sequence});
+            propertyEntry(Property::stepSizes, "4")
+        },
+        {sequence}
+    );
 }
 
 TEST_F(TrackSettingsInterpreterTests, ignoresAnyUninterpretableEntries) {
@@ -89,13 +105,17 @@ TEST_F(TrackSettingsInterpreterTests, ignoresAnyUninterpretableEntries) {
     sequence.runCount = 3;
     sequence.stepSize = 4;
     assertFileContentsYield(
-        {withNewLine(" "), propertyEntryWithNewline(Property::down, "2"),
+        {
+            withNewLine(" "),
+            propertyEntryWithNewline(Property::down, "2"),
             propertyEntryWithNewline(Property::up, "1"),
             withNewLine("not: real"),
             propertyEntryWithNewline(Property::reversalsPerStepSize, "3"),
             propertyEntryWithNewline(Property::stepSizes, "4"),
-            withNewLine(" ")},
-        {sequence});
+            withNewLine(" ")
+        },
+        {sequence}
+    );
 }
 
 TEST_F(TrackSettingsInterpreterTests, canBeUsedToInterpretMoreThanOnce) {
@@ -110,22 +130,27 @@ TEST_F(TrackSettingsInterpreterTests, canBeUsedToInterpretMoreThanOnce) {
     firstCallSecond.runCount = 7;
     firstCallSecond.stepSize = 8;
     assertFileContentsYield(
-        {propertyEntryWithNewline(Property::up, "1 5"),
+        {
+            propertyEntryWithNewline(Property::up, "1 5"),
             propertyEntryWithNewline(Property::down, "2 6"),
             propertyEntryWithNewline(Property::reversalsPerStepSize, "3 7"),
-            propertyEntry(Property::stepSizes, "4 8")},
-        {firstCallFirst, firstCallSecond});
+            propertyEntry(Property::stepSizes, "4 8")
+        },
+        {firstCallFirst, firstCallSecond}
+    );
     TrackingSequence secondCall;
     secondCall.up = 9;
     secondCall.down = 10;
     secondCall.runCount = 11;
     secondCall.stepSize = 12;
     assertFileContentsYield(
-        {propertyEntryWithNewline(Property::up, "9"),
+        {
+            propertyEntryWithNewline(Property::up, "9"),
             propertyEntryWithNewline(Property::down, "10"),
             propertyEntryWithNewline(Property::reversalsPerStepSize, "11"),
-            propertyEntry(Property::stepSizes, "12")},
-        {secondCall});
+            propertyEntry(Property::stepSizes, "12")
+        },
+        {secondCall}
+    );
 }
-}
-}
+}}

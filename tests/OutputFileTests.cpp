@@ -3,32 +3,48 @@
 #include <recognition-test/OutputFileImpl.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
-namespace {
+namespace av_speech_in_noise::tests { namespace {
 class WriterStub : public Writer {
     LogString written_;
     std::string filePath_;
     bool closed_{};
     bool saved_{};
+public:
+    void save() override {
+        saved_ = true;
+    }
 
-  public:
-    void save() override { saved_ = true; }
+    auto saved() const {
+        return saved_;
+    }
 
-    auto saved() const { return saved_; }
+    void close() override {
+        closed_ = true;
+    }
 
-    void close() override { closed_ = true; }
+    void open(std::string f) override {
+        filePath_ = std::move(f);
+    }
 
-    void open(std::string f) override { filePath_ = std::move(f); }
+    auto filePath() const {
+        return filePath_;
+    }
 
-    auto filePath() const { return filePath_; }
+    auto closed() const {
+        return closed_;
+    }
 
-    auto closed() const { return closed_; }
+    auto &written() const {
+        return written_;
+    }
 
-    auto &written() const { return written_; }
+    void write(std::string s) override {
+        written_.insert(std::move(s));
+    }
 
-    void write(std::string s) override { written_.insert(std::move(s)); }
-
-    bool failed() override { return {}; }
+    bool failed() override {
+        return {};
+    }
 };
 
 class OutputFilePathStub : public OutputFilePath {
@@ -36,32 +52,41 @@ class OutputFilePathStub : public OutputFilePath {
     std::string homeDirectory_;
     std::string outputDirectory_;
     const TestInformation *testInformation_{};
+public:
+    std::string outputDirectory() override {
+        return outputDirectory_;
+    }
 
-  public:
-    std::string outputDirectory() override { return outputDirectory_; }
+    void setOutputDirectory(std::string s) {
+        outputDirectory_ = std::move(s);
+    }
 
-    void setOutputDirectory(std::string s) { outputDirectory_ = std::move(s); }
-
-    void setFileName(std::string s) { fileName_ = std::move(s); }
+    void setFileName(std::string s) {
+        fileName_ = std::move(s);
+    }
 
     std::string generateFileName(const TestInformation &p) override {
         testInformation_ = &p;
         return fileName_;
     }
 
-    std::string homeDirectory() override { return homeDirectory_; }
+    std::string homeDirectory() override {
+        return homeDirectory_;
+    }
 
-    auto testInformation() const { return testInformation_; }
+    auto testInformation() const {
+        return testInformation_;
+    }
 };
 
 class UseCase {
-  public:
+public:
     virtual ~UseCase() = default;
     virtual void run(OutputFileImpl &) = 0;
 };
 
 class WritingTestUseCase : public virtual UseCase {
-  public:
+public:
     virtual void setCondition(Condition) = 0;
     virtual void setTestInfo(const TestInformation &) = 0;
     virtual void setCommonTest(const CommonTest &) = 0;
@@ -69,36 +94,46 @@ class WritingTestUseCase : public virtual UseCase {
 
 class WritingAdaptiveTest : public WritingTestUseCase {
     AdaptiveTest test{};
-
-  public:
-    void setCondition(Condition c) override { test.common.condition = c; }
+public:
+    void setCondition(Condition c) override {
+        test.common.condition = c;
+    }
 
     void setTestInfo(const TestInformation &p) override {
         test.information = p;
     }
 
-    void setCommonTest(const CommonTest &p) override { test.common = p; }
+    void setCommonTest(const CommonTest &p) override {
+        test.common = p;
+    }
 
-    void run(OutputFileImpl &file) override { file.writeTest(test); }
+    void run(OutputFileImpl &file) override {
+        file.writeTest(test);
+    }
 };
 
 class WritingFixedLevelTest : public WritingTestUseCase {
     FixedLevelTest test{};
+public:
+    void setCondition(Condition c) override {
+        test.common.condition = c;
+    }
 
-  public:
-    void setCondition(Condition c) override { test.common.condition = c; }
-
-    void setCommonTest(const CommonTest &p) override { test.common = p; }
+    void setCommonTest(const CommonTest &p) override {
+        test.common = p;
+    }
 
     void setTestInfo(const TestInformation &p) override {
         test.information = p;
     }
 
-    void run(OutputFileImpl &file) override { file.writeTest(test); }
+    void run(OutputFileImpl &file) override {
+        file.writeTest(test);
+    }
 };
 
 class WritingTrialUseCase : public virtual UseCase {
-  public:
+public:
     virtual void incorrect() = 0;
     virtual void correct() = 0;
     virtual int evaluationEntryIndex() = 0;
@@ -114,15 +149,22 @@ void setIncorrect(coordinate_response_measure::Trial &trial) {
 
 class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
     coordinate_response_measure::AdaptiveTrial trial_{};
+public:
+    auto &trial() {
+        return trial_;
+    }
 
-  public:
-    auto &trial() { return trial_; }
+    void incorrect() override {
+        setIncorrect(trial_.trial);
+    }
 
-    void incorrect() override { setIncorrect(trial_.trial); }
+    void correct() override {
+        setCorrect(trial_.trial);
+    }
 
-    void correct() override { setCorrect(trial_.trial); }
-
-    int evaluationEntryIndex() override { return 6; }
+    int evaluationEntryIndex() override {
+        return 6;
+    }
 
     void run(av_speech_in_noise::OutputFileImpl &file) override {
         file.writeTrial(trial_);
@@ -131,38 +173,50 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
 
 class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
     coordinate_response_measure::FixedLevelTrial trial_{};
+public:
+    auto &trial() {
+        return trial_;
+    }
 
-  public:
-    auto &trial() { return trial_; }
+    void incorrect() override {
+        setIncorrect(trial_.trial);
+    }
 
-    void incorrect() override { setIncorrect(trial_.trial); }
-
-    void correct() override { setCorrect(trial_.trial); }
+    void correct() override {
+        setCorrect(trial_.trial);
+    }
 
     void run(av_speech_in_noise::OutputFileImpl &file) override {
         file.writeTrial(trial_);
     }
 
-    int evaluationEntryIndex() override { return 5; }
+    int evaluationEntryIndex() override {
+        return 5;
+    }
 };
 
 class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
     open_set::AdaptiveTrial trial_{};
+public:
+    void incorrect() override {
+        trial_.correct = false;
+    }
 
-  public:
-    void incorrect() override { trial_.correct = false; }
-
-    void correct() override { trial_.correct = true; }
+    void correct() override {
+        trial_.correct = true;
+    }
 
     void run(av_speech_in_noise::OutputFileImpl &file) override {
         file.writeTrial(trial_);
     }
 
-    int evaluationEntryIndex() override { return 3; }
+    int evaluationEntryIndex() override {
+        return 3;
+    }
 };
 
 class OutputFileTests : public ::testing::Test {
-  protected:
+protected:
     WriterStub writer;
     OutputFilePathStub path;
     OutputFileImpl file{&writer, &path};
@@ -179,15 +233,25 @@ class OutputFileTests : public ::testing::Test {
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
 
-    void run(UseCase &useCase) { useCase.run(file); }
+    void run(UseCase &useCase) {
+        useCase.run(file);
+    }
 
-    void openNewFile() { file.openNewFile(testInformation); }
+    void openNewFile() {
+        file.openNewFile(testInformation);
+    }
 
-    void writeFreeResponseTrial() { file.writeTrial(freeResponseTrial); }
+    void writeFreeResponseTrial() {
+        file.writeTrial(freeResponseTrial);
+    }
 
-    void writeOpenSetAdaptiveTrial() { file.writeTrial(openSetAdaptiveTrial); }
+    void writeOpenSetAdaptiveTrial() {
+        file.writeTrial(openSetAdaptiveTrial);
+    }
 
-    const auto &written() { return writer.written(); }
+    const auto &written() {
+        return writer.written();
+    }
 
     void assertWriterContainsConditionName(Condition c) {
         assertColonDelimitedEntryWritten("condition", conditionName(c));
@@ -206,13 +270,17 @@ class OutputFileTests : public ::testing::Test {
         auto precedingNewLine = find_nth_element(written_, line - 1, '\n');
         auto line_ = written_.substr(precedingNewLine + 1);
         auto precedingComma = find_nth_element(line_, n - 1, ',');
-        auto entryBeginning =
-            (precedingComma == std::string::npos) ? 0U : precedingComma + 2;
+        auto entryBeginning = (precedingComma == std::string::npos)
+            ? 0U
+            : precedingComma + 2;
         return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
     }
 
     std::string::size_type find_nth_element(
-        const std::string &content, int n, char what) {
+        const std::string &content,
+        int n,
+        char what
+    ) {
         auto found = std::string::npos;
         for (int i = 0; i < n; ++i)
             found = content.find(what, found + 1U);
@@ -220,11 +288,16 @@ class OutputFileTests : public ::testing::Test {
     }
 
     std::string upUntilFirstOfAny(
-        const std::string &content, std::vector<char> v) {
+        const std::string &content,
+        std::vector<char> v
+    ) {
         return content.substr(0, content.find_first_of({v.begin(), v.end()}));
     }
 
-    void assertConditionNameWritten(WritingTestUseCase &useCase, Condition c) {
+    void assertConditionNameWritten(
+        WritingTestUseCase &useCase,
+        Condition c
+    ) {
         useCase.setCondition(c);
         useCase.run(file);
         assertWriterContainsConditionName(c);
@@ -273,7 +346,9 @@ class OutputFileTests : public ::testing::Test {
 
     void assertNthCommaDelimitedEntryOfLine(HeadingItem item, int n, int line) {
         assertEqual(
-            headingItemName(item), nthCommaDelimitedEntryOfLine(n, line));
+            headingItemName(item),
+            nthCommaDelimitedEntryOfLine(n, line)
+        );
     }
 
     void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
@@ -294,8 +369,11 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectNumber, 3, n);
         assertNthCommaDelimitedEntryOfLine(HeadingItem::correctColor, 4, n);
         assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectColor, 5, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation,
-            writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
+        assertNthCommaDelimitedEntryOfLine(
+            HeadingItem::evaluation,
+            writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(),
+            n
+        );
         assertNthCommaDelimitedEntryOfLine(HeadingItem::reversals, 7, n);
     }
 
@@ -304,8 +382,11 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectNumber, 2, n);
         assertNthCommaDelimitedEntryOfLine(HeadingItem::correctColor, 3, n);
         assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectColor, 4, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation,
-            writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), n);
+        assertNthCommaDelimitedEntryOfLine(
+            HeadingItem::evaluation,
+            writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(),
+            n
+        );
         assertNthCommaDelimitedEntryOfLine(HeadingItem::stimulus, 6, n);
     }
 
@@ -414,14 +495,18 @@ TEST_F(OutputFileTests, writeOpenSetAdaptiveTrial) {
     assertWritesOpenSetAdaptiveTrialOnLine(2);
 }
 
-TEST_F(OutputFileTests,
-    writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
+TEST_F(
+    OutputFileTests,
+    writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice
+) {
     run(writingAdaptiveCoordinateResponseTrial);
     assertWritesAdaptiveCoordinateResponseTrialOnLine(3);
 }
 
-TEST_F(OutputFileTests,
-    writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
+TEST_F(
+    OutputFileTests,
+    writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice
+) {
     run(writingFixedLevelCoordinateResponseTrial);
     assertWritesFixedLevelCoordinateResponseTrialOnLine(3);
 }
@@ -431,38 +516,45 @@ TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
     assertWritesFreeResponseTrialOnLine(3);
 }
 
-TEST_F(
-    OutputFileTests, writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
+TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
     writeOpenSetAdaptiveTrial();
     assertWritesOpenSetAdaptiveTrialOnLine(3);
 }
 
-TEST_F(OutputFileTests,
-    writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+TEST_F(
+    OutputFileTests,
+    writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened
+) {
     run(writingAdaptiveCoordinateResponseTrial);
     openNewFile();
     run(writingAdaptiveCoordinateResponseTrial);
     assertAdaptiveCoordinateHeadingAtLine(3);
 }
 
-TEST_F(OutputFileTests,
-    writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+TEST_F(
+    OutputFileTests,
+    writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened
+) {
     run(writingFixedLevelCoordinateResponseTrial);
     openNewFile();
     run(writingFixedLevelCoordinateResponseTrial);
     assertFixedLevelCoordinateResponseHeadingAtLine(3);
 }
 
-TEST_F(OutputFileTests,
-    writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+TEST_F(
+    OutputFileTests,
+    writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened
+) {
     writeFreeResponseTrial();
     openNewFile();
     writeFreeResponseTrial();
     assertFreeResponseHeadingAtLine(3);
 }
 
-TEST_F(OutputFileTests,
-    writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+TEST_F(
+    OutputFileTests,
+    writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened
+) {
     writeOpenSetAdaptiveTrial();
     openNewFile();
     writeOpenSetAdaptiveTrial();
@@ -470,13 +562,11 @@ TEST_F(OutputFileTests,
 }
 
 TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
-    assertIncorrectTrialWritesEvaluation(
-        writingAdaptiveCoordinateResponseTrial);
+    assertIncorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
 
 TEST_F(OutputFileTests, writeIncorrectFixedLevelCoordinateResponseTrial) {
-    assertIncorrectTrialWritesEvaluation(
-        writingFixedLevelCoordinateResponseTrial);
+    assertIncorrectTrialWritesEvaluation(writingFixedLevelCoordinateResponseTrial);
 }
 
 TEST_F(OutputFileTests, writeIncorrectOpenSetAdaptiveTrial) {
@@ -488,8 +578,7 @@ TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
 }
 
 TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
-    assertCorrectTrialWritesEvaluation(
-        writingFixedLevelCoordinateResponseTrial);
+    assertCorrectTrialWritesEvaluation(writingFixedLevelCoordinateResponseTrial);
 }
 
 TEST_F(OutputFileTests, writeCorrectOpenSetAdaptiveTrial) {
@@ -571,26 +660,32 @@ TEST_F(OutputFileTests, openPassesTestInformation) {
 
 class FailingWriter : public Writer {
     bool failed_{};
+public:
+    void open(std::string) override {
+        failed_ = true;
+    }
 
-  public:
-    void open(std::string) override { failed_ = true; }
-
-    bool failed() override { return failed_; }
+    bool failed() override {
+        return failed_;
+    }
 
     void close() override {}
     void write(std::string) override {}
     void save() override {}
 };
 
-TEST(FailingOutputFileTests, openThrowsOpenFailureWhenWriterFails) {
+TEST(
+    FailingOutputFileTests,
+    openThrowsOpenFailureWhenWriterFails
+) {
     FailingWriter writer;
     OutputFilePathStub path;
     OutputFileImpl file{&writer, &path};
     try {
         file.openNewFile({});
         FAIL() << "Expected OutputFileImpl::OpenFailure";
-    } catch (const OutputFileImpl::OpenFailure &) {
+    }
+    catch (const OutputFileImpl::OpenFailure &) {
     }
 }
-}
-}
+}}
