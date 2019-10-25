@@ -73,5 +73,9 @@ std::vector<std::string> RecognitionTestModel::audioDevices() {
 void RecognitionTestModel::subscribe(Model::EventListener *e) {
     model->subscribe(e);
 }
+
+int RecognitionTestModel::trialNumber() {
+    return model->trialNumber();
+}
 }
 

@@ -96,8 +96,13 @@ void Presenter::hideTestSetup() {
     testSetup->hide();
 }
 
+static void displayTrialNumber(Presenter::Experimenter *experimenter, Model *model) {
+    experimenter->display("Trial " + std::to_string(model->trialNumber()));
+}
+
 void Presenter::showTestView() {
     experimenter->show();
+    displayTrialNumber(experimenter, model);
     if (closedSet())
         subject->show();
     else
@@ -141,6 +146,7 @@ void Presenter::trialComplete() {
 
 void Presenter::submitSubjectResponse() {
     submitSubjectResponse_();
+    displayTrialNumber(experimenter, model);
     if (testComplete())
         switchToSetupView();
     else
@@ -181,6 +187,7 @@ void Presenter::proceedToNextTrialAfter(void(Presenter::*f)()) {
 }
 
 void Presenter::proceedToNextTrial() {
+    displayTrialNumber(experimenter, model);
     if (testComplete())
         switchToSetupView();
 }
@@ -572,6 +579,10 @@ void Presenter::Experimenter::hideExitTestButton() {
 
 void Presenter::Experimenter::showExitTestButton() {
     view->showExitTestButton();
+}
+
+void Presenter::Experimenter::display(std::string s) {
+    view->display(std::move(s));
 }
 
 void Presenter::Experimenter::becomeChild(Presenter *p) {

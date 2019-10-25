@@ -107,6 +107,7 @@ public:
         virtual void hide() = 0;
         virtual void hideExitTestButton() = 0;
         virtual void showExitTestButton() = 0;
+        virtual void display(std::string) = 0;
     };
 
     virtual ~View() = default;
@@ -229,6 +230,7 @@ public:
         void hide();
         void hideExitTestButton();
         void showExitTestButton();
+        void display(std::string);
         void exitTest() override;
 
     private:

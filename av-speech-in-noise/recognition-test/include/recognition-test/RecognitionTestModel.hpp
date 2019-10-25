@@ -112,6 +112,7 @@ public:
     virtual void submitIncorrectResponse() = 0;
     virtual void submitResponse(const FreeResponse &) = 0;
     virtual void throwIfTrialInProgress() = 0;
+    virtual int trialNumber() = 0;
 };
 
 class RecognitionTestModel : public Model {
@@ -144,6 +145,7 @@ public:
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     void submitResponse(const FreeResponse &) override;
+    int trialNumber() override;
 };
 }
 

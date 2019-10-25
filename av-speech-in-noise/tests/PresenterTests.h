@@ -27,6 +27,7 @@ class ModelStub : public Model {
     std::vector<std::string> audioDevices_{};
     FreeResponse freeResponse_{};
     EventListener *listener_{};
+    int trialNumber_{};
     bool testComplete_{};
     bool trialPlayed_{};
     bool fixedLevelTestInitialized_{};
@@ -35,6 +36,14 @@ class ModelStub : public Model {
     bool incorrectResponseSubmitted_{};
     bool initializedWithFiniteTargets_{};
 public:
+    int trialNumber() override {
+        return trialNumber_;
+    }
+
+    void setTrialNumber(int n) {
+        trialNumber_ = n;
+    }
+
     auto initializedWithFiniteTargets() const {
         return initializedWithFiniteTargets_;
     }
@@ -619,14 +628,23 @@ public:
         }
     };
     
-    class Experimenter2ViewStub : public Experimenter {
+    class ExperimenterViewStub : public Experimenter {
         std::string response_;
+        std::string displayed_;
         EventListener *listener_{};
         bool shown_{};
         bool hidden_{};
         bool exitTestButtonHidden_{};
         bool exitTestButtonShown_{};
     public:
+        void display(std::string s) override {
+            displayed_ = std::move(s);
+        }
+
+        auto displayed() const {
+            return displayed_;
+        }
+
         void showExitTestButton() override {
             exitTestButtonShown_ = true;
         }
@@ -1155,9 +1173,9 @@ public:
 };
 
 class ExitingTest : public UseCase {
-    ViewStub::Experimenter2ViewStub *view;
+    ViewStub::ExperimenterViewStub *view;
 public:
-    explicit ExitingTest(ViewStub::Experimenter2ViewStub *view) :
+    explicit ExitingTest(ViewStub::ExperimenterViewStub *view) :
         view{view} {}
     
     void run() override {
@@ -1369,12 +1387,12 @@ protected:
     ModelStub model;
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
-    ViewStub::Experimenter2ViewStub experimenter2View;
+    ViewStub::ExperimenterViewStub experimenterView;
     ViewStub::TestingViewStub testingView;
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Subject subject{&subjectView};
-    Presenter::Experimenter experimenter{&experimenter2View};
+    Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
     
     Presenter construct() {
@@ -1394,10 +1412,10 @@ protected:
     ViewStub view;
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
-    ViewStub::Experimenter2ViewStub experimenter2View;
+    ViewStub::ExperimenterViewStub experimenterView;
     ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::Experimenter experimenter{&experimenter2View};
+    Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
     Presenter::Subject subject{&subjectView};
     Presenter presenter{
@@ -1423,7 +1441,7 @@ protected:
     RespondingFromExperimenter respondingFromExperimenter{&testingView};
     SubmittingPassedTrial submittingPassedTrial{&testingView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};
-    ExitingTest exitingTest{&experimenter2View};
+    ExitingTest exitingTest{&experimenterView};
     
     std::string auditoryOnlyConditionName() {
         return conditionName(Condition::auditoryOnly);
@@ -1442,7 +1460,7 @@ protected:
     }
     
     void exitTest() {
-        experimenter2View.exitTest();
+        experimenterView.exitTest();
     }
     
     void playCalibration() {
@@ -1482,7 +1500,7 @@ protected:
     }
     
     bool experimenterViewShown() {
-        return experimenter2View.shown();
+        return experimenterView.shown();
     }
     
     bool testingViewShown() {
@@ -1498,7 +1516,7 @@ protected:
     }
     
     bool experimenterViewHidden() {
-        return experimenter2View.hidden();
+        return experimenterView.hidden();
     }
     
     bool testingViewHidden() {
@@ -1691,11 +1709,11 @@ protected:
     }
 
     bool exitTestButtonHidden() {
-        return experimenter2View.exitTestButtonHidden();
+        return experimenterView.exitTestButtonHidden();
     }
 
     bool exitTestButtonShown() {
-        return experimenter2View.exitTestButtonShown();
+        return experimenterView.exitTestButtonShown();
     }
     
     void assertConfirmTestSetupShowsNextTrialButton(
@@ -1889,6 +1907,20 @@ protected:
         assertTrue(trialSubmission.responseViewShown());
     }
     
+    void assertShowsTrialNumber(UseCase &useCase) {
+        setTrialNumber(1);
+        run(useCase);
+        assertDisplayedToExperimenter("Trial 1");
+    }
+
+    void setTrialNumber(int n) {
+        model.setTrialNumber(n);
+    }
+
+    void assertDisplayedToExperimenter(const std::string &s) {
+        assertEqual(s, experimenterView.displayed());
+    }
+
     void assertResponseViewHidden(TrialSubmission &useCase) {
         run(useCase);
         assertTrue(useCase.responseViewHidden());
@@ -1908,6 +1940,10 @@ protected:
 class RequestFailingModel : public Model {
     std::string errorMessage{};
 public:
+    int trialNumber() override {
+        return 0;
+    }
+
     void setErrorMessage(std::string s) {
         errorMessage = std::move(s);
     }
@@ -1955,11 +1991,11 @@ protected:
     ViewStub view;
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
-    ViewStub::Experimenter2ViewStub experimenter2View;
+    ViewStub::ExperimenterViewStub experimenterView;
     ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Subject subject{&subjectView};
-    Presenter::Experimenter experimenter{&experimenter2View};
+    Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
     
     void useFailingModel(std::string s = {}) {

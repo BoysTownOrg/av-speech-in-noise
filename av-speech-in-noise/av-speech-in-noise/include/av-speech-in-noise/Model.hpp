@@ -164,6 +164,7 @@ public:
     virtual void submitIncorrectResponse() = 0;
     virtual bool testComplete() = 0;
     virtual std::vector<std::string> audioDevices() = 0;
+    virtual int trialNumber() = 0;
 };
 }
 

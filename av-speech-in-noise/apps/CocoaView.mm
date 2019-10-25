@@ -607,6 +607,12 @@ void CocoaSubjectView::hide() {
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
+    displayedText_{[[NSTextView alloc] initWithFrame:NSMakeRect(
+        r.origin.x + 15,
+        r.origin.y + 15,
+        r.size.width - 30,
+        30
+    )]},
     actions{[ExperimenterViewActions alloc]}
 {
     exitTestButton_ = [NSButton
@@ -620,7 +626,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
         buttonWidth,
         buttonHeight
     )];
+    [displayedText_ setFont:[NSFont userFontOfSize:22.0]];
     [view_ addSubview:exitTestButton_];
+    [view_ addSubview:displayedText_];
     [view_ setHidden:YES];
     actions.controller = this;
 }
@@ -651,6 +659,10 @@ NSView *CocoaExperimenterView::view() {
 
 void CocoaExperimenterView::exitTest() {
     listener_->exitTest();
+}
+
+void CocoaExperimenterView::display(std::string s) {
+    [displayedText_ setString:asNsString(std::move(s))];
 }
 
 @implementation ExperimenterViewActions

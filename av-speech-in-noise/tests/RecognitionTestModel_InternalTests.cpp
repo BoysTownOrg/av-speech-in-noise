@@ -585,6 +585,15 @@ protected:
         run(useCase);
         assertTrue(testMethod.log().contains(what));
     }
+
+    void assertTrialNumber(int n) {
+        assertEqual(n, model.trialNumber());
+    }
+
+    void assertYieldsTrialNumber(UseCase &useCase, int n) {
+        run(useCase);
+        assertTrialNumber(n);
+    }
 };
 
 TEST_F(RecognitionTestModel_InternalTests, subscribesToPlayerEvents) {
@@ -665,6 +674,45 @@ TEST_F(
     initializeTestPassesNextTargetToTargetPlayer
 ) {
     assertPassesNextTargetToPlayer(initializingTest);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
+    initializingTestResetsTrialNumber
+) {
+    assertYieldsTrialNumber(initializingTest, 1);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
+    submittingCoordinateResponseIncrementsTrialNumber
+) {
+    run(initializingTest);
+    assertYieldsTrialNumber(submittingCoordinateResponse, 2);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
+    submittingCorrectResponseIncrementsTrialNumber
+) {
+    run(initializingTest);
+    assertYieldsTrialNumber(submittingCorrectResponse, 2);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
+    submittingIncorrectResponseIncrementsTrialNumber
+) {
+    run(initializingTest);
+    assertYieldsTrialNumber(submittingIncorrectResponse, 2);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
+    submittingFreeResponseIncrementsTrialNumber
+) {
+    run(initializingTest);
+    assertYieldsTrialNumber(submittingFreeResponse, 2);
 }
 
 TEST_F(

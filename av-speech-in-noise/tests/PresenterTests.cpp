@@ -700,6 +700,38 @@ namespace av_speech_in_noise::tests::presentation {
         assertTrue(exitTestButtonShown());
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTrialNumber) {
+        assertShowsTrialNumber(confirmingFixedLevelOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTrialNumber) {
+        assertShowsTrialNumber(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsTrialNumber) {
+        assertShowsTrialNumber(confirmingFixedLevelClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsTrialNumber) {
+        assertShowsTrialNumber(confirmingAdaptiveClosedSetTest);
+    }
+
+    TEST_F(PresenterTests, submittingResponseFromExperimenterShowsTrialNumber) {
+        assertShowsTrialNumber(respondingFromExperimenter);
+    }
+
+    TEST_F(PresenterTests, submittingResponseFromSubjectShowsTrialNumber) {
+        assertShowsTrialNumber(respondingFromSubject);
+    }
+
+    TEST_F(PresenterTests, submittingPassedTrialShowsTrialNumber) {
+        assertShowsTrialNumber(submittingPassedTrial);
+    }
+
+    TEST_F(PresenterTests, submittingFailedTrialShowsTrialNumber) {
+        assertShowsTrialNumber(submittingFailedTrial);
+    }
+
     TEST_F(
         PresenterTests,
         completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest

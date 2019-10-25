@@ -71,6 +71,7 @@ class RecognitionTestModel_Internal :
     TestMethod *testMethod{};
     int maskerLevel_dB_SPL{};
     int fullScaleLevel_dB_SPL{};
+    int trialNumber_{};
     Condition condition;
 public:
     RecognitionTestModel_Internal(
@@ -91,6 +92,7 @@ public:
     ) override;
     bool testComplete() override;
     std::vector<std::string> audioDevices() override;
+    int trialNumber() override;
     void subscribe(Model::EventListener *) override;
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;

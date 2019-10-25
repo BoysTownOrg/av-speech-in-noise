@@ -88,6 +88,7 @@ namespace av_speech_in_noise::tests { namespace {
         const TestMethod *testMethod_{};
         const coordinate_response_measure::SubjectResponse *
             coordinateResponse_{};
+        int trialNumber_;
         bool complete_{};
     public:
         void initialize(
@@ -98,6 +99,14 @@ namespace av_speech_in_noise::tests { namespace {
             testMethod_ = tm;
             commonTest_ = &ct;
             testInformation_ = &ti;
+        }
+
+        int trialNumber() override {
+            return trialNumber_;
+        }
+
+        void setTrialNumber(int n) {
+            trialNumber_ = n;
         }
         
         void playTrial(const AudioSettings &s) override {
@@ -439,6 +448,11 @@ namespace av_speech_in_noise::tests { namespace {
     TEST_F(RecognitionTestModelTests, returnsAudioDevices) {
         internalModel.setAudioDevices({"a", "b", "c"});
         assertEqual({"a", "b", "c"}, model.audioDevices());
+    }
+    
+    TEST_F(RecognitionTestModelTests, returnsTrialNumber) {
+        internalModel.setTrialNumber(1);
+        assertEqual(1, model.trialNumber());
     }
     
     TEST_F(RecognitionTestModelTests, subscribesToListener) {
