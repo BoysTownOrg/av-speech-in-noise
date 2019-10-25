@@ -4,6 +4,3 @@ add_subdirectory(adaptive-track)
 add_subdirectory(presentation)
 add_subdirectory(stimulus-players)
 add_subdirectory(target-list)
-add_subdirectory(tests)
-add_subdirectory(apps)
-
