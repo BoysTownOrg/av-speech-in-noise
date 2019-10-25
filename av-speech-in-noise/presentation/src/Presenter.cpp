@@ -100,10 +100,8 @@ void Presenter::showTestView() {
     experimenter->show();
     if (closedSet())
         subject->show();
-    else {
+    else
         testing->show();
-        testing->showNextTrialButton();
-    }
 }
 
 bool Presenter::closedSet() {
@@ -502,6 +500,7 @@ Presenter::Testing::Testing(View::Testing *view) :
 
 void Presenter::Testing::show() {
     view->show();
+    showNextTrialButton();
 }
 
 void Presenter::Testing::showNextTrialButton() {
