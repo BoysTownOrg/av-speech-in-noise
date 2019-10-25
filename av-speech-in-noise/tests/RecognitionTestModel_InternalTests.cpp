@@ -669,6 +669,14 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    initializingTestResetsTrialNumber
+) {
+    run(initializingTest);
+    assertEqual(1, model.trialNumber());
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     submittingCoordinateResponsePassesNextTargetToTargetPlayer
 ) {
     run(initializingTest);
