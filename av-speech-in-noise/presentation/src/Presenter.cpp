@@ -98,6 +98,7 @@ void Presenter::hideTestSetup() {
 
 void Presenter::showTestView() {
     experimenter->show();
+    experimenter->display("Trial 1");
     if (closedSet())
         subject->show();
     else
@@ -572,6 +573,10 @@ void Presenter::Experimenter::hideExitTestButton() {
 
 void Presenter::Experimenter::showExitTestButton() {
     view->showExitTestButton();
+}
+
+void Presenter::Experimenter::display(std::string s) {
+    view->display(std::move(s));
 }
 
 void Presenter::Experimenter::becomeChild(Presenter *p) {

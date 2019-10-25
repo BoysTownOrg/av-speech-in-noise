@@ -700,6 +700,10 @@ namespace av_speech_in_noise::tests::presentation {
         assertTrue(exitTestButtonShown());
     }
 
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTrialNumber) {
+        assertShowsTrialNumber(confirmingFixedLevelClosedSetTest);
+    }
+
     TEST_F(
         PresenterTests,
         completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest
