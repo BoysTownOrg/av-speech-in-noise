@@ -275,8 +275,10 @@ void RecognitionTestModel_Internal::submitCorrectResponse_() {
 }
 
 void RecognitionTestModel_Internal::prepareNextTrialIfNeeded() {
-    if (!testMethod->complete())
+    if (!testMethod->complete()) {
+        ++trialNumber_;
         preparePlayersForNextTrial();
+    }
 }
 
 void RecognitionTestModel_Internal::submitIncorrectResponse() {

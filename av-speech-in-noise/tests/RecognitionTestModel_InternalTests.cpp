@@ -677,6 +677,15 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    submittingCoordinateResponseIncrementsTrialNumber
+) {
+    run(initializingTest);
+    run(submittingCoordinateResponse);
+    assertEqual(2, model.trialNumber());
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     submittingCoordinateResponsePassesNextTargetToTargetPlayer
 ) {
     run(initializingTest);
