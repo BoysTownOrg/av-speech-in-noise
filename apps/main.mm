@@ -22,6 +22,7 @@
 #include <fstream>
 #include <sstream>
 
+namespace {
 class MacOsDirectoryReader : public target_list::DirectoryReader
 {
     std::vector<std::string> filesIn(std::string directory) override {
@@ -151,15 +152,18 @@ public:
             time = &dummyTime;
     }
 };
-
+}
+namespace av_speech_in_noise::impl {
 class TimerImpl;
+}
 
 @interface CallbackScheduler : NSObject
-@property TimerImpl *controller;
+@property av_speech_in_noise::impl::TimerImpl *controller;
 - (void) scheduleCallbackAfterSeconds: (double) x;
 - (void) timerCallback;
 @end
 
+namespace av_speech_in_noise::impl {
 class TimerImpl : public stimulus_players::Timer {
     EventListener *listener{};
     CallbackScheduler *scheduler{[CallbackScheduler alloc]};
@@ -180,6 +184,7 @@ public:
         listener->callback();
     }
 };
+}
 
 @implementation CallbackScheduler
 @synthesize controller;
@@ -199,6 +204,7 @@ public:
 }
 @end
 
+namespace {
 class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
     std::string read(std::string s) override {
         std::ifstream file{std::move(s)};
@@ -207,6 +213,7 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
         return stream.str();
     }
 };
+}
 
 @interface WindowDelegate : NSObject<NSWindowDelegate>
 - (void)windowWillClose:(NSNotification *)notification;
@@ -219,8 +226,8 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
 }
 @end
 
-int main() {
-    using namespace av_speech_in_noise;
+namespace av_speech_in_noise::impl {
+void main() {
     MacOsDirectoryReader reader;
     target_list::FileExtensionFilter fileExtensions_{
         {".mov", ".avi", ".wav"}
@@ -418,4 +425,9 @@ int main() {
         &testing
     };
     presenter.run();
+}
+}
+
+int main() {
+    av_speech_in_noise::impl::main();
 }
