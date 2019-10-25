@@ -701,6 +701,22 @@ TEST_F(
 
 TEST_F(
     RecognitionTestModel_InternalTests,
+    submittingIncorrectResponseIncrementsTrialNumber
+) {
+    run(initializingTest);
+    assertYieldsTrialNumber(submittingIncorrectResponse, 2);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
+    submittingFreeResponseIncrementsTrialNumber
+) {
+    run(initializingTest);
+    assertYieldsTrialNumber(submittingFreeResponse, 2);
+}
+
+TEST_F(
+    RecognitionTestModel_InternalTests,
     submittingCoordinateResponsePassesNextTargetToTargetPlayer
 ) {
     run(initializingTest);
