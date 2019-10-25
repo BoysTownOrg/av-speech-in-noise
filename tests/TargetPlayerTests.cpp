@@ -18,18 +18,15 @@ class VideoPlayerStub : public stimulus_players::VideoPlayer {
     bool played_{};
     bool playing_{};
     bool playbackCompletionSubscribedTo_{};
-public:
-    double durationSeconds() override {
-        return durationSeconds_;
-    }
+
+  public:
+    double durationSeconds() override { return durationSeconds_; }
 
     void subscribeToPlaybackCompletion() override {
         playbackCompletionSubscribedTo_ = true;
     }
 
-    bool playing() override {
-        return playing_;
-    }
+    bool playing() override { return playing_; }
 
     auto playbackCompletionSubscribedTo() const {
         return playbackCompletionSubscribedTo_;
@@ -47,96 +44,60 @@ public:
         audioDeviceDescriptions_ = std::move(v);
     }
 
-    void playbackComplete() {
-        listener_->playbackComplete();
-    }
+    void playbackComplete() { listener_->playbackComplete(); }
 
-    void setDevice(int index) override {
-        deviceIndex_ = index;
-    }
+    void setDevice(int index) override { deviceIndex_ = index; }
 
-    auto deviceIndex() const {
-        return deviceIndex_;
-    }
+    auto deviceIndex() const { return deviceIndex_; }
 
-    void play() override {
-        played_ = true;
-    }
+    void play() override { played_ = true; }
 
-    auto played() const {
-        return played_;
-    }
+    auto played() const { return played_; }
 
-    void loadFile(std::string f) override {
-        filePath_ = std::move(f);
-    }
+    void loadFile(std::string f) override { filePath_ = std::move(f); }
 
-    auto filePath() const {
-        return filePath_;
-    }
+    auto filePath() const { return filePath_; }
 
-    void hide() override {
-        hidden_ = true;
-    }
+    void hide() override { hidden_ = true; }
 
-    auto hidden() const {
-        return hidden_;
-    }
+    auto hidden() const { return hidden_; }
 
-    auto shown() const {
-        return shown_;
-    }
+    auto shown() const { return shown_; }
 
-    void setPlaying() {
-        playing_ = true;
-    }
+    void setPlaying() { playing_ = true; }
 
-    void setDurationSeconds(double x) {
-        durationSeconds_ = x;
-    }
+    void setDurationSeconds(double x) { durationSeconds_ = x; }
 
-    void show() override {
-        shown_ = true;
-    }
+    void show() override { shown_ = true; }
 
-    void subscribe(EventListener *e) override {
-        listener_ = e;
-    }
+    void subscribe(EventListener *e) override { listener_ = e; }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
         listener_->fillAudioBuffer(audio);
     }
 };
 
-class TargetPlayerListenerStub :
-    public av_speech_in_noise::TargetPlayer::EventListener
-{
+class TargetPlayerListenerStub
+    : public av_speech_in_noise::TargetPlayer::EventListener {
     bool notified_{};
-public:
-    void playbackComplete() override {
-        notified_ = true;
-    }
 
-    auto notified() const {
-        return notified_;
-    }
+  public:
+    void playbackComplete() override { notified_ = true; }
+
+    auto notified() const { return notified_; }
 };
 
 class TargetPlayerTests : public ::testing::Test {
-protected:
+  protected:
     std::vector<float> leftChannel{};
     VideoPlayerStub videoPlayer;
     TargetPlayerListenerStub listener;
     stimulus_players::tests::AudioReaderStub audioReader{};
     stimulus_players::TargetPlayerImpl player{&videoPlayer, &audioReader};
 
-    TargetPlayerTests() {
-        player.subscribe(&listener);
-    }
+    TargetPlayerTests() { player.subscribe(&listener); }
 
-    void fillAudioBuffer() {
-        videoPlayer.fillAudioBuffer({ leftChannel });
-    }
+    void fillAudioBuffer() { videoPlayer.fillAudioBuffer({leftChannel}); }
 
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
         videoPlayer.setAudioDeviceDescriptions(std::move(v));
@@ -180,9 +141,9 @@ TEST_F(TargetPlayerTests, videoPlaybackCompleteNotifiesSubscriber) {
 
 TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen) {
     player.setLevel_dB(20);
-    leftChannel = { 1, 2, 3 };
+    leftChannel = {1, 2, 3};
     fillAudioBuffer();
-    assertEqual({ 10, 20, 30 }, leftChannel);
+    assertEqual({10, 20, 30}, leftChannel);
 }
 
 TEST_F(TargetPlayerTests, setAudioDeviceFindsIndex) {
@@ -196,8 +157,7 @@ TEST_F(TargetPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
     try {
         player.setAudioDevice("third");
         FAIL() << "Expected av_coordinate_response_measure::InvalidAudioDevice";
-    } catch(const av_speech_in_noise::InvalidAudioDevice &) {
-
+    } catch (const av_speech_in_noise::InvalidAudioDevice &) {
     }
 }
 
@@ -207,12 +167,8 @@ TEST_F(TargetPlayerTests, audioDevicesReturnsDescriptions) {
 }
 
 TEST_F(TargetPlayerTests, rmsComputesFirstChannel) {
-    audioReader.set({
-        { 1, 2, 3 },
-        { 4, 5, 6 },
-        { 7, 8, 9 }
-    });
-    EXPECT_EQ(std::sqrt((1*1 + 2*2 + 3*3)/3.f), player.rms());
+    audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    EXPECT_EQ(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.f), player.rms());
 }
 
 TEST_F(TargetPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
@@ -221,10 +177,7 @@ TEST_F(TargetPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
     assertEqual("a", audioReader.filePath());
 }
 
-TEST_F(
-    TargetPlayerTests,
-    subscribesToTargetPlaybackCompletionNotification
-) {
+TEST_F(TargetPlayerTests, subscribesToTargetPlaybackCompletionNotification) {
     player.subscribeToPlaybackCompletion();
     EXPECT_TRUE(videoPlayer.playbackCompletionSubscribedTo());
 }
@@ -234,8 +187,7 @@ TEST_F(TargetPlayerTests, rmsThrowsInvalidAudioFileWhenAudioReaderThrows) {
     try {
         player.rms();
         FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
-    } catch(const av_speech_in_noise::InvalidAudioFile &) {
-
+    } catch (const av_speech_in_noise::InvalidAudioFile &) {
     }
 }
 }

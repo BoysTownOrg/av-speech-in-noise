@@ -15,30 +15,19 @@ class TrackStub : public Track {
     bool pushedDown_{};
     bool pushedUp_{};
     bool complete_{};
-public:
-    void setXWhenUpdated(int x) {
-        xWhenUpdated_ = x;
-    }
 
-    void setReversalsWhenUpdated(int x) {
-        reversalsWhenUpdated_ = x;
-    }
+  public:
+    void setXWhenUpdated(int x) { xWhenUpdated_ = x; }
 
-    void setReversals(int x) {
-        reversals_ = x;
-    }
+    void setReversalsWhenUpdated(int x) { reversalsWhenUpdated_ = x; }
 
-    auto pushedUp() const {
-        return pushedUp_;
-    }
+    void setReversals(int x) { reversals_ = x; }
 
-    auto pushedDown() const {
-        return pushedDown_;
-    }
+    auto pushedUp() const { return pushedUp_; }
 
-    void setX(int x) {
-        x_ = x;
-    }
+    auto pushedDown() const { return pushedDown_; }
+
+    void setX(int x) { x_ = x; }
 
     void down() override {
         pushedDown_ = true;
@@ -52,30 +41,21 @@ public:
         x_ = xWhenUpdated_;
     }
 
-    int x() override {
-        return x_;
-    }
+    int x() override { return x_; }
 
-    bool complete() override {
-        return complete_;
-    }
+    bool complete() override { return complete_; }
 
-    int reversals() override {
-        return reversals_;
-    }
+    int reversals() override { return reversals_; }
 
-    void setComplete() {
-        complete_ = true;
-    }
+    void setComplete() { complete_ = true; }
 };
 
 class TrackFactoryStub : public TrackFactory {
     std::vector<Track::Settings> parameters_;
     std::vector<std::shared_ptr<Track>> tracks_;
-public:
-    auto &parameters() const {
-        return parameters_;
-    }
+
+  public:
+    auto &parameters() const { return parameters_; }
 
     std::shared_ptr<Track> make(const Track::Settings &s) override {
         parameters_.push_back(s);
