@@ -10,11 +10,11 @@ class InvalidAudioDevice {};
 class InvalidAudioFile {};
 
 class TargetPlayer {
-public:
+  public:
     virtual ~TargetPlayer() = default;
 
     class EventListener {
-    public:
+      public:
         virtual ~EventListener() = default;
         virtual void playbackComplete() = 0;
     };
@@ -33,11 +33,11 @@ public:
 };
 
 class MaskerPlayer {
-public:
+  public:
     virtual ~MaskerPlayer() = default;
 
     class EventListener {
-    public:
+      public:
         virtual ~EventListener() = default;
         virtual void fadeInComplete() = 0;
         virtual void fadeOutComplete() = 0;
@@ -57,11 +57,9 @@ public:
     virtual double fadeTimeSeconds() = 0;
 };
 
-class RecognitionTestModel_Internal :
-    public TargetPlayer::EventListener,
-    public MaskerPlayer::EventListener,
-    public IRecognitionTestModel_Internal
-{
+class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
+                                      public MaskerPlayer::EventListener,
+                                      public IRecognitionTestModel_Internal {
     MaskerPlayer *maskerPlayer;
     TargetPlayer *targetPlayer;
     ResponseEvaluator *evaluator;
@@ -73,23 +71,15 @@ class RecognitionTestModel_Internal :
     int fullScaleLevel_dB_SPL{};
     int trialNumber_{};
     Condition condition;
-public:
-    RecognitionTestModel_Internal(
-        TargetPlayer *,
-        MaskerPlayer *,
-        ResponseEvaluator *,
-        OutputFile *,
-        Randomizer *
-    );
+
+  public:
+    RecognitionTestModel_Internal(TargetPlayer *, MaskerPlayer *,
+        ResponseEvaluator *, OutputFile *, Randomizer *);
     void initialize(
-        TestMethod *,
-        const CommonTest &,
-        const TestInformation &
-    ) override;
+        TestMethod *, const CommonTest &, const TestInformation &) override;
     void playTrial(const AudioSettings &) override;
     void submitResponse(
-        const coordinate_response_measure::SubjectResponse &
-    ) override;
+        const coordinate_response_measure::SubjectResponse &) override;
     bool testComplete() override;
     std::vector<std::string> audioDevices() override;
     int trialNumber() override;
@@ -102,7 +92,8 @@ public:
     void fadeInComplete() override;
     void fadeOutComplete() override;
     void playbackComplete() override;
-private:
+
+  private:
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
     void writeTrial(const FreeResponse &p);
@@ -138,13 +129,11 @@ private:
     void setAudioDevices(const AudioSettings &);
     int findDeviceIndex(const AudioSettings &);
     void throwInvalidAudioDeviceOnErrorSettingDevice(
-        void(RecognitionTestModel_Internal::*f)(const std::string &),
-        const std::string &
-    );
+        void (RecognitionTestModel_Internal::*f)(const std::string &),
+        const std::string &);
     void throwInvalidAudioFileOnErrorLoading(
         void (RecognitionTestModel_Internal::*f)(const std::string &),
-        const std::string &file
-    );
+        const std::string &file);
     void loadTargetFile(std::string);
     void setTargetLevel_dB(double);
     void prepareNextTrialIfNeeded();

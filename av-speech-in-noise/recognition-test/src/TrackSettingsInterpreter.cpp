@@ -8,7 +8,8 @@ class Stream {
     std::stringstream line_{};
     std::string lastLine_{};
     bool failed_{};
-public:
+
+  public:
     explicit Stream(std::string s) : stream{std::move(s)} {}
 
     bool nextLine() {
@@ -24,8 +25,7 @@ public:
 
     void resetLine_() {
         line_ = std::stringstream{
-            lastLine_.substr(findPropertyNameDelimiter()+1)
-        };
+            lastLine_.substr(findPropertyNameDelimiter() + 1)};
         failed_ = false;
     }
 
@@ -40,15 +40,11 @@ public:
         return x;
     }
 
-    auto failed() const {
-        return failed_;
-    }
+    auto failed() const { return failed_; }
 };
 }
 
-static void applyToUp(TrackingSequence &sequence, int x) {
-    sequence.up = x;
-}
+static void applyToUp(TrackingSequence &sequence, int x) { sequence.up = x; }
 
 static void applyToDown(TrackingSequence &sequence, int x) {
     sequence.down = x;
@@ -64,13 +60,15 @@ static void applyToStepSize(TrackingSequence &sequence, int x) {
 
 static void nothing(TrackingSequence &, int) {}
 
-static void(*propertyApplication(const std::string &s))(TrackingSequence &, int) {
+static void (*propertyApplication(const std::string &s))(
+    TrackingSequence &, int) {
     using Property = TrackSettingsInterpreter::Property;
     if (s == TrackSettingsInterpreter::propertyName(Property::up))
         return applyToUp;
     if (s == TrackSettingsInterpreter::propertyName(Property::down))
         return applyToDown;
-    if (s == TrackSettingsInterpreter::propertyName(Property::reversalsPerStepSize))
+    if (s ==
+        TrackSettingsInterpreter::propertyName(Property::reversalsPerStepSize))
         return applyToRunCount;
     if (s == TrackSettingsInterpreter::propertyName(Property::stepSizes))
         return applyToStepSize;

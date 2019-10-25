@@ -1,16 +1,11 @@
 #include "FixedLevelMethod.hpp"
 
 namespace av_speech_in_noise {
-FixedLevelMethod::FixedLevelMethod(
-    ResponseEvaluator *evaluator
-) :
-    evaluator{evaluator} {}
+FixedLevelMethod::FixedLevelMethod(ResponseEvaluator *evaluator)
+    : evaluator{evaluator} {}
 
 void FixedLevelMethod::initialize(
-    const FixedLevelTest &p,
-    TargetList *list,
-    TestConcluder *concluder_
-) {
+    const FixedLevelTest &p, TargetList *list, TestConcluder *concluder_) {
     concluder = concluder_;
     targetList = list;
     test = &p;
@@ -19,21 +14,14 @@ void FixedLevelMethod::initialize(
     concluder->initialize(p);
 }
 
-bool FixedLevelMethod::complete() {
-    return concluder->complete(targetList);
-}
+bool FixedLevelMethod::complete() { return concluder->complete(targetList); }
 
-std::string FixedLevelMethod::next() {
-    return targetList->next();
-}
+std::string FixedLevelMethod::next() { return targetList->next(); }
 
-int FixedLevelMethod::snr_dB() {
-    return snr_dB_;
-}
+int FixedLevelMethod::snr_dB() { return snr_dB_; }
 
 void FixedLevelMethod::submitResponse(
-    const coordinate_response_measure::SubjectResponse &response
-) {
+    const coordinate_response_measure::SubjectResponse &response) {
     auto current_ = current();
     coordinate_response_measure::Trial trial;
     trial.subjectColor = response.color;
@@ -46,9 +34,7 @@ void FixedLevelMethod::submitResponse(
     concluder->submitResponse();
 }
 
-std::string FixedLevelMethod::current() {
-    return targetList->current();
-}
+std::string FixedLevelMethod::current() { return targetList->current(); }
 
 void FixedLevelMethod::writeTestingParameters(OutputFile *file) {
     file->writeTest(*test);

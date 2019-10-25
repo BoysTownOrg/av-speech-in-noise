@@ -9,7 +9,7 @@
 
 namespace av_speech_in_noise {
 class Track {
-public:
+  public:
     virtual ~Track() = default;
     struct Settings {
         const TrackingRule *rule;
@@ -26,19 +26,19 @@ public:
 };
 
 class ITrackSettingsReader {
-public:
+  public:
     virtual ~ITrackSettingsReader() = default;
     virtual const TrackingRule *read(std::string) = 0;
 };
 
 class TrackFactory {
-public:
+  public:
     virtual ~TrackFactory() = default;
     virtual std::shared_ptr<Track> make(const Track::Settings &) = 0;
 };
 
 class TargetListReader {
-public:
+  public:
     virtual ~TargetListReader() = default;
     using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
     virtual lists_type read(std::string directory) = 0;
@@ -62,14 +62,10 @@ class AdaptiveMethod : public IAdaptiveMethod {
     Randomizer *randomizer;
     Track *currentSnrTrack{};
     TargetList *currentTargetList{};
-public:
-    AdaptiveMethod(
-        TargetListReader *,
-        ITrackSettingsReader *,
-        TrackFactory *,
-        ResponseEvaluator *,
-        Randomizer *
-    );
+
+  public:
+    AdaptiveMethod(TargetListReader *, ITrackSettingsReader *, TrackFactory *,
+        ResponseEvaluator *, Randomizer *);
     void initialize(const AdaptiveTest &) override;
     int snr_dB() override;
     void submitIncorrectResponse() override;
@@ -82,22 +78,19 @@ public:
     void writeLastIncorrectResponse(OutputFile *) override;
     void writeTestingParameters(OutputFile *) override;
     void submitResponse(
-        const coordinate_response_measure::SubjectResponse &
-    ) override;
+        const coordinate_response_measure::SubjectResponse &) override;
     void submitResponse(const FreeResponse &) override;
 
-private:
-    void selectNextListAfter(void(AdaptiveMethod::*)());
+  private:
+    void selectNextListAfter(void (AdaptiveMethod::*)());
     void prepareSnrTracks();
     void makeSnrTracks();
     void makeTrackWithList(TargetList *list);
     void selectNextList();
     void removeCompleteTracks();
     bool complete(const TargetListWithTrack &);
-    bool correct(
-        const std::string &,
-        const coordinate_response_measure::SubjectResponse &
-    );
+    bool correct(const std::string &,
+        const coordinate_response_measure::SubjectResponse &);
     void incorrect();
     void correct();
 };

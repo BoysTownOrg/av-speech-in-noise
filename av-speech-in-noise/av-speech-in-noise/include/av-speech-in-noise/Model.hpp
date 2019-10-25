@@ -7,13 +7,7 @@
 
 namespace av_speech_in_noise {
 namespace coordinate_response_measure {
-enum class Color {
-    green,
-    red,
-    blue,
-    white,
-    notAColor
-};
+enum class Color { green, red, blue, white, notAColor };
 
 struct SubjectResponse {
     int number;
@@ -40,10 +34,7 @@ struct FixedLevelTrial {
 };
 }
 
-enum class Condition {
-    auditoryOnly,
-    audioVisual
-};
+enum class Condition { auditoryOnly, audioVisual };
 
 constexpr const char *conditionName(Condition c) {
     switch (c) {
@@ -62,14 +53,9 @@ struct TrackingSequence {
     int up;
 };
 
-constexpr bool operator ==(
-    const TrackingSequence &a,
-    const TrackingSequence &b
-) {
-    return
-        a.down == b.down &&
-        a.up == b.up &&
-        a.runCount == b.runCount &&
+constexpr bool operator==(
+    const TrackingSequence &a, const TrackingSequence &b) {
+    return a.down == b.down && a.up == b.up && a.runCount == b.runCount &&
         a.stepSize == b.stepSize;
 }
 
@@ -137,9 +123,9 @@ struct AdaptiveTrial {
 }
 
 class Model {
-public:
+  public:
     class EventListener {
-    public:
+      public:
         virtual ~EventListener() = default;
         virtual void trialComplete() = 0;
     };
@@ -147,9 +133,8 @@ public:
     virtual ~Model() = default;
     virtual void subscribe(EventListener *) = 0;
     class RequestFailure : public std::runtime_error {
-    public:
-        explicit RequestFailure(const std::string &s) :
-            std::runtime_error{s} {}
+      public:
+        explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
     };
     virtual void initializeTest(const AdaptiveTest &) = 0;
     virtual void initializeTest(const FixedLevelTest &) = 0;
@@ -157,8 +142,7 @@ public:
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
-        const coordinate_response_measure::SubjectResponse &
-    ) = 0;
+        const coordinate_response_measure::SubjectResponse &) = 0;
     virtual void submitResponse(const FreeResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;

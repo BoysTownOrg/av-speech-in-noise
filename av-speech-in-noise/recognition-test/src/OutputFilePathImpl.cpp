@@ -3,11 +3,8 @@
 
 namespace av_speech_in_noise {
 OutputFilePathImpl::OutputFilePathImpl(
-    TimeStamp *timeStamp,
-    FileSystemPath *systemPath
-) :
-    timeStamp{timeStamp},
-    systemPath{systemPath} {}
+    TimeStamp *timeStamp, FileSystemPath *systemPath)
+    : timeStamp{timeStamp}, systemPath{systemPath} {}
 
 std::string OutputFilePathImpl::generateFileName(const TestInformation &test) {
     std::stringstream stream;
@@ -17,7 +14,8 @@ std::string OutputFilePathImpl::generateFileName(const TestInformation &test) {
     return stream.str();
 }
 
-std::string OutputFilePathImpl::formatTestInformation(const TestInformation &test) {
+std::string OutputFilePathImpl::formatTestInformation(
+    const TestInformation &test) {
     std::stringstream stream;
     stream << "Subject_";
     stream << test.subjectId;
@@ -45,17 +43,13 @@ std::string OutputFilePathImpl::formatTimeStamp() {
     return stream.str();
 }
 
-std::string OutputFilePathImpl::homeDirectory() {
-    return homeDirectory_();
-}
+std::string OutputFilePathImpl::homeDirectory() { return homeDirectory_(); }
 
 std::string OutputFilePathImpl::homeDirectory_() {
     return systemPath->homeDirectory();
 }
 
-std::string OutputFilePathImpl::outputDirectory() {
-    return outputDirectory_();
-}
+std::string OutputFilePathImpl::outputDirectory() { return outputDirectory_(); }
 
 std::string OutputFilePathImpl::outputDirectory_() {
     return homeDirectory_() + "/" + relativePath_;

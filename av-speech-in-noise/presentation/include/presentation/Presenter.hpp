@@ -7,11 +7,11 @@
 
 namespace av_speech_in_noise {
 class View {
-public:
+  public:
     class Testing {
-    public:
+      public:
         class EventListener {
-        public:
+          public:
             virtual ~EventListener() = default;
             virtual void playTrial() = 0;
             virtual void submitPassedTrial() = 0;
@@ -33,9 +33,9 @@ public:
     };
 
     class Subject {
-    public:
+      public:
         class EventListener {
-        public:
+          public:
             virtual ~EventListener() = default;
             virtual void playTrial() = 0;
             virtual void submitResponse() = 0;
@@ -56,9 +56,9 @@ public:
     };
 
     class TestSetup {
-    public:
+      public:
         class EventListener {
-        public:
+          public:
             virtual ~EventListener() = default;
             virtual void confirmTestSetup() = 0;
             virtual void playCalibration() = 0;
@@ -94,9 +94,9 @@ public:
     };
 
     class Experimenter {
-    public:
+      public:
         class EventListener {
-        public:
+          public:
             virtual ~EventListener() = default;
             virtual void exitTest() = 0;
         };
@@ -120,7 +120,6 @@ public:
     virtual void showErrorMessage(std::string) = 0;
 };
 
-
 enum class Method {
     adaptiveOpenSet,
     adaptiveClosedSet,
@@ -142,10 +141,11 @@ constexpr const char *methodName(Method c) {
 }
 
 class Presenter : public Model::EventListener {
-public:
+  public:
     class Testing : public View::Testing::EventListener {
         View::Testing *view;
-    public:
+
+      public:
         explicit Testing(View::Testing *);
         void becomeChild(Presenter *parent);
         void show();
@@ -159,13 +159,13 @@ public:
         void submitResponse() override;
         void submitFailedTrial() override;
 
-    private:
+      private:
         void prepareNextEvaluatedTrial();
         Presenter *parent;
     };
 
     class TestSetup : public View::TestSetup::EventListener {
-    public:
+      public:
         explicit TestSetup(View::TestSetup *);
         void show();
         void hide();
@@ -188,7 +188,8 @@ public:
         void confirmTestSetup() override;
         void browseForCalibration() override;
         void browseForTrackSettingsFile() override;
-    private:
+
+      private:
         TestInformation testInformation();
         CommonTest commonTest();
         Condition readCondition();
@@ -203,7 +204,7 @@ public:
     };
 
     class Subject : public View::Subject::EventListener {
-    public:
+      public:
         explicit Subject(View::Subject *);
         void show();
         void hide();
@@ -212,7 +213,8 @@ public:
         coordinate_response_measure::SubjectResponse subjectResponse();
         void playTrial() override;
         void submitResponse() override;
-    private:
+
+      private:
         void hideResponseButtons();
         void showNextTrialButton();
         coordinate_response_measure::Color colorResponse();
@@ -223,7 +225,8 @@ public:
 
     class Experimenter : public View::Experimenter::EventListener {
         View::Experimenter *view;
-    public:
+
+      public:
         explicit Experimenter(View::Experimenter *);
         void becomeChild(Presenter *parent);
         void show();
@@ -233,84 +236,62 @@ public:
         void display(std::string);
         void exitTest() override;
 
-    private:
+      private:
         Presenter *parent;
     };
 
     class TrialCompletionHandler {
-    public:
+      public:
         virtual ~TrialCompletionHandler() = default;
         virtual void showResponseView() = 0;
     };
 
-    class AdaptiveClosedSetTestTrialCompletionHandler :
-        public TrialCompletionHandler
-    {
+    class AdaptiveClosedSetTestTrialCompletionHandler
+        : public TrialCompletionHandler {
         Subject *subject;
-    public:
-        explicit AdaptiveClosedSetTestTrialCompletionHandler(
-            Subject *subject
-        ) :
-            subject{subject} {}
 
-        void showResponseView() override {
-            subject->showResponseButtons();
-        }
+      public:
+        explicit AdaptiveClosedSetTestTrialCompletionHandler(Subject *subject)
+            : subject{subject} {}
+
+        void showResponseView() override { subject->showResponseButtons(); }
     };
 
-    class AdaptiveOpenSetTestTrialCompletionHandler :
-        public TrialCompletionHandler
-    {
+    class AdaptiveOpenSetTestTrialCompletionHandler
+        : public TrialCompletionHandler {
         Testing *testing;
-    public:
-        explicit AdaptiveOpenSetTestTrialCompletionHandler(
-            Testing *testing
-        ) :
-            testing{testing} {}
 
-        void showResponseView() override {
-            testing->showEvaluationButtons();
-        }
+      public:
+        explicit AdaptiveOpenSetTestTrialCompletionHandler(Testing *testing)
+            : testing{testing} {}
+
+        void showResponseView() override { testing->showEvaluationButtons(); }
     };
 
-    class FixedLevelOpenSetTestTrialCompletionHandler :
-        public TrialCompletionHandler
-    {
+    class FixedLevelOpenSetTestTrialCompletionHandler
+        : public TrialCompletionHandler {
         Testing *testing;
-    public:
-        explicit FixedLevelOpenSetTestTrialCompletionHandler(
-            Testing *testing
-        ) :
-            testing{testing} {}
 
-        void showResponseView() override {
-            testing->showResponseSubmission();
-        }
+      public:
+        explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing *testing)
+            : testing{testing} {}
+
+        void showResponseView() override { testing->showResponseSubmission(); }
     };
 
-    class FixedLevelClosedSetTestTrialCompletionHandler :
-        public TrialCompletionHandler
-    {
+    class FixedLevelClosedSetTestTrialCompletionHandler
+        : public TrialCompletionHandler {
         Subject *subject;
-    public:
-        explicit FixedLevelClosedSetTestTrialCompletionHandler(
-            Subject *subject
-        ) :
-            subject{subject} {}
 
-        void showResponseView() override {
-            subject->showResponseButtons();
-        }
+      public:
+        explicit FixedLevelClosedSetTestTrialCompletionHandler(Subject *subject)
+            : subject{subject} {}
+
+        void showResponseView() override { subject->showResponseButtons(); }
     };
 
     Presenter(
-        Model *,
-        View *,
-        TestSetup *,
-        Subject *,
-        Experimenter *,
-        Testing *
-    );
+        Model *, View *, TestSetup *, Subject *, Experimenter *, Testing *);
     void trialComplete() override;
     void run();
     void browseForTargetList();
@@ -330,11 +311,9 @@ public:
     static int floorSnr_dB;
     static int trackBumpLimit;
 
-private:
+  private:
     bool finiteTargets();
-    void proceedToNextTrialAfter(
-        void(Presenter::*f)()
-    );
+    void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
     void submitExperimenterResponse_();
@@ -357,9 +336,7 @@ private:
     void switchToTestView();
     void confirmTestSetup_();
     void applyIfBrowseNotCancelled(
-        std::string s,
-        void(TestSetup::*f)(std::string)
-    );
+        std::string s, void (TestSetup::*f)(std::string));
     TrialCompletionHandler *trialCompletionHandler();
 
     FixedLevelOpenSetTestTrialCompletionHandler

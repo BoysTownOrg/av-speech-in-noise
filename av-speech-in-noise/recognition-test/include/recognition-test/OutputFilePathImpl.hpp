@@ -6,7 +6,7 @@
 
 namespace av_speech_in_noise {
 class TimeStamp {
-public:
+  public:
     virtual ~TimeStamp() = default;
     virtual int year() = 0;
     virtual int month() = 0;
@@ -18,7 +18,7 @@ public:
 };
 
 class FileSystemPath {
-public:
+  public:
     virtual ~FileSystemPath() = default;
     virtual std::string homeDirectory() = 0;
     virtual void createDirectory(std::string) = 0;
@@ -28,13 +28,15 @@ class OutputFilePathImpl : public OutputFilePath {
     std::string relativePath_{};
     TimeStamp *timeStamp;
     FileSystemPath *systemPath;
-public:
+
+  public:
     OutputFilePathImpl(TimeStamp *, FileSystemPath *);
     std::string generateFileName(const TestInformation &) override;
     std::string homeDirectory() override;
     std::string outputDirectory() override;
     void setRelativeOutputDirectory(std::string);
-private:
+
+  private:
     std::string homeDirectory_();
     std::string outputDirectory_();
     std::string formatTestInformation(const TestInformation &);

@@ -10,9 +10,9 @@
 
 namespace stimulus_players {
 class VideoPlayer {
-public:
+  public:
     class EventListener {
-    public:
+      public:
         virtual ~EventListener() = default;
         virtual void playbackComplete() = 0;
         virtual void fillAudioBuffer(
@@ -33,16 +33,15 @@ public:
     virtual double durationSeconds() = 0;
 };
 
-class TargetPlayerImpl :
-    public av_speech_in_noise::TargetPlayer,
-    public VideoPlayer::EventListener
-{
+class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
+                         public VideoPlayer::EventListener {
     std::string filePath_{};
     std::atomic<double> audioScale{};
     VideoPlayer *player;
     AudioReader *reader;
     TargetPlayer::EventListener *listener_{};
-public:
+
+  public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
     void subscribe(TargetPlayer::EventListener *) override;
     void play() override;
@@ -56,10 +55,10 @@ public:
     void subscribeToPlaybackCompletion() override;
     double durationSeconds() override;
     void playbackComplete() override;
-    void fillAudioBuffer(
-        const std::vector<gsl::span<float> > &audio) override;
+    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     std::vector<std::string> audioDevices();
-private:
+
+  private:
     std::vector<std::vector<float>> readAudio_();
 };
 }

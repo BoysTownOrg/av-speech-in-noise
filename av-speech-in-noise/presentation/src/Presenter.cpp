@@ -4,9 +4,8 @@
 namespace av_speech_in_noise {
 namespace {
 class BadInput : public std::runtime_error {
-public:
-    explicit BadInput(const std::string &s) :
-        std::runtime_error{s} {}
+  public:
+    explicit BadInput(const std::string &s) : std::runtime_error{s} {}
 };
 }
 
@@ -15,26 +14,15 @@ int Presenter::ceilingSnr_dB = 20;
 int Presenter::floorSnr_dB = -40;
 int Presenter::trackBumpLimit = 10;
 
-Presenter::Presenter(
-    Model *model,
-    View *view,
-    TestSetup *testSetup,
-    Subject *subject,
-    Experimenter *experimenter,
-    Testing *testing
-) :
-    fixedLevelOpenSetTrialCompletionHandler{testing},
-    fixedLevelClosedSetTrialCompletionHandler{subject},
-    adaptiveOpenSetTrialCompletionHandler{testing},
-    adaptiveClosedSetTrialCompletionHandler{subject},
-    model{model},
-    view{view},
-    testSetup{testSetup},
-    subject{subject},
-    experimenter{experimenter},
-    testing{testing},
-    trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler}
-{
+Presenter::Presenter(Model *model, View *view, TestSetup *testSetup,
+    Subject *subject, Experimenter *experimenter, Testing *testing)
+    : fixedLevelOpenSetTrialCompletionHandler{testing},
+      fixedLevelClosedSetTrialCompletionHandler{subject},
+      adaptiveOpenSetTrialCompletionHandler{testing},
+      adaptiveClosedSetTrialCompletionHandler{subject}, model{model},
+      view{view}, testSetup{testSetup}, subject{subject},
+      experimenter{experimenter}, testing{testing},
+      trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler} {
     model->subscribe(this);
     testSetup->becomeChild(this);
     subject->becomeChild(this);
@@ -43,9 +31,7 @@ Presenter::Presenter(
     view->populateAudioDeviceMenu(model->audioDevices());
 }
 
-void Presenter::run() {
-    view->eventLoop();
-}
+void Presenter::run() { view->eventLoop(); }
 
 void Presenter::confirmTestSetup() {
     try {
@@ -75,28 +61,21 @@ bool Presenter::adaptiveTest() {
     return adaptiveClosedSet() || adaptiveOpenSet();
 }
 
-bool Presenter::adaptiveClosedSet() {
-    return testSetup->adaptiveClosedSet();
-}
+bool Presenter::adaptiveClosedSet() { return testSetup->adaptiveClosedSet(); }
 
-bool Presenter::adaptiveOpenSet() {
-    return testSetup->adaptiveOpenSet();
-}
+bool Presenter::adaptiveOpenSet() { return testSetup->adaptiveOpenSet(); }
 
-bool Presenter::finiteTargets() {
-    return testSetup->finiteTargets();
-}
+bool Presenter::finiteTargets() { return testSetup->finiteTargets(); }
 
 void Presenter::switchToTestView() {
     hideTestSetup();
     showTestView();
 }
 
-void Presenter::hideTestSetup() {
-    testSetup->hide();
-}
+void Presenter::hideTestSetup() { testSetup->hide(); }
 
-static void displayTrialNumber(Presenter::Experimenter *experimenter, Model *model) {
+static void displayTrialNumber(
+    Presenter::Experimenter *experimenter, Model *model) {
     experimenter->display("Trial " + std::to_string(model->trialNumber()));
 }
 
@@ -169,19 +148,15 @@ void Presenter::submitPassedTrial() {
     proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
 }
 
-void Presenter::submitPassedTrial_() {
-    model->submitCorrectResponse();
-}
+void Presenter::submitPassedTrial_() { model->submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
 }
 
-void Presenter::submitFailedTrial_() {
-    model->submitIncorrectResponse();
-}
+void Presenter::submitFailedTrial_() { model->submitIncorrectResponse(); }
 
-void Presenter::proceedToNextTrialAfter(void(Presenter::*f)()) {
+void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
     proceedToNextTrial();
 }
@@ -192,22 +167,16 @@ void Presenter::proceedToNextTrial() {
         switchToSetupView();
 }
 
-void Presenter::exitTest() {
-    switchToSetupView();
-}
+void Presenter::exitTest() { switchToSetupView(); }
 
-bool Presenter::testComplete() {
-    return model->testComplete();
-}
+bool Presenter::testComplete() { return model->testComplete(); }
 
 void Presenter::switchToSetupView() {
     showTestSetup();
     hideTestView();
 }
 
-void Presenter::showTestSetup() {
-    testSetup->show();
-}
+void Presenter::showTestSetup() { testSetup->show(); }
 
 void Presenter::hideTestView() {
     testing->hide();
@@ -231,63 +200,43 @@ void Presenter::playCalibration_() {
 
 void Presenter::browseForTargetList() {
     applyIfBrowseNotCancelled(
-        view->browseForDirectory(),
-        &TestSetup::setStimulusList
-    );
+        view->browseForDirectory(), &TestSetup::setStimulusList);
 }
 
 void Presenter::applyIfBrowseNotCancelled(
-    std::string s,
-    void(TestSetup::*f)(std::string)
-) {
+    std::string s, void (TestSetup::*f)(std::string)) {
     if (!view->browseCancelled())
         (testSetup->*f)(std::move(s));
 }
 
 void Presenter::browseForMasker() {
     applyIfBrowseNotCancelled(
-        view->browseForOpeningFile(),
-        &TestSetup::setMasker
-    );
+        view->browseForOpeningFile(), &TestSetup::setMasker);
 }
 
 void Presenter::browseForCalibration() {
     applyIfBrowseNotCancelled(
-        view->browseForOpeningFile(),
-        &TestSetup::setCalibrationFilePath
-    );
+        view->browseForOpeningFile(), &TestSetup::setCalibrationFilePath);
 }
 
 void Presenter::browseForTrackSettingsFile() {
     applyIfBrowseNotCancelled(
-        view->browseForOpeningFile(),
-        &TestSetup::setTrackSettingsFile
-    );
+        view->browseForOpeningFile(), &TestSetup::setTrackSettingsFile);
 }
 
-
-
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
-    view->populateConditionMenu({
-        conditionName(Condition::audioVisual),
-        conditionName(Condition::auditoryOnly)
-    });
-    view->populateMethodMenu({
-        methodName(Method::adaptiveClosedSet),
+    view->populateConditionMenu({conditionName(Condition::audioVisual),
+        conditionName(Condition::auditoryOnly)});
+    view->populateMethodMenu({methodName(Method::adaptiveClosedSet),
         methodName(Method::adaptiveOpenSet),
         methodName(Method::fixedLevelClosedSet),
-        methodName(Method::fixedLevelOpenSet)
-    });
+        methodName(Method::fixedLevelOpenSet)});
     view->subscribe(this);
 }
 
-void Presenter::TestSetup::show() {
-    view->show();
-}
+void Presenter::TestSetup::show() { view->show(); }
 
-void Presenter::TestSetup::hide() {
-    view->hide();
-}
+void Presenter::TestSetup::hide() { view->hide(); }
 
 FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
     FixedLevelTest p;
@@ -328,16 +277,13 @@ AdaptiveTest Presenter::TestSetup::adaptiveTest() {
 }
 
 Condition Presenter::TestSetup::readCondition() {
-    return auditoryOnly()
-        ? Condition::auditoryOnly
-        : Condition::audioVisual;
+    return auditoryOnly() ? Condition::auditoryOnly : Condition::audioVisual;
 }
 
 int Presenter::TestSetup::readInteger(std::string x, std::string identifier) {
     try {
         return std::stoi(x);
-    }
-    catch (const std::invalid_argument &) {
+    } catch (const std::invalid_argument &) {
         std::stringstream stream;
         stream << '\'' << std::move(x) << '\'';
         stream << " is not a valid ";
@@ -351,9 +297,7 @@ bool Presenter::TestSetup::auditoryOnly() {
     return view->condition() == conditionName(Condition::auditoryOnly);
 }
 
-void Presenter::TestSetup::playCalibration() {
-    parent->playCalibration();
-}
+void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
 
 Calibration Presenter::TestSetup::calibrationParameters() {
     Calibration p;
@@ -372,13 +316,9 @@ int Presenter::TestSetup::readMaskerLevel() {
     return readInteger(view->maskerLevel_dB_SPL(), "masker level");
 }
 
-void Presenter::TestSetup::confirmTestSetup() {
-    parent->confirmTestSetup();
-}
+void Presenter::TestSetup::confirmTestSetup() { parent->confirmTestSetup(); }
 
-void Presenter::TestSetup::becomeChild(Presenter *p) {
-    parent = p;
-}
+void Presenter::TestSetup::becomeChild(Presenter *p) { parent = p; }
 
 void Presenter::TestSetup::setMasker(std::string s) {
     view->setMasker(std::move(s));
@@ -392,9 +332,7 @@ void Presenter::TestSetup::browseForTargetList() {
     parent->browseForTargetList();
 }
 
-void Presenter::TestSetup::browseForMasker() {
-    parent->browseForMasker();
-}
+void Presenter::TestSetup::browseForMasker() { parent->browseForMasker(); }
 
 void Presenter::TestSetup::browseForCalibration() {
     parent->browseForCalibration();
@@ -436,9 +374,7 @@ bool Presenter::TestSetup::finiteTargets() {
     return view->usingTargetsWithoutReplacement();
 }
 
-Presenter::Subject::Subject(View::Subject *view) :
-    view{view}
-{
+Presenter::Subject::Subject(View::Subject *view) : view{view} {
     view->subscribe(this);
 }
 
@@ -462,25 +398,16 @@ void Presenter::Subject::submitResponse() {
     hideResponseButtons();
 }
 
-void Presenter::Subject::becomeChild(Presenter *p) {
-    parent = p;
-}
+void Presenter::Subject::becomeChild(Presenter *p) { parent = p; }
 
-void Presenter::Subject::showNextTrialButton() {
-    view->showNextTrialButton();
-}
+void Presenter::Subject::showNextTrialButton() { view->showNextTrialButton(); }
 
-void Presenter::Subject::hideResponseButtons() {
-    view->hideResponseButtons();
-}
+void Presenter::Subject::hideResponseButtons() { view->hideResponseButtons(); }
 
-void Presenter::Subject::showResponseButtons() {
-    view->showResponseButtons();
-}
+void Presenter::Subject::showResponseButtons() { view->showResponseButtons(); }
 
 coordinate_response_measure::SubjectResponse
-    Presenter::Subject::subjectResponse()
-{
+Presenter::Subject::subjectResponse() {
     coordinate_response_measure::SubjectResponse p;
     p.color = colorResponse();
     p.number = std::stoi(view->numberResponse());
@@ -498,10 +425,7 @@ coordinate_response_measure::Color Presenter::Subject::colorResponse() {
         return coordinate_response_measure::Color::red;
 }
 
-
-Presenter::Testing::Testing(View::Testing *view) :
-    view{view}
-{
+Presenter::Testing::Testing(View::Testing *view) : view{view} {
     view->subscribe(this);
 }
 
@@ -510,18 +434,14 @@ void Presenter::Testing::show() {
     showNextTrialButton();
 }
 
-void Presenter::Testing::showNextTrialButton() {
-    view->showNextTrialButton();
-}
+void Presenter::Testing::showNextTrialButton() { view->showNextTrialButton(); }
 
 void Presenter::Testing::playTrial() {
     parent->playTrial();
     view->hideNextTrialButton();
 }
 
-void Presenter::Testing::becomeChild(Presenter *p) {
-    parent = p;
-}
+void Presenter::Testing::becomeChild(Presenter *p) { parent = p; }
 
 void Presenter::Testing::submitPassedTrial() {
     parent->submitPassedTrial();
@@ -562,16 +482,11 @@ FreeResponse Presenter::Testing::openSetResponse() {
     return {view->response()};
 }
 
-
-Presenter::Experimenter::Experimenter(View::Experimenter *view) :
-    view{view}
-{
+Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
     view->subscribe(this);
 }
 
-void Presenter::Experimenter::show() {
-    view->show();
-}
+void Presenter::Experimenter::show() { view->show(); }
 
 void Presenter::Experimenter::hideExitTestButton() {
     view->hideExitTestButton();
@@ -585,15 +500,9 @@ void Presenter::Experimenter::display(std::string s) {
     view->display(std::move(s));
 }
 
-void Presenter::Experimenter::becomeChild(Presenter *p) {
-    parent = p;
-}
+void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
 
-void Presenter::Experimenter::exitTest() {
-    parent->exitTest();
-}
+void Presenter::Experimenter::exitTest() { parent->exitTest(); }
 
-void Presenter::Experimenter::hide() {
-    view->hide();
-}
+void Presenter::Experimenter::hide() { view->hide(); }
 }

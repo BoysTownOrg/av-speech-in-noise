@@ -11,9 +11,9 @@
 
 namespace stimulus_players {
 class AudioPlayer {
-public:
+  public:
     class EventListener {
-    public:
+      public:
         virtual ~EventListener() = default;
         virtual void fillAudioBuffer(
             const std::vector<gsl::span<float>> &audio) = 0;
@@ -35,9 +35,9 @@ public:
 };
 
 class Timer {
-public:
+  public:
     class EventListener {
-    public:
+      public:
         virtual ~EventListener() = default;
         virtual void callback() = 0;
     };
@@ -46,17 +46,11 @@ public:
     virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
-class MaskerPlayerImpl :
-    public av_speech_in_noise::MaskerPlayer,
-    public AudioPlayer::EventListener,
-    public Timer::EventListener
-{
-public:
-    MaskerPlayerImpl(
-        AudioPlayer *,
-        AudioReader *,
-        Timer *
-    );
+class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
+                         public AudioPlayer::EventListener,
+                         public Timer::EventListener {
+  public:
+    MaskerPlayerImpl(AudioPlayer *, AudioReader *, Timer *);
     void subscribe(MaskerPlayer::EventListener *) override;
     void fadeIn() override;
     void fadeOut() override;
@@ -64,8 +58,7 @@ public:
     bool playing() override;
     void setAudioDevice(std::string) override;
     void setLevel_dB(double) override;
-    void fillAudioBuffer(
-        const std::vector<gsl::span<float>> &audio) override;
+    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     void setFadeInOutSeconds(double);
     std::vector<std::string> outputAudioDeviceDescriptions() override;
     double rms() override;
@@ -73,17 +66,19 @@ public:
     void seekSeconds(double) override;
     double fadeTimeSeconds() override;
     void callback() override;
-private:
+
+  private:
     std::vector<std::vector<float>> readAudio_();
     std::vector<std::string> audioDeviceDescriptions_();
     int findDeviceIndex(const std::string &device);
 
     class AudioThread {
-    public:
+      public:
         explicit AudioThread(AudioPlayer *);
         void setSharedAtomics(MaskerPlayerImpl *);
         void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
-    private:
+
+      private:
         void updateWindowLength();
         void prepareToFadeIn();
         void checkForFadeIn();
@@ -108,14 +103,15 @@ private:
     };
 
     class MainThread {
-    public:
+      public:
         MainThread(AudioPlayer *, Timer *);
         void setSharedAtomics(MaskerPlayerImpl *);
         void callback();
         void subscribe(MaskerPlayer::EventListener *);
         void fadeIn();
         void fadeOut();
-    private:
+
+      private:
         bool fading();
         void scheduleCallbackAfterSeconds(double);
 

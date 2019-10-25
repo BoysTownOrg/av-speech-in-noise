@@ -2,18 +2,13 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-AdaptiveMethod::AdaptiveMethod(
-    TargetListReader *targetListSetReader,
-    ITrackSettingsReader *trackSettingsReader,
-    TrackFactory *snrTrackFactory,
-    ResponseEvaluator *evaluator,
-    Randomizer *randomizer
-) :
-    targetListSetReader{targetListSetReader},
-    trackSettingsReader{trackSettingsReader},
-    snrTrackFactory{snrTrackFactory},
-    evaluator{evaluator},
-    randomizer{randomizer} {}
+AdaptiveMethod::AdaptiveMethod(TargetListReader *targetListSetReader,
+    ITrackSettingsReader *trackSettingsReader, TrackFactory *snrTrackFactory,
+    ResponseEvaluator *evaluator, Randomizer *randomizer)
+    : targetListSetReader{targetListSetReader},
+      trackSettingsReader{trackSettingsReader},
+      snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
+                                                                  randomizer} {}
 
 void AdaptiveMethod::initialize(const AdaptiveTest &p) {
     test = &p;
@@ -38,13 +33,9 @@ void AdaptiveMethod::makeSnrTracks() {
         makeTrackWithList(list.get());
 }
 
-void AdaptiveMethod::makeTrackWithList(
-    TargetList *list
-) {
-    targetListsWithTracks.push_back({
-        list,
-        snrTrackFactory->make(trackSettings)
-    });
+void AdaptiveMethod::makeTrackWithList(TargetList *list) {
+    targetListsWithTracks.push_back(
+        {list, snrTrackFactory->make(trackSettings)});
 }
 
 void AdaptiveMethod::selectNextList() {
@@ -53,8 +44,7 @@ void AdaptiveMethod::selectNextList() {
     if (remainingLists == 0)
         return;
     auto targetListsWithTrack_ = targetListsWithTracks.at(
-        randomizer->randomIntBetween(0, remainingLists - 1)
-    );
+        randomizer->randomIntBetween(0, remainingLists - 1));
     currentSnrTrack = targetListsWithTrack_.track.get();
     currentTargetList = targetListsWithTrack_.list;
 }
@@ -62,15 +52,9 @@ void AdaptiveMethod::selectNextList() {
 void AdaptiveMethod::removeCompleteTracks() {
     auto end = targetListsWithTracks.end();
     targetListsWithTracks.erase(
-        std::remove_if(
-            targetListsWithTracks.begin(),
-            end,
-            [&](const TargetListWithTrack &t) {
-                return complete(t);
-            }
-        ),
-        end
-    );
+        std::remove_if(targetListsWithTracks.begin(), end,
+            [&](const TargetListWithTrack &t) { return complete(t); }),
+        end);
 }
 
 bool AdaptiveMethod::complete(const TargetListWithTrack &t) {
@@ -78,22 +62,15 @@ bool AdaptiveMethod::complete(const TargetListWithTrack &t) {
 }
 
 bool AdaptiveMethod::complete() {
-    return std::all_of(
-        targetListsWithTracks.begin(),
+    return std::all_of(targetListsWithTracks.begin(),
         targetListsWithTracks.end(),
-        [&](const TargetListWithTrack &t) {
-            return complete(t);
-        }
-    );
+        [&](const TargetListWithTrack &t) { return complete(t); });
 }
 
-std::string AdaptiveMethod::next() {
-    return currentTargetList->next();
-}
+std::string AdaptiveMethod::next() { return currentTargetList->next(); }
 
 void AdaptiveMethod::submitResponse(
-    const coordinate_response_measure::SubjectResponse &response
-) {
+    const coordinate_response_measure::SubjectResponse &response) {
     auto lastSnr_dB_ = snr_dB();
     auto current_ = current();
     auto correct_ = correct(current_, response);
@@ -112,28 +89,18 @@ void AdaptiveMethod::submitResponse(
     selectNextList();
 }
 
-int AdaptiveMethod::snr_dB() {
-    return currentSnrTrack->x();
-}
+int AdaptiveMethod::snr_dB() { return currentSnrTrack->x(); }
 
-std::string AdaptiveMethod::current() {
-    return currentTargetList->current();
-}
+std::string AdaptiveMethod::current() { return currentTargetList->current(); }
 
-bool AdaptiveMethod::correct(
-    const std::string &target,
-    const coordinate_response_measure::SubjectResponse &response
-) {
+bool AdaptiveMethod::correct(const std::string &target,
+    const coordinate_response_measure::SubjectResponse &response) {
     return evaluator->correct(target, response);
 }
 
-void AdaptiveMethod::correct() {
-    currentSnrTrack->down();
-}
+void AdaptiveMethod::correct() { currentSnrTrack->down(); }
 
-void AdaptiveMethod::incorrect() {
-    currentSnrTrack->up();
-}
+void AdaptiveMethod::incorrect() { currentSnrTrack->up(); }
 
 void AdaptiveMethod::writeTestingParameters(OutputFile *file) {
     file->writeTest(*test);
@@ -181,7 +148,5 @@ void AdaptiveMethod::submitCorrectResponse() {
     selectNextList();
 }
 
-void AdaptiveMethod::submitResponse(const FreeResponse &) {
-    selectNextList();
-}
+void AdaptiveMethod::submitResponse(const FreeResponse &) { selectNextList(); }
 }

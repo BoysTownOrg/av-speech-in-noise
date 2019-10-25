@@ -1,34 +1,26 @@
 #include "OutputFileImpl.hpp"
 #include <sstream>
 
-namespace av_speech_in_noise { namespace {
+namespace av_speech_in_noise {
+namespace {
 class FormattedStream {
     std::stringstream stream;
-public:
-    template<typename T>
-    void writeLabeledLine(std::string label, T thing) {
+
+  public:
+    template <typename T> void writeLabeledLine(std::string label, T thing) {
         stream << std::move(label);
         stream << ": ";
         stream << thing;
         stream << '\n';
     }
 
-    template<typename T>
-    void insert(T item) {
-        stream << item;
-    }
+    template <typename T> void insert(T item) { stream << item; }
 
-    void insertCommaAndSpace() {
-        stream << ", ";
-    }
+    void insertCommaAndSpace() { stream << ", "; }
 
-    void insertNewLine() {
-        stream << '\n';
-    }
+    void insertNewLine() { stream << '\n'; }
 
-    auto str() const {
-        return stream.str();
-    }
+    auto str() const { return stream.str(); }
 
     void writeSubjectId(const TestInformation &p) {
         writeLabeledLine("subject", p.subjectId);
@@ -60,37 +52,25 @@ public:
 };
 }
 
-OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path) :
-    writer{writer},
-    path{path} {}
+OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path)
+    : writer{writer}, path{path} {}
 
-void OutputFileImpl::write(std::string s) {
-    writer->write(std::move(s));
-}
+void OutputFileImpl::write(std::string s) { writer->write(std::move(s)); }
 
-constexpr const char * correct() {
-    return "correct";
-}
+constexpr const char *correct() { return "correct"; }
 
-constexpr const char * incorrect() {
-    return "incorrect";
-}
+constexpr const char *incorrect() { return "incorrect"; }
 
-static std::string evaluation(
-    const open_set::AdaptiveTrial &trial
-) {
+static std::string evaluation(const open_set::AdaptiveTrial &trial) {
     return trial.correct ? correct() : incorrect();
 }
 
-static std::string evaluation(
-    const coordinate_response_measure::Trial &trial
-) {
+static std::string evaluation(const coordinate_response_measure::Trial &trial) {
     return trial.correct ? correct() : incorrect();
 }
 
 static std::string formatTrial(
-    const coordinate_response_measure::FixedLevelTrial &trial
-) {
+    const coordinate_response_measure::FixedLevelTrial &trial) {
     FormattedStream stream;
     stream.insert(trial.trial.correctNumber);
     stream.insertCommaAndSpace();
@@ -108,8 +88,7 @@ static std::string formatTrial(
 }
 
 static std::string formatTrial(
-    const coordinate_response_measure::AdaptiveTrial &trial
-) {
+    const coordinate_response_measure::AdaptiveTrial &trial) {
     FormattedStream stream;
     stream.insert(trial.SNR_dB);
     stream.insertCommaAndSpace();
@@ -209,8 +188,7 @@ static std::string formatOpenSetAdaptiveTrialHeading() {
 }
 
 void OutputFileImpl::writeTrial(
-    const coordinate_response_measure::AdaptiveTrial &trial
-) {
+    const coordinate_response_measure::AdaptiveTrial &trial) {
     if (!justWroteAdaptiveCoordinateResponseTrial)
         write(formatAdaptiveCoordinateResponseTrialHeading());
     write(formatTrial(trial));
@@ -218,8 +196,7 @@ void OutputFileImpl::writeTrial(
 }
 
 void OutputFileImpl::writeTrial(
-    const coordinate_response_measure::FixedLevelTrial &trial
-) {
+    const coordinate_response_measure::FixedLevelTrial &trial) {
     if (!justWroteFixedLevelCoordinateResponseTrial)
         write(formatFixedLevelCoordinateResponseTrialHeading());
     write(formatTrial(trial));
@@ -291,16 +268,11 @@ void OutputFileImpl::openNewFile(const TestInformation &test) {
 }
 
 std::string OutputFileImpl::generateNewFilePath(const TestInformation &test) {
-    return
-        path->outputDirectory() + "/" +
-        path->generateFileName(test) + ".txt";
+    return path->outputDirectory() + "/" + path->generateFileName(test) +
+        ".txt";
 }
 
-void OutputFileImpl::close() {
-    writer->close();
-}
+void OutputFileImpl::close() { writer->close(); }
 
-void OutputFileImpl::save() {
-    writer->save();
-}
+void OutputFileImpl::save() { writer->save(); }
 }

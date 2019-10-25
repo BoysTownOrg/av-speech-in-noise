@@ -20,26 +20,26 @@ enum class HeadingItem {
 
 constexpr const char *headingItemName(HeadingItem i) {
     switch (i) {
-        case HeadingItem::snr_dB:
-            return "SNR (dB)";
-        case HeadingItem::correctNumber:
-            return "correct number";
-        case HeadingItem::subjectNumber:
-            return "subject number";
-        case HeadingItem::correctColor:
-            return "correct color";
-        case HeadingItem::subjectColor:
-            return "subject color";
-        case HeadingItem::evaluation:
-            return "evaluation";
-        case HeadingItem::stimulus:
-            return "stimulus";
-        case HeadingItem::target:
-            return "target";
-        case HeadingItem::reversals:
-            return "reversals";
-        case HeadingItem::freeResponse:
-            return "response";
+    case HeadingItem::snr_dB:
+        return "SNR (dB)";
+    case HeadingItem::correctNumber:
+        return "correct number";
+    case HeadingItem::subjectNumber:
+        return "subject number";
+    case HeadingItem::correctColor:
+        return "correct color";
+    case HeadingItem::subjectColor:
+        return "subject color";
+    case HeadingItem::evaluation:
+        return "evaluation";
+    case HeadingItem::stimulus:
+        return "stimulus";
+    case HeadingItem::target:
+        return "target";
+    case HeadingItem::reversals:
+        return "reversals";
+    case HeadingItem::freeResponse:
+        return "response";
     }
 }
 
@@ -60,7 +60,7 @@ constexpr const char *colorName(coordinate_response_measure::Color c) {
 }
 
 class Writer {
-public:
+  public:
     virtual ~Writer() = default;
     virtual void write(std::string) = 0;
     virtual void open(std::string) = 0;
@@ -70,7 +70,7 @@ public:
 };
 
 class OutputFilePath {
-public:
+  public:
     virtual ~OutputFilePath() = default;
     virtual std::string generateFileName(const TestInformation &) = 0;
     virtual std::string homeDirectory() = 0;
@@ -84,7 +84,8 @@ class OutputFileImpl : public OutputFile {
     bool justWroteAdaptiveCoordinateResponseTrial{};
     bool justWroteFreeResponseTrial{};
     bool justWroteOpenSetAdaptiveTrial{};
-public:
+
+  public:
     OutputFileImpl(Writer *, OutputFilePath *);
     void openNewFile(const TestInformation &) override;
     void close() override;
@@ -92,21 +93,18 @@ public:
     void writeTest(const AdaptiveTest &) override;
     void writeTest(const FixedLevelTest &) override;
     void writeTrial(
-        const coordinate_response_measure::AdaptiveTrial &
-    ) override;
+        const coordinate_response_measure::AdaptiveTrial &) override;
     void writeTrial(
-        const coordinate_response_measure::FixedLevelTrial &
-    ) override;
+        const coordinate_response_measure::FixedLevelTrial &) override;
     void writeTrial(const FreeResponseTrial &) override;
     void writeTrial(const open_set::AdaptiveTrial &) override;
 
-private:
+  private:
     void write(std::string);
     std::string formatTest(const AdaptiveTest &);
     std::string formatTest(const FixedLevelTest &);
     std::string generateNewFilePath(const TestInformation &);
 };
 }
-
 
 #endif

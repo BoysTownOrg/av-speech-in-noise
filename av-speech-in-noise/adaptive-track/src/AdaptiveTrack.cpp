@@ -1,13 +1,9 @@
 #include "AdaptiveTrack.hpp"
 
 namespace adaptive_track {
-AdaptiveTrack::AdaptiveTrack(const Settings &p) :
-    x_{p.startingX},
-    ceiling_{p.ceiling},
-    floor_{p.floor},
-    bumpLimit_{p.bumpLimit},
-    bumpCount_{0}
-{
+AdaptiveTrack::AdaptiveTrack(const Settings &p)
+    : x_{p.startingX}, ceiling_{p.ceiling}, floor_{p.floor},
+      bumpLimit_{p.bumpLimit}, bumpCount_{0} {
     for (const auto &sequence : *p.rule)
         if (sequence.runCount) {
             stepSizes.push_back(sequence.stepSize);
@@ -23,17 +19,12 @@ void AdaptiveTrack::up() {
 }
 
 void AdaptiveTrack::updateBumpCount(int bumpBoundary) {
-    bumpCount_ = x_ == bumpBoundary
-        ? bumpCount_ + 1
-        : 0;
+    bumpCount_ = x_ == bumpBoundary ? bumpCount_ + 1 : 0;
 }
 
-void AdaptiveTrack::update(
-    Direction direction,
-    int bumpBoundary,
+void AdaptiveTrack::update(Direction direction, int bumpBoundary,
     const std::vector<int> &thresholds,
-    void(AdaptiveTrack::*whenThresholdMet)()
-) {
+    void (AdaptiveTrack::*whenThresholdMet)()) {
     if (complete_())
         return;
 
@@ -44,9 +35,7 @@ void AdaptiveTrack::update(
 }
 
 void AdaptiveTrack::callIfConsecutiveCountMet(
-    void(AdaptiveTrack::*f)(),
-    int threshold
-) {
+    void (AdaptiveTrack::*f)(), int threshold) {
     if (consecutiveCountMet(threshold))
         (this->*f)();
 }
@@ -56,9 +45,8 @@ bool AdaptiveTrack::consecutiveCountMet(int threshold) {
 }
 
 void AdaptiveTrack::updateConsecutiveCount(Direction direction) {
-    sameDirectionConsecutiveCount = previousDirection == direction
-        ? sameDirectionConsecutiveCount + 1
-        : 1;
+    sameDirectionConsecutiveCount =
+        previousDirection == direction ? sameDirectionConsecutiveCount + 1 : 1;
 }
 
 void AdaptiveTrack::stepUp() {
@@ -73,9 +61,7 @@ void AdaptiveTrack::updateReversals(Step step) {
         reversal();
 }
 
-int AdaptiveTrack::stepSize() {
-    return stepSizes.at(sequenceIndex);
-}
+int AdaptiveTrack::stepSize() { return stepSizes.at(sequenceIndex); }
 
 void AdaptiveTrack::reversal() {
     ++reversals_;
@@ -96,19 +82,13 @@ void AdaptiveTrack::stepDown() {
     previousStep = Step::fall;
 }
 
-int AdaptiveTrack::x() {
-    return x_;
-}
+int AdaptiveTrack::x() { return x_; }
 
-bool AdaptiveTrack::complete() {
-    return complete_();
-}
+bool AdaptiveTrack::complete() { return complete_(); }
 
 bool AdaptiveTrack::complete_() const {
     return sequenceIndex == runCounts.size() || bumpCount_ == bumpLimit_;
 }
 
-int AdaptiveTrack::reversals() {
-    return reversals_;
-}
+int AdaptiveTrack::reversals() { return reversals_; }
 }
