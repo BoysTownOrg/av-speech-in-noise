@@ -98,7 +98,7 @@ void Presenter::hideTestSetup() {
 
 void Presenter::showTestView() {
     experimenter->show();
-    experimenter->display("Trial 1");
+    experimenter->display("Trial " + std::to_string(model->trialNumber()));
     if (closedSet())
         subject->show();
     else

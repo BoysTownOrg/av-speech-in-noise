@@ -144,6 +144,7 @@ public:
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     void submitResponse(const FreeResponse &) override;
+    int trialNumber() override { return 0; }
 };
 }
 

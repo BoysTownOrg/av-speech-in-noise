@@ -36,6 +36,10 @@ class ModelStub : public Model {
     bool incorrectResponseSubmitted_{};
     bool initializedWithFiniteTargets_{};
 public:
+    int trialNumber() override {
+        return trialNumber_;
+    }
+
     void setTrialNumber(int n) {
         trialNumber_ = n;
     }
@@ -1936,6 +1940,10 @@ protected:
 class RequestFailingModel : public Model {
     std::string errorMessage{};
 public:
+    int trialNumber() override {
+        return 0;
+    }
+
     void setErrorMessage(std::string s) {
         errorMessage = std::move(s);
     }
