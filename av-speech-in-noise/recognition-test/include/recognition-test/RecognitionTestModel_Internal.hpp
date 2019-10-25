@@ -91,6 +91,7 @@ public:
     ) override;
     bool testComplete() override;
     std::vector<std::string> audioDevices() override;
+    int trialNumber() override { return 0; }
     void subscribe(Model::EventListener *) override;
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
