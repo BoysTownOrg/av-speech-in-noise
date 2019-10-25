@@ -5,12 +5,12 @@
 
 namespace av_speech_in_noise::tests {
 class ModelEventListenerStub : public Model::EventListener {
-  bool notified_{};
+    bool notified_{};
 
-public:
-  void trialComplete() override { notified_ = true; }
+  public:
+    void trialComplete() override { notified_ = true; }
 
-  auto notified() const { return notified_; }
+    auto notified() const { return notified_; }
 };
 } // namespace av_speech_in_noise::tests
 

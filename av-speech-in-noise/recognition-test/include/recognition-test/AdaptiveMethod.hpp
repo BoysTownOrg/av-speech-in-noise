@@ -77,8 +77,7 @@ class AdaptiveMethod : public IAdaptiveMethod {
     void writeLastCorrectResponse(OutputFile *) override;
     void writeLastIncorrectResponse(OutputFile *) override;
     void writeTestingParameters(OutputFile *) override;
-    void submitResponse(
-        const coordinate_response_measure::Response &) override;
+    void submitResponse(const coordinate_response_measure::Response &) override;
     void submitResponse(const FreeResponse &) override;
 
   private:
@@ -89,8 +88,8 @@ class AdaptiveMethod : public IAdaptiveMethod {
     void selectNextList();
     void removeCompleteTracks();
     bool complete(const TargetListWithTrack &);
-    bool correct(const std::string &,
-        const coordinate_response_measure::Response &);
+    bool correct(
+        const std::string &, const coordinate_response_measure::Response &);
     void incorrect();
     void correct();
 };

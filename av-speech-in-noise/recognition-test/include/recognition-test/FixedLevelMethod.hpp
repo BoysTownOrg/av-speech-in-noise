@@ -46,8 +46,7 @@ class FixedLevelMethod : public IFixedLevelMethod {
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeTestingParameters(OutputFile *) override;
-    void submitResponse(
-        const coordinate_response_measure::Response &) override;
+    void submitResponse(const coordinate_response_measure::Response &) override;
     void submitResponse(const FreeResponse &) override;
 };
 }

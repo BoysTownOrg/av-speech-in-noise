@@ -78,8 +78,7 @@ class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
     void initialize(
         TestMethod *, const CommonTest &, const TestInformation &) override;
     void playTrial(const AudioSettings &) override;
-    void submitResponse(
-        const coordinate_response_measure::Response &) override;
+    void submitResponse(const coordinate_response_measure::Response &) override;
     bool testComplete() override;
     std::vector<std::string> audioDevices() override;
     int trialNumber() override;

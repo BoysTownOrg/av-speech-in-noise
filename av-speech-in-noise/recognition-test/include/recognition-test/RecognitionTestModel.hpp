@@ -124,8 +124,7 @@ class RecognitionTestModel : public Model {
     void initializeTest(const FixedLevelTest &) override;
     void initializeTestWithFiniteTargets(const FixedLevelTest &) override;
     void playTrial(const AudioSettings &) override;
-    void submitResponse(
-        const coordinate_response_measure::Response &) override;
+    void submitResponse(const coordinate_response_measure::Response &) override;
     bool testComplete() override;
     std::vector<std::string> audioDevices() override;
     void subscribe(Model::EventListener *) override;

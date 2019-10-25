@@ -406,8 +406,7 @@ void Presenter::Subject::hideResponseButtons() { view->hideResponseButtons(); }
 
 void Presenter::Subject::showResponseButtons() { view->showResponseButtons(); }
 
-coordinate_response_measure::Response
-Presenter::Subject::subjectResponse() {
+coordinate_response_measure::Response Presenter::Subject::subjectResponse() {
     coordinate_response_measure::Response p;
     p.color = colorResponse();
     p.number = std::stoi(view->numberResponse());

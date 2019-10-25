@@ -6,633 +6,643 @@
 
 namespace {
 class AudioPlayerStub : public stimulus_players::AudioPlayer {
-  std::vector<std::vector<float>> audioRead_;
-  std::vector<std::string> audioDeviceDescriptions_{10};
-  std::string filePath_;
-  std::string deviceDescription_;
-  std::string audioFilePath_;
-  std::map<int, bool> outputDevices;
-  double sampleRateHz_{};
-  double durationSeconds_{};
-  double secondsSeeked_{};
-  int deviceIndex_{};
-  int deviceDescriptionDeviceIndex_{};
-  EventListener *listener_{};
-  bool playing_{};
-  bool played_{};
-  bool stopped_{};
+    std::vector<std::vector<float>> audioRead_;
+    std::vector<std::string> audioDeviceDescriptions_{10};
+    std::string filePath_;
+    std::string deviceDescription_;
+    std::string audioFilePath_;
+    std::map<int, bool> outputDevices;
+    double sampleRateHz_{};
+    double durationSeconds_{};
+    double secondsSeeked_{};
+    int deviceIndex_{};
+    int deviceDescriptionDeviceIndex_{};
+    EventListener *listener_{};
+    bool playing_{};
+    bool played_{};
+    bool stopped_{};
 
-public:
-  void seekSeconds(double x) override { secondsSeeked_ = x; }
+  public:
+    void seekSeconds(double x) override { secondsSeeked_ = x; }
 
-  double durationSeconds() override { return durationSeconds_; }
+    double durationSeconds() override { return durationSeconds_; }
 
-  bool outputDevice(int index) override { return outputDevices[index]; }
+    bool outputDevice(int index) override { return outputDevices[index]; }
 
-  void setAudioDeviceDescriptions(std::vector<std::string> v) {
-    audioDeviceDescriptions_ = std::move(v);
-  }
+    void setAudioDeviceDescriptions(std::vector<std::string> v) {
+        audioDeviceDescriptions_ = std::move(v);
+    }
 
-  void setAsOutputDevice(int index) { outputDevices[index] = true; }
+    void setAsOutputDevice(int index) { outputDevices[index] = true; }
 
-  void stop() override { stopped_ = true; }
+    void stop() override { stopped_ = true; }
 
-  auto stopped() const { return stopped_; }
+    auto stopped() const { return stopped_; }
 
-  double sampleRateHz() override { return sampleRateHz_; }
+    double sampleRateHz() override { return sampleRateHz_; }
 
-  void setSampleRateHz(double x) { sampleRateHz_ = x; }
+    void setSampleRateHz(double x) { sampleRateHz_ = x; }
 
-  void setPlaying() { playing_ = true; }
+    void setPlaying() { playing_ = true; }
 
-  void setDurationSeconds(double x) { durationSeconds_ = x; }
+    void setDurationSeconds(double x) { durationSeconds_ = x; }
 
-  bool playing() override { return playing_; }
+    bool playing() override { return playing_; }
 
-  void loadFile(std::string s) override { filePath_ = std::move(s); }
+    void loadFile(std::string s) override { filePath_ = std::move(s); }
 
-  void setDevice(int index) override { deviceIndex_ = index; }
+    void setDevice(int index) override { deviceIndex_ = index; }
 
-  int deviceCount() override {
-    return gsl::narrow<int>(audioDeviceDescriptions_.size());
-  }
+    int deviceCount() override {
+        return gsl::narrow<int>(audioDeviceDescriptions_.size());
+    }
 
-  std::string deviceDescription(int index) override {
-    deviceDescriptionDeviceIndex_ = index;
-    return audioDeviceDescriptions_.at(index);
-  }
+    std::string deviceDescription(int index) override {
+        deviceDescriptionDeviceIndex_ = index;
+        return audioDeviceDescriptions_.at(index);
+    }
 
-  void play() override { played_ = true; }
+    void play() override { played_ = true; }
 
-  void subscribe(EventListener *listener) override { listener_ = listener; }
+    void subscribe(EventListener *listener) override { listener_ = listener; }
 
-  auto filePath() const { return filePath_; }
+    auto filePath() const { return filePath_; }
 
-  auto secondsSeeked() const { return secondsSeeked_; }
+    auto secondsSeeked() const { return secondsSeeked_; }
 
-  auto deviceIndex() const { return deviceIndex_; }
+    auto deviceIndex() const { return deviceIndex_; }
 
-  auto played() const { return played_; }
+    auto played() const { return played_; }
 
-  void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
-    listener_->fillAudioBuffer(audio);
-  }
+    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
+        listener_->fillAudioBuffer(audio);
+    }
 };
 
 class MaskerPlayerListenerStub
     : public av_speech_in_noise::MaskerPlayer::EventListener {
-  int fadeInCompletions_{};
-  int fadeOutCompletions_{};
-  bool fadeInCompleted_{};
-  bool fadeOutCompleted_{};
+    int fadeInCompletions_{};
+    int fadeOutCompletions_{};
+    bool fadeInCompleted_{};
+    bool fadeOutCompleted_{};
 
-public:
-  void fadeInComplete() override {
-    fadeInCompleted_ = true;
-    ++fadeInCompletions_;
-  }
+  public:
+    void fadeInComplete() override {
+        fadeInCompleted_ = true;
+        ++fadeInCompletions_;
+    }
 
-  void fadeOutComplete() override {
-    ++fadeOutCompletions_;
-    fadeOutCompleted_ = true;
-  }
+    void fadeOutComplete() override {
+        ++fadeOutCompletions_;
+        fadeOutCompleted_ = true;
+    }
 
-  auto fadeInCompleted() const { return fadeInCompleted_; }
+    auto fadeInCompleted() const { return fadeInCompleted_; }
 
-  auto fadeOutCompleted() const { return fadeOutCompleted_; }
+    auto fadeOutCompleted() const { return fadeOutCompleted_; }
 
-  auto fadeInCompletions() const { return fadeInCompletions_; }
+    auto fadeInCompletions() const { return fadeInCompletions_; }
 
-  auto fadeOutCompletions() const { return fadeOutCompletions_; }
+    auto fadeOutCompletions() const { return fadeOutCompletions_; }
 };
 
 template <typename T> class VectorFacade {
-  std::vector<T> v;
+    std::vector<T> v;
 
-public:
-  explicit VectorFacade(std::vector<T> v) : v{std::move(v)} {}
+  public:
+    explicit VectorFacade(std::vector<T> v) : v{std::move(v)} {}
 
-  std::vector<T> elementWiseProduct(std::vector<T> y) {
-    std::vector<T> product;
-    std::transform(v.begin(), v.end(), y.begin(), std::back_inserter(product),
-                   std::multiplies<T>());
-    return product;
-  }
+    std::vector<T> elementWiseProduct(std::vector<T> y) {
+        std::vector<T> product;
+        std::transform(v.begin(), v.end(), y.begin(),
+            std::back_inserter(product), std::multiplies<T>());
+        return product;
+    }
 
-  VectorFacade<T> subvector(int b, int e) {
-    return VectorFacade<T>{{v.begin() + b, v.begin() + e}};
-  }
+    VectorFacade<T> subvector(int b, int e) {
+        return VectorFacade<T>{{v.begin() + b, v.begin() + e}};
+    }
 };
 
 class TimerStub : public stimulus_players::Timer {
-  EventListener *listener_{};
-  bool callbackScheduled_{};
+    EventListener *listener_{};
+    bool callbackScheduled_{};
 
-public:
-  void scheduleCallbackAfterSeconds(double) override {
-    callbackScheduled_ = true;
-  }
+  public:
+    void scheduleCallbackAfterSeconds(double) override {
+        callbackScheduled_ = true;
+    }
 
-  auto callbackScheduled() const { return callbackScheduled_; }
+    auto callbackScheduled() const { return callbackScheduled_; }
 
-  void clearCallbackCount() { callbackScheduled_ = false; }
+    void clearCallbackCount() { callbackScheduled_ = false; }
 
-  void callback() { listener_->callback(); }
+    void callback() { listener_->callback(); }
 
-  void subscribe(EventListener *listener) override { listener_ = listener; }
+    void subscribe(EventListener *listener) override { listener_ = listener; }
 };
 
 class MaskerPlayerTests : public ::testing::Test {
-protected:
-  AudioPlayerStub audioPlayer;
-  MaskerPlayerListenerStub listener;
-  stimulus_players::tests::AudioReaderStub audioReader;
-  TimerStub timer;
-  stimulus_players::MaskerPlayerImpl player{&audioPlayer, &audioReader, &timer};
-  std::vector<float> leftChannel;
-  std::vector<float> rightChannel;
+  protected:
+    AudioPlayerStub audioPlayer;
+    MaskerPlayerListenerStub listener;
+    stimulus_players::tests::AudioReaderStub audioReader;
+    TimerStub timer;
+    stimulus_players::MaskerPlayerImpl player{
+        &audioPlayer, &audioReader, &timer};
+    std::vector<float> leftChannel;
+    std::vector<float> rightChannel;
 
-  MaskerPlayerTests() { player.subscribe(&listener); }
+    MaskerPlayerTests() { player.subscribe(&listener); }
 
-  void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
-    audioPlayer.fillAudioBuffer(audio);
-  }
-
-  void fillAudioBufferMono() { fillAudioBuffer({leftChannel}); }
-
-  void fillAudioBufferStereo() { fillAudioBuffer({leftChannel, rightChannel}); }
-
-  std::vector<float> halfHannWindow(int length) {
-    auto N = 2 * length - 1;
-    const auto pi = std::acos(-1);
-    std::vector<float> window;
-    for (int n = 0; n < length; ++n)
-      window.push_back((1 - std::cos((2 * pi * n) / (N - 1))) / 2);
-    return window;
-  }
-
-  std::vector<float> backHalfHannWindow(int length) {
-    auto frontHalf = halfHannWindow(length);
-    std::reverse(frontHalf.begin(), frontHalf.end());
-    return frontHalf;
-  }
-
-  std::vector<float> oneToN(int N) {
-    std::vector<float> result;
-    result.resize(N);
-    std::iota(result.begin(), result.end(), 1);
-    return result;
-  }
-
-  std::vector<float> NtoOne(int N) {
-    auto result = oneToN(N);
-    std::reverse(result.begin(), result.end());
-    return result;
-  }
-
-  void setAudioDeviceDescriptions(std::vector<std::string> v) {
-    audioPlayer.setAudioDeviceDescriptions(std::move(v));
-  }
-
-  void setAsOutputDevice(int i) { audioPlayer.setAsOutputDevice(i); }
-
-  void fadeInToFullLevel() { completeOneFadeCycle(&MaskerPlayerTests::fadeIn); }
-
-  void fadeOutToSilence() { completeOneFadeCycle(&MaskerPlayerTests::fadeOut); }
-
-  void completeOneFadeCycle(void (MaskerPlayerTests::*fade)()) {
-    setFadeInOutSeconds(2);
-    setSampleRateHz(3);
-    (this->*fade)();
-    resizeChannels(2 * 3 + 1);
-    fillAudioBufferMono();
-  }
-
-  void fadeIn() { player.fadeIn(); }
-
-  void fadeOut() { player.fadeOut(); }
-
-  void resizeChannels(int n) {
-    leftChannel.resize(n);
-    rightChannel.resize(n);
-  }
-
-  void timerCallback() { timer.callback(); }
-
-  void assertCallbackScheduled() { assertTrue(callbackScheduled()); }
-
-  bool callbackScheduled() { return timer.callbackScheduled(); }
-
-  void assertCallbackNotScheduled() { assertFalse(callbackScheduled()); }
-
-  void assertFillingLeftChannelMultipliesBy_Buffered(
-      VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
-    for (int i = 0; i < buffers; ++i) {
-      auto offset = i * framesPerBuffer;
-      assertFillingLeftChannelMultipliesBy(
-          multiplicand.subvector(offset, offset + framesPerBuffer),
-          framesPerBuffer);
+    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
+        audioPlayer.fillAudioBuffer(audio);
     }
-  }
 
-  void assertFillingStereoChannelsMultipliesBy_Buffered(
-      VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
-    for (int i = 0; i < buffers; ++i) {
-      auto offset = i * framesPerBuffer;
-      assertFillingStereoChannelsMultipliesBy(
-          multiplicand.subvector(offset, offset + framesPerBuffer),
-          framesPerBuffer);
+    void fillAudioBufferMono() { fillAudioBuffer({leftChannel}); }
+
+    void fillAudioBufferStereo() {
+        fillAudioBuffer({leftChannel, rightChannel});
     }
-  }
 
-  void assertFillingLeftChannelMultipliesBy(VectorFacade<float> multiplicand,
-                                            int framesPerBuffer) {
-    leftChannel = oneToN(framesPerBuffer);
-    fillAudioBufferMono();
-    assertLeftChannelEquals(
-        multiplicand.elementWiseProduct(oneToN(framesPerBuffer)));
-  }
+    std::vector<float> halfHannWindow(int length) {
+        auto N = 2 * length - 1;
+        const auto pi = std::acos(-1);
+        std::vector<float> window;
+        for (int n = 0; n < length; ++n)
+            window.push_back((1 - std::cos((2 * pi * n) / (N - 1))) / 2);
+        return window;
+    }
 
-  void assertLeftChannelEquals(std::vector<float> x) {
-    assertChannelEqual(leftChannel, std::move(x));
-  }
+    std::vector<float> backHalfHannWindow(int length) {
+        auto frontHalf = halfHannWindow(length);
+        std::reverse(frontHalf.begin(), frontHalf.end());
+        return frontHalf;
+    }
 
-  void assertChannelEqual(const std::vector<float> &channel,
-                          std::vector<float> x) {
-    assertEqual(std::move(x), channel, 1e-6f);
-  }
+    std::vector<float> oneToN(int N) {
+        std::vector<float> result;
+        result.resize(N);
+        std::iota(result.begin(), result.end(), 1);
+        return result;
+    }
 
-  void assertFillingStereoChannelsMultipliesBy(VectorFacade<float> multiplicand,
-                                               int framesPerBuffer) {
-    leftChannel = oneToN(framesPerBuffer);
-    rightChannel = NtoOne(framesPerBuffer);
-    fillAudioBufferStereo();
-    assertLeftChannelEquals(
-        multiplicand.elementWiseProduct(oneToN(framesPerBuffer)));
-    assertRightChannelEquals(
-        multiplicand.elementWiseProduct(NtoOne(framesPerBuffer)));
-  }
+    std::vector<float> NtoOne(int N) {
+        auto result = oneToN(N);
+        std::reverse(result.begin(), result.end());
+        return result;
+    }
 
-  void assertRightChannelEquals(std::vector<float> x) {
-    assertChannelEqual(rightChannel, std::move(x));
-  }
+    void setAudioDeviceDescriptions(std::vector<std::string> v) {
+        audioPlayer.setAudioDeviceDescriptions(std::move(v));
+    }
 
-  void assertFadeInNotCompletedAfterMonoFill() {
-    callbackAfterMonoFill();
-    assertFalse(listener.fadeInCompleted());
-  }
+    void setAsOutputDevice(int i) { audioPlayer.setAsOutputDevice(i); }
 
-  void callbackAfterMonoFill() {
-    fillAudioBufferMono();
-    timerCallback();
-  }
+    void fadeInToFullLevel() {
+        completeOneFadeCycle(&MaskerPlayerTests::fadeIn);
+    }
 
-  void assertFadeInCompletedAfterMonoFill() {
-    callbackAfterMonoFill();
-    assertTrue(listener.fadeInCompleted());
-  }
+    void fadeOutToSilence() {
+        completeOneFadeCycle(&MaskerPlayerTests::fadeOut);
+    }
 
-  void assertFadeOutNotCompletedAfterMonoFill() {
-    callbackAfterMonoFill();
-    assertFalse(fadeOutCompleted());
-  }
+    void completeOneFadeCycle(void (MaskerPlayerTests::*fade)()) {
+        setFadeInOutSeconds(2);
+        setSampleRateHz(3);
+        (this->*fade)();
+        resizeChannels(2 * 3 + 1);
+        fillAudioBufferMono();
+    }
 
-  bool fadeOutCompleted() { return listener.fadeOutCompleted(); }
+    void fadeIn() { player.fadeIn(); }
 
-  void assertFadeOutCompletedAfterMonoFill() {
-    callbackAfterMonoFill();
-    assertTrue(fadeOutCompleted());
-  }
+    void fadeOut() { player.fadeOut(); }
 
-  void fadeInCompletely() {
-    fadeInToFullLevel();
-    timerCallback();
-  }
+    void resizeChannels(int n) {
+        leftChannel.resize(n);
+        rightChannel.resize(n);
+    }
 
-  void clearCallbackCount() { timer.clearCallbackCount(); }
+    void timerCallback() { timer.callback(); }
 
-  void setAudioDevice(std::string s) { player.setAudioDevice(std::move(s)); }
+    void assertCallbackScheduled() { assertTrue(callbackScheduled()); }
 
-  void assertTimerCallbackDoesNotScheduleAdditionalCallback() {
-    assertCallDoesNotScheduleAdditionalCallback(
-        &MaskerPlayerTests::timerCallback);
-  }
+    bool callbackScheduled() { return timer.callbackScheduled(); }
 
-  void
-  assertCallDoesNotScheduleAdditionalCallback(void (MaskerPlayerTests::*f)()) {
-    clearCallbackCount();
-    (this->*f)();
-    assertCallbackNotScheduled();
-  }
+    void assertCallbackNotScheduled() { assertFalse(callbackScheduled()); }
 
-  void assertFadeInDoesNotScheduleAdditionalCallback() {
-    assertCallDoesNotScheduleAdditionalCallback(&MaskerPlayerTests::fadeIn);
-  }
+    void assertFillingLeftChannelMultipliesBy_Buffered(
+        VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
+        for (int i = 0; i < buffers; ++i) {
+            auto offset = i * framesPerBuffer;
+            assertFillingLeftChannelMultipliesBy(
+                multiplicand.subvector(offset, offset + framesPerBuffer),
+                framesPerBuffer);
+        }
+    }
 
-  void assertFadeOutDoesNotScheduleAdditionalCallback() {
-    assertCallDoesNotScheduleAdditionalCallback(&MaskerPlayerTests::fadeOut);
-  }
+    void assertFillingStereoChannelsMultipliesBy_Buffered(
+        VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
+        for (int i = 0; i < buffers; ++i) {
+            auto offset = i * framesPerBuffer;
+            assertFillingStereoChannelsMultipliesBy(
+                multiplicand.subvector(offset, offset + framesPerBuffer),
+                framesPerBuffer);
+        }
+    }
 
-  void assertFadeInSchedulesCallback() {
-    clearCallbackCount();
-    fadeIn();
-    assertCallbackScheduled();
-  }
+    void assertFillingLeftChannelMultipliesBy(
+        VectorFacade<float> multiplicand, int framesPerBuffer) {
+        leftChannel = oneToN(framesPerBuffer);
+        fillAudioBufferMono();
+        assertLeftChannelEquals(
+            multiplicand.elementWiseProduct(oneToN(framesPerBuffer)));
+    }
 
-  bool playerStopped() { return audioPlayer.stopped(); }
+    void assertLeftChannelEquals(std::vector<float> x) {
+        assertChannelEqual(leftChannel, std::move(x));
+    }
 
-  void fadeOutCompletely() {
-    fadeOutToSilence();
-    timerCallback();
-  }
+    void assertChannelEqual(
+        const std::vector<float> &channel, std::vector<float> x) {
+        assertEqual(std::move(x), channel, 1e-6f);
+    }
 
-  void setFadeInOutSeconds(double x) { player.setFadeInOutSeconds(x); }
+    void assertFillingStereoChannelsMultipliesBy(
+        VectorFacade<float> multiplicand, int framesPerBuffer) {
+        leftChannel = oneToN(framesPerBuffer);
+        rightChannel = NtoOne(framesPerBuffer);
+        fillAudioBufferStereo();
+        assertLeftChannelEquals(
+            multiplicand.elementWiseProduct(oneToN(framesPerBuffer)));
+        assertRightChannelEquals(
+            multiplicand.elementWiseProduct(NtoOne(framesPerBuffer)));
+    }
 
-  void setSampleRateHz(double x) { audioPlayer.setSampleRateHz(x); }
+    void assertRightChannelEquals(std::vector<float> x) {
+        assertChannelEqual(rightChannel, std::move(x));
+    }
 
-  void loadFile(std::string s = {}) { player.loadFile(std::move(s)); }
+    void assertFadeInNotCompletedAfterMonoFill() {
+        callbackAfterMonoFill();
+        assertFalse(listener.fadeInCompleted());
+    }
+
+    void callbackAfterMonoFill() {
+        fillAudioBufferMono();
+        timerCallback();
+    }
+
+    void assertFadeInCompletedAfterMonoFill() {
+        callbackAfterMonoFill();
+        assertTrue(listener.fadeInCompleted());
+    }
+
+    void assertFadeOutNotCompletedAfterMonoFill() {
+        callbackAfterMonoFill();
+        assertFalse(fadeOutCompleted());
+    }
+
+    bool fadeOutCompleted() { return listener.fadeOutCompleted(); }
+
+    void assertFadeOutCompletedAfterMonoFill() {
+        callbackAfterMonoFill();
+        assertTrue(fadeOutCompleted());
+    }
+
+    void fadeInCompletely() {
+        fadeInToFullLevel();
+        timerCallback();
+    }
+
+    void clearCallbackCount() { timer.clearCallbackCount(); }
+
+    void setAudioDevice(std::string s) { player.setAudioDevice(std::move(s)); }
+
+    void assertTimerCallbackDoesNotScheduleAdditionalCallback() {
+        assertCallDoesNotScheduleAdditionalCallback(
+            &MaskerPlayerTests::timerCallback);
+    }
+
+    void assertCallDoesNotScheduleAdditionalCallback(
+        void (MaskerPlayerTests::*f)()) {
+        clearCallbackCount();
+        (this->*f)();
+        assertCallbackNotScheduled();
+    }
+
+    void assertFadeInDoesNotScheduleAdditionalCallback() {
+        assertCallDoesNotScheduleAdditionalCallback(&MaskerPlayerTests::fadeIn);
+    }
+
+    void assertFadeOutDoesNotScheduleAdditionalCallback() {
+        assertCallDoesNotScheduleAdditionalCallback(
+            &MaskerPlayerTests::fadeOut);
+    }
+
+    void assertFadeInSchedulesCallback() {
+        clearCallbackCount();
+        fadeIn();
+        assertCallbackScheduled();
+    }
+
+    bool playerStopped() { return audioPlayer.stopped(); }
+
+    void fadeOutCompletely() {
+        fadeOutToSilence();
+        timerCallback();
+    }
+
+    void setFadeInOutSeconds(double x) { player.setFadeInOutSeconds(x); }
+
+    void setSampleRateHz(double x) { audioPlayer.setSampleRateHz(x); }
+
+    void loadFile(std::string s = {}) { player.loadFile(std::move(s)); }
 };
 
 TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
-  audioPlayer.setPlaying();
-  assertTrue(player.playing());
+    audioPlayer.setPlaying();
+    assertTrue(player.playing());
 }
 
 TEST_F(MaskerPlayerTests, durationReturnsDuration) {
-  audioPlayer.setDurationSeconds(1);
-  assertEqual(1., player.durationSeconds());
+    audioPlayer.setDurationSeconds(1);
+    assertEqual(1., player.durationSeconds());
 }
 
 TEST_F(MaskerPlayerTests, seekSeeksAudioPlayer) {
-  player.seekSeconds(1);
-  assertEqual(1., audioPlayer.secondsSeeked());
+    player.seekSeconds(1);
+    assertEqual(1., audioPlayer.secondsSeeked());
 }
 
 TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {
-  player.setFadeInOutSeconds(1);
-  assertEqual(1., player.fadeTimeSeconds());
+    player.setFadeInOutSeconds(1);
+    assertEqual(1., player.fadeTimeSeconds());
 }
 
 TEST_F(MaskerPlayerTests, loadFileLoadsVideoFile) {
-  loadFile("a");
-  assertEqual("a", audioPlayer.filePath());
+    loadFile("a");
+    assertEqual("a", audioPlayer.filePath());
 }
 
 TEST_F(MaskerPlayerTests, fadeInPlaysVideoPlayer) {
-  fadeIn();
-  assertTrue(audioPlayer.played());
+    fadeIn();
+    assertTrue(audioPlayer.played());
 }
 
 TEST_F(MaskerPlayerTests, twentydBMultipliesSignalByTen) {
-  player.setLevel_dB(20);
-  leftChannel = {1, 2, 3};
-  fillAudioBufferMono();
-  assertEqual({10, 20, 30}, leftChannel);
+    player.setLevel_dB(20);
+    leftChannel = {1, 2, 3};
+    fillAudioBufferMono();
+    assertEqual({10, 20, 30}, leftChannel);
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
-  // For this test:
-  // halfWindowLength is determined by fade time and sample rate...
-  // but must be divisible by framesPerBuffer.
-  setFadeInOutSeconds(3);
-  setSampleRateHz(5);
-  auto halfWindowLength = 3 * 5 + 1;
-  auto framesPerBuffer = 4;
+    // For this test:
+    // halfWindowLength is determined by fade time and sample rate...
+    // but must be divisible by framesPerBuffer.
+    setFadeInOutSeconds(3);
+    setSampleRateHz(5);
+    auto halfWindowLength = 3 * 5 + 1;
+    auto framesPerBuffer = 4;
 
-  fadeIn();
-  assertFillingLeftChannelMultipliesBy_Buffered(
-      VectorFacade<float>{halfHannWindow(halfWindowLength)},
-      halfWindowLength / framesPerBuffer, framesPerBuffer);
+    fadeIn();
+    assertFillingLeftChannelMultipliesBy_Buffered(
+        VectorFacade<float>{halfHannWindow(halfWindowLength)},
+        halfWindowLength / framesPerBuffer, framesPerBuffer);
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
-  setFadeInOutSeconds(2);
-  setSampleRateHz(3);
-  auto halfWindowLength = 2 * 3 + 1;
+    setFadeInOutSeconds(2);
+    setSampleRateHz(3);
+    auto halfWindowLength = 2 * 3 + 1;
 
-  fadeIn();
-  assertFillingLeftChannelMultipliesBy(
-      VectorFacade<float>{halfHannWindow(halfWindowLength)}, halfWindowLength);
+    fadeIn();
+    assertFillingLeftChannelMultipliesBy(
+        VectorFacade<float>{halfHannWindow(halfWindowLength)},
+        halfWindowLength);
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoMultipleFills) {
-  // For this test:
-  // halfWindowLength is determined by fade time and sample rate...
-  // but must be divisible by framesPerBuffer.
-  setFadeInOutSeconds(3);
-  setSampleRateHz(5);
-  auto halfWindowLength = 3 * 5 + 1;
-  auto framesPerBuffer = 4;
+    // For this test:
+    // halfWindowLength is determined by fade time and sample rate...
+    // but must be divisible by framesPerBuffer.
+    setFadeInOutSeconds(3);
+    setSampleRateHz(5);
+    auto halfWindowLength = 3 * 5 + 1;
+    auto framesPerBuffer = 4;
 
-  fadeIn();
-  assertFillingStereoChannelsMultipliesBy_Buffered(
-      VectorFacade<float>{halfHannWindow(halfWindowLength)},
-      halfWindowLength / framesPerBuffer, framesPerBuffer);
+    fadeIn();
+    assertFillingStereoChannelsMultipliesBy_Buffered(
+        VectorFacade<float>{halfHannWindow(halfWindowLength)},
+        halfWindowLength / framesPerBuffer, framesPerBuffer);
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoOneFill) {
-  setFadeInOutSeconds(2);
-  setSampleRateHz(3);
-  auto halfWindowLength = 2 * 3 + 1;
+    setFadeInOutSeconds(2);
+    setSampleRateHz(3);
+    auto halfWindowLength = 2 * 3 + 1;
 
-  fadeIn();
-  assertFillingStereoChannelsMultipliesBy(
-      VectorFacade<float>{halfHannWindow(halfWindowLength)}, halfWindowLength);
+    fadeIn();
+    assertFillingStereoChannelsMultipliesBy(
+        VectorFacade<float>{halfHannWindow(halfWindowLength)},
+        halfWindowLength);
 }
 
 TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeIn) {
-  fadeInToFullLevel();
+    fadeInToFullLevel();
 
-  leftChannel = {1, 2, 3};
-  fillAudioBufferMono();
-  assertEqual({1, 2, 3}, leftChannel);
+    leftChannel = {1, 2, 3};
+    fillAudioBufferMono();
+    assertEqual({1, 2, 3}, leftChannel);
 }
 
 TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionMultipleFills) {
-  // For this test:
-  // halfWindowLength is determined by fade time and sample rate...
-  // but must be divisible by framesPerBuffer.
-  fadeInCompletely();
-  setFadeInOutSeconds(3);
-  setSampleRateHz(5);
-  auto halfWindowLength = 3 * 5 + 1;
-  auto framesPerBuffer = 4;
+    // For this test:
+    // halfWindowLength is determined by fade time and sample rate...
+    // but must be divisible by framesPerBuffer.
+    fadeInCompletely();
+    setFadeInOutSeconds(3);
+    setSampleRateHz(5);
+    auto halfWindowLength = 3 * 5 + 1;
+    auto framesPerBuffer = 4;
 
-  fadeOut();
-  assertFillingLeftChannelMultipliesBy_Buffered(
-      VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
-      halfWindowLength / framesPerBuffer, framesPerBuffer);
+    fadeOut();
+    assertFillingLeftChannelMultipliesBy_Buffered(
+        VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
+        halfWindowLength / framesPerBuffer, framesPerBuffer);
 }
 
 TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
-  fadeInCompletely();
-  setFadeInOutSeconds(2);
-  setSampleRateHz(3);
-  auto halfWindowLength = 2 * 3 + 1;
+    fadeInCompletely();
+    setFadeInOutSeconds(2);
+    setSampleRateHz(3);
+    auto halfWindowLength = 2 * 3 + 1;
 
-  fadeOut();
-  assertFillingLeftChannelMultipliesBy(
-      VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
-      halfWindowLength);
+    fadeOut();
+    assertFillingLeftChannelMultipliesBy(
+        VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
+        halfWindowLength);
 }
 
 TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {
-  fadeInCompletely();
-  fadeOutToSilence();
+    fadeInCompletely();
+    fadeOutToSilence();
 
-  leftChannel = {1, 2, 3};
-  fillAudioBufferMono();
-  assertEqual({0, 0, 0}, leftChannel, 1e-15f);
+    leftChannel = {1, 2, 3};
+    fillAudioBufferMono();
+    assertEqual({0, 0, 0}, leftChannel, 1e-15f);
 }
 
 TEST_F(MaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
-  setFadeInOutSeconds(3);
-  setSampleRateHz(4);
+    setFadeInOutSeconds(3);
+    setSampleRateHz(4);
 
-  fadeIn();
-  resizeChannels(1);
-  for (int i = 0; i < 3 * 4; ++i)
-    assertFadeInNotCompletedAfterMonoFill();
-  assertFadeInCompletedAfterMonoFill();
+    fadeIn();
+    resizeChannels(1);
+    for (int i = 0; i < 3 * 4; ++i)
+        assertFadeInNotCompletedAfterMonoFill();
+    assertFadeInCompletedAfterMonoFill();
 }
 
 TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeIn) {
-  fadeInCompletely();
-  assertEqual(1, listener.fadeInCompletions());
-  callbackAfterMonoFill();
-  assertEqual(1, listener.fadeInCompletions());
+    fadeInCompletely();
+    assertEqual(1, listener.fadeInCompletions());
+    callbackAfterMonoFill();
+    assertEqual(1, listener.fadeInCompletions());
 }
 
 TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
-  fadeInCompletely();
-  setFadeInOutSeconds(3);
-  setSampleRateHz(4);
+    fadeInCompletely();
+    setFadeInOutSeconds(3);
+    setSampleRateHz(4);
 
-  fadeOut();
-  resizeChannels(1);
-  for (int i = 0; i < 3 * 4; ++i)
-    assertFadeOutNotCompletedAfterMonoFill();
-  assertFadeOutCompletedAfterMonoFill();
+    fadeOut();
+    resizeChannels(1);
+    for (int i = 0; i < 3 * 4; ++i)
+        assertFadeOutNotCompletedAfterMonoFill();
+    assertFadeOutCompletedAfterMonoFill();
 }
 
 TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeOut) {
-  fadeInCompletely();
+    fadeInCompletely();
 
-  fadeOutCompletely();
-  assertEqual(1, listener.fadeOutCompletions());
-  callbackAfterMonoFill();
-  assertEqual(1, listener.fadeOutCompletions());
+    fadeOutCompletely();
+    assertEqual(1, listener.fadeOutCompletions());
+    callbackAfterMonoFill();
+    assertEqual(1, listener.fadeOutCompletions());
 }
 
 TEST_F(MaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
-  fadeInCompletely();
-  setFadeInOutSeconds(3);
-  setSampleRateHz(4);
+    fadeInCompletely();
+    setFadeInOutSeconds(3);
+    setSampleRateHz(4);
 
-  fadeOut();
-  resizeChannels(1);
-  for (int i = 0; i < 3 * 4; ++i) {
+    fadeOut();
+    resizeChannels(1);
+    for (int i = 0; i < 3 * 4; ++i) {
+        callbackAfterMonoFill();
+        assertFalse(playerStopped());
+    }
     callbackAfterMonoFill();
-    assertFalse(playerStopped());
-  }
-  callbackAfterMonoFill();
-  assertTrue(playerStopped());
+    assertTrue(playerStopped());
 }
 
 TEST_F(MaskerPlayerTests, fadeInSchedulesCallback) {
-  assertFadeInSchedulesCallback();
+    assertFadeInSchedulesCallback();
 }
 
 TEST_F(MaskerPlayerTests, fadeInTwiceDoesNotScheduleAdditionalCallback) {
-  fadeIn();
-  assertFadeInDoesNotScheduleAdditionalCallback();
+    fadeIn();
+    assertFadeInDoesNotScheduleAdditionalCallback();
 }
 
 TEST_F(MaskerPlayerTests, fadeOutSchedulesCallback) {
-  fadeOut();
-  assertCallbackScheduled();
+    fadeOut();
+    assertCallbackScheduled();
 }
 
 TEST_F(MaskerPlayerTests, fadeOutTwiceDoesNotScheduleAdditionalCallback) {
-  fadeOut();
-  assertFadeOutDoesNotScheduleAdditionalCallback();
+    fadeOut();
+    assertFadeOutDoesNotScheduleAdditionalCallback();
 }
 
-TEST_F(MaskerPlayerTests,
-       fadeOutWhileFadingInDoesNotScheduleAdditionalCallback) {
-  fadeIn();
-  assertFadeOutDoesNotScheduleAdditionalCallback();
+TEST_F(
+    MaskerPlayerTests, fadeOutWhileFadingInDoesNotScheduleAdditionalCallback) {
+    fadeIn();
+    assertFadeOutDoesNotScheduleAdditionalCallback();
 }
 
-TEST_F(MaskerPlayerTests,
-       fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
-  fadeOut();
-  assertFadeInDoesNotScheduleAdditionalCallback();
+TEST_F(
+    MaskerPlayerTests, fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
+    fadeOut();
+    assertFadeInDoesNotScheduleAdditionalCallback();
 }
 
 TEST_F(MaskerPlayerTests, fadeInAfterFadingOutSchedulesCallback) {
-  fadeOutCompletely();
-  assertFadeInSchedulesCallback();
+    fadeOutCompletely();
+    assertFadeInSchedulesCallback();
 }
 
 TEST_F(MaskerPlayerTests, callbackSchedulesAdditionalCallback) {
-  timerCallback();
-  assertCallbackScheduled();
+    timerCallback();
+    assertCallbackScheduled();
 }
 
 TEST_F(MaskerPlayerTests,
-       callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
-  fadeInToFullLevel();
-  assertTimerCallbackDoesNotScheduleAdditionalCallback();
+    callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
+    fadeInToFullLevel();
+    assertTimerCallbackDoesNotScheduleAdditionalCallback();
 }
 
 TEST_F(MaskerPlayerTests,
-       callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
-  fadeInCompletely();
-  fadeOutToSilence();
-  assertTimerCallbackDoesNotScheduleAdditionalCallback();
+    callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
+    fadeInCompletely();
+    fadeOutToSilence();
+    assertTimerCallbackDoesNotScheduleAdditionalCallback();
 }
 
 TEST_F(MaskerPlayerTests, setAudioDeviceFindsIndex) {
-  setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
-  setAudioDevice("second");
-  assertEqual(2, audioPlayer.deviceIndex());
+    setAudioDeviceDescriptions({"zeroth", "first", "second", "third"});
+    setAudioDevice("second");
+    assertEqual(2, audioPlayer.deviceIndex());
 }
 
 TEST_F(MaskerPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
-  setAudioDeviceDescriptions({"zeroth", "first", "second"});
-  try {
-    setAudioDevice("third");
-    FAIL() << "Expected recognition_test::InvalidAudioDevice";
-  } catch (const av_speech_in_noise::InvalidAudioDevice &) {
-  }
+    setAudioDeviceDescriptions({"zeroth", "first", "second"});
+    try {
+        setAudioDevice("third");
+        FAIL() << "Expected recognition_test::InvalidAudioDevice";
+    } catch (const av_speech_in_noise::InvalidAudioDevice &) {
+    }
 }
 
 TEST_F(MaskerPlayerTests, outputAudioDevicesReturnsDescriptions) {
-  setAudioDeviceDescriptions({"a", "b", "c"});
-  setAsOutputDevice(0);
-  setAsOutputDevice(2);
-  assertEqual({"a", "c"}, player.outputAudioDeviceDescriptions());
+    setAudioDeviceDescriptions({"a", "b", "c"});
+    setAsOutputDevice(0);
+    setAsOutputDevice(2);
+    assertEqual({"a", "c"}, player.outputAudioDeviceDescriptions());
 }
 
 TEST_F(MaskerPlayerTests, rmsComputesFirstChannel) {
-  audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-  loadFile();
-  assertEqual(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.), player.rms(), 1e-6);
+    audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    loadFile();
+    assertEqual(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.), player.rms(), 1e-6);
 }
 
 TEST_F(MaskerPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
-  loadFile("a");
-  player.rms();
-  assertEqual("a", audioReader.filePath());
+    loadFile("a");
+    player.rms();
+    assertEqual("a", audioReader.filePath());
 }
 
 TEST_F(MaskerPlayerTests, loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
-  audioReader.throwOnRead();
-  try {
-    loadFile();
-    FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
-  } catch (const av_speech_in_noise::InvalidAudioFile &) {
-  }
+    audioReader.throwOnRead();
+    try {
+        loadFile();
+        FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
+    } catch (const av_speech_in_noise::InvalidAudioFile &) {
+    }
 }
 } // namespace
