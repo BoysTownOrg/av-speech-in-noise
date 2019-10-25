@@ -10,7 +10,7 @@ void FixedLevelMethod::initialize(
     targetList = list;
     test = &p;
     snr_dB_ = p.snr_dB;
-    targetList->loadFromDirectory(p.common.targetListDirectory);
+    targetList->loadFromDirectory(p.targetListDirectory);
     concluder->initialize(p);
 }
 

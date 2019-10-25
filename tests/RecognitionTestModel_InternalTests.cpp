@@ -102,7 +102,7 @@ class SubmittingResponse : public virtual UseCase {};
 
 class InitializingTest : public UseCase {
     TestInformation information{};
-    CommonTest common{};
+    Test common{};
     TestMethod *method;
 
   public:

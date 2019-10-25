@@ -71,14 +71,14 @@ class RecognitionTestModel_InternalStub
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
     const TestInformation *testInformation_{};
-    const CommonTest *commonTest_{};
+    const Test *commonTest_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
     int trialNumber_;
     bool complete_{};
 
   public:
-    void initialize(TestMethod *tm, const CommonTest &ct,
+    void initialize(TestMethod *tm, const Test &ct,
         const TestInformation &ti) override {
         testMethod_ = tm;
         commonTest_ = &ct;
@@ -134,7 +134,7 @@ class InitializingTestUseCase {
   public:
     virtual ~InitializingTestUseCase() = default;
     virtual void run(RecognitionTestModel &) = 0;
-    virtual const CommonTest &commonTest() = 0;
+    virtual const Test &commonTest() = 0;
     virtual const TestInformation &testInformation() = 0;
     virtual const TestMethod *testMethod() = 0;
 };
@@ -151,7 +151,7 @@ class InitializingAdaptiveTest : public InitializingTestUseCase {
         model.initializeTest(test);
     }
 
-    const CommonTest &commonTest() override { return test.common; }
+    const Test &commonTest() override { return test; }
 
     const TestInformation &testInformation() override {
         return test.information;
@@ -172,7 +172,7 @@ class InitializingFixedLevelTest : public InitializingTestUseCase {
         model.initializeTest(test);
     }
 
-    const CommonTest &commonTest() override { return test.common; }
+    const Test &commonTest() override { return test; }
 
     const TestInformation &testInformation() override {
         return test.information;
@@ -195,7 +195,7 @@ class InitializingFixedLevelTestWithFiniteTargets
         model.initializeTestWithFiniteTargets(test);
     }
 
-    const CommonTest &commonTest() override { return test.common; }
+    const Test &commonTest() override { return test; }
 
     const TestInformation &testInformation() override {
         return test.information;

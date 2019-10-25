@@ -91,7 +91,7 @@ class IRecognitionTestModel_Internal {
   public:
     virtual ~IRecognitionTestModel_Internal() = default;
     virtual void initialize(
-        TestMethod *, const CommonTest &, const TestInformation &) = 0;
+        TestMethod *, const Test &, const TestInformation &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
         const coordinate_response_measure::Response &) = 0;

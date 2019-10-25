@@ -17,7 +17,7 @@ void AdaptiveMethod::initialize(const AdaptiveTest &p) {
     trackSettings.startingX = p.startingSnr_dB;
     trackSettings.floor = p.floorSnr_dB;
     trackSettings.bumpLimit = p.trackBumpLimit;
-    lists = targetListSetReader->read(p.common.targetListDirectory);
+    lists = targetListSetReader->read(p.targetListDirectory);
 
     selectNextListAfter(&AdaptiveMethod::makeSnrTracks);
 }

@@ -64,20 +64,20 @@ class WritingTestUseCase : public virtual UseCase {
   public:
     virtual void setCondition(Condition) = 0;
     virtual void setTestInfo(const TestInformation &) = 0;
-    virtual void setCommonTest(const CommonTest &) = 0;
+    virtual void setCommonTest(const Test &) = 0;
 };
 
 class WritingAdaptiveTest : public WritingTestUseCase {
     AdaptiveTest test{};
 
   public:
-    void setCondition(Condition c) override { test.common.condition = c; }
+    void setCondition(Condition c) override { test.condition = c; }
 
     void setTestInfo(const TestInformation &p) override {
         test.information = p;
     }
 
-    void setCommonTest(const CommonTest &p) override { test.common = p; }
+    void setCommonTest(const Test &p) override { static_cast<Test &>(test) = p; }
 
     void run(OutputFileImpl &file) override { file.writeTest(test); }
 };
@@ -86,9 +86,9 @@ class WritingFixedLevelTest : public WritingTestUseCase {
     FixedLevelTest test{};
 
   public:
-    void setCondition(Condition c) override { test.common.condition = c; }
+    void setCondition(Condition c) override { test.condition = c; }
 
-    void setCommonTest(const CommonTest &p) override { test.common = p; }
+    void setCommonTest(const Test &p) override { static_cast<Test &>(test) = p; }
 
     void setTestInfo(const TestInformation &p) override {
         test.information = p;
@@ -243,7 +243,7 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertCommonTestWritten(WritingTestUseCase &useCase) {
-        CommonTest common;
+        av_speech_in_noise::Test common;
         common.maskerFilePath = "a";
         common.targetListDirectory = "d";
         common.maskerLevel_dB_SPL = 1;

@@ -73,7 +73,7 @@ TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
 }
 
 TEST_F(FixedLevelMethodTests, initializePassesTargetListDirectory) {
-    test.common.targetListDirectory = "a";
+    test.targetListDirectory = "a";
     initialize();
     assertEqual("a", targetList.directory());
 }

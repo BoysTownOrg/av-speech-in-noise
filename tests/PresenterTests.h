@@ -536,7 +536,7 @@ class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
 
     auto adaptiveTest(ModelStub &m) { return m.adaptiveTest(); }
 
-    auto common(ModelStub &m) { return adaptiveTest(m).common; }
+    Test common(ModelStub &m) { return adaptiveTest(m); }
 
     auto information(ModelStub &m) { return adaptiveTest(m).information; }
 
@@ -738,7 +738,7 @@ class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
 
     auto fixedLevelTest(ModelStub &m) { return m.fixedLevelTest(); }
 
-    auto common(ModelStub &m) { return fixedLevelTest(m).common; }
+    auto common(ModelStub &m) { return fixedLevelTest(m); }
 
     auto information(ModelStub &m) { return fixedLevelTest(m).information; }
 

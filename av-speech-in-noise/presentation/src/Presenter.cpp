@@ -240,9 +240,9 @@ void Presenter::TestSetup::hide() { view->hide(); }
 
 FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
     FixedLevelTest p;
+    commonTest(p);
     p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
     p.information = testInformation();
-    p.common = commonTest();
     return p;
 }
 
@@ -254,25 +254,23 @@ TestInformation Presenter::TestSetup::testInformation() {
     return p;
 }
 
-CommonTest Presenter::TestSetup::commonTest() {
-    CommonTest p;
+void Presenter::TestSetup::commonTest(Test &p) {
     p.maskerLevel_dB_SPL = readMaskerLevel();
     p.targetListDirectory = view->targetListDirectory();
     p.maskerFilePath = view->maskerFilePath();
     p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
     p.condition = readCondition();
-    return p;
 }
 
 AdaptiveTest Presenter::TestSetup::adaptiveTest() {
     AdaptiveTest p;
+    commonTest(p);
     p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
     p.information = testInformation();
     p.ceilingSnr_dB = ceilingSnr_dB;
     p.floorSnr_dB = floorSnr_dB;
     p.trackBumpLimit = trackBumpLimit;
     p.trackSettingsFile = view->trackSettingsFile();
-    p.common = commonTest();
     return p;
 }
 

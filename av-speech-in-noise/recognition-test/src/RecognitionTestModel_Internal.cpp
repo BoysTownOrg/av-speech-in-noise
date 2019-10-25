@@ -42,7 +42,7 @@ void RecognitionTestModel_Internal::throwIfTrialInProgress() {
 }
 
 void RecognitionTestModel_Internal::initialize(TestMethod *testMethod_,
-    const CommonTest &common, const TestInformation &information) {
+    const Test &common, const TestInformation &information) {
     throwIfTrialInProgress();
     testMethod = testMethod_;
     prepareCommonTest(common, information);
@@ -54,7 +54,7 @@ bool RecognitionTestModel_Internal::trialInProgress() {
 }
 
 void RecognitionTestModel_Internal::prepareCommonTest(
-    const CommonTest &common, const TestInformation &information) {
+    const Test &common, const TestInformation &information) {
     storeLevels(common);
     prepareMasker(common.maskerFilePath);
     targetPlayer->hideVideo();
@@ -65,7 +65,7 @@ void RecognitionTestModel_Internal::prepareCommonTest(
     testMethod->writeTestingParameters(outputFile);
 }
 
-void RecognitionTestModel_Internal::storeLevels(const CommonTest &common) {
+void RecognitionTestModel_Internal::storeLevels(const Test &common) {
     fullScaleLevel_dB_SPL = common.fullScaleLevel_dB_SPL;
     maskerLevel_dB_SPL = common.maskerLevel_dB_SPL;
 }

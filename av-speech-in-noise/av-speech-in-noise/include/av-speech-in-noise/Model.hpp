@@ -64,7 +64,7 @@ struct TestInformation {
     std::string session;
 };
 
-struct CommonTest {
+struct Test {
     std::string targetListDirectory;
     std::string maskerFilePath;
     int maskerLevel_dB_SPL;
@@ -72,8 +72,7 @@ struct CommonTest {
     Condition condition;
 };
 
-struct AdaptiveTest {
-    CommonTest common;
+struct AdaptiveTest : Test {
     TestInformation information;
     std::string trackSettingsFile;
     int startingSnr_dB;
@@ -82,8 +81,7 @@ struct AdaptiveTest {
     int trackBumpLimit;
 };
 
-struct FixedLevelTest {
-    CommonTest common;
+struct FixedLevelTest : Test {
     TestInformation information;
     int snr_dB;
     int trials{30};

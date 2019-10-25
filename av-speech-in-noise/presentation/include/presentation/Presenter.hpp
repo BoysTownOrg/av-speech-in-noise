@@ -191,7 +191,7 @@ class Presenter : public Model::EventListener {
 
       private:
         TestInformation testInformation();
-        CommonTest commonTest();
+        void commonTest(Test &);
         Condition readCondition();
         bool method(Method m);
         int readMaskerLevel();

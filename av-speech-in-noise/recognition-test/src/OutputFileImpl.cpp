@@ -34,19 +34,19 @@ class FormattedStream {
         writeLabeledLine("session", p.session);
     }
 
-    void writeMasker(const CommonTest &p) {
+    void writeMasker(const Test &p) {
         writeLabeledLine("masker", p.maskerFilePath);
     }
 
-    void writeTargetList(const CommonTest &p) {
+    void writeTargetList(const Test &p) {
         writeLabeledLine("targets", p.targetListDirectory);
     }
 
-    void writeMaskerLevel(const CommonTest &p) {
+    void writeMaskerLevel(const Test &p) {
         writeLabeledLine("masker level (dB SPL)", p.maskerLevel_dB_SPL);
     }
 
-    void writeCondition(const CommonTest &p) {
+    void writeCondition(const Test &p) {
         writeLabeledLine("condition", conditionName(p.condition));
     }
 };
@@ -231,7 +231,7 @@ std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
     stream.writeSubjectId(information);
     stream.writeTester(information);
     stream.writeSession(information);
-    auto common = test.common;
+    auto common = test;
     stream.writeMasker(common);
     stream.writeTargetList(common);
     stream.writeMaskerLevel(common);
@@ -247,7 +247,7 @@ std::string OutputFileImpl::formatTest(const FixedLevelTest &test) {
     stream.writeSubjectId(information);
     stream.writeTester(information);
     stream.writeSession(information);
-    auto common = test.common;
+    auto common = test;
     stream.writeMasker(common);
     stream.writeTargetList(common);
     stream.writeMaskerLevel(common);

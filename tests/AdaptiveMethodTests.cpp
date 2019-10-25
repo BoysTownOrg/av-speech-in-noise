@@ -464,7 +464,7 @@ TEST_F(AdaptiveMethodTests, writeTestParametersPassesToOutputFile) {
 }
 
 TEST_F(AdaptiveMethodTests, initializePassesTargetListDirectory) {
-    test.common.targetListDirectory = "a";
+    test.targetListDirectory = "a";
     initialize();
     assertEqual("a", targetListSetReader.directory());
 }
