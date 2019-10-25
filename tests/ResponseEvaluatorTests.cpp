@@ -4,21 +4,21 @@
 
 namespace av_speech_in_noise::tests::response_evaluation {
 using coordinate_response_measure::Color;
-using coordinate_response_measure::SubjectResponse;
+using coordinate_response_measure::Response;
 
 class ResponseEvaluatorTests : public ::testing::Test {
 protected:
   ResponseEvaluatorImpl evaluator{};
 
-  bool correct(std::string s, SubjectResponse r) {
+  bool correct(std::string s, Response r) {
     return evaluator.correct(std::move(s), r);
   }
 
-  void assertCorrect(std::string s, SubjectResponse r) {
+  void assertCorrect(std::string s, Response r) {
     EXPECT_TRUE(correct(std::move(s), r));
   }
 
-  void assertIncorrect(std::string s, SubjectResponse r) {
+  void assertIncorrect(std::string s, Response r) {
     EXPECT_FALSE(correct(std::move(s), r));
   }
 };

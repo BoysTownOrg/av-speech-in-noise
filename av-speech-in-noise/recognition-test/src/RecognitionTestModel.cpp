@@ -36,7 +36,7 @@ void RecognitionTestModel::playTrial(const AudioSettings &settings) {
 }
 
 void RecognitionTestModel::submitResponse(
-    const coordinate_response_measure::SubjectResponse &response) {
+    const coordinate_response_measure::Response &response) {
     model->submitResponse(response);
 }
 

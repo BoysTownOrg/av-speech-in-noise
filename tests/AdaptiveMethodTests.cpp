@@ -39,7 +39,7 @@ public:
 };
 
 class SubmittingCoordinateResponse : public UseCase {
-  coordinate_response_measure::SubjectResponse response_{};
+  coordinate_response_measure::Response response_{};
 
 public:
   void run(AdaptiveMethod &method) override {
@@ -48,7 +48,7 @@ public:
 };
 
 class SubmittingCorrectCoordinateResponse : public UseCase {
-  coordinate_response_measure::SubjectResponse response_{};
+  coordinate_response_measure::Response response_{};
   ResponseEvaluatorStub &evaluator;
 
 public:
@@ -62,7 +62,7 @@ public:
 };
 
 class SubmittingIncorrectCoordinateResponse : public UseCase {
-  coordinate_response_measure::SubjectResponse response_{};
+  coordinate_response_measure::Response response_{};
   ResponseEvaluatorStub &evaluator;
 
 public:
@@ -100,7 +100,7 @@ public:
 };
 
 class WritingCoordinateResponse : public WritingResponseUseCase {
-  coordinate_response_measure::SubjectResponse response_{};
+  coordinate_response_measure::Response response_{};
   OutputFile &file_;
 
 public:
@@ -192,7 +192,7 @@ protected:
   WritingCorrectResponse writingCorrectResponse{outputFile};
   WritingIncorrectResponse writingIncorrectResponse{outputFile};
   AdaptiveTest test;
-  coordinate_response_measure::SubjectResponse coordinateResponse;
+  coordinate_response_measure::Response coordinateResponse;
   TrackingRule targetLevelRule_;
   std::vector<std::shared_ptr<TargetListStub>> lists;
   std::vector<std::shared_ptr<TrackStub>> tracks;
@@ -284,7 +284,7 @@ public:
   }
 
   auto writtenCoordinateResponseTrial() const {
-    return outputFile.writtenAdaptiveCoordinateResponseTrial2();
+    return outputFile.writtenAdaptiveCoordinateResponseTrial();
   }
 
   void writeCoordinateResponse() {

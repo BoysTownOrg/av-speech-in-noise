@@ -79,7 +79,7 @@ class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
         TestMethod *, const CommonTest &, const TestInformation &) override;
     void playTrial(const AudioSettings &) override;
     void submitResponse(
-        const coordinate_response_measure::SubjectResponse &) override;
+        const coordinate_response_measure::Response &) override;
     bool testComplete() override;
     std::vector<std::string> audioDevices() override;
     int trialNumber() override;
@@ -101,8 +101,8 @@ class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
     void storeLevels(const CommonTest &common);
     void preparePlayersForNextTrial();
     std::string currentTarget();
-    bool correct(const coordinate_response_measure::SubjectResponse &);
-    void submitResponse_(const coordinate_response_measure::SubjectResponse &);
+    bool correct(const coordinate_response_measure::Response &);
+    void submitResponse_(const coordinate_response_measure::Response &);
     void setTargetPlayerDevice(const Calibration &);
     double calibrationLevel_dB(const Calibration &);
     void trySettingTargetLevel(const Calibration &);

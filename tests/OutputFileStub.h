@@ -8,8 +8,7 @@ namespace av_speech_in_noise::tests {
 class OutputFileStub : public OutputFile {
   coordinate_response_measure::AdaptiveTrial
       writtenAdaptiveCoordinateResponseTrial_{};
-  coordinate_response_measure::Trial writtenAdaptiveCoordinateResponseTrial2_{};
-  coordinate_response_measure::Trial writtenFixedLevelTrial2_{};
+  coordinate_response_measure::FixedLevelTrial writtenFixedLevelTrial_{};
   FreeResponseTrial writtenFreeResponseTrial_{};
   open_set::AdaptiveTrial writtenOpenSetAdaptiveTrial_{};
   LogString log_{};
@@ -25,11 +24,6 @@ public:
   writeTrial(const coordinate_response_measure::AdaptiveTrial &trial) override {
     addToLog("writeTrial ");
     writtenAdaptiveCoordinateResponseTrial_ = trial;
-    writtenAdaptiveCoordinateResponseTrial2_ = trial.trial;
-  }
-
-  auto &writtenAdaptiveCoordinateResponseTrial2() const {
-    return writtenAdaptiveCoordinateResponseTrial2_;
   }
 
   void openNewFile(const TestInformation &p) override {
@@ -64,10 +58,10 @@ public:
   void writeTrial(
       const coordinate_response_measure::FixedLevelTrial &trial) override {
     addToLog("writeTrial ");
-    writtenFixedLevelTrial2_ = trial.trial;
+    writtenFixedLevelTrial_ = trial;
   }
 
-  auto &writtenFixedLevelTrial2() const { return writtenFixedLevelTrial2_; }
+  auto &writtenFixedLevelTrial() const { return writtenFixedLevelTrial_; }
 
   void addToLog(std::string s) { log_.insert(std::move(s)); }
 

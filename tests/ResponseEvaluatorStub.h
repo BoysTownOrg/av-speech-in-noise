@@ -10,7 +10,7 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
   std::string correctColorFilePath_;
   std::string fileName_;
   std::string filePathForFileName_;
-  const coordinate_response_measure::SubjectResponse *response_{};
+  const coordinate_response_measure::Response *response_{};
   int correctNumber_{};
   coordinate_response_measure::Color correctColor_{};
   bool correct_{};
@@ -37,7 +37,7 @@ public:
   void setIncorrect() { correct_ = false; }
 
   bool correct(const std::string &target,
-               const coordinate_response_measure::SubjectResponse &p) override {
+               const coordinate_response_measure::Response &p) override {
     correctTarget_ = target;
     response_ = &p;
     return correct_;

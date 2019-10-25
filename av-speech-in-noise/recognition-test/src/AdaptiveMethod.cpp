@@ -70,7 +70,7 @@ bool AdaptiveMethod::complete() {
 std::string AdaptiveMethod::next() { return currentTargetList->next(); }
 
 void AdaptiveMethod::submitResponse(
-    const coordinate_response_measure::SubjectResponse &response) {
+    const coordinate_response_measure::Response &response) {
     auto lastSnr_dB_ = snr_dB();
     auto current_ = current();
     auto correct_ = correct(current_, response);
@@ -79,13 +79,13 @@ void AdaptiveMethod::submitResponse(
     else
         incorrect();
     auto updatedReversals = currentSnrTrack->reversals();
-    lastTrial.trial.subjectColor = response.color;
-    lastTrial.trial.subjectNumber = response.number;
+    lastTrial.subjectColor = response.color;
+    lastTrial.subjectNumber = response.number;
     lastTrial.reversals = updatedReversals;
-    lastTrial.trial.correctColor = evaluator->correctColor(current_);
-    lastTrial.trial.correctNumber = evaluator->correctNumber(current_);
+    lastTrial.correctColor = evaluator->correctColor(current_);
+    lastTrial.correctNumber = evaluator->correctNumber(current_);
     lastTrial.SNR_dB = lastSnr_dB_;
-    lastTrial.trial.correct = correct_;
+    lastTrial.correct = correct_;
     selectNextList();
 }
 
@@ -94,7 +94,7 @@ int AdaptiveMethod::snr_dB() { return currentSnrTrack->x(); }
 std::string AdaptiveMethod::current() { return currentTargetList->current(); }
 
 bool AdaptiveMethod::correct(const std::string &target,
-    const coordinate_response_measure::SubjectResponse &response) {
+    const coordinate_response_measure::Response &response) {
     return evaluator->correct(target, response);
 }
 

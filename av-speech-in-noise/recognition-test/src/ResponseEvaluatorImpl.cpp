@@ -6,7 +6,7 @@ namespace av_speech_in_noise {
 int ResponseEvaluatorImpl::invalidNumber = -1;
 
 bool ResponseEvaluatorImpl::correct(const std::string &filePath,
-    const coordinate_response_measure::SubjectResponse &r) {
+    const coordinate_response_measure::Response &r) {
     return correctNumber(filePath) == r.number &&
         correctColor(filePath) == r.color &&
         r.color != coordinate_response_measure::Color::notAColor &&

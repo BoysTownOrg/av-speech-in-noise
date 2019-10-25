@@ -9,13 +9,13 @@ namespace av_speech_in_noise {
 namespace coordinate_response_measure {
 enum class Color { green, red, blue, white, notAColor };
 
-struct SubjectResponse {
+struct Response {
     int number;
     Color color;
 };
 
 struct Trial {
-    std::string stimulus;
+    std::string target;
     int correctNumber;
     int subjectNumber;
     Color correctColor;
@@ -23,15 +23,12 @@ struct Trial {
     bool correct;
 };
 
-struct AdaptiveTrial {
-    Trial trial;
+struct AdaptiveTrial : Trial {
     int SNR_dB;
     int reversals;
 };
 
-struct FixedLevelTrial {
-    Trial trial;
-};
+struct FixedLevelTrial : Trial {};
 }
 
 enum class Condition { auditoryOnly, audioVisual };
@@ -130,19 +127,20 @@ class Model {
         virtual void trialComplete() = 0;
     };
 
-    virtual ~Model() = default;
-    virtual void subscribe(EventListener *) = 0;
     class RequestFailure : public std::runtime_error {
       public:
         explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
     };
+
+    virtual ~Model() = default;
+    virtual void subscribe(EventListener *) = 0;
     virtual void initializeTest(const AdaptiveTest &) = 0;
     virtual void initializeTest(const FixedLevelTest &) = 0;
     virtual void initializeTestWithFiniteTargets(const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
-        const coordinate_response_measure::SubjectResponse &) = 0;
+        const coordinate_response_measure::Response &) = 0;
     virtual void submitResponse(const FreeResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;

@@ -27,7 +27,7 @@ public:
   void writeLastCorrectResponse(OutputFile *) override {}
   void writeLastIncorrectResponse(OutputFile *) override {}
   void submitResponse(
-      const coordinate_response_measure::SubjectResponse &) override {}
+      const coordinate_response_measure::Response &) override {}
 };
 
 class FixedLevelMethodStub : public IFixedLevelMethod {
@@ -61,7 +61,7 @@ public:
   void writeLastCorrectResponse(OutputFile *) override {}
   void writeLastIncorrectResponse(OutputFile *) override {}
   void submitResponse(
-      const coordinate_response_measure::SubjectResponse &) override {}
+      const coordinate_response_measure::Response &) override {}
 };
 
 class RecognitionTestModel_InternalStub
@@ -73,7 +73,7 @@ class RecognitionTestModel_InternalStub
   const TestInformation *testInformation_{};
   const CommonTest *commonTest_{};
   const TestMethod *testMethod_{};
-  const coordinate_response_measure::SubjectResponse *coordinateResponse_{};
+  const coordinate_response_measure::Response *coordinateResponse_{};
   int trialNumber_;
   bool complete_{};
 
@@ -92,7 +92,7 @@ public:
   void playTrial(const AudioSettings &s) override { playTrialSettings_ = &s; }
 
   void submitResponse(
-      const coordinate_response_measure::SubjectResponse &p) override {
+      const coordinate_response_measure::Response &p) override {
     coordinateResponse_ = &p;
   }
 
@@ -297,7 +297,7 @@ TEST_F(RecognitionTestModelTests,
 }
 
 TEST_F(RecognitionTestModelTests, submitResponsePassesCoordinateResponse) {
-  coordinate_response_measure::SubjectResponse response;
+  coordinate_response_measure::Response response;
   model.submitResponse(response);
   assertEqual(&std::as_const(response), internalModel.coordinateResponse());
 }

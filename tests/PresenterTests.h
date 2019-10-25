@@ -22,7 +22,7 @@ class ModelStub : public Model {
   FixedLevelTest fixedLevelTest_{};
   Calibration calibration_{};
   AudioSettings trialParameters_{};
-  coordinate_response_measure::SubjectResponse responseParameters_{};
+  coordinate_response_measure::Response responseParameters_{};
   std::vector<std::string> audioDevices_{};
   FreeResponse freeResponse_{};
   EventListener *listener_{};
@@ -84,7 +84,7 @@ public:
   std::vector<std::string> audioDevices() override { return audioDevices_; }
 
   void submitResponse(
-      const coordinate_response_measure::SubjectResponse &p) override {
+      const coordinate_response_measure::Response &p) override {
     responseParameters_ = p;
   }
 
@@ -1521,7 +1521,7 @@ public:
   }
 
   void submitResponse(
-      const coordinate_response_measure::SubjectResponse &) override {
+      const coordinate_response_measure::Response &) override {
     throw RequestFailure{errorMessage};
   }
 
@@ -1576,6 +1576,6 @@ protected:
     assertFalse(setupView.hidden());
   }
 };
-} // namespace av_speech_in_noise::tests::presentation
+}
 
 #endif

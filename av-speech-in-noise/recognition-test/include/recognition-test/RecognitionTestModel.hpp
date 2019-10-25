@@ -19,7 +19,7 @@ class ResponseEvaluator {
   public:
     virtual ~ResponseEvaluator() = default;
     virtual bool correct(const std::string &filePath,
-        const coordinate_response_measure::SubjectResponse &) = 0;
+        const coordinate_response_measure::Response &) = 0;
     virtual coordinate_response_measure::Color correctColor(
         const std::string &filePath) = 0;
     virtual int correctNumber(const std::string &filePath) = 0;
@@ -65,7 +65,7 @@ class TestMethod {
     virtual void writeLastCorrectResponse(OutputFile *) = 0;
     virtual void writeLastIncorrectResponse(OutputFile *) = 0;
     virtual void submitResponse(
-        const coordinate_response_measure::SubjectResponse &) = 0;
+        const coordinate_response_measure::Response &) = 0;
 };
 
 class TestConcluder {
@@ -94,7 +94,7 @@ class IRecognitionTestModel_Internal {
         TestMethod *, const CommonTest &, const TestInformation &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
-        const coordinate_response_measure::SubjectResponse &) = 0;
+        const coordinate_response_measure::Response &) = 0;
     virtual bool testComplete() = 0;
     virtual std::vector<std::string> audioDevices() = 0;
     virtual void subscribe(Model::EventListener *) = 0;
@@ -125,7 +125,7 @@ class RecognitionTestModel : public Model {
     void initializeTestWithFiniteTargets(const FixedLevelTest &) override;
     void playTrial(const AudioSettings &) override;
     void submitResponse(
-        const coordinate_response_measure::SubjectResponse &) override;
+        const coordinate_response_measure::Response &) override;
     bool testComplete() override;
     std::vector<std::string> audioDevices() override;
     void subscribe(Model::EventListener *) override;

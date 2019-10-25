@@ -78,7 +78,7 @@ public:
     log_.insert("writeLastIncorrectResponse ");
   }
 
-  void submitResponse(const coordinate_response_measure::SubjectResponse &) {
+  void submitResponse(const coordinate_response_measure::Response &) {
     log_.insert("submitResponse ");
   }
 
@@ -197,7 +197,7 @@ public:
 };
 
 class SubmittingCoordinateResponse : public SubmittingResponse {
-  coordinate_response_measure::SubjectResponse response_{};
+  coordinate_response_measure::Response response_{};
 
 public:
   void run(RecognitionTestModel_Internal &m) override {

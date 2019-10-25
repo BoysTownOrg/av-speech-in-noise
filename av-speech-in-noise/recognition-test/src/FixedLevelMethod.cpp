@@ -21,16 +21,14 @@ std::string FixedLevelMethod::next() { return targetList->next(); }
 int FixedLevelMethod::snr_dB() { return snr_dB_; }
 
 void FixedLevelMethod::submitResponse(
-    const coordinate_response_measure::SubjectResponse &response) {
+    const coordinate_response_measure::Response &response) {
     auto current_ = current();
-    coordinate_response_measure::Trial trial;
-    trial.subjectColor = response.color;
-    trial.subjectNumber = response.number;
-    trial.correctColor = evaluator->correctColor(current_);
-    trial.correctNumber = evaluator->correctNumber(current_);
-    trial.correct = evaluator->correct(current_, response);
-    trial.stimulus = current_;
-    lastTrial.trial = trial;
+    lastTrial.subjectColor = response.color;
+    lastTrial.subjectNumber = response.number;
+    lastTrial.correctColor = evaluator->correctColor(current_);
+    lastTrial.correctNumber = evaluator->correctNumber(current_);
+    lastTrial.correct = evaluator->correct(current_, response);
+    lastTrial.target = current_;
     concluder->submitResponse();
 }
 

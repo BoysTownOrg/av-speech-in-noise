@@ -16,7 +16,7 @@ protected:
   OutputFileStub outputFile;
   FixedLevelMethod method{&evaluator};
   FixedLevelTest test;
-  coordinate_response_measure::SubjectResponse coordinateResponse;
+  coordinate_response_measure::Response coordinateResponse;
 
   void initialize() { method.initialize(test, &targetList, &testConcluder); }
 
@@ -34,7 +34,7 @@ protected:
 
   auto blueColor() { return coordinate_response_measure::Color::blue; }
 
-  auto writtenFixedLevelTrial() { return outputFile.writtenFixedLevelTrial2(); }
+  auto writtenFixedLevelTrial() { return outputFile.writtenFixedLevelTrial(); }
 
   bool writtenFixedLevelTrialCorrect() {
     return writtenFixedLevelTrial().correct;
@@ -111,7 +111,7 @@ TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesCorrectNumber) {
 TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesStimulus) {
   setCurrentTarget("a");
   writeCoordinateResponse();
-  assertEqual("a", writtenFixedLevelTrial().stimulus);
+  assertEqual("a", writtenFixedLevelTrial().target);
 }
 
 TEST_F(FixedLevelMethodTests, writeCorrectCoordinateResponse) {

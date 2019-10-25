@@ -114,9 +114,9 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
 public:
   auto &trial() { return trial_; }
 
-  void incorrect() override { setIncorrect(trial_.trial); }
+  void incorrect() override { setIncorrect(trial_); }
 
-  void correct() override { setCorrect(trial_.trial); }
+  void correct() override { setCorrect(trial_); }
 
   int evaluationEntryIndex() override { return 6; }
 
@@ -131,9 +131,9 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
 public:
   auto &trial() { return trial_; }
 
-  void incorrect() override { setIncorrect(trial_.trial); }
+  void incorrect() override { setIncorrect(trial_); }
 
-  void correct() override { setCorrect(trial_.trial); }
+  void correct() override { setCorrect(trial_); }
 
   void run(av_speech_in_noise::OutputFileImpl &file) override {
     file.writeTrial(trial_);
@@ -321,10 +321,10 @@ protected:
     using coordinate_response_measure::Color;
     auto &trial = writingAdaptiveCoordinateResponseTrial.trial();
     trial.SNR_dB = 1;
-    trial.trial.correctNumber = 2;
-    trial.trial.subjectNumber = 3;
-    trial.trial.correctColor = Color::green;
-    trial.trial.subjectColor = Color::red;
+    trial.correctNumber = 2;
+    trial.subjectNumber = 3;
+    trial.correctColor = Color::green;
+    trial.subjectColor = Color::red;
     trial.reversals = 4;
     run(writingAdaptiveCoordinateResponseTrial);
     assertNthCommaDelimitedEntryOfLine("1", 1, n);
@@ -338,11 +338,11 @@ protected:
   void assertWritesFixedLevelCoordinateResponseTrialOnLine(int n) {
     using coordinate_response_measure::Color;
     auto &trial = writingFixedLevelCoordinateResponseTrial.trial();
-    trial.trial.correctNumber = 2;
-    trial.trial.subjectNumber = 3;
-    trial.trial.correctColor = Color::green;
-    trial.trial.subjectColor = Color::red;
-    trial.trial.stimulus = "a";
+    trial.correctNumber = 2;
+    trial.subjectNumber = 3;
+    trial.correctColor = Color::green;
+    trial.subjectColor = Color::red;
+    trial.target = "a";
     run(writingFixedLevelCoordinateResponseTrial);
     assertNthCommaDelimitedEntryOfLine("2", 1, n);
     assertNthCommaDelimitedEntryOfLine("3", 2, n);

@@ -72,17 +72,17 @@ static std::string evaluation(const coordinate_response_measure::Trial &trial) {
 static std::string formatTrial(
     const coordinate_response_measure::FixedLevelTrial &trial) {
     FormattedStream stream;
-    stream.insert(trial.trial.correctNumber);
+    stream.insert(trial.correctNumber);
     stream.insertCommaAndSpace();
-    stream.insert(trial.trial.subjectNumber);
+    stream.insert(trial.subjectNumber);
     stream.insertCommaAndSpace();
-    stream.insert(colorName(trial.trial.correctColor));
+    stream.insert(colorName(trial.correctColor));
     stream.insertCommaAndSpace();
-    stream.insert(colorName(trial.trial.subjectColor));
+    stream.insert(colorName(trial.subjectColor));
     stream.insertCommaAndSpace();
-    stream.insert(evaluation(trial.trial));
+    stream.insert(evaluation(trial));
     stream.insertCommaAndSpace();
-    stream.insert(trial.trial.stimulus);
+    stream.insert(trial.target);
     stream.insertNewLine();
     return stream.str();
 }
@@ -92,15 +92,15 @@ static std::string formatTrial(
     FormattedStream stream;
     stream.insert(trial.SNR_dB);
     stream.insertCommaAndSpace();
-    stream.insert(trial.trial.correctNumber);
+    stream.insert(trial.correctNumber);
     stream.insertCommaAndSpace();
-    stream.insert(trial.trial.subjectNumber);
+    stream.insert(trial.subjectNumber);
     stream.insertCommaAndSpace();
-    stream.insert(colorName(trial.trial.correctColor));
+    stream.insert(colorName(trial.correctColor));
     stream.insertCommaAndSpace();
-    stream.insert(colorName(trial.trial.subjectColor));
+    stream.insert(colorName(trial.subjectColor));
     stream.insertCommaAndSpace();
-    stream.insert(evaluation(trial.trial));
+    stream.insert(evaluation(trial));
     stream.insertCommaAndSpace();
     stream.insert(trial.reversals);
     stream.insertNewLine();
