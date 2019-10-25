@@ -720,6 +720,18 @@ namespace av_speech_in_noise::tests::presentation {
         assertShowsTrialNumber(respondingFromExperimenter);
     }
 
+    TEST_F(PresenterTests, submittingResponseFromSubjectShowsTrialNumber) {
+        assertShowsTrialNumber(respondingFromSubject);
+    }
+
+    TEST_F(PresenterTests, submittingPassedTrialShowsTrialNumber) {
+        assertShowsTrialNumber(submittingPassedTrial);
+    }
+
+    TEST_F(PresenterTests, submittingFailedTrialShowsTrialNumber) {
+        assertShowsTrialNumber(submittingFailedTrial);
+    }
+
     TEST_F(
         PresenterTests,
         completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest

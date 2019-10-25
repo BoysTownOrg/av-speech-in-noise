@@ -96,9 +96,13 @@ void Presenter::hideTestSetup() {
     testSetup->hide();
 }
 
+static void displayTrialNumber(Presenter::Experimenter *experimenter, Model *model) {
+    experimenter->display("Trial " + std::to_string(model->trialNumber()));
+}
+
 void Presenter::showTestView() {
     experimenter->show();
-    experimenter->display("Trial " + std::to_string(model->trialNumber()));
+    displayTrialNumber(experimenter, model);
     if (closedSet())
         subject->show();
     else
@@ -142,6 +146,7 @@ void Presenter::trialComplete() {
 
 void Presenter::submitSubjectResponse() {
     submitSubjectResponse_();
+    displayTrialNumber(experimenter, model);
     if (testComplete())
         switchToSetupView();
     else
@@ -182,7 +187,7 @@ void Presenter::proceedToNextTrialAfter(void(Presenter::*f)()) {
 }
 
 void Presenter::proceedToNextTrial() {
-    experimenter->display("Trial " + std::to_string(model->trialNumber()));
+    displayTrialNumber(experimenter, model);
     if (testComplete())
         switchToSetupView();
 }
