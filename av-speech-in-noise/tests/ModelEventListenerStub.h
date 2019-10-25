@@ -1,7 +1,7 @@
 #ifndef ModelEventListenerStub_h
 #define ModelEventListenerStub_h
 
-#include <av-speech-in-noise/Model.h>
+#include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise::tests {
     class ModelEventListenerStub : public Model::EventListener {

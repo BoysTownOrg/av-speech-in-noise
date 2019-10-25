@@ -607,6 +607,63 @@ void CocoaSubjectView::hide() {
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
+    actions{[ExperimenterViewActions alloc]}
+{
+    exitTestButton_ = [NSButton
+        buttonWithTitle:@"exit test"
+        target:actions
+        action:@selector(exitTest)
+    ];
+    [exitTestButton_ setFrame:NSMakeRect(
+        0,
+        r.size.height -  buttonHeight,
+        buttonWidth,
+        buttonHeight
+    )];
+    [view_ addSubview:exitTestButton_];
+    [view_ setHidden:YES];
+    actions.controller = this;
+}
+
+void CocoaExperimenterView::subscribe(EventListener *e) {
+    listener_ = e;
+}
+
+void CocoaExperimenterView::showExitTestButton() {
+    [exitTestButton_ setHidden:NO];
+}
+
+void CocoaExperimenterView::hideExitTestButton() {
+    [exitTestButton_ setHidden:YES];
+}
+
+void CocoaExperimenterView::show() {
+    [view_ setHidden:NO];
+}
+
+void CocoaExperimenterView::hide() {
+    [view_ setHidden:YES];
+}
+
+NSView *CocoaExperimenterView::view() { 
+    return view_;
+}
+
+void CocoaExperimenterView::exitTest() {
+    listener_->exitTest();
+}
+
+@implementation ExperimenterViewActions
+@synthesize controller;
+
+- (void)exitTest {
+    controller->exitTest();
+}
+@end
+
+
+CocoaTestingView::CocoaTestingView(NSRect r) :
+    view_{[[NSView alloc] initWithFrame:r]},
     nextTrialButton{[[NSView alloc]
         initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
     ]},
@@ -619,7 +676,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     response_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
     ]},
-    actions{[ExperimenterViewActions alloc]}
+    actions{[TestingViewActions alloc]}
 {
     const auto nextTrialButton_ = [NSButton
         buttonWithTitle:@"play trial"
@@ -629,17 +686,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     [nextTrialButton_ setFrame:NSMakeRect(
         r.size.width - buttonWidth,
         0,
-        buttonWidth,
-        buttonHeight
-    )];
-    exitTestButton_ = [NSButton
-        buttonWithTitle:@"exit test"
-        target:actions
-        action:@selector(exitTest)
-    ];
-    [exitTestButton_ setFrame:NSMakeRect(
-        0,
-        r.size.height -  buttonHeight,
         buttonWidth,
         buttonHeight
     )];
@@ -684,7 +730,6 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     [view_ addSubview:nextTrialButton];
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
-    [view_ addSubview:exitTestButton_];
     [evaluationButtons setHidden:YES];
     [nextTrialButton setHidden:YES];
     [responseSubmission setHidden:YES];
@@ -692,79 +737,67 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     actions.controller = this;
 }
 
-void CocoaExperimenterView::subscribe(EventListener *e) {
+void CocoaTestingView::subscribe(EventListener *e) {
     listener_ = e;
 }
 
-void CocoaExperimenterView::showNextTrialButton() {
+void CocoaTestingView::showNextTrialButton() {
     [nextTrialButton setHidden:NO];
 }
 
-void CocoaExperimenterView::hideNextTrialButton() {
+void CocoaTestingView::hideNextTrialButton() {
     [nextTrialButton setHidden:YES];
 }
 
-void CocoaExperimenterView::showExitTestButton() {
-    [exitTestButton_ setHidden:NO];
-}
-
-void CocoaExperimenterView::hideExitTestButton() {
-    [exitTestButton_ setHidden:YES];
-}
-
-void CocoaExperimenterView::show() {
+void CocoaTestingView::show() {
     [view_ setHidden:NO];
 }
 
-void CocoaExperimenterView::hide() {
+void CocoaTestingView::hide() {
     [view_ setHidden:YES];
 }
 
-void CocoaExperimenterView::showEvaluationButtons() {
+void CocoaTestingView::showEvaluationButtons() {
     [evaluationButtons setHidden:NO];
 }
 
-void CocoaExperimenterView::showResponseSubmission() {
+void CocoaTestingView::showResponseSubmission() {
     [responseSubmission setHidden:NO];
 }
 
-void CocoaExperimenterView::hideResponseSubmission() {
+void CocoaTestingView::hideResponseSubmission() {
     [responseSubmission setHidden:YES];
 }
 
-void CocoaExperimenterView::hideEvaluationButtons() {
+void CocoaTestingView::hideEvaluationButtons() {
     [evaluationButtons setHidden:YES];
 }
 
-std::string CocoaExperimenterView::response() {
+std::string CocoaTestingView::response() {
     return response_.stringValue.UTF8String;
 }
 
-NSView *CocoaExperimenterView::view() { 
+NSView *CocoaTestingView::view() { 
     return view_;
 }
 
-void CocoaExperimenterView::playTrial() {
+void CocoaTestingView::playTrial() {
     listener_->playTrial();
 }
 
-void CocoaExperimenterView::submitResponse() {
+void CocoaTestingView::submitResponse() {
     listener_->submitResponse();
 }
 
-void CocoaExperimenterView::submitPassedTrial() {
+void CocoaTestingView::submitPassedTrial() {
     listener_->submitPassedTrial();
 }
 
-void CocoaExperimenterView::submitFailedTrial() {
+void CocoaTestingView::submitFailedTrial() {
     listener_->submitFailedTrial();
 }
 
-void CocoaExperimenterView::exitTest() {
-    listener_->exitTest();
-}
-
-@implementation ExperimenterViewActions
+@implementation TestingViewActions
 @synthesize controller;
 
 - (void)playTrial {
@@ -782,12 +815,7 @@ void CocoaExperimenterView::exitTest() {
 - (void)submitFailedTrial {
     controller->submitFailedTrial();
 }
-
-- (void)exitTest {
-    controller->exitTest();
-}
 @end
-
 
 CocoaView::CocoaView(NSRect r) :
     app{[NSApplication sharedApplication]},

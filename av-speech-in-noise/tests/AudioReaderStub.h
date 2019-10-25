@@ -1,7 +1,7 @@
 #ifndef AudioReaderStub_h
 #define AudioReaderStub_h
 
-#include <stimulus-players/AudioReader.h>
+#include <stimulus-players/AudioReader.hpp>
 #include <string>
 
 namespace stimulus_players::tests {

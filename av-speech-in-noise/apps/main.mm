@@ -2,7 +2,7 @@
 #include "AvFoundationPlayers.h"
 #include "CocoaView.h"
 #include "common-objc.h"
-#include <presentation/Presenter.h>
+#include <presentation/Presenter.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/RecognitionTestModel_Internal.hpp>
 #include <recognition-test/AdaptiveMethod.hpp>
@@ -349,6 +349,18 @@ int main() {
     };
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
     auto testerWindowViewMargin = 15;
+    auto testingContentFrame = NSMakeRect(
+        testerWindowViewMargin + 100,
+        testerWindowViewMargin,
+        testerWindowFrame.size.width - testerWindowViewMargin * 2 - 100,
+        testerWindowFrame.size.height - testerWindowViewMargin * 2
+    );
+    auto experimenterContentFrame = NSMakeRect(
+        testerWindowViewMargin,
+        testerWindowViewMargin,
+        testerWindowViewMargin + 100,
+        testerWindowFrame.size.height - testerWindowViewMargin * 2
+    );
     auto testerContentFrame = NSMakeRect(
         testerWindowViewMargin,
         testerWindowViewMargin,
@@ -371,10 +383,12 @@ int main() {
     testSetupView.setTrackSettingsFile(
         "/Users/basset/Desktop/track-settings.txt"
     );
-    CocoaExperimenterView experimenterView{testerContentFrame};
+    CocoaExperimenterView experimenterView{experimenterContentFrame};
+    CocoaTestingView testingView{testingContentFrame};
     CocoaView view{testerWindowFrame};
     view.addSubview(testSetupView.view());
     view.addSubview(experimenterView.view());
+    view.addSubview(testingView.view());
     view.center();
     auto delegate = [WindowDelegate alloc];
     view.setDelegate(delegate);
@@ -394,12 +408,14 @@ int main() {
     Presenter::Subject subject{&subjectView};
     Presenter::TestSetup testSetup{&testSetupView};
     Presenter::Experimenter experimenter{&experimenterView};
+    Presenter::Testing testing{&testingView};
     Presenter presenter{
         &model,
         &view,
         &testSetup,
         &subject,
-        &experimenter
+        &experimenter,
+        &testing
     };
     presenter.run();
 }

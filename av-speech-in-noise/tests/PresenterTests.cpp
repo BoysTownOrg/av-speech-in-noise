@@ -38,6 +38,14 @@ namespace av_speech_in_noise::tests::presentation {
         assertShowsExperimenterView(confirmingAdaptiveOpenSetTest);
     }
 
+    TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTestingView) {
+        assertShowsTestingView(confirmingAdaptiveOpenSetTest);
+    }
+
+    TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTestingView) {
+        assertShowsTestingView(confirmingFixedLevelOpenSetTest);
+    }
+
     TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsExperimenterView) {
         assertShowsExperimenterView(confirmingFixedLevelOpenSetTest);
     }
@@ -488,7 +496,7 @@ namespace av_speech_in_noise::tests::presentation {
     }
 
     TEST_F(PresenterTests, experimenterResponsePassesResponse) {
-        experimenterView.setResponse("a");
+        testingView.setResponse("a");
         respondFromExperimenter();
         assertEqual("a", model.freeResponse().response);
     }
@@ -551,6 +559,18 @@ namespace av_speech_in_noise::tests::presentation {
         assertCompleteTestHidesExperimenterView(submittingFailedTrial);
     }
 
+    TEST_F(PresenterTests, respondFromExperimenterHidesTestingViewWhenTestComplete) {
+        assertCompleteTestHidesTestingView(respondingFromExperimenter);
+    }
+
+    TEST_F(PresenterTests, submitPassedTrialHidesTestingViewWhenTestComplete) {
+        assertCompleteTestHidesTestingView(submittingPassedTrial);
+    }
+
+    TEST_F(PresenterTests, submitFailedTrialHidesTestingViewWhenTestComplete) {
+        assertCompleteTestHidesTestingView(submittingFailedTrial);
+    }
+
     TEST_F(PresenterTests, submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
         assertCompleteTestDoesNotPlayTrial(respondingFromSubject);
     }
@@ -569,6 +589,18 @@ namespace av_speech_in_noise::tests::presentation {
 
     TEST_F(PresenterTests, submitFailedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
         assertDoesNotHideExperimenterView(submittingFailedTrial);
+    }
+
+    TEST_F(PresenterTests, respondFromExperimenterDoesNotHideTestingViewWhenTestIncomplete) {
+        assertDoesNotHideTestingView(respondingFromExperimenter);
+    }
+
+    TEST_F(PresenterTests, submitPassedTrialDoesNotHideTestingViewWhenTestIncomplete) {
+        assertDoesNotHideTestingView(submittingPassedTrial);
+    }
+
+    TEST_F(PresenterTests, submitFailedTrialDoesNotHideTestingViewWhenTestIncomplete) {
+        assertDoesNotHideTestingView(submittingFailedTrial);
     }
 
     TEST_F(PresenterTests, experimenterResponseShowsNextTrialButton) {
@@ -612,6 +644,10 @@ namespace av_speech_in_noise::tests::presentation {
 
     TEST_F(PresenterTests, exitTestHidesExperimenterView) {
         assertHidesExperimenterView(exitingTest);
+    }
+
+    TEST_F(PresenterTests, exitTestHidesTestingView) {
+        assertHidesTestingView(exitingTest);
     }
 
     TEST_F(PresenterTests, exitTestHidesResponseButtons) {
