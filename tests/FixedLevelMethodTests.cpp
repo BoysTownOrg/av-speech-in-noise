@@ -138,12 +138,13 @@ class FixedLevelMethodTests : public ::testing::Test {
         assertTestCompleteAfter(useCase);
     }
 
-    void assertConcluderSubmitResponseCalledBeforeComplete() {
-        assertTrue(testConcluder.log().contains("submitResponse complete"));
+    void assertTestConcluderLogContains(const std::string &s) {
+        assertTrue(testConcluder.log().contains(s));
     }
 
-    void assertConcluderInitializeBeforeComplete() {
-        assertTrue(testConcluder.log().contains("initialize complete"));
+    void assertTestConcluderLogContainsAfter(const std::string &s, UseCase &useCase) {
+        run(useCase);
+        assertTestConcluderLogContains(s);
     }
 };
 
@@ -274,13 +275,11 @@ TEST_F(FixedLevelMethodTests, initializePassesTargetListToConcluder) {
 
 TEST_F(FixedLevelMethodTests, submitCoordinateResponseSubmitsResponsePriorToQueryingCompletion) {
     initialize();
-    run(submittingCoordinateResponse);
-    assertConcluderSubmitResponseCalledBeforeComplete();
+    assertTestConcluderLogContainsAfter("submitResponse complete", submittingCoordinateResponse);
 }
 
 TEST_F(FixedLevelMethodTests, initializeInitializesConcluderBeforeQueryingCompletion) {
-    run(initializingMethod);
-    assertConcluderInitializeBeforeComplete();
+    assertTestConcluderLogContainsAfter("initialize complete", initializingMethod);
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {
