@@ -1,10 +1,10 @@
 #include "FixedLevelMethod.hpp"
 
 namespace av_speech_in_noise {
-FixedLevelMethod::FixedLevelMethod(ResponseEvaluator *evaluator)
+FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator *evaluator)
     : evaluator{evaluator} {}
 
-void FixedLevelMethod::initialize(
+void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &p, TargetList *list, TestConcluder *concluder_) {
     concluder = concluder_;
     targetList = list;
@@ -14,13 +14,13 @@ void FixedLevelMethod::initialize(
     concluder->initialize(p);
 }
 
-bool FixedLevelMethod::complete() { return concluder->complete(targetList); }
+bool FixedLevelMethodImpl::complete() { return concluder->complete(targetList); }
 
-std::string FixedLevelMethod::next() { return targetList->next(); }
+std::string FixedLevelMethodImpl::next() { return targetList->next(); }
 
-int FixedLevelMethod::snr_dB() { return snr_dB_; }
+int FixedLevelMethodImpl::snr_dB() { return snr_dB_; }
 
-void FixedLevelMethod::submitResponse(
+void FixedLevelMethodImpl::submitResponse(
     const coordinate_response_measure::Response &response) {
     auto current_ = current();
     lastTrial.subjectColor = response.color;
@@ -32,19 +32,19 @@ void FixedLevelMethod::submitResponse(
     concluder->submitResponse();
 }
 
-std::string FixedLevelMethod::current() { return targetList->current(); }
+std::string FixedLevelMethodImpl::current() { return targetList->current(); }
 
-void FixedLevelMethod::writeTestingParameters(OutputFile *file) {
+void FixedLevelMethodImpl::writeTestingParameters(OutputFile *file) {
     file->writeTest(*test);
 }
 
-void FixedLevelMethod::writeLastCoordinateResponse(OutputFile *file) {
+void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
     file->writeTrial(lastTrial);
 }
 
-void FixedLevelMethod::submitIncorrectResponse() {}
+void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
-void FixedLevelMethod::submitCorrectResponse() {}
+void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethod::submitResponse(const FreeResponse &) {}
+void FixedLevelMethodImpl::submitResponse(const FreeResponse &) {}
 }

@@ -57,9 +57,9 @@ class MaskerPlayer {
     virtual double fadeTimeSeconds() = 0;
 };
 
-class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
+class RecognitionTestModel_Impl : public TargetPlayer::EventListener,
                                       public MaskerPlayer::EventListener,
-                                      public IRecognitionTestModel_Internal {
+                                      public RecognitionTestModel_ {
     MaskerPlayer *maskerPlayer;
     TargetPlayer *targetPlayer;
     ResponseEvaluator *evaluator;
@@ -73,7 +73,7 @@ class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
     Condition condition;
 
   public:
-    RecognitionTestModel_Internal(TargetPlayer *, MaskerPlayer *,
+    RecognitionTestModel_Impl(TargetPlayer *, MaskerPlayer *,
         ResponseEvaluator *, OutputFile *, Randomizer *);
     void initialize(
         TestMethod *, const Test &, const TestIdentity &) override;
@@ -128,10 +128,10 @@ class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
     void setAudioDevices(const AudioSettings &);
     int findDeviceIndex(const AudioSettings &);
     void throwInvalidAudioDeviceOnErrorSettingDevice(
-        void (RecognitionTestModel_Internal::*f)(const std::string &),
+        void (RecognitionTestModel_Impl::*f)(const std::string &),
         const std::string &);
     void throwInvalidAudioFileOnErrorLoading(
-        void (RecognitionTestModel_Internal::*f)(const std::string &),
+        void (RecognitionTestModel_Impl::*f)(const std::string &),
         const std::string &file);
     void loadTargetFile(std::string);
     void setTargetLevel_dB(double);

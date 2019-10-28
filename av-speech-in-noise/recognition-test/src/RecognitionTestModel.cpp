@@ -3,10 +3,10 @@
 
 namespace av_speech_in_noise {
 RecognitionTestModel::RecognitionTestModel(AdaptiveMethod *adaptiveMethod,
-    IFixedLevelMethod *fixedLevelMethod, TargetList *infiniteTargetList,
+    FixedLevelMethod *fixedLevelMethod, TargetList *infiniteTargetList,
     TestConcluder *fixedTrialTestConcluder, TargetList *finiteTargetList,
     TestConcluder *completesWhenTargetsEmpty,
-    IRecognitionTestModel_Internal *model)
+    RecognitionTestModel_ *model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       infiniteTargetList{infiniteTargetList},
       fixedTrialTestConcluder{fixedTrialTestConcluder},

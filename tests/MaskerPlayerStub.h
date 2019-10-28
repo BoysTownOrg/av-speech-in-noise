@@ -1,8 +1,8 @@
-#ifndef MaskerPlayerStub_h
-#define MaskerPlayerStub_h
+#ifndef TESTS_MASKERPLAYERSTUB_H_
+#define TESTS_MASKERPLAYERSTUB_H_
 
 #include "LogString.h"
-#include <recognition-test/RecognitionTestModel_Internal.hpp>
+#include <recognition-test/RecognitionTestModel_.hpp>
 
 namespace av_speech_in_noise::tests {
 class MaskerPlayerStub : public MaskerPlayer {
@@ -102,5 +102,6 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void setDurationSeconds(double x) { durationSeconds_ = x; }
 };
-} // namespace av_speech_in_noise::tests
+}
+
 #endif

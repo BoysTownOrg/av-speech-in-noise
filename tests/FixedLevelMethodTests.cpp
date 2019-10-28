@@ -14,7 +14,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     TargetListStub targetList;
     TestConcluderStub testConcluder;
     OutputFileStub outputFile;
-    FixedLevelMethod method{&evaluator};
+    FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test;
     coordinate_response_measure::Response coordinateResponse;
 

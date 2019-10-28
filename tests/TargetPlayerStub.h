@@ -1,8 +1,10 @@
-#ifndef TargetPlayerStub_h
-#define TargetPlayerStub_h
+#ifndef TESTS_TARGETPLAYERSTUB_H_
+#define TESTS_TARGETPLAYERSTUB_H_
 
 #include "LogString.h"
-#include <recognition-test/RecognitionTestModel_Internal.hpp>
+#include <recognition-test/RecognitionTestModel_.hpp>
+#include <utility>
+#include <string>
 
 namespace av_speech_in_noise::tests {
 class TargetPlayerStub : public TargetPlayer {

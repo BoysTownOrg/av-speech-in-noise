@@ -81,15 +81,15 @@ class AdaptiveMethod : public virtual TestMethod {
     virtual void initialize(const AdaptiveTest &) = 0;
 };
 
-class IFixedLevelMethod : public virtual TestMethod {
+class FixedLevelMethod : public virtual TestMethod {
   public:
     virtual void initialize(
         const FixedLevelTest &, TargetList *, TestConcluder *) = 0;
 };
 
-class IRecognitionTestModel_Internal {
+class RecognitionTestModel_ {
   public:
-    virtual ~IRecognitionTestModel_Internal() = default;
+    virtual ~RecognitionTestModel_() = default;
     virtual void initialize(
         TestMethod *, const Test &, const TestIdentity &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
@@ -108,18 +108,18 @@ class IRecognitionTestModel_Internal {
 
 class RecognitionTestModel : public Model {
     AdaptiveMethod *adaptiveMethod;
-    IFixedLevelMethod *fixedLevelMethod;
+    FixedLevelMethod *fixedLevelMethod;
     TargetList *infiniteTargetList;
     TestConcluder *fixedTrialTestConcluder;
     TargetList *finiteTargetList;
     TestConcluder *completesWhenTargetsEmpty;
-    IRecognitionTestModel_Internal *model;
+    RecognitionTestModel_ *model;
 
   public:
-    RecognitionTestModel(AdaptiveMethod *, IFixedLevelMethod *,
+    RecognitionTestModel(AdaptiveMethod *, FixedLevelMethod *,
         TargetList *infiniteTargetList, TestConcluder *fixedTrialTestConcluder,
         TargetList *finiteTargetList, TestConcluder *completesWhenTargetsEmpty,
-        IRecognitionTestModel_Internal *);
+        RecognitionTestModel_ *);
     void initializeTest(const AdaptiveTest &) override;
     void initializeTest(const FixedLevelTest &) override;
     void initializeTestWithFiniteTargets(const FixedLevelTest &) override;

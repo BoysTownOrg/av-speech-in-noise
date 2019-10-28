@@ -89,7 +89,7 @@ class UseCase {
   public:
     virtual ~UseCase() = default;
     virtual void run(RecognitionTestModel &) {}
-    virtual void run(RecognitionTestModel_Internal &) = 0;
+    virtual void run(RecognitionTestModel_Impl &) = 0;
 };
 
 class TargetWritingUseCase : public virtual UseCase {
@@ -108,7 +108,7 @@ class InitializingTest : public UseCase {
   public:
     explicit InitializingTest(TestMethod *method) : method{method} {}
 
-    void run(RecognitionTestModel_Internal &m) override {
+    void run(RecognitionTestModel_Impl &m) override {
         m.initialize(method, common, information);
     }
 
@@ -148,7 +148,7 @@ class PlayingCalibration : public AudioDeviceUseCase, public ConditionUseCase {
         calibration.audioSettings.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModel_Internal &m) override {
+    void run(RecognitionTestModel_Impl &m) override {
         m.playCalibration(calibration);
     }
 
@@ -177,7 +177,7 @@ class PlayingTrial : public AudioDeviceUseCase {
         trial.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModel_Internal &m) override { m.playTrial(trial); }
+    void run(RecognitionTestModel_Impl &m) override { m.playTrial(trial); }
 };
 
 class SubmittingFreeResponse : public SubmittingResponse,
@@ -185,7 +185,7 @@ class SubmittingFreeResponse : public SubmittingResponse,
     FreeResponse response_;
 
   public:
-    void run(RecognitionTestModel_Internal &m) override {
+    void run(RecognitionTestModel_Impl &m) override {
         m.submitResponse(response_);
     }
 
@@ -200,7 +200,7 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
     coordinate_response_measure::Response response_{};
 
   public:
-    void run(RecognitionTestModel_Internal &m) override {
+    void run(RecognitionTestModel_Impl &m) override {
         m.submitResponse(response_);
     }
 
@@ -213,7 +213,7 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
 
 class SubmittingCorrectResponse : public TargetWritingUseCase {
   public:
-    void run(RecognitionTestModel_Internal &m) override {
+    void run(RecognitionTestModel_Impl &m) override {
         m.submitCorrectResponse();
     }
 
@@ -224,7 +224,7 @@ class SubmittingCorrectResponse : public TargetWritingUseCase {
 
 class SubmittingIncorrectResponse : public TargetWritingUseCase {
   public:
-    void run(RecognitionTestModel_Internal &m) override {
+    void run(RecognitionTestModel_Impl &m) override {
         m.submitIncorrectResponse();
     }
 
@@ -241,7 +241,7 @@ class RecognitionTestModel_InternalTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator{};
     OutputFileStub outputFile{};
     RandomizerStub randomizer{};
-    RecognitionTestModel_Internal model{
+    RecognitionTestModel_Impl model{
         &targetPlayer, &maskerPlayer, &evaluator, &outputFile, &randomizer};
     TestMethodStub testMethod;
     PlayingCalibration playingCalibration{};

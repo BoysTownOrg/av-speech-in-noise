@@ -8,13 +8,13 @@ OutputFilePathImpl::OutputFilePathImpl(
 
 std::string OutputFilePathImpl::generateFileName(const TestIdentity &test) {
     std::stringstream stream;
-    stream << formatTestInformation(test);
+    stream << formatTestIdentity(test);
     stream << '_';
     stream << formatTimeStamp();
     return stream.str();
 }
 
-std::string OutputFilePathImpl::formatTestInformation(
+std::string OutputFilePathImpl::formatTestIdentity(
     const TestIdentity &test) {
     std::stringstream stream;
     stream << "Subject_";

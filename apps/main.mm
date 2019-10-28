@@ -335,10 +335,10 @@ void main() {
     };
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
     FixedTrialTestConcluder fixedTrials;
-    FixedLevelMethod fixedLevelMethod{
+    FixedLevelMethodImpl fixedLevelMethod{
         &responseEvaluator
     };
-    RecognitionTestModel_Internal model_internal{
+    RecognitionTestModel_Impl model_internal{
         &targetPlayer,
         &maskerPlayer,
         &responseEvaluator,

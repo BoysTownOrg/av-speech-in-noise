@@ -39,7 +39,7 @@ class OutputFilePathImpl : public OutputFilePath {
   private:
     std::string homeDirectory_();
     std::string outputDirectory_();
-    std::string formatTestInformation(const TestIdentity &);
+    std::string formatTestIdentity(const TestIdentity &);
     std::string formatTimeStamp();
 };
 }

@@ -30,7 +30,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         const coordinate_response_measure::Response &) override {}
 };
 
-class FixedLevelMethodStub : public IFixedLevelMethod {
+class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelTest *test_{};
     TargetList *targetList_{};
     TestConcluder *testConcluder_{};
@@ -65,7 +65,7 @@ class FixedLevelMethodStub : public IFixedLevelMethod {
 };
 
 class RecognitionTestModel_InternalStub
-    : public IRecognitionTestModel_Internal {
+    : public RecognitionTestModel_ {
     std::vector<std::string> audioDevices_{};
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
