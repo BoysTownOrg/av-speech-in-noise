@@ -112,6 +112,10 @@ class FixedLevelMethodTests : public ::testing::Test {
         setTestComplete();
         assertTestCompleteAfter(useCase);
     }
+
+    void assertConcluderSubmitResponseCalledBeforeComplete() {
+        assertTrue(testConcluder.log().contains("submitResponse complete"));
+    }
 };
 
 TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
@@ -229,6 +233,12 @@ TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesTargetListToConclude
 
 TEST_F(FixedLevelMethodTests, submitFreeResponsePassesTargetListToConcluder) {
     assertTargetListPassedToConcluder(submittingFreeResponse);
+}
+
+TEST_F(FixedLevelMethodTests, submitCoordinateResponseSubmitsResponsePriorToQueryingCompletion) {
+    initialize();
+    run(submittingCoordinateResponse);
+    assertConcluderSubmitResponseCalledBeforeComplete();
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {
