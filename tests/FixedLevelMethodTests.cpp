@@ -129,6 +129,10 @@ class FixedLevelMethodTests : public ::testing::Test {
 
     void assertTestCompleteWhenComplete(UseCase &useCase) {
         initialize();
+        assertTestCompleteWhenComplete_(useCase);
+    }
+
+    void assertTestCompleteWhenComplete_(UseCase &useCase) {
         assertTestIncompleteAfter(useCase);
         setTestComplete();
         assertTestCompleteAfter(useCase);
@@ -136,6 +140,10 @@ class FixedLevelMethodTests : public ::testing::Test {
 
     void assertConcluderSubmitResponseCalledBeforeComplete() {
         assertTrue(testConcluder.log().contains("submitResponse complete"));
+    }
+
+    void assertConcluderInitializeBeforeComplete() {
+        assertTrue(testConcluder.log().contains("initialize complete"));
     }
 };
 
@@ -248,6 +256,10 @@ TEST_F(FixedLevelMethodTests, completeWhenTestCompleteAfterFreeResponse) {
     assertTestCompleteWhenComplete(submittingFreeResponse);
 }
 
+TEST_F(FixedLevelMethodTests, completeWhenTestCompleteAfterInitializing) {
+    assertTestCompleteWhenComplete_(initializingMethod);
+}
+
 TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesTargetListToConcluder) {
     assertTargetListPassedToConcluder(submittingCoordinateResponse);
 }
@@ -266,21 +278,9 @@ TEST_F(FixedLevelMethodTests, submitCoordinateResponseSubmitsResponsePriorToQuer
     assertConcluderSubmitResponseCalledBeforeComplete();
 }
 
-TEST_F(FixedLevelMethodTests, tbd) {
-    initialize();
-    setTestComplete();
-    run(submittingCoordinateResponse);
-    setTestIncomplete();
-    initialize();
-    assertTestIncomplete();
-}
-
-TEST_F(FixedLevelMethodTests, tbd2) {
-    initialize();
-    setTestComplete();
-    run(submittingCoordinateResponse);
-    initialize();
-    assertTestComplete();
+TEST_F(FixedLevelMethodTests, initializeInitializesConcluderBeforeQueryingCompletion) {
+    run(initializingMethod);
+    assertConcluderInitializeBeforeComplete();
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {

@@ -10,9 +10,9 @@ void FixedLevelMethodImpl::initialize(
     targetList = list;
     test = &p;
     snr_dB_ = p.snr_dB;
-    complete_ = concluder->complete(targetList);
     targetList->loadFromDirectory(p.targetListDirectory);
     concluder->initialize(p);
+    complete_ = concluder->complete(targetList);
 }
 
 bool FixedLevelMethodImpl::complete() {

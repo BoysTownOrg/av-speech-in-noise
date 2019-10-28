@@ -33,7 +33,10 @@ class TestConcluderStub : public TestConcluder {
         return complete_;
     }
 
-    void initialize(const FixedLevelTest &p) override { test_ = &p; }
+    void initialize(const FixedLevelTest &p) override {
+        log_.insert("initialize ");
+        test_ = &p;
+    }
 
     void submitResponse() override {
         log_.insert("submitResponse ");
