@@ -13,10 +13,24 @@ public:
     virtual void run(FixedLevelMethod &) = 0;
 };
 
+class InitializingMethod : public UseCase {
+    FixedLevelTest test;
+    TargetList &list;
+    TestConcluder &concluder;
+public:
+    InitializingMethod(TargetList &list, TestConcluder &concluder) :
+        list{list},
+        concluder{concluder} {}
+
+    void run(FixedLevelMethod &m) override {
+        m.initialize(test, &list, &concluder);
+    }
+};
+
 class SubmittingCoordinateResponse : public UseCase {
     coordinate_response_measure::Response response;
 public:
-    void run(FixedLevelMethod &m) {
+    void run(FixedLevelMethod &m) override {
         m.submitResponse(response);
     }
 };
@@ -24,7 +38,7 @@ public:
 class SubmittingFreeResponse : public UseCase {
     FreeResponse response;
 public:
-    void run(FixedLevelMethod &m) {
+    void run(FixedLevelMethod &m) override {
         m.submitResponse(response);
     }
 };
@@ -42,6 +56,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     FreeResponse freeResponse;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    InitializingMethod initializingMethod{targetList, testConcluder};
 
     void initialize() { method.initialize(test, &targetList, &testConcluder); }
 
@@ -103,6 +118,10 @@ class FixedLevelMethodTests : public ::testing::Test {
 
     void assertTargetListPassedToConcluder(UseCase &useCase) {
         initialize();
+        assertTargetListPassedToConcluder_(useCase);
+    }
+
+    void assertTargetListPassedToConcluder_(UseCase &useCase) {
         run(useCase);
         assertEqual(
             static_cast<TargetList *>(&targetList), testConcluder.targetList());
@@ -235,6 +254,10 @@ TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesTargetListToConclude
 
 TEST_F(FixedLevelMethodTests, submitFreeResponsePassesTargetListToConcluder) {
     assertTargetListPassedToConcluder(submittingFreeResponse);
+}
+
+TEST_F(FixedLevelMethodTests, initializePassesTargetListToConcluder) {
+    assertTargetListPassedToConcluder_(initializingMethod);
 }
 
 TEST_F(FixedLevelMethodTests, submitCoordinateResponseSubmitsResponsePriorToQueryingCompletion) {
