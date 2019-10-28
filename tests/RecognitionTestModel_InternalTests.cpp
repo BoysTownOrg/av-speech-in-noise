@@ -112,7 +112,7 @@ class InitializingTest : public UseCase {
         m.initialize(method, common, information);
     }
 
-    auto &testInformation() const { return information; }
+    auto &testIdentity() const { return information; }
 
     void setMaskerFilePath(std::string s) {
         common.maskerFilePath = std::move(s);
@@ -527,7 +527,7 @@ TEST_F(RecognitionTestModel_InternalTests,
     initializeTestOpensNewOutputFilePassingTestInformation) {
     run(initializingTest);
     assertEqual(outputFile.openNewFileParameters(),
-        &initializingTest.testInformation());
+        &initializingTest.testIdentity());
 }
 
 TEST_F(RecognitionTestModel_InternalTests,

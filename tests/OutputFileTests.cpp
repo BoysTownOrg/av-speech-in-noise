@@ -51,7 +51,7 @@ class OutputFilePathStub : public OutputFilePath {
 
     std::string homeDirectory() override { return homeDirectory_; }
 
-    auto testInformation() const { return testInformation_; }
+    auto testIdentity() const { return testInformation_; }
 };
 
 class UseCase {
@@ -175,13 +175,13 @@ class OutputFileTests : public ::testing::Test {
     open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
-    TestIdentity testInformation;
+    TestIdentity testIdentity;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
 
     void run(UseCase &useCase) { useCase.run(file); }
 
-    void openNewFile() { file.openNewFile(testInformation); }
+    void openNewFile() { file.openNewFile(testIdentity); }
 
     void writeFreeResponseTrial() { file.writeTrial(freeResponseTrial); }
 
@@ -566,7 +566,7 @@ TEST_F(OutputFileTests, saveSavesWriter) {
 
 TEST_F(OutputFileTests, openPassesTestInformation) {
     openNewFile();
-    EXPECT_EQ(&testInformation, path.testInformation());
+    EXPECT_EQ(&testIdentity, path.testIdentity());
 }
 
 class FailingWriter : public Writer {

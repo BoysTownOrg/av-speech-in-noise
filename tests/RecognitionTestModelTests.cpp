@@ -110,7 +110,7 @@ class RecognitionTestModel_InternalStub
 
     auto commonTest() const { return commonTest_; }
 
-    auto testInformation() const { return testInformation_; }
+    auto testIdentity() const { return testInformation_; }
 
     auto playTrialSettings() const { return playTrialSettings_; }
 
@@ -135,7 +135,7 @@ class InitializingTestUseCase {
     virtual ~InitializingTestUseCase() = default;
     virtual void run(RecognitionTestModel &) = 0;
     virtual const Test &commonTest() = 0;
-    virtual const TestIdentity &testInformation() = 0;
+    virtual const TestIdentity &testIdentity() = 0;
     virtual const TestMethod *testMethod() = 0;
 };
 
@@ -153,7 +153,7 @@ class InitializingAdaptiveTest : public InitializingTestUseCase {
 
     const Test &commonTest() override { return test; }
 
-    const TestIdentity &testInformation() override {
+    const TestIdentity &testIdentity() override {
         return test.identity;
     }
 
@@ -174,7 +174,7 @@ class InitializingFixedLevelTest : public InitializingTestUseCase {
 
     const Test &commonTest() override { return test; }
 
-    const TestIdentity &testInformation() override {
+    const TestIdentity &testIdentity() override {
         return test.identity;
     }
 
@@ -197,7 +197,7 @@ class InitializingFixedLevelTestWithFiniteTargets
 
     const Test &commonTest() override { return test; }
 
-    const TestIdentity &testInformation() override {
+    const TestIdentity &testIdentity() override {
         return test.identity;
     }
 
@@ -240,7 +240,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(useCase.testMethod(), internalModel.testMethod());
         assertEqual(&useCase.commonTest(), internalModel.commonTest());
         assertEqual(
-            &useCase.testInformation(), internalModel.testInformation());
+            &useCase.testIdentity(), internalModel.testIdentity());
     }
 };
 

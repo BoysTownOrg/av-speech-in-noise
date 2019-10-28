@@ -1,4 +1,5 @@
 #include "Presenter.hpp"
+#include <string>
 #include <sstream>
 
 namespace av_speech_in_noise {
@@ -13,6 +14,15 @@ int Presenter::fullScaleLevel_dB_SPL = 119;
 int Presenter::ceilingSnr_dB = 20;
 int Presenter::floorSnr_dB = -40;
 int Presenter::trackBumpLimit = 10;
+
+static FixedLevelTest fixedLevelTest(Presenter::TestSetup *testSetup) {
+    return testSetup->fixedLevelTest();
+}
+
+static void displayTrialNumber(
+    Presenter::Experimenter *experimenter, Model *model) {
+    experimenter->display("Trial " + std::to_string(model->trialNumber()));
+}
 
 Presenter::Presenter(Model *model, View *view, TestSetup *testSetup,
     Subject *subject, Experimenter *experimenter, Testing *testing)
@@ -52,9 +62,9 @@ void Presenter::initializeTest() {
     if (adaptiveTest())
         model->initializeTest(testSetup->adaptiveTest());
     else if (finiteTargets())
-        model->initializeTestWithFiniteTargets(testSetup->fixedLevelTest());
+        model->initializeTestWithFiniteTargets(fixedLevelTest(testSetup));
     else
-        model->initializeTest(testSetup->fixedLevelTest());
+        model->initializeTest(fixedLevelTest(testSetup));
 }
 
 bool Presenter::adaptiveTest() {
@@ -67,17 +77,14 @@ bool Presenter::adaptiveOpenSet() { return testSetup->adaptiveOpenSet(); }
 
 bool Presenter::finiteTargets() { return testSetup->finiteTargets(); }
 
+bool Presenter::testComplete() { return model->testComplete(); }
+
 void Presenter::switchToTestView() {
     hideTestSetup();
     showTestView();
 }
 
 void Presenter::hideTestSetup() { testSetup->hide(); }
-
-static void displayTrialNumber(
-    Presenter::Experimenter *experimenter, Model *model) {
-    experimenter->display("Trial " + std::to_string(model->trialNumber()));
-}
 
 void Presenter::showTestView() {
     experimenter->show();
@@ -169,8 +176,6 @@ void Presenter::proceedToNextTrial() {
 
 void Presenter::exitTest() { switchToSetupView(); }
 
-bool Presenter::testComplete() { return model->testComplete(); }
-
 void Presenter::switchToSetupView() {
     showTestSetup();
     hideTestView();
@@ -242,11 +247,11 @@ FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
     FixedLevelTest p;
     commonTest(p);
     p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
-    p.identity = testInformation();
+    p.identity = testIdentity();
     return p;
 }
 
-TestIdentity Presenter::TestSetup::testInformation() {
+TestIdentity Presenter::TestSetup::testIdentity() {
     TestIdentity p;
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
@@ -266,7 +271,7 @@ AdaptiveTest Presenter::TestSetup::adaptiveTest() {
     AdaptiveTest p;
     commonTest(p);
     p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
-    p.identity = testInformation();
+    p.identity = testIdentity();
     p.ceilingSnr_dB = ceilingSnr_dB;
     p.floorSnr_dB = floorSnr_dB;
     p.trackBumpLimit = trackBumpLimit;
