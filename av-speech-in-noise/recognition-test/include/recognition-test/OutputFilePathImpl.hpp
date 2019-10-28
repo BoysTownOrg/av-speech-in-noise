@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILEPATHIMPL_HPP_
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILEPATHIMPL_HPP_
 
-#include "OutputFileImpl.hpp"
+#include "OutputFile.hpp"
 #include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
