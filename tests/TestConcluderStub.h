@@ -25,6 +25,8 @@ class TestConcluderStub : public TestConcluder {
 
     void setComplete() { complete_ = true; }
 
+    void setIncomplete() { complete_ = false; }
+
     bool complete(TargetList *t) override {
         log_.insert("complete ");
         targetList_ = t;

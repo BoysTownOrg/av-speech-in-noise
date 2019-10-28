@@ -95,6 +95,8 @@ class FixedLevelMethodTests : public ::testing::Test {
 
     void setTestComplete() { testConcluder.setComplete(); }
 
+    void setTestIncomplete() { testConcluder.setIncomplete(); }
+
     void run(UseCase &useCase) {
         useCase.run(method);
     }
@@ -239,6 +241,15 @@ TEST_F(FixedLevelMethodTests, submitCoordinateResponseSubmitsResponsePriorToQuer
     initialize();
     run(submittingCoordinateResponse);
     assertConcluderSubmitResponseCalledBeforeComplete();
+}
+
+TEST_F(FixedLevelMethodTests, tbd) {
+    initialize();
+    setTestComplete();
+    run(submittingCoordinateResponse);
+    setTestIncomplete();
+    initialize();
+    assertTestIncomplete();
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {
