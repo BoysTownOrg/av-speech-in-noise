@@ -49,5 +49,7 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submitResponse(const FreeResponse &) {}
+void FixedLevelMethodImpl::submitResponse(const FreeResponse &) {
+    complete_ = concluder->complete(targetList);
+}
 }

@@ -17,6 +17,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test;
     coordinate_response_measure::Response coordinateResponse;
+    FreeResponse freeResponse;
 
     void initialize() { method.initialize(test, &targetList, &testConcluder); }
 
@@ -28,6 +29,10 @@ class FixedLevelMethodTests : public ::testing::Test {
 
     void submitCoordinateResponse() {
         method.submitResponse(coordinateResponse);
+    }
+
+    void submitFreeResponse() {
+        method.submitResponse(freeResponse);
     }
 
     void writeLastCoordinateResponse() {
@@ -178,6 +183,13 @@ TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
 TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesTargetListToConcluder) {
     initialize();
     submitCoordinateResponse();
+    assertEqual(
+        static_cast<TargetList *>(&targetList), testConcluder.targetList());
+}
+
+TEST_F(FixedLevelMethodTests, submitFreeResponsePassesTargetListToConcluder) {
+    initialize();
+    submitFreeResponse();
     assertEqual(
         static_cast<TargetList *>(&targetList), testConcluder.targetList());
 }
