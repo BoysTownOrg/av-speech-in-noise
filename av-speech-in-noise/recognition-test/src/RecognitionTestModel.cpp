@@ -16,19 +16,19 @@ RecognitionTestModel::RecognitionTestModel(IAdaptiveMethod *adaptiveMethod,
 void RecognitionTestModel::initializeTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, infiniteTargetList, fixedTrialTestConcluder);
-    model->initialize(fixedLevelMethod, p, p.information);
+    model->initialize(fixedLevelMethod, p, p.identity);
 }
 
 void RecognitionTestModel::initializeTestWithFiniteTargets(
     const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, finiteTargetList, completesWhenTargetsEmpty);
-    model->initialize(fixedLevelMethod, p, p.information);
+    model->initialize(fixedLevelMethod, p, p.identity);
 }
 
 void RecognitionTestModel::initializeTest(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
-    model->initialize(adaptiveMethod, p, p.information);
+    model->initialize(adaptiveMethod, p, p.identity);
 }
 
 void RecognitionTestModel::playTrial(const AudioSettings &settings) {

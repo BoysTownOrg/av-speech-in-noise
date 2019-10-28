@@ -31,7 +31,7 @@ class OutputFilePathImpl : public OutputFilePath {
 
   public:
     OutputFilePathImpl(TimeStamp *, FileSystemPath *);
-    std::string generateFileName(const TestInformation &) override;
+    std::string generateFileName(const TestIdentity &) override;
     std::string homeDirectory() override;
     std::string outputDirectory() override;
     void setRelativeOutputDirectory(std::string);
@@ -39,7 +39,7 @@ class OutputFilePathImpl : public OutputFilePath {
   private:
     std::string homeDirectory_();
     std::string outputDirectory_();
-    std::string formatTestInformation(const TestInformation &);
+    std::string formatTestInformation(const TestIdentity &);
     std::string formatTimeStamp();
 };
 }

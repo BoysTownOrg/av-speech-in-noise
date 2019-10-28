@@ -22,15 +22,15 @@ class FormattedStream {
 
     auto str() const { return stream.str(); }
 
-    void writeSubjectId(const TestInformation &p) {
+    void writeSubjectId(const TestIdentity &p) {
         writeLabeledLine("subject", p.subjectId);
     }
 
-    void writeTester(const TestInformation &p) {
+    void writeTester(const TestIdentity &p) {
         writeLabeledLine("tester", p.testerId);
     }
 
-    void writeSession(const TestInformation &p) {
+    void writeSession(const TestIdentity &p) {
         writeLabeledLine("session", p.session);
     }
 
@@ -227,7 +227,7 @@ void OutputFileImpl::writeTest(const FixedLevelTest &test) {
 
 std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
     FormattedStream stream;
-    auto information = test.information;
+    auto information = test.identity;
     stream.writeSubjectId(information);
     stream.writeTester(information);
     stream.writeSession(information);
@@ -243,7 +243,7 @@ std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
 
 std::string OutputFileImpl::formatTest(const FixedLevelTest &test) {
     FormattedStream stream;
-    auto information = test.information;
+    auto information = test.identity;
     stream.writeSubjectId(information);
     stream.writeTester(information);
     stream.writeSession(information);
@@ -257,7 +257,7 @@ std::string OutputFileImpl::formatTest(const FixedLevelTest &test) {
     return stream.str();
 }
 
-void OutputFileImpl::openNewFile(const TestInformation &test) {
+void OutputFileImpl::openNewFile(const TestIdentity &test) {
     writer->open(generateNewFilePath(test));
     if (writer->failed())
         throw OpenFailure{};
@@ -267,7 +267,7 @@ void OutputFileImpl::openNewFile(const TestInformation &test) {
     justWroteOpenSetAdaptiveTrial = false;
 }
 
-std::string OutputFileImpl::generateNewFilePath(const TestInformation &test) {
+std::string OutputFileImpl::generateNewFilePath(const TestIdentity &test) {
     return path->outputDirectory() + "/" + path->generateFileName(test) +
         ".txt";
 }

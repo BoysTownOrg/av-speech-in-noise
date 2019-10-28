@@ -76,7 +76,7 @@ class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
     RecognitionTestModel_Internal(TargetPlayer *, MaskerPlayer *,
         ResponseEvaluator *, OutputFile *, Randomizer *);
     void initialize(
-        TestMethod *, const Test &, const TestInformation &) override;
+        TestMethod *, const Test &, const TestIdentity &) override;
     void playTrial(const AudioSettings &) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
     bool testComplete() override;
@@ -96,7 +96,7 @@ class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
     void writeTrial(const FreeResponse &p);
-    void prepareCommonTest(const Test &, const TestInformation &);
+    void prepareCommonTest(const Test &, const TestIdentity &);
     void storeLevels(const Test &common);
     void preparePlayersForNextTrial();
     std::string currentTarget();
@@ -107,8 +107,8 @@ class RecognitionTestModel_Internal : public TargetPlayer::EventListener,
     void trySettingTargetLevel(const Calibration &);
     void playCalibration_(const Calibration &);
     void prepareMasker(const std::string &);
-    void tryOpeningOutputFile_(const TestInformation &);
-    void tryOpeningOutputFile(const TestInformation &);
+    void tryOpeningOutputFile_(const TestIdentity &);
+    void tryOpeningOutputFile(const TestIdentity &);
     void loadMaskerFile(const std::string &);
     void playTarget();
     bool noMoreTrials();

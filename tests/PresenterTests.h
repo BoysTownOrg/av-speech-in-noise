@@ -538,7 +538,7 @@ class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
 
     Test common(ModelStub &m) { return adaptiveTest(m); }
 
-    auto information(ModelStub &m) { return adaptiveTest(m).information; }
+    auto information(ModelStub &m) { return adaptiveTest(m).identity; }
 
     void run() override { view->confirmTestSetup(); }
 
@@ -740,7 +740,7 @@ class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
 
     auto common(ModelStub &m) { return fixedLevelTest(m); }
 
-    auto information(ModelStub &m) { return fixedLevelTest(m).information; }
+    auto information(ModelStub &m) { return fixedLevelTest(m).identity; }
 
     int snr_dB(ModelStub &m) override { return fixedLevelTest(m).snr_dB; }
 

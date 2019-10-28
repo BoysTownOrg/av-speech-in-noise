@@ -190,7 +190,7 @@ class Presenter : public Model::EventListener {
         void browseForTrackSettingsFile() override;
 
       private:
-        TestInformation testInformation();
+        TestIdentity testInformation();
         void commonTest(Test &);
         Condition readCondition();
         bool method(Method m);

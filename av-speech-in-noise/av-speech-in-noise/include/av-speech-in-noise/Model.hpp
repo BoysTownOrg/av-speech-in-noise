@@ -58,13 +58,14 @@ constexpr bool operator==(
 
 using TrackingRule = typename std::vector<TrackingSequence>;
 
-struct TestInformation {
+struct TestIdentity {
     std::string subjectId;
     std::string testerId;
     std::string session;
 };
 
 struct Test {
+    TestIdentity identity;
     std::string targetListDirectory;
     std::string maskerFilePath;
     int maskerLevel_dB_SPL;
@@ -73,7 +74,6 @@ struct Test {
 };
 
 struct AdaptiveTest : Test {
-    TestInformation information;
     std::string trackSettingsFile;
     int startingSnr_dB;
     int ceilingSnr_dB;
@@ -82,7 +82,6 @@ struct AdaptiveTest : Test {
 };
 
 struct FixedLevelTest : Test {
-    TestInformation information;
     int snr_dB;
     int trials{30};
 };

@@ -42,7 +42,7 @@ void RecognitionTestModel_Internal::throwIfTrialInProgress() {
 }
 
 void RecognitionTestModel_Internal::initialize(TestMethod *testMethod_,
-    const Test &common, const TestInformation &information) {
+    const Test &common, const TestIdentity &information) {
     throwIfTrialInProgress();
     testMethod = testMethod_;
     prepareCommonTest(common, information);
@@ -54,7 +54,7 @@ bool RecognitionTestModel_Internal::trialInProgress() {
 }
 
 void RecognitionTestModel_Internal::prepareCommonTest(
-    const Test &common, const TestInformation &information) {
+    const Test &common, const TestIdentity &information) {
     storeLevels(common);
     prepareMasker(common.maskerFilePath);
     targetPlayer->hideVideo();
@@ -141,13 +141,13 @@ void RecognitionTestModel_Internal::seekRandomMaskerPosition() {
 }
 
 void RecognitionTestModel_Internal::tryOpeningOutputFile(
-    const TestInformation &p) {
+    const TestIdentity &p) {
     outputFile->close();
     tryOpeningOutputFile_(p);
 }
 
 void RecognitionTestModel_Internal::tryOpeningOutputFile_(
-    const TestInformation &p) {
+    const TestIdentity &p) {
     try {
         outputFile->openNewFile(p);
     } catch (const OutputFile::OpenFailure &) {

@@ -242,12 +242,12 @@ FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
     FixedLevelTest p;
     commonTest(p);
     p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
-    p.information = testInformation();
+    p.identity = testInformation();
     return p;
 }
 
-TestInformation Presenter::TestSetup::testInformation() {
-    TestInformation p;
+TestIdentity Presenter::TestSetup::testInformation() {
+    TestIdentity p;
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
     p.session = view->session();
@@ -266,7 +266,7 @@ AdaptiveTest Presenter::TestSetup::adaptiveTest() {
     AdaptiveTest p;
     commonTest(p);
     p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
-    p.information = testInformation();
+    p.identity = testInformation();
     p.ceilingSnr_dB = ceilingSnr_dB;
     p.floorSnr_dB = floorSnr_dB;
     p.trackBumpLimit = trackBumpLimit;

@@ -35,7 +35,7 @@ class OutputFilePathStub : public OutputFilePath {
     std::string fileName_;
     std::string homeDirectory_;
     std::string outputDirectory_;
-    const TestInformation *testInformation_{};
+    const TestIdentity *testInformation_{};
 
   public:
     std::string outputDirectory() override { return outputDirectory_; }
@@ -44,7 +44,7 @@ class OutputFilePathStub : public OutputFilePath {
 
     void setFileName(std::string s) { fileName_ = std::move(s); }
 
-    std::string generateFileName(const TestInformation &p) override {
+    std::string generateFileName(const TestIdentity &p) override {
         testInformation_ = &p;
         return fileName_;
     }
@@ -63,7 +63,7 @@ class UseCase {
 class WritingTestUseCase : public virtual UseCase {
   public:
     virtual void setCondition(Condition) = 0;
-    virtual void setTestInfo(const TestInformation &) = 0;
+    virtual void setTestInfo(const TestIdentity &) = 0;
     virtual void setCommonTest(const Test &) = 0;
 };
 
@@ -73,8 +73,8 @@ class WritingAdaptiveTest : public WritingTestUseCase {
   public:
     void setCondition(Condition c) override { test.condition = c; }
 
-    void setTestInfo(const TestInformation &p) override {
-        test.information = p;
+    void setTestInfo(const TestIdentity &p) override {
+        test.identity = p;
     }
 
     void setCommonTest(const Test &p) override { static_cast<Test &>(test) = p; }
@@ -90,8 +90,8 @@ class WritingFixedLevelTest : public WritingTestUseCase {
 
     void setCommonTest(const Test &p) override { static_cast<Test &>(test) = p; }
 
-    void setTestInfo(const TestInformation &p) override {
-        test.information = p;
+    void setTestInfo(const TestIdentity &p) override {
+        test.identity = p;
     }
 
     void run(OutputFileImpl &file) override { file.writeTest(test); }
@@ -175,7 +175,7 @@ class OutputFileTests : public ::testing::Test {
     open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
-    TestInformation testInformation;
+    TestIdentity testInformation;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
 
@@ -231,7 +231,7 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertTestInformationWritten(WritingTestUseCase &useCase) {
-        TestInformation info;
+        TestIdentity info;
         info.subjectId = "a";
         info.testerId = "b";
         info.session = "c";

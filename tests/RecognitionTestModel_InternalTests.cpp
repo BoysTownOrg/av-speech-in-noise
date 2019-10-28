@@ -101,7 +101,7 @@ class TargetWritingUseCase : public virtual UseCase {
 class SubmittingResponse : public virtual UseCase {};
 
 class InitializingTest : public UseCase {
-    TestInformation information{};
+    TestIdentity information{};
     Test common{};
     TestMethod *method;
 

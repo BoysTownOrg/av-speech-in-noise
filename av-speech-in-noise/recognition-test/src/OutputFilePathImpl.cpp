@@ -6,7 +6,7 @@ OutputFilePathImpl::OutputFilePathImpl(
     TimeStamp *timeStamp, FileSystemPath *systemPath)
     : timeStamp{timeStamp}, systemPath{systemPath} {}
 
-std::string OutputFilePathImpl::generateFileName(const TestInformation &test) {
+std::string OutputFilePathImpl::generateFileName(const TestIdentity &test) {
     std::stringstream stream;
     stream << formatTestInformation(test);
     stream << '_';
@@ -15,7 +15,7 @@ std::string OutputFilePathImpl::generateFileName(const TestInformation &test) {
 }
 
 std::string OutputFilePathImpl::formatTestInformation(
-    const TestInformation &test) {
+    const TestIdentity &test) {
     std::stringstream stream;
     stream << "Subject_";
     stream << test.subjectId;

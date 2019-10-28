@@ -82,7 +82,7 @@ class OutputFilePathTests : public ::testing::Test {
     TimeStampStub timeStamp;
     FileSystemPathStub systemPath;
     av_speech_in_noise::OutputFilePathImpl path{&timeStamp, &systemPath};
-    av_speech_in_noise::TestInformation test{};
+    av_speech_in_noise::TestIdentity test{};
 
     std::string generateFileName() { return path.generateFileName(test); }
 

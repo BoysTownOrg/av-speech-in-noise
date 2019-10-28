@@ -14,7 +14,7 @@ class OutputFileStub : public OutputFile {
     LogString log_{};
     const AdaptiveTest *adaptiveTest_{};
     const FixedLevelTest *fixedLevelTest_{};
-    const TestInformation *openNewFileParameters_{};
+    const TestIdentity *openNewFileParameters_{};
     bool throwOnOpen_{};
 
   public:
@@ -26,7 +26,7 @@ class OutputFileStub : public OutputFile {
         writtenAdaptiveCoordinateResponseTrial_ = trial;
     }
 
-    void openNewFile(const TestInformation &p) override {
+    void openNewFile(const TestIdentity &p) override {
         addToLog("openNewFile ");
         openNewFileParameters_ = &p;
         if (throwOnOpen_)

@@ -70,7 +70,7 @@ class RecognitionTestModel_InternalStub
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
-    const TestInformation *testInformation_{};
+    const TestIdentity *testInformation_{};
     const Test *commonTest_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
@@ -79,7 +79,7 @@ class RecognitionTestModel_InternalStub
 
   public:
     void initialize(TestMethod *tm, const Test &ct,
-        const TestInformation &ti) override {
+        const TestIdentity &ti) override {
         testMethod_ = tm;
         commonTest_ = &ct;
         testInformation_ = &ti;
@@ -135,7 +135,7 @@ class InitializingTestUseCase {
     virtual ~InitializingTestUseCase() = default;
     virtual void run(RecognitionTestModel &) = 0;
     virtual const Test &commonTest() = 0;
-    virtual const TestInformation &testInformation() = 0;
+    virtual const TestIdentity &testInformation() = 0;
     virtual const TestMethod *testMethod() = 0;
 };
 
@@ -153,8 +153,8 @@ class InitializingAdaptiveTest : public InitializingTestUseCase {
 
     const Test &commonTest() override { return test; }
 
-    const TestInformation &testInformation() override {
-        return test.information;
+    const TestIdentity &testInformation() override {
+        return test.identity;
     }
 
     const TestMethod *testMethod() override { return method; }
@@ -174,8 +174,8 @@ class InitializingFixedLevelTest : public InitializingTestUseCase {
 
     const Test &commonTest() override { return test; }
 
-    const TestInformation &testInformation() override {
-        return test.information;
+    const TestIdentity &testInformation() override {
+        return test.identity;
     }
 
     const TestMethod *testMethod() override { return method; }
@@ -197,8 +197,8 @@ class InitializingFixedLevelTestWithFiniteTargets
 
     const Test &commonTest() override { return test; }
 
-    const TestInformation &testInformation() override {
-        return test.information;
+    const TestIdentity &testInformation() override {
+        return test.identity;
     }
 
     const TestMethod *testMethod() override { return method; }

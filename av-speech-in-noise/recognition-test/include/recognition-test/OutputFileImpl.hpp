@@ -72,7 +72,7 @@ class Writer {
 class OutputFilePath {
   public:
     virtual ~OutputFilePath() = default;
-    virtual std::string generateFileName(const TestInformation &) = 0;
+    virtual std::string generateFileName(const TestIdentity &) = 0;
     virtual std::string homeDirectory() = 0;
     virtual std::string outputDirectory() = 0;
 };
@@ -87,7 +87,7 @@ class OutputFileImpl : public OutputFile {
 
   public:
     OutputFileImpl(Writer *, OutputFilePath *);
-    void openNewFile(const TestInformation &) override;
+    void openNewFile(const TestIdentity &) override;
     void close() override;
     void save() override;
     void writeTest(const AdaptiveTest &) override;
@@ -103,7 +103,7 @@ class OutputFileImpl : public OutputFile {
     void write(std::string);
     std::string formatTest(const AdaptiveTest &);
     std::string formatTest(const FixedLevelTest &);
-    std::string generateNewFilePath(const TestInformation &);
+    std::string generateNewFilePath(const TestIdentity &);
 };
 }
 
