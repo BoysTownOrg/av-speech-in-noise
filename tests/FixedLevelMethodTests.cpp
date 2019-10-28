@@ -7,6 +7,40 @@
 #include <recognition-test/FixedLevelMethod.hpp>
 
 namespace av_speech_in_noise::tests {
+class UseCase {
+  public:
+    virtual ~UseCase() = default;
+    virtual void run(FixedLevelMethod &) = 0;
+};
+
+class InitializingMethod : public UseCase {
+    FixedLevelTest test;
+    TargetList &list;
+    TestConcluder &concluder;
+
+  public:
+    InitializingMethod(TargetList &list, TestConcluder &concluder)
+        : list{list}, concluder{concluder} {}
+
+    void run(FixedLevelMethod &m) override {
+        m.initialize(test, &list, &concluder);
+    }
+};
+
+class SubmittingCoordinateResponse : public UseCase {
+    coordinate_response_measure::Response response;
+
+  public:
+    void run(FixedLevelMethod &m) override { m.submitResponse(response); }
+};
+
+class SubmittingFreeResponse : public UseCase {
+    FreeResponse response;
+
+  public:
+    void run(FixedLevelMethod &m) override { m.submitResponse(response); }
+};
+
 namespace {
 class FixedLevelMethodTests : public ::testing::Test {
   protected:
@@ -17,6 +51,10 @@ class FixedLevelMethodTests : public ::testing::Test {
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test;
     coordinate_response_measure::Response coordinateResponse;
+    FreeResponse freeResponse;
+    SubmittingCoordinateResponse submittingCoordinateResponse;
+    SubmittingFreeResponse submittingFreeResponse;
+    InitializingMethod initializingMethod{targetList, testConcluder};
 
     void initialize() { method.initialize(test, &targetList, &testConcluder); }
 
@@ -29,6 +67,8 @@ class FixedLevelMethodTests : public ::testing::Test {
     void submitCoordinateResponse() {
         method.submitResponse(coordinateResponse);
     }
+
+    void submitFreeResponse() { method.submitResponse(freeResponse); }
 
     void writeLastCoordinateResponse() {
         method.writeLastCoordinateResponse(&outputFile);
@@ -48,13 +88,13 @@ class FixedLevelMethodTests : public ::testing::Test {
         targetList.setCurrent(std::move(s));
     }
 
-    void assertTestIncompleteAfterCoordinateResponse() {
-        submitCoordinateResponse();
+    void assertTestIncompleteAfter(UseCase &useCase) {
+        run(useCase);
         assertTestIncomplete();
     }
 
-    void assertTestCompleteAfterCoordinateResponse() {
-        submitCoordinateResponse();
+    void assertTestCompleteAfter(UseCase &useCase) {
+        run(useCase);
         assertTestComplete();
     }
 
@@ -65,6 +105,42 @@ class FixedLevelMethodTests : public ::testing::Test {
     void assertTestComplete() { assertTrue(testComplete()); }
 
     void setTestComplete() { testConcluder.setComplete(); }
+
+    void setTestIncomplete() { testConcluder.setIncomplete(); }
+
+    void run(UseCase &useCase) { useCase.run(method); }
+
+    void assertTargetListPassedToConcluder(UseCase &useCase) {
+        initialize();
+        assertTargetListPassedToConcluder_(useCase);
+    }
+
+    void assertTargetListPassedToConcluder_(UseCase &useCase) {
+        run(useCase);
+        assertEqual(
+            static_cast<TargetList *>(&targetList), testConcluder.targetList());
+    }
+
+    void assertTestCompleteWhenComplete(UseCase &useCase) {
+        initialize();
+        assertTestCompleteWhenComplete_(useCase);
+    }
+
+    void assertTestCompleteWhenComplete_(UseCase &useCase) {
+        assertTestIncompleteAfter(useCase);
+        setTestComplete();
+        assertTestCompleteAfter(useCase);
+    }
+
+    void assertTestConcluderLogContains(const std::string &s) {
+        assertTrue(testConcluder.log().contains(s));
+    }
+
+    void assertTestConcluderLogContainsAfter(
+        const std::string &s, UseCase &useCase) {
+        run(useCase);
+        assertTestConcluderLogContains(s);
+    }
 };
 
 TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
@@ -168,18 +244,42 @@ TEST_F(FixedLevelMethodTests,
     assertEqual("a", evaluator.correctFilePath());
 }
 
-TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
-    initialize();
-    assertTestIncompleteAfterCoordinateResponse();
-    setTestComplete();
-    assertTestCompleteAfterCoordinateResponse();
+TEST_F(FixedLevelMethodTests, completeWhenTestCompleteAfterCoordinateResponse) {
+    assertTestCompleteWhenComplete(submittingCoordinateResponse);
 }
 
-TEST_F(FixedLevelMethodTests, completeQueryPassesTargetListToConcluder) {
+TEST_F(FixedLevelMethodTests, completeWhenTestCompleteAfterFreeResponse) {
+    assertTestCompleteWhenComplete(submittingFreeResponse);
+}
+
+TEST_F(FixedLevelMethodTests, completeWhenTestCompleteAfterInitializing) {
+    assertTestCompleteWhenComplete_(initializingMethod);
+}
+
+TEST_F(FixedLevelMethodTests,
+    submitCoordinateResponsePassesTargetListToConcluder) {
+    assertTargetListPassedToConcluder(submittingCoordinateResponse);
+}
+
+TEST_F(FixedLevelMethodTests, submitFreeResponsePassesTargetListToConcluder) {
+    assertTargetListPassedToConcluder(submittingFreeResponse);
+}
+
+TEST_F(FixedLevelMethodTests, initializePassesTargetListToConcluder) {
+    assertTargetListPassedToConcluder_(initializingMethod);
+}
+
+TEST_F(FixedLevelMethodTests,
+    submitCoordinateResponseSubmitsResponsePriorToQueryingCompletion) {
     initialize();
-    testComplete();
-    assertEqual(
-        static_cast<TargetList *>(&targetList), testConcluder.targetList());
+    assertTestConcluderLogContainsAfter(
+        "submitResponse complete", submittingCoordinateResponse);
+}
+
+TEST_F(FixedLevelMethodTests,
+    initializeInitializesConcluderBeforeQueryingCompletion) {
+    assertTestConcluderLogContainsAfter(
+        "initialize complete", initializingMethod);
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {

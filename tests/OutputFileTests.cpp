@@ -269,8 +269,7 @@ class OutputFileTests : public ::testing::Test {
         auto line_ = written_.substr(precedingNewLine + 1);
         assertEqual(
             std::iterator_traits<std::string::iterator>::difference_type{n - 1},
-            std::count(line_.begin(), line_.end(), ',')
-        );
+            std::count(line_.begin(), line_.end(), ','));
     }
 
     void assertNthEntryOfThirdLine(std::string what, int n) {
