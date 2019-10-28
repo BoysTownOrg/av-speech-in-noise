@@ -7,7 +7,7 @@
 
 namespace av_speech_in_noise::tests {
 namespace {
-class AdaptiveMethodStub : public IAdaptiveMethod {
+class AdaptiveMethodStub : public AdaptiveMethod {
     const AdaptiveTest *test_{};
 
   public:

@@ -76,7 +76,7 @@ class TestConcluder {
     virtual void initialize(const FixedLevelTest &) = 0;
 };
 
-class IAdaptiveMethod : public virtual TestMethod {
+class AdaptiveMethod : public virtual TestMethod {
   public:
     virtual void initialize(const AdaptiveTest &) = 0;
 };
@@ -107,7 +107,7 @@ class IRecognitionTestModel_Internal {
 };
 
 class RecognitionTestModel : public Model {
-    IAdaptiveMethod *adaptiveMethod;
+    AdaptiveMethod *adaptiveMethod;
     IFixedLevelMethod *fixedLevelMethod;
     TargetList *infiniteTargetList;
     TestConcluder *fixedTrialTestConcluder;
@@ -116,7 +116,7 @@ class RecognitionTestModel : public Model {
     IRecognitionTestModel_Internal *model;
 
   public:
-    RecognitionTestModel(IAdaptiveMethod *, IFixedLevelMethod *,
+    RecognitionTestModel(AdaptiveMethod *, IFixedLevelMethod *,
         TargetList *infiniteTargetList, TestConcluder *fixedTrialTestConcluder,
         TargetList *finiteTargetList, TestConcluder *completesWhenTargetsEmpty,
         IRecognitionTestModel_Internal *);

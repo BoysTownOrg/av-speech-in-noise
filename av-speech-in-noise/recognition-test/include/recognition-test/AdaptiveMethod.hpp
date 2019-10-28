@@ -32,18 +32,18 @@ class Track {
     virtual int x() = 0;
     virtual bool complete() = 0;
     virtual int reversals() = 0;
+
+    class Factory {
+      public:
+        virtual ~Factory() = default;
+        virtual std::shared_ptr<Track> make(const Settings &) = 0;
+    };
 };
 
 class TrackSettingsReader {
   public:
     virtual ~TrackSettingsReader() = default;
     virtual const TrackingRule *read(std::string) = 0;
-};
-
-class TrackFactory {
-  public:
-    virtual ~TrackFactory() = default;
-    virtual std::shared_ptr<Track> make(const Track::Settings &) = 0;
 };
 
 class TargetListReader {
@@ -53,7 +53,7 @@ class TargetListReader {
     virtual lists_type read(std::string directory) = 0;
 };
 
-class AdaptiveMethod : public IAdaptiveMethod {
+class AdaptiveMethodImpl : public AdaptiveMethod {
     struct TargetListWithTrack {
         TargetList *list;
         std::shared_ptr<Track> track;
@@ -66,14 +66,14 @@ class AdaptiveMethod : public IAdaptiveMethod {
     const AdaptiveTest *test{};
     TargetListReader *targetListSetReader;
     TrackSettingsReader *trackSettingsReader;
-    TrackFactory *snrTrackFactory;
+    Track::Factory *snrTrackFactory;
     ResponseEvaluator *evaluator;
     Randomizer *randomizer;
     Track *currentSnrTrack{};
     TargetList *currentTargetList{};
 
   public:
-    AdaptiveMethod(TargetListReader *, TrackSettingsReader *, TrackFactory *,
+    AdaptiveMethodImpl(TargetListReader *, TrackSettingsReader *, Track::Factory *,
         ResponseEvaluator *, Randomizer *);
     void initialize(const AdaptiveTest &) override;
     int snr_dB() override;
@@ -90,7 +90,7 @@ class AdaptiveMethod : public IAdaptiveMethod {
     void submitResponse(const FreeResponse &) override;
 
   private:
-    void selectNextListAfter(void (AdaptiveMethod::*)());
+    void selectNextListAfter(void (AdaptiveMethodImpl::*)());
     void prepareSnrTracks();
     void makeSnrTracks();
     void makeTrackWithList(TargetList *list);

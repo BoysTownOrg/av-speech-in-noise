@@ -2,15 +2,15 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-AdaptiveMethod::AdaptiveMethod(TargetListReader *targetListSetReader,
-    TrackSettingsReader *trackSettingsReader, TrackFactory *snrTrackFactory,
+AdaptiveMethodImpl::AdaptiveMethodImpl(TargetListReader *targetListSetReader,
+    TrackSettingsReader *trackSettingsReader, Track::Factory *snrTrackFactory,
     ResponseEvaluator *evaluator, Randomizer *randomizer)
     : targetListSetReader{targetListSetReader},
       trackSettingsReader{trackSettingsReader},
       snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
                                                                   randomizer} {}
 
-void AdaptiveMethod::initialize(const AdaptiveTest &p) {
+void AdaptiveMethodImpl::initialize(const AdaptiveTest &p) {
     test = &p;
     trackSettings.rule = trackSettingsReader->read(p.trackSettingsFile);
     trackSettings.ceiling = p.ceilingSnr_dB;
@@ -19,26 +19,26 @@ void AdaptiveMethod::initialize(const AdaptiveTest &p) {
     trackSettings.bumpLimit = p.trackBumpLimit;
     lists = targetListSetReader->read(p.targetListDirectory);
 
-    selectNextListAfter(&AdaptiveMethod::makeSnrTracks);
+    selectNextListAfter(&AdaptiveMethodImpl::makeSnrTracks);
 }
 
-void AdaptiveMethod::selectNextListAfter(void (AdaptiveMethod::*f)()) {
+void AdaptiveMethodImpl::selectNextListAfter(void (AdaptiveMethodImpl::*f)()) {
     (this->*f)();
     selectNextList();
 }
 
-void AdaptiveMethod::makeSnrTracks() {
+void AdaptiveMethodImpl::makeSnrTracks() {
     targetListsWithTracks.clear();
     for (auto list : lists)
         makeTrackWithList(list.get());
 }
 
-void AdaptiveMethod::makeTrackWithList(TargetList *list) {
+void AdaptiveMethodImpl::makeTrackWithList(TargetList *list) {
     targetListsWithTracks.push_back(
         {list, snrTrackFactory->make(trackSettings)});
 }
 
-void AdaptiveMethod::selectNextList() {
+void AdaptiveMethodImpl::selectNextList() {
     removeCompleteTracks();
     auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
     if (remainingLists == 0)
@@ -49,7 +49,7 @@ void AdaptiveMethod::selectNextList() {
     currentTargetList = targetListsWithTrack_.list;
 }
 
-void AdaptiveMethod::removeCompleteTracks() {
+void AdaptiveMethodImpl::removeCompleteTracks() {
     auto end = targetListsWithTracks.end();
     targetListsWithTracks.erase(
         std::remove_if(targetListsWithTracks.begin(), end,
@@ -57,19 +57,19 @@ void AdaptiveMethod::removeCompleteTracks() {
         end);
 }
 
-bool AdaptiveMethod::complete(const TargetListWithTrack &t) {
+bool AdaptiveMethodImpl::complete(const TargetListWithTrack &t) {
     return t.track->complete();
 }
 
-bool AdaptiveMethod::complete() {
+bool AdaptiveMethodImpl::complete() {
     return std::all_of(targetListsWithTracks.begin(),
         targetListsWithTracks.end(),
         [&](const TargetListWithTrack &t) { return complete(t); });
 }
 
-std::string AdaptiveMethod::next() { return currentTargetList->next(); }
+std::string AdaptiveMethodImpl::next() { return currentTargetList->next(); }
 
-void AdaptiveMethod::submitResponse(
+void AdaptiveMethodImpl::submitResponse(
     const coordinate_response_measure::Response &response) {
     auto lastSnr_dB_ = snr_dB();
     auto current_ = current();
@@ -89,32 +89,32 @@ void AdaptiveMethod::submitResponse(
     selectNextList();
 }
 
-int AdaptiveMethod::snr_dB() { return currentSnrTrack->x(); }
+int AdaptiveMethodImpl::snr_dB() { return currentSnrTrack->x(); }
 
-std::string AdaptiveMethod::current() { return currentTargetList->current(); }
+std::string AdaptiveMethodImpl::current() { return currentTargetList->current(); }
 
-bool AdaptiveMethod::correct(const std::string &target,
+bool AdaptiveMethodImpl::correct(const std::string &target,
     const coordinate_response_measure::Response &response) {
     return evaluator->correct(target, response);
 }
 
-void AdaptiveMethod::correct() { currentSnrTrack->down(); }
+void AdaptiveMethodImpl::correct() { currentSnrTrack->down(); }
 
-void AdaptiveMethod::incorrect() { currentSnrTrack->up(); }
+void AdaptiveMethodImpl::incorrect() { currentSnrTrack->up(); }
 
-void AdaptiveMethod::writeTestingParameters(OutputFile *file) {
+void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
     file->writeTest(*test);
 }
 
-void AdaptiveMethod::writeLastCoordinateResponse(OutputFile *file) {
+void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
     file->writeTrial(lastTrial);
 }
 
-void AdaptiveMethod::writeLastCorrectResponse(OutputFile *file) {
+void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile *file) {
     file->writeTrial(lastOpenSetTrial);
 }
 
-void AdaptiveMethod::writeLastIncorrectResponse(OutputFile *file) {
+void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
     file->writeTrial(lastOpenSetTrial);
 }
 
@@ -130,7 +130,7 @@ static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
     trial.correct = c;
 }
 
-void AdaptiveMethod::submitIncorrectResponse() {
+void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
     lastOpenSetTrial.target = evaluator->fileName(current());
@@ -139,7 +139,7 @@ void AdaptiveMethod::submitIncorrectResponse() {
     selectNextList();
 }
 
-void AdaptiveMethod::submitCorrectResponse() {
+void AdaptiveMethodImpl::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
     lastOpenSetTrial.target = evaluator->fileName(current());
@@ -148,5 +148,5 @@ void AdaptiveMethod::submitCorrectResponse() {
     selectNextList();
 }
 
-void AdaptiveMethod::submitResponse(const FreeResponse &) { selectNextList(); }
+void AdaptiveMethodImpl::submitResponse(const FreeResponse &) { selectNextList(); }
 }

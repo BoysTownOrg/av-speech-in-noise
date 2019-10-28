@@ -28,21 +28,21 @@ class TrackSettingsReaderStub : public TrackSettingsReader {
 class UseCase {
   public:
     virtual ~UseCase() = default;
-    virtual void run(AdaptiveMethod &) = 0;
+    virtual void run(AdaptiveMethodImpl &) = 0;
 };
 
 class Initializing : public UseCase {
     AdaptiveTest test_{};
 
   public:
-    void run(AdaptiveMethod &method) override { method.initialize(test_); }
+    void run(AdaptiveMethodImpl &method) override { method.initialize(test_); }
 };
 
 class SubmittingCoordinateResponse : public UseCase {
     coordinate_response_measure::Response response_{};
 
   public:
-    void run(AdaptiveMethod &method) override {
+    void run(AdaptiveMethodImpl &method) override {
         method.submitResponse(response_);
     }
 };
@@ -56,7 +56,7 @@ class SubmittingCorrectCoordinateResponse : public UseCase {
         ResponseEvaluatorStub &evaluator)
         : evaluator{evaluator} {}
 
-    void run(AdaptiveMethod &method) override {
+    void run(AdaptiveMethodImpl &method) override {
         evaluator.setCorrect();
         method.submitResponse(response_);
     }
@@ -71,7 +71,7 @@ class SubmittingIncorrectCoordinateResponse : public UseCase {
         ResponseEvaluatorStub &evaluator)
         : evaluator{evaluator} {}
 
-    void run(AdaptiveMethod &method) override {
+    void run(AdaptiveMethodImpl &method) override {
         evaluator.setIncorrect();
         method.submitResponse(response_);
     }
@@ -79,14 +79,14 @@ class SubmittingIncorrectCoordinateResponse : public UseCase {
 
 class SubmittingCorrectResponse : public UseCase {
   public:
-    void run(AdaptiveMethod &method) override {
+    void run(AdaptiveMethodImpl &method) override {
         method.submitCorrectResponse();
     }
 };
 
 class SubmittingIncorrectResponse : public UseCase {
   public:
-    void run(AdaptiveMethod &method) override {
+    void run(AdaptiveMethodImpl &method) override {
         method.submitIncorrectResponse();
     }
 };
@@ -109,7 +109,7 @@ class WritingCoordinateResponse : public WritingResponseUseCase {
   public:
     explicit WritingCoordinateResponse(OutputFile &file_) : file_{file_} {}
 
-    void run(AdaptiveMethod &method) override {
+    void run(AdaptiveMethodImpl &method) override {
         method.submitResponse(response_);
         method.writeLastCoordinateResponse(&file_);
     }
@@ -130,7 +130,7 @@ class WritingCorrectResponse : public WritingResponseUseCase,
   public:
     explicit WritingCorrectResponse(OutputFile &file_) : file_{file_} {}
 
-    void run(AdaptiveMethod &method) override {
+    void run(AdaptiveMethodImpl &method) override {
         method.submitCorrectResponse();
         method.writeLastCorrectResponse(&file_);
     }
@@ -155,7 +155,7 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
   public:
     explicit WritingIncorrectResponse(OutputFile &file_) : file_{file_} {}
 
-    void run(AdaptiveMethod &method) override {
+    void run(AdaptiveMethodImpl &method) override {
         method.submitIncorrectResponse();
         method.writeLastIncorrectResponse(&file_);
     }
@@ -181,7 +181,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator;
     RandomizerStub randomizer;
     OutputFileStub outputFile;
-    AdaptiveMethod method{&targetListSetReader, &trackSettingsReader,
+    AdaptiveMethodImpl method{&targetListSetReader, &trackSettingsReader,
         &snrTrackFactory, &evaluator, &randomizer};
     Initializing initializing;
     SubmittingCoordinateResponse submittingCoordinateResponse;

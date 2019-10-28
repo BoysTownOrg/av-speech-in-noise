@@ -279,7 +279,7 @@ void main() {
         &textFileReader,
         &trackSettingsInterpreter
     };
-    AdaptiveMethod adaptiveMethod{
+    AdaptiveMethodImpl adaptiveMethod{
         &targetListReader,
         &trackSettingsReader,
         &snrTrackFactory,

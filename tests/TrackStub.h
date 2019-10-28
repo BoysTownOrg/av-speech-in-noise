@@ -50,7 +50,7 @@ class TrackStub : public Track {
     void setComplete() { complete_ = true; }
 };
 
-class TrackFactoryStub : public TrackFactory {
+class TrackFactoryStub : public Track::Factory {
     std::vector<Track::Settings> parameters_;
     std::vector<std::shared_ptr<Track>> tracks_;
 
@@ -68,6 +68,6 @@ class TrackFactoryStub : public TrackFactory {
         tracks_ = std::move(t);
     }
 };
-} // namespace av_speech_in_noise::tests
+}
 
 #endif

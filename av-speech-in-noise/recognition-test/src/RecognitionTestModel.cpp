@@ -2,7 +2,7 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-RecognitionTestModel::RecognitionTestModel(IAdaptiveMethod *adaptiveMethod,
+RecognitionTestModel::RecognitionTestModel(AdaptiveMethod *adaptiveMethod,
     IFixedLevelMethod *fixedLevelMethod, TargetList *infiniteTargetList,
     TestConcluder *fixedTrialTestConcluder, TargetList *finiteTargetList,
     TestConcluder *completesWhenTargetsEmpty,
