@@ -13,9 +13,7 @@ class TestConcluderStub : public TestConcluder {
     bool responseSubmitted_{};
 
   public:
-    const auto &log() const {
-        return log_;
-    }
+    const auto &log() const { return log_; }
 
     auto targetList() const { return targetList_; }
 
