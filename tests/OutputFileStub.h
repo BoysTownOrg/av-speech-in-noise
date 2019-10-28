@@ -85,5 +85,6 @@ class OutputFileStub : public OutputFile {
         return writtenOpenSetAdaptiveTrial_;
     }
 };
-} // namespace av_speech_in_noise::tests
+}
+
 #endif

@@ -182,7 +182,7 @@ class PlayingTrial : public AudioDeviceUseCase {
 
 class SubmittingFreeResponse : public SubmittingResponse,
                                public TargetWritingUseCase {
-    FreeResponse response_;
+    FreeResponse response_{};
 
   public:
     void run(RecognitionTestModelImpl &m) override {
@@ -194,6 +194,8 @@ class SubmittingFreeResponse : public SubmittingResponse,
     }
 
     void setResponse(std::string s) { response_.response = std::move(s); }
+
+    void setFlagged() { response_.flagged = true; }
 };
 
 class SubmittingCoordinateResponse : public SubmittingResponse {
@@ -936,6 +938,17 @@ TEST_F(RecognitionTestModelTests, submitFreeResponseWritesResponse) {
     assertEqual("a", writtenFreeResponseTrial().response);
 }
 
+TEST_F(RecognitionTestModelTests, submitFreeResponseWritesFlagged) {
+    submittingFreeResponse.setFlagged();
+    run(submittingFreeResponse);
+    assertTrue(writtenFreeResponseTrial().flagged);
+}
+
+TEST_F(RecognitionTestModelTests, submitFreeResponseWritesWithoutFlag) {
+    run(submittingFreeResponse);
+    assertFalse(writtenFreeResponseTrial().flagged);
+}
+
 TEST_F(RecognitionTestModelTests, submitFreeResponseWritesTarget) {
     assertWritesTarget(submittingFreeResponse);
 }
@@ -994,5 +1007,5 @@ TEST_F(RecognitionTestModelTests,
     run(submittingIncorrectResponse);
     assertTrue(testMethod.submittedIncorrectResponse());
 }
-} // namespace
-} // namespace av_speech_in_noise::tests::recognition_test
+}
+}

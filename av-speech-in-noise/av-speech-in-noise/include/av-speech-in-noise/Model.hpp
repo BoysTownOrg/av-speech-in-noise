@@ -106,6 +106,7 @@ struct FreeResponse {
 struct FreeResponseTrial {
     std::string response;
     std::string target;
+    bool flagged;
 };
 
 namespace open_set {
