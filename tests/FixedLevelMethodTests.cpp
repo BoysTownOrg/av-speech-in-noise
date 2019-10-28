@@ -87,6 +87,16 @@ class FixedLevelMethodTests : public ::testing::Test {
         assertTestComplete();
     }
 
+    void assertTestIncompleteAfterFreeResponse() {
+        submitFreeResponse();
+        assertTestIncomplete();
+    }
+
+    void assertTestCompleteAfterFreeResponse() {
+        submitFreeResponse();
+        assertTestComplete();
+    }
+
     void assertTestIncomplete() { assertFalse(testComplete()); }
 
     bool testComplete() { return method.complete(); }
@@ -213,6 +223,13 @@ TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
     assertTestIncompleteAfterCoordinateResponse();
     setTestComplete();
     assertTestCompleteAfterCoordinateResponse();
+}
+
+TEST_F(FixedLevelMethodTests, completeWhenTestCompleteAfterFreeResponse) {
+    initialize();
+    assertTestIncompleteAfterFreeResponse();
+    setTestComplete();
+    assertTestCompleteAfterFreeResponse();
 }
 
 TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesTargetListToConcluder) {
