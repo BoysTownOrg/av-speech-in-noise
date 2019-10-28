@@ -33,7 +33,7 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     bool complete() override;
     int reversals() override;
 
-    class Factory : public av_speech_in_noise::Track::Factory {
+    class Factory : public Track::Factory {
         std::shared_ptr<av_speech_in_noise::Track> make(
             const av_speech_in_noise::Track::Settings &s) override {
             return std::make_shared<AdaptiveTrack>(s);
