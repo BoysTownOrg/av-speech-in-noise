@@ -263,6 +263,16 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(std::move(what), n, 2);
     }
 
+    void assertEntriesOfSecondLine(int n) {
+        std::string written_ = written();
+        auto precedingNewLine = find_nth_element(written_, 2 - 1, '\n');
+        auto line_ = written_.substr(precedingNewLine + 1);
+        assertEqual(
+            std::iterator_traits<std::string::iterator>::difference_type{n - 1},
+            std::count(line_.begin(), line_.end(), ',')
+        );
+    }
+
     void assertNthEntryOfThirdLine(std::string what, int n) {
         assertNthCommaDelimitedEntryOfLine(std::move(what), n, 3);
     }
@@ -286,6 +296,18 @@ class OutputFileTests : public ::testing::Test {
         useCase.correct();
         run(useCase);
         assertNthEntryOfSecondLine("correct", useCase.evaluationEntryIndex());
+    }
+
+    void assertFlaggedWritesFlagged() {
+        freeResponseTrial.flagged = true;
+        writeFreeResponseTrial();
+        assertNthEntryOfSecondLine("FLAGGED", 3);
+    }
+
+    void assertNoFlagYieldsEntries(int n) {
+        freeResponseTrial.flagged = false;
+        writeFreeResponseTrial();
+        assertEntriesOfSecondLine(n);
     }
 
     void assertAdaptiveCoordinateHeadingAtLine(int n) {
@@ -494,6 +516,14 @@ TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
 
 TEST_F(OutputFileTests, writeCorrectOpenSetAdaptiveTrial) {
     assertCorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
+}
+
+TEST_F(OutputFileTests, writeFlaggedFreeResponseTrial) {
+    assertFlaggedWritesFlagged();
+}
+
+TEST_F(OutputFileTests, writeNoFlagFreeResponseTrialOnlyTwoEntries) {
+    assertNoFlagYieldsEntries(2);
 }
 
 TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
