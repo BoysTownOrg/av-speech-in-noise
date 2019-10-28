@@ -106,7 +106,7 @@ class RecognitionTestModel_ {
     virtual int trialNumber() = 0;
 };
 
-class RecognitionTestModel : public Model {
+class ModelImpl : public Model {
     AdaptiveMethod *adaptiveMethod;
     FixedLevelMethod *fixedLevelMethod;
     TargetList *infiniteTargetList;
@@ -116,7 +116,7 @@ class RecognitionTestModel : public Model {
     RecognitionTestModel_ *model;
 
   public:
-    RecognitionTestModel(AdaptiveMethod *, FixedLevelMethod *,
+    ModelImpl(AdaptiveMethod *, FixedLevelMethod *,
         TargetList *infiniteTargetList, TestConcluder *fixedTrialTestConcluder,
         TargetList *finiteTargetList, TestConcluder *completesWhenTargetsEmpty,
         RecognitionTestModel_ *);

@@ -1,8 +1,8 @@
-#ifndef TargetListStub_h
-#define TargetListStub_h
+#ifndef TESTS_TARGETLISTSTUB_H_
+#define TESTS_TARGETLISTSTUB_H_
 
 #include "LogString.h"
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/Model.hpp>
 
 namespace av_speech_in_noise::tests {
 class TargetListStub : public TargetList {

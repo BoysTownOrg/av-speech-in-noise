@@ -1,7 +1,7 @@
-#ifndef ResponseEvaluatorStub_h
-#define ResponseEvaluatorStub_h
+#ifndef TESTS_RESPONSEEVALUATORSTUB_H_
+#define TESTS_RESPONSEEVALUATORSTUB_H_
 
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/Model.hpp>
 
 namespace av_speech_in_noise::tests {
 class ResponseEvaluatorStub : public ResponseEvaluator {

@@ -338,14 +338,14 @@ void main() {
     FixedLevelMethodImpl fixedLevelMethod{
         &responseEvaluator
     };
-    RecognitionTestModel_Impl model_internal{
+    RecognitionTestModel model_internal{
         &targetPlayer,
         &maskerPlayer,
         &responseEvaluator,
         &outputFile,
         &randomizer
     };
-    RecognitionTestModel model{
+    ModelImpl model{
         &adaptiveMethod,
         &fixedLevelMethod,
         &infiniteTargetList,

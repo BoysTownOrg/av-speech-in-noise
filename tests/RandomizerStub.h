@@ -1,7 +1,7 @@
-#ifndef RandomizerStub_h
-#define RandomizerStub_h
+#ifndef TESTS_RANDOMIZERSTUB_H_
+#define TESTS_RANDOMIZERSTUB_H_
 
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/Model.hpp>
 
 namespace av_speech_in_noise::tests {
 class RandomizerStub : public Randomizer {

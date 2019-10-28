@@ -1,7 +1,7 @@
 #ifndef TESTS_TESTCONCLUDERSTUB_H_
 #define TESTS_TESTCONCLUDERSTUB_H_
 
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/Model.hpp>
 
 namespace av_speech_in_noise::tests {
 class TestConcluderStub : public TestConcluder {

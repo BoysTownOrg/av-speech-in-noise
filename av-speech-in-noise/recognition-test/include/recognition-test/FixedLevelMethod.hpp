@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_FIXEDLEVELMETHOD_HPP_
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_FIXEDLEVELMETHOD_HPP_
 
-#include "RecognitionTestModel.hpp"
+#include "Model.hpp"
 
 namespace av_speech_in_noise {
 class EmptyTargetListTestConcluder : public TestConcluder {

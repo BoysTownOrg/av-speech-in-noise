@@ -1,7 +1,7 @@
-#ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RECOGNITIONTESTMODEL_INTERNAL_HPP_
-#define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RECOGNITIONTESTMODEL_INTERNAL_HPP_
+#ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RECOGNITIONTESTMODEL__HPP_
+#define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RECOGNITIONTESTMODEL__HPP_
 
-#include "RecognitionTestModel.hpp"
+#include "Model.hpp"
 #include <string>
 #include <vector>
 
@@ -57,7 +57,7 @@ class MaskerPlayer {
     virtual double fadeTimeSeconds() = 0;
 };
 
-class RecognitionTestModel_Impl : public TargetPlayer::EventListener,
+class RecognitionTestModel : public TargetPlayer::EventListener,
                                       public MaskerPlayer::EventListener,
                                       public RecognitionTestModel_ {
     MaskerPlayer *maskerPlayer;
@@ -73,7 +73,7 @@ class RecognitionTestModel_Impl : public TargetPlayer::EventListener,
     Condition condition;
 
   public:
-    RecognitionTestModel_Impl(TargetPlayer *, MaskerPlayer *,
+    RecognitionTestModel(TargetPlayer *, MaskerPlayer *,
         ResponseEvaluator *, OutputFile *, Randomizer *);
     void initialize(
         TestMethod *, const Test &, const TestIdentity &) override;
@@ -128,10 +128,10 @@ class RecognitionTestModel_Impl : public TargetPlayer::EventListener,
     void setAudioDevices(const AudioSettings &);
     int findDeviceIndex(const AudioSettings &);
     void throwInvalidAudioDeviceOnErrorSettingDevice(
-        void (RecognitionTestModel_Impl::*f)(const std::string &),
+        void (RecognitionTestModel::*f)(const std::string &),
         const std::string &);
     void throwInvalidAudioFileOnErrorLoading(
-        void (RecognitionTestModel_Impl::*f)(const std::string &),
+        void (RecognitionTestModel::*f)(const std::string &),
         const std::string &file);
     void loadTargetFile(std::string);
     void setTargetLevel_dB(double);

@@ -21,7 +21,7 @@ class NullTestMethod : public TestMethod {
 }
 static NullTestMethod nullTestMethod;
 
-RecognitionTestModel_Impl::RecognitionTestModel_Impl(
+RecognitionTestModel::RecognitionTestModel(
     TargetPlayer *targetPlayer, MaskerPlayer *maskerPlayer,
     ResponseEvaluator *evaluator, OutputFile *outputFile,
     Randomizer *randomizer)
@@ -32,16 +32,16 @@ RecognitionTestModel_Impl::RecognitionTestModel_Impl(
     maskerPlayer->subscribe(this);
 }
 
-void RecognitionTestModel_Impl::subscribe(Model::EventListener *listener) {
+void RecognitionTestModel::subscribe(Model::EventListener *listener) {
     listener_ = listener;
 }
 
-void RecognitionTestModel_Impl::throwIfTrialInProgress() {
+void RecognitionTestModel::throwIfTrialInProgress() {
     if (trialInProgress())
         throw Model::RequestFailure{"Trial in progress."};
 }
 
-void RecognitionTestModel_Impl::initialize(TestMethod *testMethod_,
+void RecognitionTestModel::initialize(TestMethod *testMethod_,
     const Test &common, const TestIdentity &information) {
     throwIfTrialInProgress();
     testMethod = testMethod_;
@@ -49,11 +49,11 @@ void RecognitionTestModel_Impl::initialize(TestMethod *testMethod_,
     trialNumber_ = 1;
 }
 
-bool RecognitionTestModel_Impl::trialInProgress() {
+bool RecognitionTestModel::trialInProgress() {
     return maskerPlayer->playing();
 }
 
-void RecognitionTestModel_Impl::prepareCommonTest(
+void RecognitionTestModel::prepareCommonTest(
     const Test &common, const TestIdentity &information) {
     storeLevels(common);
     prepareMasker(common.maskerFilePath);
@@ -65,19 +65,19 @@ void RecognitionTestModel_Impl::prepareCommonTest(
     testMethod->writeTestingParameters(outputFile);
 }
 
-void RecognitionTestModel_Impl::storeLevels(const Test &common) {
+void RecognitionTestModel::storeLevels(const Test &common) {
     fullScaleLevel_dB_SPL = common.fullScaleLevel_dB_SPL;
     maskerLevel_dB_SPL = common.maskerLevel_dB_SPL;
 }
 
-void RecognitionTestModel_Impl::prepareMasker(const std::string &p) {
+void RecognitionTestModel::prepareMasker(const std::string &p) {
     throwInvalidAudioFileOnErrorLoading(
-        &RecognitionTestModel_Impl::loadMaskerFile, p);
+        &RecognitionTestModel::loadMaskerFile, p);
     maskerPlayer->setLevel_dB(maskerLevel_dB());
 }
 
-void RecognitionTestModel_Impl::throwInvalidAudioFileOnErrorLoading(
-    void (RecognitionTestModel_Impl::*f)(const std::string &),
+void RecognitionTestModel::throwInvalidAudioFileOnErrorLoading(
+    void (RecognitionTestModel::*f)(const std::string &),
     const std::string &file) {
     try {
         (this->*f)(file);
@@ -86,67 +86,67 @@ void RecognitionTestModel_Impl::throwInvalidAudioFileOnErrorLoading(
     }
 }
 
-void RecognitionTestModel_Impl::loadMaskerFile(const std::string &p) {
+void RecognitionTestModel::loadMaskerFile(const std::string &p) {
     maskerPlayer->loadFile(p);
 }
 
 static double dB(double x) { return 20 * std::log10(x); }
 
-double RecognitionTestModel_Impl::maskerLevel_dB() {
+double RecognitionTestModel::maskerLevel_dB() {
     return desiredMaskerLevel_dB() - dB(maskerPlayer->rms());
 }
 
-int RecognitionTestModel_Impl::desiredMaskerLevel_dB() {
+int RecognitionTestModel::desiredMaskerLevel_dB() {
     return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
 }
 
-void RecognitionTestModel_Impl::prepareVideo(const Condition &p) {
+void RecognitionTestModel::prepareVideo(const Condition &p) {
     if (auditoryOnly(p))
         targetPlayer->hideVideo();
     else
         targetPlayer->showVideo();
 }
 
-bool RecognitionTestModel_Impl::auditoryOnly(const Condition &c) {
+bool RecognitionTestModel::auditoryOnly(const Condition &c) {
     return c == Condition::auditoryOnly;
 }
 
-void RecognitionTestModel_Impl::preparePlayersForNextTrial() {
+void RecognitionTestModel::preparePlayersForNextTrial() {
     prepareTargetPlayer();
     seekRandomMaskerPosition();
 }
 
-void RecognitionTestModel_Impl::prepareTargetPlayer() {
+void RecognitionTestModel::prepareTargetPlayer() {
     loadTargetFile(testMethod->next());
     setTargetLevel_dB(targetLevel_dB());
     targetPlayer->subscribeToPlaybackCompletion();
 }
 
-void RecognitionTestModel_Impl::loadTargetFile(std::string s) {
+void RecognitionTestModel::loadTargetFile(std::string s) {
     targetPlayer->loadFile(std::move(s));
 }
 
-void RecognitionTestModel_Impl::setTargetLevel_dB(double x) {
+void RecognitionTestModel::setTargetLevel_dB(double x) {
     targetPlayer->setLevel_dB(x);
 }
 
-double RecognitionTestModel_Impl::targetLevel_dB() {
+double RecognitionTestModel::targetLevel_dB() {
     return maskerLevel_dB() + testMethod->snr_dB();
 }
 
-void RecognitionTestModel_Impl::seekRandomMaskerPosition() {
+void RecognitionTestModel::seekRandomMaskerPosition() {
     auto upperLimit = maskerPlayer->durationSeconds() -
         2 * maskerPlayer->fadeTimeSeconds() - targetPlayer->durationSeconds();
     maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
 }
 
-void RecognitionTestModel_Impl::tryOpeningOutputFile(
+void RecognitionTestModel::tryOpeningOutputFile(
     const TestIdentity &p) {
     outputFile->close();
     tryOpeningOutputFile_(p);
 }
 
-void RecognitionTestModel_Impl::tryOpeningOutputFile_(
+void RecognitionTestModel::tryOpeningOutputFile_(
     const TestIdentity &p) {
     try {
         outputFile->openNewFile(p);
@@ -155,25 +155,25 @@ void RecognitionTestModel_Impl::tryOpeningOutputFile_(
     }
 }
 
-void RecognitionTestModel_Impl::playTrial(const AudioSettings &settings) {
+void RecognitionTestModel::playTrial(const AudioSettings &settings) {
     throwIfTrialInProgress();
 
     preparePlayersToPlay(settings);
     startTrial();
 }
 
-void RecognitionTestModel_Impl::preparePlayersToPlay(
+void RecognitionTestModel::preparePlayersToPlay(
     const AudioSettings &p) {
     setAudioDevices(p);
 }
 
-void RecognitionTestModel_Impl::setAudioDevices(const AudioSettings &p) {
+void RecognitionTestModel::setAudioDevices(const AudioSettings &p) {
     throwInvalidAudioDeviceOnErrorSettingDevice(
-        &RecognitionTestModel_Impl::setAudioDevices_, p.audioDevice);
+        &RecognitionTestModel::setAudioDevices_, p.audioDevice);
 }
 
-void RecognitionTestModel_Impl::throwInvalidAudioDeviceOnErrorSettingDevice(
-    void (RecognitionTestModel_Impl::*f)(const std::string &),
+void RecognitionTestModel::throwInvalidAudioDeviceOnErrorSettingDevice(
+    void (RecognitionTestModel::*f)(const std::string &),
     const std::string &device) {
     try {
         (this->*f)(device);
@@ -183,32 +183,32 @@ void RecognitionTestModel_Impl::throwInvalidAudioDeviceOnErrorSettingDevice(
     }
 }
 
-void RecognitionTestModel_Impl::setAudioDevices_(
+void RecognitionTestModel::setAudioDevices_(
     const std::string &device) {
     maskerPlayer->setAudioDevice(device);
     setTargetPlayerDevice_(device);
 }
 
-void RecognitionTestModel_Impl::setTargetPlayerDevice_(
+void RecognitionTestModel::setTargetPlayerDevice_(
     const std::string &device) {
     targetPlayer->setAudioDevice(device);
 }
 
-void RecognitionTestModel_Impl::startTrial() {
+void RecognitionTestModel::startTrial() {
     if (!auditoryOnly(condition))
         targetPlayer->showVideo();
     maskerPlayer->fadeIn();
 }
 
-void RecognitionTestModel_Impl::fadeInComplete() { playTarget(); }
+void RecognitionTestModel::fadeInComplete() { playTarget(); }
 
-void RecognitionTestModel_Impl::playTarget() { targetPlayer->play(); }
+void RecognitionTestModel::playTarget() { targetPlayer->play(); }
 
-void RecognitionTestModel_Impl::playbackComplete() {
+void RecognitionTestModel::playbackComplete() {
     maskerPlayer->fadeOut();
 }
 
-void RecognitionTestModel_Impl::fadeOutComplete() {
+void RecognitionTestModel::fadeOutComplete() {
     targetPlayer->hideVideo();
     listener_->trialComplete();
 }
@@ -220,7 +220,7 @@ static std::string targetName(
 
 static void save(OutputFile *file) { file->save(); }
 
-void RecognitionTestModel_Impl::submitResponse(
+void RecognitionTestModel::submitResponse(
     const coordinate_response_measure::Response &response) {
     testMethod->submitResponse(response);
     testMethod->writeLastCoordinateResponse(outputFile);
@@ -228,43 +228,43 @@ void RecognitionTestModel_Impl::submitResponse(
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModel_Impl::submitCorrectResponse() {
+void RecognitionTestModel::submitCorrectResponse() {
     submitCorrectResponse_();
 }
 
-void RecognitionTestModel_Impl::submitCorrectResponse_() {
+void RecognitionTestModel::submitCorrectResponse_() {
     testMethod->submitCorrectResponse();
     testMethod->writeLastCorrectResponse(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModel_Impl::prepareNextTrialIfNeeded() {
+void RecognitionTestModel::prepareNextTrialIfNeeded() {
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial();
     }
 }
 
-void RecognitionTestModel_Impl::submitIncorrectResponse() {
+void RecognitionTestModel::submitIncorrectResponse() {
     submitIncorrectResponse_();
 }
 
-void RecognitionTestModel_Impl::submitIncorrectResponse_() {
+void RecognitionTestModel::submitIncorrectResponse_() {
     testMethod->submitIncorrectResponse();
     testMethod->writeLastIncorrectResponse(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModel_Impl::submitResponse(
+void RecognitionTestModel::submitResponse(
     const FreeResponse &response) {
     writeTrial(response);
     testMethod->submitResponse(response);
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModel_Impl::writeTrial(const FreeResponse &p) {
+void RecognitionTestModel::writeTrial(const FreeResponse &p) {
     FreeResponseTrial trial;
     trial.response = p.response;
     trial.target = targetName(evaluator, testMethod);
@@ -272,13 +272,13 @@ void RecognitionTestModel_Impl::writeTrial(const FreeResponse &p) {
     save(outputFile);
 }
 
-void RecognitionTestModel_Impl::playCalibration(const Calibration &p) {
+void RecognitionTestModel::playCalibration(const Calibration &p) {
     throwIfTrialInProgress();
 
     playCalibration_(p);
 }
 
-void RecognitionTestModel_Impl::playCalibration_(const Calibration &p) {
+void RecognitionTestModel::playCalibration_(const Calibration &p) {
     setTargetPlayerDevice(p);
     loadTargetFile(p.filePath);
     trySettingTargetLevel(p);
@@ -286,14 +286,14 @@ void RecognitionTestModel_Impl::playCalibration_(const Calibration &p) {
     playTarget();
 }
 
-void RecognitionTestModel_Impl::setTargetPlayerDevice(
+void RecognitionTestModel::setTargetPlayerDevice(
     const Calibration &p) {
     throwInvalidAudioDeviceOnErrorSettingDevice(
-        &RecognitionTestModel_Impl::setTargetPlayerDevice_,
+        &RecognitionTestModel::setTargetPlayerDevice_,
         p.audioSettings.audioDevice);
 }
 
-void RecognitionTestModel_Impl::trySettingTargetLevel(
+void RecognitionTestModel::trySettingTargetLevel(
     const Calibration &p) {
     try {
         setTargetLevel_dB(calibrationLevel_dB(p));
@@ -302,22 +302,22 @@ void RecognitionTestModel_Impl::trySettingTargetLevel(
     }
 }
 
-double RecognitionTestModel_Impl::calibrationLevel_dB(
+double RecognitionTestModel::calibrationLevel_dB(
     const Calibration &p) {
     return p.level_dB_SPL - p.fullScaleLevel_dB_SPL - unalteredTargetLevel_dB();
 }
 
-double RecognitionTestModel_Impl::unalteredTargetLevel_dB() {
+double RecognitionTestModel::unalteredTargetLevel_dB() {
     return dB(targetPlayer->rms());
 }
 
-bool RecognitionTestModel_Impl::testComplete() {
+bool RecognitionTestModel::testComplete() {
     return testMethod->complete();
 }
 
-std::vector<std::string> RecognitionTestModel_Impl::audioDevices() {
+std::vector<std::string> RecognitionTestModel::audioDevices() {
     return maskerPlayer->outputAudioDeviceDescriptions();
 }
 
-int RecognitionTestModel_Impl::trialNumber() { return trialNumber_; }
+int RecognitionTestModel::trialNumber() { return trialNumber_; }
 }

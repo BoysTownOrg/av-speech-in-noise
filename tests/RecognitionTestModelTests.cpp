@@ -3,7 +3,7 @@
 #include "TestConcluderStub.h"
 #include "assert-utility.h"
 #include <gtest/gtest.h>
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/Model.hpp>
 
 namespace av_speech_in_noise::tests {
 namespace {
@@ -133,7 +133,7 @@ class RecognitionTestModel_InternalStub
 class InitializingTestUseCase {
   public:
     virtual ~InitializingTestUseCase() = default;
-    virtual void run(RecognitionTestModel &) = 0;
+    virtual void run(ModelImpl &) = 0;
     virtual const Test &commonTest() = 0;
     virtual const TestIdentity &testIdentity() = 0;
     virtual const TestMethod *testMethod() = 0;
@@ -147,7 +147,7 @@ class InitializingAdaptiveTest : public InitializingTestUseCase {
     explicit InitializingAdaptiveTest(AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(RecognitionTestModel &model) override {
+    void run(ModelImpl &model) override {
         model.initializeTest(test);
     }
 
@@ -168,7 +168,7 @@ class InitializingFixedLevelTest : public InitializingTestUseCase {
     explicit InitializingFixedLevelTest(FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(RecognitionTestModel &model) override {
+    void run(ModelImpl &model) override {
         model.initializeTest(test);
     }
 
@@ -191,7 +191,7 @@ class InitializingFixedLevelTestWithFiniteTargets
         FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(RecognitionTestModel &model) override {
+    void run(ModelImpl &model) override {
         model.initializeTestWithFiniteTargets(test);
     }
 
@@ -213,7 +213,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     TargetListStub finiteTargetList;
     TestConcluderStub emptyTargetListTestConcluder;
     RecognitionTestModel_InternalStub internalModel;
-    RecognitionTestModel model{&adaptiveMethod, &fixedLevelMethod,
+    ModelImpl model{&adaptiveMethod, &fixedLevelMethod,
         &infiniteTargetList, &fixedTrialTestConcluder, &finiteTargetList,
         &emptyTargetListTestConcluder, &internalModel};
     AdaptiveTest adaptiveTest;

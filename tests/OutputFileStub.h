@@ -1,8 +1,8 @@
-#ifndef OutputFileStub_h
-#define OutputFileStub_h
+#ifndef TESTS_OUTPUTFILESTUB_H_
+#define TESTS_OUTPUTFILESTUB_H_
 
 #include "LogString.h"
-#include <recognition-test/RecognitionTestModel.hpp>
+#include <recognition-test/Model.hpp>
 
 namespace av_speech_in_noise::tests {
 class OutputFileStub : public OutputFile {
