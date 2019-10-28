@@ -7,6 +7,28 @@
 #include <recognition-test/FixedLevelMethod.hpp>
 
 namespace av_speech_in_noise::tests {
+class UseCase {
+public:
+    virtual ~UseCase() = default;
+    virtual void run(FixedLevelMethod &) = 0;
+};
+
+class SubmittingCoordinateResponse : public UseCase {
+    coordinate_response_measure::Response response;
+public:
+    void run(FixedLevelMethod &m) {
+        m.submitResponse(response);
+    }
+};
+
+class SubmittingFreeResponse : public UseCase {
+    FreeResponse response;
+public:
+    void run(FixedLevelMethod &m) {
+        m.submitResponse(response);
+    }
+};
+
 namespace {
 class FixedLevelMethodTests : public ::testing::Test {
   protected:
@@ -18,6 +40,8 @@ class FixedLevelMethodTests : public ::testing::Test {
     FixedLevelTest test;
     coordinate_response_measure::Response coordinateResponse;
     FreeResponse freeResponse;
+    SubmittingCoordinateResponse submittingCoordinateResponse;
+    SubmittingFreeResponse submittingFreeResponse;
 
     void initialize() { method.initialize(test, &targetList, &testConcluder); }
 
@@ -70,6 +94,17 @@ class FixedLevelMethodTests : public ::testing::Test {
     void assertTestComplete() { assertTrue(testComplete()); }
 
     void setTestComplete() { testConcluder.setComplete(); }
+
+    void run(UseCase &useCase) {
+        useCase.run(method);
+    }
+
+    void assertTargetListPassedToConcluder(UseCase &useCase) {
+        initialize();
+        run(useCase);
+        assertEqual(
+            static_cast<TargetList *>(&targetList), testConcluder.targetList());
+    }
 };
 
 TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
@@ -181,17 +216,11 @@ TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
 }
 
 TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesTargetListToConcluder) {
-    initialize();
-    submitCoordinateResponse();
-    assertEqual(
-        static_cast<TargetList *>(&targetList), testConcluder.targetList());
+    assertTargetListPassedToConcluder(submittingCoordinateResponse);
 }
 
 TEST_F(FixedLevelMethodTests, submitFreeResponsePassesTargetListToConcluder) {
-    initialize();
-    submitFreeResponse();
-    assertEqual(
-        static_cast<TargetList *>(&targetList), testConcluder.targetList());
+    assertTargetListPassedToConcluder(submittingFreeResponse);
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {
