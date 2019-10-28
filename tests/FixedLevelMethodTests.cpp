@@ -105,6 +105,13 @@ class FixedLevelMethodTests : public ::testing::Test {
         assertEqual(
             static_cast<TargetList *>(&targetList), testConcluder.targetList());
     }
+
+    void assertTestCompleteWhenComplete(UseCase &useCase) {
+        initialize();
+        assertTestIncompleteAfter(useCase);
+        setTestComplete();
+        assertTestCompleteAfter(useCase);
+    }
 };
 
 TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
@@ -208,18 +215,12 @@ TEST_F(FixedLevelMethodTests,
     assertEqual("a", evaluator.correctFilePath());
 }
 
-TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
-    initialize();
-    assertTestIncompleteAfter(submittingCoordinateResponse);
-    setTestComplete();
-    assertTestCompleteAfter(submittingCoordinateResponse);
+TEST_F(FixedLevelMethodTests, completeWhenTestCompleteAfterCoordinateResponse) {
+    assertTestCompleteWhenComplete(submittingCoordinateResponse);
 }
 
 TEST_F(FixedLevelMethodTests, completeWhenTestCompleteAfterFreeResponse) {
-    initialize();
-    assertTestIncompleteAfter(submittingFreeResponse);
-    setTestComplete();
-    assertTestCompleteAfter(submittingFreeResponse);
+    assertTestCompleteWhenComplete(submittingFreeResponse);
 }
 
 TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesTargetListToConcluder) {
