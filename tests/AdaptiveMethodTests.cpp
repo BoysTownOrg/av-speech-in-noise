@@ -10,7 +10,7 @@
 
 namespace av_speech_in_noise::tests {
 namespace {
-class TrackSettingsReaderStub : public ITrackSettingsReader {
+class TrackSettingsReaderStub : public TrackSettingsReader {
     const TrackingRule *rule_{};
     std::string filePath_{};
 

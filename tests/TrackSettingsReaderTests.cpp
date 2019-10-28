@@ -38,7 +38,7 @@ class TrackSettingsReaderTests : public ::testing::Test {
   protected:
     TextFileReaderStub fileReader;
     TrackSettingsInterpreterStub interpreter;
-    TrackSettingsReader reader{&fileReader, &interpreter};
+    TrackSettingsReaderImpl reader{&fileReader, &interpreter};
 
     auto read(std::string s = {}) { return reader.read(std::move(s)); }
 };

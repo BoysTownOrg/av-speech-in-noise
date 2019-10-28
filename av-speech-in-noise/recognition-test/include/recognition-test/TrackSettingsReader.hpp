@@ -17,12 +17,12 @@ class ITrackSettingsInterpreter {
     virtual const TrackingRule *trackingRule(std::string) = 0;
 };
 
-class TrackSettingsReader : public ITrackSettingsReader {
+class TrackSettingsReaderImpl : public TrackSettingsReader {
     TextFileReader *reader;
     ITrackSettingsInterpreter *interpreter;
 
   public:
-    TrackSettingsReader(TextFileReader *, ITrackSettingsInterpreter *);
+    TrackSettingsReaderImpl(TextFileReader *, ITrackSettingsInterpreter *);
     const TrackingRule *read(std::string filePath) override;
 };
 }

@@ -8,15 +8,24 @@
 #include <string>
 
 namespace av_speech_in_noise {
+template<typename T>
+T maximumValue() {
+    return std::numeric_limits<T>::max();
+}
+template<typename T>
+T minimumValue() {
+    return std::numeric_limits<T>::min();
+}
+
 class Track {
   public:
     virtual ~Track() = default;
     struct Settings {
         const TrackingRule *rule;
         int startingX;
-        int ceiling = std::numeric_limits<int>::max();
-        int floor = std::numeric_limits<int>::min();
-        int bumpLimit = std::numeric_limits<int>::max();
+        int ceiling = maximumValue<int>();
+        int floor = minimumValue<int>();
+        int bumpLimit = maximumValue<int>();
     };
     virtual void down() = 0;
     virtual void up() = 0;
@@ -25,9 +34,9 @@ class Track {
     virtual int reversals() = 0;
 };
 
-class ITrackSettingsReader {
+class TrackSettingsReader {
   public:
-    virtual ~ITrackSettingsReader() = default;
+    virtual ~TrackSettingsReader() = default;
     virtual const TrackingRule *read(std::string) = 0;
 };
 
@@ -56,7 +65,7 @@ class AdaptiveMethod : public IAdaptiveMethod {
     open_set::AdaptiveTrial lastOpenSetTrial{};
     const AdaptiveTest *test{};
     TargetListReader *targetListSetReader;
-    ITrackSettingsReader *trackSettingsReader;
+    TrackSettingsReader *trackSettingsReader;
     TrackFactory *snrTrackFactory;
     ResponseEvaluator *evaluator;
     Randomizer *randomizer;
@@ -64,7 +73,7 @@ class AdaptiveMethod : public IAdaptiveMethod {
     TargetList *currentTargetList{};
 
   public:
-    AdaptiveMethod(TargetListReader *, ITrackSettingsReader *, TrackFactory *,
+    AdaptiveMethod(TargetListReader *, TrackSettingsReader *, TrackFactory *,
         ResponseEvaluator *, Randomizer *);
     void initialize(const AdaptiveTest &) override;
     int snr_dB() override;

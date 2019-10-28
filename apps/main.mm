@@ -275,7 +275,7 @@ void main() {
     ResponseEvaluatorImpl responseEvaluator;
     TrackSettingsInterpreter trackSettingsInterpreter;
     TextFileReaderImpl textFileReader;
-    TrackSettingsReader trackSettingsReader{
+    TrackSettingsReaderImpl trackSettingsReader{
         &textFileReader,
         &trackSettingsInterpreter
     };
