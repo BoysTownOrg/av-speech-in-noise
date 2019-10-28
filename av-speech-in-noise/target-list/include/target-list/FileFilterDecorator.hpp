@@ -7,7 +7,7 @@
 
 namespace target_list {
 class FileFilter {
-public:
+  public:
     virtual ~FileFilter() = default;
     virtual std::vector<std::string> filter(std::vector<std::string>) = 0;
 };
@@ -15,7 +15,8 @@ public:
 class FileFilterDecorator : public DirectoryReader {
     DirectoryReader *reader;
     FileFilter *filter;
-public:
+
+  public:
     FileFilterDecorator(DirectoryReader *, FileFilter *);
     std::vector<std::string> filesIn(std::string directory) override;
     std::vector<std::string> subDirectories(std::string directory) override;
@@ -23,23 +24,27 @@ public:
 
 class FileExtensionFilter : public FileFilter {
     std::vector<std::string> filters;
-public:
+
+  public:
     explicit FileExtensionFilter(std::vector<std::string> filters);
     std::vector<std::string> filter(std::vector<std::string>) override;
 };
 
 class FileIdentifierFilter : public FileFilter {
     std::string identifier;
-public:
+
+  public:
     explicit FileIdentifierFilter(std::string identifier);
     std::vector<std::string> filter(std::vector<std::string>) override;
-private:
+
+  private:
     bool containsIdentifier(const std::string &);
 };
 
 class FileIdentifierExcluderFilter : public FileFilter {
     std::vector<std::string> identifiers;
-public:
+
+  public:
     explicit FileIdentifierExcluderFilter(std::vector<std::string> identifiers);
     std::vector<std::string> filter(std::vector<std::string>) override;
 };
@@ -47,14 +52,16 @@ public:
 class RandomSubsetFiles : public FileFilter {
     Randomizer *randomizer;
     int N;
-public:
+
+  public:
     RandomSubsetFiles(Randomizer *, int);
     std::vector<std::string> filter(std::vector<std::string>) override;
 };
 
 class DirectoryReaderComposite : public DirectoryReader {
     std::vector<DirectoryReader *> readers;
-public:
+
+  public:
     explicit DirectoryReaderComposite(std::vector<DirectoryReader *>);
     std::vector<std::string> filesIn(std::string directory) override;
     std::vector<std::string> subDirectories(std::string directory) override;

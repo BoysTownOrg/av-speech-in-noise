@@ -2,13 +2,8 @@
 #include <cmath>
 
 namespace stimulus_players {
-TargetPlayerImpl::TargetPlayerImpl(
-    VideoPlayer *player,
-    AudioReader *reader
-) :
-    player{player},
-    reader{reader}
-{
+TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
+    : player{player}, reader{reader} {
     player->subscribe(this);
 }
 
@@ -16,32 +11,20 @@ void TargetPlayerImpl::subscribe(TargetPlayer::EventListener *e) {
     listener_ = e;
 }
 
-void TargetPlayerImpl::play() {
-    player->play();
-}
+void TargetPlayerImpl::play() { player->play(); }
 
 void TargetPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath_ = std::move(filePath));
 }
 
-void TargetPlayerImpl::hideVideo() {
-    player->hide();
-}
+void TargetPlayerImpl::hideVideo() { player->hide(); }
 
-void TargetPlayerImpl::showVideo() {
-    player->show();
-}
+void TargetPlayerImpl::showVideo() { player->show(); }
 
-template<typename T>
-T rms(const std::vector<T> &x) {
-    return std::sqrt(
-        std::accumulate(
-            x.begin(),
-            x.end(),
-            T{ 0 },
-            [](T a, T b) { return a += b * b; }
-        ) / x.size()
-    );
+template <typename T> T rms(const std::vector<T> &x) {
+    return std::sqrt(std::accumulate(x.begin(), x.end(), T{0}, [](T a, T b) {
+        return a += b * b;
+    }) / x.size());
 }
 
 double TargetPlayerImpl::rms() {
@@ -62,16 +45,13 @@ std::vector<std::vector<float>> TargetPlayerImpl::readAudio_() {
 }
 
 void TargetPlayerImpl::setLevel_dB(double x) {
-    audioScale.store(std::pow(10, x/20));
+    audioScale.store(std::pow(10, x / 20));
 }
 
-void TargetPlayerImpl::playbackComplete() {
-    listener_->playbackComplete();
-}
+void TargetPlayerImpl::playbackComplete() { listener_->playbackComplete(); }
 
 void TargetPlayerImpl::fillAudioBuffer(
-    const std::vector<gsl::span<float>> &audio
-) {
+    const std::vector<gsl::span<float>> &audio) {
     auto scale = audioScale.load();
     for (auto channel : audio)
         for (auto &x : channel)
@@ -80,11 +60,7 @@ void TargetPlayerImpl::fillAudioBuffer(
 
 void TargetPlayerImpl::setAudioDevice(std::string device) {
     auto devices_ = audioDevices();
-    auto found = std::find(
-        devices_.begin(),
-        devices_.end(),
-        std::move(device)
-    );
+    auto found = std::find(devices_.begin(), devices_.end(), std::move(device));
     if (found == devices_.end())
         throw av_speech_in_noise::InvalidAudioDevice{};
     auto deviceIndex = gsl::narrow<int>(found - devices_.begin());
@@ -98,15 +74,11 @@ std::vector<std::string> TargetPlayerImpl::audioDevices() {
     return descriptions;
 }
 
-bool TargetPlayerImpl::playing() {
-    return player->playing();
-}
+bool TargetPlayerImpl::playing() { return player->playing(); }
 
 void TargetPlayerImpl::subscribeToPlaybackCompletion() {
     player->subscribeToPlaybackCompletion();
 }
 
-double TargetPlayerImpl::durationSeconds() {
-    return player->durationSeconds();
-}
+double TargetPlayerImpl::durationSeconds() { return player->durationSeconds(); }
 }

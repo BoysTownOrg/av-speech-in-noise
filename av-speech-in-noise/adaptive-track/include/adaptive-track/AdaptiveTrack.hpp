@@ -7,16 +7,8 @@
 
 namespace adaptive_track {
 class AdaptiveTrack : public av_speech_in_noise::Track {
-    enum class Direction {
-        undefined,
-        up,
-        down
-    };
-    enum class Step {
-        undefined,
-        rise,
-        fall
-    };
+    enum class Direction { undefined, up, down };
+    enum class Step { undefined, rise, fall };
     std::vector<int> runCounts;
     std::vector<int> stepSizes;
     std::vector<int> up_;
@@ -32,7 +24,8 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     int reversals_{};
     Direction previousDirection{Direction::undefined};
     Step previousStep{Step::undefined};
-public:
+
+  public:
     explicit AdaptiveTrack(const Settings &);
     int x() override;
     void up() override;
@@ -40,15 +33,11 @@ public:
     bool complete() override;
     int reversals() override;
 
-private:
+  private:
     void updateBumpCount(int bumpBoundary);
-    void update(
-        Direction,
-        int bumpBoundary,
-        const std::vector<int> &,
-        void(AdaptiveTrack::*)()
-    );
-    void callIfConsecutiveCountMet(void(AdaptiveTrack::*)(), int threshold);
+    void update(Direction, int bumpBoundary, const std::vector<int> &,
+        void (AdaptiveTrack::*)());
+    void callIfConsecutiveCountMet(void (AdaptiveTrack::*)(), int threshold);
     bool consecutiveCountMet(int threshold);
     void stepDown();
     void stepUp();
@@ -57,14 +46,13 @@ private:
     void updateReversals(Step);
     void reversal();
     bool complete_() const;
-};
 
-class AdaptiveTrackFactory : public av_speech_in_noise::TrackFactory {
-    std::shared_ptr<av_speech_in_noise::Track> make(
-        const av_speech_in_noise::Track::Settings &s
-    ) override {
-        return std::make_shared<AdaptiveTrack>(s);
-    }
+    class AdaptiveTrackFactory : public av_speech_in_noise::Track::Factory {
+        std::shared_ptr<av_speech_in_noise::Track> make(
+            const av_speech_in_noise::Track::Settings &s) override {
+            return std::make_shared<AdaptiveTrack>(s);
+        }
+    };
 };
 }
 

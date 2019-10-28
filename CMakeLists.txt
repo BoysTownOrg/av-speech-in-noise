@@ -9,6 +9,8 @@ FetchContent_Declare(
     GIT_TAG v2.0.0
 )
 FetchContent_MakeAvailable(GSL)
+add_subdirectory(av-speech-in-noise)
+add_subdirectory(apps)
 
 FetchContent_Declare(
     googletest
@@ -16,5 +18,4 @@ FetchContent_Declare(
     GIT_TAG release-1.10.0
 )
 FetchContent_MakeAvailable(googletest)
-
-add_subdirectory(av-speech-in-noise)
+add_subdirectory(tests)

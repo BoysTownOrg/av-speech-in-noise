@@ -1,11 +1,11 @@
 add_library(recognition-test 
     src/AdaptiveMethod.cpp
     src/FixedLevelMethod.cpp
-    src/OutputFileImpl.cpp
-    src/OutputFilePathImpl.cpp
-    src/RecognitionTestModel_Internal.cpp
+    src/OutputFile.cpp
+    src/OutputFilePath.cpp
+    src/Model.cpp
     src/RecognitionTestModel.cpp
-    src/ResponseEvaluatorImpl.cpp
+    src/ResponseEvaluator.cpp
     src/TrackSettingsInterpreter.cpp
     src/TrackSettingsReader.cpp
 )

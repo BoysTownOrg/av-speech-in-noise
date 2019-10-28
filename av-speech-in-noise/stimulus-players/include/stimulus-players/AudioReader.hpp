@@ -6,7 +6,7 @@
 
 namespace stimulus_players {
 class AudioReader {
-public:
+  public:
     virtual ~AudioReader() = default;
     virtual std::vector<std::vector<float>> read(std::string filePath) = 0;
     class InvalidFile {};

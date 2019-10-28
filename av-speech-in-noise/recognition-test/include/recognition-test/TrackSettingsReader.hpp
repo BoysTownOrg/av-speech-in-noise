@@ -6,25 +6,23 @@
 
 namespace av_speech_in_noise {
 class TextFileReader {
-public:
+  public:
     virtual ~TextFileReader() = default;
     virtual std::string read(std::string) = 0;
 };
 
-class ITrackSettingsInterpreter {
-public:
-    virtual ~ITrackSettingsInterpreter() = default;
+class TrackSettingsInterpreter {
+  public:
+    virtual ~TrackSettingsInterpreter() = default;
     virtual const TrackingRule *trackingRule(std::string) = 0;
 };
 
-class TrackSettingsReader : public ITrackSettingsReader {
+class TrackSettingsReaderImpl : public TrackSettingsReader {
     TextFileReader *reader;
-    ITrackSettingsInterpreter *interpreter;
-public:
-    TrackSettingsReader(
-        TextFileReader *,
-        ITrackSettingsInterpreter *
-    );
+    TrackSettingsInterpreter *interpreter;
+
+  public:
+    TrackSettingsReaderImpl(TextFileReader *, TrackSettingsInterpreter *);
     const TrackingRule *read(std::string filePath) override;
 };
 }

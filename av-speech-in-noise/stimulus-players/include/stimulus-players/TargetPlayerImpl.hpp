@@ -2,17 +2,17 @@
 #define AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_TARGETPLAYERIMPL_HPP_
 
 #include "AudioReader.hpp"
+#include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
-#include <recognition-test/RecognitionTestModel_Internal.hpp>
 #include <gsl/gsl>
 #include <vector>
 #include <string>
 
 namespace stimulus_players {
 class VideoPlayer {
-public:
+  public:
     class EventListener {
-    public:
+      public:
         virtual ~EventListener() = default;
         virtual void playbackComplete() = 0;
         virtual void fillAudioBuffer(
@@ -33,16 +33,15 @@ public:
     virtual double durationSeconds() = 0;
 };
 
-class TargetPlayerImpl :
-    public av_speech_in_noise::TargetPlayer,
-    public VideoPlayer::EventListener
-{
+class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
+                         public VideoPlayer::EventListener {
     std::string filePath_{};
     std::atomic<double> audioScale{};
     VideoPlayer *player;
     AudioReader *reader;
     TargetPlayer::EventListener *listener_{};
-public:
+
+  public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
     void subscribe(TargetPlayer::EventListener *) override;
     void play() override;
@@ -56,10 +55,10 @@ public:
     void subscribeToPlaybackCompletion() override;
     double durationSeconds() override;
     void playbackComplete() override;
-    void fillAudioBuffer(
-        const std::vector<gsl::span<float> > &audio) override;
+    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     std::vector<std::string> audioDevices();
-private:
+
+  private:
     std::vector<std::vector<float>> readAudio_();
 };
 }

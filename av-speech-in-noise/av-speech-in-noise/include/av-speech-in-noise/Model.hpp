@@ -7,21 +7,15 @@
 
 namespace av_speech_in_noise {
 namespace coordinate_response_measure {
-enum class Color {
-    green,
-    red,
-    blue,
-    white,
-    notAColor
-};
+enum class Color { green, red, blue, white, notAColor };
 
-struct SubjectResponse {
+struct Response {
     int number;
     Color color;
 };
 
 struct Trial {
-    std::string stimulus;
+    std::string target;
     int correctNumber;
     int subjectNumber;
     Color correctColor;
@@ -29,21 +23,15 @@ struct Trial {
     bool correct;
 };
 
-struct AdaptiveTrial {
-    Trial trial;
+struct AdaptiveTrial : Trial {
     int SNR_dB;
     int reversals;
 };
 
-struct FixedLevelTrial {
-    Trial trial;
-};
+struct FixedLevelTrial : Trial {};
 }
 
-enum class Condition {
-    auditoryOnly,
-    audioVisual
-};
+enum class Condition { auditoryOnly, audioVisual };
 
 constexpr const char *conditionName(Condition c) {
     switch (c) {
@@ -62,26 +50,22 @@ struct TrackingSequence {
     int up;
 };
 
-constexpr bool operator ==(
-    const TrackingSequence &a,
-    const TrackingSequence &b
-) {
-    return
-        a.down == b.down &&
-        a.up == b.up &&
-        a.runCount == b.runCount &&
+constexpr bool operator==(
+    const TrackingSequence &a, const TrackingSequence &b) {
+    return a.down == b.down && a.up == b.up && a.runCount == b.runCount &&
         a.stepSize == b.stepSize;
 }
 
 using TrackingRule = typename std::vector<TrackingSequence>;
 
-struct TestInformation {
+struct TestIdentity {
     std::string subjectId;
     std::string testerId;
     std::string session;
 };
 
-struct CommonTest {
+struct Test {
+    TestIdentity identity;
     std::string targetListDirectory;
     std::string maskerFilePath;
     int maskerLevel_dB_SPL;
@@ -89,9 +73,7 @@ struct CommonTest {
     Condition condition;
 };
 
-struct AdaptiveTest {
-    CommonTest common;
-    TestInformation information;
+struct AdaptiveTest : Test {
     std::string trackSettingsFile;
     int startingSnr_dB;
     int ceilingSnr_dB;
@@ -99,9 +81,7 @@ struct AdaptiveTest {
     int trackBumpLimit;
 };
 
-struct FixedLevelTest {
-    CommonTest common;
-    TestInformation information;
+struct FixedLevelTest : Test {
     int snr_dB;
     int trials{30};
 };
@@ -137,28 +117,27 @@ struct AdaptiveTrial {
 }
 
 class Model {
-public:
+  public:
     class EventListener {
-    public:
+      public:
         virtual ~EventListener() = default;
         virtual void trialComplete() = 0;
     };
 
+    class RequestFailure : public std::runtime_error {
+      public:
+        explicit RequestFailure(const std::string &s) : std::runtime_error{s} {}
+    };
+
     virtual ~Model() = default;
     virtual void subscribe(EventListener *) = 0;
-    class RequestFailure : public std::runtime_error {
-    public:
-        explicit RequestFailure(const std::string &s) :
-            std::runtime_error{s} {}
-    };
     virtual void initializeTest(const AdaptiveTest &) = 0;
     virtual void initializeTest(const FixedLevelTest &) = 0;
     virtual void initializeTestWithFiniteTargets(const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
-        const coordinate_response_measure::SubjectResponse &
-    ) = 0;
+        const coordinate_response_measure::Response &) = 0;
     virtual void submitResponse(const FreeResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;

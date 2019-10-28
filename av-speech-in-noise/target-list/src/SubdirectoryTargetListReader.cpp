@@ -2,11 +2,8 @@
 
 namespace target_list {
 SubdirectoryTargetListReader::SubdirectoryTargetListReader(
-    TargetListFactory *targetListFactory,
-    DirectoryReader *directoryReader
-) :
-    targetListFactory{targetListFactory},
-    directoryReader{directoryReader} {}
+    TargetListFactory *targetListFactory, DirectoryReader *directoryReader)
+    : targetListFactory{targetListFactory}, directoryReader{directoryReader} {}
 
 auto SubdirectoryTargetListReader::read(std::string directory) -> lists_type {
     lists_type lists{};
@@ -23,8 +20,7 @@ auto SubdirectoryTargetListReader::read(std::string directory) -> lists_type {
 }
 
 std::vector<std::string> SubdirectoryTargetListReader::subDirectories(
-    std::string directory
-) {
+    std::string directory) {
     return directoryReader->subDirectories(std::move(directory));
 }
 }
