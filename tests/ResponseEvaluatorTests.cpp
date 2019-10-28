@@ -1,6 +1,6 @@
 #include "assert-utility.h"
 #include <gtest/gtest.h>
-#include <recognition-test/ResponseEvaluatorImpl.hpp>
+#include <recognition-test/ResponseEvaluator.hpp>
 
 namespace av_speech_in_noise::tests::response_evaluation {
 using coordinate_response_measure::Color;
