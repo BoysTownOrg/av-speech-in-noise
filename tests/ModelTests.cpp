@@ -64,8 +64,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         const coordinate_response_measure::Response &) override {}
 };
 
-class RecognitionTestModelStub
-    : public RecognitionTestModel {
+class RecognitionTestModelStub : public RecognitionTestModel {
     std::vector<std::string> audioDevices_{};
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
@@ -78,8 +77,8 @@ class RecognitionTestModelStub
     bool complete_{};
 
   public:
-    void initialize(TestMethod *tm, const Test &ct,
-        const TestIdentity &ti) override {
+    void initialize(
+        TestMethod *tm, const Test &ct, const TestIdentity &ti) override {
         testMethod_ = tm;
         commonTest_ = &ct;
         testInformation_ = &ti;
@@ -147,15 +146,11 @@ class InitializingAdaptiveTest : public InitializingTestUseCase {
     explicit InitializingAdaptiveTest(AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
-        model.initializeTest(test);
-    }
+    void run(ModelImpl &model) override { model.initializeTest(test); }
 
     const Test &commonTest() override { return test; }
 
-    const TestIdentity &testIdentity() override {
-        return test.identity;
-    }
+    const TestIdentity &testIdentity() override { return test.identity; }
 
     const TestMethod *testMethod() override { return method; }
 };
@@ -168,15 +163,11 @@ class InitializingFixedLevelTest : public InitializingTestUseCase {
     explicit InitializingFixedLevelTest(FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override {
-        model.initializeTest(test);
-    }
+    void run(ModelImpl &model) override { model.initializeTest(test); }
 
     const Test &commonTest() override { return test; }
 
-    const TestIdentity &testIdentity() override {
-        return test.identity;
-    }
+    const TestIdentity &testIdentity() override { return test.identity; }
 
     const TestMethod *testMethod() override { return method; }
 };
@@ -197,9 +188,7 @@ class InitializingFixedLevelTestWithFiniteTargets
 
     const Test &commonTest() override { return test; }
 
-    const TestIdentity &testIdentity() override {
-        return test.identity;
-    }
+    const TestIdentity &testIdentity() override { return test.identity; }
 
     const TestMethod *testMethod() override { return method; }
 };
@@ -213,8 +202,8 @@ class ModelTests : public ::testing::Test {
     TargetListStub finiteTargetList;
     TestConcluderStub emptyTargetListTestConcluder;
     RecognitionTestModelStub internalModel;
-    ModelImpl model{&adaptiveMethod, &fixedLevelMethod,
-        &infiniteTargetList, &fixedTrialTestConcluder, &finiteTargetList,
+    ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
+        &fixedTrialTestConcluder, &finiteTargetList,
         &emptyTargetListTestConcluder, &internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
@@ -239,13 +228,11 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(useCase.testMethod(), internalModel.testMethod());
         assertEqual(&useCase.commonTest(), internalModel.commonTest());
-        assertEqual(
-            &useCase.testIdentity(), internalModel.testIdentity());
+        assertEqual(&useCase.testIdentity(), internalModel.testIdentity());
     }
 };
 
-TEST_F(ModelTests,
-    initializeFixedLevelTestInitializesFixedLevelMethod) {
+TEST_F(ModelTests, initializeFixedLevelTestInitializesFixedLevelMethod) {
     initializeFixedLevelTest();
     assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
 }
@@ -256,8 +243,7 @@ TEST_F(ModelTests,
     assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
 }
 
-TEST_F(ModelTests,
-    initializeFixedLevelTestInitializesWithInfiniteTargetList) {
+TEST_F(ModelTests, initializeFixedLevelTestInitializesWithInfiniteTargetList) {
     initializeFixedLevelTest();
     assertEqual(static_cast<TargetList *>(&infiniteTargetList),
         fixedLevelMethod.targetList());
@@ -284,14 +270,12 @@ TEST_F(ModelTests,
         fixedLevelMethod.testConcluder());
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestInitializesAdaptiveMethod) {
+TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
     initializeAdaptiveTest();
     assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
 }
 
-TEST_F(ModelTests,
-    initializeFixedLevelTestInitializesInternalModel) {
+TEST_F(ModelTests, initializeFixedLevelTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTest);
 }
 
@@ -300,8 +284,7 @@ TEST_F(ModelTests,
     assertInitializesInternalModel(initializingFixedLevelTestWithFiniteTargets);
 }
 
-TEST_F(
-    ModelTests, initializeAdaptiveTestInitializesInternalModel) {
+TEST_F(ModelTests, initializeAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTest);
 }
 

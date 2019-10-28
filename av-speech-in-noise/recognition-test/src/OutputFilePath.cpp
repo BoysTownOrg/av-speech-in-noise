@@ -14,8 +14,7 @@ std::string OutputFilePathImpl::generateFileName(const TestIdentity &test) {
     return stream.str();
 }
 
-std::string OutputFilePathImpl::formatTestIdentity(
-    const TestIdentity &test) {
+std::string OutputFilePathImpl::formatTestIdentity(const TestIdentity &test) {
     std::stringstream stream;
     stream << "Subject_";
     stream << test.subjectId;

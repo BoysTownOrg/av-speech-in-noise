@@ -73,11 +73,11 @@ class WritingAdaptiveTest : public WritingTestUseCase {
   public:
     void setCondition(Condition c) override { test.condition = c; }
 
-    void setTestInfo(const TestIdentity &p) override {
-        test.identity = p;
-    }
+    void setTestInfo(const TestIdentity &p) override { test.identity = p; }
 
-    void setCommonTest(const Test &p) override { static_cast<Test &>(test) = p; }
+    void setCommonTest(const Test &p) override {
+        static_cast<Test &>(test) = p;
+    }
 
     void run(OutputFileImpl &file) override { file.writeTest(test); }
 };
@@ -88,11 +88,11 @@ class WritingFixedLevelTest : public WritingTestUseCase {
   public:
     void setCondition(Condition c) override { test.condition = c; }
 
-    void setCommonTest(const Test &p) override { static_cast<Test &>(test) = p; }
-
-    void setTestInfo(const TestIdentity &p) override {
-        test.identity = p;
+    void setCommonTest(const Test &p) override {
+        static_cast<Test &>(test) = p;
     }
+
+    void setTestInfo(const TestIdentity &p) override { test.identity = p; }
 
     void run(OutputFileImpl &file) override { file.writeTest(test); }
 };

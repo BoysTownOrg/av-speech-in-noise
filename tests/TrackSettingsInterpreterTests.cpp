@@ -24,8 +24,8 @@ class TrackSettingsInterpreterTests : public ::testing::Test {
     }
 
     std::string propertyEntry(Property p, std::string s) {
-        return std::string{TrackSettingsInterpreterImpl::propertyName(p)} + ": " +
-            std::move(s);
+        return std::string{TrackSettingsInterpreterImpl::propertyName(p)} +
+            ": " + std::move(s);
     }
 
     std::string propertyEntryWithNewline(Property p, std::string s) {

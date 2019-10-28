@@ -5,8 +5,7 @@ namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
     FixedLevelMethod *fixedLevelMethod, TargetList *infiniteTargetList,
     TestConcluder *fixedTrialTestConcluder, TargetList *finiteTargetList,
-    TestConcluder *completesWhenTargetsEmpty,
-    RecognitionTestModel *model)
+    TestConcluder *completesWhenTargetsEmpty, RecognitionTestModel *model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       infiniteTargetList{infiniteTargetList},
       fixedTrialTestConcluder{fixedTrialTestConcluder},
@@ -19,8 +18,7 @@ void ModelImpl::initializeTest(const FixedLevelTest &p) {
     model->initialize(fixedLevelMethod, p, p.identity);
 }
 
-void ModelImpl::initializeTestWithFiniteTargets(
-    const FixedLevelTest &p) {
+void ModelImpl::initializeTestWithFiniteTargets(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, finiteTargetList, completesWhenTargetsEmpty);
     model->initialize(fixedLevelMethod, p, p.identity);
@@ -40,13 +38,9 @@ void ModelImpl::submitResponse(
     model->submitResponse(response);
 }
 
-void ModelImpl::submitCorrectResponse() {
-    model->submitCorrectResponse();
-}
+void ModelImpl::submitCorrectResponse() { model->submitCorrectResponse(); }
 
-void ModelImpl::submitIncorrectResponse() {
-    model->submitIncorrectResponse();
-}
+void ModelImpl::submitIncorrectResponse() { model->submitIncorrectResponse(); }
 
 void ModelImpl::submitResponse(const FreeResponse &response) {
     model->submitResponse(response);
@@ -62,9 +56,7 @@ std::vector<std::string> ModelImpl::audioDevices() {
     return model->audioDevices();
 }
 
-void ModelImpl::subscribe(Model::EventListener *e) {
-    model->subscribe(e);
-}
+void ModelImpl::subscribe(Model::EventListener *e) { model->subscribe(e); }
 
 int ModelImpl::trialNumber() { return model->trialNumber(); }
 }

@@ -8,14 +8,8 @@
 #include <string>
 
 namespace av_speech_in_noise {
-template<typename T>
-T maximumValue() {
-    return std::numeric_limits<T>::max();
-}
-template<typename T>
-T minimumValue() {
-    return std::numeric_limits<T>::min();
-}
+template <typename T> T maximumValue() { return std::numeric_limits<T>::max(); }
+template <typename T> T minimumValue() { return std::numeric_limits<T>::min(); }
 
 class Track {
   public:
@@ -73,8 +67,8 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     TargetList *currentTargetList{};
 
   public:
-    AdaptiveMethodImpl(TargetListReader *, TrackSettingsReader *, Track::Factory *,
-        ResponseEvaluator *, Randomizer *);
+    AdaptiveMethodImpl(TargetListReader *, TrackSettingsReader *,
+        Track::Factory *, ResponseEvaluator *, Randomizer *);
     void initialize(const AdaptiveTest &) override;
     int snr_dB() override;
     void submitIncorrectResponse() override;

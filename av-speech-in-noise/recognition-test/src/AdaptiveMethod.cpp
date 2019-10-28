@@ -91,7 +91,9 @@ void AdaptiveMethodImpl::submitResponse(
 
 int AdaptiveMethodImpl::snr_dB() { return currentSnrTrack->x(); }
 
-std::string AdaptiveMethodImpl::current() { return currentTargetList->current(); }
+std::string AdaptiveMethodImpl::current() {
+    return currentTargetList->current();
+}
 
 bool AdaptiveMethodImpl::correct(const std::string &target,
     const coordinate_response_measure::Response &response) {
@@ -148,5 +150,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submitResponse(const FreeResponse &) { selectNextList(); }
+void AdaptiveMethodImpl::submitResponse(const FreeResponse &) {
+    selectNextList();
+}
 }

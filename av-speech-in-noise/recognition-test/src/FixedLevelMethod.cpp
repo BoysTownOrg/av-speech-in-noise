@@ -14,7 +14,9 @@ void FixedLevelMethodImpl::initialize(
     concluder->initialize(p);
 }
 
-bool FixedLevelMethodImpl::complete() { return concluder->complete(targetList); }
+bool FixedLevelMethodImpl::complete() {
+    return concluder->complete(targetList);
+}
 
 std::string FixedLevelMethodImpl::next() { return targetList->next(); }
 

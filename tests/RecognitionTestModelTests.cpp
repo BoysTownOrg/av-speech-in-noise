@@ -233,7 +233,7 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
     }
 };
 
-class RecognitionTestModel_InternalTests : public ::testing::Test {
+class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
     TargetPlayerStub targetPlayer{};
@@ -252,7 +252,7 @@ class RecognitionTestModel_InternalTests : public ::testing::Test {
     SubmittingIncorrectResponse submittingIncorrectResponse;
     SubmittingFreeResponse submittingFreeResponse;
 
-    RecognitionTestModel_InternalTests() { model.subscribe(&listener); }
+    RecognitionTestModelTests() { model.subscribe(&listener); }
 
     void run(UseCase &useCase) { useCase.run(model); }
 
@@ -501,218 +501,213 @@ class RecognitionTestModel_InternalTests : public ::testing::Test {
     }
 };
 
-TEST_F(RecognitionTestModel_InternalTests, subscribesToPlayerEvents) {
+TEST_F(RecognitionTestModelTests, subscribesToPlayerEvents) {
     assertEqual(static_cast<TargetPlayer::EventListener *>(&model),
         targetPlayer.listener());
     assertEqual(static_cast<MaskerPlayer::EventListener *>(&model),
         maskerPlayer.listener());
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     playCalibrationHidesTargetVideoWhenAuditoryOnly) {
     assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    playCalibrationShowsTargetVideoWhenAudioVisual) {
+TEST_F(
+    RecognitionTestModelTests, playCalibrationShowsTargetVideoWhenAudioVisual) {
     assertTargetVideoShownWhenAudioVisual(playingCalibration);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestClosesOutputFileOpensAndWritesTestInOrder) {
     assertClosesOutputFileOpensAndWritesTestInOrder(initializingTest);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestOpensNewOutputFilePassingTestInformation) {
     run(initializingTest);
-    assertEqual(outputFile.openNewFileParameters(),
-        &initializingTest.testIdentity());
+    assertEqual(
+        outputFile.openNewFileParameters(), &initializingTest.testIdentity());
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    playTrialPassesAudioDeviceToTargetPlayer) {
+TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToTargetPlayer) {
     assertDevicePassedToTargetPlayer(playingTrial);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    playCalibrationPassesAudioDeviceToTargetPlayer) {
+TEST_F(
+    RecognitionTestModelTests, playCalibrationPassesAudioDeviceToTargetPlayer) {
     assertDevicePassedToTargetPlayer(playingCalibration);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    playTrialPassesAudioDeviceToMaskerPlayer) {
+TEST_F(RecognitionTestModelTests, playTrialPassesAudioDeviceToMaskerPlayer) {
     assertDevicePassedToMaskerPlayer(playingTrial);
 }
 
-TEST_F(RecognitionTestModel_InternalTests, playTrialFadesInMasker) {
+TEST_F(RecognitionTestModelTests, playTrialFadesInMasker) {
     run(playingTrial);
     assertTrue(maskerPlayerFadedIn());
 }
 
-TEST_F(RecognitionTestModel_InternalTests, playCalibrationPlaysTarget) {
+TEST_F(RecognitionTestModelTests, playCalibrationPlaysTarget) {
     run(playingCalibration);
     assertTargetPlayerPlayed();
 }
 
-TEST_F(RecognitionTestModel_InternalTests, fadeInCompletePlaysTarget) {
+TEST_F(RecognitionTestModelTests, fadeInCompletePlaysTarget) {
     maskerPlayer.fadeInComplete();
     assertTargetPlayerPlayed();
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    initializeTestPassesNextTargetToTargetPlayer) {
+TEST_F(
+    RecognitionTestModelTests, initializeTestPassesNextTargetToTargetPlayer) {
     assertPassesNextTargetToPlayer(initializingTest);
 }
 
-TEST_F(RecognitionTestModel_InternalTests, initializingTestResetsTrialNumber) {
+TEST_F(RecognitionTestModelTests, initializingTestResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTest, 1);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submittingCoordinateResponseIncrementsTrialNumber) {
     run(initializingTest);
     assertYieldsTrialNumber(submittingCoordinateResponse, 2);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    submittingCorrectResponseIncrementsTrialNumber) {
+TEST_F(
+    RecognitionTestModelTests, submittingCorrectResponseIncrementsTrialNumber) {
     run(initializingTest);
     assertYieldsTrialNumber(submittingCorrectResponse, 2);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submittingIncorrectResponseIncrementsTrialNumber) {
     run(initializingTest);
     assertYieldsTrialNumber(submittingIncorrectResponse, 2);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    submittingFreeResponseIncrementsTrialNumber) {
+TEST_F(RecognitionTestModelTests, submittingFreeResponseIncrementsTrialNumber) {
     run(initializingTest);
     assertYieldsTrialNumber(submittingFreeResponse, 2);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submittingCoordinateResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest);
     assertPassesNextTargetToPlayer(submittingCoordinateResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submittingCorrectResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest);
     assertPassesNextTargetToPlayer(submittingCorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submittingIncorrectResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest);
     assertPassesNextTargetToPlayer(submittingIncorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submittingFreeResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest);
     assertPassesNextTargetToPlayer(submittingFreeResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    playCalibrationPassesAudioFileToTargetPlayer) {
+TEST_F(
+    RecognitionTestModelTests, playCalibrationPassesAudioFileToTargetPlayer) {
     playingCalibration.setFilePath("a");
     run(playingCalibration);
     assertTargetFilePathEquals("a");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestPassesMaskerFilePathToMaskerPlayer) {
     setMaskerFilePath("a");
     run(initializingTest);
     assertEqual("a", maskerPlayer.filePath());
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestSubscribesToTargetPlaybackCompletionNotification) {
     assertTargetPlayerPlaybackCompletionSubscribed(initializingTest);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCoordinateResponseSubscribesToTargetPlaybackCompletionNotification) {
     assertTargetPlayerPlaybackCompletionSubscribed(
         submittingCoordinateResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitFreeResponseSubscribesToTargetPlaybackCompletionNotification) {
     assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCorrectResponseSubscribesToTargetPlaybackCompletionNotification) {
     assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitIncorrectResponseSubscribesToTargetPlaybackCompletionNotification) {
     assertTargetPlayerPlaybackCompletionSubscribed(submittingIncorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCoordinateResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingCoordinateResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingCorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitIncorrectResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingIncorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitFreeResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingFreeResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    initializeTestSeeksToRandomMaskerPosition) {
+TEST_F(RecognitionTestModelTests, initializeTestSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(initializingTest);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCoordinateResponseSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingCoordinateResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCorrectResponseSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingCorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitIncorrectResponseSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingIncorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    submitFreeResponseSeeksToRandomMaskerPosition) {
+TEST_F(
+    RecognitionTestModelTests, submitFreeResponseSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    initializeTestSetsInitialMaskerPlayerLevel) {
+TEST_F(RecognitionTestModelTests, initializeTestSetsInitialMaskerPlayerLevel) {
     setMaskerLevel_dB_SPL(1);
     setTestingFullScaleLevel_dB_SPL(2);
     setMaskerRms(3);
@@ -720,8 +715,7 @@ TEST_F(RecognitionTestModel_InternalTests,
     assertEqual(1 - 2 - dB(3), maskerPlayer.level_dB());
 }
 
-TEST_F(
-    RecognitionTestModel_InternalTests, initializeTestSetsTargetPlayerLevel) {
+TEST_F(RecognitionTestModelTests, initializeTestSetsTargetPlayerLevel) {
     setSnr_dB(2);
     setMaskerLevel_dB_SPL(3);
     setTestingFullScaleLevel_dB_SPL(4);
@@ -730,28 +724,25 @@ TEST_F(
     assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    submitCoordinateResponseSetsTargetPlayerLevel) {
+TEST_F(
+    RecognitionTestModelTests, submitCoordinateResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingCoordinateResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    submitFreeResponseSetsTargetPlayerLevel) {
+TEST_F(RecognitionTestModelTests, submitFreeResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingFreeResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    submitCorrectResponseSetsTargetPlayerLevel) {
+TEST_F(RecognitionTestModelTests, submitCorrectResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingCorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    submitIncorrectResponseSetsTargetPlayerLevel) {
+TEST_F(
+    RecognitionTestModelTests, submitIncorrectResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingIncorrectResponse);
 }
 
-TEST_F(
-    RecognitionTestModel_InternalTests, playCalibrationSetsTargetPlayerLevel) {
+TEST_F(RecognitionTestModelTests, playCalibrationSetsTargetPlayerLevel) {
     playingCalibration.setLevel_dB_SPL(1);
     playingCalibration.setFullScaleLevel_dB_SPL(2);
     targetPlayer.setRms(3);
@@ -759,21 +750,19 @@ TEST_F(
     assertTargetPlayerLevelEquals_dB(1 - 2 - dB(3));
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    startTrialShowsTargetPlayerWhenAudioVisual) {
+TEST_F(RecognitionTestModelTests, startTrialShowsTargetPlayerWhenAudioVisual) {
     initializingTest.setAudioVisual();
     run(initializingTest);
     run(playingTrial);
     assertTrue(targetPlayerVideoShown());
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    maskerFadeOutCompleteHidesTargetPlayer) {
+TEST_F(RecognitionTestModelTests, maskerFadeOutCompleteHidesTargetPlayer) {
     maskerFadeOutComplete();
     assertTargetVideoOnlyHidden();
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
     initializingTest.setAuditoryOnly();
     run(initializingTest);
@@ -781,163 +770,159 @@ TEST_F(RecognitionTestModel_InternalTests,
     assertTargetVideoNotShown();
 }
 
-TEST_F(RecognitionTestModel_InternalTests, initializeTestHidesTargetPlayer) {
+TEST_F(RecognitionTestModelTests, initializeTestHidesTargetPlayer) {
     run(initializingTest);
     assertTargetVideoOnlyHidden();
 }
 
-TEST_F(
-    RecognitionTestModel_InternalTests, targetPlaybackCompleteFadesOutMasker) {
+TEST_F(RecognitionTestModelTests, targetPlaybackCompleteFadesOutMasker) {
     targetPlayer.playbackComplete();
     assertTrue(maskerPlayer.fadeOutCalled());
 }
 
-TEST_F(
-    RecognitionTestModel_InternalTests, fadeOutCompleteNotifiesTrialComplete) {
+TEST_F(RecognitionTestModelTests, fadeOutCompleteNotifiesTrialComplete) {
     maskerFadeOutComplete();
     assertTrue(listener.notified());
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCoordinateResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCoordinateResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitFreeResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCorrectResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitIncorrectResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingIncorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestThrowsRequestFailureIfFileFailsToOpen) {
     outputFile.throwOnOpen();
     assertCallThrowsRequestFailure(
         initializingTest, "Unable to open output file.");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile) {
     playingCalibration.setFilePath("a");
     targetPlayer.throwInvalidAudioFileOnRms();
     assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
     setMaskerFilePath("a");
     maskerPlayer.throwInvalidAudioFileOnLoad();
     assertCallThrowsRequestFailure(initializingTest, "unable to read a");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     playTrialWithInvalidAudioDeviceThrowsRequestFailure) {
     assertThrowsRequestFailureWhenInvalidAudioDevice(playingTrial);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     playCalibrationWithInvalidAudioDeviceThrowsRequestFailure) {
     assertThrowsRequestFailureWhenInvalidAudioDevice(playingCalibration);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     playTrialDoesNotChangeAudioDeviceWhenTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingTrial);
     assertFalse(maskerPlayer.setDeviceCalled());
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     playCalibrationDoesNotChangeAudioDeviceWhenTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingCalibration);
     assertFalse(targetPlayer.setDeviceCalled());
 }
 
-TEST_F(
-    RecognitionTestModel_InternalTests, playTrialDoesNotPlayIfTrialInProgress) {
+TEST_F(RecognitionTestModelTests, playTrialDoesNotPlayIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingTrial);
     assertMaskerPlayerNotPlayed();
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    playCalibrationDoesNotPlayIfTrialInProgress) {
+TEST_F(RecognitionTestModelTests, playCalibrationDoesNotPlayIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingCalibration);
     assertTargetPlayerNotPlayed();
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestThrowsRequestFailureIfTrialInProgress) {
     assertThrowsRequestFailureWhenTrialInProgress(initializingTest);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    playTrialThrowsRequestFailureIfTrialInProgress) {
+TEST_F(
+    RecognitionTestModelTests, playTrialThrowsRequestFailureIfTrialInProgress) {
     assertThrowsRequestFailureWhenTrialInProgress(playingTrial);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     playCalibrationThrowsRequestFailureIfTrialInProgress) {
     assertThrowsRequestFailureWhenTrialInProgress(playingCalibration);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestDoesNotLoadMaskerIfTrialInProgress) {
     setMaskerFilePath("a");
     runIgnoringFailureWithTrialInProgress(initializingTest);
     assertEqual("", maskerPlayer.filePath());
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress) {
     initializingTest.setAuditoryOnly();
     runIgnoringFailureWithTrialInProgress(initializingTest);
     assertTargetVideoNotHidden();
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     audioDevicesReturnsOutputAudioDeviceDescriptions) {
     maskerPlayer.setOutputAudioDeviceDescriptions({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, model.audioDevices());
 }
 
-TEST_F(RecognitionTestModel_InternalTests, testCompleteWhenComplete) {
+TEST_F(RecognitionTestModelTests, testCompleteWhenComplete) {
     run(initializingTest);
     assertTestIncomplete();
     testMethod.setComplete();
     assertTestComplete();
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCoordinateResponseDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(
         submittingCoordinateResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitFreeResponseDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(submittingFreeResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCorrectResponseDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitIncorrectResponseDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(
         submittingIncorrectResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     initializeTestDoesNotLoadNextTargetWhenComplete) {
     testMethod.setNextTarget("a");
     testMethod.setComplete();
@@ -945,66 +930,65 @@ TEST_F(RecognitionTestModel_InternalTests,
     assertTargetFilePathEquals("");
 }
 
-TEST_F(RecognitionTestModel_InternalTests, submitFreeResponseWritesResponse) {
+TEST_F(RecognitionTestModelTests, submitFreeResponseWritesResponse) {
     submittingFreeResponse.setResponse("a");
     run(submittingFreeResponse);
     assertEqual("a", writtenFreeResponseTrial().response);
 }
 
-TEST_F(RecognitionTestModel_InternalTests, submitFreeResponseWritesTarget) {
+TEST_F(RecognitionTestModelTests, submitFreeResponseWritesTarget) {
     assertWritesTarget(submittingFreeResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
     assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
         submittingFreeResponse);
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCoordinateResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingCoordinateResponse,
         "submitResponse writeLastCoordinateResponse ");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCorrectResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingCorrectResponse,
         "submitCorrectResponse writeLastCorrectResponse ");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitIncorrectResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingIncorrectResponse,
         "submitIncorrectResponse writeLastIncorrectResponse ");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingCoordinateResponse, "writeLastCoordinateResponse next ");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitIncorrectResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingIncorrectResponse, "writeLastIncorrectResponse next ");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitCorrectResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingCorrectResponse, "writeLastCorrectResponse next ");
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
-    submitCorrectResponseSubmitsCorrectResponse) {
+TEST_F(RecognitionTestModelTests, submitCorrectResponseSubmitsCorrectResponse) {
     run(initializingTest);
     run(submittingCorrectResponse);
     assertTrue(testMethod.submittedCorrectResponse());
 }
 
-TEST_F(RecognitionTestModel_InternalTests,
+TEST_F(RecognitionTestModelTests,
     submitIncorrectResponseSubmitsIncorrectResponse) {
     run(initializingTest);
     run(submittingIncorrectResponse);

@@ -21,10 +21,9 @@ class NullTestMethod : public TestMethod {
 }
 static NullTestMethod nullTestMethod;
 
-RecognitionTestModelImpl::RecognitionTestModelImpl(
-    TargetPlayer *targetPlayer, MaskerPlayer *maskerPlayer,
-    ResponseEvaluator *evaluator, OutputFile *outputFile,
-    Randomizer *randomizer)
+RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer *targetPlayer,
+    MaskerPlayer *maskerPlayer, ResponseEvaluator *evaluator,
+    OutputFile *outputFile, Randomizer *randomizer)
     : maskerPlayer{maskerPlayer},
       targetPlayer{targetPlayer}, evaluator{evaluator}, outputFile{outputFile},
       randomizer{randomizer}, testMethod{&nullTestMethod} {
@@ -140,14 +139,12 @@ void RecognitionTestModelImpl::seekRandomMaskerPosition() {
     maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
 }
 
-void RecognitionTestModelImpl::tryOpeningOutputFile(
-    const TestIdentity &p) {
+void RecognitionTestModelImpl::tryOpeningOutputFile(const TestIdentity &p) {
     outputFile->close();
     tryOpeningOutputFile_(p);
 }
 
-void RecognitionTestModelImpl::tryOpeningOutputFile_(
-    const TestIdentity &p) {
+void RecognitionTestModelImpl::tryOpeningOutputFile_(const TestIdentity &p) {
     try {
         outputFile->openNewFile(p);
     } catch (const OutputFile::OpenFailure &) {
@@ -162,8 +159,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     startTrial();
 }
 
-void RecognitionTestModelImpl::preparePlayersToPlay(
-    const AudioSettings &p) {
+void RecognitionTestModelImpl::preparePlayersToPlay(const AudioSettings &p) {
     setAudioDevices(p);
 }
 
@@ -183,8 +179,7 @@ void RecognitionTestModelImpl::throwInvalidAudioDeviceOnErrorSettingDevice(
     }
 }
 
-void RecognitionTestModelImpl::setAudioDevices_(
-    const std::string &device) {
+void RecognitionTestModelImpl::setAudioDevices_(const std::string &device) {
     maskerPlayer->setAudioDevice(device);
     setTargetPlayerDevice_(device);
 }
@@ -204,9 +199,7 @@ void RecognitionTestModelImpl::fadeInComplete() { playTarget(); }
 
 void RecognitionTestModelImpl::playTarget() { targetPlayer->play(); }
 
-void RecognitionTestModelImpl::playbackComplete() {
-    maskerPlayer->fadeOut();
-}
+void RecognitionTestModelImpl::playbackComplete() { maskerPlayer->fadeOut(); }
 
 void RecognitionTestModelImpl::fadeOutComplete() {
     targetPlayer->hideVideo();
@@ -257,8 +250,7 @@ void RecognitionTestModelImpl::submitIncorrectResponse_() {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submitResponse(
-    const FreeResponse &response) {
+void RecognitionTestModelImpl::submitResponse(const FreeResponse &response) {
     writeTrial(response);
     testMethod->submitResponse(response);
     prepareNextTrialIfNeeded();
@@ -286,15 +278,13 @@ void RecognitionTestModelImpl::playCalibration_(const Calibration &p) {
     playTarget();
 }
 
-void RecognitionTestModelImpl::setTargetPlayerDevice(
-    const Calibration &p) {
+void RecognitionTestModelImpl::setTargetPlayerDevice(const Calibration &p) {
     throwInvalidAudioDeviceOnErrorSettingDevice(
         &RecognitionTestModelImpl::setTargetPlayerDevice_,
         p.audioSettings.audioDevice);
 }
 
-void RecognitionTestModelImpl::trySettingTargetLevel(
-    const Calibration &p) {
+void RecognitionTestModelImpl::trySettingTargetLevel(const Calibration &p) {
     try {
         setTargetLevel_dB(calibrationLevel_dB(p));
     } catch (const InvalidAudioFile &) {
@@ -302,8 +292,7 @@ void RecognitionTestModelImpl::trySettingTargetLevel(
     }
 }
 
-double RecognitionTestModelImpl::calibrationLevel_dB(
-    const Calibration &p) {
+double RecognitionTestModelImpl::calibrationLevel_dB(const Calibration &p) {
     return p.level_dB_SPL - p.fullScaleLevel_dB_SPL - unalteredTargetLevel_dB();
 }
 
@@ -311,9 +300,7 @@ double RecognitionTestModelImpl::unalteredTargetLevel_dB() {
     return dB(targetPlayer->rms());
 }
 
-bool RecognitionTestModelImpl::testComplete() {
-    return testMethod->complete();
-}
+bool RecognitionTestModelImpl::testComplete() { return testMethod->complete(); }
 
 std::vector<std::string> RecognitionTestModelImpl::audioDevices() {
     return maskerPlayer->outputAudioDeviceDescriptions();

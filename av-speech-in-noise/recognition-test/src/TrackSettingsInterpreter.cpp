@@ -68,7 +68,8 @@ static void (*propertyApplication(const std::string &s))(
     if (s == TrackSettingsInterpreterImpl::propertyName(Property::down))
         return applyToDown;
     if (s ==
-        TrackSettingsInterpreterImpl::propertyName(Property::reversalsPerStepSize))
+        TrackSettingsInterpreterImpl::propertyName(
+            Property::reversalsPerStepSize))
         return applyToRunCount;
     if (s == TrackSettingsInterpreterImpl::propertyName(Property::stepSizes))
         return applyToStepSize;
