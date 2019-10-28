@@ -175,9 +175,9 @@ TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
     assertTestCompleteAfterCoordinateResponse();
 }
 
-TEST_F(FixedLevelMethodTests, completeQueryPassesTargetListToConcluder) {
+TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesTargetListToConcluder) {
     initialize();
-    testComplete();
+    submitCoordinateResponse();
     assertEqual(
         static_cast<TargetList *>(&targetList), testConcluder.targetList());
 }

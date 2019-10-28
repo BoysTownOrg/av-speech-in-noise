@@ -15,7 +15,7 @@ void FixedLevelMethodImpl::initialize(
 }
 
 bool FixedLevelMethodImpl::complete() {
-    return concluder->complete(targetList);
+    return complete_;
 }
 
 std::string FixedLevelMethodImpl::next() { return targetList->next(); }
@@ -32,6 +32,7 @@ void FixedLevelMethodImpl::submitResponse(
     lastTrial.correct = evaluator->correct(current_, response);
     lastTrial.target = current_;
     concluder->submitResponse();
+    complete_ = concluder->complete(targetList);
 }
 
 std::string FixedLevelMethodImpl::current() { return targetList->current(); }
