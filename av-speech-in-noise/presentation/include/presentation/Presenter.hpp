@@ -30,6 +30,7 @@ class View {
         virtual void showResponseSubmission() = 0;
         virtual void hideResponseSubmission() = 0;
         virtual std::string response() = 0;
+        virtual bool flagged() = 0;
     };
 
     class Subject {

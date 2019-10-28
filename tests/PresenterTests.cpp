@@ -470,6 +470,12 @@ TEST_F(PresenterTests, experimenterResponsePassesResponse) {
     assertEqual("a", model.freeResponse().response);
 }
 
+TEST_F(PresenterTests, experimenterResponseFlagsResponse) {
+    testingView.flagResponse();
+    respondFromExperimenter();
+    assertTrue(model.freeResponse().flagged);
+}
+
 TEST_F(PresenterTests, passedTrialSubmitsCorrectResponse) {
     run(submittingPassedTrial);
     assertTrue(model.correctResponseSubmitted());

@@ -100,6 +100,7 @@ struct Calibration {
 
 struct FreeResponse {
     std::string response;
+    bool flagged;
 };
 
 struct FreeResponseTrial {

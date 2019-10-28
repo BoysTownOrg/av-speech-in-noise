@@ -481,7 +481,7 @@ void Presenter::Testing::submitResponse() {
 }
 
 FreeResponse Presenter::Testing::openSetResponse() {
-    return {view->response()};
+    return {view->response(), view->flagged()};
 }
 
 Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
