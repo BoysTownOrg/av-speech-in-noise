@@ -1,4 +1,4 @@
-#include "RecognitionTestModel_.hpp"
+#include "RecognitionTestModel.hpp"
 #include <cmath>
 
 namespace av_speech_in_noise {

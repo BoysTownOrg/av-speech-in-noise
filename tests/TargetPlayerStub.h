@@ -2,7 +2,7 @@
 #define TESTS_TARGETPLAYERSTUB_H_
 
 #include "LogString.h"
-#include <recognition-test/RecognitionTestModel_.hpp>
+#include <recognition-test/RecognitionTestModel.hpp>
 #include <utility>
 #include <string>
 

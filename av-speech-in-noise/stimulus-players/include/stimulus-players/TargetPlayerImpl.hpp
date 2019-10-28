@@ -3,7 +3,7 @@
 
 #include "AudioReader.hpp"
 #include <recognition-test/Model.hpp>
-#include <recognition-test/RecognitionTestModel_.hpp>
+#include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
 #include <vector>
 #include <string>
