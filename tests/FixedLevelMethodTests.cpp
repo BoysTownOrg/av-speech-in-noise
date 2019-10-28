@@ -252,6 +252,14 @@ TEST_F(FixedLevelMethodTests, tbd) {
     assertTestIncomplete();
 }
 
+TEST_F(FixedLevelMethodTests, tbd2) {
+    initialize();
+    setTestComplete();
+    run(submittingCoordinateResponse);
+    initialize();
+    assertTestComplete();
+}
+
 class FixedTrialTestConcluderTests : public ::testing::Test {
   protected:
     FixedTrialTestConcluder testConcluder{};
