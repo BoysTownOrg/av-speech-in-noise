@@ -1,7 +1,7 @@
 #include "LogString.h"
 #include "assert-utility.h"
 #include <gtest/gtest.h>
-#include <recognition-test/OutputFilePathImpl.hpp>
+#include <recognition-test/OutputFilePath.hpp>
 
 namespace {
 class TimeStampStub : public av_speech_in_noise::TimeStamp {
