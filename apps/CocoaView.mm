@@ -688,8 +688,11 @@ CocoaTestingView::CocoaTestingView(NSRect r) :
     response_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
     ]},
+    flagged_{[[NSButton alloc] initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2 - labelHeight, 150, labelHeight)]},
     actions{[TestingViewActions alloc]}
 {
+    [flagged_ setButtonType:NSButtonTypeSwitch];
+    [flagged_ setTitle:@"flagged"];
     const auto nextTrialButton_ = [NSButton
         buttonWithTitle:@"play trial"
         target:actions
@@ -737,6 +740,7 @@ CocoaTestingView::CocoaTestingView(NSRect r) :
     [nextTrialButton addSubview:nextTrialButton_];
     [responseSubmission addSubview:submitResponse_];
     [responseSubmission addSubview:response_];
+    [responseSubmission addSubview:flagged_];
     [evaluationButtons addSubview:passButton_];
     [evaluationButtons addSubview:failButton_];
     [view_ addSubview:nextTrialButton];
@@ -787,6 +791,10 @@ void CocoaTestingView::hideEvaluationButtons() {
 
 std::string CocoaTestingView::response() {
     return response_.stringValue.UTF8String;
+}
+
+bool CocoaTestingView::flagged() {
+    return flagged_.state == NSControlStateValueOn;
 }
 
 NSView *CocoaTestingView::view() { 

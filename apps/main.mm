@@ -3,15 +3,15 @@
 #include "CocoaView.h"
 #include "common-objc.h"
 #include <presentation/Presenter.hpp>
+#include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
-#include <recognition-test/RecognitionTestModel_Internal.hpp>
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <recognition-test/TrackSettingsReader.hpp>
 #include <recognition-test/TrackSettingsInterpreter.hpp>
 #include <recognition-test/FixedLevelMethod.hpp>
-#include <recognition-test/OutputFileImpl.hpp>
-#include <recognition-test/OutputFilePathImpl.hpp>
-#include <recognition-test/ResponseEvaluatorImpl.hpp>
+#include <recognition-test/OutputFile.hpp>
+#include <recognition-test/OutputFilePath.hpp>
+#include <recognition-test/ResponseEvaluator.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
@@ -271,7 +271,7 @@ void main() {
         "Documents/AVCoordinateResponseMeasureResults"
     );
     OutputFileImpl outputFile{&writer, &path};
-    adaptive_track::AdaptiveTrackFactory snrTrackFactory;
+    adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
     TrackSettingsInterpreterImpl trackSettingsInterpreter;
     TextFileReaderImpl textFileReader;

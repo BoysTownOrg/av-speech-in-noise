@@ -33,6 +33,13 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     bool complete() override;
     int reversals() override;
 
+    class Factory : public av_speech_in_noise::Track::Factory {
+        std::shared_ptr<av_speech_in_noise::Track> make(
+            const av_speech_in_noise::Track::Settings &s) override {
+            return std::make_shared<AdaptiveTrack>(s);
+        }
+    };
+
   private:
     void updateBumpCount(int bumpBoundary);
     void update(Direction, int bumpBoundary, const std::vector<int> &,
@@ -46,13 +53,6 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     void updateReversals(Step);
     void reversal();
     bool complete_() const;
-
-    class AdaptiveTrackFactory : public av_speech_in_noise::Track::Factory {
-        std::shared_ptr<av_speech_in_noise::Track> make(
-            const av_speech_in_noise::Track::Settings &s) override {
-            return std::make_shared<AdaptiveTrack>(s);
-        }
-    };
 };
 }
 

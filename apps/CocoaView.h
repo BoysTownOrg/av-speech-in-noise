@@ -65,6 +65,7 @@ class CocoaTestingView : public av_speech_in_noise::View::Testing {
     NSView *evaluationButtons;
     NSView *responseSubmission;
     NSTextField *response_;
+    NSButton *flagged_;
     EventListener *listener_{};
     TestingViewActions *actions;
 public:
@@ -83,6 +84,7 @@ public:
     void showEvaluationButtons() override;
     void showResponseSubmission() override;
     std::string response() override;
+    bool flagged() override;
     void hideResponseSubmission() override;
     void hideEvaluationButtons() override;
 };
