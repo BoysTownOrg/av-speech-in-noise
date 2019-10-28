@@ -77,23 +77,13 @@ class FixedLevelMethodTests : public ::testing::Test {
         targetList.setCurrent(std::move(s));
     }
 
-    void assertTestIncompleteAfterCoordinateResponse() {
-        submitCoordinateResponse();
+    void assertTestIncompleteAfter(UseCase &useCase) {
+        run(useCase);
         assertTestIncomplete();
     }
 
-    void assertTestCompleteAfterCoordinateResponse() {
-        submitCoordinateResponse();
-        assertTestComplete();
-    }
-
-    void assertTestIncompleteAfterFreeResponse() {
-        submitFreeResponse();
-        assertTestIncomplete();
-    }
-
-    void assertTestCompleteAfterFreeResponse() {
-        submitFreeResponse();
+    void assertTestCompleteAfter(UseCase &useCase) {
+        run(useCase);
         assertTestComplete();
     }
 
@@ -220,16 +210,16 @@ TEST_F(FixedLevelMethodTests,
 
 TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
     initialize();
-    assertTestIncompleteAfterCoordinateResponse();
+    assertTestIncompleteAfter(submittingCoordinateResponse);
     setTestComplete();
-    assertTestCompleteAfterCoordinateResponse();
+    assertTestCompleteAfter(submittingCoordinateResponse);
 }
 
 TEST_F(FixedLevelMethodTests, completeWhenTestCompleteAfterFreeResponse) {
     initialize();
-    assertTestIncompleteAfterFreeResponse();
+    assertTestIncompleteAfter(submittingFreeResponse);
     setTestComplete();
-    assertTestCompleteAfterFreeResponse();
+    assertTestCompleteAfter(submittingFreeResponse);
 }
 
 TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesTargetListToConcluder) {
