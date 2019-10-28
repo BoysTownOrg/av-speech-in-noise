@@ -6,13 +6,25 @@ struct TestSetupState {
     std::string masker;
 };
 
+enum class TestSetupStateItem {
+    masker
+};
+
+constexpr const char *name(TestSetupStateItem p) {
+    switch (p) {
+        case TestSetupStateItem::masker:
+            return "masker";
+    }
+}
+
 class TestSetupStateWriter {
     Writer &writer;
 public:
     explicit TestSetupStateWriter(Writer &writer) : writer{writer} {}
 
-    void write(const TestSetupState &) {
-        writer.write("masker: a\n");
+    void write(const TestSetupState &state) {
+        using std::string_literals::operator""s;
+        writer.write(name(TestSetupStateItem::masker) + ": "s + state.masker + "\n");
     }
 };
 }
@@ -58,8 +70,9 @@ protected:
         writer.write(state);
     }
 
-    void assertLabeledEntryWritten(std::string label, std::string entry) {
-        assertWrittenContains(label + ": " + entry + "\n");
+    void assertLabeledEntryWritten(TestSetupStateItem item, std::string entry) {
+        using std::string_literals::operator""s;
+        assertWrittenContains(name(item) + ": "s + entry + "\n");
     }
 
     const auto &written() {
@@ -75,9 +88,9 @@ private:
     TestSetupState state;
 };
 
-TEST_F(TestSetupStateWriterTests, tbd) {
+TEST_F(TestSetupStateWriterTests, writesMasker) {
     setMasker("a");
     write();
-    assertLabeledEntryWritten("masker", "a");
+    assertLabeledEntryWritten(TestSetupStateItem::masker, "a");
 }
 }}
