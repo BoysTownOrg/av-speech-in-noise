@@ -100,11 +100,13 @@ struct Calibration {
 
 struct FreeResponse {
     std::string response;
+    bool flagged;
 };
 
 struct FreeResponseTrial {
     std::string response;
     std::string target;
+    bool flagged;
 };
 
 namespace open_set {

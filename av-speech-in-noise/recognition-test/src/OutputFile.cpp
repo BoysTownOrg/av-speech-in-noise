@@ -112,6 +112,10 @@ static std::string formatTrial(const FreeResponseTrial &trial) {
     stream.insert(trial.target);
     stream.insertCommaAndSpace();
     stream.insert(trial.response);
+    if (trial.flagged) {
+        stream.insertCommaAndSpace();
+        stream.insert("FLAGGED");
+    }
     stream.insertNewLine();
     return stream.str();
 }

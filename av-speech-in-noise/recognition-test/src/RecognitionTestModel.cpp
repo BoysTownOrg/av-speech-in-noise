@@ -260,6 +260,7 @@ void RecognitionTestModelImpl::writeTrial(const FreeResponse &p) {
     FreeResponseTrial trial;
     trial.response = p.response;
     trial.target = targetName(evaluator, testMethod);
+    trial.flagged = p.flagged;
     outputFile->writeTrial(trial);
     save(outputFile);
 }

@@ -374,6 +374,7 @@ class ViewStub : public View {
         bool responseSubmissionShown_{};
         bool responseSubmissionHidden_{};
         bool evaluationButtonsHidden_{};
+        bool flagged_{};
 
       public:
         void submitFailedTrial() { listener_->submitFailedTrial(); }
@@ -433,6 +434,10 @@ class ViewStub : public View {
         void submitPassedTrial() { listener_->submitPassedTrial(); }
 
         void setResponse(std::string s) { response_ = std::move(s); }
+
+        void flagResponse() { flagged_ = true; }
+
+        bool flagged() override { return flagged_; }
 
         void submitResponse() { listener_->submitResponse(); }
     };
