@@ -273,7 +273,7 @@ void main() {
     OutputFileImpl outputFile{&writer, &path};
     adaptive_track::AdaptiveTrackFactory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
-    TrackSettingsInterpreter trackSettingsInterpreter;
+    TrackSettingsInterpreterImpl trackSettingsInterpreter;
     TextFileReaderImpl textFileReader;
     TrackSettingsReaderImpl trackSettingsReader{
         &textFileReader,

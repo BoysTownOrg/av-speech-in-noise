@@ -2,7 +2,7 @@
 
 namespace av_speech_in_noise {
 TrackSettingsReaderImpl::TrackSettingsReaderImpl(
-    TextFileReader *reader, ITrackSettingsInterpreter *interpreter)
+    TextFileReader *reader, TrackSettingsInterpreter *interpreter)
     : reader{reader}, interpreter{interpreter} {}
 
 const TrackingRule *TrackSettingsReaderImpl::read(std::string filePath) {

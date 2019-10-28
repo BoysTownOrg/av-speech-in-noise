@@ -4,11 +4,11 @@
 
 namespace av_speech_in_noise::tests {
 namespace {
-using Property = TrackSettingsInterpreter::Property;
+using Property = TrackSettingsInterpreterImpl::Property;
 
 class TrackSettingsInterpreterTests : public ::testing::Test {
   protected:
-    TrackSettingsInterpreter interpreter;
+    TrackSettingsInterpreterImpl interpreter;
 
     void assertFileContentsYield(
         std::vector<std::string> v, const TrackingRule &expected) {
@@ -24,7 +24,7 @@ class TrackSettingsInterpreterTests : public ::testing::Test {
     }
 
     std::string propertyEntry(Property p, std::string s) {
-        return std::string{TrackSettingsInterpreter::propertyName(p)} + ": " +
+        return std::string{TrackSettingsInterpreterImpl::propertyName(p)} + ": " +
             std::move(s);
     }
 

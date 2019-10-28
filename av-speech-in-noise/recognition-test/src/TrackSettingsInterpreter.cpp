@@ -62,20 +62,20 @@ static void nothing(TrackingSequence &, int) {}
 
 static void (*propertyApplication(const std::string &s))(
     TrackingSequence &, int) {
-    using Property = TrackSettingsInterpreter::Property;
-    if (s == TrackSettingsInterpreter::propertyName(Property::up))
+    using Property = TrackSettingsInterpreterImpl::Property;
+    if (s == TrackSettingsInterpreterImpl::propertyName(Property::up))
         return applyToUp;
-    if (s == TrackSettingsInterpreter::propertyName(Property::down))
+    if (s == TrackSettingsInterpreterImpl::propertyName(Property::down))
         return applyToDown;
     if (s ==
-        TrackSettingsInterpreter::propertyName(Property::reversalsPerStepSize))
+        TrackSettingsInterpreterImpl::propertyName(Property::reversalsPerStepSize))
         return applyToRunCount;
-    if (s == TrackSettingsInterpreter::propertyName(Property::stepSizes))
+    if (s == TrackSettingsInterpreterImpl::propertyName(Property::stepSizes))
         return applyToStepSize;
     return nothing;
 }
 
-const TrackingRule *TrackSettingsInterpreter::trackingRule(std::string s) {
+const TrackingRule *TrackSettingsInterpreterImpl::trackingRule(std::string s) {
     rule_.clear();
     auto stream = Stream{std::move(s)};
     while (stream.nextLine()) {

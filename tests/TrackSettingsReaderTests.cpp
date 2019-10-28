@@ -19,7 +19,7 @@ class TextFileReaderStub : public TextFileReader {
     void setContents(std::string s) { contents_ = std::move(s); }
 };
 
-class TrackSettingsInterpreterStub : public ITrackSettingsInterpreter {
+class TrackSettingsInterpreterStub : public TrackSettingsInterpreter {
     std::string content_{};
     const TrackingRule *trackingRule_{};
 

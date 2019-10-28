@@ -11,18 +11,18 @@ class TextFileReader {
     virtual std::string read(std::string) = 0;
 };
 
-class ITrackSettingsInterpreter {
+class TrackSettingsInterpreter {
   public:
-    virtual ~ITrackSettingsInterpreter() = default;
+    virtual ~TrackSettingsInterpreter() = default;
     virtual const TrackingRule *trackingRule(std::string) = 0;
 };
 
 class TrackSettingsReaderImpl : public TrackSettingsReader {
     TextFileReader *reader;
-    ITrackSettingsInterpreter *interpreter;
+    TrackSettingsInterpreter *interpreter;
 
   public:
-    TrackSettingsReaderImpl(TextFileReader *, ITrackSettingsInterpreter *);
+    TrackSettingsReaderImpl(TextFileReader *, TrackSettingsInterpreter *);
     const TrackingRule *read(std::string filePath) override;
 };
 }

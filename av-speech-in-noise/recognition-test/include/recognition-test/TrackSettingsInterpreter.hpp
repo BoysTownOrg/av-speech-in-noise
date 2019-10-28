@@ -5,7 +5,7 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class TrackSettingsInterpreter : public ITrackSettingsInterpreter {
+class TrackSettingsInterpreterImpl : public TrackSettingsInterpreter {
     TrackingRule rule_{};
     std::string contents;
 
