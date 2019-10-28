@@ -338,7 +338,7 @@ void main() {
     FixedLevelMethodImpl fixedLevelMethod{
         &responseEvaluator
     };
-    RecognitionTestModel model_internal{
+    RecognitionTestModelImpl model_internal{
         &targetPlayer,
         &maskerPlayer,
         &responseEvaluator,

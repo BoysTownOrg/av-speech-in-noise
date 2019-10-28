@@ -7,8 +7,8 @@ add_executable(tests
 	OutputFilePathTests.cpp
 	OutputFileTests.cpp
 	PresenterTests.cpp
-    RecognitionTestModel_Tests.cpp
-	RecognitionTestModelTests.cpp
+    RecognitionTestModelTests.cpp
+	ModelTests.cpp
 	ResponseEvaluatorTests.cpp
 	SubdirectoryTargetListReaderTests.cpp
 	TargetListTests.cpp

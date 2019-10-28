@@ -6,7 +6,7 @@ ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
     FixedLevelMethod *fixedLevelMethod, TargetList *infiniteTargetList,
     TestConcluder *fixedTrialTestConcluder, TargetList *finiteTargetList,
     TestConcluder *completesWhenTargetsEmpty,
-    RecognitionTestModel_ *model)
+    RecognitionTestModel *model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       infiniteTargetList{infiniteTargetList},
       fixedTrialTestConcluder{fixedTrialTestConcluder},
