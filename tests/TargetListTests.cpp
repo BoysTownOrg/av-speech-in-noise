@@ -58,9 +58,7 @@ class RandomizedTargetListTests : public ::testing::Test {
 
     void assertNotEmpty() { assertFalse(empty()); }
 
-    void reinsertCurrent() {
-        list.reinsertCurrent();
-    }
+    void reinsertCurrent() { list.reinsertCurrent(); }
 
     void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 };
@@ -76,10 +74,8 @@ TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
     assertNotEmpty();
 }
 
-TEST_F(
-    RandomizedTargetListTests,
-    loadFromDirectoryPassesDirectoryToDirectoryReader
-) {
+TEST_F(RandomizedTargetListTests,
+    loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectory("a");
     assertEqual("a", reader.directory());
 }
@@ -103,6 +99,16 @@ TEST_F(RandomizedTargetListTests, nextReplacesSecondToLastTarget) {
     next();
     next();
     assertHasBeenShuffled({"c", "d", "e", "a"});
+}
+
+TEST_F(RandomizedTargetListTests,
+    nextReplacesSecondToLastTargetWithReinsertedCurrent) {
+    setFileNames({"a", "b", "c", "d", "e"});
+    loadFromDirectory();
+    next();
+    reinsertCurrent();
+    next();
+    assertHasBeenShuffled({"c", "d", "e", "a", "a"});
 }
 
 TEST_F(RandomizedTargetListTests, nextReturnsFullPathToFile) {
