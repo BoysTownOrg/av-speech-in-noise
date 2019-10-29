@@ -1,8 +1,8 @@
-#include "AudioReaderStub.h"
 #include "assert-utility.h"
-#include <cmath>
-#include <gtest/gtest.h>
+#include "AudioReaderStub.h"
 #include <stimulus-players/MaskerPlayerImpl.hpp>
+#include <gtest/gtest.h>
+#include <cmath>
 
 namespace {
 class AudioPlayerStub : public stimulus_players::AudioPlayer {
@@ -37,7 +37,7 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     void stop() override { stopped_ = true; }
 
-    auto stopped() const { return stopped_; }
+    [[nodiscard]] auto stopped() const { return stopped_; }
 
     double sampleRateHz() override { return sampleRateHz_; }
 
@@ -66,13 +66,13 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     void subscribe(EventListener *listener) override { listener_ = listener; }
 
-    auto filePath() const { return filePath_; }
+    [[nodiscard]] auto filePath() const { return filePath_; }
 
-    auto secondsSeeked() const { return secondsSeeked_; }
+    [[nodiscard]] auto secondsSeeked() const { return secondsSeeked_; }
 
-    auto deviceIndex() const { return deviceIndex_; }
+    [[nodiscard]] auto deviceIndex() const { return deviceIndex_; }
 
-    auto played() const { return played_; }
+    [[nodiscard]] auto played() const { return played_; }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
         listener_->fillAudioBuffer(audio);
@@ -97,13 +97,15 @@ class MaskerPlayerListenerStub
         fadeOutCompleted_ = true;
     }
 
-    auto fadeInCompleted() const { return fadeInCompleted_; }
+    [[nodiscard]] auto fadeInCompleted() const { return fadeInCompleted_; }
 
-    auto fadeOutCompleted() const { return fadeOutCompleted_; }
+    [[nodiscard]] auto fadeOutCompleted() const { return fadeOutCompleted_; }
 
-    auto fadeInCompletions() const { return fadeInCompletions_; }
+    [[nodiscard]] auto fadeInCompletions() const { return fadeInCompletions_; }
 
-    auto fadeOutCompletions() const { return fadeOutCompletions_; }
+    [[nodiscard]] auto fadeOutCompletions() const {
+        return fadeOutCompletions_;
+    }
 };
 
 template <typename T> class VectorFacade {
@@ -133,7 +135,7 @@ class TimerStub : public stimulus_players::Timer {
         callbackScheduled_ = true;
     }
 
-    auto callbackScheduled() const { return callbackScheduled_; }
+    [[nodiscard]] auto callbackScheduled() const { return callbackScheduled_; }
 
     void clearCallbackCount() { callbackScheduled_ = false; }
 
@@ -165,7 +167,7 @@ class MaskerPlayerTests : public ::testing::Test {
         fillAudioBuffer({leftChannel, rightChannel});
     }
 
-    std::vector<float> halfHannWindow(int length) {
+    static std::vector<float> halfHannWindow(int length) {
         auto N = 2 * length - 1;
         const auto pi = std::acos(-1);
         std::vector<float> window;
@@ -174,20 +176,20 @@ class MaskerPlayerTests : public ::testing::Test {
         return window;
     }
 
-    std::vector<float> backHalfHannWindow(int length) {
+    static std::vector<float> backHalfHannWindow(int length) {
         auto frontHalf = halfHannWindow(length);
         std::reverse(frontHalf.begin(), frontHalf.end());
         return frontHalf;
     }
 
-    std::vector<float> oneToN(int N) {
+    static std::vector<float> oneToN(int N) {
         std::vector<float> result;
         result.resize(N);
         std::iota(result.begin(), result.end(), 1);
         return result;
     }
 
-    std::vector<float> NtoOne(int N) {
+    static std::vector<float> NtoOne(int N) {
         auto result = oneToN(N);
         std::reverse(result.begin(), result.end());
         return result;
@@ -264,9 +266,9 @@ class MaskerPlayerTests : public ::testing::Test {
         assertChannelEqual(leftChannel, std::move(x));
     }
 
-    void assertChannelEqual(
+    static void assertChannelEqual(
         const std::vector<float> &channel, std::vector<float> x) {
-        assertEqual(std::move(x), channel, 1e-6f);
+        assertEqual(std::move(x), channel, 1e-6F);
     }
 
     void assertFillingStereoChannelsMultipliesBy(
@@ -492,7 +494,7 @@ TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {
 
     leftChannel = {1, 2, 3};
     fillAudioBufferMono();
-    assertEqual({0, 0, 0}, leftChannel, 1e-15f);
+    assertEqual({0, 0, 0}, leftChannel, 1e-15F);
 }
 
 TEST_F(MaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
