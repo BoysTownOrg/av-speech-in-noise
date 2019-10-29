@@ -32,7 +32,7 @@ class RandomizedTargetList : public av_speech_in_noise::TargetList {
     std::string next() override;
     std::string current() override;
     bool empty() override;
-    void reinsertCurrent();
+    void reinsertCurrent() override;
   private:
     std::string fullPath(std::string file);
     void shuffle();
@@ -66,7 +66,7 @@ class RandomizedFiniteTargetList : public av_speech_in_noise::TargetList {
     void loadFromDirectory(std::string directory) override;
     std::string next() override;
     std::string current() override;
-    void reinsertCurrent();
+    void reinsertCurrent() override;
 
   private:
     bool empty_();

@@ -16,6 +16,8 @@ class TargetListStub : public TargetList {
     bool reinsertCurrentCalled_{};
 
   public:
+    void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
+
     auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
 
     void setEmpty() { empty_ = true; }

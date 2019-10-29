@@ -39,6 +39,7 @@ class SubmittingFreeResponse : public UseCase {
 
   public:
     void run(FixedLevelMethod &m) override { m.submitResponse(response); }
+    void setFlagged() { response.flagged = true; }
 };
 
 namespace {
@@ -144,6 +145,10 @@ class FixedLevelMethodTests : public ::testing::Test {
 
     void assertCurrentTargetNotReinserted() {
         assertFalse(targetList.reinsertCurrentCalled());
+    }
+
+    void assertCurrentTargetReinserted() {
+        assertTrue(targetList.reinsertCurrentCalled());
     }
 };
 
@@ -289,6 +294,12 @@ TEST_F(FixedLevelMethodTests,
 TEST_F(FixedLevelMethodTests, submitFreeResponseDoesNotReinsertCurrentTarget) {
     run(submittingFreeResponse);
     assertCurrentTargetNotReinserted();
+}
+
+TEST_F(FixedLevelMethodTests, submitFreeResponseReinsertsCurrentTargetIfFlagged) {
+    submittingFreeResponse.setFlagged();
+    run(submittingFreeResponse);
+    assertCurrentTargetReinserted();
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {

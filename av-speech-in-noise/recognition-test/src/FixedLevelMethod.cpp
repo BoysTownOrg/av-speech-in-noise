@@ -48,7 +48,9 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submitResponse(const FreeResponse &) {
+void FixedLevelMethodImpl::submitResponse(const FreeResponse &response) {
+    if (response.flagged)
+        targetList->reinsertCurrent();
     complete_ = concluder->complete(targetList);
 }
 }
