@@ -34,51 +34,52 @@ class TestMethodStub : public TestMethod {
 
     void setNextTarget(std::string s) { next_ = std::move(s); }
 
-    bool complete() { return complete_; }
+    bool complete() override { return complete_; }
 
-    std::string next() {
+    std::string next() override {
         log_.insert("next ");
         current_ = currentWhenNext_;
         return next_;
     }
 
-    std::string current() { return current_; }
+    std::string current() override { return current_; }
 
     void setCurrent(std::string s) { current_ = std::move(s); }
 
     void setCurrentWhenNext(std::string s) { currentWhenNext_ = std::move(s); }
 
-    int snr_dB() { return snr_dB_; }
+    int snr_dB() override { return snr_dB_; }
 
-    void submitCorrectResponse() {
+    void submitCorrectResponse() override {
         log_.insert("submitCorrectResponse ");
         submittedCorrectResponse_ = true;
     }
 
-    void submitIncorrectResponse() {
+    void submitIncorrectResponse() override {
         log_.insert("submitIncorrectResponse ");
         submittedIncorrectResponse_ = true;
     }
 
-    void submitResponse(const FreeResponse &) {}
+    void submitResponse(const FreeResponse &) override {}
 
-    void writeTestingParameters(OutputFile *file) {
+    void writeTestingParameters(OutputFile *file) override {
         file->writeTest(AdaptiveTest{});
     }
 
-    void writeLastCoordinateResponse(OutputFile *) {
+    void writeLastCoordinateResponse(OutputFile *) override {
         log_.insert("writeLastCoordinateResponse ");
     }
 
-    void writeLastCorrectResponse(OutputFile *) {
+    void writeLastCorrectResponse(OutputFile *) override {
         log_.insert("writeLastCorrectResponse ");
     }
 
-    void writeLastIncorrectResponse(OutputFile *) {
+    void writeLastIncorrectResponse(OutputFile *) override {
         log_.insert("writeLastIncorrectResponse ");
     }
 
-    void submitResponse(const coordinate_response_measure::Response &) {
+    void submitResponse(
+        const coordinate_response_measure::Response &) override {
         log_.insert("submitResponse ");
     }
 
@@ -94,7 +95,6 @@ class UseCase {
 
 class TargetWritingUseCase : public virtual UseCase {
   public:
-    virtual ~TargetWritingUseCase() = default;
     virtual std::string writtenTarget(OutputFileStub &) = 0;
 };
 
@@ -210,7 +210,7 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
 
     void setColor(coordinate_response_measure::Color c) { response_.color = c; }
 
-    auto &response() const { return response_; }
+    [[nodiscard]] auto response() const -> auto & { return response_; }
 };
 
 class SubmittingCorrectResponse : public TargetWritingUseCase {
@@ -263,11 +263,11 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertTargetVideoNotShown();
     }
 
-    bool targetPlayerVideoHidden() { return targetPlayer.videoHidden(); }
+    auto targetPlayerVideoHidden() -> bool { return targetPlayer.videoHidden(); }
 
     void assertTargetVideoNotShown() { assertFalse(targetPlayerVideoShown()); }
 
-    bool targetPlayerVideoShown() { return targetPlayer.videoShown(); }
+    auto targetPlayerVideoShown() -> bool { return targetPlayer.videoShown(); }
 
     void assertTargetVideoHiddenWhenAuditoryOnly(ConditionUseCase &useCase) {
         useCase.setAuditoryOnly();
@@ -297,8 +297,8 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     auto &outputFileLog() { return outputFile.log(); }
 
-    void assertOutputFileLog(std::string s) {
-        assertEqual(std::move(s), outputFileLog());
+    void assertOutputFileLog(const std::string &s) {
+        assertEqual(s, outputFileLog());
     }
 
     template <typename T>
@@ -325,8 +325,8 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     auto targetFilePath() { return targetPlayer.filePath(); }
 
-    void assertTargetFilePathEquals(std::string what) {
-        assertEqual(std::move(what), targetFilePath());
+    void assertTargetFilePathEquals(const std::string &what) {
+        assertEqual(what, targetFilePath());
     }
 
     void assertPassesNextTargetToPlayer(UseCase &useCase) {
@@ -362,7 +362,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(1., maskerPlayerSecondsSeeked());
     }
 
-    double dB(double x) { return 20 * std::log10(x); }
+    static double dB(double x) { return 20 * std::log10(x); }
 
     auto targetPlayerLevel_dB() { return targetPlayer.level_dB(); }
 
@@ -389,14 +389,15 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertTrue(outputFileLog().endsWith("save "));
     }
 
-    void assertCallThrowsRequestFailure(UseCase &useCase, std::string what) {
+    void assertCallThrowsRequestFailure(
+        UseCase &useCase, const std::string &what) {
         try {
             run(useCase);
             FAIL() << "Expected recognition_test::"
                       "ModelImpl::"
                       "RequestFailure";
         } catch (const ModelImpl::RequestFailure &e) {
-            assertEqual(std::move(what), e.what());
+            assertEqual(what, e.what());
         }
     }
 
