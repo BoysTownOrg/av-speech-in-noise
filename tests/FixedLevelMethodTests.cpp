@@ -28,7 +28,7 @@ class InitializingMethod : public UseCase {
 };
 
 class SubmittingCoordinateResponse : public UseCase {
-    coordinate_response_measure::Response response;
+    coordinate_response_measure::Response response{};
 
   public:
     void run(FixedLevelMethod &m) override { m.submitResponse(response); }
@@ -51,7 +51,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     OutputFileStub outputFile;
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test;
-    coordinate_response_measure::Response coordinateResponse;
+    coordinate_response_measure::Response coordinateResponse{};
     FreeResponse freeResponse;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
@@ -75,7 +75,7 @@ class FixedLevelMethodTests : public ::testing::Test {
         method.writeLastCoordinateResponse(&outputFile);
     }
 
-    auto blueColor() { return coordinate_response_measure::Color::blue; }
+    static auto blueColor() { return coordinate_response_measure::Color::blue; }
 
     auto writtenFixedLevelTrial() {
         return outputFile.writtenFixedLevelTrial();
@@ -143,12 +143,14 @@ class FixedLevelMethodTests : public ::testing::Test {
         assertTestConcluderLogContains(s);
     }
 
+    bool reinsertCurrentCalled() { return targetList.reinsertCurrentCalled(); }
+
     void assertCurrentTargetNotReinserted() {
-        assertFalse(targetList.reinsertCurrentCalled());
+        assertFalse(reinsertCurrentCalled());
     }
 
     void assertCurrentTargetReinserted() {
-        assertTrue(targetList.reinsertCurrentCalled());
+        assertTrue(reinsertCurrentCalled());
     }
 };
 
@@ -296,7 +298,8 @@ TEST_F(FixedLevelMethodTests, submitFreeResponseDoesNotReinsertCurrentTarget) {
     assertCurrentTargetNotReinserted();
 }
 
-TEST_F(FixedLevelMethodTests, submitFreeResponseReinsertsCurrentTargetIfFlagged) {
+TEST_F(
+    FixedLevelMethodTests, submitFreeResponseReinsertsCurrentTargetIfFlagged) {
     submittingFreeResponse.setFlagged();
     run(submittingFreeResponse);
     assertCurrentTargetReinserted();

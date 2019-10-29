@@ -3,6 +3,7 @@
 
 #include "LogString.h"
 #include <recognition-test/Model.hpp>
+#include <utility>
 
 namespace av_speech_in_noise::tests {
 class TargetListStub : public TargetList {
