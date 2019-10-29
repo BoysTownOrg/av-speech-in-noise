@@ -385,5 +385,5 @@ TEST_F(DirectoryReaderCompositeTests, returnsSubdirectoriesFromFirstDecorated) {
     decoratedAt(0).setSubDirectories({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, subDirectories(reader));
 }
-} // namespace
-} // namespace target_list::tests
+}
+}

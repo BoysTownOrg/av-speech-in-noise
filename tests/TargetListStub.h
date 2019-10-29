@@ -45,6 +45,6 @@ class TargetListStub : public TargetList {
 
     auto &log() const { return log_; }
 };
-} // namespace av_speech_in_noise::tests
+}
 
 #endif

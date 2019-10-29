@@ -328,5 +328,5 @@ TEST_F(ModelTests, subscribesToListener) {
     assertEqual(static_cast<const Model::EventListener *>(&listener),
         internalModel.listener());
 }
-} // namespace
-} // namespace av_speech_in_noise::tests
+}
+}

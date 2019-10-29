@@ -21,5 +21,5 @@ class AudioReaderStub : public AudioReader {
     auto filePath() const { return filePath_; }
     void throwOnRead() { throwOnRead_ = true; }
 };
-} // namespace stimulus_players::tests
+}
 #endif

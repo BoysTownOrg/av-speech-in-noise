@@ -127,5 +127,5 @@ TEST_F(TrackSettingsInterpreterTests, canBeUsedToInterpretMoreThanOnce) {
             propertyEntry(Property::stepSizes, "12")},
         {secondCall});
 }
-} // namespace
-} // namespace av_speech_in_noise::tests
+}
+}

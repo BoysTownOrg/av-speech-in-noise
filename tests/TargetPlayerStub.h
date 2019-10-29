@@ -98,6 +98,6 @@ class TargetPlayerStub : public TargetPlayer {
 
     void throwInvalidAudioFileOnRms() { throwInvalidAudioFileOnRms_ = true; }
 };
-} // namespace av_speech_in_noise::tests
+}
 
 #endif

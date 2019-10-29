@@ -12,6 +12,6 @@ class ModelEventListenerStub : public Model::EventListener {
 
     auto notified() const { return notified_; }
 };
-} // namespace av_speech_in_noise::tests
+}
 
 #endif

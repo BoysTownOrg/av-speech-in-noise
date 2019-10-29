@@ -621,5 +621,5 @@ TEST(FailingOutputFileTests, openThrowsOpenFailureWhenWriterFails) {
     } catch (const OutputFileImpl::OpenFailure &) {
     }
 }
-} // namespace
-} // namespace av_speech_in_noise::tests
+}
+}

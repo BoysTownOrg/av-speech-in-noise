@@ -333,5 +333,5 @@ TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
     targetList.setEmpty();
     assertComplete();
 }
-} // namespace
-} // namespace av_speech_in_noise::tests
+}
+}

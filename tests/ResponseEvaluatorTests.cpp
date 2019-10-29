@@ -89,4 +89,4 @@ TEST_F(ResponseEvaluatorTests, miscellaneous) {
     assertIncorrect("a/b/c/blue9-3.mov", {3, Color::blue});
     assertIncorrect("a/b/c/red8 4.mov", {4, Color::red});
 }
-} // namespace av_speech_in_noise::tests::response_evaluation
+}

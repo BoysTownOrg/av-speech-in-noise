@@ -61,5 +61,5 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
 
     auto filePathForFileName() const { return filePathForFileName_; }
 };
-} // namespace av_speech_in_noise::tests
+}
 #endif

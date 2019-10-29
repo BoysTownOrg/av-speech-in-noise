@@ -645,4 +645,4 @@ TEST_F(MaskerPlayerTests, loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
     } catch (const av_speech_in_noise::InvalidAudioFile &) {
     }
 }
-} // namespace
+}
