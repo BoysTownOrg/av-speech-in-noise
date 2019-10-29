@@ -23,9 +23,9 @@ class TargetListStub : public TargetList {
 
     void setEmpty() { empty_ = true; }
 
-    bool empty() override { return empty_; }
+    auto empty() -> bool override { return empty_; }
 
-    std::string current() override { return current_; }
+    auto current() -> std::string override { return current_; }
 
     void setCurrent(std::string s) { current_ = std::move(s); }
 
@@ -38,7 +38,7 @@ class TargetListStub : public TargetList {
         directory_ = std::move(directory);
     }
 
-    std::string next() override {
+    auto next() -> std::string override {
         log_.insert("next ");
         nextCalled_ = true;
         current_ = currentWhenNext_;
@@ -49,7 +49,7 @@ class TargetListStub : public TargetList {
 
     auto directory() { return directory_; }
 
-    auto &log() const { return log_; }
+    auto log() const -> auto & { return log_; }
 };
 }
 

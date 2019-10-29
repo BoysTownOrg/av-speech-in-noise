@@ -10,7 +10,7 @@ class TargetListFactoryStub : public target_list::TargetListFactory {
     std::vector<std::shared_ptr<av_speech_in_noise::TargetList>> lists_{};
 
   public:
-    std::shared_ptr<av_speech_in_noise::TargetList> make() override {
+    auto make() -> std::shared_ptr<av_speech_in_noise::TargetList> override {
         auto list = lists_.front();
         lists_.erase(lists_.begin());
         return list;

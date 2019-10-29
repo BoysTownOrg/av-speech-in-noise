@@ -54,7 +54,7 @@ class RandomizedTargetListTests : public ::testing::Test {
 
     void assertEmpty() { assertTrue(empty()); }
 
-    bool empty() { return list.empty(); }
+    auto empty() -> bool { return list.empty(); }
 
     void assertNotEmpty() { assertFalse(empty()); }
 
@@ -229,22 +229,22 @@ FINITE_RANDOMIZED_TARGET_LIST_TEST(reinsertCurrent) {
     assertNextEquals("C:/b");
 }
 
-std::vector<std::string> filesIn(
-    DirectoryReader &reader, std::string directory = {}) {
+auto filesIn(DirectoryReader &reader, std::string directory = {})
+    -> std::vector<std::string> {
     return reader.filesIn(std::move(directory));
 }
 
-std::vector<std::string> filter(
-    FileFilter &filter_, std::vector<std::string> files = {}) {
+auto filter(FileFilter &filter_, std::vector<std::string> files = {})
+    -> std::vector<std::string> {
     return filter_.filter(std::move(files));
 }
 
-std::vector<std::string> subDirectories(
-    DirectoryReader &reader, std::string directory = {}) {
+auto subDirectories(DirectoryReader &reader, std::string directory = {})
+    -> std::vector<std::string> {
     return reader.subDirectories(std::move(directory));
 }
 
-std::string directory(DirectoryReaderStub &reader) {
+auto directory(DirectoryReaderStub &reader) -> std::string {
     return reader.directory();
 }
 
@@ -253,11 +253,11 @@ class FileFilterStub : public FileFilter {
     std::vector<std::string> files_;
 
   public:
-    auto files() const { return files_; }
+    [[nodiscard]] auto files() const { return files_; }
 
     void setFiltered(std::vector<std::string> f) { filtered_ = std::move(f); }
 
-    std::vector<std::string> filter(std::vector<std::string> f) override {
+    auto filter(std::vector<std::string> f) -> std::vector<std::string> override {
         files_ = std::move(f);
         return filtered_;
     }
@@ -298,8 +298,8 @@ TEST_F(FileFilterDecoratorTests, returnsSubdirectories) {
 
 class FileExtensionFilterTests : public ::testing::Test {
   protected:
-    static FileExtensionFilter construct(
-        std::vector<std::string> filters = {}) {
+    static auto construct(
+        std::vector<std::string> filters = {}) -> FileExtensionFilter {
         return FileExtensionFilter{std::move(filters)};
     }
 };
@@ -312,7 +312,7 @@ TEST_F(FileExtensionFilterTests, returnsFilteredFiles) {
 
 class FileIdentifierFilterTests : public ::testing::Test {
   protected:
-    static FileIdentifierFilter construct(std::string indentifier = {}) {
+    static auto construct(std::string indentifier = {}) -> FileIdentifierFilter {
         return FileIdentifierFilter{std::move(indentifier)};
     }
 };
@@ -331,8 +331,8 @@ TEST_F(FileIdentifierFilterTests, returnsFilesThatEndWithIdentifier) {
 
 class FileIdentifierExcluderFilterTests : public ::testing::Test {
   protected:
-    static FileIdentifierExcluderFilter construct(
-        std::vector<std::string> indentifiers = {}) {
+    static auto construct(
+        std::vector<std::string> indentifiers = {}) -> FileIdentifierExcluderFilter {
         return FileIdentifierExcluderFilter{std::move(indentifiers)};
     }
 };
@@ -348,7 +348,7 @@ class RandomSubsetFilesTests : public ::testing::Test {
   protected:
     RandomizerStub randomizer;
 
-    RandomSubsetFiles construct(int N = {}) { return {&randomizer, N}; }
+    auto construct(int N = {}) -> RandomSubsetFiles { return {&randomizer, N}; }
 
     auto shuffled() { return randomizer.shuffledInts(); }
 
@@ -378,7 +378,7 @@ class DirectoryReaderCompositeTests : public ::testing::Test {
   protected:
     std::vector<DirectoryReaderStub> decorated;
 
-    DirectoryReaderComposite construct() {
+    auto construct() -> DirectoryReaderComposite {
         std::vector<DirectoryReader *> ptrs;
         for (auto &d : decorated)
             ptrs.push_back(&d);
@@ -392,7 +392,7 @@ class DirectoryReaderCompositeTests : public ::testing::Test {
             assertEqual(expected, decorated.at(i).directory());
     }
 
-    auto &decoratedAt(int n) { return decorated.at(n); }
+    auto decoratedAt(int n) -> auto & { return decorated.at(n); }
 
     void setFileNamesForDecorated(std::vector<std::string> v, int n) {
         decoratedAt(n).setFileNames(std::move(v));
