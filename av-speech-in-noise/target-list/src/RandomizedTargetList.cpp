@@ -42,6 +42,10 @@ std::string RandomizedTargetList::fullPath(std::string file) {
 
 std::string RandomizedTargetList::current() { return fullPath(currentFile_); }
 
+void RandomizedTargetList::reinsertCurrent() {
+    files.push_back(currentFile_);
+}
+
 RandomizedFiniteTargetList::RandomizedFiniteTargetList(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}

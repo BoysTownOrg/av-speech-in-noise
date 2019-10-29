@@ -57,6 +57,10 @@ class RandomizedTargetListTests : public ::testing::Test {
     bool empty() { return list.empty(); }
 
     void assertNotEmpty() { assertFalse(empty()); }
+
+    void reinsertCurrent() {
+        list.reinsertCurrent();
+    }
 };
 
 TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
@@ -70,8 +74,10 @@ TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
     assertNotEmpty();
 }
 
-TEST_F(RandomizedTargetListTests,
-    loadFromDirectoryPassesDirectoryToDirectoryReader) {
+TEST_F(
+    RandomizedTargetListTests,
+    loadFromDirectoryPassesDirectoryToDirectoryReader
+) {
     loadFromDirectory("a");
     assertEqual("a", reader.directory());
 }
@@ -116,6 +122,18 @@ TEST_F(RandomizedTargetListTests, nextReturnsEmptyIfNoFiles) {
     setFileNames({});
     loadFromDirectory();
     assertEqual("", next());
+}
+
+TEST_F(RandomizedTargetListTests, reinsertCurrent) {
+    setFileNames({"a", "b", "c"});
+    loadFromDirectory("C:");
+    assertEqual("C:/a", next());
+    assertEqual("C:/b", next());
+    reinsertCurrent();
+    assertEqual("C:/c", next());
+    assertEqual("C:/a", next());
+    assertEqual("C:/b", next());
+    assertEqual("C:/b", next());
 }
 
 class FiniteRandomizedTargetListTests : public ::testing::Test {
