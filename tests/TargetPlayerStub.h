@@ -29,9 +29,9 @@ class TargetPlayerStub : public TargetPlayer {
         playbackCompletionSubscribedTo_ = true;
     }
 
-    bool playing() override { return playing_; }
+    auto playing() -> bool override { return playing_; }
 
-    auto &log() const { return log_; }
+    auto log() const -> auto & { return log_; }
 
     auto setDeviceCalled() const { return setDeviceCalled_; }
 
@@ -71,9 +71,9 @@ class TargetPlayerStub : public TargetPlayer {
         filePath_ = std::move(filePath);
     }
 
-    void addToLog(std::string s) { log_.insert(std::move(s)); }
+    void addToLog(const std::string& s) { log_.insert(s); }
 
-    double rms() override {
+    auto rms() -> double override {
         addToLog("rms ");
         if (throwInvalidAudioFileOnRms_)
             throw InvalidAudioFile{};
@@ -82,7 +82,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     void setLevel_dB(double x) override { level_dB_ = x; }
 
-    double durationSeconds() override { return durationSeconds_; }
+    auto durationSeconds() -> double override { return durationSeconds_; }
 
     void playbackComplete() { listener_->playbackComplete(); }
 
