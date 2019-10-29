@@ -7,13 +7,13 @@ AudioReaderImpl::AudioReaderImpl(BufferedAudioReader *reader)
 std::vector<std::vector<float>> AudioReaderImpl::read(std::string filePath) {
     loadFile(std::move(filePath));
     std::vector<std::vector<float>> audio{};
-    float minimumSample = reader->minimumPossibleSample();
+    auto minimumSample = reader->minimumPossibleSample();
     for (auto buffer = reader->readNextBuffer(); !buffer->empty();
          buffer = reader->readNextBuffer()) {
         audio.resize(buffer->channels());
         for (int channel = 0; channel < buffer->channels(); ++channel)
             for (auto x : buffer->channel(channel))
-                audio.at(channel).push_back(x / minimumSample);
+                audio.at(channel).push_back(1.F * x / minimumSample);
     }
     return audio;
 }
