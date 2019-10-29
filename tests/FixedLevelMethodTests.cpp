@@ -294,12 +294,14 @@ TEST_F(FixedLevelMethodTests,
 }
 
 TEST_F(FixedLevelMethodTests, submitFreeResponseDoesNotReinsertCurrentTarget) {
+    initialize();
     run(submittingFreeResponse);
     assertCurrentTargetNotReinserted();
 }
 
 TEST_F(
     FixedLevelMethodTests, submitFreeResponseReinsertsCurrentTargetIfFlagged) {
+    initialize();
     submittingFreeResponse.setFlagged();
     run(submittingFreeResponse);
     assertCurrentTargetReinserted();
