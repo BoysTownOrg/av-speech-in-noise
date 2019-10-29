@@ -94,4 +94,4 @@ TEST_F(AudioReaderTests, readConcatenatesNormalizedBuffers) {
                     dividedBy({7, 8, 9, 16, 17, 18, 25, 26, 27}, -3.f)},
         read());
 }
-} // namespace
+}

@@ -190,4 +190,4 @@ TEST_F(TargetPlayerTests, rmsThrowsInvalidAudioFileWhenAudioReaderThrows) {
     } catch (const av_speech_in_noise::InvalidAudioFile &) {
     }
 }
-} // namespace
+}

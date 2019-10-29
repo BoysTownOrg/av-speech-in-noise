@@ -1,3 +1,6 @@
 .DS_Store
 build/
 .vscode/
+.clangd
+.clang-tidy
+compile_commands.json

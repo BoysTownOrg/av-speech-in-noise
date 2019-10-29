@@ -18,5 +18,5 @@ class TargetListSetReaderStub : public TargetListReader {
 
     auto directory() const { return directory_; }
 };
-} // namespace av_speech_in_noise::tests
+}
 #endif

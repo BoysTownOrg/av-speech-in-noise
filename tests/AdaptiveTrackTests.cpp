@@ -523,4 +523,4 @@ TEST_F(AdaptiveTrackTests, sanityTest) {
     assertCompleteAfterUp(track);
     assertXEquals(track, -10);
 }
-} // namespace adaptive_track::tests
+}

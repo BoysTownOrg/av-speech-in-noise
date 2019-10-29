@@ -59,5 +59,5 @@ TEST_F(TrackSettingsReaderTests, readReturnsInterpretedResult) {
     interpreter.setTrackingRule(&trackingRule);
     assertEqual(&std::as_const(trackingRule), read());
 }
-} // namespace
-} // namespace av_speech_in_noise::tests
+}
+}

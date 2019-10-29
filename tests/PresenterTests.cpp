@@ -796,4 +796,4 @@ TEST_F(PresenterFailureTests,
     useFailingModel();
     assertConfirmTestSetupDoesNotHideSetupView();
 }
-} // namespace av_speech_in_noise::tests::presentation
+}

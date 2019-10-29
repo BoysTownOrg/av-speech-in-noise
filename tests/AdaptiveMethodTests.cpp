@@ -692,5 +692,5 @@ TEST_F(AdaptiveMethodTests, completeWhenAllTracksComplete) {
     setSnrTrackComplete(2);
     assertTestCompleteAfterCoordinateResponse();
 }
-} // namespace
-} // namespace av_speech_in_noise::tests
+}
+}

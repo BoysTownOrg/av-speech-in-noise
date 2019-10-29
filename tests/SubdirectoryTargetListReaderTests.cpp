@@ -89,4 +89,4 @@ TEST_F(
     EXPECT_EQ(1, actual.size());
     EXPECT_EQ(targetList(0), actual.at(0));
 }
-} // namespace
+}

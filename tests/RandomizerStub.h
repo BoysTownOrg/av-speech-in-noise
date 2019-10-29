@@ -37,6 +37,6 @@ class RandomizerStub : public Randomizer {
         return randomInt_;
     }
 };
-} // namespace av_speech_in_noise::tests
+}
 
 #endif
