@@ -263,7 +263,9 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertTargetVideoNotShown();
     }
 
-    auto targetPlayerVideoHidden() -> bool { return targetPlayer.videoHidden(); }
+    auto targetPlayerVideoHidden() -> bool {
+        return targetPlayer.videoHidden();
+    }
 
     void assertTargetVideoNotShown() { assertFalse(targetPlayerVideoShown()); }
 

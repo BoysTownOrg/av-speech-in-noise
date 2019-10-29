@@ -10,15 +10,15 @@ class ResponseEvaluatorTests : public ::testing::Test {
   protected:
     ResponseEvaluatorImpl evaluator{};
 
-    auto correct(const std::string& s, Response r) -> bool {
+    auto correct(const std::string &s, Response r) -> bool {
         return evaluator.correct(s, r);
     }
 
-    void assertCorrect(const std::string& s, Response r) {
+    void assertCorrect(const std::string &s, Response r) {
         EXPECT_TRUE(correct(s, r));
     }
 
-    void assertIncorrect(const std::string& s, Response r) {
+    void assertIncorrect(const std::string &s, Response r) {
         EXPECT_FALSE(correct(s, r));
     }
 };

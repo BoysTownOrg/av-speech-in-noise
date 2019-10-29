@@ -1236,7 +1236,8 @@ class PresenterTests : public ::testing::Test {
         useCase.setResult(view, std::move(s));
     }
 
-    static void assertEntryEquals(BrowsingEnteredPathUseCase &useCase, const std::string& s) {
+    static void assertEntryEquals(
+        BrowsingEnteredPathUseCase &useCase, const std::string &s) {
         assertEqual(s, entry(useCase));
     }
 
@@ -1255,11 +1256,11 @@ class PresenterTests : public ::testing::Test {
 
     void completeTrial() { model.completeTrial(); }
 
-    void assertSetupViewConditionsContains(const std::string& s) {
+    void assertSetupViewConditionsContains(const std::string &s) {
         assertTrue(setupView.conditions().contains(s));
     }
 
-    void assertSetupViewMethodsContains(const std::string& s) {
+    void assertSetupViewMethodsContains(const std::string &s) {
         assertTrue(setupView.methods().contains(s));
     }
 
@@ -1285,7 +1286,7 @@ class PresenterTests : public ::testing::Test {
         assertErrorMessageEquals("'a' is not a valid calibration level.");
     }
 
-    void assertErrorMessageEquals(const std::string& s) {
+    void assertErrorMessageEquals(const std::string &s) {
         assertEqual(s, errorMessage());
     }
 
@@ -1638,7 +1639,7 @@ class PresenterFailureTests : public ::testing::Test {
         setupView.confirmTestSetup();
     }
 
-    void assertConfirmTestSetupShowsErrorMessage(const std::string& s) {
+    void assertConfirmTestSetupShowsErrorMessage(const std::string &s) {
         confirmTestSetup();
         assertEqual(s, view.errorMessage());
     }

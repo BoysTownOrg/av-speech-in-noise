@@ -64,7 +64,7 @@ class OutputFileStub : public OutputFile {
 
     auto &writtenFixedLevelTrial() const { return writtenFixedLevelTrial_; }
 
-    void addToLog(const std::string& s) { log_.insert(s); }
+    void addToLog(const std::string &s) { log_.insert(s); }
 
     void throwOnOpen() { throwOnOpen_ = true; }
 

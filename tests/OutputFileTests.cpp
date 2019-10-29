@@ -255,11 +255,11 @@ class OutputFileTests : public ::testing::Test {
         assertWrittenLast("\n\n");
     }
 
-    void assertNthEntryOfFirstLine(const std::string& what, int n) {
+    void assertNthEntryOfFirstLine(const std::string &what, int n) {
         assertNthCommaDelimitedEntryOfLine(what, n, 1);
     }
 
-    void assertNthEntryOfSecondLine(const std::string& what, int n) {
+    void assertNthEntryOfSecondLine(const std::string &what, int n) {
         assertNthCommaDelimitedEntryOfLine(what, n, 2);
     }
 

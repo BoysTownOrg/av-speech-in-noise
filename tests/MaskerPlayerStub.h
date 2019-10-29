@@ -68,7 +68,7 @@ class MaskerPlayerStub : public MaskerPlayer {
             throw InvalidAudioFile{};
     }
 
-    void addToLog(const std::string& s) { log_.insert(s); }
+    void addToLog(const std::string &s) { log_.insert(s); }
 
     std::vector<std::string> outputAudioDeviceDescriptions() override {
         return outputAudioDeviceDescriptions_;

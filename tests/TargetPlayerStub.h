@@ -71,7 +71,7 @@ class TargetPlayerStub : public TargetPlayer {
         filePath_ = std::move(filePath);
     }
 
-    void addToLog(const std::string& s) { log_.insert(s); }
+    void addToLog(const std::string &s) { log_.insert(s); }
 
     auto rms() -> double override {
         addToLog("rms ");

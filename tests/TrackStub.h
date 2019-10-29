@@ -23,9 +23,9 @@ class TrackStub : public Track {
 
     void setReversals(int x) { reversals_ = x; }
 
-    auto pushedUp() const { return pushedUp_; }
+    [[nodiscard]] auto pushedUp() const { return pushedUp_; }
 
-    auto pushedDown() const { return pushedDown_; }
+    [[nodiscard]] auto pushedDown() const { return pushedDown_; }
 
     void setX(int x) { x_ = x; }
 
@@ -41,11 +41,11 @@ class TrackStub : public Track {
         x_ = xWhenUpdated_;
     }
 
-    int x() override { return x_; }
+    auto x() -> int override { return x_; }
 
-    bool complete() override { return complete_; }
+    auto complete() -> bool override { return complete_; }
 
-    int reversals() override { return reversals_; }
+    auto reversals() -> int override { return reversals_; }
 
     void setComplete() { complete_ = true; }
 };
@@ -55,9 +55,9 @@ class TrackFactoryStub : public Track::Factory {
     std::vector<std::shared_ptr<Track>> tracks_;
 
   public:
-    auto &parameters() const { return parameters_; }
+    auto parameters() const -> auto & { return parameters_; }
 
-    std::shared_ptr<Track> make(const Track::Settings &s) override {
+    auto make(const Track::Settings &s) -> std::shared_ptr<Track> override {
         parameters_.push_back(s);
         auto track = tracks_.front();
         tracks_.erase(tracks_.begin());

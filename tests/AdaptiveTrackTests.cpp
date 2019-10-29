@@ -87,7 +87,9 @@ class AdaptiveTrackTests : public ::testing::Test {
         track.assertIncomplete();
     }
 
-    static void assertComplete(AdaptiveTrackFacade &track) { track.assertComplete(); }
+    static void assertComplete(AdaptiveTrackFacade &track) {
+        track.assertComplete();
+    }
 
     static void update(AdaptiveTrackFacade &track, const std::string &s) {
         track.update(s);
@@ -97,12 +99,14 @@ class AdaptiveTrackTests : public ::testing::Test {
         track.assertReversalsEquals(n);
     }
 
-    static void assertReversalsEqualsAfterDown(AdaptiveTrackFacade &track, int n) {
+    static void assertReversalsEqualsAfterDown(
+        AdaptiveTrackFacade &track, int n) {
         down(track);
         assertReversalsEquals(track, n);
     }
 
-    static void assertReversalsEqualsAfterUp(AdaptiveTrackFacade &track, int n) {
+    static void assertReversalsEqualsAfterUp(
+        AdaptiveTrackFacade &track, int n) {
         up(track);
         assertReversalsEquals(track, n);
     }

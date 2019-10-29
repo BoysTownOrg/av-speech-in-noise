@@ -257,7 +257,8 @@ class FileFilterStub : public FileFilter {
 
     void setFiltered(std::vector<std::string> f) { filtered_ = std::move(f); }
 
-    auto filter(std::vector<std::string> f) -> std::vector<std::string> override {
+    auto filter(std::vector<std::string> f)
+        -> std::vector<std::string> override {
         files_ = std::move(f);
         return filtered_;
     }
@@ -298,8 +299,8 @@ TEST_F(FileFilterDecoratorTests, returnsSubdirectories) {
 
 class FileExtensionFilterTests : public ::testing::Test {
   protected:
-    static auto construct(
-        std::vector<std::string> filters = {}) -> FileExtensionFilter {
+    static auto construct(std::vector<std::string> filters = {})
+        -> FileExtensionFilter {
         return FileExtensionFilter{std::move(filters)};
     }
 };
@@ -312,7 +313,8 @@ TEST_F(FileExtensionFilterTests, returnsFilteredFiles) {
 
 class FileIdentifierFilterTests : public ::testing::Test {
   protected:
-    static auto construct(std::string indentifier = {}) -> FileIdentifierFilter {
+    static auto construct(std::string indentifier = {})
+        -> FileIdentifierFilter {
         return FileIdentifierFilter{std::move(indentifier)};
     }
 };
@@ -331,8 +333,8 @@ TEST_F(FileIdentifierFilterTests, returnsFilesThatEndWithIdentifier) {
 
 class FileIdentifierExcluderFilterTests : public ::testing::Test {
   protected:
-    static auto construct(
-        std::vector<std::string> indentifiers = {}) -> FileIdentifierExcluderFilter {
+    static auto construct(std::vector<std::string> indentifiers = {})
+        -> FileIdentifierExcluderFilter {
         return FileIdentifierExcluderFilter{std::move(indentifiers)};
     }
 };
