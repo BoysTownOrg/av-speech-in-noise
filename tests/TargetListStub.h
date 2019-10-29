@@ -13,8 +13,11 @@ class TargetListStub : public TargetList {
     std::string current_{};
     bool nextCalled_{};
     bool empty_{};
+    bool reinsertCurrentCalled_{};
 
   public:
+    auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
+
     void setEmpty() { empty_ = true; }
 
     bool empty() override { return empty_; }

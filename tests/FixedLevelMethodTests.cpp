@@ -141,6 +141,10 @@ class FixedLevelMethodTests : public ::testing::Test {
         run(useCase);
         assertTestConcluderLogContains(s);
     }
+
+    void assertCurrentTargetNotReinserted() {
+        assertFalse(targetList.reinsertCurrentCalled());
+    }
 };
 
 TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
@@ -280,6 +284,11 @@ TEST_F(FixedLevelMethodTests,
     initializeInitializesConcluderBeforeQueryingCompletion) {
     assertTestConcluderLogContainsAfter(
         "initialize complete", initializingMethod);
+}
+
+TEST_F(FixedLevelMethodTests, submitFreeResponseDoesNotReinsertCurrentTarget) {
+    run(submittingFreeResponse);
+    assertCurrentTargetNotReinserted();
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {
