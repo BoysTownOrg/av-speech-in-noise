@@ -8,9 +8,11 @@ SubdirectoryTargetListReader::SubdirectoryTargetListReader(
 auto SubdirectoryTargetListReader::read(std::string directory) -> lists_type {
     lists_type lists{};
     auto subDirectories_ = subDirectories(directory);
-    for (auto d : subDirectories_) {
+    for (const auto &subDirectory : subDirectories_) {
         lists.push_back(targetListFactory->make());
-        lists.back()->loadFromDirectory(directory + "/" + d);
+        auto fullPath = directory;
+        fullPath.append("/" + subDirectory);
+        lists.back()->loadFromDirectory(std::move(fullPath));
     }
     if (subDirectories_.empty()) {
         lists.push_back(targetListFactory->make());
