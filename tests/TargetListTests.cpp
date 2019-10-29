@@ -139,6 +139,10 @@ class FiniteRandomizedTargetListTests : public ::testing::Test {
     void assertNotEmpty() { EXPECT_FALSE(empty()); }
 
     void assertEmpty() { EXPECT_TRUE(empty()); }
+
+    void reinsertCurrent() {
+        list.reinsertCurrent();
+    }
 };
 
 TEST_F(FiniteRandomizedTargetListTests,
@@ -186,6 +190,16 @@ TEST_F(FiniteRandomizedTargetListTests, nextReturnsEmptyIfNoFiles) {
     assertEqual("", next());
 }
 
+TEST_F(FiniteRandomizedTargetListTests, reinsertCurrent) {
+    setFileNames({"a", "b", "c"});
+    loadFromDirectory("C:");
+    assertEqual("C:/a", next());
+    assertEqual("C:/b", next());
+    reinsertCurrent();
+    assertEqual("C:/c", next());
+    assertEqual("C:/b", next());
+}
+
 std::vector<std::string> filesIn(
     DirectoryReader &reader, std::string directory = {}) {
     return reader.filesIn(std::move(directory));
@@ -214,7 +228,7 @@ class FileFilterStub : public FileFilter {
 
     void setFiltered(std::vector<std::string> f) { filtered_ = std::move(f); }
 
-    std::vector<std::string> filter(std::vector<std::string> f) {
+    std::vector<std::string> filter(std::vector<std::string> f) override {
         files_ = std::move(f);
         return filtered_;
     }
@@ -268,7 +282,7 @@ TEST_F(FileExtensionFilterTests, returnsFilteredFiles) {
 
 class FileIdentifierFilterTests : public ::testing::Test {
   protected:
-    FileIdentifierFilter construct(std::string indentifier = {}) {
+    static FileIdentifierFilter construct(std::string indentifier = {}) {
         return FileIdentifierFilter{std::move(indentifier)};
     }
 };

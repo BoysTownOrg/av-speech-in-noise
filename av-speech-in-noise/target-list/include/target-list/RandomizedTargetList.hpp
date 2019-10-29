@@ -66,6 +66,7 @@ class RandomizedFiniteTargetList : public av_speech_in_noise::TargetList {
     void loadFromDirectory(std::string directory) override;
     std::string next() override;
     std::string current() override;
+    void reinsertCurrent();
 
   private:
     bool empty_();

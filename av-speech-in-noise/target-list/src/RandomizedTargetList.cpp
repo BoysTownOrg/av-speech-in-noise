@@ -72,4 +72,8 @@ std::string RandomizedFiniteTargetList::fullPath(std::string file) {
 std::string RandomizedFiniteTargetList::current() {
     return fullPath(currentFile_);
 }
+
+void RandomizedFiniteTargetList::reinsertCurrent() {
+    files.push_back(currentFile_);
+}
 }
