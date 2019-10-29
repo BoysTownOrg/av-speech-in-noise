@@ -10,7 +10,7 @@ class Stream {
     bool failed_{};
 
   public:
-    explicit Stream(std::string s) : stream{std::move(s)} {}
+    explicit Stream(const std::string& s) : stream{s} {}
 
     bool nextLine() {
         if (!std::getline(stream, lastLine_))
@@ -78,7 +78,7 @@ static void (*propertyApplication(const std::string &s))(
 
 const TrackingRule *TrackSettingsInterpreterImpl::trackingRule(std::string s) {
     rule_.clear();
-    auto stream = Stream{std::move(s)};
+    auto stream = Stream{s};
     while (stream.nextLine()) {
         auto sequenceCount{0U};
         auto f = propertyApplication(stream.propertyName());
