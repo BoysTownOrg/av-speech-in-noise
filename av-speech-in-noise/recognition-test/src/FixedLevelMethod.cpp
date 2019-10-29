@@ -49,6 +49,8 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
 void FixedLevelMethodImpl::submitResponse(const FreeResponse &response) {
+    // target list should reinsert current before checking for completion.
+    // a test should be written.
     if (response.flagged)
         targetList->reinsertCurrent();
     complete_ = concluder->complete(targetList);
