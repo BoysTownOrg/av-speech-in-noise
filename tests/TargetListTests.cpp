@@ -61,6 +61,8 @@ class RandomizedTargetListTests : public ::testing::Test {
     void reinsertCurrent() {
         list.reinsertCurrent();
     }
+
+    void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 };
 
 TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
@@ -106,9 +108,9 @@ TEST_F(RandomizedTargetListTests, nextReplacesSecondToLastTarget) {
 TEST_F(RandomizedTargetListTests, nextReturnsFullPathToFile) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
-    assertEqual("C:/a", next());
-    assertEqual("C:/b", next());
-    assertEqual("C:/c", next());
+    assertNextEquals("C:/a");
+    assertNextEquals("C:/b");
+    assertNextEquals("C:/c");
 }
 
 TEST_F(RandomizedTargetListTests, currentReturnsFullPathToFile) {
@@ -121,19 +123,19 @@ TEST_F(RandomizedTargetListTests, currentReturnsFullPathToFile) {
 TEST_F(RandomizedTargetListTests, nextReturnsEmptyIfNoFiles) {
     setFileNames({});
     loadFromDirectory();
-    assertEqual("", next());
+    assertNextEquals("");
 }
 
 TEST_F(RandomizedTargetListTests, reinsertCurrent) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
-    assertEqual("C:/a", next());
-    assertEqual("C:/b", next());
+    assertNextEquals("C:/a");
+    assertNextEquals("C:/b");
     reinsertCurrent();
-    assertEqual("C:/c", next());
-    assertEqual("C:/a", next());
-    assertEqual("C:/b", next());
-    assertEqual("C:/b", next());
+    assertNextEquals("C:/c");
+    assertNextEquals("C:/a");
+    assertNextEquals("C:/b");
+    assertNextEquals("C:/b");
 }
 
 class FiniteRandomizedTargetListTests : public ::testing::Test {
