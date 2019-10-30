@@ -58,6 +58,10 @@ template <typename T> void insert(FormattedStream &stream, T item) {
     stream.insert(item);
 }
 
+static void insertCommaAndSpace(FormattedStream &stream) {
+    stream.insertCommaAndSpace();
+}
+
 OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path)
     : writer{writer}, path{path} {}
 
@@ -112,15 +116,15 @@ static auto formatTrial(
     const coordinate_response_measure::FixedLevelTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.correctNumber);
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, trial.subjectNumber);
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, colorName(trial.correctColor));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, colorName(trial.subjectColor));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, evaluation(trial));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, trial.target);
     stream.insertNewLine();
     return stream.str();
@@ -130,17 +134,17 @@ static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
     -> std::string {
     FormattedStream stream;
     insert(stream, trial.SNR_dB);
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, trial.correctNumber);
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, trial.subjectNumber);
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, colorName(trial.correctColor));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, colorName(trial.subjectColor));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, evaluation(trial));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, trial.reversals);
     stream.insertNewLine();
     return stream.str();
@@ -149,10 +153,10 @@ static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
 static auto formatTrial(const FreeResponseTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.target);
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, trial.response);
     if (trial.flagged) {
-        stream.insertCommaAndSpace();
+        insertCommaAndSpace(stream);
         insert(stream, "FLAGGED");
     }
     stream.insertNewLine();
@@ -162,11 +166,11 @@ static auto formatTrial(const FreeResponseTrial &trial) -> std::string {
 static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.SNR_dB);
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, trial.target);
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, evaluation(trial));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, trial.reversals);
     stream.insertNewLine();
     return stream.str();
@@ -175,7 +179,7 @@ static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
 static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
     FormattedStream stream;
     insert(stream, headingItemName(HeadingItem::target));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::freeResponse));
     stream.insertNewLine();
     return stream.str();
@@ -184,17 +188,17 @@ static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
 static auto formatAdaptiveCoordinateResponseTrialHeading() -> std::string {
     FormattedStream stream;
     insert(stream, headingItemName(HeadingItem::snr_dB));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::correctNumber));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::subjectNumber));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::correctColor));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::subjectColor));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::evaluation));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::reversals));
     stream.insertNewLine();
     return stream.str();
@@ -203,15 +207,15 @@ static auto formatAdaptiveCoordinateResponseTrialHeading() -> std::string {
 static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
     FormattedStream stream;
     insert(stream, headingItemName(HeadingItem::correctNumber));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::subjectNumber));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::correctColor));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::subjectColor));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::evaluation));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::stimulus));
     stream.insertNewLine();
     return stream.str();
@@ -220,11 +224,11 @@ static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
 static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
     FormattedStream stream;
     insert(stream, headingItemName(HeadingItem::snr_dB));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::target));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::evaluation));
-    stream.insertCommaAndSpace();
+    insertCommaAndSpace(stream);
     insert(stream, headingItemName(HeadingItem::reversals));
     stream.insertNewLine();
     return stream.str();
