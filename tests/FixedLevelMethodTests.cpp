@@ -113,20 +113,16 @@ class FixedLevelMethodTests : public ::testing::Test {
     void run(UseCase &useCase) { useCase.run(method); }
 
     void assertTargetListPassedToConcluderAfter(UseCase &useCase) {
-        assertTargetListPassedToConcluderAfter_(useCase);
+        run(useCase);
+        assertTestConcluderPassedTargetList();
     }
 
-    void assertTargetListPassedToConcluderAfter_(UseCase &useCase) {
-        run(useCase);
+    void assertTestConcluderPassedTargetList() {
         assertEqual(
             static_cast<TargetList *>(&targetList), testConcluder.targetList());
     }
 
     void assertTestCompleteWhenComplete(UseCase &useCase) {
-        assertTestCompleteWhenComplete_(useCase);
-    }
-
-    void assertTestCompleteWhenComplete_(UseCase &useCase) {
         assertTestIncompleteAfter(useCase);
         setTestComplete();
         assertTestCompleteAfter(useCase);
@@ -157,7 +153,7 @@ class FixedLevelMethodTests : public ::testing::Test {
 
 #define FIXED_LEVEL_METHOD_TEST(a) TEST_F(FixedLevelMethodTests, a)
 
-FIXED_LEVEL_METHOD_TEST(initializePassesTestParametersToConcluder) {
+FIXED_LEVEL_METHOD_TEST(passesTestParametersToConcluder) {
     assertEqual(&initializingMethod.test(), testConcluder.test());
 }
 
@@ -277,14 +273,12 @@ FIXED_LEVEL_METHOD_TEST(submitFreeResponseReinsertsCurrentTargetIfFlagged) {
     assertCurrentTargetReinserted();
 }
 
-FIXED_LEVEL_METHOD_TEST(
-    initializeInitializesConcluderBeforeQueryingCompletion) {
+FIXED_LEVEL_METHOD_TEST(initializesConcluderBeforeQueryingCompletion) {
     assertTestConcluderLogContains("initialize complete");
 }
 
 FIXED_LEVEL_METHOD_TEST(initializePassesTargetListToConcluder) {
-    assertEqual(
-        static_cast<TargetList *>(&targetList), testConcluder.targetList());
+    assertTestConcluderPassedTargetList();
 }
 
 FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterInitializing) {
