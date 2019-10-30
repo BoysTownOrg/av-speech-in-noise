@@ -3,6 +3,7 @@
 
 #include "LogString.h"
 #include <recognition-test/Model.hpp>
+#include <string>
 
 namespace av_speech_in_noise::tests {
 class OutputFileStub : public OutputFile {
@@ -63,7 +64,7 @@ class OutputFileStub : public OutputFile {
 
     auto &writtenFixedLevelTrial() const { return writtenFixedLevelTrial_; }
 
-    void addToLog(std::string s) { log_.insert(std::move(s)); }
+    void addToLog(const std::string &s) { log_.insert(s); }
 
     void throwOnOpen() { throwOnOpen_ = true; }
 

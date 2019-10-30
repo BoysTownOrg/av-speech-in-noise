@@ -13,7 +13,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
   public:
     void initialize(const AdaptiveTest &t) override { test_ = &t; }
 
-    auto test() const { return test_; }
+    [[nodiscard]] auto test() const { return test_; }
 
     bool complete() override { return {}; }
     std::string next() override { return {}; }
@@ -43,11 +43,11 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         test_ = &t;
     }
 
-    auto testConcluder() const { return testConcluder_; }
+    [[nodiscard]] auto testConcluder() const { return testConcluder_; }
 
-    auto targetList() const { return targetList_; }
+    [[nodiscard]] auto targetList() const { return targetList_; }
 
-    auto test() const { return test_; }
+    [[nodiscard]] auto test() const { return test_; }
 
     bool complete() override { return {}; }
     std::string next() override { return {}; }

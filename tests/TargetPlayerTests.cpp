@@ -20,23 +20,23 @@ class VideoPlayerStub : public stimulus_players::VideoPlayer {
     bool playbackCompletionSubscribedTo_{};
 
   public:
-    double durationSeconds() override { return durationSeconds_; }
+    auto durationSeconds() -> double override { return durationSeconds_; }
 
     void subscribeToPlaybackCompletion() override {
         playbackCompletionSubscribedTo_ = true;
     }
 
-    bool playing() override { return playing_; }
+    auto playing() -> bool override { return playing_; }
 
-    auto playbackCompletionSubscribedTo() const {
+    [[nodiscard]] auto playbackCompletionSubscribedTo() const {
         return playbackCompletionSubscribedTo_;
     }
 
-    int deviceCount() override {
+    auto deviceCount() -> int override {
         return gsl::narrow<int>(audioDeviceDescriptions_.size());
     }
 
-    std::string deviceDescription(int index) override {
+    auto deviceDescription(int index) -> std::string override {
         return audioDeviceDescriptions_.at(index);
     }
 
@@ -48,21 +48,21 @@ class VideoPlayerStub : public stimulus_players::VideoPlayer {
 
     void setDevice(int index) override { deviceIndex_ = index; }
 
-    auto deviceIndex() const { return deviceIndex_; }
+    [[nodiscard]] auto deviceIndex() const { return deviceIndex_; }
 
     void play() override { played_ = true; }
 
-    auto played() const { return played_; }
+    [[nodiscard]] auto played() const { return played_; }
 
     void loadFile(std::string f) override { filePath_ = std::move(f); }
 
-    auto filePath() const { return filePath_; }
+    [[nodiscard]] auto filePath() const { return filePath_; }
 
     void hide() override { hidden_ = true; }
 
-    auto hidden() const { return hidden_; }
+    [[nodiscard]] auto hidden() const { return hidden_; }
 
-    auto shown() const { return shown_; }
+    [[nodiscard]] auto shown() const { return shown_; }
 
     void setPlaying() { playing_ = true; }
 
@@ -84,7 +84,7 @@ class TargetPlayerListenerStub
   public:
     void playbackComplete() override { notified_ = true; }
 
-    auto notified() const { return notified_; }
+    [[nodiscard]] auto notified() const { return notified_; }
 };
 
 class TargetPlayerTests : public ::testing::Test {
@@ -168,7 +168,7 @@ TEST_F(TargetPlayerTests, audioDevicesReturnsDescriptions) {
 
 TEST_F(TargetPlayerTests, rmsComputesFirstChannel) {
     audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    EXPECT_EQ(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.f), player.rms());
+    EXPECT_EQ(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F), player.rms());
 }
 
 TEST_F(TargetPlayerTests, rmsPassesLoadedFileToVideoPlayer) {

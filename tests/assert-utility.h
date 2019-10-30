@@ -1,13 +1,16 @@
-#ifndef assert_utility_h
-#define assert_utility_h
+#ifndef TESTS_ASSERT_UTILITY_H_
+#define TESTS_ASSERT_UTILITY_H_
 
 #include <gtest/gtest.h>
+#include <string>
+#include <vector>
 
 inline void assertTrue(bool c) { EXPECT_TRUE(c); }
 
 inline void assertFalse(bool c) { EXPECT_FALSE(c); }
 
-inline void assertEqual(std::string expected, std::string actual) {
+inline void assertEqual(
+    const std::string &expected, const std::string &actual) {
     EXPECT_EQ(expected, actual);
 }
 

@@ -1,7 +1,8 @@
-#ifndef TargetListSetReaderStub_h
-#define TargetListSetReaderStub_h
+#ifndef TESTS_TARGETLISTSETREADERSTUB_H_
+#define TESTS_TARGETLISTSETREADERSTUB_H_
 
 #include <recognition-test/AdaptiveMethod.hpp>
+#include <utility>
 
 namespace av_speech_in_noise::tests {
 class TargetListSetReaderStub : public TargetListReader {
@@ -16,7 +17,8 @@ class TargetListSetReaderStub : public TargetListReader {
         return targetLists_;
     }
 
-    auto directory() const { return directory_; }
+    [[nodiscard]] auto directory() const { return directory_; }
 };
 }
+
 #endif

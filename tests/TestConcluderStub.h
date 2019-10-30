@@ -13,7 +13,7 @@ class TestConcluderStub : public TestConcluder {
     bool responseSubmitted_{};
 
   public:
-    const auto &log() const { return log_; }
+    auto log() const -> const auto & { return log_; }
 
     auto targetList() const { return targetList_; }
 
@@ -25,7 +25,7 @@ class TestConcluderStub : public TestConcluder {
 
     void setIncomplete() { complete_ = false; }
 
-    bool complete(TargetList *t) override {
+    auto complete(TargetList *t) -> bool override {
         log_.insert("complete ");
         targetList_ = t;
         return complete_;

@@ -75,54 +75,58 @@ class AdaptiveTrackTests : public ::testing::Test {
 
     void setFirstSequenceDown(int x) { firstSequence().down = x; }
 
-    void down(AdaptiveTrackFacade &track) { track.down(); }
+    static void down(AdaptiveTrackFacade &track) { track.down(); }
 
-    void up(AdaptiveTrackFacade &track) { track.up(); }
+    static void up(AdaptiveTrackFacade &track) { track.up(); }
 
     template <typename T> void assertXEquals(AdaptiveTrackFacade &track, T x) {
         track.assertXEquals(x);
     }
 
-    void assertIncomplete(AdaptiveTrackFacade &track) {
+    static void assertIncomplete(AdaptiveTrackFacade &track) {
         track.assertIncomplete();
     }
 
-    void assertComplete(AdaptiveTrackFacade &track) { track.assertComplete(); }
+    static void assertComplete(AdaptiveTrackFacade &track) {
+        track.assertComplete();
+    }
 
-    void update(AdaptiveTrackFacade &track, const std::string &s) {
+    static void update(AdaptiveTrackFacade &track, const std::string &s) {
         track.update(s);
     }
 
-    void assertReversalsEquals(AdaptiveTrackFacade &track, int n) {
+    static void assertReversalsEquals(AdaptiveTrackFacade &track, int n) {
         track.assertReversalsEquals(n);
     }
 
-    void assertReversalsEqualsAfterDown(AdaptiveTrackFacade &track, int n) {
+    static void assertReversalsEqualsAfterDown(
+        AdaptiveTrackFacade &track, int n) {
         down(track);
         assertReversalsEquals(track, n);
     }
 
-    void assertReversalsEqualsAfterUp(AdaptiveTrackFacade &track, int n) {
+    static void assertReversalsEqualsAfterUp(
+        AdaptiveTrackFacade &track, int n) {
         up(track);
         assertReversalsEquals(track, n);
     }
 
-    void assertIncompleteAfterDown(AdaptiveTrackFacade &track) {
+    static void assertIncompleteAfterDown(AdaptiveTrackFacade &track) {
         down(track);
         assertIncomplete(track);
     }
 
-    void assertIncompleteAfterUp(AdaptiveTrackFacade &track) {
+    static void assertIncompleteAfterUp(AdaptiveTrackFacade &track) {
         up(track);
         assertIncomplete(track);
     }
 
-    void assertCompleteAfterUp(AdaptiveTrackFacade &track) {
+    static void assertCompleteAfterUp(AdaptiveTrackFacade &track) {
         up(track);
         assertComplete(track);
     }
 
-    void assertCompleteAfterDown(AdaptiveTrackFacade &track) {
+    static void assertCompleteAfterDown(AdaptiveTrackFacade &track) {
         down(track);
         assertComplete(track);
     }

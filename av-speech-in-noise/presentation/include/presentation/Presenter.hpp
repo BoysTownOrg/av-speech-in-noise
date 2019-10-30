@@ -197,7 +197,6 @@ class Presenter : public Model::EventListener {
         bool method(Method m);
         int readMaskerLevel();
         int readCalibrationLevel();
-        int readInteger(std::string x, std::string identifier);
         bool auditoryOnly();
 
         View::TestSetup *view;

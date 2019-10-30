@@ -26,7 +26,7 @@ class WriterStub : public Writer {
 
     auto &written() const { return written_; }
 
-    void write(std::string s) override { written_.insert(std::move(s)); }
+    void write(std::string s) override { written_.insert(s); }
 
     bool failed() override { return {}; }
 };
@@ -193,12 +193,12 @@ class OutputFileTests : public ::testing::Test {
         assertColonDelimitedEntryWritten("condition", conditionName(c));
     }
 
-    void assertWriterContains(std::string s) {
-        assertTrue(written().contains(std::move(s)));
+    void assertWriterContains(const std::string &s) {
+        assertTrue(written().contains(s));
     }
 
-    void assertWrittenLast(std::string s) {
-        assertTrue(written().endsWith(std::move(s)));
+    void assertWrittenLast(const std::string &s) {
+        assertTrue(written().endsWith(s));
     }
 
     std::string nthCommaDelimitedEntryOfLine(int n, int line) {
@@ -211,7 +211,7 @@ class OutputFileTests : public ::testing::Test {
         return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
     }
 
-    std::string::size_type find_nth_element(
+    static std::string::size_type find_nth_element(
         const std::string &content, int n, char what) {
         auto found = std::string::npos;
         for (int i = 0; i < n; ++i)
@@ -219,7 +219,7 @@ class OutputFileTests : public ::testing::Test {
         return found;
     }
 
-    std::string upUntilFirstOfAny(
+    static std::string upUntilFirstOfAny(
         const std::string &content, std::vector<char> v) {
         return content.substr(0, content.find_first_of({v.begin(), v.end()}));
     }
@@ -255,12 +255,12 @@ class OutputFileTests : public ::testing::Test {
         assertWrittenLast("\n\n");
     }
 
-    void assertNthEntryOfFirstLine(std::string what, int n) {
-        assertNthCommaDelimitedEntryOfLine(std::move(what), n, 1);
+    void assertNthEntryOfFirstLine(const std::string &what, int n) {
+        assertNthCommaDelimitedEntryOfLine(what, n, 1);
     }
 
-    void assertNthEntryOfSecondLine(std::string what, int n) {
-        assertNthCommaDelimitedEntryOfLine(std::move(what), n, 2);
+    void assertNthEntryOfSecondLine(const std::string &what, int n) {
+        assertNthCommaDelimitedEntryOfLine(what, n, 2);
     }
 
     void assertEntriesOfSecondLine(int n) {
@@ -272,12 +272,13 @@ class OutputFileTests : public ::testing::Test {
             std::count(line_.begin(), line_.end(), ','));
     }
 
-    void assertNthEntryOfThirdLine(std::string what, int n) {
-        assertNthCommaDelimitedEntryOfLine(std::move(what), n, 3);
+    void assertNthEntryOfThirdLine(const std::string &what, int n) {
+        assertNthCommaDelimitedEntryOfLine(what, n, 3);
     }
 
-    void assertNthCommaDelimitedEntryOfLine(std::string what, int n, int line) {
-        assertEqual(std::move(what), nthCommaDelimitedEntryOfLine(n, line));
+    void assertNthCommaDelimitedEntryOfLine(
+        const std::string &what, int n, int line) {
+        assertEqual(what, nthCommaDelimitedEntryOfLine(n, line));
     }
 
     void assertNthCommaDelimitedEntryOfLine(HeadingItem item, int n, int line) {
@@ -394,7 +395,8 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine("22", 4, n);
     }
 
-    void assertColonDelimitedEntryWritten(std::string label, std::string what) {
+    void assertColonDelimitedEntryWritten(
+        const std::string &label, const std::string &what) {
         assertWriterContains(label + ": " + what + "\n");
     }
 };

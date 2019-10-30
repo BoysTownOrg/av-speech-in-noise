@@ -24,8 +24,8 @@ struct Trial {
 };
 
 struct AdaptiveTrial : Trial {
-    int SNR_dB;
-    int reversals;
+    int SNR_dB{};
+    int reversals{};
 };
 
 struct FixedLevelTrial : Trial {};
@@ -82,7 +82,7 @@ struct AdaptiveTest : Test {
 };
 
 struct FixedLevelTest : Test {
-    int snr_dB;
+    int snr_dB{};
     int trials{30};
 };
 

@@ -3,6 +3,7 @@
 
 #include "LogString.h"
 #include <recognition-test/RecognitionTestModel.hpp>
+#include <utility>
 
 namespace av_speech_in_noise::tests {
 class MaskerPlayerStub : public MaskerPlayer {
@@ -67,7 +68,7 @@ class MaskerPlayerStub : public MaskerPlayer {
             throw InvalidAudioFile{};
     }
 
-    void addToLog(std::string s) { log_.insert(std::move(s)); }
+    void addToLog(const std::string &s) { log_.insert(s); }
 
     std::vector<std::string> outputAudioDeviceDescriptions() override {
         return outputAudioDeviceDescriptions_;

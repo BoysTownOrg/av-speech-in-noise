@@ -110,8 +110,7 @@ auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
         return &adaptiveOpenSetTrialCompletionHandler;
     if (fixedLevelClosedSet())
         return &fixedLevelClosedSetTrialCompletionHandler;
-    else
-        return &fixedLevelOpenSetTrialCompletionHandler;
+    return &fixedLevelOpenSetTrialCompletionHandler;
 }
 
 void Presenter::showErrorMessage(std::string e) {
@@ -243,6 +242,19 @@ void Presenter::TestSetup::show() { view->show(); }
 
 void Presenter::TestSetup::hide() { view->hide(); }
 
+static int readInteger(const std::string &x, const std::string &identifier) {
+    try {
+        return std::stoi(x);
+    } catch (const std::invalid_argument &) {
+        std::stringstream stream;
+        stream << '\'' << x << '\'';
+        stream << " is not a valid ";
+        stream << identifier;
+        stream << '.';
+        throw BadInput{stream.str()};
+    }
+}
+
 FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
     FixedLevelTest p;
     commonTest(p);
@@ -281,19 +293,6 @@ AdaptiveTest Presenter::TestSetup::adaptiveTest() {
 
 Condition Presenter::TestSetup::readCondition() {
     return auditoryOnly() ? Condition::auditoryOnly : Condition::audioVisual;
-}
-
-int Presenter::TestSetup::readInteger(std::string x, std::string identifier) {
-    try {
-        return std::stoi(x);
-    } catch (const std::invalid_argument &) {
-        std::stringstream stream;
-        stream << '\'' << std::move(x) << '\'';
-        stream << " is not a valid ";
-        stream << std::move(identifier);
-        stream << '.';
-        throw BadInput{stream.str()};
-    }
 }
 
 bool Presenter::TestSetup::auditoryOnly() {
@@ -410,7 +409,7 @@ void Presenter::Subject::hideResponseButtons() { view->hideResponseButtons(); }
 void Presenter::Subject::showResponseButtons() { view->showResponseButtons(); }
 
 coordinate_response_measure::Response Presenter::Subject::subjectResponse() {
-    coordinate_response_measure::Response p;
+    coordinate_response_measure::Response p{};
     p.color = colorResponse();
     p.number = std::stoi(view->numberResponse());
     return p;
@@ -419,12 +418,12 @@ coordinate_response_measure::Response Presenter::Subject::subjectResponse() {
 coordinate_response_measure::Color Presenter::Subject::colorResponse() {
     if (view->greenResponse())
         return coordinate_response_measure::Color::green;
-    else if (view->blueResponse())
+    if (view->blueResponse())
         return coordinate_response_measure::Color::blue;
-    else if (view->whiteResponse())
+    if (view->whiteResponse())
         return coordinate_response_measure::Color::white;
-    else
-        return coordinate_response_measure::Color::red;
+
+    return coordinate_response_measure::Color::red;
 }
 
 Presenter::Testing::Testing(View::Testing *view) : view{view} {

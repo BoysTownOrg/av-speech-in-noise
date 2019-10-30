@@ -11,32 +11,34 @@ class TrackSettingsInterpreterTests : public ::testing::Test {
     TrackSettingsInterpreterImpl interpreter;
 
     void assertFileContentsYield(
-        std::vector<std::string> v, const TrackingRule &expected) {
-        assertEqual(
-            expected, *interpreter.trackingRule(concatenate(std::move(v))));
+        const std::vector<std::string> &v, const TrackingRule &expected) {
+        assertEqual(expected, *interpreter.trackingRule(concatenate(v)));
     }
 
-    std::string concatenate(std::vector<std::string> v) {
+    static auto concatenate(const std::vector<std::string> &v) -> std::string {
         std::string result;
-        for (auto v_ : std::move(v))
+        for (const auto &v_ : v)
             result.append(v_);
         return result;
     }
 
-    std::string propertyEntry(Property p, std::string s) {
+    static auto propertyEntry(Property p, std::string s) -> std::string {
         return std::string{TrackSettingsInterpreterImpl::propertyName(p)} +
             ": " + std::move(s);
     }
 
-    std::string propertyEntryWithNewline(Property p, std::string s) {
+    static auto propertyEntryWithNewline(Property p, std::string s)
+        -> std::string {
         return withNewLine(propertyEntry(p, std::move(s)));
     }
 
-    std::string withNewLine(std::string s) { return std::move(s) + '\n'; }
+    static auto withNewLine(std::string s) -> std::string {
+        return std::move(s) + '\n';
+    }
 };
 
 TEST_F(TrackSettingsInterpreterTests, oneSequence) {
-    TrackingSequence sequence;
+    TrackingSequence sequence{};
     sequence.up = 1;
     sequence.down = 2;
     sequence.runCount = 3;
@@ -50,12 +52,12 @@ TEST_F(TrackSettingsInterpreterTests, oneSequence) {
 }
 
 TEST_F(TrackSettingsInterpreterTests, twoSequences) {
-    TrackingSequence first;
+    TrackingSequence first{};
     first.up = 1;
     first.down = 3;
     first.runCount = 5;
     first.stepSize = 7;
-    TrackingSequence second;
+    TrackingSequence second{};
     second.up = 2;
     second.down = 4;
     second.runCount = 6;
@@ -69,7 +71,7 @@ TEST_F(TrackSettingsInterpreterTests, twoSequences) {
 }
 
 TEST_F(TrackSettingsInterpreterTests, differentPropertyOrder) {
-    TrackingSequence sequence;
+    TrackingSequence sequence{};
     sequence.up = 1;
     sequence.down = 2;
     sequence.runCount = 3;
@@ -83,7 +85,7 @@ TEST_F(TrackSettingsInterpreterTests, differentPropertyOrder) {
 }
 
 TEST_F(TrackSettingsInterpreterTests, ignoresAnyUninterpretableEntries) {
-    TrackingSequence sequence;
+    TrackingSequence sequence{};
     sequence.up = 1;
     sequence.down = 2;
     sequence.runCount = 3;
@@ -99,12 +101,12 @@ TEST_F(TrackSettingsInterpreterTests, ignoresAnyUninterpretableEntries) {
 }
 
 TEST_F(TrackSettingsInterpreterTests, canBeUsedToInterpretMoreThanOnce) {
-    TrackingSequence firstCallFirst;
+    TrackingSequence firstCallFirst{};
     firstCallFirst.up = 1;
     firstCallFirst.down = 2;
     firstCallFirst.runCount = 3;
     firstCallFirst.stepSize = 4;
-    TrackingSequence firstCallSecond;
+    TrackingSequence firstCallSecond{};
     firstCallSecond.up = 5;
     firstCallSecond.down = 6;
     firstCallSecond.runCount = 7;
@@ -115,7 +117,7 @@ TEST_F(TrackSettingsInterpreterTests, canBeUsedToInterpretMoreThanOnce) {
             propertyEntryWithNewline(Property::reversalsPerStepSize, "3 7"),
             propertyEntry(Property::stepSizes, "4 8")},
         {firstCallFirst, firstCallSecond});
-    TrackingSequence secondCall;
+    TrackingSequence secondCall{};
     secondCall.up = 9;
     secondCall.down = 10;
     secondCall.runCount = 11;

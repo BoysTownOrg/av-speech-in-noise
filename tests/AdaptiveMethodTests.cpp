@@ -15,7 +15,7 @@ class TrackSettingsReaderStub : public TrackSettingsReader {
     std::string filePath_{};
 
   public:
-    auto filePath() const { return filePath_; }
+    [[nodiscard]] auto filePath() const { return filePath_; }
 
     const TrackingRule *read(std::string s) override {
         filePath_ = std::move(s);
@@ -195,7 +195,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     WritingCorrectResponse writingCorrectResponse{outputFile};
     WritingIncorrectResponse writingIncorrectResponse{outputFile};
     AdaptiveTest test;
-    coordinate_response_measure::Response coordinateResponse;
+    coordinate_response_measure::Response coordinateResponse{};
     TrackingRule targetLevelRule_;
     std::vector<std::shared_ptr<TargetListStub>> lists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
@@ -326,7 +326,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         assertEqual(4, useCase.writtenSnr(outputFile));
     }
 
-    auto blueColor() { return coordinate_response_measure::Color::blue; }
+    static auto blueColor() { return coordinate_response_measure::Color::blue; }
 
     bool writtenCoordinateResponseTrialCorrect() {
         return writtenCoordinateResponseTrial().correct;
