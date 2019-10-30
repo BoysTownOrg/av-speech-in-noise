@@ -68,26 +68,9 @@ class FixedLevelMethodTests : public ::testing::Test {
     TestConcluderStub testConcluder;
     OutputFileStub outputFile;
     FixedLevelMethodImpl method{&evaluator};
-    FixedLevelTest test;
-    coordinate_response_measure::Response coordinateResponse{};
-    FreeResponse freeResponse;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
     InitializingMethod initializingMethod{targetList, testConcluder};
-
-    void initialize() { method.initialize(test, &targetList, &testConcluder); }
-
-    void writeCoordinateResponse() {
-        initialize();
-        submitCoordinateResponse();
-        writeLastCoordinateResponse();
-    }
-
-    void submitCoordinateResponse() {
-        method.submitResponse(coordinateResponse);
-    }
-
-    void submitFreeResponse() { method.submitResponse(freeResponse); }
 
     void writeLastCoordinateResponse() {
         method.writeLastCoordinateResponse(&outputFile);
@@ -128,7 +111,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     void run(UseCase &useCase) { useCase.run(method); }
 
     void assertTargetListPassedToConcluder(UseCase &useCase) {
-        initialize();
+        run(initializingMethod);
         assertTargetListPassedToConcluder_(useCase);
     }
 
@@ -139,7 +122,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     }
 
     void assertTestCompleteWhenComplete(UseCase &useCase) {
-        initialize();
+        run(initializingMethod);
         assertTestCompleteWhenComplete_(useCase);
     }
 
