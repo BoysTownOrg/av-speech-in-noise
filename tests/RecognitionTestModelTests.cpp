@@ -109,7 +109,7 @@ class InitializingTest : public UseCase {
     explicit InitializingTest(TestMethod *method) : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
-        m.initialize(method, test, information);
+        m.initialize(method, test);
     }
 
     [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }

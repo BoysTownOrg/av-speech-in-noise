@@ -77,11 +77,9 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool complete_{};
 
   public:
-    void initialize(
-        TestMethod *tm, const Test &ct, const TestIdentity &ti) override {
+    void initialize(TestMethod *tm, const Test &ct) override {
         testMethod_ = tm;
         commonTest_ = &ct;
-        testInformation_ = &ti;
     }
 
     int trialNumber() override { return trialNumber_; }

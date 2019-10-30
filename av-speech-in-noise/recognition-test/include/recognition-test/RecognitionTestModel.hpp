@@ -76,7 +76,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
   public:
     RecognitionTestModelImpl(TargetPlayer *, MaskerPlayer *,
         ResponseEvaluator *, OutputFile *, Randomizer *);
-    void initialize(TestMethod *, const Test &, const TestIdentity &) override;
+    void initialize(TestMethod *, const Test &) override;
     void playTrial(const AudioSettings &) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
     auto testComplete() -> bool override;

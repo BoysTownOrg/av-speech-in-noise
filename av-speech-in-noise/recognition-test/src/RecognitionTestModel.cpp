@@ -45,7 +45,7 @@ void RecognitionTestModelImpl::throwIfTrialInProgress() {
 }
 
 void RecognitionTestModelImpl::initialize(
-    TestMethod *testMethod_, const Test &test, const TestIdentity &) {
+    TestMethod *testMethod_, const Test &test) {
     throwIfTrialInProgress();
     testMethod = testMethod_;
     prepareTest(test);
