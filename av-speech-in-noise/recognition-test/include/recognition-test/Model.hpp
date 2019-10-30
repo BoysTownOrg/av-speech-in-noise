@@ -21,8 +21,8 @@ class ResponseEvaluator {
     virtual ~ResponseEvaluator() = default;
     virtual auto correct(const std::string &filePath,
         const coordinate_response_measure::Response &) -> bool = 0;
-    virtual auto correctColor(
-        const std::string &filePath) -> coordinate_response_measure::Color = 0;
+    virtual auto correctColor(const std::string &filePath)
+        -> coordinate_response_measure::Color = 0;
     virtual auto correctNumber(const std::string &filePath) -> int = 0;
     virtual auto fileName(const std::string &filePath) -> std::string = 0;
 };
@@ -91,8 +91,7 @@ class FixedLevelMethod : public virtual TestMethod {
 class RecognitionTestModel {
   public:
     virtual ~RecognitionTestModel() = default;
-    virtual void initialize(
-        TestMethod *, const Test &) = 0;
+    virtual void initialize(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
         const coordinate_response_measure::Response &) = 0;
