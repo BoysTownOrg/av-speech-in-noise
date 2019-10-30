@@ -228,7 +228,6 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(useCase.testMethod(), internalModel.testMethod());
         assertEqual(&useCase.commonTest(), internalModel.commonTest());
-        assertEqual(&useCase.testIdentity(), internalModel.testIdentity());
     }
 };
 

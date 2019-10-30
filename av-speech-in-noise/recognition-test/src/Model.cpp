@@ -15,18 +15,18 @@ ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
 void ModelImpl::initializeTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, infiniteTargetList, fixedTrialTestConcluder);
-    model->initialize(fixedLevelMethod, p, p.identity);
+    model->initialize(fixedLevelMethod, p, {});
 }
 
 void ModelImpl::initializeTestWithFiniteTargets(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, finiteTargetList, completesWhenTargetsEmpty);
-    model->initialize(fixedLevelMethod, p, p.identity);
+    model->initialize(fixedLevelMethod, p, {});
 }
 
 void ModelImpl::initializeTest(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
-    model->initialize(adaptiveMethod, p, p.identity);
+    model->initialize(adaptiveMethod, p, {});
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {
