@@ -4,7 +4,7 @@ namespace stimulus_players {
 AudioReaderImpl::AudioReaderImpl(BufferedAudioReader *reader)
     : reader{reader} {}
 
-std::vector<std::vector<float>> AudioReaderImpl::read(std::string filePath) {
+auto AudioReaderImpl::read(std::string filePath) -> std::vector<std::vector<float>> {
     loadFile(std::move(filePath));
     std::vector<std::vector<float>> audio{};
     auto minimumSample = reader->minimumPossibleSample();

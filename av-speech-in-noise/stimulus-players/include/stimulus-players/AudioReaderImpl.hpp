@@ -10,18 +10,18 @@ namespace stimulus_players {
 class AudioBuffer {
   public:
     virtual ~AudioBuffer() = default;
-    virtual int channels() = 0;
-    virtual std::vector<int> channel(int) = 0;
-    virtual bool empty() = 0;
+    virtual auto channels() -> int = 0;
+    virtual auto channel(int) -> std::vector<int> = 0;
+    virtual auto empty() -> bool = 0;
 };
 
 class BufferedAudioReader {
   public:
     virtual ~BufferedAudioReader() = default;
     virtual void loadFile(std::string) = 0;
-    virtual bool failed() = 0;
-    virtual std::shared_ptr<AudioBuffer> readNextBuffer() = 0;
-    virtual int minimumPossibleSample() = 0;
+    virtual auto failed() -> bool = 0;
+    virtual auto readNextBuffer() -> std::shared_ptr<AudioBuffer> = 0;
+    virtual auto minimumPossibleSample() -> int = 0;
 };
 
 class AudioReaderImpl : public AudioReader {
@@ -29,7 +29,7 @@ class AudioReaderImpl : public AudioReader {
 
   public:
     explicit AudioReaderImpl(BufferedAudioReader *);
-    std::vector<std::vector<float>> read(std::string filePath) override;
+    auto read(std::string filePath) -> std::vector<std::vector<float>> override;
 
   private:
     void loadFile(std::string filePath);

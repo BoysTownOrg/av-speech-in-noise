@@ -8,7 +8,8 @@ namespace stimulus_players {
 class AudioReader {
   public:
     virtual ~AudioReader() = default;
-    virtual std::vector<std::vector<float>> read(std::string filePath) = 0;
+    virtual auto read(std::string filePath)
+        -> std::vector<std::vector<float>> = 0;
     class InvalidFile {};
 };
 }

@@ -45,9 +45,9 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
   private:
     coordinate_response_measure::FixedLevelTrial lastTrial{};
     const FixedLevelTest *test{};
-    TargetList *targetList;
+    TargetList *targetList{};
     ResponseEvaluator *evaluator;
-    TestConcluder *concluder;
+    TestConcluder *concluder{};
     int snr_dB_{};
     bool complete_{};
 };

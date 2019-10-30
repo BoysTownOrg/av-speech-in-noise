@@ -16,7 +16,7 @@ class ResponseEvaluatorImpl : public ResponseEvaluator {
 
   private:
     auto correctNumber_(const std::string &filePath) -> int;
-    auto colorNameLength(
+    static auto colorNameLength(
         const std::string &filePath, unsigned long leadingPathLength_) -> long;
 };
 }
