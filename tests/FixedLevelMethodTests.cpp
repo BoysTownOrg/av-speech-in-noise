@@ -39,14 +39,16 @@ class InitializingMethod : public UseCase {
 };
 
 class SubmittingCoordinateResponse : public UseCase {
-    coordinate_response_measure::Response response{};
+    coordinate_response_measure::Response response_{};
 
   public:
-    void run(FixedLevelMethod &m) override { m.submitResponse(response); }
+    void run(FixedLevelMethod &m) override { m.submitResponse(response_); }
 
-    void setColor(coordinate_response_measure::Color c) { response.color = c; }
+    void setColor(coordinate_response_measure::Color c) { response_.color = c; }
 
-    void setNumber(int n) { response.number = n; }
+    void setNumber(int n) { response_.number = n; }
+
+    [[nodiscard]] auto response() const -> auto & { return response_; }
 };
 
 class SubmittingFreeResponse : public UseCase {
@@ -212,45 +214,55 @@ FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
+    run(initializingMethod);
     evaluator.setCorrectColor(blueColor());
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertEqual(blueColor(), writtenFixedLevelTrial().correctColor);
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
+    run(initializingMethod);
     evaluator.setCorrectNumber(1);
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertEqual(1, writtenFixedLevelTrial().correctNumber);
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesStimulus) {
+    run(initializingMethod);
     setCurrentTarget("a");
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertEqual("a", writtenFixedLevelTrial().target);
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCorrectCoordinateResponse) {
+    run(initializingMethod);
     evaluator.setCorrect();
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertTrue(writtenFixedLevelTrialCorrect());
 }
 
 FIXED_LEVEL_METHOD_TEST(writeIncorrectCoordinateResponse) {
+    run(initializingMethod);
     evaluator.setIncorrect();
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertFalse(writtenFixedLevelTrialCorrect());
 }
 
 FIXED_LEVEL_METHOD_TEST(writeTestPassesSettings) {
-    initialize();
+    run(initializingMethod);
     method.writeTestingParameters(&outputFile);
-    assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+    assertEqual(&initializingMethod.test(), outputFile.fixedLevelTest());
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesResponse) {
-    initialize();
-    submitCoordinateResponse();
-    assertEqual(&std::as_const(coordinateResponse), evaluator.response());
+    run(initializingMethod);
+    run(submittingCoordinateResponse);
+    assertEqual(&submittingCoordinateResponse.response(), evaluator.response());
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponseSubmitsResponseToConcluder) {
