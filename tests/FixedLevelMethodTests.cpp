@@ -1,8 +1,10 @@
+#include "LogString.h"
 #include "OutputFileStub.h"
 #include "ResponseEvaluatorStub.h"
 #include "TargetListStub.h"
 #include "TestConcluderStub.h"
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/FixedLevelMethod.hpp>
 
@@ -305,6 +307,37 @@ TEST_F(
     submittingFreeResponse.setFlagged();
     run(submittingFreeResponse);
     assertCurrentTargetReinserted();
+}
+
+class TargetListTestConcluderComboStub : public TargetList,
+                                         public TestConcluder {
+  public:
+    void loadFromDirectory(std::string) {}
+    std::string next() { return {}; }
+    std::string current() { return {}; }
+    bool empty() { return {}; }
+    void reinsertCurrent() { log_.insert("reinsertCurrent "); }
+    bool complete(TargetList *) { log_.insert("complete "); return {}; }
+    void submitResponse() {}
+    void initialize(const FixedLevelTest &) {}
+    auto &log() const { return log_; }
+
+  private:
+    LogString log_;
+};
+
+TEST(FixedLevelMethodTestsTBD,
+    submitFreeResponseReinsertsCurrentTargetIfFlagged) {
+    ResponseEvaluatorStub evaluator;
+    TargetListTestConcluderComboStub combo;
+    OutputFileStub outputFile;
+    FixedLevelMethodImpl method{&evaluator};
+    FixedLevelTest test;
+    method.initialize(test, &combo, &combo);
+    FreeResponse response;
+    response.flagged = true;
+    method.submitResponse(response);
+    assertEqual("complete reinsertCurrent complete ", combo.log());
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {
