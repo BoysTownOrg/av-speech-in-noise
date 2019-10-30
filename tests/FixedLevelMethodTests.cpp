@@ -9,6 +9,7 @@
 #include <recognition-test/FixedLevelMethod.hpp>
 
 namespace av_speech_in_noise::tests {
+namespace {
 class UseCase {
   public:
     virtual ~UseCase() = default;
@@ -16,7 +17,7 @@ class UseCase {
 };
 
 class InitializingMethod : public UseCase {
-    FixedLevelTest test;
+    FixedLevelTest test_;
     TargetList &list;
     TestConcluder &concluder;
 
@@ -25,8 +26,10 @@ class InitializingMethod : public UseCase {
         : list{list}, concluder{concluder} {}
 
     void run(FixedLevelMethod &m) override {
-        m.initialize(test, &list, &concluder);
+        m.initialize(test_, &list, &concluder);
     }
+
+    [[nodiscard]] auto test() const -> auto & { return test_; }
 };
 
 class SubmittingCoordinateResponse : public UseCase {
@@ -44,7 +47,8 @@ class SubmittingFreeResponse : public UseCase {
     void setFlagged() { response.flagged = true; }
 };
 
-namespace {
+auto blueColor() { return coordinate_response_measure::Color::blue; }
+
 class FixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -77,13 +81,11 @@ class FixedLevelMethodTests : public ::testing::Test {
         method.writeLastCoordinateResponse(&outputFile);
     }
 
-    static auto blueColor() { return coordinate_response_measure::Color::blue; }
-
     auto writtenFixedLevelTrial() {
         return outputFile.writtenFixedLevelTrial();
     }
 
-    bool writtenFixedLevelTrialCorrect() {
+    auto writtenFixedLevelTrialCorrect() -> bool {
         return writtenFixedLevelTrial().correct;
     }
 
@@ -103,7 +105,7 @@ class FixedLevelMethodTests : public ::testing::Test {
 
     void assertTestIncomplete() { assertFalse(testComplete()); }
 
-    bool testComplete() { return method.complete(); }
+    auto testComplete() -> bool { return method.complete(); }
 
     void assertTestComplete() { assertTrue(testComplete()); }
 
@@ -145,7 +147,9 @@ class FixedLevelMethodTests : public ::testing::Test {
         assertTestConcluderLogContains(s);
     }
 
-    bool reinsertCurrentCalled() { return targetList.reinsertCurrentCalled(); }
+    auto reinsertCurrentCalled() -> bool {
+        return targetList.reinsertCurrentCalled();
+    }
 
     void assertCurrentTargetNotReinserted() {
         assertFalse(reinsertCurrentCalled());
@@ -157,8 +161,8 @@ class FixedLevelMethodTests : public ::testing::Test {
 };
 
 TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
-    initialize();
-    assertEqual(&std::as_const(test), testConcluder.test());
+    run(initializingMethod);
+    assertEqual(&initializingMethod.test(), testConcluder.test());
 }
 
 TEST_F(FixedLevelMethodTests, initializePassesTargetListDirectory) {
@@ -312,25 +316,27 @@ TEST_F(
 class TargetListTestConcluderComboStub : public TargetList,
                                          public TestConcluder {
   public:
-    void loadFromDirectory(std::string) {}
-    std::string next() { return {}; }
-    std::string current() { return {}; }
-    bool empty() { return {}; }
-    void reinsertCurrent() { log_.insert("reinsertCurrent "); }
-    bool complete(TargetList *) { log_.insert("complete "); return {}; }
-    void submitResponse() {}
-    void initialize(const FixedLevelTest &) {}
-    auto &log() const { return log_; }
+    void loadFromDirectory(std::string) override {}
+    auto next() -> std::string override { return {}; }
+    auto current() -> std::string override { return {}; }
+    auto empty() -> bool override { return {}; }
+    void reinsertCurrent() override { log_.insert("reinsertCurrent "); }
+    auto complete(TargetList *) -> bool override {
+        log_.insert("complete ");
+        return {};
+    }
+    void submitResponse() override {}
+    void initialize(const FixedLevelTest &) override {}
+    auto log() const -> auto & { return log_; }
 
   private:
     LogString log_;
 };
 
 TEST(FixedLevelMethodTestsTBD,
-    submitFreeResponseReinsertsCurrentTargetIfFlagged) {
+    submitFreeResponseReinsertsCurrentTargetIfFlaggedBeforeQueryingCompletion) {
     ResponseEvaluatorStub evaluator;
     TargetListTestConcluderComboStub combo;
-    OutputFileStub outputFile;
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test;
     method.initialize(test, &combo, &combo);
