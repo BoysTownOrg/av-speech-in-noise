@@ -35,11 +35,15 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
     listener = e;
 }
 
-auto MaskerPlayerImpl::durationSeconds() -> double { return player->durationSeconds(); }
+auto MaskerPlayerImpl::durationSeconds() -> double {
+    return player->durationSeconds();
+}
 
 void MaskerPlayerImpl::seekSeconds(double x) { player->seekSeconds(x); }
 
-auto MaskerPlayerImpl::fadeTimeSeconds() -> double { return fadeInOutSeconds.load(); }
+auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
+    return fadeInOutSeconds.load();
+}
 
 template <typename T> auto rms(const std::vector<T> &x) -> T {
     return std::sqrt(std::accumulate(x.begin(), x.end(), T{0}, [](T a, T b) {
@@ -93,12 +97,13 @@ auto MaskerPlayerImpl::readAudio_() -> std::vector<std::vector<float>> {
 auto MaskerPlayerImpl::audioDeviceDescriptions_() -> std::vector<std::string> {
     std::vector<std::string> descriptions{};
     descriptions.reserve(player->deviceCount());
-for (int i = 0; i < player->deviceCount(); ++i)
+    for (int i = 0; i < player->deviceCount(); ++i)
         descriptions.push_back(player->deviceDescription(i));
     return descriptions;
 }
 
-auto MaskerPlayerImpl::outputAudioDeviceDescriptions() -> std::vector<std::string> {
+auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
+    -> std::vector<std::string> {
     std::vector<std::string> descriptions{};
     for (int i = 0; i < player->deviceCount(); ++i)
         if (player->outputDevice(i))
@@ -122,7 +127,9 @@ void MaskerPlayerImpl::MainThread::scheduleCallbackAfterSeconds(double x) {
     timer->scheduleCallbackAfterSeconds(x);
 }
 
-auto MaskerPlayerImpl::MainThread::fading() -> bool { return fadingIn || fadingOut; }
+auto MaskerPlayerImpl::MainThread::fading() -> bool {
+    return fadingIn || fadingOut;
+}
 
 void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
 

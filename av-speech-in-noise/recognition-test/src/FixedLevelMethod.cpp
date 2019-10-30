@@ -34,7 +34,9 @@ void FixedLevelMethodImpl::submitResponse(
     complete_ = concluder->complete(targetList);
 }
 
-auto FixedLevelMethodImpl::current() -> std::string { return targetList->current(); }
+auto FixedLevelMethodImpl::current() -> std::string {
+    return targetList->current();
+}
 
 void FixedLevelMethodImpl::writeTestingParameters(OutputFile *file) {
     file->writeTest(*test);

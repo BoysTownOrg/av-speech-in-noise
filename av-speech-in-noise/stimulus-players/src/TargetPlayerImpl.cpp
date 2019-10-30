@@ -70,7 +70,7 @@ void TargetPlayerImpl::setAudioDevice(std::string device) {
 auto TargetPlayerImpl::audioDevices() -> std::vector<std::string> {
     std::vector<std::string> descriptions{};
     descriptions.reserve(player->deviceCount());
-for (int i = 0; i < player->deviceCount(); ++i)
+    for (int i = 0; i < player->deviceCount(); ++i)
         descriptions.push_back(player->deviceDescription(i));
     return descriptions;
 }
@@ -81,5 +81,7 @@ void TargetPlayerImpl::subscribeToPlaybackCompletion() {
     player->subscribeToPlaybackCompletion();
 }
 
-auto TargetPlayerImpl::durationSeconds() -> double { return player->durationSeconds(); }
+auto TargetPlayerImpl::durationSeconds() -> double {
+    return player->durationSeconds();
+}
 }

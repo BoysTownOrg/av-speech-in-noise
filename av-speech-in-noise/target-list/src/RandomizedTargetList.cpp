@@ -40,7 +40,9 @@ auto RandomizedTargetList::fullPath(std::string file) -> std::string {
     return directory_ + "/" + std::move(file);
 }
 
-auto RandomizedTargetList::current() -> std::string { return fullPath(currentFile_); }
+auto RandomizedTargetList::current() -> std::string {
+    return fullPath(currentFile_);
+}
 
 void RandomizedTargetList::reinsertCurrent() {}
 

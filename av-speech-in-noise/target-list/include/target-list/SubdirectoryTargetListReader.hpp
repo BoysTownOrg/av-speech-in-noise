@@ -16,7 +16,8 @@ class TargetListFactory {
 class DirectoryReader {
   public:
     virtual ~DirectoryReader() = default;
-    virtual auto subDirectories(std::string directory) -> std::vector<std::string> = 0;
+    virtual auto subDirectories(std::string directory)
+        -> std::vector<std::string> = 0;
     virtual auto filesIn(std::string directory) -> std::vector<std::string> = 0;
 };
 

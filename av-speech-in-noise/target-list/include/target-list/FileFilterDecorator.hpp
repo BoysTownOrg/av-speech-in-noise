@@ -9,7 +9,8 @@ namespace target_list {
 class FileFilter {
   public:
     virtual ~FileFilter() = default;
-    virtual auto filter(std::vector<std::string>) -> std::vector<std::string> = 0;
+    virtual auto filter(std::vector<std::string>)
+        -> std::vector<std::string> = 0;
 };
 
 class FileFilterDecorator : public DirectoryReader {
@@ -19,7 +20,8 @@ class FileFilterDecorator : public DirectoryReader {
   public:
     FileFilterDecorator(DirectoryReader *, FileFilter *);
     auto filesIn(std::string directory) -> std::vector<std::string> override;
-    auto subDirectories(std::string directory) -> std::vector<std::string> override;
+    auto subDirectories(std::string directory)
+        -> std::vector<std::string> override;
 };
 
 class FileExtensionFilter : public FileFilter {
@@ -64,7 +66,8 @@ class DirectoryReaderComposite : public DirectoryReader {
   public:
     explicit DirectoryReaderComposite(std::vector<DirectoryReader *>);
     auto filesIn(std::string directory) -> std::vector<std::string> override;
-    auto subDirectories(std::string directory) -> std::vector<std::string> override;
+    auto subDirectories(std::string directory)
+        -> std::vector<std::string> override;
 };
 }
 
