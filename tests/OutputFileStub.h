@@ -62,7 +62,9 @@ class OutputFileStub : public OutputFile {
         writtenFixedLevelTrial_ = trial;
     }
 
-    auto &writtenFixedLevelTrial() const { return writtenFixedLevelTrial_; }
+    auto writtenFixedLevelTrial() const -> auto & {
+        return writtenFixedLevelTrial_;
+    }
 
     void addToLog(const std::string &s) { log_.insert(s); }
 
@@ -70,19 +72,21 @@ class OutputFileStub : public OutputFile {
 
     auto openNewFileParameters() const { return openNewFileParameters_; }
 
-    auto &log() const { return log_; }
+    auto log() const -> auto & { return log_; }
 
     auto adaptiveTest() const { return adaptiveTest_; }
 
     auto fixedLevelTest() const { return fixedLevelTest_; }
 
-    auto &writtenAdaptiveCoordinateResponseTrial() const {
+    auto writtenAdaptiveCoordinateResponseTrial() const -> auto & {
         return writtenAdaptiveCoordinateResponseTrial_;
     }
 
-    auto &writtenFreeResponseTrial() const { return writtenFreeResponseTrial_; }
+    auto writtenFreeResponseTrial() const -> auto & {
+        return writtenFreeResponseTrial_;
+    }
 
-    auto &writtenOpenSetAdaptiveTrial() const {
+    auto writtenOpenSetAdaptiveTrial() const -> auto & {
         return writtenOpenSetAdaptiveTrial_;
     }
 };

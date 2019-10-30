@@ -17,7 +17,7 @@ class TrackSettingsReaderStub : public TrackSettingsReader {
   public:
     [[nodiscard]] auto filePath() const { return filePath_; }
 
-    const TrackingRule *read(std::string s) override {
+    auto read(std::string s) -> const TrackingRule * override {
         filePath_ = std::move(s);
         return rule_;
     }
@@ -93,13 +93,13 @@ class SubmittingIncorrectResponse : public UseCase {
 
 class WritingResponseUseCase : public virtual UseCase {
   public:
-    virtual int writtenReversals(OutputFileStub &) = 0;
-    virtual int writtenSnr(OutputFileStub &) = 0;
+    virtual auto writtenReversals(OutputFileStub &) -> int = 0;
+    virtual auto writtenSnr(OutputFileStub &) -> int = 0;
 };
 
 class WritingTargetUseCase : public virtual UseCase {
   public:
-    virtual std::string writtenTarget(OutputFileStub &) = 0;
+    virtual auto writtenTarget(OutputFileStub &) -> std::string = 0;
 };
 
 class WritingCoordinateResponse : public WritingResponseUseCase {
@@ -114,11 +114,11 @@ class WritingCoordinateResponse : public WritingResponseUseCase {
         method.writeLastCoordinateResponse(&file_);
     }
 
-    int writtenReversals(OutputFileStub &file) override {
+    auto writtenReversals(OutputFileStub &file) -> int override {
         return file.writtenAdaptiveCoordinateResponseTrial().reversals;
     }
 
-    int writtenSnr(OutputFileStub &file) override {
+    auto writtenSnr(OutputFileStub &file) -> int override {
         return file.writtenAdaptiveCoordinateResponseTrial().SNR_dB;
     }
 };
@@ -135,15 +135,15 @@ class WritingCorrectResponse : public WritingResponseUseCase,
         method.writeLastCorrectResponse(&file_);
     }
 
-    int writtenReversals(OutputFileStub &file) override {
+    auto writtenReversals(OutputFileStub &file) -> int override {
         return file.writtenOpenSetAdaptiveTrial().reversals;
     }
 
-    int writtenSnr(OutputFileStub &file) override {
+    auto writtenSnr(OutputFileStub &file) -> int override {
         return file.writtenOpenSetAdaptiveTrial().SNR_dB;
     }
 
-    std::string writtenTarget(OutputFileStub &file) override {
+    auto writtenTarget(OutputFileStub &file) -> std::string override {
         return file.writtenOpenSetAdaptiveTrial().target;
     }
 };
@@ -160,15 +160,15 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
         method.writeLastIncorrectResponse(&file_);
     }
 
-    int writtenReversals(OutputFileStub &file) override {
+    auto writtenReversals(OutputFileStub &file) -> int override {
         return file.writtenOpenSetAdaptiveTrial().reversals;
     }
 
-    int writtenSnr(OutputFileStub &file) override {
+    auto writtenSnr(OutputFileStub &file) -> int override {
         return file.writtenOpenSetAdaptiveTrial().SNR_dB;
     }
 
-    std::string writtenTarget(OutputFileStub &file) override {
+    auto writtenTarget(OutputFileStub &file) -> std::string override {
         return file.writtenOpenSetAdaptiveTrial().target;
     }
 };
@@ -249,9 +249,9 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void selectList(int n) { randomizer.setRandomInt(n); }
 
-    std::string next() { return method.next(); }
+    auto next() -> std::string { return method.next(); }
 
-    void assertNextEquals(std::string s) { assertEqual(std::move(s), next()); }
+    void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 
     void setNextForList(int n, std::string s) {
         lists.at(n)->setNext(std::move(s));
@@ -328,13 +328,13 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     static auto blueColor() { return coordinate_response_measure::Color::blue; }
 
-    bool writtenCoordinateResponseTrialCorrect() {
+    auto writtenCoordinateResponseTrialCorrect() -> bool {
         return writtenCoordinateResponseTrial().correct;
     }
 
-    bool snrTrackPushedDown(int n) { return track(n)->pushedDown(); }
+    auto snrTrackPushedDown(int n) -> bool { return track(n)->pushedDown(); }
 
-    bool snrTrackPushedUp(int n) { return track(n)->pushedUp(); }
+    auto snrTrackPushedUp(int n) -> bool { return track(n)->pushedUp(); }
 
     void setCorrectCoordinateResponse() { evaluator.setCorrect(); }
 
@@ -354,7 +354,7 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void assertTestIncomplete() { assertFalse(testComplete()); }
 
-    bool testComplete() { return method.complete(); }
+    auto testComplete() -> bool { return method.complete(); }
 
     void assertTestComplete() { assertTrue(testComplete()); }
 

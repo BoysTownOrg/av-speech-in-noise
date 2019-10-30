@@ -12,7 +12,7 @@ class TargetListSetReaderStub : public TargetListReader {
   public:
     void setTargetLists(lists_type lists) { targetLists_ = std::move(lists); }
 
-    lists_type read(std::string d) override {
+    auto read(std::string d) -> lists_type override {
         directory_ = std::move(d);
         return targetLists_;
     }

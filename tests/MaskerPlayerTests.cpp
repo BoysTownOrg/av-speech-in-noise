@@ -25,9 +25,11 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
   public:
     void seekSeconds(double x) override { secondsSeeked_ = x; }
 
-    double durationSeconds() override { return durationSeconds_; }
+    auto durationSeconds() -> double override { return durationSeconds_; }
 
-    bool outputDevice(int index) override { return outputDevices[index]; }
+    auto outputDevice(int index) -> bool override {
+        return outputDevices[index];
+    }
 
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
         audioDeviceDescriptions_ = std::move(v);
@@ -39,7 +41,7 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     [[nodiscard]] auto stopped() const { return stopped_; }
 
-    double sampleRateHz() override { return sampleRateHz_; }
+    auto sampleRateHz() -> double override { return sampleRateHz_; }
 
     void setSampleRateHz(double x) { sampleRateHz_ = x; }
 
@@ -47,17 +49,17 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     void setDurationSeconds(double x) { durationSeconds_ = x; }
 
-    bool playing() override { return playing_; }
+    auto playing() -> bool override { return playing_; }
 
     void loadFile(std::string s) override { filePath_ = std::move(s); }
 
     void setDevice(int index) override { deviceIndex_ = index; }
 
-    int deviceCount() override {
+    auto deviceCount() -> int override {
         return gsl::narrow<int>(audioDeviceDescriptions_.size());
     }
 
-    std::string deviceDescription(int index) override {
+    auto deviceDescription(int index) -> std::string override {
         deviceDescriptionDeviceIndex_ = index;
         return audioDeviceDescriptions_.at(index);
     }
@@ -114,14 +116,14 @@ template <typename T> class VectorFacade {
   public:
     explicit VectorFacade(std::vector<T> v) : v{std::move(v)} {}
 
-    std::vector<T> elementWiseProduct(std::vector<T> y) {
+    auto elementWiseProduct(std::vector<T> y) -> std::vector<T> {
         std::vector<T> product;
         std::transform(v.begin(), v.end(), y.begin(),
             std::back_inserter(product), std::multiplies<T>());
         return product;
     }
 
-    VectorFacade<T> subvector(int b, int e) {
+    auto subvector(int b, int e) -> VectorFacade<T> {
         return VectorFacade<T>{{v.begin() + b, v.begin() + e}};
     }
 };
@@ -167,29 +169,30 @@ class MaskerPlayerTests : public ::testing::Test {
         fillAudioBuffer({leftChannel, rightChannel});
     }
 
-    static std::vector<float> halfHannWindow(int length) {
+    static auto halfHannWindow(int length) -> std::vector<float> {
         auto N = 2 * length - 1;
         const auto pi = std::acos(-1);
         std::vector<float> window;
+        window.reserve(length);
         for (int n = 0; n < length; ++n)
             window.push_back((1 - std::cos((2 * pi * n) / (N - 1))) / 2);
         return window;
     }
 
-    static std::vector<float> backHalfHannWindow(int length) {
+    static auto backHalfHannWindow(int length) -> std::vector<float> {
         auto frontHalf = halfHannWindow(length);
         std::reverse(frontHalf.begin(), frontHalf.end());
         return frontHalf;
     }
 
-    static std::vector<float> oneToN(int N) {
+    static auto oneToN(int N) -> std::vector<float> {
         std::vector<float> result;
         result.resize(N);
         std::iota(result.begin(), result.end(), 1);
         return result;
     }
 
-    static std::vector<float> NtoOne(int N) {
+    static auto NtoOne(int N) -> std::vector<float> {
         auto result = oneToN(N);
         std::reverse(result.begin(), result.end());
         return result;
@@ -230,7 +233,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertCallbackScheduled() { assertTrue(callbackScheduled()); }
 
-    bool callbackScheduled() { return timer.callbackScheduled(); }
+    auto callbackScheduled() -> bool { return timer.callbackScheduled(); }
 
     void assertCallbackNotScheduled() { assertFalse(callbackScheduled()); }
 
@@ -306,7 +309,7 @@ class MaskerPlayerTests : public ::testing::Test {
         assertFalse(fadeOutCompleted());
     }
 
-    bool fadeOutCompleted() { return listener.fadeOutCompleted(); }
+    auto fadeOutCompleted() -> bool { return listener.fadeOutCompleted(); }
 
     void assertFadeOutCompletedAfterMonoFill() {
         callbackAfterMonoFill();
@@ -349,7 +352,7 @@ class MaskerPlayerTests : public ::testing::Test {
         assertCallbackScheduled();
     }
 
-    bool playerStopped() { return audioPlayer.stopped(); }
+    auto playerStopped() -> bool { return audioPlayer.stopped(); }
 
     void fadeOutCompletely() {
         fadeOutToSilence();

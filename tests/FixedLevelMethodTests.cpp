@@ -360,7 +360,7 @@ class FixedTrialTestConcluderTests : public ::testing::Test {
 
     void assertIncomplete() { assertFalse(complete()); }
 
-    bool complete() { return testConcluder.complete({}); }
+    auto complete() -> bool { return testConcluder.complete({}); }
 
     void assertComplete() { assertTrue(complete()); }
 };
@@ -378,7 +378,7 @@ class EmptyTargetListTestConcluderTests : public ::testing::Test {
     TargetListStub targetList;
     EmptyTargetListTestConcluder testConcluder;
 
-    bool complete() { return testConcluder.complete(&targetList); }
+    auto complete() -> bool { return testConcluder.complete(&targetList); }
 
     void assertIncomplete() { assertFalse(complete()); }
 

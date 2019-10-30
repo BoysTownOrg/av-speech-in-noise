@@ -8,7 +8,7 @@ struct TestSetupState {
 
 enum class TestSetupStateItem { masker };
 
-constexpr const char *name(TestSetupStateItem p) {
+constexpr auto name(TestSetupStateItem p) -> const char * {
     switch (p) {
     case TestSetupStateItem::masker:
         return "masker";
@@ -54,11 +54,11 @@ class WriterStub : public Writer {
 
     auto closed() const { return closed_; }
 
-    auto &written() const { return written_; }
+    auto written() const -> auto & { return written_; }
 
-    void write(std::string s) override { written_.insert(std::move(s)); }
+    void write(std::string s) override { written_.insert(s); }
 
-    bool failed() override { return {}; }
+    auto failed() -> bool override { return {}; }
 };
 
 class TestSetupStateWriterTests : public ::testing::Test {
@@ -67,15 +67,16 @@ class TestSetupStateWriterTests : public ::testing::Test {
 
     void write() { writer.write(state); }
 
-    void assertLabeledEntryWritten(TestSetupStateItem item, std::string entry) {
+    void assertLabeledEntryWritten(
+        TestSetupStateItem item, const std::string &entry) {
         using std::string_literals::operator""s;
         assertWrittenContains(name(item) + ": "s + entry + "\n");
     }
 
-    const auto &written() { return stub.written(); }
+    auto written() -> const auto & { return stub.written(); }
 
-    void assertWrittenContains(std::string s) {
-        assertTrue(written().contains(std::move(s)));
+    void assertWrittenContains(const std::string &s) {
+        assertTrue(written().contains(s));
     }
 
   private:

@@ -24,11 +24,11 @@ class WriterStub : public Writer {
 
     auto closed() const { return closed_; }
 
-    auto &written() const { return written_; }
+    auto written() const -> auto & { return written_; }
 
     void write(std::string s) override { written_.insert(s); }
 
-    bool failed() override { return {}; }
+    auto failed() -> bool override { return {}; }
 };
 
 class OutputFilePathStub : public OutputFilePath {
@@ -38,20 +38,20 @@ class OutputFilePathStub : public OutputFilePath {
     const TestIdentity *testInformation_{};
 
   public:
-    std::string outputDirectory() override { return outputDirectory_; }
+    auto outputDirectory() -> std::string override { return outputDirectory_; }
 
     void setOutputDirectory(std::string s) { outputDirectory_ = std::move(s); }
 
     void setFileName(std::string s) { fileName_ = std::move(s); }
 
-    std::string generateFileName(const TestIdentity &p) override {
+    auto generateFileName(const TestIdentity &p) -> std::string override {
         testInformation_ = &p;
         return fileName_;
     }
 
-    std::string homeDirectory() override { return homeDirectory_; }
+    auto homeDirectory() -> std::string override { return homeDirectory_; }
 
-    auto testIdentity() const { return testInformation_; }
+    [[nodiscard]] auto testIdentity() const { return testInformation_; }
 };
 
 class UseCase {
@@ -101,7 +101,7 @@ class WritingTrialUseCase : public virtual UseCase {
   public:
     virtual void incorrect() = 0;
     virtual void correct() = 0;
-    virtual int evaluationEntryIndex() = 0;
+    virtual auto evaluationEntryIndex() -> int = 0;
 };
 
 void setCorrect(coordinate_response_measure::Trial &trial) {
@@ -116,13 +116,13 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
     coordinate_response_measure::AdaptiveTrial trial_{};
 
   public:
-    auto &trial() { return trial_; }
+    auto trial() -> auto & { return trial_; }
 
     void incorrect() override { setIncorrect(trial_); }
 
     void correct() override { setCorrect(trial_); }
 
-    int evaluationEntryIndex() override { return 6; }
+    auto evaluationEntryIndex() -> int override { return 6; }
 
     void run(av_speech_in_noise::OutputFileImpl &file) override {
         file.writeTrial(trial_);
@@ -133,7 +133,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
     coordinate_response_measure::FixedLevelTrial trial_{};
 
   public:
-    auto &trial() { return trial_; }
+    auto trial() -> auto & { return trial_; }
 
     void incorrect() override { setIncorrect(trial_); }
 
@@ -143,7 +143,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
         file.writeTrial(trial_);
     }
 
-    int evaluationEntryIndex() override { return 5; }
+    auto evaluationEntryIndex() -> int override { return 5; }
 };
 
 class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
@@ -158,7 +158,7 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
         file.writeTrial(trial_);
     }
 
-    int evaluationEntryIndex() override { return 3; }
+    auto evaluationEntryIndex() -> int override { return 3; }
 };
 
 class OutputFileTests : public ::testing::Test {
@@ -187,7 +187,7 @@ class OutputFileTests : public ::testing::Test {
 
     void writeOpenSetAdaptiveTrial() { file.writeTrial(openSetAdaptiveTrial); }
 
-    const auto &written() { return writer.written(); }
+    auto written() -> const auto & { return writer.written(); }
 
     void assertWriterContainsConditionName(Condition c) {
         assertColonDelimitedEntryWritten("condition", conditionName(c));
@@ -201,7 +201,7 @@ class OutputFileTests : public ::testing::Test {
         assertTrue(written().endsWith(s));
     }
 
-    std::string nthCommaDelimitedEntryOfLine(int n, int line) {
+    auto nthCommaDelimitedEntryOfLine(int n, int line) -> std::string {
         std::string written_ = written();
         auto precedingNewLine = find_nth_element(written_, line - 1, '\n');
         auto line_ = written_.substr(precedingNewLine + 1);
@@ -211,16 +211,16 @@ class OutputFileTests : public ::testing::Test {
         return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
     }
 
-    static std::string::size_type find_nth_element(
-        const std::string &content, int n, char what) {
+    static auto find_nth_element(const std::string &content, int n, char what)
+        -> std::string::size_type {
         auto found = std::string::npos;
         for (int i = 0; i < n; ++i)
             found = content.find(what, found + 1U);
         return found;
     }
 
-    static std::string upUntilFirstOfAny(
-        const std::string &content, std::vector<char> v) {
+    static auto upUntilFirstOfAny(
+        const std::string &content, std::vector<char> v) -> std::string {
         return content.substr(0, content.find_first_of({v.begin(), v.end()}));
     }
 
@@ -606,7 +606,7 @@ class FailingWriter : public Writer {
   public:
     void open(std::string) override { failed_ = true; }
 
-    bool failed() override { return failed_; }
+    auto failed() -> bool override { return failed_; }
 
     void close() override {}
     void write(std::string) override {}
