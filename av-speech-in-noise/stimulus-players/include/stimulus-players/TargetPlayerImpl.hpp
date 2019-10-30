@@ -26,11 +26,11 @@ class VideoPlayer {
     virtual void hide() = 0;
     virtual void loadFile(std::string) = 0;
     virtual void play() = 0;
-    virtual bool playing() = 0;
-    virtual int deviceCount() = 0;
-    virtual std::string deviceDescription(int index) = 0;
+    virtual auto playing() -> bool = 0;
+    virtual auto deviceCount() -> int = 0;
+    virtual auto deviceDescription(int index) -> std::string = 0;
     virtual void setDevice(int index) = 0;
-    virtual double durationSeconds() = 0;
+    virtual auto durationSeconds() -> double = 0;
 };
 
 class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
@@ -48,18 +48,18 @@ class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
     void loadFile(std::string filePath) override;
     void hideVideo() override;
     void showVideo() override;
-    double rms() override;
+    auto rms() -> double override;
     void setLevel_dB(double) override;
     void setAudioDevice(std::string) override;
-    bool playing() override;
+    auto playing() -> bool override;
     void subscribeToPlaybackCompletion() override;
-    double durationSeconds() override;
+    auto durationSeconds() -> double override;
     void playbackComplete() override;
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
-    std::vector<std::string> audioDevices();
+    auto audioDevices() -> std::vector<std::string>;
 
   private:
-    std::vector<std::vector<float>> readAudio_();
+    auto readAudio_() -> std::vector<std::vector<float>>;
 };
 }
 
