@@ -57,14 +57,14 @@ auto RecognitionTestModelImpl::trialInProgress() -> bool {
 }
 
 void RecognitionTestModelImpl::prepareTest(
-    const Test &test, const TestIdentity &identity) {
+    const Test &test, const TestIdentity &) {
     storeLevels(test);
     prepareMasker(test.maskerFilePath);
     targetPlayer->hideVideo();
     condition = test.condition;
     if (!testMethod->complete())
         preparePlayersForNextTrial();
-    tryOpeningOutputFile(identity);
+    tryOpeningOutputFile(test.identity);
     testMethod->writeTestingParameters(outputFile);
 }
 

@@ -71,7 +71,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     int maskerLevel_dB_SPL{};
     int fullScaleLevel_dB_SPL{};
     int trialNumber_{};
-    Condition condition;
+    Condition condition{};
 
   public:
     RecognitionTestModelImpl(TargetPlayer *, MaskerPlayer *,

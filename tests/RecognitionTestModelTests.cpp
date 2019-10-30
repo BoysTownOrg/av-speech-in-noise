@@ -102,31 +102,31 @@ class SubmittingResponse : public virtual UseCase {};
 
 class InitializingTest : public UseCase {
     TestIdentity information{};
-    Test common{};
+    Test test{};
     TestMethod *method;
 
   public:
     explicit InitializingTest(TestMethod *method) : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
-        m.initialize(method, common, information);
+        m.initialize(method, test, information);
     }
 
-    auto &testIdentity() const { return information; }
+    auto &testIdentity() const { return test.identity; }
 
     void setMaskerFilePath(std::string s) {
-        common.maskerFilePath = std::move(s);
+        test.maskerFilePath = std::move(s);
     }
 
-    void setMaskerLevel_dB_SPL(int x) { common.maskerLevel_dB_SPL = x; }
+    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
-        common.fullScaleLevel_dB_SPL = x;
+        test.fullScaleLevel_dB_SPL = x;
     }
 
-    void setAudioVisual() { common.condition = Condition::audioVisual; }
+    void setAudioVisual() { test.condition = Condition::audioVisual; }
 
-    void setAuditoryOnly() { common.condition = Condition::auditoryOnly; }
+    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
 };
 
 class AudioDeviceUseCase : public virtual UseCase {
