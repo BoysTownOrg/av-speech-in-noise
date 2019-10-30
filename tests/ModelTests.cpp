@@ -69,7 +69,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
-    const TestIdentity *testInformation_{};
     const Test *test_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
@@ -111,8 +110,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     [[nodiscard]] auto test() const { return test_; }
 
-    [[nodiscard]] auto testIdentity() const { return testInformation_; }
-
     [[nodiscard]] auto playTrialSettings() const { return playTrialSettings_; }
 
     [[nodiscard]] auto calibration() const { return calibration_; }
@@ -136,7 +133,6 @@ class InitializingTestUseCase {
     virtual ~InitializingTestUseCase() = default;
     virtual void run(ModelImpl &) = 0;
     virtual auto commonTest() -> const Test & = 0;
-    virtual auto testIdentity() -> const TestIdentity & = 0;
     virtual auto testMethod() -> const TestMethod * = 0;
 };
 
@@ -152,10 +148,6 @@ class InitializingAdaptiveTest : public InitializingTestUseCase {
 
     auto commonTest() -> const Test & override { return test; }
 
-    auto testIdentity() -> const TestIdentity & override {
-        return test.identity;
-    }
-
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
@@ -170,10 +162,6 @@ class InitializingFixedLevelTest : public InitializingTestUseCase {
     void run(ModelImpl &model) override { model.initializeTest(test); }
 
     auto commonTest() -> const Test & override { return test; }
-
-    auto testIdentity() -> const TestIdentity & override {
-        return test.identity;
-    }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
@@ -193,10 +181,6 @@ class InitializingFixedLevelTestWithFiniteTargets
     }
 
     auto commonTest() -> const Test & override { return test; }
-
-    auto testIdentity() -> const TestIdentity & override {
-        return test.identity;
-    }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
