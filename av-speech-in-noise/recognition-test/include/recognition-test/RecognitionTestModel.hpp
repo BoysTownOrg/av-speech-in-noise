@@ -61,18 +61,6 @@ class MaskerPlayer {
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,
                                  public MaskerPlayer::EventListener,
                                  public RecognitionTestModel {
-    MaskerPlayer *maskerPlayer;
-    TargetPlayer *targetPlayer;
-    ResponseEvaluator *evaluator;
-    OutputFile *outputFile;
-    Randomizer *randomizer;
-    Model::EventListener *listener_{};
-    TestMethod *testMethod{};
-    int maskerLevel_dB_SPL{};
-    int fullScaleLevel_dB_SPL{};
-    int trialNumber_{};
-    Condition condition{};
-
   public:
     RecognitionTestModelImpl(TargetPlayer *, MaskerPlayer *,
         ResponseEvaluator *, OutputFile *, Randomizer *);
@@ -135,6 +123,18 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void loadTargetFile(std::string);
     void setTargetLevel_dB(double);
     void prepareNextTrialIfNeeded();
+    
+    MaskerPlayer *maskerPlayer;
+    TargetPlayer *targetPlayer;
+    ResponseEvaluator *evaluator;
+    OutputFile *outputFile;
+    Randomizer *randomizer;
+    Model::EventListener *listener_{};
+    TestMethod *testMethod{};
+    int maskerLevel_dB_SPL{};
+    int fullScaleLevel_dB_SPL{};
+    int trialNumber_{};
+    Condition condition{};
 };
 }
 

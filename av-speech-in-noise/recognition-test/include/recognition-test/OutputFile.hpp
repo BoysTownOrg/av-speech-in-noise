@@ -18,7 +18,7 @@ enum class HeadingItem {
     freeResponse
 };
 
-constexpr const char *headingItemName(HeadingItem i) {
+constexpr auto headingItemName(HeadingItem i) -> const char * {
     switch (i) {
     case HeadingItem::snr_dB:
         return "SNR (dB)";
@@ -43,7 +43,7 @@ constexpr const char *headingItemName(HeadingItem i) {
     }
 }
 
-constexpr const char *colorName(coordinate_response_measure::Color c) {
+constexpr auto colorName(coordinate_response_measure::Color c) -> const char * {
     switch (c) {
     case coordinate_response_measure::Color::green:
         return "green";
@@ -64,7 +64,7 @@ class Writer {
     virtual ~Writer() = default;
     virtual void write(std::string) = 0;
     virtual void open(std::string) = 0;
-    virtual bool failed() = 0;
+    virtual auto failed() -> bool = 0;
     virtual void close() = 0;
     virtual void save() = 0;
 };
@@ -72,19 +72,12 @@ class Writer {
 class OutputFilePath {
   public:
     virtual ~OutputFilePath() = default;
-    virtual std::string generateFileName(const TestIdentity &) = 0;
-    virtual std::string homeDirectory() = 0;
-    virtual std::string outputDirectory() = 0;
+    virtual auto generateFileName(const TestIdentity &) -> std::string = 0;
+    virtual auto homeDirectory() -> std::string = 0;
+    virtual auto outputDirectory() -> std::string = 0;
 };
 
 class OutputFileImpl : public OutputFile {
-    Writer *writer;
-    OutputFilePath *path;
-    bool justWroteFixedLevelCoordinateResponseTrial{};
-    bool justWroteAdaptiveCoordinateResponseTrial{};
-    bool justWroteFreeResponseTrial{};
-    bool justWroteOpenSetAdaptiveTrial{};
-
   public:
     OutputFileImpl(Writer *, OutputFilePath *);
     void openNewFile(const TestIdentity &) override;
@@ -101,7 +94,14 @@ class OutputFileImpl : public OutputFile {
 
   private:
     void write(std::string);
-    std::string generateNewFilePath(const TestIdentity &);
+    auto generateNewFilePath(const TestIdentity &) -> std::string;
+
+    Writer *writer;
+    OutputFilePath *path;
+    bool justWroteFixedLevelCoordinateResponseTrial{};
+    bool justWroteAdaptiveCoordinateResponseTrial{};
+    bool justWroteFreeResponseTrial{};
+    bool justWroteOpenSetAdaptiveTrial{};
 };
 }
 
