@@ -277,116 +277,32 @@ FIXED_LEVEL_METHOD_TEST(submitFreeResponseReinsertsCurrentTargetIfFlagged) {
     assertCurrentTargetReinserted();
 }
 
+FIXED_LEVEL_METHOD_TEST(
+    initializeInitializesConcluderBeforeQueryingCompletion) {
+    assertTestConcluderLogContains("initialize complete");
+}
+
+FIXED_LEVEL_METHOD_TEST(initializePassesTargetListToConcluder) {
+    assertEqual(
+        static_cast<TargetList *>(&targetList), testConcluder.targetList());
+}
+
+FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterInitializing) {
+    assertTestIncomplete();
+    setTestComplete();
+    assertTestCompleteAfter(initializingMethod);
+}
 
 class PreInitializedFixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
     TargetListStub targetList;
     TestConcluderStub testConcluder;
-    OutputFileStub outputFile;
     FixedLevelMethodImpl method{&evaluator};
-    SubmittingCoordinateResponse submittingCoordinateResponse;
-    SubmittingFreeResponse submittingFreeResponse;
     InitializingMethod initializingMethod{targetList, testConcluder};
 
-    void writeLastCoordinateResponse() {
-        method.writeLastCoordinateResponse(&outputFile);
-    }
-
-    auto writtenFixedLevelTrial() {
-        return outputFile.writtenFixedLevelTrial();
-    }
-
-    auto writtenFixedLevelTrialCorrect() -> bool {
-        return writtenFixedLevelTrial().correct;
-    }
-
-    void setCurrentTarget(std::string s) {
-        targetList.setCurrent(std::move(s));
-    }
-
-    void assertTestIncompleteAfter(UseCase &useCase) {
-        run(useCase);
-        assertTestIncomplete();
-    }
-
-    void assertTestCompleteAfter(UseCase &useCase) {
-        run(useCase);
-        assertTestComplete();
-    }
-
-    void assertTestIncomplete() { assertFalse(testComplete()); }
-
-    auto testComplete() -> bool { return method.complete(); }
-
-    void assertTestComplete() { assertTrue(testComplete()); }
-
-    void setTestComplete() { testConcluder.setComplete(); }
-
-    void setTestIncomplete() { testConcluder.setIncomplete(); }
-
     void run(UseCase &useCase) { useCase.run(method); }
-
-    void assertTargetListPassedToConcluderAfter(UseCase &useCase) {
-        run(initializingMethod);
-        assertTargetListPassedToConcluderAfter_(useCase);
-    }
-
-    void assertTargetListPassedToConcluderAfter_(UseCase &useCase) {
-        run(useCase);
-        assertEqual(
-            static_cast<TargetList *>(&targetList), testConcluder.targetList());
-    }
-
-    void assertTestCompleteWhenComplete(UseCase &useCase) {
-        run(initializingMethod);
-        assertTestCompleteWhenComplete_(useCase);
-    }
-
-    void assertTestCompleteWhenComplete_(UseCase &useCase) {
-        assertTestIncompleteAfter(useCase);
-        setTestComplete();
-        assertTestCompleteAfter(useCase);
-    }
-
-    void assertTestConcluderLogContains(const std::string &s) {
-        assertTrue(testConcluder.log().contains(s));
-    }
-
-    void assertTestConcluderLogContainsAfter(
-        const std::string &s, UseCase &useCase) {
-        run(useCase);
-        assertTestConcluderLogContains(s);
-    }
-
-    auto reinsertCurrentCalled() -> bool {
-        return targetList.reinsertCurrentCalled();
-    }
-
-    void assertCurrentTargetNotReinserted() {
-        assertFalse(reinsertCurrentCalled());
-    }
-
-    void assertCurrentTargetReinserted() {
-        assertTrue(reinsertCurrentCalled());
-    }
 };
-
-
-
-TEST_F(PreInitializedFixedLevelMethodTests, initializePassesTargetListToConcluder) {
-    assertTargetListPassedToConcluderAfter_(initializingMethod);
-}
-
-TEST_F(PreInitializedFixedLevelMethodTests, completeWhenTestCompleteAfterInitializing) {
-    assertTestCompleteWhenComplete_(initializingMethod);
-}
-
-TEST_F(PreInitializedFixedLevelMethodTests, 
-    initializeInitializesConcluderBeforeQueryingCompletion) {
-    assertTestConcluderLogContainsAfter(
-        "initialize complete", initializingMethod);
-}
 
 TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
     initializingMethod.setSnr(1);
@@ -394,7 +310,8 @@ TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
     assertEqual(1, method.snr_dB());
 }
 
-TEST_F(PreInitializedFixedLevelMethodTests, initializePassesTargetListDirectory) {
+TEST_F(
+    PreInitializedFixedLevelMethodTests, initializePassesTargetListDirectory) {
     initializingMethod.setTargetListDirectory("a");
     run(initializingMethod);
     assertEqual("a", targetList.directory());
