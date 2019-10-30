@@ -107,14 +107,6 @@ class RecognitionTestModel {
 };
 
 class ModelImpl : public Model {
-    AdaptiveMethod *adaptiveMethod;
-    FixedLevelMethod *fixedLevelMethod;
-    TargetList *infiniteTargetList;
-    TestConcluder *fixedTrialTestConcluder;
-    TargetList *finiteTargetList;
-    TestConcluder *completesWhenTargetsEmpty;
-    RecognitionTestModel *model;
-
   public:
     ModelImpl(AdaptiveMethod *, FixedLevelMethod *,
         TargetList *infiniteTargetList, TestConcluder *fixedTrialTestConcluder,
@@ -133,6 +125,15 @@ class ModelImpl : public Model {
     void submitIncorrectResponse() override;
     void submitResponse(const FreeResponse &) override;
     auto trialNumber() -> int override;
+
+  private:
+    AdaptiveMethod *adaptiveMethod;
+    FixedLevelMethod *fixedLevelMethod;
+    TargetList *infiniteTargetList;
+    TestConcluder *fixedTrialTestConcluder;
+    TargetList *finiteTargetList;
+    TestConcluder *completesWhenTargetsEmpty;
+    RecognitionTestModel *model;
 };
 }
 
