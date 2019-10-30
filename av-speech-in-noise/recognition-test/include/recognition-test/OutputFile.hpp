@@ -101,8 +101,6 @@ class OutputFileImpl : public OutputFile {
 
   private:
     void write(std::string);
-    std::string formatTest(const AdaptiveTest &);
-    std::string formatTest(const FixedLevelTest &);
     std::string generateNewFilePath(const TestIdentity &);
 };
 }

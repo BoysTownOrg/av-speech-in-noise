@@ -4,10 +4,9 @@
 namespace av_speech_in_noise {
 namespace {
 class FormattedStream {
-    std::stringstream stream;
-
   public:
-    template <typename T> void writeLabeledLine(const std::string& label, T thing) {
+    template <typename T>
+    void writeLabeledLine(const std::string &label, T thing) {
         stream << label;
         stream << ": ";
         stream << thing;
@@ -49,6 +48,9 @@ class FormattedStream {
     void writeCondition(const Test &p) {
         writeLabeledLine("condition", conditionName(p.condition));
     }
+
+  private:
+    std::stringstream stream;
 };
 }
 
@@ -57,20 +59,53 @@ OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path)
 
 void OutputFileImpl::write(std::string s) { writer->write(std::move(s)); }
 
-constexpr const char *correct() { return "correct"; }
+constexpr auto correct() -> const char * { return "correct"; }
 
-constexpr const char *incorrect() { return "incorrect"; }
+constexpr auto incorrect() -> const char * { return "incorrect"; }
 
-static std::string evaluation(const open_set::AdaptiveTrial &trial) {
+static auto evaluation(const open_set::AdaptiveTrial &trial) -> std::string {
     return trial.correct ? correct() : incorrect();
 }
 
-static std::string evaluation(const coordinate_response_measure::Trial &trial) {
+static auto evaluation(const coordinate_response_measure::Trial &trial)
+    -> std::string {
     return trial.correct ? correct() : incorrect();
 }
 
-static std::string formatTrial(
-    const coordinate_response_measure::FixedLevelTrial &trial) {
+static auto formatTest(const AdaptiveTest &test) -> std::string {
+    FormattedStream stream;
+    auto information = test.identity;
+    stream.writeSubjectId(information);
+    stream.writeTester(information);
+    stream.writeSession(information);
+    auto common = test;
+    stream.writeMasker(common);
+    stream.writeTargetList(common);
+    stream.writeMaskerLevel(common);
+    stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
+    stream.writeCondition(common);
+    stream.insertNewLine();
+    return stream.str();
+}
+
+static auto formatTest(const FixedLevelTest &test) -> std::string {
+    FormattedStream stream;
+    auto information = test.identity;
+    stream.writeSubjectId(information);
+    stream.writeTester(information);
+    stream.writeSession(information);
+    auto common = test;
+    stream.writeMasker(common);
+    stream.writeTargetList(common);
+    stream.writeMaskerLevel(common);
+    stream.writeLabeledLine("SNR (dB)", test.snr_dB);
+    stream.writeCondition(common);
+    stream.insertNewLine();
+    return stream.str();
+}
+
+static auto formatTrial(
+    const coordinate_response_measure::FixedLevelTrial &trial) -> std::string {
     FormattedStream stream;
     stream.insert(trial.correctNumber);
     stream.insertCommaAndSpace();
@@ -87,8 +122,8 @@ static std::string formatTrial(
     return stream.str();
 }
 
-static std::string formatTrial(
-    const coordinate_response_measure::AdaptiveTrial &trial) {
+static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
+    -> std::string {
     FormattedStream stream;
     stream.insert(trial.SNR_dB);
     stream.insertCommaAndSpace();
@@ -107,7 +142,7 @@ static std::string formatTrial(
     return stream.str();
 }
 
-static std::string formatTrial(const FreeResponseTrial &trial) {
+static auto formatTrial(const FreeResponseTrial &trial) -> std::string {
     FormattedStream stream;
     stream.insert(trial.target);
     stream.insertCommaAndSpace();
@@ -120,7 +155,7 @@ static std::string formatTrial(const FreeResponseTrial &trial) {
     return stream.str();
 }
 
-static std::string formatTrial(const open_set::AdaptiveTrial &trial) {
+static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
     FormattedStream stream;
     stream.insert(trial.SNR_dB);
     stream.insertCommaAndSpace();
@@ -133,7 +168,7 @@ static std::string formatTrial(const open_set::AdaptiveTrial &trial) {
     return stream.str();
 }
 
-static std::string formatOpenSetFreeResponseTrialHeading() {
+static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
     FormattedStream stream;
     stream.insert(headingItemName(HeadingItem::target));
     stream.insertCommaAndSpace();
@@ -142,7 +177,7 @@ static std::string formatOpenSetFreeResponseTrialHeading() {
     return stream.str();
 }
 
-static std::string formatAdaptiveCoordinateResponseTrialHeading() {
+static auto formatAdaptiveCoordinateResponseTrialHeading() -> std::string {
     FormattedStream stream;
     stream.insert(headingItemName(HeadingItem::snr_dB));
     stream.insertCommaAndSpace();
@@ -161,7 +196,7 @@ static std::string formatAdaptiveCoordinateResponseTrialHeading() {
     return stream.str();
 }
 
-static std::string formatFixedLevelCoordinateResponseTrialHeading() {
+static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
     FormattedStream stream;
     stream.insert(headingItemName(HeadingItem::correctNumber));
     stream.insertCommaAndSpace();
@@ -178,7 +213,7 @@ static std::string formatFixedLevelCoordinateResponseTrialHeading() {
     return stream.str();
 }
 
-static std::string formatOpenSetAdaptiveTrialHeading() {
+static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
     FormattedStream stream;
     stream.insert(headingItemName(HeadingItem::snr_dB));
     stream.insertCommaAndSpace();
@@ -229,38 +264,6 @@ void OutputFileImpl::writeTest(const FixedLevelTest &test) {
     write(formatTest(test));
 }
 
-std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
-    FormattedStream stream;
-    auto information = test.identity;
-    stream.writeSubjectId(information);
-    stream.writeTester(information);
-    stream.writeSession(information);
-    auto common = test;
-    stream.writeMasker(common);
-    stream.writeTargetList(common);
-    stream.writeMaskerLevel(common);
-    stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
-    stream.writeCondition(common);
-    stream.insertNewLine();
-    return stream.str();
-}
-
-std::string OutputFileImpl::formatTest(const FixedLevelTest &test) {
-    FormattedStream stream;
-    auto information = test.identity;
-    stream.writeSubjectId(information);
-    stream.writeTester(information);
-    stream.writeSession(information);
-    auto common = test;
-    stream.writeMasker(common);
-    stream.writeTargetList(common);
-    stream.writeMaskerLevel(common);
-    stream.writeLabeledLine("SNR (dB)", test.snr_dB);
-    stream.writeCondition(common);
-    stream.insertNewLine();
-    return stream.str();
-}
-
 void OutputFileImpl::openNewFile(const TestIdentity &test) {
     writer->open(generateNewFilePath(test));
     if (writer->failed())
@@ -271,7 +274,8 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
     justWroteOpenSetAdaptiveTrial = false;
 }
 
-std::string OutputFileImpl::generateNewFilePath(const TestIdentity &test) {
+auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
+    -> std::string {
     return path->outputDirectory() + "/" + path->generateFileName(test) +
         ".txt";
 }
