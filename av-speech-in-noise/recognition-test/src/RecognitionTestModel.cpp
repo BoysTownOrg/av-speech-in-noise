@@ -45,10 +45,10 @@ void RecognitionTestModelImpl::throwIfTrialInProgress() {
 }
 
 void RecognitionTestModelImpl::initialize(
-    TestMethod *testMethod_, const Test &test, const TestIdentity &identity) {
+    TestMethod *testMethod_, const Test &test, const TestIdentity &) {
     throwIfTrialInProgress();
     testMethod = testMethod_;
-    prepareTest(test, identity);
+    prepareTest(test);
     trialNumber_ = 1;
 }
 
@@ -56,8 +56,7 @@ auto RecognitionTestModelImpl::trialInProgress() -> bool {
     return maskerPlayer->playing();
 }
 
-void RecognitionTestModelImpl::prepareTest(
-    const Test &test, const TestIdentity &) {
+void RecognitionTestModelImpl::prepareTest(const Test &test) {
     storeLevels(test);
     prepareMasker(test.maskerFilePath);
     targetPlayer->hideVideo();
