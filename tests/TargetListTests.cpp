@@ -101,16 +101,6 @@ TEST_F(RandomizedTargetListTests, nextReplacesSecondToLastTarget) {
     assertHasBeenShuffled({"c", "d", "e", "a"});
 }
 
-TEST_F(RandomizedTargetListTests,
-    nextReplacesSecondToLastTargetWithReinsertedCurrent) {
-    setFileNames({"a", "b", "c", "d", "e"});
-    loadFromDirectory();
-    next();
-    reinsertCurrent();
-    next();
-    assertHasBeenShuffled({"c", "d", "e", "a", "a"});
-}
-
 TEST_F(RandomizedTargetListTests, nextReturnsFullPathToFile) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
@@ -130,18 +120,6 @@ TEST_F(RandomizedTargetListTests, nextReturnsEmptyIfNoFiles) {
     setFileNames({});
     loadFromDirectory();
     assertNextEquals("");
-}
-
-TEST_F(RandomizedTargetListTests, reinsertCurrent) {
-    setFileNames({"a", "b", "c"});
-    loadFromDirectory("C:");
-    assertNextEquals("C:/a");
-    assertNextEquals("C:/b");
-    reinsertCurrent();
-    assertNextEquals("C:/c");
-    assertNextEquals("C:/a");
-    assertNextEquals("C:/b");
-    assertNextEquals("C:/b");
 }
 
 class FiniteRandomizedTargetListTests : public ::testing::Test {
