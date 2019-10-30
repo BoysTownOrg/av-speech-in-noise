@@ -1,5 +1,5 @@
-#ifndef ModelEventListenerStub_h
-#define ModelEventListenerStub_h
+#ifndef TESTS_MODELEVENTLISTENERSTUB_H_
+#define TESTS_MODELEVENTLISTENERSTUB_H_
 
 #include <av-speech-in-noise/Model.hpp>
 
@@ -10,8 +10,8 @@ class ModelEventListenerStub : public Model::EventListener {
   public:
     void trialComplete() override { notified_ = true; }
 
-    auto notified() const { return notified_; }
+    [[nodiscard]] auto notified() const { return notified_; }
 };
-} // namespace av_speech_in_noise::tests
+}
 
 #endif

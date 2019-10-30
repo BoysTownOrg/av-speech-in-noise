@@ -7,8 +7,8 @@ class FormattedStream {
     std::stringstream stream;
 
   public:
-    template <typename T> void writeLabeledLine(std::string label, T thing) {
-        stream << std::move(label);
+    template <typename T> void writeLabeledLine(const std::string& label, T thing) {
+        stream << label;
         stream << ": ";
         stream << thing;
         stream << '\n';

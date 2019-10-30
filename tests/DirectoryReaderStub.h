@@ -1,5 +1,5 @@
-#ifndef DirectoryReaderStub_h
-#define DirectoryReaderStub_h
+#ifndef TESTS_DIRECTORYREADERSTUB_H_
+#define TESTS_DIRECTORYREADERSTUB_H_
 
 #include <target-list/SubdirectoryTargetListReader.hpp>
 
@@ -23,7 +23,7 @@ class DirectoryReaderStub : public target_list::DirectoryReader {
         return subDirectories_;
     }
 
-    auto directory() const { return directory_; }
+    [[nodiscard]] auto directory() const { return directory_; }
 
     void setSubDirectories(std::vector<std::string> v) {
         subDirectories_ = std::move(v);

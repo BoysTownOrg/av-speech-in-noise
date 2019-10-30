@@ -30,14 +30,14 @@ int ResponseEvaluatorImpl::correctNumber_(const std::string &filePath) {
 
 unsigned long ResponseEvaluatorImpl::leadingPathLength(
     const std::string &filePath) {
-    return filePath.find_last_of("/") + 1;
+    return filePath.find_last_of('/') + 1;
 }
 
 long ResponseEvaluatorImpl::colorNameLength(
     const std::string &filePath, unsigned long leadingPathLength_) {
     auto fileNameBeginning = filePath.begin() + leadingPathLength_;
     auto notAlpha = std::find_if(fileNameBeginning, filePath.end(),
-        [](unsigned char c) { return !std::isalpha(c); });
+        [](unsigned char c) { return std::isalpha(c) == 0; });
     return std::distance(fileNameBeginning, notAlpha);
 }
 
@@ -54,14 +54,14 @@ coordinate_response_measure::Color ResponseEvaluatorImpl::color(
     using coordinate_response_measure::Color;
     if (colorName == "green")
         return Color::green;
-    else if (colorName == "blue")
+    if (colorName == "blue")
         return Color::blue;
-    else if (colorName == "red")
+    if (colorName == "red")
         return Color::red;
-    else if (colorName == "white")
+    if (colorName == "white")
         return Color::white;
-    else
-        return Color::notAColor;
+
+    return Color::notAColor;
 }
 
 std::string ResponseEvaluatorImpl::fileName(const std::string &filePath) {

@@ -12,11 +12,10 @@ void FixedLevelMethodImpl::initialize(
     snr_dB_ = p.snr_dB;
     targetList->loadFromDirectory(p.targetListDirectory);
     concluder->initialize(p);
+    complete_ = concluder->complete(targetList);
 }
 
-bool FixedLevelMethodImpl::complete() {
-    return concluder->complete(targetList);
-}
+bool FixedLevelMethodImpl::complete() { return complete_; }
 
 std::string FixedLevelMethodImpl::next() { return targetList->next(); }
 
@@ -32,6 +31,7 @@ void FixedLevelMethodImpl::submitResponse(
     lastTrial.correct = evaluator->correct(current_, response);
     lastTrial.target = current_;
     concluder->submitResponse();
+    complete_ = concluder->complete(targetList);
 }
 
 std::string FixedLevelMethodImpl::current() { return targetList->current(); }
@@ -48,5 +48,9 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submitResponse(const FreeResponse &) {}
+void FixedLevelMethodImpl::submitResponse(const FreeResponse &response) {
+    if (response.flagged)
+        targetList->reinsertCurrent();
+    complete_ = concluder->complete(targetList);
+}
 }

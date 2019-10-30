@@ -5,7 +5,7 @@ AdaptiveTrack::AdaptiveTrack(const Settings &p)
     : x_{p.startingX}, ceiling_{p.ceiling}, floor_{p.floor},
       bumpLimit_{p.bumpLimit}, bumpCount_{0} {
     for (const auto &sequence : *p.rule)
-        if (sequence.runCount) {
+        if (sequence.runCount != 0) {
             stepSizes.push_back(sequence.stepSize);
             runCounts.push_back(sequence.runCount);
             up_.push_back(sequence.up);

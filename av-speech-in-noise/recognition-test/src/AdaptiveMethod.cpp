@@ -29,7 +29,7 @@ void AdaptiveMethodImpl::selectNextListAfter(void (AdaptiveMethodImpl::*f)()) {
 
 void AdaptiveMethodImpl::makeSnrTracks() {
     targetListsWithTracks.clear();
-    for (auto list : lists)
+    for (const auto& list : lists)
         makeTrackWithList(list.get());
 }
 

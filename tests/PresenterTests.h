@@ -4,6 +4,8 @@
 #include "assert-utility.h"
 #include <gtest/gtest.h>
 #include <presentation/Presenter.hpp>
+#include <algorithm>
+#include <utility>
 
 namespace av_speech_in_noise::tests::presentation {
 template <typename T> class Collection {
@@ -12,7 +14,7 @@ template <typename T> class Collection {
   public:
     explicit Collection(std::vector<T> items = {}) : items{std::move(items)} {}
 
-    bool contains(const T &item) const {
+    [[nodiscard]] bool contains(const T &item) const {
         return std::find(items.begin(), items.end(), item) != items.end();
     }
 };
@@ -539,11 +541,11 @@ class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
     explicit ConfirmingAdaptiveTest(ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
-    auto adaptiveTest(ModelStub &m) { return m.adaptiveTest(); }
+    static auto adaptiveTest(ModelStub &m) { return m.adaptiveTest(); }
 
-    Test common(ModelStub &m) { return adaptiveTest(m); }
+    static Test common(ModelStub &m) { return adaptiveTest(m); }
 
-    auto information(ModelStub &m) { return adaptiveTest(m).identity; }
+    static auto information(ModelStub &m) { return adaptiveTest(m).identity; }
 
     void run() override { view->confirmTestSetup(); }
 
@@ -596,7 +598,7 @@ class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
     }
 };
 
-void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
+inline void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
     view->setMethod(methodName(m));
 }
 
@@ -741,11 +743,11 @@ class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
 
     void run() override { view->confirmTestSetup(); }
 
-    auto fixedLevelTest(ModelStub &m) { return m.fixedLevelTest(); }
+    static auto fixedLevelTest(ModelStub &m) { return m.fixedLevelTest(); }
 
-    auto common(ModelStub &m) { return fixedLevelTest(m); }
+    static auto common(ModelStub &m) { return fixedLevelTest(m); }
 
-    auto information(ModelStub &m) { return fixedLevelTest(m).identity; }
+    static auto information(ModelStub &m) { return fixedLevelTest(m).identity; }
 
     int snr_dB(ModelStub &m) override { return fixedLevelTest(m).snr_dB; }
 
@@ -1164,11 +1166,11 @@ class PresenterTests : public ::testing::Test {
     SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenterView};
 
-    std::string auditoryOnlyConditionName() {
+    static std::string auditoryOnlyConditionName() {
         return conditionName(Condition::auditoryOnly);
     }
 
-    std::string audioVisualConditionName() {
+    static std::string audioVisualConditionName() {
         return conditionName(Condition::audioVisual);
     }
 
@@ -1234,11 +1236,12 @@ class PresenterTests : public ::testing::Test {
         useCase.setResult(view, std::move(s));
     }
 
-    void assertEntryEquals(BrowsingEnteredPathUseCase &useCase, std::string s) {
-        assertEqual(std::move(s), entry(useCase));
+    static void assertEntryEquals(
+        BrowsingEnteredPathUseCase &useCase, const std::string &s) {
+        assertEqual(s, entry(useCase));
     }
 
-    std::string entry(BrowsingEnteredPathUseCase &useCase) {
+    static std::string entry(BrowsingEnteredPathUseCase &useCase) {
         return useCase.entry();
     }
 
@@ -1253,12 +1256,12 @@ class PresenterTests : public ::testing::Test {
 
     void completeTrial() { model.completeTrial(); }
 
-    void assertSetupViewConditionsContains(std::string s) {
-        assertTrue(setupView.conditions().contains(std::move(s)));
+    void assertSetupViewConditionsContains(const std::string &s) {
+        assertTrue(setupView.conditions().contains(s));
     }
 
-    void assertSetupViewMethodsContains(std::string s) {
-        assertTrue(setupView.methods().contains(std::move(s)));
+    void assertSetupViewMethodsContains(const std::string &s) {
+        assertTrue(setupView.methods().contains(s));
     }
 
     void assertSetupViewMethodsContains(Method m) {
@@ -1283,8 +1286,8 @@ class PresenterTests : public ::testing::Test {
         assertErrorMessageEquals("'a' is not a valid calibration level.");
     }
 
-    void assertErrorMessageEquals(std::string s) {
-        assertEqual(std::move(s), errorMessage());
+    void assertErrorMessageEquals(const std::string &s) {
+        assertEqual(s, errorMessage());
     }
 
     void assertInvalidMaskerLevelShowsErrorMessage(UseCase &useCase) {
@@ -1335,7 +1338,7 @@ class PresenterTests : public ::testing::Test {
         assertEqual("a", model.trialParameters().audioDevice);
     }
 
-    void run(UseCase &useCase) { useCase.run(); }
+    static void run(UseCase &useCase) { useCase.run(); }
 
     void assertPlaysTrial(UseCase &useCase) {
         run(useCase);
@@ -1344,7 +1347,7 @@ class PresenterTests : public ::testing::Test {
 
     bool trialPlayed() { return model.trialPlayed(); }
 
-    void assertHidesPlayTrialButton(PlayingTrial &useCase) {
+    static void assertHidesPlayTrialButton(PlayingTrial &useCase) {
         run(useCase);
         assertTrue(useCase.nextTrialButtonHidden());
     }
@@ -1362,7 +1365,7 @@ class PresenterTests : public ::testing::Test {
         return experimenterView.exitTestButtonShown();
     }
 
-    void assertConfirmTestSetupShowsNextTrialButton(
+    static void assertConfirmTestSetupShowsNextTrialButton(
         ConfirmingTestSetup &confirmingTest, PlayingTrial &playingTrial) {
         run(confirmingTest);
         assertTrue(playingTrial.nextTrialButtonShown());
@@ -1415,7 +1418,7 @@ class PresenterTests : public ::testing::Test {
         assertTestingViewNotHidden();
     }
 
-    void assertShowsNextTrialButton(TrialSubmission &useCase) {
+    static void assertShowsNextTrialButton(TrialSubmission &useCase) {
         run(useCase);
         assertTrue(useCase.nextTrialButtonShown());
     }
@@ -1550,7 +1553,7 @@ class PresenterTests : public ::testing::Test {
         assertEqual(s, experimenterView.displayed());
     }
 
-    void assertResponseViewHidden(TrialSubmission &useCase) {
+    static void assertResponseViewHidden(TrialSubmission &useCase) {
         run(useCase);
         assertTrue(useCase.responseViewHidden());
     }
@@ -1636,9 +1639,9 @@ class PresenterFailureTests : public ::testing::Test {
         setupView.confirmTestSetup();
     }
 
-    void assertConfirmTestSetupShowsErrorMessage(std::string s) {
+    void assertConfirmTestSetupShowsErrorMessage(const std::string &s) {
         confirmTestSetup();
-        assertEqual(std::move(s), view.errorMessage());
+        assertEqual(s, view.errorMessage());
     }
 
     void assertConfirmTestSetupDoesNotHideSetupView() {

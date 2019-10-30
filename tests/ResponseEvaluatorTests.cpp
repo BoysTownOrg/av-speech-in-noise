@@ -10,16 +10,16 @@ class ResponseEvaluatorTests : public ::testing::Test {
   protected:
     ResponseEvaluatorImpl evaluator{};
 
-    bool correct(std::string s, Response r) {
-        return evaluator.correct(std::move(s), r);
+    auto correct(const std::string &s, Response r) -> bool {
+        return evaluator.correct(s, r);
     }
 
-    void assertCorrect(std::string s, Response r) {
-        EXPECT_TRUE(correct(std::move(s), r));
+    void assertCorrect(const std::string &s, Response r) {
+        EXPECT_TRUE(correct(s, r));
     }
 
-    void assertIncorrect(std::string s, Response r) {
-        EXPECT_FALSE(correct(std::move(s), r));
+    void assertIncorrect(const std::string &s, Response r) {
+        EXPECT_FALSE(correct(s, r));
     }
 };
 
@@ -89,4 +89,4 @@ TEST_F(ResponseEvaluatorTests, miscellaneous) {
     assertIncorrect("a/b/c/blue9-3.mov", {3, Color::blue});
     assertIncorrect("a/b/c/red8 4.mov", {4, Color::red});
 }
-} // namespace av_speech_in_noise::tests::response_evaluation
+}

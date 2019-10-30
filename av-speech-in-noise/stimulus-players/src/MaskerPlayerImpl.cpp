@@ -1,5 +1,6 @@
 #include "MaskerPlayerImpl.hpp"
 #include <cmath>
+#include <gsl/gsl>
 
 namespace stimulus_players {
 MaskerPlayerImpl::MaskerPlayerImpl(
@@ -68,7 +69,7 @@ void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
 }
 
 void MaskerPlayerImpl::setAudioDevice(std::string device) {
-    player->setDevice(findDeviceIndex(std::move(device)));
+    player->setDevice(findDeviceIndex(device));
 }
 
 int MaskerPlayerImpl::findDeviceIndex(const std::string &device) {
@@ -198,12 +199,13 @@ void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
 }
 
 int MaskerPlayerImpl::AudioThread::levelTransitionSamples() {
-    return sharedAtomics->fadeInOutSeconds.load() * player->sampleRateHz();
+    return gsl::narrow_cast<int>(
+        sharedAtomics->fadeInOutSeconds.load() * player->sampleRateHz());
 }
 
 void MaskerPlayerImpl::AudioThread::scaleAudio(
     const std::vector<gsl::span<float>> &audio) {
-    if (audio.size() == 0)
+    if (audio.empty())
         return;
 
     auto firstChannel = audio.front();
@@ -211,15 +213,15 @@ void MaskerPlayerImpl::AudioThread::scaleAudio(
     for (int i = 0; i < firstChannel.size(); ++i) {
         auto fadeScalar_ = fadeScalar();
         updateFadeState();
-        for (size_t channel = 0; channel < audio.size(); ++channel)
-            audio.at(channel).at(i) *= fadeScalar_ * levelScalar_;
+        for (auto channel : audio)
+            channel.at(i) *= fadeScalar_ * levelScalar_;
     }
 }
 
 static const auto pi = std::acos(-1);
 
 double MaskerPlayerImpl::AudioThread::fadeScalar() {
-    const auto squareRoot = halfWindowLength
+    const auto squareRoot = halfWindowLength != 0
         ? std::sin((pi * hannCounter) / (2 * halfWindowLength))
         : 1;
     return squareRoot * squareRoot;

@@ -2,6 +2,7 @@
 #define TESTS_RESPONSEEVALUATORSTUB_H_
 
 #include <recognition-test/Model.hpp>
+#include <utility>
 
 namespace av_speech_in_noise::tests {
 class ResponseEvaluatorStub : public ResponseEvaluator {
@@ -24,42 +25,49 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
         correctColor_ = c;
     }
 
-    auto correctNumberFilePath() const { return correctNumberFilePath_; }
+    [[nodiscard]] auto correctNumberFilePath() const {
+        return correctNumberFilePath_;
+    }
 
-    auto correctColorFilePath() const { return correctColorFilePath_; }
+    [[nodiscard]] auto correctColorFilePath() const {
+        return correctColorFilePath_;
+    }
 
-    auto correctFilePath() const { return correctTarget_; }
+    [[nodiscard]] auto correctFilePath() const { return correctTarget_; }
 
-    auto response() const { return response_; }
+    [[nodiscard]] auto response() const { return response_; }
 
     void setCorrect() { correct_ = true; }
 
     void setIncorrect() { correct_ = false; }
 
-    bool correct(const std::string &target,
-        const coordinate_response_measure::Response &p) override {
+    auto correct(const std::string &target,
+        const coordinate_response_measure::Response &p) -> bool override {
         correctTarget_ = target;
         response_ = &p;
         return correct_;
     }
 
-    coordinate_response_measure::Color correctColor(
-        const std::string &filePath) override {
+    auto correctColor(const std::string &filePath)
+        -> coordinate_response_measure::Color override {
         correctColorFilePath_ = filePath;
         return correctColor_;
     }
 
-    int correctNumber(const std::string &filePath) override {
+    auto correctNumber(const std::string &filePath) -> int override {
         correctNumberFilePath_ = filePath;
         return correctNumber_;
     }
 
-    std::string fileName(const std::string &filePath) override {
+    auto fileName(const std::string &filePath) -> std::string override {
         filePathForFileName_ = filePath;
         return fileName_;
     }
 
-    auto filePathForFileName() const { return filePathForFileName_; }
+    [[nodiscard]] auto filePathForFileName() const {
+        return filePathForFileName_;
+    }
 };
-} // namespace av_speech_in_noise::tests
+}
+
 #endif

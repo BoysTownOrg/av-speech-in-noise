@@ -125,4 +125,4 @@ TEST_F(OutputFilePathTests, setRelativeOutputDirectoryCreatesDirectory) {
     setRelativeOutputDirectory("b");
     assertEqual("a/b", systemPath.directoryCreated());
 }
-} // namespace
+}

@@ -13,6 +13,7 @@ class TargetList {
     virtual std::string next() = 0;
     virtual std::string current() = 0;
     virtual bool empty() = 0;
+    virtual void reinsertCurrent() = 0;
 };
 
 class ResponseEvaluator {

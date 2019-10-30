@@ -1,13 +1,66 @@
+#include "LogString.h"
 #include "OutputFileStub.h"
 #include "ResponseEvaluatorStub.h"
 #include "TargetListStub.h"
 #include "TestConcluderStub.h"
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/FixedLevelMethod.hpp>
 
 namespace av_speech_in_noise::tests {
 namespace {
+class UseCase {
+  public:
+    virtual ~UseCase() = default;
+    virtual void run(FixedLevelMethod &) = 0;
+};
+
+class InitializingMethod : public UseCase {
+    FixedLevelTest test_;
+    TargetList &list;
+    TestConcluder &concluder;
+
+  public:
+    InitializingMethod(TargetList &list, TestConcluder &concluder)
+        : list{list}, concluder{concluder} {}
+
+    void run(FixedLevelMethod &m) override {
+        m.initialize(test_, &list, &concluder);
+    }
+
+    [[nodiscard]] auto test() const -> auto & { return test_; }
+
+    void setTargetListDirectory(std::string s) {
+        test_.targetListDirectory = std::move(s);
+    }
+
+    void setSnr(int x) { test_.snr_dB = x; }
+};
+
+class SubmittingCoordinateResponse : public UseCase {
+    coordinate_response_measure::Response response_{};
+
+  public:
+    void run(FixedLevelMethod &m) override { m.submitResponse(response_); }
+
+    void setColor(coordinate_response_measure::Color c) { response_.color = c; }
+
+    void setNumber(int n) { response_.number = n; }
+
+    [[nodiscard]] auto response() const -> auto & { return response_; }
+};
+
+class SubmittingFreeResponse : public UseCase {
+    FreeResponse response;
+
+  public:
+    void run(FixedLevelMethod &m) override { m.submitResponse(response); }
+    void setFlagged() { response.flagged = true; }
+};
+
+auto blueColor() { return coordinate_response_measure::Color::blue; }
+
 class FixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -15,32 +68,21 @@ class FixedLevelMethodTests : public ::testing::Test {
     TestConcluderStub testConcluder;
     OutputFileStub outputFile;
     FixedLevelMethodImpl method{&evaluator};
-    FixedLevelTest test;
-    coordinate_response_measure::Response coordinateResponse;
+    SubmittingCoordinateResponse submittingCoordinateResponse;
+    SubmittingFreeResponse submittingFreeResponse;
+    InitializingMethod initializingMethod{targetList, testConcluder};
 
-    void initialize() { method.initialize(test, &targetList, &testConcluder); }
-
-    void writeCoordinateResponse() {
-        initialize();
-        submitCoordinateResponse();
-        writeLastCoordinateResponse();
-    }
-
-    void submitCoordinateResponse() {
-        method.submitResponse(coordinateResponse);
-    }
+    FixedLevelMethodTests() { run(initializingMethod); }
 
     void writeLastCoordinateResponse() {
         method.writeLastCoordinateResponse(&outputFile);
     }
 
-    auto blueColor() { return coordinate_response_measure::Color::blue; }
-
     auto writtenFixedLevelTrial() {
         return outputFile.writtenFixedLevelTrial();
     }
 
-    bool writtenFixedLevelTrialCorrect() {
+    auto writtenFixedLevelTrialCorrect() -> bool {
         return writtenFixedLevelTrial().correct;
     }
 
@@ -48,138 +90,253 @@ class FixedLevelMethodTests : public ::testing::Test {
         targetList.setCurrent(std::move(s));
     }
 
-    void assertTestIncompleteAfterCoordinateResponse() {
-        submitCoordinateResponse();
-        assertTestIncomplete();
-    }
-
-    void assertTestCompleteAfterCoordinateResponse() {
-        submitCoordinateResponse();
-        assertTestComplete();
-    }
-
     void assertTestIncomplete() { assertFalse(testComplete()); }
 
-    bool testComplete() { return method.complete(); }
+    auto testComplete() -> bool { return method.complete(); }
 
     void assertTestComplete() { assertTrue(testComplete()); }
 
     void setTestComplete() { testConcluder.setComplete(); }
+
+    void setTestIncomplete() { testConcluder.setIncomplete(); }
+
+    void run(UseCase &useCase) { useCase.run(method); }
+
+    void assertTargetListPassedToConcluderAfter(UseCase &useCase) {
+        run(useCase);
+        assertTestConcluderPassedTargetList();
+    }
+
+    void assertTestConcluderPassedTargetList() {
+        assertEqual(
+            static_cast<TargetList *>(&targetList), testConcluder.targetList());
+    }
+
+    void assertTestCompleteOnlyWhenComplete(UseCase &useCase) {
+        run(useCase);
+        assertTestIncomplete();
+        assertTestCompleteWhenComplete(useCase);
+    }
+
+    void assertTestCompleteWhenComplete(UseCase &useCase) {
+        setTestComplete();
+        run(useCase);
+        assertTestComplete();
+    }
+
+    void assertTestConcluderLogContains(const std::string &s) {
+        assertTrue(testConcluder.log().contains(s));
+    }
+
+    void assertTestConcluderLogContainsAfter(
+        const std::string &s, UseCase &useCase) {
+        run(useCase);
+        assertTestConcluderLogContains(s);
+    }
+
+    auto reinsertCurrentCalled() -> bool {
+        return targetList.reinsertCurrentCalled();
+    }
+
+    void assertCurrentTargetNotReinserted() {
+        assertFalse(reinsertCurrentCalled());
+    }
+
+    void assertCurrentTargetReinserted() {
+        assertTrue(reinsertCurrentCalled());
+    }
 };
 
-TEST_F(FixedLevelMethodTests, initializePassesTestParametersToConcluder) {
-    initialize();
-    assertEqual(&std::as_const(test), testConcluder.test());
+#define FIXED_LEVEL_METHOD_TEST(a) TEST_F(FixedLevelMethodTests, a)
+
+FIXED_LEVEL_METHOD_TEST(passesTestParametersToConcluder) {
+    assertEqual(&initializingMethod.test(), testConcluder.test());
 }
 
-TEST_F(FixedLevelMethodTests, initializePassesTargetListDirectory) {
-    test.targetListDirectory = "a";
-    initialize();
-    assertEqual("a", targetList.directory());
-}
-
-TEST_F(FixedLevelMethodTests, nextReturnsNextTarget) {
-    initialize();
+FIXED_LEVEL_METHOD_TEST(nextReturnsNextTarget) {
     targetList.setNext("a");
     assertEqual("a", method.next());
 }
 
-TEST_F(FixedLevelMethodTests, snrReturnsInitializedSnr) {
-    test.snr_dB = 1;
-    initialize();
-    assertEqual(1, method.snr_dB());
-}
-
-TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesSubjectColor) {
-    coordinateResponse.color = blueColor();
-    writeCoordinateResponse();
+FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
+    submittingCoordinateResponse.setColor(blueColor());
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertEqual(blueColor(), writtenFixedLevelTrial().subjectColor);
 }
 
-TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesSubjectNumber) {
-    coordinateResponse.number = 1;
-    writeCoordinateResponse();
+FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
+    submittingCoordinateResponse.setNumber(1);
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertEqual(1, writtenFixedLevelTrial().subjectNumber);
 }
 
-TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesCorrectColor) {
+FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
     evaluator.setCorrectColor(blueColor());
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertEqual(blueColor(), writtenFixedLevelTrial().correctColor);
 }
 
-TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesCorrectNumber) {
+FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
     evaluator.setCorrectNumber(1);
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertEqual(1, writtenFixedLevelTrial().correctNumber);
 }
 
-TEST_F(FixedLevelMethodTests, writeCoordinateResponsePassesStimulus) {
+FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesStimulus) {
     setCurrentTarget("a");
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertEqual("a", writtenFixedLevelTrial().target);
 }
 
-TEST_F(FixedLevelMethodTests, writeCorrectCoordinateResponse) {
+FIXED_LEVEL_METHOD_TEST(writeCorrectCoordinateResponse) {
     evaluator.setCorrect();
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertTrue(writtenFixedLevelTrialCorrect());
 }
 
-TEST_F(FixedLevelMethodTests, writeIncorrectCoordinateResponse) {
+FIXED_LEVEL_METHOD_TEST(writeIncorrectCoordinateResponse) {
     evaluator.setIncorrect();
-    writeCoordinateResponse();
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertFalse(writtenFixedLevelTrialCorrect());
 }
 
-TEST_F(FixedLevelMethodTests, writeTestPassesSettings) {
-    initialize();
+FIXED_LEVEL_METHOD_TEST(writeTestPassesSettings) {
     method.writeTestingParameters(&outputFile);
-    assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+    assertEqual(&initializingMethod.test(), outputFile.fixedLevelTest());
 }
 
-TEST_F(FixedLevelMethodTests, submitCoordinateResponsePassesResponse) {
-    initialize();
-    submitCoordinateResponse();
-    assertEqual(&std::as_const(coordinateResponse), evaluator.response());
+FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesResponse) {
+    run(submittingCoordinateResponse);
+    assertEqual(&submittingCoordinateResponse.response(), evaluator.response());
 }
 
-TEST_F(
-    FixedLevelMethodTests, submitCoordinateResponseSubmitsResponseToConcluder) {
-    initialize();
-    submitCoordinateResponse();
+FIXED_LEVEL_METHOD_TEST(submitCoordinateResponseSubmitsResponseToConcluder) {
+    run(submittingCoordinateResponse);
     assertTrue(testConcluder.responseSubmitted());
 }
 
-TEST_F(
-    FixedLevelMethodTests, submitCoordinateResponsePassesCurrentToEvaluator) {
-    initialize();
+FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesCurrentToEvaluator) {
     setCurrentTarget("a");
-    submitCoordinateResponse();
+    run(submittingCoordinateResponse);
     assertEqual("a", evaluator.correctColorFilePath());
     assertEqual("a", evaluator.correctNumberFilePath());
 }
 
-TEST_F(FixedLevelMethodTests,
+FIXED_LEVEL_METHOD_TEST(
     submitCoordinateResponsePassesCorrectTargetToEvaluator) {
-    initialize();
     setCurrentTarget("a");
-    submitCoordinateResponse();
+    run(submittingCoordinateResponse);
     assertEqual("a", evaluator.correctFilePath());
 }
 
-TEST_F(FixedLevelMethodTests, completeWhenTestComplete) {
-    initialize();
-    assertTestIncompleteAfterCoordinateResponse();
-    setTestComplete();
-    assertTestCompleteAfterCoordinateResponse();
+FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterCoordinateResponse) {
+    assertTestCompleteOnlyWhenComplete(submittingCoordinateResponse);
 }
 
-TEST_F(FixedLevelMethodTests, completeQueryPassesTargetListToConcluder) {
-    initialize();
-    testComplete();
-    assertEqual(
-        static_cast<TargetList *>(&targetList), testConcluder.targetList());
+FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterFreeResponse) {
+    assertTestCompleteOnlyWhenComplete(submittingFreeResponse);
+}
+
+FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesTargetListToConcluder) {
+    assertTargetListPassedToConcluderAfter(submittingCoordinateResponse);
+}
+
+FIXED_LEVEL_METHOD_TEST(submitFreeResponsePassesTargetListToConcluder) {
+    assertTargetListPassedToConcluderAfter(submittingFreeResponse);
+}
+
+FIXED_LEVEL_METHOD_TEST(
+    submitCoordinateResponseSubmitsResponsePriorToQueryingCompletion) {
+    assertTestConcluderLogContainsAfter(
+        "submitResponse complete", submittingCoordinateResponse);
+}
+
+FIXED_LEVEL_METHOD_TEST(submitFreeResponseDoesNotReinsertCurrentTarget) {
+    run(submittingFreeResponse);
+    assertCurrentTargetNotReinserted();
+}
+
+FIXED_LEVEL_METHOD_TEST(submitFreeResponseReinsertsCurrentTargetIfFlagged) {
+    submittingFreeResponse.setFlagged();
+    run(submittingFreeResponse);
+    assertCurrentTargetReinserted();
+}
+
+FIXED_LEVEL_METHOD_TEST(initializesConcluderBeforeQueryingCompletion) {
+    assertTestConcluderLogContains("initialize complete");
+}
+
+FIXED_LEVEL_METHOD_TEST(initializePassesTargetListToConcluder) {
+    assertTestConcluderPassedTargetList();
+}
+
+FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterInitializing) {
+    assertTestIncomplete();
+    assertTestCompleteWhenComplete(initializingMethod);
+}
+
+class PreInitializedFixedLevelMethodTests : public ::testing::Test {
+  protected:
+    ResponseEvaluatorStub evaluator;
+    TargetListStub targetList;
+    TestConcluderStub testConcluder;
+    FixedLevelMethodImpl method{&evaluator};
+    InitializingMethod initializingMethod{targetList, testConcluder};
+
+    void run(UseCase &useCase) { useCase.run(method); }
+};
+
+TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
+    initializingMethod.setSnr(1);
+    run(initializingMethod);
+    assertEqual(1, method.snr_dB());
+}
+
+TEST_F(
+    PreInitializedFixedLevelMethodTests, initializePassesTargetListDirectory) {
+    initializingMethod.setTargetListDirectory("a");
+    run(initializingMethod);
+    assertEqual("a", targetList.directory());
+}
+
+class TargetListTestConcluderComboStub : public TargetList,
+                                         public TestConcluder {
+  public:
+    void loadFromDirectory(std::string) override {}
+    auto next() -> std::string override { return {}; }
+    auto current() -> std::string override { return {}; }
+    auto empty() -> bool override { return {}; }
+    void reinsertCurrent() override { log_.insert("reinsertCurrent "); }
+    auto complete(TargetList *) -> bool override {
+        log_.insert("complete ");
+        return {};
+    }
+    void submitResponse() override {}
+    void initialize(const FixedLevelTest &) override {}
+    auto log() const -> auto & { return log_; }
+
+  private:
+    LogString log_;
+};
+
+TEST(FixedLevelMethodTestsTBD,
+    submitFreeResponseReinsertsCurrentTargetIfFlaggedBeforeQueryingCompletion) {
+    ResponseEvaluatorStub evaluator;
+    TargetListTestConcluderComboStub combo;
+    FixedLevelMethodImpl method{&evaluator};
+    FixedLevelTest test;
+    method.initialize(test, &combo, &combo);
+    FreeResponse response;
+    response.flagged = true;
+    method.submitResponse(response);
+    assertEqual("complete reinsertCurrent complete ", combo.log());
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {
@@ -233,5 +390,5 @@ TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
     targetList.setEmpty();
     assertComplete();
 }
-} // namespace
-} // namespace av_speech_in_noise::tests
+}
+}

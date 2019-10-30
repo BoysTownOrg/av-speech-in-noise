@@ -13,9 +13,9 @@ class RandomizerStub : public Randomizer {
     int rotateToTheLeft_{};
 
   public:
-    auto toShuffle() const { return toShuffle_; }
+    [[nodiscard]] auto toShuffle() const { return toShuffle_; }
 
-    auto shuffledInts() const { return shuffledInts_; }
+    [[nodiscard]] auto shuffledInts() const { return shuffledInts_; }
 
     void shuffle(shuffle_iterator begin, shuffle_iterator end) override {
         toShuffle_ = {begin, end};
@@ -54,9 +54,13 @@ class RandomizedTargetListTests : public ::testing::Test {
 
     void assertEmpty() { assertTrue(empty()); }
 
-    bool empty() { return list.empty(); }
+    auto empty() -> bool { return list.empty(); }
 
     void assertNotEmpty() { assertFalse(empty()); }
+
+    void reinsertCurrent() { list.reinsertCurrent(); }
+
+    void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 };
 
 TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
@@ -100,9 +104,9 @@ TEST_F(RandomizedTargetListTests, nextReplacesSecondToLastTarget) {
 TEST_F(RandomizedTargetListTests, nextReturnsFullPathToFile) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
-    assertEqual("C:/a", next());
-    assertEqual("C:/b", next());
-    assertEqual("C:/c", next());
+    assertNextEquals("C:/a");
+    assertNextEquals("C:/b");
+    assertNextEquals("C:/c");
 }
 
 TEST_F(RandomizedTargetListTests, currentReturnsFullPathToFile) {
@@ -115,7 +119,7 @@ TEST_F(RandomizedTargetListTests, currentReturnsFullPathToFile) {
 TEST_F(RandomizedTargetListTests, nextReturnsEmptyIfNoFiles) {
     setFileNames({});
     loadFromDirectory();
-    assertEqual("", next());
+    assertNextEquals("");
 }
 
 class FiniteRandomizedTargetListTests : public ::testing::Test {
@@ -139,15 +143,22 @@ class FiniteRandomizedTargetListTests : public ::testing::Test {
     void assertNotEmpty() { EXPECT_FALSE(empty()); }
 
     void assertEmpty() { EXPECT_TRUE(empty()); }
+
+    void reinsertCurrent() { list.reinsertCurrent(); }
+
+    void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 };
 
-TEST_F(FiniteRandomizedTargetListTests,
+#define FINITE_RANDOMIZED_TARGET_LIST_TEST(a)                                  \
+    TEST_F(FiniteRandomizedTargetListTests, a)
+
+FINITE_RANDOMIZED_TARGET_LIST_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectory("a");
     assertEqual("a", reader.directory());
 }
 
-TEST_F(FiniteRandomizedTargetListTests, emptyWhenStimulusFilesExhausted) {
+FINITE_RANDOMIZED_TARGET_LIST_TEST(emptyWhenStimulusFilesExhausted) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory();
     assertNotEmpty();
@@ -159,49 +170,59 @@ TEST_F(FiniteRandomizedTargetListTests, emptyWhenStimulusFilesExhausted) {
     assertEmpty();
 }
 
-TEST_F(FiniteRandomizedTargetListTests, nextReturnsFullPathToFileAtFront) {
+FINITE_RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFileAtFront) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
-    assertEqual("C:/a", next());
-    assertEqual("C:/b", next());
-    assertEqual("C:/c", next());
+    assertNextEquals("C:/a");
+    assertNextEquals("C:/b");
+    assertNextEquals("C:/c");
 }
 
-TEST_F(FiniteRandomizedTargetListTests, loadFromDirectoryShufflesFileNames) {
+FINITE_RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory();
     assertEqual({"a", "b", "c"}, randomizer.toShuffle());
 }
 
-TEST_F(FiniteRandomizedTargetListTests, currentReturnsFullPathToFile) {
+FINITE_RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
     next();
     assertEqual("C:/a", list.current());
 }
 
-TEST_F(FiniteRandomizedTargetListTests, nextReturnsEmptyIfNoFiles) {
+FINITE_RANDOMIZED_TARGET_LIST_TEST(nextReturnsEmptyIfNoFiles) {
     setFileNames({});
     loadFromDirectory();
-    assertEqual("", next());
+    assertNextEquals("");
 }
 
-std::vector<std::string> filesIn(
-    DirectoryReader &reader, std::string directory = {}) {
+FINITE_RANDOMIZED_TARGET_LIST_TEST(reinsertCurrent) {
+    setFileNames({"a", "b", "c"});
+    loadFromDirectory("C:");
+    assertNextEquals("C:/a");
+    assertNextEquals("C:/b");
+    reinsertCurrent();
+    assertNextEquals("C:/c");
+    assertNextEquals("C:/b");
+}
+
+auto filesIn(DirectoryReader &reader, std::string directory = {})
+    -> std::vector<std::string> {
     return reader.filesIn(std::move(directory));
 }
 
-std::vector<std::string> filter(
-    FileFilter &filter_, std::vector<std::string> files = {}) {
+auto filter(FileFilter &filter_, std::vector<std::string> files = {})
+    -> std::vector<std::string> {
     return filter_.filter(std::move(files));
 }
 
-std::vector<std::string> subDirectories(
-    DirectoryReader &reader, std::string directory = {}) {
+auto subDirectories(DirectoryReader &reader, std::string directory = {})
+    -> std::vector<std::string> {
     return reader.subDirectories(std::move(directory));
 }
 
-std::string directory(DirectoryReaderStub &reader) {
+auto directory(DirectoryReaderStub &reader) -> std::string {
     return reader.directory();
 }
 
@@ -210,11 +231,12 @@ class FileFilterStub : public FileFilter {
     std::vector<std::string> files_;
 
   public:
-    auto files() const { return files_; }
+    [[nodiscard]] auto files() const { return files_; }
 
     void setFiltered(std::vector<std::string> f) { filtered_ = std::move(f); }
 
-    std::vector<std::string> filter(std::vector<std::string> f) {
+    auto filter(std::vector<std::string> f)
+        -> std::vector<std::string> override {
         files_ = std::move(f);
         return filtered_;
     }
@@ -255,7 +277,8 @@ TEST_F(FileFilterDecoratorTests, returnsSubdirectories) {
 
 class FileExtensionFilterTests : public ::testing::Test {
   protected:
-    FileExtensionFilter construct(std::vector<std::string> filters = {}) {
+    static auto construct(std::vector<std::string> filters = {})
+        -> FileExtensionFilter {
         return FileExtensionFilter{std::move(filters)};
     }
 };
@@ -268,7 +291,8 @@ TEST_F(FileExtensionFilterTests, returnsFilteredFiles) {
 
 class FileIdentifierFilterTests : public ::testing::Test {
   protected:
-    FileIdentifierFilter construct(std::string indentifier = {}) {
+    static auto construct(std::string indentifier = {})
+        -> FileIdentifierFilter {
         return FileIdentifierFilter{std::move(indentifier)};
     }
 };
@@ -287,8 +311,8 @@ TEST_F(FileIdentifierFilterTests, returnsFilesThatEndWithIdentifier) {
 
 class FileIdentifierExcluderFilterTests : public ::testing::Test {
   protected:
-    FileIdentifierExcluderFilter construct(
-        std::vector<std::string> indentifiers = {}) {
+    static auto construct(std::vector<std::string> indentifiers = {})
+        -> FileIdentifierExcluderFilter {
         return FileIdentifierExcluderFilter{std::move(indentifiers)};
     }
 };
@@ -304,7 +328,7 @@ class RandomSubsetFilesTests : public ::testing::Test {
   protected:
     RandomizerStub randomizer;
 
-    RandomSubsetFiles construct(int N = {}) { return {&randomizer, N}; }
+    auto construct(int N = {}) -> RandomSubsetFiles { return {&randomizer, N}; }
 
     auto shuffled() { return randomizer.shuffledInts(); }
 
@@ -334,7 +358,7 @@ class DirectoryReaderCompositeTests : public ::testing::Test {
   protected:
     std::vector<DirectoryReaderStub> decorated;
 
-    DirectoryReaderComposite construct() {
+    auto construct() -> DirectoryReaderComposite {
         std::vector<DirectoryReader *> ptrs;
         for (auto &d : decorated)
             ptrs.push_back(&d);
@@ -348,7 +372,7 @@ class DirectoryReaderCompositeTests : public ::testing::Test {
             assertEqual(expected, decorated.at(i).directory());
     }
 
-    auto &decoratedAt(int n) { return decorated.at(n); }
+    auto decoratedAt(int n) -> auto & { return decorated.at(n); }
 
     void setFileNamesForDecorated(std::vector<std::string> v, int n) {
         decoratedAt(n).setFileNames(std::move(v));
@@ -385,5 +409,5 @@ TEST_F(DirectoryReaderCompositeTests, returnsSubdirectoriesFromFirstDecorated) {
     decoratedAt(0).setSubDirectories({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, subDirectories(reader));
 }
-} // namespace
-} // namespace target_list::tests
+}
+}

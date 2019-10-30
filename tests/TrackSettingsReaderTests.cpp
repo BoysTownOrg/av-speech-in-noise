@@ -9,9 +9,9 @@ class TextFileReaderStub : public TextFileReader {
     std::string contents_{};
 
   public:
-    auto filePath() const { return filePath_; }
+    [[nodiscard]] auto filePath() const { return filePath_; }
 
-    std::string read(std::string s) override {
+    auto read(std::string s) -> std::string override {
         filePath_ = std::move(s);
         return contents_;
     }
@@ -24,12 +24,12 @@ class TrackSettingsInterpreterStub : public TrackSettingsInterpreter {
     const TrackingRule *trackingRule_{};
 
   public:
-    const TrackingRule *trackingRule(std::string s) override {
+    auto trackingRule(std::string s) -> const TrackingRule * override {
         content_ = std::move(s);
         return trackingRule_;
     }
 
-    auto content() const { return content_; }
+    [[nodiscard]] auto content() const { return content_; }
 
     void setTrackingRule(const TrackingRule *r) { trackingRule_ = r; }
 };
@@ -59,5 +59,5 @@ TEST_F(TrackSettingsReaderTests, readReturnsInterpretedResult) {
     interpreter.setTrackingRule(&trackingRule);
     assertEqual(&std::as_const(trackingRule), read());
 }
-} // namespace
-} // namespace av_speech_in_noise::tests
+}
+}
