@@ -266,24 +266,24 @@ FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesResponse) {
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponseSubmitsResponseToConcluder) {
-    initialize();
-    submitCoordinateResponse();
+    run(initializingMethod);
+    run(submittingCoordinateResponse);
     assertTrue(testConcluder.responseSubmitted());
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesCurrentToEvaluator) {
-    initialize();
+    run(initializingMethod);
     setCurrentTarget("a");
-    submitCoordinateResponse();
+    run(submittingCoordinateResponse);
     assertEqual("a", evaluator.correctColorFilePath());
     assertEqual("a", evaluator.correctNumberFilePath());
 }
 
 FIXED_LEVEL_METHOD_TEST(
     submitCoordinateResponsePassesCorrectTargetToEvaluator) {
-    initialize();
+    run(initializingMethod);
     setCurrentTarget("a");
-    submitCoordinateResponse();
+    run(submittingCoordinateResponse);
     assertEqual("a", evaluator.correctFilePath());
 }
 
@@ -313,7 +313,7 @@ FIXED_LEVEL_METHOD_TEST(initializePassesTargetListToConcluder) {
 
 FIXED_LEVEL_METHOD_TEST(
     submitCoordinateResponseSubmitsResponsePriorToQueryingCompletion) {
-    initialize();
+    run(initializingMethod);
     assertTestConcluderLogContainsAfter(
         "submitResponse complete", submittingCoordinateResponse);
 }
@@ -325,13 +325,13 @@ FIXED_LEVEL_METHOD_TEST(
 }
 
 FIXED_LEVEL_METHOD_TEST(submitFreeResponseDoesNotReinsertCurrentTarget) {
-    initialize();
+    run(initializingMethod);
     run(submittingFreeResponse);
     assertCurrentTargetNotReinserted();
 }
 
 FIXED_LEVEL_METHOD_TEST(submitFreeResponseReinsertsCurrentTargetIfFlagged) {
-    initialize();
+    run(initializingMethod);
     submittingFreeResponse.setFlagged();
     run(submittingFreeResponse);
     assertCurrentTargetReinserted();
