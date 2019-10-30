@@ -10,7 +10,7 @@ class OutputFileStub : public OutputFile {
     coordinate_response_measure::AdaptiveTrial
         writtenAdaptiveCoordinateResponseTrial_{};
     coordinate_response_measure::FixedLevelTrial writtenFixedLevelTrial_{};
-    FreeResponseTrial writtenFreeResponseTrial_{};
+    open_set::FreeResponseTrial writtenFreeResponseTrial_{};
     open_set::AdaptiveTrial writtenOpenSetAdaptiveTrial_{};
     LogString log_{};
     const AdaptiveTest *adaptiveTest_{};
@@ -46,7 +46,7 @@ class OutputFileStub : public OutputFile {
         fixedLevelTest_ = &p;
     }
 
-    void writeTrial(const FreeResponseTrial &p) override {
+    void writeTrial(const open_set::FreeResponseTrial &p) override {
         addToLog("writeTrial ");
         writtenFreeResponseTrial_ = p;
     }

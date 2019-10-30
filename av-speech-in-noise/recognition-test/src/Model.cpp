@@ -41,7 +41,7 @@ void ModelImpl::submitCorrectResponse() { model->submitCorrectResponse(); }
 
 void ModelImpl::submitIncorrectResponse() { model->submitIncorrectResponse(); }
 
-void ModelImpl::submitResponse(const FreeResponse &response) {
+void ModelImpl::submitResponse(const open_set::FreeResponse &response) {
     model->submitResponse(response);
 }
 

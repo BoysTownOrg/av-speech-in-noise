@@ -171,7 +171,7 @@ class OutputFileTests : public ::testing::Test {
     WritingFixedLevelCoordinateResponseTrial
         writingFixedLevelCoordinateResponseTrial;
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
-    FreeResponseTrial freeResponseTrial;
+    open_set::FreeResponseTrial freeResponseTrial;
     open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;

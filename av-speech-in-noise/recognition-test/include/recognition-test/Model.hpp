@@ -43,7 +43,7 @@ class OutputFile {
         const coordinate_response_measure::AdaptiveTrial &) = 0;
     virtual void writeTrial(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
-    virtual void writeTrial(const FreeResponseTrial &) = 0;
+    virtual void writeTrial(const open_set::FreeResponseTrial &) = 0;
     virtual void writeTrial(const open_set::AdaptiveTrial &) = 0;
     virtual void writeTest(const AdaptiveTest &) = 0;
     virtual void writeTest(const FixedLevelTest &) = 0;
@@ -60,7 +60,7 @@ class TestMethod {
     virtual auto snr_dB() -> int = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submitResponse(const FreeResponse &) = 0;
+    virtual void submitResponse(const open_set::FreeResponse &) = 0;
     virtual void writeTestingParameters(OutputFile *) = 0;
     virtual void writeLastCoordinateResponse(OutputFile *) = 0;
     virtual void writeLastCorrectResponse(OutputFile *) = 0;
@@ -101,7 +101,7 @@ class RecognitionTestModel {
     virtual void playCalibration(const Calibration &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submitResponse(const FreeResponse &) = 0;
+    virtual void submitResponse(const open_set::FreeResponse &) = 0;
     virtual void throwIfTrialInProgress() = 0;
     virtual auto trialNumber() -> int = 0;
 };
@@ -123,7 +123,7 @@ class ModelImpl : public Model {
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
-    void submitResponse(const FreeResponse &) override;
+    void submitResponse(const open_set::FreeResponse &) override;
     auto trialNumber() -> int override;
 
   private:

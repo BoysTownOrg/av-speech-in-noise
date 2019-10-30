@@ -154,7 +154,7 @@ class Presenter : public Model::EventListener {
         void showEvaluationButtons();
         void showResponseSubmission();
         void showNextTrialButton();
-        FreeResponse openSetResponse();
+        auto openSetResponse() -> open_set::FreeResponse;
         void playTrial() override;
         void submitPassedTrial() override;
         void submitResponse() override;

@@ -89,7 +89,7 @@ class OutputFileImpl : public OutputFile {
         const coordinate_response_measure::AdaptiveTrial &) override;
     void writeTrial(
         const coordinate_response_measure::FixedLevelTrial &) override;
-    void writeTrial(const FreeResponseTrial &) override;
+    void writeTrial(const open_set::FreeResponseTrial &) override;
     void writeTrial(const open_set::AdaptiveTrial &) override;
 
   private:

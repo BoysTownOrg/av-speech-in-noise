@@ -60,7 +60,7 @@ class TestMethodStub : public TestMethod {
         submittedIncorrectResponse_ = true;
     }
 
-    void submitResponse(const FreeResponse &) override {}
+    void submitResponse(const open_set::FreeResponse &) override {}
 
     void writeTestingParameters(OutputFile *file) override {
         file->writeTest(AdaptiveTest{});
@@ -182,7 +182,7 @@ class PlayingTrial : public AudioDeviceUseCase {
 
 class SubmittingFreeResponse : public SubmittingResponse,
                                public TargetWritingUseCase {
-    FreeResponse response_{};
+    open_set::FreeResponse response_{};
 
   public:
     void run(RecognitionTestModelImpl &m) override {

@@ -26,7 +26,7 @@ class ModelStub : public Model {
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
-    FreeResponse freeResponse_{};
+    open_set::FreeResponse freeResponse_{};
     EventListener *listener_{};
     int trialNumber_{};
     bool testComplete_{};
@@ -105,7 +105,7 @@ class ModelStub : public Model {
         fixedLevelTest_ = p;
     }
 
-    void submitResponse(const FreeResponse &s) override { freeResponse_ = s; }
+    void submitResponse(const open_set::FreeResponse &s) override { freeResponse_ = s; }
 
     auto trialPlayed() const { return trialPlayed_; }
 
@@ -1598,7 +1598,7 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submitResponse(const FreeResponse &) override {
+    void submitResponse(const open_set::FreeResponse &) override {
         throw RequestFailure{errorMessage};
     }
 

@@ -479,7 +479,7 @@ void Presenter::Testing::submitResponse() {
     showNextTrialButton();
 }
 
-FreeResponse Presenter::Testing::openSetResponse() {
+open_set::FreeResponse Presenter::Testing::openSetResponse() {
     return {view->response(), view->flagged()};
 }
 

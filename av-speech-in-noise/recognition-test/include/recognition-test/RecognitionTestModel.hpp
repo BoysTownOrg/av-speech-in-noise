@@ -74,7 +74,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
-    void submitResponse(const FreeResponse &) override;
+    void submitResponse(const open_set::FreeResponse &) override;
     void throwIfTrialInProgress() override;
     void fadeInComplete() override;
     void fadeOutComplete() override;
@@ -83,7 +83,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
   private:
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
-    void writeTrial(const FreeResponse &p);
+    void writeTrial(const open_set::FreeResponse &p);
     void prepareTest(const Test &);
     void storeLevels(const Test &common);
     void preparePlayersForNextTrial();
@@ -123,7 +123,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void loadTargetFile(std::string);
     void setTargetLevel_dB(double);
     void prepareNextTrialIfNeeded();
-    
+
     MaskerPlayer *maskerPlayer;
     TargetPlayer *targetPlayer;
     ResponseEvaluator *evaluator;

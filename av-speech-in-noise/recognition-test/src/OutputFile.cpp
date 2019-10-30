@@ -158,7 +158,7 @@ static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
     return stream.str();
 }
 
-static auto formatTrial(const FreeResponseTrial &trial) -> std::string {
+static auto formatTrial(const open_set::FreeResponseTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.target);
     insertCommaAndSpace(stream);
@@ -258,7 +258,7 @@ void OutputFileImpl::writeTrial(
     justWroteFixedLevelCoordinateResponseTrial = true;
 }
 
-void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
+void OutputFileImpl::writeTrial(const open_set::FreeResponseTrial &trial) {
     if (!justWroteFreeResponseTrial)
         write(formatOpenSetFreeResponseTrialHeading());
     write(formatTrial(trial));

@@ -152,7 +152,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submitResponse(const FreeResponse &) {
+void AdaptiveMethodImpl::submitResponse(const open_set::FreeResponse &) {
     selectNextList();
 }
 }
