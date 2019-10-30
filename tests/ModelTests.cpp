@@ -212,7 +212,7 @@ class ModelTests : public ::testing::Test {
 
     void initializeAdaptiveTest() { model.initializeTest(adaptiveTest); }
 
-    bool testComplete() { return model.testComplete(); }
+    auto testComplete() -> bool { return model.testComplete(); }
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -223,97 +223,97 @@ class ModelTests : public ::testing::Test {
     }
 };
 
-TEST_F(ModelTests, initializeFixedLevelTestInitializesFixedLevelMethod) {
+#define MODEL_TEST(a) TEST_F(ModelTests, a)
+
+MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
     initializeFixedLevelTest();
     assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
 }
 
-TEST_F(ModelTests,
+MODEL_TEST(
     initializeFixedLevelTestWithFiniteTargetsInitializesFixedLevelMethod) {
     initializeFixedLevelTestWithFiniteTargets();
     assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
 }
 
-TEST_F(ModelTests, initializeFixedLevelTestInitializesWithInfiniteTargetList) {
+MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
     initializeFixedLevelTest();
     assertEqual(static_cast<TargetList *>(&infiniteTargetList),
         fixedLevelMethod.targetList());
 }
 
-TEST_F(ModelTests,
+MODEL_TEST(
     initializeFixedLevelTestWithFiniteTargetsInitializesWithFiniteTargets) {
     initializeFixedLevelTestWithFiniteTargets();
     assertEqual(static_cast<TargetList *>(&finiteTargetList),
         fixedLevelMethod.targetList());
 }
 
-TEST_F(ModelTests,
-    initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
+MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
     initializeFixedLevelTest();
     assertEqual(static_cast<TestConcluder *>(&fixedTrialTestConcluder),
         fixedLevelMethod.testConcluder());
 }
 
-TEST_F(ModelTests,
+MODEL_TEST(
     initializeFixedLevelTestWithFiniteTargetsInitializesWithEmptyTargetListTestConcluder) {
     initializeFixedLevelTestWithFiniteTargets();
     assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
         fixedLevelMethod.testConcluder());
 }
 
-TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
+MODEL_TEST(initializeAdaptiveTestInitializesAdaptiveMethod) {
     initializeAdaptiveTest();
     assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
 }
 
-TEST_F(ModelTests, initializeFixedLevelTestInitializesInternalModel) {
+MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTest);
 }
 
-TEST_F(ModelTests,
-    initializeFixedLevelTestWithFiniteTargetsInitializesInternalModel) {
+MODEL_TEST(initializeFixedLevelTestWithFiniteTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTestWithFiniteTargets);
 }
 
-TEST_F(ModelTests, initializeAdaptiveTestInitializesInternalModel) {
+MODEL_TEST(initializeAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTest);
 }
 
-TEST_F(ModelTests, submitResponsePassesCoordinateResponse) {
-    coordinate_response_measure::Response response;
+MODEL_TEST(submitResponsePassesCoordinateResponse) {
+    coordinate_response_measure::Response response{};
     model.submitResponse(response);
     assertEqual(&std::as_const(response), internalModel.coordinateResponse());
 }
 
-TEST_F(ModelTests, playTrialPassesAudioSettings) {
+MODEL_TEST(playTrialPassesAudioSettings) {
     AudioSettings settings;
     model.playTrial(settings);
     assertEqual(&std::as_const(settings), internalModel.playTrialSettings());
 }
 
-TEST_F(ModelTests, playCalibrationPassesCalibration) {
+MODEL_TEST(playCalibrationPassesCalibration) {
     Calibration calibration;
     model.playCalibration(calibration);
     assertEqual(&std::as_const(calibration), internalModel.calibration());
 }
 
-TEST_F(ModelTests, testCompleteWhenComplete) {
+MODEL_TEST(testCompleteWhenComplete) {
     assertFalse(testComplete());
     internalModel.setComplete();
     assertTrue(testComplete());
 }
 
-TEST_F(ModelTests, returnsAudioDevices) {
+MODEL_TEST(returnsAudioDevices) {
     internalModel.setAudioDevices({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, model.audioDevices());
 }
 
-TEST_F(ModelTests, returnsTrialNumber) {
+MODEL_TEST(returnsTrialNumber) {
     internalModel.setTrialNumber(1);
     assertEqual(1, model.trialNumber());
 }
 
-TEST_F(ModelTests, subscribesToListener) {
+MODEL_TEST(subscribesToListener) {
     ModelEventListenerStub listener;
     model.subscribe(&listener);
     assertEqual(static_cast<const Model::EventListener *>(&listener),
