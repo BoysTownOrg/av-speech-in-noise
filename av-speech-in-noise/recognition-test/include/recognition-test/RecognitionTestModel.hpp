@@ -22,14 +22,14 @@ class TargetPlayer {
     virtual void subscribe(EventListener *) = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void play() = 0;
-    virtual bool playing() = 0;
+    virtual auto playing() -> bool = 0;
     virtual void loadFile(std::string filePath) = 0;
     virtual void hideVideo() = 0;
     virtual void showVideo() = 0;
-    virtual double rms() = 0;
+    virtual auto rms() -> double = 0;
     virtual void setLevel_dB(double) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
-    virtual double durationSeconds() = 0;
+    virtual auto durationSeconds() -> double = 0;
 };
 
 class MaskerPlayer {
@@ -44,17 +44,18 @@ class MaskerPlayer {
     };
 
     virtual void subscribe(EventListener *) = 0;
-    virtual std::vector<std::string> outputAudioDeviceDescriptions() = 0;
+    virtual auto outputAudioDeviceDescriptions()
+        -> std::vector<std::string> = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void fadeIn() = 0;
     virtual void fadeOut() = 0;
     virtual void loadFile(std::string filePath) = 0;
-    virtual bool playing() = 0;
-    virtual double rms() = 0;
+    virtual auto playing() -> bool = 0;
+    virtual auto rms() -> double = 0;
     virtual void setLevel_dB(double) = 0;
-    virtual double durationSeconds() = 0;
+    virtual auto durationSeconds() -> double = 0;
     virtual void seekSeconds(double) = 0;
-    virtual double fadeTimeSeconds() = 0;
+    virtual auto fadeTimeSeconds() -> double = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,
@@ -78,9 +79,9 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void initialize(TestMethod *, const Test &, const TestIdentity &) override;
     void playTrial(const AudioSettings &) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
-    bool testComplete() override;
-    std::vector<std::string> audioDevices() override;
-    int trialNumber() override;
+    auto testComplete() -> bool override;
+    auto audioDevices() -> std::vector<std::string> override;
+    auto trialNumber() -> int override;
     void subscribe(Model::EventListener *) override;
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
@@ -95,14 +96,14 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
     void writeTrial(const FreeResponse &p);
-    void prepareCommonTest(const Test &, const TestIdentity &);
+    void prepareTest(const Test &, const TestIdentity &);
     void storeLevels(const Test &common);
     void preparePlayersForNextTrial();
-    std::string currentTarget();
-    bool correct(const coordinate_response_measure::Response &);
+    auto currentTarget() -> std::string;
+    auto correct(const coordinate_response_measure::Response &) -> bool;
     void submitResponse_(const coordinate_response_measure::Response &);
     void setTargetPlayerDevice(const Calibration &);
-    double calibrationLevel_dB(const Calibration &);
+    auto calibrationLevel_dB(const Calibration &) -> double;
     void trySettingTargetLevel(const Calibration &);
     void playCalibration_(const Calibration &);
     void prepareMasker(const std::string &);
@@ -110,22 +111,21 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void tryOpeningOutputFile(const TestIdentity &);
     void loadMaskerFile(const std::string &);
     void playTarget();
-    bool noMoreTrials();
-    bool trialInProgress();
+    auto noMoreTrials() -> bool;
+    auto trialInProgress() -> bool;
     void prepareTargetPlayer();
     void seekRandomMaskerPosition();
     void preparePlayersToPlay(const AudioSettings &);
     void startTrial();
-    bool auditoryOnly(const Condition &);
     void prepareVideo(const Condition &);
-    int desiredMaskerLevel_dB();
-    double unalteredTargetLevel_dB();
-    double targetLevel_dB();
-    double maskerLevel_dB();
+    auto desiredMaskerLevel_dB() -> int;
+    auto unalteredTargetLevel_dB() -> double;
+    auto targetLevel_dB() -> double;
+    auto maskerLevel_dB() -> double;
     void setTargetPlayerDevice_(const std::string &);
     void setAudioDevices_(const std::string &);
     void setAudioDevices(const AudioSettings &);
-    int findDeviceIndex(const AudioSettings &);
+    auto findDeviceIndex(const AudioSettings &) -> int;
     void throwInvalidAudioDeviceOnErrorSettingDevice(
         void (RecognitionTestModelImpl::*f)(const std::string &),
         const std::string &);
