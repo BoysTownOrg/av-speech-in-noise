@@ -66,9 +66,7 @@ static void insertCommaAndSpace(FormattedStream &stream) {
     stream.insertCommaAndSpace();
 }
 
-static void insertNewLine(FormattedStream &stream) {
-    stream.insertNewLine();
-}
+static void insertNewLine(FormattedStream &stream) { stream.insertNewLine(); }
 
 OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path)
     : writer{writer}, path{path} {}
@@ -158,7 +156,8 @@ static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
     return stream.str();
 }
 
-static auto formatTrial(const open_set::FreeResponseTrial &trial) -> std::string {
+static auto formatTrial(const open_set::FreeResponseTrial &trial)
+    -> std::string {
     FormattedStream stream;
     insert(stream, trial.target);
     insertCommaAndSpace(stream);

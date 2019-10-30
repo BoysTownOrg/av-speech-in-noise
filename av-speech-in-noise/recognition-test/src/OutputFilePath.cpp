@@ -6,8 +6,7 @@ OutputFilePathImpl::OutputFilePathImpl(
     TimeStamp *timeStamp, FileSystemPath *systemPath)
     : timeStamp{timeStamp}, systemPath{systemPath} {}
 
-static auto formatTestIdentity(const TestIdentity &test)
-    -> std::string {
+static auto formatTestIdentity(const TestIdentity &test) -> std::string {
     std::stringstream stream;
     stream << "Subject_";
     stream << test.subjectId;

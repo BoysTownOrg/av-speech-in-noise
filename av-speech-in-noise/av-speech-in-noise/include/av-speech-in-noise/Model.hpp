@@ -31,6 +31,28 @@ struct AdaptiveTrial : Trial {
 struct FixedLevelTrial : Trial {};
 }
 
+namespace open_set {
+struct FreeResponse {
+    std::string response;
+    bool flagged;
+};
+
+struct Trial {
+    std::string target;
+};
+
+struct FreeResponseTrial : Trial {
+    std::string response;
+    bool flagged;
+};
+
+struct AdaptiveTrial : Trial {
+    int SNR_dB{};
+    int reversals{};
+    bool correct{};
+};
+}
+
 enum class Condition { auditoryOnly, audioVisual };
 
 constexpr auto conditionName(Condition c) -> const char * {
@@ -50,8 +72,8 @@ struct TrackingSequence {
     int up;
 };
 
-constexpr auto operator==(
-    const TrackingSequence &a, const TrackingSequence &b) -> bool {
+constexpr auto operator==(const TrackingSequence &a, const TrackingSequence &b)
+    -> bool {
     return a.down == b.down && a.up == b.up && a.runCount == b.runCount &&
         a.stepSize == b.stepSize;
 }
@@ -97,26 +119,6 @@ struct Calibration {
     int fullScaleLevel_dB_SPL;
     Condition condition;
 };
-
-namespace open_set {
-struct FreeResponse {
-    std::string response;
-    bool flagged;
-};
-
-struct FreeResponseTrial {
-    std::string response;
-    std::string target;
-    bool flagged;
-};
-
-struct AdaptiveTrial {
-    std::string target;
-    int SNR_dB;
-    int reversals;
-    bool correct;
-};
-}
 
 class Model {
   public:

@@ -6,25 +6,25 @@ struct TestSetupState {
     std::string masker;
 };
 
-enum class TestSetupStateItem {
-    masker
-};
+enum class TestSetupStateItem { masker };
 
 constexpr const char *name(TestSetupStateItem p) {
     switch (p) {
-        case TestSetupStateItem::masker:
-            return "masker";
+    case TestSetupStateItem::masker:
+        return "masker";
     }
 }
 
 class TestSetupStateWriter {
     Writer &writer;
-public:
+
+  public:
     explicit TestSetupStateWriter(Writer &writer) : writer{writer} {}
 
     void write(const TestSetupState &state) {
         using std::string_literals::operator""s;
-        writer.write(name(TestSetupStateItem::masker) + ": "s + state.masker + "\n");
+        writer.write(
+            name(TestSetupStateItem::masker) + ": "s + state.masker + "\n");
     }
 };
 }
@@ -33,7 +33,8 @@ public:
 #include "LogString.h"
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests { namespace {
+namespace av_speech_in_noise::tests {
+namespace {
 class WriterStub : public Writer {
     LogString written_;
     std::string filePath_;
@@ -61,28 +62,23 @@ class WriterStub : public Writer {
 };
 
 class TestSetupStateWriterTests : public ::testing::Test {
-protected:
-    void setMasker(std::string s) {
-        state.masker = std::move(s);
-    }
+  protected:
+    void setMasker(std::string s) { state.masker = std::move(s); }
 
-    void write() {
-        writer.write(state);
-    }
+    void write() { writer.write(state); }
 
     void assertLabeledEntryWritten(TestSetupStateItem item, std::string entry) {
         using std::string_literals::operator""s;
         assertWrittenContains(name(item) + ": "s + entry + "\n");
     }
 
-    const auto &written() {
-        return stub.written();
-    }
+    const auto &written() { return stub.written(); }
 
     void assertWrittenContains(std::string s) {
         assertTrue(written().contains(std::move(s)));
     }
-private:
+
+  private:
     WriterStub stub;
     TestSetupStateWriter writer{stub};
     TestSetupState state;
@@ -93,4 +89,5 @@ TEST_F(TestSetupStateWriterTests, writesMasker) {
     write();
     assertLabeledEntryWritten(TestSetupStateItem::masker, "a");
 }
-}}
+}
+}

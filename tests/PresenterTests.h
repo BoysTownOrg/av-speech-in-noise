@@ -105,7 +105,9 @@ class ModelStub : public Model {
         fixedLevelTest_ = p;
     }
 
-    void submitResponse(const open_set::FreeResponse &s) override { freeResponse_ = s; }
+    void submitResponse(const open_set::FreeResponse &s) override {
+        freeResponse_ = s;
+    }
 
     auto trialPlayed() const { return trialPlayed_; }
 

@@ -249,7 +249,8 @@ void RecognitionTestModelImpl::submitIncorrectResponse_() {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submitResponse(const open_set::FreeResponse &response) {
+void RecognitionTestModelImpl::submitResponse(
+    const open_set::FreeResponse &response) {
     writeTrial(response);
     testMethod->submitResponse(response);
     prepareNextTrialIfNeeded();
