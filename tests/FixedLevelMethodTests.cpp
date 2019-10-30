@@ -30,6 +30,14 @@ class InitializingMethod : public UseCase {
     }
 
     [[nodiscard]] auto test() const -> auto & { return test_; }
+
+    void setTargetListDirectory(std::string s) {
+        test_.targetListDirectory = std::move(s);
+    }
+
+    void setSnr(int x) {
+        test_.snr_dB = x;
+    }
 };
 
 class SubmittingCoordinateResponse : public UseCase {
@@ -37,6 +45,8 @@ class SubmittingCoordinateResponse : public UseCase {
 
   public:
     void run(FixedLevelMethod &m) override { m.submitResponse(response); }
+
+    void setColor(coordinate_response_measure::Color c) { response.color = c; }
 };
 
 class SubmittingFreeResponse : public UseCase {
@@ -168,26 +178,28 @@ FIXED_LEVEL_METHOD_TEST(initializePassesTestParametersToConcluder) {
 }
 
 FIXED_LEVEL_METHOD_TEST(initializePassesTargetListDirectory) {
-    test.targetListDirectory = "a";
-    initialize();
+    initializingMethod.setTargetListDirectory("a");
+    run(initializingMethod);
     assertEqual("a", targetList.directory());
 }
 
 FIXED_LEVEL_METHOD_TEST(nextReturnsNextTarget) {
-    initialize();
+    run(initializingMethod);
     targetList.setNext("a");
     assertEqual("a", method.next());
 }
 
 FIXED_LEVEL_METHOD_TEST(snrReturnsInitializedSnr) {
-    test.snr_dB = 1;
-    initialize();
+    initializingMethod.setSnr(1);
+    run(initializingMethod);
     assertEqual(1, method.snr_dB());
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
-    coordinateResponse.color = blueColor();
-    writeCoordinateResponse();
+    run(initializingMethod);
+    submittingCoordinateResponse.setColor(blueColor());
+    run(submittingCoordinateResponse);
+    writeLastCoordinateResponse();
     assertEqual(blueColor(), writtenFixedLevelTrial().subjectColor);
 }
 
