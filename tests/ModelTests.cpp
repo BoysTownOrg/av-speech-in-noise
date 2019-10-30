@@ -15,10 +15,10 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 
     [[nodiscard]] auto test() const { return test_; }
 
-    bool complete() override { return {}; }
-    std::string next() override { return {}; }
-    std::string current() override { return {}; }
-    int snr_dB() override { return {}; }
+    auto complete() -> bool override { return {}; }
+    auto next() -> std::string override { return {}; }
+    auto current() -> std::string override { return {}; }
+    auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submitResponse(const FreeResponse &) override {}
@@ -49,10 +49,10 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     [[nodiscard]] auto test() const { return test_; }
 
-    bool complete() override { return {}; }
-    std::string next() override { return {}; }
-    std::string current() override { return {}; }
-    int snr_dB() override { return {}; }
+    auto complete() -> bool override { return {}; }
+    auto next() -> std::string override { return {}; }
+    auto current() -> std::string override { return {}; }
+    auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submitResponse(const FreeResponse &) override {}
@@ -70,19 +70,19 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
     const TestIdentity *testInformation_{};
-    const Test *commonTest_{};
+    const Test *test_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
-    int trialNumber_;
+    int trialNumber_{};
     bool complete_{};
 
   public:
     void initialize(TestMethod *tm, const Test &ct) override {
         testMethod_ = tm;
-        commonTest_ = &ct;
+        test_ = &ct;
     }
 
-    int trialNumber() override { return trialNumber_; }
+    auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
 
@@ -93,25 +93,29 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    bool testComplete() override { return complete_; }
+    auto testComplete() -> bool override { return complete_; }
 
-    std::vector<std::string> audioDevices() override { return audioDevices_; }
+    auto audioDevices() -> std::vector<std::string> override {
+        return audioDevices_;
+    }
 
     void subscribe(Model::EventListener *e) override { listener_ = e; }
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
-    auto coordinateResponse() const { return coordinateResponse_; }
+    [[nodiscard]] auto coordinateResponse() const {
+        return coordinateResponse_;
+    }
 
-    auto testMethod() const { return testMethod_; }
+    [[nodiscard]] auto testMethod() const { return testMethod_; }
 
-    auto commonTest() const { return commonTest_; }
+    [[nodiscard]] auto test() const { return test_; }
 
-    auto testIdentity() const { return testInformation_; }
+    [[nodiscard]] auto testIdentity() const { return testInformation_; }
 
-    auto playTrialSettings() const { return playTrialSettings_; }
+    [[nodiscard]] auto playTrialSettings() const { return playTrialSettings_; }
 
-    auto calibration() const { return calibration_; }
+    [[nodiscard]] auto calibration() const { return calibration_; }
 
     void setComplete() { complete_ = true; }
 
@@ -119,7 +123,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         audioDevices_ = std::move(v);
     }
 
-    auto listener() const { return listener_; }
+    [[nodiscard]] auto listener() const { return listener_; }
 
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
@@ -131,9 +135,9 @@ class InitializingTestUseCase {
   public:
     virtual ~InitializingTestUseCase() = default;
     virtual void run(ModelImpl &) = 0;
-    virtual const Test &commonTest() = 0;
-    virtual const TestIdentity &testIdentity() = 0;
-    virtual const TestMethod *testMethod() = 0;
+    virtual auto commonTest() -> const Test & = 0;
+    virtual auto testIdentity() -> const TestIdentity & = 0;
+    virtual auto testMethod() -> const TestMethod * = 0;
 };
 
 class InitializingAdaptiveTest : public InitializingTestUseCase {
@@ -146,11 +150,13 @@ class InitializingAdaptiveTest : public InitializingTestUseCase {
 
     void run(ModelImpl &model) override { model.initializeTest(test); }
 
-    const Test &commonTest() override { return test; }
+    auto commonTest() -> const Test & override { return test; }
 
-    const TestIdentity &testIdentity() override { return test.identity; }
+    auto testIdentity() -> const TestIdentity & override {
+        return test.identity;
+    }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class InitializingFixedLevelTest : public InitializingTestUseCase {
@@ -163,11 +169,13 @@ class InitializingFixedLevelTest : public InitializingTestUseCase {
 
     void run(ModelImpl &model) override { model.initializeTest(test); }
 
-    const Test &commonTest() override { return test; }
+    auto commonTest() -> const Test & override { return test; }
 
-    const TestIdentity &testIdentity() override { return test.identity; }
+    auto testIdentity() -> const TestIdentity & override {
+        return test.identity;
+    }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class InitializingFixedLevelTestWithFiniteTargets
@@ -184,11 +192,13 @@ class InitializingFixedLevelTestWithFiniteTargets
         model.initializeTestWithFiniteTargets(test);
     }
 
-    const Test &commonTest() override { return test; }
+    auto commonTest() -> const Test & override { return test; }
 
-    const TestIdentity &testIdentity() override { return test.identity; }
+    auto testIdentity() -> const TestIdentity & override {
+        return test.identity;
+    }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class ModelTests : public ::testing::Test {
@@ -225,7 +235,7 @@ class ModelTests : public ::testing::Test {
     void assertInitializesInternalModel(InitializingTestUseCase &useCase) {
         run(useCase);
         assertEqual(useCase.testMethod(), internalModel.testMethod());
-        assertEqual(&useCase.commonTest(), internalModel.commonTest());
+        assertEqual(&useCase.commonTest(), internalModel.test());
     }
 };
 
