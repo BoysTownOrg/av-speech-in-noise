@@ -90,16 +90,6 @@ class FixedLevelMethodTests : public ::testing::Test {
         targetList.setCurrent(std::move(s));
     }
 
-    void assertTestIncompleteAfter(UseCase &useCase) {
-        run(useCase);
-        assertTestIncomplete();
-    }
-
-    void assertTestCompleteAfter(UseCase &useCase) {
-        run(useCase);
-        assertTestComplete();
-    }
-
     void assertTestIncomplete() { assertFalse(testComplete()); }
 
     auto testComplete() -> bool { return method.complete(); }
@@ -122,10 +112,16 @@ class FixedLevelMethodTests : public ::testing::Test {
             static_cast<TargetList *>(&targetList), testConcluder.targetList());
     }
 
+    void assertTestCompleteOnlyWhenComplete(UseCase &useCase) {
+        run(useCase);
+        assertTestIncomplete();
+        assertTestCompleteWhenComplete(useCase);
+    }
+
     void assertTestCompleteWhenComplete(UseCase &useCase) {
-        assertTestIncompleteAfter(useCase);
         setTestComplete();
-        assertTestCompleteAfter(useCase);
+        run(useCase);
+        assertTestComplete();
     }
 
     void assertTestConcluderLogContains(const std::string &s) {
@@ -241,11 +237,11 @@ FIXED_LEVEL_METHOD_TEST(
 }
 
 FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterCoordinateResponse) {
-    assertTestCompleteWhenComplete(submittingCoordinateResponse);
+    assertTestCompleteOnlyWhenComplete(submittingCoordinateResponse);
 }
 
 FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterFreeResponse) {
-    assertTestCompleteWhenComplete(submittingFreeResponse);
+    assertTestCompleteOnlyWhenComplete(submittingFreeResponse);
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesTargetListToConcluder) {
@@ -283,8 +279,7 @@ FIXED_LEVEL_METHOD_TEST(initializePassesTargetListToConcluder) {
 
 FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterInitializing) {
     assertTestIncomplete();
-    setTestComplete();
-    assertTestCompleteAfter(initializingMethod);
+    assertTestCompleteWhenComplete(initializingMethod);
 }
 
 class PreInitializedFixedLevelMethodTests : public ::testing::Test {
