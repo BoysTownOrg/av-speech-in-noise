@@ -59,7 +59,7 @@ static auto toString(CFStringRef deviceName) -> std::string {
     std::string buffer(128, '\0');
     CFStringGetCString(
         deviceName, buffer.data(), buffer.size(), kCFStringEncodingUTF8);
-    buffer.shrink_to_fit();
+    buffer.erase(std::find(buffer.begin(), buffer.end(), '\0'), buffer.end());
     return buffer;
 }
 
