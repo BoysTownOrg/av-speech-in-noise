@@ -1,4 +1,4 @@
-Language: Cpp
+Language: ObjC
 AccessModifierOffset: -2
 AlignAfterOpenBracket: false
 AlignConsecutiveAssignments: false
