@@ -1,5 +1,5 @@
-#include "AvFoundationPlayers.h"
-#include "common-objc.h"
+#include "AvFoundationPlayers.hh"
+#include "common-objc.hh"
 #include <gsl/gsl>
 #include <limits>
 

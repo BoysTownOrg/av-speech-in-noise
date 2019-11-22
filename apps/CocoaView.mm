@@ -1,5 +1,5 @@
-#include "CocoaView.h"
-#include "common-objc.h"
+#include "CocoaView.hh"
+#include "common-objc.hh"
 #include <iterator>
 
 static NSTextField *allocLabel(NSString *label, NSRect frame) {

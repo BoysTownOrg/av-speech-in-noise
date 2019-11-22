@@ -1,7 +1,7 @@
-#include "MersenneTwisterRandomizer.h"
-#include "AvFoundationPlayers.h"
-#include "CocoaView.h"
-#include "common-objc.h"
+#include "MersenneTwisterRandomizer.hpp"
+#include "AvFoundationPlayers.hh"
+#include "CocoaView.hh"
+#include "common-objc.hh"
 #include <presentation/Presenter.hpp>
 #include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
