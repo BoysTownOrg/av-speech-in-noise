@@ -198,12 +198,12 @@ class MaskerPlayerTests : public ::testing::Test {
         audioPlayer.fillAudioBuffer(audio);
     }
 
-    void fillAudioBufferMono(int n) {
+    void fillAudioBufferMono(int n = 0) {
         resizeLeftChannel(n);
         fillAudioBuffer({leftChannel});
     }
 
-    void fillAudioBufferMono() { fillAudioBuffer({leftChannel}); }
+    //void fillAudioBufferMono() { fillAudioBuffer({leftChannel}); }
 
     void fillAudioBufferStereo() {
         fillAudioBuffer({leftChannel, rightChannel});
@@ -228,7 +228,7 @@ class MaskerPlayerTests : public ::testing::Test {
         setSampleRateHz(3);
         (this->*fade)();
         resizeChannels(2 * 3 + 1);
-        fillAudioBufferMono();
+        fillAudioBufferMono(2 * 3 + 1);
     }
 
     void fadeIn() { player.fadeIn(); }
@@ -330,30 +330,30 @@ class MaskerPlayerTests : public ::testing::Test {
         assertChannelEqual(rightChannel, x);
     }
 
-    void assertFadeInNotCompletedAfterMonoFill() {
-        callbackAfterMonoFill();
+    void assertFadeInNotCompletedAfterMonoFill(int n = 0) {
+        callbackAfterMonoFill(n);
         assertFalse(listener.fadeInCompleted());
     }
 
-    void callbackAfterMonoFill() {
-        fillAudioBufferMono();
+    void callbackAfterMonoFill(int n = 0) {
+        fillAudioBufferMono(n);
         timerCallback();
     }
 
-    void assertFadeInCompletedAfterMonoFill() {
-        callbackAfterMonoFill();
+    void assertFadeInCompletedAfterMonoFill(int n = 0) {
+        callbackAfterMonoFill(n);
         assertTrue(listener.fadeInCompleted());
     }
 
-    void assertFadeOutNotCompletedAfterMonoFill() {
-        callbackAfterMonoFill();
+    void assertFadeOutNotCompletedAfterMonoFill(int n = 0) {
+        callbackAfterMonoFill(n);
         assertFalse(fadeOutCompleted());
     }
 
     auto fadeOutCompleted() -> bool { return listener.fadeOutCompleted(); }
 
-    void assertFadeOutCompletedAfterMonoFill() {
-        callbackAfterMonoFill();
+    void assertFadeOutCompletedAfterMonoFill(int n = 0) {
+        callbackAfterMonoFill(n);
         assertTrue(fadeOutCompleted());
     }
 
@@ -572,8 +572,8 @@ TEST_F(MaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
     fadeIn();
     resizeChannels(1);
     for (int i = 0; i < 3 * 4; ++i)
-        assertFadeInNotCompletedAfterMonoFill();
-    assertFadeInCompletedAfterMonoFill();
+        assertFadeInNotCompletedAfterMonoFill(1);
+    assertFadeInCompletedAfterMonoFill(1);
 }
 
 TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeIn) {
@@ -591,8 +591,8 @@ TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
     fadeOut();
     resizeChannels(1);
     for (int i = 0; i < 3 * 4; ++i)
-        assertFadeOutNotCompletedAfterMonoFill();
-    assertFadeOutCompletedAfterMonoFill();
+        assertFadeOutNotCompletedAfterMonoFill(1);
+    assertFadeOutCompletedAfterMonoFill(1);
 }
 
 TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeOut) {
@@ -612,10 +612,10 @@ TEST_F(MaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     fadeOut();
     resizeChannels(1);
     for (int i = 0; i < 3 * 4; ++i) {
-        callbackAfterMonoFill();
+        callbackAfterMonoFill(1);
         assertFalse(playerStopped());
     }
-    callbackAfterMonoFill();
+    callbackAfterMonoFill(1);
     assertTrue(playerStopped());
 }
 
