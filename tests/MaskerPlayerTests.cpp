@@ -229,9 +229,17 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void fadeOut() { player.fadeOut(); }
 
-    void resizeChannels(int n) {
+    void resizeLeftChannel(int n) {
         leftChannel.resize(n);
+    }
+
+    void resizeRightChannel(int n) {
         rightChannel.resize(n);
+    }
+
+    void resizeChannels(int n) {
+        resizeLeftChannel(n);
+        resizeRightChannel(n);
     }
 
     void timerCallback() { timer.callback(); }
@@ -245,6 +253,10 @@ class MaskerPlayerTests : public ::testing::Test {
     void loadAudio(std::vector<std::vector<float>> x) {
         audioReader.set(std::move(x));
         loadFile();
+    }
+
+    void loadMonoAudio(std::vector<float> x) {
+        loadAudio({std::move(x)});
     }
 
     void assertFillingLeftChannelMultipliesBy_Buffered(
@@ -396,16 +408,16 @@ TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
 }
 
 TEST_F(MaskerPlayerTests, durationReturnsDuration) {
-    loadAudio({{1, 2, 3, 4, 5, 6}});
+    loadMonoAudio({1, 2, 3, 4, 5, 6});
     setSampleRateHz(3);
     assertEqual(6. / 3, player.durationSeconds());
 }
 
 TEST_F(MaskerPlayerTests, seekSeeksAudio) {
-    loadAudio({{1, 2, 3, 4, 5, 6, 7, 8, 9}});
+    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     setSampleRateHz(3);
     player.seekSeconds(2);
-    leftChannel.resize(4);
+    resizeLeftChannel(4);
     fillAudioBufferMono();
     assertLeftChannelEquals({7, 8, 9, 1});
 }
