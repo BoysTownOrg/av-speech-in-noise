@@ -21,10 +21,6 @@ class CoreAudioDevices {
 
   private:
     void loadDevices();
-    auto globalAddress(AudioObjectPropertySelector)
-        -> AudioObjectPropertyAddress;
-    auto masterAddress(AudioObjectPropertySelector, AudioObjectPropertyScope)
-        -> AudioObjectPropertyAddress;
     auto objectId(int device) -> AudioObjectID;
     auto stringProperty(AudioObjectPropertySelector, int device) -> std::string;
 };
@@ -54,6 +50,7 @@ class CoreAudioBufferedReader : public stimulus_players::BufferedAudioReader {
     auto readNextBuffer()
         -> std::shared_ptr<stimulus_players::AudioBuffer> override;
     auto minimumPossibleSample() -> int override;
+    auto sampleRateHz() -> double;
 };
 
 class AvFoundationVideoPlayer;
@@ -78,7 +75,7 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
     void setSampleRate(double) {}
-    std::vector<gsl::span<float>> &audio() { return audio_; }
+    auto audio() -> std::vector<gsl::span<float>> & { return audio_; }
     void fillAudioBuffer();
     void play() override;
     void loadFile(std::string filePath) override;
@@ -86,11 +83,11 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     void hide() override;
     void show() override;
     void subscribe(EventListener *) override;
-    int deviceCount() override;
-    std::string deviceDescription(int index) override;
-    bool playing() override;
+    auto deviceCount() -> int override;
+    auto deviceDescription(int index) -> std::string override;
+    auto playing() -> bool override;
     void subscribeToPlaybackCompletion() override;
-    double durationSeconds() override;
+    auto durationSeconds() -> double override;
 
   private:
     void addPlayerLayer();

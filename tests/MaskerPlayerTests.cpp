@@ -397,9 +397,9 @@ TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
 }
 
 TEST_F(MaskerPlayerTests, durationReturnsDuration) {
-    audioPlayer.setDurationSeconds(1);
-    assertEqual(1., player.durationSeconds());
-    FAIL();
+    setAudio({{1, 2, 3, 4, 5, 6}});
+    setSampleRateHz(3);
+    assertEqual(2., player.durationSeconds());
 }
 
 TEST_F(MaskerPlayerTests, seekSeeksAudioPlayer) {

@@ -22,9 +22,20 @@ auto loadPropertyData(AudioObjectID id_,
     UInt32 dataSize{};
     getPropertyDataSize(id_, address, &dataSize);
     std::vector<T> data(dataSize / sizeof(T));
-    if (!data.empty())
-        getPropertyData(id_, address, &dataSize, &data.front());
+    if (data.empty())
+        return {};
+    getPropertyData(id_, address, &dataSize, &data.front());
     return data;
+}
+
+static auto masterAddress(AudioObjectPropertySelector selector,
+    AudioObjectPropertyScope scope) -> AudioObjectPropertyAddress {
+    return {selector, scope, kAudioObjectPropertyElementMaster};
+}
+
+static auto globalAddress(AudioObjectPropertySelector s)
+    -> AudioObjectPropertyAddress {
+    return masterAddress(s, kAudioObjectPropertyScopeGlobal);
 }
 
 // https://stackoverflow.com/questions/4575408/audioobjectgetpropertydata-to-get-a-list-of-input-devices
@@ -35,16 +46,6 @@ void CoreAudioDevices::loadDevices() {
     auto address = globalAddress(kAudioHardwarePropertyDevices);
     devices =
         loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
-}
-
-auto CoreAudioDevices::globalAddress(AudioObjectPropertySelector s)
-    -> AudioObjectPropertyAddress {
-    return masterAddress(s, kAudioObjectPropertyScopeGlobal);
-}
-
-auto CoreAudioDevices::masterAddress(AudioObjectPropertySelector selector,
-    AudioObjectPropertyScope scope) -> AudioObjectPropertyAddress {
-    return {selector, scope, kAudioObjectPropertyElementMaster};
 }
 
 auto CoreAudioDevices::deviceCount() -> int {
@@ -187,6 +188,12 @@ auto CoreAudioBufferedReader::minimumPossibleSample() -> int {
     return std::numeric_limits<SInt16>::min();
 }
 
+auto CoreAudioBufferedReader::sampleRateHz() -> double {
+    auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
+        static_cast<CMAudioFormatDescriptionRef>(trackOutput.track.formatDescriptions.firstObject));
+    return description->mSampleRate;
+}
+
 static void init(
     MTAudioProcessingTapRef, void *clientInfo, void **tapStorageOut) {
     *tapStorageOut = clientInfo;
@@ -258,6 +265,10 @@ static void loadItemFromFileWithAudioProcessing(
     [player replaceCurrentItemWithPlayerItem:playerItem];
 }
 
+static auto currentAsset(AVPlayer *player) -> AVAsset * {
+    return player.currentItem.asset;
+}
+
 AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
     : actions{[VideoPlayerActions alloc]},
       videoWindow{
@@ -302,7 +313,7 @@ void AvFoundationVideoPlayer::prepareVideo() {
 }
 
 void AvFoundationVideoPlayer::resizeVideo() {
-    AvAssetFacade asset{player.currentItem.asset};
+    AvAssetFacade asset{currentAsset(player)};
     auto size = asset.videoTrack().naturalSize;
     size.height *= 2;
     size.height /= 3;
@@ -370,7 +381,7 @@ auto AvFoundationVideoPlayer::playing() -> bool { return ::playing(player); }
 // "It appears the duration value isn't always immediately available
 // from an AVPlayerItem but it seems to work fine with an AVAsset immediately."
 static auto durationSeconds_(AVPlayer *player) -> Float64 {
-    return CMTimeGetSeconds(player.currentItem.asset.duration);
+    return CMTimeGetSeconds(currentAsset(player).duration);
 }
 
 auto AvFoundationVideoPlayer::durationSeconds() -> double {
@@ -411,7 +422,12 @@ auto AvFoundationAudioPlayer::playing() -> bool { return ::playing(player); }
 
 void AvFoundationAudioPlayer::play() { [player play]; }
 
-auto AvFoundationAudioPlayer::sampleRateHz() -> double { return sampleRate_; }
+auto AvFoundationAudioPlayer::sampleRateHz() -> double { 
+    AvAssetFacade asset{currentAsset(player)};
+    auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
+        static_cast<CMAudioFormatDescriptionRef>(asset.audioTrack().formatDescriptions.firstObject));
+    return description->mSampleRate;
+}
 
 void AvFoundationAudioPlayer::stop() { [player pause]; }
 
