@@ -23,14 +23,14 @@ class AudioPlayer {
     virtual void subscribe(EventListener *) = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
-    virtual bool playing() = 0;
+    virtual auto playing() -> bool = 0;
     virtual void loadFile(std::string) = 0;
-    virtual int deviceCount() = 0;
-    virtual std::string deviceDescription(int index) = 0;
-    virtual bool outputDevice(int index) = 0;
+    virtual auto deviceCount() -> int = 0;
+    virtual auto deviceDescription(int index) -> std::string = 0;
+    virtual auto outputDevice(int index) -> bool = 0;
     virtual void setDevice(int index) = 0;
-    virtual double sampleRateHz() = 0;
-    virtual double durationSeconds() = 0;
+    virtual auto sampleRateHz() -> double = 0;
+    virtual auto durationSeconds() -> double = 0;
     virtual void seekSeconds(double) = 0;
 };
 
@@ -55,22 +55,22 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void fadeIn() override;
     void fadeOut() override;
     void loadFile(std::string) override;
-    bool playing() override;
+    auto playing() -> bool override;
     void setAudioDevice(std::string) override;
     void setLevel_dB(double) override;
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     void setFadeInOutSeconds(double);
-    std::vector<std::string> outputAudioDeviceDescriptions() override;
-    double rms() override;
-    double durationSeconds() override;
+    auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
+    auto rms() -> double override;
+    auto durationSeconds() -> double override;
     void seekSeconds(double) override;
-    double fadeTimeSeconds() override;
+    auto fadeTimeSeconds() -> double override;
     void callback() override;
 
   private:
-    std::vector<std::vector<float>> readAudio_();
-    std::vector<std::string> audioDeviceDescriptions_();
-    int findDeviceIndex(const std::string &device);
+    auto readAudio_() -> std::vector<std::vector<float>>;
+    auto audioDeviceDescriptions_() -> std::vector<std::string>;
+    auto findDeviceIndex(const std::string &device) -> int;
 
     class AudioThread {
       public:
@@ -84,15 +84,15 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void checkForFadeIn();
         void prepareToFadeOut();
         void checkForFadeOut();
-        int levelTransitionSamples();
+        auto levelTransitionSamples() -> int;
         void scaleAudio(const std::vector<gsl::span<float>> &);
-        bool doneFadingIn();
+        auto doneFadingIn() -> bool;
         void checkForFadeInComplete();
-        bool doneFadingOut();
+        auto doneFadingOut() -> bool;
         void checkForFadeOutComplete();
         void advanceCounterIfStillFading();
         void updateFadeState();
-        double fadeScalar();
+        auto fadeScalar() -> double;
 
         int hannCounter{};
         int halfWindowLength{};
@@ -112,7 +112,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void fadeOut();
 
       private:
-        bool fading();
+        auto fading() -> bool;
         void scheduleCallbackAfterSeconds(double);
 
         MaskerPlayerImpl *sharedAtomics{};
