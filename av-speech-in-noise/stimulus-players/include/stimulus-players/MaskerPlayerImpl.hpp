@@ -94,7 +94,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void updateFadeState();
         double fadeScalar();
 
-        std::size_t audioSampleIndex_{};
         int hannCounter{};
         int halfWindowLength{};
         MaskerPlayerImpl *sharedAtomics{};
@@ -133,6 +132,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     std::atomic<double> fadeInOutSeconds{};
     AudioPlayer *player;
     AudioReader *reader;
+    std::size_t audioSampleIndex_{};
     std::atomic<bool> fadeOutComplete{};
     std::atomic<bool> fadeInComplete{};
     std::atomic<bool> pleaseFadeOut{};

@@ -56,6 +56,7 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         auto firstChannel = audio_.front();
         rms_ = ::stimulus_players::rms(firstChannel);
     }
+    audioSampleIndex_ = 0;
 }
 
 bool MaskerPlayerImpl::playing() { return player->playing(); }
@@ -166,12 +167,14 @@ void MaskerPlayerImpl::fillAudioBuffer(
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
     if (audio.size() == sharedAtomics->audio_.size()) {
-        for (std::size_t i = 0; i < audio.size(); ++i)
+        for (std::size_t i = 0; i < audio.size(); ++i) {
+            auto offset = sharedAtomics->audioSampleIndex_;
             for (int j = 0; j < audio.at(i).size(); ++j) {
                 auto source = sharedAtomics->audio_.at(i);
-                audio.at(i).at(j) = source.at((j+audioSampleIndex_)%source.size());
+                audio.at(i).at(j) = source.at((j+offset)%source.size());
             }
-        audioSampleIndex_ += audio.front().size();
+        }
+        sharedAtomics->audioSampleIndex_ += audio.front().size();
     }
     checkForFadeIn();
     checkForFadeOut();
