@@ -49,11 +49,11 @@ template <typename T> T rms(const std::vector<T> &x) {
 
 void MaskerPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath_ = std::move(filePath));
-    auto audio = readAudio_();
-    if (audio.empty())
+    audio_ = readAudio_();
+    if (audio_.empty())
         rms_ = 0;
     else {
-        auto firstChannel = audio.front();
+        auto firstChannel = audio_.front();
         rms_ = ::stimulus_players::rms(firstChannel);
     }
 }
@@ -165,6 +165,14 @@ void MaskerPlayerImpl::fillAudioBuffer(
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
+    if (audio.size() == sharedAtomics->audio_.size()) {
+        for (std::size_t i = 0; i < audio.size(); ++i)
+            for (int j = 0; j < audio.at(i).size(); ++j) {
+                auto source = sharedAtomics->audio_.at(i);
+                audio.at(i).at(j) = source.at((j+audioSampleIndex_)%source.size());
+            }
+        audioSampleIndex_ += audio.front().size();
+    }
     checkForFadeIn();
     checkForFadeOut();
     scaleAudio(audio);

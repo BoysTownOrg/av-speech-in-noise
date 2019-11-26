@@ -182,6 +182,12 @@ class MaskerPlayerTests : public ::testing::Test {
         return frontHalf;
     }
 
+    static std::vector<float> nToM(int N, int M) {
+        std::vector<float> result(M-N+1);
+        std::iota(result.begin(), result.end(), N);
+        return result;
+    }
+
     static std::vector<float> oneToN(int N) {
         std::vector<float> result;
         result.resize(N);
@@ -236,11 +242,13 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFillingLeftChannelMultipliesBy_Buffered(
         VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
+        audioReader.set({oneToN(buffers * framesPerBuffer)});
+        loadFile();
         for (int i = 0; i < buffers; ++i) {
             auto offset = i * framesPerBuffer;
             assertFillingLeftChannelMultipliesBy(
                 multiplicand.subvector(offset, offset + framesPerBuffer),
-                framesPerBuffer);
+                nToM(offset+1, offset + framesPerBuffer));
         }
     }
 
@@ -255,11 +263,12 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void assertFillingLeftChannelMultipliesBy(
-        VectorFacade<float> multiplicand, int framesPerBuffer) {
-        leftChannel = oneToN(framesPerBuffer);
+        VectorFacade<float> multiplicand, 
+        std::vector<float> other) {
+        leftChannel.resize(other.size());
         fillAudioBufferMono();
         assertLeftChannelEquals(
-            multiplicand.elementWiseProduct(oneToN(framesPerBuffer)));
+            multiplicand.elementWiseProduct(other));
     }
 
     void assertLeftChannelEquals(std::vector<float> x) {
@@ -275,6 +284,8 @@ class MaskerPlayerTests : public ::testing::Test {
         VectorFacade<float> multiplicand, int framesPerBuffer) {
         leftChannel = oneToN(framesPerBuffer);
         rightChannel = NtoOne(framesPerBuffer);
+        audioReader.set({oneToN(framesPerBuffer), NtoOne(framesPerBuffer)});
+        loadFile();
         fillAudioBufferStereo();
         assertLeftChannelEquals(
             multiplicand.elementWiseProduct(oneToN(framesPerBuffer)));
@@ -371,21 +382,18 @@ TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
 TEST_F(MaskerPlayerTests, durationReturnsDuration) {
     audioPlayer.setDurationSeconds(1);
     assertEqual(1., player.durationSeconds());
+    FAIL();
 }
 
 TEST_F(MaskerPlayerTests, seekSeeksAudioPlayer) {
     player.seekSeconds(1);
     assertEqual(1., audioPlayer.secondsSeeked());
+    FAIL();
 }
 
 TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {
     player.setFadeInOutSeconds(1);
     assertEqual(1., player.fadeTimeSeconds());
-}
-
-TEST_F(MaskerPlayerTests, loadFileLoadsVideoFile) {
-    loadFile("a");
-    assertEqual("a", audioPlayer.filePath());
 }
 
 TEST_F(MaskerPlayerTests, fadeInPlaysVideoPlayer) {
@@ -398,6 +406,28 @@ TEST_F(MaskerPlayerTests, twentydBMultipliesSignalByTen) {
     leftChannel = {1, 2, 3};
     fillAudioBufferMono();
     assertEqual({10, 20, 30}, leftChannel);
+}
+
+TEST_F(MaskerPlayerTests, loadFileResetsSampleIndex) {
+    player.setLevel_dB(20);
+    audioReader.set({oneToN(1)});
+    loadFile();
+    leftChannel.resize(1);
+    fillAudioBufferMono();
+    audioReader.set({oneToN(3)});
+    loadFile();
+    leftChannel.resize(3);
+    fillAudioBufferMono();
+    assertEqual({10, 20, 30}, leftChannel);
+}
+
+TEST_F(MaskerPlayerTests, fillAudioBufferWraps) {
+    player.setLevel_dB(20);
+    audioReader.set({oneToN(3)});
+    loadFile();
+    leftChannel.resize(4);
+    fillAudioBufferMono();
+    assertEqual({10, 20, 30, 10}, leftChannel);
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
@@ -420,10 +450,12 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
     setSampleRateHz(3);
     auto halfWindowLength = 2 * 3 + 1;
 
+    audioReader.set({oneToN(halfWindowLength)});
+    loadFile();
     fadeIn();
     assertFillingLeftChannelMultipliesBy(
         VectorFacade<float>{halfHannWindow(halfWindowLength)},
-        halfWindowLength);
+        oneToN(halfWindowLength));
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoMultipleFills) {
@@ -482,10 +514,13 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
     setSampleRateHz(3);
     auto halfWindowLength = 2 * 3 + 1;
 
+
+    audioReader.set({oneToN(halfWindowLength)});
+    loadFile();
     fadeOut();
     assertFillingLeftChannelMultipliesBy(
         VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
-        halfWindowLength);
+        oneToN(halfWindowLength));
 }
 
 TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {

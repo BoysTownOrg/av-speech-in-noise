@@ -94,6 +94,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void updateFadeState();
         double fadeScalar();
 
+        std::size_t audioSampleIndex_{};
         int hannCounter{};
         int halfWindowLength{};
         MaskerPlayerImpl *sharedAtomics{};
@@ -125,6 +126,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
 
     AudioThread audioThread;
     MainThread mainThread;
+    std::vector<std::vector<float>> audio_{};
     std::string filePath_{};
     double rms_{};
     std::atomic<double> levelScalar{1};
