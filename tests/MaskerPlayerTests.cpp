@@ -442,29 +442,26 @@ TEST_F(MaskerPlayerTests, twentydBMultipliesSignalByTen) {
     loadMonoAudio({1, 2, 3});
     resizeLeftChannel(3);
     fillAudioBufferMono();
-    assertEqual({10, 20, 30}, leftChannel);
+    assertLeftChannelEquals({10, 20, 30});
 }
 
 TEST_F(MaskerPlayerTests, loadFileResetsSampleIndex) {
     player.setLevel_dB(20);
-    audioReader.set({oneToN(1)});
-    loadFile();
-    leftChannel.resize(1);
+    loadMonoAudio({1});
+    resizeLeftChannel(1);
     fillAudioBufferMono();
-    audioReader.set({oneToN(3)});
-    loadFile();
-    leftChannel.resize(3);
+    loadMonoAudio({1, 2, 3});
+    resizeLeftChannel(3);
     fillAudioBufferMono();
-    assertEqual({10, 20, 30}, leftChannel);
+    assertLeftChannelEquals({10, 20, 30});
 }
 
 TEST_F(MaskerPlayerTests, fillAudioBufferWraps) {
     player.setLevel_dB(20);
-    audioReader.set({oneToN(3)});
-    loadFile();
-    leftChannel.resize(4);
+    loadMonoAudio({1, 2, 3});
+    resizeLeftChannel(4);
     fillAudioBufferMono();
-    assertEqual({10, 20, 30, 10}, leftChannel);
+    assertLeftChannelEquals({10, 20, 30, 10});
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
