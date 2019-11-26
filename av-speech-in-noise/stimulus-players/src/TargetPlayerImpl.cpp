@@ -21,13 +21,13 @@ void TargetPlayerImpl::hideVideo() { player->hide(); }
 
 void TargetPlayerImpl::showVideo() { player->show(); }
 
-template <typename T> T rms(const std::vector<T> &x) {
+template <typename T> auto rms(const std::vector<T> &x) -> T {
     return std::sqrt(std::accumulate(x.begin(), x.end(), T{0}, [](T a, T b) {
         return a += b * b;
     }) / x.size());
 }
 
-double TargetPlayerImpl::rms() {
+auto TargetPlayerImpl::rms() -> double {
     auto audio = readAudio_();
     if (audio.empty())
         return 0;
@@ -36,7 +36,7 @@ double TargetPlayerImpl::rms() {
     return ::stimulus_players::rms(firstChannel);
 }
 
-std::vector<std::vector<float>> TargetPlayerImpl::readAudio_() {
+auto TargetPlayerImpl::readAudio_() -> audio_type {
     try {
         return reader->read(filePath_);
     } catch (const AudioReader::InvalidFile &) {
@@ -60,25 +60,27 @@ void TargetPlayerImpl::fillAudioBuffer(
 
 void TargetPlayerImpl::setAudioDevice(std::string device) {
     auto devices_ = audioDevices();
-    auto found = std::find(devices_.begin(), devices_.end(), std::move(device));
+    auto found = std::find(devices_.begin(), devices_.end(), device);
     if (found == devices_.end())
         throw av_speech_in_noise::InvalidAudioDevice{};
     auto deviceIndex = gsl::narrow<int>(found - devices_.begin());
     player->setDevice(deviceIndex);
 }
 
-std::vector<std::string> TargetPlayerImpl::audioDevices() {
+auto TargetPlayerImpl::audioDevices() -> std::vector<std::string> {
     std::vector<std::string> descriptions{};
     for (int i = 0; i < player->deviceCount(); ++i)
         descriptions.push_back(player->deviceDescription(i));
     return descriptions;
 }
 
-bool TargetPlayerImpl::playing() { return player->playing(); }
+auto TargetPlayerImpl::playing() -> bool { return player->playing(); }
 
 void TargetPlayerImpl::subscribeToPlaybackCompletion() {
     player->subscribeToPlaybackCompletion();
 }
 
-double TargetPlayerImpl::durationSeconds() { return player->durationSeconds(); }
+auto TargetPlayerImpl::durationSeconds() -> double {
+    return player->durationSeconds();
+}
 }

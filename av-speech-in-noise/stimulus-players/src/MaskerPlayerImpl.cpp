@@ -89,7 +89,7 @@ auto MaskerPlayerImpl::findDeviceIndex(const std::string &device) -> int {
 
 auto MaskerPlayerImpl::rms() -> double { return rms_; }
 
-auto MaskerPlayerImpl::readAudio_() -> std::vector<std::vector<float>> {
+auto MaskerPlayerImpl::readAudio_() -> audio_type {
     try {
         return reader->read(filePath_);
     } catch (const AudioReader::InvalidFile &) {

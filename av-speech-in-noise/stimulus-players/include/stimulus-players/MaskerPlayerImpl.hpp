@@ -68,7 +68,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void callback() override;
 
   private:
-    auto readAudio_() -> std::vector<std::vector<float>>;
+    auto readAudio_() -> audio_type;
     auto audioDeviceDescriptions_() -> std::vector<std::string>;
     auto findDeviceIndex(const std::string &device) -> int;
 
@@ -125,7 +125,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
 
     AudioThread audioThread;
     MainThread mainThread;
-    std::vector<std::vector<float>> audio_{};
+    audio_type audio_{};
     std::string filePath_{};
     double rms_{};
     std::atomic<double> levelScalar{1};

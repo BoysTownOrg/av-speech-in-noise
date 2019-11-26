@@ -5,10 +5,11 @@
 #include <string>
 
 namespace stimulus_players {
+using audio_type = std::vector<std::vector<float>>;
 class AudioReader {
   public:
     virtual ~AudioReader() = default;
-    virtual std::vector<std::vector<float>> read(std::string filePath) = 0;
+    virtual auto read(std::string filePath) -> audio_type = 0;
     class InvalidFile {};
 };
 }
