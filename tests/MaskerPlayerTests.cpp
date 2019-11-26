@@ -1,5 +1,6 @@
 #include "assert-utility.h"
 #include "AudioReaderStub.h"
+#include "stimulus-players/AudioReader.hpp"
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
@@ -65,7 +66,7 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
     }
 
   private:
-    std::vector<std::vector<float>> audioRead_;
+    stimulus_players::audio_type audioRead_;
     std::vector<std::string> audioDeviceDescriptions_{10};
     std::string filePath_;
     std::string deviceDescription_;
@@ -197,6 +198,11 @@ class MaskerPlayerTests : public ::testing::Test {
         audioPlayer.fillAudioBuffer(audio);
     }
 
+    void fillAudioBufferMono(int n) {
+        resizeLeftChannel(n);
+        fillAudioBuffer({leftChannel});
+    }
+
     void fillAudioBufferMono() { fillAudioBuffer({leftChannel}); }
 
     void fillAudioBufferStereo() {
@@ -250,7 +256,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertCallbackNotScheduled() { assertFalse(callbackScheduled()); }
 
-    void loadAudio(std::vector<std::vector<float>> x) {
+    void loadAudio(stimulus_players::audio_type x) {
         audioReader.set(std::move(x));
         loadFile();
     }
@@ -294,8 +300,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFillingLeftChannelMultipliesBy(VectorFacade<float> multiplicand,
         const std::vector<float> &multiplier) {
-        matchLeftChannelSize(multiplier);
-        fillAudioBufferMono();
+        fillAudioBufferMono(multiplier.size());
         assertLeftChannelEquals(multiplicand.elementWiseProduct(multiplier));
     }
 
@@ -417,8 +422,7 @@ TEST_F(MaskerPlayerTests, seekSeeksAudio) {
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     setSampleRateHz(3);
     player.seekSeconds(2);
-    resizeLeftChannel(4);
-    fillAudioBufferMono();
+    fillAudioBufferMono(4);
     assertLeftChannelEquals({7, 8, 9, 1});
 }
 
@@ -440,27 +444,23 @@ TEST_F(MaskerPlayerTests, fadeInPlaysVideoPlayer) {
 TEST_F(MaskerPlayerTests, twentydBMultipliesSignalByTen) {
     player.setLevel_dB(20);
     loadMonoAudio({1, 2, 3});
-    resizeLeftChannel(3);
-    fillAudioBufferMono();
+    fillAudioBufferMono(3);
     assertLeftChannelEquals({10, 20, 30});
 }
 
 TEST_F(MaskerPlayerTests, loadFileResetsSampleIndex) {
     player.setLevel_dB(20);
     loadMonoAudio({1});
-    resizeLeftChannel(1);
-    fillAudioBufferMono();
+    fillAudioBufferMono(1);
     loadMonoAudio({1, 2, 3});
-    resizeLeftChannel(3);
-    fillAudioBufferMono();
+    fillAudioBufferMono(3);
     assertLeftChannelEquals({10, 20, 30});
 }
 
 TEST_F(MaskerPlayerTests, fillAudioBufferWraps) {
     player.setLevel_dB(20);
     loadMonoAudio({1, 2, 3});
-    resizeLeftChannel(4);
-    fillAudioBufferMono();
+    fillAudioBufferMono(4);
     assertLeftChannelEquals({10, 20, 30, 10});
 }
 
@@ -523,8 +523,7 @@ TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeIn) {
     fadeInToFullLevel();
 
     loadMonoAudio({1, 2, 3});
-    resizeLeftChannel(3);
-    fillAudioBufferMono();
+    fillAudioBufferMono(3);
     assertLeftChannelEquals({1, 2, 3});
 }
 
@@ -562,8 +561,7 @@ TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {
     fadeOutToSilence();
 
     loadMonoAudio({1, 2, 3});
-    resizeLeftChannel(3);
-    fillAudioBufferMono();
+    fillAudioBufferMono(3);
     assertEqual({0, 0, 0}, leftChannel, 1e-15F);
 }
 
