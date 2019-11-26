@@ -398,6 +398,7 @@ TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
 
 TEST_F(MaskerPlayerTests, durationReturnsDuration) {
     setAudio({{1, 2, 3, 4, 5, 6}});
+    loadFile();
     setSampleRateHz(3);
     assertEqual(2., player.durationSeconds());
 }

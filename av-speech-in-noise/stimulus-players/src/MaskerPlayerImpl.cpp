@@ -36,7 +36,7 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
 }
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
-    return player->durationSeconds();
+    return audio_.front().size() / player->sampleRateHz();
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) { player->seekSeconds(x); }
