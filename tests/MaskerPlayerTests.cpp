@@ -401,10 +401,13 @@ TEST_F(MaskerPlayerTests, durationReturnsDuration) {
     assertEqual(6. / 3, player.durationSeconds());
 }
 
-TEST_F(MaskerPlayerTests, seekSeeksAudioPlayer) {
-    player.seekSeconds(1);
-    assertEqual(1., audioPlayer.secondsSeeked());
-    FAIL();
+TEST_F(MaskerPlayerTests, seekSeeksAudio) {
+    loadAudio({{1, 2, 3, 4, 5, 6, 7, 8, 9}});
+    setSampleRateHz(3);
+    player.seekSeconds(2);
+    leftChannel.resize(4);
+    fillAudioBufferMono();
+    assertLeftChannelEquals({7, 8, 9, 1});
 }
 
 TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {

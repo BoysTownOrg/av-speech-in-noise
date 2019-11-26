@@ -39,7 +39,9 @@ auto MaskerPlayerImpl::durationSeconds() -> double {
     return audio_.front().size() / player->sampleRateHz();
 }
 
-void MaskerPlayerImpl::seekSeconds(double x) { player->seekSeconds(x); }
+void MaskerPlayerImpl::seekSeconds(double x) {
+    audioSampleIndex_ = x * player->sampleRateHz();
+}
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
     return fadeInOutSeconds.load();
