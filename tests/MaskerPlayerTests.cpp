@@ -169,6 +169,8 @@ auto backHalfHannWindow(int length) -> std::vector<float> {
 }
 
 auto mToN(int M, int N) -> std::vector<float> {
+    if (M > N)
+        return reverse(mToN(N, M));
     std::vector<float> result(N - M + 1);
     std::iota(result.begin(), result.end(), M);
     return result;
@@ -254,11 +256,16 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFillingStereoChannelsMultipliesBy_Buffered(
         VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
+        audioReader.set({oneToN(buffers * framesPerBuffer),
+            NtoOne(buffers * framesPerBuffer)});
+        loadFile();
         for (int i = 0; i < buffers; ++i) {
             auto offset = i * framesPerBuffer;
             assertFillingStereoChannelsMultipliesBy(
                 multiplicand.subvector(offset, offset + framesPerBuffer),
-                framesPerBuffer);
+                mToN(offset + 1, offset + framesPerBuffer),
+                mToN(buffers * framesPerBuffer - offset,
+                    (buffers - 1) * framesPerBuffer - offset + 1));
         }
     }
 
@@ -279,16 +286,13 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void assertFillingStereoChannelsMultipliesBy(
-        VectorFacade<float> multiplicand, int framesPerBuffer) {
-        leftChannel = oneToN(framesPerBuffer);
-        rightChannel = NtoOne(framesPerBuffer);
-        audioReader.set({oneToN(framesPerBuffer), NtoOne(framesPerBuffer)});
-        loadFile();
+        VectorFacade<float> multiplicand, const std::vector<float> &other1,
+        const std::vector<float> &other2) {
+        leftChannel.resize(other1.size());
+        rightChannel.resize(other2.size());
         fillAudioBufferStereo();
-        assertLeftChannelEquals(
-            multiplicand.elementWiseProduct(oneToN(framesPerBuffer)));
-        assertRightChannelEquals(
-            multiplicand.elementWiseProduct(NtoOne(framesPerBuffer)));
+        assertLeftChannelEquals(multiplicand.elementWiseProduct(other1));
+        assertRightChannelEquals(multiplicand.elementWiseProduct(other2));
     }
 
     void assertRightChannelEquals(std::vector<float> x) {
@@ -476,10 +480,13 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoOneFill) {
     setSampleRateHz(3);
     auto halfWindowLength = 2 * 3 + 1;
 
+    audioReader.set({oneToN(halfWindowLength), NtoOne(halfWindowLength)});
+    loadFile();
     fadeIn();
     assertFillingStereoChannelsMultipliesBy(
         VectorFacade<float>{halfHannWindow(halfWindowLength)},
-        halfWindowLength);
+        oneToN(halfWindowLength),
+        NtoOne(halfWindowLength));
 }
 
 TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeIn) {
