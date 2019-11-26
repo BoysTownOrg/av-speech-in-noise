@@ -242,14 +242,14 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertCallbackNotScheduled() { assertFalse(callbackScheduled()); }
 
-    void setAudio(std::vector<std::vector<float>> x) {
+    void loadAudio(std::vector<std::vector<float>> x) {
         audioReader.set(std::move(x));
+        loadFile();
     }
 
     void assertFillingLeftChannelMultipliesBy_Buffered(
         VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
-        setAudio({oneToN(buffers * framesPerBuffer)});
-        loadFile();
+        loadAudio({oneToN(buffers * framesPerBuffer)});
         for (int i = 0; i < buffers; ++i) {
             auto offset = i * framesPerBuffer;
             assertFillingLeftChannelMultipliesBy(
@@ -260,9 +260,8 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFillingStereoChannelsMultipliesBy_Buffered(
         VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
-        setAudio({oneToN(buffers * framesPerBuffer),
+        loadAudio({oneToN(buffers * framesPerBuffer),
             NtoOne(buffers * framesPerBuffer)});
-        loadFile();
         for (int i = 0; i < buffers; ++i) {
             auto offset = i * framesPerBuffer;
             assertFillingStereoChannelsMultipliesBy(
@@ -397,10 +396,9 @@ TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
 }
 
 TEST_F(MaskerPlayerTests, durationReturnsDuration) {
-    setAudio({{1, 2, 3, 4, 5, 6}});
-    loadFile();
+    loadAudio({{1, 2, 3, 4, 5, 6}});
     setSampleRateHz(3);
-    assertEqual(2., player.durationSeconds());
+    assertEqual(6. / 3, player.durationSeconds());
 }
 
 TEST_F(MaskerPlayerTests, seekSeeksAudioPlayer) {
