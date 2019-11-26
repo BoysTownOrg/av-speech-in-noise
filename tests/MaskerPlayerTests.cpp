@@ -226,7 +226,7 @@ class MaskerPlayerTests : public ::testing::Test {
         setFadeInOutSeconds(2);
         setSampleRateHz(3);
         (this->*fade)();
-        resizeChannels(2 * 3 + 1);
+        loadMonoAudio({0});
         fillAudioBufferMono(2 * 3 + 1);
     }
 
