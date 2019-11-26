@@ -413,6 +413,11 @@ TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {
     assertEqual(1., player.fadeTimeSeconds());
 }
 
+TEST_F(MaskerPlayerTests, loadFileLoadsAudioFile) {
+    loadFile("a");
+    assertEqual("a", audioPlayer.filePath());
+}
+
 TEST_F(MaskerPlayerTests, fadeInPlaysVideoPlayer) {
     fadeIn();
     assertTrue(audioPlayer.played());
