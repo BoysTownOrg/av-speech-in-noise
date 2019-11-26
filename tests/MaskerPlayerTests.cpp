@@ -198,12 +198,15 @@ class MaskerPlayerTests : public ::testing::Test {
         audioPlayer.fillAudioBuffer(audio);
     }
 
-    void fillAudioBufferMono(int n = 0) {
+    void fillAudioBufferMono(int n) {
         resizeLeftChannel(n);
         fillAudioBuffer({leftChannel});
     }
 
-    //void fillAudioBufferMono() { fillAudioBuffer({leftChannel}); }
+    void fillAudioBufferStereo(int n) {
+        resizeChannels(n);
+        fillAudioBuffer({leftChannel, rightChannel});
+    }
 
     void fillAudioBufferStereo() {
         fillAudioBuffer({leftChannel, rightChannel});
@@ -317,9 +320,7 @@ class MaskerPlayerTests : public ::testing::Test {
         VectorFacade<float> multiplicand,
         const std::vector<float> &leftMultiplier,
         const std::vector<float> &rightMultiplier) {
-        matchLeftChannelSize(leftMultiplier);
-        matchRightChannelSize(rightMultiplier);
-        fillAudioBufferStereo();
+        fillAudioBufferStereo(leftMultiplier.size());
         assertLeftChannelEquals(
             multiplicand.elementWiseProduct(leftMultiplier));
         assertRightChannelEquals(
@@ -330,7 +331,7 @@ class MaskerPlayerTests : public ::testing::Test {
         assertChannelEqual(rightChannel, x);
     }
 
-    void assertFadeInNotCompletedAfterMonoFill(int n = 0) {
+    void assertFadeInNotCompletedAfterMonoFill(int n) {
         callbackAfterMonoFill(n);
         assertFalse(listener.fadeInCompleted());
     }
@@ -340,19 +341,19 @@ class MaskerPlayerTests : public ::testing::Test {
         timerCallback();
     }
 
-    void assertFadeInCompletedAfterMonoFill(int n = 0) {
+    void assertFadeInCompletedAfterMonoFill(int n) {
         callbackAfterMonoFill(n);
         assertTrue(listener.fadeInCompleted());
     }
 
-    void assertFadeOutNotCompletedAfterMonoFill(int n = 0) {
+    void assertFadeOutNotCompletedAfterMonoFill(int n) {
         callbackAfterMonoFill(n);
         assertFalse(fadeOutCompleted());
     }
 
     auto fadeOutCompleted() -> bool { return listener.fadeOutCompleted(); }
 
-    void assertFadeOutCompletedAfterMonoFill(int n = 0) {
+    void assertFadeOutCompletedAfterMonoFill(int n) {
         callbackAfterMonoFill(n);
         assertTrue(fadeOutCompleted());
     }
