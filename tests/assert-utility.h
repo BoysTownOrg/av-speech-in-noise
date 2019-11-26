@@ -19,7 +19,7 @@ template <typename T> void assertEqual(T expected, T actual) {
 }
 
 template <typename T>
-void assertEqual(std::vector<T> expected, std::vector<T> actual) {
+void assertEqual(const std::vector<T> &expected, const std::vector<T> &actual) {
     assertEqual(expected.size(), actual.size());
     for (typename std::vector<T>::size_type i{0}; i < expected.size(); ++i)
         assertEqual(expected.at(i), actual.at(i));
@@ -30,7 +30,8 @@ template <typename T> void assertEqual(T expected, T actual, T tolerance) {
 }
 
 template <typename T>
-void assertEqual(std::vector<T> expected, std::vector<T> actual, T tolerance) {
+void assertEqual(
+    const std::vector<T> &expected, const std::vector<T> &actual, T tolerance) {
     assertEqual(expected.size(), actual.size());
     for (typename std::vector<T>::size_type i{0}; i < expected.size(); ++i)
         assertEqual(expected.at(i), actual.at(i), tolerance);
