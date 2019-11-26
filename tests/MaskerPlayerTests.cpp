@@ -6,28 +6,14 @@
 
 namespace {
 class AudioPlayerStub : public stimulus_players::AudioPlayer {
-    std::vector<std::vector<float>> audioRead_;
-    std::vector<std::string> audioDeviceDescriptions_{10};
-    std::string filePath_;
-    std::string deviceDescription_;
-    std::string audioFilePath_;
-    std::map<int, bool> outputDevices;
-    double sampleRateHz_{};
-    double durationSeconds_{};
-    double secondsSeeked_{};
-    int deviceIndex_{};
-    int deviceDescriptionDeviceIndex_{};
-    EventListener *listener_{};
-    bool playing_{};
-    bool played_{};
-    bool stopped_{};
-
   public:
     void seekSeconds(double x) override { secondsSeeked_ = x; }
 
-    double durationSeconds() override { return durationSeconds_; }
+    auto durationSeconds() -> double override { return durationSeconds_; }
 
-    bool outputDevice(int index) override { return outputDevices[index]; }
+    auto outputDevice(int index) -> bool override {
+        return outputDevices[index];
+    }
 
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
         audioDeviceDescriptions_ = std::move(v);
@@ -39,7 +25,7 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     [[nodiscard]] auto stopped() const { return stopped_; }
 
-    double sampleRateHz() override { return sampleRateHz_; }
+    auto sampleRateHz() -> double override { return sampleRateHz_; }
 
     void setSampleRateHz(double x) { sampleRateHz_ = x; }
 
@@ -47,17 +33,17 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     void setDurationSeconds(double x) { durationSeconds_ = x; }
 
-    bool playing() override { return playing_; }
+    auto playing() -> bool override { return playing_; }
 
     void loadFile(std::string s) override { filePath_ = std::move(s); }
 
     void setDevice(int index) override { deviceIndex_ = index; }
 
-    int deviceCount() override {
+    auto deviceCount() -> int override {
         return gsl::narrow<int>(audioDeviceDescriptions_.size());
     }
 
-    std::string deviceDescription(int index) override {
+    auto deviceDescription(int index) -> std::string override {
         deviceDescriptionDeviceIndex_ = index;
         return audioDeviceDescriptions_.at(index);
     }
@@ -77,15 +63,27 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
         listener_->fillAudioBuffer(audio);
     }
+
+  private:
+    std::vector<std::vector<float>> audioRead_;
+    std::vector<std::string> audioDeviceDescriptions_{10};
+    std::string filePath_;
+    std::string deviceDescription_;
+    std::string audioFilePath_;
+    std::map<int, bool> outputDevices;
+    double sampleRateHz_{};
+    double durationSeconds_{};
+    double secondsSeeked_{};
+    int deviceIndex_{};
+    int deviceDescriptionDeviceIndex_{};
+    EventListener *listener_{};
+    bool playing_{};
+    bool played_{};
+    bool stopped_{};
 };
 
 class MaskerPlayerListenerStub
     : public av_speech_in_noise::MaskerPlayer::EventListener {
-    int fadeInCompletions_{};
-    int fadeOutCompletions_{};
-    bool fadeInCompleted_{};
-    bool fadeOutCompleted_{};
-
   public:
     void fadeInComplete() override {
         fadeInCompleted_ = true;
@@ -106,30 +104,34 @@ class MaskerPlayerListenerStub
     [[nodiscard]] auto fadeOutCompletions() const {
         return fadeOutCompletions_;
     }
+
+  private:
+    int fadeInCompletions_{};
+    int fadeOutCompletions_{};
+    bool fadeInCompleted_{};
+    bool fadeOutCompleted_{};
 };
 
 template <typename T> class VectorFacade {
-    std::vector<T> v;
-
   public:
     explicit VectorFacade(std::vector<T> v) : v{std::move(v)} {}
 
-    std::vector<T> elementWiseProduct(std::vector<T> y) {
+    auto elementWiseProduct(std::vector<T> y) -> std::vector<T> {
         std::vector<T> product;
         std::transform(v.begin(), v.end(), y.begin(),
             std::back_inserter(product), std::multiplies<T>());
         return product;
     }
 
-    VectorFacade<T> subvector(int b, int e) {
+    auto subvector(int b, int e) -> VectorFacade<T> {
         return VectorFacade<T>{{v.begin() + b, v.begin() + e}};
     }
+
+  private:
+    std::vector<T> v;
 };
 
 class TimerStub : public stimulus_players::Timer {
-    EventListener *listener_{};
-    bool callbackScheduled_{};
-
   public:
     void scheduleCallbackAfterSeconds(double) override {
         callbackScheduled_ = true;
@@ -142,7 +144,39 @@ class TimerStub : public stimulus_players::Timer {
     void callback() { listener_->callback(); }
 
     void subscribe(EventListener *listener) override { listener_ = listener; }
+
+  private:
+    EventListener *listener_{};
+    bool callbackScheduled_{};
 };
+
+auto halfHannWindow(int length) -> std::vector<float> {
+    auto N = 2 * length - 1;
+    const auto pi = std::acos(-1);
+    std::vector<float> window;
+    for (int n = 0; n < length; ++n)
+        window.push_back((1 - std::cos((2 * pi * n) / (N - 1))) / 2);
+    return window;
+}
+
+auto reverse(std::vector<float> x) {
+    std::reverse(x.begin(), x.end());
+    return x;
+}
+
+auto backHalfHannWindow(int length) -> std::vector<float> {
+    return reverse(halfHannWindow(length));
+}
+
+auto mToN(int M, int N) -> std::vector<float> {
+    std::vector<float> result(N - M + 1);
+    std::iota(result.begin(), result.end(), M);
+    return result;
+}
+
+auto oneToN(int N) -> std::vector<float> { return mToN(1, N); }
+
+auto NtoOne(int N) -> std::vector<float> { return reverse(oneToN(N)); }
 
 class MaskerPlayerTests : public ::testing::Test {
   protected:
@@ -165,40 +199,6 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void fillAudioBufferStereo() {
         fillAudioBuffer({leftChannel, rightChannel});
-    }
-
-    static std::vector<float> halfHannWindow(int length) {
-        auto N = 2 * length - 1;
-        const auto pi = std::acos(-1);
-        std::vector<float> window;
-        for (int n = 0; n < length; ++n)
-            window.push_back((1 - std::cos((2 * pi * n) / (N - 1))) / 2);
-        return window;
-    }
-
-    static std::vector<float> backHalfHannWindow(int length) {
-        auto frontHalf = halfHannWindow(length);
-        std::reverse(frontHalf.begin(), frontHalf.end());
-        return frontHalf;
-    }
-
-    static std::vector<float> nToM(int N, int M) {
-        std::vector<float> result(M-N+1);
-        std::iota(result.begin(), result.end(), N);
-        return result;
-    }
-
-    static std::vector<float> oneToN(int N) {
-        std::vector<float> result;
-        result.resize(N);
-        std::iota(result.begin(), result.end(), 1);
-        return result;
-    }
-
-    static std::vector<float> NtoOne(int N) {
-        auto result = oneToN(N);
-        std::reverse(result.begin(), result.end());
-        return result;
     }
 
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
@@ -236,7 +236,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertCallbackScheduled() { assertTrue(callbackScheduled()); }
 
-    bool callbackScheduled() { return timer.callbackScheduled(); }
+    auto callbackScheduled() -> bool { return timer.callbackScheduled(); }
 
     void assertCallbackNotScheduled() { assertFalse(callbackScheduled()); }
 
@@ -248,7 +248,7 @@ class MaskerPlayerTests : public ::testing::Test {
             auto offset = i * framesPerBuffer;
             assertFillingLeftChannelMultipliesBy(
                 multiplicand.subvector(offset, offset + framesPerBuffer),
-                nToM(offset+1, offset + framesPerBuffer));
+                mToN(offset + 1, offset + framesPerBuffer));
         }
     }
 
@@ -263,12 +263,10 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void assertFillingLeftChannelMultipliesBy(
-        VectorFacade<float> multiplicand, 
-        std::vector<float> other) {
+        VectorFacade<float> multiplicand, const std::vector<float> &other) {
         leftChannel.resize(other.size());
         fillAudioBufferMono();
-        assertLeftChannelEquals(
-            multiplicand.elementWiseProduct(other));
+        assertLeftChannelEquals(multiplicand.elementWiseProduct(other));
     }
 
     void assertLeftChannelEquals(std::vector<float> x) {
@@ -317,7 +315,7 @@ class MaskerPlayerTests : public ::testing::Test {
         assertFalse(fadeOutCompleted());
     }
 
-    bool fadeOutCompleted() { return listener.fadeOutCompleted(); }
+    auto fadeOutCompleted() -> bool { return listener.fadeOutCompleted(); }
 
     void assertFadeOutCompletedAfterMonoFill() {
         callbackAfterMonoFill();
@@ -360,7 +358,7 @@ class MaskerPlayerTests : public ::testing::Test {
         assertCallbackScheduled();
     }
 
-    bool playerStopped() { return audioPlayer.stopped(); }
+    auto playerStopped() -> bool { return audioPlayer.stopped(); }
 
     void fadeOutCompletely() {
         fadeOutToSilence();
@@ -513,7 +511,6 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
     setFadeInOutSeconds(2);
     setSampleRateHz(3);
     auto halfWindowLength = 2 * 3 + 1;
-
 
     audioReader.set({oneToN(halfWindowLength)});
     loadFile();
