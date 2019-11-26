@@ -439,7 +439,8 @@ TEST_F(MaskerPlayerTests, fadeInPlaysVideoPlayer) {
 
 TEST_F(MaskerPlayerTests, twentydBMultipliesSignalByTen) {
     player.setLevel_dB(20);
-    leftChannel = {1, 2, 3};
+    loadMonoAudio({1, 2, 3});
+    resizeLeftChannel(3);
     fillAudioBufferMono();
     assertEqual({10, 20, 30}, leftChannel);
 }
