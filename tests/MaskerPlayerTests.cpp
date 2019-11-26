@@ -208,10 +208,6 @@ class MaskerPlayerTests : public ::testing::Test {
         fillAudioBuffer({leftChannel, rightChannel});
     }
 
-    void fillAudioBufferStereo() {
-        fillAudioBuffer({leftChannel, rightChannel});
-    }
-
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
         audioPlayer.setAudioDeviceDescriptions(std::move(v));
     }
@@ -238,13 +234,9 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void fadeOut() { player.fadeOut(); }
 
-    void resizeLeftChannel(int n) {
-        leftChannel.resize(n);
-    }
+    void resizeLeftChannel(int n) { leftChannel.resize(n); }
 
-    void resizeRightChannel(int n) {
-        rightChannel.resize(n);
-    }
+    void resizeRightChannel(int n) { rightChannel.resize(n); }
 
     void resizeChannels(int n) {
         resizeLeftChannel(n);
@@ -264,13 +256,15 @@ class MaskerPlayerTests : public ::testing::Test {
         loadFile();
     }
 
-    void loadMonoAudio(std::vector<float> x) {
-        loadAudio({std::move(x)});
+    void loadMonoAudio(std::vector<float> x) { loadAudio({std::move(x)}); }
+
+    void loadStereoAudio(std::vector<float> left, std::vector<float> right) {
+        loadAudio({std::move(left), std::move(right)});
     }
 
     void assertFillingLeftChannelMultipliesBy_Buffered(
         VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
-        loadAudio({oneToN(buffers * framesPerBuffer)});
+        loadMonoAudio(oneToN(buffers * framesPerBuffer));
         for (int i = 0; i < buffers; ++i) {
             auto offset = i * framesPerBuffer;
             assertFillingLeftChannelMultipliesBy(
@@ -281,8 +275,8 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFillingStereoChannelsMultipliesBy_Buffered(
         VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
-        loadAudio({oneToN(buffers * framesPerBuffer),
-            NtoOne(buffers * framesPerBuffer)});
+        loadStereoAudio(oneToN(buffers * framesPerBuffer),
+            NtoOne(buffers * framesPerBuffer));
         for (int i = 0; i < buffers; ++i) {
             auto offset = i * framesPerBuffer;
             assertFillingStereoChannelsMultipliesBy(
@@ -291,14 +285,6 @@ class MaskerPlayerTests : public ::testing::Test {
                 mToN(buffers * framesPerBuffer - offset,
                     (buffers - 1) * framesPerBuffer - offset + 1));
         }
-    }
-
-    void matchRightChannelSize(const std::vector<float> &other) {
-        rightChannel.resize(other.size());
-    }
-
-    void matchLeftChannelSize(const std::vector<float> &other) {
-        leftChannel.resize(other.size());
     }
 
     void assertFillingLeftChannelMultipliesBy(VectorFacade<float> multiplicand,
@@ -571,7 +557,6 @@ TEST_F(MaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
     setSampleRateHz(4);
 
     fadeIn();
-    resizeChannels(1);
     for (int i = 0; i < 3 * 4; ++i)
         assertFadeInNotCompletedAfterMonoFill(1);
     assertFadeInCompletedAfterMonoFill(1);
@@ -590,7 +575,6 @@ TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
     setSampleRateHz(4);
 
     fadeOut();
-    resizeChannels(1);
     for (int i = 0; i < 3 * 4; ++i)
         assertFadeOutNotCompletedAfterMonoFill(1);
     assertFadeOutCompletedAfterMonoFill(1);
@@ -611,7 +595,6 @@ TEST_F(MaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     setSampleRateHz(4);
 
     fadeOut();
-    resizeChannels(1);
     for (int i = 0; i < 3 * 4; ++i) {
         callbackAfterMonoFill(1);
         assertFalse(playerStopped());
