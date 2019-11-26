@@ -484,8 +484,7 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
     setSampleRateHz(3);
     auto halfWindowLength = 2 * 3 + 1;
 
-    audioReader.set({oneToN(halfWindowLength)});
-    loadFile();
+    loadMonoAudio(oneToN(halfWindowLength));
     fadeIn();
     assertFillingLeftChannelMultipliesBy(
         VectorFacade<float>{halfHannWindow(halfWindowLength)},
@@ -523,9 +522,10 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoOneFill) {
 TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeIn) {
     fadeInToFullLevel();
 
-    leftChannel = {1, 2, 3};
+    loadMonoAudio({1, 2, 3});
+    resizeLeftChannel(3);
     fillAudioBufferMono();
-    assertEqual({1, 2, 3}, leftChannel);
+    assertLeftChannelEquals({1, 2, 3});
 }
 
 TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionMultipleFills) {
