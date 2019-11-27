@@ -175,12 +175,6 @@ void MaskerPlayerImpl::fillAudioBuffer(
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
-    if (audio.empty())
-        return;
-
-    if (audio.front().empty())
-        return;
-
     if (!sharedAtomics->audio_.empty())
         for (std::size_t i = 0; i < audio.size(); ++i) {
             auto offset = sharedAtomics->audioSampleIndex_;
