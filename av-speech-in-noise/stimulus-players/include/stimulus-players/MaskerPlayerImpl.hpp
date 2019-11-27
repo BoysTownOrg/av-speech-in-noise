@@ -92,7 +92,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void checkForFadeOutComplete();
         void advanceCounterIfStillFading();
         void updateFadeState();
-        auto fadeScalar() -> double;
+        auto nextFadeScalar() -> double;
 
         int hannCounter{};
         int halfWindowLength{};
