@@ -85,7 +85,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void prepareToFadeOut();
         void checkForFadeOut();
         auto levelTransitionSamples() -> int;
-        void scaleAudio(const std::vector<gsl::span<float>> &);
         auto doneFadingIn() -> bool;
         void checkForFadeInComplete();
         auto doneFadingOut() -> bool;
@@ -94,10 +93,10 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void updateFadeState();
         auto nextFadeScalar() -> double;
 
-        int hannCounter{};
-        int halfWindowLength{};
         MaskerPlayerImpl *sharedAtomics{};
         AudioPlayer *player;
+        int hannCounter{};
+        int halfWindowLength{};
         bool fadingOut{};
         bool fadingIn{};
     };
@@ -126,11 +125,11 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioThread audioThread;
     MainThread mainThread;
     audio_type audio{};
+    AudioPlayer *player;
+    AudioReader *reader;
     double rms_{};
     std::atomic<double> levelScalar{1};
     std::atomic<double> fadeInOutSeconds{};
-    AudioPlayer *player;
-    AudioReader *reader;
     std::atomic<std::size_t> audioFrameHead{};
     std::atomic<bool> fadeOutComplete{};
     std::atomic<bool> fadeInComplete{};
