@@ -399,15 +399,12 @@ auto AvFoundationVideoPlayer::durationSeconds() -> double {
 static auto AU_RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *,
     const AudioTimeStamp *, UInt32, UInt32 inNumberFrames,
     AudioBufferList *ioData) -> OSStatus {
-
     auto self = static_cast<AvFoundationAudioPlayer *>(inRefCon);
     if (self->audio().size() != ioData->mNumberBuffers)
         return -1;
-
     for (UInt32 j = 0; j < ioData->mNumberBuffers; ++j)
         self->audio()[j] = {
-            static_cast<float *>(ioData->mBuffers[j].mData),
-            inNumberFrames};
+            static_cast<float *>(ioData->mBuffers[j].mData), inNumberFrames};
     self->fillAudioBuffer();
     return noErr;
 }
@@ -426,39 +423,49 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer()
 
     AudioComponent audioComponent =
         AudioComponentFindNext(nullptr, &audioComponentDescription);
-    AudioComponentInstanceNew(audioComponent, &audioUnit);
+    auto status = AudioComponentInstanceNew(audioComponent, &audioUnit);
+    status = AudioUnitInitialize(audioUnit);
     // enable output
     {
-    UInt32 enable = 1;
-    AudioUnitSetProperty(audioUnit,
-        kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output,
-        0, &enable, sizeof(enable));
+        UInt32 enable = 1;
+        status =
+            AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
+                kAudioUnitScope_Output, 0, &enable, sizeof(enable));
     }
 
     // disable input
     UInt32 enable = 0;
-    AudioUnitSetProperty(audioUnit,
-        kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1,
-        &enable, sizeof(enable));
-
-    // channel map
-    std::vector<SInt32> channelMap = {2, 3};
-    AudioUnitSetProperty(audioUnit,
-        kAudioOutputUnitProperty_ChannelMap, kAudioUnitScope_Input,
-        0, channelMap.data(), 2 * sizeof(SInt32));
+    status = AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
+        kAudioUnitScope_Input, 1, &enable, sizeof(enable));
 
     // Set audio unit render callback.
     AURenderCallbackStruct renderCallbackStruct;
     renderCallbackStruct.inputProc = AU_RenderCallback;
     renderCallbackStruct.inputProcRefCon = this;
-    AudioUnitSetProperty(audioUnit,
-        kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input,
-        0, &renderCallbackStruct, sizeof(AURenderCallbackStruct));
+    status = AudioUnitSetProperty(audioUnit,
+        kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Output, 0,
+        &renderCallbackStruct, sizeof(AURenderCallbackStruct));
 
-    AudioUnitInitialize(audioUnit);
+    AudioStreamBasicDescription streamFormat{};
+
+    streamFormat.mSampleRate = 44100;
+    streamFormat.mFormatID = kAudioFormatLinearPCM;
+    streamFormat.mFramesPerPacket = 1;
+    streamFormat.mBytesPerPacket = 4;
+    streamFormat.mBytesPerFrame = sizeof(float);
+    streamFormat.mChannelsPerFrame = 2;
+    streamFormat.mBitsPerChannel = 8 * sizeof(float);
+    streamFormat.mFormatFlags = kAudioFormatFlagIsFloat |
+        kAudioFormatFlagIsNonInterleaved;
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
+        kAudioUnitScope_Input, 0, &streamFormat,
+        sizeof(AudioStreamBasicDescription));
+    if (status != noErr)
+        NSLog(@"bad news bears");
 }
 
 AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
+    AudioUnitUninitialize(audioUnit);
     AudioComponentInstanceDispose(audioUnit);
 }
 
@@ -477,16 +484,24 @@ auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
 }
 
 void AvFoundationAudioPlayer::setDevice(int index) {
-    //player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
-    auto device_ = device.uid(index);
+    // player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
+    auto deviceId = device.objectId(index);
     AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
-        kAudioUnitScope_Global, 0, &device_, sizeof(device));
+        kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId));
 }
 
-auto AvFoundationAudioPlayer::playing() -> bool { return ::playing(player); }
+auto AvFoundationAudioPlayer::playing() -> bool {
+    UInt32 auhalRunning = 0;
+    UInt32 size = sizeof(auhalRunning);
+    AudioUnitGetProperty(audioUnit, kAudioOutputUnitProperty_IsRunning,
+        kAudioUnitScope_Global, 0, &auhalRunning, &size);
+    return auhalRunning != 0U;
+}
 
-void AvFoundationAudioPlayer::play() { 
+void AvFoundationAudioPlayer::play() {
     //[player play];
+    
+    audio_.resize(2);
     AudioOutputUnitStart(audioUnit);
 }
 
@@ -498,7 +513,7 @@ auto AvFoundationAudioPlayer::sampleRateHz() -> double {
     return description->mSampleRate;
 }
 
-void AvFoundationAudioPlayer::stop() { 
+void AvFoundationAudioPlayer::stop() {
     //[player pause];
     AudioOutputUnitStop(audioUnit);
 }

@@ -18,10 +18,10 @@ class CoreAudioDevices {
     auto description(int device) -> std::string;
     auto uid(int device) -> std::string;
     auto outputDevice(int device) -> bool;
+    auto objectId(int device) -> AudioObjectID;
 
   private:
     void loadDevices();
-    auto objectId(int device) -> AudioObjectID;
     auto stringProperty(AudioObjectPropertySelector, int device) -> std::string;
 };
 
