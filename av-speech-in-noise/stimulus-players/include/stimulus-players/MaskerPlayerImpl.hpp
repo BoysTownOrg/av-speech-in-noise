@@ -68,7 +68,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void callback() override;
 
   private:
-    auto readAudio_() -> audio_type;
+    auto readAudio() -> audio_type;
     auto audioDeviceDescriptions_() -> std::vector<std::string>;
     auto findDeviceIndex(const std::string &device) -> int;
 

@@ -35,12 +35,20 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
     listener = e;
 }
 
+static auto firstChannel(const audio_type &x) -> const std::vector<float> & {
+    return x.front();
+}
+
+static auto sampleRateHz(AudioPlayer *player) -> double {
+    return player->sampleRateHz();
+}
+
 auto MaskerPlayerImpl::durationSeconds() -> double {
-    return audio_.front().size() / player->sampleRateHz();
+    return firstChannel(audio_).size() / sampleRateHz(player);
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
-    audioFrameHead.store(x * player->sampleRateHz());
+    audioFrameHead.store(x * sampleRateHz(player));
 }
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
@@ -55,13 +63,8 @@ template <typename T> auto rms(const std::vector<T> &x) -> T {
 
 void MaskerPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath_ = std::move(filePath));
-    audio_ = readAudio_();
-    if (audio_.empty())
-        rms_ = 0;
-    else {
-        auto firstChannel = audio_.front();
-        rms_ = ::stimulus_players::rms(firstChannel);
-    }
+    audio_ = readAudio();
+    rms_ = audio_.empty() ? 0 : ::stimulus_players::rms(firstChannel(audio_));
     audioFrameHead.store(0);
 }
 
@@ -89,7 +92,7 @@ auto MaskerPlayerImpl::findDeviceIndex(const std::string &device) -> int {
 
 auto MaskerPlayerImpl::rms() -> double { return rms_; }
 
-auto MaskerPlayerImpl::readAudio_() -> audio_type {
+auto MaskerPlayerImpl::readAudio() -> audio_type {
     try {
         return reader->read(filePath_);
     } catch (const AudioReader::InvalidFile &) {
