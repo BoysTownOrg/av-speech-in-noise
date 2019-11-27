@@ -181,24 +181,20 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     if (audio.empty())
         return;
 
-    std::size_t framesToFill = audio.front().size();
-    auto framesAvailable = sharedAtomics->audio_.empty()
+    const std::size_t framesToFill = audio.front().size();
+    const auto framesAvailable = sharedAtomics->audio_.empty()
         ? 0
         : sharedAtomics->audio_.front().size();
-    auto audioFrameHead_ = sharedAtomics->audioFrameHead.load();
+    const auto audioFrameHead_ = sharedAtomics->audioFrameHead.load();
     for (std::size_t i = 0; i < audio.size(); ++i) {
         auto destination = audio.at(i);
-        if (sharedAtomics->audio_.empty()) {
+        if (framesAvailable == 0) {
             std::fill(destination.begin(), destination.end(), 0);
             continue;
         }
-        auto source = sharedAtomics->audio_.size() > i
+        const auto &source = sharedAtomics->audio_.size() > i
             ? sharedAtomics->audio_.at(i)
             : sharedAtomics->audio_.front();
-        if (source.empty()) {
-            std::fill(destination.begin(), destination.end(), 0);
-            continue;
-        }
         auto sourceFrameOffset = audioFrameHead_;
         auto framesFilled = 0UL;
         while (framesFilled < framesToFill) {
@@ -216,9 +212,9 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
         sharedAtomics->audioFrameHead.store(
             (audioFrameHead_ + framesToFill) % framesAvailable);
 
-    auto levelScalar_ = sharedAtomics->levelScalar.load();
+    const auto levelScalar_ = sharedAtomics->levelScalar.load();
     for (std::size_t i = 0; i < framesToFill; ++i) {
-        auto fadeScalar = nextFadeScalar();
+        const auto fadeScalar = nextFadeScalar();
         updateFadeState();
         for (auto channel : audio)
             channel.at(i) *= fadeScalar * levelScalar_;
