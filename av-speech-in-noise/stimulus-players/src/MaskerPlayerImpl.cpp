@@ -186,6 +186,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 
     std::size_t framesToFill = audio.front().size();
     auto framesAvailable = sharedAtomics->audio_.front().size();
+    auto audioFrameHead = sharedAtomics->audioSampleIndex_;
     for (std::size_t i = 0; i < audio.size(); ++i) {
         auto source = sharedAtomics->audio_.size() > i
             ? sharedAtomics->audio_.at(i)
@@ -193,7 +194,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
         if (source.empty())
             continue;
         auto destination = audio.at(i);
-        auto sourceFrameOffset = sharedAtomics->audioSampleIndex_;
+        auto sourceFrameOffset = audioFrameHead;
         auto framesFilled = 0UL;
         while (framesFilled < framesToFill) {
             auto framesAboutToFill =
@@ -206,7 +207,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             framesFilled += framesAboutToFill;
         }
     }
-    sharedAtomics->audioSampleIndex_ += framesToFill;
+    sharedAtomics->audioSampleIndex_ = (audioFrameHead + framesToFill) % framesAvailable;
 
     auto levelScalar_ = sharedAtomics->levelScalar.load();
     for (std::size_t i = 0; i < framesToFill; ++i) {

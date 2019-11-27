@@ -465,6 +465,14 @@ TEST_F(MaskerPlayerTests, fillAudioBufferWraps) {
     assertLeftChannelEquals({10, 20, 30, 10});
 }
 
+TEST_F(MaskerPlayerTests, fillAudioBufferTwoWraps) {
+    loadMonoAudio({1, 2, 3});
+    fillAudioBufferMono(4);
+    assertLeftChannelEquals({1, 2, 3, 1});
+    fillAudioBufferMono(4);
+    assertLeftChannelEquals({2, 3, 1, 2});
+}
+
 TEST_F(MaskerPlayerTests, fillAudioBufferWrapsStereo) {
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     fillAudioBufferStereo(4);
