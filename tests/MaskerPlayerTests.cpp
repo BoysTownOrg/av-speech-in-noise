@@ -465,6 +465,13 @@ TEST_F(MaskerPlayerTests, fillAudioBufferWraps) {
     assertLeftChannelEquals({10, 20, 30, 10});
 }
 
+TEST_F(MaskerPlayerTests, fillAudioBufferWrapsStereo) {
+    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    fillAudioBufferStereo(4);
+    assertLeftChannelEquals({1, 2, 3, 1});
+    assertRightChannelEquals({4, 5, 6, 4});
+}
+
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
     // For this test:
     // halfWindowLength is determined by fade time and sample rate...
