@@ -175,19 +175,34 @@ void MaskerPlayerImpl::fillAudioBuffer(
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
-    if (!sharedAtomics->audio_.empty())
+    if (audio.empty())
+        return;
+
+    std::size_t framesToFill = audio.front().size();
+    if (!sharedAtomics->audio_.empty()) {
+        auto framesAvailable = sharedAtomics->audio_.front().size();
         for (std::size_t i = 0; i < audio.size(); ++i) {
-            auto offset = sharedAtomics->audioSampleIndex_;
             auto source = sharedAtomics->audio_.size() > i
                 ? sharedAtomics->audio_.at(i)
                 : sharedAtomics->audio_.front();
             if (source.empty())
                 continue;
-            for (int j = 0; j < audio.at(i).size(); ++j) {
-                audio.at(i).at(j) = source.at((j + offset) % source.size());
+            auto destination = audio.at(i);
+            auto sourceFrameOffset = sharedAtomics->audioSampleIndex_;
+            auto framesFilled = 0UL;
+            while (framesFilled < framesToFill) {
+                auto framesAboutToFill =
+                    std::min(framesAvailable - sourceFrameOffset,
+                        framesToFill - framesFilled);
+                std::copy(source.begin() + sourceFrameOffset,
+                    source.begin() + sourceFrameOffset + framesAboutToFill,
+                    destination.begin() + framesFilled);
+                sourceFrameOffset = 0;
+                framesFilled += framesAboutToFill;
             }
         }
-    sharedAtomics->audioSampleIndex_ += audio.front().size();
+    }
+    sharedAtomics->audioSampleIndex_ += framesToFill;
     checkForFadeIn();
     checkForFadeOut();
     scaleAudio(audio);
