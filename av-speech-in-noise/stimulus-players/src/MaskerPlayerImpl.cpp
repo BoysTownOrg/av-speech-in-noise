@@ -67,10 +67,12 @@ static auto rms(const channel_type &x) -> sample_type {
         samples(x));
 }
 
+static auto noChannels(const audio_type &x) -> bool { return x.empty(); }
+
 void MaskerPlayerImpl::loadFile(std::string filePath) {
-    player->loadFile(filePath_ = std::move(filePath));
-    audio = readAudio();
-    rms_ = audio.empty() ? 0 : ::stimulus_players::rms(firstChannel(audio));
+    player->loadFile(filePath);
+    audio = readAudio(std::move(filePath));
+    rms_ = noChannels(audio) ? 0 : ::stimulus_players::rms(firstChannel(audio));
     audioFrameHead.store(0);
 }
 
@@ -98,9 +100,9 @@ auto MaskerPlayerImpl::findDeviceIndex(const std::string &device) -> int {
 
 auto MaskerPlayerImpl::rms() -> double { return rms_; }
 
-auto MaskerPlayerImpl::readAudio() -> audio_type {
+auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
     try {
-        return reader->read(filePath_);
+        return reader->read(std::move(filePath));
     } catch (const AudioReader::InvalidFile &) {
         throw av_speech_in_noise::InvalidAudioFile{};
     }
@@ -181,8 +183,6 @@ void MaskerPlayerImpl::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audioBuffer) {
     audioThread.fillAudioBuffer(audioBuffer);
 }
-
-static auto noChannels(const audio_type &x) -> bool { return x.empty(); }
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audioBuffer) {
