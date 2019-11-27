@@ -132,7 +132,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     std::atomic<double> fadeInOutSeconds{};
     AudioPlayer *player;
     AudioReader *reader;
-    std::size_t audioSampleIndex_{};
+    std::atomic<std::size_t> audioFrameHead{};
     std::atomic<bool> fadeOutComplete{};
     std::atomic<bool> fadeInComplete{};
     std::atomic<bool> pleaseFadeOut{};

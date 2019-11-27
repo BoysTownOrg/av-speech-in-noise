@@ -40,7 +40,7 @@ auto MaskerPlayerImpl::durationSeconds() -> double {
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
-    audioSampleIndex_ = x * player->sampleRateHz();
+    audioFrameHead.store(x * player->sampleRateHz());
 }
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
@@ -62,7 +62,7 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         auto firstChannel = audio_.front();
         rms_ = ::stimulus_players::rms(firstChannel);
     }
-    audioSampleIndex_ = 0;
+    audioFrameHead.store(0);
 }
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
@@ -186,7 +186,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 
     std::size_t framesToFill = audio.front().size();
     auto framesAvailable = sharedAtomics->audio_.front().size();
-    auto audioFrameHead = sharedAtomics->audioSampleIndex_;
+    auto audioFrameHead_ = sharedAtomics->audioFrameHead.load();
     for (std::size_t i = 0; i < audio.size(); ++i) {
         auto source = sharedAtomics->audio_.size() > i
             ? sharedAtomics->audio_.at(i)
@@ -194,7 +194,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
         if (source.empty())
             continue;
         auto destination = audio.at(i);
-        auto sourceFrameOffset = audioFrameHead;
+        auto sourceFrameOffset = audioFrameHead_;
         auto framesFilled = 0UL;
         while (framesFilled < framesToFill) {
             auto framesAboutToFill =
@@ -207,7 +207,8 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             framesFilled += framesAboutToFill;
         }
     }
-    sharedAtomics->audioSampleIndex_ = (audioFrameHead + framesToFill) % framesAvailable;
+    sharedAtomics->audioFrameHead.store(
+        (audioFrameHead_ + framesToFill) % framesAvailable);
 
     auto levelScalar_ = sharedAtomics->levelScalar.load();
     for (std::size_t i = 0; i < framesToFill; ++i) {
