@@ -207,7 +207,14 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
         }
     }
     sharedAtomics->audioSampleIndex_ += framesToFill;
-    scaleAudio(audio);
+
+    auto levelScalar_ = sharedAtomics->levelScalar.load();
+    for (std::size_t i = 0; i < framesToFill; ++i) {
+        auto fadeScalar_ = fadeScalar();
+        updateFadeState();
+        for (auto channel : audio)
+            channel.at(i) *= fadeScalar_ * levelScalar_;
+    }
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
@@ -241,21 +248,6 @@ void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
 auto MaskerPlayerImpl::AudioThread::levelTransitionSamples() -> int {
     return gsl::narrow_cast<int>(
         sharedAtomics->fadeInOutSeconds.load() * player->sampleRateHz());
-}
-
-void MaskerPlayerImpl::AudioThread::scaleAudio(
-    const std::vector<gsl::span<float>> &audio) {
-    if (audio.empty())
-        return;
-
-    auto firstChannel = audio.front();
-    auto levelScalar_ = sharedAtomics->levelScalar.load();
-    for (int i = 0; i < firstChannel.size(); ++i) {
-        auto fadeScalar_ = fadeScalar();
-        updateFadeState();
-        for (auto channel : audio)
-            channel.at(i) *= fadeScalar_ * levelScalar_;
-    }
 }
 
 static const auto pi = std::acos(-1);
