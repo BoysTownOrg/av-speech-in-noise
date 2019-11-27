@@ -208,6 +208,15 @@ class MaskerPlayerTests : public ::testing::Test {
         fillAudioBuffer({leftChannel, rightChannel});
     }
 
+    void resizeLeftChannel(int n) { leftChannel.resize(n); }
+
+    void resizeRightChannel(int n) { rightChannel.resize(n); }
+
+    void resizeChannels(int n) {
+        resizeLeftChannel(n);
+        resizeRightChannel(n);
+    }
+
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
         audioPlayer.setAudioDeviceDescriptions(std::move(v));
     }
@@ -233,15 +242,6 @@ class MaskerPlayerTests : public ::testing::Test {
     void fadeIn() { player.fadeIn(); }
 
     void fadeOut() { player.fadeOut(); }
-
-    void resizeLeftChannel(int n) { leftChannel.resize(n); }
-
-    void resizeRightChannel(int n) { rightChannel.resize(n); }
-
-    void resizeChannels(int n) {
-        resizeLeftChannel(n);
-        resizeRightChannel(n);
-    }
 
     void timerCallback() { timer.callback(); }
 
@@ -427,6 +427,12 @@ TEST_F(MaskerPlayerTests, moreChannelsAvailableThanRequestedTruncates) {
     assertRightChannelEquals({4, 5, 6});
 }
 
+TEST_F(MaskerPlayerTests, noAudioLoadedFillsZeros) {
+    leftChannel = {-1, -1, -1};
+    fillAudioBufferMono(3);
+    assertLeftChannelEquals({0, 0, 0});
+}
+
 TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {
     player.setFadeInOutSeconds(1);
     assertEqual(1., player.fadeTimeSeconds());
@@ -459,10 +465,9 @@ TEST_F(MaskerPlayerTests, loadFileResetsSampleIndex) {
 }
 
 TEST_F(MaskerPlayerTests, fillAudioBufferWraps) {
-    player.setLevel_dB(20);
     loadMonoAudio({1, 2, 3});
     fillAudioBufferMono(4);
-    assertLeftChannelEquals({10, 20, 30, 10});
+    assertLeftChannelEquals({1, 2, 3, 1});
 }
 
 TEST_F(MaskerPlayerTests, fillAudioBufferTwoWraps) {
