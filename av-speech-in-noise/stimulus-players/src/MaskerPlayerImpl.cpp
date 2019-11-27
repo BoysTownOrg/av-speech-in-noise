@@ -178,34 +178,31 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     checkForFadeIn();
     checkForFadeOut();
 
-    if (audio.empty())
-        return;
-
-    const std::size_t framesToFill = audio.front().size();
+    const std::size_t framesToFill = audio.empty() ? 0 : audio.front().size();
     const auto framesAvailable = sharedAtomics->audio_.empty()
         ? 0
         : sharedAtomics->audio_.front().size();
     const auto audioFrameHead_ = sharedAtomics->audioFrameHead.load();
     for (std::size_t i = 0; i < audio.size(); ++i) {
         auto destination = audio.at(i);
-        if (framesAvailable == 0) {
+        if (framesAvailable == 0)
             std::fill(destination.begin(), destination.end(), 0);
-            continue;
-        }
-        const auto &source = sharedAtomics->audio_.size() > i
-            ? sharedAtomics->audio_.at(i)
-            : sharedAtomics->audio_.front();
-        auto sourceFrameOffset = audioFrameHead_;
-        auto framesFilled = 0UL;
-        while (framesFilled < framesToFill) {
-            auto framesAboutToFill =
-                std::min(framesAvailable - sourceFrameOffset,
-                    framesToFill - framesFilled);
-            std::copy(source.begin() + sourceFrameOffset,
-                source.begin() + sourceFrameOffset + framesAboutToFill,
-                destination.begin() + framesFilled);
-            sourceFrameOffset = 0;
-            framesFilled += framesAboutToFill;
+        else {
+            const auto &source = sharedAtomics->audio_.size() > i
+                ? sharedAtomics->audio_.at(i)
+                : sharedAtomics->audio_.front();
+            auto sourceFrameOffset = audioFrameHead_;
+            auto framesFilled = 0UL;
+            while (framesFilled < framesToFill) {
+                const auto framesAboutToFill =
+                    std::min(framesAvailable - sourceFrameOffset,
+                        framesToFill - framesFilled);
+                const auto sourceBeginning = source.begin() + sourceFrameOffset;
+                std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
+                    destination.begin() + framesFilled);
+                sourceFrameOffset = 0;
+                framesFilled += framesAboutToFill;
+            }
         }
     }
     if (framesAvailable != 0)
