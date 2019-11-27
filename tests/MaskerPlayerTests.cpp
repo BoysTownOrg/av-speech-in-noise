@@ -413,6 +413,13 @@ TEST_F(MaskerPlayerTests, seekSeeksAudio) {
     assertLeftChannelEquals({7, 8, 9, 1});
 }
 
+TEST_F(MaskerPlayerTests, moreChannelsRequestedThanAvailableCopiesChannel) {
+    loadMonoAudio({1, 2, 3});
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({1, 2, 3});
+    assertRightChannelEquals({1, 2, 3});
+}
+
 TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {
     player.setFadeInOutSeconds(1);
     assertEqual(1., player.fadeTimeSeconds());

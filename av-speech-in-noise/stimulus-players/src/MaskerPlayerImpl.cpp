@@ -184,7 +184,9 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     if (!sharedAtomics->audio_.empty())
         for (std::size_t i = 0; i < audio.size(); ++i) {
             auto offset = sharedAtomics->audioSampleIndex_;
-            auto source = sharedAtomics->audio_.at(i);
+            auto source = sharedAtomics->audio_.size() > i
+                ? sharedAtomics->audio_.at(i)
+                : sharedAtomics->audio_.front();
             if (source.empty())
                 continue;
             for (int j = 0; j < audio.at(i).size(); ++j) {
