@@ -249,15 +249,14 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
-    auto expected = true;
-    if (sharedAtomics->pleaseFadeIn.compare_exchange_strong(expected, false))
+    if (isChangingFromSetToCleared(sharedAtomics->pleaseFadeIn))
         prepareToFadeIn();
 }
 
 void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
     updateWindowLength();
     hannCounter = 0;
-    fadingIn = true;
+    set(fadingIn);
 }
 
 void MaskerPlayerImpl::AudioThread::updateWindowLength() {
@@ -265,15 +264,14 @@ void MaskerPlayerImpl::AudioThread::updateWindowLength() {
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
-    auto expected = true;
-    if (sharedAtomics->pleaseFadeOut.compare_exchange_strong(expected, false))
+    if (isChangingFromSetToCleared(sharedAtomics->pleaseFadeOut))
         prepareToFadeOut();
 }
 
 void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
     updateWindowLength();
     hannCounter = halfWindowLength;
-    fadingOut = true;
+    set(fadingOut);
 }
 
 auto MaskerPlayerImpl::AudioThread::levelTransitionSamples() -> int {
@@ -298,8 +296,8 @@ void MaskerPlayerImpl::AudioThread::updateFadeState() {
 
 void MaskerPlayerImpl::AudioThread::checkForFadeInComplete() {
     if (doneFadingIn()) {
-        sharedAtomics->fadeInComplete.store(true);
-        fadingIn = false;
+        set(sharedAtomics->fadeInComplete);
+        clear(fadingIn);
     }
 }
 
@@ -313,8 +311,8 @@ auto MaskerPlayerImpl::AudioThread::doneFadingOut() -> bool {
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
     if (doneFadingOut()) {
-        sharedAtomics->fadeOutComplete.store(true);
-        fadingOut = false;
+        set(sharedAtomics->fadeOutComplete);
+        clear(fadingOut);
     }
 }
 
