@@ -125,7 +125,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
 
     AudioThread audioThread;
     MainThread mainThread;
-    audio_type audio_{};
+    audio_type audio{};
     std::string filePath_{};
     double rms_{};
     std::atomic<double> levelScalar{1};

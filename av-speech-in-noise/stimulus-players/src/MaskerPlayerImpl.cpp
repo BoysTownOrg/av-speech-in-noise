@@ -1,6 +1,8 @@
 #include "MaskerPlayerImpl.hpp"
+#include "AudioReader.hpp"
 #include <cmath>
 #include <gsl/gsl>
+#include <vector>
 
 namespace stimulus_players {
 MaskerPlayerImpl::MaskerPlayerImpl(
@@ -35,7 +37,11 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
     listener = e;
 }
 
-static auto firstChannel(const audio_type &x) -> const std::vector<float> & {
+static auto samples(const channel_type &channel) -> std::size_t {
+    return channel.size();
+}
+
+static auto firstChannel(const audio_type &x) -> const channel_type & {
     return x.front();
 }
 
@@ -44,7 +50,7 @@ static auto sampleRateHz(AudioPlayer *player) -> double {
 }
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
-    return firstChannel(audio_).size() / sampleRateHz(player);
+    return samples(firstChannel(audio)) / sampleRateHz(player);
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
@@ -55,16 +61,16 @@ auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
     return fadeInOutSeconds.load();
 }
 
-template <typename T> auto rms(const std::vector<T> &x) -> T {
-    return std::sqrt(std::accumulate(x.begin(), x.end(), T{0}, [](T a, T b) {
-        return a += b * b;
-    }) / x.size());
+static auto rms(const channel_type &x) -> sample_type {
+    return std::sqrt(std::accumulate(x.begin(), x.end(), sample_type{0},
+                         [](auto a, auto b) { return a += b * b; }) /
+        samples(x));
 }
 
 void MaskerPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath_ = std::move(filePath));
-    audio_ = readAudio();
-    rms_ = audio_.empty() ? 0 : ::stimulus_players::rms(firstChannel(audio_));
+    audio = readAudio();
+    rms_ = audio.empty() ? 0 : ::stimulus_players::rms(firstChannel(audio));
     audioFrameHead.store(0);
 }
 
@@ -172,28 +178,31 @@ void MaskerPlayerImpl::MainThread::callback() {
 
 // real-time audio thread
 void MaskerPlayerImpl::fillAudioBuffer(
-    const std::vector<gsl::span<float>> &audio) {
-    audioThread.fillAudioBuffer(audio);
+    const std::vector<gsl::span<float>> &audioBuffer) {
+    audioThread.fillAudioBuffer(audioBuffer);
 }
 
+static auto noChannels(const audio_type &x) -> bool { return x.empty(); }
+
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
-    const std::vector<gsl::span<float>> &audio) {
+    const std::vector<gsl::span<float>> &audioBuffer) {
     checkForFadeIn();
     checkForFadeOut();
 
-    const std::size_t framesToFill = audio.empty() ? 0 : audio.front().size();
-    const auto framesAvailable = sharedAtomics->audio_.empty()
+    const std::size_t framesToFill =
+        audioBuffer.empty() ? 0 : audioBuffer.front().size();
+    const auto framesAvailable = noChannels(sharedAtomics->audio)
         ? 0
-        : sharedAtomics->audio_.front().size();
+        : samples(firstChannel(sharedAtomics->audio));
     const auto audioFrameHead_ = sharedAtomics->audioFrameHead.load();
-    for (std::size_t i = 0; i < audio.size(); ++i) {
-        auto destination = audio.at(i);
+    for (std::size_t i = 0; i < audioBuffer.size(); ++i) {
+        auto destination = audioBuffer.at(i);
         if (framesAvailable == 0)
             std::fill(destination.begin(), destination.end(), 0);
         else {
-            const auto &source = sharedAtomics->audio_.size() > i
-                ? sharedAtomics->audio_.at(i)
-                : sharedAtomics->audio_.front();
+            const auto &source = sharedAtomics->audio.size() > i
+                ? sharedAtomics->audio.at(i)
+                : sharedAtomics->audio.front();
             auto sourceFrameOffset = audioFrameHead_;
             auto framesFilled = 0UL;
             while (framesFilled < framesToFill) {
@@ -216,7 +225,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     for (std::size_t i = 0; i < framesToFill; ++i) {
         const auto fadeScalar = nextFadeScalar();
         updateFadeState();
-        for (auto channel : audio)
+        for (auto channel : audioBuffer)
             channel.at(i) *= fadeScalar * levelScalar_;
     }
 }

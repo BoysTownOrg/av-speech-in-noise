@@ -5,7 +5,12 @@
 #include <string>
 
 namespace stimulus_players {
-using audio_type = std::vector<std::vector<float>>;
+using sample_type = float;
+
+using channel_type = std::vector<sample_type>;
+
+using audio_type = std::vector<channel_type>;
+
 class AudioReader {
   public:
     virtual ~AudioReader() = default;
