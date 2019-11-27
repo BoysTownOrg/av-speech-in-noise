@@ -105,10 +105,12 @@ class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     MTAudioProcessingTapRef tap{};
     EventListener *listener_{};
     AVPlayer *player;
+    AudioUnit audioUnit{};
     double sampleRate_{};
 
   public:
     AvFoundationAudioPlayer();
+    ~AvFoundationAudioPlayer() override;
     void setSampleRate(double x) { sampleRate_ = x; }
     auto audio() -> std::vector<gsl::span<float>> & { return audio_; }
     void fillAudioBuffer();

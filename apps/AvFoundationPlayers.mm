@@ -190,7 +190,8 @@ auto CoreAudioBufferedReader::minimumPossibleSample() -> int {
 
 auto CoreAudioBufferedReader::sampleRateHz() -> double {
     auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
-        static_cast<CMAudioFormatDescriptionRef>(trackOutput.track.formatDescriptions.firstObject));
+        static_cast<CMAudioFormatDescriptionRef>(
+            trackOutput.track.formatDescriptions.firstObject));
     return description->mSampleRate;
 }
 
@@ -395,9 +396,70 @@ auto AvFoundationVideoPlayer::durationSeconds() -> double {
 }
 @end
 
+static auto AU_RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *,
+    const AudioTimeStamp *, UInt32, UInt32 inNumberFrames,
+    AudioBufferList *ioData) -> OSStatus {
+
+    auto self = static_cast<AvFoundationAudioPlayer *>(inRefCon);
+    if (self->audio().size() != ioData->mNumberBuffers)
+        return -1;
+
+    for (UInt32 j = 0; j < ioData->mNumberBuffers; ++j)
+        self->audio()[j] = {
+            static_cast<float *>(ioData->mBuffers[j].mData),
+            inNumberFrames};
+    self->fillAudioBuffer();
+    return noErr;
+}
+
 AvFoundationAudioPlayer::AvFoundationAudioPlayer()
     : player{[AVPlayer playerWithPlayerItem:nil]} {
     createAudioProcessingTap<AvFoundationAudioPlayer>(this, &tap);
+
+    AudioComponentDescription audioComponentDescription;
+    audioComponentDescription.componentType = kAudioUnitType_Output;
+    audioComponentDescription.componentSubType = kAudioUnitSubType_HALOutput;
+    audioComponentDescription.componentManufacturer =
+        kAudioUnitManufacturer_Apple;
+    audioComponentDescription.componentFlags = 0;
+    audioComponentDescription.componentFlagsMask = 0;
+
+    AudioComponent audioComponent =
+        AudioComponentFindNext(nullptr, &audioComponentDescription);
+    AudioComponentInstanceNew(audioComponent, &audioUnit);
+    // enable output
+    {
+    UInt32 enable = 1;
+    AudioUnitSetProperty(audioUnit,
+        kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output,
+        0, &enable, sizeof(enable));
+    }
+
+    // disable input
+    UInt32 enable = 0;
+    AudioUnitSetProperty(audioUnit,
+        kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1,
+        &enable, sizeof(enable));
+
+    // channel map
+    std::vector<SInt32> channelMap = {2, 3};
+    AudioUnitSetProperty(audioUnit,
+        kAudioOutputUnitProperty_ChannelMap, kAudioUnitScope_Input,
+        0, channelMap.data(), 2 * sizeof(SInt32));
+
+    // Set audio unit render callback.
+    AURenderCallbackStruct renderCallbackStruct;
+    renderCallbackStruct.inputProc = AU_RenderCallback;
+    renderCallbackStruct.inputProcRefCon = this;
+    AudioUnitSetProperty(audioUnit,
+        kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input,
+        0, &renderCallbackStruct, sizeof(AURenderCallbackStruct));
+
+    AudioUnitInitialize(audioUnit);
+}
+
+AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
+    AudioComponentInstanceDispose(audioUnit);
 }
 
 void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
@@ -415,21 +477,31 @@ auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
 }
 
 void AvFoundationAudioPlayer::setDevice(int index) {
-    player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
+    //player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
+    auto device_ = device.uid(index);
+    AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
+        kAudioUnitScope_Global, 0, &device_, sizeof(device));
 }
 
 auto AvFoundationAudioPlayer::playing() -> bool { return ::playing(player); }
 
-void AvFoundationAudioPlayer::play() { [player play]; }
+void AvFoundationAudioPlayer::play() { 
+    //[player play];
+    AudioOutputUnitStart(audioUnit);
+}
 
-auto AvFoundationAudioPlayer::sampleRateHz() -> double { 
+auto AvFoundationAudioPlayer::sampleRateHz() -> double {
     AvAssetFacade asset{currentAsset(player)};
     auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
-        static_cast<CMAudioFormatDescriptionRef>(asset.audioTrack().formatDescriptions.firstObject));
+        static_cast<CMAudioFormatDescriptionRef>(
+            asset.audioTrack().formatDescriptions.firstObject));
     return description->mSampleRate;
 }
 
-void AvFoundationAudioPlayer::stop() { [player pause]; }
+void AvFoundationAudioPlayer::stop() { 
+    //[player pause];
+    AudioOutputUnitStop(audioUnit);
+}
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
     return device.outputDevice(index);
