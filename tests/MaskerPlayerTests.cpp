@@ -577,6 +577,7 @@ TEST_F(MaskerPlayerTests, fadeInCompleteOnlyAfterFadeTime) {
     setFadeInOutSeconds(3);
     setSampleRateHz(4);
 
+    loadMonoAudio({0});
     fadeIn();
     for (int i = 0; i < 3 * 4; ++i)
         assertFadeInNotCompletedAfterMonoFill(1);

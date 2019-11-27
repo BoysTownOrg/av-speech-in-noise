@@ -175,36 +175,38 @@ void MaskerPlayerImpl::fillAudioBuffer(
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
+    checkForFadeIn();
+    checkForFadeOut();
+
     if (audio.empty())
         return;
 
+    if (sharedAtomics->audio_.empty())
+        return;
+
     std::size_t framesToFill = audio.front().size();
-    if (!sharedAtomics->audio_.empty()) {
-        auto framesAvailable = sharedAtomics->audio_.front().size();
-        for (std::size_t i = 0; i < audio.size(); ++i) {
-            auto source = sharedAtomics->audio_.size() > i
-                ? sharedAtomics->audio_.at(i)
-                : sharedAtomics->audio_.front();
-            if (source.empty())
-                continue;
-            auto destination = audio.at(i);
-            auto sourceFrameOffset = sharedAtomics->audioSampleIndex_;
-            auto framesFilled = 0UL;
-            while (framesFilled < framesToFill) {
-                auto framesAboutToFill =
-                    std::min(framesAvailable - sourceFrameOffset,
-                        framesToFill - framesFilled);
-                std::copy(source.begin() + sourceFrameOffset,
-                    source.begin() + sourceFrameOffset + framesAboutToFill,
-                    destination.begin() + framesFilled);
-                sourceFrameOffset = 0;
-                framesFilled += framesAboutToFill;
-            }
+    auto framesAvailable = sharedAtomics->audio_.front().size();
+    for (std::size_t i = 0; i < audio.size(); ++i) {
+        auto source = sharedAtomics->audio_.size() > i
+            ? sharedAtomics->audio_.at(i)
+            : sharedAtomics->audio_.front();
+        if (source.empty())
+            continue;
+        auto destination = audio.at(i);
+        auto sourceFrameOffset = sharedAtomics->audioSampleIndex_;
+        auto framesFilled = 0UL;
+        while (framesFilled < framesToFill) {
+            auto framesAboutToFill =
+                std::min(framesAvailable - sourceFrameOffset,
+                    framesToFill - framesFilled);
+            std::copy(source.begin() + sourceFrameOffset,
+                source.begin() + sourceFrameOffset + framesAboutToFill,
+                destination.begin() + framesFilled);
+            sourceFrameOffset = 0;
+            framesFilled += framesAboutToFill;
         }
     }
     sharedAtomics->audioSampleIndex_ += framesToFill;
-    checkForFadeIn();
-    checkForFadeOut();
     scaleAudio(audio);
 }
 
