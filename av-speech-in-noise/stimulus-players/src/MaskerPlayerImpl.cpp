@@ -61,10 +61,11 @@ auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
     return fadeInOutSeconds.load();
 }
 
-static auto rms(const channel_type &x) -> sample_type {
-    return std::sqrt(std::accumulate(x.begin(), x.end(), sample_type{0},
-                         [](auto a, auto b) { return a += b * b; }) /
-        samples(x));
+static auto rms(const channel_type &channel) -> sample_type {
+    return std::sqrt(
+        std::accumulate(channel.begin(), channel.end(), sample_type{0},
+            [](auto a, auto b) { return a += b * b; }) /
+        samples(channel));
 }
 
 static auto noChannels(const audio_type &x) -> bool { return x.empty(); }
@@ -78,12 +79,16 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
+static void write(std::atomic<double> &to, double value) {
+    to.store(value);
+}
+
 void MaskerPlayerImpl::setLevel_dB(double x) {
-    levelScalar.store(std::pow(10, x / 20));
+    write(levelScalar, std::pow(10, x / 20));
 }
 
 void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
-    fadeInOutSeconds.store(x);
+    write(fadeInOutSeconds, x);
 }
 
 void MaskerPlayerImpl::setAudioDevice(std::string device) {
@@ -126,12 +131,20 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
 
 void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
 
+static void set(std::atomic<bool> &x) {
+    x.store(true);
+}
+
+static void set(bool &x) {
+    x = true;
+}
+
 void MaskerPlayerImpl::MainThread::fadeIn() {
     if (fading())
         return;
 
-    fadingIn = true;
-    sharedAtomics->pleaseFadeIn.store(true);
+    set(fadingIn);
+    set(sharedAtomics->pleaseFadeIn);
     player->play();
     scheduleCallbackAfterSeconds(0.1);
 }
@@ -150,26 +163,31 @@ void MaskerPlayerImpl::MainThread::fadeOut() {
     if (fading())
         return;
 
-    fadingOut = true;
-    sharedAtomics->pleaseFadeOut.store(true);
+    set(fadingOut);
+    set(sharedAtomics->pleaseFadeOut);
     scheduleCallbackAfterSeconds(0.1);
 }
 
 void MaskerPlayerImpl::callback() { mainThread.callback(); }
 
+static void clear(bool &x) {
+    x = false;
+}
+
+static auto isChangingFromSetToCleared(std::atomic<bool> &x) -> bool {
+    auto expected = true;
+    return x.compare_exchange_strong(expected, false);
+}
+
 void MaskerPlayerImpl::MainThread::callback() {
-    auto expectedFadeInComplete = true;
-    if (sharedAtomics->fadeInComplete.compare_exchange_strong(
-            expectedFadeInComplete, false)) {
-        fadingIn = false;
+    if (isChangingFromSetToCleared(sharedAtomics->fadeInComplete)) {
+        clear(fadingIn);
         listener->fadeInComplete();
         return;
     }
 
-    auto expectedFadeOutComplete = true;
-    if (sharedAtomics->fadeOutComplete.compare_exchange_strong(
-            expectedFadeOutComplete, false)) {
-        fadingOut = false;
+    if (isChangingFromSetToCleared(sharedAtomics->fadeOutComplete)) {
+        clear(fadingOut);
         listener->fadeOutComplete();
         player->stop();
         return;
