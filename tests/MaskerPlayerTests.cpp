@@ -420,6 +420,13 @@ TEST_F(MaskerPlayerTests, moreChannelsRequestedThanAvailableCopiesChannel) {
     assertRightChannelEquals({1, 2, 3});
 }
 
+TEST_F(MaskerPlayerTests, moreChannelsAvailableThanRequestedTruncates) {
+    loadAudio({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({1, 2, 3});
+    assertRightChannelEquals({4, 5, 6});
+}
+
 TEST_F(MaskerPlayerTests, fadeTimeReturnsFadeTime) {
     player.setFadeInOutSeconds(1);
     assertEqual(1., player.fadeTimeSeconds());
