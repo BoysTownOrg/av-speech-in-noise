@@ -1,8 +1,9 @@
 #include "MaskerPlayerImpl.hpp"
 #include "AudioReader.hpp"
-#include <cmath>
 #include <gsl/gsl>
+#include <cmath>
 #include <vector>
+#include <algorithm>
 
 namespace stimulus_players {
 MaskerPlayerImpl::MaskerPlayerImpl(
@@ -118,9 +119,9 @@ auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
 }
 
 auto MaskerPlayerImpl::audioDeviceDescriptions_() -> std::vector<std::string> {
-    std::vector<std::string> descriptions{};
-    for (int i = 0; i < player->deviceCount(); ++i)
-        descriptions.push_back(player->deviceDescription(i));
+    std::vector<std::string> descriptions(player->deviceCount());
+    std::generate(descriptions.begin(), descriptions.end(),
+        [&, n = 0]() mutable { return player->deviceDescription(n++); });
     return descriptions;
 }
 
@@ -202,6 +203,8 @@ void MaskerPlayerImpl::fillAudioBuffer(
 
 static auto read(std::atomic<double> &x) -> double { return x.load(); }
 
+static void mute(gsl::span<float> x) { std::fill(x.begin(), x.end(), 0); }
+
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audioBuffer) {
     checkForFadeIn();
@@ -209,15 +212,14 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 
     const std::size_t framesToFill =
         audioBuffer.empty() ? 0 : audioBuffer.front().size();
-    const auto sourceFrames = noChannels(sharedAtomics->audio)
-        ? 0
-        : samples(firstChannel(sharedAtomics->audio));
-    const auto audioFrameHead_ = sharedAtomics->audioFrameHead.load();
-    for (std::size_t i = 0; i < audioBuffer.size(); ++i) {
-        auto destination = audioBuffer.at(i);
-        if (sourceFrames == 0)
-            std::fill(destination.begin(), destination.end(), 0);
-        else {
+    if (noChannels(sharedAtomics->audio))
+        for (auto channelBuffer : audioBuffer)
+            mute(channelBuffer);
+    else {
+        const auto sourceFrames = samples(firstChannel(sharedAtomics->audio));
+        const auto audioFrameHead_ = sharedAtomics->audioFrameHead.load();
+        for (std::size_t i = 0; i < audioBuffer.size(); ++i) {
+            auto destination = audioBuffer.at(i);
             const auto &source = channels(sharedAtomics->audio) > i
                 ? sharedAtomics->audio.at(i)
                 : firstChannel(sharedAtomics->audio);
@@ -234,11 +236,9 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
                 framesFilled += framesAboutToFill;
             }
         }
-    }
-    if (sourceFrames != 0)
         write(sharedAtomics->audioFrameHead,
             (audioFrameHead_ + framesToFill) % sourceFrames);
-
+    }
     const auto levelScalar_ = read(sharedAtomics->levelScalar);
     for (std::size_t i = 0; i < framesToFill; ++i) {
         const auto fadeScalar = nextFadeScalar();
