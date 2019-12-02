@@ -102,6 +102,7 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
 class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     std::vector<gsl::span<float>> audio_;
     CoreAudioDevices device{};
+    std::string filePath_{};
     MTAudioProcessingTapRef tap{};
     EventListener *listener_{};
     AVPlayer *player;

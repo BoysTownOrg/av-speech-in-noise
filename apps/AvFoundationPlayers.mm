@@ -472,7 +472,7 @@ AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
 void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
-    loadItemFromFileWithAudioProcessing(filePath, player, tap);
+    filePath_ = std::move(filePath);
 }
 
 auto AvFoundationAudioPlayer::deviceCount() -> int {
@@ -509,7 +509,7 @@ void AvFoundationAudioPlayer::play() {
 }
 
 auto AvFoundationAudioPlayer::sampleRateHz() -> double {
-    AvAssetFacade asset{currentAsset(player)};
+    AvAssetFacade asset{filePath_};
     auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
         static_cast<CMAudioFormatDescriptionRef>(
             asset.audioTrack().formatDescriptions.firstObject));
