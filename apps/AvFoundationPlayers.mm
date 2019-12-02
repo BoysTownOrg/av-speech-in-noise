@@ -378,6 +378,10 @@ static auto playing(AVPlayer *player) -> bool {
 
 auto AvFoundationVideoPlayer::playing() -> bool { return ::playing(player); }
 
+static auto durationSeconds_(AVAsset *asset) -> Float64 {
+    return CMTimeGetSeconds(asset.duration);
+}
+
 // https://stackoverflow.com/questions/19059321/ios-7-avplayer-avplayeritem-duration-incorrect-in-ios-7
 // "It appears the duration value isn't always immediately available
 // from an AVPlayerItem but it seems to work fine with an AVAsset immediately."
@@ -409,10 +413,7 @@ static auto AU_RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *,
     return noErr;
 }
 
-AvFoundationAudioPlayer::AvFoundationAudioPlayer()
-    : player{[AVPlayer playerWithPlayerItem:nil]} {
-    createAudioProcessingTap<AvFoundationAudioPlayer>(this, &tap);
-
+AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     AudioComponentDescription audioComponentDescription;
     audioComponentDescription.componentType = kAudioUnitType_Output;
     audioComponentDescription.componentSubType = kAudioUnitSubType_HALOutput;
@@ -423,26 +424,25 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer()
 
     AudioComponent audioComponent =
         AudioComponentFindNext(nullptr, &audioComponentDescription);
-    auto status = AudioComponentInstanceNew(audioComponent, &audioUnit);
-    status = AudioUnitInitialize(audioUnit);
+    AudioComponentInstanceNew(audioComponent, &audioUnit);
+    AudioUnitInitialize(audioUnit);
     // enable output
     {
         UInt32 enable = 1;
-        status =
-            AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
+        AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
                 kAudioUnitScope_Output, 0, &enable, sizeof(enable));
     }
 
     // disable input
     UInt32 enable = 0;
-    status = AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
+    AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
         kAudioUnitScope_Input, 1, &enable, sizeof(enable));
- 
+
     // Set audio unit render callback.
     AURenderCallbackStruct renderCallbackStruct;
     renderCallbackStruct.inputProc = AU_RenderCallback;
     renderCallbackStruct.inputProcRefCon = this;
-    status = AudioUnitSetProperty(audioUnit,
+    AudioUnitSetProperty(audioUnit,
         kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Output, 0,
         &renderCallbackStruct, sizeof(AURenderCallbackStruct));
 
@@ -455,13 +455,11 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer()
     streamFormat.mBytesPerFrame = sizeof(float);
     streamFormat.mChannelsPerFrame = 2;
     streamFormat.mBitsPerChannel = 8 * sizeof(float);
-    streamFormat.mFormatFlags = kAudioFormatFlagIsFloat |
-        kAudioFormatFlagIsNonInterleaved;
-    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
+    streamFormat.mFormatFlags =
+        kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
+    AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
         kAudioUnitScope_Input, 0, &streamFormat,
         sizeof(AudioStreamBasicDescription));
-    if (status != noErr)
-        NSLog(@"bad news bears");
 }
 
 AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
@@ -484,13 +482,14 @@ auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
 }
 
 void AvFoundationAudioPlayer::setDevice(int index) {
-    // player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
     auto deviceId = device.objectId(index);
     AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
         kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId));
 
     std::vector<SInt32> channelMap = {-1, -1, 0, 1};
-    AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_ChannelMap, kAudioUnitScope_Global, 0, channelMap.data(), channelMap.size() * sizeof(SInt32));
+    AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_ChannelMap,
+        kAudioUnitScope_Global, 0, channelMap.data(),
+        channelMap.size() * sizeof(SInt32));
 }
 
 auto AvFoundationAudioPlayer::playing() -> bool {
@@ -502,8 +501,6 @@ auto AvFoundationAudioPlayer::playing() -> bool {
 }
 
 void AvFoundationAudioPlayer::play() {
-    //[player play];
-    
     audio_.resize(2);
     AudioOutputUnitStart(audioUnit);
 }
@@ -516,10 +513,7 @@ auto AvFoundationAudioPlayer::sampleRateHz() -> double {
     return description->mSampleRate;
 }
 
-void AvFoundationAudioPlayer::stop() {
-    //[player pause];
-    AudioOutputUnitStop(audioUnit);
-}
+void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
     return device.outputDevice(index);
@@ -530,14 +524,8 @@ void AvFoundationAudioPlayer::fillAudioBuffer() {
 }
 
 auto AvFoundationAudioPlayer::durationSeconds() -> double {
-    return durationSeconds_(player);
+    AvAssetFacade asset{filePath_};
+    return durationSeconds_(asset.get());
 }
 
-// https://warrenmoore.net/understanding-cmtime
-// "Apple recommends a timescale of 600 for video,
-// with the explanation that 600 is a multiple of the
-// common video framerates (24, 25, and 30 FPS)."
-void AvFoundationAudioPlayer::seekSeconds(double x) {
-    auto timescale = 600;
-    [player seekToTime:CMTimeMakeWithSeconds(x, timescale)];
-}
+void AvFoundationAudioPlayer::seekSeconds(double) {}
