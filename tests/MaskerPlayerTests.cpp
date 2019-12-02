@@ -8,8 +8,6 @@
 namespace {
 class AudioPlayerStub : public stimulus_players::AudioPlayer {
   public:
-    void seekSeconds(double x) override { secondsSeeked_ = x; }
-
     auto durationSeconds() -> double override { return durationSeconds_; }
 
     auto outputDevice(int index) -> bool override {
@@ -55,8 +53,6 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     [[nodiscard]] auto filePath() const { return filePath_; }
 
-    [[nodiscard]] auto secondsSeeked() const { return secondsSeeked_; }
-
     [[nodiscard]] auto deviceIndex() const { return deviceIndex_; }
 
     [[nodiscard]] auto played() const { return played_; }
@@ -74,7 +70,6 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
     std::map<int, bool> outputDevices;
     double sampleRateHz_{};
     double durationSeconds_{};
-    double secondsSeeked_{};
     int deviceIndex_{};
     int deviceDescriptionDeviceIndex_{};
     EventListener *listener_{};

@@ -123,7 +123,6 @@ class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     void timerCallback();
     auto outputDevice(int index) -> bool override;
     auto durationSeconds() -> double override;
-    void seekSeconds(double) override;
 };
 
 #endif

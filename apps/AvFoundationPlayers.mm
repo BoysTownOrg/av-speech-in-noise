@@ -526,5 +526,3 @@ auto AvFoundationAudioPlayer::durationSeconds() -> double {
     AvAssetFacade asset{filePath_};
     return durationSeconds_(asset.get());
 }
-
-void AvFoundationAudioPlayer::seekSeconds(double) {}

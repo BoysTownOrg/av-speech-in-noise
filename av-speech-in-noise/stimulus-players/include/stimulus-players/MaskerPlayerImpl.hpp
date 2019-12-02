@@ -31,7 +31,7 @@ class AudioPlayer {
     virtual void setDevice(int index) = 0;
     virtual auto sampleRateHz() -> double = 0;
     virtual auto durationSeconds() -> double = 0;
-    virtual void seekSeconds(double) = 0;
+    virtual void seekSeconds(double) {}
 };
 
 class Timer {
