@@ -95,8 +95,6 @@ auto CoreAudioDevices::outputDevice(int device) -> bool {
 }
 
 class AvAssetFacade {
-    AVAsset *asset;
-
   public:
     explicit AvAssetFacade(std::string filePath)
         : asset{makeAvAsset(std::move(filePath))} {}
@@ -123,6 +121,8 @@ class AvAssetFacade {
                                            withPercents]];
         return [AVURLAsset URLAssetWithURL:url options:nil];
     }
+    
+    AVAsset *asset;
 };
 
 // https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
@@ -227,7 +227,6 @@ static void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
     self->fillAudioBuffer();
 }
 
-template <typename T = AvFoundationVideoPlayer>
 static void createAudioProcessingTap(
     void *CM_NULLABLE clientInfo, MTAudioProcessingTapRef *tap) {
     MTAudioProcessingTapCallbacks callbacks;
@@ -313,6 +312,8 @@ void AvFoundationVideoPlayer::prepareVideo() {
 void AvFoundationVideoPlayer::resizeVideo() {
     AvAssetFacade asset{currentAsset(player)};
     auto size = asset.videoTrack().naturalSize;
+    // Kaylah requested that the video be reduced in size.
+    // We landed on 2/3 scale.
     size.height *= 2;
     size.height /= 3;
     size.width *= 2;
@@ -383,7 +384,7 @@ static auto durationSeconds_(AVAsset *asset) -> Float64 {
 // "It appears the duration value isn't always immediately available
 // from an AVPlayerItem but it seems to work fine with an AVAsset immediately."
 static auto durationSeconds_(AVPlayer *player) -> Float64 {
-    return CMTimeGetSeconds(currentAsset(player).duration);
+    return durationSeconds_(currentAsset(player));
 }
 
 auto AvFoundationVideoPlayer::durationSeconds() -> double {
@@ -457,6 +458,8 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
         kAudioUnitScope_Input, 0, &streamFormat,
         sizeof(AudioStreamBasicDescription));
+    
+    audio_.resize(2);
 }
 
 AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
@@ -498,7 +501,6 @@ auto AvFoundationAudioPlayer::playing() -> bool {
 }
 
 void AvFoundationAudioPlayer::play() {
-    audio_.resize(2);
     AudioOutputUnitStart(audioUnit);
 }
 
