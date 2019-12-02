@@ -202,24 +202,21 @@ static void init(
 
 static void finalize(MTAudioProcessingTapRef) {}
 
-template <typename T>
 static void prepare(MTAudioProcessingTapRef tap, CMItemCount,
     const AudioStreamBasicDescription *description) {
-    auto self = static_cast<T *>(MTAudioProcessingTapGetStorage(tap));
+    auto self = static_cast<AvFoundationVideoPlayer *>(MTAudioProcessingTapGetStorage(tap));
     self->audio().resize(description->mChannelsPerFrame);
-    self->setSampleRate(description->mSampleRate);
 }
 
 static void unprepare(MTAudioProcessingTapRef) {}
 
-template <typename T>
 static void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
     MTAudioProcessingTapFlags, AudioBufferList *bufferListInOut,
     CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut) {
     MTAudioProcessingTapGetSourceAudio(
         tap, numberFrames, bufferListInOut, flagsOut, nullptr, numberFramesOut);
 
-    auto self = static_cast<T *>(MTAudioProcessingTapGetStorage(tap));
+    auto self = static_cast<AvFoundationVideoPlayer *>(MTAudioProcessingTapGetStorage(tap));
     if (self->audio().size() != bufferListInOut->mNumberBuffers)
         return;
 
@@ -230,15 +227,15 @@ static void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
     self->fillAudioBuffer();
 }
 
-template <typename T>
+template <typename T = AvFoundationVideoPlayer>
 static void createAudioProcessingTap(
     void *CM_NULLABLE clientInfo, MTAudioProcessingTapRef *tap) {
     MTAudioProcessingTapCallbacks callbacks;
     callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
     callbacks.clientInfo = clientInfo;
     callbacks.init = init;
-    callbacks.prepare = prepare<T>;
-    callbacks.process = process<T>;
+    callbacks.prepare = prepare;
+    callbacks.process = process;
     callbacks.unprepare = unprepare;
     callbacks.finalize = finalize;
 
@@ -280,7 +277,7 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
       player{[AVPlayer playerWithPlayerItem:nil]},
       playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}, screen{
                                                                      screen} {
-    createAudioProcessingTap<AvFoundationVideoPlayer>(this, &tap);
+    createAudioProcessingTap(this, &tap);
     prepareWindow();
     actions.controller = this;
 }
