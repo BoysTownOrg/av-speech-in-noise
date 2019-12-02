@@ -42,6 +42,10 @@ static auto samples(const channel_type &channel) -> std::size_t {
     return channel.size();
 }
 
+static auto channel(const audio_type &x, int n) -> const channel_type & {
+    return x.at(n);
+}
+
 static auto firstChannel(const audio_type &x) -> const channel_type & {
     return x.front();
 }
@@ -205,24 +209,36 @@ static auto read(std::atomic<double> &x) -> double { return x.load(); }
 
 static void mute(gsl::span<float> x) { std::fill(x.begin(), x.end(), 0); }
 
+auto firstChannel(const std::vector<gsl::span<float>> &x) -> gsl::span<float> {
+    return x.front();
+}
+
+auto noChannels(const std::vector<gsl::span<float>> &x) -> bool {
+    return x.empty();
+}
+
+auto channels(const std::vector<gsl::span<float>> &x) -> std::size_t {
+    return x.size();
+}
+
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audioBuffer) {
     checkForFadeIn();
     checkForFadeOut();
 
     const std::size_t framesToFill =
-        audioBuffer.empty() ? 0 : audioBuffer.front().size();
+        noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
     if (noChannels(sharedAtomics->audio))
         for (auto channelBuffer : audioBuffer)
             mute(channelBuffer);
     else {
         const auto sourceFrames = samples(firstChannel(sharedAtomics->audio));
         const auto audioFrameHead_ = sharedAtomics->audioFrameHead.load();
-        for (std::size_t i = 0; i < audioBuffer.size(); ++i) {
-            auto destination = audioBuffer.at(i);
+        for (std::size_t i = 0; i < channels(audioBuffer); ++i) {
             const auto &source = channels(sharedAtomics->audio) > i
-                ? sharedAtomics->audio.at(i)
+                ? channel(sharedAtomics->audio, i)
                 : firstChannel(sharedAtomics->audio);
+            auto destination = audioBuffer.at(i);
             auto sourceFrameOffset = audioFrameHead_;
             auto framesFilled = 0UL;
             while (framesFilled < framesToFill) {
@@ -243,8 +259,8 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     for (std::size_t i = 0; i < framesToFill; ++i) {
         const auto fadeScalar = nextFadeScalar();
         updateFadeState();
-        for (auto channel : audioBuffer)
-            channel.at(i) *= fadeScalar * levelScalar_;
+        for (auto channelBuffer : audioBuffer)
+            channelBuffer.at(i) *= fadeScalar * levelScalar_;
     }
 }
 
