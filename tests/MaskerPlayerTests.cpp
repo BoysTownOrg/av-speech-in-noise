@@ -108,18 +108,33 @@ class MaskerPlayerListenerStub
     bool fadeOutCompleted_{};
 };
 
+template <typename T>
+auto elementWiseProduct(const std::vector<T> &v, const std::vector<T> &y)
+    -> std::vector<T> {
+    std::vector<T> product;
+    std::transform(v.begin(), v.end(), y.begin(), std::back_inserter(product),
+        std::multiplies<T>());
+    return product;
+}
+
+template <typename T>
+auto subvector(const std::vector<T> &v, int b, int e) -> std::vector<T> {
+    return {v.begin() + b, v.begin() + e};
+}
+
 template <typename T> class VectorFacade {
   public:
     explicit VectorFacade(std::vector<T> v) : v{std::move(v)} {}
 
-    auto elementWiseProduct(std::vector<T> y) -> std::vector<T> {
+    [[nodiscard]] auto elementWiseProduct(const std::vector<T> &y) const
+        -> std::vector<T> {
         std::vector<T> product;
         std::transform(v.begin(), v.end(), y.begin(),
             std::back_inserter(product), std::multiplies<T>());
         return product;
     }
 
-    auto subvector(int b, int e) -> VectorFacade<T> {
+    [[nodiscard]] auto subvector(int b, int e) const -> VectorFacade<T> {
         return VectorFacade<T>{{v.begin() + b, v.begin() + e}};
     }
 
@@ -259,12 +274,24 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertFillingLeftChannelMultipliesBy_Buffered(
         VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
-        loadMonoAudio(oneToN(buffers * framesPerBuffer));
         for (int i = 0; i < buffers; ++i) {
             auto offset = i * framesPerBuffer;
             assertFillingLeftChannelMultipliesBy(
                 multiplicand.subvector(offset, offset + framesPerBuffer),
                 mToN(offset + 1, offset + framesPerBuffer));
+        }
+    }
+
+    void assertFillingLeftChannelMultipliesBy_Buffered(std::vector<float> audio,
+        std::vector<float> multiplicand, int buffers, int framesPerBuffer) {
+        for (int i = 0; i < buffers; ++i) {
+            const auto offset = i * framesPerBuffer;
+            const auto multiplier =
+                subvector(audio, offset, offset + framesPerBuffer);
+            fillAudioBufferMono(multiplier.size());
+            assertLeftChannelEquals(elementWiseProduct(
+                subvector(multiplicand, offset, offset + framesPerBuffer),
+                multiplier));
         }
     }
 
@@ -489,10 +516,11 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
 
+    loadMonoAudio(oneToN(halfWindowLength));
     fadeIn();
-    assertFillingLeftChannelMultipliesBy_Buffered(
-        VectorFacade<float>{halfHannWindow(halfWindowLength)},
-        halfWindowLength / framesPerBuffer, framesPerBuffer);
+    const auto buffers = halfWindowLength / framesPerBuffer;
+    assertFillingLeftChannelMultipliesBy_Buffered(oneToN(halfWindowLength),
+        halfHannWindow(halfWindowLength), buffers, framesPerBuffer);
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
@@ -553,6 +581,7 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionMultipleFills) {
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
 
+    loadMonoAudio(oneToN(halfWindowLength));
     fadeOut();
     assertFillingLeftChannelMultipliesBy_Buffered(
         VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
