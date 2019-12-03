@@ -4,6 +4,7 @@
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
+#include <utility>
 
 namespace {
 class AudioPlayerStub : public stimulus_players::AudioPlayer {
@@ -164,9 +165,10 @@ class TimerStub : public stimulus_players::Timer {
 auto halfHannWindow(int length) -> std::vector<float> {
     auto N = 2 * length - 1;
     const auto pi = std::acos(-1);
-    std::vector<float> window;
-    for (int n = 0; n < length; ++n)
-        window.push_back((1 - std::cos((2 * pi * n) / (N - 1))) / 2);
+    std::vector<float> window(length);
+    std::generate(window.begin(), window.end(), [=, n = 0]() mutable {
+        return (1 - std::cos((2 * pi * n++) / (N - 1))) / 2;
+    });
     return window;
 }
 
@@ -273,7 +275,8 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void assertFillingLeftChannelMultipliesBy_Buffered(
-        VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
+        const VectorFacade<float> &multiplicand, int buffers,
+        int framesPerBuffer) {
         for (int i = 0; i < buffers; ++i) {
             auto offset = i * framesPerBuffer;
             assertFillingLeftChannelMultipliesBy(
@@ -282,21 +285,28 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
-    void assertFillingLeftChannelMultipliesBy_Buffered(
+    void assertLeftChannelEqualsProductAfterFilling_Buffered(
         const std::vector<float> &multiplicand,
         const std::vector<float> &multiplier, int buffers,
         int framesPerBuffer) {
         for (int i = 0; i < buffers; ++i) {
             const auto offset = i * framesPerBuffer;
-            fillAudioBufferMono(framesPerBuffer);
-            assertLeftChannelEquals(elementWiseProduct(
+            assertLeftChannelEqualsProductAfterFilling(
                 subvector(multiplicand, offset, framesPerBuffer),
-                subvector(multiplier, offset, framesPerBuffer)));
+                subvector(multiplier, offset, framesPerBuffer));
         }
     }
 
+    void assertLeftChannelEqualsProductAfterFilling(
+        std::vector<float> multiplicand, const std::vector<float> &multiplier) {
+        fillAudioBufferMono(multiplier.size());
+        assertLeftChannelEquals(
+            elementWiseProduct(std::move(multiplicand), multiplier));
+    }
+
     void assertFillingStereoChannelsMultipliesBy_Buffered(
-        VectorFacade<float> multiplicand, int buffers, int framesPerBuffer) {
+        const VectorFacade<float> &multiplicand, int buffers,
+        int framesPerBuffer) {
         loadStereoAudio(oneToN(buffers * framesPerBuffer),
             NtoOne(buffers * framesPerBuffer));
         for (int i = 0; i < buffers; ++i) {
@@ -309,7 +319,8 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
-    void assertFillingLeftChannelMultipliesBy(VectorFacade<float> multiplicand,
+    void assertFillingLeftChannelMultipliesBy(
+        const VectorFacade<float> &multiplicand,
         const std::vector<float> &multiplier) {
         fillAudioBufferMono(multiplier.size());
         assertLeftChannelEquals(multiplicand.elementWiseProduct(multiplier));
@@ -325,7 +336,7 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void assertFillingStereoChannelsMultipliesBy(
-        VectorFacade<float> multiplicand,
+        const VectorFacade<float> &multiplicand,
         const std::vector<float> &leftMultiplier,
         const std::vector<float> &rightMultiplier) {
         fillAudioBufferStereo(leftMultiplier.size());
@@ -519,8 +530,9 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
     loadMonoAudio(oneToN(halfWindowLength));
     fadeIn();
     const auto buffers = halfWindowLength / framesPerBuffer;
-    assertFillingLeftChannelMultipliesBy_Buffered(oneToN(halfWindowLength),
-        halfHannWindow(halfWindowLength), buffers, framesPerBuffer);
+    assertLeftChannelEqualsProductAfterFilling_Buffered(
+        oneToN(halfWindowLength), halfHannWindow(halfWindowLength), buffers,
+        framesPerBuffer);
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
@@ -530,9 +542,8 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionOneFill) {
 
     loadMonoAudio(oneToN(halfWindowLength));
     fadeIn();
-    assertFillingLeftChannelMultipliesBy(
-        VectorFacade<float>{halfHannWindow(halfWindowLength)},
-        oneToN(halfWindowLength));
+    assertLeftChannelEqualsProductAfterFilling(
+        halfHannWindow(halfWindowLength), oneToN(halfWindowLength));
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoMultipleFills) {
