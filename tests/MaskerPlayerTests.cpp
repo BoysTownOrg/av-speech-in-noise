@@ -549,13 +549,15 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionMultipleFills) {
     // For this test:
     // halfWindowLength is determined by fade time and sample rate...
     // but must be divisible by framesPerBuffer.
-    fadeInCompletely();
     setFadeInOutSeconds(3);
     setSampleRateHz(5);
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
-
     loadMonoAudio(oneToN(halfWindowLength));
+    fadeIn();
+    fillAudioBufferMono(halfWindowLength);
+    timerCallback();
+
     fadeOut();
     assertLeftChannelEqualsProductAfterFilling_Buffered(
         backHalfHannWindow(halfWindowLength), oneToN(halfWindowLength),
