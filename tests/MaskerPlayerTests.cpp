@@ -109,17 +109,17 @@ class MaskerPlayerListenerStub
 };
 
 template <typename T>
-auto elementWiseProduct(const std::vector<T> &v, const std::vector<T> &y)
+auto elementWiseProduct(std::vector<T> v, const std::vector<T> &y)
     -> std::vector<T> {
-    std::vector<T> product;
-    std::transform(v.begin(), v.end(), y.begin(), std::back_inserter(product),
-        std::multiplies<T>());
-    return product;
+    std::transform(
+        v.begin(), v.end(), y.begin(), v.begin(), std::multiplies<T>());
+    return v;
 }
 
 template <typename T>
-auto subvector(const std::vector<T> &v, int b, int e) -> std::vector<T> {
-    return {v.begin() + b, v.begin() + e};
+auto subvector(const std::vector<T> &v, int offset, int size)
+    -> std::vector<T> {
+    return {v.begin() + offset, v.begin() + offset + size};
 }
 
 template <typename T> class VectorFacade {
@@ -282,16 +282,16 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
-    void assertFillingLeftChannelMultipliesBy_Buffered(std::vector<float> audio,
-        std::vector<float> multiplicand, int buffers, int framesPerBuffer) {
+    void assertFillingLeftChannelMultipliesBy_Buffered(
+        const std::vector<float> &multiplicand,
+        const std::vector<float> &multiplier, int buffers,
+        int framesPerBuffer) {
         for (int i = 0; i < buffers; ++i) {
             const auto offset = i * framesPerBuffer;
-            const auto multiplier =
-                subvector(audio, offset, offset + framesPerBuffer);
-            fillAudioBufferMono(multiplier.size());
+            fillAudioBufferMono(framesPerBuffer);
             assertLeftChannelEquals(elementWiseProduct(
-                subvector(multiplicand, offset, offset + framesPerBuffer),
-                multiplier));
+                subvector(multiplicand, offset, framesPerBuffer),
+                subvector(multiplier, offset, framesPerBuffer)));
         }
     }
 
