@@ -646,9 +646,11 @@ TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeOut) {
 }
 
 TEST_F(MaskerPlayerTests, audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
-    fadeInCompletely();
     setFadeInOutSeconds(3);
     setSampleRateHz(4);
+    auto halfWindowLength = 3 * 4 + 1;
+    loadMonoAudio({0});
+    fadeInFillAndCallback(halfWindowLength);
 
     fadeOut();
     for (int i = 0; i < 3 * 4; ++i) {
