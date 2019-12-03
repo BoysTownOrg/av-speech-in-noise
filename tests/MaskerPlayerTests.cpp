@@ -274,17 +274,6 @@ class MaskerPlayerTests : public ::testing::Test {
         loadAudio({std::move(left), std::move(right)});
     }
 
-    void assertFillingLeftChannelMultipliesBy_Buffered(
-        const VectorFacade<float> &multiplicand, int buffers,
-        int framesPerBuffer) {
-        for (int i = 0; i < buffers; ++i) {
-            auto offset = i * framesPerBuffer;
-            assertFillingLeftChannelMultipliesBy(
-                multiplicand.subvector(offset, offset + framesPerBuffer),
-                mToN(offset + 1, offset + framesPerBuffer));
-        }
-    }
-
     void assertLeftChannelEqualsProductAfterFilling_Buffered(
         const std::vector<float> &multiplicand,
         const std::vector<float> &multiplier, int buffers,
@@ -304,21 +293,6 @@ class MaskerPlayerTests : public ::testing::Test {
             elementWiseProduct(std::move(multiplicand), multiplier));
     }
 
-    void assertFillingStereoChannelsMultipliesBy_Buffered(
-        const VectorFacade<float> &multiplicand, int buffers,
-        int framesPerBuffer) {
-        loadStereoAudio(oneToN(buffers * framesPerBuffer),
-            NtoOne(buffers * framesPerBuffer));
-        for (int i = 0; i < buffers; ++i) {
-            auto offset = i * framesPerBuffer;
-            assertFillingStereoChannelsMultipliesBy(
-                multiplicand.subvector(offset, offset + framesPerBuffer),
-                mToN(offset + 1, offset + framesPerBuffer),
-                mToN(buffers * framesPerBuffer - offset,
-                    (buffers - 1) * framesPerBuffer - offset + 1));
-        }
-    }
-
     void assertStereoChannelsEqualProductAfterFilling_Buffered(
         const std::vector<float> &multiplicand,
         const std::vector<float> &leftMultiplier,
@@ -333,13 +307,6 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
-    void assertFillingLeftChannelMultipliesBy(
-        const VectorFacade<float> &multiplicand,
-        const std::vector<float> &multiplier) {
-        fillAudioBufferMono(multiplier.size());
-        assertLeftChannelEquals(multiplicand.elementWiseProduct(multiplier));
-    }
-
     void assertLeftChannelEquals(const std::vector<float> &x) {
         assertChannelEqual(leftChannel, x);
     }
@@ -347,17 +314,6 @@ class MaskerPlayerTests : public ::testing::Test {
     static void assertChannelEqual(
         const std::vector<float> &channel, const std::vector<float> &x) {
         assertEqual(x, channel, 1e-6F);
-    }
-
-    void assertFillingStereoChannelsMultipliesBy(
-        const VectorFacade<float> &multiplicand,
-        const std::vector<float> &leftMultiplier,
-        const std::vector<float> &rightMultiplier) {
-        fillAudioBufferStereo(leftMultiplier.size());
-        assertLeftChannelEquals(
-            multiplicand.elementWiseProduct(leftMultiplier));
-        assertRightChannelEquals(
-            multiplicand.elementWiseProduct(rightMultiplier));
     }
 
     void assertStereoChannelsEqualProductAfterFilling(
