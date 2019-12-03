@@ -389,14 +389,14 @@ class MaskerPlayerTests : public ::testing::Test {
     void loadFile(std::string s = {}) { player.loadFile(std::move(s)); }
 };
 
-TEST_F(MaskerPlayerTests, playingWhenVideoPlayerPlaying) {
+TEST_F(MaskerPlayerTests, playingWhenAudioPlayerPlaying) {
     audioPlayer.setPlaying();
     assertTrue(player.playing());
 }
 
 TEST_F(MaskerPlayerTests, durationReturnsDuration) {
-    loadMonoAudio({1, 2, 3, 4, 5, 6});
     setSampleRateHz(3);
+    loadMonoAudio({1, 2, 3, 4, 5, 6});
     assertEqual(6. / 3, player.durationSeconds());
 }
 
