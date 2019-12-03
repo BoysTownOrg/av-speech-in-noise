@@ -593,11 +593,10 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoOneFill) {
     setSampleRateHz(3);
     auto halfWindowLength = 2 * 3 + 1;
 
-    audioReader.set({oneToN(halfWindowLength), NtoOne(halfWindowLength)});
-    loadFile();
+    loadStereoAudio(oneToN(halfWindowLength), NtoOne(halfWindowLength));
     fadeIn();
-    assertFillingStereoChannelsMultipliesBy(
-        VectorFacade<float>{halfHannWindow(halfWindowLength)},
+    assertStereoChannelsEqualProductAfterFilling(
+        halfHannWindow(halfWindowLength),
         oneToN(halfWindowLength), NtoOne(halfWindowLength));
 }
 
