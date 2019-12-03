@@ -579,10 +579,15 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
 }
 
 TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {
-    fadeInCompletely();
-    fadeOutToSilence();
-
-    loadMonoAudio({1, 2, 3});
+    setFadeInOutSeconds(2);
+    setSampleRateHz(3);
+    loadMonoAudio({4, 5, 6});
+    fadeIn();
+    fillAudioBufferMono(2 * 3 + 1);
+    timerCallback();
+    fadeOut();
+    fillAudioBufferMono(2 * 3 + 1);
+ 
     fillAudioBufferMono(3);
     assertEqual({0, 0, 0}, leftChannel, 1e-15F);
 }
