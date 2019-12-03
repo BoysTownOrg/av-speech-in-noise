@@ -346,6 +346,17 @@ class MaskerPlayerTests : public ::testing::Test {
             multiplicand.elementWiseProduct(rightMultiplier));
     }
 
+    void assertStereoChannelsEqualProductAfterFilling(
+        std::vector<float> multiplicand,
+        const std::vector<float> &leftMultiplier,
+        const std::vector<float> &rightMultiplier) {
+        fillAudioBufferStereo(leftMultiplier.size());
+        assertLeftChannelEquals(
+            elementWiseProduct(multiplicand, leftMultiplier));
+        assertRightChannelEquals(
+            elementWiseProduct(std::move(multiplicand), rightMultiplier));
+    }
+
     void assertRightChannelEquals(const std::vector<float> &x) {
         assertChannelEqual(rightChannel, x);
     }
@@ -555,10 +566,19 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoMultipleFills) {
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
 
+    loadStereoAudio(oneToN(halfWindowLength), NtoOne(halfWindowLength));
     fadeIn();
-    assertFillingStereoChannelsMultipliesBy_Buffered(
-        VectorFacade<float>{halfHannWindow(halfWindowLength)},
-        halfWindowLength / framesPerBuffer, framesPerBuffer);
+    auto buffers = halfWindowLength / framesPerBuffer;
+    auto multiplicand = halfHannWindow(halfWindowLength);
+    auto leftMultiplier = oneToN(halfWindowLength);
+    auto rightMultiplier = NtoOne(halfWindowLength);
+    for (int i = 0; i < buffers; ++i) {
+        auto offset = i * framesPerBuffer;
+        assertStereoChannelsEqualProductAfterFilling(
+            subvector(multiplicand, offset, framesPerBuffer),
+            subvector(leftMultiplier, offset, framesPerBuffer),
+            subvector(rightMultiplier, offset, framesPerBuffer));
+    }
 }
 
 TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoOneFill) {
