@@ -104,11 +104,11 @@ void MaskerPlayerImpl::setAudioDevice(std::string device) {
 }
 
 auto MaskerPlayerImpl::findDeviceIndex(const std::string &device) -> int {
-    auto devices_ = audioDeviceDescriptions_();
-    auto found = std::find(devices_.begin(), devices_.end(), device);
-    if (found == devices_.end())
+    auto devices = audioDeviceDescriptions_();
+    auto found = std::find(devices.begin(), devices.end(), device);
+    if (found == devices.end())
         throw av_speech_in_noise::InvalidAudioDevice{};
-    return gsl::narrow<int>(found - devices_.begin());
+    return std::distance(devices.begin(), found);
 }
 
 auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
@@ -196,30 +196,33 @@ void MaskerPlayerImpl::MainThread::callback() {
     scheduleCallbackAfterSeconds(0.1);
 }
 
+using channel_buffer_type = gsl::span<float>;
+
 // real-time audio thread
 void MaskerPlayerImpl::fillAudioBuffer(
-    const std::vector<gsl::span<float>> &audioBuffer) {
+    const std::vector<channel_buffer_type> &audioBuffer) {
     audioThread.fillAudioBuffer(audioBuffer);
 }
 
 static auto read(std::atomic<double> &x) -> double { return x.load(); }
 
-static void mute(gsl::span<float> x) { std::fill(x.begin(), x.end(), 0); }
+static void mute(channel_buffer_type x) { std::fill(x.begin(), x.end(), 0); }
 
-auto firstChannel(const std::vector<gsl::span<float>> &x) -> gsl::span<float> {
+auto firstChannel(const std::vector<channel_buffer_type> &x)
+    -> channel_buffer_type {
     return x.front();
 }
 
-auto noChannels(const std::vector<gsl::span<float>> &x) -> bool {
+auto noChannels(const std::vector<channel_buffer_type> &x) -> bool {
     return x.empty();
 }
 
-auto channels(const std::vector<gsl::span<float>> &x) -> std::size_t {
+auto channels(const std::vector<channel_buffer_type> &x) -> std::size_t {
     return x.size();
 }
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
-    const std::vector<gsl::span<float>> &audioBuffer) {
+    const std::vector<channel_buffer_type> &audioBuffer) {
     checkForFadeIn();
     checkForFadeOut();
 
