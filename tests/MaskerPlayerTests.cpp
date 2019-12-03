@@ -120,28 +120,9 @@ auto elementWiseProduct(std::vector<T> v, const std::vector<T> &y)
 template <typename T>
 auto subvector(const std::vector<T> &v, int offset, int size)
     -> std::vector<T> {
-    return {v.begin() + offset, v.begin() + offset + size};
+    const auto begin = v.begin() + offset;
+    return {begin, begin + size};
 }
-
-template <typename T> class VectorFacade {
-  public:
-    explicit VectorFacade(std::vector<T> v) : v{std::move(v)} {}
-
-    [[nodiscard]] auto elementWiseProduct(const std::vector<T> &y) const
-        -> std::vector<T> {
-        std::vector<T> product;
-        std::transform(v.begin(), v.end(), y.begin(),
-            std::back_inserter(product), std::multiplies<T>());
-        return product;
-    }
-
-    [[nodiscard]] auto subvector(int b, int e) const -> VectorFacade<T> {
-        return VectorFacade<T>{{v.begin() + b, v.begin() + e}};
-    }
-
-  private:
-    std::vector<T> v;
-};
 
 class TimerStub : public stimulus_players::Timer {
   public:
@@ -307,15 +288,6 @@ class MaskerPlayerTests : public ::testing::Test {
         }
     }
 
-    void assertLeftChannelEquals(const std::vector<float> &x) {
-        assertChannelEqual(leftChannel, x);
-    }
-
-    static void assertChannelEqual(
-        const std::vector<float> &channel, const std::vector<float> &x) {
-        assertEqual(x, channel, 1e-6F);
-    }
-
     void assertStereoChannelsEqualProductAfterFilling(
         std::vector<float> multiplicand,
         const std::vector<float> &leftMultiplier,
@@ -325,6 +297,15 @@ class MaskerPlayerTests : public ::testing::Test {
             elementWiseProduct(multiplicand, leftMultiplier));
         assertRightChannelEquals(
             elementWiseProduct(std::move(multiplicand), rightMultiplier));
+    }
+
+    void assertLeftChannelEquals(const std::vector<float> &x) {
+        assertChannelEqual(leftChannel, x);
+    }
+
+    static void assertChannelEqual(
+        const std::vector<float> &channel, const std::vector<float> &x) {
+        assertEqual(x, channel, 1e-6F);
     }
 
     void assertRightChannelEquals(const std::vector<float> &x) {
@@ -512,7 +493,7 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionMultipleFills) {
     fadeIn();
     const auto buffers = halfWindowLength / framesPerBuffer;
     assertLeftChannelEqualsProductAfterFilling_Buffered(
-        oneToN(halfWindowLength), halfHannWindow(halfWindowLength), buffers,
+        halfHannWindow(halfWindowLength), oneToN(halfWindowLength), buffers,
         framesPerBuffer);
 }
 
@@ -552,8 +533,8 @@ TEST_F(MaskerPlayerTests, fadesInAccordingToHannFunctionStereoOneFill) {
     loadStereoAudio(oneToN(halfWindowLength), NtoOne(halfWindowLength));
     fadeIn();
     assertStereoChannelsEqualProductAfterFilling(
-        halfHannWindow(halfWindowLength),
-        oneToN(halfWindowLength), NtoOne(halfWindowLength));
+        halfHannWindow(halfWindowLength), oneToN(halfWindowLength),
+        NtoOne(halfWindowLength));
 }
 
 TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeIn) {
@@ -577,8 +558,7 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionMultipleFills) {
     loadMonoAudio(oneToN(halfWindowLength));
     fadeOut();
     assertLeftChannelEqualsProductAfterFilling_Buffered(
-        backHalfHannWindow(halfWindowLength),
-        oneToN(halfWindowLength),
+        backHalfHannWindow(halfWindowLength), oneToN(halfWindowLength),
         halfWindowLength / framesPerBuffer, framesPerBuffer);
 }
 
@@ -591,8 +571,7 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
     loadMonoAudio(oneToN(halfWindowLength));
     fadeOut();
     assertLeftChannelEqualsProductAfterFilling(
-        backHalfHannWindow(halfWindowLength),
-        oneToN(halfWindowLength));
+        backHalfHannWindow(halfWindowLength), oneToN(halfWindowLength));
 }
 
 TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {
