@@ -401,8 +401,8 @@ TEST_F(MaskerPlayerTests, durationReturnsDuration) {
 }
 
 TEST_F(MaskerPlayerTests, seekSeeksAudio) {
-    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     setSampleRateHz(3);
+    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
     player.seekSeconds(2);
     fillAudioBufferMono(4);
     assertLeftChannelEquals({7, 8, 9, 1});
