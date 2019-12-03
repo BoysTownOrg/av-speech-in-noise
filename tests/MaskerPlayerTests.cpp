@@ -387,6 +387,16 @@ class MaskerPlayerTests : public ::testing::Test {
     void setSampleRateHz(double x) { audioPlayer.setSampleRateHz(x); }
 
     void loadFile(std::string s = {}) { player.loadFile(std::move(s)); }
+
+    void fadeInFillAndCallback(int n) {
+        fadeIn();
+        callbackAfterMonoFill(n);
+    }
+
+    void fadeOutAndFill(int n) {
+        fadeOut();
+        fillAudioBufferMono(n);
+    }
 };
 
 TEST_F(MaskerPlayerTests, playingWhenAudioPlayerPlaying) {
@@ -554,9 +564,7 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionMultipleFills) {
     auto halfWindowLength = 3 * 5 + 1;
     auto framesPerBuffer = 4;
     loadMonoAudio(oneToN(halfWindowLength));
-    fadeIn();
-    fillAudioBufferMono(halfWindowLength);
-    timerCallback();
+    fadeInFillAndCallback(halfWindowLength);
 
     fadeOut();
     assertLeftChannelEqualsProductAfterFilling_Buffered(
@@ -570,9 +578,7 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(oneToN(halfWindowLength));
-    fadeIn();
-    fillAudioBufferMono(halfWindowLength);
-    timerCallback();
+    fadeInFillAndCallback(halfWindowLength);
     fadeOut();
     assertLeftChannelEqualsProductAfterFilling(
         backHalfHannWindow(halfWindowLength), oneToN(halfWindowLength));
@@ -581,13 +587,12 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
 TEST_F(MaskerPlayerTests, steadyLevelFollowingFadeOut) {
     setFadeInOutSeconds(2);
     setSampleRateHz(3);
+    auto halfWindowLength = 2 * 3 + 1;
+
     loadMonoAudio({4, 5, 6});
-    fadeIn();
-    fillAudioBufferMono(2 * 3 + 1);
-    timerCallback();
-    fadeOut();
-    fillAudioBufferMono(2 * 3 + 1);
- 
+    fadeInFillAndCallback(halfWindowLength);
+    fadeOutAndFill(halfWindowLength);
+
     fillAudioBufferMono(3);
     assertEqual({0, 0, 0}, leftChannel, 1e-15F);
 }
