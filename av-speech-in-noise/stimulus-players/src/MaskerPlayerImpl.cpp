@@ -79,15 +79,17 @@ static auto rms(const channel_type &channel) -> sample_type {
 
 static auto noChannels(const audio_type &x) -> bool { return x.empty(); }
 
+// calling this while player is playing yields undefined behavior
 void MaskerPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath);
     sampleRateHz_ = sampleRateHz(player);
     audio = readAudio(std::move(filePath));
-    rms_ = noChannels(audio) ? 0 : ::stimulus_players::rms(firstChannel(audio));
     write(audioFrameHead, 0);
 }
 
-auto MaskerPlayerImpl::rms() -> double { return rms_; }
+auto MaskerPlayerImpl::rms() -> double {
+    return noChannels(audio) ? 0 : stimulus_players::rms(firstChannel(audio));
+}
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
