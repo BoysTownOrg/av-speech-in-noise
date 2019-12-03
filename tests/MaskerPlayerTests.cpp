@@ -565,12 +565,14 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionMultipleFills) {
 }
 
 TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
-    fadeInCompletely();
     setFadeInOutSeconds(2);
     setSampleRateHz(3);
     auto halfWindowLength = 2 * 3 + 1;
 
     loadMonoAudio(oneToN(halfWindowLength));
+    fadeIn();
+    fillAudioBufferMono(halfWindowLength);
+    timerCallback();
     fadeOut();
     assertLeftChannelEqualsProductAfterFilling(
         backHalfHannWindow(halfWindowLength), oneToN(halfWindowLength));
