@@ -616,9 +616,10 @@ TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeIn) {
 }
 
 TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
-    fadeInCompletely();
     setFadeInOutSeconds(3);
     setSampleRateHz(4);
+    loadMonoAudio({0});
+    fadeInFillAndCallback(3 * 4 + 1);
 
     fadeOut();
     for (int i = 0; i < 3 * 4; ++i)
