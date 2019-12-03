@@ -393,6 +393,11 @@ class MaskerPlayerTests : public ::testing::Test {
         callbackAfterMonoFill(n);
     }
 
+    void fadeOutFillAndCallback(int n) {
+        fadeOut();
+        callbackAfterMonoFill(n);
+    }
+
     void fadeOutAndFill(int n) {
         fadeOut();
         fillAudioBufferMono(n);
@@ -628,9 +633,13 @@ TEST_F(MaskerPlayerTests, fadeOutCompleteOnlyAfterFadeTime) {
 }
 
 TEST_F(MaskerPlayerTests, observerNotifiedOnceForFadeOut) {
-    fadeInCompletely();
+    setFadeInOutSeconds(2);
+    setSampleRateHz(3);
+    auto halfWindowLength = 2 * 3 + 1;
+    loadMonoAudio({0});
+    fadeInFillAndCallback(halfWindowLength);
+    fadeOutFillAndCallback(halfWindowLength);
 
-    fadeOutCompletely();
     assertEqual(1, listener.fadeOutCompletions());
     callbackAfterMonoFill();
     assertEqual(1, listener.fadeOutCompletions());
