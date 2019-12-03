@@ -620,8 +620,9 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionMultipleFills) {
 
     loadMonoAudio(oneToN(halfWindowLength));
     fadeOut();
-    assertFillingLeftChannelMultipliesBy_Buffered(
-        VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
+    assertLeftChannelEqualsProductAfterFilling_Buffered(
+        backHalfHannWindow(halfWindowLength),
+        oneToN(halfWindowLength),
         halfWindowLength / framesPerBuffer, framesPerBuffer);
 }
 
@@ -633,8 +634,8 @@ TEST_F(MaskerPlayerTests, fadesOutAccordingToHannFunctionOneFill) {
 
     loadMonoAudio(oneToN(halfWindowLength));
     fadeOut();
-    assertFillingLeftChannelMultipliesBy(
-        VectorFacade<float>{backHalfHannWindow(halfWindowLength)},
+    assertLeftChannelEqualsProductAfterFilling(
+        backHalfHannWindow(halfWindowLength),
         oneToN(halfWindowLength));
 }
 
