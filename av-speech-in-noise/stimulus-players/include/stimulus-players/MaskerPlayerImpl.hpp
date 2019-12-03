@@ -73,7 +73,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
 
     class AudioThread {
       public:
-        explicit AudioThread(AudioPlayer *);
         void setSharedAtomics(MaskerPlayerImpl *);
         void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
 
@@ -93,7 +92,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         auto nextFadeScalar() -> double;
 
         MaskerPlayerImpl *sharedAtomics{};
-        AudioPlayer *player;
         int hannCounter{};
         int halfWindowLength{};
         bool fadingOut{};
@@ -127,6 +125,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioPlayer *player;
     AudioReader *reader;
     double rms_{};
+    double sampleRateHz_{};
     std::atomic<double> levelScalar{1};
     std::atomic<double> fadeInOutSeconds{};
     std::atomic<std::size_t> audioFrameHead{};

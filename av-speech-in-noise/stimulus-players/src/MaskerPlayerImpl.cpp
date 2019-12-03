@@ -8,8 +8,7 @@
 namespace stimulus_players {
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
-    : audioThread{player},
-      mainThread{player, timer}, player{player}, reader{reader} {
+    : mainThread{player, timer}, player{player}, reader{reader} {
     player->subscribe(this);
     timer->subscribe(this);
     mainThread.setSharedAtomics(this);
@@ -22,9 +21,6 @@ MaskerPlayerImpl::MainThread::MainThread(AudioPlayer *player, Timer *timer)
 void MaskerPlayerImpl::MainThread::setSharedAtomics(MaskerPlayerImpl *p) {
     sharedAtomics = p;
 }
-
-MaskerPlayerImpl::AudioThread::AudioThread(AudioPlayer *player)
-    : player{player} {}
 
 void MaskerPlayerImpl::AudioThread::setSharedAtomics(MaskerPlayerImpl *p) {
     sharedAtomics = p;
@@ -85,6 +81,7 @@ static auto noChannels(const audio_type &x) -> bool { return x.empty(); }
 
 void MaskerPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath);
+    sampleRateHz_ = sampleRateHz(player);
     audio = readAudio(std::move(filePath));
     rms_ = noChannels(audio) ? 0 : ::stimulus_players::rms(firstChannel(audio));
     write(audioFrameHead, 0);
@@ -292,7 +289,7 @@ void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
 
 auto MaskerPlayerImpl::AudioThread::levelTransitionSamples() -> int {
     return gsl::narrow_cast<int>(
-        read(sharedAtomics->fadeInOutSeconds) * sampleRateHz(player));
+        read(sharedAtomics->fadeInOutSeconds) * sharedAtomics->sampleRateHz_);
 }
 
 static const auto pi = std::acos(-1);
