@@ -103,7 +103,7 @@ void MaskerPlayerImpl::seekSeconds(double x) {
 }
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
-    return fadeInOutSeconds.load();
+    return mainThread.fadeTimeSeconds();
 }
 
 static auto rms(const channel_type &channel) -> sample_type {
@@ -125,8 +125,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
     for (auto channel : mainThread.channelsWithDelay())
         write(samplesToWaitPerChannel_[channel],
             read(sampleRateHz_) * mainThread.channelDelaySeconds(channel));
-    write(
-        levelTransitionSamples_, read(fadeInOutSeconds) * read(sampleRateHz_));
+    write(levelTransitionSamples_,
+        mainThread.fadeTimeSeconds() * read(sampleRateHz_));
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }
@@ -142,7 +142,15 @@ static auto dB(double x) -> double { return std::pow(10, x / 20); }
 void MaskerPlayerImpl::setLevel_dB(double x) { write(levelScalar, dB(x)); }
 
 void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
-    write(fadeInOutSeconds, x);
+    mainThread.setFadeInOutSeconds(x);
+}
+
+void MaskerPlayerImpl::MainThread::setFadeInOutSeconds(double x) {
+    fadeInOutSeconds = x;
+}
+
+auto MaskerPlayerImpl::MainThread::fadeTimeSeconds() -> double {
+    return fadeInOutSeconds;
 }
 
 void MaskerPlayerImpl::setAudioDevice(std::string device) {

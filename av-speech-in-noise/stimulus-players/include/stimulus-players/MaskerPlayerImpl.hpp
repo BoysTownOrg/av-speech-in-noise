@@ -114,6 +114,8 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void setChannelDelaySeconds(channel_index_type channel, double seconds);
         auto channelDelaySeconds(channel_index_type channel) -> double;
         auto channelsWithDelay() -> std::set<channel_index_type>;
+        void setFadeInOutSeconds(double);
+        auto fadeTimeSeconds() -> double;
 
       private:
         auto fading() -> bool;
@@ -126,6 +128,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
         Timer *timer;
+        double fadeInOutSeconds{};
         bool fadingIn{};
         bool fadingOut{};
     };
@@ -139,7 +142,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioReader *reader;
     std::atomic<double> sampleRateHz_{};
     std::atomic<double> levelScalar{1};
-    std::atomic<double> fadeInOutSeconds{};
     std::atomic<std::size_t> audioFrameHead{};
     std::atomic<int> levelTransitionSamples_{};
     std::atomic<bool> fadeOutComplete{};
