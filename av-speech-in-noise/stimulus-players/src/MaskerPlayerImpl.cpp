@@ -83,6 +83,11 @@ static auto pi() -> double { return std::acos(-1); }
 
 static void mute(channel_buffer_type x) { std::fill(x.begin(), x.end(), 0); }
 
+static auto framesToFill(
+    const std::vector<channel_buffer_type> &audioBuffer) -> sample_index_type {
+    return noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
+}
+
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
     : mainThread{player, timer}, player{player}, reader{reader} {
@@ -288,9 +293,6 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
-    const auto framesToFill =
-        noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
-    const auto sourceFrames = samples(firstChannel(sharedAtomics->audio));
     const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
     for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
         const auto &source = channels(sharedAtomics->audio) > i
@@ -305,15 +307,16 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             : read(sharedAtomics->samplesToWaitPerChannel_.at(i));
         if (framesFilled < samplesToWait) {
             const auto framesAboutToFill =
-                std::min(samplesToWait, framesToFill);
+                std::min(samplesToWait, framesToFill(audioBuffer));
             mute(destination.first(framesAboutToFill));
             framesFilled += framesAboutToFill;
             write(sharedAtomics->samplesToWaitPerChannel_.at(i),
                 samplesToWait - framesAboutToFill);
         }
-        while (framesFilled < framesToFill) {
-            const auto framesAboutToFill = std::min(
-                sourceFrames - sourceFrameOffset, framesToFill - framesFilled);
+        while (framesFilled < framesToFill(audioBuffer)) {
+            const auto framesAboutToFill =
+                std::min(sourceFrames() - sourceFrameOffset,
+                    framesToFill(audioBuffer) - framesFilled);
             const auto sourceBeginning = source.begin() + sourceFrameOffset;
             std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
                 destination.begin() + framesFilled);
@@ -322,15 +325,17 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
         }
     }
     write(sharedAtomics->audioFrameHead,
-        (audioFrameHead_ + framesToFill) % sourceFrames);
+        (audioFrameHead_ + framesToFill(audioBuffer)) % sourceFrames());
+}
+
+auto MaskerPlayerImpl::AudioThread::sourceFrames() -> sample_index_type {
+    return samples(firstChannel(sharedAtomics->audio));
 }
 
 void MaskerPlayerImpl::AudioThread::applyLevel(
     const std::vector<channel_buffer_type> &audioBuffer) {
-    const auto framesToFill =
-        noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
     const auto levelScalar_ = read(sharedAtomics->levelScalar);
-    for (auto i = sample_index_type{0}; i < framesToFill; ++i) {
+    for (auto i = sample_index_type{0}; i < framesToFill(audioBuffer); ++i) {
         const auto fadeScalar = nextFadeScalar();
         updateFadeState();
         for (auto channelBuffer : audioBuffer)

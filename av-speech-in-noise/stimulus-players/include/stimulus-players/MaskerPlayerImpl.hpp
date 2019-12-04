@@ -89,8 +89,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
       private:
         void copySourceAudio(
             const std::vector<channel_buffer_type> &audioBuffer);
-        void applyLevel(
-            const std::vector<channel_buffer_type> &audioBuffer);
+        void applyLevel(const std::vector<channel_buffer_type> &audioBuffer);
         void updateWindowLength();
         void prepareToFadeIn();
         void checkForFadeIn();
@@ -103,6 +102,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void advanceCounterIfStillFading();
         void updateFadeState();
         auto nextFadeScalar() -> double;
+        auto sourceFrames() -> sample_index_type;
 
         MaskerPlayerImpl *sharedAtomics{};
         int hannCounter{};
