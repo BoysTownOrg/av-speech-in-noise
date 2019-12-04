@@ -125,7 +125,7 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         write(samplesToWaitPerChannel_[channel],
             sampleRateHz(player) * mainThread.channelDelaySeconds(channel));
     write(levelTransitionSamples_,
-        mainThread.fadeTimeSeconds() * sampleRateHz(player));
+        gsl::narrow<int>(mainThread.fadeTimeSeconds() * sampleRateHz(player)));
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }
