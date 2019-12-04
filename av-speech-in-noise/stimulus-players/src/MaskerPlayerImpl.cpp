@@ -130,7 +130,6 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         gsl::narrow_cast<int>(
             mainThread.fadeTimeSeconds() * sampleRateHz(player)));
     audio = readAudio(std::move(filePath));
-    write(audioFrameHead, 0);
     std::fill(audioFrameHeadsPerChannel__.begin(),
         audioFrameHeadsPerChannel__.end(), 0);
 }
