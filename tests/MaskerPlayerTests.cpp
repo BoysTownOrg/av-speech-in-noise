@@ -402,6 +402,10 @@ class MaskerPlayerTests : public ::testing::Test {
         fadeOut();
         fillAudioBufferMono(n);
     }
+
+    void setChannelDelaySeconds(int channel, double seconds) {
+        player.setChannelDelaySeconds(channel, seconds);
+    }
 };
 
 TEST_F(MaskerPlayerTests, playingWhenAudioPlayerPlaying) {
@@ -421,6 +425,14 @@ TEST_F(MaskerPlayerTests, seekSeeksAudio) {
     player.seekSeconds(2);
     fillAudioBufferMono(4);
     assertLeftChannelEquals({7, 8, 9, 1});
+}
+
+TEST_F(MaskerPlayerTests, delayChannelMono) {
+    setSampleRateHz(3);
+    setChannelDelaySeconds(0, 1);
+    loadMonoAudio({1, 2, 3});
+    fillAudioBufferMono(6);
+    assertLeftChannelEquals({0, 0, 0, 1, 2, 3});
 }
 
 TEST_F(MaskerPlayerTests, moreChannelsRequestedThanAvailableCopiesChannel) {

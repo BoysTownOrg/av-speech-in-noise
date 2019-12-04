@@ -65,6 +65,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void seekSeconds(double) override;
     auto fadeTimeSeconds() -> double override;
     void callback() override;
+    void setChannelDelaySeconds(int channel, double seconds);
 
   private:
     auto readAudio(std::string) -> audio_type;
@@ -125,8 +126,10 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioPlayer *player;
     AudioReader *reader;
     double sampleRateHz_{};
+    double delaySeconds_{};
     std::atomic<double> levelScalar{1};
     std::atomic<double> fadeInOutSeconds{};
+    std::size_t samplesToWait_{};
     std::atomic<std::size_t> audioFrameHead{};
     std::atomic<bool> fadeOutComplete{};
     std::atomic<bool> fadeInComplete{};
