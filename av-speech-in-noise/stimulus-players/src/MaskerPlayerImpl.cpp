@@ -6,7 +6,7 @@
 #include <algorithm>
 
 namespace stimulus_players {
-static auto samples(const channel_type &channel) -> auto {
+static auto samples(const channel_type &channel) {
     return gsl::narrow<sample_index_type>(channel.size());
 }
 
@@ -90,7 +90,8 @@ static auto framesToFill(const std::vector<channel_buffer_type> &audioBuffer)
 
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
-    : mainThread{player, timer}, player{player}, reader{reader} {
+    : mainThread{player, timer},
+      audioFrameHeadsPerChannel__(128), player{player}, reader{reader} {
     player->subscribe(this);
     timer->subscribe(this);
     mainThread.setSharedAtomics(this);
@@ -107,6 +108,9 @@ auto MaskerPlayerImpl::durationSeconds() -> double {
 
 void MaskerPlayerImpl::seekSeconds(double x) {
     write(audioFrameHead,
+        gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
+    std::fill(audioFrameHeadsPerChannel__.begin(),
+        audioFrameHeadsPerChannel__.end(),
         gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
 }
 
@@ -130,6 +134,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
             mainThread.fadeTimeSeconds() * sampleRateHz(player)));
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
+    std::fill(audioFrameHeadsPerChannel__.begin(),
+        audioFrameHeadsPerChannel__.end(), 0);
 }
 
 // real-time audio thread
@@ -301,6 +307,8 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             sharedAtomics->audioFrameHeadsPerChannel_.count(i) == 0U
             ? audioFrameHead_
             : read(sharedAtomics->audioFrameHeadsPerChannel_.at(i));
+        const auto betterAudioFrameHead__ =
+            read(sharedAtomics->audioFrameHeadsPerChannel__.at(i));
         auto framesFilled = sample_index_type{0};
         const auto samplesToWait =
             sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
@@ -314,7 +322,7 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             write(sharedAtomics->samplesToWaitPerChannel_.at(i),
                 samplesToWait - framesAboutToFill);
         }
-        auto sourceFrameOffset = audioFrameHead__;
+        auto sourceFrameOffset = betterAudioFrameHead__;
         const auto framesLeftToFill = framesToFill(audioBuffer) - framesFilled;
         while (framesFilled < framesToFill(audioBuffer)) {
             const auto framesAboutToFill =
@@ -331,7 +339,9 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
         }
         if (sharedAtomics->audioFrameHeadsPerChannel_.count(i) != 0U)
             write(sharedAtomics->audioFrameHeadsPerChannel_.at(i),
-                (audioFrameHead__ + framesLeftToFill) % sourceFrames());
+                (betterAudioFrameHead__ + framesLeftToFill) % sourceFrames());
+        write(sharedAtomics->audioFrameHeadsPerChannel__.at(i),
+            (betterAudioFrameHead__ + framesLeftToFill) % sourceFrames());
     }
     write(sharedAtomics->audioFrameHead,
         (audioFrameHead_ + framesToFill(audioBuffer)) % sourceFrames());
