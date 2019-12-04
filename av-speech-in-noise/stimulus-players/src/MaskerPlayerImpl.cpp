@@ -295,11 +295,6 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
     const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
     for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
-        const auto &source = channels(sharedAtomics->audio) > i
-            ? channel(sharedAtomics->audio, i)
-            : firstChannel(sharedAtomics->audio);
-        auto destination = channel(audioBuffer, i);
-        auto sourceFrameOffset = audioFrameHead_;
         auto framesFilled = sample_index_type{0};
         auto samplesToWait =
             sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
@@ -308,18 +303,22 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
         if (framesFilled < samplesToWait) {
             const auto framesAboutToFill =
                 std::min(samplesToWait, framesToFill(audioBuffer));
-            mute(destination.first(framesAboutToFill));
+            mute(channel(audioBuffer, i).first(framesAboutToFill));
             framesFilled += framesAboutToFill;
             write(sharedAtomics->samplesToWaitPerChannel_.at(i),
                 samplesToWait - framesAboutToFill);
         }
+        auto sourceFrameOffset = audioFrameHead_;
         while (framesFilled < framesToFill(audioBuffer)) {
             const auto framesAboutToFill =
                 std::min(sourceFrames() - sourceFrameOffset,
                     framesToFill(audioBuffer) - framesFilled);
+            const auto &source = channels(sharedAtomics->audio) > i
+                ? channel(sharedAtomics->audio, i)
+                : firstChannel(sharedAtomics->audio);
             const auto sourceBeginning = source.begin() + sourceFrameOffset;
             std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
-                destination.begin() + framesFilled);
+                channel(audioBuffer, i).begin() + framesFilled);
             sourceFrameOffset = 0;
             framesFilled += framesAboutToFill;
         }
