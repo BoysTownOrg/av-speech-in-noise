@@ -81,6 +81,9 @@ static auto noChannels(const audio_type &x) -> bool { return x.empty(); }
 
 // calling this while player is playing yields undefined behavior
 void MaskerPlayerImpl::loadFile(std::string filePath) {
+    if (playing())
+        return;
+
     player->loadFile(filePath);
     sampleRateHz_ = sampleRateHz(player);
     audio = readAudio(std::move(filePath));
