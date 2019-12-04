@@ -80,6 +80,8 @@ static void write(std::atomic<std::size_t> &to, std::size_t value) {
     to.store(value);
 }
 
+static void write(std::atomic<int> &to, int value) { to.store(value); }
+
 static void set(std::atomic<bool> &x) { x.store(true); }
 
 static void set(bool &x) { x = true; }
@@ -89,6 +91,8 @@ static auto read(std::atomic<double> &x) -> double { return x.load(); }
 static auto read(std::atomic<std::size_t> &x) -> std::size_t {
     return x.load();
 }
+
+static auto read(std::atomic<int> &x) -> int { return x.load(); }
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
     return samples(firstChannel(audio)) / read(sampleRateHz_);
@@ -121,6 +125,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
     for (auto channel : mainThread.channelsWithDelay())
         write(samplesToWaitPerChannel_[channel],
             read(sampleRateHz_) * mainThread.channelDelaySeconds(channel));
+    write(
+        levelTransitionSamples_, read(fadeInOutSeconds) * read(sampleRateHz_));
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }
@@ -322,7 +328,7 @@ void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
 }
 
 void MaskerPlayerImpl::AudioThread::updateWindowLength() {
-    halfWindowLength = levelTransitionSamples();
+    halfWindowLength = read(sharedAtomics->levelTransitionSamples_);
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
@@ -334,11 +340,6 @@ void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
     updateWindowLength();
     hannCounter = halfWindowLength;
     set(fadingOut);
-}
-
-auto MaskerPlayerImpl::AudioThread::levelTransitionSamples() -> int {
-    return gsl::narrow_cast<int>(
-        read(sharedAtomics->fadeInOutSeconds) * sharedAtomics->sampleRateHz_);
 }
 
 static const auto pi = std::acos(-1);
