@@ -107,9 +107,9 @@ auto MaskerPlayerImpl::durationSeconds() -> double {
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
-    std::fill(audioFrameHeadsPerChannel.begin(),
-        audioFrameHeadsPerChannel.end(),
-        gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
+    for (auto &head : audioFrameHeadsPerChannel)
+        write(head,
+            gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
 }
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
@@ -130,8 +130,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         gsl::narrow_cast<int>(
             mainThread.fadeTimeSeconds() * sampleRateHz(player)));
     audio = readAudio(std::move(filePath));
-    std::fill(
-        audioFrameHeadsPerChannel.begin(), audioFrameHeadsPerChannel.end(), 0);
+    for (auto &head : audioFrameHeadsPerChannel)
+        write(head, 0);
 }
 
 // real-time audio thread
