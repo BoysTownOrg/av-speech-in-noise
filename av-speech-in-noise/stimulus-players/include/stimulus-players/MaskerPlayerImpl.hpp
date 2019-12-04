@@ -125,11 +125,11 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     audio_type audio{};
     AudioPlayer *player;
     AudioReader *reader;
-    double sampleRateHz_{};
     double delaySeconds_{};
+    std::atomic<double> sampleRateHz_{};
     std::atomic<double> levelScalar{1};
     std::atomic<double> fadeInOutSeconds{};
-    std::size_t samplesToWait_{};
+    std::atomic<std::size_t> samplesToWait_{};
     std::atomic<std::size_t> audioFrameHead{};
     std::atomic<bool> fadeOutComplete{};
     std::atomic<bool> fadeInComplete{};

@@ -34,7 +34,7 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
     listener = e;
 }
 
-void MaskerPlayerImpl::setChannelDelaySeconds(int , double seconds) {
+void MaskerPlayerImpl::setChannelDelaySeconds(int, double seconds) {
     delaySeconds_ = seconds;
 }
 
@@ -56,18 +56,28 @@ static auto sampleRateHz(AudioPlayer *player) -> double {
     return player->sampleRateHz();
 }
 
-auto MaskerPlayerImpl::durationSeconds() -> double {
-    return samples(firstChannel(audio)) / sampleRateHz(player);
-}
-
 static void write(std::atomic<double> &to, double value) { to.store(value); }
 
 static void write(std::atomic<std::size_t> &to, std::size_t value) {
     to.store(value);
 }
 
+static void set(std::atomic<bool> &x) { x.store(true); }
+
+static void set(bool &x) { x = true; }
+
+static auto read(std::atomic<double> &x) -> double { return x.load(); }
+
+static auto read(std::atomic<std::size_t> &x) -> std::size_t {
+    return x.load();
+}
+
+auto MaskerPlayerImpl::durationSeconds() -> double {
+    return samples(firstChannel(audio)) / read(sampleRateHz_);
+}
+
 void MaskerPlayerImpl::seekSeconds(double x) {
-    write(audioFrameHead, x * sampleRateHz(player));
+    write(audioFrameHead, x * read(sampleRateHz_));
 }
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
@@ -89,8 +99,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         return;
 
     player->loadFile(filePath);
-    sampleRateHz_ = sampleRateHz(player);
-    samplesToWait_ = gsl::narrow<int>(sampleRateHz_ * delaySeconds_);
+    write(sampleRateHz_, sampleRateHz(player));
+    write(samplesToWait_, gsl::narrow<int>(sampleRateHz_ * delaySeconds_));
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }
@@ -146,10 +156,6 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
 }
 
 void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
-
-static void set(std::atomic<bool> &x) { x.store(true); }
-
-static void set(bool &x) { x = true; }
 
 void MaskerPlayerImpl::MainThread::fadeIn() {
     if (fading())
@@ -214,8 +220,6 @@ void MaskerPlayerImpl::fillAudioBuffer(
     audioThread.fillAudioBuffer(audioBuffer);
 }
 
-static auto read(std::atomic<double> &x) -> double { return x.load(); }
-
 static void mute(channel_buffer_type x) { std::fill(x.begin(), x.end(), 0); }
 
 auto firstChannel(const std::vector<channel_buffer_type> &x)
@@ -251,13 +255,14 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             auto destination = audioBuffer.at(i);
             auto sourceFrameOffset = audioFrameHead_;
             auto framesFilled = 0UL;
-            if (framesFilled < sharedAtomics->samplesToWait_) {
+            auto samplesToWait = read(sharedAtomics->samplesToWait_);
+            if (framesFilled < samplesToWait) {
                 const auto framesAboutToFill =
-                    std::min(sharedAtomics->samplesToWait_,
-                        framesToFill);
-                std::fill(destination.begin(), destination.begin() + framesAboutToFill, 0);
+                    std::min(samplesToWait, framesToFill);
+                mute(destination.first(framesAboutToFill));
                 framesFilled += framesAboutToFill;
-                sharedAtomics->samplesToWait_ -= framesAboutToFill;
+                write(sharedAtomics->samplesToWait_,
+                    samplesToWait - framesAboutToFill);
             }
             while (framesFilled < framesToFill) {
                 const auto framesAboutToFill =
