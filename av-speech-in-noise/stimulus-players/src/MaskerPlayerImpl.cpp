@@ -34,21 +34,24 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
     listener = e;
 }
 
-void MaskerPlayerImpl::setChannelDelaySeconds(int channel, double seconds) {
+void MaskerPlayerImpl::setChannelDelaySeconds(
+    channel_index_type channel, double seconds) {
     mainThread.setChannelDelaySeconds(channel, seconds);
 }
 
 void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
-    int channel, double seconds) {
+    channel_index_type channel, double seconds) {
     channelDelaySeconds_[channel] = seconds;
     channelsWithDelay_.insert(channel);
 }
 
-auto MaskerPlayerImpl::MainThread::channelsWithDelay() -> std::set<int> {
+auto MaskerPlayerImpl::MainThread::channelsWithDelay()
+    -> std::set<channel_index_type> {
     return channelsWithDelay_;
 }
 
-auto MaskerPlayerImpl::MainThread::channelDelaySeconds(int channel) -> double {
+auto MaskerPlayerImpl::MainThread::channelDelaySeconds(
+    channel_index_type channel) -> double {
     return channelDelaySeconds_.at(channel);
 }
 
@@ -56,7 +59,8 @@ static auto samples(const channel_type &channel) -> std::size_t {
     return channel.size();
 }
 
-static auto channel(const audio_type &x, int n) -> const channel_type & {
+static auto channel(const audio_type &x, channel_index_type n)
+    -> const channel_type & {
     return x.at(n);
 }
 
@@ -82,7 +86,9 @@ static void set(bool &x) { x = true; }
 
 static auto read(std::atomic<double> &x) -> double { return x.load(); }
 
-static auto read(std::atomic<std::size_t> &x) -> std::size_t { return x.load(); }
+static auto read(std::atomic<std::size_t> &x) -> std::size_t {
+    return x.load();
+}
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
     return samples(firstChannel(audio)) / read(sampleRateHz_);

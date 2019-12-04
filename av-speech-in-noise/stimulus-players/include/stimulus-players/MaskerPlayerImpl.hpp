@@ -47,6 +47,8 @@ class Timer {
     virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
+using channel_index_type = int;
+
 class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
                          public AudioPlayer::EventListener,
                          public Timer::EventListener {
@@ -67,7 +69,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void seekSeconds(double) override;
     auto fadeTimeSeconds() -> double override;
     void callback() override;
-    void setChannelDelaySeconds(int channel, double seconds);
+    void setChannelDelaySeconds(channel_index_type channel, double seconds);
 
   private:
     auto readAudio(std::string) -> audio_type;
@@ -109,16 +111,17 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void subscribe(MaskerPlayer::EventListener *);
         void fadeIn();
         void fadeOut();
-        void setChannelDelaySeconds(int channel, double seconds);
-        auto channelDelaySeconds(int channel) -> double;
-        auto channelsWithDelay() -> std::set<int>;
+        void setChannelDelaySeconds(channel_index_type channel, double seconds);
+        auto channelDelaySeconds(channel_index_type channel) -> double;
+        auto channelsWithDelay() -> std::set<channel_index_type>;
 
       private:
         auto fading() -> bool;
         void scheduleCallbackAfterSeconds(double);
 
-        std::unordered_map<int, std::size_t> channelDelaySeconds_{};
-        std::set<int> channelsWithDelay_{};
+        std::unordered_map<channel_index_type, std::size_t>
+            channelDelaySeconds_{};
+        std::set<channel_index_type> channelsWithDelay_{};
         MaskerPlayerImpl *sharedAtomics{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
@@ -130,7 +133,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioThread audioThread;
     MainThread mainThread;
     audio_type audio{};
-    std::unordered_map<int, std::atomic<std::size_t>>
+    std::unordered_map<channel_index_type, std::atomic<std::size_t>>
         samplesToWaitPerChannel_{};
     AudioPlayer *player;
     AudioReader *reader;
