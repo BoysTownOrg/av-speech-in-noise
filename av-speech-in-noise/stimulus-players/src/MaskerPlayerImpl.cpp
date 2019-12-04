@@ -6,47 +6,42 @@
 #include <algorithm>
 
 namespace stimulus_players {
-using channel_buffer_type = gsl::span<float>;
-
-static auto samples(const channel_type &channel) -> sample_index_type {
+static auto samples(const channel_type &channel) -> auto {
     return gsl::narrow<sample_index_type>(channel.size());
 }
 
-static auto channel(const audio_type &x, channel_index_type n)
-    -> const channel_type & {
+static auto channel(const audio_type &x, channel_index_type n) -> const auto & {
     return x.at(gsl::narrow<std::size_t>(n));
 }
 
-static auto channel(const std::vector<channel_buffer_type> &x,
-    channel_index_type i) -> channel_buffer_type {
+static auto channel(
+    const std::vector<channel_buffer_type> &x, channel_index_type i) -> auto {
     return x.at(gsl::narrow<std::size_t>(i));
 }
 
-static auto firstChannel(const audio_type &x) -> const channel_type & {
+static auto firstChannel(const audio_type &x) -> const auto & {
     return x.front();
 }
 
-static auto firstChannel(const std::vector<channel_buffer_type> &x)
-    -> channel_buffer_type {
+static auto firstChannel(const std::vector<channel_buffer_type> &x) -> auto {
     return x.front();
 }
 
-static auto channels(const audio_type &x) -> channel_index_type {
+static auto channels(const audio_type &x) -> auto {
     return gsl::narrow<channel_index_type>(x.size());
 }
 
-static auto channels(const std::vector<channel_buffer_type> &x)
-    -> channel_index_type {
+static auto channels(const std::vector<channel_buffer_type> &x) -> auto {
     return gsl::narrow<channel_index_type>(x.size());
 }
 
-static auto noChannels(const audio_type &x) -> bool { return x.empty(); }
+static auto noChannels(const audio_type &x) -> auto { return x.empty(); }
 
-static auto noChannels(const std::vector<channel_buffer_type> &x) -> bool {
+static auto noChannels(const std::vector<channel_buffer_type> &x) -> auto {
     return x.empty();
 }
 
-static auto sampleRateHz(AudioPlayer *player) -> double {
+static auto sampleRateHz(AudioPlayer *player) -> auto {
     return player->sampleRateHz();
 }
 
@@ -58,13 +53,11 @@ static void write(std::atomic<sample_index_type> &to, sample_index_type value) {
     to.store(value);
 }
 
-static auto read(std::atomic<double> &x) -> double { return x.load(); }
+static auto read(std::atomic<double> &x) -> auto { return x.load(); }
 
-static auto read(std::atomic<int> &x) -> int { return x.load(); }
+static auto read(std::atomic<int> &x) -> auto { return x.load(); }
 
-static auto read(std::atomic<sample_index_type> &x) -> sample_index_type {
-    return x.load();
-}
+static auto read(std::atomic<sample_index_type> &x) -> auto { return x.load(); }
 
 static void set(std::atomic<bool> &x) { x.store(true); }
 
@@ -86,9 +79,7 @@ static auto rms(const channel_type &channel) -> sample_type {
 
 static auto dB(double x) -> double { return std::pow(10, x / 20); }
 
-static auto pi() -> double {
-    return std::acos(-1);
-}
+static auto pi() -> double { return std::acos(-1); }
 
 static void mute(channel_buffer_type x) { std::fill(x.begin(), x.end(), 0); }
 
@@ -101,44 +92,8 @@ MaskerPlayerImpl::MaskerPlayerImpl(
     audioThread.setSharedAtomics(this);
 }
 
-MaskerPlayerImpl::MainThread::MainThread(AudioPlayer *player, Timer *timer)
-    : player{player}, timer{timer} {}
-
-void MaskerPlayerImpl::MainThread::setSharedAtomics(MaskerPlayerImpl *p) {
-    sharedAtomics = p;
-}
-
-void MaskerPlayerImpl::AudioThread::setSharedAtomics(MaskerPlayerImpl *p) {
-    sharedAtomics = p;
-}
-
 void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
     mainThread.subscribe(e);
-}
-
-void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
-    listener = e;
-}
-
-void MaskerPlayerImpl::setChannelDelaySeconds(
-    channel_index_type channel, double seconds) {
-    mainThread.setChannelDelaySeconds(channel, seconds);
-}
-
-void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
-    channel_index_type channel, double seconds) {
-    channelDelaySeconds_[channel] = seconds;
-    channelsWithDelay_.insert(channel);
-}
-
-auto MaskerPlayerImpl::MainThread::channelsWithDelay()
-    -> std::set<channel_index_type> {
-    return channelsWithDelay_;
-}
-
-auto MaskerPlayerImpl::MainThread::channelDelaySeconds(
-    channel_index_type channel) -> double {
-    return channelDelaySeconds_.at(channel);
 }
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
@@ -171,6 +126,12 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
     write(audioFrameHead, 0);
 }
 
+// real-time audio thread
+void MaskerPlayerImpl::fillAudioBuffer(
+    const std::vector<channel_buffer_type> &audioBuffer) {
+    audioThread.fillAudioBuffer(audioBuffer);
+}
+
 auto MaskerPlayerImpl::rms() -> double {
     return noChannels(audio) ? 0 : stimulus_players::rms(firstChannel(audio));
 }
@@ -181,14 +142,6 @@ void MaskerPlayerImpl::setLevel_dB(double x) { write(levelScalar, dB(x)); }
 
 void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
     mainThread.setFadeInOutSeconds(x);
-}
-
-void MaskerPlayerImpl::MainThread::setFadeInOutSeconds(double x) {
-    fadeInOutSeconds = x;
-}
-
-auto MaskerPlayerImpl::MainThread::fadeTimeSeconds() -> double {
-    return fadeInOutSeconds;
 }
 
 void MaskerPlayerImpl::setAudioDevice(std::string device) {
@@ -230,6 +183,50 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
 
 void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
 
+void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
+
+void MaskerPlayerImpl::callback() { mainThread.callback(); }
+
+MaskerPlayerImpl::MainThread::MainThread(AudioPlayer *player, Timer *timer)
+    : player{player}, timer{timer} {}
+
+void MaskerPlayerImpl::MainThread::setSharedAtomics(MaskerPlayerImpl *p) {
+    sharedAtomics = p;
+}
+
+void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
+    listener = e;
+}
+
+void MaskerPlayerImpl::setChannelDelaySeconds(
+    channel_index_type channel, double seconds) {
+    mainThread.setChannelDelaySeconds(channel, seconds);
+}
+
+void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
+    channel_index_type channel, double seconds) {
+    channelDelaySeconds_[channel] = seconds;
+    channelsWithDelay_.insert(channel);
+}
+
+auto MaskerPlayerImpl::MainThread::channelsWithDelay()
+    -> std::set<channel_index_type> {
+    return channelsWithDelay_;
+}
+
+auto MaskerPlayerImpl::MainThread::channelDelaySeconds(
+    channel_index_type channel) -> double {
+    return channelDelaySeconds_.at(channel);
+}
+
+void MaskerPlayerImpl::MainThread::setFadeInOutSeconds(double x) {
+    fadeInOutSeconds = x;
+}
+
+auto MaskerPlayerImpl::MainThread::fadeTimeSeconds() -> double {
+    return fadeInOutSeconds;
+}
+
 void MaskerPlayerImpl::MainThread::fadeIn() {
     if (fading())
         return;
@@ -248,8 +245,6 @@ auto MaskerPlayerImpl::MainThread::fading() -> bool {
     return fadingIn || fadingOut;
 }
 
-void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
-
 void MaskerPlayerImpl::MainThread::fadeOut() {
     if (fading())
         return;
@@ -258,8 +253,6 @@ void MaskerPlayerImpl::MainThread::fadeOut() {
     set(sharedAtomics->pleaseFadeOut);
     scheduleCallbackAfterSeconds(0.1);
 }
-
-void MaskerPlayerImpl::callback() { mainThread.callback(); }
 
 void MaskerPlayerImpl::MainThread::callback() {
     if (thisCallClears(sharedAtomics->fadeInComplete)) {
@@ -278,10 +271,8 @@ void MaskerPlayerImpl::MainThread::callback() {
     scheduleCallbackAfterSeconds(0.1);
 }
 
-// real-time audio thread
-void MaskerPlayerImpl::fillAudioBuffer(
-    const std::vector<channel_buffer_type> &audioBuffer) {
-    audioThread.fillAudioBuffer(audioBuffer);
+void MaskerPlayerImpl::AudioThread::setSharedAtomics(MaskerPlayerImpl *p) {
+    sharedAtomics = p;
 }
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(

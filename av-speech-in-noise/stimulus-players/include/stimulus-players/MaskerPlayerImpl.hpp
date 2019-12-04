@@ -12,13 +12,15 @@
 #include <set>
 
 namespace stimulus_players {
+using channel_buffer_type = gsl::span<float>;
+
 class AudioPlayer {
   public:
     class EventListener {
       public:
         virtual ~EventListener() = default;
         virtual void fillAudioBuffer(
-            const std::vector<gsl::span<float>> &audio) = 0;
+            const std::vector<channel_buffer_type> &audio) = 0;
     };
 
     virtual ~AudioPlayer() = default;
@@ -47,8 +49,9 @@ class Timer {
     virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
-using channel_index_type = gsl::index;
-using sample_index_type = gsl::index;
+using cpp_core_guidelines_index_type = gsl::index;
+using channel_index_type = cpp_core_guidelines_index_type;
+using sample_index_type = cpp_core_guidelines_index_type;
 
 class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
                          public AudioPlayer::EventListener,
@@ -62,7 +65,8 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     auto playing() -> bool override;
     void setAudioDevice(std::string) override;
     void setLevel_dB(double) override;
-    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
+    void fillAudioBuffer(
+        const std::vector<channel_buffer_type> &audio) override;
     void setFadeInOutSeconds(double);
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
     auto rms() -> double override;
@@ -80,7 +84,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     class AudioThread {
       public:
         void setSharedAtomics(MaskerPlayerImpl *);
-        void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
+        void fillAudioBuffer(const std::vector<channel_buffer_type> &audio);
 
       private:
         void updateWindowLength();
@@ -88,7 +92,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void checkForFadeIn();
         void prepareToFadeOut();
         void checkForFadeOut();
-        auto levelTransitionSamples() -> int;
         auto doneFadingIn() -> bool;
         void checkForFadeInComplete();
         auto doneFadingOut() -> bool;
@@ -122,8 +125,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         auto fading() -> bool;
         void scheduleCallbackAfterSeconds(double);
 
-        std::unordered_map<channel_index_type, double>
-            channelDelaySeconds_{};
+        std::unordered_map<channel_index_type, double> channelDelaySeconds_{};
         std::set<channel_index_type> channelsWithDelay_{};
         MaskerPlayerImpl *sharedAtomics{};
         AudioPlayer *player;
