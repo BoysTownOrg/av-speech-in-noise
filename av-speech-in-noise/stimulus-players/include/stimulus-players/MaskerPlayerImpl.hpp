@@ -129,7 +129,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         auto fading() -> bool;
         void scheduleCallbackAfterSeconds(double);
 
-        std::unordered_map<channel_index_type, double> channelDelaySeconds_{};
+        std::vector<double> channelDelaySeconds_;
         std::set<channel_index_type> channelsWithDelay_{};
         MaskerPlayerImpl *sharedAtomics{};
         AudioPlayer *player;

@@ -201,7 +201,7 @@ void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
 void MaskerPlayerImpl::callback() { mainThread.callback(); }
 
 MaskerPlayerImpl::MainThread::MainThread(AudioPlayer *player, Timer *timer)
-    : player{player}, timer{timer} {}
+    : channelDelaySeconds_(128), player{player}, timer{timer} {}
 
 void MaskerPlayerImpl::MainThread::setSharedAtomics(MaskerPlayerImpl *p) {
     sharedAtomics = p;
@@ -213,8 +213,8 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
 
 void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
-    channelDelaySeconds_[channel] = seconds;
     channelsWithDelay_.insert(channel);
+    channelDelaySeconds_.at(channel) = seconds;
 }
 
 auto MaskerPlayerImpl::MainThread::channelsWithDelay()
