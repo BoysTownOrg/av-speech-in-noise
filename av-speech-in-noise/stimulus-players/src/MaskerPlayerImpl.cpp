@@ -90,7 +90,7 @@ static auto framesToFill(const std::vector<channel_buffer_type> &audioBuffer)
 
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
-    : mainThread{player, timer},
+    : mainThread{player, timer}, samplesToWaitPerChannel__(128),
       audioFrameHeadsPerChannel(128), player{player}, reader{reader} {
     player->subscribe(this);
     timer->subscribe(this);
@@ -121,11 +121,11 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         return;
 
     player->loadFile(filePath);
-    for (auto channel : mainThread.channelsWithDelay()) {
-        write(samplesToWaitPerChannel_[channel],
-            gsl::narrow_cast<sample_index_type>(sampleRateHz(player) *
-                mainThread.channelDelaySeconds(channel)));
-    }
+    for (auto i = sample_index_type{0}; i < samplesToWaitPerChannel__.size();
+         ++i)
+        write(samplesToWaitPerChannel__.at(i),
+            gsl::narrow_cast<sample_index_type>(
+                sampleRateHz(player) * mainThread.channelDelaySeconds(i)));
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(
             mainThread.fadeTimeSeconds() * sampleRateHz(player)));
@@ -302,15 +302,13 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             read(sharedAtomics->audioFrameHeadsPerChannel.at(i));
         auto framesFilled = sample_index_type{0};
         const auto samplesToWait =
-            sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
-            ? sample_index_type{0}
-            : read(sharedAtomics->samplesToWaitPerChannel_.at(i));
+            read(sharedAtomics->samplesToWaitPerChannel__.at(i));
         if (framesFilled < samplesToWait) {
             const auto framesAboutToFill =
                 std::min(samplesToWait, framesToFill(audioBuffer));
             mute(channel(audioBuffer, i).first(framesAboutToFill));
             framesFilled += framesAboutToFill;
-            write(sharedAtomics->samplesToWaitPerChannel_.at(i),
+            write(sharedAtomics->samplesToWaitPerChannel__.at(i),
                 samplesToWait - framesAboutToFill);
         }
         auto sourceFrameOffset = betterAudioFrameHead__;
