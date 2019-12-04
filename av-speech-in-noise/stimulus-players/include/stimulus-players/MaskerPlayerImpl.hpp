@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <atomic>
+#include <unordered_map>
 
 namespace stimulus_players {
 class AudioPlayer {
@@ -123,6 +124,8 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioThread audioThread;
     MainThread mainThread;
     audio_type audio{};
+    std::unordered_map<int, std::size_t> channelDelaySeconds_{};
+    std::unordered_map<int, std::size_t> samplesToWaitPerChannel_{};
     AudioPlayer *player;
     AudioReader *reader;
     double delaySeconds_{};

@@ -34,8 +34,9 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
     listener = e;
 }
 
-void MaskerPlayerImpl::setChannelDelaySeconds(int, double seconds) {
+void MaskerPlayerImpl::setChannelDelaySeconds(int channel, double seconds) {
     delaySeconds_ = seconds;
+    channelDelaySeconds_[channel] = seconds;
 }
 
 static auto samples(const channel_type &channel) -> std::size_t {
@@ -68,10 +69,6 @@ static void set(bool &x) { x = true; }
 
 static auto read(std::atomic<double> &x) -> double { return x.load(); }
 
-static auto read(std::atomic<std::size_t> &x) -> std::size_t {
-    return x.load();
-}
-
 auto MaskerPlayerImpl::durationSeconds() -> double {
     return samples(firstChannel(audio)) / read(sampleRateHz_);
 }
@@ -100,7 +97,10 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
 
     player->loadFile(filePath);
     write(sampleRateHz_, sampleRateHz(player));
-    write(samplesToWait_, gsl::narrow<int>(sampleRateHz_ * delaySeconds_));
+    write(
+        samplesToWait_, gsl::narrow<int>(read(sampleRateHz_) * delaySeconds_));
+    for (auto [key, value] : channelDelaySeconds_)
+        samplesToWaitPerChannel_[key] = read(sampleRateHz_) * value;
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }
@@ -255,7 +255,10 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             auto destination = audioBuffer.at(i);
             auto sourceFrameOffset = audioFrameHead_;
             auto framesFilled = 0UL;
-            auto samplesToWait = read(sharedAtomics->samplesToWait_);
+            auto samplesToWait =
+                sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
+                ? 0
+                : sharedAtomics->samplesToWaitPerChannel_.at(i);
             if (framesFilled < samplesToWait) {
                 const auto framesAboutToFill =
                     std::min(samplesToWait, framesToFill);
