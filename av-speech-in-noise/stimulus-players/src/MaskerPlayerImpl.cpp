@@ -283,17 +283,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             mute(channelBuffer);
     else
         copySourceAudio(audioBuffer);
-
-    const auto framesToFill =
-        noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
-    const auto levelScalar_ = read(sharedAtomics->levelScalar);
-    for (auto i = sample_index_type{0}; i < framesToFill; ++i) {
-        const auto fadeScalar = nextFadeScalar();
-        updateFadeState();
-        for (auto channelBuffer : audioBuffer)
-            channelBuffer.at(i) *=
-                gsl::narrow_cast<sample_type>(fadeScalar * levelScalar_);
-    }
+    applyLevel(audioBuffer);
 }
 
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
@@ -333,6 +323,20 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
     }
     write(sharedAtomics->audioFrameHead,
         (audioFrameHead_ + framesToFill) % sourceFrames);
+}
+
+void MaskerPlayerImpl::AudioThread::applyLevel(
+    const std::vector<channel_buffer_type> &audioBuffer) {
+    const auto framesToFill =
+        noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
+    const auto levelScalar_ = read(sharedAtomics->levelScalar);
+    for (auto i = sample_index_type{0}; i < framesToFill; ++i) {
+        const auto fadeScalar = nextFadeScalar();
+        updateFadeState();
+        for (auto channelBuffer : audioBuffer)
+            channelBuffer.at(i) *=
+                gsl::narrow_cast<sample_type>(fadeScalar * levelScalar_);
+    }
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
