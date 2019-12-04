@@ -91,7 +91,7 @@ static auto framesToFill(const std::vector<channel_buffer_type> &audioBuffer)
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
     : mainThread{player, timer},
-      audioFrameHeadsPerChannel__(128), player{player}, reader{reader} {
+      audioFrameHeadsPerChannel(128), player{player}, reader{reader} {
     player->subscribe(this);
     timer->subscribe(this);
     mainThread.setSharedAtomics(this);
@@ -107,8 +107,8 @@ auto MaskerPlayerImpl::durationSeconds() -> double {
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
-    std::fill(audioFrameHeadsPerChannel__.begin(),
-        audioFrameHeadsPerChannel__.end(),
+    std::fill(audioFrameHeadsPerChannel.begin(),
+        audioFrameHeadsPerChannel.end(),
         gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
 }
 
@@ -130,8 +130,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         gsl::narrow_cast<int>(
             mainThread.fadeTimeSeconds() * sampleRateHz(player)));
     audio = readAudio(std::move(filePath));
-    std::fill(audioFrameHeadsPerChannel__.begin(),
-        audioFrameHeadsPerChannel__.end(), 0);
+    std::fill(
+        audioFrameHeadsPerChannel.begin(), audioFrameHeadsPerChannel.end(), 0);
 }
 
 // real-time audio thread
@@ -299,7 +299,7 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
     for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
         const auto betterAudioFrameHead__ =
-            read(sharedAtomics->audioFrameHeadsPerChannel__.at(i));
+            read(sharedAtomics->audioFrameHeadsPerChannel.at(i));
         auto framesFilled = sample_index_type{0};
         const auto samplesToWait =
             sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
@@ -328,7 +328,7 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             sourceFrameOffset = 0;
             framesFilled += framesAboutToFill;
         }
-        write(sharedAtomics->audioFrameHeadsPerChannel__.at(i),
+        write(sharedAtomics->audioFrameHeadsPerChannel.at(i),
             (betterAudioFrameHead__ + framesLeftToFill) % sourceFrames());
     }
 }
