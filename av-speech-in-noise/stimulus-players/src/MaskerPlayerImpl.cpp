@@ -83,8 +83,8 @@ static auto pi() -> double { return std::acos(-1); }
 
 static void mute(channel_buffer_type x) { std::fill(x.begin(), x.end(), 0); }
 
-static auto framesToFill(
-    const std::vector<channel_buffer_type> &audioBuffer) -> sample_index_type {
+static auto framesToFill(const std::vector<channel_buffer_type> &audioBuffer)
+    -> sample_index_type {
     return noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
 }
 
@@ -296,9 +296,9 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
     for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
         auto framesFilled = sample_index_type{0};
-        auto samplesToWait =
+        const auto samplesToWait =
             sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
-            ? 0
+            ? sample_index_type{0}
             : read(sharedAtomics->samplesToWaitPerChannel_.at(i));
         if (framesFilled < samplesToWait) {
             const auto framesAboutToFill =
