@@ -145,8 +145,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     audio_type audio{};
     std::unordered_map<channel_index_type, std::atomic<sample_index_type>>
         samplesToWaitPerChannel_{};
-    std::unordered_map<channel_index_type, std::atomic<sample_index_type>>
-        audioFrameHeadsPerChannel_{};
     std::vector<std::atomic<sample_index_type>> audioFrameHeadsPerChannel__;
     AudioPlayer *player;
     AudioReader *reader;

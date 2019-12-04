@@ -107,8 +107,6 @@ auto MaskerPlayerImpl::durationSeconds() -> double {
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
-    write(audioFrameHead,
-        gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
     std::fill(audioFrameHeadsPerChannel__.begin(),
         audioFrameHeadsPerChannel__.end(),
         gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
@@ -127,7 +125,6 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         write(samplesToWaitPerChannel_[channel],
             gsl::narrow_cast<sample_index_type>(sampleRateHz(player) *
                 mainThread.channelDelaySeconds(channel)));
-        write(audioFrameHeadsPerChannel_[channel], 0);
     }
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(
@@ -301,12 +298,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
-    const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
     for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
-        const auto audioFrameHead__ =
-            sharedAtomics->audioFrameHeadsPerChannel_.count(i) == 0U
-            ? audioFrameHead_
-            : read(sharedAtomics->audioFrameHeadsPerChannel_.at(i));
         const auto betterAudioFrameHead__ =
             read(sharedAtomics->audioFrameHeadsPerChannel__.at(i));
         auto framesFilled = sample_index_type{0};
@@ -337,14 +329,9 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             sourceFrameOffset = 0;
             framesFilled += framesAboutToFill;
         }
-        if (sharedAtomics->audioFrameHeadsPerChannel_.count(i) != 0U)
-            write(sharedAtomics->audioFrameHeadsPerChannel_.at(i),
-                (betterAudioFrameHead__ + framesLeftToFill) % sourceFrames());
         write(sharedAtomics->audioFrameHeadsPerChannel__.at(i),
             (betterAudioFrameHead__ + framesLeftToFill) % sourceFrames());
     }
-    write(sharedAtomics->audioFrameHead,
-        (audioFrameHead_ + framesToFill(audioBuffer)) % sourceFrames());
 }
 
 auto MaskerPlayerImpl::AudioThread::sourceFrames() -> sample_index_type {
