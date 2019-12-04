@@ -130,7 +130,8 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioThread audioThread;
     MainThread mainThread;
     audio_type audio{};
-    std::unordered_map<int, std::size_t> samplesToWaitPerChannel_{};
+    std::unordered_map<int, std::atomic<std::size_t>>
+        samplesToWaitPerChannel_{};
     AudioPlayer *player;
     AudioReader *reader;
     std::atomic<double> sampleRateHz_{};

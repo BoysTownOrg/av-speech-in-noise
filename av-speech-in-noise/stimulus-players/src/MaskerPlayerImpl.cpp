@@ -82,6 +82,8 @@ static void set(bool &x) { x = true; }
 
 static auto read(std::atomic<double> &x) -> double { return x.load(); }
 
+static auto read(std::atomic<std::size_t> &x) -> std::size_t { return x.load(); }
+
 auto MaskerPlayerImpl::durationSeconds() -> double {
     return samples(firstChannel(audio)) / read(sampleRateHz_);
 }
@@ -111,8 +113,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath);
     write(sampleRateHz_, sampleRateHz(player));
     for (auto channel : mainThread.channelsWithDelay())
-        samplesToWaitPerChannel_[channel] =
-            read(sampleRateHz_) * mainThread.channelDelaySeconds(channel);
+        write(samplesToWaitPerChannel_[channel],
+            read(sampleRateHz_) * mainThread.channelDelaySeconds(channel));
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }
@@ -259,7 +261,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             mute(channelBuffer);
     else {
         const auto sourceFrames = samples(firstChannel(sharedAtomics->audio));
-        const auto audioFrameHead_ = sharedAtomics->audioFrameHead.load();
+        const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
         for (std::size_t i = 0; i < channels(audioBuffer); ++i) {
             const auto &source = channels(sharedAtomics->audio) > i
                 ? channel(sharedAtomics->audio, i)
@@ -270,14 +272,14 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             auto samplesToWait =
                 sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
                 ? 0
-                : sharedAtomics->samplesToWaitPerChannel_.at(i);
+                : read(sharedAtomics->samplesToWaitPerChannel_.at(i));
             if (framesFilled < samplesToWait) {
                 const auto framesAboutToFill =
                     std::min(samplesToWait, framesToFill);
                 mute(destination.first(framesAboutToFill));
                 framesFilled += framesAboutToFill;
-                sharedAtomics->samplesToWaitPerChannel_.at(i) =
-                    samplesToWait - framesAboutToFill;
+                write(sharedAtomics->samplesToWaitPerChannel_.at(i),
+                    samplesToWait - framesAboutToFill);
             }
             while (framesFilled < framesToFill) {
                 const auto framesAboutToFill =
