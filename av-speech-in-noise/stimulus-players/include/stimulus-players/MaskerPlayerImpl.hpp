@@ -47,7 +47,7 @@ class Timer {
     virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
-using channel_index_type = int;
+using channel_index_type = gsl::index;
 using sample_index_type = gsl::index;
 
 class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,

@@ -55,7 +55,7 @@ auto MaskerPlayerImpl::MainThread::channelDelaySeconds(
     return channelDelaySeconds_.at(channel);
 }
 
-static auto samples(const channel_type &channel) -> std::size_t {
+static auto samples(const channel_type &channel) -> auto {
     return channel.size();
 }
 
@@ -68,17 +68,13 @@ static auto firstChannel(const audio_type &x) -> const channel_type & {
     return x.front();
 }
 
-static auto channels(const audio_type &x) -> std::size_t { return x.size(); }
+static auto channels(const audio_type &x) -> auto { return x.size(); }
 
 static auto sampleRateHz(AudioPlayer *player) -> double {
     return player->sampleRateHz();
 }
 
 static void write(std::atomic<double> &to, double value) { to.store(value); }
-
-static void write(std::atomic<std::size_t> &to, std::size_t value) {
-    to.store(value);
-}
 
 static void write(std::atomic<int> &to, int value) { to.store(value); }
 
@@ -92,13 +88,11 @@ static void set(bool &x) { x = true; }
 
 static auto read(std::atomic<double> &x) -> double { return x.load(); }
 
-static auto read(std::atomic<std::size_t> &x) -> std::size_t {
-    return x.load();
-}
-
 static auto read(std::atomic<int> &x) -> int { return x.load(); }
 
-static auto read(std::atomic<sample_index_type> &x) -> sample_index_type { return x.load(); }
+static auto read(std::atomic<sample_index_type> &x) -> sample_index_type {
+    return x.load();
+}
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
     return samples(firstChannel(audio)) / sampleRateHz(player);
@@ -291,7 +285,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     else {
         const auto sourceFrames = samples(firstChannel(sharedAtomics->audio));
         const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
-        for (auto i = 0; i < channels(audioBuffer); ++i) {
+        for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
             const auto &source = channels(sharedAtomics->audio) > i
                 ? channel(sharedAtomics->audio, i)
                 : firstChannel(sharedAtomics->audio);
@@ -325,7 +319,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             (audioFrameHead_ + framesToFill) % sourceFrames);
     }
     const auto levelScalar_ = read(sharedAtomics->levelScalar);
-    for (std::size_t i = 0; i < framesToFill; ++i) {
+    for (auto i = sample_index_type{0}; i < framesToFill; ++i) {
         const auto fadeScalar = nextFadeScalar();
         updateFadeState();
         for (auto channelBuffer : audioBuffer)
