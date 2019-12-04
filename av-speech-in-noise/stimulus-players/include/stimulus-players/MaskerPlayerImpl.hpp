@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 #include <atomic>
-#include <unordered_map>
-#include <set>
 
 namespace stimulus_players {
 using channel_buffer_type = gsl::span<float>;
