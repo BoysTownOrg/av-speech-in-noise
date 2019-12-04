@@ -331,7 +331,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
         updateFadeState();
         for (auto channelBuffer : audioBuffer)
             channelBuffer.at(i) *=
-                gsl::narrow<sample_type>(fadeScalar * levelScalar_);
+                gsl::narrow_cast<sample_type>(fadeScalar * levelScalar_);
     }
 }
 
