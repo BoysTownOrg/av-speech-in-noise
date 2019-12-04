@@ -95,11 +95,11 @@ static auto read(std::atomic<std::size_t> &x) -> std::size_t {
 static auto read(std::atomic<int> &x) -> int { return x.load(); }
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
-    return samples(firstChannel(audio)) / read(sampleRateHz_);
+    return samples(firstChannel(audio)) / sampleRateHz(player);
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
-    write(audioFrameHead, x * read(sampleRateHz_));
+    write(audioFrameHead, x * sampleRateHz(player));
 }
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
@@ -121,12 +121,11 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         return;
 
     player->loadFile(filePath);
-    write(sampleRateHz_, sampleRateHz(player));
     for (auto channel : mainThread.channelsWithDelay())
         write(samplesToWaitPerChannel_[channel],
-            read(sampleRateHz_) * mainThread.channelDelaySeconds(channel));
+            sampleRateHz(player) * mainThread.channelDelaySeconds(channel));
     write(levelTransitionSamples_,
-        mainThread.fadeTimeSeconds() * read(sampleRateHz_));
+        mainThread.fadeTimeSeconds() * sampleRateHz(player));
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }

@@ -140,7 +140,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         samplesToWaitPerChannel_{};
     AudioPlayer *player;
     AudioReader *reader;
-    std::atomic<double> sampleRateHz_{};
     std::atomic<double> levelScalar{1};
     std::atomic<std::size_t> audioFrameHead{};
     std::atomic<int> levelTransitionSamples_{};
