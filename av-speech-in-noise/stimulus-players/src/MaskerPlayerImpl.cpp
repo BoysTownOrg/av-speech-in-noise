@@ -213,13 +213,7 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
 
 void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
-    channelsWithDelay_.insert(channel);
     channelDelaySeconds_.at(channel) = seconds;
-}
-
-auto MaskerPlayerImpl::MainThread::channelsWithDelay()
-    -> std::set<channel_index_type> {
-    return channelsWithDelay_;
 }
 
 auto MaskerPlayerImpl::MainThread::channelDelaySeconds(

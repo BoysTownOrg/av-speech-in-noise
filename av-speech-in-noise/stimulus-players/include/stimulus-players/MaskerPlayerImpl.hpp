@@ -121,7 +121,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void fadeOut();
         void setChannelDelaySeconds(channel_index_type channel, double seconds);
         auto channelDelaySeconds(channel_index_type channel) -> double;
-        auto channelsWithDelay() -> std::set<channel_index_type>;
         void setFadeInOutSeconds(double);
         auto fadeTimeSeconds() -> double;
 
@@ -130,7 +129,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void scheduleCallbackAfterSeconds(double);
 
         std::vector<double> channelDelaySeconds_;
-        std::set<channel_index_type> channelsWithDelay_{};
         MaskerPlayerImpl *sharedAtomics{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
