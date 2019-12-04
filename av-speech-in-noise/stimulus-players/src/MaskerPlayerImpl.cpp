@@ -109,7 +109,6 @@ auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
     return mainThread.fadeTimeSeconds();
 }
 
-// calling this while player is playing yields undefined behavior
 void MaskerPlayerImpl::loadFile(std::string filePath) {
     if (playing())
         return;
@@ -181,6 +180,11 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
     return descriptions;
 }
 
+void MaskerPlayerImpl::setChannelDelaySeconds(
+    channel_index_type channel, double seconds) {
+    mainThread.setChannelDelaySeconds(channel, seconds);
+}
+
 void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
 
 void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
@@ -196,11 +200,6 @@ void MaskerPlayerImpl::MainThread::setSharedAtomics(MaskerPlayerImpl *p) {
 
 void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
     listener = e;
-}
-
-void MaskerPlayerImpl::setChannelDelaySeconds(
-    channel_index_type channel, double seconds) {
-    mainThread.setChannelDelaySeconds(channel, seconds);
 }
 
 void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
