@@ -35,7 +35,6 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
 }
 
 void MaskerPlayerImpl::setChannelDelaySeconds(int channel, double seconds) {
-    delaySeconds_ = seconds;
     channelDelaySeconds_[channel] = seconds;
 }
 
@@ -97,10 +96,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
 
     player->loadFile(filePath);
     write(sampleRateHz_, sampleRateHz(player));
-    write(
-        samplesToWait_, gsl::narrow<int>(read(sampleRateHz_) * delaySeconds_));
-    for (auto [key, value] : channelDelaySeconds_)
-        samplesToWaitPerChannel_[key] = read(sampleRateHz_) * value;
+    for (auto [channel, seconds] : channelDelaySeconds_)
+        samplesToWaitPerChannel_[channel] = read(sampleRateHz_) * seconds;
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }
@@ -264,8 +261,8 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
                     std::min(samplesToWait, framesToFill);
                 mute(destination.first(framesAboutToFill));
                 framesFilled += framesAboutToFill;
-                write(sharedAtomics->samplesToWait_,
-                    samplesToWait - framesAboutToFill);
+                sharedAtomics->samplesToWaitPerChannel_.at(i) =
+                    samplesToWait - framesAboutToFill;
             }
             while (framesFilled < framesToFill) {
                 const auto framesAboutToFill =
