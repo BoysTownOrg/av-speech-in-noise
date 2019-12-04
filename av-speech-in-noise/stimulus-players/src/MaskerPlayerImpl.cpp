@@ -278,48 +278,14 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer) {
     checkForFadeIn();
     checkForFadeOut();
-
-    const auto framesToFill =
-        noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
     if (noChannels(sharedAtomics->audio))
         for (auto channelBuffer : audioBuffer)
             mute(channelBuffer);
-    else {
-        const auto sourceFrames = samples(firstChannel(sharedAtomics->audio));
-        const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
-        for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
-            const auto &source = channels(sharedAtomics->audio) > i
-                ? channel(sharedAtomics->audio, i)
-                : firstChannel(sharedAtomics->audio);
-            auto destination = channel(audioBuffer, i);
-            auto sourceFrameOffset = audioFrameHead_;
-            auto framesFilled = sample_index_type{0};
-            auto samplesToWait =
-                sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
-                ? 0
-                : read(sharedAtomics->samplesToWaitPerChannel_.at(i));
-            if (framesFilled < samplesToWait) {
-                const auto framesAboutToFill =
-                    std::min(samplesToWait, framesToFill);
-                mute(destination.first(framesAboutToFill));
-                framesFilled += framesAboutToFill;
-                write(sharedAtomics->samplesToWaitPerChannel_.at(i),
-                    samplesToWait - framesAboutToFill);
-            }
-            while (framesFilled < framesToFill) {
-                const auto framesAboutToFill =
-                    std::min(sourceFrames - sourceFrameOffset,
-                        framesToFill - framesFilled);
-                const auto sourceBeginning = source.begin() + sourceFrameOffset;
-                std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
-                    destination.begin() + framesFilled);
-                sourceFrameOffset = 0;
-                framesFilled += framesAboutToFill;
-            }
-        }
-        write(sharedAtomics->audioFrameHead,
-            (audioFrameHead_ + framesToFill) % sourceFrames);
-    }
+    else
+        copySourceAudio(audioBuffer);
+
+    const auto framesToFill =
+        noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
     const auto levelScalar_ = read(sharedAtomics->levelScalar);
     for (auto i = sample_index_type{0}; i < framesToFill; ++i) {
         const auto fadeScalar = nextFadeScalar();
@@ -328,6 +294,45 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             channelBuffer.at(i) *=
                 gsl::narrow_cast<sample_type>(fadeScalar * levelScalar_);
     }
+}
+
+void MaskerPlayerImpl::AudioThread::copySourceAudio(
+    const std::vector<channel_buffer_type> &audioBuffer) {
+    const auto framesToFill =
+        noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
+    const auto sourceFrames = samples(firstChannel(sharedAtomics->audio));
+    const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
+    for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
+        const auto &source = channels(sharedAtomics->audio) > i
+            ? channel(sharedAtomics->audio, i)
+            : firstChannel(sharedAtomics->audio);
+        auto destination = channel(audioBuffer, i);
+        auto sourceFrameOffset = audioFrameHead_;
+        auto framesFilled = sample_index_type{0};
+        auto samplesToWait =
+            sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
+            ? 0
+            : read(sharedAtomics->samplesToWaitPerChannel_.at(i));
+        if (framesFilled < samplesToWait) {
+            const auto framesAboutToFill =
+                std::min(samplesToWait, framesToFill);
+            mute(destination.first(framesAboutToFill));
+            framesFilled += framesAboutToFill;
+            write(sharedAtomics->samplesToWaitPerChannel_.at(i),
+                samplesToWait - framesAboutToFill);
+        }
+        while (framesFilled < framesToFill) {
+            const auto framesAboutToFill = std::min(
+                sourceFrames - sourceFrameOffset, framesToFill - framesFilled);
+            const auto sourceBeginning = source.begin() + sourceFrameOffset;
+            std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
+                destination.begin() + framesFilled);
+            sourceFrameOffset = 0;
+            framesFilled += framesAboutToFill;
+        }
+    }
+    write(sharedAtomics->audioFrameHead,
+        (audioFrameHead_ + framesToFill) % sourceFrames);
 }
 
 void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
