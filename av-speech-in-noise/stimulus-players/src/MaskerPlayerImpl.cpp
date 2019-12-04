@@ -55,20 +55,22 @@ auto MaskerPlayerImpl::MainThread::channelDelaySeconds(
     return channelDelaySeconds_.at(channel);
 }
 
-static auto samples(const channel_type &channel) -> auto {
-    return channel.size();
+static auto samples(const channel_type &channel) -> sample_index_type {
+    return gsl::narrow<sample_index_type>(channel.size());
 }
 
 static auto channel(const audio_type &x, channel_index_type n)
     -> const channel_type & {
-    return x.at(n);
+    return x.at(gsl::narrow<std::size_t>(n));
 }
 
 static auto firstChannel(const audio_type &x) -> const channel_type & {
     return x.front();
 }
 
-static auto channels(const audio_type &x) -> auto { return x.size(); }
+static auto channels(const audio_type &x) -> channel_index_type {
+    return gsl::narrow<channel_index_type>(x.size());
+}
 
 static auto sampleRateHz(AudioPlayer *player) -> double {
     return player->sampleRateHz();
@@ -264,12 +266,17 @@ auto firstChannel(const std::vector<channel_buffer_type> &x)
     return x.front();
 }
 
+auto channel(const std::vector<channel_buffer_type> &x, channel_index_type i)
+    -> channel_buffer_type {
+    return x.at(gsl::narrow<std::size_t>(i));
+}
+
 auto noChannels(const std::vector<channel_buffer_type> &x) -> bool {
     return x.empty();
 }
 
-auto channels(const std::vector<channel_buffer_type> &x) -> std::size_t {
-    return x.size();
+auto channels(const std::vector<channel_buffer_type> &x) -> channel_index_type {
+    return gsl::narrow<channel_index_type>(x.size());
 }
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
@@ -289,9 +296,9 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
             const auto &source = channels(sharedAtomics->audio) > i
                 ? channel(sharedAtomics->audio, i)
                 : firstChannel(sharedAtomics->audio);
-            auto destination = audioBuffer.at(i);
+            auto destination = channel(audioBuffer, i);
             auto sourceFrameOffset = audioFrameHead_;
-            auto framesFilled = 0UL;
+            auto framesFilled = sample_index_type{0};
             auto samplesToWait =
                 sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
                 ? 0
@@ -323,7 +330,8 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
         const auto fadeScalar = nextFadeScalar();
         updateFadeState();
         for (auto channelBuffer : audioBuffer)
-            channelBuffer.at(i) *= fadeScalar * levelScalar_;
+            channelBuffer.at(i) *=
+                gsl::narrow<sample_type>(fadeScalar * levelScalar_);
     }
 }
 
