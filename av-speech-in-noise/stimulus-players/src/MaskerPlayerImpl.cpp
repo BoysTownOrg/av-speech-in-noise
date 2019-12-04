@@ -119,10 +119,12 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         return;
 
     player->loadFile(filePath);
-    for (auto channel : mainThread.channelsWithDelay())
+    for (auto channel : mainThread.channelsWithDelay()) {
         write(samplesToWaitPerChannel_[channel],
             gsl::narrow_cast<sample_index_type>(sampleRateHz(player) *
                 mainThread.channelDelaySeconds(channel)));
+        write(audioFrameHeadsPerChannel_[channel], 0);
+    }
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(
             mainThread.fadeTimeSeconds() * sampleRateHz(player)));
@@ -295,6 +297,10 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
     const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
     for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
+        const auto audioFrameHead__ =
+            sharedAtomics->audioFrameHeadsPerChannel_.count(i) == 0U
+            ? audioFrameHead_
+            : read(sharedAtomics->audioFrameHeadsPerChannel_.at(i));
         auto framesFilled = sample_index_type{0};
         const auto samplesToWait =
             sharedAtomics->samplesToWaitPerChannel_.count(i) == 0U
@@ -308,7 +314,8 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             write(sharedAtomics->samplesToWaitPerChannel_.at(i),
                 samplesToWait - framesAboutToFill);
         }
-        auto sourceFrameOffset = audioFrameHead_;
+        auto sourceFrameOffset = audioFrameHead__;
+        const auto framesLeftToFill = framesToFill(audioBuffer) - framesFilled;
         while (framesFilled < framesToFill(audioBuffer)) {
             const auto framesAboutToFill =
                 std::min(sourceFrames() - sourceFrameOffset,
@@ -322,6 +329,9 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             sourceFrameOffset = 0;
             framesFilled += framesAboutToFill;
         }
+        if (sharedAtomics->audioFrameHeadsPerChannel_.count(i) != 0U)
+            write(sharedAtomics->audioFrameHeadsPerChannel_.at(i),
+                (audioFrameHead__ + framesLeftToFill) % sourceFrames());
     }
     write(sharedAtomics->audioFrameHead,
         (audioFrameHead_ + framesToFill(audioBuffer)) % sourceFrames());
