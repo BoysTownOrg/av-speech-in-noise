@@ -35,7 +35,21 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
 }
 
 void MaskerPlayerImpl::setChannelDelaySeconds(int channel, double seconds) {
+    mainThread.setChannelDelaySeconds(channel, seconds);
+}
+
+void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
+    int channel, double seconds) {
     channelDelaySeconds_[channel] = seconds;
+    channelsWithDelay_.insert(channel);
+}
+
+auto MaskerPlayerImpl::MainThread::channelsWithDelay() -> std::set<int> {
+    return channelsWithDelay_;
+}
+
+auto MaskerPlayerImpl::MainThread::channelDelaySeconds(int channel) -> double {
+    return channelDelaySeconds_.at(channel);
 }
 
 static auto samples(const channel_type &channel) -> std::size_t {
@@ -96,8 +110,9 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
 
     player->loadFile(filePath);
     write(sampleRateHz_, sampleRateHz(player));
-    for (auto [channel, seconds] : channelDelaySeconds_)
-        samplesToWaitPerChannel_[channel] = read(sampleRateHz_) * seconds;
+    for (auto channel : mainThread.channelsWithDelay())
+        samplesToWaitPerChannel_[channel] =
+            read(sampleRateHz_) * mainThread.channelDelaySeconds(channel);
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }

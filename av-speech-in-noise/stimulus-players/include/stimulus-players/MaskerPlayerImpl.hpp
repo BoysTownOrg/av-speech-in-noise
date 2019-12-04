@@ -9,6 +9,7 @@
 #include <vector>
 #include <atomic>
 #include <unordered_map>
+#include <set>
 
 namespace stimulus_players {
 class AudioPlayer {
@@ -108,11 +109,16 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void subscribe(MaskerPlayer::EventListener *);
         void fadeIn();
         void fadeOut();
+        void setChannelDelaySeconds(int channel, double seconds);
+        auto channelDelaySeconds(int channel) -> double;
+        auto channelsWithDelay() -> std::set<int>;
 
       private:
         auto fading() -> bool;
         void scheduleCallbackAfterSeconds(double);
 
+        std::unordered_map<int, std::size_t> channelDelaySeconds_{};
+        std::set<int> channelsWithDelay_{};
         MaskerPlayerImpl *sharedAtomics{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
@@ -124,7 +130,6 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioThread audioThread;
     MainThread mainThread;
     audio_type audio{};
-    std::unordered_map<int, std::size_t> channelDelaySeconds_{};
     std::unordered_map<int, std::size_t> samplesToWaitPerChannel_{};
     AudioPlayer *player;
     AudioReader *reader;
