@@ -29,7 +29,7 @@ void AdaptiveMethodImpl::selectNextListAfter(void (AdaptiveMethodImpl::*f)()) {
 
 void AdaptiveMethodImpl::makeSnrTracks() {
     targetListsWithTracks.clear();
-    for (const auto& list : lists)
+    for (const auto &list : lists)
         makeTrackWithList(list.get());
 }
 
@@ -43,8 +43,9 @@ void AdaptiveMethodImpl::selectNextList() {
     auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
     if (remainingLists == 0)
         return;
-    auto targetListsWithTrack_ = targetListsWithTracks.at(
+    auto index = gsl::narrow<std::size_t>(
         randomizer->randomIntBetween(0, remainingLists - 1));
+    auto targetListsWithTrack_ = targetListsWithTracks.at(index);
     currentSnrTrack = targetListsWithTrack_.track.get();
     currentTargetList = targetListsWithTrack_.list;
 }

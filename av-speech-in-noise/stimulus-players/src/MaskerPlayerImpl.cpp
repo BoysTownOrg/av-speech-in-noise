@@ -82,6 +82,10 @@ static void write(std::atomic<std::size_t> &to, std::size_t value) {
 
 static void write(std::atomic<int> &to, int value) { to.store(value); }
 
+static void write(std::atomic<sample_index_type> &to, sample_index_type value) {
+    to.store(value);
+}
+
 static void set(std::atomic<bool> &x) { x.store(true); }
 
 static void set(bool &x) { x = true; }
@@ -94,12 +98,15 @@ static auto read(std::atomic<std::size_t> &x) -> std::size_t {
 
 static auto read(std::atomic<int> &x) -> int { return x.load(); }
 
+static auto read(std::atomic<sample_index_type> &x) -> sample_index_type { return x.load(); }
+
 auto MaskerPlayerImpl::durationSeconds() -> double {
     return samples(firstChannel(audio)) / sampleRateHz(player);
 }
 
 void MaskerPlayerImpl::seekSeconds(double x) {
-    write(audioFrameHead, x * sampleRateHz(player));
+    write(audioFrameHead,
+        gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
 }
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
@@ -123,9 +130,11 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath);
     for (auto channel : mainThread.channelsWithDelay())
         write(samplesToWaitPerChannel_[channel],
-            sampleRateHz(player) * mainThread.channelDelaySeconds(channel));
+            gsl::narrow_cast<sample_index_type>(sampleRateHz(player) *
+                mainThread.channelDelaySeconds(channel)));
     write(levelTransitionSamples_,
-        gsl::narrow<int>(mainThread.fadeTimeSeconds() * sampleRateHz(player)));
+        gsl::narrow_cast<int>(
+            mainThread.fadeTimeSeconds() * sampleRateHz(player)));
     audio = readAudio(std::move(filePath));
     write(audioFrameHead, 0);
 }
@@ -161,7 +170,7 @@ auto MaskerPlayerImpl::findDeviceIndex(const std::string &device) -> int {
     auto found = std::find(devices.begin(), devices.end(), device);
     if (found == devices.end())
         throw av_speech_in_noise::InvalidAudioDevice{};
-    return std::distance(devices.begin(), found);
+    return gsl::narrow<int>(std::distance(devices.begin(), found));
 }
 
 auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
@@ -173,7 +182,8 @@ auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
 }
 
 auto MaskerPlayerImpl::audioDeviceDescriptions_() -> std::vector<std::string> {
-    std::vector<std::string> descriptions(player->deviceCount());
+    std::vector<std::string> descriptions(
+        gsl::narrow<std::size_t>(player->deviceCount()));
     std::generate(descriptions.begin(), descriptions.end(),
         [&, n = 0]() mutable { return player->deviceDescription(n++); });
     return descriptions;
@@ -273,7 +283,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     checkForFadeIn();
     checkForFadeOut();
 
-    const std::size_t framesToFill =
+    const auto framesToFill =
         noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
     if (noChannels(sharedAtomics->audio))
         for (auto channelBuffer : audioBuffer)
@@ -281,7 +291,7 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     else {
         const auto sourceFrames = samples(firstChannel(sharedAtomics->audio));
         const auto audioFrameHead_ = read(sharedAtomics->audioFrameHead);
-        for (std::size_t i = 0; i < channels(audioBuffer); ++i) {
+        for (auto i = 0; i < channels(audioBuffer); ++i) {
             const auto &source = channels(sharedAtomics->audio) > i
                 ? channel(sharedAtomics->audio, i)
                 : firstChannel(sharedAtomics->audio);

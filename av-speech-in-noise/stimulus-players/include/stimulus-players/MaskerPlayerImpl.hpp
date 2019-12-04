@@ -48,6 +48,7 @@ class Timer {
 };
 
 using channel_index_type = int;
+using sample_index_type = gsl::index;
 
 class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
                          public AudioPlayer::EventListener,
@@ -136,12 +137,12 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioThread audioThread;
     MainThread mainThread;
     audio_type audio{};
-    std::unordered_map<channel_index_type, std::atomic<std::size_t>>
+    std::unordered_map<channel_index_type, std::atomic<sample_index_type>>
         samplesToWaitPerChannel_{};
     AudioPlayer *player;
     AudioReader *reader;
     std::atomic<double> levelScalar{1};
-    std::atomic<std::size_t> audioFrameHead{};
+    std::atomic<sample_index_type> audioFrameHead{};
     std::atomic<int> levelTransitionSamples_{};
     std::atomic<bool> fadeOutComplete{};
     std::atomic<bool> fadeInComplete{};
