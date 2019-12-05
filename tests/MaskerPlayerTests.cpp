@@ -459,6 +459,17 @@ TEST_F(MaskerPlayerTests, delayChannelStereo_Buffered) {
     assertRightChannelEquals({8, 9});
 }
 
+TEST_F(MaskerPlayerTests, delayChannelMonoWithSeek) {
+    setSampleRateHz(3);
+    setChannelDelaySeconds(0, 1);
+    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
+    fillAudioBufferMono(6);
+    assertLeftChannelEquals({0, 0, 0, 1, 2, 3});
+    player.seekSeconds(2);
+    fillAudioBufferMono(6);
+    assertLeftChannelEquals({0, 0, 0, 7, 8, 9});
+}
+
 TEST_F(MaskerPlayerTests, moreChannelsRequestedThanAvailableCopiesChannel) {
     loadMonoAudio({1, 2, 3});
     fillAudioBufferStereo(3);

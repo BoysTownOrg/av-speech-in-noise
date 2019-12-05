@@ -104,6 +104,11 @@ void MaskerPlayerImpl::seekSeconds(double x) {
     if (playing())
         return;
 
+    std::generate(samplesToWaitPerChannel.begin(),
+        samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
+            return gsl::narrow_cast<channel_index_type>(
+                sampleRateHz(player) * mainThread.channelDelaySeconds(n++));
+        });
     std::fill(audioFrameHeadsPerChannel.begin(),
         audioFrameHeadsPerChannel.end(),
         gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
