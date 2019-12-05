@@ -15,7 +15,7 @@ void RandomizedTargetList::shuffle() {
     randomizer->shuffle(files.begin(), files.end());
 }
 
-auto RandomizedTargetList::next() -> std::string {
+std::string RandomizedTargetList::next() {
     if (empty_())
         return "";
 
@@ -26,9 +26,9 @@ auto RandomizedTargetList::next() -> std::string {
     return fullPath(currentFile_ = std::move(nextFile_));
 }
 
-auto RandomizedTargetList::empty() -> bool { return empty_(); }
+bool RandomizedTargetList::empty() { return empty_(); }
 
-auto RandomizedTargetList::empty_() -> bool { return files.empty(); }
+bool RandomizedTargetList::empty_() { return files.empty(); }
 
 void RandomizedTargetList::replaceLastFile() {
     if (!noFilesGotten)
@@ -36,13 +36,11 @@ void RandomizedTargetList::replaceLastFile() {
     noFilesGotten = false;
 }
 
-auto RandomizedTargetList::fullPath(std::string file) -> std::string {
+std::string RandomizedTargetList::fullPath(std::string file) {
     return directory_ + "/" + std::move(file);
 }
 
-auto RandomizedTargetList::current() -> std::string {
-    return fullPath(currentFile_);
-}
+std::string RandomizedTargetList::current() { return fullPath(currentFile_); }
 
 void RandomizedTargetList::reinsertCurrent() {}
 
@@ -56,11 +54,11 @@ void RandomizedFiniteTargetList::loadFromDirectory(std::string directory) {
     randomizer->shuffle(files.begin(), files.end());
 }
 
-auto RandomizedFiniteTargetList::empty() -> bool { return empty_(); }
+bool RandomizedFiniteTargetList::empty() { return empty_(); }
 
-auto RandomizedFiniteTargetList::empty_() -> bool { return files.empty(); }
+bool RandomizedFiniteTargetList::empty_() { return files.empty(); }
 
-auto RandomizedFiniteTargetList::next() -> std::string {
+std::string RandomizedFiniteTargetList::next() {
     if (empty_())
         return "";
 
@@ -69,11 +67,11 @@ auto RandomizedFiniteTargetList::next() -> std::string {
     return fullPath(currentFile_);
 }
 
-auto RandomizedFiniteTargetList::fullPath(std::string file) -> std::string {
+std::string RandomizedFiniteTargetList::fullPath(std::string file) {
     return directory_ + "/" + std::move(file);
 }
 
-auto RandomizedFiniteTargetList::current() -> std::string {
+std::string RandomizedFiniteTargetList::current() {
     return fullPath(currentFile_);
 }
 

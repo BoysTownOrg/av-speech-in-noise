@@ -6,10 +6,13 @@
 
 namespace av_speech_in_noise {
 class TrackSettingsInterpreterImpl : public TrackSettingsInterpreter {
+    TrackingRule rule_{};
+    std::string contents;
+
   public:
     enum class Property { up, down, reversalsPerStepSize, stepSizes };
 
-    static constexpr auto propertyName(Property p) -> const char * {
+    static constexpr const char *propertyName(Property p) {
         switch (p) {
         case Property::up:
             return "up";
@@ -22,11 +25,7 @@ class TrackSettingsInterpreterImpl : public TrackSettingsInterpreter {
         }
     }
 
-    auto trackingRule(std::string) -> const TrackingRule * override;
-
-  private:
-    TrackingRule rule_{};
-    std::string contents;
+    const TrackingRule *trackingRule(std::string) override;
 };
 }
 

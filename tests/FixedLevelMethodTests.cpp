@@ -52,7 +52,7 @@ class SubmittingCoordinateResponse : public UseCase {
 };
 
 class SubmittingFreeResponse : public UseCase {
-    open_set::FreeResponse response;
+    FreeResponse response;
 
   public:
     void run(FixedLevelMethod &m) override { m.submitResponse(response); }
@@ -333,7 +333,7 @@ TEST(FixedLevelMethodTestsTBD,
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test;
     method.initialize(test, &combo, &combo);
-    open_set::FreeResponse response;
+    FreeResponse response;
     response.flagged = true;
     method.submitResponse(response);
     assertEqual("complete reinsertCurrent complete ", combo.log());
@@ -360,7 +360,7 @@ class FixedTrialTestConcluderTests : public ::testing::Test {
 
     void assertIncomplete() { assertFalse(complete()); }
 
-    auto complete() -> bool { return testConcluder.complete({}); }
+    bool complete() { return testConcluder.complete({}); }
 
     void assertComplete() { assertTrue(complete()); }
 };
@@ -378,7 +378,7 @@ class EmptyTargetListTestConcluderTests : public ::testing::Test {
     TargetListStub targetList;
     EmptyTargetListTestConcluder testConcluder;
 
-    auto complete() -> bool { return testConcluder.complete(&targetList); }
+    bool complete() { return testConcluder.complete(&targetList); }
 
     void assertIncomplete() { assertFalse(complete()); }
 

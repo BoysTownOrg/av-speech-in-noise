@@ -15,13 +15,13 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 
     [[nodiscard]] auto test() const { return test_; }
 
-    auto complete() -> bool override { return {}; }
-    auto next() -> std::string override { return {}; }
-    auto current() -> std::string override { return {}; }
-    auto snr_dB() -> int override { return {}; }
+    bool complete() override { return {}; }
+    std::string next() override { return {}; }
+    std::string current() override { return {}; }
+    int snr_dB() override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submitResponse(const FreeResponse &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
@@ -49,13 +49,13 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     [[nodiscard]] auto test() const { return test_; }
 
-    auto complete() -> bool override { return {}; }
-    auto next() -> std::string override { return {}; }
-    auto current() -> std::string override { return {}; }
-    auto snr_dB() -> int override { return {}; }
+    bool complete() override { return {}; }
+    std::string next() override { return {}; }
+    std::string current() override { return {}; }
+    int snr_dB() override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submitResponse(const FreeResponse &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
@@ -69,19 +69,22 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
-    const Test *test_{};
+    const TestIdentity *testInformation_{};
+    const Test *commonTest_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
-    int trialNumber_{};
+    int trialNumber_;
     bool complete_{};
 
   public:
-    void initialize(TestMethod *tm, const Test &ct) override {
+    void initialize(
+        TestMethod *tm, const Test &ct, const TestIdentity &ti) override {
         testMethod_ = tm;
-        test_ = &ct;
+        commonTest_ = &ct;
+        testInformation_ = &ti;
     }
 
-    auto trialNumber() -> int override { return trialNumber_; }
+    int trialNumber() override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
 
@@ -92,27 +95,25 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    auto testComplete() -> bool override { return complete_; }
+    bool testComplete() override { return complete_; }
 
-    auto audioDevices() -> std::vector<std::string> override {
-        return audioDevices_;
-    }
+    std::vector<std::string> audioDevices() override { return audioDevices_; }
 
     void subscribe(Model::EventListener *e) override { listener_ = e; }
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
-    [[nodiscard]] auto coordinateResponse() const {
-        return coordinateResponse_;
-    }
+    auto coordinateResponse() const { return coordinateResponse_; }
 
-    [[nodiscard]] auto testMethod() const { return testMethod_; }
+    auto testMethod() const { return testMethod_; }
 
-    [[nodiscard]] auto test() const { return test_; }
+    auto commonTest() const { return commonTest_; }
 
-    [[nodiscard]] auto playTrialSettings() const { return playTrialSettings_; }
+    auto testIdentity() const { return testInformation_; }
 
-    [[nodiscard]] auto calibration() const { return calibration_; }
+    auto playTrialSettings() const { return playTrialSettings_; }
+
+    auto calibration() const { return calibration_; }
 
     void setComplete() { complete_ = true; }
 
@@ -120,11 +121,11 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         audioDevices_ = std::move(v);
     }
 
-    [[nodiscard]] auto listener() const { return listener_; }
+    auto listener() const { return listener_; }
 
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submitResponse(const FreeResponse &) override {}
     void throwIfTrialInProgress() override {}
 };
 
@@ -132,8 +133,9 @@ class InitializingTestUseCase {
   public:
     virtual ~InitializingTestUseCase() = default;
     virtual void run(ModelImpl &) = 0;
-    virtual auto commonTest() -> const Test & = 0;
-    virtual auto testMethod() -> const TestMethod * = 0;
+    virtual const Test &commonTest() = 0;
+    virtual const TestIdentity &testIdentity() = 0;
+    virtual const TestMethod *testMethod() = 0;
 };
 
 class InitializingAdaptiveTest : public InitializingTestUseCase {
@@ -146,9 +148,11 @@ class InitializingAdaptiveTest : public InitializingTestUseCase {
 
     void run(ModelImpl &model) override { model.initializeTest(test); }
 
-    auto commonTest() -> const Test & override { return test; }
+    const Test &commonTest() override { return test; }
 
-    auto testMethod() -> const TestMethod * override { return method; }
+    const TestIdentity &testIdentity() override { return test.identity; }
+
+    const TestMethod *testMethod() override { return method; }
 };
 
 class InitializingFixedLevelTest : public InitializingTestUseCase {
@@ -161,9 +165,11 @@ class InitializingFixedLevelTest : public InitializingTestUseCase {
 
     void run(ModelImpl &model) override { model.initializeTest(test); }
 
-    auto commonTest() -> const Test & override { return test; }
+    const Test &commonTest() override { return test; }
 
-    auto testMethod() -> const TestMethod * override { return method; }
+    const TestIdentity &testIdentity() override { return test.identity; }
+
+    const TestMethod *testMethod() override { return method; }
 };
 
 class InitializingFixedLevelTestWithFiniteTargets
@@ -180,9 +186,11 @@ class InitializingFixedLevelTestWithFiniteTargets
         model.initializeTestWithFiniteTargets(test);
     }
 
-    auto commonTest() -> const Test & override { return test; }
+    const Test &commonTest() override { return test; }
 
-    auto testMethod() -> const TestMethod * override { return method; }
+    const TestIdentity &testIdentity() override { return test.identity; }
+
+    const TestMethod *testMethod() override { return method; }
 };
 
 class ModelTests : public ::testing::Test {
@@ -212,108 +220,109 @@ class ModelTests : public ::testing::Test {
 
     void initializeAdaptiveTest() { model.initializeTest(adaptiveTest); }
 
-    auto testComplete() -> bool { return model.testComplete(); }
+    bool testComplete() { return model.testComplete(); }
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
     void assertInitializesInternalModel(InitializingTestUseCase &useCase) {
         run(useCase);
         assertEqual(useCase.testMethod(), internalModel.testMethod());
-        assertEqual(&useCase.commonTest(), internalModel.test());
+        assertEqual(&useCase.commonTest(), internalModel.commonTest());
+        assertEqual(&useCase.testIdentity(), internalModel.testIdentity());
     }
 };
 
-#define MODEL_TEST(a) TEST_F(ModelTests, a)
-
-MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
+TEST_F(ModelTests, initializeFixedLevelTestInitializesFixedLevelMethod) {
     initializeFixedLevelTest();
     assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
 }
 
-MODEL_TEST(
+TEST_F(ModelTests,
     initializeFixedLevelTestWithFiniteTargetsInitializesFixedLevelMethod) {
     initializeFixedLevelTestWithFiniteTargets();
     assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
 }
 
-MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
+TEST_F(ModelTests, initializeFixedLevelTestInitializesWithInfiniteTargetList) {
     initializeFixedLevelTest();
     assertEqual(static_cast<TargetList *>(&infiniteTargetList),
         fixedLevelMethod.targetList());
 }
 
-MODEL_TEST(
+TEST_F(ModelTests,
     initializeFixedLevelTestWithFiniteTargetsInitializesWithFiniteTargets) {
     initializeFixedLevelTestWithFiniteTargets();
     assertEqual(static_cast<TargetList *>(&finiteTargetList),
         fixedLevelMethod.targetList());
 }
 
-MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
+TEST_F(ModelTests,
+    initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
     initializeFixedLevelTest();
     assertEqual(static_cast<TestConcluder *>(&fixedTrialTestConcluder),
         fixedLevelMethod.testConcluder());
 }
 
-MODEL_TEST(
+TEST_F(ModelTests,
     initializeFixedLevelTestWithFiniteTargetsInitializesWithEmptyTargetListTestConcluder) {
     initializeFixedLevelTestWithFiniteTargets();
     assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
         fixedLevelMethod.testConcluder());
 }
 
-MODEL_TEST(initializeAdaptiveTestInitializesAdaptiveMethod) {
+TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
     initializeAdaptiveTest();
     assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
 }
 
-MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
+TEST_F(ModelTests, initializeFixedLevelTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTest);
 }
 
-MODEL_TEST(initializeFixedLevelTestWithFiniteTargetsInitializesInternalModel) {
+TEST_F(ModelTests,
+    initializeFixedLevelTestWithFiniteTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTestWithFiniteTargets);
 }
 
-MODEL_TEST(initializeAdaptiveTestInitializesInternalModel) {
+TEST_F(ModelTests, initializeAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTest);
 }
 
-MODEL_TEST(submitResponsePassesCoordinateResponse) {
-    coordinate_response_measure::Response response{};
+TEST_F(ModelTests, submitResponsePassesCoordinateResponse) {
+    coordinate_response_measure::Response response;
     model.submitResponse(response);
     assertEqual(&std::as_const(response), internalModel.coordinateResponse());
 }
 
-MODEL_TEST(playTrialPassesAudioSettings) {
+TEST_F(ModelTests, playTrialPassesAudioSettings) {
     AudioSettings settings;
     model.playTrial(settings);
     assertEqual(&std::as_const(settings), internalModel.playTrialSettings());
 }
 
-MODEL_TEST(playCalibrationPassesCalibration) {
+TEST_F(ModelTests, playCalibrationPassesCalibration) {
     Calibration calibration;
     model.playCalibration(calibration);
     assertEqual(&std::as_const(calibration), internalModel.calibration());
 }
 
-MODEL_TEST(testCompleteWhenComplete) {
+TEST_F(ModelTests, testCompleteWhenComplete) {
     assertFalse(testComplete());
     internalModel.setComplete();
     assertTrue(testComplete());
 }
 
-MODEL_TEST(returnsAudioDevices) {
+TEST_F(ModelTests, returnsAudioDevices) {
     internalModel.setAudioDevices({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, model.audioDevices());
 }
 
-MODEL_TEST(returnsTrialNumber) {
+TEST_F(ModelTests, returnsTrialNumber) {
     internalModel.setTrialNumber(1);
     assertEqual(1, model.trialNumber());
 }
 
-MODEL_TEST(subscribesToListener) {
+TEST_F(ModelTests, subscribesToListener) {
     ModelEventListenerStub listener;
     model.subscribe(&listener);
     assertEqual(static_cast<const Model::EventListener *>(&listener),

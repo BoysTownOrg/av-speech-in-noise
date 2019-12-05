@@ -4,10 +4,10 @@
 namespace av_speech_in_noise {
 namespace {
 class NullTestMethod : public TestMethod {
-    auto complete() -> bool override { return {}; }
-    auto next() -> std::string override { return {}; }
-    auto current() -> std::string override { return {}; }
-    auto snr_dB() -> int override { return {}; }
+    bool complete() override { return {}; }
+    std::string next() override { return {}; }
+    std::string current() override { return {}; }
+    int snr_dB() override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
@@ -16,7 +16,7 @@ class NullTestMethod : public TestMethod {
     void writeTestingParameters(OutputFile *) override {}
     void submitResponse(
         const coordinate_response_measure::Response &) override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submitResponse(const FreeResponse &) override {}
 };
 }
 static NullTestMethod nullTestMethod;
@@ -31,10 +31,6 @@ RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer *targetPlayer,
     maskerPlayer->subscribe(this);
 }
 
-static auto auditoryOnly(const Condition &c) -> bool {
-    return c == Condition::auditoryOnly;
-}
-
 void RecognitionTestModelImpl::subscribe(Model::EventListener *listener) {
     listener_ = listener;
 }
@@ -44,26 +40,27 @@ void RecognitionTestModelImpl::throwIfTrialInProgress() {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
-void RecognitionTestModelImpl::initialize(
-    TestMethod *testMethod_, const Test &test) {
+void RecognitionTestModelImpl::initialize(TestMethod *testMethod_,
+    const Test &common, const TestIdentity &information) {
     throwIfTrialInProgress();
     testMethod = testMethod_;
-    prepareTest(test);
+    prepareCommonTest(common, information);
     trialNumber_ = 1;
 }
 
-auto RecognitionTestModelImpl::trialInProgress() -> bool {
+bool RecognitionTestModelImpl::trialInProgress() {
     return maskerPlayer->playing();
 }
 
-void RecognitionTestModelImpl::prepareTest(const Test &test) {
-    storeLevels(test);
-    prepareMasker(test.maskerFilePath);
+void RecognitionTestModelImpl::prepareCommonTest(
+    const Test &common, const TestIdentity &information) {
+    storeLevels(common);
+    prepareMasker(common.maskerFilePath);
     targetPlayer->hideVideo();
-    condition = test.condition;
+    condition = common.condition;
     if (!testMethod->complete())
         preparePlayersForNextTrial();
-    tryOpeningOutputFile(test.identity);
+    tryOpeningOutputFile(information);
     testMethod->writeTestingParameters(outputFile);
 }
 
@@ -92,13 +89,13 @@ void RecognitionTestModelImpl::loadMaskerFile(const std::string &p) {
     maskerPlayer->loadFile(p);
 }
 
-static auto dB(double x) -> double { return 20 * std::log10(x); }
+static double dB(double x) { return 20 * std::log10(x); }
 
-auto RecognitionTestModelImpl::maskerLevel_dB() -> double {
+double RecognitionTestModelImpl::maskerLevel_dB() {
     return desiredMaskerLevel_dB() - dB(maskerPlayer->rms());
 }
 
-auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
+int RecognitionTestModelImpl::desiredMaskerLevel_dB() {
     return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
 }
 
@@ -107,6 +104,10 @@ void RecognitionTestModelImpl::prepareVideo(const Condition &p) {
         targetPlayer->hideVideo();
     else
         targetPlayer->showVideo();
+}
+
+bool RecognitionTestModelImpl::auditoryOnly(const Condition &c) {
+    return c == Condition::auditoryOnly;
 }
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
@@ -128,7 +129,7 @@ void RecognitionTestModelImpl::setTargetLevel_dB(double x) {
     targetPlayer->setLevel_dB(x);
 }
 
-auto RecognitionTestModelImpl::targetLevel_dB() -> double {
+double RecognitionTestModelImpl::targetLevel_dB() {
     return maskerLevel_dB() + testMethod->snr_dB();
 }
 
@@ -205,8 +206,8 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     listener_->trialComplete();
 }
 
-static auto targetName(ResponseEvaluator *evaluator, TestMethod *testMethod)
-    -> std::string {
+static std::string targetName(
+    ResponseEvaluator *evaluator, TestMethod *testMethod) {
     return evaluator->fileName(testMethod->current());
 }
 
@@ -249,15 +250,14 @@ void RecognitionTestModelImpl::submitIncorrectResponse_() {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submitResponse(
-    const open_set::FreeResponse &response) {
+void RecognitionTestModelImpl::submitResponse(const FreeResponse &response) {
     writeTrial(response);
     testMethod->submitResponse(response);
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::writeTrial(const open_set::FreeResponse &p) {
-    open_set::FreeResponseTrial trial;
+void RecognitionTestModelImpl::writeTrial(const FreeResponse &p) {
+    FreeResponseTrial trial;
     trial.response = p.response;
     trial.target = targetName(evaluator, testMethod);
     trial.flagged = p.flagged;
@@ -293,22 +293,19 @@ void RecognitionTestModelImpl::trySettingTargetLevel(const Calibration &p) {
     }
 }
 
-auto RecognitionTestModelImpl::calibrationLevel_dB(const Calibration &p)
-    -> double {
+double RecognitionTestModelImpl::calibrationLevel_dB(const Calibration &p) {
     return p.level_dB_SPL - p.fullScaleLevel_dB_SPL - unalteredTargetLevel_dB();
 }
 
-auto RecognitionTestModelImpl::unalteredTargetLevel_dB() -> double {
+double RecognitionTestModelImpl::unalteredTargetLevel_dB() {
     return dB(targetPlayer->rms());
 }
 
-auto RecognitionTestModelImpl::testComplete() -> bool {
-    return testMethod->complete();
-}
+bool RecognitionTestModelImpl::testComplete() { return testMethod->complete(); }
 
-auto RecognitionTestModelImpl::audioDevices() -> std::vector<std::string> {
+std::vector<std::string> RecognitionTestModelImpl::audioDevices() {
     return maskerPlayer->outputAudioDeviceDescriptions();
 }
 
-auto RecognitionTestModelImpl::trialNumber() -> int { return trialNumber_; }
+int RecognitionTestModelImpl::trialNumber() { return trialNumber_; }
 }

@@ -10,7 +10,7 @@ class OutputFileStub : public OutputFile {
     coordinate_response_measure::AdaptiveTrial
         writtenAdaptiveCoordinateResponseTrial_{};
     coordinate_response_measure::FixedLevelTrial writtenFixedLevelTrial_{};
-    open_set::FreeResponseTrial writtenFreeResponseTrial_{};
+    FreeResponseTrial writtenFreeResponseTrial_{};
     open_set::AdaptiveTrial writtenOpenSetAdaptiveTrial_{};
     LogString log_{};
     const AdaptiveTest *adaptiveTest_{};
@@ -46,7 +46,7 @@ class OutputFileStub : public OutputFile {
         fixedLevelTest_ = &p;
     }
 
-    void writeTrial(const open_set::FreeResponseTrial &p) override {
+    void writeTrial(const FreeResponseTrial &p) override {
         addToLog("writeTrial ");
         writtenFreeResponseTrial_ = p;
     }
@@ -62,9 +62,7 @@ class OutputFileStub : public OutputFile {
         writtenFixedLevelTrial_ = trial;
     }
 
-    auto writtenFixedLevelTrial() const -> auto & {
-        return writtenFixedLevelTrial_;
-    }
+    auto &writtenFixedLevelTrial() const { return writtenFixedLevelTrial_; }
 
     void addToLog(const std::string &s) { log_.insert(s); }
 
@@ -72,21 +70,19 @@ class OutputFileStub : public OutputFile {
 
     auto openNewFileParameters() const { return openNewFileParameters_; }
 
-    auto log() const -> auto & { return log_; }
+    auto &log() const { return log_; }
 
     auto adaptiveTest() const { return adaptiveTest_; }
 
     auto fixedLevelTest() const { return fixedLevelTest_; }
 
-    auto writtenAdaptiveCoordinateResponseTrial() const -> auto & {
+    auto &writtenAdaptiveCoordinateResponseTrial() const {
         return writtenAdaptiveCoordinateResponseTrial_;
     }
 
-    auto writtenFreeResponseTrial() const -> auto & {
-        return writtenFreeResponseTrial_;
-    }
+    auto &writtenFreeResponseTrial() const { return writtenFreeResponseTrial_; }
 
-    auto writtenOpenSetAdaptiveTrial() const -> auto & {
+    auto &writtenOpenSetAdaptiveTrial() const {
         return writtenOpenSetAdaptiveTrial_;
     }
 };

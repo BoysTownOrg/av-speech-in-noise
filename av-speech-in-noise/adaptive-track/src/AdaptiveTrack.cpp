@@ -40,7 +40,7 @@ void AdaptiveTrack::callIfConsecutiveCountMet(
         (this->*f)();
 }
 
-auto AdaptiveTrack::consecutiveCountMet(int threshold) -> bool {
+bool AdaptiveTrack::consecutiveCountMet(int threshold) {
     return sameDirectionConsecutiveCount == threshold;
 }
 
@@ -61,7 +61,7 @@ void AdaptiveTrack::updateReversals(Step step) {
         reversal();
 }
 
-auto AdaptiveTrack::stepSize() -> int { return stepSizes.at(sequenceIndex); }
+int AdaptiveTrack::stepSize() { return stepSizes.at(sequenceIndex); }
 
 void AdaptiveTrack::reversal() {
     ++reversals_;
@@ -82,13 +82,13 @@ void AdaptiveTrack::stepDown() {
     previousStep = Step::fall;
 }
 
-auto AdaptiveTrack::x() -> int { return x_; }
+int AdaptiveTrack::x() { return x_; }
 
-auto AdaptiveTrack::complete() -> bool { return complete_(); }
+bool AdaptiveTrack::complete() { return complete_(); }
 
-auto AdaptiveTrack::complete_() const -> bool {
+bool AdaptiveTrack::complete_() const {
     return sequenceIndex == runCounts.size() || bumpCount_ == bumpLimit_;
 }
 
-auto AdaptiveTrack::reversals() -> int { return reversals_; }
+int AdaptiveTrack::reversals() { return reversals_; }
 }

@@ -29,8 +29,8 @@ class View {
         virtual void hideEvaluationButtons() = 0;
         virtual void showResponseSubmission() = 0;
         virtual void hideResponseSubmission() = 0;
-        virtual auto response() -> std::string = 0;
-        virtual auto flagged() -> bool = 0;
+        virtual std::string response() = 0;
+        virtual bool flagged() = 0;
     };
 
     class Subject {
@@ -44,10 +44,10 @@ class View {
 
         virtual ~Subject() = default;
         virtual void subscribe(EventListener *) = 0;
-        virtual auto numberResponse() -> std::string = 0;
-        virtual auto greenResponse() -> bool = 0;
-        virtual auto blueResponse() -> bool = 0;
-        virtual auto whiteResponse() -> bool = 0;
+        virtual std::string numberResponse() = 0;
+        virtual bool greenResponse() = 0;
+        virtual bool blueResponse() = 0;
+        virtual bool whiteResponse() = 0;
         virtual void showResponseButtons() = 0;
         virtual void hideResponseButtons() = 0;
         virtual void showNextTrialButton() = 0;
@@ -73,19 +73,19 @@ class View {
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
-        virtual auto maskerLevel_dB_SPL() -> std::string = 0;
-        virtual auto calibrationLevel_dB_SPL() -> std::string = 0;
-        virtual auto startingSnr_dB() -> std::string = 0;
-        virtual auto maskerFilePath() -> std::string = 0;
-        virtual auto calibrationFilePath() -> std::string = 0;
-        virtual auto targetListDirectory() -> std::string = 0;
-        virtual auto trackSettingsFile() -> std::string = 0;
-        virtual auto testerId() -> std::string = 0;
-        virtual auto subjectId() -> std::string = 0;
-        virtual auto condition() -> std::string = 0;
-        virtual auto session() -> std::string = 0;
-        virtual auto method() -> std::string = 0;
-        virtual auto usingTargetsWithoutReplacement() -> bool = 0;
+        virtual std::string maskerLevel_dB_SPL() = 0;
+        virtual std::string calibrationLevel_dB_SPL() = 0;
+        virtual std::string startingSnr_dB() = 0;
+        virtual std::string maskerFilePath() = 0;
+        virtual std::string calibrationFilePath() = 0;
+        virtual std::string targetListDirectory() = 0;
+        virtual std::string trackSettingsFile() = 0;
+        virtual std::string testerId() = 0;
+        virtual std::string subjectId() = 0;
+        virtual std::string condition() = 0;
+        virtual std::string session() = 0;
+        virtual std::string method() = 0;
+        virtual bool usingTargetsWithoutReplacement() = 0;
         virtual void setMasker(std::string) = 0;
         virtual void setTargetListDirectory(std::string) = 0;
         virtual void setCalibrationFilePath(std::string) = 0;
@@ -113,11 +113,11 @@ class View {
 
     virtual ~View() = default;
     virtual void eventLoop() = 0;
-    virtual auto browseForDirectory() -> std::string = 0;
-    virtual auto browseForOpeningFile() -> std::string = 0;
-    virtual auto audioDevice() -> std::string = 0;
+    virtual std::string browseForDirectory() = 0;
+    virtual std::string browseForOpeningFile() = 0;
+    virtual std::string audioDevice() = 0;
     virtual void populateAudioDeviceMenu(std::vector<std::string>) = 0;
-    virtual auto browseCancelled() -> bool = 0;
+    virtual bool browseCancelled() = 0;
     virtual void showErrorMessage(std::string) = 0;
 };
 
@@ -128,7 +128,7 @@ enum class Method {
     fixedLevelClosedSet
 };
 
-constexpr auto methodName(Method c) -> const char * {
+constexpr const char *methodName(Method c) {
     switch (c) {
     case Method::adaptiveOpenSet:
         return "adaptive open-set";
@@ -144,6 +144,8 @@ constexpr auto methodName(Method c) -> const char * {
 class Presenter : public Model::EventListener {
   public:
     class Testing : public View::Testing::EventListener {
+        View::Testing *view;
+
       public:
         explicit Testing(View::Testing *);
         void becomeChild(Presenter *parent);
@@ -152,7 +154,7 @@ class Presenter : public Model::EventListener {
         void showEvaluationButtons();
         void showResponseSubmission();
         void showNextTrialButton();
-        auto openSetResponse() -> open_set::FreeResponse;
+        FreeResponse openSetResponse();
         void playTrial() override;
         void submitPassedTrial() override;
         void submitResponse() override;
@@ -160,9 +162,7 @@ class Presenter : public Model::EventListener {
 
       private:
         void prepareNextEvaluatedTrial();
-
-        Presenter *parent{};
-        View::Testing *view;
+        Presenter *parent;
     };
 
     class TestSetup : public View::TestSetup::EventListener {
@@ -175,14 +175,14 @@ class Presenter : public Model::EventListener {
         void setStimulusList(std::string);
         void setCalibrationFilePath(std::string);
         void setTrackSettingsFile(std::string);
-        auto adaptiveTest() -> AdaptiveTest;
-        auto fixedLevelTest() -> FixedLevelTest;
-        auto calibrationParameters() -> Calibration;
-        auto adaptiveClosedSet() -> bool;
-        auto adaptiveOpenSet() -> bool;
-        auto fixedLevelOpenSet() -> bool;
-        auto fixedLevelClosedSet() -> bool;
-        auto finiteTargets() -> bool;
+        AdaptiveTest adaptiveTest();
+        FixedLevelTest fixedLevelTest();
+        Calibration calibrationParameters();
+        bool adaptiveClosedSet();
+        bool adaptiveOpenSet();
+        bool fixedLevelOpenSet();
+        bool fixedLevelClosedSet();
+        bool finiteTargets();
         void playCalibration() override;
         void browseForTargetList() override;
         void browseForMasker() override;
@@ -191,16 +191,16 @@ class Presenter : public Model::EventListener {
         void browseForTrackSettingsFile() override;
 
       private:
-        auto testIdentity() -> TestIdentity;
+        TestIdentity testIdentity();
         void commonTest(Test &);
-        auto readCondition() -> Condition;
-        auto method(Method m) -> bool;
-        auto readMaskerLevel() -> int;
-        auto readCalibrationLevel() -> int;
-        auto auditoryOnly() -> bool;
+        Condition readCondition();
+        bool method(Method m);
+        int readMaskerLevel();
+        int readCalibrationLevel();
+        bool auditoryOnly();
 
         View::TestSetup *view;
-        Presenter *parent{};
+        Presenter *parent;
     };
 
     class Subject : public View::Subject::EventListener {
@@ -210,20 +210,22 @@ class Presenter : public Model::EventListener {
         void hide();
         void becomeChild(Presenter *parent);
         void showResponseButtons();
-        auto subjectResponse() -> coordinate_response_measure::Response;
+        coordinate_response_measure::Response subjectResponse();
         void playTrial() override;
         void submitResponse() override;
 
       private:
         void hideResponseButtons();
         void showNextTrialButton();
-        auto colorResponse() -> coordinate_response_measure::Color;
+        coordinate_response_measure::Color colorResponse();
 
         View::Subject *view;
-        Presenter *parent{};
+        Presenter *parent;
     };
 
     class Experimenter : public View::Experimenter::EventListener {
+        View::Experimenter *view;
+
       public:
         explicit Experimenter(View::Experimenter *);
         void becomeChild(Presenter *parent);
@@ -235,8 +237,7 @@ class Presenter : public Model::EventListener {
         void exitTest() override;
 
       private:
-        Presenter *parent{};
-        View::Experimenter *view;
+        Presenter *parent;
     };
 
     class TrialCompletionHandler {
@@ -247,50 +248,46 @@ class Presenter : public Model::EventListener {
 
     class AdaptiveClosedSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
+        Subject *subject;
+
       public:
         explicit AdaptiveClosedSetTestTrialCompletionHandler(Subject *subject)
             : subject{subject} {}
 
         void showResponseView() override { subject->showResponseButtons(); }
-
-      private:
-        Subject *subject;
     };
 
     class AdaptiveOpenSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
+        Testing *testing;
+
       public:
         explicit AdaptiveOpenSetTestTrialCompletionHandler(Testing *testing)
             : testing{testing} {}
 
         void showResponseView() override { testing->showEvaluationButtons(); }
-
-      private:
-        Testing *testing;
     };
 
     class FixedLevelOpenSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
+        Testing *testing;
+
       public:
         explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing *testing)
             : testing{testing} {}
 
         void showResponseView() override { testing->showResponseSubmission(); }
-
-      private:
-        Testing *testing;
     };
 
     class FixedLevelClosedSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
+        Subject *subject;
+
       public:
         explicit FixedLevelClosedSetTestTrialCompletionHandler(Subject *subject)
             : subject{subject} {}
 
         void showResponseView() override { subject->showResponseButtons(); }
-
-      private:
-        Subject *subject;
     };
 
     Presenter(
@@ -315,7 +312,7 @@ class Presenter : public Model::EventListener {
     static int trackBumpLimit;
 
   private:
-    auto finiteTargets() -> bool;
+    bool finiteTargets();
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
@@ -326,21 +323,21 @@ class Presenter : public Model::EventListener {
     void showErrorMessage(std::string);
     void playCalibration_();
     void showTestSetup();
-    auto testComplete() -> bool;
+    bool testComplete();
     void proceedToNextTrial();
     void hideTestSetup();
-    auto adaptiveClosedSet() -> bool;
-    auto adaptiveOpenSet() -> bool;
-    auto adaptiveTest() -> bool;
-    auto closedSet() -> bool;
-    auto fixedLevelClosedSet() -> bool;
+    bool adaptiveClosedSet();
+    bool adaptiveOpenSet();
+    bool adaptiveTest();
+    bool closedSet();
+    bool fixedLevelClosedSet();
     void initializeTest();
     void showTestView();
     void switchToTestView();
     void confirmTestSetup_();
     void applyIfBrowseNotCancelled(
         std::string s, void (TestSetup::*f)(std::string));
-    auto trialCompletionHandler() -> TrialCompletionHandler *;
+    TrialCompletionHandler *trialCompletionHandler();
 
     FixedLevelOpenSetTestTrialCompletionHandler
         fixedLevelOpenSetTrialCompletionHandler;

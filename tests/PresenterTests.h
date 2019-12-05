@@ -14,7 +14,7 @@ template <typename T> class Collection {
   public:
     explicit Collection(std::vector<T> items = {}) : items{std::move(items)} {}
 
-    [[nodiscard]] auto contains(const T &item) const -> bool {
+    [[nodiscard]] bool contains(const T &item) const {
         return std::find(items.begin(), items.end(), item) != items.end();
     }
 };
@@ -26,7 +26,7 @@ class ModelStub : public Model {
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
-    open_set::FreeResponse freeResponse_{};
+    FreeResponse freeResponse_{};
     EventListener *listener_{};
     int trialNumber_{};
     bool testComplete_{};
@@ -38,11 +38,11 @@ class ModelStub : public Model {
     bool initializedWithFiniteTargets_{};
 
   public:
-    auto trialNumber() -> int override { return trialNumber_; }
+    int trialNumber() override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
 
-    [[nodiscard]] auto initializedWithFiniteTargets() const {
+    auto initializedWithFiniteTargets() const {
         return initializedWithFiniteTargets_;
     }
 
@@ -51,15 +51,13 @@ class ModelStub : public Model {
         initializedWithFiniteTargets_ = true;
     }
 
-    [[nodiscard]] auto incorrectResponseSubmitted() const {
+    auto incorrectResponseSubmitted() const {
         return incorrectResponseSubmitted_;
     }
 
-    [[nodiscard]] auto correctResponseSubmitted() const {
-        return correctResponseSubmitted_;
-    }
+    auto correctResponseSubmitted() const { return correctResponseSubmitted_; }
 
-    [[nodiscard]] auto freeResponse() const { return freeResponse_; }
+    auto freeResponse() const { return freeResponse_; }
 
     void completeTrial() { listener_->trialComplete(); }
 
@@ -67,17 +65,13 @@ class ModelStub : public Model {
         audioDevices_ = std::move(v);
     }
 
-    [[nodiscard]] auto responseParameters() const -> auto & {
-        return responseParameters_;
-    }
+    auto &responseParameters() const { return responseParameters_; }
 
-    [[nodiscard]] auto trialParameters() const -> auto & {
-        return trialParameters_;
-    }
+    auto &trialParameters() const { return trialParameters_; }
 
     void setTestComplete() { testComplete_ = true; }
 
-    auto testComplete() -> bool override { return testComplete_; }
+    bool testComplete() override { return testComplete_; }
 
     void playTrial(const AudioSettings &p) override {
         trialParameters_ = p;
@@ -89,9 +83,7 @@ class ModelStub : public Model {
         adaptiveTest_ = p;
     }
 
-    auto audioDevices() -> std::vector<std::string> override {
-        return audioDevices_;
-    }
+    std::vector<std::string> audioDevices() override { return audioDevices_; }
 
     void submitResponse(
         const coordinate_response_measure::Response &p) override {
@@ -113,27 +105,21 @@ class ModelStub : public Model {
         fixedLevelTest_ = p;
     }
 
-    void submitResponse(const open_set::FreeResponse &s) override {
-        freeResponse_ = s;
-    }
+    void submitResponse(const FreeResponse &s) override { freeResponse_ = s; }
 
-    [[nodiscard]] auto trialPlayed() const { return trialPlayed_; }
+    auto trialPlayed() const { return trialPlayed_; }
 
-    [[nodiscard]] auto adaptiveTest() const -> auto & { return adaptiveTest_; }
+    auto &adaptiveTest() const { return adaptiveTest_; }
 
-    [[nodiscard]] auto fixedLevelTest() const -> auto & {
-        return fixedLevelTest_;
-    }
+    auto &fixedLevelTest() const { return fixedLevelTest_; }
 
-    [[nodiscard]] auto calibration() const -> auto & { return calibration_; }
+    auto &calibration() const { return calibration_; }
 
-    [[nodiscard]] auto fixedLevelTestInitialized() const {
+    auto fixedLevelTestInitialized() const {
         return fixedLevelTestInitialized_;
     }
 
-    [[nodiscard]] auto adaptiveTestInitialized() const {
-        return adaptiveTestInitialized_;
-    }
+    auto adaptiveTestInitialized() const { return adaptiveTestInitialized_; }
 };
 
 class ViewStub : public View {
@@ -156,19 +142,19 @@ class ViewStub : public View {
 
     void eventLoop() override { eventLoopCalled_ = true; }
 
-    auto browseForDirectory() -> std::string override {
+    std::string browseForDirectory() override {
         return browseForDirectoryResult_;
     }
 
-    auto browseCancelled() -> bool override { return browseCancelled_; }
+    bool browseCancelled() override { return browseCancelled_; }
 
-    auto browseForOpeningFile() -> std::string override {
+    std::string browseForOpeningFile() override {
         return browseForOpeningFileResult_;
     }
 
-    auto audioDevice() -> std::string override { return audioDevice_; }
+    std::string audioDevice() override { return audioDevice_; }
 
-    [[nodiscard]] auto eventLoopCalled() const { return eventLoopCalled_; }
+    auto eventLoopCalled() const { return eventLoopCalled_; }
 
     void setBrowseForDirectoryResult(std::string s) {
         browseForDirectoryResult_ = std::move(s);
@@ -184,7 +170,7 @@ class ViewStub : public View {
         audioDevices_ = std::move(v);
     }
 
-    [[nodiscard]] auto audioDevices() const { return audioDevices_; }
+    auto audioDevices() const { return audioDevices_; }
 
     class TestSetupViewStub : public TestSetup {
         Collection<std::string> conditions_;
@@ -208,47 +194,43 @@ class ViewStub : public View {
         bool useFiniteTargets_{};
 
       public:
-        auto usingTargetsWithoutReplacement() -> bool override {
+        bool usingTargetsWithoutReplacement() override {
             return useFiniteTargets_;
         }
 
         void useFiniteTargets() { useFiniteTargets_ = true; }
 
-        auto trackSettingsFile() -> std::string override {
-            return trackSettingsFile_;
-        }
+        std::string trackSettingsFile() override { return trackSettingsFile_; }
 
-        auto calibrationLevel_dB_SPL() -> std::string override {
+        std::string calibrationLevel_dB_SPL() override {
             return calibrationLevel_;
         }
 
-        auto maskerLevel_dB_SPL() -> std::string override {
-            return maskerLevel_;
-        }
+        std::string maskerLevel_dB_SPL() override { return maskerLevel_; }
 
         void confirmTestSetup() { listener_->confirmTestSetup(); }
 
         void playCalibration() { listener_->playCalibration(); }
 
-        auto session() -> std::string override { return session_; }
+        std::string session() override { return session_; }
 
-        auto startingSnr_dB() -> std::string override { return startingSnr_; }
+        std::string startingSnr_dB() override { return startingSnr_; }
 
         void populateConditionMenu(std::vector<std::string> items) override {
             conditions_ = Collection{std::move(items)};
         }
 
-        [[nodiscard]] auto conditions() const -> auto & { return conditions_; }
+        auto &conditions() const { return conditions_; }
 
-        [[nodiscard]] auto methods() const -> auto & { return methods_; }
+        auto &methods() const { return methods_; }
 
-        [[nodiscard]] auto shown() const { return shown_; }
+        auto shown() const { return shown_; }
 
         void show() override { shown_ = true; }
 
         void hide() override { hidden_ = true; }
 
-        [[nodiscard]] auto hidden() const { return hidden_; }
+        auto hidden() const { return hidden_; }
 
         void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
 
@@ -282,19 +264,17 @@ class ViewStub : public View {
 
         void setTesterId(std::string s) { testerId_ = std::move(s); }
 
-        auto maskerFilePath() -> std::string override { return masker_; }
+        std::string maskerFilePath() override { return masker_; }
 
-        auto targetListDirectory() -> std::string override {
-            return stimulusList_;
-        }
+        std::string targetListDirectory() override { return stimulusList_; }
 
-        auto testerId() -> std::string override { return testerId_; }
+        std::string testerId() override { return testerId_; }
 
-        auto subjectId() -> std::string override { return subjectId_; }
+        std::string subjectId() override { return subjectId_; }
 
-        auto condition() -> std::string override { return condition_; }
+        std::string condition() override { return condition_; }
 
-        auto calibrationFilePath() -> std::string override {
+        std::string calibrationFilePath() override {
             return calibrationFilePath_;
         }
 
@@ -302,7 +282,7 @@ class ViewStub : public View {
             listener_ = listener;
         }
 
-        auto method() -> std::string override { return method_; }
+        std::string method() override { return method_; }
 
         void populateMethodMenu(std::vector<std::string> items) override {
             methods_ = Collection{std::move(items)};
@@ -336,15 +316,15 @@ class ViewStub : public View {
       public:
         void show() override { shown_ = true; }
 
-        [[nodiscard]] auto shown() const { return shown_; }
+        auto shown() const { return shown_; }
 
-        [[nodiscard]] auto hidden() const { return hidden_; }
+        auto hidden() const { return hidden_; }
 
-        auto whiteResponse() -> bool override { return grayResponse_; }
+        bool whiteResponse() override { return grayResponse_; }
 
         void setGrayResponse() { grayResponse_ = true; }
 
-        auto blueResponse() -> bool override { return blueResponse_; }
+        bool blueResponse() override { return blueResponse_; }
 
         void setBlueResponse() { blueResponse_ = true; }
 
@@ -352,25 +332,17 @@ class ViewStub : public View {
 
         void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
 
-        [[nodiscard]] auto nextTrialButtonHidden() const {
-            return nextTrialButtonHidden_;
-        }
+        auto nextTrialButtonHidden() const { return nextTrialButtonHidden_; }
 
         void hideResponseButtons() override { responseButtonsHidden_ = true; }
 
-        [[nodiscard]] auto responseButtonsHidden() const {
-            return responseButtonsHidden_;
-        }
+        auto responseButtonsHidden() const { return responseButtonsHidden_; }
 
         void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
-        [[nodiscard]] auto nextTrialButtonShown() const {
-            return nextTrialButtonShown_;
-        }
+        auto nextTrialButtonShown() const { return nextTrialButtonShown_; }
 
-        [[nodiscard]] auto responseButtonsShown() const {
-            return responseButtonsShown_;
-        }
+        auto responseButtonsShown() const { return responseButtonsShown_; }
 
         void setGreenResponse() { greenResponse_ = true; }
 
@@ -378,11 +350,9 @@ class ViewStub : public View {
             numberResponse_ = std::move(s);
         }
 
-        auto numberResponse() -> std::string override {
-            return numberResponse_;
-        }
+        std::string numberResponse() override { return numberResponse_; }
 
-        auto greenResponse() -> bool override { return greenResponse_; }
+        bool greenResponse() override { return greenResponse_; }
 
         void showResponseButtons() override { responseButtonsShown_ = true; }
 
@@ -411,31 +381,27 @@ class ViewStub : public View {
       public:
         void submitFailedTrial() { listener_->submitFailedTrial(); }
 
-        [[nodiscard]] auto responseSubmissionHidden() const {
+        auto responseSubmissionHidden() const {
             return responseSubmissionHidden_;
         }
 
-        [[nodiscard]] auto evaluationButtonsHidden() const {
+        auto evaluationButtonsHidden() const {
             return evaluationButtonsHidden_;
         }
 
-        [[nodiscard]] auto nextTrialButtonShown() const {
-            return nextTrialButtonShown_;
-        }
+        auto nextTrialButtonShown() const { return nextTrialButtonShown_; }
 
-        [[nodiscard]] auto evaluationButtonsShown() const {
-            return evaluationButtonsShown_;
-        }
+        auto evaluationButtonsShown() const { return evaluationButtonsShown_; }
 
-        [[nodiscard]] auto responseSubmissionShown() const {
+        auto responseSubmissionShown() const {
             return responseSubmissionShown_;
         }
 
         void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
-        [[nodiscard]] auto shown() const { return shown_; }
+        auto shown() const { return shown_; }
 
-        [[nodiscard]] auto hidden() const { return hidden_; }
+        auto hidden() const { return hidden_; }
 
         void show() override { shown_ = true; }
 
@@ -449,7 +415,7 @@ class ViewStub : public View {
             evaluationButtonsShown_ = true;
         }
 
-        auto response() -> std::string override { return response_; }
+        std::string response() override { return response_; }
 
         void showResponseSubmission() override {
             responseSubmissionShown_ = true;
@@ -465,9 +431,7 @@ class ViewStub : public View {
 
         void playTrial() { listener_->playTrial(); }
 
-        [[nodiscard]] auto nextTrialButtonHidden() const {
-            return nextTrialButtonHidden_;
-        }
+        auto nextTrialButtonHidden() const { return nextTrialButtonHidden_; }
 
         void submitPassedTrial() { listener_->submitPassedTrial(); }
 
@@ -475,7 +439,7 @@ class ViewStub : public View {
 
         void flagResponse() { flagged_ = true; }
 
-        auto flagged() -> bool override { return flagged_; }
+        bool flagged() override { return flagged_; }
 
         void submitResponse() { listener_->submitResponse(); }
     };
@@ -492,23 +456,19 @@ class ViewStub : public View {
       public:
         void display(std::string s) override { displayed_ = std::move(s); }
 
-        [[nodiscard]] auto displayed() const { return displayed_; }
+        auto displayed() const { return displayed_; }
 
         void showExitTestButton() override { exitTestButtonShown_ = true; }
 
         void hideExitTestButton() override { exitTestButtonHidden_ = true; }
 
-        [[nodiscard]] auto exitTestButtonShown() const {
-            return exitTestButtonShown_;
-        }
+        auto exitTestButtonShown() const { return exitTestButtonShown_; }
 
-        [[nodiscard]] auto exitTestButtonHidden() const {
-            return exitTestButtonHidden_;
-        }
+        auto exitTestButtonHidden() const { return exitTestButtonHidden_; }
 
-        [[nodiscard]] auto shown() const { return shown_; }
+        auto shown() const { return shown_; }
 
-        [[nodiscard]] auto hidden() const { return hidden_; }
+        auto hidden() const { return hidden_; }
 
         void show() override { shown_ = true; }
 
@@ -528,12 +488,12 @@ class UseCase {
 
 class ConditionUseCase : public virtual UseCase {
   public:
-    virtual auto condition(ModelStub &) -> Condition = 0;
+    virtual Condition condition(ModelStub &) = 0;
 };
 
 class LevelUseCase : public virtual UseCase {
   public:
-    virtual auto fullScaleLevel(ModelStub &) -> int = 0;
+    virtual int fullScaleLevel(ModelStub &) = 0;
 };
 
 class PlayingCalibration : public ConditionUseCase, public LevelUseCase {
@@ -543,13 +503,13 @@ class PlayingCalibration : public ConditionUseCase, public LevelUseCase {
     explicit PlayingCalibration(ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
-    auto condition(ModelStub &m) -> Condition override {
+    Condition condition(ModelStub &m) override {
         return m.calibration().condition;
     }
 
     void run() override { view->playCalibration(); }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
+    int fullScaleLevel(ModelStub &m) override {
         return m.calibration().fullScaleLevel_dB_SPL;
     }
 };
@@ -557,21 +517,21 @@ class PlayingCalibration : public ConditionUseCase, public LevelUseCase {
 class ConfirmingTestSetup : public virtual ConditionUseCase,
                             public virtual LevelUseCase {
   public:
-    virtual auto snr_dB(ModelStub &) -> int = 0;
-    virtual auto maskerLevel(ModelStub &) -> int = 0;
-    virtual auto targetListDirectory(ModelStub &) -> std::string = 0;
-    virtual auto subjectId(ModelStub &) -> std::string = 0;
-    virtual auto testerId(ModelStub &) -> std::string = 0;
-    virtual auto session(ModelStub &) -> std::string = 0;
-    virtual auto maskerFilePath(ModelStub &) -> std::string = 0;
+    virtual int snr_dB(ModelStub &) = 0;
+    virtual int maskerLevel(ModelStub &) = 0;
+    virtual std::string targetListDirectory(ModelStub &) = 0;
+    virtual std::string subjectId(ModelStub &) = 0;
+    virtual std::string testerId(ModelStub &) = 0;
+    virtual std::string session(ModelStub &) = 0;
+    virtual std::string maskerFilePath(ModelStub &) = 0;
 };
 
 class ConfirmingAdaptiveTest_ : public virtual ConfirmingTestSetup {
   public:
-    virtual auto ceilingSnr_dB(ModelStub &) -> int = 0;
-    virtual auto floorSnr_dB(ModelStub &) -> int = 0;
-    virtual auto trackBumpLimit(ModelStub &) -> int = 0;
-    virtual auto trackSettingsFile(ModelStub &) -> std::string = 0;
+    virtual int ceilingSnr_dB(ModelStub &) = 0;
+    virtual int floorSnr_dB(ModelStub &) = 0;
+    virtual int trackBumpLimit(ModelStub &) = 0;
+    virtual std::string trackSettingsFile(ModelStub &) = 0;
 };
 
 class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
@@ -583,61 +543,57 @@ class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
 
     static auto adaptiveTest(ModelStub &m) { return m.adaptiveTest(); }
 
-    static auto common(ModelStub &m) -> Test { return adaptiveTest(m); }
+    static Test common(ModelStub &m) { return adaptiveTest(m); }
 
     static auto information(ModelStub &m) { return adaptiveTest(m).identity; }
 
     void run() override { view->confirmTestSetup(); }
 
-    auto snr_dB(ModelStub &m) -> int override {
-        return adaptiveTest(m).startingSnr_dB;
-    }
+    int snr_dB(ModelStub &m) override { return adaptiveTest(m).startingSnr_dB; }
 
-    auto maskerLevel(ModelStub &m) -> int override {
+    int maskerLevel(ModelStub &m) override {
         return common(m).maskerLevel_dB_SPL;
     }
 
-    auto targetListDirectory(ModelStub &m) -> std::string override {
+    std::string targetListDirectory(ModelStub &m) override {
         return common(m).targetListDirectory;
     }
 
-    auto subjectId(ModelStub &m) -> std::string override {
+    std::string subjectId(ModelStub &m) override {
         return information(m).subjectId;
     }
 
-    auto testerId(ModelStub &m) -> std::string override {
+    std::string testerId(ModelStub &m) override {
         return information(m).testerId;
     }
 
-    auto session(ModelStub &m) -> std::string override {
+    std::string session(ModelStub &m) override {
         return information(m).session;
     }
 
-    auto maskerFilePath(ModelStub &m) -> std::string override {
+    std::string maskerFilePath(ModelStub &m) override {
         return common(m).maskerFilePath;
     }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
+    int fullScaleLevel(ModelStub &m) override {
         return common(m).fullScaleLevel_dB_SPL;
     }
 
-    auto condition(ModelStub &m) -> Condition override {
-        return common(m).condition;
-    }
+    Condition condition(ModelStub &m) override { return common(m).condition; }
 
-    auto ceilingSnr_dB(ModelStub &m) -> int override {
+    int ceilingSnr_dB(ModelStub &m) override {
         return adaptiveTest(m).ceilingSnr_dB;
     }
 
-    auto floorSnr_dB(ModelStub &m) -> int override {
+    int floorSnr_dB(ModelStub &m) override {
         return adaptiveTest(m).floorSnr_dB;
     }
 
-    auto trackSettingsFile(ModelStub &m) -> std::string override {
+    std::string trackSettingsFile(ModelStub &m) override {
         return adaptiveTest(m).trackSettingsFile;
     }
 
-    auto trackBumpLimit(ModelStub &m) -> int override {
+    int trackBumpLimit(ModelStub &m) override {
         return adaptiveTest(m).trackBumpLimit;
     }
 };
@@ -659,55 +615,55 @@ class ConfirmingAdaptiveClosedSetTest : public ConfirmingAdaptiveTest_ {
         confirmingAdaptiveTest.run();
     }
 
-    auto snr_dB(ModelStub &m) -> int override {
+    int snr_dB(ModelStub &m) override {
         return confirmingAdaptiveTest.snr_dB(m);
     }
 
-    auto maskerLevel(ModelStub &m) -> int override {
+    int maskerLevel(ModelStub &m) override {
         return confirmingAdaptiveTest.maskerLevel(m);
     }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
+    int fullScaleLevel(ModelStub &m) override {
         return confirmingAdaptiveTest.fullScaleLevel(m);
     }
 
-    auto targetListDirectory(ModelStub &m) -> std::string override {
+    std::string targetListDirectory(ModelStub &m) override {
         return confirmingAdaptiveTest.targetListDirectory(m);
     }
 
-    auto subjectId(ModelStub &m) -> std::string override {
+    std::string subjectId(ModelStub &m) override {
         return confirmingAdaptiveTest.subjectId(m);
     }
 
-    auto testerId(ModelStub &m) -> std::string override {
+    std::string testerId(ModelStub &m) override {
         return confirmingAdaptiveTest.testerId(m);
     }
 
-    auto session(ModelStub &m) -> std::string override {
+    std::string session(ModelStub &m) override {
         return confirmingAdaptiveTest.session(m);
     }
 
-    auto maskerFilePath(ModelStub &m) -> std::string override {
+    std::string maskerFilePath(ModelStub &m) override {
         return confirmingAdaptiveTest.maskerFilePath(m);
     }
 
-    auto condition(ModelStub &m) -> Condition override {
+    Condition condition(ModelStub &m) override {
         return confirmingAdaptiveTest.condition(m);
     }
 
-    auto ceilingSnr_dB(ModelStub &m) -> int override {
+    int ceilingSnr_dB(ModelStub &m) override {
         return confirmingAdaptiveTest.ceilingSnr_dB(m);
     }
 
-    auto floorSnr_dB(ModelStub &m) -> int override {
+    int floorSnr_dB(ModelStub &m) override {
         return confirmingAdaptiveTest.floorSnr_dB(m);
     }
 
-    auto trackSettingsFile(ModelStub &m) -> std::string override {
+    std::string trackSettingsFile(ModelStub &m) override {
         return confirmingAdaptiveTest.trackSettingsFile(m);
     }
 
-    auto trackBumpLimit(ModelStub &m) -> int override {
+    int trackBumpLimit(ModelStub &m) override {
         return confirmingAdaptiveTest.trackBumpLimit(m);
     }
 };
@@ -725,55 +681,55 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
         confirmingAdaptiveTest.run();
     }
 
-    auto snr_dB(ModelStub &m) -> int override {
+    int snr_dB(ModelStub &m) override {
         return confirmingAdaptiveTest.snr_dB(m);
     }
 
-    auto maskerLevel(ModelStub &m) -> int override {
+    int maskerLevel(ModelStub &m) override {
         return confirmingAdaptiveTest.maskerLevel(m);
     }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
+    int fullScaleLevel(ModelStub &m) override {
         return confirmingAdaptiveTest.fullScaleLevel(m);
     }
 
-    auto targetListDirectory(ModelStub &m) -> std::string override {
+    std::string targetListDirectory(ModelStub &m) override {
         return confirmingAdaptiveTest.targetListDirectory(m);
     }
 
-    auto subjectId(ModelStub &m) -> std::string override {
+    std::string subjectId(ModelStub &m) override {
         return confirmingAdaptiveTest.subjectId(m);
     }
 
-    auto testerId(ModelStub &m) -> std::string override {
+    std::string testerId(ModelStub &m) override {
         return confirmingAdaptiveTest.testerId(m);
     }
 
-    auto session(ModelStub &m) -> std::string override {
+    std::string session(ModelStub &m) override {
         return confirmingAdaptiveTest.session(m);
     }
 
-    auto maskerFilePath(ModelStub &m) -> std::string override {
+    std::string maskerFilePath(ModelStub &m) override {
         return confirmingAdaptiveTest.maskerFilePath(m);
     }
 
-    auto condition(ModelStub &m) -> Condition override {
+    Condition condition(ModelStub &m) override {
         return confirmingAdaptiveTest.condition(m);
     }
 
-    auto ceilingSnr_dB(ModelStub &m) -> int override {
+    int ceilingSnr_dB(ModelStub &m) override {
         return confirmingAdaptiveTest.ceilingSnr_dB(m);
     }
 
-    auto floorSnr_dB(ModelStub &m) -> int override {
+    int floorSnr_dB(ModelStub &m) override {
         return confirmingAdaptiveTest.floorSnr_dB(m);
     }
 
-    auto trackSettingsFile(ModelStub &m) -> std::string override {
+    std::string trackSettingsFile(ModelStub &m) override {
         return confirmingAdaptiveTest.trackSettingsFile(m);
     }
 
-    auto trackBumpLimit(ModelStub &m) -> int override {
+    int trackBumpLimit(ModelStub &m) override {
         return confirmingAdaptiveTest.trackBumpLimit(m);
     }
 };
@@ -793,41 +749,37 @@ class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
 
     static auto information(ModelStub &m) { return fixedLevelTest(m).identity; }
 
-    auto snr_dB(ModelStub &m) -> int override {
-        return fixedLevelTest(m).snr_dB;
-    }
+    int snr_dB(ModelStub &m) override { return fixedLevelTest(m).snr_dB; }
 
-    auto maskerLevel(ModelStub &m) -> int override {
+    int maskerLevel(ModelStub &m) override {
         return common(m).maskerLevel_dB_SPL;
     }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
+    int fullScaleLevel(ModelStub &m) override {
         return common(m).fullScaleLevel_dB_SPL;
     }
 
-    auto targetListDirectory(ModelStub &m) -> std::string override {
+    std::string targetListDirectory(ModelStub &m) override {
         return common(m).targetListDirectory;
     }
 
-    auto subjectId(ModelStub &m) -> std::string override {
+    std::string subjectId(ModelStub &m) override {
         return information(m).subjectId;
     }
 
-    auto testerId(ModelStub &m) -> std::string override {
+    std::string testerId(ModelStub &m) override {
         return information(m).testerId;
     }
 
-    auto session(ModelStub &m) -> std::string override {
+    std::string session(ModelStub &m) override {
         return information(m).session;
     }
 
-    auto maskerFilePath(ModelStub &m) -> std::string override {
+    std::string maskerFilePath(ModelStub &m) override {
         return common(m).maskerFilePath;
     }
 
-    auto condition(ModelStub &m) -> Condition override {
-        return common(m).condition;
-    }
+    Condition condition(ModelStub &m) override { return common(m).condition; }
 };
 
 class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
@@ -843,39 +795,39 @@ class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
         confirmingFixedLevelTest.run();
     }
 
-    auto snr_dB(ModelStub &m) -> int override {
+    int snr_dB(ModelStub &m) override {
         return confirmingFixedLevelTest.snr_dB(m);
     }
 
-    auto maskerLevel(ModelStub &m) -> int override {
+    int maskerLevel(ModelStub &m) override {
         return confirmingFixedLevelTest.maskerLevel(m);
     }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
+    int fullScaleLevel(ModelStub &m) override {
         return confirmingFixedLevelTest.fullScaleLevel(m);
     }
 
-    auto targetListDirectory(ModelStub &m) -> std::string override {
+    std::string targetListDirectory(ModelStub &m) override {
         return confirmingFixedLevelTest.targetListDirectory(m);
     }
 
-    auto subjectId(ModelStub &m) -> std::string override {
+    std::string subjectId(ModelStub &m) override {
         return confirmingFixedLevelTest.subjectId(m);
     }
 
-    auto testerId(ModelStub &m) -> std::string override {
+    std::string testerId(ModelStub &m) override {
         return confirmingFixedLevelTest.testerId(m);
     }
 
-    auto session(ModelStub &m) -> std::string override {
+    std::string session(ModelStub &m) override {
         return confirmingFixedLevelTest.session(m);
     }
 
-    auto maskerFilePath(ModelStub &m) -> std::string override {
+    std::string maskerFilePath(ModelStub &m) override {
         return confirmingFixedLevelTest.maskerFilePath(m);
     }
 
-    auto condition(ModelStub &m) -> Condition override {
+    Condition condition(ModelStub &m) override {
         return confirmingFixedLevelTest.condition(m);
     }
 };
@@ -894,48 +846,48 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
         confirmingFixedLevelTest.run();
     }
 
-    auto snr_dB(ModelStub &m) -> int override {
+    int snr_dB(ModelStub &m) override {
         return confirmingFixedLevelTest.snr_dB(m);
     }
 
-    auto maskerLevel(ModelStub &m) -> int override {
+    int maskerLevel(ModelStub &m) override {
         return confirmingFixedLevelTest.maskerLevel(m);
     }
 
-    auto fullScaleLevel(ModelStub &m) -> int override {
+    int fullScaleLevel(ModelStub &m) override {
         return confirmingFixedLevelTest.fullScaleLevel(m);
     }
 
-    auto targetListDirectory(ModelStub &m) -> std::string override {
+    std::string targetListDirectory(ModelStub &m) override {
         return confirmingFixedLevelTest.targetListDirectory(m);
     }
 
-    auto subjectId(ModelStub &m) -> std::string override {
+    std::string subjectId(ModelStub &m) override {
         return confirmingFixedLevelTest.subjectId(m);
     }
 
-    auto testerId(ModelStub &m) -> std::string override {
+    std::string testerId(ModelStub &m) override {
         return confirmingFixedLevelTest.testerId(m);
     }
 
-    auto session(ModelStub &m) -> std::string override {
+    std::string session(ModelStub &m) override {
         return confirmingFixedLevelTest.session(m);
     }
 
-    auto maskerFilePath(ModelStub &m) -> std::string override {
+    std::string maskerFilePath(ModelStub &m) override {
         return confirmingFixedLevelTest.maskerFilePath(m);
     }
 
-    auto condition(ModelStub &m) -> Condition override {
+    Condition condition(ModelStub &m) override {
         return confirmingFixedLevelTest.condition(m);
     }
 };
 
 class TrialSubmission : public virtual UseCase {
   public:
-    virtual auto nextTrialButtonShown() -> bool = 0;
-    virtual auto responseViewShown() -> bool = 0;
-    virtual auto responseViewHidden() -> bool = 0;
+    virtual bool nextTrialButtonShown() = 0;
+    virtual bool responseViewShown() = 0;
+    virtual bool responseViewHidden() = 0;
 };
 
 class RespondingFromSubject : public TrialSubmission {
@@ -947,17 +899,13 @@ class RespondingFromSubject : public TrialSubmission {
 
     void run() override { view->submitResponse(); }
 
-    auto nextTrialButtonShown() -> bool override {
+    bool nextTrialButtonShown() override {
         return view->nextTrialButtonShown();
     }
 
-    auto responseViewShown() -> bool override {
-        return view->responseButtonsShown();
-    }
+    bool responseViewShown() override { return view->responseButtonsShown(); }
 
-    auto responseViewHidden() -> bool override {
-        return view->responseButtonsHidden();
-    }
+    bool responseViewHidden() override { return view->responseButtonsHidden(); }
 };
 
 class RespondingFromExperimenter : public TrialSubmission {
@@ -969,15 +917,15 @@ class RespondingFromExperimenter : public TrialSubmission {
 
     void run() override { view->submitResponse(); }
 
-    auto nextTrialButtonShown() -> bool override {
+    bool nextTrialButtonShown() override {
         return view->nextTrialButtonShown();
     }
 
-    auto responseViewShown() -> bool override {
+    bool responseViewShown() override {
         return view->responseSubmissionShown();
     }
 
-    auto responseViewHidden() -> bool override {
+    bool responseViewHidden() override {
         return view->responseSubmissionHidden();
     }
 };
@@ -1000,15 +948,13 @@ class SubmittingPassedTrial : public TrialSubmission {
 
     void run() override { view->submitPassedTrial(); }
 
-    auto nextTrialButtonShown() -> bool override {
+    bool nextTrialButtonShown() override {
         return view->nextTrialButtonShown();
     }
 
-    auto responseViewShown() -> bool override {
-        return view->evaluationButtonsShown();
-    }
+    bool responseViewShown() override { return view->evaluationButtonsShown(); }
 
-    auto responseViewHidden() -> bool override {
+    bool responseViewHidden() override {
         return view->evaluationButtonsHidden();
     }
 };
@@ -1022,23 +968,21 @@ class SubmittingFailedTrial : public TrialSubmission {
 
     void run() override { view->submitFailedTrial(); }
 
-    auto nextTrialButtonShown() -> bool override {
+    bool nextTrialButtonShown() override {
         return view->nextTrialButtonShown();
     }
 
-    auto responseViewShown() -> bool override {
-        return view->evaluationButtonsShown();
-    }
+    bool responseViewShown() override { return view->evaluationButtonsShown(); }
 
-    auto responseViewHidden() -> bool override {
+    bool responseViewHidden() override {
         return view->evaluationButtonsHidden();
     }
 };
 
 class PlayingTrial : public virtual UseCase {
   public:
-    virtual auto nextTrialButtonHidden() -> bool = 0;
-    virtual auto nextTrialButtonShown() -> bool = 0;
+    virtual bool nextTrialButtonHidden() = 0;
+    virtual bool nextTrialButtonShown() = 0;
 };
 
 class PlayingTrialFromSubject : public PlayingTrial {
@@ -1050,11 +994,11 @@ class PlayingTrialFromSubject : public PlayingTrial {
 
     void run() override { view->playTrial(); }
 
-    auto nextTrialButtonHidden() -> bool override {
+    bool nextTrialButtonHidden() override {
         return view->nextTrialButtonHidden();
     }
 
-    auto nextTrialButtonShown() -> bool override {
+    bool nextTrialButtonShown() override {
         return view->nextTrialButtonShown();
     }
 };
@@ -1068,11 +1012,11 @@ class PlayingTrialFromExperimenter : public PlayingTrial {
 
     void run() override { view->playTrial(); }
 
-    auto nextTrialButtonHidden() -> bool override {
+    bool nextTrialButtonHidden() override {
         return view->nextTrialButtonHidden();
     }
 
-    auto nextTrialButtonShown() -> bool override {
+    bool nextTrialButtonShown() override {
         return view->nextTrialButtonShown();
     }
 };
@@ -1084,7 +1028,7 @@ class BrowsingUseCase : public virtual UseCase {
 
 class BrowsingEnteredPathUseCase : public virtual BrowsingUseCase {
   public:
-    virtual auto entry() -> std::string = 0;
+    virtual std::string entry() = 0;
     virtual void setEntry(std::string) = 0;
 };
 
@@ -1095,7 +1039,7 @@ class BrowsingForMasker : public BrowsingEnteredPathUseCase {
     explicit BrowsingForMasker(ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
-    auto entry() -> std::string override { return view->maskerFilePath(); }
+    std::string entry() override { return view->maskerFilePath(); }
 
     void setEntry(std::string s) override { view->setMasker(std::move(s)); }
 
@@ -1119,7 +1063,7 @@ class BrowsingForTrackSettingsFile : public BrowsingEnteredPathUseCase {
         view_.setBrowseForOpeningFileResult(s);
     }
 
-    auto entry() -> std::string override { return view->trackSettingsFile(); }
+    std::string entry() override { return view->trackSettingsFile(); }
 
     void setEntry(std::string s) override {
         view->setTrackSettingsFile(std::move(s));
@@ -1139,7 +1083,7 @@ class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
         view_.setBrowseForDirectoryResult(s);
     }
 
-    auto entry() -> std::string override { return view->targetListDirectory(); }
+    std::string entry() override { return view->targetListDirectory(); }
 
     void setEntry(std::string s) override {
         view->setTargetListDirectory(std::move(s));
@@ -1153,7 +1097,7 @@ class BrowsingForCalibration : public BrowsingEnteredPathUseCase {
     explicit BrowsingForCalibration(ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
-    auto entry() -> std::string override { return view->calibrationFilePath(); }
+    std::string entry() override { return view->calibrationFilePath(); }
 
     void setEntry(std::string s) override {
         view->setCalibrationFilePath(std::move(s));
@@ -1179,7 +1123,7 @@ class PresenterConstructionTests : public ::testing::Test {
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
 
-    auto construct() -> Presenter {
+    Presenter construct() {
         return {&model, &view, &testSetup, &subject, &experimenter, &testing};
     }
 };
@@ -1222,11 +1166,11 @@ class PresenterTests : public ::testing::Test {
     SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenterView};
 
-    static auto auditoryOnlyConditionName() -> std::string {
+    static std::string auditoryOnlyConditionName() {
         return conditionName(Condition::auditoryOnly);
     }
 
-    static auto audioVisualConditionName() -> std::string {
+    static std::string audioVisualConditionName() {
         return conditionName(Condition::audioVisual);
     }
 
@@ -1240,13 +1184,13 @@ class PresenterTests : public ::testing::Test {
 
     void assertSetupViewShown() { assertTrue(setupViewShown()); }
 
-    auto setupViewShown() -> bool { return setupView.shown(); }
+    bool setupViewShown() { return setupView.shown(); }
 
     void assertSetupViewNotShown() { assertFalse(setupViewShown()); }
 
     void assertSetupViewHidden() { assertTrue(setupViewHidden()); }
 
-    auto setupViewHidden() -> bool { return setupView.hidden(); }
+    bool setupViewHidden() { return setupView.hidden(); }
 
     void assertSetupViewNotHidden() { assertFalse(setupViewHidden()); }
 
@@ -1254,9 +1198,9 @@ class PresenterTests : public ::testing::Test {
 
     void assertTestingViewShown() { assertTrue(testingViewShown()); }
 
-    auto experimenterViewShown() -> bool { return experimenterView.shown(); }
+    bool experimenterViewShown() { return experimenterView.shown(); }
 
-    auto testingViewShown() -> bool { return testingView.shown(); }
+    bool testingViewShown() { return testingView.shown(); }
 
     void assertExperimenterViewHidden() {
         assertTrue(experimenterViewHidden());
@@ -1264,9 +1208,9 @@ class PresenterTests : public ::testing::Test {
 
     void assertTestingViewHidden() { assertTrue(testingViewHidden()); }
 
-    auto experimenterViewHidden() -> bool { return experimenterView.hidden(); }
+    bool experimenterViewHidden() { return experimenterView.hidden(); }
 
-    auto testingViewHidden() -> bool { return testingView.hidden(); }
+    bool testingViewHidden() { return testingView.hidden(); }
 
     void assertExperimenterViewNotHidden() {
         assertFalse(experimenterViewHidden());
@@ -1276,7 +1220,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertSubjectViewShown() { assertTrue(subjectViewShown()); }
 
-    auto subjectViewShown() -> bool { return subjectView.shown(); }
+    bool subjectViewShown() { return subjectView.shown(); }
 
     void assertSubjectViewNotShown() { assertFalse(subjectViewShown()); }
 
@@ -1297,7 +1241,7 @@ class PresenterTests : public ::testing::Test {
         assertEqual(s, entry(useCase));
     }
 
-    static auto entry(BrowsingEnteredPathUseCase &useCase) -> std::string {
+    static std::string entry(BrowsingEnteredPathUseCase &useCase) {
         return useCase.entry();
     }
 
@@ -1326,15 +1270,15 @@ class PresenterTests : public ::testing::Test {
 
     void setCondition(std::string s) { setupView.setCondition(std::move(s)); }
 
-    auto errorMessage() -> std::string { return view.errorMessage(); }
+    std::string errorMessage() { return view.errorMessage(); }
 
     void assertModelPassedCondition(coordinate_response_measure::Color c) {
         assertEqual(c, model.responseParameters().color);
     }
 
-    auto adaptiveTest() -> const AdaptiveTest & { return model.adaptiveTest(); }
+    const AdaptiveTest &adaptiveTest() { return model.adaptiveTest(); }
 
-    auto calibration() -> const Calibration & { return model.calibration(); }
+    const Calibration &calibration() { return model.calibration(); }
 
     void assertInvalidCalibrationLevelShowsErrorMessage(UseCase &useCase) {
         setCalibrationLevel("a");
@@ -1372,7 +1316,7 @@ class PresenterTests : public ::testing::Test {
         assertEqual(c, modelCondition(useCase));
     }
 
-    auto modelCondition(ConditionUseCase &useCase) -> Condition {
+    Condition modelCondition(ConditionUseCase &useCase) {
         return useCase.condition(model);
     }
 
@@ -1401,7 +1345,7 @@ class PresenterTests : public ::testing::Test {
         assertTrue(trialPlayed());
     }
 
-    auto trialPlayed() -> bool { return model.trialPlayed(); }
+    bool trialPlayed() { return model.trialPlayed(); }
 
     static void assertHidesPlayTrialButton(PlayingTrial &useCase) {
         run(useCase);
@@ -1413,11 +1357,11 @@ class PresenterTests : public ::testing::Test {
         assertTrue(exitTestButtonHidden());
     }
 
-    auto exitTestButtonHidden() -> bool {
+    bool exitTestButtonHidden() {
         return experimenterView.exitTestButtonHidden();
     }
 
-    auto exitTestButtonShown() -> bool {
+    bool exitTestButtonShown() {
         return experimenterView.exitTestButtonShown();
     }
 
@@ -1629,7 +1573,7 @@ class RequestFailingModel : public Model {
     std::string errorMessage{};
 
   public:
-    auto trialNumber() -> int override { return 0; }
+    int trialNumber() override { return 0; }
 
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
 
@@ -1654,7 +1598,7 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submitResponse(const open_set::FreeResponse &) override {
+    void submitResponse(const FreeResponse &) override {
         throw RequestFailure{errorMessage};
     }
 
@@ -1662,8 +1606,8 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    auto testComplete() -> bool override { return {}; }
-    auto audioDevices() -> std::vector<std::string> override { return {}; }
+    bool testComplete() override { return {}; }
+    std::vector<std::string> audioDevices() override { return {}; }
     void subscribe(EventListener *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}

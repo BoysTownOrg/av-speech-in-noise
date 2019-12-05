@@ -29,15 +29,14 @@ class RandomizedTargetList : public av_speech_in_noise::TargetList {
   public:
     RandomizedTargetList(DirectoryReader *, Randomizer *);
     void loadFromDirectory(std::string) override;
-    auto next() -> std::string override;
-    auto current() -> std::string override;
-    auto empty() -> bool override;
+    std::string next() override;
+    std::string current() override;
+    bool empty() override;
     void reinsertCurrent() override;
-
   private:
-    auto fullPath(std::string file) -> std::string;
+    std::string fullPath(std::string file);
     void shuffle();
-    auto empty_() -> bool;
+    bool empty_();
     void replaceLastFile();
 };
 
@@ -49,7 +48,7 @@ class RandomizedTargetListFactory : public TargetListFactory {
     RandomizedTargetListFactory(DirectoryReader *reader, Randomizer *randomizer)
         : reader{reader}, randomizer{randomizer} {}
 
-    auto make() -> std::shared_ptr<av_speech_in_noise::TargetList> override {
+    std::shared_ptr<av_speech_in_noise::TargetList> make() override {
         return std::make_shared<RandomizedTargetList>(reader, randomizer);
     }
 };
@@ -63,15 +62,15 @@ class RandomizedFiniteTargetList : public av_speech_in_noise::TargetList {
 
   public:
     RandomizedFiniteTargetList(DirectoryReader *, Randomizer *);
-    auto empty() -> bool override;
+    bool empty() override;
     void loadFromDirectory(std::string directory) override;
-    auto next() -> std::string override;
-    auto current() -> std::string override;
+    std::string next() override;
+    std::string current() override;
     void reinsertCurrent() override;
 
   private:
-    auto empty_() -> bool;
-    auto fullPath(std::string file) -> std::string;
+    bool empty_();
+    std::string fullPath(std::string file);
 };
 }
 

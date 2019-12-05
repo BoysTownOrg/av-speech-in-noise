@@ -43,7 +43,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     auto setDeviceCalled() const { return setDeviceCalled_; }
 
-    auto playing() -> bool override { return playing_; }
+    bool playing() override { return playing_; }
 
     void setPlaying() { playing_ = true; }
 
@@ -70,7 +70,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void addToLog(const std::string &s) { log_.insert(s); }
 
-    auto outputAudioDeviceDescriptions() -> std::vector<std::string> override {
+    std::vector<std::string> outputAudioDeviceDescriptions() override {
         return outputAudioDeviceDescriptions_;
     }
 
@@ -84,20 +84,20 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     auto level_dB() const { return level_dB_; }
 
-    auto rms() -> double override {
+    double rms() override {
         addToLog("rms ");
         return rms_;
     }
 
     void setLevel_dB(double x) override { level_dB_ = x; }
 
-    auto durationSeconds() -> double override { return durationSeconds_; }
+    double durationSeconds() override { return durationSeconds_; }
 
     void seekSeconds(double x) override { secondsSeeked_ = x; }
 
     auto secondsSeeked() const { return secondsSeeked_; }
 
-    auto fadeTimeSeconds() -> double override { return fadeTimeSeconds_; }
+    double fadeTimeSeconds() override { return fadeTimeSeconds_; }
 
     void setFadeTimeSeconds(double x) { fadeTimeSeconds_ = x; }
 

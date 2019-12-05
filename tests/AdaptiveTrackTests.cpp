@@ -51,15 +51,13 @@ class AdaptiveTrackTests : public ::testing::Test {
         rule.resize(3);
     }
 
-    auto firstSequence() -> auto & { return rule.at(0); }
+    auto &firstSequence() { return rule.at(0); }
 
-    auto secondSequence() -> auto & { return rule.at(1); }
+    auto &secondSequence() { return rule.at(1); }
 
-    auto thirdSequence() -> auto & { return rule.at(2); }
+    auto &thirdSequence() { return rule.at(2); }
 
-    auto construct() -> AdaptiveTrackFacade {
-        return AdaptiveTrackFacade{settings};
-    }
+    AdaptiveTrackFacade construct() { return AdaptiveTrackFacade{settings}; }
 
     template <typename T> void setStartingX(T x) { settings.startingX = x; }
 

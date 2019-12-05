@@ -21,8 +21,8 @@ auto SubdirectoryTargetListReader::read(std::string directory) -> lists_type {
     return lists;
 }
 
-auto SubdirectoryTargetListReader::subDirectories(std::string directory)
-    -> std::vector<std::string> {
+std::vector<std::string> SubdirectoryTargetListReader::subDirectories(
+    std::string directory) {
     return directoryReader->subDirectories(std::move(directory));
 }
 }

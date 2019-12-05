@@ -12,8 +12,7 @@ class AudioReaderStub : public AudioReader {
   public:
     void set(std::vector<std::vector<float>> x) { toRead_ = std::move(x); }
 
-    auto read(std::string filePath)
-        -> std::vector<std::vector<float>> override {
+    std::vector<std::vector<float>> read(std::string filePath) override {
         filePath_ = std::move(filePath);
         if (throwOnRead_)
             throw InvalidFile{};

@@ -9,8 +9,7 @@ namespace target_list {
 class FileFilter {
   public:
     virtual ~FileFilter() = default;
-    virtual auto filter(std::vector<std::string>)
-        -> std::vector<std::string> = 0;
+    virtual std::vector<std::string> filter(std::vector<std::string>) = 0;
 };
 
 class FileFilterDecorator : public DirectoryReader {
@@ -19,9 +18,8 @@ class FileFilterDecorator : public DirectoryReader {
 
   public:
     FileFilterDecorator(DirectoryReader *, FileFilter *);
-    auto filesIn(std::string directory) -> std::vector<std::string> override;
-    auto subDirectories(std::string directory)
-        -> std::vector<std::string> override;
+    std::vector<std::string> filesIn(std::string directory) override;
+    std::vector<std::string> subDirectories(std::string directory) override;
 };
 
 class FileExtensionFilter : public FileFilter {
@@ -29,7 +27,7 @@ class FileExtensionFilter : public FileFilter {
 
   public:
     explicit FileExtensionFilter(std::vector<std::string> filters);
-    auto filter(std::vector<std::string>) -> std::vector<std::string> override;
+    std::vector<std::string> filter(std::vector<std::string>) override;
 };
 
 class FileIdentifierFilter : public FileFilter {
@@ -37,10 +35,10 @@ class FileIdentifierFilter : public FileFilter {
 
   public:
     explicit FileIdentifierFilter(std::string identifier);
-    auto filter(std::vector<std::string>) -> std::vector<std::string> override;
+    std::vector<std::string> filter(std::vector<std::string>) override;
 
   private:
-    auto containsIdentifier(const std::string &) -> bool;
+    bool containsIdentifier(const std::string &);
 };
 
 class FileIdentifierExcluderFilter : public FileFilter {
@@ -48,7 +46,7 @@ class FileIdentifierExcluderFilter : public FileFilter {
 
   public:
     explicit FileIdentifierExcluderFilter(std::vector<std::string> identifiers);
-    auto filter(std::vector<std::string>) -> std::vector<std::string> override;
+    std::vector<std::string> filter(std::vector<std::string>) override;
 };
 
 class RandomSubsetFiles : public FileFilter {
@@ -57,7 +55,7 @@ class RandomSubsetFiles : public FileFilter {
 
   public:
     RandomSubsetFiles(Randomizer *, int);
-    auto filter(std::vector<std::string>) -> std::vector<std::string> override;
+    std::vector<std::string> filter(std::vector<std::string>) override;
 };
 
 class DirectoryReaderComposite : public DirectoryReader {
@@ -65,9 +63,8 @@ class DirectoryReaderComposite : public DirectoryReader {
 
   public:
     explicit DirectoryReaderComposite(std::vector<DirectoryReader *>);
-    auto filesIn(std::string directory) -> std::vector<std::string> override;
-    auto subDirectories(std::string directory)
-        -> std::vector<std::string> override;
+    std::vector<std::string> filesIn(std::string directory) override;
+    std::vector<std::string> subDirectories(std::string directory) override;
 };
 }
 

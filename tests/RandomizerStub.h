@@ -13,25 +13,25 @@ class RandomizerStub : public Randomizer {
     int upperIntBound_{};
 
   public:
-    [[nodiscard]] auto lowerIntBound() const { return lowerIntBound_; }
+    auto lowerIntBound() const { return lowerIntBound_; }
 
-    [[nodiscard]] auto upperIntBound() const { return upperIntBound_; }
+    auto upperIntBound() const { return upperIntBound_; }
 
     void setRandomInt(int x) { randomInt_ = x; }
 
     void setRandomFloat(double x) { randomFloat_ = x; }
 
-    [[nodiscard]] auto lowerFloatBound() const { return lowerBound_; }
+    auto lowerFloatBound() const { return lowerBound_; }
 
-    [[nodiscard]] auto upperFloatBound() const { return upperBound_; }
+    auto upperFloatBound() const { return upperBound_; }
 
-    auto randomFloatBetween(double a, double b) -> double override {
+    double randomFloatBetween(double a, double b) override {
         lowerBound_ = a;
         upperBound_ = b;
         return randomFloat_;
     }
 
-    auto randomIntBetween(int a, int b) -> int override {
+    int randomIntBetween(int a, int b) override {
         lowerIntBound_ = a;
         upperIntBound_ = b;
         return randomInt_;

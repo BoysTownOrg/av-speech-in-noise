@@ -11,16 +11,16 @@ class LogString {
   public:
     void insert(const std::string &s_) { log << s_; }
 
-    auto isEmpty() const -> bool { return log.str().empty(); }
+    bool isEmpty() const { return log.str().empty(); }
 
-    auto beginsWith(std::string const &beginning) const -> bool {
+    bool beginsWith(std::string const &beginning) const {
         if (log.str().length() >= beginning.length())
             return 0 == log.str().compare(0, beginning.length(), beginning);
 
         return false;
     }
 
-    auto endsWith(std::string const &ending) const -> bool {
+    bool endsWith(std::string const &ending) const {
         if (log.str().length() >= ending.length())
             return 0 ==
                 log.str().compare(log.str().length() - ending.length(),
@@ -29,7 +29,7 @@ class LogString {
         return false;
     }
 
-    auto contains(const std::string &s2) const -> bool {
+    bool contains(const std::string &s2) const {
         return log.str().find(s2) != std::string::npos;
     }
 

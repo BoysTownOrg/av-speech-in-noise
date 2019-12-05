@@ -16,7 +16,7 @@ class TimeStampStub : public av_speech_in_noise::TimeStamp {
   public:
     void capture() override { log_.insert("capture "); }
 
-    auto log() const -> auto & { return log_; }
+    auto &log() const { return log_; }
 
     void setYear(int y) { year_ = y; }
 
@@ -30,32 +30,32 @@ class TimeStampStub : public av_speech_in_noise::TimeStamp {
 
     void setSecond(int y) { second_ = y; }
 
-    auto year() -> int override {
+    int year() override {
         log_.insert("year ");
         return year_;
     }
 
-    auto month() -> int override {
+    int month() override {
         log_.insert("month ");
         return month_;
     }
 
-    auto dayOfMonth() -> int override {
+    int dayOfMonth() override {
         log_.insert("dayOfMonth ");
         return dayOfMonth_;
     }
 
-    auto hour() -> int override {
+    int hour() override {
         log_.insert("hour ");
         return hour_;
     }
 
-    auto minute() -> int override {
+    int minute() override {
         log_.insert("minute ");
         return minute_;
     }
 
-    auto second() -> int override {
+    int second() override {
         log_.insert("second ");
         return second_;
     }
@@ -68,9 +68,9 @@ class FileSystemPathStub : public av_speech_in_noise::FileSystemPath {
   public:
     void setHomeDirectory(std::string s) { homeDirectory_ = std::move(s); }
 
-    auto homeDirectory() -> std::string override { return homeDirectory_; }
+    std::string homeDirectory() override { return homeDirectory_; }
 
-    [[nodiscard]] auto directoryCreated() const { return directoryCreated_; }
+    auto directoryCreated() const { return directoryCreated_; }
 
     void createDirectory(std::string s) override {
         directoryCreated_ = std::move(s);
@@ -84,9 +84,7 @@ class OutputFilePathTests : public ::testing::Test {
     av_speech_in_noise::OutputFilePathImpl path{&timeStamp, &systemPath};
     av_speech_in_noise::TestIdentity test{};
 
-    auto generateFileName() -> std::string {
-        return path.generateFileName(test);
-    }
+    std::string generateFileName() { return path.generateFileName(test); }
 
     void setHomeDirectory(std::string s) {
         systemPath.setHomeDirectory(std::move(s));

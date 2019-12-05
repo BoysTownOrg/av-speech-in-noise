@@ -15,7 +15,7 @@ int Presenter::ceilingSnr_dB = 20;
 int Presenter::floorSnr_dB = -40;
 int Presenter::trackBumpLimit = 10;
 
-static auto fixedLevelTest(Presenter::TestSetup *testSetup) -> FixedLevelTest {
+static FixedLevelTest fixedLevelTest(Presenter::TestSetup *testSetup) {
     return testSetup->fixedLevelTest();
 }
 
@@ -67,21 +67,17 @@ void Presenter::initializeTest() {
         model->initializeTest(fixedLevelTest(testSetup));
 }
 
-auto Presenter::adaptiveTest() -> bool {
+bool Presenter::adaptiveTest() {
     return adaptiveClosedSet() || adaptiveOpenSet();
 }
 
-auto Presenter::adaptiveClosedSet() -> bool {
-    return testSetup->adaptiveClosedSet();
-}
+bool Presenter::adaptiveClosedSet() { return testSetup->adaptiveClosedSet(); }
 
-auto Presenter::adaptiveOpenSet() -> bool {
-    return testSetup->adaptiveOpenSet();
-}
+bool Presenter::adaptiveOpenSet() { return testSetup->adaptiveOpenSet(); }
 
-auto Presenter::finiteTargets() -> bool { return testSetup->finiteTargets(); }
+bool Presenter::finiteTargets() { return testSetup->finiteTargets(); }
 
-auto Presenter::testComplete() -> bool { return model->testComplete(); }
+bool Presenter::testComplete() { return model->testComplete(); }
 
 void Presenter::switchToTestView() {
     hideTestSetup();
@@ -99,11 +95,11 @@ void Presenter::showTestView() {
         testing->show();
 }
 
-auto Presenter::closedSet() -> bool {
+bool Presenter::closedSet() {
     return adaptiveClosedSet() || fixedLevelClosedSet();
 }
 
-auto Presenter::fixedLevelClosedSet() -> bool {
+bool Presenter::fixedLevelClosedSet() {
     return testSetup->fixedLevelClosedSet();
 }
 
@@ -246,8 +242,7 @@ void Presenter::TestSetup::show() { view->show(); }
 
 void Presenter::TestSetup::hide() { view->hide(); }
 
-static auto readInteger(const std::string &x, const std::string &identifier)
-    -> int {
+static int readInteger(const std::string &x, const std::string &identifier) {
     try {
         return std::stoi(x);
     } catch (const std::invalid_argument &) {
@@ -260,7 +255,7 @@ static auto readInteger(const std::string &x, const std::string &identifier)
     }
 }
 
-auto Presenter::TestSetup::fixedLevelTest() -> FixedLevelTest {
+FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
     FixedLevelTest p;
     commonTest(p);
     p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
@@ -268,7 +263,7 @@ auto Presenter::TestSetup::fixedLevelTest() -> FixedLevelTest {
     return p;
 }
 
-auto Presenter::TestSetup::testIdentity() -> TestIdentity {
+TestIdentity Presenter::TestSetup::testIdentity() {
     TestIdentity p;
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
@@ -284,7 +279,7 @@ void Presenter::TestSetup::commonTest(Test &p) {
     p.condition = readCondition();
 }
 
-auto Presenter::TestSetup::adaptiveTest() -> AdaptiveTest {
+AdaptiveTest Presenter::TestSetup::adaptiveTest() {
     AdaptiveTest p;
     commonTest(p);
     p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
@@ -296,17 +291,17 @@ auto Presenter::TestSetup::adaptiveTest() -> AdaptiveTest {
     return p;
 }
 
-auto Presenter::TestSetup::readCondition() -> Condition {
+Condition Presenter::TestSetup::readCondition() {
     return auditoryOnly() ? Condition::auditoryOnly : Condition::audioVisual;
 }
 
-auto Presenter::TestSetup::auditoryOnly() -> bool {
+bool Presenter::TestSetup::auditoryOnly() {
     return view->condition() == conditionName(Condition::auditoryOnly);
 }
 
 void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
 
-auto Presenter::TestSetup::calibrationParameters() -> Calibration {
+Calibration Presenter::TestSetup::calibrationParameters() {
     Calibration p;
     p.filePath = view->calibrationFilePath();
     p.level_dB_SPL = readCalibrationLevel();
@@ -315,11 +310,11 @@ auto Presenter::TestSetup::calibrationParameters() -> Calibration {
     return p;
 }
 
-auto Presenter::TestSetup::readCalibrationLevel() -> int {
+int Presenter::TestSetup::readCalibrationLevel() {
     return readInteger(view->calibrationLevel_dB_SPL(), "calibration level");
 }
 
-auto Presenter::TestSetup::readMaskerLevel() -> int {
+int Presenter::TestSetup::readMaskerLevel() {
     return readInteger(view->maskerLevel_dB_SPL(), "masker level");
 }
 
@@ -357,27 +352,27 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
     view->setTrackSettingsFile(std::move(s));
 }
 
-auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
+bool Presenter::TestSetup::adaptiveClosedSet() {
     return method(Method::adaptiveClosedSet);
 }
 
-auto Presenter::TestSetup::method(Method m) -> bool {
+bool Presenter::TestSetup::method(Method m) {
     return view->method() == methodName(m);
 }
 
-auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
+bool Presenter::TestSetup::adaptiveOpenSet() {
     return method(Method::adaptiveOpenSet);
 }
 
-auto Presenter::TestSetup::fixedLevelOpenSet() -> bool {
+bool Presenter::TestSetup::fixedLevelOpenSet() {
     return method(Method::fixedLevelOpenSet);
 }
 
-auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
+bool Presenter::TestSetup::fixedLevelClosedSet() {
     return method(Method::fixedLevelClosedSet);
 }
 
-auto Presenter::TestSetup::finiteTargets() -> bool {
+bool Presenter::TestSetup::finiteTargets() {
     return view->usingTargetsWithoutReplacement();
 }
 
@@ -413,15 +408,14 @@ void Presenter::Subject::hideResponseButtons() { view->hideResponseButtons(); }
 
 void Presenter::Subject::showResponseButtons() { view->showResponseButtons(); }
 
-auto Presenter::Subject::subjectResponse()
-    -> coordinate_response_measure::Response {
+coordinate_response_measure::Response Presenter::Subject::subjectResponse() {
     coordinate_response_measure::Response p{};
     p.color = colorResponse();
     p.number = std::stoi(view->numberResponse());
     return p;
 }
 
-auto Presenter::Subject::colorResponse() -> coordinate_response_measure::Color {
+coordinate_response_measure::Color Presenter::Subject::colorResponse() {
     if (view->greenResponse())
         return coordinate_response_measure::Color::green;
     if (view->blueResponse())
@@ -485,7 +479,7 @@ void Presenter::Testing::submitResponse() {
     showNextTrialButton();
 }
 
-auto Presenter::Testing::openSetResponse() -> open_set::FreeResponse {
+FreeResponse Presenter::Testing::openSetResponse() {
     return {view->response(), view->flagged()};
 }
 

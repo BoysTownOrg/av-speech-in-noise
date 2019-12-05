@@ -13,12 +13,12 @@ class DirectoryReaderStub : public target_list::DirectoryReader {
         fileNames_ = std::move(files);
     }
 
-    auto filesIn(std::string directory) -> std::vector<std::string> override {
+    std::vector<std::string> filesIn(std::string directory) override {
         directory_ = std::move(directory);
         return fileNames_;
     }
 
-    auto subDirectories(std::string d) -> std::vector<std::string> override {
+    std::vector<std::string> subDirectories(std::string d) override {
         directory_ = std::move(d);
         return subDirectories_;
     }

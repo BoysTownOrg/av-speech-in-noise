@@ -10,11 +10,11 @@ class AudioBufferStub : public stimulus_players::AudioBuffer {
   public:
     void setAudio(std::vector<std::vector<int>> x) { audio_ = std::move(x); }
 
-    auto channels() -> int override { return gsl::narrow<int>(audio_.size()); }
+    int channels() override { return gsl::narrow<int>(audio_.size()); }
 
-    auto channel(int i) -> std::vector<int> override { return audio_.at(i); }
+    std::vector<int> channel(int i) override { return audio_.at(i); }
 
-    auto empty() -> bool override { return audio_.empty(); }
+    bool empty() override { return audio_.empty(); }
 };
 
 class BufferedAudioReaderStub : public stimulus_players::BufferedAudioReader {
@@ -31,8 +31,7 @@ class BufferedAudioReaderStub : public stimulus_players::BufferedAudioReader {
 
     [[nodiscard]] auto file() const { return file_; }
 
-    auto readNextBuffer()
-        -> std::shared_ptr<stimulus_players::AudioBuffer> override {
+    std::shared_ptr<stimulus_players::AudioBuffer> readNextBuffer() override {
         if (!buffers_.empty()) {
             buffer->setAudio(buffers_.front());
             buffers_.erase(buffers_.begin());
@@ -47,11 +46,9 @@ class BufferedAudioReaderStub : public stimulus_players::BufferedAudioReader {
             failed_ = true;
     }
 
-    auto failed() -> bool override { return failed_; }
+    bool failed() override { return failed_; }
 
-    auto minimumPossibleSample() -> int override {
-        return minimumPossibleSample_;
-    }
+    int minimumPossibleSample() override { return minimumPossibleSample_; }
 
     void setMinimumPossibleSample(int x) { minimumPossibleSample_ = x; }
 
@@ -65,8 +62,7 @@ class AudioReaderTests : public ::testing::Test {
     BufferedAudioReaderStub bufferedReader{};
     stimulus_players::AudioReaderImpl reader{&bufferedReader};
 
-    template <typename T>
-    auto dividedBy(std::vector<T> x, T c) -> std::vector<T> {
+    template <typename T> std::vector<T> dividedBy(std::vector<T> x, T c) {
         std::for_each(x.begin(), x.end(), [&](T &x_) { x_ /= c; });
         return x;
     }
