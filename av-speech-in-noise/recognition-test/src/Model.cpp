@@ -1,5 +1,4 @@
 #include "Model.hpp"
-#include <gsl/gsl>
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
@@ -15,18 +14,18 @@ ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
 void ModelImpl::initializeTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, infiniteTargetList, fixedTrialTestConcluder);
-    model->initialize(fixedLevelMethod, p, p.identity);
+    model->initialize(fixedLevelMethod, p);
 }
 
 void ModelImpl::initializeTestWithFiniteTargets(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, finiteTargetList, completesWhenTargetsEmpty);
-    model->initialize(fixedLevelMethod, p, p.identity);
+    model->initialize(fixedLevelMethod, p);
 }
 
 void ModelImpl::initializeTest(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
-    model->initialize(adaptiveMethod, p, p.identity);
+    model->initialize(adaptiveMethod, p);
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {
@@ -42,7 +41,7 @@ void ModelImpl::submitCorrectResponse() { model->submitCorrectResponse(); }
 
 void ModelImpl::submitIncorrectResponse() { model->submitIncorrectResponse(); }
 
-void ModelImpl::submitResponse(const FreeResponse &response) {
+void ModelImpl::submitResponse(const open_set::FreeResponse &response) {
     model->submitResponse(response);
 }
 
@@ -50,13 +49,13 @@ void ModelImpl::playCalibration(const Calibration &p) {
     model->playCalibration(p);
 }
 
-bool ModelImpl::testComplete() { return model->testComplete(); }
+auto ModelImpl::testComplete() -> bool { return model->testComplete(); }
 
-std::vector<std::string> ModelImpl::audioDevices() {
+auto ModelImpl::audioDevices() -> std::vector<std::string> {
     return model->audioDevices();
 }
 
 void ModelImpl::subscribe(Model::EventListener *e) { model->subscribe(e); }
 
-int ModelImpl::trialNumber() { return model->trialNumber(); }
+auto ModelImpl::trialNumber() -> int { return model->trialNumber(); }
 }

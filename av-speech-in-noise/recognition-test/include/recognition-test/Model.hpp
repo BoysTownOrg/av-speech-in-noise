@@ -10,28 +10,28 @@ class TargetList {
   public:
     virtual ~TargetList() = default;
     virtual void loadFromDirectory(std::string directory) = 0;
-    virtual std::string next() = 0;
-    virtual std::string current() = 0;
-    virtual bool empty() = 0;
+    virtual auto next() -> std::string = 0;
+    virtual auto current() -> std::string = 0;
+    virtual auto empty() -> bool = 0;
     virtual void reinsertCurrent() = 0;
 };
 
 class ResponseEvaluator {
   public:
     virtual ~ResponseEvaluator() = default;
-    virtual bool correct(const std::string &filePath,
-        const coordinate_response_measure::Response &) = 0;
-    virtual coordinate_response_measure::Color correctColor(
-        const std::string &filePath) = 0;
-    virtual int correctNumber(const std::string &filePath) = 0;
-    virtual std::string fileName(const std::string &filePath) = 0;
+    virtual auto correct(const std::string &filePath,
+        const coordinate_response_measure::Response &) -> bool = 0;
+    virtual auto correctColor(const std::string &filePath)
+        -> coordinate_response_measure::Color = 0;
+    virtual auto correctNumber(const std::string &filePath) -> int = 0;
+    virtual auto fileName(const std::string &filePath) -> std::string = 0;
 };
 
 class Randomizer {
   public:
     virtual ~Randomizer() = default;
-    virtual double randomFloatBetween(double, double) = 0;
-    virtual int randomIntBetween(int, int) = 0;
+    virtual auto randomFloatBetween(double, double) -> double = 0;
+    virtual auto randomIntBetween(int, int) -> int = 0;
 };
 
 class OutputFile {
@@ -43,7 +43,7 @@ class OutputFile {
         const coordinate_response_measure::AdaptiveTrial &) = 0;
     virtual void writeTrial(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
-    virtual void writeTrial(const FreeResponseTrial &) = 0;
+    virtual void writeTrial(const open_set::FreeResponseTrial &) = 0;
     virtual void writeTrial(const open_set::AdaptiveTrial &) = 0;
     virtual void writeTest(const AdaptiveTest &) = 0;
     virtual void writeTest(const FixedLevelTest &) = 0;
@@ -54,13 +54,13 @@ class OutputFile {
 class TestMethod {
   public:
     virtual ~TestMethod() = default;
-    virtual bool complete() = 0;
-    virtual std::string next() = 0;
-    virtual std::string current() = 0;
-    virtual int snr_dB() = 0;
+    virtual auto complete() -> bool = 0;
+    virtual auto next() -> std::string = 0;
+    virtual auto current() -> std::string = 0;
+    virtual auto snr_dB() -> int = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submitResponse(const FreeResponse &) = 0;
+    virtual void submitResponse(const open_set::FreeResponse &) = 0;
     virtual void writeTestingParameters(OutputFile *) = 0;
     virtual void writeLastCoordinateResponse(OutputFile *) = 0;
     virtual void writeLastCorrectResponse(OutputFile *) = 0;
@@ -72,7 +72,7 @@ class TestMethod {
 class TestConcluder {
   public:
     virtual ~TestConcluder() = default;
-    virtual bool complete(TargetList *) = 0;
+    virtual auto complete(TargetList *) -> bool = 0;
     virtual void submitResponse() = 0;
     virtual void initialize(const FixedLevelTest &) = 0;
 };
@@ -91,31 +91,22 @@ class FixedLevelMethod : public virtual TestMethod {
 class RecognitionTestModel {
   public:
     virtual ~RecognitionTestModel() = default;
-    virtual void initialize(
-        TestMethod *, const Test &, const TestIdentity &) = 0;
+    virtual void initialize(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
         const coordinate_response_measure::Response &) = 0;
-    virtual bool testComplete() = 0;
-    virtual std::vector<std::string> audioDevices() = 0;
+    virtual auto testComplete() -> bool = 0;
+    virtual auto audioDevices() -> std::vector<std::string> = 0;
     virtual void subscribe(Model::EventListener *) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submitResponse(const FreeResponse &) = 0;
+    virtual void submitResponse(const open_set::FreeResponse &) = 0;
     virtual void throwIfTrialInProgress() = 0;
-    virtual int trialNumber() = 0;
+    virtual auto trialNumber() -> int = 0;
 };
 
 class ModelImpl : public Model {
-    AdaptiveMethod *adaptiveMethod;
-    FixedLevelMethod *fixedLevelMethod;
-    TargetList *infiniteTargetList;
-    TestConcluder *fixedTrialTestConcluder;
-    TargetList *finiteTargetList;
-    TestConcluder *completesWhenTargetsEmpty;
-    RecognitionTestModel *model;
-
   public:
     ModelImpl(AdaptiveMethod *, FixedLevelMethod *,
         TargetList *infiniteTargetList, TestConcluder *fixedTrialTestConcluder,
@@ -126,14 +117,23 @@ class ModelImpl : public Model {
     void initializeTestWithFiniteTargets(const FixedLevelTest &) override;
     void playTrial(const AudioSettings &) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
-    bool testComplete() override;
-    std::vector<std::string> audioDevices() override;
+    auto testComplete() -> bool override;
+    auto audioDevices() -> std::vector<std::string> override;
     void subscribe(Model::EventListener *) override;
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
-    void submitResponse(const FreeResponse &) override;
-    int trialNumber() override;
+    void submitResponse(const open_set::FreeResponse &) override;
+    auto trialNumber() -> int override;
+
+  private:
+    AdaptiveMethod *adaptiveMethod;
+    FixedLevelMethod *fixedLevelMethod;
+    TargetList *infiniteTargetList;
+    TestConcluder *fixedTrialTestConcluder;
+    TargetList *finiteTargetList;
+    TestConcluder *completesWhenTargetsEmpty;
+    RecognitionTestModel *model;
 };
 }
 
