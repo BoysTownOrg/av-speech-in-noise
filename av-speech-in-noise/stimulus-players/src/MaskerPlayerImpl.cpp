@@ -104,14 +104,18 @@ void MaskerPlayerImpl::seekSeconds(double x) {
     if (playing())
         return;
 
+    recalculateSamplesToWaitPerChannel();
+    std::fill(audioFrameHeadsPerChannel.begin(),
+        audioFrameHeadsPerChannel.end(),
+        gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
+}
+
+void MaskerPlayerImpl::recalculateSamplesToWaitPerChannel() {
     std::generate(samplesToWaitPerChannel.begin(),
         samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
             return gsl::narrow_cast<channel_index_type>(
                 sampleRateHz(player) * mainThread.channelDelaySeconds(n++));
         });
-    std::fill(audioFrameHeadsPerChannel.begin(),
-        audioFrameHeadsPerChannel.end(),
-        gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
 }
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
@@ -123,11 +127,7 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         return;
 
     player->loadFile(filePath);
-    std::generate(samplesToWaitPerChannel.begin(),
-        samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
-            return gsl::narrow_cast<channel_index_type>(
-                sampleRateHz(player) * mainThread.channelDelaySeconds(n++));
-        });
+    recalculateSamplesToWaitPerChannel();
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(
             mainThread.fadeTimeSeconds() * sampleRateHz(player)));
