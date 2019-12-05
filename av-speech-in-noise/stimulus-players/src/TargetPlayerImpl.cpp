@@ -53,9 +53,15 @@ void TargetPlayerImpl::playbackComplete() { listener_->playbackComplete(); }
 void TargetPlayerImpl::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
     auto scale = audioScale.load();
-    for (auto channel : audio)
+    auto useFirstChannelOnly__ = useFirstChannelOnly_.load();
+    auto afterFirstChannel{false};
+    for (auto channel : audio) {
+        if (useFirstChannelOnly__ && afterFirstChannel)
+            scale = 0;
         for (auto &x : channel)
             x *= scale;
+        afterFirstChannel = true;
+    }
 }
 
 void TargetPlayerImpl::setAudioDevice(std::string device) {
@@ -72,6 +78,10 @@ auto TargetPlayerImpl::audioDevices() -> std::vector<std::string> {
     for (int i = 0; i < player->deviceCount(); ++i)
         descriptions.push_back(player->deviceDescription(i));
     return descriptions;
+}
+
+void TargetPlayerImpl::useFirstChannelOnly() {
+    useFirstChannelOnly_.store(true);
 }
 
 auto TargetPlayerImpl::playing() -> bool { return player->playing(); }

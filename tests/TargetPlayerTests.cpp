@@ -125,6 +125,10 @@ class TargetPlayerTests : public ::testing::Test {
     }
 
     void setLevel_dB(double x) { player.setLevel_dB(x); }
+
+    void setFirstChannelOnly() {
+        player.useFirstChannelOnly();
+    }
 };
 
 TEST_F(TargetPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -176,6 +180,16 @@ TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen_Stereo) {
     fillAudioBufferStereo();
     assertLeftChannelEquals({10, 20, 30});
     assertRightChannelEquals({40, 50, 60});
+}
+
+TEST_F(TargetPlayerTests, onlyPlayFirstChannel) {
+    setLevel_dB(20);
+    setFirstChannelOnly();
+    setLeftChannel({1, 2, 3});
+    setRightChannel({4, 5, 6});
+    fillAudioBufferStereo();
+    assertLeftChannelEquals({10, 20, 30});
+    assertRightChannelEquals({0, 0, 0});
 }
 
 TEST_F(TargetPlayerTests, setAudioDeviceFindsIndex) {

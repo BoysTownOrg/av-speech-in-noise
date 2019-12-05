@@ -7,6 +7,7 @@
 #include <gsl/gsl>
 #include <vector>
 #include <string>
+#include <atomic>
 
 namespace stimulus_players {
 class VideoPlayer {
@@ -35,12 +36,6 @@ class VideoPlayer {
 
 class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
                          public VideoPlayer::EventListener {
-    std::string filePath_{};
-    std::atomic<double> audioScale{};
-    VideoPlayer *player;
-    AudioReader *reader;
-    TargetPlayer::EventListener *listener_{};
-
   public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
     void subscribe(TargetPlayer::EventListener *) override;
@@ -57,9 +52,17 @@ class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
     void playbackComplete() override;
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     auto audioDevices() -> std::vector<std::string>;
+    void useFirstChannelOnly();
 
   private:
     auto readAudio_() -> audio_type;
+
+    std::string filePath_{};
+    VideoPlayer *player;
+    AudioReader *reader;
+    TargetPlayer::EventListener *listener_{};
+    std::atomic<double> audioScale{};
+    std::atomic<bool> useFirstChannelOnly_{};
 };
 }
 
