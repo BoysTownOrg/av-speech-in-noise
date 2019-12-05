@@ -53,6 +53,7 @@ class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     auto audioDevices() -> std::vector<std::string>;
     void useFirstChannelOnly();
+    void useAllChannels();
 
   private:
     auto readAudio_() -> audio_type;
@@ -61,7 +62,7 @@ class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
     VideoPlayer *player;
     AudioReader *reader;
     TargetPlayer::EventListener *listener_{};
-    std::atomic<double> audioScale{};
+    std::atomic<double> audioScale{1};
     std::atomic<bool> useFirstChannelOnly_{};
 };
 }

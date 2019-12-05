@@ -85,6 +85,10 @@ void TargetPlayerImpl::useFirstChannelOnly() {
     useFirstChannelOnly_.store(true);
 }
 
+void TargetPlayerImpl::useAllChannels() {
+    useFirstChannelOnly_.store(false);
+}
+
 auto TargetPlayerImpl::playing() -> bool { return player->playing(); }
 
 void TargetPlayerImpl::subscribeToPlaybackCompletion() {
