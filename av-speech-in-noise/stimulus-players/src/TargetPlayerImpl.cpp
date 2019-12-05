@@ -75,9 +75,10 @@ void TargetPlayerImpl::setAudioDevice(std::string device) {
 }
 
 auto TargetPlayerImpl::audioDevices() -> std::vector<std::string> {
-    std::vector<std::string> descriptions{};
-    for (int i = 0; i < player->deviceCount(); ++i)
-        descriptions.push_back(player->deviceDescription(i));
+    std::vector<std::string> descriptions(
+        gsl::narrow<std::size_t>(player->deviceCount()));
+    std::generate(descriptions.begin(), descriptions.end(),
+        [&, n = 0]() mutable { return player->deviceDescription(n++); });
     return descriptions;
 }
 
