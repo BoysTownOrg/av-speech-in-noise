@@ -3,15 +3,13 @@
 
 #include <vector>
 #include <string>
-#include <gsl/gsl>
 
 namespace stimulus_players {
 using sample_type = float;
+
 using channel_type = std::vector<sample_type>;
+
 using audio_type = std::vector<channel_type>;
-using cpp_core_guidelines_index_type = gsl::index;
-using channel_index_type = cpp_core_guidelines_index_type;
-using sample_index_type = cpp_core_guidelines_index_type;
 
 class AudioReader {
   public:
