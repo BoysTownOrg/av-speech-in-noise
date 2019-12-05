@@ -90,6 +90,7 @@ class TargetPlayerListenerStub
 class TargetPlayerTests : public ::testing::Test {
   protected:
     std::vector<float> leftChannel{};
+    std::vector<float> rightChannel{};
     VideoPlayerStub videoPlayer;
     TargetPlayerListenerStub listener;
     stimulus_players::tests::AudioReaderStub audioReader{};
@@ -97,7 +98,11 @@ class TargetPlayerTests : public ::testing::Test {
 
     TargetPlayerTests() { player.subscribe(&listener); }
 
-    void fillAudioBuffer() { videoPlayer.fillAudioBuffer({leftChannel}); }
+    void fillAudioBufferMono() { videoPlayer.fillAudioBuffer({leftChannel}); }
+
+    void fillAudioBufferStereo() {
+        videoPlayer.fillAudioBuffer({leftChannel, rightChannel});
+    }
 
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
         videoPlayer.setAudioDeviceDescriptions(std::move(v));
@@ -142,8 +147,17 @@ TEST_F(TargetPlayerTests, videoPlaybackCompleteNotifiesSubscriber) {
 TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen) {
     player.setLevel_dB(20);
     leftChannel = {1, 2, 3};
-    fillAudioBuffer();
+    fillAudioBufferMono();
     assertEqual({10, 20, 30}, leftChannel);
+}
+
+TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen_Stereo) {
+    player.setLevel_dB(20);
+    leftChannel = {1, 2, 3};
+    rightChannel = {4, 5, 6};
+    fillAudioBufferStereo();
+    assertEqual({10, 20, 30}, leftChannel);
+    assertEqual({40, 50, 60}, rightChannel);
 }
 
 TEST_F(TargetPlayerTests, setAudioDeviceFindsIndex) {
