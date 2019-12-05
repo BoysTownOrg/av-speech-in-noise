@@ -3,6 +3,13 @@
 #include <gsl/gsl>
 #include <limits>
 
+static auto sampleRateHz(AVAssetTrack *track) -> double {
+    auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
+        static_cast<CMAudioFormatDescriptionRef>(
+            track.formatDescriptions.firstObject));
+    return description->mSampleRate;
+}
+
 static auto getPropertyDataSize(AudioObjectID id_,
     const AudioObjectPropertyAddress *address, UInt32 *outDataSize)
     -> OSStatus {
@@ -121,7 +128,7 @@ class AvAssetFacade {
                                            withPercents]];
         return [AVURLAsset URLAssetWithURL:url options:nil];
     }
-    
+
     AVAsset *asset;
 };
 
@@ -189,10 +196,7 @@ auto CoreAudioBufferedReader::minimumPossibleSample() -> int {
 }
 
 auto CoreAudioBufferedReader::sampleRateHz() -> double {
-    auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
-        static_cast<CMAudioFormatDescriptionRef>(
-            trackOutput.track.formatDescriptions.firstObject));
-    return description->mSampleRate;
+    return ::sampleRateHz(trackOutput.track);
 }
 
 static void init(
@@ -204,7 +208,8 @@ static void finalize(MTAudioProcessingTapRef) {}
 
 static void prepare(MTAudioProcessingTapRef tap, CMItemCount,
     const AudioStreamBasicDescription *description) {
-    auto self = static_cast<AvFoundationVideoPlayer *>(MTAudioProcessingTapGetStorage(tap));
+    auto self = static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap));
     self->audio().resize(description->mChannelsPerFrame);
 }
 
@@ -216,7 +221,8 @@ static void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
     MTAudioProcessingTapGetSourceAudio(
         tap, numberFrames, bufferListInOut, flagsOut, nullptr, numberFramesOut);
 
-    auto self = static_cast<AvFoundationVideoPlayer *>(MTAudioProcessingTapGetStorage(tap));
+    auto self = static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap));
     if (self->audio().size() != bufferListInOut->mNumberBuffers)
         return;
 
@@ -420,7 +426,7 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     audioComponentDescription.componentFlags = 0;
     audioComponentDescription.componentFlagsMask = 0;
 
-    AudioComponent audioComponent =
+    auto audioComponent =
         AudioComponentFindNext(nullptr, &audioComponentDescription);
     AudioComponentInstanceNew(audioComponent, &audioUnit);
     AudioUnitInitialize(audioUnit);
@@ -428,7 +434,7 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     {
         UInt32 enable = 1;
         AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
-                kAudioUnitScope_Output, 0, &enable, sizeof(enable));
+            kAudioUnitScope_Output, 0, &enable, sizeof(enable));
     }
 
     // disable input
@@ -440,26 +446,9 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     AURenderCallbackStruct renderCallbackStruct;
     renderCallbackStruct.inputProc = AU_RenderCallback;
     renderCallbackStruct.inputProcRefCon = this;
-    AudioUnitSetProperty(audioUnit,
-        kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Output, 0,
-        &renderCallbackStruct, sizeof(AURenderCallbackStruct));
-
-    AudioStreamBasicDescription streamFormat{};
-
-    streamFormat.mSampleRate = 44100;
-    streamFormat.mFormatID = kAudioFormatLinearPCM;
-    streamFormat.mFramesPerPacket = 1;
-    streamFormat.mBytesPerPacket = 4;
-    streamFormat.mBytesPerFrame = sizeof(float);
-    streamFormat.mChannelsPerFrame = 2;
-    streamFormat.mBitsPerChannel = 8 * sizeof(float);
-    streamFormat.mFormatFlags =
-        kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
-    AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
-        kAudioUnitScope_Input, 0, &streamFormat,
-        sizeof(AudioStreamBasicDescription));
-    
-    audio_.resize(2);
+    AudioUnitSetProperty(audioUnit, kAudioUnitProperty_SetRenderCallback,
+        kAudioUnitScope_Output, 0, &renderCallbackStruct,
+        sizeof(AURenderCallbackStruct));
 }
 
 AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
@@ -471,6 +460,25 @@ void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     filePath_ = std::move(filePath);
+    
+    AvAssetFacade asset{filePath_};
+
+    AudioStreamBasicDescription streamFormat{};
+
+    streamFormat.mSampleRate = ::sampleRateHz(asset.audioTrack());
+    streamFormat.mFormatID = kAudioFormatLinearPCM;
+    streamFormat.mFramesPerPacket = 1;
+    streamFormat.mBytesPerPacket = 4;
+    streamFormat.mBytesPerFrame = sizeof(float);
+    streamFormat.mChannelsPerFrame = 2;
+    streamFormat.mBitsPerChannel = 8 * sizeof(float);
+    streamFormat.mFormatFlags =
+        kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
+    AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
+        kAudioUnitScope_Input, 0, &streamFormat,
+        sizeof(AudioStreamBasicDescription));
+
+    audio_.resize(2);
 }
 
 auto AvFoundationAudioPlayer::deviceCount() -> int {
@@ -500,16 +508,15 @@ auto AvFoundationAudioPlayer::playing() -> bool {
     return auhalRunning != 0U;
 }
 
-void AvFoundationAudioPlayer::play() {
-    AudioOutputUnitStart(audioUnit);
-}
+void AvFoundationAudioPlayer::play() { AudioOutputUnitStart(audioUnit); }
 
 auto AvFoundationAudioPlayer::sampleRateHz() -> double {
-    AvAssetFacade asset{filePath_};
-    auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
-        static_cast<CMAudioFormatDescriptionRef>(
-            asset.audioTrack().formatDescriptions.firstObject));
-    return description->mSampleRate;
+    AudioStreamBasicDescription streamFormat{};
+    UInt32 size = sizeof(AudioStreamBasicDescription);
+    AudioUnitGetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
+        kAudioUnitScope_Input, 0, &streamFormat,
+        &size);
+    return streamFormat.mSampleRate;
 }
 
 void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
