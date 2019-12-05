@@ -98,14 +98,26 @@ class TargetPlayerTests : public ::testing::Test {
 
     TargetPlayerTests() { player.subscribe(&listener); }
 
-    void fillAudioBufferMono() { videoPlayer.fillAudioBuffer({leftChannel}); }
+    void fillAudioBuffer(const std::vector<gsl::span<float>> &x) {
+        videoPlayer.fillAudioBuffer(x);
+    }
+
+    void fillAudioBufferMono() { fillAudioBuffer({leftChannel}); }
 
     void fillAudioBufferStereo() {
-        videoPlayer.fillAudioBuffer({leftChannel, rightChannel});
+        fillAudioBuffer({leftChannel, rightChannel});
     }
 
     void setAudioDeviceDescriptions(std::vector<std::string> v) {
         videoPlayer.setAudioDeviceDescriptions(std::move(v));
+    }
+
+    void setLeftChannel(std::vector<float> x) {
+        leftChannel = std::move(x);
+    }
+
+    void setRightChannel(std::vector<float> x) {
+        rightChannel = std::move(x);
     }
 };
 
@@ -146,15 +158,15 @@ TEST_F(TargetPlayerTests, videoPlaybackCompleteNotifiesSubscriber) {
 
 TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen) {
     player.setLevel_dB(20);
-    leftChannel = {1, 2, 3};
+    setLeftChannel({1, 2, 3});
     fillAudioBufferMono();
     assertEqual({10, 20, 30}, leftChannel);
 }
 
 TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen_Stereo) {
     player.setLevel_dB(20);
-    leftChannel = {1, 2, 3};
-    rightChannel = {4, 5, 6};
+    setLeftChannel({1, 2, 3});
+    setRightChannel({4, 5, 6});
     fillAudioBufferStereo();
     assertEqual({10, 20, 30}, leftChannel);
     assertEqual({40, 50, 60}, rightChannel);
