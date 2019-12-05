@@ -47,10 +47,6 @@ class Timer {
     virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
-using cpp_core_guidelines_index_type = gsl::index;
-using channel_index_type = cpp_core_guidelines_index_type;
-using sample_index_type = cpp_core_guidelines_index_type;
-
 class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
                          public AudioPlayer::EventListener,
                          public Timer::EventListener {

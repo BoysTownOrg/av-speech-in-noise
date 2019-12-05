@@ -11,7 +11,8 @@ auto AudioReaderImpl::read(std::string filePath) -> audio_type {
     for (auto buffer = reader->readNextBuffer(); !buffer->empty();
          buffer = reader->readNextBuffer()) {
         audio.resize(buffer->channels());
-        for (int channel = 0; channel < buffer->channels(); ++channel)
+        for (channel_index_type channel{0}; channel < buffer->channels();
+             ++channel)
             for (auto x : buffer->channel(channel))
                 audio.at(channel).push_back(1.F * x / minimumSample);
     }
