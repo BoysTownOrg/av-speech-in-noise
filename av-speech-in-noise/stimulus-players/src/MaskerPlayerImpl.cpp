@@ -121,10 +121,10 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         return;
 
     player->loadFile(filePath);
-    for (auto i = sample_index_type{0}; i < samplesToWaitPerChannel.size();
+    for (auto i = channel_index_type{0}; i < samplesToWaitPerChannel.size();
          ++i)
         write(samplesToWaitPerChannel.at(i),
-            gsl::narrow_cast<sample_index_type>(
+            gsl::narrow_cast<channel_index_type>(
                 sampleRateHz(player) * mainThread.channelDelaySeconds(i)));
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(
@@ -291,24 +291,21 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
-    for (auto i = sample_index_type{0}; i < channels(audioBuffer); ++i) {
+    for (auto i = channel_index_type{0}; i < channels(audioBuffer); ++i) {
         const auto samplesToWait =
             read(sharedAtomics->samplesToWaitPerChannel.at(i));
-        auto framesFilled = sample_index_type{0};
-        if (framesFilled < samplesToWait) {
-            const auto framesAboutToFill =
-                std::min(samplesToWait, framesToFill(audioBuffer));
-            mute(channel(audioBuffer, i).first(framesAboutToFill));
-            framesFilled += framesAboutToFill;
-            write(sharedAtomics->samplesToWaitPerChannel.at(i),
-                samplesToWait - framesAboutToFill);
-        }
+        const auto framesToMute =
+            std::min(samplesToWait, framesToFill(audioBuffer));
+        mute(channel(audioBuffer, i).first(framesToMute));
+        write(sharedAtomics->samplesToWaitPerChannel.at(i),
+            samplesToWait - framesToMute);
+        auto framesFilled = std::min(samplesToWait, framesToFill(audioBuffer));
+        const auto framesLeftToFill = framesToFill(audioBuffer) - framesFilled;
         const auto frameHead =
             read(sharedAtomics->audioFrameHeadsPerChannel.at(i));
-        auto frameOffset = frameHead;
-        const auto framesLeftToFill = framesToFill(audioBuffer) - framesFilled;
         write(sharedAtomics->audioFrameHeadsPerChannel.at(i),
             (frameHead + framesLeftToFill) % sourceFrames());
+        auto frameOffset = frameHead;
         while (framesFilled < framesToFill(audioBuffer)) {
             const auto framesAboutToFill =
                 std::min(sourceFrames() - frameOffset,
