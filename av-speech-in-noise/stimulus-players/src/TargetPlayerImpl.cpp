@@ -1,5 +1,6 @@
 #include "TargetPlayerImpl.hpp"
 #include <cmath>
+#include <algorithm>
 
 namespace stimulus_players {
 TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
