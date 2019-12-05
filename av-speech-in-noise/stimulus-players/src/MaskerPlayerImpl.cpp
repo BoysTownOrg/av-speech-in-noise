@@ -49,15 +49,9 @@ static void write(std::atomic<double> &to, double value) { to.store(value); }
 
 static void write(std::atomic<int> &to, int value) { to.store(value); }
 
-static void write(std::atomic<sample_index_type> &to, sample_index_type value) {
-    to.store(value);
-}
-
 static auto read(std::atomic<double> &x) -> auto { return x.load(); }
 
 static auto read(std::atomic<int> &x) -> auto { return x.load(); }
-
-static auto read(std::atomic<sample_index_type> &x) -> auto { return x.load(); }
 
 static void set(std::atomic<bool> &x) { x.store(true); }
 
