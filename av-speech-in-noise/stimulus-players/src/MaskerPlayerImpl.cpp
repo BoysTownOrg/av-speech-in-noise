@@ -299,25 +299,24 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
         mute(channel(audioBuffer, i).first(framesToMute));
         write(sharedAtomics->samplesToWaitPerChannel.at(i),
             samplesToWait - framesToMute);
-        auto framesFilled = std::min(samplesToWait, framesToFill(audioBuffer));
-        const auto framesLeftToFill = framesToFill(audioBuffer) - framesFilled;
         const auto frameHead =
             read(sharedAtomics->audioFrameHeadsPerChannel.at(i));
+        auto framesLeftToFill = framesToFill(audioBuffer) - framesToMute;
         write(sharedAtomics->audioFrameHeadsPerChannel.at(i),
             (frameHead + framesLeftToFill) % sourceFrames());
         auto frameOffset = frameHead;
-        while (framesFilled < framesToFill(audioBuffer)) {
+        while (framesLeftToFill != 0) {
             const auto framesAboutToFill =
-                std::min(sourceFrames() - frameOffset,
-                    framesToFill(audioBuffer) - framesFilled);
+                std::min(sourceFrames() - frameOffset, framesLeftToFill);
             const auto &source = channels(sharedAtomics->audio) > i
                 ? channel(sharedAtomics->audio, i)
                 : firstChannel(sharedAtomics->audio);
             const auto sourceBeginning = source.begin() + frameOffset;
             std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
-                channel(audioBuffer, i).begin() + framesFilled);
+                channel(audioBuffer, i).begin() + framesToFill(audioBuffer) -
+                    framesLeftToFill);
             frameOffset = 0;
-            framesFilled += framesAboutToFill;
+            framesLeftToFill -= framesAboutToFill;
         }
     }
 }
