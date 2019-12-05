@@ -74,6 +74,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void callback() override;
     void setChannelDelaySeconds(channel_index_type channel, double seconds);
     void setFirstChannelOnly();
+    void useAllChannels();
 
   private:
     auto readAudio(std::string) -> audio_type;

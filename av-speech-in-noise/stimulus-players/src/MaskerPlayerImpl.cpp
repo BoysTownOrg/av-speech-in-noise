@@ -55,6 +55,8 @@ static auto read(std::atomic<int> &x) -> auto { return x.load(); }
 
 static void set(std::atomic<bool> &x) { x.store(true); }
 
+static void clear(std::atomic<bool> &x) { x.store(false); }
+
 static void set(bool &x) { x = true; }
 
 static void clear(bool &x) { x = false; }
@@ -200,6 +202,10 @@ void MaskerPlayerImpl::setFirstChannelOnly() {
     set(firstChannelOnly);
 }
 
+void MaskerPlayerImpl::useAllChannels() {
+    clear(firstChannelOnly);
+}
+
 void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
 
 void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
@@ -299,10 +305,6 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
     auto firstChannelOnly_ = sharedAtomics->firstChannelOnly.load();
     for (auto i = channel_index_type{0}; i < channels(audioBuffer); ++i) {
-        if (firstChannelOnly_ && i > 0) {
-            mute(channel(audioBuffer, i));
-            continue;
-        }
         const auto samplesToWait = sharedAtomics->samplesToWaitPerChannel.at(i);
         const auto framesToMute =
             std::min(samplesToWait, framesToFill(audioBuffer));
@@ -326,6 +328,8 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             frameHead = 0;
             framesLeftToFill -= framesAboutToFill;
         }
+        if (firstChannelOnly_ && i > 0)
+            mute(channel(audioBuffer, i));
     }
 }
 

@@ -408,6 +408,9 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void setFirstChannelOnly() { player.setFirstChannelOnly(); }
+
+    void useAllChannels() { player.useAllChannels(); }
+
 };
 
 TEST_F(MaskerPlayerTests, playingWhenAudioPlayerPlaying) {
@@ -492,6 +495,16 @@ TEST_F(MaskerPlayerTests, onlyPlayFirstChannel) {
     fillAudioBufferStereo(3);
     assertLeftChannelEquals({1, 2, 3});
     assertRightChannelEquals({0, 0, 0});
+}
+
+TEST_F(MaskerPlayerTests, switchBackToAllChannels) {
+    setFirstChannelOnly();
+    loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
+    fillAudioBufferStereo(3);
+    useAllChannels();
+    fillAudioBufferStereo(3);
+    assertLeftChannelEquals({4, 5, 6});
+    assertRightChannelEquals({10, 11, 12});
 }
 
 TEST_F(MaskerPlayerTests, noAudioLoadedFillsZeros) {
