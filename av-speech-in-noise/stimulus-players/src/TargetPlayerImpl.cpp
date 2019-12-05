@@ -81,12 +81,16 @@ auto TargetPlayerImpl::audioDevices() -> std::vector<std::string> {
     return descriptions;
 }
 
+static void store(std::atomic<bool> &where, bool what) {
+    where.store(what);
+}
+
 void TargetPlayerImpl::useFirstChannelOnly() {
-    useFirstChannelOnly_.store(true);
+    store(useFirstChannelOnly_, true);
 }
 
 void TargetPlayerImpl::useAllChannels() {
-    useFirstChannelOnly_.store(false);
+    store(useFirstChannelOnly_, false);
 }
 
 auto TargetPlayerImpl::playing() -> bool { return player->playing(); }
