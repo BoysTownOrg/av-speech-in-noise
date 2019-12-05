@@ -57,9 +57,10 @@ void TargetPlayerImpl::fillAudioBuffer(
     auto afterFirstChannel{false};
     for (auto channel : audio) {
         if (useFirstChannelOnly__ && afterFirstChannel)
-            scale = 0;
-        for (auto &x : channel)
-            x *= scale;
+            std::fill(channel.begin(), channel.end(), 0);
+        else
+            for (auto &x : channel)
+                x *= scale;
         afterFirstChannel = true;
     }
 }
