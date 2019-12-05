@@ -121,11 +121,11 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
         return;
 
     player->loadFile(filePath);
-    for (auto i = channel_index_type{0}; i < samplesToWaitPerChannel.size();
-         ++i)
-        samplesToWaitPerChannel.at(i) =
-            gsl::narrow_cast<channel_index_type>(
-                sampleRateHz(player) * mainThread.channelDelaySeconds(i));
+    std::generate(samplesToWaitPerChannel.begin(),
+        samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
+            return gsl::narrow_cast<channel_index_type>(
+                sampleRateHz(player) * mainThread.channelDelaySeconds(n++));
+        });
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(
             mainThread.fadeTimeSeconds() * sampleRateHz(player)));
@@ -292,15 +292,13 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
     for (auto i = channel_index_type{0}; i < channels(audioBuffer); ++i) {
-        const auto samplesToWait =
-            sharedAtomics->samplesToWaitPerChannel.at(i);
+        const auto samplesToWait = sharedAtomics->samplesToWaitPerChannel.at(i);
         const auto framesToMute =
             std::min(samplesToWait, framesToFill(audioBuffer));
         mute(channel(audioBuffer, i).first(framesToMute));
         sharedAtomics->samplesToWaitPerChannel.at(i) =
             samplesToWait - framesToMute;
-        auto frameHead =
-            read(sharedAtomics->audioFrameHeadsPerChannel.at(i));
+        auto frameHead = read(sharedAtomics->audioFrameHeadsPerChannel.at(i));
         auto framesLeftToFill = framesToFill(audioBuffer) - framesToMute;
         write(sharedAtomics->audioFrameHeadsPerChannel.at(i),
             (frameHead + framesLeftToFill) % sourceFrames());
