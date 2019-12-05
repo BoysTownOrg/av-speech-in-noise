@@ -119,6 +119,14 @@ class TargetPlayerTests : public ::testing::Test {
     void setRightChannel(std::vector<float> x) {
         rightChannel = std::move(x);
     }
+
+    void assertLeftChannelEquals(const std::vector<float> &x) {
+        assertEqual(x, leftChannel);
+    }
+
+    void assertRightChannelEquals(const std::vector<float> &x) {
+        assertEqual(x, rightChannel);
+    }
 };
 
 TEST_F(TargetPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -160,7 +168,7 @@ TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen) {
     player.setLevel_dB(20);
     setLeftChannel({1, 2, 3});
     fillAudioBufferMono();
-    assertEqual({10, 20, 30}, leftChannel);
+    assertLeftChannelEquals({10, 20, 30});
 }
 
 TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen_Stereo) {
@@ -168,8 +176,8 @@ TEST_F(TargetPlayerTests, twentydBMultipliesSignalByTen_Stereo) {
     setLeftChannel({1, 2, 3});
     setRightChannel({4, 5, 6});
     fillAudioBufferStereo();
-    assertEqual({10, 20, 30}, leftChannel);
-    assertEqual({40, 50, 60}, rightChannel);
+    assertLeftChannelEquals({10, 20, 30});
+    assertRightChannelEquals({40, 50, 60});
 }
 
 TEST_F(TargetPlayerTests, setAudioDeviceFindsIndex) {
