@@ -196,6 +196,10 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
     mainThread.setChannelDelaySeconds(channel, seconds);
 }
 
+void MaskerPlayerImpl::setFirstChannelOnly() {
+    set(firstChannelOnly);
+}
+
 void MaskerPlayerImpl::fadeIn() { mainThread.fadeIn(); }
 
 void MaskerPlayerImpl::fadeOut() { mainThread.fadeOut(); }
@@ -293,7 +297,12 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
+    auto firstChannelOnly_ = sharedAtomics->firstChannelOnly.load();
     for (auto i = channel_index_type{0}; i < channels(audioBuffer); ++i) {
+        if (firstChannelOnly_ && i > 0) {
+            mute(channel(audioBuffer, i));
+            continue;
+        }
         const auto samplesToWait = sharedAtomics->samplesToWaitPerChannel.at(i);
         const auto framesToMute =
             std::min(samplesToWait, framesToFill(audioBuffer));

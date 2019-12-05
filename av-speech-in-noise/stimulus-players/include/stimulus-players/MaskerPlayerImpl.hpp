@@ -73,6 +73,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     auto fadeTimeSeconds() -> double override;
     void callback() override;
     void setChannelDelaySeconds(channel_index_type channel, double seconds);
+    void setFirstChannelOnly();
 
   private:
     auto readAudio(std::string) -> audio_type;
@@ -146,6 +147,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioReader *reader;
     std::atomic<double> levelScalar{1};
     std::atomic<int> levelTransitionSamples_{};
+    std::atomic<bool> firstChannelOnly{};
     std::atomic<bool> fadeOutComplete{};
     std::atomic<bool> fadeInComplete{};
     std::atomic<bool> pleaseFadeOut{};
