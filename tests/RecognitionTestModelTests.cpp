@@ -619,6 +619,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    initializeTestClearsAllMaskerPlayerChannelDelays) {
+    run(initializingTest);
+    assertTrue(maskerPlayer.channelDelaysCleared());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerUsesFirstChannelOnlyOfTargetPlayer) {
     run(initializingTestWithSingleSpeaker);
     assertOnlyUsingFirstChannelOfTargetPlayer();

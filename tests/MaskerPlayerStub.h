@@ -25,11 +25,16 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool throwInvalidAudioFileOnLoad_{};
     bool usingAllChannels_{};
     bool usingFirstChannelOnly_{};
+    bool channelDelaysCleared_{};
 
   public:
+    void clearChannelDelays() override { channelDelaysCleared_ = true; }
+
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
 
     auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
+
+    auto channelDelaysCleared() const { return channelDelaysCleared_; }
 
     void useAllChannels() override { usingAllChannels_ = true; }
 

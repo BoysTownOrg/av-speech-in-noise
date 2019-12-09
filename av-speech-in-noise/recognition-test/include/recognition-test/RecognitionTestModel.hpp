@@ -60,6 +60,7 @@ class MaskerPlayer {
     virtual auto fadeTimeSeconds() -> double = 0;
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
+    virtual void clearChannelDelays() = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,

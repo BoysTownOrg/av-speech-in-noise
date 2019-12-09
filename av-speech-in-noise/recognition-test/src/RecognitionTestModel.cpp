@@ -53,6 +53,7 @@ void RecognitionTestModelImpl::initialize(
     initialize_(testMethod_, test);
     targetPlayer->useAllChannels();
     useAllChannels(maskerPlayer);
+    maskerPlayer->clearChannelDelays();
 }
 
 void RecognitionTestModelImpl::initialize_(
