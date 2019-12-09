@@ -178,7 +178,9 @@ class InitializingAdaptiveTestWithSingleSpeaker
         AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { model.initializeTest(test_); }
+    void run(ModelImpl &model) override {
+        model.initializeTestWithSingleSpeaker(test_);
+    }
 
     const Test &test() override { return test_; }
 
@@ -345,6 +347,11 @@ TEST_F(ModelTests,
 
 TEST_F(ModelTests, initializeAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTest);
+}
+
+TEST_F(ModelTests,
+    initializeAdaptiveTestWithSingleSpeakerInitializesInternalModel) {
+    assertInitializesInternalModel(initializingAdaptiveTestWithSingleSpeaker);
 }
 
 TEST_F(ModelTests, submitResponsePassesCoordinateResponse) {
