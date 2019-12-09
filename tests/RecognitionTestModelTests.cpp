@@ -568,6 +568,10 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertOnlyUsingFirstChannelOfTargetPlayer() {
         assertTrue(targetPlayer.usingFirstChannelOnly());
     }
+
+    void assertUsingAllMaskerPlayerChannels() {
+        assertTrue(maskerPlayer.usingAllChannels());
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -611,7 +615,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestUsesAllMaskerPlayerChannels) {
     run(initializingTest);
-    assertTrue(maskerPlayer.usingAllChannels());
+    assertUsingAllMaskerPlayerChannels();
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -635,7 +639,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerUsesAllMaskerPlayerChannels) {
     run(initializingTestWithDelayedMasker);
-    assertTrue(maskerPlayer.usingAllChannels());
+    assertUsingAllMaskerPlayerChannels();
 }
 
 RECOGNITION_TEST_MODEL_TEST(

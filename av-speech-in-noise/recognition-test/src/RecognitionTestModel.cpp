@@ -44,11 +44,15 @@ void RecognitionTestModelImpl::throwIfTrialInProgress() {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
+static void useAllChannels(MaskerPlayer *player) {
+    player->useAllChannels();
+}
+
 void RecognitionTestModelImpl::initialize(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     targetPlayer->useAllChannels();
-    maskerPlayer->useAllChannels();
+    useAllChannels(maskerPlayer);
 }
 
 void RecognitionTestModelImpl::initialize_(
@@ -74,7 +78,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     useFirstChannelOnly(targetPlayer);
-    maskerPlayer->useAllChannels();
+    useAllChannels(maskerPlayer);
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {
