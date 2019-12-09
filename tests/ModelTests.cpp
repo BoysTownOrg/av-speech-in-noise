@@ -75,21 +75,33 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const coordinate_response_measure::Response *coordinateResponse_{};
     int trialNumber_{};
     bool complete_{};
+    bool initializedWithSingleSpeaker_{};
+    bool initializedWithDelayedMasker_{};
 
   public:
+    auto initializedWithSingleSpeaker() const {
+        return initializedWithSingleSpeaker_;
+    }
+
+    auto initializedWithDelayedMasker() const {
+        return initializedWithDelayedMasker_;
+    }
+
     void initialize(TestMethod *tm, const Test &ct) override {
         testMethod_ = tm;
         test_ = &ct;
     }
 
-    void initializeWithSingleSpeaker(TestMethod *tm, const Test &ct) {
+    void initializeWithSingleSpeaker(TestMethod *tm, const Test &ct) override {
         testMethod_ = tm;
         test_ = &ct;
+        initializedWithSingleSpeaker_ = true;
     }
 
-    void initializeWithDelayedMasker(TestMethod *tm, const Test &ct) {
+    void initializeWithDelayedMasker(TestMethod *tm, const Test &ct) override {
         testMethod_ = tm;
         test_ = &ct;
+        initializedWithDelayedMasker_ = true;
     }
 
     auto trialNumber() -> int override { return trialNumber_; }
@@ -271,7 +283,8 @@ class ModelTests : public ::testing::Test {
     InitializingDefaultAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
     InitializingAdaptiveTestWithSingleSpeaker
         initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
-    InitializingAdaptiveTestWithDelayedMasker initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
+    InitializingAdaptiveTestWithDelayedMasker
+        initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
     InitializingDefaultFixedLevelTest initializingFixedLevelTest{
         &fixedLevelMethod};
     InitializingFixedLevelTestWithFiniteTargets
@@ -383,6 +396,18 @@ TEST_F(ModelTests,
 TEST_F(ModelTests,
     initializeAdaptiveTestWithDelayedMaskerInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithDelayedMasker);
+}
+
+TEST_F(ModelTests,
+    initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
+    run(initializingAdaptiveTestWithSingleSpeaker);
+    assertTrue(internalModel.initializedWithSingleSpeaker());
+}
+
+TEST_F(ModelTests,
+    initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
+    run(initializingAdaptiveTestWithDelayedMasker);
+    assertTrue(internalModel.initializedWithDelayedMasker());
 }
 
 TEST_F(ModelTests, submitResponsePassesCoordinateResponse) {
