@@ -83,6 +83,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void playbackComplete() override;
 
   private:
+    void initialize_(TestMethod *, const Test &);
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
     void writeTrial(const open_set::FreeResponse &p);

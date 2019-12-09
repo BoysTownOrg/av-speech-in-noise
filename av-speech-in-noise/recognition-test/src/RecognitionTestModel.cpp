@@ -46,6 +46,11 @@ void RecognitionTestModelImpl::throwIfTrialInProgress() {
 
 void RecognitionTestModelImpl::initialize(
     TestMethod *testMethod_, const Test &test) {
+    initialize_(testMethod_, test);
+}
+
+void RecognitionTestModelImpl::initialize_(
+    TestMethod *testMethod_, const Test &test) {
     throwIfTrialInProgress();
     testMethod = testMethod_;
     prepareTest(test);
@@ -54,18 +59,12 @@ void RecognitionTestModelImpl::initialize(
 
 void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     TestMethod *testMethod_, const Test &test) {
-    throwIfTrialInProgress();
-    testMethod = testMethod_;
-    prepareTest(test);
-    trialNumber_ = 1;
+    initialize_(testMethod_, test);
 }
 
 void RecognitionTestModelImpl::initializeWithDelayedMasker(
     TestMethod *testMethod_, const Test &test) {
-    throwIfTrialInProgress();
-    testMethod = testMethod_;
-    prepareTest(test);
-    trialNumber_ = 1;
+    initialize_(testMethod_, test);
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {
