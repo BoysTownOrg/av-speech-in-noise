@@ -36,6 +36,7 @@ void ModelImpl::initializeTestWithSingleSpeaker(const AdaptiveTest &p) {
 
 void ModelImpl::initializeTestWithDelayedMasker(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
+    model->initialize(adaptiveMethod, p, p.identity);
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {

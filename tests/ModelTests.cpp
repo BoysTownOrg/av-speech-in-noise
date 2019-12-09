@@ -383,6 +383,11 @@ TEST_F(ModelTests,
     assertInitializesInternalModel(initializingAdaptiveTestWithSingleSpeaker);
 }
 
+TEST_F(ModelTests,
+    initializeAdaptiveTestWithDelayedMaskerInitializesInternalModel) {
+    assertInitializesInternalModel(initializingAdaptiveTestWithDelayedMasker);
+}
+
 TEST_F(ModelTests, submitResponsePassesCoordinateResponse) {
     coordinate_response_measure::Response response;
     model.submitResponse(response);
