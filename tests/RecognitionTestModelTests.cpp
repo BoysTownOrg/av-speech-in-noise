@@ -167,7 +167,7 @@ class InitializingTestWithDelayedMasker : public UseCase {
     explicit InitializingTestWithDelayedMasker(TestMethod *method) : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
-        m.initializeTestWithDelayedMasker(method, test);
+        m.initializeWithDelayedMasker(method, test);
     }
 
     [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }

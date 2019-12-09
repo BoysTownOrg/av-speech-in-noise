@@ -60,7 +60,7 @@ void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     trialNumber_ = 1;
 }
 
-void RecognitionTestModelImpl::initializeTestWithDelayedMasker(
+void RecognitionTestModelImpl::initializeWithDelayedMasker(
     TestMethod *testMethod_, const Test &test) {
     throwIfTrialInProgress();
     testMethod = testMethod_;
