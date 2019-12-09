@@ -605,6 +605,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    initializeTestUsesAllMaskerPlayerChannels) {
+    run(initializingTest);
+    assertTrue(maskerPlayer.usingAllChannels());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerUsesFirstChannelOnlyOfTargetPlayer) {
     run(initializingTestWithSingleSpeaker);
     assertTrue(targetPlayer.usingFirstChannelOnly());

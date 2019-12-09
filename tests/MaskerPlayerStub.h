@@ -23,8 +23,13 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool setDeviceCalled_{};
     bool throwInvalidAudioDeviceWhenDeviceSet_{};
     bool throwInvalidAudioFileOnLoad_{};
+    bool usingAllChannels_{};
 
   public:
+    void useAllChannels() override { usingAllChannels_ = true; }
+
+    auto usingAllChannels() const { return usingAllChannels_; }
+
     void throwInvalidAudioFileOnLoad() { throwInvalidAudioFileOnLoad_ = true; }
 
     void fadeOutComplete() { listener_->fadeOutComplete(); }

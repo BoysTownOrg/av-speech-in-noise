@@ -48,6 +48,7 @@ void RecognitionTestModelImpl::initialize(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     targetPlayer->useAllChannels();
+    maskerPlayer->useAllChannels();
 }
 
 void RecognitionTestModelImpl::initialize_(
