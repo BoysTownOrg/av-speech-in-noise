@@ -31,6 +31,7 @@ class TargetPlayer {
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual auto durationSeconds() -> double = 0;
     virtual void useAllChannels() = 0;
+    virtual void useFirstChannelOnly() = 0;
 };
 
 class MaskerPlayer {
