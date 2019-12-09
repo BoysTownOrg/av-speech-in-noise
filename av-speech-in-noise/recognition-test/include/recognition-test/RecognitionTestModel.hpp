@@ -61,6 +61,7 @@ class MaskerPlayer {
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
     virtual void clearChannelDelays() = 0;
+    virtual void setChannelDelaySeconds(long channel, double seconds) = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,
@@ -86,6 +87,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void fadeInComplete() override;
     void fadeOutComplete() override;
     void playbackComplete() override;
+    static double maskerChannelDelaySeconds;
 
   private:
     void initialize_(TestMethod *, const Test &);

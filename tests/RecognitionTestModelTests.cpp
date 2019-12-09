@@ -135,7 +135,8 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     TestMethod *method;
 
   public:
-    explicit InitializingTestWithSingleSpeaker(TestMethod *method) : method{method} {}
+    explicit InitializingTestWithSingleSpeaker(TestMethod *method)
+        : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
         m.initializeWithSingleSpeaker(method, test);
@@ -164,7 +165,8 @@ class InitializingTestWithDelayedMasker : public UseCase {
     TestMethod *method;
 
   public:
-    explicit InitializingTestWithDelayedMasker(TestMethod *method) : method{method} {}
+    explicit InitializingTestWithDelayedMasker(TestMethod *method)
+        : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
         m.initializeWithDelayedMasker(method, test);
@@ -308,8 +310,10 @@ class RecognitionTestModelTests : public ::testing::Test {
     TestMethodStub testMethod;
     PlayingCalibration playingCalibration{};
     InitializingTest initializingTest{&testMethod};
-    InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{&testMethod};
-    InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{&testMethod};
+    InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
+        &testMethod};
+    InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
+        &testMethod};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectResponse submittingCorrectResponse;
@@ -602,28 +606,27 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerClosesOutputFileOpensAndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(initializingTestWithSingleSpeaker);
+    assertClosesOutputFileOpensAndWritesTestInOrder(
+        initializingTestWithSingleSpeaker);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerClosesOutputFileOpensAndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(initializingTestWithDelayedMasker);
+    assertClosesOutputFileOpensAndWritesTestInOrder(
+        initializingTestWithDelayedMasker);
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestUsesAllTargetPlayerChannels) {
+RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     run(initializingTest);
     assertTrue(targetPlayer.usingAllChannels());
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestUsesAllMaskerPlayerChannels) {
+RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     run(initializingTest);
     assertUsingAllMaskerPlayerChannels();
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    initializeTestClearsAllMaskerPlayerChannelDelays) {
+RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
     run(initializingTest);
     assertMaskerPlayerChannelDelaysCleared();
 }
@@ -656,6 +659,14 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerUsesAllMaskerPlayerChannels) {
     run(initializingTestWithDelayedMasker);
     assertUsingAllMaskerPlayerChannels();
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithDelayedMaskerSetsFirstChannelMaskerDelay) {
+    run(initializingTestWithDelayedMasker);
+    assertEqual(0L, maskerPlayer.channelDelayed());
+    assertEqual(RecognitionTestModelImpl::maskerChannelDelaySeconds,
+        maskerPlayer.channelDelaySeconds());
 }
 
 RECOGNITION_TEST_MODEL_TEST(

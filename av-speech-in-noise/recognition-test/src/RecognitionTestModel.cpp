@@ -21,6 +21,8 @@ class NullTestMethod : public TestMethod {
 }
 static NullTestMethod nullTestMethod;
 
+double RecognitionTestModelImpl::maskerChannelDelaySeconds = 0.004;
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer *targetPlayer,
     MaskerPlayer *maskerPlayer, ResponseEvaluator *evaluator,
     OutputFile *outputFile, Randomizer *randomizer)
@@ -85,6 +87,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     initialize_(testMethod_, test);
     useFirstChannelOnly(targetPlayer);
     useAllChannels(maskerPlayer);
+    maskerPlayer->setChannelDelaySeconds(0, maskerChannelDelaySeconds);
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {

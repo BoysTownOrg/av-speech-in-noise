@@ -16,6 +16,8 @@ class MaskerPlayerStub : public MaskerPlayer {
     double fadeTimeSeconds_{};
     double durationSeconds_{};
     double secondsSeeked_{};
+    double channelDelaySeconds_{};
+    long channelDelayed_{};
     EventListener *listener_{};
     bool fadeInCalled_{};
     bool fadeOutCalled_{};
@@ -28,6 +30,15 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool channelDelaysCleared_{};
 
   public:
+    void setChannelDelaySeconds(long channel, double seconds) {
+        channelDelaySeconds_ = seconds;
+        channelDelayed_ = channel;
+    }
+    
+    auto channelDelaySeconds() const { return channelDelaySeconds_; }
+
+    auto channelDelayed() const { return channelDelayed_; }
+
     void clearChannelDelays() override { channelDelaysCleared_ = true; }
 
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
