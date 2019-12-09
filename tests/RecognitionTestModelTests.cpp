@@ -572,6 +572,10 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertUsingAllMaskerPlayerChannels() {
         assertTrue(maskerPlayer.usingAllChannels());
     }
+
+    void assertMaskerPlayerChannelDelaysCleared() {
+        assertTrue(maskerPlayer.channelDelaysCleared());
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -621,7 +625,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestClearsAllMaskerPlayerChannelDelays) {
     run(initializingTest);
-    assertTrue(maskerPlayer.channelDelaysCleared());
+    assertMaskerPlayerChannelDelaysCleared();
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -633,7 +637,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerClearsAllMaskerPlayerChannelDelays) {
     run(initializingTestWithSingleSpeaker);
-    assertTrue(maskerPlayer.channelDelaysCleared());
+    assertMaskerPlayerChannelDelaysCleared();
 }
 
 RECOGNITION_TEST_MODEL_TEST(
