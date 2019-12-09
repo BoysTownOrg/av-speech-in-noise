@@ -10,16 +10,16 @@ class Stream {
     bool failed_{};
 
   public:
-    explicit Stream(const std::string& s) : stream{s} {}
+    explicit Stream(const std::string &s) : stream{s} {}
 
-    bool nextLine() {
+    auto nextLine() -> bool {
         if (!std::getline(stream, lastLine_))
             return false;
         resetLine_();
         return true;
     }
 
-    std::string propertyName() {
+    auto propertyName() -> std::string {
         return lastLine_.substr(0, findPropertyNameDelimiter());
     }
 
@@ -29,11 +29,11 @@ class Stream {
         failed_ = false;
     }
 
-    std::string::size_type findPropertyNameDelimiter() {
+    auto findPropertyNameDelimiter() -> std::string::size_type {
         return lastLine_.find(':');
     }
 
-    int value() {
+    auto value() -> int {
         int x;
         if (!(line_ >> x))
             failed_ = true;
@@ -76,7 +76,8 @@ static void (*propertyApplication(const std::string &s))(
     return nothing;
 }
 
-const TrackingRule *TrackSettingsInterpreterImpl::trackingRule(std::string s) {
+auto TrackSettingsInterpreterImpl::trackingRule(std::string s)
+    -> const TrackingRule * {
     rule_.clear();
     auto stream = Stream{s};
     while (stream.nextLine()) {

@@ -55,7 +55,7 @@ class TrackFactoryStub : public Track::Factory {
     std::vector<std::shared_ptr<Track>> tracks_;
 
   public:
-    auto parameters() const -> auto & { return parameters_; }
+    [[nodiscard]] auto parameters() const -> auto & { return parameters_; }
 
     auto make(const Track::Settings &s) -> std::shared_ptr<Track> override {
         parameters_.push_back(s);

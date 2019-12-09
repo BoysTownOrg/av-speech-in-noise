@@ -4,10 +4,9 @@
 namespace av_speech_in_noise {
 namespace {
 class FormattedStream {
-    std::stringstream stream;
-
   public:
-    template <typename T> void writeLabeledLine(const std::string& label, T thing) {
+    template <typename T>
+    void writeLabeledLine(const std::string &label, T thing) {
         stream << label;
         stream << ": ";
         stream << thing;
@@ -49,145 +48,196 @@ class FormattedStream {
     void writeCondition(const Test &p) {
         writeLabeledLine("condition", conditionName(p.condition));
     }
+
+  private:
+    std::stringstream stream;
 };
 }
+
+template <typename T> void insert(FormattedStream &stream, T item) {
+    stream.insert(item);
+}
+
+static void insert(FormattedStream &stream, HeadingItem item) {
+    stream.insert(headingItemName(item));
+}
+
+static void insertCommaAndSpace(FormattedStream &stream) {
+    stream.insertCommaAndSpace();
+}
+
+static void insertNewLine(FormattedStream &stream) { stream.insertNewLine(); }
 
 OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path)
     : writer{writer}, path{path} {}
 
 void OutputFileImpl::write(std::string s) { writer->write(std::move(s)); }
 
-constexpr const char *correct() { return "correct"; }
+constexpr auto correct() -> const char * { return "correct"; }
 
-constexpr const char *incorrect() { return "incorrect"; }
+constexpr auto incorrect() -> const char * { return "incorrect"; }
 
-static std::string evaluation(const open_set::AdaptiveTrial &trial) {
+static auto evaluation(const open_set::AdaptiveTrial &trial) -> std::string {
     return trial.correct ? correct() : incorrect();
 }
 
-static std::string evaluation(const coordinate_response_measure::Trial &trial) {
+static auto evaluation(const coordinate_response_measure::Trial &trial)
+    -> std::string {
     return trial.correct ? correct() : incorrect();
 }
 
-static std::string formatTrial(
-    const coordinate_response_measure::FixedLevelTrial &trial) {
+static auto formatTest(const AdaptiveTest &test) -> std::string {
     FormattedStream stream;
-    stream.insert(trial.correctNumber);
-    stream.insertCommaAndSpace();
-    stream.insert(trial.subjectNumber);
-    stream.insertCommaAndSpace();
-    stream.insert(colorName(trial.correctColor));
-    stream.insertCommaAndSpace();
-    stream.insert(colorName(trial.subjectColor));
-    stream.insertCommaAndSpace();
-    stream.insert(evaluation(trial));
-    stream.insertCommaAndSpace();
-    stream.insert(trial.target);
+    auto information = test.identity;
+    stream.writeSubjectId(information);
+    stream.writeTester(information);
+    stream.writeSession(information);
+    auto common = test;
+    stream.writeMasker(common);
+    stream.writeTargetList(common);
+    stream.writeMaskerLevel(common);
+    stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
+    stream.writeCondition(common);
     stream.insertNewLine();
     return stream.str();
 }
 
-static std::string formatTrial(
-    const coordinate_response_measure::AdaptiveTrial &trial) {
+static auto formatTest(const FixedLevelTest &test) -> std::string {
     FormattedStream stream;
-    stream.insert(trial.SNR_dB);
-    stream.insertCommaAndSpace();
-    stream.insert(trial.correctNumber);
-    stream.insertCommaAndSpace();
-    stream.insert(trial.subjectNumber);
-    stream.insertCommaAndSpace();
-    stream.insert(colorName(trial.correctColor));
-    stream.insertCommaAndSpace();
-    stream.insert(colorName(trial.subjectColor));
-    stream.insertCommaAndSpace();
-    stream.insert(evaluation(trial));
-    stream.insertCommaAndSpace();
-    stream.insert(trial.reversals);
+    auto information = test.identity;
+    stream.writeSubjectId(information);
+    stream.writeTester(information);
+    stream.writeSession(information);
+    auto common = test;
+    stream.writeMasker(common);
+    stream.writeTargetList(common);
+    stream.writeMaskerLevel(common);
+    stream.writeLabeledLine("SNR (dB)", test.snr_dB);
+    stream.writeCondition(common);
     stream.insertNewLine();
     return stream.str();
 }
 
-static std::string formatTrial(const FreeResponseTrial &trial) {
+static auto formatTrial(
+    const coordinate_response_measure::FixedLevelTrial &trial) -> std::string {
     FormattedStream stream;
-    stream.insert(trial.target);
-    stream.insertCommaAndSpace();
-    stream.insert(trial.response);
+    insert(stream, trial.correctNumber);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.subjectNumber);
+    insertCommaAndSpace(stream);
+    insert(stream, colorName(trial.correctColor));
+    insertCommaAndSpace(stream);
+    insert(stream, colorName(trial.subjectColor));
+    insertCommaAndSpace(stream);
+    insert(stream, evaluation(trial));
+    insertCommaAndSpace(stream);
+    insert(stream, trial.target);
+    insertNewLine(stream);
+    return stream.str();
+}
+
+static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
+    -> std::string {
+    FormattedStream stream;
+    insert(stream, trial.SNR_dB);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.correctNumber);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.subjectNumber);
+    insertCommaAndSpace(stream);
+    insert(stream, colorName(trial.correctColor));
+    insertCommaAndSpace(stream);
+    insert(stream, colorName(trial.subjectColor));
+    insertCommaAndSpace(stream);
+    insert(stream, evaluation(trial));
+    insertCommaAndSpace(stream);
+    insert(stream, trial.reversals);
+    insertNewLine(stream);
+    return stream.str();
+}
+
+static auto formatTrial(const open_set::FreeResponseTrial &trial)
+    -> std::string {
+    FormattedStream stream;
+    insert(stream, trial.target);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.response);
     if (trial.flagged) {
-        stream.insertCommaAndSpace();
-        stream.insert("FLAGGED");
+        insertCommaAndSpace(stream);
+        insert(stream, "FLAGGED");
     }
-    stream.insertNewLine();
+    insertNewLine(stream);
     return stream.str();
 }
 
-static std::string formatTrial(const open_set::AdaptiveTrial &trial) {
+static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
     FormattedStream stream;
-    stream.insert(trial.SNR_dB);
-    stream.insertCommaAndSpace();
-    stream.insert(trial.target);
-    stream.insertCommaAndSpace();
-    stream.insert(evaluation(trial));
-    stream.insertCommaAndSpace();
-    stream.insert(trial.reversals);
-    stream.insertNewLine();
+    insert(stream, trial.SNR_dB);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.target);
+    insertCommaAndSpace(stream);
+    insert(stream, evaluation(trial));
+    insertCommaAndSpace(stream);
+    insert(stream, trial.reversals);
+    insertNewLine(stream);
     return stream.str();
 }
 
-static std::string formatOpenSetFreeResponseTrialHeading() {
+static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
     FormattedStream stream;
-    stream.insert(headingItemName(HeadingItem::target));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::freeResponse));
-    stream.insertNewLine();
+    insert(stream, HeadingItem::target);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::freeResponse);
+    insertNewLine(stream);
     return stream.str();
 }
 
-static std::string formatAdaptiveCoordinateResponseTrialHeading() {
+static auto formatAdaptiveCoordinateResponseTrialHeading() -> std::string {
     FormattedStream stream;
-    stream.insert(headingItemName(HeadingItem::snr_dB));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::correctNumber));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::subjectNumber));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::correctColor));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::subjectColor));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::evaluation));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::reversals));
-    stream.insertNewLine();
+    insert(stream, HeadingItem::snr_dB);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::correctNumber);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::subjectNumber);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::correctColor);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::subjectColor);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::evaluation);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::reversals);
+    insertNewLine(stream);
     return stream.str();
 }
 
-static std::string formatFixedLevelCoordinateResponseTrialHeading() {
+static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
     FormattedStream stream;
-    stream.insert(headingItemName(HeadingItem::correctNumber));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::subjectNumber));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::correctColor));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::subjectColor));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::evaluation));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::stimulus));
-    stream.insertNewLine();
+    insert(stream, HeadingItem::correctNumber);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::subjectNumber);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::correctColor);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::subjectColor);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::evaluation);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::stimulus);
+    insertNewLine(stream);
     return stream.str();
 }
 
-static std::string formatOpenSetAdaptiveTrialHeading() {
+static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
     FormattedStream stream;
-    stream.insert(headingItemName(HeadingItem::snr_dB));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::target));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::evaluation));
-    stream.insertCommaAndSpace();
-    stream.insert(headingItemName(HeadingItem::reversals));
-    stream.insertNewLine();
+    insert(stream, HeadingItem::snr_dB);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::target);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::evaluation);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::reversals);
+    insertNewLine(stream);
     return stream.str();
 }
 
@@ -207,7 +257,7 @@ void OutputFileImpl::writeTrial(
     justWroteFixedLevelCoordinateResponseTrial = true;
 }
 
-void OutputFileImpl::writeTrial(const FreeResponseTrial &trial) {
+void OutputFileImpl::writeTrial(const open_set::FreeResponseTrial &trial) {
     if (!justWroteFreeResponseTrial)
         write(formatOpenSetFreeResponseTrialHeading());
     write(formatTrial(trial));
@@ -229,38 +279,6 @@ void OutputFileImpl::writeTest(const FixedLevelTest &test) {
     write(formatTest(test));
 }
 
-std::string OutputFileImpl::formatTest(const AdaptiveTest &test) {
-    FormattedStream stream;
-    auto information = test.identity;
-    stream.writeSubjectId(information);
-    stream.writeTester(information);
-    stream.writeSession(information);
-    auto common = test;
-    stream.writeMasker(common);
-    stream.writeTargetList(common);
-    stream.writeMaskerLevel(common);
-    stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
-    stream.writeCondition(common);
-    stream.insertNewLine();
-    return stream.str();
-}
-
-std::string OutputFileImpl::formatTest(const FixedLevelTest &test) {
-    FormattedStream stream;
-    auto information = test.identity;
-    stream.writeSubjectId(information);
-    stream.writeTester(information);
-    stream.writeSession(information);
-    auto common = test;
-    stream.writeMasker(common);
-    stream.writeTargetList(common);
-    stream.writeMaskerLevel(common);
-    stream.writeLabeledLine("SNR (dB)", test.snr_dB);
-    stream.writeCondition(common);
-    stream.insertNewLine();
-    return stream.str();
-}
-
 void OutputFileImpl::openNewFile(const TestIdentity &test) {
     writer->open(generateNewFilePath(test));
     if (writer->failed())
@@ -271,7 +289,8 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
     justWroteOpenSetAdaptiveTrial = false;
 }
 
-std::string OutputFileImpl::generateNewFilePath(const TestIdentity &test) {
+auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
+    -> std::string {
     return path->outputDirectory() + "/" + path->generateFileName(test) +
         ".txt";
 }

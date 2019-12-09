@@ -8,8 +8,12 @@
 #include <string>
 
 namespace av_speech_in_noise {
-template <typename T> T maximumValue() { return std::numeric_limits<T>::max(); }
-template <typename T> T minimumValue() { return std::numeric_limits<T>::min(); }
+template <typename T> auto maximumValue() -> T {
+    return std::numeric_limits<T>::max();
+}
+template <typename T> auto minimumValue() -> T {
+    return std::numeric_limits<T>::min();
+}
 
 class Track {
   public:
@@ -23,35 +27,65 @@ class Track {
     };
     virtual void down() = 0;
     virtual void up() = 0;
-    virtual int x() = 0;
-    virtual bool complete() = 0;
-    virtual int reversals() = 0;
+    virtual auto x() -> int = 0;
+    virtual auto complete() -> bool = 0;
+    virtual auto reversals() -> int = 0;
 
     class Factory {
       public:
         virtual ~Factory() = default;
-        virtual std::shared_ptr<Track> make(const Settings &) = 0;
+        virtual auto make(const Settings &) -> std::shared_ptr<Track> = 0;
     };
 };
 
 class TrackSettingsReader {
   public:
     virtual ~TrackSettingsReader() = default;
-    virtual const TrackingRule *read(std::string) = 0;
+    virtual auto read(std::string) -> const TrackingRule * = 0;
 };
 
 class TargetListReader {
   public:
     virtual ~TargetListReader() = default;
     using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
-    virtual lists_type read(std::string directory) = 0;
+    virtual auto read(std::string directory) -> lists_type = 0;
 };
 
 class AdaptiveMethodImpl : public AdaptiveMethod {
+  public:
+    AdaptiveMethodImpl(TargetListReader *, TrackSettingsReader *,
+        Track::Factory *, ResponseEvaluator *, Randomizer *);
+    void initialize(const AdaptiveTest &) override;
+    auto snr_dB() -> int override;
+    void submitIncorrectResponse() override;
+    void submitCorrectResponse() override;
+    auto complete() -> bool override;
+    auto next() -> std::string override;
+    auto current() -> std::string override;
+    void writeLastCoordinateResponse(OutputFile *) override;
+    void writeLastCorrectResponse(OutputFile *) override;
+    void writeLastIncorrectResponse(OutputFile *) override;
+    void writeTestingParameters(OutputFile *) override;
+    void submitResponse(const coordinate_response_measure::Response &) override;
+    void submitResponse(const open_set::FreeResponse &) override;
+
+  private:
     struct TargetListWithTrack {
         TargetList *list;
         std::shared_ptr<Track> track;
     };
+    void selectNextListAfter(void (AdaptiveMethodImpl::*)());
+    void prepareSnrTracks();
+    void makeSnrTracks();
+    void makeTrackWithList(TargetList *list);
+    void selectNextList();
+    void removeCompleteTracks();
+    static auto complete(const TargetListWithTrack &) -> bool;
+    auto correct(const std::string &,
+        const coordinate_response_measure::Response &) -> bool;
+    void incorrect();
+    void correct();
+
     TargetListReader::lists_type lists{};
     std::vector<TargetListWithTrack> targetListsWithTracks{};
     Track::Settings trackSettings{};
@@ -65,36 +99,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     Randomizer *randomizer;
     Track *currentSnrTrack{};
     TargetList *currentTargetList{};
-
-  public:
-    AdaptiveMethodImpl(TargetListReader *, TrackSettingsReader *,
-        Track::Factory *, ResponseEvaluator *, Randomizer *);
-    void initialize(const AdaptiveTest &) override;
-    int snr_dB() override;
-    void submitIncorrectResponse() override;
-    void submitCorrectResponse() override;
-    bool complete() override;
-    std::string next() override;
-    std::string current() override;
-    void writeLastCoordinateResponse(OutputFile *) override;
-    void writeLastCorrectResponse(OutputFile *) override;
-    void writeLastIncorrectResponse(OutputFile *) override;
-    void writeTestingParameters(OutputFile *) override;
-    void submitResponse(const coordinate_response_measure::Response &) override;
-    void submitResponse(const FreeResponse &) override;
-
-  private:
-    void selectNextListAfter(void (AdaptiveMethodImpl::*)());
-    void prepareSnrTracks();
-    void makeSnrTracks();
-    void makeTrackWithList(TargetList *list);
-    void selectNextList();
-    void removeCompleteTracks();
-    bool complete(const TargetListWithTrack &);
-    bool correct(
-        const std::string &, const coordinate_response_measure::Response &);
-    void incorrect();
-    void correct();
 };
 }
 

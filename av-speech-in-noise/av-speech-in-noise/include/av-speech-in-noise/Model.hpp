@@ -31,9 +31,31 @@ struct AdaptiveTrial : Trial {
 struct FixedLevelTrial : Trial {};
 }
 
+namespace open_set {
+struct FreeResponse {
+    std::string response;
+    bool flagged;
+};
+
+struct Trial {
+    std::string target;
+};
+
+struct FreeResponseTrial : Trial {
+    std::string response;
+    bool flagged;
+};
+
+struct AdaptiveTrial : Trial {
+    int SNR_dB{};
+    int reversals{};
+    bool correct{};
+};
+}
+
 enum class Condition { auditoryOnly, audioVisual };
 
-constexpr const char *conditionName(Condition c) {
+constexpr auto conditionName(Condition c) -> const char * {
     switch (c) {
     case Condition::auditoryOnly:
         return "auditory-only";
@@ -50,8 +72,8 @@ struct TrackingSequence {
     int up;
 };
 
-constexpr bool operator==(
-    const TrackingSequence &a, const TrackingSequence &b) {
+constexpr auto operator==(const TrackingSequence &a, const TrackingSequence &b)
+    -> bool {
     return a.down == b.down && a.up == b.up && a.runCount == b.runCount &&
         a.stepSize == b.stepSize;
 }
@@ -98,26 +120,6 @@ struct Calibration {
     Condition condition;
 };
 
-struct FreeResponse {
-    std::string response;
-    bool flagged;
-};
-
-struct FreeResponseTrial {
-    std::string response;
-    std::string target;
-    bool flagged;
-};
-
-namespace open_set {
-struct AdaptiveTrial {
-    std::string target;
-    int SNR_dB;
-    int reversals;
-    bool correct;
-};
-}
-
 class Model {
   public:
     class EventListener {
@@ -142,12 +144,12 @@ class Model {
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
         const coordinate_response_measure::Response &) = 0;
-    virtual void submitResponse(const FreeResponse &) = 0;
+    virtual void submitResponse(const open_set::FreeResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual bool testComplete() = 0;
-    virtual std::vector<std::string> audioDevices() = 0;
-    virtual int trialNumber() = 0;
+    virtual auto testComplete() -> bool = 0;
+    virtual auto audioDevices() -> std::vector<std::string> = 0;
+    virtual auto trialNumber() -> int = 0;
 };
 }
 

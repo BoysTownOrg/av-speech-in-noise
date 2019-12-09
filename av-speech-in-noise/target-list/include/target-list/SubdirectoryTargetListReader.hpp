@@ -10,14 +10,15 @@ namespace target_list {
 class TargetListFactory {
   public:
     virtual ~TargetListFactory() = default;
-    virtual std::shared_ptr<av_speech_in_noise::TargetList> make() = 0;
+    virtual auto make() -> std::shared_ptr<av_speech_in_noise::TargetList> = 0;
 };
 
 class DirectoryReader {
   public:
     virtual ~DirectoryReader() = default;
-    virtual std::vector<std::string> subDirectories(std::string directory) = 0;
-    virtual std::vector<std::string> filesIn(std::string directory) = 0;
+    virtual auto subDirectories(std::string directory)
+        -> std::vector<std::string> = 0;
+    virtual auto filesIn(std::string directory) -> std::vector<std::string> = 0;
 };
 
 class SubdirectoryTargetListReader
@@ -27,10 +28,10 @@ class SubdirectoryTargetListReader
 
   public:
     SubdirectoryTargetListReader(TargetListFactory *, DirectoryReader *);
-    lists_type read(std::string directory) override;
+    auto read(std::string directory) -> lists_type override;
 
   private:
-    std::vector<std::string> subDirectories(std::string directory);
+    auto subDirectories(std::string directory) -> std::vector<std::string>;
 };
 }
 
