@@ -38,6 +38,7 @@ class ModelStub : public Model {
     bool incorrectResponseSubmitted_{};
     bool initializedWithFiniteTargets_{};
     bool initializedWithSingleSpeaker_{};
+    bool initializedWithDelayedMasker_{};
 
   public:
     int trialNumber() override { return trialNumber_; }
@@ -52,16 +53,25 @@ class ModelStub : public Model {
         return initializedWithSingleSpeaker_;
     }
 
+    auto initializedWithDelayedMasker() const {
+        return initializedWithDelayedMasker_;
+    }
+
     void initializeTestWithSingleSpeaker(const AdaptiveTest &p) {
         adaptiveTest_ = p;
         initializedWithSingleSpeaker_ = true;
+    }
+
+    void initializeTestWithDelayedMasker(const AdaptiveTest &p) {
+        adaptiveTest_ = p;
+        initializedWithDelayedMasker_ = true;
     }
 
     void initializeTestWithFiniteTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         initializedWithFiniteTargets_ = true;
     }
-
+    
     auto incorrectResponseSubmitted() const {
         return incorrectResponseSubmitted_;
     }
@@ -204,6 +214,7 @@ class ViewStub : public View {
         bool hidden_{};
         bool useFiniteTargets_{};
         bool useSingleSpeaker_{};
+        bool useDelayedMasker_{};
 
       public:
         bool usingTargetsWithoutReplacement() override {
@@ -214,9 +225,15 @@ class ViewStub : public View {
             return useSingleSpeaker_;
         }
 
+        auto usingDelayedMasker() -> bool override {
+            return useDelayedMasker_;
+        }
+
         void useFiniteTargets() { useFiniteTargets_ = true; }
 
         void useSingleSpeaker() { useSingleSpeaker_ = true; }
+
+        void useDelayedMasker() { useDelayedMasker_ = true; }
 
         std::string trackSettingsFile() override { return trackSettingsFile_; }
 
@@ -1608,6 +1625,10 @@ class RequestFailingModel : public Model {
     }
 
     void initializeTestWithSingleSpeaker(const AdaptiveTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void initializeTestWithDelayedMasker(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 

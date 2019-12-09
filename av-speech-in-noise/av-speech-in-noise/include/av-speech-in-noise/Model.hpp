@@ -135,6 +135,7 @@ class Model {
     virtual void subscribe(EventListener *) = 0;
     virtual void initializeTest(const AdaptiveTest &) = 0;
     virtual void initializeTestWithSingleSpeaker(const AdaptiveTest &) = 0;
+    virtual void initializeTestWithDelayedMasker(const AdaptiveTest &) = 0;
     virtual void initializeTest(const FixedLevelTest &) = 0;
     virtual void initializeTestWithFiniteTargets(const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;

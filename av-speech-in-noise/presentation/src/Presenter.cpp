@@ -62,6 +62,8 @@ void Presenter::initializeTest() {
     if (adaptiveTest())
         if (singleSpeaker())
             model->initializeTestWithSingleSpeaker(testSetup->adaptiveTest());
+        else if (delayedMasker())
+            model->initializeTestWithDelayedMasker(testSetup->adaptiveTest());
         else
             model->initializeTest(testSetup->adaptiveTest());
     else if (finiteTargets())
@@ -81,6 +83,9 @@ bool Presenter::adaptiveOpenSet() { return testSetup->adaptiveOpenSet(); }
 bool Presenter::finiteTargets() { return testSetup->finiteTargets(); }
 
 bool Presenter::singleSpeaker() { return testSetup->singleSpeaker(); }
+
+bool Presenter::delayedMasker() { return testSetup->delayedMasker(); }
+
 
 bool Presenter::testComplete() { return model->testComplete(); }
 
@@ -383,6 +388,10 @@ bool Presenter::TestSetup::finiteTargets() {
 
 bool Presenter::TestSetup::singleSpeaker() {
     return view->usingSingleSpeaker();
+}
+
+bool Presenter::TestSetup::delayedMasker() {
+    return view->usingDelayedMasker();
 }
 
 Presenter::Subject::Subject(View::Subject *view) : view{view} {

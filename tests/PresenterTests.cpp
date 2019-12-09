@@ -94,6 +94,13 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetTestWithDelayedMaskerInitializesModel) {
+    setupView.useDelayedMasker();
+    run(confirmingAdaptiveClosedSetTest);
+    assertTrue(model.initializedWithDelayedMasker());
+}
+
+TEST_F(PresenterTests,
     confirmFixedLevelClosedSetTestWithFiniteTargetsInitializesModel) {
     setupView.useFiniteTargets();
     run(confirmingFixedLevelClosedSetTest);

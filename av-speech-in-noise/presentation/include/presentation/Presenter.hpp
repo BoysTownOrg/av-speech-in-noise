@@ -87,6 +87,7 @@ class View {
         virtual std::string method() = 0;
         virtual bool usingTargetsWithoutReplacement() = 0;
         virtual auto usingSingleSpeaker() -> bool = 0;
+        virtual auto usingDelayedMasker() -> bool = 0;
         virtual void setMasker(std::string) = 0;
         virtual void setTargetListDirectory(std::string) = 0;
         virtual void setCalibrationFilePath(std::string) = 0;
@@ -185,6 +186,7 @@ class Presenter : public Model::EventListener {
         bool fixedLevelClosedSet();
         bool finiteTargets();
         auto singleSpeaker() -> bool;
+        auto delayedMasker() -> bool;
         void playCalibration() override;
         void browseForTargetList() override;
         void browseForMasker() override;
@@ -316,6 +318,7 @@ class Presenter : public Model::EventListener {
   private:
     bool finiteTargets();
     auto singleSpeaker() -> bool;
+    auto delayedMasker() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();

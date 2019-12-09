@@ -125,6 +125,7 @@ class ModelImpl : public Model {
     void initializeTest(const FixedLevelTest &) override;
     void initializeTestWithFiniteTargets(const FixedLevelTest &) override;
     void initializeTestWithSingleSpeaker(const AdaptiveTest &) override;
+    void initializeTestWithDelayedMasker(const AdaptiveTest &) override {}
     void playTrial(const AudioSettings &) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
     bool testComplete() override;
