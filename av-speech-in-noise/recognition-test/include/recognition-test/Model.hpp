@@ -92,6 +92,8 @@ class RecognitionTestModel {
   public:
     virtual ~RecognitionTestModel() = default;
     virtual void initialize(TestMethod *, const Test &) = 0;
+    virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;
+    virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
         const coordinate_response_measure::Response &) = 0;
@@ -130,7 +132,7 @@ class ModelImpl : public Model {
 
   private:
     void initializeTest_(const AdaptiveTest &);
-    
+
     AdaptiveMethod *adaptiveMethod;
     FixedLevelMethod *fixedLevelMethod;
     TargetList *infiniteTargetList;

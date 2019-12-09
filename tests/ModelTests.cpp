@@ -82,6 +82,16 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         test_ = &ct;
     }
 
+    void initializeWithSingleSpeaker(TestMethod *tm, const Test &ct) {
+        testMethod_ = tm;
+        test_ = &ct;
+    }
+
+    void initializeWithDelayedMasker(TestMethod *tm, const Test &ct) {
+        testMethod_ = tm;
+        test_ = &ct;
+    }
+
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
