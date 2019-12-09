@@ -48,12 +48,16 @@ static void useAllChannels(MaskerPlayer *player) {
     player->useAllChannels();
 }
 
+static void clearChannelDelays(MaskerPlayer *player) {
+    player->clearChannelDelays();
+}
+
 void RecognitionTestModelImpl::initialize(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     targetPlayer->useAllChannels();
     useAllChannels(maskerPlayer);
-    maskerPlayer->clearChannelDelays();
+    clearChannelDelays(maskerPlayer);
 }
 
 void RecognitionTestModelImpl::initialize_(
@@ -73,7 +77,7 @@ void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     initialize_(testMethod_, test);
     useFirstChannelOnly(targetPlayer);
     maskerPlayer->useFirstChannelOnly();
-    maskerPlayer->clearChannelDelays();
+    clearChannelDelays(maskerPlayer);
 }
 
 void RecognitionTestModelImpl::initializeWithDelayedMasker(
