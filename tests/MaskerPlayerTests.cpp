@@ -407,6 +407,8 @@ class MaskerPlayerTests : public ::testing::Test {
         player.setChannelDelaySeconds(channel, seconds);
     }
 
+    void clearChannelDelays() { player.clearChannelDelays(); }
+
     void useFirstChannelOnly() { player.useFirstChannelOnly(); }
 
     void useAllChannels() { player.useAllChannels(); }
@@ -438,6 +440,17 @@ TEST_F(MaskerPlayerTests, delayChannelMono) {
     loadMonoAudio({1, 2, 3});
     fillAudioBufferMono(6);
     assertLeftChannelEquals({0, 0, 0, 1, 2, 3});
+}
+
+TEST_F(MaskerPlayerTests, clearChannelDelaysMono) {
+    setSampleRateHz(3);
+    setChannelDelaySeconds(0, 1);
+    loadMonoAudio({1, 2, 3});
+    fillAudioBufferMono(6);
+    clearChannelDelays();
+    loadMonoAudio({1, 2, 3});
+    fillAudioBufferMono(3);
+    assertLeftChannelEquals({1, 2, 3});
 }
 
 TEST_F(MaskerPlayerTests, delayChannelStereo) {

@@ -198,6 +198,10 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
     mainThread.setChannelDelaySeconds(channel, seconds);
 }
 
+void MaskerPlayerImpl::clearChannelDelays() {
+    mainThread.clearChannelDelays();
+}
+
 void MaskerPlayerImpl::useFirstChannelOnly() {
     set(firstChannelOnly);
 }
@@ -226,6 +230,10 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
 void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
     channelDelaySeconds_.at(channel) = seconds;
+}
+
+void MaskerPlayerImpl::MainThread::clearChannelDelays() {
+    std::fill(channelDelaySeconds_.begin(), channelDelaySeconds_.end(), 0);
 }
 
 auto MaskerPlayerImpl::MainThread::channelDelaySeconds(

@@ -74,6 +74,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void callback() override;
     void setChannelDelaySeconds(channel_index_type channel, double seconds);
     void useFirstChannelOnly() override;
+    void clearChannelDelays();
     void useAllChannels() override;
 
   private:
@@ -121,6 +122,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void fadeIn();
         void fadeOut();
         void setChannelDelaySeconds(channel_index_type channel, double seconds);
+        void clearChannelDelays();
         auto channelDelaySeconds(channel_index_type channel) -> double;
         void setFadeInOutSeconds(double);
         auto fadeTimeSeconds() -> double;
