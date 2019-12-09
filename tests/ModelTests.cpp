@@ -191,6 +191,29 @@ class InitializingAdaptiveTestWithSingleSpeaker
     const TestMethod *testMethod() override { return method; }
 };
 
+class InitializingAdaptiveTestWithDelayedMasker
+    : public InitializingAdaptiveTest {
+    AdaptiveTest test_;
+    AdaptiveMethodStub *method;
+
+  public:
+    explicit InitializingAdaptiveTestWithDelayedMasker(
+        AdaptiveMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        model.initializeTestWithDelayedMasker(test_);
+    }
+
+    const Test &test() override { return test_; }
+
+    const AdaptiveTest &adaptiveTest() override { return test_; }
+
+    const TestIdentity &testIdentity() override { return test_.identity; }
+
+    const TestMethod *testMethod() override { return method; }
+};
+
 class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
@@ -250,6 +273,7 @@ class ModelTests : public ::testing::Test {
     InitializingDefaultAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
     InitializingAdaptiveTestWithSingleSpeaker
         initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
+    InitializingAdaptiveTestWithDelayedMasker initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
     InitializingDefaultFixedLevelTest initializingFixedLevelTest{
         &fixedLevelMethod};
     InitializingFixedLevelTestWithFiniteTargets
@@ -334,6 +358,11 @@ TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
 TEST_F(ModelTests,
     initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker);
+}
+
+TEST_F(ModelTests,
+    initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
+    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker);
 }
 
 TEST_F(ModelTests, initializeFixedLevelTestInitializesInternalModel) {
