@@ -52,7 +52,7 @@ class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
     void playbackComplete() override;
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     auto audioDevices() -> std::vector<std::string>;
-    void useFirstChannelOnly();
+    void useFirstChannelOnly() override;
     void useAllChannels() override;
 
   private:
