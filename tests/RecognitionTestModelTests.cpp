@@ -129,6 +129,35 @@ class InitializingTest : public UseCase {
     void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
 };
 
+class InitializingTestWithSingleSpeaker : public UseCase {
+    TestIdentity information{};
+    Test test{};
+    TestMethod *method;
+
+  public:
+    explicit InitializingTestWithSingleSpeaker(TestMethod *method) : method{method} {}
+
+    void run(RecognitionTestModelImpl &m) override {
+        m.initializeWithSingleSpeaker(method, test);
+    }
+
+    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
+
+    void setMaskerFilePath(std::string s) {
+        test.maskerFilePath = std::move(s);
+    }
+
+    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
+
+    void setTestingFullScaleLevel_dB_SPL(int x) {
+        test.fullScaleLevel_dB_SPL = x;
+    }
+
+    void setAudioVisual() { test.condition = Condition::audioVisual; }
+
+    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
+};
+
 class AudioDeviceUseCase : public virtual UseCase {
   public:
     virtual void setAudioDevice(std::string) = 0;
@@ -250,6 +279,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     TestMethodStub testMethod;
     PlayingCalibration playingCalibration{};
     InitializingTest initializingTest{&testMethod};
+    InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{&testMethod};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectResponse submittingCorrectResponse;
@@ -526,6 +556,11 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetVideoWhenAudioVisual) {
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestClosesOutputFileOpensAndWritesTestInOrder) {
     assertClosesOutputFileOpensAndWritesTestInOrder(initializingTest);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithSingleSpeakerClosesOutputFileOpensAndWritesTestInOrder) {
+    assertClosesOutputFileOpensAndWritesTestInOrder(initializingTestWithSingleSpeaker);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
