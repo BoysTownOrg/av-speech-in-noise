@@ -138,6 +138,11 @@ class InitializingTestUseCase {
     virtual const TestMethod *testMethod() = 0;
 };
 
+class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
+  public:
+    virtual const FixedLevelTest &fixedLevelTest() = 0;
+};
+
 class InitializingAdaptiveTest : public InitializingTestUseCase {
     AdaptiveTest test_;
     AdaptiveMethodStub *method;
@@ -155,17 +160,19 @@ class InitializingAdaptiveTest : public InitializingTestUseCase {
     const TestMethod *testMethod() override { return method; }
 };
 
-class InitializingFixedLevelTest : public InitializingTestUseCase {
+class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelTest(FixedLevelMethodStub *method)
+    explicit InitializingDefaultFixedLevelTest(FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override { model.initializeTest(test_); }
 
     const Test &test() override { return test_; }
+
+    const FixedLevelTest &fixedLevelTest() override { return test_; }
 
     const TestIdentity &testIdentity() override { return test_.identity; }
 
@@ -173,7 +180,7 @@ class InitializingFixedLevelTest : public InitializingTestUseCase {
 };
 
 class InitializingFixedLevelTestWithFiniteTargets
-    : public InitializingTestUseCase {
+    : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
@@ -191,6 +198,8 @@ class InitializingFixedLevelTestWithFiniteTargets
     const TestIdentity &testIdentity() override { return test_.identity; }
 
     const TestMethod *testMethod() override { return method; }
+
+    const FixedLevelTest &fixedLevelTest() override { return test_; }
 };
 
 class ModelTests : public ::testing::Test {
@@ -208,7 +217,8 @@ class ModelTests : public ::testing::Test {
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     InitializingAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
-    InitializingFixedLevelTest initializingFixedLevelTest{&fixedLevelMethod};
+    InitializingDefaultFixedLevelTest initializingFixedLevelTest{
+        &fixedLevelMethod};
     InitializingFixedLevelTestWithFiniteTargets
         initializingFixedLevelTestWithFiniteTargets{&fixedLevelMethod};
 
