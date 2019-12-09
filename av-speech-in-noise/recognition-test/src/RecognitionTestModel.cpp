@@ -60,6 +60,14 @@ void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     trialNumber_ = 1;
 }
 
+void RecognitionTestModelImpl::initializeTestWithDelayedMasker(
+    TestMethod *testMethod_, const Test &test) {
+    throwIfTrialInProgress();
+    testMethod = testMethod_;
+    prepareTest(test);
+    trialNumber_ = 1;
+}
+
 auto RecognitionTestModelImpl::trialInProgress() -> bool {
     return maskerPlayer->playing();
 }
