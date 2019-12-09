@@ -74,6 +74,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     useFirstChannelOnly(targetPlayer);
+    maskerPlayer->useAllChannels();
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {

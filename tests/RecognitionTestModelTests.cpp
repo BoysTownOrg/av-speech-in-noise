@@ -633,6 +633,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithDelayedMaskerUsesAllMaskerPlayerChannels) {
+    run(initializingTestWithDelayedMasker);
+    assertTrue(maskerPlayer.usingAllChannels());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     initializeTestOpensNewOutputFilePassingTestInformation) {
     run(initializingTest);
     assertEqual(
