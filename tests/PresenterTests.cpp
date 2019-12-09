@@ -87,6 +87,14 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsExperimenterView) {
 }
 
 TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetTestWithSingleSpeakerInitializesModel) {
+    setMethod(&setupView, Method::adaptiveClosedSet);
+    setupView.useSingleSpeaker();
+    setupView.confirmTestSetup();
+    assertTrue(model.initializedWithSingleSpeaker());
+}
+
+TEST_F(PresenterTests,
     confirmFixedLevelClosedSetTestWithFiniteTargetsInitializesModel) {
     setMethod(&setupView, Method::fixedLevelClosedSet);
     setupView.useFiniteTargets();

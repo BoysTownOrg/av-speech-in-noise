@@ -60,7 +60,10 @@ void Presenter::confirmTestSetup_() {
 
 void Presenter::initializeTest() {
     if (adaptiveTest())
-        model->initializeTest(testSetup->adaptiveTest());
+        if (singleSpeaker())
+            model->initializeTestWithSingleSpeaker(testSetup->adaptiveTest());
+        else
+            model->initializeTest(testSetup->adaptiveTest());
     else if (finiteTargets())
         model->initializeTestWithFiniteTargets(fixedLevelTest(testSetup));
     else
@@ -76,6 +79,8 @@ bool Presenter::adaptiveClosedSet() { return testSetup->adaptiveClosedSet(); }
 bool Presenter::adaptiveOpenSet() { return testSetup->adaptiveOpenSet(); }
 
 bool Presenter::finiteTargets() { return testSetup->finiteTargets(); }
+
+bool Presenter::singleSpeaker() { return testSetup->singleSpeaker(); }
 
 bool Presenter::testComplete() { return model->testComplete(); }
 
@@ -374,6 +379,10 @@ bool Presenter::TestSetup::fixedLevelClosedSet() {
 
 bool Presenter::TestSetup::finiteTargets() {
     return view->usingTargetsWithoutReplacement();
+}
+
+bool Presenter::TestSetup::singleSpeaker() {
+    return view->usingSingleSpeaker();
 }
 
 Presenter::Subject::Subject(View::Subject *view) : view{view} {

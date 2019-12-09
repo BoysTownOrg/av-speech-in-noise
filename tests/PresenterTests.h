@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_H_
 
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
 #include <presentation/Presenter.hpp>
 #include <algorithm>
@@ -36,6 +37,7 @@ class ModelStub : public Model {
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
     bool initializedWithFiniteTargets_{};
+    bool initializedWithSingleSpeaker_{};
 
   public:
     int trialNumber() override { return trialNumber_; }
@@ -44,6 +46,15 @@ class ModelStub : public Model {
 
     auto initializedWithFiniteTargets() const {
         return initializedWithFiniteTargets_;
+    }
+
+    auto initializedWithSingleSpeaker() const {
+        return initializedWithSingleSpeaker_;
+    }
+
+    void initializeTestWithSingleSpeaker(const AdaptiveTest &p) {
+        adaptiveTest_ = p;
+        initializedWithSingleSpeaker_ = true;
     }
 
     void initializeTestWithFiniteTargets(const FixedLevelTest &p) override {
@@ -192,13 +203,20 @@ class ViewStub : public View {
         bool shown_{};
         bool hidden_{};
         bool useFiniteTargets_{};
+        bool useSingleSpeaker_{};
 
       public:
         bool usingTargetsWithoutReplacement() override {
             return useFiniteTargets_;
         }
 
+        auto usingSingleSpeaker() -> bool override {
+            return useSingleSpeaker_;
+        }
+
         void useFiniteTargets() { useFiniteTargets_ = true; }
+
+        void useSingleSpeaker() { useSingleSpeaker_ = true; }
 
         std::string trackSettingsFile() override { return trackSettingsFile_; }
 
@@ -1586,6 +1604,10 @@ class RequestFailingModel : public Model {
     }
 
     void initializeTestWithFiniteTargets(const FixedLevelTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void initializeTestWithSingleSpeaker(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
