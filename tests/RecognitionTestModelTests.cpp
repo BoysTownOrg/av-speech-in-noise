@@ -564,6 +564,10 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase);
         assertTrialNumber(n);
     }
+
+    void assertOnlyUsingFirstChannelOfTargetPlayer() {
+        assertTrue(targetPlayer.usingFirstChannelOnly());
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -613,7 +617,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerUsesFirstChannelOnlyOfTargetPlayer) {
     run(initializingTestWithSingleSpeaker);
-    assertTrue(targetPlayer.usingFirstChannelOnly());
+    assertOnlyUsingFirstChannelOfTargetPlayer();
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -625,7 +629,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerUsesFirstChannelOnlyOfTargetPlayer) {
     run(initializingTestWithDelayedMasker);
-    assertTrue(targetPlayer.usingFirstChannelOnly());
+    assertOnlyUsingFirstChannelOfTargetPlayer();
 }
 
 RECOGNITION_TEST_MODEL_TEST(

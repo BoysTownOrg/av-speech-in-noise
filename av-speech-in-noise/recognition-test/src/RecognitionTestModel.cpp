@@ -59,17 +59,21 @@ void RecognitionTestModelImpl::initialize_(
     trialNumber_ = 1;
 }
 
+static void useFirstChannelOnly(TargetPlayer *player) {
+    player->useFirstChannelOnly();
+}
+
 void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
-    targetPlayer->useFirstChannelOnly();
+    useFirstChannelOnly(targetPlayer);
     maskerPlayer->useFirstChannelOnly();
 }
 
 void RecognitionTestModelImpl::initializeWithDelayedMasker(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
-    targetPlayer->useFirstChannelOnly();
+    useFirstChannelOnly(targetPlayer);
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {
