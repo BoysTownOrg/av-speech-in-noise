@@ -2,6 +2,7 @@
 #include "TargetListStub.h"
 #include "TestConcluderStub.h"
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/Model.hpp>
 
@@ -143,17 +144,45 @@ class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
     virtual const FixedLevelTest &fixedLevelTest() = 0;
 };
 
-class InitializingAdaptiveTest : public InitializingTestUseCase {
+class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
+  public:
+    virtual const AdaptiveTest &adaptiveTest() = 0;
+};
+
+class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     AdaptiveTest test_;
     AdaptiveMethodStub *method;
 
   public:
-    explicit InitializingAdaptiveTest(AdaptiveMethodStub *method)
+    explicit InitializingDefaultAdaptiveTest(AdaptiveMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override { model.initializeTest(test_); }
 
     const Test &test() override { return test_; }
+
+    const AdaptiveTest &adaptiveTest() override { return test_; }
+
+    const TestIdentity &testIdentity() override { return test_.identity; }
+
+    const TestMethod *testMethod() override { return method; }
+};
+
+class InitializingAdaptiveTestWithSingleSpeaker
+    : public InitializingAdaptiveTest {
+    AdaptiveTest test_;
+    AdaptiveMethodStub *method;
+
+  public:
+    explicit InitializingAdaptiveTestWithSingleSpeaker(
+        AdaptiveMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override { model.initializeTest(test_); }
+
+    const Test &test() override { return test_; }
+
+    const AdaptiveTest &adaptiveTest() override { return test_; }
 
     const TestIdentity &testIdentity() override { return test_.identity; }
 
@@ -216,7 +245,9 @@ class ModelTests : public ::testing::Test {
         &emptyTargetListTestConcluder, &internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
-    InitializingAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
+    InitializingDefaultAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
+    InitializingAdaptiveTestWithSingleSpeaker
+        initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
     InitializingDefaultFixedLevelTest initializingFixedLevelTest{
         &fixedLevelMethod};
     InitializingFixedLevelTestWithFiniteTargets
@@ -249,6 +280,11 @@ class ModelTests : public ::testing::Test {
         InitializingFixedLevelTest &useCase) {
         run(useCase);
         assertEqual(&useCase.fixedLevelTest(), fixedLevelMethod.test());
+    }
+
+    void assertInitializesAdaptiveMethod(InitializingAdaptiveTest &useCase) {
+        run(useCase);
+        assertEqual(&useCase.adaptiveTest(), adaptiveMethod.test());
     }
 };
 
@@ -290,14 +326,12 @@ TEST_F(ModelTests,
 }
 
 TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
-    initializeAdaptiveTest();
-    assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
+    assertInitializesAdaptiveMethod(initializingAdaptiveTest);
 }
 
 TEST_F(ModelTests,
     initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
-    initializeAdaptiveTestWithSingleSpeaker();
-    assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
+    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker);
 }
 
 TEST_F(ModelTests, initializeFixedLevelTestInitializesInternalModel) {
