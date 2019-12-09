@@ -63,6 +63,7 @@ void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     targetPlayer->useFirstChannelOnly();
+    maskerPlayer->useFirstChannelOnly();
 }
 
 void RecognitionTestModelImpl::initializeWithDelayedMasker(

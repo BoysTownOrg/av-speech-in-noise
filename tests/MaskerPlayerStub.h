@@ -24,8 +24,13 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool throwInvalidAudioDeviceWhenDeviceSet_{};
     bool throwInvalidAudioFileOnLoad_{};
     bool usingAllChannels_{};
+    bool usingFirstChannelOnly_{};
 
   public:
+    void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
+
+    auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
+
     void useAllChannels() override { usingAllChannels_ = true; }
 
     auto usingAllChannels() const { return usingAllChannels_; }
