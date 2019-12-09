@@ -493,11 +493,6 @@ void AvFoundationAudioPlayer::setDevice(int index) {
     auto deviceId = device.objectId(index);
     AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
         kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId));
-
-    std::vector<SInt32> channelMap = {-1, -1, 0, 1};
-    AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_ChannelMap,
-        kAudioUnitScope_Global, 0, channelMap.data(),
-        channelMap.size() * sizeof(SInt32));
 }
 
 auto AvFoundationAudioPlayer::playing() -> bool {

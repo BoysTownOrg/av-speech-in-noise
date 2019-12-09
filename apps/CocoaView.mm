@@ -138,6 +138,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         pullsDown:NO
     ]},
     finiteTargets_{[[NSButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge + menuWidth + 20, 60, menuWidth, labelHeight)]},
+    usingSingleSpeaker_{[[NSButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge + menuWidth + 20, 35, menuWidth, labelHeight)]},
+    usingDelayedMasker_{[[NSButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge + menuWidth + 20, 10, menuWidth, labelHeight)]},
     method_label{allocLabel(
         @"method:",
         NSMakeRect(0, 30, labelWidth, labelHeight)
@@ -156,6 +158,10 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     actions.controller = this;
     [finiteTargets_ setButtonType:NSButtonTypeSwitch];
     [finiteTargets_ setTitle:@"targets without replacement"];
+    [usingDelayedMasker_ setButtonType:NSButtonTypeSwitch];
+    [usingDelayedMasker_ setTitle:@"delayed masker"];
+    [usingSingleSpeaker_ setButtonType:NSButtonTypeSwitch];
+    [usingSingleSpeaker_ setTitle:@"single speaker"];
     const auto browseForStimulusListButton = [NSButton
         buttonWithTitle:@"browse"
         target:actions
@@ -251,6 +257,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
     addSubview(condition_label);
     addSubview(conditionMenu);
     addSubview(finiteTargets_);
+    addSubview(usingDelayedMasker_);
+    addSubview(usingSingleSpeaker_);
     addSubview(method_label);
     addSubview(methodMenu);
     [view_ setHidden:NO];
@@ -286,6 +294,14 @@ std::string CocoaTestSetupView::maskerLevel_dB_SPL() {
 
 bool CocoaTestSetupView::usingTargetsWithoutReplacement() {
     return finiteTargets_.state == NSControlStateValueOn;
+}
+
+bool CocoaTestSetupView::usingDelayedMasker() {
+    return usingDelayedMasker_.state == NSControlStateValueOn;
+}
+
+bool CocoaTestSetupView::usingSingleSpeaker() {
+    return usingSingleSpeaker_.state == NSControlStateValueOn;
 }
 
 std::string CocoaTestSetupView::calibrationLevel_dB_SPL() {
