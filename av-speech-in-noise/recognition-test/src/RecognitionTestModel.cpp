@@ -21,8 +21,6 @@ class NullTestMethod : public TestMethod {
 }
 static NullTestMethod nullTestMethod;
 
-double RecognitionTestModelImpl::maskerChannelDelaySeconds = 0.004;
-
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer *targetPlayer,
     MaskerPlayer *maskerPlayer, ResponseEvaluator *evaluator,
     OutputFile *outputFile, Randomizer *randomizer)

@@ -30,11 +30,11 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool channelDelaysCleared_{};
 
   public:
-    void setChannelDelaySeconds(long channel, double seconds) {
+    void setChannelDelaySeconds(long channel, double seconds) override {
         channelDelaySeconds_ = seconds;
         channelDelayed_ = channel;
     }
-    
+
     auto channelDelaySeconds() const { return channelDelaySeconds_; }
 
     auto channelDelayed() const { return channelDelayed_; }

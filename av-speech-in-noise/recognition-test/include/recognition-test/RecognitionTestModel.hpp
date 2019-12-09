@@ -87,7 +87,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void fadeInComplete() override;
     void fadeOutComplete() override;
     void playbackComplete() override;
-    static double maskerChannelDelaySeconds;
+    static constexpr double maskerChannelDelaySeconds = 0.004;
 
   private:
     void initialize_(TestMethod *, const Test &);
