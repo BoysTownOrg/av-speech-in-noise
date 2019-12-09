@@ -244,17 +244,22 @@ class ModelTests : public ::testing::Test {
         assertEqual(&useCase.test(), internalModel.commonTest());
         assertEqual(&useCase.testIdentity(), internalModel.testIdentity());
     }
+
+    void assertInitializesFixedLevelMethod(
+        InitializingFixedLevelTest &useCase) {
+        run(useCase);
+        assertEqual(&useCase.fixedLevelTest(), fixedLevelMethod.test());
+    }
 };
 
 TEST_F(ModelTests, initializeFixedLevelTestInitializesFixedLevelMethod) {
-    run(initializingFixedLevelTest);
-    assertEqual(&initializingFixedLevelTest.fixedLevelTest(), fixedLevelMethod.test());
+    assertInitializesFixedLevelMethod(initializingFixedLevelTest);
 }
 
 TEST_F(ModelTests,
     initializeFixedLevelTestWithFiniteTargetsInitializesFixedLevelMethod) {
-    initializeFixedLevelTestWithFiniteTargets();
-    assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelTestWithFiniteTargets);
 }
 
 TEST_F(ModelTests, initializeFixedLevelTestInitializesWithInfiniteTargetList) {
