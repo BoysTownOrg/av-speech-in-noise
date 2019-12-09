@@ -220,6 +220,10 @@ class ModelTests : public ::testing::Test {
 
     void initializeAdaptiveTest() { model.initializeTest(adaptiveTest); }
 
+    void initializeAdaptiveTestWithSingleSpeaker() {
+        model.initializeTestWithSingleSpeaker(adaptiveTest);
+    }
+
     bool testComplete() { return model.testComplete(); }
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
@@ -272,6 +276,12 @@ TEST_F(ModelTests,
 
 TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
     initializeAdaptiveTest();
+    assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
+}
+
+TEST_F(ModelTests,
+    initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
+    initializeAdaptiveTestWithSingleSpeaker();
     assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
 }
 
