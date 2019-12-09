@@ -30,6 +30,7 @@ class TargetPlayer {
     virtual void setLevel_dB(double) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual auto durationSeconds() -> double = 0;
+    virtual void useAllChannels() = 0;
 };
 
 class MaskerPlayer {

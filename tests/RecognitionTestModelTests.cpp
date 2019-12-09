@@ -599,6 +599,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    initializeTestUsesAllTargetPlayerChannels) {
+    run(initializingTest);
+    assertTrue(targetPlayer.usingAllChannels());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     initializeTestOpensNewOutputFilePassingTestInformation) {
     run(initializingTest);
     assertEqual(
