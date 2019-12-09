@@ -247,8 +247,8 @@ class ModelTests : public ::testing::Test {
 };
 
 TEST_F(ModelTests, initializeFixedLevelTestInitializesFixedLevelMethod) {
-    initializeFixedLevelTest();
-    assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
+    run(initializingFixedLevelTest);
+    assertEqual(&initializingFixedLevelTest.fixedLevelTest(), fixedLevelMethod.test());
 }
 
 TEST_F(ModelTests,
