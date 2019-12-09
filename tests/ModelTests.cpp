@@ -133,48 +133,48 @@ class InitializingTestUseCase {
   public:
     virtual ~InitializingTestUseCase() = default;
     virtual void run(ModelImpl &) = 0;
-    virtual const Test &commonTest() = 0;
+    virtual const Test &test() = 0;
     virtual const TestIdentity &testIdentity() = 0;
     virtual const TestMethod *testMethod() = 0;
 };
 
 class InitializingAdaptiveTest : public InitializingTestUseCase {
-    AdaptiveTest test;
+    AdaptiveTest test_;
     AdaptiveMethodStub *method;
 
   public:
     explicit InitializingAdaptiveTest(AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { model.initializeTest(test); }
+    void run(ModelImpl &model) override { model.initializeTest(test_); }
 
-    const Test &commonTest() override { return test; }
+    const Test &test() override { return test_; }
 
-    const TestIdentity &testIdentity() override { return test.identity; }
+    const TestIdentity &testIdentity() override { return test_.identity; }
 
     const TestMethod *testMethod() override { return method; }
 };
 
 class InitializingFixedLevelTest : public InitializingTestUseCase {
-    FixedLevelTest test;
+    FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
     explicit InitializingFixedLevelTest(FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { model.initializeTest(test); }
+    void run(ModelImpl &model) override { model.initializeTest(test_); }
 
-    const Test &commonTest() override { return test; }
+    const Test &test() override { return test_; }
 
-    const TestIdentity &testIdentity() override { return test.identity; }
+    const TestIdentity &testIdentity() override { return test_.identity; }
 
     const TestMethod *testMethod() override { return method; }
 };
 
 class InitializingFixedLevelTestWithFiniteTargets
     : public InitializingTestUseCase {
-    FixedLevelTest test;
+    FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
@@ -183,12 +183,12 @@ class InitializingFixedLevelTestWithFiniteTargets
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeTestWithFiniteTargets(test);
+        model.initializeTestWithFiniteTargets(test_);
     }
 
-    const Test &commonTest() override { return test; }
+    const Test &test() override { return test_; }
 
-    const TestIdentity &testIdentity() override { return test.identity; }
+    const TestIdentity &testIdentity() override { return test_.identity; }
 
     const TestMethod *testMethod() override { return method; }
 };
@@ -231,7 +231,7 @@ class ModelTests : public ::testing::Test {
     void assertInitializesInternalModel(InitializingTestUseCase &useCase) {
         run(useCase);
         assertEqual(useCase.testMethod(), internalModel.testMethod());
-        assertEqual(&useCase.commonTest(), internalModel.commonTest());
+        assertEqual(&useCase.test(), internalModel.commonTest());
         assertEqual(&useCase.testIdentity(), internalModel.testIdentity());
     }
 };
