@@ -73,7 +73,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     auto fadeTimeSeconds() -> double override;
     void callback() override;
     void setChannelDelaySeconds(channel_index_type channel, double seconds);
-    void setFirstChannelOnly();
+    void useFirstChannelOnly();
     void useAllChannels();
 
   private:

@@ -407,7 +407,7 @@ class MaskerPlayerTests : public ::testing::Test {
         player.setChannelDelaySeconds(channel, seconds);
     }
 
-    void setFirstChannelOnly() { player.setFirstChannelOnly(); }
+    void useFirstChannelOnly() { player.useFirstChannelOnly(); }
 
     void useAllChannels() { player.useAllChannels(); }
 
@@ -490,7 +490,7 @@ TEST_F(MaskerPlayerTests, moreChannelsAvailableThanRequestedTruncates) {
 }
 
 TEST_F(MaskerPlayerTests, onlyPlayFirstChannel) {
-    setFirstChannelOnly();
+    useFirstChannelOnly();
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     fillAudioBufferStereo(3);
     assertLeftChannelEquals({1, 2, 3});
@@ -498,7 +498,7 @@ TEST_F(MaskerPlayerTests, onlyPlayFirstChannel) {
 }
 
 TEST_F(MaskerPlayerTests, switchBackToAllChannels) {
-    setFirstChannelOnly();
+    useFirstChannelOnly();
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     fillAudioBufferStereo(3);
     useAllChannels();

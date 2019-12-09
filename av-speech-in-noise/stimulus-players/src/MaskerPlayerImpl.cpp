@@ -198,7 +198,7 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
     mainThread.setChannelDelaySeconds(channel, seconds);
 }
 
-void MaskerPlayerImpl::setFirstChannelOnly() {
+void MaskerPlayerImpl::useFirstChannelOnly() {
     set(firstChannelOnly);
 }
 
