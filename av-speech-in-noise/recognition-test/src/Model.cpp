@@ -25,18 +25,20 @@ void ModelImpl::initializeTestWithFiniteTargets(const FixedLevelTest &p) {
 }
 
 void ModelImpl::initializeTest(const AdaptiveTest &p) {
+    initializeTest_(p);
+}
+
+void ModelImpl::initializeTest_(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
     model->initialize(adaptiveMethod, p, p.identity);
 }
 
 void ModelImpl::initializeTestWithSingleSpeaker(const AdaptiveTest &p) {
-    adaptiveMethod->initialize(p);
-    model->initialize(adaptiveMethod, p, p.identity);
+    initializeTest_(p);
 }
 
 void ModelImpl::initializeTestWithDelayedMasker(const AdaptiveTest &p) {
-    adaptiveMethod->initialize(p);
-    model->initialize(adaptiveMethod, p, p.identity);
+    initializeTest_(p);
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {

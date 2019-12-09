@@ -136,6 +136,8 @@ class ModelImpl : public Model {
     void submitIncorrectResponse() override;
     void submitResponse(const FreeResponse &) override;
     int trialNumber() override;
+  private:
+    void initializeTest_(const AdaptiveTest &);
 };
 }
 
