@@ -811,8 +811,7 @@ class ConfirmingAdaptiveClosedSetSingleSpeakerTest
         : confirmingAdaptiveTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveClosedSet);
-        view->useSingleSpeaker();
+        setMethod(view, Method::adaptiveClosedSetSingleSpeaker);
         presentation::run(confirmingAdaptiveTest);
     }
 

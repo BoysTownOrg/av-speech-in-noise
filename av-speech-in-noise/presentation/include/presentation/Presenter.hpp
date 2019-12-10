@@ -193,6 +193,7 @@ class Presenter : public Model::EventListener {
         auto finiteTargets() -> bool;
         auto singleSpeaker() -> bool;
         auto adaptiveClosedSetDelayedMasker() -> bool;
+        auto adaptiveClosedSetSingleSpeaker() -> bool;
         auto delayedMasker() -> bool;
         void playCalibration() override;
         void browseForTargetList() override;
@@ -330,6 +331,7 @@ class Presenter : public Model::EventListener {
     auto singleSpeaker() -> bool;
     auto delayedMasker() -> bool;
     auto adaptiveClosedSetDelayedMasker() -> bool;
+    auto adaptiveClosedSetSingleSpeaker() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
