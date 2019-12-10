@@ -880,8 +880,7 @@ class ConfirmingAdaptiveClosedSetDelayedMaskerTest
         : confirmingAdaptiveTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveClosedSet);
-        view->useDelayedMasker();
+        setMethod(view, Method::adaptiveClosedSetDelayedMasker);
         presentation::run(confirmingAdaptiveTest);
     }
 

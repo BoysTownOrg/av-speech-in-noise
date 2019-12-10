@@ -59,11 +59,11 @@ void Presenter::confirmTestSetup_() {
 }
 
 void Presenter::initializeTest() {
-    if (adaptiveTest())
+    if (adaptiveClosedSetDelayedMasker())
+        model->initializeTestWithDelayedMasker(testSetup->adaptiveTest());
+    else if (adaptiveTest())
         if (singleSpeaker())
             model->initializeTestWithSingleSpeaker(testSetup->adaptiveTest());
-        else if (delayedMasker())
-            model->initializeTestWithDelayedMasker(testSetup->adaptiveTest());
         else
             model->initializeTest(testSetup->adaptiveTest());
     else if (finiteTargets())
@@ -88,8 +88,11 @@ auto Presenter::finiteTargets() -> bool { return testSetup->finiteTargets(); }
 
 auto Presenter::singleSpeaker() -> bool { return testSetup->singleSpeaker(); }
 
-auto Presenter::delayedMasker() -> bool { return testSetup->delayedMasker(); }
+auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
+    return testSetup->adaptiveClosedSetDelayedMasker();
+}
 
+auto Presenter::delayedMasker() -> bool { return testSetup->delayedMasker(); }
 
 auto Presenter::testComplete() -> bool { return model->testComplete(); }
 
@@ -393,11 +396,15 @@ auto Presenter::TestSetup::finiteTargets() -> bool {
     return view->usingTargetsWithoutReplacement();
 }
 
-bool Presenter::TestSetup::singleSpeaker() {
+auto Presenter::TestSetup::singleSpeaker() -> bool {
     return view->usingSingleSpeaker();
 }
 
-bool Presenter::TestSetup::delayedMasker() {
+auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
+    return method(Method::adaptiveClosedSetDelayedMasker);
+}
+
+auto Presenter::TestSetup::delayedMasker() -> bool {
     return view->usingDelayedMasker();
 }
 
