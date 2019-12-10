@@ -25,4 +25,5 @@ target_link_libraries(tests
 	stimulus-players 
 	target-list 
 	gtest_main
+	GSL
 )
