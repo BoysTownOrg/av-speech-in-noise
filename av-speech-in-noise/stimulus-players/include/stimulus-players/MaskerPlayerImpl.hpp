@@ -86,7 +86,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
 
     class AudioThread {
       public:
-        void setSharedAtomics(MaskerPlayerImpl *);
+        void setSharedState(MaskerPlayerImpl *);
         void fillAudioBuffer(const std::vector<channel_buffer_type> &audio);
 
       private:
@@ -107,7 +107,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         auto nextFadeScalar() -> double;
         auto sourceFrames() -> sample_index_type;
 
-        MaskerPlayerImpl *sharedAtomics{};
+        MaskerPlayerImpl *sharedState{};
         int hannCounter{};
         int halfWindowLength{};
         bool fadingOut{};
@@ -117,7 +117,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     class MainThread {
       public:
         MainThread(AudioPlayer *, Timer *);
-        void setSharedAtomics(MaskerPlayerImpl *);
+        void setSharedState(MaskerPlayerImpl *);
         void callback();
         void subscribe(MaskerPlayer::EventListener *);
         void fadeIn();
@@ -133,7 +133,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         void scheduleCallbackAfterSeconds(double);
 
         std::vector<double> channelDelaySeconds_;
-        MaskerPlayerImpl *sharedAtomics{};
+        MaskerPlayerImpl *sharedState{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
         Timer *timer;
@@ -144,7 +144,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
 
     AudioThread audioThread;
     MainThread mainThread;
-    audio_type audio{};
+    audio_type sourceAudio{};
     std::vector<sample_index_type> samplesToWaitPerChannel;
     std::vector<sample_index_type> audioFrameHeadsPerChannel;
     AudioPlayer *player;
