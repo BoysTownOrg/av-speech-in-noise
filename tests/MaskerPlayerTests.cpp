@@ -416,6 +416,8 @@ class MaskerPlayerTests : public ::testing::Test {
     void useFirstChannelOnly() { player.useFirstChannelOnly(); }
 
     void useAllChannels() { player.useAllChannels(); }
+
+    void seekSeconds(double x) { player.seekSeconds(x); }
 };
 
 #define MASKER_PLAYER_TEST(a) TEST_F(MaskerPlayerTests, a)
@@ -434,7 +436,7 @@ MASKER_PLAYER_TEST(durationReturnsDuration) {
 MASKER_PLAYER_TEST(seekSeeksAudio) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    player.seekSeconds(2);
+    seekSeconds(2);
     fillAudioBufferMono(4);
     assertLeftChannelEquals({7, 8, 9, 1});
 }
@@ -447,11 +449,12 @@ MASKER_PLAYER_TEST(setChannelDelayMono) {
     assertLeftChannelEquals({0, 0, 0, 1, 2, 3});
 }
 
-MASKER_PLAYER_TEST(setChannelDelayMonoTwoFills) {
+MASKER_PLAYER_TEST(setChannelDelayMono_Buffered) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
     loadMonoAudio({4, 5, 6});
-    fillAudioBufferMono(2); // => {0, 0}
+    fillAudioBufferMono(2);
+    assertLeftChannelEquals({0, 0});
     fillAudioBufferMono(4);
     assertLeftChannelEquals({0, 4, 5, 6});
 }
@@ -467,6 +470,17 @@ MASKER_PLAYER_TEST(setChannelDelayMonoLoadNewAudio) {
     assertLeftChannelEquals({0, 0, 0});
 }
 
+MASKER_PLAYER_TEST(setChannelDelayMonoWithSeek) {
+    setSampleRateHz(3);
+    setChannelDelaySeconds(0, 1);
+    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
+    fillAudioBufferMono(6);
+    assertLeftChannelEquals({0, 0, 0, 1, 2, 3});
+    seekSeconds(2);
+    fillAudioBufferMono(6);
+    assertLeftChannelEquals({0, 0, 0, 7, 8, 9});
+}
+
 MASKER_PLAYER_TEST(clearChannelDelaysMono) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
@@ -479,7 +493,7 @@ MASKER_PLAYER_TEST(clearChannelDelaysMono) {
     assertLeftChannelEquals({1, 2, 3});
 }
 
-MASKER_PLAYER_TEST(delayChannelStereo) {
+MASKER_PLAYER_TEST(setChannelDelayStereo) {
     setSampleRateHz(3);
     setChannelDelaySeconds(1, 1);
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
@@ -488,7 +502,7 @@ MASKER_PLAYER_TEST(delayChannelStereo) {
     assertRightChannelEquals({0, 0, 0, 7, 8, 9});
 }
 
-MASKER_PLAYER_TEST(delayChannelStereo_Buffered) {
+MASKER_PLAYER_TEST(setChannelDelayStereo_Buffered) {
     setSampleRateHz(3);
     setChannelDelaySeconds(1, 1);
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
@@ -501,17 +515,6 @@ MASKER_PLAYER_TEST(delayChannelStereo_Buffered) {
     fillAudioBufferStereo(2);
     assertLeftChannelEquals({5, 6});
     assertRightChannelEquals({8, 9});
-}
-
-MASKER_PLAYER_TEST(delayChannelMonoWithSeek) {
-    setSampleRateHz(3);
-    setChannelDelaySeconds(0, 1);
-    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    fillAudioBufferMono(6);
-    assertLeftChannelEquals({0, 0, 0, 1, 2, 3});
-    player.seekSeconds(2);
-    fillAudioBufferMono(6);
-    assertLeftChannelEquals({0, 0, 0, 7, 8, 9});
 }
 
 MASKER_PLAYER_TEST(moreChannelsRequestedThanAvailableCopiesChannel) {
@@ -528,7 +531,7 @@ MASKER_PLAYER_TEST(moreChannelsAvailableThanRequestedTruncates) {
     assertRightChannelEquals({4, 5, 6});
 }
 
-MASKER_PLAYER_TEST(onlyPlayFirstChannel) {
+MASKER_PLAYER_TEST(useFirstChannelOnlyMutesOtherChannels) {
     useFirstChannelOnly();
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     fillAudioBufferStereo(3);
@@ -536,10 +539,12 @@ MASKER_PLAYER_TEST(onlyPlayFirstChannel) {
     assertRightChannelEquals({0, 0, 0});
 }
 
-MASKER_PLAYER_TEST(switchBackToAllChannels) {
+MASKER_PLAYER_TEST(useAllChannelsAfterUsingFirstChannelOnly) {
     useFirstChannelOnly();
     loadStereoAudio({1, 2, 3, 4, 5, 6}, {7, 8, 9, 10, 11, 12});
     fillAudioBufferStereo(3);
+    assertLeftChannelEquals({1, 2, 3});
+    assertRightChannelEquals({0, 0, 0});
     useAllChannels();
     fillAudioBufferStereo(3);
     assertLeftChannelEquals({4, 5, 6});
@@ -770,9 +775,7 @@ MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
     assertTrue(playerStopped());
 }
 
-MASKER_PLAYER_TEST(fadeInSchedulesCallback) {
-    assertFadeInSchedulesCallback();
-}
+MASKER_PLAYER_TEST(fadeInSchedulesCallback) { assertFadeInSchedulesCallback(); }
 
 MASKER_PLAYER_TEST(fadeInTwiceDoesNotScheduleAdditionalCallback) {
     fadeIn();
