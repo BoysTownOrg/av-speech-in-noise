@@ -114,8 +114,6 @@ class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
     NSTextField *condition_label;
     NSPopUpButton *conditionMenu;
     NSButton *finiteTargets_;
-    NSButton *usingSingleSpeaker_;
-    NSButton *usingDelayedMasker_;
     NSTextField *method_label;
     NSPopUpButton *methodMenu;
     SetupViewActions *actions;
@@ -125,8 +123,6 @@ public:
     void show() override;
     void hide() override;
     bool usingTargetsWithoutReplacement() override;
-    bool usingSingleSpeaker() override;
-    bool usingDelayedMasker() override;
     std::string maskerLevel_dB_SPL() override;
     std::string calibrationLevel_dB_SPL() override;
     std::string maskerFilePath() override;

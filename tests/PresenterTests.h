@@ -49,20 +49,20 @@ class ModelStub : public Model {
         return initializedWithFiniteTargets_;
     }
 
-    auto initializedWithSingleSpeaker() const {
+    [[nodiscard]] auto initializedWithSingleSpeaker() const {
         return initializedWithSingleSpeaker_;
     }
 
-    auto initializedWithDelayedMasker() const {
+    [[nodiscard]] auto initializedWithDelayedMasker() const {
         return initializedWithDelayedMasker_;
     }
 
-    void initializeTestWithSingleSpeaker(const AdaptiveTest &p) {
+    void initializeTestWithSingleSpeaker(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithSingleSpeaker_ = true;
     }
 
-    void initializeTestWithDelayedMasker(const AdaptiveTest &p) {
+    void initializeTestWithDelayedMasker(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithDelayedMasker_ = true;
     }
