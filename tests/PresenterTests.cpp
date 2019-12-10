@@ -28,6 +28,10 @@ TEST_F(PresenterTests, confirmAdaptiveClosedSetSingleSpeakerTestHidesTestSetupVi
     assertHidesTestSetupView(confirmingAdaptiveClosedSetSingleSpeakerTest);
 }
 
+TEST_F(PresenterTests, confirmAdaptiveClosedSetDelayedMaskerTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptiveClosedSetDelayedMaskerTest);
+}
+
 TEST_F(PresenterTests, confirmAdaptiveOpenSetTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveOpenSetTest);
 }
