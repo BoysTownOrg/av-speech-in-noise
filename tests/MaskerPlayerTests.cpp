@@ -418,6 +418,10 @@ class MaskerPlayerTests : public ::testing::Test {
     void useAllChannels() { player.useAllChannels(); }
 
     void seekSeconds(double x) { player.seekSeconds(x); }
+
+    void assertFadeInCompletions(int n) {
+        assertEqual(n, listener.fadeInCompletions());
+    }
 };
 
 #define MASKER_PLAYER_TEST(a) TEST_F(MaskerPlayerTests, a)
@@ -727,7 +731,7 @@ MASKER_PLAYER_TEST(steadyLevelFollowingFadeOut) {
     fadeOutAndFill(halfWindowLength);
 
     fillAudioBufferMono(3);
-    assertEqual({0, 0, 0}, leftChannel, 1e-15F);
+    assertLeftChannelEquals({0, 0, 0});
 }
 
 MASKER_PLAYER_TEST(fadeInCompleteOnlyAfterFadeTime) {
@@ -741,11 +745,12 @@ MASKER_PLAYER_TEST(fadeInCompleteOnlyAfterFadeTime) {
     assertFadeInCompletedAfterMonoFill(1);
 }
 
-MASKER_PLAYER_TEST(observerNotifiedOnceForFadeIn) {
+MASKER_PLAYER_TEST(observerNotifiedOnlyOnceForFadeIn) {
+    assertFadeInCompletions(0);
     fadeInCompletely();
-    assertEqual(1, listener.fadeInCompletions());
+    assertFadeInCompletions(1);
     callbackAfterMonoFill();
-    assertEqual(1, listener.fadeInCompletions());
+    assertFadeInCompletions(1);
 }
 
 MASKER_PLAYER_TEST(fadeOutCompleteOnlyAfterFadeTime) {
