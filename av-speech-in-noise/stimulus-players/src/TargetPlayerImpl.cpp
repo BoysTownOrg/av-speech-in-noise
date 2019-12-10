@@ -34,7 +34,7 @@ auto TargetPlayerImpl::rms() -> double {
         return 0;
 
     auto firstChannel = audio.front();
-    return ::stimulus_players::rms(firstChannel);
+    return stimulus_players::rms(firstChannel);
 }
 
 auto TargetPlayerImpl::readAudio_() -> audio_type {
@@ -51,6 +51,16 @@ void TargetPlayerImpl::setLevel_dB(double x) {
 
 void TargetPlayerImpl::playbackComplete() { listener_->playbackComplete(); }
 
+constexpr auto begin(const gsl::span<float> &channel)
+    -> gsl::span<float>::iterator {
+    return channel.begin();
+}
+
+constexpr auto end(const gsl::span<float> &channel)
+    -> gsl::span<float>::iterator {
+    return channel.end();
+}
+
 void TargetPlayerImpl::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
     auto scale = audioScale.load();
@@ -58,10 +68,10 @@ void TargetPlayerImpl::fillAudioBuffer(
     auto afterFirstChannel{false};
     for (auto channel : audio) {
         if (useFirstChannelOnly__ && afterFirstChannel)
-            std::fill(channel.begin(), channel.end(), 0);
+            std::fill(begin(channel), end(channel), 0);
         else
-            for (auto &x : channel)
-                x *= scale;
+            std::transform(begin(channel), end(channel), begin(channel),
+                [&](auto &x) { return x * scale; });
         afterFirstChannel = true;
     }
 }
@@ -83,17 +93,13 @@ auto TargetPlayerImpl::audioDevices() -> std::vector<std::string> {
     return descriptions;
 }
 
-static void store(std::atomic<bool> &where, bool what) {
-    where.store(what);
-}
+static void store(std::atomic<bool> &where, bool what) { where.store(what); }
 
 void TargetPlayerImpl::useFirstChannelOnly() {
     store(useFirstChannelOnly_, true);
 }
 
-void TargetPlayerImpl::useAllChannels() {
-    store(useFirstChannelOnly_, false);
-}
+void TargetPlayerImpl::useAllChannels() { store(useFirstChannelOnly_, false); }
 
 auto TargetPlayerImpl::playing() -> bool { return player->playing(); }
 
