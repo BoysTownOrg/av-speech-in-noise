@@ -85,8 +85,6 @@ auto Presenter::adaptiveOpenSet() -> bool {
 
 auto Presenter::finiteTargets() -> bool { return testSetup->finiteTargets(); }
 
-auto Presenter::singleSpeaker() -> bool { return testSetup->singleSpeaker(); }
-
 auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
     return testSetup->adaptiveClosedSetDelayedMasker();
 }
@@ -94,8 +92,6 @@ auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
 auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
     return testSetup->adaptiveClosedSetSingleSpeaker();
 }
-
-auto Presenter::delayedMasker() -> bool { return testSetup->delayedMasker(); }
 
 auto Presenter::testComplete() -> bool { return model->testComplete(); }
 
@@ -399,20 +395,12 @@ auto Presenter::TestSetup::finiteTargets() -> bool {
     return view->usingTargetsWithoutReplacement();
 }
 
-auto Presenter::TestSetup::singleSpeaker() -> bool {
-    return view->usingSingleSpeaker();
-}
-
 auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
     return method(Method::adaptiveClosedSetDelayedMasker);
 }
 
 auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
     return method(Method::adaptiveClosedSetSingleSpeaker);
-}
-
-auto Presenter::TestSetup::delayedMasker() -> bool {
-    return view->usingDelayedMasker();
 }
 
 Presenter::Subject::Subject(View::Subject *view) : view{view} {

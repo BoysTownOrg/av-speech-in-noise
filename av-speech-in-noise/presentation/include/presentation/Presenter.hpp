@@ -86,8 +86,6 @@ class View {
         virtual auto session() -> std::string = 0;
         virtual auto method() -> std::string = 0;
         virtual auto usingTargetsWithoutReplacement() -> bool = 0;
-        virtual auto usingSingleSpeaker() -> bool = 0;
-        virtual auto usingDelayedMasker() -> bool = 0;
         virtual void setMasker(std::string) = 0;
         virtual void setTargetListDirectory(std::string) = 0;
         virtual void setCalibrationFilePath(std::string) = 0;

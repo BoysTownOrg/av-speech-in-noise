@@ -235,10 +235,6 @@ class ViewStub : public View {
             return useFiniteTargets_;
         }
 
-        auto usingSingleSpeaker() -> bool override { return useSingleSpeaker_; }
-
-        auto usingDelayedMasker() -> bool override { return useDelayedMasker_; }
-
         void useFiniteTargets() { useFiniteTargets_ = true; }
 
         void useSingleSpeaker() { useSingleSpeaker_ = true; }

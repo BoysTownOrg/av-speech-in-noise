@@ -52,7 +52,7 @@ class SubmittingCoordinateResponse : public UseCase {
 };
 
 class SubmittingFreeResponse : public UseCase {
-    open_set::FreeResponse response;
+    open_set::FreeResponse response{};
 
   public:
     void run(FixedLevelMethod &m) override { m.submitResponse(response); }
