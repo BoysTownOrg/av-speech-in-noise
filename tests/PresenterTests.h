@@ -235,13 +235,9 @@ class ViewStub : public View {
             return useFiniteTargets_;
         }
 
-        auto usingSingleSpeaker() -> bool override {
-            return useSingleSpeaker_;
-        }
+        auto usingSingleSpeaker() -> bool override { return useSingleSpeaker_; }
 
-        auto usingDelayedMasker() -> bool override {
-            return useDelayedMasker_;
-        }
+        auto usingDelayedMasker() -> bool override { return useDelayedMasker_; }
 
         void useFiniteTargets() { useFiniteTargets_ = true; }
 
@@ -249,7 +245,9 @@ class ViewStub : public View {
 
         void useDelayedMasker() { useDelayedMasker_ = true; }
 
-        auto trackSettingsFile() -> std::string override { return trackSettingsFile_; }
+        auto trackSettingsFile() -> std::string override {
+            return trackSettingsFile_;
+        }
 
         auto calibrationLevel_dB_SPL() -> std::string override {
             return calibrationLevel_;
@@ -689,6 +687,75 @@ class ConfirmingAdaptiveClosedSetTest : public ConfirmingAdaptiveTest_ {
 
     void run() override {
         setMethod(view, Method::adaptiveClosedSet);
+        confirmingAdaptiveTest.run();
+    }
+
+    auto snr_dB(ModelStub &m) -> int override {
+        return confirmingAdaptiveTest.snr_dB(m);
+    }
+
+    auto maskerLevel(ModelStub &m) -> int override {
+        return confirmingAdaptiveTest.maskerLevel(m);
+    }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return confirmingAdaptiveTest.fullScaleLevel(m);
+    }
+
+    auto targetListDirectory(ModelStub &m) -> std::string override {
+        return confirmingAdaptiveTest.targetListDirectory(m);
+    }
+
+    auto subjectId(ModelStub &m) -> std::string override {
+        return confirmingAdaptiveTest.subjectId(m);
+    }
+
+    auto testerId(ModelStub &m) -> std::string override {
+        return confirmingAdaptiveTest.testerId(m);
+    }
+
+    auto session(ModelStub &m) -> std::string override {
+        return confirmingAdaptiveTest.session(m);
+    }
+
+    auto maskerFilePath(ModelStub &m) -> std::string override {
+        return confirmingAdaptiveTest.maskerFilePath(m);
+    }
+
+    auto condition(ModelStub &m) -> Condition override {
+        return confirmingAdaptiveTest.condition(m);
+    }
+
+    auto ceilingSnr_dB(ModelStub &m) -> int override {
+        return confirmingAdaptiveTest.ceilingSnr_dB(m);
+    }
+
+    auto floorSnr_dB(ModelStub &m) -> int override {
+        return confirmingAdaptiveTest.floorSnr_dB(m);
+    }
+
+    auto trackSettingsFile(ModelStub &m) -> std::string override {
+        return confirmingAdaptiveTest.trackSettingsFile(m);
+    }
+
+    auto trackBumpLimit(ModelStub &m) -> int override {
+        return confirmingAdaptiveTest.trackBumpLimit(m);
+    }
+};
+
+class ConfirmingAdaptiveClosedSetSingleSpeakerTest
+    : public ConfirmingAdaptiveTest_ {
+    ConfirmingAdaptiveTest confirmingAdaptiveTest;
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit ConfirmingAdaptiveClosedSetSingleSpeakerTest(
+        ViewStub::TestSetupViewStub *view)
+        : confirmingAdaptiveTest{view}, view{view} {}
+
+    void run() override {
+        setMethod(view, Method::adaptiveClosedSet);
+        view->useSingleSpeaker();
         confirmingAdaptiveTest.run();
     }
 
@@ -1242,6 +1309,8 @@ class PresenterTests : public ::testing::Test {
     BrowsingForMasker browsingForMasker{&setupView};
     BrowsingForCalibration browsingForCalibration{&setupView};
     ConfirmingAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{&setupView};
+    ConfirmingAdaptiveClosedSetSingleSpeakerTest
+        confirmingAdaptiveClosedSetSingleSpeakerTest{&setupView};
     ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
     ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{
