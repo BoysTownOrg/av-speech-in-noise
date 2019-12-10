@@ -104,8 +104,7 @@ TEST_F(PresenterTests,
 
 TEST_F(PresenterTests,
     confirmAdaptiveClosedSetTestWithDelayedMaskerInitializesModel) {
-    setupView.useDelayedMasker();
-    run(confirmingAdaptiveClosedSetTest);
+    run(confirmingAdaptiveClosedSetDelayedMaskerTest);
     assertTrue(model.initializedWithDelayedMasker());
 }
 
