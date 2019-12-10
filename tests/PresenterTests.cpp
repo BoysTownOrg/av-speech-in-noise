@@ -93,8 +93,7 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsExperimenterView) {
 
 TEST_F(PresenterTests,
     confirmAdaptiveClosedSetTestWithSingleSpeakerInitializesModel) {
-    setupView.useSingleSpeaker();
-    run(confirmingAdaptiveClosedSetTest);
+    run(confirmingAdaptiveClosedSetSingleSpeakerTest);
     assertTrue(model.initializedWithSingleSpeaker());
 }
 
