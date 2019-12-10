@@ -11,16 +11,21 @@ ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
       finiteTargetList{finiteTargetList},
       completesWhenTargetsEmpty{completesWhenTargetsEmpty}, model{model} {}
 
+static void initialize(RecognitionTestModel *model, class TestMethod *method,
+    const struct Test &test) {
+        model->initialize(method, test);
+}
+
 void ModelImpl::initializeTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, infiniteTargetList, fixedTrialTestConcluder);
-    model->initialize(fixedLevelMethod, p);
+    initialize(model, fixedLevelMethod, p);
 }
 
 void ModelImpl::initializeTestWithFiniteTargets(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, finiteTargetList, completesWhenTargetsEmpty);
-    model->initialize(fixedLevelMethod, p);
+    initialize(model, fixedLevelMethod, p);
 }
 
 void ModelImpl::initializeTest(const AdaptiveTest &p) {
@@ -29,7 +34,7 @@ void ModelImpl::initializeTest(const AdaptiveTest &p) {
 
 void ModelImpl::initializeTest_(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
-    model->initialize(adaptiveMethod, p);
+    initialize(model, adaptiveMethod, p);
 }
 
 void ModelImpl::initializeTestWithSingleSpeaker(const AdaptiveTest &p) {

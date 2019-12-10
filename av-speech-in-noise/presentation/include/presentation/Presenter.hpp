@@ -345,7 +345,6 @@ class Presenter : public Model::EventListener {
     void hideTestSetup();
     auto adaptiveClosedSet() -> bool;
     auto adaptiveOpenSet() -> bool;
-    auto adaptiveTest() -> bool;
     auto closedSet() -> bool;
     auto fixedLevelClosedSet() -> bool;
     void initializeTest();

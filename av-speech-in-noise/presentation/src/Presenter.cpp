@@ -1,4 +1,5 @@
 #include "Presenter.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <string>
 #include <sstream>
 
@@ -17,6 +18,10 @@ int Presenter::trackBumpLimit = 10;
 
 static auto fixedLevelTest(Presenter::TestSetup *testSetup) -> FixedLevelTest {
     return testSetup->fixedLevelTest();
+}
+
+static auto adaptiveTest(Presenter::TestSetup *testSetup) -> AdaptiveTest {
+    return testSetup->adaptiveTest();
 }
 
 static void displayTrialNumber(
@@ -60,19 +65,15 @@ void Presenter::confirmTestSetup_() {
 
 void Presenter::initializeTest() {
     if (adaptiveClosedSetDelayedMasker())
-        model->initializeTestWithDelayedMasker(testSetup->adaptiveTest());
+        model->initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetSingleSpeaker())
-        model->initializeTestWithSingleSpeaker(testSetup->adaptiveTest());
-    else if (adaptiveTest())
-        model->initializeTest(testSetup->adaptiveTest());
+        model->initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
+    else if (adaptiveClosedSet() || adaptiveOpenSet())
+        model->initializeTest(adaptiveTest(testSetup));
     else if (finiteTargets())
         model->initializeTestWithFiniteTargets(fixedLevelTest(testSetup));
     else
         model->initializeTest(fixedLevelTest(testSetup));
-}
-
-auto Presenter::adaptiveTest() -> bool {
-    return adaptiveClosedSet() || adaptiveOpenSet();
 }
 
 auto Presenter::adaptiveClosedSet() -> bool {
