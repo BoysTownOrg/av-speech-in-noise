@@ -422,6 +422,12 @@ class MaskerPlayerTests : public ::testing::Test {
     void assertFadeInCompletions(int n) {
         assertEqual(n, listener.fadeInCompletions());
     }
+
+    void assertFadeOutCompletions(int n) {
+        assertEqual(n, listener.fadeOutCompletions());
+    }
+
+    auto rms() -> double { return player.rms(); }
 };
 
 #define MASKER_PLAYER_TEST(a) TEST_F(MaskerPlayerTests, a)
@@ -773,9 +779,9 @@ MASKER_PLAYER_TEST(observerNotifiedOnceForFadeOut) {
     fadeInFillAndCallback(halfWindowLength);
     fadeOutFillAndCallback(halfWindowLength);
 
-    assertEqual(1, listener.fadeOutCompletions());
+    assertFadeOutCompletions(1);
     callbackAfterMonoFill();
-    assertEqual(1, listener.fadeOutCompletions());
+    assertFadeOutCompletions(1);
 }
 
 MASKER_PLAYER_TEST(audioPlayerStoppedOnlyAtEndOfFadeOutTime) {
@@ -868,14 +874,14 @@ MASKER_PLAYER_TEST(outputAudioDevicesReturnsDescriptions) {
     assertEqual({"a", "c"}, player.outputAudioDeviceDescriptions());
 }
 
-MASKER_PLAYER_TEST(rmsComputesFirstChannel) {
+MASKER_PLAYER_TEST(rmsComputedFromFirstChannel) {
     loadAudio({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    assertEqual(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.), player.rms(), 1e-6);
+    assertEqual<double>(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F), rms());
 }
 
 MASKER_PLAYER_TEST(rmsPassesLoadedFileToVideoPlayer) {
     loadFile("a");
-    player.rms();
+    rms();
     assertEqual("a", audioReader.filePath());
 }
 
