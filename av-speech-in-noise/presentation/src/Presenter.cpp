@@ -246,6 +246,7 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
     view->populateMethodMenu({methodName(Method::adaptiveClosedSet),
+        methodName(Method::adaptiveClosedSetSingleSpeaker),
         methodName(Method::adaptiveOpenSet),
         methodName(Method::fixedLevelClosedSet),
         methodName(Method::fixedLevelOpenSet)});
