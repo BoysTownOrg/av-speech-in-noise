@@ -64,10 +64,10 @@ constexpr auto end(const gsl::span<float> &channel)
 void TargetPlayerImpl::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
     auto scale = audioScale.load();
-    auto useFirstChannelOnly__ = useFirstChannelOnly_.load();
+    auto usingFirstChannelOnly = useFirstChannelOnly_.load();
     auto afterFirstChannel{false};
     for (auto channel : audio) {
-        if (useFirstChannelOnly__ && afterFirstChannel)
+        if (usingFirstChannelOnly && afterFirstChannel)
             std::fill(begin(channel), end(channel), 0);
         else
             std::transform(begin(channel), end(channel), begin(channel),
