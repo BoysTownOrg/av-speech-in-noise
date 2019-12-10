@@ -817,14 +817,12 @@ MASKER_PLAYER_TEST(fadeOutTwiceDoesNotScheduleAdditionalCallback) {
     assertFadeOutDoesNotScheduleAdditionalCallback();
 }
 
-TEST_F(
-    MaskerPlayerTests, fadeOutWhileFadingInDoesNotScheduleAdditionalCallback) {
+MASKER_PLAYER_TEST(fadeOutWhileFadingInDoesNotScheduleAdditionalCallback) {
     fadeIn();
     assertFadeOutDoesNotScheduleAdditionalCallback();
 }
 
-TEST_F(
-    MaskerPlayerTests, fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
+MASKER_PLAYER_TEST(fadeInWhileFadingOutDoesNotScheduleAdditionalCallback) {
     fadeOut();
     assertFadeInDoesNotScheduleAdditionalCallback();
 }
@@ -839,13 +837,13 @@ MASKER_PLAYER_TEST(callbackSchedulesAdditionalCallback) {
     assertCallbackScheduled();
 }
 
-TEST_F(MaskerPlayerTests,
+MASKER_PLAYER_TEST(
     callbackDoesNotScheduleAdditionalCallbackWhenFadeInComplete) {
     fadeInToFullLevel();
     assertTimerCallbackDoesNotScheduleAdditionalCallback();
 }
 
-TEST_F(MaskerPlayerTests,
+MASKER_PLAYER_TEST(
     callbackDoesNotScheduleAdditionalCallbackWhenFadeOutComplete) {
     fadeInCompletely();
     fadeOutToSilence();
