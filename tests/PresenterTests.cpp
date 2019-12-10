@@ -12,6 +12,7 @@ TEST_F(PresenterTests, populatesMethodMenu) {
     assertSetupViewMethodsContains(Method::adaptiveOpenSet);
     assertSetupViewMethodsContains(Method::adaptiveClosedSet);
     assertSetupViewMethodsContains(Method::adaptiveClosedSetSingleSpeaker);
+    assertSetupViewMethodsContains(Method::adaptiveClosedSetDelayedMasker);
 }
 
 TEST_F(PresenterTests, callsEventLoopWhenRun) {
