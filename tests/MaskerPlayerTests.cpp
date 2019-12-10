@@ -551,7 +551,7 @@ MASKER_PLAYER_TEST(useAllChannelsAfterUsingFirstChannelOnly) {
     assertRightChannelEquals({10, 11, 12});
 }
 
-MASKER_PLAYER_TEST(noAudioLoadedFillsZeros) {
+MASKER_PLAYER_TEST(noAudioLoadedMutesChannel) {
     leftChannel = {-1, -1, -1};
     fillAudioBufferMono(3);
     assertLeftChannelEquals({0, 0, 0});
@@ -580,21 +580,21 @@ MASKER_PLAYER_TEST(twentydBMultipliesSignalByTen) {
 }
 
 MASKER_PLAYER_TEST(loadFileResetsSampleIndex) {
-    player.setLevel_dB(20);
-    loadMonoAudio({1});
-    fillAudioBufferMono(1);
     loadMonoAudio({1, 2, 3});
+    fillAudioBufferMono(2);
+    assertLeftChannelEquals({1, 2});
+    loadMonoAudio({4, 5, 6});
     fillAudioBufferMono(3);
-    assertLeftChannelEquals({10, 20, 30});
+    assertLeftChannelEquals({4, 5, 6});
 }
 
-MASKER_PLAYER_TEST(fillAudioBufferWraps) {
+MASKER_PLAYER_TEST(fillAudioBufferWrapsMonoChannel) {
     loadMonoAudio({1, 2, 3});
     fillAudioBufferMono(4);
     assertLeftChannelEquals({1, 2, 3, 1});
 }
 
-MASKER_PLAYER_TEST(fillAudioBufferTwoWraps) {
+MASKER_PLAYER_TEST(fillAudioBufferWrapsMonoChannel_Buffered) {
     loadMonoAudio({1, 2, 3});
     fillAudioBufferMono(4);
     assertLeftChannelEquals({1, 2, 3, 1});
@@ -602,11 +602,21 @@ MASKER_PLAYER_TEST(fillAudioBufferTwoWraps) {
     assertLeftChannelEquals({2, 3, 1, 2});
 }
 
-MASKER_PLAYER_TEST(fillAudioBufferWrapsStereo) {
+MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel) {
     loadStereoAudio({1, 2, 3}, {4, 5, 6});
     fillAudioBufferStereo(4);
     assertLeftChannelEquals({1, 2, 3, 1});
     assertRightChannelEquals({4, 5, 6, 4});
+}
+
+MASKER_PLAYER_TEST(fillAudioBufferWrapsStereoChannel_Buffered) {
+    loadStereoAudio({1, 2, 3}, {4, 5, 6});
+    fillAudioBufferStereo(2);
+    assertLeftChannelEquals({1, 2});
+    assertRightChannelEquals({4, 5});
+    fillAudioBufferStereo(4);
+    assertLeftChannelEquals({3, 1, 2, 3});
+    assertRightChannelEquals({6, 4, 5, 6});
 }
 
 MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionMultipleFills) {
