@@ -677,11 +677,15 @@ MASKER_PLAYER_TEST(fadesInAccordingToHannFunctionStereoOneFill) {
 }
 
 MASKER_PLAYER_TEST(steadyLevelFollowingFadeIn) {
-    fadeInToFullLevel();
+    setFadeInOutSeconds(2);
+    setSampleRateHz(3);
+    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+    fadeIn();
+    auto halfWindowLength = 2 * 3 + 1;
+    fillAudioBufferMono(halfWindowLength);
 
-    loadMonoAudio({1, 2, 3});
     fillAudioBufferMono(3);
-    assertLeftChannelEquals({1, 2, 3});
+    assertLeftChannelEquals({8, 9, 10});
 }
 
 MASKER_PLAYER_TEST(fadesOutAccordingToHannFunctionMultipleFills) {
