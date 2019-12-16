@@ -104,6 +104,12 @@ auto MaskerPlayerImpl::durationSeconds() -> double {
     return samples(firstChannel(sourceAudio)) / sampleRateHz(player);
 }
 
+auto mathModulus(sample_index_type a, sample_index_type b)
+    -> sample_index_type {
+    auto result = a % b;
+    return result > 0 ? result : result + b;
+}
+
 void MaskerPlayerImpl::seekSeconds(double x) {
     if (playing())
         return;
@@ -111,7 +117,9 @@ void MaskerPlayerImpl::seekSeconds(double x) {
     recalculateSamplesToWaitPerChannel();
     std::fill(audioFrameHeadsPerChannel.begin(),
         audioFrameHeadsPerChannel.end(),
-        gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)));
+        mathModulus(
+            gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)),
+            samples(firstChannel(sourceAudio))));
 }
 
 void MaskerPlayerImpl::recalculateSamplesToWaitPerChannel() {

@@ -451,6 +451,14 @@ MASKER_PLAYER_TEST(seekSeeksAudio) {
     assertLeftChannelEquals({7, 8, 9, 1});
 }
 
+MASKER_PLAYER_TEST(seekNegativeTime) {
+    setSampleRateHz(3);
+    loadMonoAudio({1, 2, 3, 4, 5, 6, 7, 8, 9});
+    seekSeconds(-2);
+    fillAudioBufferMono(4);
+    assertLeftChannelEquals({4, 5, 6, 7});
+}
+
 MASKER_PLAYER_TEST(setChannelDelayMono) {
     setSampleRateHz(3);
     setChannelDelaySeconds(0, 1);
