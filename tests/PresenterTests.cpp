@@ -24,11 +24,13 @@ TEST_F(PresenterTests, confirmAdaptiveClosedSetTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveClosedSetTest);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveClosedSetSingleSpeakerTestHidesTestSetupView) {
+TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetSingleSpeakerTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveClosedSetSingleSpeakerTest);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveClosedSetDelayedMaskerTestHidesTestSetupView) {
+TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetDelayedMaskerTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveClosedSetDelayedMaskerTest);
 }
 
@@ -64,8 +66,14 @@ TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsSubjectView) {
     assertShowsSubjectView(confirmingAdaptiveClosedSetTest);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveClosedSetSingleSpeakerTestShowsSubjectView) {
+TEST_F(
+    PresenterTests, confirmAdaptiveClosedSetSingleSpeakerTestShowsSubjectView) {
     assertShowsSubjectView(confirmingAdaptiveClosedSetSingleSpeakerTest);
+}
+
+TEST_F(
+    PresenterTests, confirmAdaptiveClosedSetDelayedMaskerTestShowsSubjectView) {
+    assertShowsSubjectView(confirmingAdaptiveClosedSetDelayedMaskerTest);
 }
 
 TEST_F(PresenterTests,
