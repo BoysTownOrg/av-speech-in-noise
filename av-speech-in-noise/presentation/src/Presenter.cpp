@@ -113,7 +113,7 @@ void Presenter::showTestView() {
 }
 
 auto Presenter::closedSet() -> bool {
-    return adaptiveClosedSet() || fixedLevelClosedSet();
+    return adaptiveClosedSet() || fixedLevelClosedSet() || adaptiveClosedSetSingleSpeaker();
 }
 
 auto Presenter::fixedLevelClosedSet() -> bool {

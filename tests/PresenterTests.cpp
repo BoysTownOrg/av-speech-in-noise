@@ -64,6 +64,10 @@ TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsSubjectView) {
     assertShowsSubjectView(confirmingAdaptiveClosedSetTest);
 }
 
+TEST_F(PresenterTests, confirmAdaptiveClosedSetSingleSpeakerTestShowsSubjectView) {
+    assertShowsSubjectView(confirmingAdaptiveClosedSetSingleSpeakerTest);
+}
+
 TEST_F(PresenterTests,
     confirmAdaptiveClosedSetTestDoesNotShowSubjectViewWhenTestComplete) {
     setTestComplete();
