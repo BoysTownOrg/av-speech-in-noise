@@ -6,10 +6,6 @@
 #include <algorithm>
 
 namespace stimulus_players {
-static auto samples(const channel_type &channel) {
-    return gsl::narrow<sample_index_type>(channel.size());
-}
-
 static auto channel(const audio_type &x, channel_index_type i) -> const auto & {
     return x.at(i);
 }
@@ -22,6 +18,12 @@ static auto channel(
 static auto firstChannel(const audio_type &x) -> const auto & {
     return x.front();
 }
+
+static auto samples(const channel_type &channel) {
+    return gsl::narrow<sample_index_type>(channel.size());
+}
+
+static auto samples(const audio_type &x) { return samples(firstChannel(x)); }
 
 static auto firstChannel(const std::vector<channel_buffer_type> &x) -> auto {
     return x.front();
@@ -101,7 +103,7 @@ void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
 }
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
-    return samples(firstChannel(sourceAudio)) / sampleRateHz(player);
+    return samples(sourceAudio) / sampleRateHz(player);
 }
 
 auto mathModulus(sample_index_type a, sample_index_type b)
@@ -119,7 +121,7 @@ void MaskerPlayerImpl::seekSeconds(double x) {
         audioFrameHeadsPerChannel.end(),
         mathModulus(
             gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)),
-            samples(firstChannel(sourceAudio))));
+            samples(sourceAudio)));
 }
 
 void MaskerPlayerImpl::recalculateSamplesToWaitPerChannel() {
