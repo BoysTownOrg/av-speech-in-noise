@@ -1,5 +1,6 @@
 #include "TargetPlayerImpl.hpp"
 #include <cmath>
+#include <algorithm>
 
 namespace stimulus_players {
 TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
@@ -21,22 +22,22 @@ void TargetPlayerImpl::hideVideo() { player->hide(); }
 
 void TargetPlayerImpl::showVideo() { player->show(); }
 
-template <typename T> T rms(const std::vector<T> &x) {
+template <typename T> auto rms(const std::vector<T> &x) -> T {
     return std::sqrt(std::accumulate(x.begin(), x.end(), T{0}, [](T a, T b) {
         return a += b * b;
     }) / x.size());
 }
 
-double TargetPlayerImpl::rms() {
+auto TargetPlayerImpl::rms() -> double {
     auto audio = readAudio_();
     if (audio.empty())
         return 0;
 
     auto firstChannel = audio.front();
-    return ::stimulus_players::rms(firstChannel);
+    return stimulus_players::rms(firstChannel);
 }
 
-std::vector<std::vector<float>> TargetPlayerImpl::readAudio_() {
+auto TargetPlayerImpl::readAudio_() -> audio_type {
     try {
         return reader->read(filePath_);
     } catch (const AudioReader::InvalidFile &) {
@@ -50,35 +51,63 @@ void TargetPlayerImpl::setLevel_dB(double x) {
 
 void TargetPlayerImpl::playbackComplete() { listener_->playbackComplete(); }
 
+constexpr auto begin(const gsl::span<float> &channel)
+    -> gsl::span<float>::iterator {
+    return channel.begin();
+}
+
+constexpr auto end(const gsl::span<float> &channel)
+    -> gsl::span<float>::iterator {
+    return channel.end();
+}
+
 void TargetPlayerImpl::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
     auto scale = audioScale.load();
-    for (auto channel : audio)
-        for (auto &x : channel)
-            x *= scale;
+    auto usingFirstChannelOnly = useFirstChannelOnly_.load();
+    auto afterFirstChannel{false};
+    for (auto channel : audio) {
+        if (usingFirstChannelOnly && afterFirstChannel)
+            std::fill(begin(channel), end(channel), 0);
+        else
+            std::transform(begin(channel), end(channel), begin(channel),
+                [&](auto &x) { return x * scale; });
+        afterFirstChannel = true;
+    }
 }
 
 void TargetPlayerImpl::setAudioDevice(std::string device) {
     auto devices_ = audioDevices();
-    auto found = std::find(devices_.begin(), devices_.end(), std::move(device));
+    auto found = std::find(devices_.begin(), devices_.end(), device);
     if (found == devices_.end())
         throw av_speech_in_noise::InvalidAudioDevice{};
     auto deviceIndex = gsl::narrow<int>(found - devices_.begin());
     player->setDevice(deviceIndex);
 }
 
-std::vector<std::string> TargetPlayerImpl::audioDevices() {
-    std::vector<std::string> descriptions{};
-    for (int i = 0; i < player->deviceCount(); ++i)
-        descriptions.push_back(player->deviceDescription(i));
+auto TargetPlayerImpl::audioDevices() -> std::vector<std::string> {
+    std::vector<std::string> descriptions(
+        gsl::narrow<std::size_t>(player->deviceCount()));
+    std::generate(descriptions.begin(), descriptions.end(),
+        [&, n = 0]() mutable { return player->deviceDescription(n++); });
     return descriptions;
 }
 
-bool TargetPlayerImpl::playing() { return player->playing(); }
+static void store(std::atomic<bool> &where, bool what) { where.store(what); }
+
+void TargetPlayerImpl::useFirstChannelOnly() {
+    store(useFirstChannelOnly_, true);
+}
+
+void TargetPlayerImpl::useAllChannels() { store(useFirstChannelOnly_, false); }
+
+auto TargetPlayerImpl::playing() -> bool { return player->playing(); }
 
 void TargetPlayerImpl::subscribeToPlaybackCompletion() {
     player->subscribeToPlaybackCompletion();
 }
 
-double TargetPlayerImpl::durationSeconds() { return player->durationSeconds(); }
+auto TargetPlayerImpl::durationSeconds() -> double {
+    return player->durationSeconds();
+}
 }

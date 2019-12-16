@@ -6,15 +6,7 @@ OutputFilePathImpl::OutputFilePathImpl(
     TimeStamp *timeStamp, FileSystemPath *systemPath)
     : timeStamp{timeStamp}, systemPath{systemPath} {}
 
-std::string OutputFilePathImpl::generateFileName(const TestIdentity &test) {
-    std::stringstream stream;
-    stream << formatTestIdentity(test);
-    stream << '_';
-    stream << formatTimeStamp();
-    return stream.str();
-}
-
-std::string OutputFilePathImpl::formatTestIdentity(const TestIdentity &test) {
+static auto formatTestIdentity(const TestIdentity &test) -> std::string {
     std::stringstream stream;
     stream << "Subject_";
     stream << test.subjectId;
@@ -25,7 +17,16 @@ std::string OutputFilePathImpl::formatTestIdentity(const TestIdentity &test) {
     return stream.str();
 }
 
-std::string OutputFilePathImpl::formatTimeStamp() {
+auto OutputFilePathImpl::generateFileName(const TestIdentity &test)
+    -> std::string {
+    std::stringstream stream;
+    stream << formatTestIdentity(test);
+    stream << '_';
+    stream << formatTimeStamp();
+    return stream.str();
+}
+
+auto OutputFilePathImpl::formatTimeStamp() -> std::string {
     timeStamp->capture();
     std::stringstream stream;
     stream << timeStamp->year();
@@ -42,15 +43,19 @@ std::string OutputFilePathImpl::formatTimeStamp() {
     return stream.str();
 }
 
-std::string OutputFilePathImpl::homeDirectory() { return homeDirectory_(); }
+auto OutputFilePathImpl::homeDirectory() -> std::string {
+    return homeDirectory_();
+}
 
-std::string OutputFilePathImpl::homeDirectory_() {
+auto OutputFilePathImpl::homeDirectory_() -> std::string {
     return systemPath->homeDirectory();
 }
 
-std::string OutputFilePathImpl::outputDirectory() { return outputDirectory_(); }
+auto OutputFilePathImpl::outputDirectory() -> std::string {
+    return outputDirectory_();
+}
 
-std::string OutputFilePathImpl::outputDirectory_() {
+auto OutputFilePathImpl::outputDirectory_() -> std::string {
     return homeDirectory_() + "/" + relativePath_;
 }
 

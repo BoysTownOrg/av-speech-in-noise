@@ -16,6 +16,8 @@ class MaskerPlayerStub : public MaskerPlayer {
     double fadeTimeSeconds_{};
     double durationSeconds_{};
     double secondsSeeked_{};
+    double channelDelaySeconds_{};
+    long channelDelayed_{};
     EventListener *listener_{};
     bool fadeInCalled_{};
     bool fadeOutCalled_{};
@@ -23,8 +25,32 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool setDeviceCalled_{};
     bool throwInvalidAudioDeviceWhenDeviceSet_{};
     bool throwInvalidAudioFileOnLoad_{};
+    bool usingAllChannels_{};
+    bool usingFirstChannelOnly_{};
+    bool channelDelaysCleared_{};
 
   public:
+    void setChannelDelaySeconds(long channel, double seconds) override {
+        channelDelaySeconds_ = seconds;
+        channelDelayed_ = channel;
+    }
+
+    auto channelDelaySeconds() const { return channelDelaySeconds_; }
+
+    auto channelDelayed() const { return channelDelayed_; }
+
+    void clearChannelDelays() override { channelDelaysCleared_ = true; }
+
+    void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
+
+    auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
+
+    auto channelDelaysCleared() const { return channelDelaysCleared_; }
+
+    void useAllChannels() override { usingAllChannels_ = true; }
+
+    auto usingAllChannels() const { return usingAllChannels_; }
+
     void throwInvalidAudioFileOnLoad() { throwInvalidAudioFileOnLoad_ = true; }
 
     void fadeOutComplete() { listener_->fadeOutComplete(); }
@@ -43,7 +69,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     auto setDeviceCalled() const { return setDeviceCalled_; }
 
-    bool playing() override { return playing_; }
+    auto playing() -> bool override { return playing_; }
 
     void setPlaying() { playing_ = true; }
 
@@ -70,7 +96,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void addToLog(const std::string &s) { log_.insert(s); }
 
-    std::vector<std::string> outputAudioDeviceDescriptions() override {
+    auto outputAudioDeviceDescriptions() -> std::vector<std::string> override {
         return outputAudioDeviceDescriptions_;
     }
 
@@ -84,20 +110,20 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     auto level_dB() const { return level_dB_; }
 
-    double rms() override {
+    auto rms() -> double override {
         addToLog("rms ");
         return rms_;
     }
 
     void setLevel_dB(double x) override { level_dB_ = x; }
 
-    double durationSeconds() override { return durationSeconds_; }
+    auto durationSeconds() -> double override { return durationSeconds_; }
 
     void seekSeconds(double x) override { secondsSeeked_ = x; }
 
     auto secondsSeeked() const { return secondsSeeked_; }
 
-    double fadeTimeSeconds() override { return fadeTimeSeconds_; }
+    auto fadeTimeSeconds() -> double override { return fadeTimeSeconds_; }
 
     void setFadeTimeSeconds(double x) { fadeTimeSeconds_ = x; }
 

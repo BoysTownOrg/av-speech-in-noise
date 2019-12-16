@@ -5,5 +5,5 @@ add_library(stimulus-players
 )
 target_include_directories(stimulus-players PUBLIC include)
 target_include_directories(stimulus-players PRIVATE include/stimulus-players)
-target_compile_features(stimulus-players PRIVATE cxx_std_14)
-target_link_libraries(stimulus-players recognition-test)
+target_compile_features(stimulus-players PRIVATE cxx_std_17)
+target_link_libraries(stimulus-players recognition-test GSL)

@@ -15,11 +15,11 @@ void FixedLevelMethodImpl::initialize(
     complete_ = concluder->complete(targetList);
 }
 
-bool FixedLevelMethodImpl::complete() { return complete_; }
+auto FixedLevelMethodImpl::complete() -> bool { return complete_; }
 
-std::string FixedLevelMethodImpl::next() { return targetList->next(); }
+auto FixedLevelMethodImpl::next() -> std::string { return targetList->next(); }
 
-int FixedLevelMethodImpl::snr_dB() { return snr_dB_; }
+auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
 
 void FixedLevelMethodImpl::submitResponse(
     const coordinate_response_measure::Response &response) {
@@ -34,7 +34,9 @@ void FixedLevelMethodImpl::submitResponse(
     complete_ = concluder->complete(targetList);
 }
 
-std::string FixedLevelMethodImpl::current() { return targetList->current(); }
+auto FixedLevelMethodImpl::current() -> std::string {
+    return targetList->current();
+}
 
 void FixedLevelMethodImpl::writeTestingParameters(OutputFile *file) {
     file->writeTest(*test);
@@ -48,7 +50,8 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submitResponse(const FreeResponse &response) {
+void FixedLevelMethodImpl::submitResponse(
+    const open_set::FreeResponse &response) {
     if (response.flagged)
         targetList->reinsertCurrent();
     complete_ = concluder->complete(targetList);

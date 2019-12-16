@@ -5,7 +5,8 @@ TrackSettingsReaderImpl::TrackSettingsReaderImpl(
     TextFileReader *reader, TrackSettingsInterpreter *interpreter)
     : reader{reader}, interpreter{interpreter} {}
 
-const TrackingRule *TrackSettingsReaderImpl::read(std::string filePath) {
+auto TrackSettingsReaderImpl::read(std::string filePath)
+    -> const TrackingRule * {
     return interpreter->trackingRule(reader->read(std::move(filePath)));
 }
 }

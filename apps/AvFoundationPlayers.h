@@ -1,5 +1,5 @@
-#ifndef AvFoundationPlayers_h
-#define AvFoundationPlayers_h
+#ifndef APPS_AVFOUNDATIONPLAYERS_H_
+#define APPS_AVFOUNDATIONPLAYERS_H_
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
@@ -11,18 +11,18 @@
 
 class CoreAudioDevices {
     std::vector<AudioObjectID> devices{};
-public:
+
+  public:
     CoreAudioDevices();
-    int deviceCount();
-    std::string description(int device);
-    std::string uid(int device);
-    bool outputDevice(int device);
-private:
+    auto deviceCount() -> int;
+    auto description(int device) -> std::string;
+    auto uid(int device) -> std::string;
+    auto outputDevice(int device) -> bool;
+    auto objectId(int device) -> AudioObjectID;
+
+  private:
     void loadDevices();
-    AudioObjectPropertyAddress globalAddress(AudioObjectPropertySelector);
-    AudioObjectPropertyAddress masterAddress(AudioObjectPropertySelector, AudioObjectPropertyScope);
-    AudioObjectID objectId(int device);
-    std::string stringProperty(AudioObjectPropertySelector, int device);
+    auto stringProperty(AudioObjectPropertySelector, int device) -> std::string;
 };
 
 class CoreAudioBuffer : public stimulus_players::AudioBuffer {
@@ -31,29 +31,33 @@ class CoreAudioBuffer : public stimulus_players::AudioBuffer {
     CMSampleBufferRef sampleBuffer;
     // possibly critical: initialize blockBuffer to null
     CMBlockBufferRef blockBuffer{};
-public:
+
+  public:
     explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);
     ~CoreAudioBuffer() override;
     void set(CMSampleBufferRef);
-    int channels() override;
-    std::vector<int> channel(int) override;
-    bool empty() override;
+    auto channels() -> int override;
+    auto channel(int) -> std::vector<int> override;
+    auto empty() -> bool override;
 };
 
 class CoreAudioBufferedReader : public stimulus_players::BufferedAudioReader {
     AVAssetReaderTrackOutput *trackOutput{};
-public:
+
+  public:
     void loadFile(std::string) override;
-    bool failed() override;
-    std::shared_ptr<stimulus_players::AudioBuffer> readNextBuffer() override;
-    int minimumPossibleSample() override;
+    auto failed() -> bool override;
+    auto readNextBuffer()
+        -> std::shared_ptr<stimulus_players::AudioBuffer> override;
+    auto minimumPossibleSample() -> int override;
+    auto sampleRateHz() -> double;
 };
 
 class AvFoundationVideoPlayer;
 
 @interface VideoPlayerActions : NSObject
 @property AvFoundationVideoPlayer *controller;
-- (void) playbackComplete;
+- (void)playbackComplete;
 @end
 
 class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
@@ -66,11 +70,11 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     AVPlayerLayer *playerLayer;
     NSScreen *screen;
     EventListener *listener_{};
-public:
-    AvFoundationVideoPlayer(NSScreen *);
+
+  public:
+    explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
-    void setSampleRate(double) {}
-    std::vector<gsl::span<float>> &audio() { return audio_; }
+    auto audio() -> std::vector<gsl::span<float>> & { return audio_; }
     void fillAudioBuffer();
     void play() override;
     void loadFile(std::string filePath) override;
@@ -78,13 +82,13 @@ public:
     void hide() override;
     void show() override;
     void subscribe(EventListener *) override;
-    int deviceCount() override;
-    std::string deviceDescription(int index) override;
-    bool playing() override;
+    auto deviceCount() -> int override;
+    auto deviceDescription(int index) -> std::string override;
+    auto playing() -> bool override;
     void subscribeToPlaybackCompletion() override;
-    double durationSeconds() override;
-    
-private:
+    auto durationSeconds() -> double override;
+
+  private:
     void addPlayerLayer();
     void showWindow();
     void prepareWindow();
@@ -97,28 +101,28 @@ private:
 class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     std::vector<gsl::span<float>> audio_;
     CoreAudioDevices device{};
-    MTAudioProcessingTapRef tap{};
+    std::string filePath_{};
     EventListener *listener_{};
-    AVPlayer *player;
+    AudioUnit audioUnit{};
     double sampleRate_{};
-public:
+
+  public:
     AvFoundationAudioPlayer();
-    void setSampleRate(double x) { sampleRate_ = x; }
-    std::vector<gsl::span<float>> &audio() { return audio_; }
+    ~AvFoundationAudioPlayer() override;
+    auto audio() -> std::vector<gsl::span<float>> & { return audio_; }
     void fillAudioBuffer();
     void subscribe(EventListener *) override;
     void loadFile(std::string filePath) override;
-    int deviceCount() override;
-    std::string deviceDescription(int index) override;
+    auto deviceCount() -> int override;
+    auto deviceDescription(int index) -> std::string override;
     void setDevice(int index) override;
-    bool playing() override;
+    auto playing() -> bool override;
     void play() override;
-    double sampleRateHz() override;
+    auto sampleRateHz() -> double override;
     void stop() override;
     void timerCallback();
-    bool outputDevice(int index) override;
-    double durationSeconds() override;
-    void seekSeconds(double) override;
+    auto outputDevice(int index) -> bool override;
+    auto durationSeconds() -> double override;
 };
 
 #endif

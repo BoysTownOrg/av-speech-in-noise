@@ -18,6 +18,10 @@ find_library(MEDIA_TOOLBOX MediaToolbox)
 if (NOT MEDIA_TOOLBOX)
     message(MEDIA_TOOLBOX "MediaToolbox not found")
 endif()
+find_library(AUDIO_TOOLBOX AudioToolbox)
+if (NOT AUDIO_TOOLBOX)
+    message(AUDIO_TOOLBOX "AudioToolbox not found")
+endif()
 add_executable(AvSpeechInNoise MACOSX_BUNDLE 
     AvFoundationPlayers.mm
     CocoaView.mm
@@ -35,4 +39,5 @@ target_link_libraries(AvSpeechInNoise
     ${COCOA} 
     ${CORE_MEDIA} 
     ${MEDIA_TOOLBOX}
+    ${AUDIO_TOOLBOX}
 )

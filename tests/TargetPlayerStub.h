@@ -23,8 +23,18 @@ class TargetPlayerStub : public TargetPlayer {
     bool setDeviceCalled_{};
     bool playing_{};
     bool playbackCompletionSubscribedTo_{};
+    bool usingAllChannels_{};
+    bool usingFirstChannelOnly_{};
 
   public:
+    void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
+
+    void useAllChannels() override { usingAllChannels_ = true; }
+
+    auto usingAllChannels() const { return usingAllChannels_; }
+
+    auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
+
     void subscribeToPlaybackCompletion() override {
         playbackCompletionSubscribedTo_ = true;
     }

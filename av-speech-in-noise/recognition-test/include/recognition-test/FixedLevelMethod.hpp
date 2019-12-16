@@ -10,7 +10,7 @@ class EmptyTargetListTestConcluder : public TestConcluder {
 
     void submitResponse() override {}
 
-    bool complete(TargetList *t) override { return t->empty(); }
+    auto complete(TargetList *t) -> bool override { return t->empty(); }
 };
 
 class FixedTrialTestConcluder : public TestConcluder {
@@ -21,26 +21,18 @@ class FixedTrialTestConcluder : public TestConcluder {
 
     void submitResponse() override { --trials_; }
 
-    bool complete(TargetList *) override { return trials_ == 0; }
+    auto complete(TargetList *) -> bool override { return trials_ == 0; }
 };
 
 class FixedLevelMethodImpl : public FixedLevelMethod {
-    coordinate_response_measure::FixedLevelTrial lastTrial{};
-    const FixedLevelTest *test{};
-    TargetList *targetList;
-    ResponseEvaluator *evaluator;
-    TestConcluder *concluder;
-    int snr_dB_{};
-    bool complete_{};
-
   public:
     explicit FixedLevelMethodImpl(ResponseEvaluator *);
     void initialize(
         const FixedLevelTest &, TargetList *, TestConcluder *) override;
-    int snr_dB() override;
-    std::string next() override;
-    bool complete() override;
-    std::string current() override;
+    auto snr_dB() -> int override;
+    auto next() -> std::string override;
+    auto complete() -> bool override;
+    auto current() -> std::string override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     void writeLastCoordinateResponse(OutputFile *) override;
@@ -48,7 +40,16 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeTestingParameters(OutputFile *) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
-    void submitResponse(const FreeResponse &) override;
+    void submitResponse(const open_set::FreeResponse &) override;
+
+  private:
+    coordinate_response_measure::FixedLevelTrial lastTrial{};
+    const FixedLevelTest *test{};
+    TargetList *targetList{};
+    ResponseEvaluator *evaluator;
+    TestConcluder *concluder{};
+    int snr_dB_{};
+    bool complete_{};
 };
 }
 #endif

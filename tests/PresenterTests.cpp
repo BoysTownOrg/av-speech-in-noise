@@ -11,6 +11,8 @@ TEST_F(PresenterTests, populatesMethodMenu) {
     assertSetupViewMethodsContains(Method::fixedLevelClosedSet);
     assertSetupViewMethodsContains(Method::adaptiveOpenSet);
     assertSetupViewMethodsContains(Method::adaptiveClosedSet);
+    assertSetupViewMethodsContains(Method::adaptiveClosedSetSingleSpeaker);
+    assertSetupViewMethodsContains(Method::adaptiveClosedSetDelayedMasker);
 }
 
 TEST_F(PresenterTests, callsEventLoopWhenRun) {
@@ -20,6 +22,16 @@ TEST_F(PresenterTests, callsEventLoopWhenRun) {
 
 TEST_F(PresenterTests, confirmAdaptiveClosedSetTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveClosedSetTest);
+}
+
+TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetSingleSpeakerTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptiveClosedSetSingleSpeakerTest);
+}
+
+TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetDelayedMaskerTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptiveClosedSetDelayedMaskerTest);
 }
 
 TEST_F(PresenterTests, confirmAdaptiveOpenSetTestHidesTestSetupView) {
@@ -52,6 +64,16 @@ TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsExperimenterView) {
 
 TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsSubjectView) {
     assertShowsSubjectView(confirmingAdaptiveClosedSetTest);
+}
+
+TEST_F(
+    PresenterTests, confirmAdaptiveClosedSetSingleSpeakerTestShowsSubjectView) {
+    assertShowsSubjectView(confirmingAdaptiveClosedSetSingleSpeakerTest);
+}
+
+TEST_F(
+    PresenterTests, confirmAdaptiveClosedSetDelayedMaskerTestShowsSubjectView) {
+    assertShowsSubjectView(confirmingAdaptiveClosedSetDelayedMaskerTest);
 }
 
 TEST_F(PresenterTests,
@@ -87,10 +109,21 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsExperimenterView) {
 }
 
 TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetTestWithSingleSpeakerInitializesModel) {
+    run(confirmingAdaptiveClosedSetSingleSpeakerTest);
+    assertTrue(model.initializedWithSingleSpeaker());
+}
+
+TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetTestWithDelayedMaskerInitializesModel) {
+    run(confirmingAdaptiveClosedSetDelayedMaskerTest);
+    assertTrue(model.initializedWithDelayedMasker());
+}
+
+TEST_F(PresenterTests,
     confirmFixedLevelClosedSetTestWithFiniteTargetsInitializesModel) {
-    setMethod(&setupView, Method::fixedLevelClosedSet);
     setupView.useFiniteTargets();
-    setupView.confirmTestSetup();
+    run(confirmingFixedLevelClosedSetTest);
     assertTrue(model.initializedWithFiniteTargets());
 }
 
@@ -725,6 +758,18 @@ TEST_F(PresenterTests,
     completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveClosedSetTest, respondingFromSubject);
+}
+
+TEST_F(PresenterTests,
+    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetSingleSpeakerTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptiveClosedSetSingleSpeakerTest, respondingFromSubject);
+}
+
+TEST_F(PresenterTests,
+    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetDelayedMaskerTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptiveClosedSetDelayedMaskerTest, respondingFromSubject);
 }
 
 TEST_F(PresenterTests,

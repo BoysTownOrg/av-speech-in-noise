@@ -1,4 +1,5 @@
 #include "Presenter.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <string>
 #include <sstream>
 
@@ -15,8 +16,12 @@ int Presenter::ceilingSnr_dB = 20;
 int Presenter::floorSnr_dB = -40;
 int Presenter::trackBumpLimit = 10;
 
-static FixedLevelTest fixedLevelTest(Presenter::TestSetup *testSetup) {
+static auto fixedLevelTest(Presenter::TestSetup *testSetup) -> FixedLevelTest {
     return testSetup->fixedLevelTest();
+}
+
+static auto adaptiveTest(Presenter::TestSetup *testSetup) -> AdaptiveTest {
+    return testSetup->adaptiveTest();
 }
 
 static void displayTrialNumber(
@@ -59,25 +64,37 @@ void Presenter::confirmTestSetup_() {
 }
 
 void Presenter::initializeTest() {
-    if (adaptiveTest())
-        model->initializeTest(testSetup->adaptiveTest());
+    if (adaptiveClosedSetDelayedMasker())
+        model->initializeTestWithDelayedMasker(adaptiveTest(testSetup));
+    else if (adaptiveClosedSetSingleSpeaker())
+        model->initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
+    else if (adaptiveClosedSet() || adaptiveOpenSet())
+        model->initializeTest(adaptiveTest(testSetup));
     else if (finiteTargets())
         model->initializeTestWithFiniteTargets(fixedLevelTest(testSetup));
     else
         model->initializeTest(fixedLevelTest(testSetup));
 }
 
-bool Presenter::adaptiveTest() {
-    return adaptiveClosedSet() || adaptiveOpenSet();
+auto Presenter::adaptiveClosedSet() -> bool {
+    return testSetup->adaptiveClosedSet();
 }
 
-bool Presenter::adaptiveClosedSet() { return testSetup->adaptiveClosedSet(); }
+auto Presenter::adaptiveOpenSet() -> bool {
+    return testSetup->adaptiveOpenSet();
+}
 
-bool Presenter::adaptiveOpenSet() { return testSetup->adaptiveOpenSet(); }
+auto Presenter::finiteTargets() -> bool { return testSetup->finiteTargets(); }
 
-bool Presenter::finiteTargets() { return testSetup->finiteTargets(); }
+auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
+    return testSetup->adaptiveClosedSetDelayedMasker();
+}
 
-bool Presenter::testComplete() { return model->testComplete(); }
+auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
+    return testSetup->adaptiveClosedSetSingleSpeaker();
+}
+
+auto Presenter::testComplete() -> bool { return model->testComplete(); }
 
 void Presenter::switchToTestView() {
     hideTestSetup();
@@ -95,16 +112,18 @@ void Presenter::showTestView() {
         testing->show();
 }
 
-bool Presenter::closedSet() {
-    return adaptiveClosedSet() || fixedLevelClosedSet();
+auto Presenter::closedSet() -> bool {
+    return adaptiveClosedSet() || fixedLevelClosedSet() ||
+        adaptiveClosedSetSingleSpeaker() || adaptiveClosedSetDelayedMasker();
 }
 
-bool Presenter::fixedLevelClosedSet() {
+auto Presenter::fixedLevelClosedSet() -> bool {
     return testSetup->fixedLevelClosedSet();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
-    if (adaptiveClosedSet())
+    if (adaptiveClosedSet() || adaptiveClosedSetSingleSpeaker() ||
+        adaptiveClosedSetDelayedMasker())
         return &adaptiveClosedSetTrialCompletionHandler;
     if (adaptiveOpenSet())
         return &adaptiveOpenSetTrialCompletionHandler;
@@ -232,6 +251,8 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
     view->populateMethodMenu({methodName(Method::adaptiveClosedSet),
+        methodName(Method::adaptiveClosedSetSingleSpeaker),
+        methodName(Method::adaptiveClosedSetDelayedMasker),
         methodName(Method::adaptiveOpenSet),
         methodName(Method::fixedLevelClosedSet),
         methodName(Method::fixedLevelOpenSet)});
@@ -242,7 +263,8 @@ void Presenter::TestSetup::show() { view->show(); }
 
 void Presenter::TestSetup::hide() { view->hide(); }
 
-static int readInteger(const std::string &x, const std::string &identifier) {
+static auto readInteger(const std::string &x, const std::string &identifier)
+    -> int {
     try {
         return std::stoi(x);
     } catch (const std::invalid_argument &) {
@@ -255,7 +277,7 @@ static int readInteger(const std::string &x, const std::string &identifier) {
     }
 }
 
-FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
+auto Presenter::TestSetup::fixedLevelTest() -> FixedLevelTest {
     FixedLevelTest p;
     commonTest(p);
     p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
@@ -263,7 +285,7 @@ FixedLevelTest Presenter::TestSetup::fixedLevelTest() {
     return p;
 }
 
-TestIdentity Presenter::TestSetup::testIdentity() {
+auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     TestIdentity p;
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
@@ -279,7 +301,7 @@ void Presenter::TestSetup::commonTest(Test &p) {
     p.condition = readCondition();
 }
 
-AdaptiveTest Presenter::TestSetup::adaptiveTest() {
+auto Presenter::TestSetup::adaptiveTest() -> AdaptiveTest {
     AdaptiveTest p;
     commonTest(p);
     p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
@@ -291,17 +313,17 @@ AdaptiveTest Presenter::TestSetup::adaptiveTest() {
     return p;
 }
 
-Condition Presenter::TestSetup::readCondition() {
+auto Presenter::TestSetup::readCondition() -> Condition {
     return auditoryOnly() ? Condition::auditoryOnly : Condition::audioVisual;
 }
 
-bool Presenter::TestSetup::auditoryOnly() {
+auto Presenter::TestSetup::auditoryOnly() -> bool {
     return view->condition() == conditionName(Condition::auditoryOnly);
 }
 
 void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
 
-Calibration Presenter::TestSetup::calibrationParameters() {
+auto Presenter::TestSetup::calibrationParameters() -> Calibration {
     Calibration p;
     p.filePath = view->calibrationFilePath();
     p.level_dB_SPL = readCalibrationLevel();
@@ -310,11 +332,11 @@ Calibration Presenter::TestSetup::calibrationParameters() {
     return p;
 }
 
-int Presenter::TestSetup::readCalibrationLevel() {
+auto Presenter::TestSetup::readCalibrationLevel() -> int {
     return readInteger(view->calibrationLevel_dB_SPL(), "calibration level");
 }
 
-int Presenter::TestSetup::readMaskerLevel() {
+auto Presenter::TestSetup::readMaskerLevel() -> int {
     return readInteger(view->maskerLevel_dB_SPL(), "masker level");
 }
 
@@ -352,28 +374,36 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
     view->setTrackSettingsFile(std::move(s));
 }
 
-bool Presenter::TestSetup::adaptiveClosedSet() {
+auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
     return method(Method::adaptiveClosedSet);
 }
 
-bool Presenter::TestSetup::method(Method m) {
+auto Presenter::TestSetup::method(Method m) -> bool {
     return view->method() == methodName(m);
 }
 
-bool Presenter::TestSetup::adaptiveOpenSet() {
+auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
     return method(Method::adaptiveOpenSet);
 }
 
-bool Presenter::TestSetup::fixedLevelOpenSet() {
+auto Presenter::TestSetup::fixedLevelOpenSet() -> bool {
     return method(Method::fixedLevelOpenSet);
 }
 
-bool Presenter::TestSetup::fixedLevelClosedSet() {
+auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
     return method(Method::fixedLevelClosedSet);
 }
 
-bool Presenter::TestSetup::finiteTargets() {
+auto Presenter::TestSetup::finiteTargets() -> bool {
     return view->usingTargetsWithoutReplacement();
+}
+
+auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
+    return method(Method::adaptiveClosedSetDelayedMasker);
+}
+
+auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
+    return method(Method::adaptiveClosedSetSingleSpeaker);
 }
 
 Presenter::Subject::Subject(View::Subject *view) : view{view} {
@@ -408,14 +438,15 @@ void Presenter::Subject::hideResponseButtons() { view->hideResponseButtons(); }
 
 void Presenter::Subject::showResponseButtons() { view->showResponseButtons(); }
 
-coordinate_response_measure::Response Presenter::Subject::subjectResponse() {
+auto Presenter::Subject::subjectResponse()
+    -> coordinate_response_measure::Response {
     coordinate_response_measure::Response p{};
     p.color = colorResponse();
     p.number = std::stoi(view->numberResponse());
     return p;
 }
 
-coordinate_response_measure::Color Presenter::Subject::colorResponse() {
+auto Presenter::Subject::colorResponse() -> coordinate_response_measure::Color {
     if (view->greenResponse())
         return coordinate_response_measure::Color::green;
     if (view->blueResponse())
@@ -479,7 +510,7 @@ void Presenter::Testing::submitResponse() {
     showNextTrialButton();
 }
 
-FreeResponse Presenter::Testing::openSetResponse() {
+auto Presenter::Testing::openSetResponse() -> open_set::FreeResponse {
     return {view->response(), view->flagged()};
 }
 

@@ -29,7 +29,7 @@ void AdaptiveMethodImpl::selectNextListAfter(void (AdaptiveMethodImpl::*f)()) {
 
 void AdaptiveMethodImpl::makeSnrTracks() {
     targetListsWithTracks.clear();
-    for (const auto& list : lists)
+    for (const auto &list : lists)
         makeTrackWithList(list.get());
 }
 
@@ -43,8 +43,9 @@ void AdaptiveMethodImpl::selectNextList() {
     auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
     if (remainingLists == 0)
         return;
-    auto targetListsWithTrack_ = targetListsWithTracks.at(
+    auto index = gsl::narrow<std::size_t>(
         randomizer->randomIntBetween(0, remainingLists - 1));
+    auto targetListsWithTrack_ = targetListsWithTracks.at(index);
     currentSnrTrack = targetListsWithTrack_.track.get();
     currentTargetList = targetListsWithTrack_.list;
 }
@@ -57,17 +58,19 @@ void AdaptiveMethodImpl::removeCompleteTracks() {
         end);
 }
 
-bool AdaptiveMethodImpl::complete(const TargetListWithTrack &t) {
+auto AdaptiveMethodImpl::complete(const TargetListWithTrack &t) -> bool {
     return t.track->complete();
 }
 
-bool AdaptiveMethodImpl::complete() {
+auto AdaptiveMethodImpl::complete() -> bool {
     return std::all_of(targetListsWithTracks.begin(),
         targetListsWithTracks.end(),
         [&](const TargetListWithTrack &t) { return complete(t); });
 }
 
-std::string AdaptiveMethodImpl::next() { return currentTargetList->next(); }
+auto AdaptiveMethodImpl::next() -> std::string {
+    return currentTargetList->next();
+}
 
 void AdaptiveMethodImpl::submitResponse(
     const coordinate_response_measure::Response &response) {
@@ -89,14 +92,14 @@ void AdaptiveMethodImpl::submitResponse(
     selectNextList();
 }
 
-int AdaptiveMethodImpl::snr_dB() { return currentSnrTrack->x(); }
+auto AdaptiveMethodImpl::snr_dB() -> int { return currentSnrTrack->x(); }
 
-std::string AdaptiveMethodImpl::current() {
+auto AdaptiveMethodImpl::current() -> std::string {
     return currentTargetList->current();
 }
 
-bool AdaptiveMethodImpl::correct(const std::string &target,
-    const coordinate_response_measure::Response &response) {
+auto AdaptiveMethodImpl::correct(const std::string &target,
+    const coordinate_response_measure::Response &response) -> bool {
     return evaluator->correct(target, response);
 }
 
@@ -150,7 +153,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submitResponse(const FreeResponse &) {
+void AdaptiveMethodImpl::submitResponse(const open_set::FreeResponse &) {
     selectNextList();
 }
 }

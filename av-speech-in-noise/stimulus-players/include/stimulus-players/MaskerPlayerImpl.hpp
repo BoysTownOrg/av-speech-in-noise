@@ -10,28 +10,29 @@
 #include <atomic>
 
 namespace stimulus_players {
+using channel_buffer_type = gsl::span<float>;
+
 class AudioPlayer {
   public:
     class EventListener {
       public:
         virtual ~EventListener() = default;
         virtual void fillAudioBuffer(
-            const std::vector<gsl::span<float>> &audio) = 0;
+            const std::vector<channel_buffer_type> &audio) = 0;
     };
 
     virtual ~AudioPlayer() = default;
     virtual void subscribe(EventListener *) = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
-    virtual bool playing() = 0;
+    virtual auto playing() -> bool = 0;
     virtual void loadFile(std::string) = 0;
-    virtual int deviceCount() = 0;
-    virtual std::string deviceDescription(int index) = 0;
-    virtual bool outputDevice(int index) = 0;
+    virtual auto deviceCount() -> int = 0;
+    virtual auto deviceDescription(int index) -> std::string = 0;
+    virtual auto outputDevice(int index) -> bool = 0;
     virtual void setDevice(int index) = 0;
-    virtual double sampleRateHz() = 0;
-    virtual double durationSeconds() = 0;
-    virtual void seekSeconds(double) = 0;
+    virtual auto sampleRateHz() -> double = 0;
+    virtual auto durationSeconds() -> double = 0;
 };
 
 class Timer {
@@ -46,6 +47,10 @@ class Timer {
     virtual void scheduleCallbackAfterSeconds(double) = 0;
 };
 
+using cpp_core_guidelines_index_type = gsl::index;
+using channel_index_type = cpp_core_guidelines_index_type;
+using sample_index_type = cpp_core_guidelines_index_type;
+
 class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
                          public AudioPlayer::EventListener,
                          public Timer::EventListener {
@@ -55,49 +60,56 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void fadeIn() override;
     void fadeOut() override;
     void loadFile(std::string) override;
-    bool playing() override;
+    auto playing() -> bool override;
     void setAudioDevice(std::string) override;
     void setLevel_dB(double) override;
-    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
+    void fillAudioBuffer(
+        const std::vector<channel_buffer_type> &audio) override;
     void setFadeInOutSeconds(double);
-    std::vector<std::string> outputAudioDeviceDescriptions() override;
-    double rms() override;
-    double durationSeconds() override;
+    auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
+    auto rms() -> double override;
+    auto durationSeconds() -> double override;
     void seekSeconds(double) override;
-    double fadeTimeSeconds() override;
+    auto fadeTimeSeconds() -> double override;
     void callback() override;
+    void setChannelDelaySeconds(
+        channel_index_type channel, double seconds) override;
+    void useFirstChannelOnly() override;
+    void clearChannelDelays() override;
+    void useAllChannels() override;
 
   private:
-    std::vector<std::vector<float>> readAudio_();
-    std::vector<std::string> audioDeviceDescriptions_();
-    int findDeviceIndex(const std::string &device);
+    auto readAudio(std::string) -> audio_type;
+    auto audioDeviceDescriptions_() -> std::vector<std::string>;
+    auto findDeviceIndex(const std::string &device) -> int;
+    void recalculateSamplesToWaitPerChannel();
 
     class AudioThread {
       public:
-        explicit AudioThread(AudioPlayer *);
-        void setSharedAtomics(MaskerPlayerImpl *);
-        void fillAudioBuffer(const std::vector<gsl::span<float>> &audio);
+        void setSharedState(MaskerPlayerImpl *);
+        void fillAudioBuffer(const std::vector<channel_buffer_type> &audio);
 
       private:
+        void copySourceAudio(
+            const std::vector<channel_buffer_type> &audioBuffer);
+        void applyLevel(const std::vector<channel_buffer_type> &audioBuffer);
         void updateWindowLength();
         void prepareToFadeIn();
         void checkForFadeIn();
         void prepareToFadeOut();
         void checkForFadeOut();
-        int levelTransitionSamples();
-        void scaleAudio(const std::vector<gsl::span<float>> &);
-        bool doneFadingIn();
+        auto doneFadingIn() -> bool;
         void checkForFadeInComplete();
-        bool doneFadingOut();
+        auto doneFadingOut() -> bool;
         void checkForFadeOutComplete();
         void advanceCounterIfStillFading();
         void updateFadeState();
-        double fadeScalar();
+        auto nextFadeScalar() -> double;
+        auto sourceFrames() -> sample_index_type;
 
+        MaskerPlayerImpl *sharedState{};
         int hannCounter{};
         int halfWindowLength{};
-        MaskerPlayerImpl *sharedAtomics{};
-        AudioPlayer *player;
         bool fadingOut{};
         bool fadingIn{};
     };
@@ -105,32 +117,41 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     class MainThread {
       public:
         MainThread(AudioPlayer *, Timer *);
-        void setSharedAtomics(MaskerPlayerImpl *);
+        void setSharedState(MaskerPlayerImpl *);
         void callback();
         void subscribe(MaskerPlayer::EventListener *);
         void fadeIn();
         void fadeOut();
+        void setChannelDelaySeconds(channel_index_type channel, double seconds);
+        void clearChannelDelays();
+        auto channelDelaySeconds(channel_index_type channel) -> double;
+        void setFadeInOutSeconds(double);
+        auto fadeTimeSeconds() -> double;
 
       private:
-        bool fading();
+        auto fading() -> bool;
         void scheduleCallbackAfterSeconds(double);
 
-        MaskerPlayerImpl *sharedAtomics{};
+        std::vector<double> channelDelaySeconds_;
+        MaskerPlayerImpl *sharedState{};
         AudioPlayer *player;
         MaskerPlayer::EventListener *listener{};
         Timer *timer;
+        double fadeInOutSeconds{};
         bool fadingIn{};
         bool fadingOut{};
     };
 
     AudioThread audioThread;
     MainThread mainThread;
-    std::string filePath_{};
-    double rms_{};
-    std::atomic<double> levelScalar{1};
-    std::atomic<double> fadeInOutSeconds{};
+    audio_type sourceAudio{};
+    std::vector<sample_index_type> samplesToWaitPerChannel;
+    std::vector<sample_index_type> audioFrameHeadsPerChannel;
     AudioPlayer *player;
     AudioReader *reader;
+    std::atomic<double> levelScalar{1};
+    std::atomic<int> levelTransitionSamples_{};
+    std::atomic<bool> firstChannelOnly{};
     std::atomic<bool> fadeOutComplete{};
     std::atomic<bool> fadeInComplete{};
     std::atomic<bool> pleaseFadeOut{};
