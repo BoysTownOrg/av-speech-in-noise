@@ -210,6 +210,7 @@ auto MaskerPlayerImpl::outputAudioDeviceDescriptions()
 void MaskerPlayerImpl::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
     mainThread.setChannelDelaySeconds(channel, seconds);
+    recalculateSamplesToWaitPerChannel();
 }
 
 void MaskerPlayerImpl::clearChannelDelays() { mainThread.clearChannelDelays(); }
