@@ -21,95 +21,71 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <sstream>
+#include <utility>
 
 namespace {
-class MacOsDirectoryReader : public target_list::DirectoryReader
-{
-    std::vector<std::string> filesIn(std::string directory) override {
-        return collectAllPredicateAbidingContents(
-            std::move(directory),
-            &MacOsDirectoryReader::notADirectory
-        );
+auto contents(NSString *parent) -> NSArray<NSString *> * {
+    return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parent
+                                                               error:nil];
+}
+
+auto combinePath(NSString *base, id toAppend) -> NSString * {
+    return [base stringByAppendingPathComponent:toAppend];
+}
+
+auto toCStr(id item) -> const char *_Nullable { return [item UTF8String]; }
+
+auto collectContentsIf(std::string directory, BOOL (*f)(NSString *))
+    -> std::vector<std::string> {
+    std::vector<std::string> items{};
+    auto parent = asNsString(std::move(directory));
+    for (id item in contents(parent)) {
+        auto path = combinePath(parent, item);
+        if ((*f)(path) != 0)
+            items.emplace_back(toCStr(item));
     }
-    
-    std::vector<std::string> subDirectories(std::string directory) override {
-        return collectAllPredicateAbidingContents(
-            std::move(directory),
-            &MacOsDirectoryReader::isDirectory
-        );
+    return items;
+}
+
+auto isDirectory(NSString *path) -> BOOL {
+    BOOL isDir = NO;
+    [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
+    return isDir;
+}
+
+auto notADirectory(NSString *path) -> BOOL {
+    return static_cast<BOOL>(isDirectory(path) == 0);
+}
+
+class MacOsDirectoryReader : public target_list::DirectoryReader {
+    auto filesIn(std::string directory) -> std::vector<std::string> override {
+        return collectContentsIf(std::move(directory), notADirectory);
     }
-    
-    std::vector<std::string> collectAllPredicateAbidingContents(
-        std::string directory,
-        BOOL(MacOsDirectoryReader::*f)(NSString *)
-    ) {
-        std::vector<std::string> items{};
-        auto parent = asNsString(directory);
-        for (id item in contents(parent)) {
-            auto path = combinePath(parent, item);
-            if ((this->*f)(path))
-                items.push_back(toCStr(item));
-        }
-        return items;
-    }
-    
-    NSArray<NSString *> *contents(NSString *parent) {
-        return [[NSFileManager defaultManager]
-            contentsOfDirectoryAtPath: parent
-            error: nil
-        ];
-    }
-    
-    NSString *combinePath(NSString *base, id toAppend) {
-        return [base stringByAppendingPathComponent:toAppend];
-    }
-    
-    BOOL isDirectory(NSString *path) {
-        BOOL isDir = NO;
-        [[NSFileManager defaultManager]
-            fileExistsAtPath:path
-            isDirectory:&isDir];
-        return isDir;
-    }
-    
-    BOOL notADirectory(NSString *path) {
-        return !isDirectory(path);
-    }
-    
-    const char * _Nullable toCStr(id item) {
-        return [item UTF8String];
+
+    auto subDirectories(std::string directory)
+        -> std::vector<std::string> override {
+        return collectContentsIf(std::move(directory), isDirectory);
     }
 };
 
 class FileWriter : public av_speech_in_noise::Writer {
     std::ofstream file{};
-public:
-    void write(std::string s) override {
-        file << std::move(s);
-    }
-    
-    void open(std::string s) override {
-        file.open(s);
-    }
-    
-    bool failed() override {
-        return file.fail();
-    }
-    
-    void close() override {
-        file.close();
-    }
-    
-    void save() override {
-        file.flush();
-    }
+
+  public:
+    void write(std::string s) override { file << s; }
+
+    void open(std::string s) override { file.open(s); }
+
+    auto failed() -> bool override { return file.fail(); }
+
+    void close() override { file.close(); }
+
+    void save() override { file.flush(); }
 };
 
 class UnixFileSystemPath : public av_speech_in_noise::FileSystemPath {
-    std::string homeDirectory() override {
-        return std::getenv("HOME");
-    }
-    
+    auto homeDirectory() -> std::string override { return std::getenv("HOME"); }
+
     void createDirectory(std::string s) override {
         mkdir(s.c_str(), ACCESSPERMS);
     }
@@ -118,32 +94,23 @@ class UnixFileSystemPath : public av_speech_in_noise::FileSystemPath {
 class TimeStampImpl : public av_speech_in_noise::TimeStamp {
     tm dummyTime{};
     tm *time{&dummyTime};
-public:
-    int year() override {
+
+  public:
+    auto year() -> int override {
         // https://en.cppreference.com/w/c/chrono/tm
         return time->tm_year + 1900;
     }
-    
-    int month() override {
-        return time->tm_mon;
-    }
-    
-    int dayOfMonth() override {
-        return time->tm_mday;
-    }
-    
-    int hour() override {
-        return time->tm_hour;
-    }
-    
-    int minute() override {
-        return time->tm_min;
-    }
-    
-    int second() override {
-        return time->tm_sec;
-    }
-    
+
+    auto month() -> int override { return time->tm_mon; }
+
+    auto dayOfMonth() -> int override { return time->tm_mday; }
+
+    auto hour() -> int override { return time->tm_hour; }
+
+    auto minute() -> int override { return time->tm_min; }
+
+    auto second() -> int override { return time->tm_sec; }
+
     void capture() override {
         auto now = std::time(nullptr);
         time = std::localtime(&now);
@@ -159,30 +126,25 @@ class TimerImpl;
 
 @interface CallbackScheduler : NSObject
 @property av_speech_in_noise::impl::TimerImpl *controller;
-- (void) scheduleCallbackAfterSeconds: (double) x;
-- (void) timerCallback;
+- (void)scheduleCallbackAfterSeconds:(double)x;
+- (void)timerCallback;
 @end
 
 namespace av_speech_in_noise::impl {
 class TimerImpl : public stimulus_players::Timer {
     EventListener *listener{};
     CallbackScheduler *scheduler{[CallbackScheduler alloc]};
-public:
-    TimerImpl() {
-        scheduler.controller = this;
-    }
-    
-    void subscribe(EventListener *e) override {
-        listener = e;
-    }
-    
-    void scheduleCallbackAfterSeconds(double x) override{
+
+  public:
+    TimerImpl() { scheduler.controller = this; }
+
+    void subscribe(EventListener *e) override { listener = e; }
+
+    void scheduleCallbackAfterSeconds(double x) override {
         [scheduler scheduleCallbackAfterSeconds:x];
     }
-    
-    void timerCallback() {
-        listener->callback();
-    }
+
+    void timerCallback() { listener->callback(); }
 };
 }
 
@@ -190,13 +152,11 @@ public:
 @synthesize controller;
 
 - (void)scheduleCallbackAfterSeconds:(double)x {
-    [NSTimer
-        scheduledTimerWithTimeInterval:x
-        target:self
-        selector: @selector(timerCallback)
-        userInfo:nil
-        repeats:NO
-    ];
+    [NSTimer scheduledTimerWithTimeInterval:x
+                                     target:self
+                                   selector:@selector(timerCallback)
+                                   userInfo:nil
+                                    repeats:NO];
 }
 
 - (void)timerCallback {
@@ -206,8 +166,8 @@ public:
 
 namespace {
 class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
-    std::string read(std::string s) override {
-        std::ifstream file{std::move(s)};
+    auto read(std::string s) -> std::string override {
+        std::ifstream file{s};
         std::stringstream stream;
         stream << file.rdbuf();
         return stream.str();
@@ -215,13 +175,12 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
 };
 }
 
-@interface WindowDelegate : NSObject<NSWindowDelegate>
+@interface WindowDelegate : NSObject <NSWindowDelegate>
 - (void)windowWillClose:(NSNotification *)notification;
 @end
 
 @implementation WindowDelegate
-- (void)windowWillClose:(NSNotification *) __unused notification
-{
+- (void)windowWillClose:(NSNotification *)__unused notification {
     [NSApp terminate:self];
 }
 @end
@@ -229,167 +188,101 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
 namespace av_speech_in_noise::impl {
 void main() {
     MacOsDirectoryReader reader;
-    target_list::FileExtensionFilter fileExtensions_{
-        {".mov", ".avi", ".wav"}
-    };
-    target_list::FileFilterDecorator fileExtensions{
-        &reader,
-        &fileExtensions_
-    };
+    target_list::FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
+    target_list::FileFilterDecorator fileExtensions{&reader, &fileExtensions_};
     MersenneTwisterRandomizer randomizer;
     target_list::RandomizedTargetListFactory targetListFactory{
-        &fileExtensions,
-        &randomizer
-    };
+        &fileExtensions, &randomizer};
     target_list::SubdirectoryTargetListReader targetListReader{
-        &targetListFactory,
-        &reader
-    };
+        &targetListFactory, &reader};
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
-    stimulus_players::TargetPlayerImpl targetPlayer{
-        &videoPlayer,
-        &audioReader
-    };
+    stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
     AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
     stimulus_players::MaskerPlayerImpl maskerPlayer{
-        &audioPlayer,
-        &audioReader,
-        &timer
-    };
+        &audioPlayer, &audioReader, &timer};
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
     OutputFilePathImpl path{&timeStamp, &systemPath};
     path.setRelativeOutputDirectory(
-        "Documents/AVCoordinateResponseMeasureResults"
-    );
+        "Documents/AVCoordinateResponseMeasureResults");
     OutputFileImpl outputFile{&writer, &path};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
     TrackSettingsInterpreterImpl trackSettingsInterpreter;
     TextFileReaderImpl textFileReader;
     TrackSettingsReaderImpl trackSettingsReader{
-        &textFileReader,
-        &trackSettingsInterpreter
-    };
-    AdaptiveMethodImpl adaptiveMethod{
-        &targetListReader,
-        &trackSettingsReader,
-        &snrTrackFactory,
-        &responseEvaluator,
-        &randomizer
-    };
+        &textFileReader, &trackSettingsInterpreter};
+    AdaptiveMethodImpl adaptiveMethod{&targetListReader, &trackSettingsReader,
+        &snrTrackFactory, &responseEvaluator, &randomizer};
     target_list::RandomizedTargetList infiniteTargetList{
-        &fileExtensions,
-        &randomizer
-    };
-    target_list::FileIdentifierExcluderFilter 
-        originalStimuli_{{"100", "200", "300", "400"}};
-    target_list::FileIdentifierFilter 
-        oneHundredMsStimuli_{"100"};
-    target_list::FileIdentifierFilter 
-        twoHundredMsStimuli_{"200"};
-    target_list::FileIdentifierFilter 
-        threeHundredMsStimuli_{"300"};
-    target_list::FileIdentifierFilter 
-        fourHundredMsStimuli_{"400"};
-    target_list::FileFilterDecorator 
-        originalStimuli{&fileExtensions, &originalStimuli_};
-    target_list::FileFilterDecorator 
-        oneHundredMsStimuli{&fileExtensions, &oneHundredMsStimuli_};
-    target_list::FileFilterDecorator 
-        twoHundredMsStimuli{&fileExtensions, &twoHundredMsStimuli_};
-    target_list::FileFilterDecorator 
-        threeHundredMsStimuli{&fileExtensions, &threeHundredMsStimuli_};
-    target_list::FileFilterDecorator 
-        fourHundredMsStimuli{&fileExtensions, &fourHundredMsStimuli_};
-    target_list::RandomSubsetFiles 
-        randomSubsetStimuli{&randomizer, 30};
-    target_list::FileFilterDecorator 
-        randomSubsetOriginalStimuli{&originalStimuli, &randomSubsetStimuli};
-    target_list::FileFilterDecorator 
-        randomSubsetOneHundredMsStimuli{&oneHundredMsStimuli, &randomSubsetStimuli};
-    target_list::FileFilterDecorator 
-        randomSubsetTwoHundredMsStimuli{&twoHundredMsStimuli, &randomSubsetStimuli};
-    target_list::FileFilterDecorator 
-        randomSubsetThreeHundredMsStimuli{&threeHundredMsStimuli, &randomSubsetStimuli};
-    target_list::FileFilterDecorator 
-        randomSubsetFourHundredMsStimuli{&fourHundredMsStimuli, &randomSubsetStimuli};
-    target_list::DirectoryReaderComposite composite{{
-        &randomSubsetOriginalStimuli,
-        &randomSubsetOneHundredMsStimuli, 
-        &randomSubsetTwoHundredMsStimuli, 
-        &randomSubsetThreeHundredMsStimuli, 
-        &randomSubsetFourHundredMsStimuli
-    }};
+        &fileExtensions, &randomizer};
+    target_list::FileIdentifierExcluderFilter originalStimuli_{
+        {"100", "200", "300", "400"}};
+    target_list::FileIdentifierFilter oneHundredMsStimuli_{"100"};
+    target_list::FileIdentifierFilter twoHundredMsStimuli_{"200"};
+    target_list::FileIdentifierFilter threeHundredMsStimuli_{"300"};
+    target_list::FileIdentifierFilter fourHundredMsStimuli_{"400"};
+    target_list::FileFilterDecorator originalStimuli{
+        &fileExtensions, &originalStimuli_};
+    target_list::FileFilterDecorator oneHundredMsStimuli{
+        &fileExtensions, &oneHundredMsStimuli_};
+    target_list::FileFilterDecorator twoHundredMsStimuli{
+        &fileExtensions, &twoHundredMsStimuli_};
+    target_list::FileFilterDecorator threeHundredMsStimuli{
+        &fileExtensions, &threeHundredMsStimuli_};
+    target_list::FileFilterDecorator fourHundredMsStimuli{
+        &fileExtensions, &fourHundredMsStimuli_};
+    target_list::RandomSubsetFiles randomSubsetStimuli{&randomizer, 30};
+    target_list::FileFilterDecorator randomSubsetOriginalStimuli{
+        &originalStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator randomSubsetOneHundredMsStimuli{
+        &oneHundredMsStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator randomSubsetTwoHundredMsStimuli{
+        &twoHundredMsStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator randomSubsetThreeHundredMsStimuli{
+        &threeHundredMsStimuli, &randomSubsetStimuli};
+    target_list::FileFilterDecorator randomSubsetFourHundredMsStimuli{
+        &fourHundredMsStimuli, &randomSubsetStimuli};
+    target_list::DirectoryReaderComposite composite{
+        {&randomSubsetOriginalStimuli, &randomSubsetOneHundredMsStimuli,
+            &randomSubsetTwoHundredMsStimuli,
+            &randomSubsetThreeHundredMsStimuli,
+            &randomSubsetFourHundredMsStimuli}};
     target_list::RandomizedFiniteTargetList finiteTargetList{
-        &composite,
-        &randomizer
-    };
+        &composite, &randomizer};
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
     FixedTrialTestConcluder fixedTrials;
-    FixedLevelMethodImpl fixedLevelMethod{
-        &responseEvaluator
-    };
-    RecognitionTestModelImpl model_internal{
-        &targetPlayer,
-        &maskerPlayer,
-        &responseEvaluator,
-        &outputFile,
-        &randomizer
-    };
-    ModelImpl model{
-        &adaptiveMethod,
-        &fixedLevelMethod,
-        &infiniteTargetList,
-        &fixedTrials,
-        &finiteTargetList,
-        &completesWhenTargetsEmpty,
-        &model_internal
-    };
+    FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
+    RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
+        &responseEvaluator, &outputFile, &randomizer};
+    ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
+        &fixedTrials, &finiteTargetList, &completesWhenTargetsEmpty,
+        &model_internal};
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
     auto testerWindowViewMargin = 15;
-    auto testingContentFrame = NSMakeRect(
-        testerWindowViewMargin + 100,
-        testerWindowViewMargin,
-        testerWindowFrame.size.width - testerWindowViewMargin * 2 - 100,
-        testerWindowFrame.size.height - testerWindowViewMargin * 2
-    );
-    auto experimenterContentFrame = NSMakeRect(
-        testerWindowViewMargin,
-        testerWindowViewMargin,
-        testerWindowViewMargin + 100,
-        testerWindowFrame.size.height - testerWindowViewMargin * 2
-    );
-    auto testerContentFrame = NSMakeRect(
-        testerWindowViewMargin,
-        testerWindowViewMargin,
-        testerWindowFrame.size.width - testerWindowViewMargin * 2,
-        testerWindowFrame.size.height - testerWindowViewMargin * 2
-    );
+    auto testingContentFrame =
+        NSMakeRect(testerWindowViewMargin + 100, testerWindowViewMargin,
+            testerWindowFrame.size.width - testerWindowViewMargin * 2 - 100,
+            testerWindowFrame.size.height - testerWindowViewMargin * 2);
+    auto experimenterContentFrame = NSMakeRect(testerWindowViewMargin,
+        testerWindowViewMargin, testerWindowViewMargin + 100,
+        testerWindowFrame.size.height - testerWindowViewMargin * 2);
+    auto testerContentFrame =
+        NSMakeRect(testerWindowViewMargin, testerWindowViewMargin,
+            testerWindowFrame.size.width - testerWindowViewMargin * 2,
+            testerWindowFrame.size.height - testerWindowViewMargin * 2);
     CocoaTestSetupView testSetupView{testerContentFrame};
     testSetupView.setMaskerLevel_dB_SPL("65");
     testSetupView.setCalibrationLevel_dB_SPL("65");
     testSetupView.setStartingSnr_dB("5");
-    testSetupView.setMasker(
-        "/Users/basset/Documents/maxdetection/Stimuli/Masker/L1L2_EngEng.wav"
-    );
-    testSetupView.setCalibration(
-        "/Users/basset/Documents/maxdetection/Stimuli/Video/List_1/List1E01AVLNST.mov"
-    );
-    testSetupView.setTargetListDirectory(
-        "/Users/basset/Documents/Lalonde/Lalonde-coordinate-response/Seth Mars Attack"
-    );
-    testSetupView.setTrackSettingsFile(
-        "/Users/basset/Desktop/track-settings.txt"
-    );
     CocoaExperimenterView experimenterView{experimenterContentFrame};
     CocoaTestingView testingView{testingContentFrame};
     CocoaView view{testerWindowFrame};
@@ -404,30 +297,17 @@ void main() {
     auto subjectScreenWidth = subjectScreenSize.width;
     auto subjectViewWidth = subjectScreenWidth / 3;
     auto subjectViewLeadingEdge =
-        subjectScreenOrigin.x +
-        (subjectScreenWidth - subjectViewWidth) / 2;
-    CocoaSubjectView subjectView{NSMakeRect(
-        subjectViewLeadingEdge,
-        subjectScreenOrigin.y,
-        subjectViewWidth,
-        subjectViewHeight
-    )};
+        subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
+    CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge,
+        subjectScreenOrigin.y, subjectViewWidth, subjectViewHeight)};
     Presenter::Subject subject{&subjectView};
     Presenter::TestSetup testSetup{&testSetupView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
     Presenter presenter{
-        &model,
-        &view,
-        &testSetup,
-        &subject,
-        &experimenter,
-        &testing
-    };
+        &model, &view, &testSetup, &subject, &experimenter, &testing};
     presenter.run();
 }
 }
 
-int main() {
-    av_speech_in_noise::impl::main();
-}
+int main() { av_speech_in_noise::impl::main(); }
