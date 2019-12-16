@@ -213,7 +213,10 @@ void MaskerPlayerImpl::setChannelDelaySeconds(
     recalculateSamplesToWaitPerChannel();
 }
 
-void MaskerPlayerImpl::clearChannelDelays() { mainThread.clearChannelDelays(); }
+void MaskerPlayerImpl::clearChannelDelays() {
+    mainThread.clearChannelDelays();
+    recalculateSamplesToWaitPerChannel();
+}
 
 void MaskerPlayerImpl::useFirstChannelOnly() { set(firstChannelOnly); }
 

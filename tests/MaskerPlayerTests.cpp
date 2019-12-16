@@ -519,6 +519,18 @@ MASKER_PLAYER_TEST(clearChannelDelaysMono) {
     assertLeftChannelEquals({1, 2, 3});
 }
 
+MASKER_PLAYER_TEST(clearChannelDelaysAfterLoadMono) {
+    setSampleRateHz(3);
+    setChannelDelaySeconds(0, 1);
+    loadMonoAudio({4, 5, 6});
+    fillAudioBufferMono(3); // => {0, 0, 0}
+
+    loadMonoAudio({1, 2, 3});
+    clearChannelDelays();
+    fillAudioBufferMono(3);
+    assertLeftChannelEquals({1, 2, 3});
+}
+
 MASKER_PLAYER_TEST(setChannelDelayStereo) {
     setSampleRateHz(3);
     setChannelDelaySeconds(1, 1);
