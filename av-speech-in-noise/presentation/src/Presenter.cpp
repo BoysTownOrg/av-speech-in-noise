@@ -122,7 +122,8 @@ auto Presenter::fixedLevelClosedSet() -> bool {
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
-    if (adaptiveClosedSet())
+    if (adaptiveClosedSet() || adaptiveClosedSetSingleSpeaker() ||
+        adaptiveClosedSetDelayedMasker())
         return &adaptiveClosedSetTrialCompletionHandler;
     if (adaptiveOpenSet())
         return &adaptiveOpenSetTrialCompletionHandler;

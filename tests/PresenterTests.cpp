@@ -761,6 +761,18 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetSingleSpeakerTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptiveClosedSetSingleSpeakerTest, respondingFromSubject);
+}
+
+TEST_F(PresenterTests,
+    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetDelayedMaskerTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptiveClosedSetDelayedMaskerTest, respondingFromSubject);
+}
+
+TEST_F(PresenterTests,
     completingTrialShowsSubjectResponseButtonsForFixedLevelClosedSetTest) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelClosedSetTest, respondingFromSubject);
