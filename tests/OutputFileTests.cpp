@@ -63,7 +63,7 @@ class UseCase {
 class WritingTestUseCase : public virtual UseCase {
   public:
     virtual void setCondition(Condition) = 0;
-    virtual void setTestInfo(const TestIdentity &) = 0;
+    virtual void setTestIdentity(const TestIdentity &) = 0;
     virtual void setCommonTest(const Test &) = 0;
 };
 
@@ -73,7 +73,7 @@ class WritingAdaptiveTest : public WritingTestUseCase {
   public:
     void setCondition(Condition c) override { test.condition = c; }
 
-    void setTestInfo(const TestIdentity &p) override { test.identity = p; }
+    void setTestIdentity(const TestIdentity &p) override { test.identity = p; }
 
     void setCommonTest(const Test &p) override {
         static_cast<Test &>(test) = p;
@@ -92,7 +92,7 @@ class WritingFixedLevelTest : public WritingTestUseCase {
         static_cast<Test &>(test) = p;
     }
 
-    void setTestInfo(const TestIdentity &p) override { test.identity = p; }
+    void setTestIdentity(const TestIdentity &p) override { test.identity = p; }
 
     void run(OutputFileImpl &file) override { file.writeTest(test); }
 };
@@ -230,13 +230,13 @@ class OutputFileTests : public ::testing::Test {
         assertWriterContainsConditionName(c);
     }
 
-    void assertTestInformationWritten(WritingTestUseCase &useCase) {
-        TestIdentity info;
-        info.subjectId = "a";
-        info.testerId = "b";
-        info.session = "c";
-        info.method = "d";
-        useCase.setTestInfo(info);
+    void assertTestIdentityWritten(WritingTestUseCase &useCase) {
+        TestIdentity identity;
+        identity.subjectId = "a";
+        identity.testerId = "b";
+        identity.session = "c";
+        identity.method = "d";
+        useCase.setTestIdentity(identity);
         useCase.run(file);
         assertColonDelimitedEntryWritten("subject", "a");
         assertColonDelimitedEntryWritten("tester", "b");
@@ -557,11 +557,11 @@ TEST_F(OutputFileTests, writeFixedLevelTest) {
 }
 
 TEST_F(OutputFileTests, writeAdaptiveTestInformation) {
-    assertTestInformationWritten(writingAdaptiveTest);
+    assertTestIdentityWritten(writingAdaptiveTest);
 }
 
 TEST_F(OutputFileTests, writeFixedLevelTestInformation) {
-    assertTestInformationWritten(writingFixedLevelTest);
+    assertTestIdentityWritten(writingFixedLevelTest);
 }
 
 TEST_F(OutputFileTests, writeAdaptiveTestWithAvCondition) {
