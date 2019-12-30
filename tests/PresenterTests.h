@@ -1079,6 +1079,23 @@ class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
     }
 };
 
+static auto session(ConfirmingFixedLevelTest &t, ModelStub &m) -> std::string {
+    return t.session(m);
+}
+
+static auto method(ConfirmingFixedLevelTest &t, ModelStub &m) -> std::string {
+    return t.method(m);
+}
+
+static auto subjectId(ConfirmingFixedLevelTest &t, ModelStub &m)
+    -> std::string {
+    return t.subjectId(m);
+}
+
+static auto testerId(ConfirmingFixedLevelTest &t, ModelStub &m) -> std::string {
+    return t.testerId(m);
+}
+
 class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
     ConfirmingFixedLevelTest confirmingFixedLevelTest;
     ViewStub::TestSetupViewStub *view;
@@ -1109,19 +1126,19 @@ class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.subjectId(m);
+        return presentation::subjectId(confirmingFixedLevelTest, m);
     }
 
     auto testerId(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.testerId(m);
+        return presentation::testerId(confirmingFixedLevelTest, m);
     }
 
     auto session(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.session(m);
+        return presentation::session(confirmingFixedLevelTest, m);
     }
 
     auto method(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.method(m);
+        return presentation::method(confirmingFixedLevelTest, m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
@@ -1164,19 +1181,19 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.subjectId(m);
+        return presentation::subjectId(confirmingFixedLevelTest, m);
     }
 
     auto testerId(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.testerId(m);
+        return presentation::testerId(confirmingFixedLevelTest, m);
     }
 
     auto session(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.session(m);
+        return presentation::session(confirmingFixedLevelTest, m);
     }
 
     auto method(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.method(m);
+        return presentation::method(confirmingFixedLevelTest, m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
@@ -1468,7 +1485,8 @@ class PresenterTests : public ::testing::Test {
     ConfirmingAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{&setupView};
     ConfirmingAdaptiveClosedSetSingleSpeakerTest
         confirmingAdaptiveClosedSetSingleSpeakerTest{&setupView};
-    ConfirmingAdaptiveClosedSetDelayedMaskerTest confirmingAdaptiveClosedSetDelayedMaskerTest{&setupView};
+    ConfirmingAdaptiveClosedSetDelayedMaskerTest
+        confirmingAdaptiveClosedSetDelayedMaskerTest{&setupView};
     ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
     ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{
