@@ -235,11 +235,13 @@ class OutputFileTests : public ::testing::Test {
         info.subjectId = "a";
         info.testerId = "b";
         info.session = "c";
+        info.method = "d";
         useCase.setTestInfo(info);
         useCase.run(file);
         assertColonDelimitedEntryWritten("subject", "a");
         assertColonDelimitedEntryWritten("tester", "b");
         assertColonDelimitedEntryWritten("session", "c");
+        assertColonDelimitedEntryWritten("method", "d");
     }
 
     void assertCommonTestWritten(WritingTestUseCase &useCase) {

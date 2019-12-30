@@ -33,6 +33,10 @@ class FormattedStream {
         writeLabeledLine("session", p.session);
     }
 
+    void writeMethod(const TestIdentity &p) {
+        writeLabeledLine("method", p.method);
+    }
+
     void writeMasker(const Test &p) {
         writeLabeledLine("masker", p.maskerFilePath);
     }
@@ -92,6 +96,7 @@ static auto formatTest(const AdaptiveTest &test) -> std::string {
     stream.writeSubjectId(information);
     stream.writeTester(information);
     stream.writeSession(information);
+    stream.writeMethod(information);
     auto common = test;
     stream.writeMasker(common);
     stream.writeTargetList(common);
@@ -108,6 +113,7 @@ static auto formatTest(const FixedLevelTest &test) -> std::string {
     stream.writeSubjectId(information);
     stream.writeTester(information);
     stream.writeSession(information);
+    stream.writeMethod(information);
     auto common = test;
     stream.writeMasker(common);
     stream.writeTargetList(common);
