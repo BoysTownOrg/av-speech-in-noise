@@ -592,6 +592,7 @@ class ConfirmingTestSetup : public virtual ConditionUseCase,
     virtual auto subjectId(ModelStub &) -> std::string = 0;
     virtual auto testerId(ModelStub &) -> std::string = 0;
     virtual auto session(ModelStub &) -> std::string = 0;
+    virtual auto method(ModelStub &) -> std::string = 0;
     virtual auto maskerFilePath(ModelStub &) -> std::string = 0;
 };
 
@@ -642,6 +643,10 @@ class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
         return testIdentity(m).session;
     }
 
+    auto method(ModelStub &m) -> std::string override {
+        return testIdentity(m).method;
+    }
+
     auto maskerFilePath(ModelStub &m) -> std::string override {
         return test(m).maskerFilePath;
     }
@@ -689,6 +694,10 @@ static auto fullScaleLevel(ConfirmingAdaptiveTest &t, ModelStub &m) -> int {
 
 static auto session(ConfirmingAdaptiveTest &t, ModelStub &m) -> std::string {
     return t.session(m);
+}
+
+static auto method(ConfirmingAdaptiveTest &t, ModelStub &m) -> std::string {
+    return t.method(m);
 }
 
 static auto subjectId(ConfirmingAdaptiveTest &t, ModelStub &m) -> std::string {
@@ -771,6 +780,10 @@ class ConfirmingAdaptiveClosedSetTest : public ConfirmingAdaptiveTest_ {
         return presentation::session(confirmingAdaptiveTest, m);
     }
 
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingAdaptiveTest, m);
+    }
+
     auto maskerFilePath(ModelStub &m) -> std::string override {
         return presentation::maskerFilePath(confirmingAdaptiveTest, m);
     }
@@ -837,6 +850,10 @@ class ConfirmingAdaptiveClosedSetSingleSpeakerTest
 
     auto session(ModelStub &m) -> std::string override {
         return presentation::session(confirmingAdaptiveTest, m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingAdaptiveTest, m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
@@ -907,6 +924,10 @@ class ConfirmingAdaptiveClosedSetDelayedMaskerTest
         return presentation::session(confirmingAdaptiveTest, m);
     }
 
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingAdaptiveTest, m);
+    }
+
     auto maskerFilePath(ModelStub &m) -> std::string override {
         return presentation::maskerFilePath(confirmingAdaptiveTest, m);
     }
@@ -971,6 +992,10 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
 
     auto session(ModelStub &m) -> std::string override {
         return presentation::session(confirmingAdaptiveTest, m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingAdaptiveTest, m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
@@ -1041,6 +1066,10 @@ class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
         return identity(m).session;
     }
 
+    auto method(ModelStub &m) -> std::string override {
+        return identity(m).method;
+    }
+
     auto maskerFilePath(ModelStub &m) -> std::string override {
         return test(m).maskerFilePath;
     }
@@ -1089,6 +1118,10 @@ class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
 
     auto session(ModelStub &m) -> std::string override {
         return confirmingFixedLevelTest.session(m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return confirmingFixedLevelTest.method(m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
@@ -1140,6 +1173,10 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
 
     auto session(ModelStub &m) -> std::string override {
         return confirmingFixedLevelTest.session(m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return confirmingFixedLevelTest.method(m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
@@ -1770,6 +1807,11 @@ class PresenterTests : public ::testing::Test {
         setupView.setSession("e");
         run(useCase);
         assertEqual("e", useCase.session(model));
+    }
+
+    void assertPassesMethod(ConfirmingTestSetup &useCase) {
+        run(useCase);
+        assertEqual(setupView.method(), useCase.method(model));
     }
 
     void assertPassesFullScaleLevel(LevelUseCase &useCase) {
