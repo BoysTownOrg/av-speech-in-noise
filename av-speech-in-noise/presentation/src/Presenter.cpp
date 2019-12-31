@@ -290,6 +290,7 @@ auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
     p.session = view->session();
+    p.method = view->method();
     return p;
 }
 

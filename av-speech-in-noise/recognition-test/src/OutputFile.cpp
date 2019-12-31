@@ -1,4 +1,5 @@
 #include "OutputFile.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <sstream>
 
 namespace av_speech_in_noise {
@@ -31,6 +32,10 @@ class FormattedStream {
 
     void writeSession(const TestIdentity &p) {
         writeLabeledLine("session", p.session);
+    }
+
+    void writeMethod(const TestIdentity &p) {
+        writeLabeledLine("method", p.method);
     }
 
     void writeMasker(const Test &p) {
@@ -86,34 +91,52 @@ static auto evaluation(const coordinate_response_measure::Trial &trial)
     return trial.correct ? correct() : incorrect();
 }
 
+static void writeSubjectId(
+    FormattedStream &stream, const TestIdentity &identity) {
+    stream.writeSubjectId(identity);
+}
+
+static void writeTester(FormattedStream &stream, const TestIdentity &identity) {
+    stream.writeTester(identity);
+}
+
+static void writeSession(
+    FormattedStream &stream, const TestIdentity &identity) {
+    stream.writeSession(identity);
+}
+
+static void writeMethod(FormattedStream &stream, const TestIdentity &identity) {
+    stream.writeMethod(identity);
+}
+
 static auto formatTest(const AdaptiveTest &test) -> std::string {
     FormattedStream stream;
-    auto information = test.identity;
-    stream.writeSubjectId(information);
-    stream.writeTester(information);
-    stream.writeSession(information);
-    auto common = test;
-    stream.writeMasker(common);
-    stream.writeTargetList(common);
-    stream.writeMaskerLevel(common);
+    const auto &identity = test.identity;
+    writeSubjectId(stream, identity);
+    writeTester(stream, identity);
+    writeSession(stream, identity);
+    writeMethod(stream, identity);
+    stream.writeMasker(test);
+    stream.writeTargetList(test);
+    stream.writeMaskerLevel(test);
     stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
-    stream.writeCondition(common);
+    stream.writeCondition(test);
     stream.insertNewLine();
     return stream.str();
 }
 
 static auto formatTest(const FixedLevelTest &test) -> std::string {
     FormattedStream stream;
-    auto information = test.identity;
-    stream.writeSubjectId(information);
-    stream.writeTester(information);
-    stream.writeSession(information);
-    auto common = test;
-    stream.writeMasker(common);
-    stream.writeTargetList(common);
-    stream.writeMaskerLevel(common);
+    const auto &identity = test.identity;
+    writeSubjectId(stream, identity);
+    writeTester(stream, identity);
+    writeSession(stream, identity);
+    writeMethod(stream, identity);
+    stream.writeMasker(test);
+    stream.writeTargetList(test);
+    stream.writeMaskerLevel(test);
     stream.writeLabeledLine("SNR (dB)", test.snr_dB);
-    stream.writeCondition(common);
+    stream.writeCondition(test);
     stream.insertNewLine();
     return stream.str();
 }

@@ -84,6 +84,7 @@ struct TestIdentity {
     std::string subjectId;
     std::string testerId;
     std::string session;
+    std::string method;
 };
 
 struct Test {
