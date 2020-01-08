@@ -151,7 +151,7 @@ constexpr auto methodName(Method c) -> const char * {
     case Method::fixedLevelClosedSetSilentIntervals:
         return "fixed-level closed-set silent intervals";
     case Method::fixedLevelOpenSetAllStimuli:
-        return "fixed-level closed-set all stimuli";
+        return "fixed-level open-set all stimuli";
     }
 }
 

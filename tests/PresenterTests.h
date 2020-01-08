@@ -1693,7 +1693,7 @@ class PresenterTests : public ::testing::Test {
     ConfirmingFixedLevelOpenSetSilentIntervalsTest
         confirmingFixedLevelOpenSetSilentIntervalsTest{&setupView};
     ConfirmingFixedLevelOpenSetAllStimuliTest
-        confirmingFixedLevelClosedSetAllStimuliTest{&setupView};
+        confirmingFixedLevelOpenSetAllStimuliTest{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{&testingView};

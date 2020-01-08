@@ -130,8 +130,8 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetAllStimuliTestInitializesModel) {
-    run(confirmingFixedLevelClosedSetAllStimuliTest);
+    confirmFixedLevelOpenSetAllStimuliTestInitializesModel) {
+    run(confirmingFixedLevelOpenSetAllStimuliTest);
     assertTrue(model.fixedLevelAllStimuliTestInitialized());
 }
 
