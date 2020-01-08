@@ -196,6 +196,7 @@ class Presenter : public Model::EventListener {
         auto adaptiveOpenSet() -> bool;
         auto fixedLevelOpenSet() -> bool;
         auto fixedLevelClosedSet() -> bool;
+        auto fixedLevelClosedSetSilentIntervals() -> bool;
         auto fixedLevelSilentIntervals() -> bool;
         auto fixedLevelAllStimuli() -> bool;
         auto singleSpeaker() -> bool;
@@ -357,6 +358,7 @@ class Presenter : public Model::EventListener {
     auto adaptiveOpenSet() -> bool;
     auto closedSet() -> bool;
     auto fixedLevelClosedSet() -> bool;
+    auto fixedLevelClosedSetSilentIntervals() -> bool;
     void initializeTest();
     void showTestView();
     void switchToTestView();

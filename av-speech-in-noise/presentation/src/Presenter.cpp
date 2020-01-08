@@ -122,11 +122,16 @@ void Presenter::showTestView() {
 
 auto Presenter::closedSet() -> bool {
     return adaptiveClosedSet() || fixedLevelClosedSet() ||
-        adaptiveClosedSetSingleSpeaker() || adaptiveClosedSetDelayedMasker();
+        adaptiveClosedSetSingleSpeaker() || adaptiveClosedSetDelayedMasker() ||
+        fixedLevelClosedSetSilentIntervals();
 }
 
 auto Presenter::fixedLevelClosedSet() -> bool {
     return testSetup->fixedLevelClosedSet();
+}
+
+auto Presenter::fixedLevelClosedSetSilentIntervals() -> bool {
+    return testSetup->fixedLevelClosedSetSilentIntervals();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
@@ -404,6 +409,10 @@ auto Presenter::TestSetup::fixedLevelOpenSet() -> bool {
 
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
     return method(Method::fixedLevelClosedSet);
+}
+
+auto Presenter::TestSetup::fixedLevelClosedSetSilentIntervals() -> bool {
+    return method(Method::fixedLevelClosedSetSilentIntervals);
 }
 
 auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {

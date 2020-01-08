@@ -99,6 +99,10 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsSubjectView) {
     assertShowsSubjectView(confirmingFixedLevelClosedSetTest);
 }
 
+TEST_F(PresenterTests, confirmFixedLevelClosedSetSilentIntervalsTestShowsSubjectView) {
+    assertShowsSubjectView(confirmingFixedLevelClosedSetSilentIntervalsTest);
+}
+
 TEST_F(PresenterTests, confirmAdaptiveOpenSetTestDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(confirmingAdaptiveOpenSetTest);
 }
