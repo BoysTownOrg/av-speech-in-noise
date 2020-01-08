@@ -462,6 +462,12 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    confirmFixedLevelClosedSetSilentIntervalsTestShowsNextTrialButtonForSubject) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelClosedSetSilentIntervalsTest, playingTrialFromSubject);
+}
+
+TEST_F(PresenterTests,
     confirmAdaptiveOpenSetTestShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingAdaptiveOpenSetTest, playingTrialFromExperimenter);
