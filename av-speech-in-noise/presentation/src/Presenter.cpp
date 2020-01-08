@@ -121,9 +121,7 @@ void Presenter::showTestView() {
 }
 
 auto Presenter::closedSet() -> bool {
-    return adaptiveClosedSet() || fixedLevelClosedSet() ||
-        adaptiveClosedSetSingleSpeaker() || adaptiveClosedSetDelayedMasker() ||
-        fixedLevelClosedSetSilentIntervals();
+    return testSetup->closedSet();
 }
 
 auto Presenter::fixedLevelClosedSet() -> bool {
@@ -393,6 +391,12 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
 
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
     return method(Method::adaptiveClosedSet);
+}
+
+auto Presenter::TestSetup::closedSet() -> bool {
+    return adaptiveClosedSet() || adaptiveClosedSetDelayedMasker() ||
+        adaptiveClosedSetSingleSpeaker() || fixedLevelClosedSet() ||
+        fixedLevelClosedSetSilentIntervals();
 }
 
 auto Presenter::TestSetup::method(Method m) -> bool {

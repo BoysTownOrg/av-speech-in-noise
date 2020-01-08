@@ -192,6 +192,7 @@ class Presenter : public Model::EventListener {
         auto adaptiveTest() -> AdaptiveTest;
         auto fixedLevelTest() -> FixedLevelTest;
         auto calibrationParameters() -> Calibration;
+        auto closedSet() -> bool;
         auto adaptiveClosedSet() -> bool;
         auto adaptiveOpenSet() -> bool;
         auto fixedLevelOpenSet() -> bool;
