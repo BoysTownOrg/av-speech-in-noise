@@ -331,7 +331,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithFiniteTargetsInitializesFixedLevelMethod) {
+    initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelSilentIntervalsTest);
 }
@@ -343,7 +343,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithFiniteTargetsInitializesWithFiniteTargets) {
+    initializeFixedLevelSilentIntervalsTestInitializesWithSilentIntervals) {
     initializeFixedLevelSilentIntervalsTest();
     assertEqual(static_cast<TargetList *>(&silentIntervals),
         fixedLevelMethod.targetList());
@@ -356,7 +356,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithFiniteTargetsInitializesWithEmptyTargetListTestConcluder) {
+    initializeFixedLevelSilentIntervalsTestInitializesWithEmptyTargetListTestConcluder) {
     initializeFixedLevelSilentIntervalsTest();
     assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
         fixedLevelMethod.testConcluder());
@@ -380,7 +380,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTest);
 }
 
-MODEL_TEST(initializeFixedLevelTestWithFiniteTargetsInitializesInternalModel) {
+MODEL_TEST(initializeFixedLevelSilentIntervalsTestTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelSilentIntervalsTest);
 }
 
