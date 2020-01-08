@@ -829,6 +829,10 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingFixedLevelClosedSetTest);
 }
 
+TEST_F(PresenterTests, confirmFixedLevelClosedSetSilentIntervalsTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingFixedLevelClosedSetSilentIntervalsTest);
+}
+
 TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingAdaptiveClosedSetTest);
 }
