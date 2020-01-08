@@ -349,6 +349,12 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(&useCase.adaptiveTest(), adaptiveMethod.test());
     }
+
+    void assertInitializesFixedLevelTestWithTestConcluder(
+        InitializingTestUseCase &useCase, TestConcluder &concluder) {
+        run(useCase);
+        assertEqual(&concluder, fixedLevelMethod.testConcluder());
+    }
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -377,9 +383,8 @@ MODEL_TEST(
 }
 
 MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
-    initializeFixedLevelTest();
-    assertEqual(static_cast<TestConcluder *>(&fixedTrialTestConcluder),
-        fixedLevelMethod.testConcluder());
+    assertInitializesFixedLevelTestWithTestConcluder(
+        initializingFixedLevelTest, fixedTrialTestConcluder);
 }
 
 MODEL_TEST(
