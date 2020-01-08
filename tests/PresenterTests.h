@@ -751,7 +751,7 @@ class ConfirmingAdaptiveClosedSetTest : public ConfirmingAdaptiveTest_ {
         : confirmingAdaptiveTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveClosedSet);
+        setMethod(view, Method::defaultAdaptiveClosedSet);
         presentation::run(confirmingAdaptiveTest);
     }
 
