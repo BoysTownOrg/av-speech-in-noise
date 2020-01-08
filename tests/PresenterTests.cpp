@@ -457,6 +457,18 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    confirmFixedLevelOpenSetAllStimuliTestShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelOpenSetAllStimuliTest, playingTrialFromExperimenter);
+}
+
+TEST_F(PresenterTests,
+    confirmFixedLevelOpenSetSilentIntervalsTestShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelOpenSetSilentIntervalsTest, playingTrialFromExperimenter);
+}
+
+TEST_F(PresenterTests,
     confirmingAdaptiveClosedSetTestWithInvalidMaskerLevelShowsErrorMessage) {
     assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptiveClosedSetTest);
 }
