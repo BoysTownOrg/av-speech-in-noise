@@ -116,7 +116,7 @@ class ModelImpl : public Model {
         RecognitionTestModel *);
     void initializeTest(const AdaptiveTest &) override;
     void initializeTest(const FixedLevelTest &) override;
-    void initializeTestWithFiniteTargets(const FixedLevelTest &) override;
+    void initializeSilentIntervalTest(const FixedLevelTest &) override;
     void initializeTestWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeTestWithDelayedMasker(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;

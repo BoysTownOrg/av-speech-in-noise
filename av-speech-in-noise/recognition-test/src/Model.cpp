@@ -22,7 +22,7 @@ void ModelImpl::initializeTest(const FixedLevelTest &p) {
     initialize(model, fixedLevelMethod, p);
 }
 
-void ModelImpl::initializeTestWithFiniteTargets(const FixedLevelTest &p) {
+void ModelImpl::initializeSilentIntervalTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, finiteTargetList, completesWhenTargetsEmpty);
     initialize(model, fixedLevelMethod, p);

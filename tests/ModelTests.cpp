@@ -256,7 +256,7 @@ class InitializingFixedLevelTestWithFiniteTargets
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeTestWithFiniteTargets(test_);
+        model.initializeSilentIntervalTest(test_);
     }
 
     const Test &test() override { return test_; }
@@ -293,7 +293,7 @@ class ModelTests : public ::testing::Test {
     void initializeFixedLevelTest() { model.initializeTest(fixedLevelTest); }
 
     void initializeFixedLevelTestWithFiniteTargets() {
-        model.initializeTestWithFiniteTargets(fixedLevelTest);
+        model.initializeSilentIntervalTest(fixedLevelTest);
     }
 
     void initializeAdaptiveTest() { model.initializeTest(adaptiveTest); }
