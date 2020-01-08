@@ -3,12 +3,12 @@
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
     FixedLevelMethod *fixedLevelMethod, TargetList *infiniteTargetList,
-    TestConcluder *fixedTrialTestConcluder, TargetList *finiteTargetList,
+    TestConcluder *fixedTrialTestConcluder, TargetList *silentIntervals,
     TestConcluder *completesWhenTargetsEmpty, RecognitionTestModel *model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       infiniteTargetList{infiniteTargetList},
       fixedTrialTestConcluder{fixedTrialTestConcluder},
-      finiteTargetList{finiteTargetList},
+      silentIntervals{silentIntervals},
       completesWhenTargetsEmpty{completesWhenTargetsEmpty}, model{model} {}
 
 static void initialize(RecognitionTestModel *model, class TestMethod *method,
@@ -24,7 +24,7 @@ void ModelImpl::initializeTest(const FixedLevelTest &p) {
 
 void ModelImpl::initializeSilentIntervalsTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
-        p, finiteTargetList, completesWhenTargetsEmpty);
+        p, silentIntervals, completesWhenTargetsEmpty);
     initialize(model, fixedLevelMethod, p);
 }
 

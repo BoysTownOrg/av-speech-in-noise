@@ -272,11 +272,11 @@ class ModelTests : public ::testing::Test {
     FixedLevelMethodStub fixedLevelMethod;
     TargetListStub infiniteTargetList;
     TestConcluderStub fixedTrialTestConcluder;
-    TargetListStub finiteTargetList;
+    TargetListStub silentIntervals;
     TestConcluderStub emptyTargetListTestConcluder;
     RecognitionTestModelStub internalModel;
     ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
-        &fixedTrialTestConcluder, &finiteTargetList,
+        &fixedTrialTestConcluder, &silentIntervals,
         &emptyTargetListTestConcluder, &internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
@@ -345,7 +345,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
 MODEL_TEST(
     initializeFixedLevelTestWithFiniteTargetsInitializesWithFiniteTargets) {
     initializeFixedLevelSilentIntervalsTest();
-    assertEqual(static_cast<TargetList *>(&finiteTargetList),
+    assertEqual(static_cast<TargetList *>(&silentIntervals),
         fixedLevelMethod.targetList());
 }
 
