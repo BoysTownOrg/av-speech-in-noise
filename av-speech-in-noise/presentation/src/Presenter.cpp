@@ -137,8 +137,7 @@ auto Presenter::fixedLevelClosedSetSilentIntervals() -> bool {
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
-    if (adaptiveClosedSet() || adaptiveClosedSetSingleSpeaker() ||
-        adaptiveClosedSetDelayedMasker())
+    if (adaptiveClosedSet())
         return &adaptiveClosedSetTrialCompletionHandler;
     if (adaptiveOpenSet())
         return &adaptiveOpenSetTrialCompletionHandler;
@@ -394,7 +393,9 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
 }
 
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
-    return method(Method::adaptiveClosedSet);
+    return method(Method::adaptiveClosedSet) ||
+        adaptiveClosedSetSingleSpeaker() ||
+        adaptiveClosedSetDelayedMasker();
 }
 
 auto Presenter::TestSetup::closedSet() -> bool {
