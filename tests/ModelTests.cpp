@@ -266,6 +266,27 @@ class InitializingFixedLevelSilentIntervalsTest
     const FixedLevelTest &fixedLevelTest() override { return test_; }
 };
 
+class InitializingFixedLevelAllStimuliTest
+    : public InitializingFixedLevelTest {
+    FixedLevelTest test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelAllStimuliTest(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        model.initializeAllStimuliTest(test_);
+    }
+
+    const Test &test() override { return test_; }
+
+    const TestMethod *testMethod() override { return method; }
+
+    const FixedLevelTest &fixedLevelTest() override { return test_; }
+};
+
 class ModelTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveMethod;
@@ -289,6 +310,8 @@ class ModelTests : public ::testing::Test {
         &fixedLevelMethod};
     InitializingFixedLevelSilentIntervalsTest
         initializingFixedLevelSilentIntervalsTest{&fixedLevelMethod};
+    InitializingFixedLevelAllStimuliTest
+        initializingFixedLevelAllStimuliTest{&fixedLevelMethod};
 
     void initializeFixedLevelTest() { model.initializeTest(fixedLevelTest); }
 
@@ -361,14 +384,14 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
 
 MODEL_TEST(
     initializeFixedLevelSilentIntervalsTestInitializesWithEmptyTargetListTestConcluder) {
-    initializeFixedLevelSilentIntervalsTest();
+    run(initializingFixedLevelSilentIntervalsTest);
     assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
         fixedLevelMethod.testConcluder());
 }
 
 MODEL_TEST(
     initializeFixedLevelAllStimuliTestInitializesWithEmptyTargetListTestConcluder) {
-    initializeFixedLevelAllStimuliTest();
+    run(initializingFixedLevelAllStimuliTest);
     assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
         fixedLevelMethod.testConcluder());
 }
