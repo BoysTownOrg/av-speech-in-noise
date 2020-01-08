@@ -1106,6 +1106,15 @@ static auto targetListDirectory(ConfirmingFixedLevelTest &t, ModelStub &m)
     return t.targetListDirectory(m);
 }
 
+static auto maskerFilePath(ConfirmingFixedLevelTest &t, ModelStub &m)
+    -> std::string {
+    return t.maskerFilePath(m);
+}
+
+static auto condition(ConfirmingFixedLevelTest &t, ModelStub &m) -> Condition {
+    return t.condition(m);
+}
+
 class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
     ConfirmingFixedLevelTest confirmingFixedLevelTest;
     ViewStub::TestSetupViewStub *view;
@@ -1152,11 +1161,11 @@ class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.maskerFilePath(m);
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return confirmingFixedLevelTest.condition(m);
+        return presentation::condition(confirmingFixedLevelTest, m);
     }
 };
 
@@ -1207,11 +1216,11 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.maskerFilePath(m);
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return confirmingFixedLevelTest.condition(m);
+        return presentation::condition(confirmingFixedLevelTest, m);
     }
 };
 
@@ -1263,11 +1272,11 @@ class ConfirmingFixedLevelClosedSetSilentIntervalsTest
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.maskerFilePath(m);
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return confirmingFixedLevelTest.condition(m);
+        return presentation::condition(confirmingFixedLevelTest, m);
     }
 };
 
@@ -1319,11 +1328,11 @@ class ConfirmingFixedLevelOpenSetSilentIntervalsTest
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.maskerFilePath(m);
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return confirmingFixedLevelTest.condition(m);
+        return presentation::condition(confirmingFixedLevelTest, m);
     }
 };
 
