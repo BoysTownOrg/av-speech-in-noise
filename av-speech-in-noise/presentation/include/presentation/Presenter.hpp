@@ -85,7 +85,7 @@ class View {
         virtual auto condition() -> std::string = 0;
         virtual auto session() -> std::string = 0;
         virtual auto method() -> std::string = 0;
-        virtual auto usingTargetsWithoutReplacement() -> bool = 0;
+        virtual auto usingTargetsWithoutReplacement() -> bool {return {};};
         virtual void setMasker(std::string) = 0;
         virtual void setTargetListDirectory(std::string) = 0;
         virtual void setCalibrationFilePath(std::string) = 0;

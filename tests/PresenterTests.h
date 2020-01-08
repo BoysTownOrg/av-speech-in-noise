@@ -226,17 +226,10 @@ class ViewStub : public View {
         EventListener *listener_{};
         bool shown_{};
         bool hidden_{};
-        bool useFiniteTargets_{};
         bool useSingleSpeaker_{};
         bool useDelayedMasker_{};
 
       public:
-        auto usingTargetsWithoutReplacement() -> bool override {
-            return useFiniteTargets_;
-        }
-
-        void useFiniteTargets() { useFiniteTargets_ = true; }
-
         void useSingleSpeaker() { useSingleSpeaker_ = true; }
 
         void useDelayedMasker() { useDelayedMasker_ = true; }
