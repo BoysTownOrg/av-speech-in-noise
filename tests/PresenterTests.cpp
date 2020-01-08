@@ -790,6 +790,14 @@ TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingFixedLevelOpenSetTest);
 }
 
+TEST_F(PresenterTests, confirmFixedLevelOpenSetAllStimuliTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingFixedLevelOpenSetAllStimuliTest);
+}
+
+TEST_F(PresenterTests, confirmFixedLevelOpenSetSilentIntervalsTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingFixedLevelOpenSetSilentIntervalsTest);
+}
+
 TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingAdaptiveOpenSetTest);
 }
