@@ -126,13 +126,13 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     confirmFixedLevelClosedSetSilentIntervalsTestInitializesModel) {
     run(confirmingFixedLevelClosedSetSilentIntervalsTest);
-    assertTrue(model.initializedWithFiniteTargets());
+    assertTrue(model.fixedLevelSilentIntervalsTestInitialized());
 }
 
 TEST_F(PresenterTests,
     confirmFixedLevelOpenSetSilentIntervalsTestInitializesModel) {
     run(confirmingFixedLevelOpenSetSilentIntervalsTest);
-    assertTrue(model.initializedWithFiniteTargets());
+    assertTrue(model.fixedLevelSilentIntervalsTestInitialized());
 }
 
 TEST_F(PresenterTests,

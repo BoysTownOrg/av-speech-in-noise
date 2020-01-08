@@ -36,7 +36,7 @@ class ModelStub : public Model {
     bool adaptiveTestInitialized_{};
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
-    bool initializedWithFiniteTargets_{};
+    bool fixedLevelSilentIntervalsTestInitialized_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
 
@@ -45,8 +45,8 @@ class ModelStub : public Model {
 
     void setTrialNumber(int n) { trialNumber_ = n; }
 
-    [[nodiscard]] auto initializedWithFiniteTargets() const {
-        return initializedWithFiniteTargets_;
+    [[nodiscard]] auto fixedLevelSilentIntervalsTestInitialized() const {
+        return fixedLevelSilentIntervalsTestInitialized_;
     }
 
     [[nodiscard]] auto initializedWithSingleSpeaker() const {
@@ -69,7 +69,7 @@ class ModelStub : public Model {
 
     void initializeSilentIntervalsTest(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
-        initializedWithFiniteTargets_ = true;
+        fixedLevelSilentIntervalsTestInitialized_ = true;
     }
 
     [[nodiscard]] auto incorrectResponseSubmitted() const {
