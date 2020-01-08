@@ -77,7 +77,7 @@ class ModelStub : public Model {
         fixedLevelSilentIntervalsTestInitialized_ = true;
     }
 
-    void initializeAllStimuliTest(const FixedLevelTest &p) {
+    void initializeAllStimuliTest(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelAllStimuliTestInitialized_ = true;
     }
