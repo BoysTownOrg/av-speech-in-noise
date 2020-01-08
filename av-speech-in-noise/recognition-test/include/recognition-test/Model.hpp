@@ -113,7 +113,7 @@ class ModelImpl : public Model {
     ModelImpl(AdaptiveMethod *, FixedLevelMethod *,
         TargetList *infiniteTargetList, TestConcluder *fixedTrialTestConcluder,
         TargetList *silentIntervals, TestConcluder *completesWhenTargetsEmpty,
-        RecognitionTestModel *);
+        TargetList *allStimuli, RecognitionTestModel *);
     void initializeTest(const AdaptiveTest &) override;
     void initializeTest(const FixedLevelTest &) override;
     void initializeSilentIntervalsTest(const FixedLevelTest &) override;
@@ -140,6 +140,7 @@ class ModelImpl : public Model {
     TestConcluder *fixedTrialTestConcluder;
     TargetList *silentIntervals;
     TestConcluder *completesWhenTargetsEmpty;
+    TargetList *allStimuli;
     RecognitionTestModel *model;
 };
 }
