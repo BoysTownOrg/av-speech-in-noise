@@ -259,7 +259,8 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         methodName(Method::fixedLevelClosedSet),
         methodName(Method::fixedLevelOpenSet),
         methodName(Method::fixedLevelClosedSetSilentIntervals),
-        methodName(Method::fixedLevelOpenSetSilentIntervals)});
+        methodName(Method::fixedLevelOpenSetSilentIntervals),
+        methodName(Method::fixedLevelOpenSetAllStimuli)});
     view->subscribe(this);
 }
 

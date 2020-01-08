@@ -128,7 +128,8 @@ enum class Method {
     fixedLevelOpenSet,
     fixedLevelClosedSet,
     fixedLevelOpenSetSilentIntervals,
-    fixedLevelClosedSetSilentIntervals
+    fixedLevelClosedSetSilentIntervals,
+    fixedLevelOpenSetAllStimuli
 };
 
 constexpr auto methodName(Method c) -> const char * {
@@ -149,6 +150,8 @@ constexpr auto methodName(Method c) -> const char * {
         return "fixed-level open-set silent intervals";
     case Method::fixedLevelClosedSetSilentIntervals:
         return "fixed-level closed-set silent intervals";
+    case Method::fixedLevelOpenSetAllStimuli:
+        return "fixed-level closed-set all stimuli";
     }
 }
 

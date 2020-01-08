@@ -9,6 +9,7 @@ TEST_F(PresenterTests, populatesConditionMenu) {
 TEST_F(PresenterTests, populatesMethodMenu) {
     assertSetupViewMethodsContains(Method::fixedLevelOpenSet);
     assertSetupViewMethodsContains(Method::fixedLevelClosedSet);
+    assertSetupViewMethodsContains(Method::fixedLevelOpenSetAllStimuli);
     assertSetupViewMethodsContains(Method::fixedLevelOpenSetSilentIntervals);
     assertSetupViewMethodsContains(Method::fixedLevelClosedSetSilentIntervals);
     assertSetupViewMethodsContains(Method::adaptiveOpenSet);
