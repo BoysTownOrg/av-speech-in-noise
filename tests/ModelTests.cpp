@@ -389,16 +389,14 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
 
 MODEL_TEST(
     initializeFixedLevelSilentIntervalsTestInitializesWithEmptyTargetListTestConcluder) {
-    run(initializingFixedLevelSilentIntervalsTest);
-    assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
-        fixedLevelMethod.testConcluder());
+    assertInitializesFixedLevelTestWithTestConcluder(
+        initializingFixedLevelSilentIntervalsTest, emptyTargetListTestConcluder);
 }
 
 MODEL_TEST(
     initializeFixedLevelAllStimuliTestInitializesWithEmptyTargetListTestConcluder) {
-    run(initializingFixedLevelAllStimuliTest);
-    assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
-        fixedLevelMethod.testConcluder());
+    assertInitializesFixedLevelTestWithTestConcluder(
+        initializingFixedLevelAllStimuliTest, emptyTargetListTestConcluder);
 }
 
 TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
