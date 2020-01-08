@@ -125,10 +125,10 @@ enum class Method {
     defaultAdaptiveClosedSet,
     adaptiveClosedSetSingleSpeaker,
     adaptiveClosedSetDelayedMasker,
-    fixedLevelOpenSet,
+    defaultFixedLevelOpenSet,
     fixedLevelOpenSetSilentIntervals,
     fixedLevelOpenSetAllStimuli,
-    fixedLevelClosedSet,
+    defaultFixedLevelClosedSet,
     fixedLevelClosedSetSilentIntervals
 };
 
@@ -142,9 +142,9 @@ constexpr auto methodName(Method c) -> const char * {
         return "adaptive closed-set single speaker";
     case Method::adaptiveClosedSetDelayedMasker:
         return "adaptive closed-set delayed masker";
-    case Method::fixedLevelOpenSet:
+    case Method::defaultFixedLevelOpenSet:
         return "fixed-level open-set";
-    case Method::fixedLevelClosedSet:
+    case Method::defaultFixedLevelClosedSet:
         return "fixed-level closed-set";
     case Method::fixedLevelOpenSetSilentIntervals:
         return "fixed-level open-set silent intervals";

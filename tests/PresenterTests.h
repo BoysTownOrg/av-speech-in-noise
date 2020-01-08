@@ -1134,7 +1134,7 @@ class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
         : confirmingFixedLevelTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelOpenSet);
+        setMethod(view, Method::defaultFixedLevelOpenSet);
         presentation::run(confirmingFixedLevelTest);
     }
 
@@ -1189,7 +1189,7 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
         : confirmingFixedLevelTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelClosedSet);
+        setMethod(view, Method::defaultFixedLevelClosedSet);
         presentation::run(confirmingFixedLevelTest);
     }
 

@@ -264,9 +264,9 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         methodName(Method::adaptiveClosedSetSingleSpeaker),
         methodName(Method::adaptiveClosedSetDelayedMasker),
         methodName(Method::adaptiveOpenSet),
-        methodName(Method::fixedLevelClosedSet),
-        methodName(Method::fixedLevelOpenSet),
+        methodName(Method::defaultFixedLevelClosedSet),
         methodName(Method::fixedLevelClosedSetSilentIntervals),
+        methodName(Method::defaultFixedLevelOpenSet),
         methodName(Method::fixedLevelOpenSetSilentIntervals),
         methodName(Method::fixedLevelOpenSetAllStimuli)});
     view->subscribe(this);
@@ -415,7 +415,7 @@ auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
-    return method(Method::fixedLevelClosedSet) ||
+    return method(Method::defaultFixedLevelClosedSet) ||
         fixedLevelClosedSetSilentIntervals();
 }
 
