@@ -132,10 +132,6 @@ auto Presenter::fixedLevelClosedSet() -> bool {
     return testSetup->fixedLevelClosedSet();
 }
 
-auto Presenter::fixedLevelClosedSetSilentIntervals() -> bool {
-    return testSetup->fixedLevelClosedSetSilentIntervals();
-}
-
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
     if (adaptiveClosedSet())
         return &adaptiveClosedSetTrialCompletionHandler;
