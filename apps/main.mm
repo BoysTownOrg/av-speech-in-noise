@@ -256,15 +256,17 @@ void main() {
             &randomSubsetTwoHundredMsStimuli,
             &randomSubsetThreeHundredMsStimuli,
             &randomSubsetFourHundredMsStimuli}};
-    target_list::RandomizedFiniteTargetList finiteTargetList{
+    target_list::RandomizedFiniteTargetList silentIntervals{
         &composite, &randomizer};
+    target_list::RandomizedFiniteTargetList allStimuli{
+        &fileExtensions, &randomizer};
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
     FixedTrialTestConcluder fixedTrials;
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
     RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
         &responseEvaluator, &outputFile, &randomizer};
     ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
-        &fixedTrials, &finiteTargetList, &completesWhenTargetsEmpty,
+        &fixedTrials, &silentIntervals, &completesWhenTargetsEmpty, &allStimuli,
         &model_internal};
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
     auto testerWindowViewMargin = 15;
