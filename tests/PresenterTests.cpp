@@ -863,6 +863,18 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetAllStimuliTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelOpenSetAllStimuliTest, respondingFromExperimenter);
+}
+
+TEST_F(PresenterTests,
+    completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetSilentIntervalsTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelOpenSetSilentIntervalsTest, respondingFromExperimenter);
+}
+
+TEST_F(PresenterTests,
     confirmAdaptiveClosedSetTestWithInvalidSnrShowsErrorMessage) {
     assertInvalidSnrShowsErrorMessage(confirmingAdaptiveClosedSetTest);
 }
