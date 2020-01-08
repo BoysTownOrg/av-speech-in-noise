@@ -355,6 +355,12 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(&concluder, fixedLevelMethod.testConcluder());
     }
+
+    void assertInitializesFixedLevelTestWithTargetList(
+        InitializingTestUseCase &useCase, TargetList &targetList) {
+        run(useCase);
+        assertEqual(&targetList, fixedLevelMethod.targetList());
+    }
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -370,16 +376,14 @@ MODEL_TEST(
 }
 
 MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
-    initializeFixedLevelTest();
-    assertEqual(static_cast<TargetList *>(&infiniteTargetList),
-        fixedLevelMethod.targetList());
+    assertInitializesFixedLevelTestWithTargetList(
+        initializingFixedLevelTest, infiniteTargetList);
 }
 
 MODEL_TEST(
     initializeFixedLevelSilentIntervalsTestInitializesWithSilentIntervals) {
-    initializeFixedLevelSilentIntervalsTest();
-    assertEqual(static_cast<TargetList *>(&silentIntervals),
-        fixedLevelMethod.targetList());
+    assertInitializesFixedLevelTestWithTargetList(
+        initializingFixedLevelSilentIntervalsTest, silentIntervals);
 }
 
 MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
