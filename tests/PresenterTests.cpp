@@ -129,6 +129,12 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    confirmFixedLevelOpenSetSilentIntervalsTestInitializesModel) {
+    run(confirmingFixedLevelOpenSetSilentIntervalsTest);
+    assertTrue(model.initializedWithFiniteTargets());
+}
+
+TEST_F(PresenterTests,
     confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveClosedSetTest);
 }

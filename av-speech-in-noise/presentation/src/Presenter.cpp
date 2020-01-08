@@ -400,7 +400,8 @@ auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
 }
 
 auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
-    return method(Method::fixedLevelClosedSetSilentIntervals);
+    return method(Method::fixedLevelClosedSetSilentIntervals) ||
+        method(Method::fixedLevelOpenSetSilentIntervals);
 }
 
 auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
