@@ -213,6 +213,7 @@ class Presenter : public Model::EventListener {
         void browseForTrackSettingsFile() override;
 
       private:
+        auto defaultAdaptiveClosedSet() -> bool;
         auto testIdentity() -> TestIdentity;
         void commonTest(Test &);
         auto readCondition() -> Condition;

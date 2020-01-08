@@ -388,15 +388,18 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
     view->setTrackSettingsFile(std::move(s));
 }
 
+auto Presenter::TestSetup::defaultAdaptiveClosedSet() -> bool {
+    return method(Method::adaptiveClosedSet);
+}
+
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
-    return method(Method::adaptiveClosedSet) ||
+    return defaultAdaptiveClosedSet() ||
         adaptiveClosedSetSingleSpeaker() ||
         adaptiveClosedSetDelayedMasker();
 }
 
 auto Presenter::TestSetup::closedSet() -> bool {
-    return adaptiveClosedSet() || adaptiveClosedSetDelayedMasker() ||
-        adaptiveClosedSetSingleSpeaker() || fixedLevelClosedSet() ||
+    return adaptiveClosedSet() || fixedLevelClosedSet() ||
         fixedLevelClosedSetSilentIntervals();
 }
 
@@ -408,12 +411,9 @@ auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
     return method(Method::adaptiveOpenSet);
 }
 
-auto Presenter::TestSetup::fixedLevelOpenSet() -> bool {
-    return method(Method::fixedLevelOpenSet);
-}
-
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
-    return method(Method::fixedLevelClosedSet) || fixedLevelClosedSetSilentIntervals();
+    return method(Method::fixedLevelClosedSet) ||
+        fixedLevelClosedSetSilentIntervals();
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSetSilentIntervals() -> bool {
@@ -421,7 +421,7 @@ auto Presenter::TestSetup::fixedLevelClosedSetSilentIntervals() -> bool {
 }
 
 auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
-    return method(Method::fixedLevelClosedSetSilentIntervals) ||
+    return fixedLevelClosedSetSilentIntervals() ||
         method(Method::fixedLevelOpenSetSilentIntervals);
 }
 
@@ -430,7 +430,7 @@ auto Presenter::TestSetup::fixedLevelAllStimuli() -> bool {
 }
 
 auto Presenter::TestSetup::defaultAdaptive() -> bool {
-    return adaptiveClosedSet() || adaptiveOpenSet();
+    return defaultAdaptiveClosedSet() || adaptiveOpenSet();
 }
 
 auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
