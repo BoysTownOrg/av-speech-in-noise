@@ -245,18 +245,18 @@ class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelTestWithFiniteTargets
+class InitializingFixedLevelSilentIntervalsTest
     : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelTestWithFiniteTargets(
+    explicit InitializingFixedLevelSilentIntervalsTest(
         FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeSilentIntervalTest(test_);
+        model.initializeSilentIntervalsTest(test_);
     }
 
     const Test &test() override { return test_; }
@@ -287,13 +287,13 @@ class ModelTests : public ::testing::Test {
         initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
     InitializingDefaultFixedLevelTest initializingFixedLevelTest{
         &fixedLevelMethod};
-    InitializingFixedLevelTestWithFiniteTargets
-        initializingFixedLevelTestWithFiniteTargets{&fixedLevelMethod};
+    InitializingFixedLevelSilentIntervalsTest
+        initializingFixedLevelSilentIntervalsTest{&fixedLevelMethod};
 
     void initializeFixedLevelTest() { model.initializeTest(fixedLevelTest); }
 
-    void initializeFixedLevelTestWithFiniteTargets() {
-        model.initializeSilentIntervalTest(fixedLevelTest);
+    void initializeFixedLevelSilentIntervalsTest() {
+        model.initializeSilentIntervalsTest(fixedLevelTest);
     }
 
     void initializeAdaptiveTest() { model.initializeTest(adaptiveTest); }
@@ -333,7 +333,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
 MODEL_TEST(
     initializeFixedLevelTestWithFiniteTargetsInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
-        initializingFixedLevelTestWithFiniteTargets);
+        initializingFixedLevelSilentIntervalsTest);
 }
 
 MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
@@ -344,7 +344,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
 
 MODEL_TEST(
     initializeFixedLevelTestWithFiniteTargetsInitializesWithFiniteTargets) {
-    initializeFixedLevelTestWithFiniteTargets();
+    initializeFixedLevelSilentIntervalsTest();
     assertEqual(static_cast<TargetList *>(&finiteTargetList),
         fixedLevelMethod.targetList());
 }
@@ -357,7 +357,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
 
 MODEL_TEST(
     initializeFixedLevelTestWithFiniteTargetsInitializesWithEmptyTargetListTestConcluder) {
-    initializeFixedLevelTestWithFiniteTargets();
+    initializeFixedLevelSilentIntervalsTest();
     assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
         fixedLevelMethod.testConcluder());
 }
@@ -381,7 +381,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
 }
 
 MODEL_TEST(initializeFixedLevelTestWithFiniteTargetsInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelTestWithFiniteTargets);
+    assertInitializesInternalModel(initializingFixedLevelSilentIntervalsTest);
 }
 
 MODEL_TEST(initializeAdaptiveTestInitializesInternalModel) {

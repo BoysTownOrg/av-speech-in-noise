@@ -71,7 +71,7 @@ void Presenter::initializeTest() {
     else if (adaptiveClosedSet() || adaptiveOpenSet())
         model->initializeTest(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
-        model->initializeSilentIntervalTest(fixedLevelTest(testSetup));
+        model->initializeSilentIntervalsTest(fixedLevelTest(testSetup));
     else
         model->initializeTest(fixedLevelTest(testSetup));
 }
