@@ -28,6 +28,12 @@ void ModelImpl::initializeSilentIntervalsTest(const FixedLevelTest &p) {
     initialize(model, fixedLevelMethod, p);
 }
 
+void ModelImpl::initializeAllStimuliTest(const FixedLevelTest &p) {
+    fixedLevelMethod->initialize(
+        p, silentIntervals, completesWhenTargetsEmpty);
+    initialize(model, fixedLevelMethod, p);
+}
+
 void ModelImpl::initializeTest(const AdaptiveTest &p) {
     initializeTest_(p);
 }

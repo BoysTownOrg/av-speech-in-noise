@@ -117,6 +117,7 @@ class ModelImpl : public Model {
     void initializeTest(const AdaptiveTest &) override;
     void initializeTest(const FixedLevelTest &) override;
     void initializeSilentIntervalsTest(const FixedLevelTest &) override;
+    void initializeAllStimuliTest(const FixedLevelTest &) override;
     void initializeTestWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeTestWithDelayedMasker(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;

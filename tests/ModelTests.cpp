@@ -296,6 +296,10 @@ class ModelTests : public ::testing::Test {
         model.initializeSilentIntervalsTest(fixedLevelTest);
     }
 
+    void initializeFixedLevelAllStimuliTest() {
+        model.initializeAllStimuliTest(fixedLevelTest);
+    }
+
     void initializeAdaptiveTest() { model.initializeTest(adaptiveTest); }
 
     void initializeAdaptiveTestWithSingleSpeaker() {
@@ -358,6 +362,13 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
 MODEL_TEST(
     initializeFixedLevelSilentIntervalsTestInitializesWithEmptyTargetListTestConcluder) {
     initializeFixedLevelSilentIntervalsTest();
+    assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
+        fixedLevelMethod.testConcluder());
+}
+
+MODEL_TEST(
+    initializeFixedLevelAllStimuliTestInitializesWithEmptyTargetListTestConcluder) {
+    initializeFixedLevelAllStimuliTest();
     assertEqual(static_cast<TestConcluder *>(&emptyTargetListTestConcluder),
         fixedLevelMethod.testConcluder());
 }
