@@ -164,6 +164,16 @@ TEST_F(
     assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelOpenSetTest);
 }
 
+TEST_F(
+    PresenterTests, confirmFixedLevelOpenSetAllStimuliTestDoesNotInitializeAdaptiveTest) {
+    assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelOpenSetAllStimuliTest);
+}
+
+TEST_F(
+    PresenterTests, confirmFixedLevelOpenSetSilentIntervalsTestDoesNotInitializeAdaptiveTest) {
+    assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelOpenSetSilentIntervalsTest);
+}
+
 TEST_F(PresenterTests,
     confirmFixedLevelClosedSetTestDoesNotInitializeAdaptiveTest) {
     assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelClosedSetTest);
