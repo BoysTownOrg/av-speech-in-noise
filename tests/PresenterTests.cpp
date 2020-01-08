@@ -171,12 +171,8 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestPassesStartingSnr) {
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetTestWithFiniteTargetsPassesStartingSnr) {
-    setStartingSnr("1");
-    setMethod(&setupView, Method::fixedLevelClosedSet);
-    setupView.useFiniteTargets();
-    setupView.confirmTestSetup();
-    assertEqual(1, model.fixedLevelTest().snr_dB);
+    confirmFixedLevelClosedSetSilentIntervalsTestPassesStartingSnr) {
+    assertStartingSnrPassedToModel(confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
 
 TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMaskerLevel) {
