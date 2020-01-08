@@ -2129,6 +2129,10 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void initializeAllStimuliTest(const FixedLevelTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void initializeTestWithSingleSpeaker(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
