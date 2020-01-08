@@ -255,7 +255,9 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         methodName(Method::adaptiveClosedSetDelayedMasker),
         methodName(Method::adaptiveOpenSet),
         methodName(Method::fixedLevelClosedSet),
-        methodName(Method::fixedLevelOpenSet)});
+        methodName(Method::fixedLevelOpenSet),
+        methodName(Method::fixedLevelClosedSetSilentIntervals),
+        methodName(Method::fixedLevelOpenSetSilentIntervals)});
     view->subscribe(this);
 }
 

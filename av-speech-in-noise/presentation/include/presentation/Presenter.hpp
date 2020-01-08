@@ -127,7 +127,9 @@ enum class Method {
     adaptiveClosedSetSingleSpeaker,
     adaptiveClosedSetDelayedMasker,
     fixedLevelOpenSet,
-    fixedLevelClosedSet
+    fixedLevelClosedSet,
+    fixedLevelOpenSetSilentIntervals,
+    fixedLevelClosedSetSilentIntervals
 };
 
 constexpr auto methodName(Method c) -> const char * {
@@ -144,6 +146,10 @@ constexpr auto methodName(Method c) -> const char * {
         return "fixed-level open-set";
     case Method::fixedLevelClosedSet:
         return "fixed-level closed-set";
+    case Method::fixedLevelOpenSetSilentIntervals:
+        return "fixed-level open-set silent intervals";
+    case Method::fixedLevelClosedSetSilentIntervals:
+        return "fixed-level closed-set silent intervals";
     }
 }
 
