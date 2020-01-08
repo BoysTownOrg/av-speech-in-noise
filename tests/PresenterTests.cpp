@@ -127,6 +127,10 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingFixedLevelClosedSetTest);
 }
 
+TEST_F(PresenterTests, confirmFixedLevelClosedSetSilentIntervalsTestShowsExperimenterView) {
+    assertShowsExperimenterView(confirmingFixedLevelClosedSetSilentIntervalsTest);
+}
+
 TEST_F(PresenterTests,
     confirmAdaptiveClosedSetTestWithSingleSpeakerInitializesModel) {
     run(confirmingAdaptiveClosedSetSingleSpeakerTest);
