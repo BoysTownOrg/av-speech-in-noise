@@ -191,6 +191,11 @@ TEST_F(PresenterTests,
     assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelClosedSetTest);
 }
 
+TEST_F(PresenterTests,
+    confirmFixedLevelClosedSetSilentIntervalsTestDoesNotInitializeAdaptiveTest) {
+    assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelClosedSetSilentIntervalsTest);
+}
+
 TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesStartingSnr) {
     assertStartingSnrPassedToModel(confirmingAdaptiveClosedSetTest);
 }
