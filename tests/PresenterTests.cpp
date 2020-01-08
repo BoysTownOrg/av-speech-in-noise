@@ -878,6 +878,12 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    completingTrialShowsSubjectResponseButtonsForFixedLevelClosedSetSilentIntervalsTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelClosedSetSilentIntervalsTest, respondingFromSubject);
+}
+
+TEST_F(PresenterTests,
     completingTrialShowsExperimenterEvaluationButtonsForAdaptiveOpenSetTest) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveOpenSetTest, submittingPassedTrial);

@@ -413,7 +413,7 @@ auto Presenter::TestSetup::fixedLevelOpenSet() -> bool {
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
-    return method(Method::fixedLevelClosedSet);
+    return method(Method::fixedLevelClosedSet) || fixedLevelClosedSetSilentIntervals();
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSetSilentIntervals() -> bool {
