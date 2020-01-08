@@ -49,6 +49,10 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingFixedLevelClosedSetTest);
 }
 
+TEST_F(PresenterTests, confirmFixedLevelClosedSetSilentIntervalsTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingFixedLevelClosedSetSilentIntervalsTest);
+}
+
 TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingAdaptiveOpenSetTest);
 }
@@ -912,6 +916,11 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     confirmFixedLevelClosedSetTestWithInvalidInputDoesNotHideSetupView) {
     assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingFixedLevelClosedSetTest);
+}
+
+TEST_F(PresenterTests,
+    confirmFixedLevelClosedSetSilentIntervalsTestWithInvalidInputDoesNotHideSetupView) {
+    assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
 
 TEST_F(PresenterFailureTests,
