@@ -37,6 +37,7 @@ class ModelStub : public Model {
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
     bool fixedLevelSilentIntervalsTestInitialized_{};
+    bool fixedLevelAllStimuliTestInitialized_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
 
@@ -47,6 +48,10 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto fixedLevelSilentIntervalsTestInitialized() const {
         return fixedLevelSilentIntervalsTestInitialized_;
+    }
+
+    [[nodiscard]] auto fixedLevelAllStimuliTestInitialized() const {
+        return fixedLevelAllStimuliTestInitialized_;
     }
 
     [[nodiscard]] auto initializedWithSingleSpeaker() const {
@@ -70,6 +75,11 @@ class ModelStub : public Model {
     void initializeSilentIntervalsTest(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelSilentIntervalsTestInitialized_ = true;
+    }
+
+    void initializeAllStimuliTest(const FixedLevelTest &p) {
+        fixedLevelTest_ = p;
+        fixedLevelAllStimuliTestInitialized_ = true;
     }
 
     [[nodiscard]] auto incorrectResponseSubmitted() const {
@@ -1336,6 +1346,62 @@ class ConfirmingFixedLevelOpenSetSilentIntervalsTest
     }
 };
 
+class ConfirmingFixedLevelOpenSetAllStimuliTest
+    : public ConfirmingTestSetup {
+    ConfirmingFixedLevelTest confirmingFixedLevelTest;
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit ConfirmingFixedLevelOpenSetAllStimuliTest(
+        ViewStub::TestSetupViewStub *view)
+        : confirmingFixedLevelTest{view}, view{view} {}
+
+    void run() override {
+        setMethod(view, Method::fixedLevelOpenSetAllStimuli);
+        presentation::run(confirmingFixedLevelTest);
+    }
+
+    auto snr_dB(ModelStub &m) -> int override {
+        return presentation::snr_dB(confirmingFixedLevelTest, m);
+    }
+
+    auto maskerLevel(ModelStub &m) -> int override {
+        return presentation::maskerLevel(confirmingFixedLevelTest, m);
+    }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return presentation::fullScaleLevel(confirmingFixedLevelTest, m);
+    }
+
+    auto targetListDirectory(ModelStub &m) -> std::string override {
+        return presentation::targetListDirectory(confirmingFixedLevelTest, m);
+    }
+
+    auto subjectId(ModelStub &m) -> std::string override {
+        return presentation::subjectId(confirmingFixedLevelTest, m);
+    }
+
+    auto testerId(ModelStub &m) -> std::string override {
+        return presentation::testerId(confirmingFixedLevelTest, m);
+    }
+
+    auto session(ModelStub &m) -> std::string override {
+        return presentation::session(confirmingFixedLevelTest, m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingFixedLevelTest, m);
+    }
+
+    auto maskerFilePath(ModelStub &m) -> std::string override {
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
+    }
+
+    auto condition(ModelStub &m) -> Condition override {
+        return presentation::condition(confirmingFixedLevelTest, m);
+    }
+};
+
 class TrialSubmission : public virtual UseCase {
   public:
     virtual auto nextTrialButtonShown() -> bool = 0;
@@ -1626,6 +1692,8 @@ class PresenterTests : public ::testing::Test {
         confirmingFixedLevelClosedSetSilentIntervalsTest{&setupView};
     ConfirmingFixedLevelOpenSetSilentIntervalsTest
         confirmingFixedLevelOpenSetSilentIntervalsTest{&setupView};
+    ConfirmingFixedLevelOpenSetAllStimuliTest
+        confirmingFixedLevelClosedSetAllStimuliTest{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{&testingView};

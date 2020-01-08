@@ -197,6 +197,7 @@ class Presenter : public Model::EventListener {
         auto fixedLevelOpenSet() -> bool;
         auto fixedLevelClosedSet() -> bool;
         auto fixedLevelSilentIntervals() -> bool;
+        auto fixedLevelAllStimuli() -> bool;
         auto singleSpeaker() -> bool;
         auto adaptiveClosedSetDelayedMasker() -> bool;
         auto adaptiveClosedSetSingleSpeaker() -> bool;
@@ -334,6 +335,7 @@ class Presenter : public Model::EventListener {
 
   private:
     auto fixedLevelSilentIntervals() -> bool;
+    auto fixedLevelAllStimuli() -> bool;
     auto singleSpeaker() -> bool;
     auto delayedMasker() -> bool;
     auto adaptiveClosedSetDelayedMasker() -> bool;
