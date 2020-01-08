@@ -123,9 +123,8 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetTestWithFiniteTargetsInitializesModel) {
-    setupView.useFiniteTargets();
-    run(confirmingFixedLevelClosedSetTest);
+    confirmFixedLevelClosedSetSilentIntervalsTestInitializesModel) {
+    run(confirmingFixedLevelClosedSetSilentIntervalsTest);
     assertTrue(model.initializedWithFiniteTargets());
 }
 

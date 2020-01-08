@@ -194,7 +194,7 @@ class Presenter : public Model::EventListener {
         auto adaptiveOpenSet() -> bool;
         auto fixedLevelOpenSet() -> bool;
         auto fixedLevelClosedSet() -> bool;
-        auto finiteTargets() -> bool;
+        auto fixedLevelSilentIntervals() -> bool;
         auto singleSpeaker() -> bool;
         auto adaptiveClosedSetDelayedMasker() -> bool;
         auto adaptiveClosedSetSingleSpeaker() -> bool;
@@ -331,7 +331,7 @@ class Presenter : public Model::EventListener {
     static int trackBumpLimit;
 
   private:
-    auto finiteTargets() -> bool;
+    auto fixedLevelSilentIntervals() -> bool;
     auto singleSpeaker() -> bool;
     auto delayedMasker() -> bool;
     auto adaptiveClosedSetDelayedMasker() -> bool;

@@ -1205,6 +1205,62 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
     }
 };
 
+class ConfirmingFixedLevelClosedSetSilentIntervalsTest
+    : public ConfirmingTestSetup {
+    ConfirmingFixedLevelTest confirmingFixedLevelTest;
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit ConfirmingFixedLevelClosedSetSilentIntervalsTest(
+        ViewStub::TestSetupViewStub *view)
+        : confirmingFixedLevelTest{view}, view{view} {}
+
+    void run() override {
+        setMethod(view, Method::fixedLevelClosedSetSilentIntervals);
+        presentation::run(confirmingFixedLevelTest);
+    }
+
+    auto snr_dB(ModelStub &m) -> int override {
+        return confirmingFixedLevelTest.snr_dB(m);
+    }
+
+    auto maskerLevel(ModelStub &m) -> int override {
+        return confirmingFixedLevelTest.maskerLevel(m);
+    }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return confirmingFixedLevelTest.fullScaleLevel(m);
+    }
+
+    auto targetListDirectory(ModelStub &m) -> std::string override {
+        return confirmingFixedLevelTest.targetListDirectory(m);
+    }
+
+    auto subjectId(ModelStub &m) -> std::string override {
+        return presentation::subjectId(confirmingFixedLevelTest, m);
+    }
+
+    auto testerId(ModelStub &m) -> std::string override {
+        return presentation::testerId(confirmingFixedLevelTest, m);
+    }
+
+    auto session(ModelStub &m) -> std::string override {
+        return presentation::session(confirmingFixedLevelTest, m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingFixedLevelTest, m);
+    }
+
+    auto maskerFilePath(ModelStub &m) -> std::string override {
+        return confirmingFixedLevelTest.maskerFilePath(m);
+    }
+
+    auto condition(ModelStub &m) -> Condition override {
+        return confirmingFixedLevelTest.condition(m);
+    }
+};
+
 class TrialSubmission : public virtual UseCase {
   public:
     virtual auto nextTrialButtonShown() -> bool = 0;
@@ -1491,6 +1547,8 @@ class PresenterTests : public ::testing::Test {
     ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{
         &setupView};
+    ConfirmingFixedLevelClosedSetSilentIntervalsTest
+        confirmingFixedLevelClosedSetSilentIntervalsTest{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{&testingView};

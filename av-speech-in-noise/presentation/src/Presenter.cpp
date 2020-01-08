@@ -70,7 +70,7 @@ void Presenter::initializeTest() {
         model->initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
     else if (adaptiveClosedSet() || adaptiveOpenSet())
         model->initializeTest(adaptiveTest(testSetup));
-    else if (finiteTargets())
+    else if (fixedLevelSilentIntervals())
         model->initializeTestWithFiniteTargets(fixedLevelTest(testSetup));
     else
         model->initializeTest(fixedLevelTest(testSetup));
@@ -84,7 +84,9 @@ auto Presenter::adaptiveOpenSet() -> bool {
     return testSetup->adaptiveOpenSet();
 }
 
-auto Presenter::finiteTargets() -> bool { return testSetup->finiteTargets(); }
+auto Presenter::fixedLevelSilentIntervals() -> bool {
+    return testSetup->fixedLevelSilentIntervals();
+}
 
 auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
     return testSetup->adaptiveClosedSetDelayedMasker();
@@ -397,8 +399,8 @@ auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
     return method(Method::fixedLevelClosedSet);
 }
 
-auto Presenter::TestSetup::finiteTargets() -> bool {
-    return view->usingTargetsWithoutReplacement();
+auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
+    return method(Method::fixedLevelClosedSetSilentIntervals);
 }
 
 auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
