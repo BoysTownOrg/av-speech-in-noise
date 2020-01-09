@@ -112,11 +112,12 @@ class ModelImpl : public Model {
   public:
     ModelImpl(AdaptiveMethod *, FixedLevelMethod *,
         TargetList *infiniteTargetList, TestConcluder *fixedTrialTestConcluder,
-        TargetList *finiteTargetList, TestConcluder *completesWhenTargetsEmpty,
-        RecognitionTestModel *);
+        TargetList *silentIntervals, TestConcluder *completesWhenTargetsEmpty,
+        TargetList *allStimuli, RecognitionTestModel *);
     void initializeTest(const AdaptiveTest &) override;
     void initializeTest(const FixedLevelTest &) override;
-    void initializeTestWithFiniteTargets(const FixedLevelTest &) override;
+    void initializeSilentIntervalsTest(const FixedLevelTest &) override;
+    void initializeAllStimuliTest(const FixedLevelTest &) override;
     void initializeTestWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeTestWithDelayedMasker(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
@@ -137,8 +138,9 @@ class ModelImpl : public Model {
     FixedLevelMethod *fixedLevelMethod;
     TargetList *infiniteTargetList;
     TestConcluder *fixedTrialTestConcluder;
-    TargetList *finiteTargetList;
+    TargetList *silentIntervals;
     TestConcluder *completesWhenTargetsEmpty;
+    TargetList *allStimuli;
     RecognitionTestModel *model;
 };
 }

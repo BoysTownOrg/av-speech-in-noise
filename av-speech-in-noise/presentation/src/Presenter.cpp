@@ -68,10 +68,12 @@ void Presenter::initializeTest() {
         model->initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetSingleSpeaker())
         model->initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (adaptiveClosedSet() || adaptiveOpenSet())
+    else if (defaultAdaptive())
         model->initializeTest(adaptiveTest(testSetup));
-    else if (finiteTargets())
-        model->initializeTestWithFiniteTargets(fixedLevelTest(testSetup));
+    else if (fixedLevelSilentIntervals())
+        model->initializeSilentIntervalsTest(fixedLevelTest(testSetup));
+    else if (fixedLevelAllStimuli())
+        model->initializeAllStimuliTest(fixedLevelTest(testSetup));
     else
         model->initializeTest(fixedLevelTest(testSetup));
 }
@@ -84,7 +86,13 @@ auto Presenter::adaptiveOpenSet() -> bool {
     return testSetup->adaptiveOpenSet();
 }
 
-auto Presenter::finiteTargets() -> bool { return testSetup->finiteTargets(); }
+auto Presenter::fixedLevelSilentIntervals() -> bool {
+    return testSetup->fixedLevelSilentIntervals();
+}
+
+auto Presenter::fixedLevelAllStimuli() -> bool {
+    return testSetup->fixedLevelAllStimuli();
+}
 
 auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
     return testSetup->adaptiveClosedSetDelayedMasker();
@@ -113,8 +121,11 @@ void Presenter::showTestView() {
 }
 
 auto Presenter::closedSet() -> bool {
-    return adaptiveClosedSet() || fixedLevelClosedSet() ||
-        adaptiveClosedSetSingleSpeaker() || adaptiveClosedSetDelayedMasker();
+    return testSetup->closedSet();
+}
+
+auto Presenter::defaultAdaptive() -> bool {
+    return testSetup->defaultAdaptive();
 }
 
 auto Presenter::fixedLevelClosedSet() -> bool {
@@ -122,8 +133,7 @@ auto Presenter::fixedLevelClosedSet() -> bool {
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
-    if (adaptiveClosedSet() || adaptiveClosedSetSingleSpeaker() ||
-        adaptiveClosedSetDelayedMasker())
+    if (adaptiveClosedSet())
         return &adaptiveClosedSetTrialCompletionHandler;
     if (adaptiveOpenSet())
         return &adaptiveOpenSetTrialCompletionHandler;
@@ -250,12 +260,15 @@ void Presenter::browseForTrackSettingsFile() {
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
-    view->populateMethodMenu({methodName(Method::adaptiveClosedSet),
+    view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
         methodName(Method::adaptiveClosedSetSingleSpeaker),
         methodName(Method::adaptiveClosedSetDelayedMasker),
         methodName(Method::adaptiveOpenSet),
-        methodName(Method::fixedLevelClosedSet),
-        methodName(Method::fixedLevelOpenSet)});
+        methodName(Method::defaultFixedLevelClosedSet),
+        methodName(Method::fixedLevelClosedSetSilentIntervals),
+        methodName(Method::defaultFixedLevelOpenSet),
+        methodName(Method::fixedLevelOpenSetSilentIntervals),
+        methodName(Method::fixedLevelOpenSetAllStimuli)});
     view->subscribe(this);
 }
 
@@ -375,28 +388,22 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
     view->setTrackSettingsFile(std::move(s));
 }
 
-auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
-    return method(Method::adaptiveClosedSet);
+auto Presenter::TestSetup::defaultAdaptive() -> bool {
+    return defaultAdaptiveClosedSet() || adaptiveOpenSet();
 }
 
-auto Presenter::TestSetup::method(Method m) -> bool {
-    return view->method() == methodName(m);
+auto Presenter::TestSetup::defaultAdaptiveClosedSet() -> bool {
+    return method(Method::defaultAdaptiveClosedSet);
 }
 
 auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
     return method(Method::adaptiveOpenSet);
 }
 
-auto Presenter::TestSetup::fixedLevelOpenSet() -> bool {
-    return method(Method::fixedLevelOpenSet);
-}
-
-auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
-    return method(Method::fixedLevelClosedSet);
-}
-
-auto Presenter::TestSetup::finiteTargets() -> bool {
-    return view->usingTargetsWithoutReplacement();
+auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
+    return defaultAdaptiveClosedSet() ||
+        adaptiveClosedSetSingleSpeaker() ||
+        adaptiveClosedSetDelayedMasker();
 }
 
 auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
@@ -405,6 +412,32 @@ auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
 
 auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
     return method(Method::adaptiveClosedSetSingleSpeaker);
+}
+
+auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
+    return method(Method::defaultFixedLevelClosedSet) ||
+        fixedLevelClosedSetSilentIntervals();
+}
+
+auto Presenter::TestSetup::fixedLevelClosedSetSilentIntervals() -> bool {
+    return method(Method::fixedLevelClosedSetSilentIntervals);
+}
+
+auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
+    return fixedLevelClosedSetSilentIntervals() ||
+        method(Method::fixedLevelOpenSetSilentIntervals);
+}
+
+auto Presenter::TestSetup::fixedLevelAllStimuli() -> bool {
+    return method(Method::fixedLevelOpenSetAllStimuli);
+}
+
+auto Presenter::TestSetup::closedSet() -> bool {
+    return adaptiveClosedSet() || fixedLevelClosedSet();
+}
+
+auto Presenter::TestSetup::method(Method m) -> bool {
+    return view->method() == methodName(m);
 }
 
 Presenter::Subject::Subject(View::Subject *view) : view{view} {

@@ -85,7 +85,6 @@ class View {
         virtual auto condition() -> std::string = 0;
         virtual auto session() -> std::string = 0;
         virtual auto method() -> std::string = 0;
-        virtual auto usingTargetsWithoutReplacement() -> bool = 0;
         virtual void setMasker(std::string) = 0;
         virtual void setTargetListDirectory(std::string) = 0;
         virtual void setCalibrationFilePath(std::string) = 0;
@@ -123,27 +122,36 @@ class View {
 
 enum class Method {
     adaptiveOpenSet,
-    adaptiveClosedSet,
+    defaultAdaptiveClosedSet,
     adaptiveClosedSetSingleSpeaker,
     adaptiveClosedSetDelayedMasker,
-    fixedLevelOpenSet,
-    fixedLevelClosedSet
+    defaultFixedLevelOpenSet,
+    fixedLevelOpenSetSilentIntervals,
+    fixedLevelOpenSetAllStimuli,
+    defaultFixedLevelClosedSet,
+    fixedLevelClosedSetSilentIntervals
 };
 
 constexpr auto methodName(Method c) -> const char * {
     switch (c) {
     case Method::adaptiveOpenSet:
         return "adaptive open-set";
-    case Method::adaptiveClosedSet:
+    case Method::defaultAdaptiveClosedSet:
         return "adaptive closed-set";
     case Method::adaptiveClosedSetSingleSpeaker:
         return "adaptive closed-set single speaker";
     case Method::adaptiveClosedSetDelayedMasker:
         return "adaptive closed-set delayed masker";
-    case Method::fixedLevelOpenSet:
-        return "fixed-level open-set";
-    case Method::fixedLevelClosedSet:
-        return "fixed-level closed-set";
+    case Method::defaultFixedLevelOpenSet:
+        return "fixed-level open-set with replacement";
+    case Method::defaultFixedLevelClosedSet:
+        return "fixed-level closed-set with replacement";
+    case Method::fixedLevelOpenSetSilentIntervals:
+        return "fixed-level open-set silent intervals";
+    case Method::fixedLevelClosedSetSilentIntervals:
+        return "fixed-level closed-set silent intervals";
+    case Method::fixedLevelOpenSetAllStimuli:
+        return "fixed-level open-set all stimuli";
     }
 }
 
@@ -184,11 +192,15 @@ class Presenter : public Model::EventListener {
         auto adaptiveTest() -> AdaptiveTest;
         auto fixedLevelTest() -> FixedLevelTest;
         auto calibrationParameters() -> Calibration;
+        auto closedSet() -> bool;
+        auto defaultAdaptive() -> bool;
         auto adaptiveClosedSet() -> bool;
         auto adaptiveOpenSet() -> bool;
         auto fixedLevelOpenSet() -> bool;
         auto fixedLevelClosedSet() -> bool;
-        auto finiteTargets() -> bool;
+        auto fixedLevelClosedSetSilentIntervals() -> bool;
+        auto fixedLevelSilentIntervals() -> bool;
+        auto fixedLevelAllStimuli() -> bool;
         auto singleSpeaker() -> bool;
         auto adaptiveClosedSetDelayedMasker() -> bool;
         auto adaptiveClosedSetSingleSpeaker() -> bool;
@@ -201,6 +213,7 @@ class Presenter : public Model::EventListener {
         void browseForTrackSettingsFile() override;
 
       private:
+        auto defaultAdaptiveClosedSet() -> bool;
         auto testIdentity() -> TestIdentity;
         void commonTest(Test &);
         auto readCondition() -> Condition;
@@ -325,7 +338,9 @@ class Presenter : public Model::EventListener {
     static int trackBumpLimit;
 
   private:
-    auto finiteTargets() -> bool;
+    auto fixedLevelSilentIntervals() -> bool;
+    auto fixedLevelAllStimuli() -> bool;
+    auto defaultAdaptive() -> bool;
     auto singleSpeaker() -> bool;
     auto delayedMasker() -> bool;
     auto adaptiveClosedSetDelayedMasker() -> bool;
@@ -347,6 +362,7 @@ class Presenter : public Model::EventListener {
     auto adaptiveOpenSet() -> bool;
     auto closedSet() -> bool;
     auto fixedLevelClosedSet() -> bool;
+    auto fixedLevelClosedSetSilentIntervals() -> bool;
     void initializeTest();
     void showTestView();
     void switchToTestView();

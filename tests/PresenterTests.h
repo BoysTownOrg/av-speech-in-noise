@@ -36,7 +36,8 @@ class ModelStub : public Model {
     bool adaptiveTestInitialized_{};
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
-    bool initializedWithFiniteTargets_{};
+    bool fixedLevelSilentIntervalsTestInitialized_{};
+    bool fixedLevelAllStimuliTestInitialized_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
 
@@ -45,8 +46,12 @@ class ModelStub : public Model {
 
     void setTrialNumber(int n) { trialNumber_ = n; }
 
-    [[nodiscard]] auto initializedWithFiniteTargets() const {
-        return initializedWithFiniteTargets_;
+    [[nodiscard]] auto fixedLevelSilentIntervalsTestInitialized() const {
+        return fixedLevelSilentIntervalsTestInitialized_;
+    }
+
+    [[nodiscard]] auto fixedLevelAllStimuliTestInitialized() const {
+        return fixedLevelAllStimuliTestInitialized_;
     }
 
     [[nodiscard]] auto initializedWithSingleSpeaker() const {
@@ -67,9 +72,14 @@ class ModelStub : public Model {
         initializedWithDelayedMasker_ = true;
     }
 
-    void initializeTestWithFiniteTargets(const FixedLevelTest &p) override {
+    void initializeSilentIntervalsTest(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
-        initializedWithFiniteTargets_ = true;
+        fixedLevelSilentIntervalsTestInitialized_ = true;
+    }
+
+    void initializeAllStimuliTest(const FixedLevelTest &p) override {
+        fixedLevelTest_ = p;
+        fixedLevelAllStimuliTestInitialized_ = true;
     }
 
     [[nodiscard]] auto incorrectResponseSubmitted() const {
@@ -226,17 +236,10 @@ class ViewStub : public View {
         EventListener *listener_{};
         bool shown_{};
         bool hidden_{};
-        bool useFiniteTargets_{};
         bool useSingleSpeaker_{};
         bool useDelayedMasker_{};
 
       public:
-        auto usingTargetsWithoutReplacement() -> bool override {
-            return useFiniteTargets_;
-        }
-
-        void useFiniteTargets() { useFiniteTargets_ = true; }
-
         void useSingleSpeaker() { useSingleSpeaker_ = true; }
 
         void useDelayedMasker() { useDelayedMasker_ = true; }
@@ -748,7 +751,7 @@ class ConfirmingAdaptiveClosedSetTest : public ConfirmingAdaptiveTest_ {
         : confirmingAdaptiveTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveClosedSet);
+        setMethod(view, Method::defaultAdaptiveClosedSet);
         presentation::run(confirmingAdaptiveTest);
     }
 
@@ -1096,6 +1099,32 @@ static auto testerId(ConfirmingFixedLevelTest &t, ModelStub &m) -> std::string {
     return t.testerId(m);
 }
 
+static auto snr_dB(ConfirmingFixedLevelTest &t, ModelStub &m) -> int {
+    return t.snr_dB(m);
+}
+
+static auto maskerLevel(ConfirmingFixedLevelTest &t, ModelStub &m) -> int {
+    return t.maskerLevel(m);
+}
+
+static auto fullScaleLevel(ConfirmingFixedLevelTest &t, ModelStub &m) -> int {
+    return t.fullScaleLevel(m);
+}
+
+static auto targetListDirectory(ConfirmingFixedLevelTest &t, ModelStub &m)
+    -> std::string {
+    return t.targetListDirectory(m);
+}
+
+static auto maskerFilePath(ConfirmingFixedLevelTest &t, ModelStub &m)
+    -> std::string {
+    return t.maskerFilePath(m);
+}
+
+static auto condition(ConfirmingFixedLevelTest &t, ModelStub &m) -> Condition {
+    return t.condition(m);
+}
+
 class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
     ConfirmingFixedLevelTest confirmingFixedLevelTest;
     ViewStub::TestSetupViewStub *view;
@@ -1105,24 +1134,24 @@ class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
         : confirmingFixedLevelTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelOpenSet);
+        setMethod(view, Method::defaultFixedLevelOpenSet);
         presentation::run(confirmingFixedLevelTest);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
-        return confirmingFixedLevelTest.snr_dB(m);
+        return presentation::snr_dB(confirmingFixedLevelTest, m);
     }
 
     auto maskerLevel(ModelStub &m) -> int override {
-        return confirmingFixedLevelTest.maskerLevel(m);
+        return presentation::maskerLevel(confirmingFixedLevelTest, m);
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
-        return confirmingFixedLevelTest.fullScaleLevel(m);
+        return presentation::fullScaleLevel(confirmingFixedLevelTest, m);
     }
 
     auto targetListDirectory(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.targetListDirectory(m);
+        return presentation::targetListDirectory(confirmingFixedLevelTest, m);
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
@@ -1142,11 +1171,11 @@ class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.maskerFilePath(m);
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return confirmingFixedLevelTest.condition(m);
+        return presentation::condition(confirmingFixedLevelTest, m);
     }
 };
 
@@ -1160,24 +1189,24 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
         : confirmingFixedLevelTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelClosedSet);
+        setMethod(view, Method::defaultFixedLevelClosedSet);
         presentation::run(confirmingFixedLevelTest);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
-        return confirmingFixedLevelTest.snr_dB(m);
+        return presentation::snr_dB(confirmingFixedLevelTest, m);
     }
 
     auto maskerLevel(ModelStub &m) -> int override {
-        return confirmingFixedLevelTest.maskerLevel(m);
+        return presentation::maskerLevel(confirmingFixedLevelTest, m);
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
-        return confirmingFixedLevelTest.fullScaleLevel(m);
+        return presentation::fullScaleLevel(confirmingFixedLevelTest, m);
     }
 
     auto targetListDirectory(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.targetListDirectory(m);
+        return presentation::targetListDirectory(confirmingFixedLevelTest, m);
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
@@ -1197,11 +1226,179 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return confirmingFixedLevelTest.maskerFilePath(m);
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return confirmingFixedLevelTest.condition(m);
+        return presentation::condition(confirmingFixedLevelTest, m);
+    }
+};
+
+class ConfirmingFixedLevelClosedSetSilentIntervalsTest
+    : public ConfirmingTestSetup {
+    ConfirmingFixedLevelTest confirmingFixedLevelTest;
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit ConfirmingFixedLevelClosedSetSilentIntervalsTest(
+        ViewStub::TestSetupViewStub *view)
+        : confirmingFixedLevelTest{view}, view{view} {}
+
+    void run() override {
+        setMethod(view, Method::fixedLevelClosedSetSilentIntervals);
+        presentation::run(confirmingFixedLevelTest);
+    }
+
+    auto snr_dB(ModelStub &m) -> int override {
+        return presentation::snr_dB(confirmingFixedLevelTest, m);
+    }
+
+    auto maskerLevel(ModelStub &m) -> int override {
+        return presentation::maskerLevel(confirmingFixedLevelTest, m);
+    }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return presentation::fullScaleLevel(confirmingFixedLevelTest, m);
+    }
+
+    auto targetListDirectory(ModelStub &m) -> std::string override {
+        return presentation::targetListDirectory(confirmingFixedLevelTest, m);
+    }
+
+    auto subjectId(ModelStub &m) -> std::string override {
+        return presentation::subjectId(confirmingFixedLevelTest, m);
+    }
+
+    auto testerId(ModelStub &m) -> std::string override {
+        return presentation::testerId(confirmingFixedLevelTest, m);
+    }
+
+    auto session(ModelStub &m) -> std::string override {
+        return presentation::session(confirmingFixedLevelTest, m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingFixedLevelTest, m);
+    }
+
+    auto maskerFilePath(ModelStub &m) -> std::string override {
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
+    }
+
+    auto condition(ModelStub &m) -> Condition override {
+        return presentation::condition(confirmingFixedLevelTest, m);
+    }
+};
+
+class ConfirmingFixedLevelOpenSetSilentIntervalsTest
+    : public ConfirmingTestSetup {
+    ConfirmingFixedLevelTest confirmingFixedLevelTest;
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit ConfirmingFixedLevelOpenSetSilentIntervalsTest(
+        ViewStub::TestSetupViewStub *view)
+        : confirmingFixedLevelTest{view}, view{view} {}
+
+    void run() override {
+        setMethod(view, Method::fixedLevelOpenSetSilentIntervals);
+        presentation::run(confirmingFixedLevelTest);
+    }
+
+    auto snr_dB(ModelStub &m) -> int override {
+        return presentation::snr_dB(confirmingFixedLevelTest, m);
+    }
+
+    auto maskerLevel(ModelStub &m) -> int override {
+        return presentation::maskerLevel(confirmingFixedLevelTest, m);
+    }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return presentation::fullScaleLevel(confirmingFixedLevelTest, m);
+    }
+
+    auto targetListDirectory(ModelStub &m) -> std::string override {
+        return presentation::targetListDirectory(confirmingFixedLevelTest, m);
+    }
+
+    auto subjectId(ModelStub &m) -> std::string override {
+        return presentation::subjectId(confirmingFixedLevelTest, m);
+    }
+
+    auto testerId(ModelStub &m) -> std::string override {
+        return presentation::testerId(confirmingFixedLevelTest, m);
+    }
+
+    auto session(ModelStub &m) -> std::string override {
+        return presentation::session(confirmingFixedLevelTest, m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingFixedLevelTest, m);
+    }
+
+    auto maskerFilePath(ModelStub &m) -> std::string override {
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
+    }
+
+    auto condition(ModelStub &m) -> Condition override {
+        return presentation::condition(confirmingFixedLevelTest, m);
+    }
+};
+
+class ConfirmingFixedLevelOpenSetAllStimuliTest
+    : public ConfirmingTestSetup {
+    ConfirmingFixedLevelTest confirmingFixedLevelTest;
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit ConfirmingFixedLevelOpenSetAllStimuliTest(
+        ViewStub::TestSetupViewStub *view)
+        : confirmingFixedLevelTest{view}, view{view} {}
+
+    void run() override {
+        setMethod(view, Method::fixedLevelOpenSetAllStimuli);
+        presentation::run(confirmingFixedLevelTest);
+    }
+
+    auto snr_dB(ModelStub &m) -> int override {
+        return presentation::snr_dB(confirmingFixedLevelTest, m);
+    }
+
+    auto maskerLevel(ModelStub &m) -> int override {
+        return presentation::maskerLevel(confirmingFixedLevelTest, m);
+    }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return presentation::fullScaleLevel(confirmingFixedLevelTest, m);
+    }
+
+    auto targetListDirectory(ModelStub &m) -> std::string override {
+        return presentation::targetListDirectory(confirmingFixedLevelTest, m);
+    }
+
+    auto subjectId(ModelStub &m) -> std::string override {
+        return presentation::subjectId(confirmingFixedLevelTest, m);
+    }
+
+    auto testerId(ModelStub &m) -> std::string override {
+        return presentation::testerId(confirmingFixedLevelTest, m);
+    }
+
+    auto session(ModelStub &m) -> std::string override {
+        return presentation::session(confirmingFixedLevelTest, m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingFixedLevelTest, m);
+    }
+
+    auto maskerFilePath(ModelStub &m) -> std::string override {
+        return presentation::maskerFilePath(confirmingFixedLevelTest, m);
+    }
+
+    auto condition(ModelStub &m) -> Condition override {
+        return presentation::condition(confirmingFixedLevelTest, m);
     }
 };
 
@@ -1491,6 +1688,12 @@ class PresenterTests : public ::testing::Test {
     ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{
         &setupView};
+    ConfirmingFixedLevelClosedSetSilentIntervalsTest
+        confirmingFixedLevelClosedSetSilentIntervalsTest{&setupView};
+    ConfirmingFixedLevelOpenSetSilentIntervalsTest
+        confirmingFixedLevelOpenSetSilentIntervalsTest{&setupView};
+    ConfirmingFixedLevelOpenSetAllStimuliTest
+        confirmingFixedLevelOpenSetAllStimuliTest{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{&testingView};
@@ -1922,7 +2125,11 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeTestWithFiniteTargets(const FixedLevelTest &) override {
+    void initializeSilentIntervalsTest(const FixedLevelTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void initializeAllStimuliTest(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 

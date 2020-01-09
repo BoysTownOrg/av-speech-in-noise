@@ -3,13 +3,15 @@
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
     FixedLevelMethod *fixedLevelMethod, TargetList *infiniteTargetList,
-    TestConcluder *fixedTrialTestConcluder, TargetList *finiteTargetList,
-    TestConcluder *completesWhenTargetsEmpty, RecognitionTestModel *model)
+    TestConcluder *fixedTrialTestConcluder, TargetList *silentIntervals,
+    TestConcluder *completesWhenTargetsEmpty, TargetList *allStimuli,
+    RecognitionTestModel *model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       infiniteTargetList{infiniteTargetList},
       fixedTrialTestConcluder{fixedTrialTestConcluder},
-      finiteTargetList{finiteTargetList},
-      completesWhenTargetsEmpty{completesWhenTargetsEmpty}, model{model} {}
+      silentIntervals{silentIntervals},
+      completesWhenTargetsEmpty{completesWhenTargetsEmpty},
+      allStimuli{allStimuli}, model{model} {}
 
 static void initialize(RecognitionTestModel *model, class TestMethod *method,
     const struct Test &test) {
@@ -22,9 +24,15 @@ void ModelImpl::initializeTest(const FixedLevelTest &p) {
     initialize(model, fixedLevelMethod, p);
 }
 
-void ModelImpl::initializeTestWithFiniteTargets(const FixedLevelTest &p) {
+void ModelImpl::initializeSilentIntervalsTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
-        p, finiteTargetList, completesWhenTargetsEmpty);
+        p, silentIntervals, completesWhenTargetsEmpty);
+    initialize(model, fixedLevelMethod, p);
+}
+
+void ModelImpl::initializeAllStimuliTest(const FixedLevelTest &p) {
+    fixedLevelMethod->initialize(
+        p, allStimuli, completesWhenTargetsEmpty);
     initialize(model, fixedLevelMethod, p);
 }
 

@@ -222,6 +222,11 @@ FIXED_LEVEL_METHOD_TEST(submitCoordinateResponseSubmitsResponseToConcluder) {
     assertTrue(testConcluder.responseSubmitted());
 }
 
+FIXED_LEVEL_METHOD_TEST(submitFreeResponseSubmitsResponseToConcluder) {
+    run(submittingFreeResponse);
+    assertTrue(testConcluder.responseSubmitted());
+}
+
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesCurrentToEvaluator) {
     setCurrentTarget("a");
     run(submittingCoordinateResponse);
