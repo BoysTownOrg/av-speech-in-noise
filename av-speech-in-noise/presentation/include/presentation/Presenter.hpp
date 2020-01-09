@@ -143,9 +143,9 @@ constexpr auto methodName(Method c) -> const char * {
     case Method::adaptiveClosedSetDelayedMasker:
         return "adaptive closed-set delayed masker";
     case Method::defaultFixedLevelOpenSet:
-        return "fixed-level open-set";
+        return "fixed-level open-set with replacement";
     case Method::defaultFixedLevelClosedSet:
-        return "fixed-level closed-set";
+        return "fixed-level closed-set with replacement";
     case Method::fixedLevelOpenSetSilentIntervals:
         return "fixed-level open-set silent intervals";
     case Method::fixedLevelClosedSetSilentIntervals:
