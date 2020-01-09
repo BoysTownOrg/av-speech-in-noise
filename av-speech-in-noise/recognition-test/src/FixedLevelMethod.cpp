@@ -52,6 +52,7 @@ void FixedLevelMethodImpl::submitCorrectResponse() {}
 
 void FixedLevelMethodImpl::submitResponse(
     const open_set::FreeResponse &response) {
+    concluder->submitResponse();
     if (response.flagged)
         targetList->reinsertCurrent();
     complete_ = concluder->complete(targetList);
