@@ -10,16 +10,16 @@ namespace coordinate_response_measure {
 enum class Color { green, red, blue, white, notAColor };
 
 struct Response {
-    int number;
-    Color color;
+    int number{};
+    Color color{};
 };
 
 struct Trial {
     std::string target;
-    int correctNumber;
-    int subjectNumber;
-    Color correctColor;
-    Color subjectColor;
+    int correctNumber{};
+    int subjectNumber{};
+    Color correctColor{};
+    Color subjectColor{};
     bool correct{};
 };
 
@@ -34,7 +34,7 @@ struct FixedLevelTrial : Trial {};
 namespace open_set {
 struct FreeResponse {
     std::string response;
-    bool flagged;
+    bool flagged{};
 };
 
 struct Trial {
@@ -66,10 +66,10 @@ constexpr auto conditionName(Condition c) -> const char * {
 }
 
 struct TrackingSequence {
-    int runCount;
-    int stepSize;
-    int down;
-    int up;
+    int runCount{};
+    int stepSize{};
+    int down{};
+    int up{};
 };
 
 constexpr auto operator==(const TrackingSequence &a, const TrackingSequence &b)
@@ -91,17 +91,17 @@ struct Test {
     TestIdentity identity;
     std::string targetListDirectory;
     std::string maskerFilePath;
-    int maskerLevel_dB_SPL;
-    int fullScaleLevel_dB_SPL;
-    Condition condition;
+    int maskerLevel_dB_SPL{};
+    int fullScaleLevel_dB_SPL{};
+    Condition condition{};
 };
 
 struct AdaptiveTest : Test {
     std::string trackSettingsFile;
-    int startingSnr_dB;
-    int ceilingSnr_dB;
-    int floorSnr_dB;
-    int trackBumpLimit;
+    int startingSnr_dB{};
+    int ceilingSnr_dB{};
+    int floorSnr_dB{};
+    int trackBumpLimit{};
 };
 
 struct FixedLevelTest : Test {
@@ -116,9 +116,9 @@ struct AudioSettings {
 struct Calibration {
     AudioSettings audioSettings;
     std::string filePath;
-    int level_dB_SPL;
-    int fullScaleLevel_dB_SPL;
-    Condition condition;
+    int level_dB_SPL{};
+    int fullScaleLevel_dB_SPL{};
+    Condition condition{};
 };
 
 class Model {
