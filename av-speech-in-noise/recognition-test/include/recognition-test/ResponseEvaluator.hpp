@@ -13,11 +13,6 @@ class ResponseEvaluatorImpl : public ResponseEvaluator {
     auto correctColor(const std::string &filePath)
         -> coordinate_response_measure::Color override;
     auto fileName(const std::string &filePath) -> std::string override;
-
-  private:
-    auto correctNumber_(const std::string &filePath) -> int;
-    static auto colorNameLength(
-        const std::string &filePath, unsigned long leadingPathLength_) -> long;
 };
 }
 

@@ -1,4 +1,5 @@
 #include "ResponseEvaluator.hpp"
+#include <gsl/gsl>
 #include <algorithm>
 #include <cctype>
 
@@ -13,6 +14,25 @@ auto ResponseEvaluatorImpl::correct(const std::string &filePath,
         r.number != invalidNumber;
 }
 
+static auto leadingPathLength(const std::string &filePath) -> size_t {
+    return filePath.find_last_of('/') + 1;
+}
+
+static auto colorNameLength(
+    const std::string &filePath, gsl::index leadingPathLength_) -> gsl::index {
+    auto fileNameBeginning = filePath.begin() + leadingPathLength_;
+    auto notAlpha = std::find_if(fileNameBeginning, filePath.end(),
+        [](unsigned char c) { return std::isalpha(c) == 0; });
+    return std::distance(fileNameBeginning, notAlpha);
+}
+
+static auto correctNumber_(const std::string &filePath) -> int {
+    auto leadingPathLength_ = leadingPathLength(filePath);
+    auto number = filePath.substr(
+        leadingPathLength_ + colorNameLength(filePath, leadingPathLength_), 1);
+    return std::stoi(number);
+}
+
 auto ResponseEvaluatorImpl::correctNumber(const std::string &filePath) -> int {
     try {
         return correctNumber_(filePath);
@@ -21,28 +41,9 @@ auto ResponseEvaluatorImpl::correctNumber(const std::string &filePath) -> int {
     }
 }
 
-static auto leadingPathLength(const std::string &filePath) -> unsigned long {
-    return filePath.find_last_of('/') + 1;
-}
-
 auto ResponseEvaluatorImpl::fileName(const std::string &filePath)
     -> std::string {
     return filePath.substr(leadingPathLength(filePath));
-}
-
-auto ResponseEvaluatorImpl::correctNumber_(const std::string &filePath) -> int {
-    auto leadingPathLength_ = leadingPathLength(filePath);
-    auto number = filePath.substr(
-        leadingPathLength_ + colorNameLength(filePath, leadingPathLength_), 1);
-    return std::stoi(number);
-}
-
-auto ResponseEvaluatorImpl::colorNameLength(
-    const std::string &filePath, unsigned long leadingPathLength_) -> long {
-    auto fileNameBeginning = filePath.begin() + leadingPathLength_;
-    auto notAlpha = std::find_if(fileNameBeginning, filePath.end(),
-        [](unsigned char c) { return std::isalpha(c) == 0; });
-    return std::distance(fileNameBeginning, notAlpha);
 }
 
 static auto color(const std::string &colorName)

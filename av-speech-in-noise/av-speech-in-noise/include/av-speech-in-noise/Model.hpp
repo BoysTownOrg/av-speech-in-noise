@@ -20,7 +20,7 @@ struct Trial {
     int subjectNumber;
     Color correctColor;
     Color subjectColor;
-    bool correct;
+    bool correct{};
 };
 
 struct AdaptiveTrial : Trial {
