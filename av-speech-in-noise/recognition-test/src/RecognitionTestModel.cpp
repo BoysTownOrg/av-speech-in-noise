@@ -1,4 +1,5 @@
 #include "RecognitionTestModel.hpp"
+#include <gsl/gsl>
 #include <cmath>
 
 namespace av_speech_in_noise {
@@ -331,7 +332,8 @@ void RecognitionTestModelImpl::trySettingTargetLevel(const Calibration &p) {
 
 auto RecognitionTestModelImpl::calibrationLevel_dB(const Calibration &p)
     -> double {
-    return p.level_dB_SPL - p.fullScaleLevel_dB_SPL - unalteredTargetLevel_dB();
+    return gsl::narrow_cast<double>(p.level_dB_SPL - p.fullScaleLevel_dB_SPL) -
+        unalteredTargetLevel_dB();
 }
 
 auto RecognitionTestModelImpl::unalteredTargetLevel_dB() -> double {
