@@ -43,7 +43,7 @@ struct Trial {
 
 struct FreeResponseTrial : Trial {
     std::string response;
-    bool flagged;
+    bool flagged{};
 };
 
 struct AdaptiveTrial : Trial {

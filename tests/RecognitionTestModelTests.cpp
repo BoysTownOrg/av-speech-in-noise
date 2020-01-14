@@ -664,7 +664,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerSetsFirstChannelMaskerDelay) {
     run(initializingTestWithDelayedMasker);
-    assertEqual(0L, maskerPlayer.channelDelayed());
+    assertEqual(gsl::index{0}, maskerPlayer.channelDelayed());
     assertEqual(RecognitionTestModelImpl::maskerChannelDelaySeconds,
         maskerPlayer.channelDelaySeconds());
 }
