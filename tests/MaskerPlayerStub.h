@@ -30,7 +30,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool channelDelaysCleared_{};
 
   public:
-    void setChannelDelaySeconds(long channel, double seconds) override {
+    void setChannelDelaySeconds(gsl::index channel, double seconds) override {
         channelDelaySeconds_ = seconds;
         channelDelayed_ = channel;
     }

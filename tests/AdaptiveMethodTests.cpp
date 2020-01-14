@@ -420,7 +420,7 @@ class AdaptiveMethodTests : public ::testing::Test {
 
 TEST_F(AdaptiveMethodTests, initializeCreatesSnrTrackForEachList) {
     initialize();
-    assertEqual(3UL, snrTrackFactoryParameters().size());
+    assertEqual(std::size_t{3}, snrTrackFactoryParameters().size());
 }
 
 TEST_F(AdaptiveMethodTests, initializeCreatesEachSnrTrackWithTargetLevelRule) {

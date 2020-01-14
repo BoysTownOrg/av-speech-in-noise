@@ -12,6 +12,10 @@ FetchContent_MakeAvailable(GSL)
 add_subdirectory(av-speech-in-noise)
 add_subdirectory(apps)
 
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows") 
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+endif()
+
 FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest
