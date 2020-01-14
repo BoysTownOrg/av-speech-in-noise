@@ -1,4 +1,5 @@
 #include "TargetPlayerImpl.hpp"
+#include <gsl/gsl>
 #include <cmath>
 #include <algorithm>
 
@@ -68,10 +69,10 @@ void TargetPlayerImpl::fillAudioBuffer(
     auto afterFirstChannel{false};
     for (auto channel : audio) {
         if (usingFirstChannelOnly && afterFirstChannel)
-            std::fill(begin(channel), end(channel), 0);
+            std::fill(begin(channel), end(channel), float{0});
         else
             std::transform(begin(channel), end(channel), begin(channel),
-                [&](auto &x) { return x * scale; });
+                [&](auto &x) { return gsl::narrow_cast<float>(x * scale); });
         afterFirstChannel = true;
     }
 }

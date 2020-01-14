@@ -1,6 +1,6 @@
 #include "assert-utility.h"
 #include "AudioReaderStub.h"
-#include "stimulus-players/AudioReader.hpp"
+#include <stimulus-players/AudioReader.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
@@ -149,7 +149,7 @@ auto halfHannWindow(gsl::index length) -> std::vector<float> {
     const auto pi = std::acos(-1);
     std::vector<float> window(length);
     std::generate(window.begin(), window.end(), [=, n = 0]() mutable {
-        return (1 - std::cos((2 * pi * n++) / (N - 1))) / 2;
+        return gsl::narrow_cast<float>((1 - std::cos((2 * pi * n++) / (N - 1))) / 2);
     });
     return window;
 }
@@ -167,7 +167,7 @@ auto mToN(int M, int N) -> std::vector<float> {
     if (M > N)
         return reverse(mToN(N, M));
     std::vector<float> result(N - M + 1);
-    std::iota(result.begin(), result.end(), M);
+    std::iota(result.begin(), result.end(), gsl::narrow<float>(M));
     return result;
 }
 
