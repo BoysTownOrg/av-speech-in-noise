@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RECOGNITIONTESTMODEL_HPP_
 
 #include "Model.hpp"
+#include <gsl/gsl>
 #include <string>
 #include <vector>
 
@@ -61,7 +62,7 @@ class MaskerPlayer {
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
     virtual void clearChannelDelays() = 0;
-    virtual void setChannelDelaySeconds(long channel, double seconds) = 0;
+    virtual void setChannelDelaySeconds(gsl::index channel, double seconds) = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,

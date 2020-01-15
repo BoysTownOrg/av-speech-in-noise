@@ -19,8 +19,8 @@ class Track {
   public:
     virtual ~Track() = default;
     struct Settings {
-        const TrackingRule *rule;
-        int startingX;
+        const TrackingRule *rule{};
+        int startingX{};
         int ceiling = maximumValue<int>();
         int floor = minimumValue<int>();
         int bumpLimit = maximumValue<int>();

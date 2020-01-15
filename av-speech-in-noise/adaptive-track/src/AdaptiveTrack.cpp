@@ -1,4 +1,5 @@
 #include "AdaptiveTrack.hpp"
+#include <algorithm>
 
 namespace adaptive_track {
 AdaptiveTrack::AdaptiveTrack(const Settings &p)

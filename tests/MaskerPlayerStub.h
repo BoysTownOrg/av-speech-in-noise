@@ -17,7 +17,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     double durationSeconds_{};
     double secondsSeeked_{};
     double channelDelaySeconds_{};
-    long channelDelayed_{};
+    gsl::index channelDelayed_{};
     EventListener *listener_{};
     bool fadeInCalled_{};
     bool fadeOutCalled_{};
@@ -30,7 +30,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool channelDelaysCleared_{};
 
   public:
-    void setChannelDelaySeconds(long channel, double seconds) override {
+    void setChannelDelaySeconds(gsl::index channel, double seconds) override {
         channelDelaySeconds_ = seconds;
         channelDelayed_ = channel;
     }

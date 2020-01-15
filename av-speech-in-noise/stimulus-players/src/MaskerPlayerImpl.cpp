@@ -79,7 +79,9 @@ static auto dB(double x) -> double { return std::pow(10, x / 20); }
 
 static auto pi() -> double { return std::acos(-1); }
 
-static void mute(channel_buffer_type x) { std::fill(x.begin(), x.end(), 0); }
+static void mute(channel_buffer_type x) {
+    std::fill(x.begin(), x.end(), sample_type{0});
+}
 
 static auto framesToFill(const std::vector<channel_buffer_type> &audioBuffer)
     -> sample_index_type {
