@@ -215,7 +215,7 @@ class Presenter : public Model::EventListener {
       private:
         auto defaultAdaptiveClosedSet() -> bool;
         auto testIdentity() -> TestIdentity;
-        void commonTest(Test &);
+        void initialize(Test &);
         auto readCondition() -> Condition;
         auto method(Method m) -> bool;
         auto readMaskerLevel() -> int;
@@ -271,53 +271,53 @@ class Presenter : public Model::EventListener {
     class AdaptiveClosedSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveClosedSetTestTrialCompletionHandler(Subject *subject)
+        explicit AdaptiveClosedSetTestTrialCompletionHandler(Subject &subject)
             : subject{subject} {}
 
-        void showResponseView() override { subject->showResponseButtons(); }
+        void showResponseView() override { subject.showResponseButtons(); }
 
       private:
-        Subject *subject;
+        Subject &subject;
     };
 
     class AdaptiveOpenSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveOpenSetTestTrialCompletionHandler(Testing *testing)
+        explicit AdaptiveOpenSetTestTrialCompletionHandler(Testing &testing)
             : testing{testing} {}
 
-        void showResponseView() override { testing->showEvaluationButtons(); }
+        void showResponseView() override { testing.showEvaluationButtons(); }
 
       private:
-        Testing *testing;
+        Testing &testing;
     };
 
     class FixedLevelOpenSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing *testing)
+        explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing &testing)
             : testing{testing} {}
 
-        void showResponseView() override { testing->showResponseSubmission(); }
+        void showResponseView() override { testing.showResponseSubmission(); }
 
       private:
-        Testing *testing;
+        Testing &testing;
     };
 
     class FixedLevelClosedSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit FixedLevelClosedSetTestTrialCompletionHandler(Subject *subject)
+        explicit FixedLevelClosedSetTestTrialCompletionHandler(Subject &subject)
             : subject{subject} {}
 
-        void showResponseView() override { subject->showResponseButtons(); }
+        void showResponseView() override { subject.showResponseButtons(); }
 
       private:
-        Subject *subject;
+        Subject &subject;
     };
 
     Presenter(
-        Model *, View *, TestSetup *, Subject *, Experimenter *, Testing *);
+        Model &, View &, TestSetup &, Subject &, Experimenter &, Testing &);
     void trialComplete() override;
     void run();
     void browseForTargetList();
@@ -379,12 +379,12 @@ class Presenter : public Model::EventListener {
         adaptiveOpenSetTrialCompletionHandler;
     AdaptiveClosedSetTestTrialCompletionHandler
         adaptiveClosedSetTrialCompletionHandler;
-    Model *model;
-    View *view;
-    TestSetup *testSetup;
-    Subject *subject;
-    Experimenter *experimenter;
-    Testing *testing;
+    Model &model;
+    View &view;
+    TestSetup &testSetup;
+    Subject &subject;
+    Experimenter &experimenter;
+    Testing &testing;
     TrialCompletionHandler *trialCompletionHandler_{};
 };
 }

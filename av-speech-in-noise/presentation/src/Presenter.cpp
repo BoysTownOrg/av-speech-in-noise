@@ -16,21 +16,21 @@ int Presenter::ceilingSnr_dB = 20;
 int Presenter::floorSnr_dB = -40;
 int Presenter::trackBumpLimit = 10;
 
-static auto fixedLevelTest(Presenter::TestSetup *testSetup) -> FixedLevelTest {
-    return testSetup->fixedLevelTest();
+static auto fixedLevelTest(Presenter::TestSetup &testSetup) -> FixedLevelTest {
+    return testSetup.fixedLevelTest();
 }
 
-static auto adaptiveTest(Presenter::TestSetup *testSetup) -> AdaptiveTest {
-    return testSetup->adaptiveTest();
+static auto adaptiveTest(Presenter::TestSetup &testSetup) -> AdaptiveTest {
+    return testSetup.adaptiveTest();
 }
 
 static void displayTrialNumber(
-    Presenter::Experimenter *experimenter, Model *model) {
-    experimenter->display("Trial " + std::to_string(model->trialNumber()));
+    Presenter::Experimenter &experimenter, Model &model) {
+    experimenter.display("Trial " + std::to_string(model.trialNumber()));
 }
 
-Presenter::Presenter(Model *model, View *view, TestSetup *testSetup,
-    Subject *subject, Experimenter *experimenter, Testing *testing)
+Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
+    Subject &subject, Experimenter &experimenter, Testing &testing)
     : fixedLevelOpenSetTrialCompletionHandler{testing},
       fixedLevelClosedSetTrialCompletionHandler{subject},
       adaptiveOpenSetTrialCompletionHandler{testing},
@@ -38,15 +38,15 @@ Presenter::Presenter(Model *model, View *view, TestSetup *testSetup,
       view{view}, testSetup{testSetup}, subject{subject},
       experimenter{experimenter}, testing{testing},
       trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler} {
-    model->subscribe(this);
-    testSetup->becomeChild(this);
-    subject->becomeChild(this);
-    experimenter->becomeChild(this);
-    testing->becomeChild(this);
-    view->populateAudioDeviceMenu(model->audioDevices());
+    model.subscribe(this);
+    testSetup.becomeChild(this);
+    subject.becomeChild(this);
+    experimenter.becomeChild(this);
+    testing.becomeChild(this);
+    view.populateAudioDeviceMenu(model.audioDevices());
 }
 
-void Presenter::run() { view->eventLoop(); }
+void Presenter::run() { view.eventLoop(); }
 
 void Presenter::confirmTestSetup() {
     try {
@@ -65,71 +65,71 @@ void Presenter::confirmTestSetup_() {
 
 void Presenter::initializeTest() {
     if (adaptiveClosedSetDelayedMasker())
-        model->initializeTestWithDelayedMasker(adaptiveTest(testSetup));
+        model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetSingleSpeaker())
-        model->initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
+        model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
     else if (defaultAdaptive())
-        model->initializeTest(adaptiveTest(testSetup));
+        model.initializeTest(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
-        model->initializeSilentIntervalsTest(fixedLevelTest(testSetup));
+        model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
     else if (fixedLevelAllStimuli())
-        model->initializeAllStimuliTest(fixedLevelTest(testSetup));
+        model.initializeAllStimuliTest(fixedLevelTest(testSetup));
     else
-        model->initializeTest(fixedLevelTest(testSetup));
+        model.initializeTest(fixedLevelTest(testSetup));
 }
 
 auto Presenter::adaptiveClosedSet() -> bool {
-    return testSetup->adaptiveClosedSet();
+    return testSetup.adaptiveClosedSet();
 }
 
 auto Presenter::adaptiveOpenSet() -> bool {
-    return testSetup->adaptiveOpenSet();
+    return testSetup.adaptiveOpenSet();
 }
 
 auto Presenter::fixedLevelSilentIntervals() -> bool {
-    return testSetup->fixedLevelSilentIntervals();
+    return testSetup.fixedLevelSilentIntervals();
 }
 
 auto Presenter::fixedLevelAllStimuli() -> bool {
-    return testSetup->fixedLevelAllStimuli();
+    return testSetup.fixedLevelAllStimuli();
 }
 
 auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
-    return testSetup->adaptiveClosedSetDelayedMasker();
+    return testSetup.adaptiveClosedSetDelayedMasker();
 }
 
 auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
-    return testSetup->adaptiveClosedSetSingleSpeaker();
+    return testSetup.adaptiveClosedSetSingleSpeaker();
 }
 
-auto Presenter::testComplete() -> bool { return model->testComplete(); }
+auto Presenter::testComplete() -> bool { return model.testComplete(); }
 
 void Presenter::switchToTestView() {
     hideTestSetup();
     showTestView();
 }
 
-void Presenter::hideTestSetup() { testSetup->hide(); }
+void Presenter::hideTestSetup() { testSetup.hide(); }
 
 void Presenter::showTestView() {
-    experimenter->show();
+    experimenter.show();
     displayTrialNumber(experimenter, model);
     if (closedSet())
-        subject->show();
+        subject.show();
     else
-        testing->show();
+        testing.show();
 }
 
 auto Presenter::closedSet() -> bool {
-    return testSetup->closedSet();
+    return testSetup.closedSet();
 }
 
 auto Presenter::defaultAdaptive() -> bool {
-    return testSetup->defaultAdaptive();
+    return testSetup.defaultAdaptive();
 }
 
 auto Presenter::fixedLevelClosedSet() -> bool {
-    return testSetup->fixedLevelClosedSet();
+    return testSetup.fixedLevelClosedSet();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
@@ -143,19 +143,19 @@ auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
 }
 
 void Presenter::showErrorMessage(std::string e) {
-    view->showErrorMessage(std::move(e));
+    view.showErrorMessage(std::move(e));
 }
 
 void Presenter::playTrial() {
     AudioSettings p;
-    p.audioDevice = view->audioDevice();
-    model->playTrial(p);
-    experimenter->hideExitTestButton();
+    p.audioDevice = view.audioDevice();
+    model.playTrial(p);
+    experimenter.hideExitTestButton();
 }
 
 void Presenter::trialComplete() {
     trialCompletionHandler_->showResponseView();
-    experimenter->showExitTestButton();
+    experimenter.showExitTestButton();
 }
 
 void Presenter::submitSubjectResponse() {
@@ -168,7 +168,7 @@ void Presenter::submitSubjectResponse() {
 }
 
 void Presenter::submitSubjectResponse_() {
-    model->submitResponse(subject->subjectResponse());
+    model.submitResponse(subject.subjectResponse());
 }
 
 void Presenter::submitExperimenterResponse() {
@@ -176,20 +176,20 @@ void Presenter::submitExperimenterResponse() {
 }
 
 void Presenter::submitExperimenterResponse_() {
-    model->submitResponse(testing->openSetResponse());
+    model.submitResponse(testing.openSetResponse());
 }
 
 void Presenter::submitPassedTrial() {
     proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
 }
 
-void Presenter::submitPassedTrial_() { model->submitCorrectResponse(); }
+void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
 }
 
-void Presenter::submitFailedTrial_() { model->submitIncorrectResponse(); }
+void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
 void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
@@ -209,12 +209,12 @@ void Presenter::switchToSetupView() {
     hideTestView();
 }
 
-void Presenter::showTestSetup() { testSetup->show(); }
+void Presenter::showTestSetup() { testSetup.show(); }
 
 void Presenter::hideTestView() {
-    testing->hide();
-    experimenter->hide();
-    subject->hide();
+    testing.hide();
+    experimenter.hide();
+    subject.hide();
 }
 
 void Presenter::playCalibration() {
@@ -226,35 +226,35 @@ void Presenter::playCalibration() {
 }
 
 void Presenter::playCalibration_() {
-    auto p = testSetup->calibrationParameters();
-    p.audioSettings.audioDevice = view->audioDevice();
-    model->playCalibration(p);
+    auto p = testSetup.calibrationParameters();
+    p.audioSettings.audioDevice = view.audioDevice();
+    model.playCalibration(p);
 }
 
 void Presenter::browseForTargetList() {
     applyIfBrowseNotCancelled(
-        view->browseForDirectory(), &TestSetup::setStimulusList);
+        view.browseForDirectory(), &TestSetup::setStimulusList);
 }
 
 void Presenter::applyIfBrowseNotCancelled(
     std::string s, void (TestSetup::*f)(std::string)) {
-    if (!view->browseCancelled())
-        (testSetup->*f)(std::move(s));
+    if (!view.browseCancelled())
+        (testSetup.*f)(std::move(s));
 }
 
 void Presenter::browseForMasker() {
     applyIfBrowseNotCancelled(
-        view->browseForOpeningFile(), &TestSetup::setMasker);
+        view.browseForOpeningFile(), &TestSetup::setMasker);
 }
 
 void Presenter::browseForCalibration() {
     applyIfBrowseNotCancelled(
-        view->browseForOpeningFile(), &TestSetup::setCalibrationFilePath);
+        view.browseForOpeningFile(), &TestSetup::setCalibrationFilePath);
 }
 
 void Presenter::browseForTrackSettingsFile() {
     applyIfBrowseNotCancelled(
-        view->browseForOpeningFile(), &TestSetup::setTrackSettingsFile);
+        view.browseForOpeningFile(), &TestSetup::setTrackSettingsFile);
 }
 
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
@@ -292,9 +292,8 @@ static auto readInteger(const std::string &x, const std::string &identifier)
 
 auto Presenter::TestSetup::fixedLevelTest() -> FixedLevelTest {
     FixedLevelTest p;
-    commonTest(p);
+    initialize(p);
     p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
-    p.identity = testIdentity();
     return p;
 }
 
@@ -307,19 +306,19 @@ auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     return p;
 }
 
-void Presenter::TestSetup::commonTest(Test &p) {
+void Presenter::TestSetup::initialize(Test &p) {
     p.maskerLevel_dB_SPL = readMaskerLevel();
     p.targetListDirectory = view->targetListDirectory();
     p.maskerFilePath = view->maskerFilePath();
     p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
     p.condition = readCondition();
+    p.identity = testIdentity();
 }
 
 auto Presenter::TestSetup::adaptiveTest() -> AdaptiveTest {
     AdaptiveTest p;
-    commonTest(p);
+    initialize(p);
     p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
-    p.identity = testIdentity();
     p.ceilingSnr_dB = ceilingSnr_dB;
     p.floorSnr_dB = floorSnr_dB;
     p.trackBumpLimit = trackBumpLimit;

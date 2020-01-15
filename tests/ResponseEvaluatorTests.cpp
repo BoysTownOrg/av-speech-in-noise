@@ -61,13 +61,13 @@ TEST_F(ResponseEvaluatorTests, ignoresLeadingPath) {
 TEST_F(ResponseEvaluatorTests, invalidFormatIsAlwaysIncorrect) {
     assertIncorrect("not-valid", {1, Color::blue});
     assertIncorrect(
-        "not-valid", {ResponseEvaluatorImpl::invalidNumber, Color::notAColor});
+        "not-valid", {ResponseEvaluatorImpl::invalidNumber, Color::unknown});
     assertIncorrect(
-        "almost.mov", {ResponseEvaluatorImpl::invalidNumber, Color::notAColor});
+        "almost.mov", {ResponseEvaluatorImpl::invalidNumber, Color::unknown});
     assertIncorrect(
         "white$.mov", {ResponseEvaluatorImpl::invalidNumber, Color::white});
     assertIncorrect(
-        "/", {ResponseEvaluatorImpl::invalidNumber, Color::notAColor});
+        "/", {ResponseEvaluatorImpl::invalidNumber, Color::unknown});
 }
 
 TEST_F(ResponseEvaluatorTests, fileNameReturnsEverythingAfterFinalSlash) {

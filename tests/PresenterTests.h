@@ -1651,7 +1651,7 @@ class PresenterConstructionTests : public ::testing::Test {
     Presenter::Testing testing{&testingView};
 
     auto construct() -> Presenter {
-        return {&model, &view, &testSetup, &subject, &experimenter, &testing};
+        return {model, view, testSetup, subject, experimenter, testing};
     }
 };
 
@@ -1674,7 +1674,7 @@ class PresenterTests : public ::testing::Test {
     Presenter::Testing testing{&testingView};
     Presenter::Subject subject{&subjectView};
     Presenter presenter{
-        &model, &view, &testSetup, &subject, &experimenter, &testing};
+        model, view, testSetup, subject, experimenter, testing};
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
     BrowsingForTargetList browsingForTargetList{&setupView};
     BrowsingForMasker browsingForMasker{&setupView};
@@ -2187,7 +2187,7 @@ class PresenterFailureTests : public ::testing::Test {
 
     void confirmTestSetup() {
         Presenter presenter{
-            model, &view, &testSetup, &subject, &experimenter, &testing};
+            *model, view, testSetup, subject, experimenter, testing};
         setupView.confirmTestSetup();
     }
 
