@@ -78,6 +78,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void selectNextList();
     void removeCompleteTracks();
     static auto complete(const TargetListWithTrack &) -> bool;
+    static auto track(const TargetListWithTrack &) -> Track *;
     auto correct(const std::string &,
         const coordinate_response_measure::Response &) -> bool;
     void incorrect();
