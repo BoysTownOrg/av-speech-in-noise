@@ -215,7 +215,7 @@ class Presenter : public Model::EventListener {
       private:
         auto defaultAdaptiveClosedSet() -> bool;
         auto testIdentity() -> TestIdentity;
-        void commonTest(Test &);
+        void initialize(Test &);
         auto readCondition() -> Condition;
         auto method(Method m) -> bool;
         auto readMaskerLevel() -> int;

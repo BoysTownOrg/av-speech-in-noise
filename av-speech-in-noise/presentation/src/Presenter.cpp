@@ -292,9 +292,8 @@ static auto readInteger(const std::string &x, const std::string &identifier)
 
 auto Presenter::TestSetup::fixedLevelTest() -> FixedLevelTest {
     FixedLevelTest p;
-    commonTest(p);
+    initialize(p);
     p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
-    p.identity = testIdentity();
     return p;
 }
 
@@ -307,19 +306,19 @@ auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     return p;
 }
 
-void Presenter::TestSetup::commonTest(Test &p) {
+void Presenter::TestSetup::initialize(Test &p) {
     p.maskerLevel_dB_SPL = readMaskerLevel();
     p.targetListDirectory = view->targetListDirectory();
     p.maskerFilePath = view->maskerFilePath();
     p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
     p.condition = readCondition();
+    p.identity = testIdentity();
 }
 
 auto Presenter::TestSetup::adaptiveTest() -> AdaptiveTest {
     AdaptiveTest p;
-    commonTest(p);
+    initialize(p);
     p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
-    p.identity = testIdentity();
     p.ceilingSnr_dB = ceilingSnr_dB;
     p.floorSnr_dB = floorSnr_dB;
     p.trackBumpLimit = trackBumpLimit;
