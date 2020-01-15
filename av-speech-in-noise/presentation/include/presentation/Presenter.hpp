@@ -271,8 +271,8 @@ class Presenter : public Model::EventListener {
     class AdaptiveClosedSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveClosedSetTestTrialCompletionHandler(Subject *subject)
-            : subject{*subject} {}
+        explicit AdaptiveClosedSetTestTrialCompletionHandler(Subject &subject)
+            : subject{subject} {}
 
         void showResponseView() override { subject.showResponseButtons(); }
 
@@ -307,8 +307,8 @@ class Presenter : public Model::EventListener {
     class FixedLevelClosedSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit FixedLevelClosedSetTestTrialCompletionHandler(Subject *subject)
-            : subject{*subject} {}
+        explicit FixedLevelClosedSetTestTrialCompletionHandler(Subject &subject)
+            : subject{subject} {}
 
         void showResponseView() override { subject.showResponseButtons(); }
 
@@ -317,7 +317,7 @@ class Presenter : public Model::EventListener {
     };
 
     Presenter(
-        Model &, View &, TestSetup &, Subject *, Experimenter *, Testing *);
+        Model &, View &, TestSetup &, Subject &, Experimenter *, Testing *);
     void trialComplete() override;
     void run();
     void browseForTargetList();

@@ -30,17 +30,17 @@ static void displayTrialNumber(
 }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    Subject *subject, Experimenter *experimenter, Testing *testing)
+    Subject &subject, Experimenter *experimenter, Testing *testing)
     : fixedLevelOpenSetTrialCompletionHandler{testing},
       fixedLevelClosedSetTrialCompletionHandler{subject},
       adaptiveOpenSetTrialCompletionHandler{testing},
       adaptiveClosedSetTrialCompletionHandler{subject}, model{model},
-      view{view}, testSetup{testSetup}, subject{*subject},
+      view{view}, testSetup{testSetup}, subject{subject},
       experimenter{experimenter}, testing{testing},
       trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler} {
     model.subscribe(this);
     testSetup.becomeChild(this);
-    subject->becomeChild(this);
+    subject.becomeChild(this);
     experimenter->becomeChild(this);
     testing->becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
