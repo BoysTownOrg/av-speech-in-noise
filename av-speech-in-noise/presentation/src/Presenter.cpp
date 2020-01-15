@@ -25,12 +25,12 @@ static auto adaptiveTest(Presenter::TestSetup &testSetup) -> AdaptiveTest {
 }
 
 static void displayTrialNumber(
-    Presenter::Experimenter *experimenter, Model &model) {
-    experimenter->display("Trial " + std::to_string(model.trialNumber()));
+    Presenter::Experimenter &experimenter, Model &model) {
+    experimenter.display("Trial " + std::to_string(model.trialNumber()));
 }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    Subject &subject, Experimenter *experimenter, Testing *testing)
+    Subject &subject, Experimenter &experimenter, Testing *testing)
     : fixedLevelOpenSetTrialCompletionHandler{testing},
       fixedLevelClosedSetTrialCompletionHandler{subject},
       adaptiveOpenSetTrialCompletionHandler{testing},
@@ -41,7 +41,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     model.subscribe(this);
     testSetup.becomeChild(this);
     subject.becomeChild(this);
-    experimenter->becomeChild(this);
+    experimenter.becomeChild(this);
     testing->becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
 }
@@ -112,7 +112,7 @@ void Presenter::switchToTestView() {
 void Presenter::hideTestSetup() { testSetup.hide(); }
 
 void Presenter::showTestView() {
-    experimenter->show();
+    experimenter.show();
     displayTrialNumber(experimenter, model);
     if (closedSet())
         subject.show();
@@ -150,12 +150,12 @@ void Presenter::playTrial() {
     AudioSettings p;
     p.audioDevice = view.audioDevice();
     model.playTrial(p);
-    experimenter->hideExitTestButton();
+    experimenter.hideExitTestButton();
 }
 
 void Presenter::trialComplete() {
     trialCompletionHandler_->showResponseView();
-    experimenter->showExitTestButton();
+    experimenter.showExitTestButton();
 }
 
 void Presenter::submitSubjectResponse() {
@@ -213,7 +213,7 @@ void Presenter::showTestSetup() { testSetup.show(); }
 
 void Presenter::hideTestView() {
     testing->hide();
-    experimenter->hide();
+    experimenter.hide();
     subject.hide();
 }
 
