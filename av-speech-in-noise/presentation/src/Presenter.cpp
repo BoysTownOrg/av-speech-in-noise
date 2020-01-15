@@ -25,11 +25,11 @@ static auto adaptiveTest(Presenter::TestSetup *testSetup) -> AdaptiveTest {
 }
 
 static void displayTrialNumber(
-    Presenter::Experimenter *experimenter, Model *model) {
-    experimenter->display("Trial " + std::to_string(model->trialNumber()));
+    Presenter::Experimenter *experimenter, Model &model) {
+    experimenter->display("Trial " + std::to_string(model.trialNumber()));
 }
 
-Presenter::Presenter(Model *model, View *view, TestSetup *testSetup,
+Presenter::Presenter(Model &model, View *view, TestSetup *testSetup,
     Subject *subject, Experimenter *experimenter, Testing *testing)
     : fixedLevelOpenSetTrialCompletionHandler{testing},
       fixedLevelClosedSetTrialCompletionHandler{subject},
@@ -38,12 +38,12 @@ Presenter::Presenter(Model *model, View *view, TestSetup *testSetup,
       view{view}, testSetup{testSetup}, subject{subject},
       experimenter{experimenter}, testing{testing},
       trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler} {
-    model->subscribe(this);
+    this->model.subscribe(this);
     testSetup->becomeChild(this);
     subject->becomeChild(this);
     experimenter->becomeChild(this);
     testing->becomeChild(this);
-    view->populateAudioDeviceMenu(model->audioDevices());
+    view->populateAudioDeviceMenu(this->model.audioDevices());
 }
 
 void Presenter::run() { view->eventLoop(); }
@@ -65,17 +65,17 @@ void Presenter::confirmTestSetup_() {
 
 void Presenter::initializeTest() {
     if (adaptiveClosedSetDelayedMasker())
-        model->initializeTestWithDelayedMasker(adaptiveTest(testSetup));
+        model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetSingleSpeaker())
-        model->initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
+        model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
     else if (defaultAdaptive())
-        model->initializeTest(adaptiveTest(testSetup));
+        model.initializeTest(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
-        model->initializeSilentIntervalsTest(fixedLevelTest(testSetup));
+        model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
     else if (fixedLevelAllStimuli())
-        model->initializeAllStimuliTest(fixedLevelTest(testSetup));
+        model.initializeAllStimuliTest(fixedLevelTest(testSetup));
     else
-        model->initializeTest(fixedLevelTest(testSetup));
+        model.initializeTest(fixedLevelTest(testSetup));
 }
 
 auto Presenter::adaptiveClosedSet() -> bool {
@@ -102,7 +102,7 @@ auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
     return testSetup->adaptiveClosedSetSingleSpeaker();
 }
 
-auto Presenter::testComplete() -> bool { return model->testComplete(); }
+auto Presenter::testComplete() -> bool { return model.testComplete(); }
 
 void Presenter::switchToTestView() {
     hideTestSetup();
@@ -149,7 +149,7 @@ void Presenter::showErrorMessage(std::string e) {
 void Presenter::playTrial() {
     AudioSettings p;
     p.audioDevice = view->audioDevice();
-    model->playTrial(p);
+    model.playTrial(p);
     experimenter->hideExitTestButton();
 }
 
@@ -168,7 +168,7 @@ void Presenter::submitSubjectResponse() {
 }
 
 void Presenter::submitSubjectResponse_() {
-    model->submitResponse(subject->subjectResponse());
+    model.submitResponse(subject->subjectResponse());
 }
 
 void Presenter::submitExperimenterResponse() {
@@ -176,20 +176,20 @@ void Presenter::submitExperimenterResponse() {
 }
 
 void Presenter::submitExperimenterResponse_() {
-    model->submitResponse(testing->openSetResponse());
+    model.submitResponse(testing->openSetResponse());
 }
 
 void Presenter::submitPassedTrial() {
     proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
 }
 
-void Presenter::submitPassedTrial_() { model->submitCorrectResponse(); }
+void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
 }
 
-void Presenter::submitFailedTrial_() { model->submitIncorrectResponse(); }
+void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
 void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
@@ -228,7 +228,7 @@ void Presenter::playCalibration() {
 void Presenter::playCalibration_() {
     auto p = testSetup->calibrationParameters();
     p.audioSettings.audioDevice = view->audioDevice();
-    model->playCalibration(p);
+    model.playCalibration(p);
 }
 
 void Presenter::browseForTargetList() {

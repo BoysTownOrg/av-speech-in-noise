@@ -317,7 +317,7 @@ class Presenter : public Model::EventListener {
     };
 
     Presenter(
-        Model *, View *, TestSetup *, Subject *, Experimenter *, Testing *);
+        Model &, View *, TestSetup *, Subject *, Experimenter *, Testing *);
     void trialComplete() override;
     void run();
     void browseForTargetList();
@@ -379,7 +379,7 @@ class Presenter : public Model::EventListener {
         adaptiveOpenSetTrialCompletionHandler;
     AdaptiveClosedSetTestTrialCompletionHandler
         adaptiveClosedSetTrialCompletionHandler;
-    Model *model;
+    Model &model;
     View *view;
     TestSetup *testSetup;
     Subject *subject;

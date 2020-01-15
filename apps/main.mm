@@ -307,7 +307,7 @@ void main() {
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
     Presenter presenter{
-        &model, &view, &testSetup, &subject, &experimenter, &testing};
+        model, &view, &testSetup, &subject, &experimenter, &testing};
     presenter.run();
 }
 }
