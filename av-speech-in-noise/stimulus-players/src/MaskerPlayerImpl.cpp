@@ -6,44 +6,58 @@
 #include <algorithm>
 
 namespace stimulus_players {
-static auto channel(const audio_type &x, channel_index_type i) -> const auto & {
+static auto at(std::vector<double> &x, gsl::index n) -> double & {
+    return x.at(n);
+}
+
+static auto at(std::vector<sample_index_type> &x, gsl::index n)
+    -> sample_index_type & {
+    return x.at(n);
+}
+
+static auto channel(const audio_type &x, channel_index_type i)
+    -> const channel_type & {
     return x.at(i);
 }
 
-static auto channel(
-    const std::vector<channel_buffer_type> &x, channel_index_type i) -> auto {
+static auto channel(const std::vector<channel_buffer_type> &x,
+    channel_index_type i) -> channel_buffer_type {
     return x.at(i);
 }
 
-static auto firstChannel(const audio_type &x) -> const auto & {
+static auto firstChannel(const audio_type &x) -> const channel_type & {
     return x.front();
 }
 
-static auto samples(const channel_type &channel) {
-    return gsl::narrow<sample_index_type>(channel.size());
+static auto samples(const channel_type &channel) -> sample_index_type {
+    return channel.size();
 }
 
-static auto samples(const audio_type &x) { return samples(firstChannel(x)); }
+static auto samples(const audio_type &x) -> sample_index_type {
+    return samples(firstChannel(x));
+}
 
-static auto firstChannel(const std::vector<channel_buffer_type> &x) -> auto {
+static auto firstChannel(const std::vector<channel_buffer_type> &x)
+    -> channel_buffer_type {
     return x.front();
 }
 
-static auto channels(const audio_type &x) -> auto {
-    return gsl::narrow<channel_index_type>(x.size());
+static auto channels(const audio_type &x) -> channel_index_type {
+    return x.size();
 }
 
-static auto channels(const std::vector<channel_buffer_type> &x) -> auto {
-    return gsl::narrow<channel_index_type>(x.size());
+static auto channels(const std::vector<channel_buffer_type> &x)
+    -> channel_index_type {
+    return x.size();
 }
 
-static auto noChannels(const audio_type &x) -> auto { return x.empty(); }
+static auto noChannels(const audio_type &x) -> bool { return x.empty(); }
 
-static auto noChannels(const std::vector<channel_buffer_type> &x) -> auto {
+static auto noChannels(const std::vector<channel_buffer_type> &x) -> bool {
     return x.empty();
 }
 
-static auto sampleRateHz(AudioPlayer *player) -> auto {
+static auto sampleRateHz(AudioPlayer *player) -> double {
     return player->sampleRateHz();
 }
 
@@ -51,9 +65,9 @@ static void write(std::atomic<double> &to, double value) { to.store(value); }
 
 static void write(std::atomic<int> &to, int value) { to.store(value); }
 
-static auto read(std::atomic<double> &x) -> auto { return x.load(); }
+static auto read(std::atomic<double> &x) -> double { return x.load(); }
 
-static auto read(std::atomic<int> &x) -> auto { return x.load(); }
+static auto read(std::atomic<int> &x) -> int { return x.load(); }
 
 static void set(std::atomic<bool> &x) { x.store(true); }
 
@@ -243,7 +257,7 @@ void MaskerPlayerImpl::MainThread::subscribe(MaskerPlayer::EventListener *e) {
 
 void MaskerPlayerImpl::MainThread::setChannelDelaySeconds(
     channel_index_type channel, double seconds) {
-    channelDelaySeconds_.at(channel) = seconds;
+    at(channelDelaySeconds_, channel) = seconds;
 }
 
 void MaskerPlayerImpl::MainThread::clearChannelDelays() {
@@ -252,7 +266,7 @@ void MaskerPlayerImpl::MainThread::clearChannelDelays() {
 
 auto MaskerPlayerImpl::MainThread::channelDelaySeconds(
     channel_index_type channel) -> double {
-    return channelDelaySeconds_.at(channel);
+    return at(channelDelaySeconds_, channel);
 }
 
 void MaskerPlayerImpl::MainThread::setFadeInOutSeconds(double x) {
@@ -326,16 +340,16 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
     auto usingFirstChannelOnly = sharedState->firstChannelOnly.load();
-    for (auto i = channel_index_type{0}; i < channels(audioBuffer); ++i) {
-        const auto samplesToWait = sharedState->samplesToWaitPerChannel.at(i);
+    for (channel_index_type i{0}; i < channels(audioBuffer); ++i) {
+        const auto samplesToWait = at(sharedState->samplesToWaitPerChannel, i);
         const auto framesToMute =
             std::min(samplesToWait, framesToFill(audioBuffer));
         mute(channel(audioBuffer, i).first(framesToMute));
-        sharedState->samplesToWaitPerChannel.at(i) =
+        at(sharedState->samplesToWaitPerChannel, i) =
             samplesToWait - framesToMute;
-        auto frameHead = sharedState->audioFrameHeadsPerChannel.at(i);
+        auto frameHead = at(sharedState->audioFrameHeadsPerChannel, i);
         auto framesLeftToFill = framesToFill(audioBuffer) - framesToMute;
-        sharedState->audioFrameHeadsPerChannel.at(i) =
+        at(sharedState->audioFrameHeadsPerChannel, i) =
             (frameHead + framesLeftToFill) % sourceFrames();
         while (framesLeftToFill != 0) {
             const auto framesAboutToFill =

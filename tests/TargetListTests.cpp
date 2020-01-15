@@ -48,8 +48,8 @@ class RandomizedTargetListTests : public ::testing::Test {
 
     auto shuffled() { return randomizer.toShuffle(); }
 
-    void assertHasBeenShuffled(std::vector<std::string> v) {
-        assertEqual(std::move(v), shuffled());
+    void assertHasBeenShuffled(const std::vector<std::string> &v) {
+        assertEqual(v, shuffled());
     }
 
     void assertEmpty() { assertTrue(empty()); }
@@ -63,7 +63,9 @@ class RandomizedTargetListTests : public ::testing::Test {
     void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 };
 
-TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
+#define RANDOMIZED_TARGET_LIST_TEST(a) TEST_F(RandomizedTargetListTests, a)
+
+RANDOMIZED_TARGET_LIST_TEST(emptyOnlyWhenNoFilesLoaded) {
     assertEmpty();
     setFileNames({"a", "b"});
     loadFromDirectory();
@@ -74,26 +76,25 @@ TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
     assertNotEmpty();
 }
 
-TEST_F(RandomizedTargetListTests,
-    loadFromDirectoryPassesDirectoryToDirectoryReader) {
+RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectory("a");
     assertEqual("a", reader.directory());
 }
 
-TEST_F(RandomizedTargetListTests, loadFromDirectoryShufflesFileNames) {
+RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory();
     assertHasBeenShuffled({"a", "b", "c"});
 }
 
-TEST_F(RandomizedTargetListTests, nextShufflesNextSetNotIncludingCurrent) {
+RANDOMIZED_TARGET_LIST_TEST(nextShufflesNextSetNotIncludingCurrent) {
     setFileNames({"a", "b", "c", "d"});
     loadFromDirectory();
     next();
     assertHasBeenShuffled({"b", "c", "d"});
 }
 
-TEST_F(RandomizedTargetListTests, nextReplacesSecondToLastTarget) {
+RANDOMIZED_TARGET_LIST_TEST(nextReplacesSecondToLastTarget) {
     setFileNames({"a", "b", "c", "d", "e"});
     loadFromDirectory();
     next();
@@ -101,7 +102,7 @@ TEST_F(RandomizedTargetListTests, nextReplacesSecondToLastTarget) {
     assertHasBeenShuffled({"c", "d", "e", "a"});
 }
 
-TEST_F(RandomizedTargetListTests, nextReturnsFullPathToFile) {
+RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFile) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
     assertNextEquals("C:/a");
@@ -109,14 +110,14 @@ TEST_F(RandomizedTargetListTests, nextReturnsFullPathToFile) {
     assertNextEquals("C:/c");
 }
 
-TEST_F(RandomizedTargetListTests, currentReturnsFullPathToFile) {
+RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
     next();
     assertEqual("C:/a", list.current());
 }
 
-TEST_F(RandomizedTargetListTests, nextReturnsEmptyIfNoFiles) {
+RANDOMIZED_TARGET_LIST_TEST(nextReturnsEmptyIfNoFiles) {
     setFileNames({});
     loadFromDirectory();
     assertNextEquals("");
@@ -227,9 +228,6 @@ auto directory(DirectoryReaderStub &reader) -> std::string {
 }
 
 class FileFilterStub : public FileFilter {
-    std::vector<std::string> filtered_;
-    std::vector<std::string> files_;
-
   public:
     [[nodiscard]] auto files() const { return files_; }
 
@@ -240,6 +238,10 @@ class FileFilterStub : public FileFilter {
         files_ = std::move(f);
         return filtered_;
     }
+
+  private:
+    std::vector<std::string> filtered_;
+    std::vector<std::string> files_;
 };
 
 class FileFilterDecoratorTests : public ::testing::Test {
@@ -249,28 +251,30 @@ class FileFilterDecoratorTests : public ::testing::Test {
     FileFilterDecorator decorator{&reader, &filter};
 };
 
-TEST_F(FileFilterDecoratorTests, passesDirectoryToDecoratedForFiles) {
+#define FILE_FILTER_DECORATOR_TEST(a) TEST_F(FileFilterDecoratorTests, a)
+
+FILE_FILTER_DECORATOR_TEST(passesDirectoryToDecoratedForFiles) {
     filesIn(decorator, "a");
     assertEqual("a", directory(reader));
 }
 
-TEST_F(FileFilterDecoratorTests, passesDirectoryToDecoratedForSubdirectories) {
+FILE_FILTER_DECORATOR_TEST(passesDirectoryToDecoratedForSubdirectories) {
     subDirectories(decorator, "a");
     assertEqual("a", directory(reader));
 }
 
-TEST_F(FileFilterDecoratorTests, passesFilesToFilter) {
+FILE_FILTER_DECORATOR_TEST(passesFilesToFilter) {
     reader.setFileNames({"a", "b", "c"});
     filesIn(decorator);
     assertEqual({"a", "b", "c"}, filter.files());
 }
 
-TEST_F(FileFilterDecoratorTests, returnsFilteredFiles) {
+FILE_FILTER_DECORATOR_TEST(returnsFilteredFiles) {
     filter.setFiltered({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, filesIn(decorator));
 }
 
-TEST_F(FileFilterDecoratorTests, returnsSubdirectories) {
+FILE_FILTER_DECORATOR_TEST(returnsSubdirectories) {
     reader.setSubDirectories({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, subDirectories(decorator));
 }
@@ -297,13 +301,15 @@ class FileIdentifierFilterTests : public ::testing::Test {
     }
 };
 
-TEST_F(FileIdentifierFilterTests, returnsFilteredFiles) {
+#define FILE_IDENTIFIER_FILTER_TEST(a) TEST_F(FileIdentifierFilterTests, a)
+
+FILE_IDENTIFIER_FILTER_TEST(returnsFilteredFiles) {
     auto decorator = construct("x");
     assertEqual({"ax.j", "xf.c"},
         filter(decorator, {"ax.j", "b.c", "d.e", "xf.c", "g.h"}));
 }
 
-TEST_F(FileIdentifierFilterTests, returnsFilesThatEndWithIdentifier) {
+FILE_IDENTIFIER_FILTER_TEST(returnsFilesThatEndWithIdentifier) {
     auto decorator = construct("x");
     assertEqual({"ax.j", "fx.c"},
         filter(decorator, {"ax.j", "b.c", "d.e", "fx.c", "g.h"}));
@@ -332,24 +338,26 @@ class RandomSubsetFilesTests : public ::testing::Test {
 
     auto shuffled() { return randomizer.shuffledInts(); }
 
-    void assertHasBeenShuffled(std::vector<int> v) {
-        assertEqual(std::move(v), shuffled());
+    void assertHasBeenShuffled(const std::vector<int> &v) {
+        assertEqual(v, shuffled());
     }
 };
 
-TEST_F(RandomSubsetFilesTests, passesFileNumberRangeToRandomizer) {
+#define RANDOM_SUBSET_FILES_TEST(a) TEST_F(RandomSubsetFilesTests, a)
+
+RANDOM_SUBSET_FILES_TEST(passesFileNumberRangeToRandomizer) {
     auto decorator = construct();
     filter(decorator, {"a", "b", "c"});
     assertHasBeenShuffled({0, 1, 2});
 }
 
-TEST_F(RandomSubsetFilesTests, returnsFirstNShuffledIndexedFiles) {
+RANDOM_SUBSET_FILES_TEST(returnsFirstNShuffledIndexedFiles) {
     auto decorator = construct(3);
     randomizer.rotateToTheLeft(2);
     assertEqual({"c", "d", "e"}, filter(decorator, {"a", "b", "c", "d", "e"}));
 }
 
-TEST_F(RandomSubsetFilesTests, returnsAllFilesIfLessThanAvailable) {
+RANDOM_SUBSET_FILES_TEST(returnsAllFilesIfLessThanAvailable) {
     auto decorator = construct(5);
     assertEqual({"a", "b", "c"}, filter(decorator, {"a", "b", "c"}));
 }
@@ -379,14 +387,17 @@ class DirectoryReaderCompositeTests : public ::testing::Test {
     }
 };
 
-TEST_F(DirectoryReaderCompositeTests, filesInPassesDirectoryToEach) {
+#define DIRECTORY_READER_COMPOSITE_TEST(a)                                     \
+    TEST_F(DirectoryReaderCompositeTests, a)
+
+DIRECTORY_READER_COMPOSITE_TEST(filesInPassesDirectoryToEach) {
     setDecoratedCount(3);
     auto reader = construct();
     filesIn(reader, "a");
     assertEachDecoratedDirectory("a", 3);
 }
 
-TEST_F(DirectoryReaderCompositeTests, filesInPassesCollectsFilesFromEach) {
+DIRECTORY_READER_COMPOSITE_TEST(filesInPassesCollectsFilesFromEach) {
     setDecoratedCount(3);
     setFileNamesForDecorated({"a"}, 0);
     setFileNamesForDecorated({"b", "c", "d"}, 1);
@@ -403,7 +414,7 @@ TEST_F(DirectoryReaderCompositeTests,
     assertEqual("a", directory(decoratedAt(0)));
 }
 
-TEST_F(DirectoryReaderCompositeTests, returnsSubdirectoriesFromFirstDecorated) {
+DIRECTORY_READER_COMPOSITE_TEST(returnsSubdirectoriesFromFirstDecorated) {
     setDecoratedCount(3);
     auto reader = construct();
     decoratedAt(0).setSubDirectories({"a", "b", "c"});

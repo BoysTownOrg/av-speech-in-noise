@@ -8,6 +8,10 @@
 #include <utility>
 
 namespace {
+auto at(const std::vector<std::string> &v, gsl::index n) -> std::string {
+    return v.at(n);
+}
+
 class AudioPlayerStub : public stimulus_players::AudioPlayer {
   public:
     auto durationSeconds() -> double override { return durationSeconds_; }
@@ -46,7 +50,7 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     auto deviceDescription(int index) -> std::string override {
         deviceDescriptionDeviceIndex_ = index;
-        return audioDeviceDescriptions_.at(index);
+        return at(audioDeviceDescriptions_, index);
     }
 
     void play() override { played_ = true; }
@@ -144,12 +148,17 @@ class TimerStub : public stimulus_players::Timer {
     bool callbackScheduled_{};
 };
 
+template <typename T> auto vector(gsl::index size) -> std::vector<T> {
+    return std::vector<T>(size);
+}
+
 auto halfHannWindow(gsl::index length) -> std::vector<float> {
-    auto N = 2 * length - 1;
-    const auto pi = std::acos(-1);
-    std::vector<float> window(length);
+    auto N{2 * length - 1};
+    const auto pi{std::acos(-1)};
+    auto window{vector<float>(length)};
     std::generate(window.begin(), window.end(), [=, n = 0]() mutable {
-        return gsl::narrow_cast<float>((1 - std::cos((2 * pi * n++) / (N - 1))) / 2);
+        return gsl::narrow_cast<float>(
+            (1 - std::cos((2 * pi * n++) / (N - 1))) / 2);
     });
     return window;
 }
@@ -166,7 +175,7 @@ auto backHalfHannWindow(int length) -> std::vector<float> {
 auto mToN(int M, int N) -> std::vector<float> {
     if (M > N)
         return reverse(mToN(N, M));
-    std::vector<float> result(N - M + 1);
+    auto result{vector<float>(N - M + 1)};
     std::iota(result.begin(), result.end(), gsl::narrow<float>(M));
     return result;
 }
@@ -174,6 +183,10 @@ auto mToN(int M, int N) -> std::vector<float> {
 auto oneToN(int N) -> std::vector<float> { return mToN(1, N); }
 
 auto NtoOne(int N) -> std::vector<float> { return reverse(oneToN(N)); }
+
+auto size(const std::vector<float> &v) -> gsl::index { return v.size(); }
+
+void resize(std::vector<float> &v, gsl::index n) { v.resize(n); }
 
 using channel_index_type = gsl::index;
 
@@ -204,9 +217,9 @@ class MaskerPlayerTests : public ::testing::Test {
         fillAudioBuffer({leftChannel, rightChannel});
     }
 
-    void resizeLeftChannel(channel_index_type n) { leftChannel.resize(n); }
+    void resizeLeftChannel(channel_index_type n) { resize(leftChannel, n); }
 
-    void resizeRightChannel(channel_index_type n) { rightChannel.resize(n); }
+    void resizeRightChannel(channel_index_type n) { resize(rightChannel, n); }
 
     void resizeChannels(channel_index_type n) {
         resizeLeftChannel(n);
@@ -272,7 +285,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertLeftChannelEqualsProductAfterFilling(
         std::vector<float> multiplicand, const std::vector<float> &multiplier) {
-        fillAudioBufferMono(multiplier.size());
+        fillAudioBufferMono(size(multiplier));
         assertLeftChannelEquals(
             elementWiseProduct(std::move(multiplicand), multiplier));
     }
@@ -295,7 +308,7 @@ class MaskerPlayerTests : public ::testing::Test {
         std::vector<float> multiplicand,
         const std::vector<float> &leftMultiplier,
         const std::vector<float> &rightMultiplier) {
-        fillAudioBufferStereo(leftMultiplier.size());
+        fillAudioBufferStereo(size(leftMultiplier));
         assertLeftChannelEquals(
             elementWiseProduct(multiplicand, leftMultiplier));
         assertRightChannelEquals(
