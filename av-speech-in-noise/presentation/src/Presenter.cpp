@@ -16,12 +16,12 @@ int Presenter::ceilingSnr_dB = 20;
 int Presenter::floorSnr_dB = -40;
 int Presenter::trackBumpLimit = 10;
 
-static auto fixedLevelTest(Presenter::TestSetup *testSetup) -> FixedLevelTest {
-    return testSetup->fixedLevelTest();
+static auto fixedLevelTest(Presenter::TestSetup &testSetup) -> FixedLevelTest {
+    return testSetup.fixedLevelTest();
 }
 
-static auto adaptiveTest(Presenter::TestSetup *testSetup) -> AdaptiveTest {
-    return testSetup->adaptiveTest();
+static auto adaptiveTest(Presenter::TestSetup &testSetup) -> AdaptiveTest {
+    return testSetup.adaptiveTest();
 }
 
 static void displayTrialNumber(
@@ -29,7 +29,7 @@ static void displayTrialNumber(
     experimenter->display("Trial " + std::to_string(model.trialNumber()));
 }
 
-Presenter::Presenter(Model &model, View &view, TestSetup *testSetup,
+Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     Subject *subject, Experimenter *experimenter, Testing *testing)
     : fixedLevelOpenSetTrialCompletionHandler{testing},
       fixedLevelClosedSetTrialCompletionHandler{subject},
@@ -39,7 +39,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup *testSetup,
       experimenter{experimenter}, testing{testing},
       trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler} {
     model.subscribe(this);
-    testSetup->becomeChild(this);
+    testSetup.becomeChild(this);
     subject->becomeChild(this);
     experimenter->becomeChild(this);
     testing->becomeChild(this);
@@ -79,27 +79,27 @@ void Presenter::initializeTest() {
 }
 
 auto Presenter::adaptiveClosedSet() -> bool {
-    return testSetup->adaptiveClosedSet();
+    return testSetup.adaptiveClosedSet();
 }
 
 auto Presenter::adaptiveOpenSet() -> bool {
-    return testSetup->adaptiveOpenSet();
+    return testSetup.adaptiveOpenSet();
 }
 
 auto Presenter::fixedLevelSilentIntervals() -> bool {
-    return testSetup->fixedLevelSilentIntervals();
+    return testSetup.fixedLevelSilentIntervals();
 }
 
 auto Presenter::fixedLevelAllStimuli() -> bool {
-    return testSetup->fixedLevelAllStimuli();
+    return testSetup.fixedLevelAllStimuli();
 }
 
 auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
-    return testSetup->adaptiveClosedSetDelayedMasker();
+    return testSetup.adaptiveClosedSetDelayedMasker();
 }
 
 auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
-    return testSetup->adaptiveClosedSetSingleSpeaker();
+    return testSetup.adaptiveClosedSetSingleSpeaker();
 }
 
 auto Presenter::testComplete() -> bool { return model.testComplete(); }
@@ -109,7 +109,7 @@ void Presenter::switchToTestView() {
     showTestView();
 }
 
-void Presenter::hideTestSetup() { testSetup->hide(); }
+void Presenter::hideTestSetup() { testSetup.hide(); }
 
 void Presenter::showTestView() {
     experimenter->show();
@@ -121,15 +121,15 @@ void Presenter::showTestView() {
 }
 
 auto Presenter::closedSet() -> bool {
-    return testSetup->closedSet();
+    return testSetup.closedSet();
 }
 
 auto Presenter::defaultAdaptive() -> bool {
-    return testSetup->defaultAdaptive();
+    return testSetup.defaultAdaptive();
 }
 
 auto Presenter::fixedLevelClosedSet() -> bool {
-    return testSetup->fixedLevelClosedSet();
+    return testSetup.fixedLevelClosedSet();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
@@ -209,7 +209,7 @@ void Presenter::switchToSetupView() {
     hideTestView();
 }
 
-void Presenter::showTestSetup() { testSetup->show(); }
+void Presenter::showTestSetup() { testSetup.show(); }
 
 void Presenter::hideTestView() {
     testing->hide();
@@ -226,7 +226,7 @@ void Presenter::playCalibration() {
 }
 
 void Presenter::playCalibration_() {
-    auto p = testSetup->calibrationParameters();
+    auto p = testSetup.calibrationParameters();
     p.audioSettings.audioDevice = view.audioDevice();
     model.playCalibration(p);
 }
@@ -239,7 +239,7 @@ void Presenter::browseForTargetList() {
 void Presenter::applyIfBrowseNotCancelled(
     std::string s, void (TestSetup::*f)(std::string)) {
     if (!view.browseCancelled())
-        (testSetup->*f)(std::move(s));
+        (testSetup.*f)(std::move(s));
 }
 
 void Presenter::browseForMasker() {
