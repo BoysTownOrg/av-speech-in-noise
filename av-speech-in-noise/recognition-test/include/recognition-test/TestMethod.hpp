@@ -10,12 +10,12 @@ class OutputFile {
     virtual ~OutputFile() = default;
     virtual void openNewFile(const TestIdentity &) = 0;
     class OpenFailure {};
-    virtual void writeTrial(
+    virtual void write(
         const coordinate_response_measure::AdaptiveTrial &) = 0;
-    virtual void writeTrial(
+    virtual void write(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
-    virtual void writeTrial(const open_set::FreeResponseTrial &) = 0;
-    virtual void writeTrial(const open_set::AdaptiveTrial &) = 0;
+    virtual void write(const open_set::FreeResponseTrial &) = 0;
+    virtual void write(const open_set::AdaptiveTrial &) = 0;
     virtual void writeTest(const AdaptiveTest &) = 0;
     virtual void writeTest(const FixedLevelTest &) = 0;
     virtual void close() = 0;

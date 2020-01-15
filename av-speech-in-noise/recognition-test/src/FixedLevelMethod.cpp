@@ -43,7 +43,7 @@ void FixedLevelMethodImpl::writeTestingParameters(OutputFile *file) {
 }
 
 void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
-    file->writeTrial(lastTrial);
+    file->write(lastTrial);
 }
 
 void FixedLevelMethodImpl::submitIncorrectResponse() {}

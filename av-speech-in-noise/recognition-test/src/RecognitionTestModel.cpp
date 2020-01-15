@@ -288,17 +288,17 @@ void RecognitionTestModelImpl::submitIncorrectResponse_() {
 
 void RecognitionTestModelImpl::submitResponse(
     const open_set::FreeResponse &response) {
-    writeTrial(response);
+    write(response);
     testMethod->submitResponse(response);
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::writeTrial(const open_set::FreeResponse &p) {
+void RecognitionTestModelImpl::write(const open_set::FreeResponse &p) {
     open_set::FreeResponseTrial trial;
     trial.response = p.response;
     trial.target = targetName(evaluator, testMethod);
     trial.flagged = p.flagged;
-    outputFile->writeTrial(trial);
+    outputFile->write(trial);
     save(outputFile);
 }
 

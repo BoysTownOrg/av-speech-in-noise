@@ -115,15 +115,15 @@ void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
 }
 
 void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
-    file->writeTrial(lastTrial);
+    file->write(lastTrial);
 }
 
 void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile *file) {
-    file->writeTrial(lastOpenSetTrial);
+    file->write(lastOpenSetTrial);
 }
 
 void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
-    file->writeTrial(lastOpenSetTrial);
+    file->write(lastOpenSetTrial);
 }
 
 static void assignReversals(open_set::AdaptiveTrial &trial, Track *track) {
