@@ -4,6 +4,20 @@
 #include <cctype>
 
 namespace av_speech_in_noise {
+static auto leadingPathLength(const std::string &filePath) -> gsl::index {
+    return filePath.find_last_of('/') + 1;
+}
+
+static auto subString(
+    const std::string &s, gsl::index position, gsl::index size) -> std::string {
+    return s.substr(position, size);
+}
+
+static auto subString(const std::string &s, gsl::index position)
+    -> std::string {
+    return s.substr(position);
+}
+
 int ResponseEvaluatorImpl::invalidNumber = -1;
 
 auto ResponseEvaluatorImpl::correct(const std::string &filePath,
@@ -12,10 +26,6 @@ auto ResponseEvaluatorImpl::correct(const std::string &filePath,
         correctColor(filePath) == r.color &&
         r.color != coordinate_response_measure::Color::notAColor &&
         r.number != invalidNumber;
-}
-
-static auto leadingPathLength(const std::string &filePath) -> size_t {
-    return filePath.find_last_of('/') + 1;
 }
 
 static auto colorNameLength(
@@ -28,7 +38,7 @@ static auto colorNameLength(
 
 static auto correctNumber_(const std::string &filePath) -> int {
     auto leadingPathLength_ = leadingPathLength(filePath);
-    auto number = filePath.substr(
+    auto number = subString(filePath,
         leadingPathLength_ + colorNameLength(filePath, leadingPathLength_), 1);
     return std::stoi(number);
 }
@@ -43,7 +53,7 @@ auto ResponseEvaluatorImpl::correctNumber(const std::string &filePath) -> int {
 
 auto ResponseEvaluatorImpl::fileName(const std::string &filePath)
     -> std::string {
-    return filePath.substr(leadingPathLength(filePath));
+    return subString(filePath, leadingPathLength(filePath));
 }
 
 static auto color(const std::string &colorName)
@@ -64,8 +74,8 @@ static auto color(const std::string &colorName)
 auto ResponseEvaluatorImpl::correctColor(const std::string &filePath)
     -> coordinate_response_measure::Color {
     auto leadingPathLength_ = leadingPathLength(filePath);
-    auto colorName = filePath.substr(
-        leadingPathLength_, colorNameLength(filePath, leadingPathLength_));
+    auto colorName = subString(filePath, leadingPathLength_,
+        colorNameLength(filePath, leadingPathLength_));
     return color(colorName);
 }
 }
