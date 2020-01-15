@@ -6,7 +6,7 @@ namespace av_speech_in_noise {
 namespace {
 class NullTestMethod : public TestMethod {
     auto complete() -> bool override { return {}; }
-    auto next() -> std::string override { return {}; }
+    auto nextTarget() -> std::string override { return {}; }
     auto currentTarget() -> std::string override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
@@ -152,7 +152,7 @@ void RecognitionTestModelImpl::preparePlayersForNextTrial() {
 }
 
 void RecognitionTestModelImpl::prepareTargetPlayer() {
-    loadTargetFile(testMethod->next());
+    loadTargetFile(testMethod->nextTarget());
     setTargetLevel_dB(targetLevel_dB());
     targetPlayer->subscribeToPlaybackCompletion();
 }

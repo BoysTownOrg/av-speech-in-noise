@@ -57,7 +57,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     auto complete() -> bool override;
-    auto next() -> std::string override;
+    auto nextTarget() -> std::string override;
     auto currentTarget() -> std::string override;
     void writeLastCoordinateResponse(OutputFile *) override;
     void writeLastCorrectResponse(OutputFile *) override;

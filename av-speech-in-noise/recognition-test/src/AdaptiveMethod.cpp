@@ -71,7 +71,7 @@ auto AdaptiveMethodImpl::complete() -> bool {
         [&](const TargetListWithTrack &t) { return complete(t); });
 }
 
-auto AdaptiveMethodImpl::next() -> std::string {
+auto AdaptiveMethodImpl::nextTarget() -> std::string {
     return currentTargetList->next();
 }
 

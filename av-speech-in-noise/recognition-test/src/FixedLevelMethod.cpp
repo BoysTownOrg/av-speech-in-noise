@@ -17,7 +17,7 @@ void FixedLevelMethodImpl::initialize(
 
 auto FixedLevelMethodImpl::complete() -> bool { return complete_; }
 
-auto FixedLevelMethodImpl::next() -> std::string { return targetList->next(); }
+auto FixedLevelMethodImpl::nextTarget() -> std::string { return targetList->next(); }
 
 auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
 

@@ -155,7 +155,7 @@ FIXED_LEVEL_METHOD_TEST(passesTestParametersToConcluder) {
 
 FIXED_LEVEL_METHOD_TEST(nextReturnsNextTarget) {
     targetList.setNext("a");
-    assertEqual("a", method.next());
+    assertEqual("a", method.nextTarget());
 }
 
 FIXED_LEVEL_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {

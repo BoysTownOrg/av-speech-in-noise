@@ -30,7 +30,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void initialize(
         const FixedLevelTest &, TargetList *, TestConcluder *) override;
     auto snr_dB() -> int override;
-    auto next() -> std::string override;
+    auto nextTarget() -> std::string override;
     auto complete() -> bool override;
     auto currentTarget() -> std::string override;
     void submitIncorrectResponse() override;

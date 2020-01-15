@@ -17,7 +17,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     [[nodiscard]] auto test() const { return test_; }
 
     auto complete() -> bool override { return {}; }
-    auto next() -> std::string override { return {}; }
+    auto nextTarget() -> std::string override { return {}; }
     auto currentTarget() -> std::string override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
@@ -51,7 +51,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     [[nodiscard]] auto test() const { return test_; }
 
     auto complete() -> bool override { return {}; }
-    auto next() -> std::string override { return {}; }
+    auto nextTarget() -> std::string override { return {}; }
     auto currentTarget() -> std::string override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}

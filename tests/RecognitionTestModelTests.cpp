@@ -36,7 +36,7 @@ class TestMethodStub : public TestMethod {
 
     auto complete() -> bool override { return complete_; }
 
-    auto next() -> std::string override {
+    auto nextTarget() -> std::string override {
         log_.insert("next ");
         current_ = currentWhenNext_;
         return next_;
