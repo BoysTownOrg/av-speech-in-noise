@@ -283,8 +283,8 @@ class Presenter : public Model::EventListener {
     class AdaptiveOpenSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveOpenSetTestTrialCompletionHandler(Testing *testing)
-            : testing{*testing} {}
+        explicit AdaptiveOpenSetTestTrialCompletionHandler(Testing &testing)
+            : testing{testing} {}
 
         void showResponseView() override { testing.showEvaluationButtons(); }
 
@@ -295,8 +295,8 @@ class Presenter : public Model::EventListener {
     class FixedLevelOpenSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing *testing)
-            : testing{*testing} {}
+        explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing &testing)
+            : testing{testing} {}
 
         void showResponseView() override { testing.showResponseSubmission(); }
 
@@ -317,7 +317,7 @@ class Presenter : public Model::EventListener {
     };
 
     Presenter(
-        Model &, View &, TestSetup &, Subject &, Experimenter &, Testing *);
+        Model &, View &, TestSetup &, Subject &, Experimenter &, Testing &);
     void trialComplete() override;
     void run();
     void browseForTargetList();
@@ -384,7 +384,7 @@ class Presenter : public Model::EventListener {
     TestSetup &testSetup;
     Subject &subject;
     Experimenter &experimenter;
-    Testing *testing;
+    Testing &testing;
     TrialCompletionHandler *trialCompletionHandler_{};
 };
 }

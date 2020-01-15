@@ -30,7 +30,7 @@ static void displayTrialNumber(
 }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    Subject &subject, Experimenter &experimenter, Testing *testing)
+    Subject &subject, Experimenter &experimenter, Testing &testing)
     : fixedLevelOpenSetTrialCompletionHandler{testing},
       fixedLevelClosedSetTrialCompletionHandler{subject},
       adaptiveOpenSetTrialCompletionHandler{testing},
@@ -42,7 +42,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     testSetup.becomeChild(this);
     subject.becomeChild(this);
     experimenter.becomeChild(this);
-    testing->becomeChild(this);
+    testing.becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
@@ -117,7 +117,7 @@ void Presenter::showTestView() {
     if (closedSet())
         subject.show();
     else
-        testing->show();
+        testing.show();
 }
 
 auto Presenter::closedSet() -> bool {
@@ -176,7 +176,7 @@ void Presenter::submitExperimenterResponse() {
 }
 
 void Presenter::submitExperimenterResponse_() {
-    model.submitResponse(testing->openSetResponse());
+    model.submitResponse(testing.openSetResponse());
 }
 
 void Presenter::submitPassedTrial() {
@@ -212,7 +212,7 @@ void Presenter::switchToSetupView() {
 void Presenter::showTestSetup() { testSetup.show(); }
 
 void Presenter::hideTestView() {
-    testing->hide();
+    testing.hide();
     experimenter.hide();
     subject.hide();
 }
