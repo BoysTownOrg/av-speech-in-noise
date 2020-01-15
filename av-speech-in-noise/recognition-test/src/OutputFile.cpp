@@ -264,7 +264,7 @@ static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
     return stream.str();
 }
 
-void OutputFileImpl::writeTrial(
+void OutputFileImpl::write(
     const coordinate_response_measure::AdaptiveTrial &trial) {
     if (!justWroteAdaptiveCoordinateResponseTrial)
         write(formatAdaptiveCoordinateResponseTrialHeading());
@@ -272,7 +272,7 @@ void OutputFileImpl::writeTrial(
     justWroteAdaptiveCoordinateResponseTrial = true;
 }
 
-void OutputFileImpl::writeTrial(
+void OutputFileImpl::write(
     const coordinate_response_measure::FixedLevelTrial &trial) {
     if (!justWroteFixedLevelCoordinateResponseTrial)
         write(formatFixedLevelCoordinateResponseTrialHeading());
@@ -280,14 +280,14 @@ void OutputFileImpl::writeTrial(
     justWroteFixedLevelCoordinateResponseTrial = true;
 }
 
-void OutputFileImpl::writeTrial(const open_set::FreeResponseTrial &trial) {
+void OutputFileImpl::write(const open_set::FreeResponseTrial &trial) {
     if (!justWroteFreeResponseTrial)
         write(formatOpenSetFreeResponseTrialHeading());
     write(formatTrial(trial));
     justWroteFreeResponseTrial = true;
 }
 
-void OutputFileImpl::writeTrial(const open_set::AdaptiveTrial &trial) {
+void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
     if (!justWroteOpenSetAdaptiveTrial)
         write(formatOpenSetAdaptiveTrialHeading());
     write(formatTrial(trial));

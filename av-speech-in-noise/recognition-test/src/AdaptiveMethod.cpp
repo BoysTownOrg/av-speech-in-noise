@@ -10,14 +10,14 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(TargetListReader *targetListSetReader,
       snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
                                                                   randomizer} {}
 
-void AdaptiveMethodImpl::initialize(const AdaptiveTest &p) {
-    test = &p;
-    trackSettings.rule = trackSettingsReader->read(p.trackSettingsFile);
-    trackSettings.ceiling = p.ceilingSnr_dB;
-    trackSettings.startingX = p.startingSnr_dB;
-    trackSettings.floor = p.floorSnr_dB;
-    trackSettings.bumpLimit = p.trackBumpLimit;
-    lists = targetListSetReader->read(p.targetListDirectory);
+void AdaptiveMethodImpl::initialize(const AdaptiveTest &test_) {
+    test = &test_;
+    trackSettings.rule = trackSettingsReader->read(test_.trackSettingsFile);
+    trackSettings.ceiling = test_.ceilingSnr_dB;
+    trackSettings.startingX = test_.startingSnr_dB;
+    trackSettings.floor = test_.floorSnr_dB;
+    trackSettings.bumpLimit = test_.trackBumpLimit;
+    lists = targetListSetReader->read(test_.targetListDirectory);
 
     selectNextListAfter(&AdaptiveMethodImpl::makeSnrTracks);
 }
@@ -38,20 +38,23 @@ void AdaptiveMethodImpl::makeTrackWithList(TargetList *list) {
         {list, snrTrackFactory->make(trackSettings)});
 }
 
+auto AdaptiveMethodImpl::track(const TargetListWithTrack &t) -> Track * {
+    return t.track.get();
+}
+
 void AdaptiveMethodImpl::selectNextList() {
     removeCompleteTracks();
-    auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
-    if (remainingLists == 0)
+    if (targetListsWithTracks.empty())
         return;
-    auto index = gsl::narrow<std::size_t>(
-        randomizer->randomIntBetween(0, remainingLists - 1));
-    auto targetListsWithTrack_ = targetListsWithTracks.at(index);
-    currentSnrTrack = targetListsWithTrack_.track.get();
-    currentTargetList = targetListsWithTrack_.list;
+    auto remainingLists{gsl::narrow<int>(targetListsWithTracks.size())};
+    auto index{randomizer->randomIntBetween(0, remainingLists - 1)};
+    auto targetListsWithTrack{targetListsWithTracks.at(index)};
+    currentSnrTrack = track(targetListsWithTrack);
+    currentTargetList = targetListsWithTrack.list;
 }
 
 void AdaptiveMethodImpl::removeCompleteTracks() {
-    auto end = targetListsWithTracks.end();
+    auto end{targetListsWithTracks.end()};
     targetListsWithTracks.erase(
         std::remove_if(targetListsWithTracks.begin(), end,
             [&](const TargetListWithTrack &t) { return complete(t); }),
@@ -59,7 +62,7 @@ void AdaptiveMethodImpl::removeCompleteTracks() {
 }
 
 auto AdaptiveMethodImpl::complete(const TargetListWithTrack &t) -> bool {
-    return t.track->complete();
+    return track(t)->complete();
 }
 
 auto AdaptiveMethodImpl::complete() -> bool {
@@ -68,20 +71,20 @@ auto AdaptiveMethodImpl::complete() -> bool {
         [&](const TargetListWithTrack &t) { return complete(t); });
 }
 
-auto AdaptiveMethodImpl::next() -> std::string {
+auto AdaptiveMethodImpl::nextTarget() -> std::string {
     return currentTargetList->next();
 }
 
 void AdaptiveMethodImpl::submitResponse(
     const coordinate_response_measure::Response &response) {
-    auto lastSnr_dB_ = snr_dB();
-    auto current_ = current();
-    auto correct_ = correct(current_, response);
+    auto lastSnr_dB_{snr_dB()};
+    auto current_{currentTarget()};
+    auto correct_{correct(current_, response)};
     if (correct_)
         correct();
     else
         incorrect();
-    auto updatedReversals = currentSnrTrack->reversals();
+    auto updatedReversals{currentSnrTrack->reversals()};
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
     lastTrial.reversals = updatedReversals;
@@ -94,7 +97,7 @@ void AdaptiveMethodImpl::submitResponse(
 
 auto AdaptiveMethodImpl::snr_dB() -> int { return currentSnrTrack->x(); }
 
-auto AdaptiveMethodImpl::current() -> std::string {
+auto AdaptiveMethodImpl::currentTarget() -> std::string {
     return currentTargetList->current();
 }
 
@@ -112,15 +115,15 @@ void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
 }
 
 void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
-    file->writeTrial(lastTrial);
+    file->write(lastTrial);
 }
 
 void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile *file) {
-    file->writeTrial(lastOpenSetTrial);
+    file->write(lastOpenSetTrial);
 }
 
 void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
-    file->writeTrial(lastOpenSetTrial);
+    file->write(lastOpenSetTrial);
 }
 
 static void assignReversals(open_set::AdaptiveTrial &trial, Track *track) {
@@ -138,7 +141,7 @@ static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
 void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    lastOpenSetTrial.target = evaluator->fileName(current());
+    lastOpenSetTrial.target = evaluator->fileName(currentTarget());
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
@@ -147,7 +150,7 @@ void AdaptiveMethodImpl::submitIncorrectResponse() {
 void AdaptiveMethodImpl::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    lastOpenSetTrial.target = evaluator->fileName(current());
+    lastOpenSetTrial.target = evaluator->fileName(currentTarget());
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();

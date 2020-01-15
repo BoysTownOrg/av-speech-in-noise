@@ -8,12 +8,9 @@
 #include <string>
 
 namespace av_speech_in_noise {
-template <typename T> auto maximumValue() -> T {
-    return std::numeric_limits<T>::max();
-}
-template <typename T> auto minimumValue() -> T {
-    return std::numeric_limits<T>::min();
-}
+constexpr auto maximumInt() -> int { return std::numeric_limits<int>::max(); }
+
+constexpr auto minimumInt() -> int { return std::numeric_limits<int>::min(); }
 
 class Track {
   public:
@@ -21,9 +18,9 @@ class Track {
     struct Settings {
         const TrackingRule *rule{};
         int startingX{};
-        int ceiling = maximumValue<int>();
-        int floor = minimumValue<int>();
-        int bumpLimit = maximumValue<int>();
+        int ceiling{maximumInt()};
+        int floor{minimumInt()};
+        int bumpLimit{maximumInt()};
     };
     virtual void down() = 0;
     virtual void up() = 0;
@@ -60,8 +57,8 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     auto complete() -> bool override;
-    auto next() -> std::string override;
-    auto current() -> std::string override;
+    auto nextTarget() -> std::string override;
+    auto currentTarget() -> std::string override;
     void writeLastCoordinateResponse(OutputFile *) override;
     void writeLastCorrectResponse(OutputFile *) override;
     void writeLastIncorrectResponse(OutputFile *) override;
@@ -81,6 +78,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void selectNextList();
     void removeCompleteTracks();
     static auto complete(const TargetListWithTrack &) -> bool;
+    static auto track(const TargetListWithTrack &) -> Track *;
     auto correct(const std::string &,
         const coordinate_response_measure::Response &) -> bool;
     void incorrect();

@@ -84,12 +84,12 @@ class OutputFileImpl : public OutputFile {
     void save() override;
     void writeTest(const AdaptiveTest &) override;
     void writeTest(const FixedLevelTest &) override;
-    void writeTrial(
+    void write(
         const coordinate_response_measure::AdaptiveTrial &) override;
-    void writeTrial(
+    void write(
         const coordinate_response_measure::FixedLevelTrial &) override;
-    void writeTrial(const open_set::FreeResponseTrial &) override;
-    void writeTrial(const open_set::AdaptiveTrial &) override;
+    void write(const open_set::FreeResponseTrial &) override;
+    void write(const open_set::AdaptiveTrial &) override;
 
   private:
     void write(std::string);

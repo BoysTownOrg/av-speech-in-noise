@@ -36,13 +36,13 @@ class TestMethodStub : public TestMethod {
 
     auto complete() -> bool override { return complete_; }
 
-    auto next() -> std::string override {
+    auto nextTarget() -> std::string override {
         log_.insert("next ");
         current_ = currentWhenNext_;
         return next_;
     }
 
-    auto current() -> std::string override { return current_; }
+    auto currentTarget() -> std::string override { return current_; }
 
     void setCurrent(std::string s) { current_ = std::move(s); }
 

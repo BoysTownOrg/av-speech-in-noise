@@ -17,13 +17,13 @@ void FixedLevelMethodImpl::initialize(
 
 auto FixedLevelMethodImpl::complete() -> bool { return complete_; }
 
-auto FixedLevelMethodImpl::next() -> std::string { return targetList->next(); }
+auto FixedLevelMethodImpl::nextTarget() -> std::string { return targetList->next(); }
 
 auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
 
 void FixedLevelMethodImpl::submitResponse(
     const coordinate_response_measure::Response &response) {
-    auto current_ = current();
+    auto current_ = currentTarget();
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
     lastTrial.correctColor = evaluator->correctColor(current_);
@@ -34,7 +34,7 @@ void FixedLevelMethodImpl::submitResponse(
     complete_ = concluder->complete(targetList);
 }
 
-auto FixedLevelMethodImpl::current() -> std::string {
+auto FixedLevelMethodImpl::currentTarget() -> std::string {
     return targetList->current();
 }
 
@@ -43,7 +43,7 @@ void FixedLevelMethodImpl::writeTestingParameters(OutputFile *file) {
 }
 
 void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
-    file->writeTrial(lastTrial);
+    file->write(lastTrial);
 }
 
 void FixedLevelMethodImpl::submitIncorrectResponse() {}

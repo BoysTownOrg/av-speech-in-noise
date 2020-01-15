@@ -250,7 +250,7 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void selectList(int n) { randomizer.setRandomInt(n); }
 
-    auto next() -> std::string { return method.next(); }
+    auto next() -> std::string { return method.nextTarget(); }
 
     void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 

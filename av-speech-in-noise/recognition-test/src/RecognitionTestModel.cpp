@@ -6,8 +6,8 @@ namespace av_speech_in_noise {
 namespace {
 class NullTestMethod : public TestMethod {
     auto complete() -> bool override { return {}; }
-    auto next() -> std::string override { return {}; }
-    auto current() -> std::string override { return {}; }
+    auto nextTarget() -> std::string override { return {}; }
+    auto currentTarget() -> std::string override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
@@ -152,7 +152,7 @@ void RecognitionTestModelImpl::preparePlayersForNextTrial() {
 }
 
 void RecognitionTestModelImpl::prepareTargetPlayer() {
-    loadTargetFile(testMethod->next());
+    loadTargetFile(testMethod->nextTarget());
     setTargetLevel_dB(targetLevel_dB());
     targetPlayer->subscribeToPlaybackCompletion();
 }
@@ -244,7 +244,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 
 static auto targetName(ResponseEvaluator *evaluator, TestMethod *testMethod)
     -> std::string {
-    return evaluator->fileName(testMethod->current());
+    return evaluator->fileName(testMethod->currentTarget());
 }
 
 static void save(OutputFile *file) { file->save(); }
@@ -288,17 +288,17 @@ void RecognitionTestModelImpl::submitIncorrectResponse_() {
 
 void RecognitionTestModelImpl::submitResponse(
     const open_set::FreeResponse &response) {
-    writeTrial(response);
+    write(response);
     testMethod->submitResponse(response);
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::writeTrial(const open_set::FreeResponse &p) {
+void RecognitionTestModelImpl::write(const open_set::FreeResponse &p) {
     open_set::FreeResponseTrial trial;
     trial.response = p.response;
     trial.target = targetName(evaluator, testMethod);
     trial.flagged = p.flagged;
-    outputFile->writeTrial(trial);
+    outputFile->write(trial);
     save(outputFile);
 }
 

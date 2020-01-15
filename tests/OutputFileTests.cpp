@@ -125,7 +125,7 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
     auto evaluationEntryIndex() -> int override { return 6; }
 
     void run(av_speech_in_noise::OutputFileImpl &file) override {
-        file.writeTrial(trial_);
+        file.write(trial_);
     }
 };
 
@@ -140,7 +140,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
     void correct() override { setCorrect(trial_); }
 
     void run(av_speech_in_noise::OutputFileImpl &file) override {
-        file.writeTrial(trial_);
+        file.write(trial_);
     }
 
     auto evaluationEntryIndex() -> int override { return 5; }
@@ -155,7 +155,7 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
     void correct() override { trial_.correct = true; }
 
     void run(av_speech_in_noise::OutputFileImpl &file) override {
-        file.writeTrial(trial_);
+        file.write(trial_);
     }
 
     auto evaluationEntryIndex() -> int override { return 3; }
@@ -183,9 +183,9 @@ class OutputFileTests : public ::testing::Test {
 
     void openNewFile() { file.openNewFile(testIdentity); }
 
-    void writeFreeResponseTrial() { file.writeTrial(freeResponseTrial); }
+    void writeFreeResponseTrial() { file.write(freeResponseTrial); }
 
-    void writeOpenSetAdaptiveTrial() { file.writeTrial(openSetAdaptiveTrial); }
+    void writeOpenSetAdaptiveTrial() { file.write(openSetAdaptiveTrial); }
 
     auto written() -> const auto & { return writer.written(); }
 
@@ -531,7 +531,7 @@ TEST_F(OutputFileTests, writeNoFlagFreeResponseTrialOnlyTwoEntries) {
 
 TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
     coordinate_response_measure::AdaptiveTrial uninitialized;
-    file.writeTrial(uninitialized);
+    file.write(uninitialized);
 }
 
 TEST_F(OutputFileTests, writeCommonAdaptiveTest) {

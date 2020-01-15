@@ -94,7 +94,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void initialize_(TestMethod *, const Test &);
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
-    void writeTrial(const open_set::FreeResponse &p);
+    void write(const open_set::FreeResponse &p);
     void prepareTest(const Test &);
     void storeLevels(const Test &common);
     void preparePlayersForNextTrial();
