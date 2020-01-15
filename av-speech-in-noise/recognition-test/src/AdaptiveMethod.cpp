@@ -78,7 +78,7 @@ auto AdaptiveMethodImpl::next() -> std::string {
 void AdaptiveMethodImpl::submitResponse(
     const coordinate_response_measure::Response &response) {
     auto lastSnr_dB_{snr_dB()};
-    auto current_{current()};
+    auto current_{currentTarget()};
     auto correct_{correct(current_, response)};
     if (correct_)
         correct();
@@ -97,7 +97,7 @@ void AdaptiveMethodImpl::submitResponse(
 
 auto AdaptiveMethodImpl::snr_dB() -> int { return currentSnrTrack->x(); }
 
-auto AdaptiveMethodImpl::current() -> std::string {
+auto AdaptiveMethodImpl::currentTarget() -> std::string {
     return currentTargetList->current();
 }
 
@@ -141,7 +141,7 @@ static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
 void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    lastOpenSetTrial.target = evaluator->fileName(current());
+    lastOpenSetTrial.target = evaluator->fileName(currentTarget());
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
@@ -150,7 +150,7 @@ void AdaptiveMethodImpl::submitIncorrectResponse() {
 void AdaptiveMethodImpl::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    lastOpenSetTrial.target = evaluator->fileName(current());
+    lastOpenSetTrial.target = evaluator->fileName(currentTarget());
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();

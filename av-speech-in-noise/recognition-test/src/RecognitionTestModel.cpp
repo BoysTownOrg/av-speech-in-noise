@@ -7,7 +7,7 @@ namespace {
 class NullTestMethod : public TestMethod {
     auto complete() -> bool override { return {}; }
     auto next() -> std::string override { return {}; }
-    auto current() -> std::string override { return {}; }
+    auto currentTarget() -> std::string override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
@@ -244,7 +244,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 
 static auto targetName(ResponseEvaluator *evaluator, TestMethod *testMethod)
     -> std::string {
-    return evaluator->fileName(testMethod->current());
+    return evaluator->fileName(testMethod->currentTarget());
 }
 
 static void save(OutputFile *file) { file->save(); }

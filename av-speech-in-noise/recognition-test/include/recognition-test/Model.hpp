@@ -56,7 +56,7 @@ class TestMethod {
     virtual ~TestMethod() = default;
     virtual auto complete() -> bool = 0;
     virtual auto next() -> std::string = 0;
-    virtual auto current() -> std::string = 0;
+    virtual auto currentTarget() -> std::string = 0;
     virtual auto snr_dB() -> int = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;

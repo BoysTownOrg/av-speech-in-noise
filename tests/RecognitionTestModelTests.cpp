@@ -42,7 +42,7 @@ class TestMethodStub : public TestMethod {
         return next_;
     }
 
-    auto current() -> std::string override { return current_; }
+    auto currentTarget() -> std::string override { return current_; }
 
     void setCurrent(std::string s) { current_ = std::move(s); }
 

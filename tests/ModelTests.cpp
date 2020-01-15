@@ -18,7 +18,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 
     auto complete() -> bool override { return {}; }
     auto next() -> std::string override { return {}; }
-    auto current() -> std::string override { return {}; }
+    auto currentTarget() -> std::string override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
@@ -52,7 +52,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
     auto complete() -> bool override { return {}; }
     auto next() -> std::string override { return {}; }
-    auto current() -> std::string override { return {}; }
+    auto currentTarget() -> std::string override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}

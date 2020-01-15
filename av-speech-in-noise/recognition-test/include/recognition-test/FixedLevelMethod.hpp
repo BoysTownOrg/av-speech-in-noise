@@ -32,7 +32,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     auto snr_dB() -> int override;
     auto next() -> std::string override;
     auto complete() -> bool override;
-    auto current() -> std::string override;
+    auto currentTarget() -> std::string override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     void writeLastCoordinateResponse(OutputFile *) override;
