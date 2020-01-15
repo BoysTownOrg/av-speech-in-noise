@@ -272,48 +272,48 @@ class Presenter : public Model::EventListener {
         : public TrialCompletionHandler {
       public:
         explicit AdaptiveClosedSetTestTrialCompletionHandler(Subject *subject)
-            : subject{subject} {}
+            : subject{*subject} {}
 
-        void showResponseView() override { subject->showResponseButtons(); }
+        void showResponseView() override { subject.showResponseButtons(); }
 
       private:
-        Subject *subject;
+        Subject &subject;
     };
 
     class AdaptiveOpenSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
         explicit AdaptiveOpenSetTestTrialCompletionHandler(Testing *testing)
-            : testing{testing} {}
+            : testing{*testing} {}
 
-        void showResponseView() override { testing->showEvaluationButtons(); }
+        void showResponseView() override { testing.showEvaluationButtons(); }
 
       private:
-        Testing *testing;
+        Testing &testing;
     };
 
     class FixedLevelOpenSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
         explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing *testing)
-            : testing{testing} {}
+            : testing{*testing} {}
 
-        void showResponseView() override { testing->showResponseSubmission(); }
+        void showResponseView() override { testing.showResponseSubmission(); }
 
       private:
-        Testing *testing;
+        Testing &testing;
     };
 
     class FixedLevelClosedSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
         explicit FixedLevelClosedSetTestTrialCompletionHandler(Subject *subject)
-            : subject{subject} {}
+            : subject{*subject} {}
 
-        void showResponseView() override { subject->showResponseButtons(); }
+        void showResponseView() override { subject.showResponseButtons(); }
 
       private:
-        Subject *subject;
+        Subject &subject;
     };
 
     Presenter(
@@ -382,7 +382,7 @@ class Presenter : public Model::EventListener {
     Model &model;
     View &view;
     TestSetup &testSetup;
-    Subject *subject;
+    Subject &subject;
     Experimenter *experimenter;
     Testing *testing;
     TrialCompletionHandler *trialCompletionHandler_{};

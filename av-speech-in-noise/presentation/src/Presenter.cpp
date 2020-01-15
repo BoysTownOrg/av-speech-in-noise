@@ -35,7 +35,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       fixedLevelClosedSetTrialCompletionHandler{subject},
       adaptiveOpenSetTrialCompletionHandler{testing},
       adaptiveClosedSetTrialCompletionHandler{subject}, model{model},
-      view{view}, testSetup{testSetup}, subject{subject},
+      view{view}, testSetup{testSetup}, subject{*subject},
       experimenter{experimenter}, testing{testing},
       trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler} {
     model.subscribe(this);
@@ -115,7 +115,7 @@ void Presenter::showTestView() {
     experimenter->show();
     displayTrialNumber(experimenter, model);
     if (closedSet())
-        subject->show();
+        subject.show();
     else
         testing->show();
 }
@@ -168,7 +168,7 @@ void Presenter::submitSubjectResponse() {
 }
 
 void Presenter::submitSubjectResponse_() {
-    model.submitResponse(subject->subjectResponse());
+    model.submitResponse(subject.subjectResponse());
 }
 
 void Presenter::submitExperimenterResponse() {
@@ -214,7 +214,7 @@ void Presenter::showTestSetup() { testSetup.show(); }
 void Presenter::hideTestView() {
     testing->hide();
     experimenter->hide();
-    subject->hide();
+    subject.hide();
 }
 
 void Presenter::playCalibration() {
