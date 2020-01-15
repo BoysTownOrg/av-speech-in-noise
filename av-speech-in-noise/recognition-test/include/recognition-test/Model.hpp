@@ -1,21 +1,12 @@
 #ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_MODEL_HPP_
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_MODEL_HPP_
 
+#include "TargetList.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <vector>
 #include <string>
 
 namespace av_speech_in_noise {
-class TargetList {
-  public:
-    virtual ~TargetList() = default;
-    virtual void loadFromDirectory(std::string directory) = 0;
-    virtual auto next() -> std::string = 0;
-    virtual auto current() -> std::string = 0;
-    virtual auto empty() -> bool = 0;
-    virtual void reinsertCurrent() = 0;
-};
-
 class ResponseEvaluator {
   public:
     virtual ~ResponseEvaluator() = default;

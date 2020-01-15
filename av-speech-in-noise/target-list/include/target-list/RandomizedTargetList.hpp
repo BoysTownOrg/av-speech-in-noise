@@ -2,7 +2,7 @@
 #define AV_SPEECH_IN_NOISE_TARGET_LIST_INCLUDE_TARGET_LIST_RANDOMIZEDTARGETLIST_HPP_
 
 #include "SubdirectoryTargetListReader.hpp"
-#include <recognition-test/Model.hpp>
+#include <recognition-test/TargetList.hpp>
 #include <vector>
 #include <string>
 #include <memory>
