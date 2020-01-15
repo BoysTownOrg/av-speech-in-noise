@@ -48,8 +48,8 @@ class RandomizedTargetListTests : public ::testing::Test {
 
     auto shuffled() { return randomizer.toShuffle(); }
 
-    void assertHasBeenShuffled(std::vector<std::string> v) {
-        assertEqual(std::move(v), shuffled());
+    void assertHasBeenShuffled(const std::vector<std::string>& v) {
+        assertEqual(v, shuffled());
     }
 
     void assertEmpty() { assertTrue(empty()); }
@@ -63,7 +63,9 @@ class RandomizedTargetListTests : public ::testing::Test {
     void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 };
 
-TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
+#define RANDOMIZED_TARGET_LIST_TEST(a) TEST_F(RandomizedTargetListTests, a)
+
+RANDOMIZED_TARGET_LIST_TEST(emptyOnlyWhenNoFilesLoaded) {
     assertEmpty();
     setFileNames({"a", "b"});
     loadFromDirectory();
@@ -74,26 +76,26 @@ TEST_F(RandomizedTargetListTests, emptyOnlyWhenNoFilesLoaded) {
     assertNotEmpty();
 }
 
-TEST_F(RandomizedTargetListTests,
+RANDOMIZED_TARGET_LIST_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectory("a");
     assertEqual("a", reader.directory());
 }
 
-TEST_F(RandomizedTargetListTests, loadFromDirectoryShufflesFileNames) {
+RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory();
     assertHasBeenShuffled({"a", "b", "c"});
 }
 
-TEST_F(RandomizedTargetListTests, nextShufflesNextSetNotIncludingCurrent) {
+RANDOMIZED_TARGET_LIST_TEST(nextShufflesNextSetNotIncludingCurrent) {
     setFileNames({"a", "b", "c", "d"});
     loadFromDirectory();
     next();
     assertHasBeenShuffled({"b", "c", "d"});
 }
 
-TEST_F(RandomizedTargetListTests, nextReplacesSecondToLastTarget) {
+RANDOMIZED_TARGET_LIST_TEST(nextReplacesSecondToLastTarget) {
     setFileNames({"a", "b", "c", "d", "e"});
     loadFromDirectory();
     next();
@@ -101,7 +103,7 @@ TEST_F(RandomizedTargetListTests, nextReplacesSecondToLastTarget) {
     assertHasBeenShuffled({"c", "d", "e", "a"});
 }
 
-TEST_F(RandomizedTargetListTests, nextReturnsFullPathToFile) {
+RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFile) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
     assertNextEquals("C:/a");
@@ -109,14 +111,14 @@ TEST_F(RandomizedTargetListTests, nextReturnsFullPathToFile) {
     assertNextEquals("C:/c");
 }
 
-TEST_F(RandomizedTargetListTests, currentReturnsFullPathToFile) {
+RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
     setFileNames({"a", "b", "c"});
     loadFromDirectory("C:");
     next();
     assertEqual("C:/a", list.current());
 }
 
-TEST_F(RandomizedTargetListTests, nextReturnsEmptyIfNoFiles) {
+RANDOMIZED_TARGET_LIST_TEST(nextReturnsEmptyIfNoFiles) {
     setFileNames({});
     loadFromDirectory();
     assertNextEquals("");
