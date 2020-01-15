@@ -1,8 +1,25 @@
 #include "FileFilterDecorator.hpp"
 #include <gsl/gsl>
 #include <numeric>
+#include <algorithm>
 
 namespace target_list {
+static auto at(const std::vector<int> &x, gsl::index n) -> int {
+    return x.at(n);
+}
+
+static auto at(const std::vector<std::string> &x, gsl::index n) -> std::string {
+    return x.at(n);
+}
+
+static auto vectorOfStrings(gsl::index size) -> std::vector<std::string> {
+    return std::vector<std::string>(size);
+}
+
+static auto size(const std::vector<std::string> &s) -> gsl::index {
+    return s.size();
+}
+
 FileFilterDecorator::FileFilterDecorator(
     DirectoryReader *reader, FileFilter *filter)
     : reader{reader}, filter{filter} {}
@@ -83,15 +100,14 @@ RandomSubsetFiles::RandomSubsetFiles(Randomizer *randomizer, int N)
 
 auto RandomSubsetFiles::filter(std::vector<std::string> files)
     -> std::vector<std::string> {
-    if (files.size() < gsl::narrow<size_t>(N))
+    if (size(files) < N)
         return files;
     std::vector<int> indices(files.size());
     std::iota(indices.begin(), indices.end(), 0);
     randomizer->shuffle(indices.begin(), indices.end());
-    std::vector<std::string> subset;
-    subset.reserve(N);
-    for (int i = 0; i < N; ++i)
-        subset.push_back(files.at(indices.at(i)));
+    auto subset = vectorOfStrings(N);
+    std::generate(subset.begin(), subset.end(),
+        [&, n = 0]() mutable { return at(files, at(indices, n++)); });
     return subset;
 }
 
