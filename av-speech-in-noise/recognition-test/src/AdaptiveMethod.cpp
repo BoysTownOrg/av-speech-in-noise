@@ -40,9 +40,9 @@ void AdaptiveMethodImpl::makeTrackWithList(TargetList *list) {
 
 void AdaptiveMethodImpl::selectNextList() {
     removeCompleteTracks();
-    auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
-    if (remainingLists == 0)
+    if (targetListsWithTracks.empty())
         return;
+    auto remainingLists = gsl::narrow<int>(targetListsWithTracks.size());
     auto index = gsl::narrow<std::size_t>(
         randomizer->randomIntBetween(0, remainingLists - 1));
     auto targetListsWithTrack_ = targetListsWithTracks.at(index);
