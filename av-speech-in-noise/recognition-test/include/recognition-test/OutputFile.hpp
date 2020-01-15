@@ -53,10 +53,9 @@ constexpr auto colorName(coordinate_response_measure::Color c) -> const char * {
         return "blue";
     case coordinate_response_measure::Color::white:
         return "white";
-    case coordinate_response_measure::Color::notAColor:
-        return "not a color";
+    case coordinate_response_measure::Color::unknown:
+        return "unknown";
     }
-    return "unknown";
 }
 
 class Writer {

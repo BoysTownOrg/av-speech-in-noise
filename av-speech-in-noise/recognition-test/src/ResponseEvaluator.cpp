@@ -24,7 +24,7 @@ auto ResponseEvaluatorImpl::correct(const std::string &filePath,
     const coordinate_response_measure::Response &r) -> bool {
     return correctNumber(filePath) == r.number &&
         correctColor(filePath) == r.color &&
-        r.color != coordinate_response_measure::Color::notAColor &&
+        r.color != coordinate_response_measure::Color::unknown &&
         r.number != invalidNumber;
 }
 
@@ -68,7 +68,7 @@ static auto color(const std::string &colorName)
     if (colorName == "white")
         return Color::white;
 
-    return Color::notAColor;
+    return Color::unknown;
 }
 
 auto ResponseEvaluatorImpl::correctColor(const std::string &filePath)

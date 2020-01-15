@@ -7,7 +7,7 @@
 
 namespace av_speech_in_noise {
 namespace coordinate_response_measure {
-enum class Color { green, red, blue, white, notAColor };
+enum class Color { green, red, blue, white, unknown };
 
 struct Response {
     int number{};
