@@ -29,7 +29,7 @@ static void displayTrialNumber(
     experimenter->display("Trial " + std::to_string(model.trialNumber()));
 }
 
-Presenter::Presenter(Model &model, View *view, TestSetup *testSetup,
+Presenter::Presenter(Model &model, View &view, TestSetup *testSetup,
     Subject *subject, Experimenter *experimenter, Testing *testing)
     : fixedLevelOpenSetTrialCompletionHandler{testing},
       fixedLevelClosedSetTrialCompletionHandler{subject},
@@ -38,15 +38,15 @@ Presenter::Presenter(Model &model, View *view, TestSetup *testSetup,
       view{view}, testSetup{testSetup}, subject{subject},
       experimenter{experimenter}, testing{testing},
       trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler} {
-    this->model.subscribe(this);
+    model.subscribe(this);
     testSetup->becomeChild(this);
     subject->becomeChild(this);
     experimenter->becomeChild(this);
     testing->becomeChild(this);
-    view->populateAudioDeviceMenu(this->model.audioDevices());
+    view.populateAudioDeviceMenu(model.audioDevices());
 }
 
-void Presenter::run() { view->eventLoop(); }
+void Presenter::run() { view.eventLoop(); }
 
 void Presenter::confirmTestSetup() {
     try {
@@ -143,12 +143,12 @@ auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
 }
 
 void Presenter::showErrorMessage(std::string e) {
-    view->showErrorMessage(std::move(e));
+    view.showErrorMessage(std::move(e));
 }
 
 void Presenter::playTrial() {
     AudioSettings p;
-    p.audioDevice = view->audioDevice();
+    p.audioDevice = view.audioDevice();
     model.playTrial(p);
     experimenter->hideExitTestButton();
 }
@@ -227,34 +227,34 @@ void Presenter::playCalibration() {
 
 void Presenter::playCalibration_() {
     auto p = testSetup->calibrationParameters();
-    p.audioSettings.audioDevice = view->audioDevice();
+    p.audioSettings.audioDevice = view.audioDevice();
     model.playCalibration(p);
 }
 
 void Presenter::browseForTargetList() {
     applyIfBrowseNotCancelled(
-        view->browseForDirectory(), &TestSetup::setStimulusList);
+        view.browseForDirectory(), &TestSetup::setStimulusList);
 }
 
 void Presenter::applyIfBrowseNotCancelled(
     std::string s, void (TestSetup::*f)(std::string)) {
-    if (!view->browseCancelled())
+    if (!view.browseCancelled())
         (testSetup->*f)(std::move(s));
 }
 
 void Presenter::browseForMasker() {
     applyIfBrowseNotCancelled(
-        view->browseForOpeningFile(), &TestSetup::setMasker);
+        view.browseForOpeningFile(), &TestSetup::setMasker);
 }
 
 void Presenter::browseForCalibration() {
     applyIfBrowseNotCancelled(
-        view->browseForOpeningFile(), &TestSetup::setCalibrationFilePath);
+        view.browseForOpeningFile(), &TestSetup::setCalibrationFilePath);
 }
 
 void Presenter::browseForTrackSettingsFile() {
     applyIfBrowseNotCancelled(
-        view->browseForOpeningFile(), &TestSetup::setTrackSettingsFile);
+        view.browseForOpeningFile(), &TestSetup::setTrackSettingsFile);
 }
 
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
