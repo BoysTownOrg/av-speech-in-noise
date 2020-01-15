@@ -1,6 +1,13 @@
 #include "AudioReaderImpl.hpp"
+#include <gsl/gsl>
 
 namespace stimulus_players {
+static void resize(audio_type &audio, gsl::index size) { audio.resize(size); }
+
+static auto channel(audio_type &audio, gsl::index n) -> channel_type & {
+    return audio.at(n);
+}
+
 AudioReaderImpl::AudioReaderImpl(BufferedAudioReader *reader)
     : reader{reader} {}
 
@@ -10,10 +17,10 @@ auto AudioReaderImpl::read(std::string filePath) -> audio_type {
     auto minimumSample = reader->minimumPossibleSample();
     for (auto buffer = reader->readNextBuffer(); !buffer->empty();
          buffer = reader->readNextBuffer()) {
-        audio.resize(buffer->channels());
-        for (int channel = 0; channel < buffer->channels(); ++channel)
-            for (auto x : buffer->channel(channel))
-                audio.at(channel).push_back(1.F * x / minimumSample);
+        resize(audio, buffer->channels());
+        for (int i = 0; i < buffer->channels(); ++i)
+            for (auto x : buffer->channel(i))
+                channel(audio, i).push_back(1.F * x / minimumSample);
     }
     return audio;
 }
