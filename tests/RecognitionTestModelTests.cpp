@@ -118,7 +118,7 @@ void setAudioVisual(Test &test) { test.condition = Condition::audioVisual; }
 void setAuditoryOnly(Test &test) { test.condition = Condition::auditoryOnly; }
 
 class InitializingTestUseCase : public virtual UseCase {
-public:
+  public:
     virtual void run(RecognitionTestModelImpl &, const Test &) = 0;
 };
 
@@ -432,9 +432,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(x, targetPlayerLevel_dB());
     }
 
-    void setMaskerLevel_dB_SPL(int x) {
-        tests::setMaskerLevel_dB_SPL(test, x);
-    }
+    void setMaskerLevel_dB_SPL(int x) { tests::setMaskerLevel_dB_SPL(test, x); }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
         tests::setTestingFullScaleLevel_dB_SPL(test, x);
@@ -510,9 +508,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertTestComplete() { assertTrue(testComplete()); }
 
-    void run(InitializingTestUseCase &useCase) {
-        useCase.run(model, test);
-    }
+    void run(InitializingTestUseCase &useCase) { useCase.run(model, test); }
 
     void assertSetsTargetLevel(UseCase &useCase) {
         setMaskerLevel_dB_SPL(3);
@@ -600,6 +596,12 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase);
         assertMaskerPlayerChannelDelaysCleared();
     }
+
+    void assertPassesTestIdentityToOutputFile(
+        InitializingTestUseCase &useCase) {
+        run(useCase);
+        assertEqual(outputFile.openNewFileParameters(), &identity(test));
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -646,7 +648,8 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     assertUsesAllTargetPlayerChannels(initializingTest);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingUsesAllTargetPlayerChannels) {
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingUsesAllTargetPlayerChannels) {
     assertUsesAllTargetPlayerChannels(initializingTestWithEyeTracking);
 }
 
@@ -654,7 +657,8 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     assertUsesAllMaskerPlayerChannels(initializingTest);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingUsesAllMaskerPlayerChannels) {
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingUsesAllMaskerPlayerChannels) {
     assertUsesAllMaskerPlayerChannels(initializingTestWithEyeTracking);
 }
 
@@ -662,7 +666,8 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
     assertMaskerPlayerChannelDelaysCleared(initializingTest);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingClearsAllMaskerPlayerChannelDelays) {
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingClearsAllMaskerPlayerChannelDelays) {
     assertMaskerPlayerChannelDelaysCleared(initializingTestWithEyeTracking);
 }
 
@@ -706,16 +711,12 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestOpensNewOutputFilePassingTestInformation) {
-    run(initializingTest);
-    assertEqual(
-        outputFile.openNewFileParameters(), &identity(test));
+    assertPassesTestIdentityToOutputFile(initializingTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithEyeTrackingOpensNewOutputFilePassingTestInformation) {
-    run(initializingTestWithEyeTracking);
-    assertEqual(
-        outputFile.openNewFileParameters(), &identity(test));
+    assertPassesTestIdentityToOutputFile(initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToTargetPlayer) {
