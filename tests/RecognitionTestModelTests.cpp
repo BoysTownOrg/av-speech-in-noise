@@ -643,6 +643,11 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
     assertMaskerPlayerChannelDelaysCleared();
 }
 
+RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingClearsAllMaskerPlayerChannelDelays) {
+    run(initializingTestWithEyeTracking);
+    assertMaskerPlayerChannelDelaysCleared();
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerUsesFirstChannelOnlyOfTargetPlayer) {
     run(initializingTestWithSingleSpeaker);

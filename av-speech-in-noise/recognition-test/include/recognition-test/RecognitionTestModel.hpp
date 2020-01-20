@@ -93,6 +93,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
 
   private:
     void initialize_(TestMethod *, const Test &);
+    void initializeWithDefaultAudioConfiguration(TestMethod *, const Test &);
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
     void write(const open_set::FreeResponse &p);

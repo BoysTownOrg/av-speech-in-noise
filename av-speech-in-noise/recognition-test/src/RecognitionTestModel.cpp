@@ -58,17 +58,22 @@ static void clearChannelDelays(MaskerPlayer *player) {
 }
 
 void RecognitionTestModelImpl::initialize(
-    TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
+    TestMethod *method, const Test &test) {
+    initializeWithDefaultAudioConfiguration(method, test);
+}
+
+void RecognitionTestModelImpl::initializeWithDefaultAudioConfiguration(
+    TestMethod *method, const Test &test) {
+    initialize_(method, test);
     useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
 }
 
 void RecognitionTestModelImpl::initialize_(
-    TestMethod *testMethod_, const Test &test) {
+    TestMethod *method, const Test &test) {
     throwIfTrialInProgress();
-    testMethod = testMethod_;
+    testMethod = method;
     prepareTest(test);
     trialNumber_ = 1;
 }
@@ -78,26 +83,24 @@ static void useFirstChannelOnly(TargetPlayer *player) {
 }
 
 void RecognitionTestModelImpl::initializeWithSingleSpeaker(
-    TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
+    TestMethod *method, const Test &test) {
+    initialize_(method, test);
     useFirstChannelOnly(targetPlayer);
     maskerPlayer->useFirstChannelOnly();
     clearChannelDelays(maskerPlayer);
 }
 
 void RecognitionTestModelImpl::initializeWithDelayedMasker(
-    TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
+    TestMethod *method, const Test &test) {
+    initialize_(method, test);
     useFirstChannelOnly(targetPlayer);
     useAllChannels(maskerPlayer);
     maskerPlayer->setChannelDelaySeconds(0, maskerChannelDelaySeconds);
 }
 
 void RecognitionTestModelImpl::initializeWithEyeTracking(
-    TestMethod *testMethod_, const Test &test) {
-    initialize_(testMethod_, test);
-    useAllChannels(targetPlayer);
-    useAllChannels(maskerPlayer);
+    TestMethod *method, const Test &test) {
+    initializeWithDefaultAudioConfiguration(method, test);
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {
