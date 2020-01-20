@@ -49,6 +49,10 @@ static void useAllChannels(MaskerPlayer *player) {
     player->useAllChannels();
 }
 
+static void useAllChannels(TargetPlayer *player) {
+    player->useAllChannels();
+}
+
 static void clearChannelDelays(MaskerPlayer *player) {
     player->clearChannelDelays();
 }
@@ -56,7 +60,7 @@ static void clearChannelDelays(MaskerPlayer *player) {
 void RecognitionTestModelImpl::initialize(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
-    targetPlayer->useAllChannels();
+    useAllChannels(targetPlayer);
     useAllChannels(maskerPlayer);
     clearChannelDelays(maskerPlayer);
 }
@@ -92,7 +96,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
 void RecognitionTestModelImpl::initializeWithEyeTracking(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
-    targetPlayer->useAllChannels();
+    useAllChannels(targetPlayer);
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {
