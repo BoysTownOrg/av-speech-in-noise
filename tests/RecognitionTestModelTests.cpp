@@ -6,8 +6,9 @@
 #include "ResponseEvaluatorStub.h"
 #include "TargetPlayerStub.h"
 #include "assert-utility.h"
-#include <cmath>
 #include <gtest/gtest.h>
+#include <cmath>
+#include <functional>
 
 namespace av_speech_in_noise::tests {
 namespace {
@@ -123,22 +124,15 @@ class InitializingTestUseCase : public virtual UseCase {
 };
 
 class InitializingTest : public InitializingTestUseCase {
-    Test test{};
     TestMethod *method;
 
   public:
     explicit InitializingTest(TestMethod *method) : method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override {
-        m.initialize(method, test);
-    }
+    void run(RecognitionTestModelImpl &m) override { m.initialize(method, {}); }
 
     void run(RecognitionTestModelImpl &m, const Test &test_) override {
         m.initialize(method, test_);
-    }
-
-    void setMaskerFilePath(std::string s) {
-        tests::setMaskerFilePath(test, std::move(s));
     }
 };
 
@@ -449,10 +443,10 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertTrue(outputFileLog().endsWith("save "));
     }
 
-    void assertCallThrowsRequestFailure(
-        UseCase &useCase, const std::string &what) {
+    static void assertCallThrowsRequestFailure(
+        const std::function<void()> &f, const std::string &what) {
         try {
-            run(useCase);
+            f();
             FAIL() << "Expected recognition_test::"
                       "ModelImpl::"
                       "RequestFailure";
@@ -461,8 +455,17 @@ class RecognitionTestModelTests : public ::testing::Test {
         }
     }
 
+    void assertCallThrowsRequestFailure(
+        UseCase &useCase, const std::string &what) {
+        assertCallThrowsRequestFailure([&]() { run(useCase); }, what);
+    }
+
+    void assertCallThrowsRequestFailure(
+        InitializingTestUseCase &useCase, const std::string &what) {
+        assertCallThrowsRequestFailure([&]() { run(useCase); }, what);
+    }
+
     void setMaskerFilePath(std::string s) {
-        initializingTest.setMaskerFilePath(s);
         tests::setMaskerFilePath(test, std::move(s));
     }
 
