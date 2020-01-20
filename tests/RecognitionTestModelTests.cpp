@@ -835,6 +835,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingSubscribesToTargetPlaybackCompletionNotification) {
+    assertTargetPlayerPlaybackCompletionSubscribed(
+        initializingTestWithEyeTracking);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseSubscribesToTargetPlaybackCompletionNotification) {
     assertTargetPlayerPlaybackCompletionSubscribed(
         submittingCoordinateResponse);
