@@ -128,7 +128,9 @@ class InitializingTest : public UseCase {
         m.initialize(method, test);
     }
 
-    [[nodiscard]] auto testIdentity() const -> auto & { return identity(test); }
+    void run(RecognitionTestModelImpl &m, const Test &test_) {
+        m.initialize(method, test_);
+    }
 
     void setMaskerFilePath(std::string s) {
         tests::setMaskerFilePath(test, std::move(s));
@@ -146,7 +148,6 @@ class InitializingTest : public UseCase {
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
-    Test test{};
     TestMethod *method;
 
   public:
@@ -154,12 +155,11 @@ class InitializingTestWithSingleSpeaker : public UseCase {
         : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
-        m.initializeWithSingleSpeaker(method, test);
+        m.initializeWithSingleSpeaker(method, {});
     }
 };
 
 class InitializingTestWithDelayedMasker : public UseCase {
-    Test test{};
     TestMethod *method;
 
   public:
@@ -167,12 +167,11 @@ class InitializingTestWithDelayedMasker : public UseCase {
         : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
-        m.initializeWithDelayedMasker(method, test);
+        m.initializeWithDelayedMasker(method, {});
     }
 };
 
 class InitializingTestWithEyeTracking : public UseCase {
-    Test test{};
     TestMethod *method;
 
   public:
@@ -180,7 +179,7 @@ class InitializingTestWithEyeTracking : public UseCase {
         : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
-        m.initializeWithEyeTracking(method, test);
+        m.initializeWithEyeTracking(method, {});
     }
 };
 
@@ -674,9 +673,10 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestOpensNewOutputFilePassingTestInformation) {
-    run(initializingTest);
+    av_speech_in_noise::Test test;
+    initializingTest.run(model, test);
     assertEqual(
-        outputFile.openNewFileParameters(), &initializingTest.testIdentity());
+        outputFile.openNewFileParameters(), &identity(test));
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToTargetPlayer) {
