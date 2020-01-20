@@ -867,6 +867,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingSeeksToRandomMaskerPositionWithinTrialDuration) {
+    assertSeeksToRandomMaskerPositionWithinTrialDuration(
+        initializingTestWithEyeTracking);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseSeeksToRandomMaskerPositionWithinTrialDuration) {
     assertSeeksToRandomMaskerPositionWithinTrialDuration(
         submittingCoordinateResponse);
