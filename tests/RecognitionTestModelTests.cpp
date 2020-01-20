@@ -750,6 +750,11 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestPassesNextTargetToTargetPlayer) {
     assertPassesNextTargetToPlayer(initializingTest);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingPassesNextTargetToTargetPlayer) {
+    assertPassesNextTargetToPlayer(initializingTestWithEyeTracking);
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializingTestResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTest, 1);
 }
