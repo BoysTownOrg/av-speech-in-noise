@@ -97,6 +97,7 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
     useAllChannels(targetPlayer);
+    useAllChannels(maskerPlayer);
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {

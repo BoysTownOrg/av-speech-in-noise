@@ -633,6 +633,11 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     assertUsingAllMaskerPlayerChannels();
 }
 
+RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingUsesAllMaskerPlayerChannels) {
+    run(initializingTestWithEyeTracking);
+    assertUsingAllMaskerPlayerChannels();
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
     run(initializingTest);
     assertMaskerPlayerChannelDelaysCleared();
