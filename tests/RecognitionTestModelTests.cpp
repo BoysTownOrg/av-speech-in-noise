@@ -602,6 +602,13 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(outputFile.openNewFileParameters(), &identity(test));
     }
+
+    void assertPassesMaskerFilePathToMaskerPlayer(
+        InitializingTestUseCase &useCase) {
+        setMaskerFilePath("a");
+        run(useCase);
+        assertEqual("a", maskerPlayer.filePath());
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -755,8 +762,12 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesNextTargetToPlayer(initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializingTestResetsTrialNumber) {
+RECOGNITION_TEST_MODEL_TEST(initializeTestResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTest, 1);
+}
+
+RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingResetsTrialNumber) {
+    assertYieldsTrialNumber(initializingTestWithEyeTracking, 1);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseIncrementsTrialNumber) {
@@ -810,9 +821,12 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
-    setMaskerFilePath("a");
-    run(initializingTest);
-    assertEqual("a", maskerPlayer.filePath());
+    assertPassesMaskerFilePathToMaskerPlayer(initializingTest);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingPassesMaskerFilePathToMaskerPlayer) {
+    assertPassesMaskerFilePathToMaskerPlayer(initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
