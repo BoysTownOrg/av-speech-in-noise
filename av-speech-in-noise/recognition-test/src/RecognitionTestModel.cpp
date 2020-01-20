@@ -89,6 +89,11 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     maskerPlayer->setChannelDelaySeconds(0, maskerChannelDelaySeconds);
 }
 
+void RecognitionTestModelImpl::initializeWithEyeTracking(
+    TestMethod *testMethod_, const Test &test) {
+    initialize_(testMethod_, test);
+}
+
 auto RecognitionTestModelImpl::trialInProgress() -> bool {
     return maskerPlayer->playing();
 }

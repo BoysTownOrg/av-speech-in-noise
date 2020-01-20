@@ -189,6 +189,36 @@ class InitializingTestWithDelayedMasker : public UseCase {
     void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
 };
 
+class InitializingTestWithEyeTracking : public UseCase {
+    TestIdentity information{};
+    Test test{};
+    TestMethod *method;
+
+  public:
+    explicit InitializingTestWithEyeTracking(TestMethod *method)
+        : method{method} {}
+
+    void run(RecognitionTestModelImpl &m) override {
+        m.initializeWithEyeTracking(method, test);
+    }
+
+    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
+
+    void setMaskerFilePath(std::string s) {
+        test.maskerFilePath = std::move(s);
+    }
+
+    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
+
+    void setTestingFullScaleLevel_dB_SPL(int x) {
+        test.fullScaleLevel_dB_SPL = x;
+    }
+
+    void setAudioVisual() { test.condition = Condition::audioVisual; }
+
+    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
+};
+
 class AudioDeviceUseCase : public virtual UseCase {
   public:
     virtual void setAudioDevice(std::string) = 0;
@@ -314,6 +344,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
         &testMethod};
+    InitializingTestWithEyeTracking initializingTestWithEyeTracking{&testMethod};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectResponse submittingCorrectResponse;
@@ -614,6 +645,11 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerClosesOutputFileOpensAndWritesTestInOrder) {
     assertClosesOutputFileOpensAndWritesTestInOrder(
         initializingTestWithDelayedMasker);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingClosesOutputFileOpensAndWritesTestInOrder) {
+    assertClosesOutputFileOpensAndWritesTestInOrder(initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
