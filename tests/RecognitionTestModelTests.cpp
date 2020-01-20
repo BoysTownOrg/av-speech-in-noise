@@ -135,10 +135,6 @@ class InitializingTest : public UseCase {
     void setMaskerFilePath(std::string s) {
         tests::setMaskerFilePath(test, std::move(s));
     }
-
-    void setAudioVisual() { tests::setAudioVisual(test); }
-
-    void setAuditoryOnly() { tests::setAuditoryOnly(test); }
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
@@ -900,7 +896,7 @@ RECOGNITION_TEST_MODEL_TEST(maskerFadeOutCompleteHidesTargetPlayer) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
-    initializingTest.setAuditoryOnly();
+    setAuditoryOnly(test);
     run(initializingTest);
     run(playingTrial);
     assertTargetVideoNotShown();
@@ -1016,7 +1012,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadMaskerIfTrialInProgress) {
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress) {
-    initializingTest.setAuditoryOnly();
+    setAuditoryOnly(test);
     runIgnoringFailureWithTrialInProgress(initializingTest);
     assertTargetVideoNotHidden();
 }
