@@ -581,6 +581,11 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase);
         assertUsingAllTargetPlayerChannels();
     }
+
+    void assertUsesAllMaskerPlayerChannels(UseCase &useCase) {
+        run(useCase);
+        assertUsingAllMaskerPlayerChannels();
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -632,13 +637,11 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingUsesAllTargetPlayerChan
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
-    run(initializingTest);
-    assertUsingAllMaskerPlayerChannels();
+    assertUsesAllMaskerPlayerChannels(initializingTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingUsesAllMaskerPlayerChannels) {
-    run(initializingTestWithEyeTracking);
-    assertUsingAllMaskerPlayerChannels();
+    assertUsesAllMaskerPlayerChannels(initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
