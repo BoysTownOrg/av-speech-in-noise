@@ -11,6 +11,10 @@
 
 namespace av_speech_in_noise::tests {
 namespace {
+void insert(LogString &log, const std::string &s) {
+    log.insert(s);
+}
+
 class TestMethodStub : public TestMethod {
     LogString log_{};
     std::string current_{};
@@ -37,7 +41,7 @@ class TestMethodStub : public TestMethod {
     auto complete() -> bool override { return complete_; }
 
     auto nextTarget() -> std::string override {
-        log_.insert("next ");
+        insert(log_, "next ");
         current_ = currentWhenNext_;
         return next_;
     }
@@ -51,12 +55,12 @@ class TestMethodStub : public TestMethod {
     auto snr_dB() -> int override { return snr_dB_; }
 
     void submitCorrectResponse() override {
-        log_.insert("submitCorrectResponse ");
+        insert(log_, "submitCorrectResponse ");
         submittedCorrectResponse_ = true;
     }
 
     void submitIncorrectResponse() override {
-        log_.insert("submitIncorrectResponse ");
+        insert(log_, "submitIncorrectResponse ");
         submittedIncorrectResponse_ = true;
     }
 
@@ -67,20 +71,20 @@ class TestMethodStub : public TestMethod {
     }
 
     void writeLastCoordinateResponse(OutputFile *) override {
-        log_.insert("writeLastCoordinateResponse ");
+        insert(log_, "writeLastCoordinateResponse ");
     }
 
     void writeLastCorrectResponse(OutputFile *) override {
-        log_.insert("writeLastCorrectResponse ");
+        insert(log_, "writeLastCorrectResponse ");
     }
 
     void writeLastIncorrectResponse(OutputFile *) override {
-        log_.insert("writeLastIncorrectResponse ");
+        insert(log_, "writeLastIncorrectResponse ");
     }
 
     void submitResponse(
         const coordinate_response_measure::Response &) override {
-        log_.insert("submitResponse ");
+        insert(log_, "submitResponse ");
     }
 
     auto log() const -> auto & { return log_; }
@@ -100,8 +104,15 @@ class TargetWritingUseCase : public virtual UseCase {
 
 class SubmittingResponse : public virtual UseCase {};
 
+auto identity(const Test &t) -> auto & {
+    return t.identity;
+}
+
+void setMaskerFilePath(Test &t, std::string s) {
+    t.maskerFilePath = std::move(s);
+}
+
 class InitializingTest : public UseCase {
-    TestIdentity information{};
     Test test{};
     TestMethod *method;
 
@@ -112,10 +123,10 @@ class InitializingTest : public UseCase {
         m.initialize(method, test);
     }
 
-    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
+    [[nodiscard]] auto testIdentity() const -> auto & { return identity(test); }
 
     void setMaskerFilePath(std::string s) {
-        test.maskerFilePath = std::move(s);
+        tests::setMaskerFilePath(test, std::move(s));
     }
 
     void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
@@ -142,10 +153,10 @@ class InitializingTestWithSingleSpeaker : public UseCase {
         m.initializeWithSingleSpeaker(method, test);
     }
 
-    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
+    [[nodiscard]] auto testIdentity() const -> auto & { return identity(test); }
 
     void setMaskerFilePath(std::string s) {
-        test.maskerFilePath = std::move(s);
+        tests::setMaskerFilePath(test, std::move(s));
     }
 
     void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
@@ -172,10 +183,10 @@ class InitializingTestWithDelayedMasker : public UseCase {
         m.initializeWithDelayedMasker(method, test);
     }
 
-    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
+    [[nodiscard]] auto testIdentity() const -> auto & { return identity(test); }
 
     void setMaskerFilePath(std::string s) {
-        test.maskerFilePath = std::move(s);
+        tests::setMaskerFilePath(test, std::move(s));
     }
 
     void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
@@ -202,10 +213,10 @@ class InitializingTestWithEyeTracking : public UseCase {
         m.initializeWithEyeTracking(method, test);
     }
 
-    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
+    [[nodiscard]] auto testIdentity() const -> auto & { return identity(test); }
 
     void setMaskerFilePath(std::string s) {
-        test.maskerFilePath = std::move(s);
+        tests::setMaskerFilePath(test, std::move(s));
     }
 
     void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
