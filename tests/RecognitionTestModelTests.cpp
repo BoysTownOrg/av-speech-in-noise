@@ -91,7 +91,6 @@ class TestMethodStub : public TestMethod {
 class UseCase {
   public:
     virtual ~UseCase() = default;
-    virtual void run(ModelImpl &) {}
     virtual void run(RecognitionTestModelImpl &) = 0;
 };
 
@@ -147,7 +146,6 @@ class InitializingTest : public UseCase {
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
-    TestIdentity information{};
     Test test{};
     TestMethod *method;
 
@@ -158,26 +156,9 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     void run(RecognitionTestModelImpl &m) override {
         m.initializeWithSingleSpeaker(method, test);
     }
-
-    [[nodiscard]] auto testIdentity() const -> auto & { return identity(test); }
-
-    void setMaskerFilePath(std::string s) {
-        tests::setMaskerFilePath(test, std::move(s));
-    }
-
-    void setMaskerLevel_dB_SPL(int x) { tests::setMaskerLevel_dB_SPL(test, x); }
-
-    void setTestingFullScaleLevel_dB_SPL(int x) {
-        tests::setTestingFullScaleLevel_dB_SPL(test, x);
-    }
-
-    void setAudioVisual() { tests::setAudioVisual(test); }
-
-    void setAuditoryOnly() { tests::setAuditoryOnly(test); }
 };
 
 class InitializingTestWithDelayedMasker : public UseCase {
-    TestIdentity information{};
     Test test{};
     TestMethod *method;
 
@@ -188,26 +169,9 @@ class InitializingTestWithDelayedMasker : public UseCase {
     void run(RecognitionTestModelImpl &m) override {
         m.initializeWithDelayedMasker(method, test);
     }
-
-    [[nodiscard]] auto testIdentity() const -> auto & { return identity(test); }
-
-    void setMaskerFilePath(std::string s) {
-        tests::setMaskerFilePath(test, std::move(s));
-    }
-
-    void setMaskerLevel_dB_SPL(int x) { tests::setMaskerLevel_dB_SPL(test, x); }
-
-    void setTestingFullScaleLevel_dB_SPL(int x) {
-        tests::setTestingFullScaleLevel_dB_SPL(test, x);
-    }
-
-    void setAudioVisual() { tests::setAudioVisual(test); }
-
-    void setAuditoryOnly() { tests::setAuditoryOnly(test); }
 };
 
 class InitializingTestWithEyeTracking : public UseCase {
-    TestIdentity information{};
     Test test{};
     TestMethod *method;
 
@@ -218,22 +182,6 @@ class InitializingTestWithEyeTracking : public UseCase {
     void run(RecognitionTestModelImpl &m) override {
         m.initializeWithEyeTracking(method, test);
     }
-
-    [[nodiscard]] auto testIdentity() const -> auto & { return identity(test); }
-
-    void setMaskerFilePath(std::string s) {
-        tests::setMaskerFilePath(test, std::move(s));
-    }
-
-    void setMaskerLevel_dB_SPL(int x) { tests::setMaskerLevel_dB_SPL(test, x); }
-
-    void setTestingFullScaleLevel_dB_SPL(int x) {
-        tests::setTestingFullScaleLevel_dB_SPL(test, x);
-    }
-
-    void setAudioVisual() { tests::setAudioVisual(test); }
-
-    void setAuditoryOnly() { tests::setAuditoryOnly(test); }
 };
 
 class AudioDeviceUseCase : public virtual UseCase {
