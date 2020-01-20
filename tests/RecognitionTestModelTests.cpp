@@ -11,9 +11,7 @@
 
 namespace av_speech_in_noise::tests {
 namespace {
-void insert(LogString &log, const std::string &s) {
-    log.insert(s);
-}
+void insert(LogString &log, const std::string &s) { log.insert(s); }
 
 class TestMethodStub : public TestMethod {
     LogString log_{};
@@ -104,13 +102,21 @@ class TargetWritingUseCase : public virtual UseCase {
 
 class SubmittingResponse : public virtual UseCase {};
 
-auto identity(const Test &t) -> auto & {
-    return t.identity;
+auto identity(const Test &test) -> auto & { return test.identity; }
+
+void setMaskerFilePath(Test &test, std::string s) {
+    test.maskerFilePath = std::move(s);
 }
 
-void setMaskerFilePath(Test &t, std::string s) {
-    t.maskerFilePath = std::move(s);
+void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel_dB_SPL = x; }
+
+void setTestingFullScaleLevel_dB_SPL(Test &test, int x) {
+    test.fullScaleLevel_dB_SPL = x;
 }
+
+void setAudioVisual(Test &test) { test.condition = Condition::audioVisual; }
+
+void setAuditoryOnly(Test &test) { test.condition = Condition::auditoryOnly; }
 
 class InitializingTest : public UseCase {
     Test test{};
@@ -129,15 +135,15 @@ class InitializingTest : public UseCase {
         tests::setMaskerFilePath(test, std::move(s));
     }
 
-    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
+    void setMaskerLevel_dB_SPL(int x) { tests::setMaskerLevel_dB_SPL(test, x); }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
-        test.fullScaleLevel_dB_SPL = x;
+        tests::setTestingFullScaleLevel_dB_SPL(test, x);
     }
 
-    void setAudioVisual() { test.condition = Condition::audioVisual; }
+    void setAudioVisual() { tests::setAudioVisual(test); }
 
-    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
+    void setAuditoryOnly() { tests::setAuditoryOnly(test); }
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
@@ -159,15 +165,15 @@ class InitializingTestWithSingleSpeaker : public UseCase {
         tests::setMaskerFilePath(test, std::move(s));
     }
 
-    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
+    void setMaskerLevel_dB_SPL(int x) { tests::setMaskerLevel_dB_SPL(test, x); }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
-        test.fullScaleLevel_dB_SPL = x;
+        tests::setTestingFullScaleLevel_dB_SPL(test, x);
     }
 
-    void setAudioVisual() { test.condition = Condition::audioVisual; }
+    void setAudioVisual() { tests::setAudioVisual(test); }
 
-    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
+    void setAuditoryOnly() { tests::setAuditoryOnly(test); }
 };
 
 class InitializingTestWithDelayedMasker : public UseCase {
@@ -189,15 +195,15 @@ class InitializingTestWithDelayedMasker : public UseCase {
         tests::setMaskerFilePath(test, std::move(s));
     }
 
-    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
+    void setMaskerLevel_dB_SPL(int x) { tests::setMaskerLevel_dB_SPL(test, x); }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
-        test.fullScaleLevel_dB_SPL = x;
+        tests::setTestingFullScaleLevel_dB_SPL(test, x);
     }
 
-    void setAudioVisual() { test.condition = Condition::audioVisual; }
+    void setAudioVisual() { tests::setAudioVisual(test); }
 
-    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
+    void setAuditoryOnly() { tests::setAuditoryOnly(test); }
 };
 
 class InitializingTestWithEyeTracking : public UseCase {
@@ -219,15 +225,15 @@ class InitializingTestWithEyeTracking : public UseCase {
         tests::setMaskerFilePath(test, std::move(s));
     }
 
-    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
+    void setMaskerLevel_dB_SPL(int x) { tests::setMaskerLevel_dB_SPL(test, x); }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
-        test.fullScaleLevel_dB_SPL = x;
+        tests::setTestingFullScaleLevel_dB_SPL(test, x);
     }
 
-    void setAudioVisual() { test.condition = Condition::audioVisual; }
+    void setAudioVisual() { tests::setAudioVisual(test); }
 
-    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
+    void setAuditoryOnly() { tests::setAuditoryOnly(test); }
 };
 
 class AudioDeviceUseCase : public virtual UseCase {
@@ -355,7 +361,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
         &testMethod};
-    InitializingTestWithEyeTracking initializingTestWithEyeTracking{&testMethod};
+    InitializingTestWithEyeTracking initializingTestWithEyeTracking{
+        &testMethod};
     PlayingTrial playingTrial;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectResponse submittingCorrectResponse;
@@ -660,7 +667,8 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithEyeTrackingClosesOutputFileOpensAndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(initializingTestWithEyeTracking);
+    assertClosesOutputFileOpensAndWritesTestInOrder(
+        initializingTestWithEyeTracking);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
