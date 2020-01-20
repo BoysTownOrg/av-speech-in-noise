@@ -136,10 +136,6 @@ class InitializingTest : public UseCase {
         tests::setMaskerFilePath(test, std::move(s));
     }
 
-    void setTestingFullScaleLevel_dB_SPL(int x) {
-        tests::setTestingFullScaleLevel_dB_SPL(test, x);
-    }
-
     void setAudioVisual() { tests::setAudioVisual(test); }
 
     void setAuditoryOnly() { tests::setAuditoryOnly(test); }
@@ -436,7 +432,6 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
-        initializingTest.setTestingFullScaleLevel_dB_SPL(x);
         tests::setTestingFullScaleLevel_dB_SPL(test, x);
     }
 
