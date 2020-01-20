@@ -117,7 +117,12 @@ void setAudioVisual(Test &test) { test.condition = Condition::audioVisual; }
 
 void setAuditoryOnly(Test &test) { test.condition = Condition::auditoryOnly; }
 
-class InitializingTest : public UseCase {
+class InitializingTestUseCase : public virtual UseCase {
+public:
+    virtual void run(RecognitionTestModelImpl &, const Test &) = 0;
+};
+
+class InitializingTest : public InitializingTestUseCase {
     Test test{};
     TestMethod *method;
 
@@ -128,7 +133,7 @@ class InitializingTest : public UseCase {
         m.initialize(method, test);
     }
 
-    void run(RecognitionTestModelImpl &m, const Test &test_) {
+    void run(RecognitionTestModelImpl &m, const Test &test_) override {
         m.initialize(method, test_);
     }
 
@@ -161,7 +166,7 @@ class InitializingTestWithDelayedMasker : public UseCase {
     }
 };
 
-class InitializingTestWithEyeTracking : public UseCase {
+class InitializingTestWithEyeTracking : public InitializingTestUseCase {
     TestMethod *method;
 
   public:
@@ -170,6 +175,10 @@ class InitializingTestWithEyeTracking : public UseCase {
 
     void run(RecognitionTestModelImpl &m) override {
         m.initializeWithEyeTracking(method, {});
+    }
+
+    void run(RecognitionTestModelImpl &m, const Test &test) override {
+        m.initializeWithEyeTracking(method, test);
     }
 };
 
@@ -501,8 +510,8 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertTestComplete() { assertTrue(testComplete()); }
 
-    void run(InitializingTest &initializingTest_) {
-        initializingTest_.run(model, test);
+    void run(InitializingTestUseCase &useCase) {
+        useCase.run(model, test);
     }
 
     void assertSetsTargetLevel(UseCase &useCase) {
@@ -698,6 +707,13 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestOpensNewOutputFilePassingTestInformation) {
     run(initializingTest);
+    assertEqual(
+        outputFile.openNewFileParameters(), &identity(test));
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    initializeTestWithEyeTrackingOpensNewOutputFilePassingTestInformation) {
+    run(initializingTestWithEyeTracking);
     assertEqual(
         outputFile.openNewFileParameters(), &identity(test));
 }
