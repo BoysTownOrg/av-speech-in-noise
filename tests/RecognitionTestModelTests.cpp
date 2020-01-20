@@ -136,8 +136,6 @@ class InitializingTest : public UseCase {
         tests::setMaskerFilePath(test, std::move(s));
     }
 
-    void setMaskerLevel_dB_SPL(int x) { tests::setMaskerLevel_dB_SPL(test, x); }
-
     void setTestingFullScaleLevel_dB_SPL(int x) {
         tests::setTestingFullScaleLevel_dB_SPL(test, x);
     }
@@ -315,6 +313,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    av_speech_in_noise::Test test;
 
     RecognitionTestModelTests() { model.subscribe(&listener); }
 
@@ -433,11 +432,12 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void setMaskerLevel_dB_SPL(int x) {
-        initializingTest.setMaskerLevel_dB_SPL(x);
+        tests::setMaskerLevel_dB_SPL(test, x);
     }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
         initializingTest.setTestingFullScaleLevel_dB_SPL(x);
+        tests::setTestingFullScaleLevel_dB_SPL(test, x);
     }
 
     void setMaskerRms(double x) { maskerPlayer.setRms(x); }
@@ -464,7 +464,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void setMaskerFilePath(std::string s) {
-        initializingTest.setMaskerFilePath(std::move(s));
+        initializingTest.setMaskerFilePath(s);
+        tests::setMaskerFilePath(test, std::move(s));
     }
 
     void assertThrowsRequestFailureWhenInvalidAudioDevice(
@@ -508,6 +509,10 @@ class RecognitionTestModelTests : public ::testing::Test {
     auto testComplete() -> bool { return model.testComplete(); }
 
     void assertTestComplete() { assertTrue(testComplete()); }
+
+    void run(InitializingTest &initializingTest_) {
+        initializingTest_.run(model, test);
+    }
 
     void assertSetsTargetLevel(UseCase &useCase) {
         setMaskerLevel_dB_SPL(3);
@@ -673,8 +678,7 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestOpensNewOutputFilePassingTestInformation) {
-    av_speech_in_noise::Test test;
-    initializingTest.run(model, test);
+    run(initializingTest);
     assertEqual(
         outputFile.openNewFileParameters(), &identity(test));
 }
@@ -889,7 +893,7 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
-    initializingTest.setAudioVisual();
+    setAudioVisual(test);
     run(initializingTest);
     run(playingTrial);
     assertTrue(targetPlayerVideoShown());
