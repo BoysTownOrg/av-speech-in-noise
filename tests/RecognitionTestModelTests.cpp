@@ -619,6 +619,11 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
     assertTrue(targetPlayer.usingAllChannels());
 }
 
+RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingUsesAllTargetPlayerChannels) {
+    run(initializingTestWithEyeTracking);
+    assertTrue(targetPlayer.usingAllChannels());
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     run(initializingTest);
     assertUsingAllMaskerPlayerChannels();

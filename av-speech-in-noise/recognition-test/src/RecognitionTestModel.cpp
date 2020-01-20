@@ -92,6 +92,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
 void RecognitionTestModelImpl::initializeWithEyeTracking(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
+    targetPlayer->useAllChannels();
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {
