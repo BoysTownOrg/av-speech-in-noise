@@ -36,6 +36,10 @@ static auto auditoryOnly(const Condition &c) -> bool {
     return c == Condition::auditoryOnly;
 }
 
+static auto audioVisual(const Condition &c) -> bool {
+    return c == Condition::audioVisual;
+}
+
 void RecognitionTestModelImpl::subscribe(Model::EventListener *listener) {
     listener_ = listener;
 }
@@ -262,7 +266,7 @@ void RecognitionTestModelImpl::startTrial() {
     if (eyeTracking)
         eyeTracker->allocateRecordingTimeSeconds(
             trialDurationSeconds(targetPlayer, maskerPlayer));
-    if (!auditoryOnly(condition))
+    if (audioVisual(condition))
         targetPlayer->showVideo();
     maskerPlayer->fadeIn();
 }
