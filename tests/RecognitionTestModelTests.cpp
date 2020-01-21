@@ -187,13 +187,7 @@ class AudioDeviceUseCase : public virtual UseCase {
     virtual void setAudioDevice(std::string) = 0;
 };
 
-class ConditionUseCase : public virtual UseCase {
-  public:
-    virtual void setAuditoryOnly() = 0;
-    virtual void setAudioVisual() = 0;
-};
-
-class PlayingCalibration : public AudioDeviceUseCase, public ConditionUseCase {
+class PlayingCalibration : public AudioDeviceUseCase {
     Calibration calibration{};
 
   public:
@@ -213,11 +207,11 @@ class PlayingCalibration : public AudioDeviceUseCase, public ConditionUseCase {
         calibration.fullScaleLevel_dB_SPL = x;
     }
 
-    void setAudioVisual() override {
+    void setAudioVisual() {
         calibration.condition = Condition::audioVisual;
     }
 
-    void setAuditoryOnly() override {
+    void setAuditoryOnly() {
         calibration.condition = Condition::auditoryOnly;
     }
 };
@@ -354,13 +348,13 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     auto targetPlayerVideoShown() -> bool { return targetPlayer.videoShown(); }
 
-    void assertTargetVideoHiddenWhenAuditoryOnly(ConditionUseCase &useCase) {
+    void assertTargetVideoHiddenWhenAuditoryOnly(PlayingCalibration &useCase) {
         useCase.setAuditoryOnly();
         run(useCase);
         assertTargetVideoOnlyHidden();
     }
 
-    void assertTargetVideoShownWhenAudioVisual(ConditionUseCase &useCase) {
+    void assertTargetVideoShownWhenAudioVisual(PlayingCalibration &useCase) {
         useCase.setAudioVisual();
         run(useCase);
         assertTargetVideoOnlyShown();
