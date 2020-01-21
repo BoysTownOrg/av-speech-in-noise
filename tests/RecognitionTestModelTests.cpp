@@ -207,13 +207,9 @@ class PlayingCalibration : public AudioDeviceUseCase {
         calibration.fullScaleLevel_dB_SPL = x;
     }
 
-    void setAudioVisual() {
-        calibration.condition = Condition::audioVisual;
-    }
+    void setAudioVisual() { calibration.condition = Condition::audioVisual; }
 
-    void setAuditoryOnly() {
-        calibration.condition = Condition::auditoryOnly;
-    }
+    void setAuditoryOnly() { calibration.condition = Condition::auditoryOnly; }
 };
 
 class PlayingTrial : public AudioDeviceUseCase {
@@ -648,6 +644,15 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(3 + 2 * 4., eyeTracker.recordingTimeAllocatedSeconds());
     }
+
+    void
+    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
+        UseCase &useCase) {
+        run(initializingTestWithEyeTracking);
+        run(useCase);
+        run(playingTrial);
+        assertFalse(eyeTracker.recordingTimeAllocated());
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -781,18 +786,14 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     playTrialForDefaultTestFollowingTestWithEyeTrackingDoesNotAllocateTrialDurationRecordingForEyeTracking) {
-    run(initializingTestWithEyeTracking);
-    run(initializingDefaultTest);
-    run(playingTrial);
-    assertFalse(eyeTracker.recordingTimeAllocated());
+    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
+        initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     playTrialForTestWithSingleSpeakerFollowingTestWithEyeTrackingDoesNotAllocateTrialDurationRecordingForEyeTracking) {
-    run(initializingTestWithEyeTracking);
-    run(initializingTestWithSingleSpeaker);
-    run(playingTrial);
-    assertFalse(eyeTracker.recordingTimeAllocated());
+    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
+        initializingTestWithSingleSpeaker);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToTargetPlayer) {
