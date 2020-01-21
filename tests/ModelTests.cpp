@@ -79,28 +79,30 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool initializedWithDelayedMasker_{};
 
   public:
-    auto initializedWithSingleSpeaker() const {
+    [[nodiscard]] auto initializedWithSingleSpeaker() const -> bool {
         return initializedWithSingleSpeaker_;
     }
 
-    auto initializedWithDelayedMasker() const {
+    [[nodiscard]] auto initializedWithDelayedMasker() const -> bool {
         return initializedWithDelayedMasker_;
     }
 
-    void initialize(TestMethod *tm, const Test &ct) override {
-        testMethod_ = tm;
-        test_ = &ct;
+    void initialize(TestMethod *method, const Test &test) override {
+        testMethod_ = method;
+        test_ = &test;
     }
 
-    void initializeWithSingleSpeaker(TestMethod *tm, const Test &ct) override {
-        testMethod_ = tm;
-        test_ = &ct;
+    void initializeWithSingleSpeaker(
+        TestMethod *method, const Test &test) override {
+        testMethod_ = method;
+        test_ = &test;
         initializedWithSingleSpeaker_ = true;
     }
 
-    void initializeWithDelayedMasker(TestMethod *tm, const Test &ct) override {
-        testMethod_ = tm;
-        test_ = &ct;
+    void initializeWithDelayedMasker(
+        TestMethod *method, const Test &test) override {
+        testMethod_ = method;
+        test_ = &test;
         initializedWithDelayedMasker_ = true;
     }
 
@@ -161,12 +163,12 @@ class InitializingTestUseCase {
 
 class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
   public:
-    virtual const FixedLevelTest &fixedLevelTest() = 0;
+    virtual auto fixedLevelTest() -> const FixedLevelTest & = 0;
 };
 
 class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
   public:
-    virtual const AdaptiveTest &adaptiveTest() = 0;
+    virtual auto adaptiveTest() -> const AdaptiveTest & = 0;
 };
 
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
@@ -179,11 +181,11 @@ class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
 
     void run(ModelImpl &model) override { model.initializeTest(test_); }
 
-    const Test &test() override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
-    const AdaptiveTest &adaptiveTest() override { return test_; }
+    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class InitializingAdaptiveTestWithSingleSpeaker
@@ -200,11 +202,11 @@ class InitializingAdaptiveTestWithSingleSpeaker
         model.initializeTestWithSingleSpeaker(test_);
     }
 
-    const Test &test() override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
-    const AdaptiveTest &adaptiveTest() override { return test_; }
+    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class InitializingAdaptiveTestWithDelayedMasker
@@ -221,11 +223,11 @@ class InitializingAdaptiveTestWithDelayedMasker
         model.initializeTestWithDelayedMasker(test_);
     }
 
-    const Test &test() override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
-    const AdaptiveTest &adaptiveTest() override { return test_; }
+    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
@@ -238,9 +240,9 @@ class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
 
     void run(ModelImpl &model) override { model.initializeTest(test_); }
 
-    const Test &test() override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
-    const FixedLevelTest &fixedLevelTest() override { return test_; }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
@@ -259,32 +261,30 @@ class InitializingFixedLevelSilentIntervalsTest
         model.initializeSilentIntervalsTest(test_);
     }
 
-    const Test &test() override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 
-    const FixedLevelTest &fixedLevelTest() override { return test_; }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 };
 
-class InitializingFixedLevelAllStimuliTest
-    : public InitializingFixedLevelTest {
+class InitializingFixedLevelAllStimuliTest : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelAllStimuliTest(
-        FixedLevelMethodStub *method)
+    explicit InitializingFixedLevelAllStimuliTest(FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override {
         model.initializeAllStimuliTest(test_);
     }
 
-    const Test &test() override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 
-    const FixedLevelTest &fixedLevelTest() override { return test_; }
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 };
 
 class ModelTests : public ::testing::Test {
@@ -311,8 +311,8 @@ class ModelTests : public ::testing::Test {
         &fixedLevelMethod};
     InitializingFixedLevelSilentIntervalsTest
         initializingFixedLevelSilentIntervalsTest{&fixedLevelMethod};
-    InitializingFixedLevelAllStimuliTest
-        initializingFixedLevelAllStimuliTest{&fixedLevelMethod};
+    InitializingFixedLevelAllStimuliTest initializingFixedLevelAllStimuliTest{
+        &fixedLevelMethod};
 
     void initializeFixedLevelTest() { model.initializeTest(fixedLevelTest); }
 
@@ -330,7 +330,7 @@ class ModelTests : public ::testing::Test {
         model.initializeTestWithSingleSpeaker(adaptiveTest);
     }
 
-    bool testComplete() { return model.testComplete(); }
+    auto testComplete() -> bool { return model.testComplete(); }
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -370,8 +370,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(initializingFixedLevelTest);
 }
 
-MODEL_TEST(
-    initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
+MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelSilentIntervalsTest);
 }
@@ -387,8 +386,7 @@ MODEL_TEST(
         initializingFixedLevelSilentIntervalsTest, silentIntervals);
 }
 
-MODEL_TEST(
-    initializeFixedLevelAllStimuliTestInitializesWithAllStimuli) {
+MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesWithAllStimuli) {
     assertInitializesFixedLevelTestWithTargetList(
         initializingFixedLevelAllStimuliTest, allStimuli);
 }
@@ -401,7 +399,8 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
 MODEL_TEST(
     initializeFixedLevelSilentIntervalsTestInitializesWithEmptyTargetListTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelSilentIntervalsTest, emptyTargetListTestConcluder);
+        initializingFixedLevelSilentIntervalsTest,
+        emptyTargetListTestConcluder);
 }
 
 MODEL_TEST(
@@ -428,7 +427,8 @@ MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTest);
 }
 
-MODEL_TEST(initializeFixedLevelSilentIntervalsTestTargetsInitializesInternalModel) {
+MODEL_TEST(
+    initializeFixedLevelSilentIntervalsTestTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelSilentIntervalsTest);
 }
 
