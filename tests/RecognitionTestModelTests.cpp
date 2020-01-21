@@ -317,7 +317,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         &outputFile, &randomizer, &eyeTracker};
     TestMethodStub testMethod;
     PlayingCalibration playingCalibration{};
-    InitializingTest initializingTest{&testMethod};
+    InitializingTest initializingDefaultTest{&testMethod};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
@@ -369,7 +369,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertFalse(targetPlayerVideoHidden());
     }
 
-    void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
+    void assertClosesOutputFile_OpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase);
         assertOutputFileLog("close openNewFile writeTest ");
     }
@@ -537,7 +537,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertSetsTargetLevel(UseCase &useCase) {
         setMaskerLevel_dB_SPL(3);
         setTestingFullScaleLevel_dB_SPL(4);
-        run(initializingTest);
+        run(initializingDefaultTest);
         setMaskerRms(5);
         setSnr_dB(2);
         run(useCase);
@@ -554,7 +554,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
         testMethod.setNextTarget("a");
-        run(initializingTest);
+        run(initializingDefaultTest);
         testMethod.setComplete();
         testMethod.setNextTarget("b");
         run(useCase);
@@ -569,7 +569,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
         UseCase &useCase) {
-        run(initializingTest);
+        run(initializingDefaultTest);
         testMethod.setCurrent("a");
         testMethod.setCurrentWhenNext("b");
         run(useCase);
@@ -578,7 +578,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertTestMethodLogContains(
         UseCase &useCase, const std::string &what) {
-        run(initializingTest);
+        run(initializingDefaultTest);
         run(useCase);
         assertTrue(testMethod.log().contains(what));
     }
@@ -670,30 +670,30 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetVideoWhenAudioVisual) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestClosesOutputFileOpensAndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(initializingTest);
+    initializeDefaultTestClosesOutputFile_OpensAndWritesTestInOrder) {
+    assertClosesOutputFile_OpensAndWritesTestInOrder(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithSingleSpeakerClosesOutputFileOpensAndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(
+    initializeTestWithSingleSpeakerClosesOutputFile_OpensAndWritesTestInOrder) {
+    assertClosesOutputFile_OpensAndWritesTestInOrder(
         initializingTestWithSingleSpeaker);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithDelayedMaskerClosesOutputFileOpensAndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(
+    initializeTestWithDelayedMaskerClosesOutputFile_OpensAndWritesTestInOrder) {
+    assertClosesOutputFile_OpensAndWritesTestInOrder(
         initializingTestWithDelayedMasker);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestWithEyeTrackingClosesOutputFileOpensAndWritesTestInOrder) {
-    assertClosesOutputFileOpensAndWritesTestInOrder(
+    initializeTestWithEyeTrackingClosesOutputFile_OpensAndWritesTestInOrder) {
+    assertClosesOutputFile_OpensAndWritesTestInOrder(
         initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
-    assertUsesAllTargetPlayerChannels(initializingTest);
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestUsesAllTargetPlayerChannels) {
+    assertUsesAllTargetPlayerChannels(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -701,8 +701,8 @@ RECOGNITION_TEST_MODEL_TEST(
     assertUsesAllTargetPlayerChannels(initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
-    assertUsesAllMaskerPlayerChannels(initializingTest);
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestUsesAllMaskerPlayerChannels) {
+    assertUsesAllMaskerPlayerChannels(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -710,8 +710,8 @@ RECOGNITION_TEST_MODEL_TEST(
     assertUsesAllMaskerPlayerChannels(initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
-    assertMaskerPlayerChannelDelaysCleared(initializingTest);
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestClearsAllMaskerPlayerChannelDelays) {
+    assertMaskerPlayerChannelDelaysCleared(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -758,8 +758,8 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestOpensNewOutputFilePassingTestInformation) {
-    assertPassesTestIdentityToOutputFile(initializingTest);
+    initializeDefaultTestOpensNewOutputFilePassingTestInformation) {
+    assertPassesTestIdentityToOutputFile(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -774,7 +774,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialForTestDoesNotAllocateTrialDurationRecordingForEyeTracking) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     run(playingTrial);
     assertFalse(eyeTracker.recordingTimeAllocated());
 }
@@ -806,8 +806,8 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTarget) {
     assertTargetPlayerPlayed();
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestPassesNextTargetToTargetPlayer) {
-    assertPassesNextTargetToPlayer(initializingTest);
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestPassesNextTargetToTargetPlayer) {
+    assertPassesNextTargetToPlayer(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -815,8 +815,8 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesNextTargetToPlayer(initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestResetsTrialNumber) {
-    assertYieldsTrialNumber(initializingTest, 1);
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestResetsTrialNumber) {
+    assertYieldsTrialNumber(initializingDefaultTest, 1);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingResetsTrialNumber) {
@@ -824,46 +824,46 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingResetsTrialNumber) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseIncrementsTrialNumber) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertYieldsTrialNumber(submittingCoordinateResponse, 2);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submittingCorrectResponseIncrementsTrialNumber) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertYieldsTrialNumber(submittingCorrectResponse, 2);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submittingIncorrectResponseIncrementsTrialNumber) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertYieldsTrialNumber(submittingIncorrectResponse, 2);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submittingFreeResponseIncrementsTrialNumber) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertYieldsTrialNumber(submittingFreeResponse, 2);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     submittingCoordinateResponsePassesNextTargetToTargetPlayer) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertPassesNextTargetToPlayer(submittingCoordinateResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     submittingCorrectResponsePassesNextTargetToTargetPlayer) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertPassesNextTargetToPlayer(submittingCorrectResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     submittingIncorrectResponsePassesNextTargetToTargetPlayer) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertPassesNextTargetToPlayer(submittingIncorrectResponse);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     submittingFreeResponsePassesNextTargetToTargetPlayer) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertPassesNextTargetToPlayer(submittingFreeResponse);
 }
 
@@ -873,8 +873,8 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
     assertTargetFilePathEquals("a");
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
-    assertPassesMaskerFilePathToMaskerPlayer(initializingTest);
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestPassesMaskerFilePathToMaskerPlayer) {
+    assertPassesMaskerFilePathToMaskerPlayer(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -883,8 +883,8 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestSubscribesToTargetPlaybackCompletionNotification) {
-    assertTargetPlayerPlaybackCompletionSubscribed(initializingTest);
+    initializeDefaultTestSubscribesToTargetPlaybackCompletionNotification) {
+    assertTargetPlayerPlaybackCompletionSubscribed(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -915,8 +915,9 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestSeeksToRandomMaskerPositionWithinTrialDuration) {
-    assertSeeksToRandomMaskerPositionWithinTrialDuration(initializingTest);
+    initializeDefaultTestSeeksToRandomMaskerPositionWithinTrialDuration) {
+    assertSeeksToRandomMaskerPositionWithinTrialDuration(
+        initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -949,8 +950,8 @@ RECOGNITION_TEST_MODEL_TEST(
         submittingFreeResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestSeeksToRandomMaskerPosition) {
-    assertMaskerPlayerSeekedToRandomTime(initializingTest);
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSeeksToRandomMaskerPosition) {
+    assertMaskerPlayerSeekedToRandomTime(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -971,20 +972,20 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestSetsInitialMaskerPlayerLevel) {
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsInitialMaskerPlayerLevel) {
     setMaskerLevel_dB_SPL(1);
     setTestingFullScaleLevel_dB_SPL(2);
     setMaskerRms(3);
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertEqual(1 - 2 - dB(3), maskerPlayer.level_dB());
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestSetsTargetPlayerLevel) {
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsTargetPlayerLevel) {
     setSnr_dB(2);
     setMaskerLevel_dB_SPL(3);
     setTestingFullScaleLevel_dB_SPL(4);
     setMaskerRms(5);
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
 }
 
@@ -1014,7 +1015,7 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
     setAudioVisual(test);
-    run(initializingTest);
+    run(initializingDefaultTest);
     run(playingTrial);
     assertTrue(targetPlayerVideoShown());
 }
@@ -1026,13 +1027,13 @@ RECOGNITION_TEST_MODEL_TEST(maskerFadeOutCompleteHidesTargetPlayer) {
 
 RECOGNITION_TEST_MODEL_TEST(startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
     setAuditoryOnly(test);
-    run(initializingTest);
+    run(initializingDefaultTest);
     run(playingTrial);
     assertTargetVideoNotShown();
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestHidesTargetPlayer) {
-    run(initializingTest);
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestHidesTargetPlayer) {
+    run(initializingDefaultTest);
     assertTargetVideoOnlyHidden();
 }
 
@@ -1067,10 +1068,10 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestThrowsRequestFailureIfFileFailsToOpen) {
+    initializeDefaultTestThrowsRequestFailureIfFileFailsToOpen) {
     outputFile.throwOnOpen();
     assertCallThrowsRequestFailure(
-        initializingTest, "Unable to open output file.");
+        initializingDefaultTest, "Unable to open output file.");
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1081,10 +1082,10 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
+    initializeDefaultTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
     setMaskerFilePath("a");
     maskerPlayer.throwInvalidAudioFileOnLoad();
-    assertCallThrowsRequestFailure(initializingTest, "unable to read a");
+    assertCallThrowsRequestFailure(initializingDefaultTest, "unable to read a");
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1120,8 +1121,8 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationDoesNotPlayIfTrialInProgress) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestThrowsRequestFailureIfTrialInProgress) {
-    assertThrowsRequestFailureWhenTrialInProgress(initializingTest);
+    initializeDefaultTestThrowsRequestFailureIfTrialInProgress) {
+    assertThrowsRequestFailureWhenTrialInProgress(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialThrowsRequestFailureIfTrialInProgress) {
@@ -1133,16 +1134,16 @@ RECOGNITION_TEST_MODEL_TEST(
     assertThrowsRequestFailureWhenTrialInProgress(playingCalibration);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadMaskerIfTrialInProgress) {
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestDoesNotLoadMaskerIfTrialInProgress) {
     setMaskerFilePath("a");
-    runIgnoringFailureWithTrialInProgress(initializingTest);
+    runIgnoringFailureWithTrialInProgress(initializingDefaultTest);
     assertEqual("", maskerPlayer.filePath());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress) {
+    initializeDefaultTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress) {
     setAuditoryOnly(test);
-    runIgnoringFailureWithTrialInProgress(initializingTest);
+    runIgnoringFailureWithTrialInProgress(initializingDefaultTest);
     assertTargetVideoNotHidden();
 }
 
@@ -1152,7 +1153,7 @@ RECOGNITION_TEST_MODEL_TEST(audioDevicesReturnsOutputAudioDeviceDescriptions) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(testCompleteWhenComplete) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertTestIncomplete();
     testMethod.setComplete();
     assertTestComplete();
@@ -1180,10 +1181,10 @@ RECOGNITION_TEST_MODEL_TEST(
         submittingIncorrectResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadNextTargetWhenComplete) {
+RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestDoesNotLoadNextTargetWhenComplete) {
     testMethod.setNextTarget("a");
     testMethod.setComplete();
-    run(initializingTest);
+    run(initializingDefaultTest);
     assertTargetFilePathEquals("");
 }
 
@@ -1251,13 +1252,13 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSubmitsCorrectResponse) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     run(submittingCorrectResponse);
     assertTrue(testMethod.submittedCorrectResponse());
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSubmitsIncorrectResponse) {
-    run(initializingTest);
+    run(initializingDefaultTest);
     run(submittingIncorrectResponse);
     assertTrue(testMethod.submittedIncorrectResponse());
 }
