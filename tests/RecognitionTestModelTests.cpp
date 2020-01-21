@@ -787,6 +787,14 @@ RECOGNITION_TEST_MODEL_TEST(
     assertFalse(eyeTracker.recordingTimeAllocated());
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    playTrialForTestWithSingleSpeakerFollowingTestWithEyeTrackingDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+    run(initializingTestWithEyeTracking);
+    run(initializingTestWithSingleSpeaker);
+    run(playingTrial);
+    assertFalse(eyeTracker.recordingTimeAllocated());
+}
+
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToTargetPlayer) {
     assertDevicePassedToTargetPlayer(playingTrial);
 }

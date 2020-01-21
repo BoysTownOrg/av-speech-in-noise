@@ -97,6 +97,7 @@ void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     useFirstChannelOnly(targetPlayer);
     maskerPlayer->useFirstChannelOnly();
     clearChannelDelays(maskerPlayer);
+    eyeTracking = false;
 }
 
 void RecognitionTestModelImpl::initializeWithDelayedMasker(
