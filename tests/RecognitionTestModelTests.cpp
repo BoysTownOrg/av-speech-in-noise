@@ -796,6 +796,12 @@ RECOGNITION_TEST_MODEL_TEST(
         initializingTestWithSingleSpeaker);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    playTrialForTestWithDelayedMaskerFollowingTestWithEyeTrackingDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+    assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
+        initializingTestWithDelayedMasker);
+}
+
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToTargetPlayer) {
     assertDevicePassedToTargetPlayer(playingTrial);
 }

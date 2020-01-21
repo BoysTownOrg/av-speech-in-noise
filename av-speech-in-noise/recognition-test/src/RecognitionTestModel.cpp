@@ -106,6 +106,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     useFirstChannelOnly(targetPlayer);
     useAllChannels(maskerPlayer);
     maskerPlayer->setChannelDelaySeconds(0, maskerChannelDelaySeconds);
+    eyeTracking = false;
 }
 
 void RecognitionTestModelImpl::initializeWithEyeTracking(
