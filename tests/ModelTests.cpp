@@ -194,8 +194,7 @@ void initializeSilentIntervalsTest(
     model.initializeSilentIntervalsTest(test);
 }
 
-void initializeEyeTrackingTest(
-    ModelImpl &model, const FixedLevelTest &test) {
+void initializeEyeTrackingTest(ModelImpl &model, const FixedLevelTest &test) {
     model.initializeEyeTrackingTest(test);
 }
 
@@ -432,7 +431,8 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
         initializingFixedLevelTest, infiniteTargetList);
 }
 
-MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesWithInfiniteTargetList) {
+MODEL_TEST(
+    initializeFixedLevelEyeTrackingTestInitializesWithInfiniteTargetList) {
     assertInitializesFixedLevelTestWithTargetList(
         initializingFixedLevelEyeTrackingTest, infiniteTargetList);
 }
@@ -451,6 +451,12 @@ MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesWithAllStimuli) {
 MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
         initializingFixedLevelTest, fixedTrialTestConcluder);
+}
+
+MODEL_TEST(
+    initializeFixedLevelEyeTrackingTestInitializesWithFixedTrialTestConcluder) {
+    assertInitializesFixedLevelTestWithTestConcluder(
+        initializingFixedLevelEyeTrackingTest, fixedTrialTestConcluder);
 }
 
 MODEL_TEST(

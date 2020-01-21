@@ -57,7 +57,7 @@ void ModelImpl::initializeTestWithDelayedMasker(const AdaptiveTest &p) {
 
 void ModelImpl::initializeEyeTrackingTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
-        p, infiniteTargetList, {});
+        p, infiniteTargetList, fixedTrialTestConcluder);
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {
