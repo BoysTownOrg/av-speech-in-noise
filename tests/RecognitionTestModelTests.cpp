@@ -303,7 +303,7 @@ class EyeTrackerStub : public EyeTracker {
         started_ = true;
     }
 
-    void stop() {
+    void stop() override {
         insert(log_, "stop ");
         stopped_ = true;
     }
