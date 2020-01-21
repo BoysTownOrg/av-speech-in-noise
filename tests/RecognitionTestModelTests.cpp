@@ -426,7 +426,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertSeeksToRandomMaskerPositionWithinTrialDuration(
         UseCase &useCase) {
         setTargetPlayerDurationSeconds(1);
-        maskerPlayer.setFadeTimeSeconds(2);
+        setMaskerPlayerFadeTimeSeconds(2);
         maskerPlayer.setDurationSeconds(3);
         run(useCase);
         assertEqual(0., randomizer.lowerFloatBound());
@@ -638,11 +638,15 @@ class RecognitionTestModelTests : public ::testing::Test {
         targetPlayer.setDurationSeconds(x);
     }
 
+    void setMaskerPlayerFadeTimeSeconds(double x) {
+        maskerPlayer.setFadeTimeSeconds(x);
+    }
+
     void assertAllocatesTrialDurationForEyeTracking(
         InitializingTestUseCase &initializing, UseCase &useCase) {
         run(initializing);
         setTargetPlayerDurationSeconds(3);
-        maskerPlayer.setFadeTimeSeconds(4);
+        setMaskerPlayerFadeTimeSeconds(4);
         run(useCase);
         assertEqual(3 + 2 * 4., eyeTracker.recordingTimeAllocatedSeconds());
     }
