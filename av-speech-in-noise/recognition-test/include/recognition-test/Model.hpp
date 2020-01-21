@@ -77,6 +77,7 @@ class ModelImpl : public Model {
     void initializeAllStimuliTest(const FixedLevelTest &) override;
     void initializeTestWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeTestWithDelayedMasker(const AdaptiveTest &) override;
+    void initializeEyeTrackingTest(const FixedLevelTest &);
     void playTrial(const AudioSettings &) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
     auto testComplete() -> bool override;

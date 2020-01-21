@@ -268,6 +268,27 @@ class InitializingFixedLevelSilentIntervalsTest
     auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
 };
 
+class InitializingFixedLevelEyeTrackingTest
+    : public InitializingFixedLevelTest {
+    FixedLevelTest test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelEyeTrackingTest(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        model.initializeEyeTrackingTest(test_);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+
+    auto fixedLevelTest() -> const FixedLevelTest & override { return test_; }
+};
+
 class InitializingFixedLevelAllStimuliTest : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
@@ -311,6 +332,8 @@ class ModelTests : public ::testing::Test {
         &fixedLevelMethod};
     InitializingFixedLevelSilentIntervalsTest
         initializingFixedLevelSilentIntervalsTest{&fixedLevelMethod};
+    InitializingFixedLevelEyeTrackingTest
+        initializingFixedLevelEyeTrackingTest{&fixedLevelMethod};
     InitializingFixedLevelAllStimuliTest initializingFixedLevelAllStimuliTest{
         &fixedLevelMethod};
 
@@ -373,6 +396,11 @@ MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
 MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelSilentIntervalsTest);
+}
+
+MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesFixedLevelMethod) {
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelEyeTrackingTest);
 }
 
 MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
