@@ -175,6 +175,11 @@ void initializeTest(ModelImpl &model, const AdaptiveTest &test) {
     model.initializeTest(test);
 }
 
+void initializeTestWithSingleSpeaker(
+    ModelImpl &model, const AdaptiveTest &test) {
+    model.initializeTestWithSingleSpeaker(test);
+}
+
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     AdaptiveTest test_;
     AdaptiveMethodStub *method;
@@ -205,11 +210,11 @@ class InitializingAdaptiveTestWithSingleSpeaker
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeTestWithSingleSpeaker(test_);
+        initializeTestWithSingleSpeaker(model, test_);
     }
 
     void run(ModelImpl &model, const AdaptiveTest &test) override {
-        model.initializeTestWithSingleSpeaker(test);
+        initializeTestWithSingleSpeaker(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
