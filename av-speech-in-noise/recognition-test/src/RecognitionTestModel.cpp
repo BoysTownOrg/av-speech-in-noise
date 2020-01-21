@@ -57,6 +57,10 @@ static auto fadeTimeSeconds(MaskerPlayer *player) -> double {
     return player->fadeTimeSeconds();
 }
 
+static auto totalFadeTimeSeconds(MaskerPlayer *player) -> double {
+    return 2 * fadeTimeSeconds(player);
+}
+
 static auto durationSeconds(TargetPlayer *player) -> double {
     return player->durationSeconds();
 }
@@ -190,7 +194,7 @@ auto RecognitionTestModelImpl::targetLevel_dB() -> double {
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
     auto upperLimit = maskerPlayer->durationSeconds() -
-        2 * fadeTimeSeconds(maskerPlayer) - durationSeconds(targetPlayer);
+        totalFadeTimeSeconds(maskerPlayer) - durationSeconds(targetPlayer);
     maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
 }
 
@@ -247,7 +251,7 @@ void RecognitionTestModelImpl::setTargetPlayerDevice_(
 void RecognitionTestModelImpl::startTrial() {
     if (eyeTracking)
         eyeTracker->allocateRecordingTimeSeconds(
-            2 * fadeTimeSeconds(maskerPlayer) +
+            totalFadeTimeSeconds(maskerPlayer) +
             durationSeconds(targetPlayer));
     if (!auditoryOnly(condition))
         targetPlayer->showVideo();
