@@ -378,22 +378,6 @@ class ModelTests : public ::testing::Test {
     InitializingFixedLevelAllStimuliTest initializingFixedLevelAllStimuliTest{
         &fixedLevelMethod};
 
-    void initializeFixedLevelTest() { model.initializeTest(fixedLevelTest); }
-
-    void initializeFixedLevelSilentIntervalsTest() {
-        model.initializeSilentIntervalsTest(fixedLevelTest);
-    }
-
-    void initializeFixedLevelAllStimuliTest() {
-        model.initializeAllStimuliTest(fixedLevelTest);
-    }
-
-    void initializeAdaptiveTest() { model.initializeTest(adaptiveTest); }
-
-    void initializeAdaptiveTestWithSingleSpeaker() {
-        model.initializeTestWithSingleSpeaker(adaptiveTest);
-    }
-
     auto testComplete() -> bool { return model.testComplete(); }
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
