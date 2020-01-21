@@ -65,10 +65,14 @@ static auto durationSeconds(TargetPlayer *player) -> double {
     return player->durationSeconds();
 }
 
+static void turnOff(bool &b) {
+    b = false;
+}
+
 void RecognitionTestModelImpl::initialize(
     TestMethod *method, const Test &test) {
     initializeWithDefaultAudioConfiguration(method, test);
-    eyeTracking = false;
+    turnOff(eyeTracking);
 }
 
 void RecognitionTestModelImpl::initializeWithDefaultAudioConfiguration(
@@ -97,7 +101,7 @@ void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     useFirstChannelOnly(targetPlayer);
     maskerPlayer->useFirstChannelOnly();
     clearChannelDelays(maskerPlayer);
-    eyeTracking = false;
+    turnOff(eyeTracking);
 }
 
 void RecognitionTestModelImpl::initializeWithDelayedMasker(
@@ -106,7 +110,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     useFirstChannelOnly(targetPlayer);
     useAllChannels(maskerPlayer);
     maskerPlayer->setChannelDelaySeconds(0, maskerChannelDelaySeconds);
-    eyeTracking = false;
+    turnOff(eyeTracking);
 }
 
 void RecognitionTestModelImpl::initializeWithEyeTracking(
