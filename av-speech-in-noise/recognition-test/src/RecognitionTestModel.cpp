@@ -264,9 +264,9 @@ void RecognitionTestModelImpl::setTargetPlayerDevice_(
 
 void RecognitionTestModelImpl::startTrial() {
     if (eyeTracking) {
-        eyeTracker->start();
         eyeTracker->allocateRecordingTimeSeconds(
             trialDurationSeconds(targetPlayer, maskerPlayer));
+        eyeTracker->start();
     }
     if (audioVisual(condition))
         targetPlayer->showVideo();

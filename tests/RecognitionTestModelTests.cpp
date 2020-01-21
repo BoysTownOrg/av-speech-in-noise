@@ -286,22 +286,25 @@ class EyeTrackerStub : public EyeTracker {
         return recordingTimeAllocatedSeconds_;
     }
 
-    auto started() -> bool {
-        return started_;
-    }
+    auto started() -> bool { return started_; }
+
+    auto log() const -> auto & { return log_; }
 
     void allocateRecordingTimeSeconds(double x) override {
+        insert(log_, "allocateRecordingTimeSeconds ");
         recordingTimeAllocatedSeconds_ = x;
         recordingTimeAllocated_ = true;
     }
 
     void start() override {
+        insert(log_, "start ");
         started_ = true;
     }
 
     auto recordingTimeAllocated() -> bool { return recordingTimeAllocated_; }
 
   private:
+    LogString log_{};
     double recordingTimeAllocatedSeconds_{};
     bool recordingTimeAllocated_{};
     bool started_{};
@@ -667,9 +670,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertPlayTrialDoesNotAllocateRecordingTime(useCase);
     }
 
-    auto eyeTrackerStarted() -> bool {
-        return eyeTracker.started();
-    }
+    auto eyeTrackerStarted() -> bool { return eyeTracker.started(); }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -804,6 +805,13 @@ RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
     run(initializingDefaultTest);
     run(playingTrial);
     assertFalse(eyeTrackerStarted());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playTrialForTestWithEyeTrackingStartsEyeTrackingAfterAllocatingRecordingTime) {
+    run(initializingTestWithEyeTracking);
+    run(playingTrial);
+    assertEqual("allocateRecordingTimeSeconds start ", eyeTracker.log());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
