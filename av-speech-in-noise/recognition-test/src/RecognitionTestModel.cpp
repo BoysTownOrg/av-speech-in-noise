@@ -236,11 +236,10 @@ void RecognitionTestModelImpl::setTargetPlayerDevice_(
 }
 
 void RecognitionTestModelImpl::startTrial() {
-    if (eyeTracker) {
+    if (eyeTracker != nullptr)
         eyeTracker->allocateRecordingTimeSeconds(
             2 * maskerPlayer->fadeTimeSeconds() +
             targetPlayer->durationSeconds());
-    }
     if (!auditoryOnly(condition))
         targetPlayer->showVideo();
     maskerPlayer->fadeIn();

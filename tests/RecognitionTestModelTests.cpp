@@ -284,16 +284,16 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
 
 class EyeTrackerStub : public EyeTracker {
   public:
-    auto recordingTimeAllocatedSeconds() -> int {
+    auto recordingTimeAllocatedSeconds() -> double {
         return recordingTimeAllocatedSeconds_;
     }
 
-    void allocateRecordingTimeSeconds(int x) override {
+    void allocateRecordingTimeSeconds(double x) override {
         recordingTimeAllocatedSeconds_ = x;
     }
 
   private:
-    int recordingTimeAllocatedSeconds_{};
+    double recordingTimeAllocatedSeconds_{};
 };
 
 auto dB(double x) -> double { return 20 * std::log10(x); }
@@ -634,7 +634,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         targetPlayer.setDurationSeconds(3);
         maskerPlayer.setFadeTimeSeconds(4);
         run(useCase);
-        assertEqual(3 + 2 * 4, eyeTracker.recordingTimeAllocatedSeconds());
+        assertEqual(3 + 2 * 4., eyeTracker.recordingTimeAllocatedSeconds());
     }
 };
 

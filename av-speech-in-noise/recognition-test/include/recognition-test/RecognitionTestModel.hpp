@@ -68,7 +68,7 @@ class MaskerPlayer {
 class EyeTracker {
   public:
     virtual ~EyeTracker() = default;
-    virtual void allocateRecordingTimeSeconds(int) = 0;
+    virtual void allocateRecordingTimeSeconds(double) = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,
