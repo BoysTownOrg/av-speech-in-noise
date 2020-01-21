@@ -163,6 +163,7 @@ class InitializingTestUseCase {
 
 class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
   public:
+    virtual void run(ModelImpl &model, const FixedLevelTest &test) = 0;
     virtual auto fixedLevelTest() -> const FixedLevelTest & = 0;
 };
 
@@ -181,7 +182,7 @@ class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
 
     void run(ModelImpl &model) override { model.initializeTest(test_); }
 
-    void run(ModelImpl &model, const AdaptiveTest &test) {
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
         model.initializeTest(test);
     }
 
@@ -204,7 +205,7 @@ class InitializingAdaptiveTestWithSingleSpeaker
         model.initializeTestWithSingleSpeaker(test_);
     }
 
-    void run(ModelImpl &model, const AdaptiveTest &test) {
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
         model.initializeTest(test);
     }
 
@@ -227,7 +228,7 @@ class InitializingAdaptiveTestWithDelayedMasker
         model.initializeTestWithDelayedMasker(test_);
     }
 
-    void run(ModelImpl &model, const AdaptiveTest &test) {
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
         model.initializeTest(test);
     }
 
@@ -245,6 +246,10 @@ class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
         : method{method} {}
 
     void run(ModelImpl &model) override { model.initializeTest(test_); }
+
+    void run(ModelImpl &model, const FixedLevelTest &test) {
+        model.initializeTest(test);
+    }
 
     auto test() -> const Test & override { return test_; }
 
@@ -267,6 +272,10 @@ class InitializingFixedLevelSilentIntervalsTest
         model.initializeSilentIntervalsTest(test_);
     }
 
+    void run(ModelImpl &model, const FixedLevelTest &test) {
+        model.initializeTest(test);
+    }
+
     auto test() -> const Test & override { return test_; }
 
     auto testMethod() -> const TestMethod * override { return method; }
@@ -287,6 +296,10 @@ class InitializingFixedLevelEyeTrackingTest
         model.initializeEyeTrackingTest(test_);
     }
 
+    void run(ModelImpl &model, const FixedLevelTest &test) {
+        model.initializeTest(test);
+    }
+
     auto test() -> const Test & override { return test_; }
 
     auto testMethod() -> const TestMethod * override { return method; }
@@ -304,6 +317,10 @@ class InitializingFixedLevelAllStimuliTest : public InitializingFixedLevelTest {
 
     void run(ModelImpl &model) override {
         model.initializeAllStimuliTest(test_);
+    }
+
+    void run(ModelImpl &model, const FixedLevelTest &test) {
+        model.initializeTest(test);
     }
 
     auto test() -> const Test & override { return test_; }
@@ -370,8 +387,8 @@ class ModelTests : public ::testing::Test {
 
     void assertInitializesFixedLevelMethod(
         InitializingFixedLevelTest &useCase) {
-        run(useCase);
-        assertEqual(&useCase.fixedLevelTest(), fixedLevelMethod.test());
+        useCase.run(model, fixedLevelTest);
+        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
     }
 
     void assertInitializesAdaptiveMethod(InitializingAdaptiveTest &useCase) {
