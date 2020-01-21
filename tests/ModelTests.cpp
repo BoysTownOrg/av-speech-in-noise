@@ -168,7 +168,7 @@ class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
 
 class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
   public:
-    virtual auto adaptiveTest() -> const AdaptiveTest & = 0;
+    virtual void run(ModelImpl &model, const AdaptiveTest &test) = 0;
 };
 
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
@@ -181,9 +181,11 @@ class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
 
     void run(ModelImpl &model) override { model.initializeTest(test_); }
 
-    auto test() -> const Test & override { return test_; }
+    void run(ModelImpl &model, const AdaptiveTest &test) {
+        model.initializeTest(test);
+    }
 
-    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
@@ -202,9 +204,11 @@ class InitializingAdaptiveTestWithSingleSpeaker
         model.initializeTestWithSingleSpeaker(test_);
     }
 
-    auto test() -> const Test & override { return test_; }
+    void run(ModelImpl &model, const AdaptiveTest &test) {
+        model.initializeTest(test);
+    }
 
-    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
@@ -223,9 +227,11 @@ class InitializingAdaptiveTestWithDelayedMasker
         model.initializeTestWithDelayedMasker(test_);
     }
 
-    auto test() -> const Test & override { return test_; }
+    void run(ModelImpl &model, const AdaptiveTest &test) {
+        model.initializeTest(test);
+    }
 
-    auto adaptiveTest() -> const AdaptiveTest & override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
@@ -274,8 +280,7 @@ class InitializingFixedLevelEyeTrackingTest
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelEyeTrackingTest(
-        FixedLevelMethodStub *method)
+    explicit InitializingFixedLevelEyeTrackingTest(FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override {
@@ -332,8 +337,8 @@ class ModelTests : public ::testing::Test {
         &fixedLevelMethod};
     InitializingFixedLevelSilentIntervalsTest
         initializingFixedLevelSilentIntervalsTest{&fixedLevelMethod};
-    InitializingFixedLevelEyeTrackingTest
-        initializingFixedLevelEyeTrackingTest{&fixedLevelMethod};
+    InitializingFixedLevelEyeTrackingTest initializingFixedLevelEyeTrackingTest{
+        &fixedLevelMethod};
     InitializingFixedLevelAllStimuliTest initializingFixedLevelAllStimuliTest{
         &fixedLevelMethod};
 
@@ -370,8 +375,8 @@ class ModelTests : public ::testing::Test {
     }
 
     void assertInitializesAdaptiveMethod(InitializingAdaptiveTest &useCase) {
-        run(useCase);
-        assertEqual(&useCase.adaptiveTest(), adaptiveMethod.test());
+        useCase.run(model, adaptiveTest);
+        assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
     }
 
     void assertInitializesFixedLevelTestWithTestConcluder(
@@ -399,8 +404,7 @@ MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
 }
 
 MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(
-        initializingFixedLevelEyeTrackingTest);
+    assertInitializesFixedLevelMethod(initializingFixedLevelEyeTrackingTest);
 }
 
 MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
