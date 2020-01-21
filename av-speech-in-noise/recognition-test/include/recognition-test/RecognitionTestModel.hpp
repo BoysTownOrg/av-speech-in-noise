@@ -155,6 +155,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     int fullScaleLevel_dB_SPL{};
     int trialNumber_{};
     Condition condition{};
+    bool eyeTracking{};
 };
 }
 

@@ -97,6 +97,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
 void RecognitionTestModelImpl::initializeWithEyeTracking(
     TestMethod *method, const Test &test) {
     initializeWithDefaultAudioConfiguration(method, test);
+    eyeTracking = true;
 }
 
 auto RecognitionTestModelImpl::trialInProgress() -> bool {
@@ -236,7 +237,7 @@ void RecognitionTestModelImpl::setTargetPlayerDevice_(
 }
 
 void RecognitionTestModelImpl::startTrial() {
-    if (eyeTracker != nullptr)
+    if (eyeTracker != nullptr && eyeTracking)
         eyeTracker->allocateRecordingTimeSeconds(
             2 * maskerPlayer->fadeTimeSeconds() +
             targetPlayer->durationSeconds());

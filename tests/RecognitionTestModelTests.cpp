@@ -290,10 +290,16 @@ class EyeTrackerStub : public EyeTracker {
 
     void allocateRecordingTimeSeconds(double x) override {
         recordingTimeAllocatedSeconds_ = x;
+        recordingTimeAllocated_ = true;
+    }
+
+    auto recordingTimeAllocated() -> bool {
+        return recordingTimeAllocated_;
     }
 
   private:
     double recordingTimeAllocatedSeconds_{};
+    bool recordingTimeAllocated_{};
 };
 
 auto dB(double x) -> double { return 20 * std::log10(x); }
@@ -753,9 +759,16 @@ RECOGNITION_TEST_MODEL_TEST(
     assertPassesTestIdentityToOutputFile(initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playTrialAllocatesTrialDurationForEyeTracking) {
+RECOGNITION_TEST_MODEL_TEST(
+    playTrialForTestWithEyeTrackingAllocatesTrialDurationRecordingForEyeTracking) {
     assertAllocatesTrialDurationForEyeTracking(
         initializingTestWithEyeTracking, playingTrial);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playTrialForTestDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+    run(initializingTest);
+    run(playingTrial);
+    assertFalse(eyeTracker.recordingTimeAllocated());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToTargetPlayer) {
