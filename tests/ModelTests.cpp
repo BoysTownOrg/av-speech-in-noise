@@ -189,6 +189,11 @@ void initializeTestWithDelayedMasker(
     model.initializeTestWithDelayedMasker(test);
 }
 
+void initializeSilentIntervalsTest(
+    ModelImpl &model, const FixedLevelTest &test) {
+    model.initializeSilentIntervalsTest(test);
+}
+
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     AdaptiveTest test_;
     AdaptiveMethodStub *method;
@@ -284,11 +289,11 @@ class InitializingFixedLevelSilentIntervalsTest
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeSilentIntervalsTest(test_);
+        initializeSilentIntervalsTest(model, test_);
     }
 
     void run(ModelImpl &model, const FixedLevelTest &test) override {
-        model.initializeSilentIntervalsTest(test);
+        initializeSilentIntervalsTest(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
