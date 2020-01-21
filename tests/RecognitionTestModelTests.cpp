@@ -295,7 +295,7 @@ class EyeTrackerStub : public EyeTracker {
         recordingTimeAllocated_ = true;
     }
 
-    void start() {
+    void start() override {
         started_ = true;
     }
 
