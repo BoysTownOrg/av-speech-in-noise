@@ -68,6 +68,7 @@ static auto durationSeconds(TargetPlayer *player) -> double {
 void RecognitionTestModelImpl::initialize(
     TestMethod *method, const Test &test) {
     initializeWithDefaultAudioConfiguration(method, test);
+    eyeTracking = false;
 }
 
 void RecognitionTestModelImpl::initializeWithDefaultAudioConfiguration(

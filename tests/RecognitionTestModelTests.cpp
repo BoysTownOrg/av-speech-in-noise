@@ -773,7 +773,15 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+    playTrialForDefaultTestDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+    run(initializingDefaultTest);
+    run(playingTrial);
+    assertFalse(eyeTracker.recordingTimeAllocated());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playTrialForDefaultTestFollowingTestWithEyeTrackingDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+    run(initializingTestWithEyeTracking);
     run(initializingDefaultTest);
     run(playingTrial);
     assertFalse(eyeTracker.recordingTimeAllocated());
