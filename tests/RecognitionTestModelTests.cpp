@@ -645,13 +645,17 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(3 + 2 * 4., eyeTracker.recordingTimeAllocatedSeconds());
     }
 
+    void assertPlayTrialDoesNotAllocateRecordingTime(UseCase &useCase) {
+        run(useCase);
+        run(playingTrial);
+        assertFalse(eyeTracker.recordingTimeAllocated());
+    }
+
     void
     assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
         UseCase &useCase) {
         run(initializingTestWithEyeTracking);
-        run(useCase);
-        run(playingTrial);
-        assertFalse(eyeTracker.recordingTimeAllocated());
+        assertPlayTrialDoesNotAllocateRecordingTime(useCase);
     }
 };
 
@@ -778,26 +782,34 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    playTrialForDefaultTestDoesNotAllocateTrialDurationRecordingForEyeTracking) {
-    run(initializingDefaultTest);
-    run(playingTrial);
-    assertFalse(eyeTracker.recordingTimeAllocated());
+    playTrialForDefaultTestDoesNotAllocateRecordingTimeForEyeTracking) {
+    assertPlayTrialDoesNotAllocateRecordingTime(initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    playTrialForDefaultTestFollowingTestWithEyeTrackingDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+    playTrialForTestWithDelayedMaskerDoesNotAllocateRecordingTimeForEyeTracking) {
+    assertPlayTrialDoesNotAllocateRecordingTime(initializingTestWithDelayedMasker);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playTrialForTestWithSingleSpeakerDoesNotAllocateRecordingTimeForEyeTracking) {
+    assertPlayTrialDoesNotAllocateRecordingTime(initializingTestWithSingleSpeaker);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    playTrialForDefaultTestFollowingTestWithEyeTrackingDoesNotAllocateRecordingTimeForEyeTracking) {
     assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
         initializingDefaultTest);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithSingleSpeakerFollowingTestWithEyeTrackingDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+    playTrialForTestWithSingleSpeakerFollowingTestWithEyeTrackingDoesNotAllocateRecordingTimeForEyeTracking) {
     assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
         initializingTestWithSingleSpeaker);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithDelayedMaskerFollowingTestWithEyeTrackingDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+    playTrialForTestWithDelayedMaskerFollowingTestWithEyeTrackingDoesNotAllocateRecordingTimeForEyeTracking) {
     assertPlayTrialDoesNotAllocateRecordingTimeForEyeTrackingAfterTestWithEyeTracking(
         initializingTestWithDelayedMasker);
 }
