@@ -24,10 +24,10 @@ static NullTestMethod nullTestMethod;
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer *targetPlayer,
     MaskerPlayer *maskerPlayer, ResponseEvaluator *evaluator,
-    OutputFile *outputFile, Randomizer *randomizer)
-    : maskerPlayer{maskerPlayer},
-      targetPlayer{targetPlayer}, evaluator{evaluator}, outputFile{outputFile},
-      randomizer{randomizer}, testMethod{&nullTestMethod} {
+    OutputFile *outputFile, Randomizer *randomizer, EyeTracker *eyeTracker)
+    : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
+      evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
+      eyeTracker{eyeTracker}, testMethod{&nullTestMethod} {
     targetPlayer->subscribe(this);
     maskerPlayer->subscribe(this);
 }
@@ -45,13 +45,9 @@ void RecognitionTestModelImpl::throwIfTrialInProgress() {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
-static void useAllChannels(MaskerPlayer *player) {
-    player->useAllChannels();
-}
+static void useAllChannels(MaskerPlayer *player) { player->useAllChannels(); }
 
-static void useAllChannels(TargetPlayer *player) {
-    player->useAllChannels();
-}
+static void useAllChannels(TargetPlayer *player) { player->useAllChannels(); }
 
 static void clearChannelDelays(MaskerPlayer *player) {
     player->clearChannelDelays();
@@ -240,6 +236,11 @@ void RecognitionTestModelImpl::setTargetPlayerDevice_(
 }
 
 void RecognitionTestModelImpl::startTrial() {
+    if (eyeTracker) {
+        eyeTracker->allocateRecordingTimeSeconds(
+            2 * maskerPlayer->fadeTimeSeconds() +
+            targetPlayer->durationSeconds());
+    }
     if (!auditoryOnly(condition))
         targetPlayer->showVideo();
     maskerPlayer->fadeIn();

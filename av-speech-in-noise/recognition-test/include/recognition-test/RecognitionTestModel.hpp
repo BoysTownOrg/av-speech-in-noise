@@ -65,12 +65,18 @@ class MaskerPlayer {
     virtual void setChannelDelaySeconds(gsl::index channel, double seconds) = 0;
 };
 
+class EyeTracker {
+  public:
+    virtual ~EyeTracker() = default;
+    virtual void allocateRecordingTimeSeconds(int) = 0;
+};
+
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,
                                  public MaskerPlayer::EventListener,
                                  public RecognitionTestModel {
   public:
     RecognitionTestModelImpl(TargetPlayer *, MaskerPlayer *,
-        ResponseEvaluator *, OutputFile *, Randomizer *);
+        ResponseEvaluator *, OutputFile *, Randomizer *, EyeTracker * = {});
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
@@ -142,6 +148,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     ResponseEvaluator *evaluator;
     OutputFile *outputFile;
     Randomizer *randomizer;
+    EyeTracker *eyeTracker;
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
     int maskerLevel_dB_SPL{};

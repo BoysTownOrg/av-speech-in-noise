@@ -282,6 +282,20 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
     }
 };
 
+class EyeTrackerStub : public EyeTracker {
+  public:
+    auto recordingTimeAllocatedSeconds() -> int {
+        return recordingTimeAllocatedSeconds_;
+    }
+
+    void allocateRecordingTimeSeconds(int x) override {
+        recordingTimeAllocatedSeconds_ = x;
+    }
+
+  private:
+    int recordingTimeAllocatedSeconds_{};
+};
+
 auto dB(double x) -> double { return 20 * std::log10(x); }
 
 class RecognitionTestModelTests : public ::testing::Test {
@@ -292,8 +306,9 @@ class RecognitionTestModelTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator{};
     OutputFileStub outputFile{};
     RandomizerStub randomizer{};
-    RecognitionTestModelImpl model{
-        &targetPlayer, &maskerPlayer, &evaluator, &outputFile, &randomizer};
+    EyeTrackerStub eyeTracker{};
+    RecognitionTestModelImpl model{&targetPlayer, &maskerPlayer, &evaluator,
+        &outputFile, &randomizer, &eyeTracker};
     TestMethodStub testMethod;
     PlayingCalibration playingCalibration{};
     InitializingTest initializingTest{&testMethod};
@@ -612,6 +627,15 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase);
         assertEqual("a", maskerPlayer.filePath());
     }
+
+    void assertAllocatesTrialDurationForEyeTracking(
+        InitializingTestUseCase &initializing, UseCase &useCase) {
+        run(initializing);
+        targetPlayer.setDurationSeconds(3);
+        maskerPlayer.setFadeTimeSeconds(4);
+        run(useCase);
+        assertEqual(3 + 2 * 4, eyeTracker.recordingTimeAllocatedSeconds());
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -727,6 +751,11 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithEyeTrackingOpensNewOutputFilePassingTestInformation) {
     assertPassesTestIdentityToOutputFile(initializingTestWithEyeTracking);
+}
+
+RECOGNITION_TEST_MODEL_TEST(playTrialAllocatesTrialDurationForEyeTracking) {
+    assertAllocatesTrialDurationForEyeTracking(
+        initializingTestWithEyeTracking, playingTrial);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToTargetPlayer) {
