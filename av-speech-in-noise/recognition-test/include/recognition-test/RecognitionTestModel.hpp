@@ -69,6 +69,7 @@ class EyeTracker {
   public:
     virtual ~EyeTracker() = default;
     virtual void allocateRecordingTimeSeconds(double) = 0;
+    virtual void start() = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,

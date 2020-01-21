@@ -286,9 +286,17 @@ class EyeTrackerStub : public EyeTracker {
         return recordingTimeAllocatedSeconds_;
     }
 
+    auto started() -> bool {
+        return started_;
+    }
+
     void allocateRecordingTimeSeconds(double x) override {
         recordingTimeAllocatedSeconds_ = x;
         recordingTimeAllocated_ = true;
+    }
+
+    void start() {
+        started_ = true;
     }
 
     auto recordingTimeAllocated() -> bool { return recordingTimeAllocated_; }
@@ -296,6 +304,7 @@ class EyeTrackerStub : public EyeTracker {
   private:
     double recordingTimeAllocatedSeconds_{};
     bool recordingTimeAllocated_{};
+    bool started_{};
 };
 
 auto dB(double x) -> double { return 20 * std::log10(x); }
@@ -781,6 +790,12 @@ RECOGNITION_TEST_MODEL_TEST(
         initializingTestWithEyeTracking, playingTrial);
 }
 
+RECOGNITION_TEST_MODEL_TEST(playTrialForTestWithEyeTrackingStartsEyeTracking) {
+    run(initializingTestWithEyeTracking);
+    run(playingTrial);
+    assertTrue(eyeTracker.started());
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     playTrialForDefaultTestDoesNotAllocateRecordingTimeForEyeTracking) {
     assertPlayTrialDoesNotAllocateRecordingTime(initializingDefaultTest);
@@ -788,12 +803,14 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     playTrialForTestWithDelayedMaskerDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTime(initializingTestWithDelayedMasker);
+    assertPlayTrialDoesNotAllocateRecordingTime(
+        initializingTestWithDelayedMasker);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     playTrialForTestWithSingleSpeakerDoesNotAllocateRecordingTimeForEyeTracking) {
-    assertPlayTrialDoesNotAllocateRecordingTime(initializingTestWithSingleSpeaker);
+    assertPlayTrialDoesNotAllocateRecordingTime(
+        initializingTestWithSingleSpeaker);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
