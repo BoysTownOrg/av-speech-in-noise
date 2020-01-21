@@ -776,7 +776,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    playTrialForTestWithEyeTrackingAllocatesTrialDurationRecordingForEyeTracking) {
+    playTrialForTestWithEyeTrackingAllocatesTrialDurationsWorthRecordingTimeForEyeTracking) {
     assertAllocatesTrialDurationForEyeTracking(
         initializingTestWithEyeTracking, playingTrial);
 }
