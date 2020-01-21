@@ -53,6 +53,14 @@ static void clearChannelDelays(MaskerPlayer *player) {
     player->clearChannelDelays();
 }
 
+static auto fadeTimeSeconds(MaskerPlayer *player) -> double {
+    return player->fadeTimeSeconds();
+}
+
+static auto durationSeconds(TargetPlayer *player) -> double {
+    return player->durationSeconds();
+}
+
 void RecognitionTestModelImpl::initialize(
     TestMethod *method, const Test &test) {
     initializeWithDefaultAudioConfiguration(method, test);
@@ -182,7 +190,7 @@ auto RecognitionTestModelImpl::targetLevel_dB() -> double {
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
     auto upperLimit = maskerPlayer->durationSeconds() -
-        2 * maskerPlayer->fadeTimeSeconds() - targetPlayer->durationSeconds();
+        2 * fadeTimeSeconds(maskerPlayer) - durationSeconds(targetPlayer);
     maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
 }
 
@@ -239,8 +247,8 @@ void RecognitionTestModelImpl::setTargetPlayerDevice_(
 void RecognitionTestModelImpl::startTrial() {
     if (eyeTracking)
         eyeTracker->allocateRecordingTimeSeconds(
-            2 * maskerPlayer->fadeTimeSeconds() +
-            targetPlayer->durationSeconds());
+            2 * fadeTimeSeconds(maskerPlayer) +
+            durationSeconds(targetPlayer));
     if (!auditoryOnly(condition))
         targetPlayer->showVideo();
     maskerPlayer->fadeIn();
