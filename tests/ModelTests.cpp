@@ -198,6 +198,10 @@ void initializeEyeTrackingTest(ModelImpl &model, const FixedLevelTest &test) {
     model.initializeEyeTrackingTest(test);
 }
 
+void initializeEyeTrackingTest(ModelImpl &model, const AdaptiveTest &test) {
+    model.initializeEyeTrackingTest(test);
+}
+
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     AdaptiveTest test_;
     AdaptiveMethodStub *method;
@@ -210,6 +214,27 @@ class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
 
     void run(ModelImpl &model, const AdaptiveTest &test) override {
         initializeTest(model, test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
+class InitializingAdaptiveEyeTrackingTest : public InitializingAdaptiveTest {
+    AdaptiveTest test_;
+    AdaptiveMethodStub *method;
+
+  public:
+    explicit InitializingAdaptiveEyeTrackingTest(AdaptiveMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        initializeEyeTrackingTest(model, test_);
+    }
+
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
+        initializeEyeTrackingTest(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
@@ -364,6 +389,8 @@ class ModelTests : public ::testing::Test {
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     InitializingDefaultAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
+    InitializingAdaptiveEyeTrackingTest initializingAdaptiveEyeTrackingTest{
+        &adaptiveMethod};
     InitializingAdaptiveTestWithSingleSpeaker
         initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
     InitializingAdaptiveTestWithDelayedMasker
@@ -474,6 +501,10 @@ MODEL_TEST(
 
 TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingAdaptiveTest);
+}
+
+TEST_F(ModelTests, initializeAdaptiveEyeTrackingTestInitializesAdaptiveMethod) {
+    assertInitializesAdaptiveMethod(initializingAdaptiveEyeTrackingTest);
 }
 
 TEST_F(ModelTests,

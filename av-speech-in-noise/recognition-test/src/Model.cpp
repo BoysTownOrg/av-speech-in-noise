@@ -1,4 +1,5 @@
 #include "Model.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
@@ -58,6 +59,10 @@ void ModelImpl::initializeTestWithDelayedMasker(const AdaptiveTest &p) {
 void ModelImpl::initializeEyeTrackingTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, infiniteTargetList, fixedTrialTestConcluder);
+}
+
+void ModelImpl::initializeEyeTrackingTest(const AdaptiveTest &p) {
+    adaptiveMethod->initialize(p);
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {
