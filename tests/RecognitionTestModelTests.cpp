@@ -114,25 +114,31 @@ void setTestingFullScaleLevel_dB_SPL(Test &test, int x) {
     test.fullScaleLevel_dB_SPL = x;
 }
 
-void setAudioVisual(Test &test) { test.condition = Condition::audioVisual; }
+void setCondition(Test &test, Condition c) { test.condition = c; }
 
-void setAuditoryOnly(Test &test) { test.condition = Condition::auditoryOnly; }
+void setAudioVisual(Test &test) { setCondition(test, Condition::audioVisual); }
 
-class InitializingTestUseCase : public virtual UseCase {
+void setAuditoryOnly(Test &test) {
+    setCondition(test, Condition::auditoryOnly);
+}
+
+class InitializingTest : public virtual UseCase {
   public:
     virtual void run(RecognitionTestModelImpl &, const Test &) = 0;
 };
 
-class InitializingTest : public InitializingTestUseCase {
+class InitializingDefaultTest : public InitializingTest {
     TestMethod *method;
 
   public:
-    explicit InitializingTest(TestMethod *method) : method{method} {}
+    explicit InitializingDefaultTest(TestMethod *method) : method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override { m.initialize(method, {}); }
+    void run(RecognitionTestModelImpl &model) override {
+        model.initialize(method, {});
+    }
 
-    void run(RecognitionTestModelImpl &m, const Test &test_) override {
-        m.initialize(method, test_);
+    void run(RecognitionTestModelImpl &model, const Test &test) override {
+        model.initialize(method, test);
     }
 };
 
@@ -143,8 +149,8 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     explicit InitializingTestWithSingleSpeaker(TestMethod *method)
         : method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override {
-        m.initializeWithSingleSpeaker(method, {});
+    void run(RecognitionTestModelImpl &model) override {
+        model.initializeWithSingleSpeaker(method, {});
     }
 };
 
@@ -155,24 +161,24 @@ class InitializingTestWithDelayedMasker : public UseCase {
     explicit InitializingTestWithDelayedMasker(TestMethod *method)
         : method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override {
-        m.initializeWithDelayedMasker(method, {});
+    void run(RecognitionTestModelImpl &model) override {
+        model.initializeWithDelayedMasker(method, {});
     }
 };
 
-class InitializingTestWithEyeTracking : public InitializingTestUseCase {
+class InitializingTestWithEyeTracking : public InitializingTest {
     TestMethod *method;
 
   public:
     explicit InitializingTestWithEyeTracking(TestMethod *method)
         : method{method} {}
 
-    void run(RecognitionTestModelImpl &m) override {
-        m.initializeWithEyeTracking(method, {});
+    void run(RecognitionTestModelImpl &model) override {
+        model.initializeWithEyeTracking(method, {});
     }
 
-    void run(RecognitionTestModelImpl &m, const Test &test) override {
-        m.initializeWithEyeTracking(method, test);
+    void run(RecognitionTestModelImpl &model, const Test &test) override {
+        model.initializeWithEyeTracking(method, test);
     }
 };
 
@@ -195,8 +201,8 @@ class PlayingCalibration : public AudioDeviceUseCase, public ConditionUseCase {
         calibration.audioSettings.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &m) override {
-        m.playCalibration(calibration);
+    void run(RecognitionTestModelImpl &model) override {
+        model.playCalibration(calibration);
     }
 
     void setFilePath(std::string s) { calibration.filePath = std::move(s); }
@@ -224,7 +230,9 @@ class PlayingTrial : public AudioDeviceUseCase {
         trial.audioDevice = std::move(s);
     }
 
-    void run(RecognitionTestModelImpl &m) override { m.playTrial(trial); }
+    void run(RecognitionTestModelImpl &model) override {
+        model.playTrial(trial);
+    }
 };
 
 class SubmittingFreeResponse : public SubmittingResponse,
@@ -232,8 +240,8 @@ class SubmittingFreeResponse : public SubmittingResponse,
     open_set::FreeResponse response_{};
 
   public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.submitResponse(response_);
+    void run(RecognitionTestModelImpl &model) override {
+        model.submitResponse(response_);
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
@@ -249,8 +257,8 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
     coordinate_response_measure::Response response_{};
 
   public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.submitResponse(response_);
+    void run(RecognitionTestModelImpl &model) override {
+        model.submitResponse(response_);
     }
 
     void setNumber(int n) { response_.number = n; }
@@ -262,8 +270,8 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
 
 class SubmittingCorrectResponse : public TargetWritingUseCase {
   public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.submitCorrectResponse();
+    void run(RecognitionTestModelImpl &model) override {
+        model.submitCorrectResponse();
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
@@ -273,8 +281,8 @@ class SubmittingCorrectResponse : public TargetWritingUseCase {
 
 class SubmittingIncorrectResponse : public TargetWritingUseCase {
   public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.submitIncorrectResponse();
+    void run(RecognitionTestModelImpl &model) override {
+        model.submitIncorrectResponse();
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
@@ -293,9 +301,7 @@ class EyeTrackerStub : public EyeTracker {
         recordingTimeAllocated_ = true;
     }
 
-    auto recordingTimeAllocated() -> bool {
-        return recordingTimeAllocated_;
-    }
+    auto recordingTimeAllocated() -> bool { return recordingTimeAllocated_; }
 
   private:
     double recordingTimeAllocatedSeconds_{};
@@ -317,7 +323,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         &outputFile, &randomizer, &eyeTracker};
     TestMethodStub testMethod;
     PlayingCalibration playingCalibration{};
-    InitializingTest initializingDefaultTest{&testMethod};
+    InitializingDefaultTest initializingDefaultTest{&testMethod};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
@@ -482,7 +488,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void assertCallThrowsRequestFailure(
-        InitializingTestUseCase &useCase, const std::string &what) {
+        InitializingTest &useCase, const std::string &what) {
         assertCallThrowsRequestFailure([&]() { run(useCase); }, what);
     }
 
@@ -532,7 +538,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertTestComplete() { assertTrue(testComplete()); }
 
-    void run(InitializingTestUseCase &useCase) { useCase.run(model, test); }
+    void run(InitializingTest &useCase) { useCase.run(model, test); }
 
     void assertSetsTargetLevel(UseCase &useCase) {
         setMaskerLevel_dB_SPL(3);
@@ -621,14 +627,12 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertMaskerPlayerChannelDelaysCleared();
     }
 
-    void assertPassesTestIdentityToOutputFile(
-        InitializingTestUseCase &useCase) {
+    void assertPassesTestIdentityToOutputFile(InitializingTest &useCase) {
         run(useCase);
         assertEqual(outputFile.openNewFileParameters(), &identity(test));
     }
 
-    void assertPassesMaskerFilePathToMaskerPlayer(
-        InitializingTestUseCase &useCase) {
+    void assertPassesMaskerFilePathToMaskerPlayer(InitializingTest &useCase) {
         setMaskerFilePath("a");
         run(useCase);
         assertEqual("a", maskerPlayer.filePath());
@@ -643,7 +647,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void assertAllocatesTrialDurationForEyeTracking(
-        InitializingTestUseCase &initializing, UseCase &useCase) {
+        InitializingTest &initializing, UseCase &useCase) {
         run(initializing);
         setTargetPlayerDurationSeconds(3);
         setMaskerPlayerFadeTimeSeconds(4);
@@ -710,7 +714,8 @@ RECOGNITION_TEST_MODEL_TEST(
     assertUsesAllMaskerPlayerChannels(initializingTestWithEyeTracking);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestClearsAllMaskerPlayerChannelDelays) {
+RECOGNITION_TEST_MODEL_TEST(
+    initializeDefaultTestClearsAllMaskerPlayerChannelDelays) {
     assertMaskerPlayerChannelDelaysCleared(initializingDefaultTest);
 }
 
@@ -773,7 +778,8 @@ RECOGNITION_TEST_MODEL_TEST(
         initializingTestWithEyeTracking, playingTrial);
 }
 
-RECOGNITION_TEST_MODEL_TEST(playTrialForTestDoesNotAllocateTrialDurationRecordingForEyeTracking) {
+RECOGNITION_TEST_MODEL_TEST(
+    playTrialForTestDoesNotAllocateTrialDurationRecordingForEyeTracking) {
     run(initializingDefaultTest);
     run(playingTrial);
     assertFalse(eyeTracker.recordingTimeAllocated());
@@ -806,7 +812,8 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTarget) {
     assertTargetPlayerPlayed();
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestPassesNextTargetToTargetPlayer) {
+RECOGNITION_TEST_MODEL_TEST(
+    initializeDefaultTestPassesNextTargetToTargetPlayer) {
     assertPassesNextTargetToPlayer(initializingDefaultTest);
 }
 
@@ -873,7 +880,8 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
     assertTargetFilePathEquals("a");
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestPassesMaskerFilePathToMaskerPlayer) {
+RECOGNITION_TEST_MODEL_TEST(
+    initializeDefaultTestPassesMaskerFilePathToMaskerPlayer) {
     assertPassesMaskerFilePathToMaskerPlayer(initializingDefaultTest);
 }
 
@@ -1134,7 +1142,8 @@ RECOGNITION_TEST_MODEL_TEST(
     assertThrowsRequestFailureWhenTrialInProgress(playingCalibration);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestDoesNotLoadMaskerIfTrialInProgress) {
+RECOGNITION_TEST_MODEL_TEST(
+    initializeDefaultTestDoesNotLoadMaskerIfTrialInProgress) {
     setMaskerFilePath("a");
     runIgnoringFailureWithTrialInProgress(initializingDefaultTest);
     assertEqual("", maskerPlayer.filePath());
@@ -1181,7 +1190,8 @@ RECOGNITION_TEST_MODEL_TEST(
         submittingIncorrectResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestDoesNotLoadNextTargetWhenComplete) {
+RECOGNITION_TEST_MODEL_TEST(
+    initializeDefaultTestDoesNotLoadNextTargetWhenComplete) {
     testMethod.setNextTarget("a");
     testMethod.setComplete();
     run(initializingDefaultTest);
