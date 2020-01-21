@@ -432,6 +432,11 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
         initializingFixedLevelTest, infiniteTargetList);
 }
 
+MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesWithInfiniteTargetList) {
+    assertInitializesFixedLevelTestWithTargetList(
+        initializingFixedLevelEyeTrackingTest, infiniteTargetList);
+}
+
 MODEL_TEST(
     initializeFixedLevelSilentIntervalsTestInitializesWithSilentIntervals) {
     assertInitializesFixedLevelTestWithTargetList(
