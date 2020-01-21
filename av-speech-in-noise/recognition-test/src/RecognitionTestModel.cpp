@@ -237,7 +237,7 @@ void RecognitionTestModelImpl::setTargetPlayerDevice_(
 }
 
 void RecognitionTestModelImpl::startTrial() {
-    if (eyeTracker != nullptr && eyeTracking)
+    if (eyeTracking)
         eyeTracker->allocateRecordingTimeSeconds(
             2 * maskerPlayer->fadeTimeSeconds() +
             targetPlayer->durationSeconds());
