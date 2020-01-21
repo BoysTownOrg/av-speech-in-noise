@@ -281,6 +281,7 @@ void RecognitionTestModelImpl::playbackComplete() { maskerPlayer->fadeOut(); }
 
 void RecognitionTestModelImpl::fadeOutComplete() {
     targetPlayer->hideVideo();
+    eyeTracker->stop();
     listener_->trialComplete();
 }
 

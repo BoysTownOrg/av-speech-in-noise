@@ -288,6 +288,8 @@ class EyeTrackerStub : public EyeTracker {
 
     auto started() -> bool { return started_; }
 
+    auto stopped() -> bool { return stopped_; }
+
     auto log() const -> auto & { return log_; }
 
     void allocateRecordingTimeSeconds(double x) override {
@@ -301,6 +303,11 @@ class EyeTrackerStub : public EyeTracker {
         started_ = true;
     }
 
+    void stop() {
+        insert(log_, "stop ");
+        stopped_ = true;
+    }
+
     auto recordingTimeAllocated() -> bool { return recordingTimeAllocated_; }
 
   private:
@@ -308,6 +315,7 @@ class EyeTrackerStub : public EyeTracker {
     double recordingTimeAllocatedSeconds_{};
     bool recordingTimeAllocated_{};
     bool started_{};
+    bool stopped_{};
 };
 
 auto dB(double x) -> double { return 20 * std::log10(x); }
@@ -671,6 +679,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     auto eyeTrackerStarted() -> bool { return eyeTracker.started(); }
+
+    auto eyeTrackerStopped() -> bool { return eyeTracker.stopped(); }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -812,6 +822,12 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTestWithEyeTracking);
     run(playingTrial);
     assertEqual("allocateRecordingTimeSeconds start ", eyeTracker.log());
+}
+
+RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteForTestWithEyeTrackingStopsEyeTracking) {
+    run(initializingTestWithEyeTracking);
+    maskerFadeOutComplete();
+    assertTrue(eyeTrackerStopped());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
