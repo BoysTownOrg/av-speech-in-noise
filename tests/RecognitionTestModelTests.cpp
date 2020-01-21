@@ -666,6 +666,10 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(initializingTestWithEyeTracking);
         assertPlayTrialDoesNotAllocateRecordingTime(useCase);
     }
+
+    auto eyeTrackerStarted() -> bool {
+        return eyeTracker.started();
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -793,13 +797,13 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(playTrialForTestWithEyeTrackingStartsEyeTracking) {
     run(initializingTestWithEyeTracking);
     run(playingTrial);
-    assertTrue(eyeTracker.started());
+    assertTrue(eyeTrackerStarted());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
     run(initializingDefaultTest);
     run(playingTrial);
-    assertFalse(eyeTracker.started());
+    assertFalse(eyeTrackerStarted());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
