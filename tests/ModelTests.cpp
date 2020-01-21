@@ -77,6 +77,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
+    bool initializedWithEyeTracking_{};
 
   public:
     [[nodiscard]] auto initializedWithSingleSpeaker() const -> bool {
@@ -104,6 +105,13 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         testMethod_ = method;
         test_ = &test;
         initializedWithDelayedMasker_ = true;
+    }
+
+    void initializeWithEyeTracking(
+        TestMethod *method, const Test &test) override {
+        testMethod_ = method;
+        test_ = &test;
+        initializedWithEyeTracking_ = true;
     }
 
     auto trialNumber() -> int override { return trialNumber_; }
@@ -519,6 +527,10 @@ TEST_F(ModelTests,
 
 MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTest);
+}
+
+MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesInternalModel) {
+    assertInitializesInternalModel(initializingFixedLevelEyeTrackingTest);
 }
 
 MODEL_TEST(

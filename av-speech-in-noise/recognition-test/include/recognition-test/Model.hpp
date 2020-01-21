@@ -51,6 +51,7 @@ class RecognitionTestModel {
     virtual void initialize(TestMethod *, const Test &) = 0;
     virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;
     virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
+    virtual void initializeWithEyeTracking(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(
         const coordinate_response_measure::Response &) = 0;
