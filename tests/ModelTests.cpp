@@ -175,9 +175,18 @@ void initializeTest(ModelImpl &model, const AdaptiveTest &test) {
     model.initializeTest(test);
 }
 
+void initializeTest(ModelImpl &model, const FixedLevelTest &test) {
+    model.initializeTest(test);
+}
+
 void initializeTestWithSingleSpeaker(
     ModelImpl &model, const AdaptiveTest &test) {
     model.initializeTestWithSingleSpeaker(test);
+}
+
+void initializeTestWithDelayedMasker(
+    ModelImpl &model, const AdaptiveTest &test) {
+    model.initializeTestWithDelayedMasker(test);
 }
 
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
@@ -233,11 +242,11 @@ class InitializingAdaptiveTestWithDelayedMasker
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeTestWithDelayedMasker(test_);
+        initializeTestWithDelayedMasker(model, test_);
     }
 
     void run(ModelImpl &model, const AdaptiveTest &test) override {
-        model.initializeTestWithDelayedMasker(test);
+        initializeTestWithDelayedMasker(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
@@ -253,10 +262,10 @@ class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
     explicit InitializingDefaultFixedLevelTest(FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { model.initializeTest(test_); }
+    void run(ModelImpl &model) override { initializeTest(model, test_); }
 
     void run(ModelImpl &model, const FixedLevelTest &test) override {
-        model.initializeTest(test);
+        initializeTest(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
