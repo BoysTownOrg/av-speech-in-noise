@@ -824,10 +824,18 @@ RECOGNITION_TEST_MODEL_TEST(
     assertEqual("allocateRecordingTimeSeconds start ", eyeTracker.log());
 }
 
-RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteForTestWithEyeTrackingStopsEyeTracking) {
+RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompleteForTestWithEyeTrackingStopsEyeTracking) {
     run(initializingTestWithEyeTracking);
     maskerFadeOutComplete();
     assertTrue(eyeTrackerStopped());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompleteForDefaultTestDoesNotStopEyeTracking) {
+    run(initializingDefaultTest);
+    maskerFadeOutComplete();
+    assertFalse(eyeTrackerStopped());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
