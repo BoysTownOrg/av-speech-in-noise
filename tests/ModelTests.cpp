@@ -394,11 +394,11 @@ class ModelTests : public ::testing::Test {
     TestConcluderStub fixedTrialTestConcluder;
     TargetListStub silentIntervals;
     TestConcluderStub emptyTargetListTestConcluder;
-    TargetListStub allStimuli;
+    TargetListStub allTargets;
     RecognitionTestModelStub internalModel;
     ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
         &fixedTrialTestConcluder, &silentIntervals,
-        &emptyTargetListTestConcluder, &allStimuli, &internalModel};
+        &emptyTargetListTestConcluder, &allTargets, &internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
@@ -486,9 +486,9 @@ MODEL_TEST(
         initializingFixedLevelTestWithSilentIntervalTargets, silentIntervals);
 }
 
-MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesWithAllStimuli) {
+MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesWithAllTargets) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelTestWithAllTargets, allStimuli);
+        initializingFixedLevelTestWithAllTargets, allTargets);
 }
 
 MODEL_TEST(
@@ -511,7 +511,7 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializeFixedLevelAllStimuliTestInitializesWithEmptyTargetListTestConcluder) {
+    initializeFixedLevelTestWithAllTargetsInitializesWithEmptyTargetListTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
         initializingFixedLevelTestWithAllTargets, emptyTargetListTestConcluder);
 }
@@ -548,7 +548,7 @@ MODEL_TEST(
         initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
-MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesInternalModel) {
+MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTestWithAllTargets);
 }
 
