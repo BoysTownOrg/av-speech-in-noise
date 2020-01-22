@@ -614,16 +614,8 @@ static void confirmTestSetup(ViewStub::TestSetupViewStub *view) {
 }
 
 namespace adaptive_test {
-static auto testIdentity(ModelStub &m) -> const TestIdentity & {
-    return adaptiveTest(m).identity;
-}
-
 static auto snr_dB(ModelStub &m) -> int {
     return adaptiveTest(m).startingSnr_dB;
-}
-
-static auto method(ModelStub &m) -> std::string {
-    return testIdentity(m).method;
 }
 
 static auto fullScaleLevel(ModelStub &m) -> int {
@@ -636,17 +628,11 @@ static auto condition(ModelStub &m) -> Condition {
 };
 
 namespace fixed_level_test {
-static auto identity(ModelStub &m) -> const TestIdentity & {
-    return fixedLevelTest(m).identity;
-}
-
 static auto snr_dB(ModelStub &m) -> int { return fixedLevelTest(m).snr_dB; }
 
 static auto fullScaleLevel(ModelStub &m) -> int {
     return fixedLevelTest(m).fullScaleLevel_dB_SPL;
 }
-
-static auto method(ModelStub &m) -> std::string { return identity(m).method; }
 
 static auto condition(ModelStub &m) -> Condition {
     return fixedLevelTest(m).condition;
