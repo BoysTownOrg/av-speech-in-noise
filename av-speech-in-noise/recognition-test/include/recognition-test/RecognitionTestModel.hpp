@@ -82,7 +82,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
-    void initializeWithEyeTracking(TestMethod *, const Test &);
+    void initializeWithEyeTracking(TestMethod *, const Test &) override;
     void playTrial(const AudioSettings &) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
     auto testComplete() -> bool override;
