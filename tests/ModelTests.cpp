@@ -88,6 +88,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return initializedWithDelayedMasker_;
     }
 
+    [[nodiscard]] auto initializedWithEyeTracking() const -> bool {
+        return initializedWithEyeTracking_;
+    }
+
     void initialize(TestMethod *method, const Test &test) override {
         testMethod_ = method;
         test_ = &test;
@@ -571,6 +575,12 @@ TEST_F(ModelTests,
     initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithDelayedMasker);
     assertTrue(internalModel.initializedWithDelayedMasker());
+}
+
+TEST_F(ModelTests,
+    initializeAdaptiveEyeTrackingTestInitializesWithEyeTracking) {
+    run(initializingAdaptiveEyeTrackingTest);
+    assertTrue(internalModel.initializedWithEyeTracking());
 }
 
 TEST_F(ModelTests, submitResponsePassesCoordinateResponse) {
