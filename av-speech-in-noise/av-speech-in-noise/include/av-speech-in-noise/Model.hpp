@@ -139,8 +139,8 @@ class Model {
     virtual void initialize(const FixedLevelTest &) = 0;
     virtual void initializeTestWithSingleSpeaker(const AdaptiveTest &) = 0;
     virtual void initializeTestWithDelayedMasker(const AdaptiveTest &) = 0;
-    virtual void initializeWithSilentIntervalStimuli(const FixedLevelTest &) = 0;
-    virtual void initializeAllStimuliTest(const FixedLevelTest &) = 0;
+    virtual void initializeWithSilentIntervalTargets(const FixedLevelTest &) = 0;
+    virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submitResponse(

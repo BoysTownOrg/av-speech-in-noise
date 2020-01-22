@@ -74,8 +74,8 @@ class ModelImpl : public Model {
         TargetList *allStimuli, RecognitionTestModel *);
     void initialize(const AdaptiveTest &) override;
     void initialize(const FixedLevelTest &) override;
-    void initializeWithSilentIntervalStimuli(const FixedLevelTest &) override;
-    void initializeAllStimuliTest(const FixedLevelTest &) override;
+    void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
+    void initializeWithAllTargets(const FixedLevelTest &) override;
     void initializeTestWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeTestWithDelayedMasker(const AdaptiveTest &) override;
     void initializeEyeTrackingTest(const FixedLevelTest &);

@@ -71,9 +71,9 @@ void Presenter::initializeTest() {
     else if (defaultAdaptive())
         model.initialize(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
-        model.initializeWithSilentIntervalStimuli(fixedLevelTest(testSetup));
+        model.initializeWithSilentIntervalTargets(fixedLevelTest(testSetup));
     else if (fixedLevelAllStimuli())
-        model.initializeAllStimuliTest(fixedLevelTest(testSetup));
+        model.initializeWithAllTargets(fixedLevelTest(testSetup));
     else
         model.initialize(fixedLevelTest(testSetup));
 }

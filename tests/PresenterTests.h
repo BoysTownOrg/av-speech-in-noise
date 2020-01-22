@@ -72,12 +72,12 @@ class ModelStub : public Model {
         initializedWithDelayedMasker_ = true;
     }
 
-    void initializeWithSilentIntervalStimuli(const FixedLevelTest &p) override {
+    void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelSilentIntervalsTestInitialized_ = true;
     }
 
-    void initializeAllStimuliTest(const FixedLevelTest &p) override {
+    void initializeWithAllTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelAllStimuliTestInitialized_ = true;
     }
@@ -2125,11 +2125,11 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeWithSilentIntervalStimuli(const FixedLevelTest &) override {
+    void initializeWithSilentIntervalTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeAllStimuliTest(const FixedLevelTest &) override {
+    void initializeWithAllTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 

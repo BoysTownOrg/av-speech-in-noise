@@ -201,9 +201,9 @@ void initializeTestWithDelayedMasker(
     model.initializeTestWithDelayedMasker(test);
 }
 
-void initializeWithSilentIntervalStimuli(
+void initializeWithSilentIntervalTargets(
     ModelImpl &model, const FixedLevelTest &test) {
-    model.initializeWithSilentIntervalStimuli(test);
+    model.initializeWithSilentIntervalTargets(test);
 }
 
 void initializeEyeTrackingTest(ModelImpl &model, const FixedLevelTest &test) {
@@ -330,11 +330,11 @@ class InitializingFixedLevelSilentIntervalsTest
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        initializeWithSilentIntervalStimuli(model, test_);
+        initializeWithSilentIntervalTargets(model, test_);
     }
 
     void run(ModelImpl &model, const FixedLevelTest &test) override {
-        initializeWithSilentIntervalStimuli(model, test);
+        initializeWithSilentIntervalTargets(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
@@ -373,11 +373,11 @@ class InitializingFixedLevelAllStimuliTest : public InitializingFixedLevelTest {
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeAllStimuliTest(test_);
+        model.initializeWithAllTargets(test_);
     }
 
     void run(ModelImpl &model, const FixedLevelTest &test) override {
-        model.initializeAllStimuliTest(test);
+        model.initializeWithAllTargets(test);
     }
 
     auto test() -> const Test & override { return test_; }
