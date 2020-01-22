@@ -15,8 +15,8 @@ ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
       completesWhenTargetsEmpty{completesWhenTargetsEmpty},
       everyTargetOnce{everyTargetOnce}, model{model} {}
 
-static void initialize(RecognitionTestModel *model, TestMethod *method,
-    const struct Test &test) {
+static void initialize(
+    RecognitionTestModel *model, TestMethod *method, const struct Test &test) {
     model->initialize(method, test);
 }
 
@@ -45,8 +45,8 @@ static void initializeWithEyeTracking(
 }
 
 void ModelImpl::initializeWithTargetReplacement(const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, targetsWithReplacement, fixedTrialTestConcluder);
+    av_speech_in_noise::initialize(fixedLevelMethod, test,
+        targetsWithReplacement, fixedTrialTestConcluder);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
@@ -80,9 +80,10 @@ void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
         model, adaptiveMethod, test);
 }
 
-void ModelImpl::initializeWithTargetReplacementAndEyeTracking(const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, targetsWithReplacement, fixedTrialTestConcluder);
+void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
+    const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(fixedLevelMethod, test,
+        targetsWithReplacement, fixedTrialTestConcluder);
     av_speech_in_noise::initializeWithEyeTracking(
         model, fixedLevelMethod, test);
 }
