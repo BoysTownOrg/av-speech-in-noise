@@ -15,7 +15,7 @@ ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
       completesWhenTargetsEmpty{completesWhenTargetsEmpty},
       allTargets{allTargets}, model{model} {}
 
-static void initialize(RecognitionTestModel *model, class TestMethod *method,
+static void initialize(RecognitionTestModel *model, TestMethod *method,
     const struct Test &test) {
     model->initialize(method, test);
 }
@@ -50,6 +50,11 @@ void ModelImpl::initialize(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
+void ModelImpl::initialize(const AdaptiveTest &test) {
+    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initialize(model, adaptiveMethod, test);
+}
+
 void ModelImpl::initializeWithSilentIntervalTargets(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(fixedLevelMethod, test,
@@ -61,11 +66,6 @@ void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, allTargets, completesWhenTargetsEmpty);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
-}
-
-void ModelImpl::initialize(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test);
-    av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
 
 void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
