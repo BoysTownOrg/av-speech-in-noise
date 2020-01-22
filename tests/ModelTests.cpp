@@ -196,9 +196,9 @@ void initializeWithSingleSpeaker(
     model.initializeWithSingleSpeaker(test);
 }
 
-void initializeTestWithDelayedMasker(
+void initializeWithDelayedMasker(
     ModelImpl &model, const AdaptiveTest &test) {
-    model.initializeTestWithDelayedMasker(test);
+    model.initializeWithDelayedMasker(test);
 }
 
 void initializeWithSilentIntervalTargets(
@@ -288,11 +288,11 @@ class InitializingAdaptiveTestWithDelayedMasker
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        initializeTestWithDelayedMasker(model, test_);
+        initializeWithDelayedMasker(model, test_);
     }
 
     void run(ModelImpl &model, const AdaptiveTest &test) override {
-        initializeTestWithDelayedMasker(model, test);
+        initializeWithDelayedMasker(model, test);
     }
 
     auto test() -> const Test & override { return test_; }

@@ -51,7 +51,7 @@ void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &p) {
     model->initializeWithSingleSpeaker(adaptiveMethod, p);
 }
 
-void ModelImpl::initializeTestWithDelayedMasker(const AdaptiveTest &p) {
+void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
     model->initializeWithDelayedMasker(adaptiveMethod, p);
 }
