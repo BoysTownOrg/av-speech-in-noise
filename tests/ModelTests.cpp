@@ -418,9 +418,9 @@ class ModelTests : public ::testing::Test {
     InitializingFixedLevelTestWithAllTargets
         initializingFixedLevelTestWithAllTargets{&fixedLevelMethod};
 
-    auto testComplete() -> bool { return model.testComplete(); }
-
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
+
+    auto testComplete() -> bool { return model.testComplete(); }
 
     void assertInitializesInternalModel(InitializingTestUseCase &useCase) {
         run(useCase);
@@ -454,33 +454,34 @@ class ModelTests : public ::testing::Test {
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
 
-MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
+MODEL_TEST(initializeDefaultFixedLevelTestInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(initializingDefaultFixedLevelTest);
 }
 
-MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
+MODEL_TEST(
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
-MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesFixedLevelMethod) {
+MODEL_TEST(initializeFixedLevelTestWithEyeTrackingInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithEyeTracking);
 }
 
-MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
+MODEL_TEST(initializeDefaultFixedLevelTestInitializesWithInfiniteTargetList) {
     assertInitializesFixedLevelTestWithTargetList(
         initializingDefaultFixedLevelTest, infiniteTargetList);
 }
 
 MODEL_TEST(
-    initializeFixedLevelEyeTrackingTestInitializesWithInfiniteTargetList) {
+    initializeFixedLevelTestWithEyeTrackingInitializesWithInfiniteTargetList) {
     assertInitializesFixedLevelTestWithTargetList(
         initializingFixedLevelTestWithEyeTracking, infiniteTargetList);
 }
 
 MODEL_TEST(
-    initializeFixedLevelSilentIntervalsTestInitializesWithSilentIntervals) {
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithSilentIntervals) {
     assertInitializesFixedLevelTestWithTargetList(
         initializingFixedLevelTestWithSilentIntervalTargets, silentIntervals);
 }
@@ -490,19 +491,20 @@ MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesWithAllStimuli) {
         initializingFixedLevelTestWithAllTargets, allStimuli);
 }
 
-MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
+MODEL_TEST(
+    initializeDefaultFixedLevelTestInitializesWithFixedTrialTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
         initializingDefaultFixedLevelTest, fixedTrialTestConcluder);
 }
 
 MODEL_TEST(
-    initializeFixedLevelEyeTrackingTestInitializesWithFixedTrialTestConcluder) {
+    initializeFixedLevelTestWithEyeTrackingInitializesWithFixedTrialTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
         initializingFixedLevelTestWithEyeTracking, fixedTrialTestConcluder);
 }
 
 MODEL_TEST(
-    initializeFixedLevelSilentIntervalsTestInitializesWithEmptyTargetListTestConcluder) {
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithEmptyTargetListTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
         initializingFixedLevelTestWithSilentIntervalTargets,
         emptyTargetListTestConcluder);
@@ -532,15 +534,16 @@ TEST_F(ModelTests,
     assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker);
 }
 
-MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
+MODEL_TEST(initializeDefaultFixedLevelTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingDefaultFixedLevelTest);
 }
 
-MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesInternalModel) {
+MODEL_TEST(initializeFixedLevelTestWithEyeTrackingInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTestWithEyeTracking);
 }
 
-MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesInternalModel) {
+MODEL_TEST(
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesInternalModel) {
     assertInitializesInternalModel(
         initializingFixedLevelTestWithSilentIntervalTargets);
 }
@@ -585,8 +588,8 @@ TEST_F(
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
-TEST_F(
-    ModelTests, initializeFixedLevelEyeTrackingTestInitializesWithEyeTracking) {
+TEST_F(ModelTests,
+    initializeFixedLevelTestWithEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithEyeTracking);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
