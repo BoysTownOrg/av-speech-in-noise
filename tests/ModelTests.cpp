@@ -191,9 +191,9 @@ void initialize(ModelImpl &model, const FixedLevelTest &test) {
     model.initialize(test);
 }
 
-void initializeTestWithSingleSpeaker(
+void initializeWithSingleSpeaker(
     ModelImpl &model, const AdaptiveTest &test) {
-    model.initializeTestWithSingleSpeaker(test);
+    model.initializeWithSingleSpeaker(test);
 }
 
 void initializeTestWithDelayedMasker(
@@ -265,11 +265,11 @@ class InitializingAdaptiveTestWithSingleSpeaker
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        initializeTestWithSingleSpeaker(model, test_);
+        initializeWithSingleSpeaker(model, test_);
     }
 
     void run(ModelImpl &model, const AdaptiveTest &test) override {
-        initializeTestWithSingleSpeaker(model, test);
+        initializeWithSingleSpeaker(model, test);
     }
 
     auto test() -> const Test & override { return test_; }

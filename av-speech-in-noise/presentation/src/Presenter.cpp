@@ -67,7 +67,7 @@ void Presenter::initializeTest() {
     if (adaptiveClosedSetDelayedMasker())
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetSingleSpeaker())
-        model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
+        model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
     else if (defaultAdaptive())
         model.initialize(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())

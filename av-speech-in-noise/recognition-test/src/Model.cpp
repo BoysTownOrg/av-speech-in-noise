@@ -46,7 +46,7 @@ void ModelImpl::initializeTest_(const AdaptiveTest &p) {
     av_speech_in_noise::initialize(model, adaptiveMethod, p);
 }
 
-void ModelImpl::initializeTestWithSingleSpeaker(const AdaptiveTest &p) {
+void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
     model->initializeWithSingleSpeaker(adaptiveMethod, p);
 }

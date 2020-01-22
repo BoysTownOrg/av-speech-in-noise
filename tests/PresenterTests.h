@@ -62,7 +62,7 @@ class ModelStub : public Model {
         return initializedWithDelayedMasker_;
     }
 
-    void initializeTestWithSingleSpeaker(const AdaptiveTest &p) override {
+    void initializeWithSingleSpeaker(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithSingleSpeaker_ = true;
     }
@@ -2133,7 +2133,7 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeTestWithSingleSpeaker(const AdaptiveTest &) override {
+    void initializeWithSingleSpeaker(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
