@@ -819,13 +819,13 @@ class ConfirmingAdaptiveClosedSetTest : public ConfirmingAdaptiveTest_ {
     }
 };
 
-class ConfirmingAdaptiveClosedSetSingleSpeakerTest
+class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
     : public ConfirmingAdaptiveTest_ {
     ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingAdaptiveClosedSetSingleSpeakerTest(
+    explicit ConfirmingAdaptiveClosedSetTestWithSingleSpeaker(
         ViewStub::TestSetupViewStub *view)
         : confirmingAdaptiveTest{view}, view{view} {}
 
@@ -891,13 +891,13 @@ class ConfirmingAdaptiveClosedSetSingleSpeakerTest
     }
 };
 
-class ConfirmingAdaptiveClosedSetDelayedMaskerTest
+class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
     : public ConfirmingAdaptiveTest_ {
     ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingAdaptiveClosedSetDelayedMaskerTest(
+    explicit ConfirmingAdaptiveClosedSetTestWithDelayedMasker(
         ViewStub::TestSetupViewStub *view)
         : confirmingAdaptiveTest{view}, view{view} {}
 
@@ -1686,9 +1686,9 @@ class PresenterTests : public ::testing::Test {
     BrowsingForMasker browsingForMasker{&setupView};
     BrowsingForCalibration browsingForCalibration{&setupView};
     ConfirmingAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{&setupView};
-    ConfirmingAdaptiveClosedSetSingleSpeakerTest
+    ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
         confirmingAdaptiveClosedSetSingleSpeakerTest{&setupView};
-    ConfirmingAdaptiveClosedSetDelayedMaskerTest
+    ConfirmingAdaptiveClosedSetTestWithDelayedMasker
         confirmingAdaptiveClosedSetDelayedMaskerTest{&setupView};
     ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
     ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
