@@ -224,11 +224,11 @@ PRESENTER_TEST(
         confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesStartingSnr) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesStartingSnr) {
     assertStartingSnrPassedToModel(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesStartingSnr) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesStartingSnr) {
     assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetTest);
 }
 
@@ -246,11 +246,11 @@ PRESENTER_TEST(
         confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesMaskerLevel) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesMaskerLevel) {
     assertMaskerLevelPassedToModel(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesMaskerLevel) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesMaskerLevel) {
     assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetTest);
 }
 
@@ -268,67 +268,67 @@ PRESENTER_TEST(playCalibrationPassesLevel) {
     assertEqual(1, calibration().level_dB_SPL);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesTargetList) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesTargetList) {
     assertPassesTargetListDirectory(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesTargetList) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesTargetList) {
     assertPassesTargetListDirectory(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelOpenSetTestPassesTargetList) {
+PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesTargetList) {
     assertPassesTargetListDirectory(confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedSetTestPassesTargetList) {
+PRESENTER_TEST(confirmFixedLevelClosedSetTestPassesTargetList) {
     assertPassesTargetListDirectory(confirmingDefaultFixedLevelClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesSubjectId) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesSubjectId) {
     assertPassesSubjectId(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesSubjectId) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesSubjectId) {
     assertPassesSubjectId(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelOpenSetTestPassesSubjectId) {
+PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesSubjectId) {
     assertPassesSubjectId(confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedSetTestPassesSubjectId) {
+PRESENTER_TEST(confirmFixedLevelClosedSetTestPassesSubjectId) {
     assertPassesSubjectId(confirmingDefaultFixedLevelClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesTesterId) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesTesterId) {
     assertPassesTesterId(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesTesterId) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesTesterId) {
     assertPassesTesterId(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelOpenSetTestPassesTesterId) {
+PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesTesterId) {
     assertPassesTesterId(confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedSetTestPassesTesterId) {
+PRESENTER_TEST(confirmFixedLevelClosedSetTestPassesTesterId) {
     assertPassesTesterId(confirmingDefaultFixedLevelClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesMasker) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesMasker) {
     assertPassesMasker(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesMasker) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesMasker) {
     assertPassesMasker(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelOpenSetTestPassesMasker) {
+PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesMasker) {
     assertPassesMasker(confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedSetTestPassesMasker) {
+PRESENTER_TEST(confirmFixedLevelClosedSetTestPassesMasker) {
     assertPassesMasker(confirmingDefaultFixedLevelClosedSetTest);
 }
 
@@ -338,87 +338,87 @@ PRESENTER_TEST(playCalibrationPassesFilePath) {
     assertEqual("a", calibration().filePath);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesSession) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesSession) {
     assertPassesSession(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesSession) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesSession) {
     assertPassesSession(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelOpenSetTestPassesSession) {
+PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesSession) {
     assertPassesSession(confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedSetTestPassesSession) {
+PRESENTER_TEST(confirmFixedLevelClosedSetTestPassesSession) {
     assertPassesSession(confirmingDefaultFixedLevelClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesMethod) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesMethod) {
     assertPassesMethod(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesMethod) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesMethod) {
     assertPassesMethod(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelOpenSetTestPassesMethod) {
+PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesMethod) {
     assertPassesMethod(confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedSetTestPassesMethod) {
+PRESENTER_TEST(confirmFixedLevelClosedSetTestPassesMethod) {
     assertPassesMethod(confirmingDefaultFixedLevelClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetDelayedMaskerTestPassesMethod) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestWithDelayedMaskerPassesMethod) {
     assertPassesMethod(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetEyeTrackingTestPassesMethod) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestWithEyeTrackingPassesMethod) {
     assertPassesMethod(confirmingAdaptiveClosedSetTestWithEyeTracking);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetSingleSpeakerTestPassesMethod) {
+PRESENTER_TEST(confirmAdaptiveClosedSetSingleSpeakerTestPassesMethod) {
     assertPassesMethod(confirmingAdaptiveClosedSetTestWithSingleSpeaker);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesCeilingSNR) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesCeilingSNR) {
     assertPassesCeilingSNR(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesCeilingSNR) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesCeilingSNR) {
     assertPassesCeilingSNR(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesFloorSNR) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesFloorSNR) {
     assertPassesFloorSNR(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesFloorSNR) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesFloorSNR) {
     assertPassesFloorSNR(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesTrackBumpLimit) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesTrackBumpLimit) {
     assertPassesTrackBumpLimit(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesTrackBumpLimit) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesTrackBumpLimit) {
     assertPassesTrackBumpLimit(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesFullScaleLevel) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesFullScaleLevel) {
     assertPassesFullScaleLevel(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesFullScaleLevel) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesFullScaleLevel) {
     assertPassesFullScaleLevel(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelOpenSetTestPassesFullScaleLevel) {
+PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesFullScaleLevel) {
     assertPassesFullScaleLevel(confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedSetTestPassesFullScaleLevel) {
+PRESENTER_TEST(confirmFixedLevelClosedSetTestPassesFullScaleLevel) {
     assertPassesFullScaleLevel(confirmingDefaultFixedLevelClosedSetTest);
 }
 
@@ -426,48 +426,48 @@ PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
     assertPassesFullScaleLevel(playingCalibration);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesTrackSettingsFile) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesTrackSettingsFile) {
     assertPassesTrackSettingsFile(confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesTrackSettingsFile) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesTrackSettingsFile) {
     assertPassesTrackSettingsFile(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesAudioVisualCondition) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesAudioVisualCondition) {
     assertAudioVisualConditionPassedToModel(
         confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveClosedSetTestPassesAuditoryOnlyCondition) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestPassesAuditoryOnlyCondition) {
     assertAuditoryOnlyConditionPassedToModel(
         confirmingDefaultAdaptiveClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesAudioVisualCondition) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesAudioVisualCondition) {
     assertAudioVisualConditionPassedToModel(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveOpenSetTestPassesAuditoryOnlyCondition) {
+PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesAuditoryOnlyCondition) {
     assertAuditoryOnlyConditionPassedToModel(confirmingAdaptiveOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelOpenSetTestPassesAudioVisualCondition) {
+PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesAudioVisualCondition) {
     assertAudioVisualConditionPassedToModel(
         confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelOpenSetTestPassesAuditoryOnlyCondition) {
+PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesAuditoryOnlyCondition) {
     assertAuditoryOnlyConditionPassedToModel(
         confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedSetTestPassesAudioVisualCondition) {
+PRESENTER_TEST(confirmFixedLevelClosedSetTestPassesAudioVisualCondition) {
     assertAudioVisualConditionPassedToModel(
         confirmingDefaultFixedLevelClosedSetTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedetTestPassesAuditoryOnlyCondition) {
+PRESENTER_TEST(confirmFixedLevelClosedetTestPassesAuditoryOnlyCondition) {
     assertAuditoryOnlyConditionPassedToModel(
         confirmingDefaultFixedLevelClosedSetTest);
 }
