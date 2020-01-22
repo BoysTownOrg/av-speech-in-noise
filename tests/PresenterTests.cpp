@@ -374,6 +374,10 @@ PRESENTER_TEST(confirmingAdaptiveClosedSetDelayedMaskerTestPassesMethod) {
     assertPassesMethod(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
+PRESENTER_TEST(confirmingAdaptiveClosedSetEyeTrackingTestPassesMethod) {
+    assertPassesMethod(confirmingAdaptiveClosedSetTestWithEyeTracking);
+}
+
 PRESENTER_TEST(confirmingAdaptiveClosedSetSingleSpeakerTestPassesMethod) {
     assertPassesMethod(confirmingAdaptiveClosedSetTestWithSingleSpeaker);
 }
