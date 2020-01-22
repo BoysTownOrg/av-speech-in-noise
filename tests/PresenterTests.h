@@ -1241,13 +1241,13 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
     }
 };
 
-class ConfirmingFixedLevelClosedSetSilentIntervalsTest
+class ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
     : public ConfirmingTestSetup {
     ConfirmingFixedLevelTest confirmingFixedLevelTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingFixedLevelClosedSetSilentIntervalsTest(
+    explicit ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets(
         ViewStub::TestSetupViewStub *view)
         : confirmingFixedLevelTest{view}, view{view} {}
 
@@ -1297,13 +1297,13 @@ class ConfirmingFixedLevelClosedSetSilentIntervalsTest
     }
 };
 
-class ConfirmingFixedLevelOpenSetSilentIntervalsTest
+class ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
     : public ConfirmingTestSetup {
     ConfirmingFixedLevelTest confirmingFixedLevelTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingFixedLevelOpenSetSilentIntervalsTest(
+    explicit ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets(
         ViewStub::TestSetupViewStub *view)
         : confirmingFixedLevelTest{view}, view{view} {}
 
@@ -1353,12 +1353,13 @@ class ConfirmingFixedLevelOpenSetSilentIntervalsTest
     }
 };
 
-class ConfirmingFixedLevelOpenSetAllStimuliTest : public ConfirmingTestSetup {
+class ConfirmingFixedLevelOpenSetTestWithAllTargets
+    : public ConfirmingTestSetup {
     ConfirmingFixedLevelTest confirmingFixedLevelTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingFixedLevelOpenSetAllStimuliTest(
+    explicit ConfirmingFixedLevelOpenSetTestWithAllTargets(
         ViewStub::TestSetupViewStub *view)
         : confirmingFixedLevelTest{view}, view{view} {}
 
@@ -1693,11 +1694,11 @@ class PresenterTests : public ::testing::Test {
     ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{
         &setupView};
-    ConfirmingFixedLevelClosedSetSilentIntervalsTest
+    ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
         confirmingFixedLevelClosedSetSilentIntervalsTest{&setupView};
-    ConfirmingFixedLevelOpenSetSilentIntervalsTest
+    ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
         confirmingFixedLevelOpenSetSilentIntervalsTest{&setupView};
-    ConfirmingFixedLevelOpenSetAllStimuliTest
+    ConfirmingFixedLevelOpenSetTestWithAllTargets
         confirmingFixedLevelOpenSetAllStimuliTest{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
