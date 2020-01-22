@@ -1,6 +1,12 @@
 #include "PresenterTests.h"
 
 namespace av_speech_in_noise::tests::presentation {
+TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
+    model.setAudioDevices({"a", "b", "c"});
+    construct();
+    assertEqual({"a", "b", "c"}, view.audioDevices());
+}
+
 TEST_F(PresenterTests, populatesConditionMenu) {
     assertSetupViewConditionsContains(auditoryOnlyConditionName());
     assertSetupViewConditionsContains(audioVisualConditionName());
@@ -29,12 +35,12 @@ TEST_F(PresenterTests, confirmAdaptiveClosedSetTestHidesTestSetupView) {
 
 TEST_F(PresenterTests,
     confirmAdaptiveClosedSetSingleSpeakerTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingAdaptiveClosedSetSingleSpeakerTest);
+    assertHidesTestSetupView(confirmingAdaptiveClosedSetTestWithSingleSpeaker);
 }
 
 TEST_F(PresenterTests,
     confirmAdaptiveClosedSetDelayedMaskerTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingAdaptiveClosedSetDelayedMaskerTest);
+    assertHidesTestSetupView(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
 TEST_F(PresenterTests, confirmAdaptiveOpenSetTestHidesTestSetupView) {
@@ -75,12 +81,12 @@ TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsSubjectView) {
 
 TEST_F(
     PresenterTests, confirmAdaptiveClosedSetSingleSpeakerTestShowsSubjectView) {
-    assertShowsSubjectView(confirmingAdaptiveClosedSetSingleSpeakerTest);
+    assertShowsSubjectView(confirmingAdaptiveClosedSetTestWithSingleSpeaker);
 }
 
 TEST_F(
     PresenterTests, confirmAdaptiveClosedSetDelayedMaskerTestShowsSubjectView) {
-    assertShowsSubjectView(confirmingAdaptiveClosedSetDelayedMaskerTest);
+    assertShowsSubjectView(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
 TEST_F(PresenterTests,
@@ -112,7 +118,7 @@ TEST_F(PresenterTests, confirmFixedLevelOpenSetTestDoesNotShowSubjectView) {
 }
 
 TEST_F(PresenterTests, confirmFixedLevelOpenSetAllStimuliTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingFixedLevelOpenSetAllStimuliTest);
+    assertDoesNotShowSubjectView(confirmingFixedLevelOpenSetTestWithAllTargets);
 }
 
 TEST_F(PresenterTests, confirmFixedLevelOpenSetSilentIntervalsTestDoesNotShowSubjectView) {
@@ -133,13 +139,13 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetSilentIntervalsTestShowsExperim
 
 TEST_F(PresenterTests,
     confirmAdaptiveClosedSetTestWithSingleSpeakerInitializesModel) {
-    run(confirmingAdaptiveClosedSetSingleSpeakerTest);
+    run(confirmingAdaptiveClosedSetTestWithSingleSpeaker);
     assertTrue(model.initializedWithSingleSpeaker());
 }
 
 TEST_F(PresenterTests,
     confirmAdaptiveClosedSetTestWithDelayedMaskerInitializesModel) {
-    run(confirmingAdaptiveClosedSetDelayedMaskerTest);
+    run(confirmingAdaptiveClosedSetTestWithDelayedMasker);
     assertTrue(model.initializedWithDelayedMasker());
 }
 
@@ -151,7 +157,7 @@ TEST_F(PresenterTests,
 
 TEST_F(PresenterTests,
     confirmFixedLevelOpenSetAllStimuliTestInitializesModel) {
-    run(confirmingFixedLevelOpenSetAllStimuliTest);
+    run(confirmingFixedLevelOpenSetTestWithAllTargets);
     assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
 }
 
@@ -178,7 +184,7 @@ TEST_F(
 
 TEST_F(
     PresenterTests, confirmFixedLevelOpenSetAllStimuliTestDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelOpenSetAllStimuliTest);
+    assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelOpenSetTestWithAllTargets);
 }
 
 TEST_F(
@@ -342,11 +348,11 @@ TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesMethod) {
 }
 
 TEST_F(PresenterTests, confirmingAdaptiveClosedSetDelayedMaskerTestPassesMethod) {
-    assertPassesMethod(confirmingAdaptiveClosedSetDelayedMaskerTest);
+    assertPassesMethod(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
 TEST_F(PresenterTests, confirmingAdaptiveClosedSetSingleSpeakerTestPassesMethod) {
-    assertPassesMethod(confirmingAdaptiveClosedSetSingleSpeakerTest);
+    assertPassesMethod(confirmingAdaptiveClosedSetTestWithSingleSpeaker);
 }
 
 TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesCeilingSNR) {
@@ -482,7 +488,7 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     confirmFixedLevelOpenSetAllStimuliTestShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
-        confirmingFixedLevelOpenSetAllStimuliTest, playingTrialFromExperimenter);
+        confirmingFixedLevelOpenSetTestWithAllTargets, playingTrialFromExperimenter);
 }
 
 TEST_F(PresenterTests,
@@ -814,7 +820,7 @@ TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTrialNumber) {
 }
 
 TEST_F(PresenterTests, confirmFixedLevelOpenSetAllStimuliTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingFixedLevelOpenSetAllStimuliTest);
+    assertShowsTrialNumber(confirmingFixedLevelOpenSetTestWithAllTargets);
 }
 
 TEST_F(PresenterTests, confirmFixedLevelOpenSetSilentIntervalsTestShowsTrialNumber) {
@@ -862,13 +868,13 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetSingleSpeakerTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveClosedSetSingleSpeakerTest, respondingFromSubject);
+        confirmingAdaptiveClosedSetTestWithSingleSpeaker, respondingFromSubject);
 }
 
 TEST_F(PresenterTests,
     completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetDelayedMaskerTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveClosedSetDelayedMaskerTest, respondingFromSubject);
+        confirmingAdaptiveClosedSetTestWithDelayedMasker, respondingFromSubject);
 }
 
 TEST_F(PresenterTests,
@@ -898,7 +904,7 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetAllStimuliTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingFixedLevelOpenSetAllStimuliTest, respondingFromExperimenter);
+        confirmingFixedLevelOpenSetTestWithAllTargets, respondingFromExperimenter);
 }
 
 TEST_F(PresenterTests,

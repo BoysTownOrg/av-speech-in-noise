@@ -1662,12 +1662,6 @@ class PresenterConstructionTests : public ::testing::Test {
     }
 };
 
-TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
-    model.setAudioDevices({"a", "b", "c"});
-    construct();
-    assertEqual({"a", "b", "c"}, view.audioDevices());
-}
-
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -1687,9 +1681,9 @@ class PresenterTests : public ::testing::Test {
     BrowsingForCalibration browsingForCalibration{&setupView};
     ConfirmingAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{&setupView};
     ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
-        confirmingAdaptiveClosedSetSingleSpeakerTest{&setupView};
+        confirmingAdaptiveClosedSetTestWithSingleSpeaker{&setupView};
     ConfirmingAdaptiveClosedSetTestWithDelayedMasker
-        confirmingAdaptiveClosedSetDelayedMaskerTest{&setupView};
+        confirmingAdaptiveClosedSetTestWithDelayedMasker{&setupView};
     ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
     ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{
@@ -1699,7 +1693,7 @@ class PresenterTests : public ::testing::Test {
     ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
         confirmingFixedLevelOpenSetSilentIntervalsTest{&setupView};
     ConfirmingFixedLevelOpenSetTestWithAllTargets
-        confirmingFixedLevelOpenSetAllStimuliTest{&setupView};
+        confirmingFixedLevelOpenSetTestWithAllTargets{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{&testingView};
