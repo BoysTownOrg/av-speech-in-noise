@@ -77,7 +77,7 @@ void Presenter::initializeTest() {
     else if (fixedLevelAllStimuli())
         model.initializeWithAllTargets(fixedLevelTest(testSetup));
     else
-        model.initialize(fixedLevelTest(testSetup));
+        model.initializeWithTargetReplacement(fixedLevelTest(testSetup));
 }
 
 auto Presenter::adaptiveClosedSet() -> bool {

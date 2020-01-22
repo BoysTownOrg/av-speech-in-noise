@@ -73,13 +73,13 @@ class ModelImpl : public Model {
         TargetList *silentIntervalTargets, TestConcluder *completesWhenTargetsEmpty,
         TargetList *allTargets, RecognitionTestModel *);
     void initialize(const AdaptiveTest &) override;
-    void initialize(const FixedLevelTest &) override;
+    void initializeWithTargetReplacement(const FixedLevelTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
     void initializeWithAllTargets(const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
     void initializeWithEyeTracking(const FixedLevelTest &);
-    void initializeWithEyeTracking(const AdaptiveTest &);
+    void initializeWithEyeTracking(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
     auto testComplete() -> bool override;

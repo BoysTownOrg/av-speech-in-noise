@@ -84,7 +84,7 @@ class ModelStub : public Model {
         return trialParameters_;
     }
 
-    void initialize(const FixedLevelTest &p) override {
+    void initializeWithTargetReplacement(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         defaultFixedLevelTestInitialized_ = true;
     }
@@ -1668,7 +1668,7 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void initialize(const FixedLevelTest &) override {
+    void initializeWithTargetReplacement(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 

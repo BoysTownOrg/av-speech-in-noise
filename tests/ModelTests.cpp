@@ -187,7 +187,7 @@ void initialize(ModelImpl &model, const AdaptiveTest &test) {
 }
 
 void initialize(ModelImpl &model, const FixedLevelTest &test) {
-    model.initialize(test);
+    model.initializeWithTargetReplacement(test);
 }
 
 void initializeWithSingleSpeaker(ModelImpl &model, const AdaptiveTest &test) {
