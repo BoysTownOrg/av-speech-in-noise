@@ -15,13 +15,13 @@ TEST_F(PresenterTests, populatesConditionMenu) {
 TEST_F(PresenterTests, populatesMethodMenu) {
     assertSetupViewMethodsContains(Method::defaultFixedLevelOpenSet);
     assertSetupViewMethodsContains(Method::defaultFixedLevelClosedSet);
-    assertSetupViewMethodsContains(Method::fixedLevelOpenSetAllStimuli);
-    assertSetupViewMethodsContains(Method::fixedLevelOpenSetSilentIntervals);
-    assertSetupViewMethodsContains(Method::fixedLevelClosedSetSilentIntervals);
+    assertSetupViewMethodsContains(Method::fixedLevelOpenSetWithAllTargets);
+    assertSetupViewMethodsContains(Method::fixedLevelOpenSetWithSilentIntervalTargets);
+    assertSetupViewMethodsContains(Method::fixedLevelClosedSetWithSilentIntervalTargets);
     assertSetupViewMethodsContains(Method::adaptiveOpenSet);
     assertSetupViewMethodsContains(Method::defaultAdaptiveClosedSet);
-    assertSetupViewMethodsContains(Method::adaptiveClosedSetSingleSpeaker);
-    assertSetupViewMethodsContains(Method::adaptiveClosedSetDelayedMasker);
+    assertSetupViewMethodsContains(Method::adaptiveClosedSetWithSingleSpeaker);
+    assertSetupViewMethodsContains(Method::adaptiveClosedSetWithDelayedMasker);
 }
 
 TEST_F(PresenterTests, callsEventLoopWhenRun) {

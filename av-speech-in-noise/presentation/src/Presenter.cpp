@@ -64,9 +64,9 @@ void Presenter::confirmTestSetup_() {
 }
 
 void Presenter::initializeTest() {
-    if (adaptiveClosedSetDelayedMasker())
+    if (adaptiveClosedSetWithDelayedMasker())
         model.initializeWithDelayedMasker(adaptiveTest(testSetup));
-    else if (adaptiveClosedSetSingleSpeaker())
+    else if (adaptiveClosedSetWithSingleSpeaker())
         model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
     else if (defaultAdaptive())
         model.initialize(adaptiveTest(testSetup));
@@ -94,12 +94,12 @@ auto Presenter::fixedLevelAllStimuli() -> bool {
     return testSetup.fixedLevelAllStimuli();
 }
 
-auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
-    return testSetup.adaptiveClosedSetDelayedMasker();
+auto Presenter::adaptiveClosedSetWithDelayedMasker() -> bool {
+    return testSetup.adaptiveClosedSetWithDelayedMasker();
 }
 
-auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
-    return testSetup.adaptiveClosedSetSingleSpeaker();
+auto Presenter::adaptiveClosedSetWithSingleSpeaker() -> bool {
+    return testSetup.adaptiveClosedSetWithSingleSpeaker();
 }
 
 auto Presenter::testComplete() -> bool { return model.testComplete(); }
@@ -261,14 +261,14 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
     view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
-        methodName(Method::adaptiveClosedSetSingleSpeaker),
-        methodName(Method::adaptiveClosedSetDelayedMasker),
+        methodName(Method::adaptiveClosedSetWithSingleSpeaker),
+        methodName(Method::adaptiveClosedSetWithDelayedMasker),
         methodName(Method::adaptiveOpenSet),
         methodName(Method::defaultFixedLevelClosedSet),
-        methodName(Method::fixedLevelClosedSetSilentIntervals),
+        methodName(Method::fixedLevelClosedSetWithSilentIntervalTargets),
         methodName(Method::defaultFixedLevelOpenSet),
-        methodName(Method::fixedLevelOpenSetSilentIntervals),
-        methodName(Method::fixedLevelOpenSetAllStimuli)});
+        methodName(Method::fixedLevelOpenSetWithSilentIntervalTargets),
+        methodName(Method::fixedLevelOpenSetWithAllTargets)});
     view->subscribe(this);
 }
 
@@ -401,34 +401,34 @@ auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
 
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
     return defaultAdaptiveClosedSet() ||
-        adaptiveClosedSetSingleSpeaker() ||
-        adaptiveClosedSetDelayedMasker();
+        adaptiveClosedSetWithSingleSpeaker() ||
+        adaptiveClosedSetWithDelayedMasker();
 }
 
-auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
-    return method(Method::adaptiveClosedSetDelayedMasker);
+auto Presenter::TestSetup::adaptiveClosedSetWithDelayedMasker() -> bool {
+    return method(Method::adaptiveClosedSetWithDelayedMasker);
 }
 
-auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
-    return method(Method::adaptiveClosedSetSingleSpeaker);
+auto Presenter::TestSetup::adaptiveClosedSetWithSingleSpeaker() -> bool {
+    return method(Method::adaptiveClosedSetWithSingleSpeaker);
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
     return method(Method::defaultFixedLevelClosedSet) ||
-        fixedLevelClosedSetSilentIntervals();
+        fixedLevelClosedSetWithSilentIntervalTargets();
 }
 
-auto Presenter::TestSetup::fixedLevelClosedSetSilentIntervals() -> bool {
-    return method(Method::fixedLevelClosedSetSilentIntervals);
+auto Presenter::TestSetup::fixedLevelClosedSetWithSilentIntervalTargets() -> bool {
+    return method(Method::fixedLevelClosedSetWithSilentIntervalTargets);
 }
 
 auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
-    return fixedLevelClosedSetSilentIntervals() ||
-        method(Method::fixedLevelOpenSetSilentIntervals);
+    return fixedLevelClosedSetWithSilentIntervalTargets() ||
+        method(Method::fixedLevelOpenSetWithSilentIntervalTargets);
 }
 
 auto Presenter::TestSetup::fixedLevelAllStimuli() -> bool {
-    return method(Method::fixedLevelOpenSetAllStimuli);
+    return method(Method::fixedLevelOpenSetWithAllTargets);
 }
 
 auto Presenter::TestSetup::closedSet() -> bool {

@@ -123,13 +123,13 @@ class View {
 enum class Method {
     adaptiveOpenSet,
     defaultAdaptiveClosedSet,
-    adaptiveClosedSetSingleSpeaker,
-    adaptiveClosedSetDelayedMasker,
+    adaptiveClosedSetWithSingleSpeaker,
+    adaptiveClosedSetWithDelayedMasker,
     defaultFixedLevelOpenSet,
-    fixedLevelOpenSetSilentIntervals,
-    fixedLevelOpenSetAllStimuli,
+    fixedLevelOpenSetWithSilentIntervalTargets,
+    fixedLevelOpenSetWithAllTargets,
     defaultFixedLevelClosedSet,
-    fixedLevelClosedSetSilentIntervals
+    fixedLevelClosedSetWithSilentIntervalTargets
 };
 
 constexpr auto methodName(Method c) -> const char * {
@@ -138,19 +138,19 @@ constexpr auto methodName(Method c) -> const char * {
         return "adaptive open-set";
     case Method::defaultAdaptiveClosedSet:
         return "adaptive closed-set";
-    case Method::adaptiveClosedSetSingleSpeaker:
+    case Method::adaptiveClosedSetWithSingleSpeaker:
         return "adaptive closed-set single speaker";
-    case Method::adaptiveClosedSetDelayedMasker:
+    case Method::adaptiveClosedSetWithDelayedMasker:
         return "adaptive closed-set delayed masker";
     case Method::defaultFixedLevelOpenSet:
         return "fixed-level open-set with replacement";
     case Method::defaultFixedLevelClosedSet:
         return "fixed-level closed-set with replacement";
-    case Method::fixedLevelOpenSetSilentIntervals:
+    case Method::fixedLevelOpenSetWithSilentIntervalTargets:
         return "fixed-level open-set silent intervals";
-    case Method::fixedLevelClosedSetSilentIntervals:
+    case Method::fixedLevelClosedSetWithSilentIntervalTargets:
         return "fixed-level closed-set silent intervals";
-    case Method::fixedLevelOpenSetAllStimuli:
+    case Method::fixedLevelOpenSetWithAllTargets:
         return "fixed-level open-set all stimuli";
     }
 }
@@ -198,12 +198,12 @@ class Presenter : public Model::EventListener {
         auto adaptiveOpenSet() -> bool;
         auto fixedLevelOpenSet() -> bool;
         auto fixedLevelClosedSet() -> bool;
-        auto fixedLevelClosedSetSilentIntervals() -> bool;
+        auto fixedLevelClosedSetWithSilentIntervalTargets() -> bool;
         auto fixedLevelSilentIntervals() -> bool;
         auto fixedLevelAllStimuli() -> bool;
         auto singleSpeaker() -> bool;
-        auto adaptiveClosedSetDelayedMasker() -> bool;
-        auto adaptiveClosedSetSingleSpeaker() -> bool;
+        auto adaptiveClosedSetWithDelayedMasker() -> bool;
+        auto adaptiveClosedSetWithSingleSpeaker() -> bool;
         auto delayedMasker() -> bool;
         void playCalibration() override;
         void browseForTargetList() override;
@@ -343,8 +343,8 @@ class Presenter : public Model::EventListener {
     auto defaultAdaptive() -> bool;
     auto singleSpeaker() -> bool;
     auto delayedMasker() -> bool;
-    auto adaptiveClosedSetDelayedMasker() -> bool;
-    auto adaptiveClosedSetSingleSpeaker() -> bool;
+    auto adaptiveClosedSetWithDelayedMasker() -> bool;
+    auto adaptiveClosedSetWithSingleSpeaker() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
@@ -362,7 +362,7 @@ class Presenter : public Model::EventListener {
     auto adaptiveOpenSet() -> bool;
     auto closedSet() -> bool;
     auto fixedLevelClosedSet() -> bool;
-    auto fixedLevelClosedSetSilentIntervals() -> bool;
+    auto fixedLevelClosedSetWithSilentIntervalTargets() -> bool;
     void initializeTest();
     void showTestView();
     void switchToTestView();

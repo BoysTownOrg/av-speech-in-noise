@@ -780,7 +780,7 @@ class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
         : confirmingAdaptiveTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveClosedSetSingleSpeaker);
+        setMethod(view, Method::adaptiveClosedSetWithSingleSpeaker);
         presentation::run(confirmingAdaptiveTest);
     }
 
@@ -836,7 +836,7 @@ class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
         : confirmingAdaptiveTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveClosedSetDelayedMasker);
+        setMethod(view, Method::adaptiveClosedSetWithDelayedMasker);
         presentation::run(confirmingAdaptiveTest);
     }
 
@@ -1152,7 +1152,7 @@ class ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
         : confirmingFixedLevelTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelClosedSetSilentIntervals);
+        setMethod(view, Method::fixedLevelClosedSetWithSilentIntervalTargets);
         presentation::run(confirmingFixedLevelTest);
     }
 
@@ -1208,7 +1208,7 @@ class ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
         : confirmingFixedLevelTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelOpenSetSilentIntervals);
+        setMethod(view, Method::fixedLevelOpenSetWithSilentIntervalTargets);
         presentation::run(confirmingFixedLevelTest);
     }
 
@@ -1264,7 +1264,7 @@ class ConfirmingFixedLevelOpenSetTestWithAllTargets
         : confirmingFixedLevelTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelOpenSetAllStimuli);
+        setMethod(view, Method::fixedLevelOpenSetWithAllTargets);
         presentation::run(confirmingFixedLevelTest);
     }
 
