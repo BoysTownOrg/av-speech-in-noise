@@ -615,6 +615,10 @@ static auto fixedLevelTest(ModelStub &m) -> const FixedLevelTest & {
     return m.fixedLevelTest();
 }
 
+static void confirmTestSetup(ViewStub::TestSetupViewStub *view) {
+    view->confirmTestSetup();
+}
+
 class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
@@ -622,7 +626,7 @@ class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
     explicit ConfirmingAdaptiveTest(ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
-    void run() override { view->confirmTestSetup(); }
+    void run() override { confirmTestSetup(view); }
 
     static auto testIdentity(ModelStub &m) -> const TestIdentity & {
         return adaptiveTest(m).identity;
@@ -725,7 +729,7 @@ class ConfirmingAdaptiveClosedSetTest : public ConfirmingTestSetup {
 
     void run() override {
         setMethod(view, Method::defaultAdaptiveClosedSet);
-        presentation::run(confirmingAdaptiveTest);
+        confirmTestSetup(view);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
@@ -781,7 +785,7 @@ class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
 
     void run() override {
         setMethod(view, Method::adaptiveClosedSetWithSingleSpeaker);
-        presentation::run(confirmingAdaptiveTest);
+        confirmTestSetup(view);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
@@ -837,7 +841,7 @@ class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
 
     void run() override {
         setMethod(view, Method::adaptiveClosedSetWithDelayedMasker);
-        presentation::run(confirmingAdaptiveTest);
+        confirmTestSetup(view);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
@@ -891,7 +895,7 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
 
     void run() override {
         setMethod(view, Method::adaptiveOpenSet);
-        presentation::run(confirmingAdaptiveTest);
+        confirmTestSetup(view);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
@@ -942,7 +946,7 @@ class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
     explicit ConfirmingFixedLevelTest(ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
-    void run() override { view->confirmTestSetup(); }
+    void run() override { confirmTestSetup(view); }
 
     static auto identity(ModelStub &m) -> const TestIdentity & {
         return fixedLevelTest(m).identity;
@@ -1042,7 +1046,7 @@ class ConfirmingFixedLevelOpenSetTest : public ConfirmingTestSetup {
 
     void run() override {
         setMethod(view, Method::defaultFixedLevelOpenSet);
-        presentation::run(confirmingFixedLevelTest);
+        confirmTestSetup(view);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
@@ -1097,7 +1101,7 @@ class ConfirmingFixedLevelClosedSetTest : public ConfirmingTestSetup {
 
     void run() override {
         setMethod(view, Method::defaultFixedLevelClosedSet);
-        presentation::run(confirmingFixedLevelTest);
+        confirmTestSetup(view);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
@@ -1153,7 +1157,7 @@ class ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
 
     void run() override {
         setMethod(view, Method::fixedLevelClosedSetWithSilentIntervalTargets);
-        presentation::run(confirmingFixedLevelTest);
+        confirmTestSetup(view);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
@@ -1209,7 +1213,7 @@ class ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
 
     void run() override {
         setMethod(view, Method::fixedLevelOpenSetWithSilentIntervalTargets);
-        presentation::run(confirmingFixedLevelTest);
+        confirmTestSetup(view);
     }
 
     auto snr_dB(ModelStub &m) -> int override {
@@ -1265,7 +1269,7 @@ class ConfirmingFixedLevelOpenSetTestWithAllTargets
 
     void run() override {
         setMethod(view, Method::fixedLevelOpenSetWithAllTargets);
-        presentation::run(confirmingFixedLevelTest);
+        confirmTestSetup(view);
     }
 
     auto snr_dB(ModelStub &m) -> int override {

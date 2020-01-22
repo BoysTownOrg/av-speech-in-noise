@@ -123,12 +123,12 @@ TEST_F(PresenterTests, confirmFixedLevelOpenSetTestDoesNotShowSubjectView) {
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetAllStimuliTestDoesNotShowSubjectView) {
+    confirmFixedLevelClosedSetTestWithAllTargetsDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(confirmingFixedLevelOpenSetTestWithAllTargets);
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestDoesNotShowSubjectView) {
+    confirmFixedLevelOpenSetTestWithSilentIntervalTargetsDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(
         confirmingFixedLevelOpenSetSilentIntervalsTest);
 }
@@ -165,13 +165,14 @@ TEST_F(PresenterTests,
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
-TEST_F(PresenterTests, confirmFixedLevelOpenSetAllStimuliTestInitializesModel) {
+TEST_F(PresenterTests,
+    confirmFixedLevelClosedSetTestWithAllTargetsInitializesModel) {
     run(confirmingFixedLevelOpenSetTestWithAllTargets);
     assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestInitializesModel) {
+    confirmFixedLevelOpenSetTestWithSilentIntervalTargetsInitializesModel) {
     run(confirmingFixedLevelOpenSetSilentIntervalsTest);
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
@@ -192,13 +193,13 @@ TEST_F(
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetAllStimuliTestDoesNotInitializeAdaptiveTest) {
+    confirmFixedLevelClosedSetTestWithAllTargetsDoesNotInitializeAdaptiveTest) {
     assertDoesNotInitializeAdaptiveTest(
         confirmingFixedLevelOpenSetTestWithAllTargets);
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestDoesNotInitializeAdaptiveTest) {
+    confirmFixedLevelOpenSetTestWithSilentIntervalTargetsDoesNotInitializeAdaptiveTest) {
     assertDoesNotInitializeAdaptiveTest(
         confirmingFixedLevelOpenSetSilentIntervalsTest);
 }
@@ -502,14 +503,14 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetAllStimuliTestShowsNextTrialButtonForExperimenter) {
+    confirmFixedLevelClosedSetTestWithAllTargetsShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelOpenSetTestWithAllTargets,
         playingTrialFromExperimenter);
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestShowsNextTrialButtonForExperimenter) {
+    confirmFixedLevelOpenSetTestWithSilentIntervalTargetsShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelOpenSetSilentIntervalsTest,
         playingTrialFromExperimenter);
@@ -837,12 +838,13 @@ TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingFixedLevelOpenSetTest);
 }
 
-TEST_F(PresenterTests, confirmFixedLevelOpenSetAllStimuliTestShowsTrialNumber) {
+TEST_F(PresenterTests,
+    confirmFixedLevelClosedSetTestWithAllTargetsShowsTrialNumber) {
     assertShowsTrialNumber(confirmingFixedLevelOpenSetTestWithAllTargets);
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestShowsTrialNumber) {
+    confirmFixedLevelOpenSetTestWithSilentIntervalTargetsShowsTrialNumber) {
     assertShowsTrialNumber(confirmingFixedLevelOpenSetSilentIntervalsTest);
 }
 
