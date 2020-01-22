@@ -120,9 +120,7 @@ void Presenter::showTestView() {
         testing.show();
 }
 
-auto Presenter::closedSet() -> bool {
-    return testSetup.closedSet();
-}
+auto Presenter::closedSet() -> bool { return testSetup.closedSet(); }
 
 auto Presenter::defaultAdaptive() -> bool {
     return testSetup.defaultAdaptive();
@@ -263,6 +261,7 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
         methodName(Method::adaptiveClosedSetWithSingleSpeaker),
         methodName(Method::adaptiveClosedSetWithDelayedMasker),
+        methodName(Method::adaptiveClosedSetWithEyeTracking),
         methodName(Method::adaptiveOpenSet),
         methodName(Method::defaultFixedLevelClosedSet),
         methodName(Method::fixedLevelClosedSetWithSilentIntervalTargets),
@@ -400,8 +399,7 @@ auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
 }
 
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
-    return defaultAdaptiveClosedSet() ||
-        adaptiveClosedSetWithSingleSpeaker() ||
+    return defaultAdaptiveClosedSet() || adaptiveClosedSetWithSingleSpeaker() ||
         adaptiveClosedSetWithDelayedMasker();
 }
 
@@ -418,7 +416,8 @@ auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
         fixedLevelClosedSetWithSilentIntervalTargets();
 }
 
-auto Presenter::TestSetup::fixedLevelClosedSetWithSilentIntervalTargets() -> bool {
+auto Presenter::TestSetup::fixedLevelClosedSetWithSilentIntervalTargets()
+    -> bool {
     return method(Method::fixedLevelClosedSetWithSilentIntervalTargets);
 }
 
