@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_H_
 
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <presentation/Presenter.hpp>
 #include <gtest/gtest.h>
 #include <algorithm>
@@ -610,6 +611,10 @@ static auto adaptiveTest(ModelStub &m) -> const AdaptiveTest & {
     return m.adaptiveTest();
 }
 
+static auto fixedLevelTest(ModelStub &m) -> const FixedLevelTest & {
+    return m.fixedLevelTest();
+}
+
 class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
@@ -619,22 +624,20 @@ class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
 
     void run() override { view->confirmTestSetup(); }
 
-    static auto test(ModelStub &m) -> const AdaptiveTest & {
-        return m.adaptiveTest();
-    }
-
     static auto testIdentity(ModelStub &m) -> const TestIdentity & {
-        return test(m).identity;
+        return adaptiveTest(m).identity;
     }
 
-    auto snr_dB(ModelStub &m) -> int override { return test(m).startingSnr_dB; }
+    auto snr_dB(ModelStub &m) -> int override {
+        return adaptiveTest(m).startingSnr_dB;
+    }
 
     auto maskerLevel(ModelStub &m) -> int override {
-        return test(m).maskerLevel_dB_SPL;
+        return adaptiveTest(m).maskerLevel_dB_SPL;
     }
 
     auto targetListDirectory(ModelStub &m) -> std::string override {
-        return test(m).targetListDirectory;
+        return adaptiveTest(m).targetListDirectory;
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
@@ -654,15 +657,15 @@ class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return test(m).maskerFilePath;
+        return adaptiveTest(m).maskerFilePath;
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
-        return test(m).fullScaleLevel_dB_SPL;
+        return adaptiveTest(m).fullScaleLevel_dB_SPL;
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return test(m).condition;
+        return adaptiveTest(m).condition;
     }
 };
 
@@ -941,26 +944,24 @@ class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
 
     void run() override { view->confirmTestSetup(); }
 
-    static auto test(ModelStub &m) -> const FixedLevelTest & {
-        return m.fixedLevelTest();
-    }
-
     static auto identity(ModelStub &m) -> const TestIdentity & {
-        return test(m).identity;
+        return fixedLevelTest(m).identity;
     }
 
-    auto snr_dB(ModelStub &m) -> int override { return test(m).snr_dB; }
+    auto snr_dB(ModelStub &m) -> int override {
+        return fixedLevelTest(m).snr_dB;
+    }
 
     auto maskerLevel(ModelStub &m) -> int override {
-        return test(m).maskerLevel_dB_SPL;
+        return fixedLevelTest(m).maskerLevel_dB_SPL;
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
-        return test(m).fullScaleLevel_dB_SPL;
+        return fixedLevelTest(m).fullScaleLevel_dB_SPL;
     }
 
     auto targetListDirectory(ModelStub &m) -> std::string override {
-        return test(m).targetListDirectory;
+        return fixedLevelTest(m).targetListDirectory;
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
@@ -980,11 +981,11 @@ class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return test(m).maskerFilePath;
+        return fixedLevelTest(m).maskerFilePath;
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return test(m).condition;
+        return fixedLevelTest(m).condition;
     }
 };
 
