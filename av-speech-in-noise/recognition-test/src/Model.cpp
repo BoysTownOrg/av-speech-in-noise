@@ -25,7 +25,7 @@ void ModelImpl::initialize(const FixedLevelTest &p) {
     av_speech_in_noise::initialize(model, fixedLevelMethod, p);
 }
 
-void ModelImpl::initializeSilentIntervalsTest(const FixedLevelTest &p) {
+void ModelImpl::initializeWithSilentIntervalStimuli(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, silentIntervals, completesWhenTargetsEmpty);
     av_speech_in_noise::initialize(model, fixedLevelMethod, p);

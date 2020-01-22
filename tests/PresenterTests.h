@@ -72,7 +72,7 @@ class ModelStub : public Model {
         initializedWithDelayedMasker_ = true;
     }
 
-    void initializeSilentIntervalsTest(const FixedLevelTest &p) override {
+    void initializeWithSilentIntervalStimuli(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelSilentIntervalsTestInitialized_ = true;
     }
@@ -2125,7 +2125,7 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeSilentIntervalsTest(const FixedLevelTest &) override {
+    void initializeWithSilentIntervalStimuli(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 
