@@ -520,7 +520,7 @@ MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingDefaultAdaptiveTest);
 }
 
-MODEL_TEST(initializeAdaptiveEyeTrackingTestInitializesAdaptiveMethod) {
+MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingAdaptiveTestWithEyeTracking);
 }
 
@@ -554,7 +554,7 @@ MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingDefaultAdaptiveTest);
 }
 
-MODEL_TEST(initializeAdaptiveEyeTrackingTestInitializesInternalModel) {
+MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithEyeTracking);
 }
 
@@ -576,7 +576,7 @@ MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
     assertTrue(internalModel.initializedWithDelayedMasker());
 }
 
-MODEL_TEST(initializeAdaptiveEyeTrackingTestInitializesWithEyeTracking) {
+MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithEyeTracking);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
