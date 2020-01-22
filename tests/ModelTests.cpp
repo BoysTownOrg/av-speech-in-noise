@@ -204,7 +204,7 @@ void initializeWithSilentIntervalTargets(
 }
 
 void initializeWithEyeTracking(ModelImpl &model, const FixedLevelTest &test) {
-    model.initializeWithEyeTracking(test);
+    model.initializeWithTargetReplacementAndEyeTracking(test);
 }
 
 void initializeWithEyeTracking(ModelImpl &model, const AdaptiveTest &test) {

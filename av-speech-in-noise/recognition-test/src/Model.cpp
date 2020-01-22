@@ -80,7 +80,7 @@ void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
         model, adaptiveMethod, test);
 }
 
-void ModelImpl::initializeWithEyeTracking(const FixedLevelTest &test) {
+void ModelImpl::initializeWithTargetReplacementAndEyeTracking(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
         fixedLevelMethod, test, targetsWithReplacement, fixedTrialTestConcluder);
     av_speech_in_noise::initializeWithEyeTracking(
