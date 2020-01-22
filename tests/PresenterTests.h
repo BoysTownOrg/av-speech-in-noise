@@ -2,56 +2,37 @@
 #define AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_H_
 
 #include "assert-utility.h"
-#include "av-speech-in-noise/Model.hpp"
-#include <gtest/gtest.h>
 #include <presentation/Presenter.hpp>
+#include <gtest/gtest.h>
 #include <algorithm>
 #include <utility>
 
 namespace av_speech_in_noise::tests::presentation {
 template <typename T> class Collection {
-    std::vector<T> items{};
-
   public:
     explicit Collection(std::vector<T> items = {}) : items{std::move(items)} {}
 
     [[nodiscard]] auto contains(const T &item) const -> bool {
         return std::find(items.begin(), items.end(), item) != items.end();
     }
+
+  private:
+    std::vector<T> items{};
 };
 
 class ModelStub : public Model {
-    AdaptiveTest adaptiveTest_{};
-    FixedLevelTest fixedLevelTest_{};
-    Calibration calibration_{};
-    AudioSettings trialParameters_{};
-    coordinate_response_measure::Response responseParameters_{};
-    std::vector<std::string> audioDevices_{};
-    open_set::FreeResponse freeResponse_{};
-    EventListener *listener_{};
-    int trialNumber_{};
-    bool testComplete_{};
-    bool trialPlayed_{};
-    bool fixedLevelTestInitialized_{};
-    bool adaptiveTestInitialized_{};
-    bool correctResponseSubmitted_{};
-    bool incorrectResponseSubmitted_{};
-    bool fixedLevelSilentIntervalsTestInitialized_{};
-    bool fixedLevelAllStimuliTestInitialized_{};
-    bool initializedWithSingleSpeaker_{};
-    bool initializedWithDelayedMasker_{};
-
   public:
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
 
-    [[nodiscard]] auto fixedLevelSilentIntervalsTestInitialized() const {
-        return fixedLevelSilentIntervalsTestInitialized_;
+    [[nodiscard]] auto
+    fixedLevelTestWithSilentIntervalTargetsInitialized() const {
+        return fixedLevelTestWithSilentIntervalTargetsInitialized_;
     }
 
-    [[nodiscard]] auto fixedLevelAllStimuliTestInitialized() const {
-        return fixedLevelAllStimuliTestInitialized_;
+    [[nodiscard]] auto fixedLevelTestWithAllTargetsInitialized() const {
+        return fixedLevelTestWithAllTargetsInitialized_;
     }
 
     [[nodiscard]] auto initializedWithSingleSpeaker() const {
@@ -60,6 +41,52 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto initializedWithDelayedMasker() const {
         return initializedWithDelayedMasker_;
+    }
+
+    [[nodiscard]] auto defaultFixedLevelTestInitialized() const {
+        return defaultFixedLevelTestInitialized_;
+    }
+
+    [[nodiscard]] auto defaultAdaptiveTestInitialized() const {
+        return defaultAdaptiveTestInitialized_;
+    }
+
+    [[nodiscard]] auto trialPlayed() const { return trialPlayed_; }
+
+    [[nodiscard]] auto adaptiveTest() const -> auto & { return adaptiveTest_; }
+
+    [[nodiscard]] auto fixedLevelTest() const -> auto & {
+        return fixedLevelTest_;
+    }
+
+    [[nodiscard]] auto calibration() const -> auto & { return calibration_; }
+
+    [[nodiscard]] auto incorrectResponseSubmitted() const {
+        return incorrectResponseSubmitted_;
+    }
+
+    [[nodiscard]] auto correctResponseSubmitted() const {
+        return correctResponseSubmitted_;
+    }
+
+    [[nodiscard]] auto freeResponse() const { return freeResponse_; }
+
+    [[nodiscard]] auto responseParameters() const -> auto & {
+        return responseParameters_;
+    }
+
+    [[nodiscard]] auto trialParameters() const -> auto & {
+        return trialParameters_;
+    }
+
+    void initialize(const FixedLevelTest &p) override {
+        fixedLevelTest_ = p;
+        defaultFixedLevelTestInitialized_ = true;
+    }
+
+    void initialize(const AdaptiveTest &p) override {
+        adaptiveTest_ = p;
+        defaultAdaptiveTestInitialized_ = true;
     }
 
     void initializeWithSingleSpeaker(const AdaptiveTest &p) override {
@@ -74,36 +101,18 @@ class ModelStub : public Model {
 
     void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
-        fixedLevelSilentIntervalsTestInitialized_ = true;
+        fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
     }
 
     void initializeWithAllTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
-        fixedLevelAllStimuliTestInitialized_ = true;
+        fixedLevelTestWithAllTargetsInitialized_ = true;
     }
-
-    [[nodiscard]] auto incorrectResponseSubmitted() const {
-        return incorrectResponseSubmitted_;
-    }
-
-    [[nodiscard]] auto correctResponseSubmitted() const {
-        return correctResponseSubmitted_;
-    }
-
-    [[nodiscard]] auto freeResponse() const { return freeResponse_; }
 
     void completeTrial() { listener_->trialComplete(); }
 
     void setAudioDevices(std::vector<std::string> v) {
         audioDevices_ = std::move(v);
-    }
-
-    [[nodiscard]] auto responseParameters() const -> auto & {
-        return responseParameters_;
-    }
-
-    [[nodiscard]] auto trialParameters() const -> auto & {
-        return trialParameters_;
     }
 
     void setTestComplete() { testComplete_ = true; }
@@ -113,11 +122,6 @@ class ModelStub : public Model {
     void playTrial(const AudioSettings &p) override {
         trialParameters_ = p;
         trialPlayed_ = true;
-    }
-
-    void initialize(const AdaptiveTest &p) override {
-        adaptiveTestInitialized_ = true;
-        adaptiveTest_ = p;
     }
 
     auto audioDevices() -> std::vector<std::string> override {
@@ -139,32 +143,30 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void initialize(const FixedLevelTest &p) override {
-        fixedLevelTestInitialized_ = true;
-        fixedLevelTest_ = p;
-    }
-
     void submitResponse(const open_set::FreeResponse &s) override {
         freeResponse_ = s;
     }
 
-    [[nodiscard]] auto trialPlayed() const { return trialPlayed_; }
-
-    [[nodiscard]] auto adaptiveTest() const -> auto & { return adaptiveTest_; }
-
-    [[nodiscard]] auto fixedLevelTest() const -> auto & {
-        return fixedLevelTest_;
-    }
-
-    [[nodiscard]] auto calibration() const -> auto & { return calibration_; }
-
-    [[nodiscard]] auto fixedLevelTestInitialized() const {
-        return fixedLevelTestInitialized_;
-    }
-
-    [[nodiscard]] auto adaptiveTestInitialized() const {
-        return adaptiveTestInitialized_;
-    }
+  private:
+    AdaptiveTest adaptiveTest_{};
+    FixedLevelTest fixedLevelTest_{};
+    Calibration calibration_{};
+    AudioSettings trialParameters_{};
+    coordinate_response_measure::Response responseParameters_{};
+    std::vector<std::string> audioDevices_{};
+    open_set::FreeResponse freeResponse_{};
+    EventListener *listener_{};
+    int trialNumber_{};
+    bool testComplete_{};
+    bool trialPlayed_{};
+    bool defaultFixedLevelTestInitialized_{};
+    bool defaultAdaptiveTestInitialized_{};
+    bool correctResponseSubmitted_{};
+    bool incorrectResponseSubmitted_{};
+    bool fixedLevelTestWithSilentIntervalTargetsInitialized_{};
+    bool fixedLevelTestWithAllTargetsInitialized_{};
+    bool initializedWithSingleSpeaker_{};
+    bool initializedWithDelayedMasker_{};
 };
 
 class ViewStub : public View {
@@ -1346,8 +1348,7 @@ class ConfirmingFixedLevelOpenSetSilentIntervalsTest
     }
 };
 
-class ConfirmingFixedLevelOpenSetAllStimuliTest
-    : public ConfirmingTestSetup {
+class ConfirmingFixedLevelOpenSetAllStimuliTest : public ConfirmingTestSetup {
     ConfirmingFixedLevelTest confirmingFixedLevelTest;
     ViewStub::TestSetupViewStub *view;
 
@@ -1673,8 +1674,7 @@ class PresenterTests : public ::testing::Test {
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
     Presenter::Subject subject{&subjectView};
-    Presenter presenter{
-        model, view, testSetup, subject, experimenter, testing};
+    Presenter presenter{model, view, testSetup, subject, experimenter, testing};
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
     BrowsingForTargetList browsingForTargetList{&setupView};
     BrowsingForMasker browsingForMasker{&setupView};
@@ -1997,7 +1997,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertDoesNotInitializeFixedLevelTest(UseCase &useCase) {
         run(useCase);
-        assertFalse(model.fixedLevelTestInitialized());
+        assertFalse(model.defaultFixedLevelTestInitialized());
     }
 
     void assertPassesTargetListDirectory(ConfirmingTestSetup &useCase) {
@@ -2105,7 +2105,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertDoesNotInitializeAdaptiveTest(UseCase &useCase) {
         run(useCase);
-        assertFalse(model.adaptiveTestInitialized());
+        assertFalse(model.defaultAdaptiveTestInitialized());
     }
 };
 

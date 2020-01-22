@@ -146,19 +146,19 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     confirmFixedLevelClosedSetSilentIntervalsTestInitializesModel) {
     run(confirmingFixedLevelClosedSetSilentIntervalsTest);
-    assertTrue(model.fixedLevelSilentIntervalsTestInitialized());
+    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
 TEST_F(PresenterTests,
     confirmFixedLevelOpenSetAllStimuliTestInitializesModel) {
     run(confirmingFixedLevelOpenSetAllStimuliTest);
-    assertTrue(model.fixedLevelAllStimuliTestInitialized());
+    assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
 }
 
 TEST_F(PresenterTests,
     confirmFixedLevelOpenSetSilentIntervalsTestInitializesModel) {
     run(confirmingFixedLevelOpenSetSilentIntervalsTest);
-    assertTrue(model.fixedLevelSilentIntervalsTestInitialized());
+    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
 TEST_F(PresenterTests,
