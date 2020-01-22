@@ -298,12 +298,12 @@ class InitializingAdaptiveTestWithDelayedMasker
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
+class InitializingFixedLevelTestWithTargetReplacement : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingDefaultFixedLevelTest(FixedLevelMethodStub *method)
+    explicit InitializingFixedLevelTestWithTargetReplacement(FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override { initializeWithTargetReplacement(model, test_); }
@@ -340,13 +340,13 @@ class InitializingFixedLevelTestWithSilentIntervalTargets
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelTestWithEyeTracking
+class InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
     : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelTestWithEyeTracking(
+    explicit InitializingFixedLevelTestWithTargetReplacementAndEyeTracking(
         FixedLevelMethodStub *method)
         : method{method} {}
 
@@ -409,12 +409,12 @@ class ModelTests : public ::testing::Test {
         initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
     InitializingAdaptiveTestWithDelayedMasker
         initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
-    InitializingDefaultFixedLevelTest initializingDefaultFixedLevelTest{
+    InitializingFixedLevelTestWithTargetReplacement initializingFixedLevelTestWithTargetReplacement{
         &fixedLevelMethod};
     InitializingFixedLevelTestWithSilentIntervalTargets
         initializingFixedLevelTestWithSilentIntervalTargets{&fixedLevelMethod};
-    InitializingFixedLevelTestWithEyeTracking
-        initializingFixedLevelTestWithEyeTracking{&fixedLevelMethod};
+    InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
+        initializingFixedLevelTestWithTargetReplacementAndEyeTracking{&fixedLevelMethod};
     InitializingFixedLevelTestWithAllTargets
         initializingFixedLevelTestWithAllTargets{&fixedLevelMethod};
 
@@ -454,8 +454,8 @@ class ModelTests : public ::testing::Test {
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
 
-MODEL_TEST(initializeDefaultFixedLevelTestInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(initializingDefaultFixedLevelTest);
+MODEL_TEST(initializeFixedLevelTestWithTargetReplacementInitializesFixedLevelMethod) {
+    assertInitializesFixedLevelMethod(initializingFixedLevelTestWithTargetReplacement);
 }
 
 MODEL_TEST(
@@ -464,20 +464,20 @@ MODEL_TEST(
         initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
-MODEL_TEST(initializeFixedLevelTestWithEyeTrackingInitializesFixedLevelMethod) {
+MODEL_TEST(initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
-        initializingFixedLevelTestWithEyeTracking);
+        initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
 }
 
-MODEL_TEST(initializeDefaultFixedLevelTestInitializesWithInfiniteTargetList) {
+MODEL_TEST(initializeFixedLevelTestWithTargetReplacementInitializesWithInfiniteTargetList) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingDefaultFixedLevelTest, infiniteTargetList);
+        initializingFixedLevelTestWithTargetReplacement, infiniteTargetList);
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithEyeTrackingInitializesWithInfiniteTargetList) {
+    initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithInfiniteTargetList) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelTestWithEyeTracking, infiniteTargetList);
+        initializingFixedLevelTestWithTargetReplacementAndEyeTracking, infiniteTargetList);
 }
 
 MODEL_TEST(
@@ -492,15 +492,15 @@ MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesWithAllTargets) {
 }
 
 MODEL_TEST(
-    initializeDefaultFixedLevelTestInitializesWithFixedTrialTestConcluder) {
+    initializeFixedLevelTestWithTargetReplacementInitializesWithFixedTrialTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
-        initializingDefaultFixedLevelTest, fixedTrialTestConcluder);
+        initializingFixedLevelTestWithTargetReplacement, fixedTrialTestConcluder);
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithEyeTrackingInitializesWithFixedTrialTestConcluder) {
+    initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithFixedTrialTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithEyeTracking, fixedTrialTestConcluder);
+        initializingFixedLevelTestWithTargetReplacementAndEyeTracking, fixedTrialTestConcluder);
 }
 
 MODEL_TEST(
@@ -532,12 +532,12 @@ MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker);
 }
 
-MODEL_TEST(initializeDefaultFixedLevelTestInitializesInternalModel) {
-    assertInitializesInternalModel(initializingDefaultFixedLevelTest);
+MODEL_TEST(initializeFixedLevelTestWithTargetReplacementInitializesInternalModel) {
+    assertInitializesInternalModel(initializingFixedLevelTestWithTargetReplacement);
 }
 
-MODEL_TEST(initializeFixedLevelTestWithEyeTrackingInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelTestWithEyeTracking);
+MODEL_TEST(initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesInternalModel) {
+    assertInitializesInternalModel(initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
 }
 
 MODEL_TEST(
@@ -581,8 +581,8 @@ MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
-MODEL_TEST(initializeFixedLevelTestWithEyeTrackingInitializesWithEyeTracking) {
-    run(initializingFixedLevelTestWithEyeTracking);
+MODEL_TEST(initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithEyeTracking) {
+    run(initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
