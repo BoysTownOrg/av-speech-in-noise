@@ -34,13 +34,13 @@ static void initializeWithSingleSpeaker(RecognitionTestModel *model,
     model->initializeWithSingleSpeaker(method, test);
 }
 
-static void initializeWithDelayedMasker(RecognitionTestModel *model,
-    TestMethod *method, const Test &test) {
+static void initializeWithDelayedMasker(
+    RecognitionTestModel *model, TestMethod *method, const Test &test) {
     model->initializeWithDelayedMasker(method, test);
 }
 
-static void initializeWithEyeTracking(RecognitionTestModel *model,
-    TestMethod *method, const Test &test) {
+static void initializeWithEyeTracking(
+    RecognitionTestModel *model, TestMethod *method, const Test &test) {
     model->initializeWithEyeTracking(method, test);
 }
 
@@ -63,9 +63,7 @@ void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
-void ModelImpl::initialize(const AdaptiveTest &test) { initializeTest_(test); }
-
-void ModelImpl::initializeTest_(const AdaptiveTest &test) {
+void ModelImpl::initialize(const AdaptiveTest &test) {
     av_speech_in_noise::initialize(adaptiveMethod, test);
     av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
