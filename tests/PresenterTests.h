@@ -598,7 +598,6 @@ class ConfirmingTestSetup : public virtual ConditionUseCase,
                             public virtual LevelUseCase {
   public:
     virtual auto snr_dB(ModelStub &) -> int = 0;
-    virtual auto method(ModelStub &) -> std::string = 0;
     virtual auto test(ModelStub &) -> const Test & = 0;
 };
 
@@ -636,6 +635,24 @@ static auto condition(ModelStub &m) -> Condition {
 }
 };
 
+namespace fixed_level_test {
+static auto identity(ModelStub &m) -> const TestIdentity & {
+    return fixedLevelTest(m).identity;
+}
+
+static auto snr_dB(ModelStub &m) -> int { return fixedLevelTest(m).snr_dB; }
+
+static auto fullScaleLevel(ModelStub &m) -> int {
+    return fixedLevelTest(m).fullScaleLevel_dB_SPL;
+}
+
+static auto method(ModelStub &m) -> std::string { return identity(m).method; }
+
+static auto condition(ModelStub &m) -> Condition {
+    return fixedLevelTest(m).condition;
+}
+};
+
 static void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
     view->setMethod(methodName(m));
 }
@@ -661,10 +678,6 @@ class ConfirmingDefaultAdaptiveClosedSetTest : public ConfirmingTestSetup {
 
     auto fullScaleLevel(ModelStub &m) -> int override {
         return adaptive_test::fullScaleLevel(m);
-    }
-
-    auto method(ModelStub &m) -> std::string override {
-        return adaptive_test::method(m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
@@ -696,10 +709,6 @@ class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
         return adaptive_test::fullScaleLevel(m);
     }
 
-    auto method(ModelStub &m) -> std::string override {
-        return adaptive_test::method(m);
-    }
-
     auto condition(ModelStub &m) -> Condition override {
         return adaptive_test::condition(m);
     }
@@ -729,10 +738,6 @@ class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
         return adaptive_test::fullScaleLevel(m);
     }
 
-    auto method(ModelStub &m) -> std::string override {
-        return adaptive_test::method(m);
-    }
-
     auto condition(ModelStub &m) -> Condition override {
         return adaptive_test::condition(m);
     }
@@ -760,31 +765,9 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
         return adaptive_test::fullScaleLevel(m);
     }
 
-    auto method(ModelStub &m) -> std::string override {
-        return adaptive_test::method(m);
-    }
-
     auto condition(ModelStub &m) -> Condition override {
         return adaptive_test::condition(m);
     }
-};
-
-namespace fixed_level_test {
-static auto identity(ModelStub &m) -> const TestIdentity & {
-    return fixedLevelTest(m).identity;
-}
-
-static auto snr_dB(ModelStub &m) -> int { return fixedLevelTest(m).snr_dB; }
-
-static auto fullScaleLevel(ModelStub &m) -> int {
-    return fixedLevelTest(m).fullScaleLevel_dB_SPL;
-}
-
-static auto method(ModelStub &m) -> std::string { return identity(m).method; }
-
-static auto condition(ModelStub &m) -> Condition {
-    return fixedLevelTest(m).condition;
-}
 };
 
 class ConfirmingDefaultFixedLevelOpenSetTest : public ConfirmingTestSetup {
@@ -810,10 +793,6 @@ class ConfirmingDefaultFixedLevelOpenSetTest : public ConfirmingTestSetup {
 
     auto fullScaleLevel(ModelStub &m) -> int override {
         return fixed_level_test::fullScaleLevel(m);
-    }
-
-    auto method(ModelStub &m) -> std::string override {
-        return fixed_level_test::method(m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
@@ -844,10 +823,6 @@ class ConfirmingDefaultFixedLevelClosedSetTest : public ConfirmingTestSetup {
 
     auto fullScaleLevel(ModelStub &m) -> int override {
         return fixed_level_test::fullScaleLevel(m);
-    }
-
-    auto method(ModelStub &m) -> std::string override {
-        return fixed_level_test::method(m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
@@ -881,10 +856,6 @@ class ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
         return fixed_level_test::fullScaleLevel(m);
     }
 
-    auto method(ModelStub &m) -> std::string override {
-        return fixed_level_test::method(m);
-    }
-
     auto condition(ModelStub &m) -> Condition override {
         return fixed_level_test::condition(m);
     }
@@ -916,10 +887,6 @@ class ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
         return fixed_level_test::fullScaleLevel(m);
     }
 
-    auto method(ModelStub &m) -> std::string override {
-        return fixed_level_test::method(m);
-    }
-
     auto condition(ModelStub &m) -> Condition override {
         return fixed_level_test::condition(m);
     }
@@ -949,10 +916,6 @@ class ConfirmingFixedLevelOpenSetTestWithAllTargets
 
     auto fullScaleLevel(ModelStub &m) -> int override {
         return fixed_level_test::fullScaleLevel(m);
-    }
-
-    auto method(ModelStub &m) -> std::string override {
-        return fixed_level_test::method(m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
@@ -1585,7 +1548,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertPassesMethod(ConfirmingTestSetup &useCase) {
         run(useCase);
-        assertEqual(setupView.method(), useCase.method(model));
+        assertEqual(setupView.method(), useCase.test(model).identity.method);
     }
 
     void assertPassesFullScaleLevel(LevelUseCase &useCase) {
