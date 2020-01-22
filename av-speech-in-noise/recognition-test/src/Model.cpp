@@ -1,19 +1,19 @@
 #include "Model.hpp"
 #include "TestMethod.hpp"
-#include "av-speech-in-noise/Model.hpp"
+#include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
-    FixedLevelMethod *fixedLevelMethod, TargetList *infiniteTargets,
+    FixedLevelMethod *fixedLevelMethod, TargetList *targetsWithReplacement,
     TestConcluder *fixedTrialTestConcluder, TargetList *silentIntervalTargets,
-    TestConcluder *completesWhenTargetsEmpty, TargetList *allTargets,
+    TestConcluder *completesWhenTargetsEmpty, TargetList *everyTargetOnce,
     RecognitionTestModel *model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
-      infiniteTargets{infiniteTargets},
+      targetsWithReplacement{targetsWithReplacement},
       fixedTrialTestConcluder{fixedTrialTestConcluder},
       silentIntervalTargets{silentIntervalTargets},
       completesWhenTargetsEmpty{completesWhenTargetsEmpty},
-      allTargets{allTargets}, model{model} {}
+      everyTargetOnce{everyTargetOnce}, model{model} {}
 
 static void initialize(RecognitionTestModel *model, TestMethod *method,
     const struct Test &test) {
@@ -46,7 +46,7 @@ static void initializeWithEyeTracking(
 
 void ModelImpl::initializeWithTargetReplacement(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
-        fixedLevelMethod, test, infiniteTargets, fixedTrialTestConcluder);
+        fixedLevelMethod, test, targetsWithReplacement, fixedTrialTestConcluder);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
@@ -64,7 +64,7 @@ void ModelImpl::initializeWithSilentIntervalTargets(
 
 void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
-        fixedLevelMethod, test, allTargets, completesWhenTargetsEmpty);
+        fixedLevelMethod, test, everyTargetOnce, completesWhenTargetsEmpty);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
@@ -82,7 +82,7 @@ void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
 
 void ModelImpl::initializeWithEyeTracking(const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
-        fixedLevelMethod, test, infiniteTargets, fixedTrialTestConcluder);
+        fixedLevelMethod, test, targetsWithReplacement, fixedTrialTestConcluder);
     av_speech_in_noise::initializeWithEyeTracking(
         model, fixedLevelMethod, test);
 }

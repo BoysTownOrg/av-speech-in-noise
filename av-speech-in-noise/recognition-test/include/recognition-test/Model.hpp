@@ -69,9 +69,9 @@ class RecognitionTestModel {
 class ModelImpl : public Model {
   public:
     ModelImpl(AdaptiveMethod *, FixedLevelMethod *,
-        TargetList *infiniteTargets, TestConcluder *fixedTrialTestConcluder,
+        TargetList *targetsWithReplacement, TestConcluder *fixedTrialTestConcluder,
         TargetList *silentIntervalTargets, TestConcluder *completesWhenTargetsEmpty,
-        TargetList *allTargets, RecognitionTestModel *);
+        TargetList *everyTargetOnce, RecognitionTestModel *);
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(const FixedLevelTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
@@ -96,11 +96,11 @@ class ModelImpl : public Model {
 
     AdaptiveMethod *adaptiveMethod;
     FixedLevelMethod *fixedLevelMethod;
-    TargetList *infiniteTargets;
+    TargetList *targetsWithReplacement;
     TestConcluder *fixedTrialTestConcluder;
     TargetList *silentIntervalTargets;
     TestConcluder *completesWhenTargetsEmpty;
-    TargetList *allTargets;
+    TargetList *everyTargetOnce;
     RecognitionTestModel *model;
 };
 }
