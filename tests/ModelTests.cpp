@@ -583,6 +583,12 @@ TEST_F(ModelTests,
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
+TEST_F(ModelTests,
+    initializeFixedLevelEyeTrackingTestInitializesWithEyeTracking) {
+    run(initializingFixedLevelEyeTrackingTest);
+    assertTrue(internalModel.initializedWithEyeTracking());
+}
+
 TEST_F(ModelTests, submitResponsePassesCoordinateResponse) {
     coordinate_response_measure::Response response;
     model.submitResponse(response);
