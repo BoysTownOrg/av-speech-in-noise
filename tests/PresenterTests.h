@@ -1179,17 +1179,17 @@ class PresenterTests : public ::testing::Test {
     BrowsingForTargetList browsingForTargetList{&setupView};
     BrowsingForMasker browsingForMasker{&setupView};
     BrowsingForCalibration browsingForCalibration{&setupView};
-    ConfirmingDefaultAdaptiveClosedSetTest confirmingAdaptiveClosedSetTest{
-        &setupView};
+    ConfirmingDefaultAdaptiveClosedSetTest
+        confirmingDefaultAdaptiveClosedSetTest{&setupView};
     ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
         confirmingAdaptiveClosedSetTestWithSingleSpeaker{&setupView};
     ConfirmingAdaptiveClosedSetTestWithDelayedMasker
         confirmingAdaptiveClosedSetTestWithDelayedMasker{&setupView};
     ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
-    ConfirmingDefaultFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{
-        &setupView};
-    ConfirmingDefaultFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{
-        &setupView};
+    ConfirmingDefaultFixedLevelOpenSetTest
+        confirmingDefaultFixedLevelOpenSetTest{&setupView};
+    ConfirmingDefaultFixedLevelClosedSetTest
+        confirmingDefaultFixedLevelClosedSetTest{&setupView};
     ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
         confirmingFixedLevelClosedSetSilentIntervalsTest{&setupView};
     ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
