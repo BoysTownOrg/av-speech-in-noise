@@ -34,7 +34,7 @@ PRESENTER_TEST(callsEventLoopWhenRun) {
     assertTrue(view.eventLoopCalled());
 }
 
-PRESENTER_TEST(confirmAdaptiveClosedSetTestHidesTestSetupView) {
+PRESENTER_TEST(confirmDefaultAdaptiveClosedSetTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingDefaultAdaptiveClosedSetTest);
 }
 
@@ -81,7 +81,7 @@ PRESENTER_TEST(confirmFixedLevelOpenSetTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingDefaultFixedLevelOpenSetTest);
 }
 
-PRESENTER_TEST(confirmAdaptiveClosedSetTestShowsSubjectView) {
+PRESENTER_TEST(confirmDefaultAdaptiveClosedSetTestShowsSubjectView) {
     assertShowsSubjectView(confirmingDefaultAdaptiveClosedSetTest);
 }
 
@@ -94,13 +94,13 @@ PRESENTER_TEST(confirmAdaptiveClosedSetTestWithDelayedMaskerShowsSubjectView) {
 }
 
 PRESENTER_TEST(
-    confirmAdaptiveClosedSetTestDoesNotShowSubjectViewWhenTestComplete) {
+    confirmDefaultAdaptiveClosedSetTestDoesNotShowSubjectViewWhenTestComplete) {
     setTestComplete();
     assertDoesNotShowSubjectView(confirmingDefaultAdaptiveClosedSetTest);
 }
 
 PRESENTER_TEST(
-    confirmAdaptiveClosedSetTestDoesNotHideSetupViewWhenTestComplete) {
+    confirmDefaultAdaptiveClosedSetTestDoesNotHideSetupViewWhenTestComplete) {
     setTestComplete();
     assertDoesNotHideTestSetupView(confirmingDefaultAdaptiveClosedSetTest);
 }
@@ -133,7 +133,7 @@ PRESENTER_TEST(
         confirmingFixedLevelOpenSetSilentIntervalsTest);
 }
 
-PRESENTER_TEST(confirmAdaptiveClosedSetTestShowsExperimenterView) {
+PRESENTER_TEST(confirmDefaultAdaptiveClosedSetTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingDefaultAdaptiveClosedSetTest);
 }
 
@@ -174,7 +174,7 @@ PRESENTER_TEST(
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
-PRESENTER_TEST(confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
+PRESENTER_TEST(confirmDefaultAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(
         confirmingDefaultAdaptiveClosedSetTest);
 }
@@ -462,7 +462,7 @@ PRESENTER_TEST(playCalibrationPassesAuditoryOnlyCondition) {
     assertAuditoryOnlyConditionPassedToModel(playingCalibration);
 }
 
-PRESENTER_TEST(confirmAdaptiveClosedSetTestShowsNextTrialButtonForSubject) {
+PRESENTER_TEST(confirmDefaultAdaptiveClosedSetTestShowsNextTrialButtonForSubject) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingDefaultAdaptiveClosedSetTest, playingTrialFromSubject);
 }
@@ -836,7 +836,7 @@ PRESENTER_TEST(
     assertShowsTrialNumber(confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
 
-PRESENTER_TEST(confirmAdaptiveClosedSetTestShowsTrialNumber) {
+PRESENTER_TEST(confirmDefaultAdaptiveClosedSetTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingDefaultAdaptiveClosedSetTest);
 }
 
