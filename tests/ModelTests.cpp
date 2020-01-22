@@ -186,7 +186,7 @@ void initialize(ModelImpl &model, const AdaptiveTest &test) {
     model.initialize(test);
 }
 
-void initialize(ModelImpl &model, const FixedLevelTest &test) {
+void initializeWithTargetReplacement(ModelImpl &model, const FixedLevelTest &test) {
     model.initializeWithTargetReplacement(test);
 }
 
@@ -203,7 +203,7 @@ void initializeWithSilentIntervalTargets(
     model.initializeWithSilentIntervalTargets(test);
 }
 
-void initializeWithEyeTracking(ModelImpl &model, const FixedLevelTest &test) {
+void initializeWithTargetReplacementAndEyeTracking(ModelImpl &model, const FixedLevelTest &test) {
     model.initializeWithTargetReplacementAndEyeTracking(test);
 }
 
@@ -306,10 +306,10 @@ class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
     explicit InitializingDefaultFixedLevelTest(FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { initialize(model, test_); }
+    void run(ModelImpl &model) override { initializeWithTargetReplacement(model, test_); }
 
     void run(ModelImpl &model, const FixedLevelTest &test) override {
-        initialize(model, test);
+        initializeWithTargetReplacement(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
@@ -351,11 +351,11 @@ class InitializingFixedLevelTestWithEyeTracking
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        initializeWithEyeTracking(model, test_);
+        initializeWithTargetReplacementAndEyeTracking(model, test_);
     }
 
     void run(ModelImpl &model, const FixedLevelTest &test) override {
-        initializeWithEyeTracking(model, test);
+        initializeWithTargetReplacementAndEyeTracking(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
