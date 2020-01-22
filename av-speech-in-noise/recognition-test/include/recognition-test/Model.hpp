@@ -72,8 +72,8 @@ class ModelImpl : public Model {
         TargetList *infiniteTargetList, TestConcluder *fixedTrialTestConcluder,
         TargetList *silentIntervals, TestConcluder *completesWhenTargetsEmpty,
         TargetList *allStimuli, RecognitionTestModel *);
-    void initializeTest(const AdaptiveTest &) override;
-    void initializeTest(const FixedLevelTest &) override;
+    void initialize(const AdaptiveTest &) override;
+    void initialize(const FixedLevelTest &) override;
     void initializeSilentIntervalsTest(const FixedLevelTest &) override;
     void initializeAllStimuliTest(const FixedLevelTest &) override;
     void initializeTestWithSingleSpeaker(const AdaptiveTest &) override;

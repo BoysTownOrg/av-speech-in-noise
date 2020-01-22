@@ -69,13 +69,13 @@ void Presenter::initializeTest() {
     else if (adaptiveClosedSetSingleSpeaker())
         model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
     else if (defaultAdaptive())
-        model.initializeTest(adaptiveTest(testSetup));
+        model.initialize(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
         model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
     else if (fixedLevelAllStimuli())
         model.initializeAllStimuliTest(fixedLevelTest(testSetup));
     else
-        model.initializeTest(fixedLevelTest(testSetup));
+        model.initialize(fixedLevelTest(testSetup));
 }
 
 auto Presenter::adaptiveClosedSet() -> bool {

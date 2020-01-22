@@ -115,7 +115,7 @@ class ModelStub : public Model {
         trialPlayed_ = true;
     }
 
-    void initializeTest(const AdaptiveTest &p) override {
+    void initialize(const AdaptiveTest &p) override {
         adaptiveTestInitialized_ = true;
         adaptiveTest_ = p;
     }
@@ -139,7 +139,7 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void initializeTest(const FixedLevelTest &p) override {
+    void initialize(const FixedLevelTest &p) override {
         fixedLevelTestInitialized_ = true;
         fixedLevelTest_ = p;
     }
@@ -2117,11 +2117,11 @@ class RequestFailingModel : public Model {
 
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
 
-    void initializeTest(const AdaptiveTest &) override {
+    void initialize(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeTest(const FixedLevelTest &) override {
+    void initialize(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 

@@ -135,8 +135,8 @@ class Model {
 
     virtual ~Model() = default;
     virtual void subscribe(EventListener *) = 0;
-    virtual void initializeTest(const AdaptiveTest &) = 0;
-    virtual void initializeTest(const FixedLevelTest &) = 0;
+    virtual void initialize(const AdaptiveTest &) = 0;
+    virtual void initialize(const FixedLevelTest &) = 0;
     virtual void initializeTestWithSingleSpeaker(const AdaptiveTest &) = 0;
     virtual void initializeTestWithDelayedMasker(const AdaptiveTest &) = 0;
     virtual void initializeSilentIntervalsTest(const FixedLevelTest &) = 0;

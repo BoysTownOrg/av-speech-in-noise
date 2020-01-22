@@ -19,31 +19,31 @@ static void initialize(RecognitionTestModel *model, class TestMethod *method,
         model->initialize(method, test);
 }
 
-void ModelImpl::initializeTest(const FixedLevelTest &p) {
+void ModelImpl::initialize(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, infiniteTargetList, fixedTrialTestConcluder);
-    initialize(model, fixedLevelMethod, p);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, p);
 }
 
 void ModelImpl::initializeSilentIntervalsTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, silentIntervals, completesWhenTargetsEmpty);
-    initialize(model, fixedLevelMethod, p);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, p);
 }
 
 void ModelImpl::initializeAllStimuliTest(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, allStimuli, completesWhenTargetsEmpty);
-    initialize(model, fixedLevelMethod, p);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, p);
 }
 
-void ModelImpl::initializeTest(const AdaptiveTest &p) {
+void ModelImpl::initialize(const AdaptiveTest &p) {
     initializeTest_(p);
 }
 
 void ModelImpl::initializeTest_(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
-    initialize(model, adaptiveMethod, p);
+    av_speech_in_noise::initialize(model, adaptiveMethod, p);
 }
 
 void ModelImpl::initializeTestWithSingleSpeaker(const AdaptiveTest &p) {

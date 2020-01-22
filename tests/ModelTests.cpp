@@ -183,12 +183,12 @@ class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
     virtual void run(ModelImpl &model, const AdaptiveTest &test) = 0;
 };
 
-void initializeTest(ModelImpl &model, const AdaptiveTest &test) {
-    model.initializeTest(test);
+void initialize(ModelImpl &model, const AdaptiveTest &test) {
+    model.initialize(test);
 }
 
-void initializeTest(ModelImpl &model, const FixedLevelTest &test) {
-    model.initializeTest(test);
+void initialize(ModelImpl &model, const FixedLevelTest &test) {
+    model.initialize(test);
 }
 
 void initializeTestWithSingleSpeaker(
@@ -222,10 +222,10 @@ class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     explicit InitializingDefaultAdaptiveTest(AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { initializeTest(model, test_); }
+    void run(ModelImpl &model) override { initialize(model, test_); }
 
     void run(ModelImpl &model, const AdaptiveTest &test) override {
-        initializeTest(model, test);
+        initialize(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
@@ -308,10 +308,10 @@ class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
     explicit InitializingDefaultFixedLevelTest(FixedLevelMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { initializeTest(model, test_); }
+    void run(ModelImpl &model) override { initialize(model, test_); }
 
     void run(ModelImpl &model, const FixedLevelTest &test) override {
-        initializeTest(model, test);
+        initialize(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
