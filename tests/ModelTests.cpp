@@ -534,8 +534,13 @@ MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesInternalModel) {
 }
 
 MODEL_TEST(
-    initializeFixedLevelSilentIntervalsTestTargetsInitializesInternalModel) {
+    initializeFixedLevelSilentIntervalsTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelSilentIntervalsTest);
+}
+
+MODEL_TEST(
+    initializeFixedLevelAllStimuliTestInitializesInternalModel) {
+    assertInitializesInternalModel(initializingFixedLevelAllStimuliTest);
 }
 
 MODEL_TEST(initializeAdaptiveTestInitializesInternalModel) {
