@@ -400,7 +400,8 @@ auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
 
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
     return defaultAdaptiveClosedSet() || adaptiveClosedSetWithSingleSpeaker() ||
-        adaptiveClosedSetWithDelayedMasker();
+        adaptiveClosedSetWithDelayedMasker() ||
+        method(Method::adaptiveClosedSetWithEyeTracking);
 }
 
 auto Presenter::TestSetup::adaptiveClosedSetWithDelayedMasker() -> bool {

@@ -98,6 +98,10 @@ PRESENTER_TEST(confirmAdaptiveClosedSetTestWithDelayedMaskerShowsSubjectView) {
     assertShowsSubjectView(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
+PRESENTER_TEST(confirmAdaptiveClosedSetTestWithEyeTrackingShowsSubjectView) {
+    assertShowsSubjectView(confirmingAdaptiveClosedSetTestWithEyeTracking);
+}
+
 PRESENTER_TEST(
     confirmDefaultAdaptiveClosedSetTestDoesNotShowSubjectViewWhenTestComplete) {
     setTestComplete();
