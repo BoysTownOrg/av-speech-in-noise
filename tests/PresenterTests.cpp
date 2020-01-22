@@ -37,12 +37,12 @@ TEST_F(PresenterTests, confirmAdaptiveClosedSetTestHidesTestSetupView) {
 }
 
 TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetSingleSpeakerTestHidesTestSetupView) {
+    confirmAdaptiveClosedSetTestWithSingleSpeakerHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveClosedSetTestWithSingleSpeaker);
 }
 
 TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetDelayedMaskerTestHidesTestSetupView) {
+    confirmAdaptiveClosedSetTestWithDelayedMaskerHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
@@ -59,7 +59,7 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestHidesTestSetupView) {
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestHidesTestSetupView) {
+    confirmFixedLevelClosedSetTestWithSilentIntervalTargetsHidesTestSetupView) {
     assertHidesTestSetupView(confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
 
@@ -83,13 +83,13 @@ TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsSubjectView) {
     assertShowsSubjectView(confirmingAdaptiveClosedSetTest);
 }
 
-TEST_F(
-    PresenterTests, confirmAdaptiveClosedSetSingleSpeakerTestShowsSubjectView) {
+TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetTestWithSingleSpeakerShowsSubjectView) {
     assertShowsSubjectView(confirmingAdaptiveClosedSetTestWithSingleSpeaker);
 }
 
-TEST_F(
-    PresenterTests, confirmAdaptiveClosedSetDelayedMaskerTestShowsSubjectView) {
+TEST_F(PresenterTests,
+    confirmAdaptiveClosedSetTestWithDelayedMaskerShowsSubjectView) {
     assertShowsSubjectView(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
@@ -110,7 +110,7 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsSubjectView) {
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestShowsSubjectView) {
+    confirmFixedLevelClosedSetTestWithSilentIntervalTargetsShowsSubjectView) {
     assertShowsSubjectView(confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
 
@@ -142,7 +142,7 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsExperimenterView) {
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestShowsExperimenterView) {
+    confirmFixedLevelClosedSetTestWithSilentIntervalTargetsShowsExperimenterView) {
     assertShowsExperimenterView(
         confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
@@ -160,7 +160,7 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestInitializesModel) {
+    confirmFixedLevelClosedSetTestWithSilentIntervalTargetsInitializesModel) {
     run(confirmingFixedLevelClosedSetSilentIntervalsTest);
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
@@ -209,7 +209,7 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestDoesNotInitializeAdaptiveTest) {
+    confirmFixedLevelClosedSetTestWithSilentIntervalTargetsDoesNotInitializeAdaptiveTest) {
     assertDoesNotInitializeAdaptiveTest(
         confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
@@ -231,7 +231,7 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestPassesStartingSnr) {
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestPassesStartingSnr) {
+    confirmFixedLevelClosedSetTestWithSilentIntervalTargetsPassesStartingSnr) {
     assertStartingSnrPassedToModel(
         confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
@@ -483,7 +483,7 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestShowsNextTrialButtonForSubject) {
+    confirmFixedLevelClosedSetTestWithSilentIntervalTargetsShowsNextTrialButtonForSubject) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelClosedSetSilentIntervalsTest,
         playingTrialFromSubject);
@@ -855,7 +855,7 @@ TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsTrialNumber) {
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestShowsTrialNumber) {
+    confirmFixedLevelClosedSetTestWithSilentIntervalTargetsShowsTrialNumber) {
     assertShowsTrialNumber(confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
 
@@ -979,7 +979,7 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestWithInvalidInputDoesNotHideSetupView) {
+    confirmFixedLevelClosedSetTestWithSilentIntervalTargetsWithInvalidInputDoesNotHideSetupView) {
     assertSetupViewNotHiddenWhenSnrIsInvalid(
         confirmingFixedLevelClosedSetSilentIntervalsTest);
 }
