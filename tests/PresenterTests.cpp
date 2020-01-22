@@ -48,6 +48,11 @@ PRESENTER_TEST(
     assertHidesTestSetupView(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
+PRESENTER_TEST(
+    confirmAdaptiveClosedSetTestWithEyeTrackingHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptiveClosedSetTestWithEyeTracking);
+}
+
 PRESENTER_TEST(confirmAdaptiveOpenSetTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveOpenSetTest);
 }

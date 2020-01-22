@@ -729,6 +729,35 @@ class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
     }
 };
 
+class ConfirmingAdaptiveClosedSetTestWithEyeTracking
+    : public ConfirmingTestSetup {
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit ConfirmingAdaptiveClosedSetTestWithEyeTracking(
+        ViewStub::TestSetupViewStub *view)
+        : view{view} {}
+
+    void run() override {
+        setMethod(view, Method::adaptiveClosedSetWithEyeTracking);
+        confirmTestSetup(view);
+    }
+
+    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
+
+    auto snr_dB(ModelStub &m) -> int override {
+        return adaptive_test::snr_dB(m);
+    }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return adaptive_test::fullScaleLevel(m);
+    }
+
+    auto condition(ModelStub &m) -> Condition override {
+        return adaptive_test::condition(m);
+    }
+};
+
 class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
@@ -1185,6 +1214,8 @@ class PresenterTests : public ::testing::Test {
         confirmingAdaptiveClosedSetTestWithSingleSpeaker{&setupView};
     ConfirmingAdaptiveClosedSetTestWithDelayedMasker
         confirmingAdaptiveClosedSetTestWithDelayedMasker{&setupView};
+    ConfirmingAdaptiveClosedSetTestWithEyeTracking
+        confirmingAdaptiveClosedSetTestWithEyeTracking{&setupView};
     ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
     ConfirmingDefaultFixedLevelOpenSetTest
         confirmingDefaultFixedLevelOpenSetTest{&setupView};
