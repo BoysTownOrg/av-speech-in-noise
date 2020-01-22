@@ -230,12 +230,13 @@ class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingAdaptiveEyeTrackingTest : public InitializingAdaptiveTest {
+class InitializingAdaptiveTestWithEyeTracking
+    : public InitializingAdaptiveTest {
     AdaptiveTest test_;
     AdaptiveMethodStub *method;
 
   public:
-    explicit InitializingAdaptiveEyeTrackingTest(AdaptiveMethodStub *method)
+    explicit InitializingAdaptiveTestWithEyeTracking(AdaptiveMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override {
@@ -316,13 +317,13 @@ class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelSilentIntervalsTest
+class InitializingFixedLevelTestWithSilentIntervalTargets
     : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelSilentIntervalsTest(
+    explicit InitializingFixedLevelTestWithSilentIntervalTargets(
         FixedLevelMethodStub *method)
         : method{method} {}
 
@@ -339,13 +340,14 @@ class InitializingFixedLevelSilentIntervalsTest
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelEyeTrackingTest
+class InitializingFixedLevelTestWithEyeTracking
     : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelEyeTrackingTest(FixedLevelMethodStub *method)
+    explicit InitializingFixedLevelTestWithEyeTracking(
+        FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override {
@@ -361,12 +363,14 @@ class InitializingFixedLevelEyeTrackingTest
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelAllStimuliTest : public InitializingFixedLevelTest {
+class InitializingFixedLevelTestWithAllTargets
+    : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelAllStimuliTest(FixedLevelMethodStub *method)
+    explicit InitializingFixedLevelTestWithAllTargets(
+        FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override {
@@ -397,21 +401,22 @@ class ModelTests : public ::testing::Test {
         &emptyTargetListTestConcluder, &allStimuli, &internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
-    InitializingDefaultAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
-    InitializingAdaptiveEyeTrackingTest initializingAdaptiveEyeTrackingTest{
+    InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
         &adaptiveMethod};
+    InitializingAdaptiveTestWithEyeTracking
+        initializingAdaptiveTestWithEyeTracking{&adaptiveMethod};
     InitializingAdaptiveTestWithSingleSpeaker
         initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
     InitializingAdaptiveTestWithDelayedMasker
         initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
-    InitializingDefaultFixedLevelTest initializingFixedLevelTest{
+    InitializingDefaultFixedLevelTest initializingDefaultFixedLevelTest{
         &fixedLevelMethod};
-    InitializingFixedLevelSilentIntervalsTest
-        initializingFixedLevelSilentIntervalsTest{&fixedLevelMethod};
-    InitializingFixedLevelEyeTrackingTest initializingFixedLevelEyeTrackingTest{
-        &fixedLevelMethod};
-    InitializingFixedLevelAllStimuliTest initializingFixedLevelAllStimuliTest{
-        &fixedLevelMethod};
+    InitializingFixedLevelTestWithSilentIntervalTargets
+        initializingFixedLevelTestWithSilentIntervalTargets{&fixedLevelMethod};
+    InitializingFixedLevelTestWithEyeTracking
+        initializingFixedLevelTestWithEyeTracking{&fixedLevelMethod};
+    InitializingFixedLevelTestWithAllTargets
+        initializingFixedLevelTestWithAllTargets{&fixedLevelMethod};
 
     auto testComplete() -> bool { return model.testComplete(); }
 
@@ -450,70 +455,71 @@ class ModelTests : public ::testing::Test {
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
 
 MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(initializingFixedLevelTest);
+    assertInitializesFixedLevelMethod(initializingDefaultFixedLevelTest);
 }
 
 MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
-        initializingFixedLevelSilentIntervalsTest);
+        initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
 MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(initializingFixedLevelEyeTrackingTest);
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelTestWithEyeTracking);
 }
 
 MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelTest, infiniteTargetList);
+        initializingDefaultFixedLevelTest, infiniteTargetList);
 }
 
 MODEL_TEST(
     initializeFixedLevelEyeTrackingTestInitializesWithInfiniteTargetList) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelEyeTrackingTest, infiniteTargetList);
+        initializingFixedLevelTestWithEyeTracking, infiniteTargetList);
 }
 
 MODEL_TEST(
     initializeFixedLevelSilentIntervalsTestInitializesWithSilentIntervals) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelSilentIntervalsTest, silentIntervals);
+        initializingFixedLevelTestWithSilentIntervalTargets, silentIntervals);
 }
 
 MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesWithAllStimuli) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelAllStimuliTest, allStimuli);
+        initializingFixedLevelTestWithAllTargets, allStimuli);
 }
 
 MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTest, fixedTrialTestConcluder);
+        initializingDefaultFixedLevelTest, fixedTrialTestConcluder);
 }
 
 MODEL_TEST(
     initializeFixedLevelEyeTrackingTestInitializesWithFixedTrialTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelEyeTrackingTest, fixedTrialTestConcluder);
+        initializingFixedLevelTestWithEyeTracking, fixedTrialTestConcluder);
 }
 
 MODEL_TEST(
     initializeFixedLevelSilentIntervalsTestInitializesWithEmptyTargetListTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelSilentIntervalsTest,
+        initializingFixedLevelTestWithSilentIntervalTargets,
         emptyTargetListTestConcluder);
 }
 
 MODEL_TEST(
     initializeFixedLevelAllStimuliTestInitializesWithEmptyTargetListTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelAllStimuliTest, emptyTargetListTestConcluder);
+        initializingFixedLevelTestWithAllTargets, emptyTargetListTestConcluder);
 }
 
 TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTest);
+    assertInitializesAdaptiveMethod(initializingDefaultAdaptiveTest);
 }
 
 TEST_F(ModelTests, initializeAdaptiveEyeTrackingTestInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveEyeTrackingTest);
+    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithEyeTracking);
 }
 
 TEST_F(ModelTests,
@@ -527,27 +533,28 @@ TEST_F(ModelTests,
 }
 
 MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelTest);
+    assertInitializesInternalModel(initializingDefaultFixedLevelTest);
 }
 
 MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelEyeTrackingTest);
+    assertInitializesInternalModel(initializingFixedLevelTestWithEyeTracking);
 }
 
 MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelSilentIntervalsTest);
+    assertInitializesInternalModel(
+        initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
 MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelAllStimuliTest);
+    assertInitializesInternalModel(initializingFixedLevelTestWithAllTargets);
 }
 
 MODEL_TEST(initializeAdaptiveTestInitializesInternalModel) {
-    assertInitializesInternalModel(initializingAdaptiveTest);
+    assertInitializesInternalModel(initializingDefaultAdaptiveTest);
 }
 
 MODEL_TEST(initializeAdaptiveEyeTrackingTestInitializesInternalModel) {
-    assertInitializesInternalModel(initializingAdaptiveEyeTrackingTest);
+    assertInitializesInternalModel(initializingAdaptiveTestWithEyeTracking);
 }
 
 TEST_F(ModelTests,
@@ -574,13 +581,13 @@ TEST_F(ModelTests,
 
 TEST_F(
     ModelTests, initializeAdaptiveEyeTrackingTestInitializesWithEyeTracking) {
-    run(initializingAdaptiveEyeTrackingTest);
+    run(initializingAdaptiveTestWithEyeTracking);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
 TEST_F(
     ModelTests, initializeFixedLevelEyeTrackingTestInitializesWithEyeTracking) {
-    run(initializingFixedLevelEyeTrackingTest);
+    run(initializingFixedLevelTestWithEyeTracking);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
