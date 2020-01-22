@@ -516,21 +516,19 @@ MODEL_TEST(
         initializingFixedLevelTestWithAllTargets, emptyTargetListTestConcluder);
 }
 
-TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
+MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingDefaultAdaptiveTest);
 }
 
-TEST_F(ModelTests, initializeAdaptiveEyeTrackingTestInitializesAdaptiveMethod) {
+MODEL_TEST(initializeAdaptiveEyeTrackingTestInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingAdaptiveTestWithEyeTracking);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
+MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
+MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker);
 }
 
@@ -552,7 +550,7 @@ MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTestWithAllTargets);
 }
 
-MODEL_TEST(initializeAdaptiveTestInitializesInternalModel) {
+MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingDefaultAdaptiveTest);
 }
 
@@ -560,41 +558,35 @@ MODEL_TEST(initializeAdaptiveEyeTrackingTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithEyeTracking);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithSingleSpeakerInitializesInternalModel) {
+MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithSingleSpeaker);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithDelayedMaskerInitializesInternalModel) {
+MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithDelayedMasker);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
+MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithSingleSpeaker);
     assertTrue(internalModel.initializedWithSingleSpeaker());
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
+MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithDelayedMasker);
     assertTrue(internalModel.initializedWithDelayedMasker());
 }
 
-TEST_F(
-    ModelTests, initializeAdaptiveEyeTrackingTestInitializesWithEyeTracking) {
+MODEL_TEST(initializeAdaptiveEyeTrackingTestInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithEyeTracking);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
-TEST_F(ModelTests,
-    initializeFixedLevelTestWithEyeTrackingInitializesWithEyeTracking) {
+MODEL_TEST(initializeFixedLevelTestWithEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithEyeTracking);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
-TEST_F(ModelTests, submitResponsePassesCoordinateResponse) {
+MODEL_TEST(submitResponsePassesCoordinateResponse) {
     coordinate_response_measure::Response response;
     model.submitResponse(response);
     assertEqual(&std::as_const(response), internalModel.coordinateResponse());
