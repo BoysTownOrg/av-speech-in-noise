@@ -888,9 +888,16 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetDelayedMaskerTest) {
+    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTestWithDelayedMasker) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveClosedSetTestWithDelayedMasker,
+        respondingFromSubject);
+}
+
+PRESENTER_TEST(
+    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTestWithEyeTracking) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptiveClosedSetTestWithEyeTracking,
         respondingFromSubject);
 }
 
