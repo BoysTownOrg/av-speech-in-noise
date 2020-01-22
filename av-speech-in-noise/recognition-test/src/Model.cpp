@@ -56,13 +56,13 @@ void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &p) {
     model->initializeWithDelayedMasker(adaptiveMethod, p);
 }
 
-void ModelImpl::initializeEyeTrackingTest(const FixedLevelTest &p) {
+void ModelImpl::initializeWithEyeTracking(const FixedLevelTest &p) {
     fixedLevelMethod->initialize(
         p, infiniteTargetList, fixedTrialTestConcluder);
     model->initializeWithEyeTracking(fixedLevelMethod, p);
 }
 
-void ModelImpl::initializeEyeTrackingTest(const AdaptiveTest &p) {
+void ModelImpl::initializeWithEyeTracking(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
     model->initializeWithEyeTracking(adaptiveMethod, p);
 }
