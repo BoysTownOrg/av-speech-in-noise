@@ -598,13 +598,7 @@ class ConfirmingTestSetup : public virtual ConditionUseCase,
                             public virtual LevelUseCase {
   public:
     virtual auto snr_dB(ModelStub &) -> int = 0;
-    virtual auto maskerLevel(ModelStub &) -> int { return {}; }
-    virtual auto targetListDirectory(ModelStub &) -> std::string { return {}; }
-    virtual auto subjectId(ModelStub &) -> std::string { return {}; }
-    virtual auto testerId(ModelStub &) -> std::string { return {}; }
-    virtual auto session(ModelStub &) -> std::string { return {}; }
     virtual auto method(ModelStub &) -> std::string = 0;
-    virtual auto maskerFilePath(ModelStub &) -> std::string { return {}; }
     virtual auto test(ModelStub &) -> const Test & = 0;
 };
 
@@ -629,32 +623,8 @@ static auto snr_dB(ModelStub &m) -> int {
     return adaptiveTest(m).startingSnr_dB;
 }
 
-static auto maskerLevel(ModelStub &m) -> int {
-    return adaptiveTest(m).maskerLevel_dB_SPL;
-}
-
-static auto targetListDirectory(ModelStub &m) -> std::string {
-    return adaptiveTest(m).targetListDirectory;
-}
-
-static auto subjectId(ModelStub &m) -> std::string {
-    return testIdentity(m).subjectId;
-}
-
-static auto testerId(ModelStub &m) -> std::string {
-    return testIdentity(m).testerId;
-}
-
-static auto session(ModelStub &m) -> std::string {
-    return testIdentity(m).session;
-}
-
 static auto method(ModelStub &m) -> std::string {
     return testIdentity(m).method;
-}
-
-static auto maskerFilePath(ModelStub &m) -> std::string {
-    return adaptiveTest(m).maskerFilePath;
 }
 
 static auto fullScaleLevel(ModelStub &m) -> int {
@@ -683,9 +653,7 @@ class ConfirmingDefaultAdaptiveClosedSetTest : public ConfirmingTestSetup {
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & {
-        return adaptiveTest(m);
-    }
+    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
 
     auto snr_dB(ModelStub &m) -> int override {
         return adaptive_test::snr_dB(m);
@@ -718,9 +686,7 @@ class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & {
-        return adaptiveTest(m);
-    }
+    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
 
     auto snr_dB(ModelStub &m) -> int override {
         return adaptive_test::snr_dB(m);
@@ -753,9 +719,7 @@ class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & {
-        return adaptiveTest(m);
-    }
+    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
 
     auto snr_dB(ModelStub &m) -> int override {
         return adaptive_test::snr_dB(m);
@@ -786,9 +750,7 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & {
-        return adaptiveTest(m);
-    }
+    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
 
     auto snr_dB(ModelStub &m) -> int override {
         return adaptive_test::snr_dB(m);
@@ -814,33 +776,11 @@ static auto identity(ModelStub &m) -> const TestIdentity & {
 
 static auto snr_dB(ModelStub &m) -> int { return fixedLevelTest(m).snr_dB; }
 
-static auto maskerLevel(ModelStub &m) -> int {
-    return fixedLevelTest(m).maskerLevel_dB_SPL;
-}
-
 static auto fullScaleLevel(ModelStub &m) -> int {
     return fixedLevelTest(m).fullScaleLevel_dB_SPL;
 }
 
-static auto targetListDirectory(ModelStub &m) -> std::string {
-    return fixedLevelTest(m).targetListDirectory;
-}
-
-static auto subjectId(ModelStub &m) -> std::string {
-    return identity(m).subjectId;
-}
-
-static auto testerId(ModelStub &m) -> std::string {
-    return identity(m).testerId;
-}
-
-static auto session(ModelStub &m) -> std::string { return identity(m).session; }
-
 static auto method(ModelStub &m) -> std::string { return identity(m).method; }
-
-static auto maskerFilePath(ModelStub &m) -> std::string {
-    return fixedLevelTest(m).maskerFilePath;
-}
 
 static auto condition(ModelStub &m) -> Condition {
     return fixedLevelTest(m).condition;
@@ -860,7 +800,7 @@ class ConfirmingDefaultFixedLevelOpenSetTest : public ConfirmingTestSetup {
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & {
+    auto test(ModelStub &m) -> const Test & override {
         return fixedLevelTest(m);
     }
 
@@ -894,7 +834,7 @@ class ConfirmingDefaultFixedLevelClosedSetTest : public ConfirmingTestSetup {
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & {
+    auto test(ModelStub &m) -> const Test & override {
         return fixedLevelTest(m);
     }
 
@@ -929,7 +869,7 @@ class ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & {
+    auto test(ModelStub &m) -> const Test & override {
         return fixedLevelTest(m);
     }
 
@@ -964,7 +904,7 @@ class ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & {
+    auto test(ModelStub &m) -> const Test & override {
         return fixedLevelTest(m);
     }
 
@@ -999,7 +939,7 @@ class ConfirmingFixedLevelOpenSetTestWithAllTargets
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & {
+    auto test(ModelStub &m) -> const Test & override {
         return fixedLevelTest(m);
     }
 
