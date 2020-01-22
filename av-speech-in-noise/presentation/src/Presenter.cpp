@@ -68,6 +68,8 @@ void Presenter::initializeTest() {
         model.initializeWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetWithSingleSpeaker())
         model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
+    else if (adaptiveClosedSetWithEyeTracking())
+        model.initializeWithEyeTracking(adaptiveTest(testSetup));
     else if (defaultAdaptive())
         model.initialize(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
@@ -100,6 +102,10 @@ auto Presenter::adaptiveClosedSetWithDelayedMasker() -> bool {
 
 auto Presenter::adaptiveClosedSetWithSingleSpeaker() -> bool {
     return testSetup.adaptiveClosedSetWithSingleSpeaker();
+}
+
+auto Presenter::adaptiveClosedSetWithEyeTracking() -> bool {
+    return testSetup.adaptiveClosedSetWithEyeTracking();
 }
 
 auto Presenter::testComplete() -> bool { return model.testComplete(); }
@@ -410,6 +416,10 @@ auto Presenter::TestSetup::adaptiveClosedSetWithDelayedMasker() -> bool {
 
 auto Presenter::TestSetup::adaptiveClosedSetWithSingleSpeaker() -> bool {
     return method(Method::adaptiveClosedSetWithSingleSpeaker);
+}
+
+auto Presenter::TestSetup::adaptiveClosedSetWithEyeTracking() -> bool {
+    return method(Method::adaptiveClosedSetWithEyeTracking);
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {

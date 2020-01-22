@@ -166,6 +166,11 @@ PRESENTER_TEST(confirmAdaptiveClosedSetTestWithDelayedMaskerInitializesModel) {
     assertTrue(model.initializedWithDelayedMasker());
 }
 
+PRESENTER_TEST(confirmAdaptiveClosedSetTestWithEyeTrackingInitializesModel) {
+    run(confirmingAdaptiveClosedSetTestWithEyeTracking);
+    assertTrue(model.initializedWithEyeTracking());
+}
+
 PRESENTER_TEST(
     confirmFixedLevelClosedSetTestWithSilentIntervalTargetsInitializesModel) {
     run(confirmingFixedLevelClosedSetSilentIntervalsTest);

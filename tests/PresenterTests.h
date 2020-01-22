@@ -44,6 +44,10 @@ class ModelStub : public Model {
         return initializedWithDelayedMasker_;
     }
 
+    [[nodiscard]] auto initializedWithEyeTracking() const {
+        return initializedWithEyeTracking_;
+    }
+
     [[nodiscard]] auto defaultFixedLevelTestInitialized() const {
         return defaultFixedLevelTestInitialized_;
     }
@@ -98,6 +102,11 @@ class ModelStub : public Model {
     void initializeWithDelayedMasker(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithDelayedMasker_ = true;
+    }
+
+    void initializeWithEyeTracking(const AdaptiveTest &p) {
+        adaptiveTest_ = p;
+        initializedWithEyeTracking_ = true;
     }
 
     void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
@@ -166,6 +175,7 @@ class ModelStub : public Model {
     bool fixedLevelTestWithAllTargetsInitialized_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
+    bool initializedWithEyeTracking_{};
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
 };
@@ -1675,6 +1685,10 @@ class RequestFailingModel : public Model {
     }
 
     void initializeWithDelayedMasker(const AdaptiveTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void initializeWithEyeTracking(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
