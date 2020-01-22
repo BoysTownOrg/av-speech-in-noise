@@ -606,15 +606,11 @@ class ConfirmingTestSetup : public virtual ConditionUseCase,
     virtual auto maskerFilePath(ModelStub &) -> std::string = 0;
 };
 
-class ConfirmingAdaptiveTest_ : public virtual ConfirmingTestSetup {
-  public:
-    virtual auto ceilingSnr_dB(ModelStub &) -> int = 0;
-    virtual auto floorSnr_dB(ModelStub &) -> int = 0;
-    virtual auto trackBumpLimit(ModelStub &) -> int = 0;
-    virtual auto trackSettingsFile(ModelStub &) -> std::string = 0;
-};
+static auto adaptiveTest(ModelStub &m) -> const AdaptiveTest & {
+    return m.adaptiveTest();
+}
 
-class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
+class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
@@ -668,22 +664,6 @@ class ConfirmingAdaptiveTest : public ConfirmingAdaptiveTest_ {
     auto condition(ModelStub &m) -> Condition override {
         return test(m).condition;
     }
-
-    auto ceilingSnr_dB(ModelStub &m) -> int override {
-        return test(m).ceilingSnr_dB;
-    }
-
-    auto floorSnr_dB(ModelStub &m) -> int override {
-        return test(m).floorSnr_dB;
-    }
-
-    auto trackSettingsFile(ModelStub &m) -> std::string override {
-        return test(m).trackSettingsFile;
-    }
-
-    auto trackBumpLimit(ModelStub &m) -> int override {
-        return test(m).trackBumpLimit;
-    }
 };
 
 static void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
@@ -732,24 +712,7 @@ static auto condition(ConfirmingAdaptiveTest &t, ModelStub &m) -> Condition {
     return t.condition(m);
 }
 
-static auto ceilingSnr_dB(ConfirmingAdaptiveTest &t, ModelStub &m) -> int {
-    return t.ceilingSnr_dB(m);
-}
-
-static auto floorSnr_dB(ConfirmingAdaptiveTest &t, ModelStub &m) -> int {
-    return t.floorSnr_dB(m);
-}
-
-static auto trackSettingsFile(ConfirmingAdaptiveTest &t, ModelStub &m)
-    -> std::string {
-    return t.trackSettingsFile(m);
-}
-
-static auto trackBumpLimit(ConfirmingAdaptiveTest &t, ModelStub &m) -> int {
-    return t.trackBumpLimit(m);
-}
-
-class ConfirmingAdaptiveClosedSetTest : public ConfirmingAdaptiveTest_ {
+class ConfirmingAdaptiveClosedSetTest : public ConfirmingTestSetup {
     ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
@@ -801,26 +764,10 @@ class ConfirmingAdaptiveClosedSetTest : public ConfirmingAdaptiveTest_ {
     auto condition(ModelStub &m) -> Condition override {
         return presentation::condition(confirmingAdaptiveTest, m);
     }
-
-    auto ceilingSnr_dB(ModelStub &m) -> int override {
-        return presentation::ceilingSnr_dB(confirmingAdaptiveTest, m);
-    }
-
-    auto floorSnr_dB(ModelStub &m) -> int override {
-        return presentation::floorSnr_dB(confirmingAdaptiveTest, m);
-    }
-
-    auto trackSettingsFile(ModelStub &m) -> std::string override {
-        return presentation::trackSettingsFile(confirmingAdaptiveTest, m);
-    }
-
-    auto trackBumpLimit(ModelStub &m) -> int override {
-        return presentation::trackBumpLimit(confirmingAdaptiveTest, m);
-    }
 };
 
 class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
-    : public ConfirmingAdaptiveTest_ {
+    : public ConfirmingTestSetup {
     ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
@@ -873,26 +820,10 @@ class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
     auto condition(ModelStub &m) -> Condition override {
         return presentation::condition(confirmingAdaptiveTest, m);
     }
-
-    auto ceilingSnr_dB(ModelStub &m) -> int override {
-        return presentation::ceilingSnr_dB(confirmingAdaptiveTest, m);
-    }
-
-    auto floorSnr_dB(ModelStub &m) -> int override {
-        return presentation::floorSnr_dB(confirmingAdaptiveTest, m);
-    }
-
-    auto trackSettingsFile(ModelStub &m) -> std::string override {
-        return presentation::trackSettingsFile(confirmingAdaptiveTest, m);
-    }
-
-    auto trackBumpLimit(ModelStub &m) -> int override {
-        return presentation::trackBumpLimit(confirmingAdaptiveTest, m);
-    }
 };
 
 class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
-    : public ConfirmingAdaptiveTest_ {
+    : public ConfirmingTestSetup {
     ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
@@ -945,25 +876,9 @@ class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
     auto condition(ModelStub &m) -> Condition override {
         return presentation::condition(confirmingAdaptiveTest, m);
     }
-
-    auto ceilingSnr_dB(ModelStub &m) -> int override {
-        return presentation::ceilingSnr_dB(confirmingAdaptiveTest, m);
-    }
-
-    auto floorSnr_dB(ModelStub &m) -> int override {
-        return presentation::floorSnr_dB(confirmingAdaptiveTest, m);
-    }
-
-    auto trackSettingsFile(ModelStub &m) -> std::string override {
-        return presentation::trackSettingsFile(confirmingAdaptiveTest, m);
-    }
-
-    auto trackBumpLimit(ModelStub &m) -> int override {
-        return presentation::trackBumpLimit(confirmingAdaptiveTest, m);
-    }
 };
 
-class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
+class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
     ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
@@ -1014,22 +929,6 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
 
     auto condition(ModelStub &m) -> Condition override {
         return presentation::condition(confirmingAdaptiveTest, m);
-    }
-
-    auto ceilingSnr_dB(ModelStub &m) -> int override {
-        return presentation::ceilingSnr_dB(confirmingAdaptiveTest, m);
-    }
-
-    auto floorSnr_dB(ModelStub &m) -> int override {
-        return presentation::floorSnr_dB(confirmingAdaptiveTest, m);
-    }
-
-    auto trackSettingsFile(ModelStub &m) -> std::string override {
-        return presentation::trackSettingsFile(confirmingAdaptiveTest, m);
-    }
-
-    auto trackBumpLimit(ModelStub &m) -> int override {
-        return presentation::trackBumpLimit(confirmingAdaptiveTest, m);
     }
 };
 
@@ -2041,25 +1940,29 @@ class PresenterTests : public ::testing::Test {
             Presenter::fullScaleLevel_dB_SPL, useCase.fullScaleLevel(model));
     }
 
-    void assertPassesCeilingSNR(ConfirmingAdaptiveTest_ &useCase) {
+    void assertPassesCeilingSNR(UseCase &useCase) {
         run(useCase);
-        assertEqual(Presenter::ceilingSnr_dB, useCase.ceilingSnr_dB(model));
+        assertEqual(Presenter::ceilingSnr_dB,
+            tests::presentation::adaptiveTest(model).ceilingSnr_dB);
     }
 
-    void assertPassesFloorSNR(ConfirmingAdaptiveTest_ &useCase) {
+    void assertPassesFloorSNR(UseCase &useCase) {
         run(useCase);
-        assertEqual(Presenter::floorSnr_dB, useCase.floorSnr_dB(model));
+        assertEqual(Presenter::floorSnr_dB,
+            tests::presentation::adaptiveTest(model).floorSnr_dB);
     }
 
-    void assertPassesTrackBumpLimit(ConfirmingAdaptiveTest_ &useCase) {
+    void assertPassesTrackBumpLimit(UseCase &useCase) {
         run(useCase);
-        assertEqual(Presenter::trackBumpLimit, useCase.trackBumpLimit(model));
+        assertEqual(Presenter::trackBumpLimit,
+            tests::presentation::adaptiveTest(model).trackBumpLimit);
     }
 
-    void assertPassesTrackSettingsFile(ConfirmingAdaptiveTest_ &useCase) {
+    void assertPassesTrackSettingsFile(UseCase &useCase) {
         setupView.setTrackSettingsFile("e");
         run(useCase);
-        assertEqual("e", useCase.trackSettingsFile(model));
+        assertEqual(
+            "e", tests::presentation::adaptiveTest(model).trackSettingsFile);
     }
 
     void assertInvalidSnrShowsErrorMessage(UseCase &useCase) {
