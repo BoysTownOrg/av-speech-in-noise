@@ -673,60 +673,63 @@ class ConfirmingAdaptiveTest : public ConfirmingTestSetup {
     }
 };
 
+namespace adaptive_test {
+static auto testIdentity(ModelStub &m) -> const TestIdentity & {
+    return adaptiveTest(m).identity;
+}
+
+static auto snr_dB(ModelStub &m) -> int {
+    return adaptiveTest(m).startingSnr_dB;
+}
+
+static auto maskerLevel(ModelStub &m) -> int {
+    return adaptiveTest(m).maskerLevel_dB_SPL;
+}
+
+static auto targetListDirectory(ModelStub &m) -> std::string {
+    return adaptiveTest(m).targetListDirectory;
+}
+
+static auto subjectId(ModelStub &m) -> std::string {
+    return testIdentity(m).subjectId;
+}
+
+static auto testerId(ModelStub &m) -> std::string {
+    return testIdentity(m).testerId;
+}
+
+static auto session(ModelStub &m) -> std::string {
+    return testIdentity(m).session;
+}
+
+static auto method(ModelStub &m) -> std::string {
+    return testIdentity(m).method;
+}
+
+static auto maskerFilePath(ModelStub &m) -> std::string {
+    return adaptiveTest(m).maskerFilePath;
+}
+
+static auto fullScaleLevel(ModelStub &m) -> int {
+    return adaptiveTest(m).fullScaleLevel_dB_SPL;
+}
+
+static auto condition(ModelStub &m) -> Condition {
+    return adaptiveTest(m).condition;
+}
+};
+
 static void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
     view->setMethod(methodName(m));
 }
 
-static auto snr_dB(ConfirmingAdaptiveTest &t, ModelStub &m) -> int {
-    return t.snr_dB(m);
-}
-
-static auto maskerLevel(ConfirmingAdaptiveTest &t, ModelStub &m) -> int {
-    return t.maskerLevel(m);
-}
-
-static auto fullScaleLevel(ConfirmingAdaptiveTest &t, ModelStub &m) -> int {
-    return t.fullScaleLevel(m);
-}
-
-static auto session(ConfirmingAdaptiveTest &t, ModelStub &m) -> std::string {
-    return t.session(m);
-}
-
-static auto method(ConfirmingAdaptiveTest &t, ModelStub &m) -> std::string {
-    return t.method(m);
-}
-
-static auto subjectId(ConfirmingAdaptiveTest &t, ModelStub &m) -> std::string {
-    return t.subjectId(m);
-}
-
-static auto testerId(ConfirmingAdaptiveTest &t, ModelStub &m) -> std::string {
-    return t.testerId(m);
-}
-
-static auto targetListDirectory(ConfirmingAdaptiveTest &t, ModelStub &m)
-    -> std::string {
-    return t.targetListDirectory(m);
-}
-
-static auto maskerFilePath(ConfirmingAdaptiveTest &t, ModelStub &m)
-    -> std::string {
-    return t.maskerFilePath(m);
-}
-
-static auto condition(ConfirmingAdaptiveTest &t, ModelStub &m) -> Condition {
-    return t.condition(m);
-}
-
 class ConfirmingDefaultAdaptiveClosedSetTest : public ConfirmingTestSetup {
-    ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
     explicit ConfirmingDefaultAdaptiveClosedSetTest(
         ViewStub::TestSetupViewStub *view)
-        : confirmingAdaptiveTest{view}, view{view} {}
+        : view{view} {}
 
     void run() override {
         setMethod(view, Method::defaultAdaptiveClosedSet);
@@ -734,55 +737,54 @@ class ConfirmingDefaultAdaptiveClosedSetTest : public ConfirmingTestSetup {
     }
 
     auto snr_dB(ModelStub &m) -> int override {
-        return presentation::snr_dB(confirmingAdaptiveTest, m);
+        return adaptive_test::snr_dB(m);
     }
 
     auto maskerLevel(ModelStub &m) -> int override {
-        return presentation::maskerLevel(confirmingAdaptiveTest, m);
+        return adaptive_test::maskerLevel(m);
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
-        return presentation::fullScaleLevel(confirmingAdaptiveTest, m);
+        return adaptive_test::fullScaleLevel(m);
     }
 
     auto targetListDirectory(ModelStub &m) -> std::string override {
-        return presentation::targetListDirectory(confirmingAdaptiveTest, m);
+        return adaptive_test::targetListDirectory(m);
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
-        return presentation::subjectId(confirmingAdaptiveTest, m);
+        return adaptive_test::subjectId(m);
     }
 
     auto testerId(ModelStub &m) -> std::string override {
-        return presentation::testerId(confirmingAdaptiveTest, m);
+        return adaptive_test::testerId(m);
     }
 
     auto session(ModelStub &m) -> std::string override {
-        return presentation::session(confirmingAdaptiveTest, m);
+        return adaptive_test::session(m);
     }
 
     auto method(ModelStub &m) -> std::string override {
-        return presentation::method(confirmingAdaptiveTest, m);
+        return adaptive_test::method(m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return presentation::maskerFilePath(confirmingAdaptiveTest, m);
+        return adaptive_test::maskerFilePath(m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return presentation::condition(confirmingAdaptiveTest, m);
+        return adaptive_test::condition(m);
     }
 };
 
 class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
     : public ConfirmingTestSetup {
-    ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
     explicit ConfirmingAdaptiveClosedSetTestWithSingleSpeaker(
         ViewStub::TestSetupViewStub *view)
-        : confirmingAdaptiveTest{view}, view{view} {}
+        : view{view} {}
 
     void run() override {
         setMethod(view, Method::adaptiveClosedSetWithSingleSpeaker);
@@ -790,55 +792,54 @@ class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
     }
 
     auto snr_dB(ModelStub &m) -> int override {
-        return presentation::snr_dB(confirmingAdaptiveTest, m);
+        return adaptive_test::snr_dB(m);
     }
 
     auto maskerLevel(ModelStub &m) -> int override {
-        return presentation::maskerLevel(confirmingAdaptiveTest, m);
+        return adaptive_test::maskerLevel(m);
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
-        return presentation::fullScaleLevel(confirmingAdaptiveTest, m);
+        return adaptive_test::fullScaleLevel(m);
     }
 
     auto targetListDirectory(ModelStub &m) -> std::string override {
-        return presentation::targetListDirectory(confirmingAdaptiveTest, m);
+        return adaptive_test::targetListDirectory(m);
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
-        return presentation::subjectId(confirmingAdaptiveTest, m);
+        return adaptive_test::subjectId(m);
     }
 
     auto testerId(ModelStub &m) -> std::string override {
-        return presentation::testerId(confirmingAdaptiveTest, m);
+        return adaptive_test::testerId(m);
     }
 
     auto session(ModelStub &m) -> std::string override {
-        return presentation::session(confirmingAdaptiveTest, m);
+        return adaptive_test::session(m);
     }
 
     auto method(ModelStub &m) -> std::string override {
-        return presentation::method(confirmingAdaptiveTest, m);
+        return adaptive_test::method(m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return presentation::maskerFilePath(confirmingAdaptiveTest, m);
+        return adaptive_test::maskerFilePath(m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return presentation::condition(confirmingAdaptiveTest, m);
+        return adaptive_test::condition(m);
     }
 };
 
 class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
     : public ConfirmingTestSetup {
-    ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
     explicit ConfirmingAdaptiveClosedSetTestWithDelayedMasker(
         ViewStub::TestSetupViewStub *view)
-        : confirmingAdaptiveTest{view}, view{view} {}
+        : view{view} {}
 
     void run() override {
         setMethod(view, Method::adaptiveClosedSetWithDelayedMasker);
@@ -846,53 +847,52 @@ class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
     }
 
     auto snr_dB(ModelStub &m) -> int override {
-        return presentation::snr_dB(confirmingAdaptiveTest, m);
+        return adaptive_test::snr_dB(m);
     }
 
     auto maskerLevel(ModelStub &m) -> int override {
-        return presentation::maskerLevel(confirmingAdaptiveTest, m);
+        return adaptive_test::maskerLevel(m);
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
-        return presentation::fullScaleLevel(confirmingAdaptiveTest, m);
+        return adaptive_test::fullScaleLevel(m);
     }
 
     auto targetListDirectory(ModelStub &m) -> std::string override {
-        return presentation::targetListDirectory(confirmingAdaptiveTest, m);
+        return adaptive_test::targetListDirectory(m);
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
-        return presentation::subjectId(confirmingAdaptiveTest, m);
+        return adaptive_test::subjectId(m);
     }
 
     auto testerId(ModelStub &m) -> std::string override {
-        return presentation::testerId(confirmingAdaptiveTest, m);
+        return adaptive_test::testerId(m);
     }
 
     auto session(ModelStub &m) -> std::string override {
-        return presentation::session(confirmingAdaptiveTest, m);
+        return adaptive_test::session(m);
     }
 
     auto method(ModelStub &m) -> std::string override {
-        return presentation::method(confirmingAdaptiveTest, m);
+        return adaptive_test::method(m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return presentation::maskerFilePath(confirmingAdaptiveTest, m);
+        return adaptive_test::maskerFilePath(m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return presentation::condition(confirmingAdaptiveTest, m);
+        return adaptive_test::condition(m);
     }
 };
 
 class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
-    ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
     explicit ConfirmingAdaptiveOpenSetTest(ViewStub::TestSetupViewStub *view)
-        : confirmingAdaptiveTest{view}, view{view} {}
+        : view{view} {}
 
     void run() override {
         setMethod(view, Method::adaptiveOpenSet);
@@ -900,43 +900,43 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
     }
 
     auto snr_dB(ModelStub &m) -> int override {
-        return presentation::snr_dB(confirmingAdaptiveTest, m);
+        return adaptive_test::snr_dB(m);
     }
 
     auto maskerLevel(ModelStub &m) -> int override {
-        return presentation::maskerLevel(confirmingAdaptiveTest, m);
+        return adaptive_test::maskerLevel(m);
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
-        return presentation::fullScaleLevel(confirmingAdaptiveTest, m);
+        return adaptive_test::fullScaleLevel(m);
     }
 
     auto targetListDirectory(ModelStub &m) -> std::string override {
-        return presentation::targetListDirectory(confirmingAdaptiveTest, m);
+        return adaptive_test::targetListDirectory(m);
     }
 
     auto subjectId(ModelStub &m) -> std::string override {
-        return presentation::subjectId(confirmingAdaptiveTest, m);
+        return adaptive_test::subjectId(m);
     }
 
     auto testerId(ModelStub &m) -> std::string override {
-        return presentation::testerId(confirmingAdaptiveTest, m);
+        return adaptive_test::testerId(m);
     }
 
     auto session(ModelStub &m) -> std::string override {
-        return presentation::session(confirmingAdaptiveTest, m);
+        return adaptive_test::session(m);
     }
 
     auto method(ModelStub &m) -> std::string override {
-        return presentation::method(confirmingAdaptiveTest, m);
+        return adaptive_test::method(m);
     }
 
     auto maskerFilePath(ModelStub &m) -> std::string override {
-        return presentation::maskerFilePath(confirmingAdaptiveTest, m);
+        return adaptive_test::maskerFilePath(m);
     }
 
     auto condition(ModelStub &m) -> Condition override {
-        return presentation::condition(confirmingAdaptiveTest, m);
+        return adaptive_test::condition(m);
     }
 };
 
