@@ -2,9 +2,8 @@
 #include "TargetListStub.h"
 #include "TestConcluderStub.h"
 #include "assert-utility.h"
-#include "av-speech-in-noise/Model.hpp"
-#include <gtest/gtest.h>
 #include <recognition-test/Model.hpp>
+#include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests {
 namespace {
@@ -80,18 +79,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool initializedWithEyeTracking_{};
 
   public:
-    [[nodiscard]] auto initializedWithSingleSpeaker() const -> bool {
-        return initializedWithSingleSpeaker_;
-    }
-
-    [[nodiscard]] auto initializedWithDelayedMasker() const -> bool {
-        return initializedWithDelayedMasker_;
-    }
-
-    [[nodiscard]] auto initializedWithEyeTracking() const -> bool {
-        return initializedWithEyeTracking_;
-    }
-
     void initialize(TestMethod *method, const Test &test) override {
         testMethod_ = method;
         test_ = &test;
@@ -139,6 +126,18 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
+    [[nodiscard]] auto initializedWithSingleSpeaker() const -> bool {
+        return initializedWithSingleSpeaker_;
+    }
+
+    [[nodiscard]] auto initializedWithDelayedMasker() const -> bool {
+        return initializedWithDelayedMasker_;
+    }
+
+    [[nodiscard]] auto initializedWithEyeTracking() const -> bool {
+        return initializedWithEyeTracking_;
+    }
+
     [[nodiscard]] auto coordinateResponse() const {
         return coordinateResponse_;
     }
@@ -151,13 +150,13 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     [[nodiscard]] auto calibration() const { return calibration_; }
 
+    [[nodiscard]] auto listener() const { return listener_; }
+
     void setComplete() { complete_ = true; }
 
     void setAudioDevices(std::vector<std::string> v) {
         audioDevices_ = std::move(v);
     }
-
-    [[nodiscard]] auto listener() const { return listener_; }
 
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
@@ -191,13 +190,11 @@ void initialize(ModelImpl &model, const FixedLevelTest &test) {
     model.initialize(test);
 }
 
-void initializeWithSingleSpeaker(
-    ModelImpl &model, const AdaptiveTest &test) {
+void initializeWithSingleSpeaker(ModelImpl &model, const AdaptiveTest &test) {
     model.initializeWithSingleSpeaker(test);
 }
 
-void initializeWithDelayedMasker(
-    ModelImpl &model, const AdaptiveTest &test) {
+void initializeWithDelayedMasker(ModelImpl &model, const AdaptiveTest &test) {
     model.initializeWithDelayedMasker(test);
 }
 
@@ -537,13 +534,11 @@ MODEL_TEST(initializeFixedLevelEyeTrackingTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelEyeTrackingTest);
 }
 
-MODEL_TEST(
-    initializeFixedLevelSilentIntervalsTestInitializesInternalModel) {
+MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelSilentIntervalsTest);
 }
 
-MODEL_TEST(
-    initializeFixedLevelAllStimuliTestInitializesInternalModel) {
+MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelAllStimuliTest);
 }
 
@@ -577,14 +572,14 @@ TEST_F(ModelTests,
     assertTrue(internalModel.initializedWithDelayedMasker());
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveEyeTrackingTestInitializesWithEyeTracking) {
+TEST_F(
+    ModelTests, initializeAdaptiveEyeTrackingTestInitializesWithEyeTracking) {
     run(initializingAdaptiveEyeTrackingTest);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
-TEST_F(ModelTests,
-    initializeFixedLevelEyeTrackingTestInitializesWithEyeTracking) {
+TEST_F(
+    ModelTests, initializeFixedLevelEyeTrackingTestInitializesWithEyeTracking) {
     run(initializingFixedLevelEyeTrackingTest);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
