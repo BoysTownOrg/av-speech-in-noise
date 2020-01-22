@@ -64,6 +64,7 @@ void ModelImpl::initializeEyeTrackingTest(const FixedLevelTest &p) {
 
 void ModelImpl::initializeEyeTrackingTest(const AdaptiveTest &p) {
     adaptiveMethod->initialize(p);
+    model->initializeWithEyeTracking(adaptiveMethod, p);
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {

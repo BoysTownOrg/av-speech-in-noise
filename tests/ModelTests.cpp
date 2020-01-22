@@ -547,6 +547,10 @@ MODEL_TEST(initializeAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTest);
 }
 
+MODEL_TEST(initializeAdaptiveEyeTrackingTestInitializesInternalModel) {
+    assertInitializesInternalModel(initializingAdaptiveEyeTrackingTest);
+}
+
 TEST_F(ModelTests,
     initializeAdaptiveTestWithSingleSpeakerInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithSingleSpeaker);
