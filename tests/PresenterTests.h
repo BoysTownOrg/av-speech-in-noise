@@ -161,23 +161,15 @@ class ModelStub : public Model {
     bool trialPlayed_{};
     bool defaultFixedLevelTestInitialized_{};
     bool defaultAdaptiveTestInitialized_{};
-    bool correctResponseSubmitted_{};
-    bool incorrectResponseSubmitted_{};
     bool fixedLevelTestWithSilentIntervalTargetsInitialized_{};
     bool fixedLevelTestWithAllTargetsInitialized_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
+    bool correctResponseSubmitted_{};
+    bool incorrectResponseSubmitted_{};
 };
 
 class ViewStub : public View {
-    std::vector<std::string> audioDevices_;
-    std::string errorMessage_;
-    std::string browseForDirectoryResult_;
-    std::string browseForOpeningFileResult_;
-    std::string audioDevice_;
-    bool eventLoopCalled_{};
-    bool browseCancelled_{};
-
   public:
     void setAudioDevice(std::string s) { audioDevice_ = std::move(s); }
 
@@ -220,27 +212,6 @@ class ViewStub : public View {
     [[nodiscard]] auto audioDevices() const { return audioDevices_; }
 
     class TestSetupViewStub : public TestSetup {
-        Collection<std::string> conditions_;
-        Collection<std::string> methods_;
-        std::string signalLevel_{"0"};
-        std::string calibrationLevel_{"0"};
-        std::string startingSnr_{"0"};
-        std::string maskerLevel_{"0"};
-        std::string masker_;
-        std::string condition_;
-        std::string stimulusList_;
-        std::string subjectId_;
-        std::string testerId_;
-        std::string session_;
-        std::string calibrationFilePath_;
-        std::string method_;
-        std::string trackSettingsFile_;
-        EventListener *listener_{};
-        bool shown_{};
-        bool hidden_{};
-        bool useSingleSpeaker_{};
-        bool useDelayedMasker_{};
-
       public:
         void useSingleSpeaker() { useSingleSpeaker_ = true; }
 
@@ -349,22 +320,31 @@ class ViewStub : public View {
         }
 
         void browseForCalibration() { listener_->browseForCalibration(); }
+
+      private:
+        Collection<std::string> conditions_;
+        Collection<std::string> methods_;
+        std::string signalLevel_{"0"};
+        std::string calibrationLevel_{"0"};
+        std::string startingSnr_{"0"};
+        std::string maskerLevel_{"0"};
+        std::string masker_;
+        std::string condition_;
+        std::string stimulusList_;
+        std::string subjectId_;
+        std::string testerId_;
+        std::string session_;
+        std::string calibrationFilePath_;
+        std::string method_;
+        std::string trackSettingsFile_;
+        EventListener *listener_{};
+        bool shown_{};
+        bool hidden_{};
+        bool useSingleSpeaker_{};
+        bool useDelayedMasker_{};
     };
 
     class SubjectViewStub : public Subject {
-        std::string numberResponse_{"0"};
-        EventListener *listener_{};
-        bool greenResponse_{};
-        bool redResponse_{};
-        bool blueResponse_{};
-        bool grayResponse_{};
-        bool responseButtonsShown_{};
-        bool nextTrialButtonShown_{};
-        bool responseButtonsHidden_{};
-        bool nextTrialButtonHidden_{};
-        bool shown_{};
-        bool hidden_{};
-
       public:
         void show() override { shown_ = true; }
 
@@ -425,21 +405,23 @@ class ViewStub : public View {
         void submitResponse() { listener_->submitResponse(); }
 
         void playTrial() { listener_->playTrial(); }
+
+      private:
+        std::string numberResponse_{"0"};
+        EventListener *listener_{};
+        bool greenResponse_{};
+        bool redResponse_{};
+        bool blueResponse_{};
+        bool grayResponse_{};
+        bool responseButtonsShown_{};
+        bool nextTrialButtonShown_{};
+        bool responseButtonsHidden_{};
+        bool nextTrialButtonHidden_{};
+        bool shown_{};
+        bool hidden_{};
     };
 
     class TestingViewStub : public Testing {
-        std::string response_;
-        EventListener *listener_{};
-        bool nextTrialButtonShown_{};
-        bool shown_{};
-        bool nextTrialButtonHidden_{};
-        bool hidden_{};
-        bool evaluationButtonsShown_{};
-        bool responseSubmissionShown_{};
-        bool responseSubmissionHidden_{};
-        bool evaluationButtonsHidden_{};
-        bool flagged_{};
-
       public:
         void submitFailedTrial() { listener_->submitFailedTrial(); }
 
@@ -510,17 +492,22 @@ class ViewStub : public View {
         auto flagged() -> bool override { return flagged_; }
 
         void submitResponse() { listener_->submitResponse(); }
+
+      private:
+        std::string response_;
+        EventListener *listener_{};
+        bool nextTrialButtonShown_{};
+        bool shown_{};
+        bool nextTrialButtonHidden_{};
+        bool hidden_{};
+        bool evaluationButtonsShown_{};
+        bool responseSubmissionShown_{};
+        bool responseSubmissionHidden_{};
+        bool evaluationButtonsHidden_{};
+        bool flagged_{};
     };
 
     class ExperimenterViewStub : public Experimenter {
-        std::string response_;
-        std::string displayed_;
-        EventListener *listener_{};
-        bool shown_{};
-        bool hidden_{};
-        bool exitTestButtonHidden_{};
-        bool exitTestButtonShown_{};
-
       public:
         void display(std::string s) override { displayed_ = std::move(s); }
 
@@ -549,7 +536,25 @@ class ViewStub : public View {
         void hide() override { hidden_ = true; }
 
         void exitTest() { listener_->exitTest(); }
+
+      private:
+        std::string response_;
+        std::string displayed_;
+        EventListener *listener_{};
+        bool shown_{};
+        bool hidden_{};
+        bool exitTestButtonHidden_{};
+        bool exitTestButtonShown_{};
     };
+
+  private:
+    std::vector<std::string> audioDevices_;
+    std::string errorMessage_;
+    std::string browseForDirectoryResult_;
+    std::string browseForOpeningFileResult_;
+    std::string audioDevice_;
+    bool eventLoopCalled_{};
+    bool browseCancelled_{};
 };
 
 class UseCase {
