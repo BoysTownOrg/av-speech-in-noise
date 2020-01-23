@@ -4,13 +4,13 @@
 
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
     -> TobiiResearchEyeTracker * {
-    return eyeTrackers->count == 0U ? nullptr : eyeTrackers->eyetrackers[0];
+    return eyeTrackers == nullptr || eyeTrackers->count == 0U
+        ? nullptr
+        : eyeTrackers->eyetrackers[0];
 }
 
 TobiiEyeTracker::TobiiEyeTracker() {
-    if (tobii_research_find_all_eyetrackers(&eyeTrackers) !=
-        TOBII_RESEARCH_STATUS_OK)
-        throw int{};
+    tobii_research_find_all_eyetrackers(&eyeTrackers);
 }
 
 TobiiEyeTracker::~TobiiEyeTracker() {

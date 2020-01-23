@@ -264,8 +264,9 @@ void main() {
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
     FixedTrialTestConcluder fixedTrials;
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
+    TobiiEyeTracker eyeTracker;
     RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
-        &responseEvaluator, &outputFile, &randomizer};
+        &responseEvaluator, &outputFile, &randomizer, &eyeTracker};
     ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
         &fixedTrials, &silentIntervals, &completesWhenTargetsEmpty, &allStimuli,
         &model_internal};
