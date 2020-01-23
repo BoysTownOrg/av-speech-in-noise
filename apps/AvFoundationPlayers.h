@@ -109,8 +109,6 @@ class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
   public:
     AvFoundationAudioPlayer();
     ~AvFoundationAudioPlayer() override;
-    auto audio() -> std::vector<gsl::span<float>> & { return audio_; }
-    void fillAudioBuffer();
     void subscribe(EventListener *) override;
     void loadFile(std::string filePath) override;
     auto deviceCount() -> int override;
@@ -123,6 +121,15 @@ class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     void timerCallback();
     auto outputDevice(int index) -> bool override;
     auto durationSeconds() -> double override;
+
+  private:
+    static auto AU_RenderCallback(void *inRefCon,
+        AudioUnitRenderActionFlags *ioActionFlags,
+        const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
+        UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus;
+    auto audioBufferReady(AudioUnitRenderActionFlags *ioActionFlags,
+        const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
+        UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus;
 };
 
 #endif

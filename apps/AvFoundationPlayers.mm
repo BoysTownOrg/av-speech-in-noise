@@ -404,19 +404,6 @@ auto AvFoundationVideoPlayer::durationSeconds() -> double {
 }
 @end
 
-static auto AU_RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *,
-    const AudioTimeStamp *, UInt32, UInt32 inNumberFrames,
-    AudioBufferList *ioData) -> OSStatus {
-    auto self = static_cast<AvFoundationAudioPlayer *>(inRefCon);
-    if (self->audio().size() != ioData->mNumberBuffers)
-        return -1;
-    for (UInt32 j = 0; j < ioData->mNumberBuffers; ++j)
-        self->audio()[j] = {
-            static_cast<float *>(ioData->mBuffers[j].mData), inNumberFrames};
-    self->fillAudioBuffer();
-    return noErr;
-}
-
 AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     AudioComponentDescription audioComponentDescription;
     audioComponentDescription.componentType = kAudioUnitType_Output;
@@ -456,11 +443,32 @@ AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
     AudioComponentInstanceDispose(audioUnit);
 }
 
+auto AvFoundationAudioPlayer::AU_RenderCallback(void *inRefCon,
+    AudioUnitRenderActionFlags *ioActionFlags,
+    const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
+    UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus {
+    return static_cast<AvFoundationAudioPlayer *>(inRefCon)->audioBufferReady(
+        ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData);
+}
+
+auto AvFoundationAudioPlayer::audioBufferReady(
+    AudioUnitRenderActionFlags *ioActionFlags,
+    const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
+    UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus {
+    if (audio_.size() != ioData->mNumberBuffers)
+        return -1;
+    for (UInt32 j = 0; j < ioData->mNumberBuffers; ++j)
+        audio_[j] = {
+            static_cast<float *>(ioData->mBuffers[j].mData), inNumberFrames};
+    listener_->fillAudioBuffer(audio_);
+    return noErr;
+}
+
 void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     filePath_ = std::move(filePath);
-    
+
     AvAssetFacade asset{filePath_};
 
     AudioStreamBasicDescription streamFormat{};
@@ -509,8 +517,7 @@ auto AvFoundationAudioPlayer::sampleRateHz() -> double {
     AudioStreamBasicDescription streamFormat{};
     UInt32 size = sizeof(AudioStreamBasicDescription);
     AudioUnitGetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
-        kAudioUnitScope_Input, 0, &streamFormat,
-        &size);
+        kAudioUnitScope_Input, 0, &streamFormat, &size);
     return streamFormat.mSampleRate;
 }
 
@@ -518,10 +525,6 @@ void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
     return device.outputDevice(index);
-}
-
-void AvFoundationAudioPlayer::fillAudioBuffer() {
-    listener_->fillAudioBuffer(audio_);
 }
 
 auto AvFoundationAudioPlayer::durationSeconds() -> double {
