@@ -206,59 +206,7 @@ static void init(
 
 static void finalize(MTAudioProcessingTapRef) {}
 
-void AvFoundationVideoPlayer::prepareTap(MTAudioProcessingTapRef tap,
-    CMItemCount maxFrames,
-    const AudioStreamBasicDescription *processingFormat) {
-    return static_cast<AvFoundationVideoPlayer *>(
-        MTAudioProcessingTapGetStorage(tap))
-        ->prepareTap_(tap, maxFrames, processingFormat);
-}
-
-void AvFoundationVideoPlayer::prepareTap_(
-    MTAudioProcessingTapRef, CMItemCount,
-    const AudioStreamBasicDescription *processingFormat) {
-    audio_.resize(processingFormat->mChannelsPerFrame);
-}
-
 static void unprepare(MTAudioProcessingTapRef) {}
-
-static void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
-    MTAudioProcessingTapFlags, AudioBufferList *bufferListInOut,
-    CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut) {
-    MTAudioProcessingTapGetSourceAudio(
-        tap, numberFrames, bufferListInOut, flagsOut, nullptr, numberFramesOut);
-
-    auto self = static_cast<AvFoundationVideoPlayer *>(
-        MTAudioProcessingTapGetStorage(tap));
-    if (self->audio().size() != bufferListInOut->mNumberBuffers)
-        return;
-
-    for (UInt32 j = 0; j < bufferListInOut->mNumberBuffers; ++j)
-        self->audio()[j] = {
-            static_cast<float *>(bufferListInOut->mBuffers[j].mData),
-            numberFrames};
-    self->fillAudioBuffer();
-}
-
-static auto playerItemWithAudioProcessing(
-    std::string filePath, MTAudioProcessingTapRef tap) -> AVPlayerItem * {
-    AvAssetFacade asset{std::move(filePath)};
-    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset.get()];
-    const auto audioMix = [AVMutableAudioMix audioMix];
-    const auto processing = [AVMutableAudioMixInputParameters
-        audioMixInputParametersWithTrack:asset.audioTrack()];
-    processing.audioTapProcessor = tap;
-    audioMix.inputParameters = @[ processing ];
-    playerItem.audioMix = audioMix;
-    return playerItem;
-}
-
-static void loadItemFromFileWithAudioProcessing(
-    std::string filePath, AVPlayer *player, MTAudioProcessingTapRef tap) {
-    const auto playerItem =
-        playerItemWithAudioProcessing(std::move(filePath), tap);
-    [player replaceCurrentItemWithPlayerItem:playerItem];
-}
 
 static auto currentAsset(AVPlayer *player) -> AVAsset * {
     return player.currentItem.asset;
@@ -279,7 +227,7 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
     callbacks.clientInfo = this;
     callbacks.init = init;
     callbacks.prepare = prepareTap;
-    callbacks.process = process;
+    callbacks.process = processTap;
     callbacks.unprepare = unprepare;
     callbacks.finalize = finalize;
 
@@ -287,6 +235,45 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
         kMTAudioProcessingTapCreationFlag_PostEffects, &tap);
     prepareWindow();
     actions.controller = this;
+}
+
+void AvFoundationVideoPlayer::prepareTap(MTAudioProcessingTapRef tap,
+    CMItemCount maxFrames,
+    const AudioStreamBasicDescription *processingFormat) {
+    return static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap))
+        ->prepareTap_(tap, maxFrames, processingFormat);
+}
+
+void AvFoundationVideoPlayer::prepareTap_(MTAudioProcessingTapRef, CMItemCount,
+    const AudioStreamBasicDescription *processingFormat) {
+    audio_.resize(processingFormat->mChannelsPerFrame);
+}
+
+void AvFoundationVideoPlayer::processTap(MTAudioProcessingTapRef tap,
+    CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
+    AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
+    MTAudioProcessingTapFlags *flagsOut) {
+    return static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap))
+        ->processTap_(tap, numberFrames, flags, bufferListInOut,
+            numberFramesOut, flagsOut);
+}
+
+void AvFoundationVideoPlayer::processTap_(MTAudioProcessingTapRef tap,
+    CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
+    AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
+    MTAudioProcessingTapFlags *flagsOut) {
+    MTAudioProcessingTapGetSourceAudio(
+        tap, numberFrames, bufferListInOut, flagsOut, nullptr, numberFramesOut);
+
+    if (audio_.size() != bufferListInOut->mNumberBuffers)
+        return;
+
+    for (UInt32 j = 0; j < bufferListInOut->mNumberBuffers; ++j)
+        audio_[j] = {static_cast<float *>(bufferListInOut->mBuffers[j].mData),
+            numberFrames};
+    listener_->fillAudioBuffer(audio_);
 }
 
 void AvFoundationVideoPlayer::prepareWindow() {
@@ -308,7 +295,15 @@ void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
 void AvFoundationVideoPlayer::play() { [player play]; }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
-    loadItemFromFileWithAudioProcessing(std::move(filePath), player, tap);
+    AvAssetFacade asset{std::move(filePath)};
+    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset.get()];
+    const auto audioMix = [AVMutableAudioMix audioMix];
+    const auto processing = [AVMutableAudioMixInputParameters
+        audioMixInputParametersWithTrack:asset.audioTrack()];
+    processing.audioTapProcessor = tap;
+    audioMix.inputParameters = @[ processing ];
+    playerItem.audioMix = audioMix;
+    [player replaceCurrentItemWithPlayerItem:playerItem];
     prepareVideo();
 }
 
@@ -372,10 +367,6 @@ auto AvFoundationVideoPlayer::deviceCount() -> int {
 
 auto AvFoundationVideoPlayer::deviceDescription(int index) -> std::string {
     return device.description(index);
-}
-
-void AvFoundationVideoPlayer::fillAudioBuffer() {
-    listener_->fillAudioBuffer(audio_);
 }
 
 static auto playing(AVPlayer *player) -> bool {

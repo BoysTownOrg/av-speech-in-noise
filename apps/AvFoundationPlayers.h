@@ -66,8 +66,6 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
   public:
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
-    auto audio() -> std::vector<gsl::span<float>> & { return audio_; }
-    void fillAudioBuffer();
     void play() override;
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
@@ -88,12 +86,17 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     void centerVideo();
     void resizeVideo();
     void prepareVideo();
-    static void prepareTap(MTAudioProcessingTapRef tap,
-        CMItemCount maxFrames,
+    static void prepareTap(MTAudioProcessingTapRef tap, CMItemCount maxFrames,
         const AudioStreamBasicDescription *processingFormat);
-    void prepareTap_(MTAudioProcessingTapRef tap,
-        CMItemCount maxFrames,
+    void prepareTap_(MTAudioProcessingTapRef tap, CMItemCount maxFrames,
         const AudioStreamBasicDescription *processingFormat);
+    static void processTap(MTAudioProcessingTapRef tap,
+        CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
+        AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
+        MTAudioProcessingTapFlags *flagsOut);
+    void processTap_(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
+        MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut,
+        CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut);
 
     std::vector<gsl::span<float>> audio_;
     MTAudioProcessingTapRef tap{};
