@@ -1,4 +1,5 @@
 #include "MersenneTwisterRandomizer.hpp"
+#include "TobiiEyeTracker.hpp"
 #include "AvFoundationPlayers.h"
 #include "CocoaView.h"
 #include "common-objc.h"
