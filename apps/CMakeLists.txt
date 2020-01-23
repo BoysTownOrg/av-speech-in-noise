@@ -28,6 +28,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         message(FATAL_ERROR "tobii_research not found")
     endif()
     add_executable(AvSpeechInNoise MACOSX_BUNDLE 
+        TobiiEyeTracker.cpp
         AvFoundationPlayers.mm
         CocoaView.mm
         main.mm
@@ -46,6 +47,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         ${MEDIA_TOOLBOX}
         ${AUDIO_TOOLBOX}
         ${TOBII_RESEARCH}
+        GSL
     )
     target_include_directories(AvSpeechInNoise PRIVATE "/usr/local/include/tobii_research")
 endif()
