@@ -206,11 +206,18 @@ static void init(
 
 static void finalize(MTAudioProcessingTapRef) {}
 
-static void prepare(MTAudioProcessingTapRef tap, CMItemCount,
-    const AudioStreamBasicDescription *description) {
-    auto self = static_cast<AvFoundationVideoPlayer *>(
-        MTAudioProcessingTapGetStorage(tap));
-    self->audio().resize(description->mChannelsPerFrame);
+void AvFoundationVideoPlayer::prepareTap(MTAudioProcessingTapRef tap,
+    CMItemCount maxFrames,
+    const AudioStreamBasicDescription *processingFormat) {
+    return static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap))
+        ->prepareTap_(tap, maxFrames, processingFormat);
+}
+
+void AvFoundationVideoPlayer::prepareTap_(
+    MTAudioProcessingTapRef, CMItemCount,
+    const AudioStreamBasicDescription *processingFormat) {
+    audio_.resize(processingFormat->mChannelsPerFrame);
 }
 
 static void unprepare(MTAudioProcessingTapRef) {}
@@ -231,21 +238,6 @@ static void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
             static_cast<float *>(bufferListInOut->mBuffers[j].mData),
             numberFrames};
     self->fillAudioBuffer();
-}
-
-static void createAudioProcessingTap(
-    void *CM_NULLABLE clientInfo, MTAudioProcessingTapRef *tap) {
-    MTAudioProcessingTapCallbacks callbacks;
-    callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
-    callbacks.clientInfo = clientInfo;
-    callbacks.init = init;
-    callbacks.prepare = prepare;
-    callbacks.process = process;
-    callbacks.unprepare = unprepare;
-    callbacks.finalize = finalize;
-
-    MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
-        kMTAudioProcessingTapCreationFlag_PostEffects, tap);
 }
 
 static auto playerItemWithAudioProcessing(
@@ -282,7 +274,17 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
       player{[AVPlayer playerWithPlayerItem:nil]},
       playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}, screen{
                                                                      screen} {
-    createAudioProcessingTap(this, &tap);
+    MTAudioProcessingTapCallbacks callbacks;
+    callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
+    callbacks.clientInfo = this;
+    callbacks.init = init;
+    callbacks.prepare = prepareTap;
+    callbacks.process = process;
+    callbacks.unprepare = unprepare;
+    callbacks.finalize = finalize;
+
+    MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
+        kMTAudioProcessingTapCreationFlag_PostEffects, &tap);
     prepareWindow();
     actions.controller = this;
 }

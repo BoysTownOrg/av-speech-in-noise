@@ -88,6 +88,12 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     void centerVideo();
     void resizeVideo();
     void prepareVideo();
+    static void prepareTap(MTAudioProcessingTapRef tap,
+        CMItemCount maxFrames,
+        const AudioStreamBasicDescription *processingFormat);
+    void prepareTap_(MTAudioProcessingTapRef tap,
+        CMItemCount maxFrames,
+        const AudioStreamBasicDescription *processingFormat);
 
     std::vector<gsl::span<float>> audio_;
     MTAudioProcessingTapRef tap{};
