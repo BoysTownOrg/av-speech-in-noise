@@ -1,6 +1,5 @@
 #include "AvFoundationPlayers.h"
 #include "common-objc.h"
-#import <CoreMedia/CoreMedia.h>
 #include <gsl/gsl>
 #include <limits>
 #include <atomic>
@@ -51,8 +50,7 @@ static auto globalAddress(AudioObjectPropertySelector s)
 // http://fdiv.net/2008/08/12/nssound-setplaybackdeviceidentifier-coreaudio-output-device-enumeration
 static auto loadDevices() -> std::vector<AudioObjectID> {
     const auto address{globalAddress(kAudioHardwarePropertyDevices)};
-    return
-        loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
+    return loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
 }
 
 static std::vector<AudioDeviceID> globalAudioDevices{loadDevices()};
@@ -370,9 +368,7 @@ void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
 
 void AvFoundationVideoPlayer::show() { showWindow(); }
 
-auto AvFoundationVideoPlayer::deviceCount() -> int {
-    return ::deviceCount();
-}
+auto AvFoundationVideoPlayer::deviceCount() -> int { return ::deviceCount(); }
 
 auto AvFoundationVideoPlayer::deviceDescription(int index) -> std::string {
     return description(index);
@@ -488,9 +484,7 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     audio.resize(2);
 }
 
-auto AvFoundationAudioPlayer::deviceCount() -> int {
-    return ::deviceCount();
-}
+auto AvFoundationAudioPlayer::deviceCount() -> int { return ::deviceCount(); }
 
 auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
     return description(index);
@@ -523,5 +517,5 @@ auto AvFoundationAudioPlayer::sampleRateHz() -> double {
 void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
-    return outputDevice(index);
+    return ::outputDevice(index);
 }

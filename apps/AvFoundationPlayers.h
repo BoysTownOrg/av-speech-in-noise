@@ -5,8 +5,10 @@
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
-#import <Cocoa/Cocoa.h>
+#import <CoreMedia/CoreMedia.h>
+#import <MediaToolbox/MediaToolbox.h>
 #import <AVFoundation/AVFoundation.h>
+#import <AppKit/AppKit.h>
 #include <vector>
 
 class CoreAudioBuffer : public stimulus_players::AudioBuffer {
