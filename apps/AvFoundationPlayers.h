@@ -55,12 +55,7 @@ class CoreAudioBufferedReader : public stimulus_players::BufferedAudioReader {
     AVAssetReaderTrackOutput *trackOutput{};
 };
 
-class AvFoundationVideoPlayer;
-
-@interface VideoPlayerActions : NSObject
-@property AvFoundationVideoPlayer *controller;
-- (void)playbackComplete;
-@end
+@class VideoPlayerActions;
 
 class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
   public:

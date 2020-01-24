@@ -214,6 +214,11 @@ static auto currentAsset(AVPlayer *player) -> AVAsset * {
     return player.currentItem.asset;
 }
 
+@interface VideoPlayerActions : NSObject
+@property AvFoundationVideoPlayer *controller;
+- (void)playbackComplete;
+@end
+
 AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
     : actions{[VideoPlayerActions alloc]},
       videoWindow{
@@ -367,8 +372,7 @@ void AvFoundationVideoPlayer::playbackComplete() {
 }
 
 void AvFoundationVideoPlayer::setDevice(int index) {
-    auto deviceUID{asNsString(device.uid(index))};
-    player.audioOutputDeviceUniqueID = deviceUID;
+    player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
 }
 
 void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
