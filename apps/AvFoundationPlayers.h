@@ -9,22 +9,6 @@
 #import <AVFoundation/AVFoundation.h>
 #include <vector>
 
-class CoreAudioDevices {
-  public:
-    CoreAudioDevices();
-    auto deviceCount() -> int;
-    auto description(int device) -> std::string;
-    auto uid(int device) -> std::string;
-    auto outputDevice(int device) -> bool;
-    auto objectId(int device) -> AudioObjectID;
-
-  private:
-    void loadDevices();
-    auto stringProperty(AudioObjectPropertySelector, int device) -> std::string;
-
-    std::vector<AudioObjectID> devices{};
-};
-
 class CoreAudioBuffer : public stimulus_players::AudioBuffer {
   public:
     explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);
@@ -96,7 +80,6 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
 
     std::vector<gsl::span<float>> audio;
     MTAudioProcessingTapRef tap{};
-    CoreAudioDevices device{};
     VideoPlayerActions *actions;
     NSWindow *videoWindow;
     AVPlayer *player;
@@ -131,7 +114,6 @@ class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
         UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus;
 
     std::vector<gsl::span<float>> audio;
-    CoreAudioDevices device{};
     EventListener *listener_{};
     AudioUnit audioUnit{};
     double sampleRate_{};

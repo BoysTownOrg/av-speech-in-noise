@@ -49,20 +49,20 @@ static auto globalAddress(AudioObjectPropertySelector s)
 
 // https://stackoverflow.com/questions/4575408/audioobjectgetpropertydata-to-get-a-list-of-input-devices
 // http://fdiv.net/2008/08/12/nssound-setplaybackdeviceidentifier-coreaudio-output-device-enumeration
-CoreAudioDevices::CoreAudioDevices() { loadDevices(); }
-
-void CoreAudioDevices::loadDevices() {
+static auto loadDevices() -> std::vector<AudioObjectID> {
     const auto address{globalAddress(kAudioHardwarePropertyDevices)};
-    devices =
+    return
         loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
 }
 
-auto CoreAudioDevices::deviceCount() -> int {
-    return gsl::narrow<int>(devices.size());
+static std::vector<AudioDeviceID> globalAudioDevices{loadDevices()};
+
+static auto deviceCount() -> int {
+    return gsl::narrow<int>(globalAudioDevices.size());
 }
 
-auto CoreAudioDevices::description(int device) -> std::string {
-    return stringProperty(kAudioObjectPropertyName, device);
+static auto objectId(int device) -> AudioObjectID {
+    return globalAudioDevices.at(device);
 }
 
 static auto toString(CFStringRef deviceName) -> std::string {
@@ -73,7 +73,7 @@ static auto toString(CFStringRef deviceName) -> std::string {
     return buffer;
 }
 
-auto CoreAudioDevices::stringProperty(AudioObjectPropertySelector s, int device)
+static auto stringProperty(AudioObjectPropertySelector s, int device)
     -> std::string {
     const auto address{globalAddress(s)};
     const auto data{loadPropertyData<CFStringRef>(objectId(device), &address)};
@@ -83,15 +83,15 @@ auto CoreAudioDevices::stringProperty(AudioObjectPropertySelector s, int device)
     return toString(data.front());
 }
 
-auto CoreAudioDevices::objectId(int device) -> AudioObjectID {
-    return devices.at(device);
+static auto description(int device) -> std::string {
+    return stringProperty(kAudioObjectPropertyName, device);
 }
 
-auto CoreAudioDevices::uid(int device) -> std::string {
+static auto uid(int device) -> std::string {
     return stringProperty(kAudioDevicePropertyDeviceUID, device);
 }
 
-auto CoreAudioDevices::outputDevice(int device) -> bool {
+static auto outputDevice(int device) -> bool {
     const auto address = masterAddress(kAudioDevicePropertyStreamConfiguration,
         kAudioObjectPropertyScopeOutput);
     const auto bufferLists =
@@ -363,7 +363,7 @@ void AvFoundationVideoPlayer::playbackComplete() {
 }
 
 void AvFoundationVideoPlayer::setDevice(int index) {
-    player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
+    player.audioOutputDeviceUniqueID = asNsString(uid(index));
 }
 
 void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
@@ -371,11 +371,11 @@ void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
 void AvFoundationVideoPlayer::show() { showWindow(); }
 
 auto AvFoundationVideoPlayer::deviceCount() -> int {
-    return device.deviceCount();
+    return ::deviceCount();
 }
 
 auto AvFoundationVideoPlayer::deviceDescription(int index) -> std::string {
-    return device.description(index);
+    return description(index);
 }
 
 static auto playing(AVPlayer *player) -> bool {
@@ -489,15 +489,15 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
 }
 
 auto AvFoundationAudioPlayer::deviceCount() -> int {
-    return device.deviceCount();
+    return ::deviceCount();
 }
 
 auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
-    return device.description(index);
+    return description(index);
 }
 
 void AvFoundationAudioPlayer::setDevice(int index) {
-    const auto deviceId{device.objectId(index)};
+    const auto deviceId{objectId(index)};
     AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
         kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId));
 }
@@ -523,5 +523,5 @@ auto AvFoundationAudioPlayer::sampleRateHz() -> double {
 void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
-    return device.outputDevice(index);
+    return outputDevice(index);
 }
