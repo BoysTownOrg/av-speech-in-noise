@@ -148,11 +148,11 @@ auto CoreAudioBuffer::channels() -> int {
 }
 
 auto CoreAudioBuffer::channel(int n) -> std::vector<int> {
-    std::vector<int> channel_{};
+    std::vector<int> channel{};
     auto data{static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData)};
     for (int i{}; i < frames; ++i)
-        channel_.push_back(data[i]);
-    return channel_;
+        channel.push_back(data[i]);
+    return channel;
 }
 
 auto CoreAudioBuffer::empty() -> bool { return frames == 0; }
@@ -468,9 +468,7 @@ auto AvFoundationAudioPlayer::audioBufferReady(AudioUnitRenderActionFlags *,
 void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
-    filePath_ = std::move(filePath);
-
-    auto asset{makeAvAsset(filePath_)};
+    auto asset{makeAvAsset(std::move(filePath))};
 
     AudioStreamBasicDescription streamFormat{};
 
@@ -526,9 +524,4 @@ void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
     return device.outputDevice(index);
-}
-
-auto AvFoundationAudioPlayer::durationSeconds() -> double {
-    auto asset{makeAvAsset(filePath_)};
-    return durationSeconds_(asset);
 }
