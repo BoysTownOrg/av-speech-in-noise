@@ -1,7 +1,9 @@
 #include "AvFoundationPlayers.h"
 #include "common-objc.h"
+#import <CoreMedia/CoreMedia.h>
 #include <gsl/gsl>
 #include <limits>
+#include <atomic>
 
 static auto sampleRateHz(AVAssetTrack *track) -> double {
     auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
@@ -292,7 +294,16 @@ void AvFoundationVideoPlayer::showWindow() {
 
 void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
 
-void AvFoundationVideoPlayer::play() { [player play]; }
+static std::atomic<UInt64> lastAudioTimeStamp;
+
+void AvFoundationVideoPlayer::play() {
+    auto lastAudioTime{
+        CMClockMakeHostTimeFromSystemUnits(lastAudioTimeStamp.load())};
+    player.automaticallyWaitsToMinimizeStalling = NO;
+    [player setRate:1.0
+               time:kCMTimeZero
+         atHostTime:lastAudioTime];
+}
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     AvAssetFacade asset{std::move(filePath)};
@@ -354,7 +365,12 @@ void AvFoundationVideoPlayer::playbackComplete() {
 }
 
 void AvFoundationVideoPlayer::setDevice(int index) {
-    player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
+    auto deviceUID{asNsString(device.uid(index))};
+    CMClockRef audioClock{};
+    CMAudioDeviceClockCreate(
+        kCFAllocatorDefault, static_cast<CFStringRef>(deviceUID), &audioClock);
+    [player setMasterClock:audioClock];
+    player.audioOutputDeviceUniqueID = deviceUID;
 }
 
 void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
@@ -448,6 +464,7 @@ auto AvFoundationAudioPlayer::audioBufferReady(
     AudioUnitRenderActionFlags *ioActionFlags,
     const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
     UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus {
+    lastAudioTimeStamp.store(inTimeStamp->mHostTime);
     if (audio_.size() != ioData->mNumberBuffers)
         return -1;
     for (UInt32 j = 0; j < ioData->mNumberBuffers; ++j)
