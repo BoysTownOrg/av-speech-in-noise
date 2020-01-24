@@ -52,7 +52,7 @@ static auto globalAddress(AudioObjectPropertySelector s)
 CoreAudioDevices::CoreAudioDevices() { loadDevices(); }
 
 void CoreAudioDevices::loadDevices() {
-    auto address = globalAddress(kAudioHardwarePropertyDevices);
+    auto address{globalAddress(kAudioHardwarePropertyDevices)};
     devices =
         loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
 }
@@ -75,8 +75,8 @@ static auto toString(CFStringRef deviceName) -> std::string {
 
 auto CoreAudioDevices::stringProperty(AudioObjectPropertySelector s, int device)
     -> std::string {
-    auto address = globalAddress(s);
-    auto data = loadPropertyData<CFStringRef>(objectId(device), &address);
+    auto address{globalAddress(s)};
+    auto data{loadPropertyData<CFStringRef>(objectId(device), &address)};
     if (data.empty())
         return {};
 
@@ -158,7 +158,7 @@ auto CoreAudioBuffer::channels() -> int {
 
 auto CoreAudioBuffer::channel(int n) -> std::vector<int> {
     std::vector<int> channel_{};
-    auto data = static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData);
+    auto data{static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData)};
     for (int i{}; i < frames; ++i)
         channel_.push_back(data[i]);
     return channel_;
@@ -168,8 +168,8 @@ auto CoreAudioBuffer::empty() -> bool { return frames == 0; }
 
 void CoreAudioBufferedReader::loadFile(std::string filePath) {
     AvAssetFacade asset{std::move(filePath)};
-    auto reader = [[AVAssetReader alloc] initWithAsset:asset.get() error:nil];
-    auto track = asset.audioTrack();
+    auto reader{[[AVAssetReader alloc] initWithAsset:asset.get() error:nil]};
+    auto track{asset.audioTrack()};
 
     // assetReaderTrackOutputWithTrack throws if track is nil...
     // I do not handle the error here but by querying failed method.
@@ -249,7 +249,7 @@ void AvFoundationVideoPlayer::prepareTap(MTAudioProcessingTapRef tap,
 
 void AvFoundationVideoPlayer::prepareTap_(MTAudioProcessingTapRef, CMItemCount,
     const AudioStreamBasicDescription *processingFormat) {
-    audio_.resize(processingFormat->mChannelsPerFrame);
+    audio.resize(processingFormat->mChannelsPerFrame);
 }
 
 void AvFoundationVideoPlayer::processTap(MTAudioProcessingTapRef tap,
@@ -258,24 +258,23 @@ void AvFoundationVideoPlayer::processTap(MTAudioProcessingTapRef tap,
     MTAudioProcessingTapFlags *flagsOut) {
     return static_cast<AvFoundationVideoPlayer *>(
         MTAudioProcessingTapGetStorage(tap))
-        ->processTap_(tap, numberFrames, flags, bufferListInOut,
-            numberFramesOut, flagsOut);
+        ->processTap_(
+            numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut);
 }
 
-void AvFoundationVideoPlayer::processTap_(MTAudioProcessingTapRef tap,
-    CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
-    AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
-    MTAudioProcessingTapFlags *flagsOut) {
+void AvFoundationVideoPlayer::processTap_(CMItemCount numberFrames,
+    MTAudioProcessingTapFlags, AudioBufferList *bufferListInOut,
+    CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut) {
     MTAudioProcessingTapGetSourceAudio(
         tap, numberFrames, bufferListInOut, flagsOut, nullptr, numberFramesOut);
 
-    if (audio_.size() != bufferListInOut->mNumberBuffers)
+    if (audio.size() != bufferListInOut->mNumberBuffers)
         return;
 
     for (UInt32 j = 0; j < bufferListInOut->mNumberBuffers; ++j)
-        audio_[j] = {static_cast<float *>(bufferListInOut->mBuffers[j].mData),
+        audio.at(j) = {static_cast<float *>(bufferListInOut->mBuffers[j].mData),
             numberFrames};
-    listener_->fillAudioBuffer(audio_);
+    listener_->fillAudioBuffer(audio);
 }
 
 void AvFoundationVideoPlayer::prepareWindow() {
@@ -294,9 +293,7 @@ void AvFoundationVideoPlayer::showWindow() {
 
 void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
 
-void AvFoundationVideoPlayer::play() {
-    [player play];
-}
+void AvFoundationVideoPlayer::play() { [player play]; }
 
 void AvFoundationVideoPlayer::playAt(stimulus_players::system_time time) {
     // https://developer.apple.com/documentation/avfoundation/avplayer/1386591-setrate?language=objc
@@ -305,13 +302,15 @@ void AvFoundationVideoPlayer::playAt(stimulus_players::system_time time) {
     // automaticallyWaitsToMinimizeStalling is YES will raise an
     // NSInvalidArgument exception."
     player.automaticallyWaitsToMinimizeStalling = NO;
-    [player setRate:1.0 time:kCMTimeInvalid atHostTime:CMClockMakeHostTimeFromSystemUnits(time)];
+    [player setRate:1.0
+               time:kCMTimeInvalid
+         atHostTime:CMClockMakeHostTimeFromSystemUnits(time)];
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     AvAssetFacade asset{std::move(filePath)};
-    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset.get()];
-    const auto audioMix = [AVMutableAudioMix audioMix];
+    const auto playerItem{[AVPlayerItem playerItemWithAsset:asset.get()]};
+    const auto audioMix{[AVMutableAudioMix audioMix]};
     const auto processing = [AVMutableAudioMixInputParameters
         audioMixInputParametersWithTrack:asset.audioTrack()];
     processing.audioTapProcessor = tap;
@@ -328,7 +327,7 @@ void AvFoundationVideoPlayer::prepareVideo() {
 
 void AvFoundationVideoPlayer::resizeVideo() {
     AvAssetFacade asset{currentAsset(player)};
-    auto size = asset.videoTrack().naturalSize;
+    auto size{asset.videoTrack().naturalSize};
     // Kaylah requested that the video be reduced in size.
     // We landed on 2/3 scale.
     size.height *= 2;
@@ -340,10 +339,10 @@ void AvFoundationVideoPlayer::resizeVideo() {
 }
 
 void AvFoundationVideoPlayer::centerVideo() {
-    auto screenFrame = [screen frame];
-    auto screenOrigin = screenFrame.origin;
-    auto screenSize = screenFrame.size;
-    auto windowSize = videoWindow.frame.size;
+    auto screenFrame{[screen frame]};
+    auto screenOrigin{screenFrame.origin};
+    auto screenSize{screenFrame.size};
+    auto windowSize{videoWindow.frame.size};
     auto videoLeadingEdge =
         screenOrigin.x + (screenSize.width - windowSize.width) / 2;
     auto videoBottomEdge =
@@ -427,13 +426,13 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     AudioUnitInitialize(audioUnit);
     // enable output
     {
-        UInt32 enable = 1;
+        UInt32 enable{1};
         AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
             kAudioUnitScope_Output, 0, &enable, sizeof(enable));
     }
 
     // disable input
-    UInt32 enable = 0;
+    UInt32 enable{0};
     AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
         kAudioUnitScope_Input, 1, &enable, sizeof(enable));
 
@@ -462,12 +461,12 @@ auto AvFoundationAudioPlayer::AU_RenderCallback(void *inRefCon,
 auto AvFoundationAudioPlayer::audioBufferReady(AudioUnitRenderActionFlags *,
     const AudioTimeStamp *inTimeStamp, UInt32, UInt32 inNumberFrames,
     AudioBufferList *ioData) -> OSStatus {
-    if (audio_.size() != ioData->mNumberBuffers)
+    if (audio.size() != ioData->mNumberBuffers)
         return -1;
     for (UInt32 j = 0; j < ioData->mNumberBuffers; ++j)
-        audio_[j] = {
+        audio.at(j) = {
             static_cast<float *>(ioData->mBuffers[j].mData), inNumberFrames};
-    listener_->fillAudioBuffer(audio_, inTimeStamp->mHostTime);
+    listener_->fillAudioBuffer(audio, inTimeStamp->mHostTime);
     return noErr;
 }
 
@@ -493,7 +492,7 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
         kAudioUnitScope_Input, 0, &streamFormat,
         sizeof(AudioStreamBasicDescription));
 
-    audio_.resize(2);
+    audio.resize(2);
 }
 
 auto AvFoundationAudioPlayer::deviceCount() -> int {
@@ -505,14 +504,14 @@ auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
 }
 
 void AvFoundationAudioPlayer::setDevice(int index) {
-    auto deviceId = device.objectId(index);
+    auto deviceId{device.objectId(index)};
     AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
         kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId));
 }
 
 auto AvFoundationAudioPlayer::playing() -> bool {
-    UInt32 auhalRunning = 0;
-    UInt32 size = sizeof(auhalRunning);
+    UInt32 auhalRunning{0};
+    UInt32 size{sizeof(auhalRunning)};
     AudioUnitGetProperty(audioUnit, kAudioOutputUnitProperty_IsRunning,
         kAudioUnitScope_Global, 0, &auhalRunning, &size);
     return auhalRunning != 0U;
@@ -522,7 +521,7 @@ void AvFoundationAudioPlayer::play() { AudioOutputUnitStart(audioUnit); }
 
 auto AvFoundationAudioPlayer::sampleRateHz() -> double {
     AudioStreamBasicDescription streamFormat{};
-    UInt32 size = sizeof(AudioStreamBasicDescription);
+    UInt32 size{sizeof(AudioStreamBasicDescription)};
     AudioUnitGetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
         kAudioUnitScope_Input, 0, &streamFormat, &size);
     return streamFormat.mSampleRate;

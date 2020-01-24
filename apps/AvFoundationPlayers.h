@@ -95,11 +95,11 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
         CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
         AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
         MTAudioProcessingTapFlags *flagsOut);
-    void processTap_(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
+    void processTap_(CMItemCount numberFrames,
         MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut,
         CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut);
 
-    std::vector<gsl::span<float>> audio_;
+    std::vector<gsl::span<float>> audio;
     MTAudioProcessingTapRef tap{};
     CoreAudioDevices device{};
     VideoPlayerActions *actions;
@@ -136,7 +136,7 @@ class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
         const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
         UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus;
 
-    std::vector<gsl::span<float>> audio_;
+    std::vector<gsl::span<float>> audio;
     CoreAudioDevices device{};
     std::string filePath_{};
     EventListener *listener_{};
