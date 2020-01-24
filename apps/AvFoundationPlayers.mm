@@ -299,10 +299,13 @@ static std::atomic<UInt64> lastAudioTimeStamp;
 void AvFoundationVideoPlayer::play() {
     auto lastAudioTime{
         CMClockMakeHostTimeFromSystemUnits(lastAudioTimeStamp.load())};
+    // https://developer.apple.com/documentation/avfoundation/avplayer/1386591-setrate?language=objc
+    // "For clients linked against iOS 10.0 and later or macOS 10.12 and later,
+    // invoking [[setRate:time:atHostTime:]] when
+    // automaticallyWaitsToMinimizeStalling is YES will raise an
+    // NSInvalidArgument exception."
     player.automaticallyWaitsToMinimizeStalling = NO;
-    [player setRate:1.0
-               time:kCMTimeZero
-         atHostTime:lastAudioTime];
+    [player setRate:1.0 time:kCMTimeZero atHostTime:lastAudioTime];
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
@@ -366,10 +369,6 @@ void AvFoundationVideoPlayer::playbackComplete() {
 
 void AvFoundationVideoPlayer::setDevice(int index) {
     auto deviceUID{asNsString(device.uid(index))};
-    CMClockRef audioClock{};
-    CMAudioDeviceClockCreate(
-        kCFAllocatorDefault, static_cast<CFStringRef>(deviceUID), &audioClock);
-    [player setMasterClock:audioClock];
     player.audioOutputDeviceUniqueID = deviceUID;
 }
 
@@ -460,10 +459,9 @@ auto AvFoundationAudioPlayer::AU_RenderCallback(void *inRefCon,
         ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData);
 }
 
-auto AvFoundationAudioPlayer::audioBufferReady(
-    AudioUnitRenderActionFlags *ioActionFlags,
-    const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
-    UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus {
+auto AvFoundationAudioPlayer::audioBufferReady(AudioUnitRenderActionFlags *,
+    const AudioTimeStamp *inTimeStamp, UInt32, UInt32 inNumberFrames,
+    AudioBufferList *ioData) -> OSStatus {
     lastAudioTimeStamp.store(inTimeStamp->mHostTime);
     if (audio_.size() != ioData->mNumberBuffers)
         return -1;
