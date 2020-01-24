@@ -6,7 +6,7 @@
 #include <atomic>
 
 static auto sampleRateHz(AVAssetTrack *track) -> double {
-    auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
+    const auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
         static_cast<CMAudioFormatDescriptionRef>(
             track.formatDescriptions.firstObject));
     return description->mSampleRate;
@@ -52,7 +52,7 @@ static auto globalAddress(AudioObjectPropertySelector s)
 CoreAudioDevices::CoreAudioDevices() { loadDevices(); }
 
 void CoreAudioDevices::loadDevices() {
-    auto address{globalAddress(kAudioHardwarePropertyDevices)};
+    const auto address{globalAddress(kAudioHardwarePropertyDevices)};
     devices =
         loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
 }
@@ -75,8 +75,8 @@ static auto toString(CFStringRef deviceName) -> std::string {
 
 auto CoreAudioDevices::stringProperty(AudioObjectPropertySelector s, int device)
     -> std::string {
-    auto address{globalAddress(s)};
-    auto data{loadPropertyData<CFStringRef>(objectId(device), &address)};
+    const auto address{globalAddress(s)};
+    const auto data{loadPropertyData<CFStringRef>(objectId(device), &address)};
     if (data.empty())
         return {};
 
@@ -92,9 +92,9 @@ auto CoreAudioDevices::uid(int device) -> std::string {
 }
 
 auto CoreAudioDevices::outputDevice(int device) -> bool {
-    auto address = masterAddress(kAudioDevicePropertyStreamConfiguration,
+    const auto address = masterAddress(kAudioDevicePropertyStreamConfiguration,
         kAudioObjectPropertyScopeOutput);
-    auto bufferLists =
+    const auto bufferLists =
         loadPropertyData<AudioBufferList>(objectId(device), &address);
     for (auto list : bufferLists)
         for (UInt32 j = 0; j < list.mNumberBuffers; ++j)
@@ -149,7 +149,7 @@ auto CoreAudioBuffer::channels() -> int {
 
 auto CoreAudioBuffer::channel(int n) -> std::vector<int> {
     std::vector<int> channel{};
-    auto data{static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData)};
+    const auto data{static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData)};
     for (int i{}; i < frames; ++i)
         channel.push_back(data[i]);
     return channel;
@@ -158,9 +158,9 @@ auto CoreAudioBuffer::channel(int n) -> std::vector<int> {
 auto CoreAudioBuffer::empty() -> bool { return frames == 0; }
 
 void CoreAudioBufferedReader::loadFile(std::string filePath) {
-    auto asset{makeAvAsset(std::move(filePath))};
-    auto reader{[[AVAssetReader alloc] initWithAsset:asset error:nil]};
-    auto track{audioTrack(asset)};
+    const auto asset{makeAvAsset(std::move(filePath))};
+    const auto reader{[[AVAssetReader alloc] initWithAsset:asset error:nil]};
+    const auto track{audioTrack(asset)};
 
     // assetReaderTrackOutputWithTrack throws if track is nil...
     // I do not handle the error here but by querying failed method.
@@ -304,7 +304,7 @@ void AvFoundationVideoPlayer::playAt(stimulus_players::system_time time) {
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
-    auto asset{makeAvAsset(std::move(filePath))};
+    const auto asset{makeAvAsset(std::move(filePath))};
     const auto playerItem{[AVPlayerItem playerItemWithAsset:asset]};
     const auto audioMix{[AVMutableAudioMix audioMix]};
     const auto processing = [AVMutableAudioMixInputParameters
@@ -322,7 +322,7 @@ void AvFoundationVideoPlayer::prepareVideo() {
 }
 
 void AvFoundationVideoPlayer::resizeVideo() {
-    auto asset{currentAsset(player)};
+    const auto asset{currentAsset(player)};
     auto size{videoTrack(asset).naturalSize};
     // Kaylah requested that the video be reduced in size.
     // We landed on 2/3 scale.
@@ -335,13 +335,13 @@ void AvFoundationVideoPlayer::resizeVideo() {
 }
 
 void AvFoundationVideoPlayer::centerVideo() {
-    auto screenFrame{[screen frame]};
-    auto screenOrigin{screenFrame.origin};
-    auto screenSize{screenFrame.size};
-    auto windowSize{videoWindow.frame.size};
-    auto videoLeadingEdge =
+    const auto screenFrame{[screen frame]};
+    const auto screenOrigin{screenFrame.origin};
+    const auto screenSize{screenFrame.size};
+    const auto windowSize{videoWindow.frame.size};
+    const auto videoLeadingEdge =
         screenOrigin.x + (screenSize.width - windowSize.width) / 2;
-    auto videoBottomEdge =
+    const auto videoBottomEdge =
         screenOrigin.y + (screenSize.height - windowSize.height) / 2;
     [videoWindow setFrameOrigin:NSMakePoint(videoLeadingEdge, videoBottomEdge)];
 }
@@ -415,7 +415,7 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     audioComponentDescription.componentFlags = 0;
     audioComponentDescription.componentFlagsMask = 0;
 
-    auto audioComponent =
+    const auto audioComponent =
         AudioComponentFindNext(nullptr, &audioComponentDescription);
     AudioComponentInstanceNew(audioComponent, &audioUnit);
     AudioUnitInitialize(audioUnit);
@@ -458,7 +458,7 @@ auto AvFoundationAudioPlayer::audioBufferReady(AudioUnitRenderActionFlags *,
     AudioBufferList *ioData) -> OSStatus {
     if (audio.size() != ioData->mNumberBuffers)
         return -1;
-    for (UInt32 j = 0; j < ioData->mNumberBuffers; ++j)
+    for (UInt32 j{0}; j < ioData->mNumberBuffers; ++j)
         audio.at(j) = {
             static_cast<float *>(ioData->mBuffers[j].mData), inNumberFrames};
     listener_->fillAudioBuffer(audio, inTimeStamp->mHostTime);
@@ -468,7 +468,7 @@ auto AvFoundationAudioPlayer::audioBufferReady(AudioUnitRenderActionFlags *,
 void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
-    auto asset{makeAvAsset(std::move(filePath))};
+    const auto asset{makeAvAsset(std::move(filePath))};
 
     AudioStreamBasicDescription streamFormat{};
 
@@ -497,7 +497,7 @@ auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
 }
 
 void AvFoundationAudioPlayer::setDevice(int index) {
-    auto deviceId{device.objectId(index)};
+    const auto deviceId{device.objectId(index)};
     AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
         kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId));
 }
