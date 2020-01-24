@@ -294,18 +294,18 @@ void AvFoundationVideoPlayer::showWindow() {
 
 void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
 
-static std::atomic<UInt64> lastAudioTimeStamp;
-
 void AvFoundationVideoPlayer::play() {
-    auto lastAudioTime{
-        CMClockMakeHostTimeFromSystemUnits(lastAudioTimeStamp.load())};
+    [player play];
+}
+
+void AvFoundationVideoPlayer::playAt(stimulus_players::system_time time) {
     // https://developer.apple.com/documentation/avfoundation/avplayer/1386591-setrate?language=objc
     // "For clients linked against iOS 10.0 and later or macOS 10.12 and later,
     // invoking [[setRate:time:atHostTime:]] when
     // automaticallyWaitsToMinimizeStalling is YES will raise an
     // NSInvalidArgument exception."
     player.automaticallyWaitsToMinimizeStalling = NO;
-    [player setRate:1.0 time:kCMTimeZero atHostTime:lastAudioTime];
+    [player setRate:1.0 time:kCMTimeInvalid atHostTime:CMClockMakeHostTimeFromSystemUnits(time)];
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
@@ -462,13 +462,12 @@ auto AvFoundationAudioPlayer::AU_RenderCallback(void *inRefCon,
 auto AvFoundationAudioPlayer::audioBufferReady(AudioUnitRenderActionFlags *,
     const AudioTimeStamp *inTimeStamp, UInt32, UInt32 inNumberFrames,
     AudioBufferList *ioData) -> OSStatus {
-    lastAudioTimeStamp.store(inTimeStamp->mHostTime);
     if (audio_.size() != ioData->mNumberBuffers)
         return -1;
     for (UInt32 j = 0; j < ioData->mNumberBuffers; ++j)
         audio_[j] = {
             static_cast<float *>(ioData->mBuffers[j].mData), inNumberFrames};
-    listener_->fillAudioBuffer(audio_);
+    listener_->fillAudioBuffer(audio_, inTimeStamp->mHostTime);
     return noErr;
 }
 

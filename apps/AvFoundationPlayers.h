@@ -67,6 +67,7 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
     void play() override;
+    void playAt(stimulus_players::system_time time);
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
     void hide() override;
