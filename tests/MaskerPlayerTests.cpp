@@ -64,7 +64,7 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
     [[nodiscard]] auto played() const { return played_; }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
-        listener_->fillAudioBuffer(audio);
+        listener_->fillAudioBuffer(audio, {});
     }
 
   private:

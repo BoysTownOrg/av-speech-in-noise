@@ -168,7 +168,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
 
 // real-time audio thread
 void MaskerPlayerImpl::fillAudioBuffer(
-    const std::vector<channel_buffer_type> &audioBuffer) {
+    const std::vector<channel_buffer_type> &audioBuffer,
+    system_time) {
     audioThread.fillAudioBuffer(audioBuffer);
 }
 

@@ -8,9 +8,11 @@
 #include <string>
 #include <vector>
 #include <atomic>
+#include <cstdint>
 
 namespace stimulus_players {
 using channel_buffer_type = gsl::span<float>;
+using system_time = std::uintmax_t;
 
 class AudioPlayer {
   public:
@@ -18,7 +20,8 @@ class AudioPlayer {
       public:
         virtual ~EventListener() = default;
         virtual void fillAudioBuffer(
-            const std::vector<channel_buffer_type> &audio) = 0;
+            const std::vector<channel_buffer_type> &audio,
+            system_time) = 0;
     };
 
     virtual ~AudioPlayer() = default;
@@ -64,7 +67,8 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void setAudioDevice(std::string) override;
     void setLevel_dB(double) override;
     void fillAudioBuffer(
-        const std::vector<channel_buffer_type> &audio) override;
+        const std::vector<channel_buffer_type> &audio,
+        system_time) override;
     void setFadeInOutSeconds(double);
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
     auto rms() -> double override;
