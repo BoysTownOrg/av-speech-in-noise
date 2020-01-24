@@ -103,36 +103,27 @@ auto CoreAudioDevices::outputDevice(int device) -> bool {
     return false;
 }
 
-class AvAssetFacade {
-  public:
-    explicit AvAssetFacade(std::string filePath)
-        : asset{makeAvAsset(std::move(filePath))} {}
+static auto firstTrack(AVAsset *asset, AVMediaType mediaType)
+    -> AVAssetTrack * {
+    return [asset tracksWithMediaType:mediaType].firstObject;
+}
 
-    explicit AvAssetFacade(AVAsset *asset) : asset{asset} {}
+static auto audioTrack(AVAsset *asset) -> AVAssetTrack * {
+    return firstTrack(asset, AVMediaTypeAudio);
+}
 
-    auto audioTrack() -> AVAssetTrack * { return firstTrack(AVMediaTypeAudio); }
+static auto videoTrack(AVAsset *asset) -> AVAssetTrack * {
+    return firstTrack(asset, AVMediaTypeVideo);
+}
 
-    auto videoTrack() -> AVAssetTrack * { return firstTrack(AVMediaTypeVideo); }
-
-    auto get() -> AVAsset * { return asset; }
-
-  private:
-    auto firstTrack(AVMediaType mediaType) -> AVAssetTrack * {
-        return [asset tracksWithMediaType:mediaType].firstObject;
-    }
-
-    static auto makeAvAsset(std::string filePath) -> AVURLAsset * {
-        const auto withPercents = [asNsString(std::move(filePath))
-            stringByAddingPercentEncodingWithAllowedCharacters:
-                NSCharacterSet.URLQueryAllowedCharacterSet];
-        const auto url =
-            [NSURL URLWithString:[NSString stringWithFormat:@"file://%@/",
-                                           withPercents]];
-        return [AVURLAsset URLAssetWithURL:url options:nil];
-    }
-
-    AVAsset *asset;
-};
+static auto makeAvAsset(std::string filePath) -> AVURLAsset * {
+    const auto withPercents = [asNsString(std::move(filePath))
+        stringByAddingPercentEncodingWithAllowedCharacters:
+            NSCharacterSet.URLQueryAllowedCharacterSet];
+    const auto url = [NSURL
+        URLWithString:[NSString stringWithFormat:@"file://%@/", withPercents]];
+    return [AVURLAsset URLAssetWithURL:url options:nil];
+}
 
 // https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
 CoreAudioBuffer::CoreAudioBuffer(AVAssetReaderTrackOutput *trackOutput)
@@ -167,9 +158,9 @@ auto CoreAudioBuffer::channel(int n) -> std::vector<int> {
 auto CoreAudioBuffer::empty() -> bool { return frames == 0; }
 
 void CoreAudioBufferedReader::loadFile(std::string filePath) {
-    AvAssetFacade asset{std::move(filePath)};
-    auto reader{[[AVAssetReader alloc] initWithAsset:asset.get() error:nil]};
-    auto track{asset.audioTrack()};
+    auto asset{makeAvAsset(std::move(filePath))};
+    auto reader{[[AVAssetReader alloc] initWithAsset:asset error:nil]};
+    auto track{audioTrack(asset)};
 
     // assetReaderTrackOutputWithTrack throws if track is nil...
     // I do not handle the error here but by querying failed method.
@@ -313,11 +304,11 @@ void AvFoundationVideoPlayer::playAt(stimulus_players::system_time time) {
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
-    AvAssetFacade asset{std::move(filePath)};
-    const auto playerItem{[AVPlayerItem playerItemWithAsset:asset.get()]};
+    auto asset{makeAvAsset(std::move(filePath))};
+    const auto playerItem{[AVPlayerItem playerItemWithAsset:asset]};
     const auto audioMix{[AVMutableAudioMix audioMix]};
     const auto processing = [AVMutableAudioMixInputParameters
-        audioMixInputParametersWithTrack:asset.audioTrack()];
+        audioMixInputParametersWithTrack:audioTrack(asset)];
     processing.audioTapProcessor = tap;
     audioMix.inputParameters = @[ processing ];
     playerItem.audioMix = audioMix;
@@ -331,8 +322,8 @@ void AvFoundationVideoPlayer::prepareVideo() {
 }
 
 void AvFoundationVideoPlayer::resizeVideo() {
-    AvAssetFacade asset{currentAsset(player)};
-    auto size{asset.videoTrack().naturalSize};
+    auto asset{currentAsset(player)};
+    auto size{videoTrack(asset).naturalSize};
     // Kaylah requested that the video be reduced in size.
     // We landed on 2/3 scale.
     size.height *= 2;
@@ -479,11 +470,11 @@ void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     filePath_ = std::move(filePath);
 
-    AvAssetFacade asset{filePath_};
+    auto asset{makeAvAsset(filePath_)};
 
     AudioStreamBasicDescription streamFormat{};
 
-    streamFormat.mSampleRate = ::sampleRateHz(asset.audioTrack());
+    streamFormat.mSampleRate = ::sampleRateHz(audioTrack(asset));
     streamFormat.mFormatID = kAudioFormatLinearPCM;
     streamFormat.mFramesPerPacket = 1;
     streamFormat.mBytesPerPacket = 4;
@@ -538,6 +529,6 @@ auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
 }
 
 auto AvFoundationAudioPlayer::durationSeconds() -> double {
-    AvAssetFacade asset{filePath_};
-    return durationSeconds_(asset.get());
+    auto asset{makeAvAsset(filePath_)};
+    return durationSeconds_(asset);
 }
