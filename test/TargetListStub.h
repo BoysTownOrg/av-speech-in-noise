@@ -5,7 +5,7 @@
 #include <recognition-test/Model.hpp>
 #include <utility>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TargetListStub : public TargetList {
     LogString log_{};
     std::string currentWhenNext_{};

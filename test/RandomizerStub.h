@@ -3,7 +3,7 @@
 
 #include <recognition-test/Model.hpp>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class RandomizerStub : public Randomizer {
     double lowerBound_{};
     double upperBound_{};

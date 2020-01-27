@@ -3,7 +3,7 @@
 #include "ModelEventListenerStub.h"
 #include "OutputFileStub.h"
 #include "RandomizerStub.h"
-#include "ResponseEvaluatorStub.h"
+#include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
 #include "recognition-test/RecognitionTestModel.hpp"

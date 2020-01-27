@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TrackStub : public Track {
     Settings settings_;
     int x_{};

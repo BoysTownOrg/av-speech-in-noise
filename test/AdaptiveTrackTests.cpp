@@ -2,7 +2,7 @@
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <gtest/gtest.h>
 
-namespace adaptive_track::tests {
+namespace adaptive_track {
 class AdaptiveTrackFacade {
     AdaptiveTrack track;
 

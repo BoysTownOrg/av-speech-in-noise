@@ -5,7 +5,7 @@
 #include <recognition-test/Model.hpp>
 #include <string>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class OutputFileStub : public OutputFile {
     coordinate_response_measure::AdaptiveTrial
         writtenAdaptiveCoordinateResponseTrial_{};

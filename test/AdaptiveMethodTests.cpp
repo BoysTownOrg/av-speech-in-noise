@@ -1,6 +1,6 @@
 #include "OutputFileStub.h"
 #include "RandomizerStub.h"
-#include "ResponseEvaluatorStub.h"
+#include "ResponseEvaluatorStub.hpp"
 #include "TargetListSetReaderStub.h"
 #include "TargetListStub.h"
 #include "TrackStub.h"
@@ -9,7 +9,7 @@
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <algorithm>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 namespace {
 class TrackSettingsReaderStub : public TrackSettingsReader {
     const TrackingRule *rule_{};

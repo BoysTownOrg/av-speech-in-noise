@@ -1,6 +1,6 @@
 #include "LogString.h"
 #include "OutputFileStub.h"
-#include "ResponseEvaluatorStub.h"
+#include "ResponseEvaluatorStub.hpp"
 #include "TargetListStub.h"
 #include "TestConcluderStub.h"
 #include "assert-utility.hpp"
