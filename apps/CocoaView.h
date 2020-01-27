@@ -16,7 +16,8 @@ class CocoaExperimenterView : public View::Experimenter {
     NSButton *exitTestButton_;
     EventListener *listener_{};
     ExperimenterViewActions *actions;
-public:
+
+  public:
     CocoaExperimenterView(NSRect);
     NSView *view();
     void exitTest();
@@ -37,7 +38,8 @@ class CocoaTestingView : public View::Testing {
     NSButton *flagged_;
     EventListener *listener_{};
     TestingViewActions *actions;
-public:
+
+  public:
     CocoaTestingView(NSRect);
     NSView *view();
     void playTrial();
@@ -86,7 +88,8 @@ class CocoaTestSetupView : public View::TestSetup {
     NSPopUpButton *methodMenu;
     SetupViewActions *actions;
     EventListener *listener_{};
-public:
+
+  public:
     CocoaTestSetupView(NSRect);
     void show() override;
     void hide() override;
@@ -120,9 +123,10 @@ public:
     void setStartingSnr_dB(std::string);
     void setCalibrationLevel_dB_SPL(std::string);
     void setCalibration(std::string);
-private:
+
+  private:
     void addSubview(NSView *subview);
-    const char * stringValue(NSTextField *field);
+    const char *stringValue(NSTextField *field);
 };
 
 class CocoaSubjectView : public View::Subject {
@@ -132,7 +136,8 @@ class CocoaSubjectView : public View::Subject {
     NSButton *lastButtonPressed;
     SubjectViewActions *actions;
     EventListener *listener_{};
-public:
+
+  public:
     CocoaSubjectView(NSRect);
     std::string numberResponse() override;
     bool greenResponse() override;
@@ -147,7 +152,8 @@ public:
     void hide() override;
     void respond(id sender);
     void playTrial();
-private:
+
+  private:
     void addNextTrialButton();
     NSColor *lastPressedColor();
     void addNumberButton(NSColor *color, int number, int row, std::size_t col);
@@ -160,7 +166,8 @@ class CocoaView : public View {
     NSTextField *audioDevice_label;
     NSPopUpButton *deviceMenu;
     bool browseCancelled_{};
-public:
+
+  public:
     CocoaView(NSRect);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
@@ -172,7 +179,8 @@ public:
     void addSubview(NSView *);
     void setDelegate(id<NSWindowDelegate>);
     void center();
-private:
+
+  private:
     std::string browseModal(NSOpenPanel *panel);
 };
 }
