@@ -1,10 +1,10 @@
-#ifndef TESTS_TESTCONCLUDERSTUB_H_
-#define TESTS_TESTCONCLUDERSTUB_H_
+#ifndef TESTS_TESTCONCLUDERSTUB_HPP_
+#define TESTS_TESTCONCLUDERSTUB_HPP_
 
 #include "LogString.hpp"
 #include <recognition-test/Model.hpp>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TestConcluderStub : public TestConcluder {
     LogString log_;
     const FixedLevelTest *test_{};

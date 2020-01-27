@@ -5,7 +5,7 @@
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 namespace {
 class AdaptiveMethodStub : public AdaptiveMethod {
     const AdaptiveTest *test_{};
