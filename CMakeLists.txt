@@ -10,9 +10,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(GSL)
 add_subdirectory(src)
-add_subdirectory(main)
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows") 
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    add_subdirectory(main)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows") 
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 endif()
 
