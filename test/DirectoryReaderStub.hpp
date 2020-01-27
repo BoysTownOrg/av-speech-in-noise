@@ -1,7 +1,8 @@
-#ifndef TESTS_DIRECTORYREADERSTUB_H_
-#define TESTS_DIRECTORYREADERSTUB_H_
+#ifndef TESTS_DIRECTORYREADERSTUB_HPP_
+#define TESTS_DIRECTORYREADERSTUB_HPP_
 
 #include <target-list/SubdirectoryTargetListReader.hpp>
+#include <utility>
 
 class DirectoryReaderStub : public target_list::DirectoryReader {
     std::vector<std::string> subDirectories_{};

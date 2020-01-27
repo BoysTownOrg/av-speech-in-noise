@@ -1,4 +1,4 @@
-#include "DirectoryReaderStub.h"
+#include "DirectoryReaderStub.hpp"
 #include "TargetListStub.h"
 #include "assert-utility.hpp"
 #include <gsl/gsl>

@@ -1,4 +1,4 @@
-#include "DirectoryReaderStub.h"
+#include "DirectoryReaderStub.hpp"
 #include "assert-utility.hpp"
 #include <algorithm>
 #include <gtest/gtest.h>

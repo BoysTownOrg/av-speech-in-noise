@@ -32,8 +32,7 @@ class BufferedAudioReaderStub : public BufferedAudioReader {
 
     [[nodiscard]] auto file() const { return file_; }
 
-    auto readNextBuffer()
-        -> std::shared_ptr<AudioBuffer> override {
+    auto readNextBuffer() -> std::shared_ptr<AudioBuffer> override {
         if (!buffers_.empty()) {
             buffer->setAudio(buffers_.front());
             buffers_.erase(buffers_.begin());
