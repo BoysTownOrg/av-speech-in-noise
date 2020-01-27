@@ -273,7 +273,9 @@ void RecognitionTestModelImpl::startTrial() {
     maskerPlayer->fadeIn();
 }
 
-void RecognitionTestModelImpl::fadeInComplete() { playTarget(); }
+void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTime &) {
+    playTarget();
+}
 
 void RecognitionTestModelImpl::playTarget() { targetPlayer->play(); }
 

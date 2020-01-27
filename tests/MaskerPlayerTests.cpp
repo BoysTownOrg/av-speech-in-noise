@@ -1,5 +1,6 @@
 #include "assert-utility.h"
 #include "AudioReaderStub.h"
+#include "gsl/gsl_util"
 #include <stimulus-players/AudioReader.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
@@ -59,8 +60,9 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     [[nodiscard]] auto played() const { return played_; }
 
-    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
-        listener_->fillAudioBuffer(audio, {});
+    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio,
+        av_speech_in_noise::system_time t = {}) {
+        listener_->fillAudioBuffer(audio, t);
     }
 
   private:
@@ -82,7 +84,9 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 class MaskerPlayerListenerStub
     : public av_speech_in_noise::MaskerPlayer::EventListener {
   public:
-    void fadeInComplete() override {
+    void fadeInComplete(const av_speech_in_noise::AudioSampleTime &t) override {
+        fadeInCompleteSystemTime_ = t.systemTime;
+        fadeInCompleteSystemTimeSampleOffset_ = t.sampleOffset;
         fadeInCompleted_ = true;
         ++fadeInCompletions_;
     }
@@ -90,6 +94,14 @@ class MaskerPlayerListenerStub
     void fadeOutComplete() override {
         ++fadeOutCompletions_;
         fadeOutCompleted_ = true;
+    }
+
+    [[nodiscard]] auto fadeInCompleteSystemTime() const {
+        return fadeInCompleteSystemTime_;
+    }
+
+    [[nodiscard]] auto fadeInCompleteSystemTimeSampleOffset() const {
+        return fadeInCompleteSystemTimeSampleOffset_;
     }
 
     [[nodiscard]] auto fadeInCompleted() const { return fadeInCompleted_; }
@@ -103,6 +115,8 @@ class MaskerPlayerListenerStub
     }
 
   private:
+    av_speech_in_noise::system_time fadeInCompleteSystemTime_{};
+    gsl::index fadeInCompleteSystemTimeSampleOffset_{};
     int fadeInCompletions_{};
     int fadeOutCompletions_{};
     bool fadeInCompleted_{};
@@ -198,13 +212,15 @@ class MaskerPlayerTests : public ::testing::Test {
 
     MaskerPlayerTests() { player.subscribe(&listener); }
 
-    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
-        audioPlayer.fillAudioBuffer(audio);
+    void fillAudioBuffer(const std::vector<gsl::span<float>> &audio,
+        av_speech_in_noise::system_time t = {}) {
+        audioPlayer.fillAudioBuffer(audio, t);
     }
 
-    void fillAudioBufferMono(channel_index_type n) {
+    void fillAudioBufferMono(
+        channel_index_type n, av_speech_in_noise::system_time t = {}) {
         resizeLeftChannel(n);
-        fillAudioBuffer({leftChannel});
+        fillAudioBuffer({leftChannel}, t);
     }
 
     void fillAudioBufferStereo(channel_index_type n) {
@@ -785,6 +801,21 @@ MASKER_PLAYER_TEST(fadeInCompleteOnlyAfterFadeTime) {
     for (int i = 0; i < 3 * 4; ++i)
         assertFadeInNotCompletedAfterMonoFill(1);
     assertFadeInCompletedAfterMonoFill(1);
+}
+
+MASKER_PLAYER_TEST(fadeInCompletePassesSystemTimeAndSampleOffset) {
+    setFadeInOutSeconds(3);
+    setSampleRateHz(4);
+
+    loadMonoAudio({0});
+    fadeIn();
+    fillAudioBufferMono(5);
+    fillAudioBufferMono(3 * 4 - 5 + 1, 6);
+    timerCallback();
+    assertEqual(av_speech_in_noise::system_time{6},
+        listener.fadeInCompleteSystemTime());
+    assertEqual(gsl::index{3 * 4 - 5 + 1},
+        listener.fadeInCompleteSystemTimeSampleOffset());
 }
 
 MASKER_PLAYER_TEST(observerNotifiedOnlyOnceForFadeIn) {

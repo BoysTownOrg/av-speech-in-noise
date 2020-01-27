@@ -1,5 +1,6 @@
 #include "MaskerPlayerImpl.hpp"
 #include "AudioReader.hpp"
+#include "recognition-test/RecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <cmath>
 #include <vector>
@@ -169,8 +170,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
 // real-time audio thread
 void MaskerPlayerImpl::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
-    system_time) {
-    audioThread.fillAudioBuffer(audioBuffer);
+    av_speech_in_noise::system_time time) {
+    audioThread.fillAudioBuffer(audioBuffer, time);
 }
 
 auto MaskerPlayerImpl::rms() -> double {
@@ -308,7 +309,8 @@ void MaskerPlayerImpl::MainThread::fadeOut() {
 void MaskerPlayerImpl::MainThread::callback() {
     if (thisCallClears(sharedState->fadeInComplete)) {
         clear(fadingIn);
-        listener->fadeInComplete();
+        listener->fadeInComplete({sharedState->fadeInCompleteSystemTime.load(),
+            sharedState->fadeInCompleteSystemTimeSampleOffset.load()});
         return;
     }
 
@@ -327,7 +329,9 @@ void MaskerPlayerImpl::AudioThread::setSharedState(MaskerPlayerImpl *p) {
 }
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
-    const std::vector<channel_buffer_type> &audioBuffer) {
+    const std::vector<channel_buffer_type> &audioBuffer,
+    av_speech_in_noise::system_time time) {
+    systemTime = time;
     if (noChannels(sharedState->sourceAudio))
         for (auto channel : audioBuffer)
             mute(channel);
@@ -379,7 +383,7 @@ void MaskerPlayerImpl::AudioThread::applyLevel(
     const auto levelScalar_ = read(sharedState->levelScalar);
     for (auto i = sample_index_type{0}; i < framesToFill(audioBuffer); ++i) {
         const auto fadeScalar = nextFadeScalar();
-        updateFadeState();
+        updateFadeState(i);
         for (auto channel : audioBuffer)
             channel.at(i) *=
                 gsl::narrow_cast<sample_type>(fadeScalar * levelScalar_);
@@ -419,14 +423,16 @@ auto MaskerPlayerImpl::AudioThread::nextFadeScalar() -> double {
     return squareRoot * squareRoot;
 }
 
-void MaskerPlayerImpl::AudioThread::updateFadeState() {
-    checkForFadeInComplete();
+void MaskerPlayerImpl::AudioThread::updateFadeState(sample_index_type offset) {
+    checkForFadeInComplete(offset);
     checkForFadeOutComplete();
     advanceCounterIfStillFading();
 }
 
-void MaskerPlayerImpl::AudioThread::checkForFadeInComplete() {
+void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(sample_index_type offset) {
     if (doneFadingIn()) {
+        sharedState->fadeInCompleteSystemTime.store(systemTime);
+        sharedState->fadeInCompleteSystemTimeSampleOffset.store(offset+1);
         set(sharedState->fadeInComplete);
         clear(fadingIn);
     }

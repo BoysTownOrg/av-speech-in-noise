@@ -5,6 +5,7 @@
 #include <gsl/gsl>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace av_speech_in_noise {
 class InvalidAudioDevice {};
@@ -35,6 +36,13 @@ class TargetPlayer {
     virtual void useFirstChannelOnly() = 0;
 };
 
+using system_time = std::uintmax_t;
+
+struct AudioSampleTime {
+    system_time systemTime;
+    gsl::index sampleOffset;
+};
+
 class MaskerPlayer {
   public:
     virtual ~MaskerPlayer() = default;
@@ -42,7 +50,7 @@ class MaskerPlayer {
     class EventListener {
       public:
         virtual ~EventListener() = default;
-        virtual void fadeInComplete() = 0;
+        virtual void fadeInComplete(const AudioSampleTime &) = 0;
         virtual void fadeOutComplete() = 0;
     };
 
@@ -94,7 +102,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void submitIncorrectResponse() override;
     void submitResponse(const open_set::FreeResponse &) override;
     void throwIfTrialInProgress() override;
-    void fadeInComplete() override;
+    void fadeInComplete(const AudioSampleTime &) override;
     void fadeOutComplete() override;
     void playbackComplete() override;
     static constexpr double maskerChannelDelaySeconds = 0.004;

@@ -102,7 +102,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     auto listener() const { return listener_; }
 
-    void fadeInComplete() { listener_->fadeInComplete(); }
+    void fadeInComplete() { listener_->fadeInComplete({}); }
 
     auto filePath() const { return filePath_; }
 
