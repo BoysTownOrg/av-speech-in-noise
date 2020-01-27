@@ -1,10 +1,11 @@
 #include "assert-utility.hpp"
-#include <gsl/gsl>
-#include <gtest/gtest.h>
 #include <stimulus-players/AudioReaderImpl.hpp>
+#include <gtest/gtest.h>
+#include <gsl/gsl>
 
+namespace stimulus_players {
 namespace {
-class AudioBufferStub : public stimulus_players::AudioBuffer {
+class AudioBufferStub : public AudioBuffer {
     std::vector<std::vector<int>> audio_{};
 
   public:
@@ -17,7 +18,7 @@ class AudioBufferStub : public stimulus_players::AudioBuffer {
     auto empty() -> bool override { return audio_.empty(); }
 };
 
-class BufferedAudioReaderStub : public stimulus_players::BufferedAudioReader {
+class BufferedAudioReaderStub : public BufferedAudioReader {
     std::vector<std::vector<std::vector<int>>> buffers_{};
     std::string file_{};
     std::shared_ptr<AudioBufferStub> buffer =
@@ -32,7 +33,7 @@ class BufferedAudioReaderStub : public stimulus_players::BufferedAudioReader {
     [[nodiscard]] auto file() const { return file_; }
 
     auto readNextBuffer()
-        -> std::shared_ptr<stimulus_players::AudioBuffer> override {
+        -> std::shared_ptr<AudioBuffer> override {
         if (!buffers_.empty()) {
             buffer->setAudio(buffers_.front());
             buffers_.erase(buffers_.begin());
@@ -63,7 +64,7 @@ class BufferedAudioReaderStub : public stimulus_players::BufferedAudioReader {
 class AudioReaderTests : public ::testing::Test {
   protected:
     BufferedAudioReaderStub bufferedReader{};
-    stimulus_players::AudioReaderImpl reader{&bufferedReader};
+    AudioReaderImpl reader{&bufferedReader};
 
     template <typename T>
     auto dividedBy(std::vector<T> x, T c) -> std::vector<T> {
@@ -83,8 +84,8 @@ TEST_F(AudioReaderTests, readThrowsInvalidFileOnFailure) {
     bufferedReader.failOnLoad();
     try {
         read();
-        FAIL() << "Expected stimulus_players::AudioReader::InvalidFile";
-    } catch (const stimulus_players::AudioReaderImpl::InvalidFile &) {
+        FAIL() << "Expected AudioReader::InvalidFile";
+    } catch (const AudioReaderImpl::InvalidFile &) {
     }
 }
 
@@ -97,5 +98,6 @@ TEST_F(AudioReaderTests, readConcatenatesNormalizedBuffers) {
                     dividedBy({4, 5, 6, 13, 14, 15, 22, 23, 24}, -3.F),
                     dividedBy({7, 8, 9, 16, 17, 18, 25, 26, 27}, -3.F)},
         read());
+}
 }
 }

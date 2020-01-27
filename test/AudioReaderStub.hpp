@@ -2,6 +2,7 @@
 #define TESTS_AUDIOREADERSTUB_HPP_
 
 #include <stimulus-players/AudioReader.hpp>
+#include <utility>
 
 namespace stimulus_players::tests {
 class AudioReaderStub : public AudioReader {
