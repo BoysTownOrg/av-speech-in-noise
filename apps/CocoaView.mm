@@ -3,7 +3,7 @@
 #include <iterator>
 
 @interface SetupViewActions : NSObject
-@property CocoaTestSetupView *controller;
+@property av_speech_in_noise::CocoaTestSetupView *controller;
 - (void) confirmTestSetup;
 - (void) browseForTargetList;
 - (void) browseForMasker;
@@ -13,24 +13,93 @@
 @end
 
 @interface SubjectViewActions : NSObject
-@property CocoaSubjectView *controller;
+@property av_speech_in_noise::CocoaSubjectView *controller;
 - (void) respond:(id)sender;
 - (void) playTrial;
 @end
 
 @interface ExperimenterViewActions : NSObject
-@property CocoaExperimenterView *controller;
+@property av_speech_in_noise::CocoaExperimenterView *controller;
 - (void) exitTest;
 @end
 
 @interface TestingViewActions : NSObject
-@property CocoaTestingView *controller;
+@property av_speech_in_noise::CocoaTestingView *controller;
 - (void) playTrial;
 - (void) submitResponse;
 - (void) submitPassedTrial;
 - (void) submitFailedTrial;
 @end
 
+@implementation SetupViewActions
+@synthesize controller;
+
+- (void)confirmTestSetup {
+    controller->confirm();
+}
+
+- (void)browseForTargetList { 
+    controller->browseForTargetList();
+}
+
+- (void)browseForMasker { 
+    controller->browseForMasker();
+}
+
+- (void)browseForCalibration {
+    controller->browseForCalibration();
+}
+
+- (void)browseForTrackSettings {
+    controller->browseForTrackSettings();
+}
+
+- (void)playCalibration { 
+    controller->playCalibration();
+}
+@end
+
+@implementation SubjectViewActions
+@synthesize controller;
+
+- (void)respond:(id)sender {
+    controller->respond(sender);
+}
+
+- (void)playTrial { 
+    controller->playTrial();
+}
+@end
+
+@implementation ExperimenterViewActions
+@synthesize controller;
+
+- (void)exitTest {
+    controller->exitTest();
+}
+@end
+
+@implementation TestingViewActions
+@synthesize controller;
+
+- (void)playTrial {
+    controller->playTrial();
+}
+
+- (void)submitResponse { 
+    controller->submitResponse();
+}
+
+- (void)submitPassedTrial {
+    controller->submitPassedTrial();
+}
+
+- (void)submitFailedTrial {
+    controller->submitFailedTrial();
+}
+@end
+
+namespace av_speech_in_noise {
 static NSTextField *allocLabel(NSString *label, NSRect frame) {
     const auto text = [[NSTextField alloc] initWithFrame:frame];
     [text setStringValue:label];
@@ -419,34 +488,6 @@ void CocoaTestSetupView::playCalibration() {
     listener_->playCalibration();
 }
 
-@implementation SetupViewActions
-@synthesize controller;
-
-- (void)confirmTestSetup {
-    controller->confirm();
-}
-
-- (void)browseForTargetList { 
-    controller->browseForTargetList();
-}
-
-- (void)browseForMasker { 
-    controller->browseForMasker();
-}
-
-- (void)browseForCalibration {
-    controller->browseForCalibration();
-}
-
-- (void)browseForTrackSettings {
-    controller->browseForTrackSettings();
-}
-
-- (void)playCalibration { 
-    controller->playCalibration();
-}
-@end
-
 static auto greenColor = NSColor.greenColor;
 static auto redColor = NSColor.redColor;
 static auto blueColor = NSColor.blueColor;
@@ -613,18 +654,6 @@ void CocoaSubjectView::hide() {
     [window orderOut:nil];
 }
 
-@implementation SubjectViewActions
-@synthesize controller;
-
-- (void)respond:(id)sender {
-    controller->respond(sender);
-}
-
-- (void)playTrial { 
-    controller->playTrial();
-}
-@end
-
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
@@ -685,14 +714,6 @@ void CocoaExperimenterView::exitTest() {
 void CocoaExperimenterView::display(std::string s) {
     [displayedText_ setString:asNsString(std::move(s))];
 }
-
-@implementation ExperimenterViewActions
-@synthesize controller;
-
-- (void)exitTest {
-    controller->exitTest();
-}
-@end
 
 
 CocoaTestingView::CocoaTestingView(NSRect r) :
@@ -838,26 +859,6 @@ void CocoaTestingView::submitFailedTrial() {
     listener_->submitFailedTrial();
 }
 
-@implementation TestingViewActions
-@synthesize controller;
-
-- (void)playTrial {
-    controller->playTrial();
-}
-
-- (void)submitResponse { 
-    controller->submitResponse();
-}
-
-- (void)submitPassedTrial {
-    controller->submitPassedTrial();
-}
-
-- (void)submitFailedTrial {
-    controller->submitFailedTrial();
-}
-@end
-
 CocoaView::CocoaView(NSRect r) :
     app{[NSApplication sharedApplication]},
     window{[[NSWindow alloc]
@@ -955,4 +956,5 @@ void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {
 
 void CocoaView::center() {
     [window center];
+}
 }

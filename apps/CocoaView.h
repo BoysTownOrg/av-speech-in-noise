@@ -9,7 +9,8 @@
 @class ExperimenterViewActions;
 @class TestingViewActions;
 
-class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
+namespace av_speech_in_noise {
+class CocoaExperimenterView : public View::Experimenter {
     NSView *view_;
     NSTextView *displayedText_;
     NSButton *exitTestButton_;
@@ -27,7 +28,7 @@ public:
     void display(std::string) override;
 };
 
-class CocoaTestingView : public av_speech_in_noise::View::Testing {
+class CocoaTestingView : public View::Testing {
     NSView *view_;
     NSView *nextTrialButton;
     NSView *evaluationButtons;
@@ -57,7 +58,7 @@ public:
     void hideEvaluationButtons() override;
 };
 
-class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
+class CocoaTestSetupView : public View::TestSetup {
     NSView *view_;
     NSTextField *subjectIdLabel;
     NSTextField *subjectId_;
@@ -124,7 +125,7 @@ private:
     const char * stringValue(NSTextField *field);
 };
 
-class CocoaSubjectView : public av_speech_in_noise::View::Subject {
+class CocoaSubjectView : public View::Subject {
     NSWindow *window;
     NSView *responseButtons;
     NSView *nextTrialButton;
@@ -153,7 +154,7 @@ private:
     void addButtonRow(NSColor *color, int row);
 };
 
-class CocoaView : public av_speech_in_noise::View {
+class CocoaView : public View {
     NSApplication *app;
     NSWindow *window;
     NSTextField *audioDevice_label;
@@ -174,5 +175,6 @@ public:
 private:
     std::string browseModal(NSOpenPanel *panel);
 };
+}
 
 #endif
