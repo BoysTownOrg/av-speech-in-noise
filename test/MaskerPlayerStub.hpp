@@ -5,7 +5,7 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <utility>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class MaskerPlayerStub : public MaskerPlayer {
     std::vector<std::string> outputAudioDeviceDescriptions_;
     LogString log_;
@@ -33,9 +33,7 @@ class MaskerPlayerStub : public MaskerPlayer {
   public:
     void setSampleRateHz(double x) { sampleRateHz_ = x; }
 
-    auto sampleRateHz() -> double override {
-        return sampleRateHz_;
-    }
+    auto sampleRateHz() -> double override { return sampleRateHz_; }
 
     void setChannelDelaySeconds(gsl::index channel, double seconds) override {
         channelDelaySeconds_ = seconds;

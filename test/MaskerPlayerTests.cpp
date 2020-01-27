@@ -8,12 +8,13 @@
 #include <cmath>
 #include <utility>
 
+namespace stimulus_players {
 namespace {
 auto at(const std::vector<std::string> &v, gsl::index n) -> std::string {
     return v.at(n);
 }
 
-class AudioPlayerStub : public stimulus_players::AudioPlayer {
+class AudioPlayerStub : public AudioPlayer {
   public:
     auto outputDevice(int index) -> bool override {
         return outputDevices[index];
@@ -66,7 +67,7 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
     }
 
   private:
-    stimulus_players::audio_type audioRead_;
+    audio_type audioRead_;
     std::vector<std::string> audioDeviceDescriptions_{10};
     std::string filePath_;
     std::string deviceDescription_;
@@ -138,7 +139,7 @@ auto subvector(const std::vector<T> &v, int offset, int size)
     return {begin, begin + size};
 }
 
-class TimerStub : public stimulus_players::Timer {
+class TimerStub : public Timer {
   public:
     void scheduleCallbackAfterSeconds(double) override {
         callbackScheduled_ = true;
@@ -203,9 +204,9 @@ class MaskerPlayerTests : public ::testing::Test {
   protected:
     AudioPlayerStub audioPlayer;
     MaskerPlayerListenerStub listener;
-    stimulus_players::AudioReaderStub audioReader;
+    AudioReaderStub audioReader;
     TimerStub timer;
-    stimulus_players::MaskerPlayerImpl player{
+    MaskerPlayerImpl player{
         &audioPlayer, &audioReader, &timer};
     std::vector<float> leftChannel;
     std::vector<float> rightChannel;
@@ -271,7 +272,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void assertCallbackNotScheduled() { assertFalse(callbackScheduled()); }
 
-    void loadAudio(stimulus_players::audio_type x) {
+    void loadAudio(audio_type x) {
         audioReader.set(std::move(x));
         loadFile();
     }
@@ -431,7 +432,7 @@ class MaskerPlayerTests : public ::testing::Test {
     }
 
     void setChannelDelaySeconds(
-        stimulus_players::channel_index_type channel, double seconds) {
+        channel_index_type channel, double seconds) {
         player.setChannelDelaySeconds(channel, seconds);
     }
 
@@ -957,5 +958,6 @@ MASKER_PLAYER_TEST(loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
         FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
     } catch (const av_speech_in_noise::InvalidAudioFile &) {
     }
+}
 }
 }
