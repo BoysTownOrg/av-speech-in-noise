@@ -1,5 +1,5 @@
 #include "assert-utility.hpp"
-#include "AudioReaderStub.h"
+#include "AudioReaderStub.hpp"
 #include "gsl/gsl_util"
 #include <stimulus-players/AudioReader.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>

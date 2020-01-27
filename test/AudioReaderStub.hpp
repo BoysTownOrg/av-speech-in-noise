@@ -1,5 +1,5 @@
-#ifndef TESTS_AUDIOREADERSTUB_H_
-#define TESTS_AUDIOREADERSTUB_H_
+#ifndef TESTS_AUDIOREADERSTUB_HPP_
+#define TESTS_AUDIOREADERSTUB_HPP_
 
 #include <stimulus-players/AudioReader.hpp>
 

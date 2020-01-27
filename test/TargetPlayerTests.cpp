@@ -1,4 +1,4 @@
-#include "AudioReaderStub.h"
+#include "AudioReaderStub.hpp"
 #include "assert-utility.hpp"
 #include "recognition-test/RecognitionTestModel.hpp"
 #include <cmath>
