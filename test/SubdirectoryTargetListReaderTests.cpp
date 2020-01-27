@@ -7,7 +7,7 @@
 
 namespace target_list {
 namespace {
-class TargetListFactoryStub : public target_list::TargetListFactory {
+class TargetListFactoryStub : public TargetListFactory {
     std::vector<std::shared_ptr<av_speech_in_noise::TargetList>> lists_{};
 
   public:
@@ -27,7 +27,7 @@ class SubdirectoryTargetListReaderTests : public ::testing::Test {
   protected:
     TargetListFactoryStub targetListFactory;
     DirectoryReaderStub directoryReader;
-    target_list::SubdirectoryTargetListReader listReader{
+    SubdirectoryTargetListReader listReader{
         &targetListFactory, &directoryReader};
     std::vector<std::shared_ptr<av_speech_in_noise::TargetListStub>>
         targetLists;

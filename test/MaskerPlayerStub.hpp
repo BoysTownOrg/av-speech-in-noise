@@ -1,7 +1,7 @@
 #ifndef TESTS_MASKERPLAYERSTUB_HPP_
 #define TESTS_MASKERPLAYERSTUB_HPP_
 
-#include "LogString.h"
+#include "LogString.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <utility>
 

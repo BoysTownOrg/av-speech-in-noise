@@ -30,7 +30,7 @@ class TestSetupStateWriter {
 }
 
 #include "assert-utility.hpp"
-#include "LogString.h"
+#include "LogString.hpp"
 #include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests {

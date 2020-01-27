@@ -1,5 +1,5 @@
-#ifndef TESTS_LOGSTRING_H_
-#define TESTS_LOGSTRING_H_
+#ifndef TESTS_LOGSTRING_HPP_
+#define TESTS_LOGSTRING_HPP_
 
 #include <sstream>
 #include <utility>

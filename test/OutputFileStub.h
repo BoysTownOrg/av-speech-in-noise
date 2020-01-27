@@ -1,7 +1,7 @@
 #ifndef TESTS_OUTPUTFILESTUB_H_
 #define TESTS_OUTPUTFILESTUB_H_
 
-#include "LogString.h"
+#include "LogString.hpp"
 #include <recognition-test/Model.hpp>
 #include <string>
 
