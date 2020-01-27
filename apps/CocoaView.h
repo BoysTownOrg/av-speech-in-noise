@@ -1,5 +1,5 @@
-#ifndef CocoaView_h
-#define CocoaView_h
+#ifndef APPS_COCOAVIEW_H_
+#define APPS_COCOAVIEW_H_
 
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>

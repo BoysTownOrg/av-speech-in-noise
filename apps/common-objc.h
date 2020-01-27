@@ -1,5 +1,5 @@
-#ifndef common_objc_h
-#define common_objc_h
+#ifndef APPS_COMMON_OBJC_H_
+#define APPS_COMMON_OBJC_H_
 
 #import <Foundation/Foundation.h>
 #include <string>

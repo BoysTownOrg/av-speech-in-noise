@@ -199,11 +199,11 @@ void main() {
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
-    AvFoundationVideoPlayer videoPlayer{subjectScreen};
-    CoreAudioBufferedReader bufferedReader;
+    stimulus_players::AvFoundationVideoPlayer videoPlayer{subjectScreen};
+    stimulus_players::CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
     stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
-    AvFoundationAudioPlayer audioPlayer;
+    stimulus_players::AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
     stimulus_players::MaskerPlayerImpl maskerPlayer{
         &audioPlayer, &audioReader, &timer};

@@ -1,6 +1,7 @@
 #include "TobiiEyeTracker.hpp"
 #include <gsl/gsl>
 #include <cmath>
+#include <iostream>
 
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
     -> TobiiResearchEyeTracker * {
@@ -34,6 +35,11 @@ void TobiiEyeTracker::start() {
 void TobiiEyeTracker::stop() {
     tobii_research_unsubscribe_from_gaze_data(
         eyeTracker(eyeTrackers), gaze_data_callback);
+    for (auto d : gazeData) {
+        std::cout << "system time: " << d.system_time_stamp << '\n';
+        std::cout << "x (left eye): " << d.left_eye.gaze_point.position_on_display_area.x << '\n';
+        std::cout << "y (left eye): " << d.left_eye.gaze_point.position_on_display_area.y << '\n';
+    }
 }
 
 void TobiiEyeTracker::gaze_data_callback(

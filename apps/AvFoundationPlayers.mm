@@ -5,6 +5,19 @@
 #include <limits>
 #include <atomic>
 
+@interface VideoPlayerActions : NSObject
+@property stimulus_players::AvFoundationVideoPlayer *controller;
+- (void)playbackComplete;
+@end
+
+@implementation VideoPlayerActions
+@synthesize controller;
+- (void)playbackComplete {
+    controller->playbackComplete();
+}
+@end
+
+namespace stimulus_players {
 static auto sampleRateHz(AVAssetTrack *track) -> double {
     const auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
         static_cast<CMAudioFormatDescriptionRef>(
@@ -188,7 +201,7 @@ auto CoreAudioBufferedReader::minimumPossibleSample() -> int {
 }
 
 auto CoreAudioBufferedReader::sampleRateHz() -> double {
-    return ::sampleRateHz(trackOutput.track);
+    return stimulus_players::sampleRateHz(trackOutput.track);
 }
 
 static void init(
@@ -203,11 +216,6 @@ static void unprepare(MTAudioProcessingTapRef) {}
 static auto currentAsset(AVPlayer *player) -> AVAsset * {
     return player.currentItem.asset;
 }
-
-@interface VideoPlayerActions : NSObject
-@property AvFoundationVideoPlayer *controller;
-- (void)playbackComplete;
-@end
 
 AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
     : actions{[VideoPlayerActions alloc]},
@@ -290,7 +298,8 @@ void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationVideoPlayer::play() { [player play]; }
 
-void AvFoundationVideoPlayer::playAt(const av_speech_in_noise::SystemTimeWithDelay &time) {
+void AvFoundationVideoPlayer::playAt(
+    const av_speech_in_noise::SystemTimeWithDelay &time) {
     // https://developer.apple.com/documentation/avfoundation/avplayer/1386591-setrate?language=objc
     // "For clients linked against iOS 10.0 and later or macOS 10.12 and later,
     // invoking [[setRate:time:atHostTime:]] when
@@ -300,7 +309,9 @@ void AvFoundationVideoPlayer::playAt(const av_speech_in_noise::SystemTimeWithDel
     auto hostTime{CMClockMakeHostTimeFromSystemUnits(time.systemTime)};
     [player setRate:1.0
                time:kCMTimeInvalid
-         atHostTime:CMTimeAdd(hostTime, CMTimeMakeWithSeconds(time.secondsDelayed, hostTime.timescale))];
+         atHostTime:CMTimeAdd(hostTime,
+                        CMTimeMakeWithSeconds(
+                            time.secondsDelayed, hostTime.timescale))];
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
@@ -370,7 +381,9 @@ void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
 
 void AvFoundationVideoPlayer::show() { showWindow(); }
 
-auto AvFoundationVideoPlayer::deviceCount() -> int { return ::deviceCount(); }
+auto AvFoundationVideoPlayer::deviceCount() -> int {
+    return stimulus_players::deviceCount();
+}
 
 auto AvFoundationVideoPlayer::deviceDescription(int index) -> std::string {
     return description(index);
@@ -380,7 +393,9 @@ static auto playing(AVPlayer *player) -> bool {
     return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
 }
 
-auto AvFoundationVideoPlayer::playing() -> bool { return ::playing(player); }
+auto AvFoundationVideoPlayer::playing() -> bool {
+    return stimulus_players::playing(player);
+}
 
 static auto durationSeconds_(AVAsset *asset) -> Float64 {
     return CMTimeGetSeconds(asset.duration);
@@ -396,13 +411,6 @@ static auto durationSeconds_(AVPlayer *player) -> Float64 {
 auto AvFoundationVideoPlayer::durationSeconds() -> double {
     return durationSeconds_(player);
 }
-
-@implementation VideoPlayerActions
-@synthesize controller;
-- (void)playbackComplete {
-    controller->playbackComplete();
-}
-@end
 
 AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     AudioComponentDescription audioComponentDescription;
@@ -470,7 +478,8 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
 
     AudioStreamBasicDescription streamFormat{};
 
-    streamFormat.mSampleRate = ::sampleRateHz(audioTrack(asset));
+    streamFormat.mSampleRate =
+        stimulus_players::sampleRateHz(audioTrack(asset));
     streamFormat.mFormatID = kAudioFormatLinearPCM;
     streamFormat.mFramesPerPacket = 1;
     streamFormat.mBytesPerPacket = 4;
@@ -486,7 +495,9 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     audio.resize(2);
 }
 
-auto AvFoundationAudioPlayer::deviceCount() -> int { return ::deviceCount(); }
+auto AvFoundationAudioPlayer::deviceCount() -> int {
+    return stimulus_players::deviceCount();
+}
 
 auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
     return description(index);
@@ -519,5 +530,6 @@ auto AvFoundationAudioPlayer::sampleRateHz() -> double {
 void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
-    return ::outputDevice(index);
+    return stimulus_players::outputDevice(index);
+}
 }

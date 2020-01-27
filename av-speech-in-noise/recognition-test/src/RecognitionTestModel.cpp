@@ -1,7 +1,7 @@
 #include "RecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <cmath>
-
+#include <iostream>
 namespace av_speech_in_noise {
 namespace {
 class NullTestMethod : public TestMethod {
@@ -273,7 +273,12 @@ void RecognitionTestModelImpl::startTrial() {
     maskerPlayer->fadeIn();
 }
 
+static system_time lastFadeInCompleteAudioSampleSystemTime{};
+static double lastFadeInCompleteAudioSampleOffset{};
+
 void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTime &t) {
+    lastFadeInCompleteAudioSampleSystemTime = t.systemTime;
+    lastFadeInCompleteAudioSampleOffset = t.systemTimeSampleOffset;
     SystemTimeWithDelay timeToPlay{};
     timeToPlay.systemTime = t.systemTime;
     timeToPlay.secondsDelayed =
@@ -290,6 +295,8 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     if (eyeTracking)
         eyeTracker->stop();
     listener_->trialComplete();
+    std::cout << "Last fade in complete audio sample system time: " << lastFadeInCompleteAudioSampleSystemTime << '\n';
+    std::cout << "Last fade in complete audio sample offset: " << lastFadeInCompleteAudioSampleOffset << '\n';
 }
 
 static auto targetName(ResponseEvaluator *evaluator, TestMethod *testMethod)

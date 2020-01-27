@@ -11,7 +11,10 @@
 #import <AppKit/AppKit.h>
 #include <vector>
 
-class CoreAudioBuffer : public stimulus_players::AudioBuffer {
+@class VideoPlayerActions;
+
+namespace stimulus_players {
+class CoreAudioBuffer : public AudioBuffer {
   public:
     explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);
     ~CoreAudioBuffer() override;
@@ -28,12 +31,12 @@ class CoreAudioBuffer : public stimulus_players::AudioBuffer {
     CMBlockBufferRef blockBuffer{};
 };
 
-class CoreAudioBufferedReader : public stimulus_players::BufferedAudioReader {
+class CoreAudioBufferedReader : public BufferedAudioReader {
   public:
     void loadFile(std::string) override;
     auto failed() -> bool override;
     auto readNextBuffer()
-        -> std::shared_ptr<stimulus_players::AudioBuffer> override;
+        -> std::shared_ptr<AudioBuffer> override;
     auto minimumPossibleSample() -> int override;
     auto sampleRateHz() -> double;
 
@@ -41,9 +44,7 @@ class CoreAudioBufferedReader : public stimulus_players::BufferedAudioReader {
     AVAssetReaderTrackOutput *trackOutput{};
 };
 
-@class VideoPlayerActions;
-
-class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
+class AvFoundationVideoPlayer : public VideoPlayer {
   public:
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
@@ -90,7 +91,7 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     EventListener *listener_{};
 };
 
-class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
+class AvFoundationAudioPlayer : public AudioPlayer {
   public:
     AvFoundationAudioPlayer();
     ~AvFoundationAudioPlayer() override;
@@ -120,5 +121,6 @@ class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     AudioUnit audioUnit{};
     double sampleRate_{};
 };
+}
 
 #endif
