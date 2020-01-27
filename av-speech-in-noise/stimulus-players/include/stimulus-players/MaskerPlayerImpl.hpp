@@ -71,6 +71,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     auto durationSeconds() -> double override;
     void seekSeconds(double) override;
     auto fadeTimeSeconds() -> double override;
+    auto sampleRateHz() -> double override;
     void callback() override;
     void setChannelDelaySeconds(
         channel_index_type channel, double seconds) override;

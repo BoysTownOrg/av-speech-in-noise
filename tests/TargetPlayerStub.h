@@ -14,6 +14,8 @@ class TargetPlayerStub : public TargetPlayer {
     double rms_{};
     double level_dB_{};
     double durationSeconds_{};
+    double secondsDelayedPlayedAt_{};
+    system_time baseSystemTimePlayedAt_{};
     EventListener *listener_{};
     bool played_{};
     bool videoHidden_{};
@@ -34,6 +36,10 @@ class TargetPlayerStub : public TargetPlayer {
     auto usingAllChannels() const { return usingAllChannels_; }
 
     auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
+
+    auto baseSystemTimePlayedAt() const {
+        return baseSystemTimePlayedAt_;
+    }
 
     void subscribeToPlaybackCompletion() override {
         playbackCompletionSubscribedTo_ = true;
@@ -73,6 +79,15 @@ class TargetPlayerStub : public TargetPlayer {
     auto played() const { return played_; }
 
     void play() override { played_ = true; }
+
+    void playAt(const SystemTimeWithDelay &t) {
+        baseSystemTimePlayedAt_ = t.systemTime;
+        secondsDelayedPlayedAt_ = t.secondsDelayed;
+    }
+
+    auto secondsDelayedPlayedAt() const {
+        return secondsDelayedPlayedAt_;
+    }
 
     void subscribe(EventListener *listener) override { listener_ = listener; }
 

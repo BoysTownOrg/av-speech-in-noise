@@ -120,7 +120,7 @@ void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
 }
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
-    return samples(sourceAudio) / sampleRateHz(player);
+    return samples(sourceAudio) / stimulus_players::sampleRateHz(player);
 }
 
 auto mathModulus(sample_index_type a, sample_index_type b)
@@ -136,8 +136,8 @@ void MaskerPlayerImpl::seekSeconds(double x) {
     recalculateSamplesToWaitPerChannel();
     std::fill(audioFrameHeadsPerChannel.begin(),
         audioFrameHeadsPerChannel.end(),
-        mathModulus(
-            gsl::narrow_cast<sample_index_type>(x * sampleRateHz(player)),
+        mathModulus(gsl::narrow_cast<sample_index_type>(
+                        x * stimulus_players::sampleRateHz(player)),
             samples(sourceAudio)));
 }
 
@@ -145,12 +145,17 @@ void MaskerPlayerImpl::recalculateSamplesToWaitPerChannel() {
     std::generate(samplesToWaitPerChannel.begin(),
         samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
             return gsl::narrow_cast<channel_index_type>(
-                sampleRateHz(player) * mainThread.channelDelaySeconds(n++));
+                stimulus_players::sampleRateHz(player) *
+                mainThread.channelDelaySeconds(n++));
         });
 }
 
 auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
     return mainThread.fadeTimeSeconds();
+}
+
+auto MaskerPlayerImpl::sampleRateHz() -> double {
+    return stimulus_players::sampleRateHz(player);
 }
 
 void MaskerPlayerImpl::loadFile(std::string filePath) {
@@ -160,8 +165,8 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath);
     recalculateSamplesToWaitPerChannel();
     write(levelTransitionSamples_,
-        gsl::narrow_cast<int>(
-            mainThread.fadeTimeSeconds() * sampleRateHz(player)));
+        gsl::narrow_cast<int>(mainThread.fadeTimeSeconds() *
+            stimulus_players::sampleRateHz(player)));
     sourceAudio = readAudio(std::move(filePath));
     std::fill(
         audioFrameHeadsPerChannel.begin(), audioFrameHeadsPerChannel.end(), 0);

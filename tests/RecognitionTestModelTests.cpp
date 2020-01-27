@@ -6,6 +6,7 @@
 #include "ResponseEvaluatorStub.h"
 #include "TargetPlayerStub.h"
 #include "assert-utility.h"
+#include "recognition-test/RecognitionTestModel.hpp"
 #include <gtest/gtest.h>
 #include <cmath>
 #include <functional>
@@ -346,6 +347,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingIncorrectResponse submittingIncorrectResponse;
     SubmittingFreeResponse submittingFreeResponse;
     av_speech_in_noise::Test test;
+    AudioSampleTime fadeInCompleteTime{};
 
     RecognitionTestModelTests() { model.subscribe(&listener); }
 
@@ -681,6 +683,22 @@ class RecognitionTestModelTests : public ::testing::Test {
     auto eyeTrackerStarted() -> bool { return eyeTracker.started(); }
 
     auto eyeTrackerStopped() -> bool { return eyeTracker.stopped(); }
+
+    void setMaskerPlayerFadeInCompleteAudioSampleSystemTime(system_time t) {
+        fadeInCompleteTime.systemTime = t;
+    }
+
+    void setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(gsl::index t) {
+        fadeInCompleteTime.systemTimeSampleOffset = t;
+    }
+
+    void setMaskerPlayerSampleRateHz(double x) {
+        maskerPlayer.setSampleRateHz(x);
+    }
+
+    void fadeInComplete() {
+        maskerPlayer.fadeInComplete(fadeInCompleteTime);
+    }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -895,9 +913,13 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
     assertTargetPlayerPlayed();
 }
 
-RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTarget) {
-    maskerPlayer.fadeInComplete();
-    assertTargetPlayerPlayed();
+RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAt) {
+    setMaskerPlayerFadeInCompleteAudioSampleSystemTime(1);
+    setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(2);
+    setMaskerPlayerSampleRateHz(3);
+    fadeInComplete();
+    assertEqual(system_time{1}, targetPlayer.baseSystemTimePlayedAt());
+    assertEqual(2 / 3. + 0.5, targetPlayer.secondsDelayedPlayedAt());
 }
 
 RECOGNITION_TEST_MODEL_TEST(

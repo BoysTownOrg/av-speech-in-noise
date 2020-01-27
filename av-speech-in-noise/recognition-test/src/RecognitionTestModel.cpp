@@ -273,8 +273,12 @@ void RecognitionTestModelImpl::startTrial() {
     maskerPlayer->fadeIn();
 }
 
-void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTime &) {
-    playTarget();
+void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTime &t) {
+    SystemTimeWithDelay timeToPlay{};
+    timeToPlay.systemTime = t.systemTime;
+    timeToPlay.secondsDelayed =
+        t.systemTimeSampleOffset / maskerPlayer->sampleRateHz() + 0.5;
+    targetPlayer->playAt(timeToPlay);
 }
 
 void RecognitionTestModelImpl::playTarget() { targetPlayer->play(); }

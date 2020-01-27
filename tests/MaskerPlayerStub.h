@@ -17,6 +17,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     double durationSeconds_{};
     double secondsSeeked_{};
     double channelDelaySeconds_{};
+    double sampleRateHz_{};
     gsl::index channelDelayed_{};
     EventListener *listener_{};
     bool fadeInCalled_{};
@@ -30,6 +31,12 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool channelDelaysCleared_{};
 
   public:
+    void setSampleRateHz(double x) { sampleRateHz_ = x; }
+
+    auto sampleRateHz() -> double {
+        return sampleRateHz_;
+    }
+
     void setChannelDelaySeconds(gsl::index channel, double seconds) override {
         channelDelaySeconds_ = seconds;
         channelDelayed_ = channel;
@@ -102,7 +109,9 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     auto listener() const { return listener_; }
 
-    void fadeInComplete() { listener_->fadeInComplete({}); }
+    void fadeInComplete(const AudioSampleTime &t = {}) {
+        listener_->fadeInComplete(t);
+    }
 
     auto filePath() const { return filePath_; }
 

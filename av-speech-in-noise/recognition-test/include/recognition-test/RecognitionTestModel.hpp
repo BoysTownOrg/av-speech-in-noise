@@ -31,6 +31,7 @@ class TargetPlayer {
     virtual void subscribe(EventListener *) = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void play() = 0;
+    virtual void playAt(const SystemTimeWithDelay &) = 0;
     virtual auto playing() -> bool = 0;
     virtual void loadFile(std::string filePath) = 0;
     virtual void hideVideo() = 0;
@@ -70,6 +71,7 @@ class MaskerPlayer {
     virtual auto rms() -> double = 0;
     virtual void setLevel_dB(double) = 0;
     virtual auto durationSeconds() -> double = 0;
+    virtual auto sampleRateHz() -> double = 0;
     virtual void seekSeconds(double) = 0;
     virtual auto fadeTimeSeconds() -> double = 0;
     virtual void useAllChannels() = 0;
