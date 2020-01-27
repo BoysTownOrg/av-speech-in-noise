@@ -1,6 +1,6 @@
 #include "LogString.hpp"
 #include "MaskerPlayerStub.hpp"
-#include "ModelEventListenerStub.h"
+#include "ModelEventListenerStub.hpp"
 #include "OutputFileStub.h"
 #include "RandomizerStub.h"
 #include "ResponseEvaluatorStub.hpp"

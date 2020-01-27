@@ -1,4 +1,4 @@
-#include "ModelEventListenerStub.h"
+#include "ModelEventListenerStub.hpp"
 #include "TargetListStub.h"
 #include "TestConcluderStub.h"
 #include "assert-utility.hpp"
