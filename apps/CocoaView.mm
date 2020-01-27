@@ -101,7 +101,7 @@
 
 namespace av_speech_in_noise {
 static auto allocLabel(NSString *label, NSRect frame) -> NSTextField * {
-    const auto text = [[NSTextField alloc] initWithFrame:frame];
+    const auto text{[[NSTextField alloc] initWithFrame:frame]};
     [text setStringValue:label];
     [text setBezeled:NO];
     [text setDrawsBackground:NO];
@@ -111,16 +111,16 @@ static auto allocLabel(NSString *label, NSRect frame) -> NSTextField * {
     return text;
 }
 
-static constexpr auto labelHeight = 22;
-static constexpr auto labelWidth = 140;
-static constexpr auto labelToTextFieldSpacing = 5;
+static constexpr auto labelHeight{22};
+static constexpr auto labelWidth{140};
+static constexpr auto labelToTextFieldSpacing{5};
 static constexpr auto textFieldLeadingEdge =
     labelWidth + labelToTextFieldSpacing;
-static constexpr auto normalTextFieldWidth = 150;
-static constexpr auto menuWidth = 180;
-static constexpr auto filePathTextFieldWidth = 500;
-static constexpr auto buttonHeight = 25;
-static constexpr auto buttonWidth = 100;
+static constexpr auto normalTextFieldWidth{150};
+static constexpr auto menuWidth{180};
+static constexpr auto filePathTextFieldWidth{500};
+static constexpr auto buttonHeight{25};
+static constexpr auto buttonWidth{100};
 
 static auto normalTextFieldSizeAtHeight(CGFloat y) -> NSRect {
     return NSMakeRect(
@@ -392,13 +392,13 @@ void CocoaTestSetupView::browseForTrackSettings() {
 
 void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
 
-static auto greenColor = NSColor.greenColor;
-static auto redColor = NSColor.redColor;
-static auto blueColor = NSColor.blueColor;
-static auto whiteColor = NSColor.whiteColor;
+static auto greenColor{NSColor.greenColor};
+static auto redColor{NSColor.redColor};
+static auto blueColor{NSColor.blueColor};
+static auto whiteColor{NSColor.whiteColor};
 static constexpr int numbers[] = {1, 2, 3, 4, 5, 6, 8, 9};
-static constexpr auto responseNumbers = std::size(numbers);
-static constexpr auto responseColors = 4;
+static constexpr auto responseNumbers{std::size(numbers)};
+static constexpr auto responseColors{4};
 
 CocoaSubjectView::CocoaSubjectView(NSRect r)
     : // Defer may be critical here...
@@ -424,22 +424,22 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
 }
 
 void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
-    for (std::size_t col = 0; col < responseNumbers; ++col)
+    for (std::size_t col{0}; col < responseNumbers; ++col)
         addNumberButton(color, numbers[col], row, col);
 }
 
 void CocoaSubjectView::addNumberButton(
     NSColor *color, int number, int row, std::size_t col) {
-    auto title = asNsString(std::to_string(number));
+    auto title{asNsString(std::to_string(number))};
     const auto button = [NSButton buttonWithTitle:title
                                            target:actions
                                            action:@selector(respond:)];
-    auto responseWidth = responseButtons.frame.size.width / responseNumbers;
-    auto responseHeight = responseButtons.frame.size.height / responseColors;
+    auto responseWidth{responseButtons.frame.size.width / responseNumbers};
+    auto responseHeight{responseButtons.frame.size.height / responseColors};
     [button setFrame:NSMakeRect(responseWidth * col, responseHeight * row,
                          responseWidth, responseHeight)];
     [button setBezelStyle:NSBezelStyleTexturedSquare];
-    auto style = [[NSMutableParagraphStyle alloc] init];
+    auto style{[[NSMutableParagraphStyle alloc] init]};
     [style setAlignment:NSTextAlignmentCenter];
     auto attrsDictionary = [NSDictionary
         dictionaryWithObjectsAndKeys:color, NSForegroundColorAttributeName,
@@ -459,9 +459,9 @@ void CocoaSubjectView::addNextTrialButton() {
                                            target:actions
                                            action:@selector(playTrial)];
     [button setBezelStyle:NSBezelStyleTexturedSquare];
-    auto style = [[NSMutableParagraphStyle alloc] init];
+    auto style{[[NSMutableParagraphStyle alloc] init]};
     [style setAlignment:NSTextAlignmentCenter];
-    auto font = [NSFont fontWithName:@"Courier" size:36];
+    auto font{[NSFont fontWithName:@"Courier" size:36]};
     auto attrsDictionary = [NSDictionary
         dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil];
     auto attrString =
@@ -683,8 +683,8 @@ CocoaView::CocoaView(NSRect r)
                                      pullsDown:NO]} {
     app.mainMenu = [[NSMenu alloc] init];
 
-    auto appMenu = [[NSMenuItem alloc] init];
-    auto appSubMenu = [[NSMenu alloc] init];
+    auto appMenu{[[NSMenuItem alloc] init]};
+    auto appSubMenu{[[NSMenu alloc] init]};
     [appSubMenu addItemWithTitle:@"Quit"
                           action:@selector(stop:)
                    keyEquivalent:@"q"];
@@ -699,7 +699,7 @@ CocoaView::CocoaView(NSRect r)
 void CocoaView::eventLoop() { [app run]; }
 
 void CocoaView::showErrorMessage(std::string s) {
-    auto alert = [[NSAlert alloc] init];
+    auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@"Error."];
     [alert setInformativeText:asNsString(std::move(s))];
     [alert addButtonWithTitle:@"Ok"];
@@ -707,7 +707,7 @@ void CocoaView::showErrorMessage(std::string s) {
 }
 
 auto CocoaView::browseForDirectory() -> std::string {
-    auto panel = [NSOpenPanel openPanel];
+    auto panel{[NSOpenPanel openPanel]};
     panel.canChooseDirectories = YES;
     panel.canChooseFiles = NO;
     return browseModal(panel);
@@ -716,7 +716,7 @@ auto CocoaView::browseForDirectory() -> std::string {
 auto CocoaView::browseCancelled() -> bool { return browseCancelled_; }
 
 auto CocoaView::browseForOpeningFile() -> std::string {
-    auto panel = [NSOpenPanel openPanel];
+    auto panel{[NSOpenPanel openPanel]};
     panel.canChooseDirectories = NO;
     panel.canChooseFiles = YES;
     return browseModal(panel);

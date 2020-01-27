@@ -109,7 +109,7 @@ static auto outputDevice(int device) -> bool {
     const auto bufferLists =
         loadPropertyData<AudioBufferList>(objectId(device), &address);
     for (auto list : bufferLists)
-        for (UInt32 j = 0; j < list.mNumberBuffers; ++j)
+        for (UInt32 j{0}; j < list.mNumberBuffers; ++j)
             if (list.mBuffers[j].mNumberChannels != 0)
                 return true;
     return false;
@@ -274,7 +274,7 @@ void AvFoundationVideoPlayer::processTap_(CMItemCount numberFrames,
     if (audio.size() != bufferListInOut->mNumberBuffers)
         return;
 
-    for (UInt32 j = 0; j < bufferListInOut->mNumberBuffers; ++j)
+    for (UInt32 j{0}; j < bufferListInOut->mNumberBuffers; ++j)
         audio.at(j) = {static_cast<float *>(bufferListInOut->mBuffers[j].mData),
             numberFrames};
     listener_->fillAudioBuffer(audio);

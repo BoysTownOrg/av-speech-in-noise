@@ -59,9 +59,9 @@ auto toCStr(id item) -> const char *_Nullable { return [item UTF8String]; }
 auto collectContentsIf(std::string directory, BOOL (*f)(NSString *))
     -> std::vector<std::string> {
     std::vector<std::string> items{};
-    auto parent = asNsString(std::move(directory));
+    auto parent{asNsString(std::move(directory))};
     for (id item in contents(parent)) {
-        auto path = combinePath(parent, item);
+        auto path{combinePath(parent, item)};
         if ((*f)(path) != 0)
             items.emplace_back(toCStr(item));
     }
@@ -69,7 +69,7 @@ auto collectContentsIf(std::string directory, BOOL (*f)(NSString *))
 }
 
 auto isDirectory(NSString *path) -> BOOL {
-    BOOL isDir = NO;
+    BOOL isDir{NO};
     [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
     return isDir;
 }
@@ -133,7 +133,7 @@ class TimeStampImpl : public av_speech_in_noise::TimeStamp {
     auto second() -> int override { return time->tm_sec; }
 
     void capture() override {
-        auto now = std::time(nullptr);
+        auto now{std::time(nullptr)};
         time = std::localtime(&now);
         // Add fail method?
         if (time == nullptr)
@@ -193,9 +193,9 @@ void main() {
         &fileExtensions, &randomizer};
     target_list::SubdirectoryTargetListReader targetListReader{
         &targetListFactory, &reader};
-    auto subjectScreen = [[NSScreen screens] lastObject];
-    auto subjectScreenFrame = subjectScreen.frame;
-    auto subjectScreenOrigin = subjectScreenFrame.origin;
+    auto subjectScreen{[[NSScreen screens] lastObject]};
+    auto subjectScreenFrame{subjectScreen.frame};
+    auto subjectScreenOrigin{subjectScreenFrame.origin};
     stimulus_players::AvFoundationVideoPlayer videoPlayer{subjectScreen};
     stimulus_players::CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
@@ -267,8 +267,8 @@ void main() {
     ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
         &fixedTrials, &silentIntervals, &completesWhenTargetsEmpty, &allStimuli,
         &model_internal};
-    auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
-    auto testerWindowViewMargin = 15;
+    auto testerWindowFrame{NSMakeRect(15, 15, 900, 400)};
+    auto testerWindowViewMargin{15};
     auto testingContentFrame =
         NSMakeRect(testerWindowViewMargin + 100, testerWindowViewMargin,
             testerWindowFrame.size.width - testerWindowViewMargin * 2 - 100,
@@ -291,12 +291,12 @@ void main() {
     view.addSubview(experimenterView.view());
     view.addSubview(testingView.view());
     view.center();
-    auto delegate = [WindowDelegate alloc];
+    auto delegate{[WindowDelegate alloc]};
     view.setDelegate(delegate);
-    auto subjectScreenSize = subjectScreenFrame.size;
-    auto subjectViewHeight = subjectScreenSize.height / 4;
-    auto subjectScreenWidth = subjectScreenSize.width;
-    auto subjectViewWidth = subjectScreenWidth / 3;
+    auto subjectScreenSize{subjectScreenFrame.size};
+    auto subjectViewHeight{subjectScreenSize.height / 4};
+    auto subjectScreenWidth{subjectScreenSize.width};
+    auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
     CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge,
