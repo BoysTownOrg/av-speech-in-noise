@@ -109,7 +109,7 @@ class TargetPlayerTests : public ::testing::Test {
     std::vector<float> rightChannel{};
     VideoPlayerStub videoPlayer;
     TargetPlayerListenerStub listener;
-    stimulus_players::tests::AudioReaderStub audioReader{};
+    stimulus_players::AudioReaderStub audioReader{};
     stimulus_players::TargetPlayerImpl player{&videoPlayer, &audioReader};
     av_speech_in_noise::SystemTimeWithDelay systemTimeWithDelay{};
 

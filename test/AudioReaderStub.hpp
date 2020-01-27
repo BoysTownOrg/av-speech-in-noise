@@ -4,7 +4,7 @@
 #include <stimulus-players/AudioReader.hpp>
 #include <utility>
 
-namespace stimulus_players::tests {
+namespace stimulus_players {
 class AudioReaderStub : public AudioReader {
     std::vector<std::vector<float>> toRead_{};
     std::string filePath_{};

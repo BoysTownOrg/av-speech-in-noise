@@ -203,7 +203,7 @@ class MaskerPlayerTests : public ::testing::Test {
   protected:
     AudioPlayerStub audioPlayer;
     MaskerPlayerListenerStub listener;
-    stimulus_players::tests::AudioReaderStub audioReader;
+    stimulus_players::AudioReaderStub audioReader;
     TimerStub timer;
     stimulus_players::MaskerPlayerImpl player{
         &audioPlayer, &audioReader, &timer};
