@@ -1,5 +1,6 @@
 #include "AvFoundationPlayers.h"
 #include "common-objc.h"
+#include "recognition-test/RecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <limits>
 #include <atomic>
@@ -289,16 +290,17 @@ void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationVideoPlayer::play() { [player play]; }
 
-void AvFoundationVideoPlayer::playAt(av_speech_in_noise::system_time time) {
+void AvFoundationVideoPlayer::playAt(const SystemTimeWithDelay &time) {
     // https://developer.apple.com/documentation/avfoundation/avplayer/1386591-setrate?language=objc
     // "For clients linked against iOS 10.0 and later or macOS 10.12 and later,
     // invoking [[setRate:time:atHostTime:]] when
     // automaticallyWaitsToMinimizeStalling is YES will raise an
     // NSInvalidArgument exception."
     player.automaticallyWaitsToMinimizeStalling = NO;
+    auto hostTime{CMClockMakeHostTimeFromSystemUnits(time.systemTime)};
     [player setRate:1.0
                time:kCMTimeInvalid
-         atHostTime:CMClockMakeHostTimeFromSystemUnits(time)];
+         atHostTime:CMTimeAdd(hostTime, CMTimeMakeWithSeconds(time.secondsDelayed, hostTime.timescale))];
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
