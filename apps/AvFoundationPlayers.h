@@ -43,17 +43,12 @@ class CoreAudioBufferedReader : public stimulus_players::BufferedAudioReader {
 
 @class VideoPlayerActions;
 
-struct SystemTimeWithDelay {
-    av_speech_in_noise::system_time systemTime;
-    double secondsDelayed;
-};
-
 class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
   public:
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
     void play() override;
-    void playAt(const SystemTimeWithDelay &);
+    void playAt(const stimulus_players::SystemTimeWithDelay &);
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
     void hide() override;

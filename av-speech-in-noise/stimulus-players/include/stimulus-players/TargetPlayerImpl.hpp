@@ -34,12 +34,18 @@ class VideoPlayer {
     virtual auto durationSeconds() -> double = 0;
 };
 
+struct SystemTimeWithDelay {
+    av_speech_in_noise::system_time systemTime;
+    double secondsDelayed;
+};
+
 class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
                          public VideoPlayer::EventListener {
   public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
     void subscribe(TargetPlayer::EventListener *) override;
     void play() override;
+    void playAt(const SystemTimeWithDelay &);
     void loadFile(std::string filePath) override;
     void hideVideo() override;
     void showVideo() override;
