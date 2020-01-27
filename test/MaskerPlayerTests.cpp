@@ -206,8 +206,7 @@ class MaskerPlayerTests : public ::testing::Test {
     MaskerPlayerListenerStub listener;
     AudioReaderStub audioReader;
     TimerStub timer;
-    MaskerPlayerImpl player{
-        &audioPlayer, &audioReader, &timer};
+    MaskerPlayerImpl player{&audioPlayer, &audioReader, &timer};
     std::vector<float> leftChannel;
     std::vector<float> rightChannel;
 
@@ -431,8 +430,7 @@ class MaskerPlayerTests : public ::testing::Test {
         fillAudioBufferMono(n);
     }
 
-    void setChannelDelaySeconds(
-        channel_index_type channel, double seconds) {
+    void setChannelDelaySeconds(channel_index_type channel, double seconds) {
         player.setChannelDelaySeconds(channel, seconds);
     }
 

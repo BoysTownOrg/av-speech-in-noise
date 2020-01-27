@@ -1,9 +1,9 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
-#include <gtest/gtest.h>
 #include <recognition-test/OutputFile.hpp>
+#include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 namespace {
 class WriterStub : public Writer {
     LogString written_;
