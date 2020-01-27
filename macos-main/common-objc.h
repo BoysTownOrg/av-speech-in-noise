@@ -1,5 +1,5 @@
-#ifndef APPS_COMMON_OBJC_H_
-#define APPS_COMMON_OBJC_H_
+#ifndef MACOS_MAIN_COMMON_OBJC_H_
+#define MACOS_MAIN_COMMON_OBJC_H_
 
 #import <Foundation/Foundation.h>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef APPS_AVFOUNDATIONPLAYERS_H_
-#define APPS_AVFOUNDATIONPLAYERS_H_
+#ifndef MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
+#define MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>

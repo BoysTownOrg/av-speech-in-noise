@@ -1,5 +1,5 @@
-#ifndef AV_SPEECH_IN_NOISE_APPS_TOBIIEYETRACKER_HPP_
-#define AV_SPEECH_IN_NOISE_APPS_TOBIIEYETRACKER_HPP_
+#ifndef AV_SPEECH_IN_NOISE_MACOS_MAIN_TOBIIEYETRACKER_HPP_
+#define AV_SPEECH_IN_NOISE_MACOS_MAIN_TOBIIEYETRACKER_HPP_
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <tobii_research_streams.h>
