@@ -4,7 +4,8 @@
 #include <target-list/SubdirectoryTargetListReader.hpp>
 #include <utility>
 
-class DirectoryReaderStub : public target_list::DirectoryReader {
+namespace target_list {
+class DirectoryReaderStub : public DirectoryReader {
     std::vector<std::string> subDirectories_{};
     std::vector<std::string> fileNames_;
     std::string directory_{};
@@ -30,5 +31,6 @@ class DirectoryReaderStub : public target_list::DirectoryReader {
         subDirectories_ = std::move(v);
     }
 };
+}
 
 #endif

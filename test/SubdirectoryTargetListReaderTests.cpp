@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <target-list/SubdirectoryTargetListReader.hpp>
 
+namespace target_list {
 namespace {
 class TargetListFactoryStub : public target_list::TargetListFactory {
     std::vector<std::shared_ptr<av_speech_in_noise::TargetList>> lists_{};
@@ -88,5 +89,6 @@ TEST_F(
     auto actual = read();
     EXPECT_EQ(1, actual.size());
     EXPECT_EQ(targetList(0), actual.at(0));
+}
 }
 }
