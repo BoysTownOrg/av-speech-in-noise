@@ -29,7 +29,7 @@ class TestSetupStateWriter {
 };
 }
 
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include "LogString.h"
 #include <gtest/gtest.h>
 

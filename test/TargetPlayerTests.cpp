@@ -1,5 +1,5 @@
 #include "AudioReaderStub.h"
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include "recognition-test/RecognitionTestModel.hpp"
 #include <cmath>
 #include <gtest/gtest.h>

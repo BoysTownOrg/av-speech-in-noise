@@ -1,7 +1,7 @@
 #include "ModelEventListenerStub.h"
 #include "TargetListStub.h"
 #include "TestConcluderStub.h"
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
 

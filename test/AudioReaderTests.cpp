@@ -1,4 +1,4 @@
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include <gsl/gsl>
 #include <gtest/gtest.h>
 #include <stimulus-players/AudioReaderImpl.hpp>

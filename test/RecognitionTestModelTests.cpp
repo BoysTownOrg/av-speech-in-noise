@@ -5,7 +5,7 @@
 #include "RandomizerStub.h"
 #include "ResponseEvaluatorStub.h"
 #include "TargetPlayerStub.hpp"
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include "recognition-test/RecognitionTestModel.hpp"
 #include <gtest/gtest.h>
 #include <cmath>

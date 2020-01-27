@@ -1,4 +1,4 @@
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <gtest/gtest.h>
 

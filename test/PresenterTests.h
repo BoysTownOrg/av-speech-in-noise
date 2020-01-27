@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_H_
 #define AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_H_
 
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include "av-speech-in-noise/Model.hpp"
 #include <presentation/Presenter.hpp>
 #include <gtest/gtest.h>

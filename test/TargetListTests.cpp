@@ -1,5 +1,5 @@
 #include "DirectoryReaderStub.h"
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <target-list/FileFilterDecorator.hpp>

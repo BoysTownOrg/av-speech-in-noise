@@ -4,7 +4,7 @@
 #include "TargetListSetReaderStub.h"
 #include "TargetListStub.h"
 #include "TrackStub.h"
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <algorithm>

@@ -1,5 +1,5 @@
 #include "LogString.h"
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/OutputFilePath.hpp>
 

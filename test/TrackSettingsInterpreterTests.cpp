@@ -1,4 +1,4 @@
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/TrackSettingsInterpreter.hpp>
 

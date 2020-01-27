@@ -3,7 +3,7 @@
 #include "ResponseEvaluatorStub.h"
 #include "TargetListStub.h"
 #include "TestConcluderStub.h"
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/FixedLevelMethod.hpp>

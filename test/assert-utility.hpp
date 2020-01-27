@@ -1,5 +1,5 @@
-#ifndef TESTS_ASSERT_UTILITY_H_
-#define TESTS_ASSERT_UTILITY_H_
+#ifndef TESTS_ASSERT_UTILITY_HPP_
+#define TESTS_ASSERT_UTILITY_HPP_
 
 #include <gtest/gtest.h>
 #include <string>
