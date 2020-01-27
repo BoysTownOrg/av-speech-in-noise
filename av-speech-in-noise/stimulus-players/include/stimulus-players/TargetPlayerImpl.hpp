@@ -10,6 +10,11 @@
 #include <atomic>
 
 namespace stimulus_players {
+struct SystemTimeWithDelay {
+    av_speech_in_noise::system_time systemTime;
+    double secondsDelayed;
+};
+
 class VideoPlayer {
   public:
     class EventListener {
@@ -27,16 +32,12 @@ class VideoPlayer {
     virtual void hide() = 0;
     virtual void loadFile(std::string) = 0;
     virtual void play() = 0;
+    virtual void playAt(const SystemTimeWithDelay &) = 0;
     virtual auto playing() -> bool = 0;
     virtual auto deviceCount() -> int = 0;
     virtual auto deviceDescription(int index) -> std::string = 0;
     virtual void setDevice(int index) = 0;
     virtual auto durationSeconds() -> double = 0;
-};
-
-struct SystemTimeWithDelay {
-    av_speech_in_noise::system_time systemTime;
-    double secondsDelayed;
 };
 
 class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,

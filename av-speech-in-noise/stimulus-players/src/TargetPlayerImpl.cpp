@@ -15,7 +15,9 @@ void TargetPlayerImpl::subscribe(TargetPlayer::EventListener *e) {
 
 void TargetPlayerImpl::play() { player->play(); }
 
-void TargetPlayerImpl::playAt(const SystemTimeWithDelay &) {}
+void TargetPlayerImpl::playAt(const SystemTimeWithDelay &t) {
+    player->playAt(t);
+}
 
 void TargetPlayerImpl::loadFile(std::string filePath) {
     player->loadFile(filePath_ = std::move(filePath));

@@ -1,5 +1,6 @@
 #include "AudioReaderStub.h"
 #include "assert-utility.h"
+#include "recognition-test/RecognitionTestModel.hpp"
 #include <cmath>
 #include <gtest/gtest.h>
 #include <stimulus-players/TargetPlayerImpl.hpp>
@@ -11,6 +12,8 @@ class VideoPlayerStub : public stimulus_players::VideoPlayer {
     std::string filePath_{};
     std::string audioFilePath_{};
     double durationSeconds_{};
+    double secondsDelayedPlayedAt_{};
+    av_speech_in_noise::system_time baseSystemTimePlayedAt_{};
     int deviceIndex_{};
     EventListener *listener_{};
     bool shown_{};
@@ -75,6 +78,19 @@ class VideoPlayerStub : public stimulus_players::VideoPlayer {
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) {
         listener_->fillAudioBuffer(audio);
     }
+
+    [[nodiscard]] auto baseSystemTimePlayedAt() const {
+        return baseSystemTimePlayedAt_;
+    }
+
+    [[nodiscard]] auto secondsDelayedPlayedAt() const {
+        return secondsDelayedPlayedAt_;
+    }
+
+    void playAt(const stimulus_players::SystemTimeWithDelay &t) {
+        baseSystemTimePlayedAt_ = t.systemTime;
+        secondsDelayedPlayedAt_ = t.secondsDelayed;
+    }
 };
 
 class TargetPlayerListenerStub
@@ -95,6 +111,7 @@ class TargetPlayerTests : public ::testing::Test {
     TargetPlayerListenerStub listener;
     stimulus_players::tests::AudioReaderStub audioReader{};
     stimulus_players::TargetPlayerImpl player{&videoPlayer, &audioReader};
+    stimulus_players::SystemTimeWithDelay systemTimeWithDelay{};
 
     TargetPlayerTests() { player.subscribe(&listener); }
 
@@ -131,6 +148,18 @@ class TargetPlayerTests : public ::testing::Test {
     }
 
     void useAllChannels() { player.useAllChannels(); }
+
+    void setBaseSystemTimeToPlayAt(av_speech_in_noise::system_time t) {
+        systemTimeWithDelay.systemTime = t;
+    }
+
+    void setSecondsDelayedToPlayAt(double x) {
+        systemTimeWithDelay.secondsDelayed = x;
+    }
+
+    void playAt() {
+        player.playAt(systemTimeWithDelay);
+    }
 };
 
 TEST_F(TargetPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -141,6 +170,14 @@ TEST_F(TargetPlayerTests, playingWhenVideoPlayerPlaying) {
 TEST_F(TargetPlayerTests, playPlaysVideo) {
     player.play();
     EXPECT_TRUE(videoPlayer.played());
+}
+
+TEST_F(TargetPlayerTests, playAtPlaysVideoAt) {
+    setBaseSystemTimeToPlayAt(1);
+    setSecondsDelayedToPlayAt(2);
+    playAt();
+    assertEqual(av_speech_in_noise::system_time{1}, videoPlayer.baseSystemTimePlayedAt());
+    assertEqual(2., videoPlayer.secondsDelayedPlayedAt());
 }
 
 TEST_F(TargetPlayerTests, durationReturnsDuration) {
