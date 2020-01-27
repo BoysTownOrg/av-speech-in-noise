@@ -1,5 +1,5 @@
-#ifndef TESTS_OUTPUTFILESTUB_H_
-#define TESTS_OUTPUTFILESTUB_H_
+#ifndef TESTS_OUTPUTFILESTUB_HPP_
+#define TESTS_OUTPUTFILESTUB_HPP_
 
 #include "LogString.hpp"
 #include <recognition-test/Model.hpp>

@@ -1,5 +1,5 @@
 #include "LogString.hpp"
-#include "OutputFileStub.h"
+#include "OutputFileStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetListStub.h"
 #include "TestConcluderStub.h"

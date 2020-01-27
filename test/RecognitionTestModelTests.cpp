@@ -1,7 +1,7 @@
 #include "LogString.hpp"
 #include "MaskerPlayerStub.hpp"
 #include "ModelEventListenerStub.hpp"
-#include "OutputFileStub.h"
+#include "OutputFileStub.hpp"
 #include "RandomizerStub.h"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"

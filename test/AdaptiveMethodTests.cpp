@@ -1,4 +1,4 @@
-#include "OutputFileStub.h"
+#include "OutputFileStub.hpp"
 #include "RandomizerStub.h"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetListSetReaderStub.h"
