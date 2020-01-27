@@ -87,7 +87,7 @@ class VideoPlayerStub : public stimulus_players::VideoPlayer {
         return secondsDelayedPlayedAt_;
     }
 
-    void playAt(const stimulus_players::SystemTimeWithDelay &t) {
+    void playAt(const av_speech_in_noise::SystemTimeWithDelay &t) {
         baseSystemTimePlayedAt_ = t.systemTime;
         secondsDelayedPlayedAt_ = t.secondsDelayed;
     }
@@ -111,7 +111,7 @@ class TargetPlayerTests : public ::testing::Test {
     TargetPlayerListenerStub listener;
     stimulus_players::tests::AudioReaderStub audioReader{};
     stimulus_players::TargetPlayerImpl player{&videoPlayer, &audioReader};
-    stimulus_players::SystemTimeWithDelay systemTimeWithDelay{};
+    av_speech_in_noise::SystemTimeWithDelay systemTimeWithDelay{};
 
     TargetPlayerTests() { player.subscribe(&listener); }
 

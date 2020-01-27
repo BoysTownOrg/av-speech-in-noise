@@ -11,6 +11,13 @@ namespace av_speech_in_noise {
 class InvalidAudioDevice {};
 class InvalidAudioFile {};
 
+using system_time = std::uintmax_t;
+
+struct SystemTimeWithDelay {
+    system_time systemTime;
+    double secondsDelayed;
+};
+
 class TargetPlayer {
   public:
     virtual ~TargetPlayer() = default;
@@ -35,8 +42,6 @@ class TargetPlayer {
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
 };
-
-using system_time = std::uintmax_t;
 
 struct AudioSampleTime {
     system_time systemTime;

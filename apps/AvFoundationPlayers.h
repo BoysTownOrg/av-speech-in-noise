@@ -48,7 +48,7 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
     void play() override;
-    void playAt(const stimulus_players::SystemTimeWithDelay &);
+    void playAt(const av_speech_in_noise::SystemTimeWithDelay &);
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
     void hide() override;
