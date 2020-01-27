@@ -192,7 +192,7 @@ void CoreAudioBufferedReader::loadFile(std::string filePath) {
 auto CoreAudioBufferedReader::failed() -> bool { return trackOutput == nil; }
 
 auto CoreAudioBufferedReader::readNextBuffer()
-    -> std::shared_ptr<stimulus_players::AudioBuffer> {
+    -> std::shared_ptr<AudioBuffer> {
     return std::make_shared<CoreAudioBuffer>(trackOutput);
 }
 

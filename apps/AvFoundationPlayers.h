@@ -35,8 +35,7 @@ class CoreAudioBufferedReader : public BufferedAudioReader {
   public:
     void loadFile(std::string) override;
     auto failed() -> bool override;
-    auto readNextBuffer()
-        -> std::shared_ptr<AudioBuffer> override;
+    auto readNextBuffer() -> std::shared_ptr<AudioBuffer> override;
     auto minimumPossibleSample() -> int override;
     auto sampleRateHz() -> double;
 
@@ -49,7 +48,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
     void play() override;
-    void playAt(const av_speech_in_noise::SystemTimeWithDelay &);
+    void playAt(const av_speech_in_noise::SystemTimeWithDelay &) override;
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
     void hide() override;
@@ -77,9 +76,9 @@ class AvFoundationVideoPlayer : public VideoPlayer {
         CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
         AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
         MTAudioProcessingTapFlags *flagsOut);
-    void processTap_(CMItemCount numberFrames,
-        MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut,
-        CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut);
+    void processTap_(CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
+        AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
+        MTAudioProcessingTapFlags *flagsOut);
 
     std::vector<gsl::span<float>> audio;
     MTAudioProcessingTapRef tap{};
