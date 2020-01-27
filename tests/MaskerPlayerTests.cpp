@@ -86,7 +86,7 @@ class MaskerPlayerListenerStub
   public:
     void fadeInComplete(const av_speech_in_noise::AudioSampleTime &t) override {
         fadeInCompleteSystemTime_ = t.systemTime;
-        fadeInCompleteSystemTimeSampleOffset_ = t.sampleOffset;
+        fadeInCompleteSystemTimeSampleOffset_ = t.systemTimeSampleOffset;
         fadeInCompleted_ = true;
         ++fadeInCompletions_;
     }

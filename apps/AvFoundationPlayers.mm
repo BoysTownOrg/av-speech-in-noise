@@ -289,7 +289,7 @@ void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationVideoPlayer::play() { [player play]; }
 
-void AvFoundationVideoPlayer::playAt(stimulus_players::system_time time) {
+void AvFoundationVideoPlayer::playAt(av_speech_in_noise::system_time time) {
     // https://developer.apple.com/documentation/avfoundation/avplayer/1386591-setrate?language=objc
     // "For clients linked against iOS 10.0 and later or macOS 10.12 and later,
     // invoking [[setRate:time:atHostTime:]] when

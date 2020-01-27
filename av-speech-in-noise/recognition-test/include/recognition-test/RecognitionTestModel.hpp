@@ -40,7 +40,7 @@ using system_time = std::uintmax_t;
 
 struct AudioSampleTime {
     system_time systemTime;
-    gsl::index sampleOffset;
+    gsl::index systemTimeSampleOffset;
 };
 
 class MaskerPlayer {

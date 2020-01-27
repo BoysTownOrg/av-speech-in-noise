@@ -429,10 +429,11 @@ void MaskerPlayerImpl::AudioThread::updateFadeState(sample_index_type offset) {
     advanceCounterIfStillFading();
 }
 
-void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(sample_index_type offset) {
+void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(
+    sample_index_type offset) {
     if (doneFadingIn()) {
         sharedState->fadeInCompleteSystemTime.store(systemTime);
-        sharedState->fadeInCompleteSystemTimeSampleOffset.store(offset+1);
+        sharedState->fadeInCompleteSystemTimeSampleOffset.store(offset + 1);
         set(sharedState->fadeInComplete);
         clear(fadingIn);
     }
