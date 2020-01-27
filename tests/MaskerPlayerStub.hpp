@@ -1,5 +1,5 @@
-#ifndef TESTS_MASKERPLAYERSTUB_H_
-#define TESTS_MASKERPLAYERSTUB_H_
+#ifndef TESTS_MASKERPLAYERSTUB_HPP_
+#define TESTS_MASKERPLAYERSTUB_HPP_
 
 #include "LogString.h"
 #include <recognition-test/RecognitionTestModel.hpp>
@@ -33,7 +33,7 @@ class MaskerPlayerStub : public MaskerPlayer {
   public:
     void setSampleRateHz(double x) { sampleRateHz_ = x; }
 
-    auto sampleRateHz() -> double {
+    auto sampleRateHz() -> double override {
         return sampleRateHz_;
     }
 

@@ -1,10 +1,10 @@
 #include "LogString.h"
-#include "MaskerPlayerStub.h"
+#include "MaskerPlayerStub.hpp"
 #include "ModelEventListenerStub.h"
 #include "OutputFileStub.h"
 #include "RandomizerStub.h"
 #include "ResponseEvaluatorStub.h"
-#include "TargetPlayerStub.h"
+#include "TargetPlayerStub.hpp"
 #include "assert-utility.h"
 #include "recognition-test/RecognitionTestModel.hpp"
 #include <gtest/gtest.h>
@@ -696,9 +696,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         maskerPlayer.setSampleRateHz(x);
     }
 
-    void fadeInComplete() {
-        maskerPlayer.fadeInComplete(fadeInCompleteTime);
-    }
+    void fadeInComplete() { maskerPlayer.fadeInComplete(fadeInCompleteTime); }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)

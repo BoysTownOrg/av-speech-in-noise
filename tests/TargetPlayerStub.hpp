@@ -1,5 +1,5 @@
-#ifndef TESTS_TARGETPLAYERSTUB_H_
-#define TESTS_TARGETPLAYERSTUB_H_
+#ifndef TESTS_TARGETPLAYERSTUB_HPP_
+#define TESTS_TARGETPLAYERSTUB_HPP_
 
 #include "LogString.h"
 #include <recognition-test/RecognitionTestModel.hpp>
@@ -80,7 +80,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     void play() override { played_ = true; }
 
-    void playAt(const SystemTimeWithDelay &t) {
+    void playAt(const SystemTimeWithDelay &t) override {
         baseSystemTimePlayedAt_ = t.systemTime;
         secondsDelayedPlayedAt_ = t.secondsDelayed;
     }
