@@ -4,42 +4,10 @@
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 
-class CocoaTestSetupView;
-
-@interface SetupViewActions : NSObject
-@property CocoaTestSetupView *controller;
-- (void) confirmTestSetup;
-- (void) browseForTargetList;
-- (void) browseForMasker;
-- (void) browseForCalibration;
-- (void) browseForTrackSettings;
-- (void) playCalibration;
-@end
-
-class CocoaSubjectView;
-
-@interface SubjectViewActions : NSObject
-@property CocoaSubjectView *controller;
-- (void) respond:(id)sender;
-- (void) playTrial;
-@end
-
-class CocoaExperimenterView;
-
-@interface ExperimenterViewActions : NSObject
-@property CocoaExperimenterView *controller;
-- (void) exitTest;
-@end
-
-class CocoaTestingView;
-
-@interface TestingViewActions : NSObject
-@property CocoaTestingView *controller;
-- (void) playTrial;
-- (void) submitResponse;
-- (void) submitPassedTrial;
-- (void) submitFailedTrial;
-@end
+@class SetupViewActions;
+@class SubjectViewActions;
+@class ExperimenterViewActions;
+@class TestingViewActions;
 
 class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
     NSView *view_;

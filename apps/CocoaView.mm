@@ -2,6 +2,35 @@
 #include "common-objc.h"
 #include <iterator>
 
+@interface SetupViewActions : NSObject
+@property CocoaTestSetupView *controller;
+- (void) confirmTestSetup;
+- (void) browseForTargetList;
+- (void) browseForMasker;
+- (void) browseForCalibration;
+- (void) browseForTrackSettings;
+- (void) playCalibration;
+@end
+
+@interface SubjectViewActions : NSObject
+@property CocoaSubjectView *controller;
+- (void) respond:(id)sender;
+- (void) playTrial;
+@end
+
+@interface ExperimenterViewActions : NSObject
+@property CocoaExperimenterView *controller;
+- (void) exitTest;
+@end
+
+@interface TestingViewActions : NSObject
+@property CocoaTestingView *controller;
+- (void) playTrial;
+- (void) submitResponse;
+- (void) submitPassedTrial;
+- (void) submitFailedTrial;
+@end
+
 static NSTextField *allocLabel(NSString *label, NSRect frame) {
     const auto text = [[NSTextField alloc] initWithFrame:frame];
     [text setStringValue:label];
