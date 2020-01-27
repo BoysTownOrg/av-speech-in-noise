@@ -4,11 +4,9 @@
 #import <Foundation/Foundation.h>
 #include <string>
 
-inline NSString *asNsString(std::string s) {
-    return [NSString
-        stringWithCString:s.c_str()
-        encoding:NSString.defaultCStringEncoding
-    ];
+inline auto asNsString(std::string s) -> NSString * {
+    return [NSString stringWithCString:s.c_str()
+                              encoding:NSString.defaultCStringEncoding];
 }
 
 #endif

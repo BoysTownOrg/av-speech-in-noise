@@ -24,6 +24,26 @@
 #include <sstream>
 #include <utility>
 
+@interface WindowDelegate : NSObject <NSWindowDelegate>
+- (void)windowWillClose:(NSNotification *)notification;
+@end
+
+@implementation WindowDelegate
+- (void)windowWillClose:(NSNotification *)__unused notification {
+    [NSApp terminate:self];
+}
+@end
+
+namespace {
+class TimerImpl;
+}
+
+@interface CallbackScheduler : NSObject
+@property TimerImpl *controller;
+- (void)scheduleCallbackAfterSeconds:(double)x;
+- (void)timerCallback;
+@end
+
 namespace {
 auto contents(NSString *parent) -> NSArray<NSString *> * {
     return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parent
@@ -120,18 +140,16 @@ class TimeStampImpl : public av_speech_in_noise::TimeStamp {
             time = &dummyTime;
     }
 };
-}
-namespace av_speech_in_noise::impl {
-class TimerImpl;
-}
 
-@interface CallbackScheduler : NSObject
-@property av_speech_in_noise::impl::TimerImpl *controller;
-- (void)scheduleCallbackAfterSeconds:(double)x;
-- (void)timerCallback;
-@end
+class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
+    auto read(std::string s) -> std::string override {
+        std::ifstream file{s};
+        std::stringstream stream;
+        stream << file.rdbuf();
+        return stream.str();
+    }
+};
 
-namespace av_speech_in_noise::impl {
 class TimerImpl : public stimulus_players::Timer {
     EventListener *listener{};
     CallbackScheduler *scheduler{[CallbackScheduler alloc]};
@@ -165,28 +183,7 @@ class TimerImpl : public stimulus_players::Timer {
 }
 @end
 
-namespace {
-class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
-    auto read(std::string s) -> std::string override {
-        std::ifstream file{s};
-        std::stringstream stream;
-        stream << file.rdbuf();
-        return stream.str();
-    }
-};
-}
-
-@interface WindowDelegate : NSObject <NSWindowDelegate>
-- (void)windowWillClose:(NSNotification *)notification;
-@end
-
-@implementation WindowDelegate
-- (void)windowWillClose:(NSNotification *)__unused notification {
-    [NSApp terminate:self];
-}
-@end
-
-namespace av_speech_in_noise::impl {
+namespace av_speech_in_noise {
 void main() {
     MacOsDirectoryReader reader;
     target_list::FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
@@ -308,10 +305,9 @@ void main() {
     Presenter::TestSetup testSetup{&testSetupView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
-    Presenter presenter{
-        model, view, testSetup, subject, experimenter, testing};
+    Presenter presenter{model, view, testSetup, subject, experimenter, testing};
     presenter.run();
 }
 }
 
-int main() { av_speech_in_noise::impl::main(); }
+int main() { av_speech_in_noise::main(); }
