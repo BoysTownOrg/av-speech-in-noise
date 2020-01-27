@@ -3,8 +3,9 @@
 #include <gtest/gtest.h>
 #include <recognition-test/OutputFilePath.hpp>
 
+namespace av_speech_in_noise {
 namespace {
-class TimeStampStub : public av_speech_in_noise::TimeStamp {
+class TimeStampStub : public TimeStamp {
     LogString log_{};
     int year_{};
     int month_{};
@@ -61,7 +62,7 @@ class TimeStampStub : public av_speech_in_noise::TimeStamp {
     }
 };
 
-class FileSystemPathStub : public av_speech_in_noise::FileSystemPath {
+class FileSystemPathStub : public FileSystemPath {
     std::string homeDirectory_{};
     std::string directoryCreated_{};
 
@@ -81,8 +82,8 @@ class OutputFilePathTests : public ::testing::Test {
   protected:
     TimeStampStub timeStamp;
     FileSystemPathStub systemPath;
-    av_speech_in_noise::OutputFilePathImpl path{&timeStamp, &systemPath};
-    av_speech_in_noise::TestIdentity test{};
+    OutputFilePathImpl path{&timeStamp, &systemPath};
+    TestIdentity test{};
 
     auto generateFileName() -> std::string {
         return path.generateFileName(test);
@@ -126,5 +127,6 @@ TEST_F(OutputFilePathTests, setRelativeOutputDirectoryCreatesDirectory) {
     setHomeDirectory("a");
     setRelativeOutputDirectory("b");
     assertEqual("a/b", systemPath.directoryCreated());
+}
 }
 }
