@@ -9,8 +9,8 @@ FetchContent_Declare(
     GIT_TAG v2.0.0
 )
 FetchContent_MakeAvailable(GSL)
-add_subdirectory(av-speech-in-noise)
-add_subdirectory(apps)
+add_subdirectory(src)
+add_subdirectory(main)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows") 
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -22,4 +22,4 @@ FetchContent_Declare(
     GIT_TAG release-1.10.0
 )
 FetchContent_MakeAvailable(googletest)
-add_subdirectory(tests)
+add_subdirectory(test)
