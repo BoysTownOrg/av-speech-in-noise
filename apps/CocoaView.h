@@ -11,12 +11,6 @@
 
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public View::Experimenter {
-    NSView *view_;
-    NSTextView *displayedText_;
-    NSButton *exitTestButton_;
-    EventListener *listener_{};
-    ExperimenterViewActions *actions;
-
   public:
     CocoaExperimenterView(NSRect);
     NSView *view();
@@ -27,18 +21,16 @@ class CocoaExperimenterView : public View::Experimenter {
     void show() override;
     void hide() override;
     void display(std::string) override;
+
+  private:
+    NSView *view_;
+    NSTextView *displayedText_;
+    NSButton *exitTestButton_;
+    EventListener *listener_{};
+    ExperimenterViewActions *actions;
 };
 
 class CocoaTestingView : public View::Testing {
-    NSView *view_;
-    NSView *nextTrialButton;
-    NSView *evaluationButtons;
-    NSView *responseSubmission;
-    NSTextField *response_;
-    NSButton *flagged_;
-    EventListener *listener_{};
-    TestingViewActions *actions;
-
   public:
     CocoaTestingView(NSRect);
     NSView *view();
@@ -58,37 +50,19 @@ class CocoaTestingView : public View::Testing {
     bool flagged() override;
     void hideResponseSubmission() override;
     void hideEvaluationButtons() override;
+
+  private:
+    NSView *view_;
+    NSView *nextTrialButton;
+    NSView *evaluationButtons;
+    NSView *responseSubmission;
+    NSTextField *response_;
+    NSButton *flagged_;
+    EventListener *listener_{};
+    TestingViewActions *actions;
 };
 
 class CocoaTestSetupView : public View::TestSetup {
-    NSView *view_;
-    NSTextField *subjectIdLabel;
-    NSTextField *subjectId_;
-    NSTextField *testerIdLabel;
-    NSTextField *testerId_;
-    NSTextField *sessionLabel;
-    NSTextField *session_;
-    NSTextField *maskerLevel_dB_SPL_label;
-    NSTextField *maskerLevel_dB_SPL_;
-    NSTextField *calibrationLevel_dB_SPL_label;
-    NSTextField *calibrationLevel_dB_SPL_;
-    NSTextField *startingSnr_dB_label;
-    NSTextField *startingSnr_dB_;
-    NSTextField *targetListDirectoryLabel;
-    NSTextField *targetListDirectory_;
-    NSTextField *maskerFilePath_label;
-    NSTextField *maskerFilePath_;
-    NSTextField *calibrationFilePath_label;
-    NSTextField *calibrationFilePath_;
-    NSTextField *trackSettingsFile_label;
-    NSTextField *trackSettingsFile_;
-    NSTextField *condition_label;
-    NSPopUpButton *conditionMenu;
-    NSTextField *method_label;
-    NSPopUpButton *methodMenu;
-    SetupViewActions *actions;
-    EventListener *listener_{};
-
   public:
     CocoaTestSetupView(NSRect);
     void show() override;
@@ -127,16 +101,37 @@ class CocoaTestSetupView : public View::TestSetup {
   private:
     void addSubview(NSView *subview);
     const char *stringValue(NSTextField *field);
+
+    NSView *view_;
+    NSTextField *subjectIdLabel;
+    NSTextField *subjectId_;
+    NSTextField *testerIdLabel;
+    NSTextField *testerId_;
+    NSTextField *sessionLabel;
+    NSTextField *session_;
+    NSTextField *maskerLevel_dB_SPL_label;
+    NSTextField *maskerLevel_dB_SPL_;
+    NSTextField *calibrationLevel_dB_SPL_label;
+    NSTextField *calibrationLevel_dB_SPL_;
+    NSTextField *startingSnr_dB_label;
+    NSTextField *startingSnr_dB_;
+    NSTextField *targetListDirectoryLabel;
+    NSTextField *targetListDirectory_;
+    NSTextField *maskerFilePath_label;
+    NSTextField *maskerFilePath_;
+    NSTextField *calibrationFilePath_label;
+    NSTextField *calibrationFilePath_;
+    NSTextField *trackSettingsFile_label;
+    NSTextField *trackSettingsFile_;
+    NSTextField *condition_label;
+    NSPopUpButton *conditionMenu;
+    NSTextField *method_label;
+    NSPopUpButton *methodMenu;
+    SetupViewActions *actions;
+    EventListener *listener_{};
 };
 
 class CocoaSubjectView : public View::Subject {
-    NSWindow *window;
-    NSView *responseButtons;
-    NSView *nextTrialButton;
-    NSButton *lastButtonPressed;
-    SubjectViewActions *actions;
-    EventListener *listener_{};
-
   public:
     CocoaSubjectView(NSRect);
     std::string numberResponse() override;
@@ -158,15 +153,16 @@ class CocoaSubjectView : public View::Subject {
     NSColor *lastPressedColor();
     void addNumberButton(NSColor *color, int number, int row, std::size_t col);
     void addButtonRow(NSColor *color, int row);
+
+    NSWindow *window;
+    NSView *responseButtons;
+    NSView *nextTrialButton;
+    NSButton *lastButtonPressed;
+    SubjectViewActions *actions;
+    EventListener *listener_{};
 };
 
 class CocoaView : public View {
-    NSApplication *app;
-    NSWindow *window;
-    NSTextField *audioDevice_label;
-    NSPopUpButton *deviceMenu;
-    bool browseCancelled_{};
-
   public:
     CocoaView(NSRect);
     void eventLoop() override;
@@ -182,6 +178,12 @@ class CocoaView : public View {
 
   private:
     std::string browseModal(NSOpenPanel *panel);
+
+    NSApplication *app;
+    NSWindow *window;
+    NSTextField *audioDevice_label;
+    NSPopUpButton *deviceMenu;
+    bool browseCancelled_{};
 };
 }
 

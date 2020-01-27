@@ -304,11 +304,17 @@ auto CocoaTestSetupView::targetListDirectory() -> std::string {
     return stringValue(targetListDirectory_);
 }
 
-auto CocoaTestSetupView::testerId() -> std::string { return stringValue(testerId_); }
+auto CocoaTestSetupView::testerId() -> std::string {
+    return stringValue(testerId_);
+}
 
-auto CocoaTestSetupView::subjectId() -> std::string { return stringValue(subjectId_); }
+auto CocoaTestSetupView::subjectId() -> std::string {
+    return stringValue(subjectId_);
+}
 
-auto CocoaTestSetupView::session() -> std::string { return stringValue(session_); }
+auto CocoaTestSetupView::session() -> std::string {
+    return stringValue(session_);
+}
 
 auto CocoaTestSetupView::method() -> std::string {
     return methodMenu.titleOfSelectedItem.UTF8String;
@@ -355,12 +361,12 @@ void CocoaTestSetupView::setStartingSnr_dB(std::string s) {
 }
 
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
-    for (const auto& item : items)
+    for (const auto &item : items)
         [conditionMenu addItemWithTitle:asNsString(item)];
 }
 
 void CocoaTestSetupView::populateMethodMenu(std::vector<std::string> items) {
-    for (const auto& item : items)
+    for (const auto &item : items)
         [methodMenu addItemWithTitle:asNsString(item)];
 }
 
@@ -732,7 +738,7 @@ auto CocoaView::audioDevice() -> std::string {
 }
 
 void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
-    for (const auto& item : items)
+    for (const auto &item : items)
         [deviceMenu addItemWithTitle:asNsString(item)];
 }
 
