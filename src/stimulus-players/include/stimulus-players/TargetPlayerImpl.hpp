@@ -2,7 +2,6 @@
 #define AV_SPEECH_IN_NOISE_STIMULUS_PLAYERS_INCLUDE_STIMULUS_PLAYERS_TARGETPLAYERIMPL_HPP_
 
 #include "AudioReader.hpp"
-#include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gsl/gsl>
 #include <vector>
@@ -41,7 +40,7 @@ class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
     void subscribe(TargetPlayer::EventListener *) override;
     void play() override;
-    void playAt(const av_speech_in_noise::SystemTimeWithDelay &);
+    void playAt(const av_speech_in_noise::SystemTimeWithDelay &) override;
     void loadFile(std::string filePath) override;
     void hideVideo() override;
     void showVideo() override;

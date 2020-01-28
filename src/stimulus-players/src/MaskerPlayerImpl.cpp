@@ -1,6 +1,4 @@
 #include "MaskerPlayerImpl.hpp"
-#include "AudioReader.hpp"
-#include "recognition-test/RecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <cmath>
 #include <vector>
