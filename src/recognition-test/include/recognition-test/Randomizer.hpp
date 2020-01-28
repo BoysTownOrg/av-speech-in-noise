@@ -5,8 +5,8 @@ namespace av_speech_in_noise {
 class Randomizer {
   public:
     virtual ~Randomizer() = default;
-    virtual auto randomFloatBetween(double, double) -> double = 0;
-    virtual auto randomIntBetween(int, int) -> int = 0;
+    virtual auto betweenInclusive(double, double) -> double = 0;
+    virtual auto betweenInclusive(int, int) -> int = 0;
 };
 }
 

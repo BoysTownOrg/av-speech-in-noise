@@ -47,7 +47,7 @@ void AdaptiveMethodImpl::selectNextList() {
     if (targetListsWithTracks.empty())
         return;
     auto remainingLists{gsl::narrow<int>(targetListsWithTracks.size())};
-    auto index{randomizer->randomIntBetween(0, remainingLists - 1)};
+    auto index{randomizer->betweenInclusive(0, remainingLists - 1)};
     auto targetListsWithTrack{targetListsWithTracks.at(index)};
     currentSnrTrack = track(targetListsWithTrack);
     currentTargetList = targetListsWithTrack.list;

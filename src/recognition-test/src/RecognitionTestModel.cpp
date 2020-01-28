@@ -209,7 +209,7 @@ auto RecognitionTestModelImpl::targetLevel_dB() -> double {
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
     auto upperLimit = maskerPlayer->durationSeconds() -
         trialDurationSeconds(targetPlayer, maskerPlayer);
-    maskerPlayer->seekSeconds(randomizer->randomFloatBetween(0, upperLimit));
+    maskerPlayer->seekSeconds(randomizer->betweenInclusive(0., upperLimit));
 }
 
 void RecognitionTestModelImpl::tryOpeningOutputFile(const TestIdentity &p) {

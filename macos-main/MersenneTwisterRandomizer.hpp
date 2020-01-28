@@ -19,12 +19,12 @@ class MersenneTwisterRandomizer : public target_list::Randomizer,
         std::shuffle(begin, end, engine);
     }
 
-    auto randomFloatBetween(double a, double b) -> double override {
+    auto betweenInclusive(double a, double b) -> double override {
         std::uniform_real_distribution<> distribution{a, b};
         return distribution(engine);
     }
 
-    auto randomIntBetween(int a, int b) -> int override {
+    auto betweenInclusive(int a, int b) -> int override {
         std::uniform_int_distribution<> distribution{a, b};
         return distribution(engine);
     }
