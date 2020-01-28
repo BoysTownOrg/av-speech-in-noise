@@ -4,10 +4,10 @@
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
-    FixedLevelMethod &fixedLevelMethod, TargetList *targetsWithReplacement,
-    TestConcluder *fixedTrialTestConcluder, TargetList *silentIntervalTargets,
-    TestConcluder *completesWhenTargetsEmpty, TargetList *everyTargetOnce,
-    RecognitionTestModel *model)
+    FixedLevelMethod &fixedLevelMethod, TargetList &targetsWithReplacement,
+    TestConcluder &fixedTrialTestConcluder, TargetList &silentIntervalTargets,
+    TestConcluder &completesWhenTargetsEmpty, TargetList &everyTargetOnce,
+    RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacement{targetsWithReplacement},
       fixedTrialTestConcluder{fixedTrialTestConcluder},
@@ -16,32 +16,32 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
       everyTargetOnce{everyTargetOnce}, model{model} {}
 
 static void initialize(
-    RecognitionTestModel *model, TestMethod &method, const struct Test &test) {
-    model->initialize(&method, test);
+    RecognitionTestModel &model, TestMethod &method, const struct Test &test) {
+    model.initialize(&method, test);
 }
 
 static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
-    TargetList *targets, TestConcluder *concluder) {
-    method.initialize(test, targets, concluder);
+    TargetList &targets, TestConcluder &concluder) {
+    method.initialize(test, &targets, &concluder);
 }
 
 static void initialize(AdaptiveMethod &method, const AdaptiveTest &test) {
     method.initialize(test);
 }
 
-static void initializeWithSingleSpeaker(RecognitionTestModel *model,
+static void initializeWithSingleSpeaker(RecognitionTestModel &model,
     AdaptiveMethod &method, const AdaptiveTest &test) {
-    model->initializeWithSingleSpeaker(&method, test);
+    model.initializeWithSingleSpeaker(&method, test);
 }
 
 static void initializeWithDelayedMasker(
-    RecognitionTestModel *model, TestMethod &method, const Test &test) {
-    model->initializeWithDelayedMasker(&method, test);
+    RecognitionTestModel &model, TestMethod &method, const Test &test) {
+    model.initializeWithDelayedMasker(&method, test);
 }
 
 static void initializeWithEyeTracking(
-    RecognitionTestModel *model, TestMethod &method, const Test &test) {
-    model->initializeWithEyeTracking(&method, test);
+    RecognitionTestModel &model, TestMethod &method, const Test &test) {
+    model.initializeWithEyeTracking(&method, test);
 }
 
 void ModelImpl::initializeWithTargetReplacement(const FixedLevelTest &test) {
@@ -94,32 +94,32 @@ void ModelImpl::initializeWithEyeTracking(const AdaptiveTest &test) {
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {
-    model->playTrial(settings);
+    model.playTrial(settings);
 }
 
 void ModelImpl::submit(const coordinate_response_measure::Response &response) {
-    model->submit(response);
+    model.submit(response);
 }
 
-void ModelImpl::submitCorrectResponse() { model->submitCorrectResponse(); }
+void ModelImpl::submitCorrectResponse() { model.submitCorrectResponse(); }
 
-void ModelImpl::submitIncorrectResponse() { model->submitIncorrectResponse(); }
+void ModelImpl::submitIncorrectResponse() { model.submitIncorrectResponse(); }
 
 void ModelImpl::submit(const open_set::FreeResponse &response) {
-    model->submit(response);
+    model.submit(response);
 }
 
 void ModelImpl::playCalibration(const Calibration &p) {
-    model->playCalibration(p);
+    model.playCalibration(p);
 }
 
-auto ModelImpl::testComplete() -> bool { return model->testComplete(); }
+auto ModelImpl::testComplete() -> bool { return model.testComplete(); }
 
 auto ModelImpl::audioDevices() -> std::vector<std::string> {
-    return model->audioDevices();
+    return model.audioDevices();
 }
 
-void ModelImpl::subscribe(Model::EventListener *e) { model->subscribe(e); }
+void ModelImpl::subscribe(Model::EventListener *e) { model.subscribe(e); }
 
-auto ModelImpl::trialNumber() -> int { return model->trialNumber(); }
+auto ModelImpl::trialNumber() -> int { return model.trialNumber(); }
 }
