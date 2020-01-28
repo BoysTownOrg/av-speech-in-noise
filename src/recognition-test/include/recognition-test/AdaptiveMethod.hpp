@@ -51,8 +51,8 @@ class TargetListReader {
 
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
-    AdaptiveMethodImpl(TargetListReader *, TrackSettingsReader *,
-        Track::Factory *, ResponseEvaluator *, Randomizer *);
+    AdaptiveMethodImpl(TargetListReader &, TrackSettingsReader &,
+        Track::Factory &, ResponseEvaluator &, Randomizer &);
     void initialize(const AdaptiveTest &) override;
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
@@ -91,11 +91,11 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     coordinate_response_measure::AdaptiveTrial lastTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
     const AdaptiveTest *test{};
-    TargetListReader *targetListSetReader;
-    TrackSettingsReader *trackSettingsReader;
-    Track::Factory *snrTrackFactory;
-    ResponseEvaluator *evaluator;
-    Randomizer *randomizer;
+    TargetListReader &targetListSetReader;
+    TrackSettingsReader &trackSettingsReader;
+    Track::Factory &snrTrackFactory;
+    ResponseEvaluator &evaluator;
+    Randomizer &randomizer;
     Track *currentSnrTrack{};
     TargetList *currentTargetList{};
 };

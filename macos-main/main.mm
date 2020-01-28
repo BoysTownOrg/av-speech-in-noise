@@ -218,8 +218,8 @@ void main() {
     TextFileReaderImpl textFileReader;
     TrackSettingsReaderImpl trackSettingsReader{
         &textFileReader, &trackSettingsInterpreter};
-    AdaptiveMethodImpl adaptiveMethod{&targetListReader, &trackSettingsReader,
-        &snrTrackFactory, &responseEvaluator, &randomizer};
+    AdaptiveMethodImpl adaptiveMethod{targetListReader, trackSettingsReader,
+        snrTrackFactory, responseEvaluator, randomizer};
     target_list::RandomizedTargetList infiniteTargetList{
         &fileExtensions, &randomizer};
     target_list::FileIdentifierExcluderFilter originalStimuli_{

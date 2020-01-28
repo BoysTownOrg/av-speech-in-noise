@@ -17,7 +17,9 @@ void FixedLevelMethodImpl::initialize(
 
 auto FixedLevelMethodImpl::complete() -> bool { return complete_; }
 
-auto FixedLevelMethodImpl::nextTarget() -> std::string { return targetList->next(); }
+auto FixedLevelMethodImpl::nextTarget() -> std::string {
+    return targetList->next();
+}
 
 auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
 
@@ -50,8 +52,7 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submit(
-    const open_set::FreeResponse &response) {
+void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
     concluder->submitResponse();
     if (response.flagged)
         targetList->reinsertCurrent();

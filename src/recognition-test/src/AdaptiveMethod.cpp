@@ -2,9 +2,9 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-AdaptiveMethodImpl::AdaptiveMethodImpl(TargetListReader *targetListSetReader,
-    TrackSettingsReader *trackSettingsReader, Track::Factory *snrTrackFactory,
-    ResponseEvaluator *evaluator, Randomizer *randomizer)
+AdaptiveMethodImpl::AdaptiveMethodImpl(TargetListReader &targetListSetReader,
+    TrackSettingsReader &trackSettingsReader, Track::Factory &snrTrackFactory,
+    ResponseEvaluator &evaluator, Randomizer &randomizer)
     : targetListSetReader{targetListSetReader},
       trackSettingsReader{trackSettingsReader},
       snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
@@ -12,12 +12,12 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(TargetListReader *targetListSetReader,
 
 void AdaptiveMethodImpl::initialize(const AdaptiveTest &test_) {
     test = &test_;
-    trackSettings.rule = trackSettingsReader->read(test_.trackSettingsFile);
+    trackSettings.rule = trackSettingsReader.read(test_.trackSettingsFile);
     trackSettings.ceiling = test_.ceilingSnr_dB;
     trackSettings.startingX = test_.startingSnr_dB;
     trackSettings.floor = test_.floorSnr_dB;
     trackSettings.bumpLimit = test_.trackBumpLimit;
-    lists = targetListSetReader->read(test_.targetListDirectory);
+    lists = targetListSetReader.read(test_.targetListDirectory);
 
     selectNextListAfter(&AdaptiveMethodImpl::makeSnrTracks);
 }
@@ -35,7 +35,7 @@ void AdaptiveMethodImpl::makeSnrTracks() {
 
 void AdaptiveMethodImpl::makeTrackWithList(TargetList *list) {
     targetListsWithTracks.push_back(
-        {list, snrTrackFactory->make(trackSettings)});
+        {list, snrTrackFactory.make(trackSettings)});
 }
 
 auto AdaptiveMethodImpl::track(const TargetListWithTrack &t) -> Track * {
@@ -47,7 +47,7 @@ void AdaptiveMethodImpl::selectNextList() {
     if (targetListsWithTracks.empty())
         return;
     auto remainingLists{gsl::narrow<int>(targetListsWithTracks.size())};
-    auto index{randomizer->betweenInclusive(0, remainingLists - 1)};
+    auto index{randomizer.betweenInclusive(0, remainingLists - 1)};
     auto targetListsWithTrack{targetListsWithTracks.at(index)};
     currentSnrTrack = track(targetListsWithTrack);
     currentTargetList = targetListsWithTrack.list;
@@ -88,8 +88,8 @@ void AdaptiveMethodImpl::submit(
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
     lastTrial.reversals = updatedReversals;
-    lastTrial.correctColor = evaluator->correctColor(current_);
-    lastTrial.correctNumber = evaluator->correctNumber(current_);
+    lastTrial.correctColor = evaluator.correctColor(current_);
+    lastTrial.correctNumber = evaluator.correctNumber(current_);
     lastTrial.SNR_dB = lastSnr_dB_;
     lastTrial.correct = correct_;
     selectNextList();
@@ -103,7 +103,7 @@ auto AdaptiveMethodImpl::currentTarget() -> std::string {
 
 auto AdaptiveMethodImpl::correct(const std::string &target,
     const coordinate_response_measure::Response &response) -> bool {
-    return evaluator->correct(target, response);
+    return evaluator.correct(target, response);
 }
 
 void AdaptiveMethodImpl::correct() { currentSnrTrack->down(); }
@@ -141,7 +141,7 @@ static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
 void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    lastOpenSetTrial.target = evaluator->fileName(currentTarget());
+    lastOpenSetTrial.target = evaluator.fileName(currentTarget());
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
@@ -150,7 +150,7 @@ void AdaptiveMethodImpl::submitIncorrectResponse() {
 void AdaptiveMethodImpl::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    lastOpenSetTrial.target = evaluator->fileName(currentTarget());
+    lastOpenSetTrial.target = evaluator.fileName(currentTarget());
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();

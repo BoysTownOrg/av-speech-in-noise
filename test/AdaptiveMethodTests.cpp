@@ -182,8 +182,8 @@ class AdaptiveMethodTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator;
     RandomizerStub randomizer;
     OutputFileStub outputFile;
-    AdaptiveMethodImpl method{&targetListSetReader, &trackSettingsReader,
-        &snrTrackFactory, &evaluator, &randomizer};
+    AdaptiveMethodImpl method{targetListSetReader, trackSettingsReader,
+        snrTrackFactory, evaluator, randomizer};
     Initializing initializing;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectCoordinateResponse submittingCorrectCoordinateResponse{
