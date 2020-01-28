@@ -1,5 +1,5 @@
 #include "ModelEventListenerStub.hpp"
-#include "TargetListStub.h"
+#include "TargetListStub.hpp"
 #include "TestConcluderStub.h"
 #include "assert-utility.hpp"
 #include <recognition-test/Model.hpp>

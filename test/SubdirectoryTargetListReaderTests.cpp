@@ -1,5 +1,5 @@
 #include "DirectoryReaderStub.hpp"
-#include "TargetListStub.h"
+#include "TargetListStub.hpp"
 #include "assert-utility.hpp"
 #include <target-list/SubdirectoryTargetListReader.hpp>
 #include <gtest/gtest.h>

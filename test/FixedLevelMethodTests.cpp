@@ -1,12 +1,12 @@
 #include "LogString.hpp"
 #include "OutputFileStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
-#include "TargetListStub.h"
+#include "TargetListStub.hpp"
 #include "TestConcluderStub.h"
 #include "assert-utility.hpp"
-#include "av-speech-in-noise/Model.hpp"
-#include <gtest/gtest.h>
+#include <av-speech-in-noise/Model.hpp>
 #include <recognition-test/FixedLevelMethod.hpp>
+#include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests {
 namespace {

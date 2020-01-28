@@ -2,11 +2,11 @@
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetListSetReaderStub.hpp"
-#include "TargetListStub.h"
+#include "TargetListStub.hpp"
 #include "TrackStub.h"
 #include "assert-utility.hpp"
-#include <gtest/gtest.h>
 #include <recognition-test/AdaptiveMethod.hpp>
+#include <gtest/gtest.h>
 #include <algorithm>
 
 namespace av_speech_in_noise {

@@ -1,5 +1,5 @@
-#ifndef TESTS_TARGETLISTSTUB_H_
-#define TESTS_TARGETLISTSTUB_H_
+#ifndef TESTS_TARGETLISTSTUB_HPP_
+#define TESTS_TARGETLISTSTUB_HPP_
 
 #include "LogString.hpp"
 #include <recognition-test/Model.hpp>
@@ -7,15 +7,6 @@
 
 namespace av_speech_in_noise {
 class TargetListStub : public TargetList {
-    LogString log_{};
-    std::string currentWhenNext_{};
-    std::string directory_{};
-    std::string next_{};
-    std::string current_{};
-    bool nextCalled_{};
-    bool empty_{};
-    bool reinsertCurrentCalled_{};
-
   public:
     void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
 
@@ -50,6 +41,16 @@ class TargetListStub : public TargetList {
     auto directory() { return directory_; }
 
     auto log() const -> auto & { return log_; }
+
+  private:
+    LogString log_{};
+    std::string currentWhenNext_{};
+    std::string directory_{};
+    std::string next_{};
+    std::string current_{};
+    bool nextCalled_{};
+    bool empty_{};
+    bool reinsertCurrentCalled_{};
 };
 }
 
