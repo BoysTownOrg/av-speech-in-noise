@@ -19,13 +19,6 @@ class ResponseEvaluator {
     virtual auto fileName(const std::string &filePath) -> std::string = 0;
 };
 
-class Randomizer {
-  public:
-    virtual ~Randomizer() = default;
-    virtual auto randomFloatBetween(double, double) -> double = 0;
-    virtual auto randomIntBetween(int, int) -> int = 0;
-};
-
 class TestConcluder {
   public:
     virtual ~TestConcluder() = default;
