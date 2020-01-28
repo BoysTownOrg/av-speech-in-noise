@@ -1,8 +1,8 @@
 #include "assert-utility.hpp"
-#include <gtest/gtest.h>
 #include <recognition-test/TrackSettingsInterpreter.hpp>
+#include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 namespace {
 using Property = TrackSettingsInterpreterImpl::Property;
 

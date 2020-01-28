@@ -1,13 +1,10 @@
 #include "assert-utility.hpp"
-#include <gtest/gtest.h>
 #include <recognition-test/TrackSettingsReader.hpp>
+#include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 namespace {
 class TextFileReaderStub : public TextFileReader {
-    std::string filePath_{};
-    std::string contents_{};
-
   public:
     [[nodiscard]] auto filePath() const { return filePath_; }
 
@@ -17,12 +14,13 @@ class TextFileReaderStub : public TextFileReader {
     }
 
     void setContents(std::string s) { contents_ = std::move(s); }
+
+  private:
+    std::string filePath_{};
+    std::string contents_{};
 };
 
 class TrackSettingsInterpreterStub : public TrackSettingsInterpreter {
-    std::string content_{};
-    const TrackingRule *trackingRule_{};
-
   public:
     auto trackingRule(std::string s) -> const TrackingRule * override {
         content_ = std::move(s);
@@ -32,6 +30,10 @@ class TrackSettingsInterpreterStub : public TrackSettingsInterpreter {
     [[nodiscard]] auto content() const { return content_; }
 
     void setTrackingRule(const TrackingRule *r) { trackingRule_ = r; }
+
+  private:
+    std::string content_{};
+    const TrackingRule *trackingRule_{};
 };
 
 class TrackSettingsReaderTests : public ::testing::Test {
