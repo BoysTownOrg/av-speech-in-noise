@@ -1,6 +1,6 @@
 #include "PresenterTests.h"
 
-namespace av_speech_in_noise::tests::presentation {
+namespace av_speech_in_noise {
 TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
     model.setAudioDevices({"a", "b", "c"});
     construct();

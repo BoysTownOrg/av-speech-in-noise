@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <utility>
 
-namespace av_speech_in_noise::tests::presentation {
+namespace av_speech_in_noise {
 template <typename T> class Collection {
   public:
     explicit Collection(std::vector<T> items = {}) : items{std::move(items)} {}
@@ -1587,26 +1587,26 @@ class PresenterTests : public ::testing::Test {
     void assertPassesCeilingSNR(UseCase &useCase) {
         run(useCase);
         assertEqual(Presenter::ceilingSnr_dB,
-            tests::presentation::adaptiveTest(model).ceilingSnr_dB);
+            av_speech_in_noise::adaptiveTest(model).ceilingSnr_dB);
     }
 
     void assertPassesFloorSNR(UseCase &useCase) {
         run(useCase);
         assertEqual(Presenter::floorSnr_dB,
-            tests::presentation::adaptiveTest(model).floorSnr_dB);
+            av_speech_in_noise::adaptiveTest(model).floorSnr_dB);
     }
 
     void assertPassesTrackBumpLimit(UseCase &useCase) {
         run(useCase);
         assertEqual(Presenter::trackBumpLimit,
-            tests::presentation::adaptiveTest(model).trackBumpLimit);
+            av_speech_in_noise::adaptiveTest(model).trackBumpLimit);
     }
 
     void assertPassesTrackSettingsFile(UseCase &useCase) {
         setupView.setTrackSettingsFile("e");
         run(useCase);
         assertEqual(
-            "e", tests::presentation::adaptiveTest(model).trackSettingsFile);
+            "e", av_speech_in_noise::adaptiveTest(model).trackSettingsFile);
     }
 
     void assertInvalidSnrShowsErrorMessage(UseCase &useCase) {
