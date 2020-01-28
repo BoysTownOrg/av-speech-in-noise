@@ -152,8 +152,8 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioPlayer *player;
     AudioReader *reader;
     std::atomic<double> levelScalar{1};
-    std::atomic<av_speech_in_noise::system_time> fadeInCompleteSystemTime;
-    std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset;
+    std::atomic<av_speech_in_noise::system_time> fadeInCompleteSystemTime{};
+    std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
     std::atomic<int> levelTransitionSamples_{};
     std::atomic<bool> firstChannelOnly{};
     std::atomic<bool> fadeOutComplete{};

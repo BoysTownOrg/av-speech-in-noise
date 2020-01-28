@@ -6,7 +6,7 @@
 #include <atomic>
 
 @interface VideoPlayerActions : NSObject
-@property stimulus_players::AvFoundationVideoPlayer *controller;
+@property(nonatomic) stimulus_players::AvFoundationVideoPlayer *controller;
 - (void)playbackComplete;
 @end
 
@@ -73,7 +73,7 @@ static auto deviceCount() -> int {
     return gsl::narrow<int>(globalAudioDevices.size());
 }
 
-static auto objectId(int device) -> AudioObjectID {
+static auto objectId(gsl::index device) -> AudioObjectID {
     return globalAudioDevices.at(device);
 }
 

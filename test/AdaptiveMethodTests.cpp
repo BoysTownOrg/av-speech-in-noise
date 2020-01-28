@@ -7,6 +7,7 @@
 #include "assert-utility.hpp"
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <gtest/gtest.h>
+#include <gsl/gsl>
 #include <algorithm>
 
 namespace av_speech_in_noise {
@@ -254,7 +255,7 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 
-    void setNextForList(int n, std::string s) {
+    void setNextForList(gsl::index n, std::string s) {
         lists.at(n)->setNext(std::move(s));
     }
 
@@ -271,9 +272,9 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void submitIncorrectResponse() { method.submitIncorrectResponse(); }
 
-    auto track(int n) { return tracks.at(n); }
+    auto track(gsl::index n) { return tracks.at(n); }
 
-    void setCurrentForTarget(int n, std::string s) {
+    void setCurrentForTarget(gsl::index n, std::string s) {
         lists.at(n)->setCurrent(std::move(s));
     }
 

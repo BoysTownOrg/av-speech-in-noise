@@ -121,7 +121,7 @@ auto MaskerPlayerImpl::durationSeconds() -> double {
     return samples(sourceAudio) / stimulus_players::sampleRateHz(player);
 }
 
-auto mathModulus(sample_index_type a, sample_index_type b)
+static auto mathModulus(sample_index_type a, sample_index_type b)
     -> sample_index_type {
     auto result = a % b;
     return result > 0 ? result : result + b;

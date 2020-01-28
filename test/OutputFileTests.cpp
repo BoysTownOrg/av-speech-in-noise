@@ -257,10 +257,6 @@ class OutputFileTests : public ::testing::Test {
         assertWrittenLast("\n\n");
     }
 
-    void assertNthEntryOfFirstLine(const std::string &what, int n) {
-        assertNthCommaDelimitedEntryOfLine(what, n, 1);
-    }
-
     void assertNthEntryOfSecondLine(const std::string &what, int n) {
         assertNthCommaDelimitedEntryOfLine(what, n, 2);
     }
@@ -272,10 +268,6 @@ class OutputFileTests : public ::testing::Test {
         assertEqual(
             std::iterator_traits<std::string::iterator>::difference_type{n - 1},
             std::count(line_.begin(), line_.end(), ','));
-    }
-
-    void assertNthEntryOfThirdLine(const std::string &what, int n) {
-        assertNthCommaDelimitedEntryOfLine(what, n, 3);
     }
 
     void assertNthCommaDelimitedEntryOfLine(
