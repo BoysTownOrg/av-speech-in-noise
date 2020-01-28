@@ -6,28 +6,8 @@
 #include <utility>
 #include <string>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TargetPlayerStub : public TargetPlayer {
-    LogString log_;
-    std::string filePath_;
-    std::string device_;
-    double rms_{};
-    double level_dB_{};
-    double durationSeconds_{};
-    double secondsDelayedPlayedAt_{};
-    system_time baseSystemTimePlayedAt_{};
-    EventListener *listener_{};
-    bool played_{};
-    bool videoHidden_{};
-    bool videoShown_{};
-    bool throwInvalidAudioDeviceWhenDeviceSet_{};
-    bool throwInvalidAudioFileOnRms_{};
-    bool setDeviceCalled_{};
-    bool playing_{};
-    bool playbackCompletionSubscribedTo_{};
-    bool usingAllChannels_{};
-    bool usingFirstChannelOnly_{};
-
   public:
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
 
@@ -37,9 +17,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
 
-    auto baseSystemTimePlayedAt() const {
-        return baseSystemTimePlayedAt_;
-    }
+    auto baseSystemTimePlayedAt() const { return baseSystemTimePlayedAt_; }
 
     void subscribeToPlaybackCompletion() override {
         playbackCompletionSubscribedTo_ = true;
@@ -85,9 +63,7 @@ class TargetPlayerStub : public TargetPlayer {
         secondsDelayedPlayedAt_ = t.secondsDelayed;
     }
 
-    auto secondsDelayedPlayedAt() const {
-        return secondsDelayedPlayedAt_;
-    }
+    auto secondsDelayedPlayedAt() const { return secondsDelayedPlayedAt_; }
 
     void subscribe(EventListener *listener) override { listener_ = listener; }
 
@@ -122,6 +98,27 @@ class TargetPlayerStub : public TargetPlayer {
     void setDurationSeconds(double x) { durationSeconds_ = x; }
 
     void throwInvalidAudioFileOnRms() { throwInvalidAudioFileOnRms_ = true; }
+
+  private:
+    LogString log_;
+    std::string filePath_;
+    std::string device_;
+    double rms_{};
+    double level_dB_{};
+    double durationSeconds_{};
+    double secondsDelayedPlayedAt_{};
+    system_time baseSystemTimePlayedAt_{};
+    EventListener *listener_{};
+    bool played_{};
+    bool videoHidden_{};
+    bool videoShown_{};
+    bool throwInvalidAudioDeviceWhenDeviceSet_{};
+    bool throwInvalidAudioFileOnRms_{};
+    bool setDeviceCalled_{};
+    bool playing_{};
+    bool playbackCompletionSubscribedTo_{};
+    bool usingAllChannels_{};
+    bool usingFirstChannelOnly_{};
 };
 }
 

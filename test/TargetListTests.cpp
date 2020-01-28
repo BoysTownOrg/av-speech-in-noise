@@ -1,11 +1,11 @@
 #include "DirectoryReaderStub.hpp"
 #include "assert-utility.hpp"
-#include <algorithm>
-#include <gtest/gtest.h>
 #include <target-list/FileFilterDecorator.hpp>
 #include <target-list/RandomizedTargetList.hpp>
+#include <gtest/gtest.h>
+#include <algorithm>
 
-namespace target_list::tests {
+namespace target_list {
 namespace {
 class RandomizerStub : public Randomizer {
     std::vector<std::string> toShuffle_;
