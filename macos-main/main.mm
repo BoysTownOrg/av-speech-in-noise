@@ -264,9 +264,9 @@ void main() {
     TobiiEyeTracker eyeTracker;
     RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
         &responseEvaluator, &outputFile, &randomizer, &eyeTracker};
-    ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
-        &fixedTrials, &silentIntervals, &completesWhenTargetsEmpty, &allStimuli,
-        &model_internal};
+    ModelImpl model{adaptiveMethod, fixedLevelMethod, infiniteTargetList,
+        fixedTrials, silentIntervals, completesWhenTargetsEmpty, allStimuli,
+        model_internal};
     auto testerWindowFrame{NSMakeRect(15, 15, 900, 400)};
     auto testerWindowViewMargin{15};
     auto testingContentFrame =
