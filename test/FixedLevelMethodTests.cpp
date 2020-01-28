@@ -2,9 +2,8 @@
 #include "OutputFileStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetListStub.hpp"
-#include "TestConcluderStub.h"
+#include "TestConcluderStub.hpp"
 #include "assert-utility.hpp"
-#include <av-speech-in-noise/Model.hpp>
 #include <recognition-test/FixedLevelMethod.hpp>
 #include <gtest/gtest.h>
 

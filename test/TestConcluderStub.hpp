@@ -6,12 +6,6 @@
 
 namespace av_speech_in_noise {
 class TestConcluderStub : public TestConcluder {
-    LogString log_;
-    const FixedLevelTest *test_{};
-    TargetList *targetList_{};
-    bool complete_{};
-    bool responseSubmitted_{};
-
   public:
     auto log() const -> const auto & { return log_; }
 
@@ -40,6 +34,13 @@ class TestConcluderStub : public TestConcluder {
         log_.insert("submitResponse ");
         responseSubmitted_ = true;
     }
+
+  private:
+    LogString log_;
+    const FixedLevelTest *test_{};
+    TargetList *targetList_{};
+    bool complete_{};
+    bool responseSubmitted_{};
 };
 }
 
