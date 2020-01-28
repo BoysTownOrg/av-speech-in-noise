@@ -53,8 +53,7 @@ class RecognitionTestModel {
     virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
     virtual void initializeWithEyeTracking(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
-    virtual void submit(
-        const coordinate_response_measure::Response &) = 0;
+    virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> std::vector<std::string> = 0;
     virtual void subscribe(Model::EventListener *) = 0;
@@ -68,10 +67,12 @@ class RecognitionTestModel {
 
 class ModelImpl : public Model {
   public:
-    ModelImpl(AdaptiveMethod *, FixedLevelMethod *,
-        TargetList *targetsWithReplacement, TestConcluder *fixedTrialTestConcluder,
-        TargetList *silentIntervalTargets, TestConcluder *completesWhenTargetsEmpty,
-        TargetList *everyTargetOnce, RecognitionTestModel *);
+    ModelImpl(AdaptiveMethod &, FixedLevelMethod *,
+        TargetList *targetsWithReplacement,
+        TestConcluder *fixedTrialTestConcluder,
+        TargetList *silentIntervalTargets,
+        TestConcluder *completesWhenTargetsEmpty, TargetList *everyTargetOnce,
+        RecognitionTestModel *);
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(const FixedLevelTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
@@ -94,7 +95,7 @@ class ModelImpl : public Model {
   private:
     void initializeTest_(const AdaptiveTest &);
 
-    AdaptiveMethod *adaptiveMethod;
+    AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod *fixedLevelMethod;
     TargetList *targetsWithReplacement;
     TestConcluder *fixedTrialTestConcluder;

@@ -14,14 +14,15 @@ class EmptyTargetListTestConcluder : public TestConcluder {
 };
 
 class FixedTrialTestConcluder : public TestConcluder {
-    int trials_{};
-
   public:
     void initialize(const FixedLevelTest &p) override { trials_ = p.trials; }
 
     void submitResponse() override { --trials_; }
 
     auto complete(TargetList *) -> bool override { return trials_ == 0; }
+
+  private:
+    int trials_{};
 };
 
 class FixedLevelMethodImpl : public FixedLevelMethod {

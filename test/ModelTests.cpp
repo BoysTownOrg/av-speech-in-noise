@@ -402,7 +402,7 @@ class ModelTests : public ::testing::Test {
     TestConcluderStub emptyTargetListTestConcluder;
     TargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
-    ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &targetsWithReplacement,
+    ModelImpl model{adaptiveMethod, &fixedLevelMethod, &targetsWithReplacement,
         &fixedTrialTestConcluder, &silentIntervals,
         &emptyTargetListTestConcluder, &everyTargetOnce, &internalModel};
     AdaptiveTest adaptiveTest;
