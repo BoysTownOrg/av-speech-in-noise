@@ -262,11 +262,11 @@ void main() {
     FixedTrialTestConcluder fixedTrials;
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
     TobiiEyeTracker eyeTracker;
-    RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
-        &responseEvaluator, &outputFile, &randomizer, &eyeTracker};
+    RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
+        responseEvaluator, outputFile, randomizer, eyeTracker};
     ModelImpl model{adaptiveMethod, fixedLevelMethod, infiniteTargetList,
         fixedTrials, silentIntervals, completesWhenTargetsEmpty, allStimuli,
-        model_internal};
+        recognitionTestModel};
     auto testerWindowFrame{NSMakeRect(15, 15, 900, 400)};
     auto testerWindowViewMargin{15};
     auto testingContentFrame =

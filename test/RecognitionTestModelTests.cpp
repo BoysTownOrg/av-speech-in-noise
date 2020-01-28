@@ -330,8 +330,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     OutputFileStub outputFile{};
     RandomizerStub randomizer{};
     EyeTrackerStub eyeTracker{};
-    RecognitionTestModelImpl model{&targetPlayer, &maskerPlayer, &evaluator,
-        &outputFile, &randomizer, &eyeTracker};
+    RecognitionTestModelImpl model{targetPlayer, maskerPlayer, evaluator,
+        outputFile, randomizer, eyeTracker};
     TestMethodStub testMethod;
     PlayingCalibration playingCalibration{};
     InitializingDefaultTest initializingDefaultTest{&testMethod};

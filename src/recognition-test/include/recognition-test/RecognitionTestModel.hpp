@@ -93,8 +93,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
                                  public MaskerPlayer::EventListener,
                                  public RecognitionTestModel {
   public:
-    RecognitionTestModelImpl(TargetPlayer *, MaskerPlayer *,
-        ResponseEvaluator *, OutputFile *, Randomizer *, EyeTracker * = {});
+    RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &,
+        ResponseEvaluator &, OutputFile &, Randomizer &, EyeTracker &);
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
@@ -161,12 +161,12 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void setTargetLevel_dB(double);
     void prepareNextTrialIfNeeded();
 
-    MaskerPlayer *maskerPlayer;
-    TargetPlayer *targetPlayer;
-    ResponseEvaluator *evaluator;
-    OutputFile *outputFile;
-    Randomizer *randomizer;
-    EyeTracker *eyeTracker;
+    MaskerPlayer &maskerPlayer;
+    TargetPlayer &targetPlayer;
+    ResponseEvaluator &evaluator;
+    OutputFile &outputFile;
+    Randomizer &randomizer;
+    EyeTracker &eyeTracker;
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
     int maskerLevel_dB_SPL{};
