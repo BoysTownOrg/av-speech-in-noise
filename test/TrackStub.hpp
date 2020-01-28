@@ -1,5 +1,5 @@
-#ifndef TESTS_TRACKSTUB_H_
-#define TESTS_TRACKSTUB_H_
+#ifndef TESTS_TRACKSTUB_HPP_
+#define TESTS_TRACKSTUB_HPP_
 
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <utility>
@@ -7,15 +7,6 @@
 
 namespace av_speech_in_noise {
 class TrackStub : public Track {
-    Settings settings_;
-    int x_{};
-    int reversals_{};
-    int reversalsWhenUpdated_{};
-    int xWhenUpdated_{};
-    bool pushedDown_{};
-    bool pushedUp_{};
-    bool complete_{};
-
   public:
     void setXWhenUpdated(int x) { xWhenUpdated_ = x; }
 
@@ -48,12 +39,19 @@ class TrackStub : public Track {
     auto reversals() -> int override { return reversals_; }
 
     void setComplete() { complete_ = true; }
+
+  private:
+    Settings settings_;
+    int x_{};
+    int reversals_{};
+    int reversalsWhenUpdated_{};
+    int xWhenUpdated_{};
+    bool pushedDown_{};
+    bool pushedUp_{};
+    bool complete_{};
 };
 
 class TrackFactoryStub : public Track::Factory {
-    std::vector<Track::Settings> parameters_;
-    std::vector<std::shared_ptr<Track>> tracks_;
-
   public:
     [[nodiscard]] auto parameters() const -> auto & { return parameters_; }
 
@@ -67,6 +65,10 @@ class TrackFactoryStub : public Track::Factory {
     void setTracks(std::vector<std::shared_ptr<Track>> t) {
         tracks_ = std::move(t);
     }
+
+  private:
+    std::vector<Track::Settings> parameters_;
+    std::vector<std::shared_ptr<Track>> tracks_;
 };
 }
 

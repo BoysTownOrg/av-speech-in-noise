@@ -3,7 +3,7 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetListSetReaderStub.hpp"
 #include "TargetListStub.hpp"
-#include "TrackStub.h"
+#include "TrackStub.hpp"
 #include "assert-utility.hpp"
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <gtest/gtest.h>
