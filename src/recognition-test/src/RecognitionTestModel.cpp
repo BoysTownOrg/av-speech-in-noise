@@ -16,8 +16,7 @@ class NullTestMethod : public TestMethod {
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeTestingParameters(OutputFile *) override {}
-    void submit(
-        const coordinate_response_measure::Response &) override {}
+    void submit(const coordinate_response_measure::Response &) override {}
     void submit(const open_set::FreeResponse &) override {}
 };
 }
@@ -297,8 +296,10 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     if (eyeTracking)
         eyeTracker.stop();
     listener_->trialComplete();
-    std::cout << "Last fade in complete audio sample system time: " << lastFadeInCompleteAudioSampleSystemTime << '\n';
-    std::cout << "Last fade in complete audio sample offset: " << lastFadeInCompleteAudioSampleOffset << '\n';
+    std::cout << "Last fade in complete audio sample system time: "
+              << lastFadeInCompleteAudioSampleSystemTime << '\n';
+    std::cout << "Last fade in complete audio sample offset: "
+              << lastFadeInCompleteAudioSampleOffset << '\n';
 }
 
 static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
@@ -345,8 +346,7 @@ void RecognitionTestModelImpl::submitIncorrectResponse_() {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submit(
-    const open_set::FreeResponse &response) {
+void RecognitionTestModelImpl::submit(const open_set::FreeResponse &response) {
     write(response);
     testMethod->submit(response);
     prepareNextTrialIfNeeded();

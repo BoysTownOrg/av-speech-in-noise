@@ -1,5 +1,4 @@
 #include "OutputFile.hpp"
-#include "av-speech-in-noise/Model.hpp"
 #include <sstream>
 
 namespace av_speech_in_noise {
