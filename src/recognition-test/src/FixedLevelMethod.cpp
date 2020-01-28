@@ -1,7 +1,7 @@
 #include "FixedLevelMethod.hpp"
 
 namespace av_speech_in_noise {
-FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator *evaluator)
+FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator &evaluator)
     : evaluator{evaluator} {}
 
 void FixedLevelMethodImpl::initialize(
@@ -28,9 +28,9 @@ void FixedLevelMethodImpl::submit(
     auto current_ = currentTarget();
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
-    lastTrial.correctColor = evaluator->correctColor(current_);
-    lastTrial.correctNumber = evaluator->correctNumber(current_);
-    lastTrial.correct = evaluator->correct(current_, response);
+    lastTrial.correctColor = evaluator.correctColor(current_);
+    lastTrial.correctNumber = evaluator.correctNumber(current_);
+    lastTrial.correct = evaluator.correct(current_, response);
     lastTrial.target = current_;
     concluder->submitResponse();
     complete_ = concluder->complete(targetList);

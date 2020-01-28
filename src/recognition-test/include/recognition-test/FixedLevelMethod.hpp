@@ -27,7 +27,7 @@ class FixedTrialTestConcluder : public TestConcluder {
 
 class FixedLevelMethodImpl : public FixedLevelMethod {
   public:
-    explicit FixedLevelMethodImpl(ResponseEvaluator *);
+    explicit FixedLevelMethodImpl(ResponseEvaluator &);
     void initialize(
         const FixedLevelTest &, TargetList *, TestConcluder *) override;
     auto snr_dB() -> int override;
@@ -47,7 +47,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     coordinate_response_measure::FixedLevelTrial lastTrial{};
     const FixedLevelTest *test{};
     TargetList *targetList{};
-    ResponseEvaluator *evaluator;
+    ResponseEvaluator &evaluator;
     TestConcluder *concluder{};
     int snr_dB_{};
     bool complete_{};

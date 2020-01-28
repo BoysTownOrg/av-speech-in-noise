@@ -66,7 +66,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     TargetListStub targetList;
     TestConcluderStub testConcluder;
     OutputFileStub outputFile;
-    FixedLevelMethodImpl method{&evaluator};
+    FixedLevelMethodImpl method{evaluator};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
     InitializingMethod initializingMethod{targetList, testConcluder};
@@ -291,7 +291,7 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator;
     TargetListStub targetList;
     TestConcluderStub testConcluder;
-    FixedLevelMethodImpl method{&evaluator};
+    FixedLevelMethodImpl method{evaluator};
     InitializingMethod initializingMethod{targetList, testConcluder};
 
     void run(UseCase &useCase) { useCase.run(method); }
@@ -334,7 +334,7 @@ TEST(FixedLevelMethodTestsTBD,
     submitFreeResponseReinsertsCurrentTargetIfFlaggedBeforeQueryingCompletion) {
     ResponseEvaluatorStub evaluator;
     TargetListTestConcluderComboStub combo;
-    FixedLevelMethodImpl method{&evaluator};
+    FixedLevelMethodImpl method{evaluator};
     FixedLevelTest test;
     method.initialize(test, &combo, &combo);
     open_set::FreeResponse response;

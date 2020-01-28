@@ -260,7 +260,7 @@ void main() {
         &fileExtensions, &randomizer};
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
     FixedTrialTestConcluder fixedTrials;
-    FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
+    FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     TobiiEyeTracker eyeTracker;
     RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, eyeTracker};
