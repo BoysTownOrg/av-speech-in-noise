@@ -1,9 +1,9 @@
 #include "DirectoryReaderStub.hpp"
 #include "TargetListStub.h"
 #include "assert-utility.hpp"
-#include <gsl/gsl>
-#include <gtest/gtest.h>
 #include <target-list/SubdirectoryTargetListReader.hpp>
+#include <gtest/gtest.h>
+#include <gsl/gsl>
 
 namespace target_list {
 namespace {

@@ -1,7 +1,7 @@
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
-#include "TargetListSetReaderStub.h"
+#include "TargetListSetReaderStub.hpp"
 #include "TargetListStub.h"
 #include "TrackStub.h"
 #include "assert-utility.hpp"
