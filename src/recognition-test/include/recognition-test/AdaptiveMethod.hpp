@@ -63,8 +63,8 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeLastCorrectResponse(OutputFile *) override;
     void writeLastIncorrectResponse(OutputFile *) override;
     void writeTestingParameters(OutputFile *) override;
-    void submitResponse(const coordinate_response_measure::Response &) override;
-    void submitResponse(const open_set::FreeResponse &) override;
+    void submit(const coordinate_response_measure::Response &) override;
+    void submit(const open_set::FreeResponse &) override;
 
   private:
     struct TargetListWithTrack {

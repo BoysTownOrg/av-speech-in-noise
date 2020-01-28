@@ -97,17 +97,17 @@ void ModelImpl::playTrial(const AudioSettings &settings) {
     model->playTrial(settings);
 }
 
-void ModelImpl::submitResponse(
+void ModelImpl::submit(
     const coordinate_response_measure::Response &response) {
-    model->submitResponse(response);
+    model->submit(response);
 }
 
 void ModelImpl::submitCorrectResponse() { model->submitCorrectResponse(); }
 
 void ModelImpl::submitIncorrectResponse() { model->submitIncorrectResponse(); }
 
-void ModelImpl::submitResponse(const open_set::FreeResponse &response) {
-    model->submitResponse(response);
+void ModelImpl::submit(const open_set::FreeResponse &response) {
+    model->submit(response);
 }
 
 void ModelImpl::playCalibration(const Calibration &p) {

@@ -172,7 +172,7 @@ void Presenter::submitSubjectResponse() {
 }
 
 void Presenter::submitSubjectResponse_() {
-    model.submitResponse(subject.subjectResponse());
+    model.submit(subject.subjectResponse());
 }
 
 void Presenter::submitExperimenterResponse() {
@@ -180,7 +180,7 @@ void Presenter::submitExperimenterResponse() {
 }
 
 void Presenter::submitExperimenterResponse_() {
-    model.submitResponse(testing.openSetResponse());
+    model.submit(testing.openSetResponse());
 }
 
 void Presenter::submitPassedTrial() {

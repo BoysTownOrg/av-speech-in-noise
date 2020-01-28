@@ -15,9 +15,9 @@ class NullTestMethod : public TestMethod {
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeTestingParameters(OutputFile *) override {}
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &) override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submit(const open_set::FreeResponse &) override {}
 };
 }
 static NullTestMethod nullTestMethod;
@@ -306,9 +306,9 @@ static auto targetName(ResponseEvaluator *evaluator, TestMethod *testMethod)
 
 static void save(OutputFile *file) { file->save(); }
 
-void RecognitionTestModelImpl::submitResponse(
+void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
-    testMethod->submitResponse(response);
+    testMethod->submit(response);
     testMethod->writeLastCoordinateResponse(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
@@ -343,10 +343,10 @@ void RecognitionTestModelImpl::submitIncorrectResponse_() {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submitResponse(
+void RecognitionTestModelImpl::submit(
     const open_set::FreeResponse &response) {
     write(response);
-    testMethod->submitResponse(response);
+    testMethod->submit(response);
     prepareNextTrialIfNeeded();
 }
 

@@ -75,7 +75,7 @@ auto AdaptiveMethodImpl::nextTarget() -> std::string {
     return currentTargetList->next();
 }
 
-void AdaptiveMethodImpl::submitResponse(
+void AdaptiveMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
     auto lastSnr_dB_{snr_dB()};
     auto current_{currentTarget()};
@@ -156,7 +156,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submitResponse(const open_set::FreeResponse &) {
+void AdaptiveMethodImpl::submit(const open_set::FreeResponse &) {
     selectNextList();
 }
 }

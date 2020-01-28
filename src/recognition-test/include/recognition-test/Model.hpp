@@ -53,7 +53,7 @@ class RecognitionTestModel {
     virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
     virtual void initializeWithEyeTracking(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
-    virtual void submitResponse(
+    virtual void submit(
         const coordinate_response_measure::Response &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> std::vector<std::string> = 0;
@@ -61,7 +61,7 @@ class RecognitionTestModel {
     virtual void playCalibration(const Calibration &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submitResponse(const open_set::FreeResponse &) = 0;
+    virtual void submit(const open_set::FreeResponse &) = 0;
     virtual void throwIfTrialInProgress() = 0;
     virtual auto trialNumber() -> int = 0;
 };
@@ -81,14 +81,14 @@ class ModelImpl : public Model {
     void initializeWithTargetReplacementAndEyeTracking(const FixedLevelTest &);
     void initializeWithEyeTracking(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
-    void submitResponse(const coordinate_response_measure::Response &) override;
+    void submit(const coordinate_response_measure::Response &) override;
     auto testComplete() -> bool override;
     auto audioDevices() -> std::vector<std::string> override;
     void subscribe(Model::EventListener *) override;
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
-    void submitResponse(const open_set::FreeResponse &) override;
+    void submit(const open_set::FreeResponse &) override;
     auto trialNumber() -> int override;
 
   private:

@@ -44,7 +44,7 @@ class SubmittingCoordinateResponse : public UseCase {
 
   public:
     void run(AdaptiveMethodImpl &method) override {
-        method.submitResponse(response_);
+        method.submit(response_);
     }
 };
 
@@ -59,7 +59,7 @@ class SubmittingCorrectCoordinateResponse : public UseCase {
 
     void run(AdaptiveMethodImpl &method) override {
         evaluator.setCorrect();
-        method.submitResponse(response_);
+        method.submit(response_);
     }
 };
 
@@ -74,7 +74,7 @@ class SubmittingIncorrectCoordinateResponse : public UseCase {
 
     void run(AdaptiveMethodImpl &method) override {
         evaluator.setIncorrect();
-        method.submitResponse(response_);
+        method.submit(response_);
     }
 };
 
@@ -111,7 +111,7 @@ class WritingCoordinateResponse : public WritingResponseUseCase {
     explicit WritingCoordinateResponse(OutputFile &file_) : file_{file_} {}
 
     void run(AdaptiveMethodImpl &method) override {
-        method.submitResponse(response_);
+        method.submit(response_);
         method.writeLastCoordinateResponse(&file_);
     }
 
@@ -264,7 +264,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
     void submitCoordinateResponse() {
-        method.submitResponse(coordinateResponse);
+        method.submit(coordinateResponse);
     }
 
     void submitCorrectResponse() { method.submitCorrectResponse(); }

@@ -64,7 +64,7 @@ class TestMethodStub : public TestMethod {
         submittedIncorrectResponse_ = true;
     }
 
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submit(const open_set::FreeResponse &) override {}
 
     void writeTestingParameters(OutputFile *file) override {
         file->writeTest(AdaptiveTest{});
@@ -82,7 +82,7 @@ class TestMethodStub : public TestMethod {
         insert(log_, "writeLastIncorrectResponse ");
     }
 
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &) override {
         insert(log_, "submitResponse ");
     }
@@ -232,7 +232,7 @@ class SubmittingFreeResponse : public SubmittingResponse,
 
   public:
     void run(RecognitionTestModelImpl &model) override {
-        model.submitResponse(response_);
+        model.submit(response_);
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
@@ -249,7 +249,7 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
 
   public:
     void run(RecognitionTestModelImpl &model) override {
-        model.submitResponse(response_);
+        model.submit(response_);
     }
 
     void setNumber(int n) { response_.number = n; }

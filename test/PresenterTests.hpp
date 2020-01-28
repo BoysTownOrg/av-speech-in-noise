@@ -138,7 +138,7 @@ class ModelStub : public Model {
         return audioDevices_;
     }
 
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &p) override {
         responseParameters_ = p;
     }
@@ -153,7 +153,7 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void submitResponse(const open_set::FreeResponse &s) override {
+    void submit(const open_set::FreeResponse &s) override {
         freeResponse_ = s;
     }
 
@@ -1696,12 +1696,12 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void submitResponse(const open_set::FreeResponse &) override {
+    void submit(const open_set::FreeResponse &) override {
         throw RequestFailure{errorMessage};
     }
 

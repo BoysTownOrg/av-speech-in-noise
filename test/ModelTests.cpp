@@ -21,12 +21,12 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submit(const open_set::FreeResponse &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &) override {}
 };
 
@@ -55,12 +55,12 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submit(const open_set::FreeResponse &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &) override {}
 };
 
@@ -111,7 +111,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void playTrial(const AudioSettings &s) override { playTrialSettings_ = &s; }
 
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &p) override {
         coordinateResponse_ = &p;
     }
@@ -160,7 +160,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submit(const open_set::FreeResponse &) override {}
     void throwIfTrialInProgress() override {}
 };
 
@@ -608,7 +608,7 @@ MODEL_TEST(
 
 MODEL_TEST(submitResponsePassesCoordinateResponse) {
     coordinate_response_measure::Response response;
-    model.submitResponse(response);
+    model.submit(response);
     assertEqual(&std::as_const(response), internalModel.coordinateResponse());
 }
 

@@ -140,13 +140,14 @@ class Model {
     virtual void initializeWithSingleSpeaker(const AdaptiveTest &) = 0;
     virtual void initializeWithDelayedMasker(const AdaptiveTest &) = 0;
     virtual void initializeWithEyeTracking(const AdaptiveTest &) = 0;
-    virtual void initializeWithSilentIntervalTargets(const FixedLevelTest &) = 0;
+    virtual void initializeWithSilentIntervalTargets(
+        const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
-    virtual void submitResponse(
+    virtual void submit(
         const coordinate_response_measure::Response &) = 0;
-    virtual void submitResponse(const open_set::FreeResponse &) = 0;
+    virtual void submit(const open_set::FreeResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;
