@@ -1,4 +1,4 @@
-#include "PresenterTests.h"
+#include "PresenterTests.hpp"
 
 namespace av_speech_in_noise {
 TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {

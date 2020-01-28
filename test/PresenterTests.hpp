@@ -1,5 +1,5 @@
-#ifndef AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_H_
-#define AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_H_
+#ifndef AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_HPP_
+#define AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_HPP_
 
 #include "assert-utility.hpp"
 #include "av-speech-in-noise/Model.hpp"
@@ -104,7 +104,7 @@ class ModelStub : public Model {
         initializedWithDelayedMasker_ = true;
     }
 
-    void initializeWithEyeTracking(const AdaptiveTest &p) {
+    void initializeWithEyeTracking(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithEyeTracking_ = true;
     }
