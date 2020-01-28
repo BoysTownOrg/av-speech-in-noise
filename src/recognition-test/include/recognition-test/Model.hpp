@@ -67,7 +67,7 @@ class RecognitionTestModel {
 
 class ModelImpl : public Model {
   public:
-    ModelImpl(AdaptiveMethod &, FixedLevelMethod *,
+    ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
         TargetList *targetsWithReplacement,
         TestConcluder *fixedTrialTestConcluder,
         TargetList *silentIntervalTargets,
@@ -96,7 +96,7 @@ class ModelImpl : public Model {
     void initializeTest_(const AdaptiveTest &);
 
     AdaptiveMethod &adaptiveMethod;
-    FixedLevelMethod *fixedLevelMethod;
+    FixedLevelMethod &fixedLevelMethod;
     TargetList *targetsWithReplacement;
     TestConcluder *fixedTrialTestConcluder;
     TargetList *silentIntervalTargets;
