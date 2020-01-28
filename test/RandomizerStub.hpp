@@ -1,17 +1,10 @@
-#ifndef TESTS_RANDOMIZERSTUB_H_
-#define TESTS_RANDOMIZERSTUB_H_
+#ifndef TESTS_RANDOMIZERSTUB_HPP_
+#define TESTS_RANDOMIZERSTUB_HPP_
 
 #include <recognition-test/Model.hpp>
 
 namespace av_speech_in_noise {
 class RandomizerStub : public Randomizer {
-    double lowerBound_{};
-    double upperBound_{};
-    double randomFloat_{};
-    int randomInt_{};
-    int lowerIntBound_{};
-    int upperIntBound_{};
-
   public:
     [[nodiscard]] auto lowerIntBound() const { return lowerIntBound_; }
 
@@ -36,6 +29,14 @@ class RandomizerStub : public Randomizer {
         upperIntBound_ = b;
         return randomInt_;
     }
+
+  private:
+    double lowerBound_{};
+    double upperBound_{};
+    double randomFloat_{};
+    int randomInt_{};
+    int lowerIntBound_{};
+    int upperIntBound_{};
 };
 }
 
