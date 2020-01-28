@@ -58,8 +58,6 @@ class RandomizedTargetListTests : public ::testing::Test {
 
     void assertNotEmpty() { assertFalse(empty()); }
 
-    void reinsertCurrent() { list.reinsertCurrent(); }
-
     void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
 };
 

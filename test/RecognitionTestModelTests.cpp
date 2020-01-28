@@ -251,12 +251,6 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
     void run(RecognitionTestModelImpl &model) override {
         model.submit(response_);
     }
-
-    void setNumber(int n) { response_.number = n; }
-
-    void setColor(coordinate_response_measure::Color c) { response_.color = c; }
-
-    [[nodiscard]] auto response() const -> auto & { return response_; }
 };
 
 class SubmittingCorrectResponse : public TargetWritingUseCase {
@@ -564,10 +558,6 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     auto writtenFreeResponseTrial() {
         return outputFile.writtenFreeResponseTrial();
-    }
-
-    auto writtenOpenSetAdaptiveTrial() {
-        return outputFile.writtenOpenSetAdaptiveTrial();
     }
 
     void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
