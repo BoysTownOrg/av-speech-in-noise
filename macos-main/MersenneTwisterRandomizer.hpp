@@ -10,12 +10,12 @@ class MersenneTwisterRandomizer : public target_list::Randomizer,
     std::mt19937 engine{std::random_device{}()};
 
   public:
-    void shuffle(shuffle_iterator begin, shuffle_iterator end) override {
+    void shuffle(string_vector_iterator begin, string_vector_iterator end) override {
         std::shuffle(begin, end, engine);
     }
 
     void shuffle(
-        int_shuffle_iterator begin, int_shuffle_iterator end) override {
+        int_vector_iterator begin, int_vector_iterator end) override {
         std::shuffle(begin, end, engine);
     }
 
