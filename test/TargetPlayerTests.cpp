@@ -5,23 +5,9 @@
 #include <gtest/gtest.h>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 
+namespace stimulus_players {
 namespace {
-class VideoPlayerStub : public stimulus_players::VideoPlayer {
-    std::vector<std::string> audioDeviceDescriptions_{};
-    std::vector<std::vector<float>> audioRead_{};
-    std::string filePath_{};
-    std::string audioFilePath_{};
-    double durationSeconds_{};
-    double secondsDelayedPlayedAt_{};
-    av_speech_in_noise::system_time baseSystemTimePlayedAt_{};
-    int deviceIndex_{};
-    EventListener *listener_{};
-    bool shown_{};
-    bool hidden_{};
-    bool played_{};
-    bool playing_{};
-    bool playbackCompletionSubscribedTo_{};
-
+class VideoPlayerStub : public VideoPlayer {
   public:
     auto durationSeconds() -> double override { return durationSeconds_; }
 
@@ -87,10 +73,26 @@ class VideoPlayerStub : public stimulus_players::VideoPlayer {
         return secondsDelayedPlayedAt_;
     }
 
-    void playAt(const av_speech_in_noise::SystemTimeWithDelay &t) {
+    void playAt(const av_speech_in_noise::SystemTimeWithDelay &t) override {
         baseSystemTimePlayedAt_ = t.systemTime;
         secondsDelayedPlayedAt_ = t.secondsDelayed;
     }
+
+  private:
+    std::vector<std::string> audioDeviceDescriptions_{};
+    std::vector<std::vector<float>> audioRead_{};
+    std::string filePath_{};
+    std::string audioFilePath_{};
+    double durationSeconds_{};
+    double secondsDelayedPlayedAt_{};
+    av_speech_in_noise::system_time baseSystemTimePlayedAt_{};
+    int deviceIndex_{};
+    EventListener *listener_{};
+    bool shown_{};
+    bool hidden_{};
+    bool played_{};
+    bool playing_{};
+    bool playbackCompletionSubscribedTo_{};
 };
 
 class TargetPlayerListenerStub
@@ -109,8 +111,8 @@ class TargetPlayerTests : public ::testing::Test {
     std::vector<float> rightChannel{};
     VideoPlayerStub videoPlayer;
     TargetPlayerListenerStub listener;
-    stimulus_players::AudioReaderStub audioReader{};
-    stimulus_players::TargetPlayerImpl player{&videoPlayer, &audioReader};
+    AudioReaderStub audioReader{};
+    TargetPlayerImpl player{&videoPlayer, &audioReader};
     av_speech_in_noise::SystemTimeWithDelay systemTimeWithDelay{};
 
     TargetPlayerTests() { player.subscribe(&listener); }
@@ -143,9 +145,7 @@ class TargetPlayerTests : public ::testing::Test {
 
     void setLevel_dB(double x) { player.setLevel_dB(x); }
 
-    void setFirstChannelOnly() {
-        player.useFirstChannelOnly();
-    }
+    void setFirstChannelOnly() { player.useFirstChannelOnly(); }
 
     void useAllChannels() { player.useAllChannels(); }
 
@@ -157,9 +157,7 @@ class TargetPlayerTests : public ::testing::Test {
         systemTimeWithDelay.secondsDelayed = x;
     }
 
-    void playAt() {
-        player.playAt(systemTimeWithDelay);
-    }
+    void playAt() { player.playAt(systemTimeWithDelay); }
 };
 
 TEST_F(TargetPlayerTests, playingWhenVideoPlayerPlaying) {
@@ -176,7 +174,8 @@ TEST_F(TargetPlayerTests, playAtPlaysVideoAt) {
     setBaseSystemTimeToPlayAt(1);
     setSecondsDelayedToPlayAt(2);
     playAt();
-    assertEqual(av_speech_in_noise::system_time{1}, videoPlayer.baseSystemTimePlayedAt());
+    assertEqual(av_speech_in_noise::system_time{1},
+        videoPlayer.baseSystemTimePlayedAt());
     assertEqual(2., videoPlayer.secondsDelayedPlayedAt());
 }
 
@@ -286,5 +285,6 @@ TEST_F(TargetPlayerTests, rmsThrowsInvalidAudioFileWhenAudioReaderThrows) {
         FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
     } catch (const av_speech_in_noise::InvalidAudioFile &) {
     }
+}
 }
 }
