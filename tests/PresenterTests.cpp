@@ -238,6 +238,10 @@ TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesStartingSnr) {
     assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetTest);
 }
 
+TEST_F(PresenterTests, confirmingAdaptiveOpenSetKeywordsTestPassesStartingSnr) {
+    assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
 TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesStartingSnr) {
     assertStartingSnrPassedToModel(confirmingFixedLevelOpenSetTest);
 }
