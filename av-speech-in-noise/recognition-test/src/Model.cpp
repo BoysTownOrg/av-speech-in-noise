@@ -1,4 +1,5 @@
 #include "Model.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
@@ -70,6 +71,9 @@ void ModelImpl::submitIncorrectResponse() { model->submitIncorrectResponse(); }
 
 void ModelImpl::submitResponse(const open_set::FreeResponse &response) {
     model->submitResponse(response);
+}
+
+void ModelImpl::submit(const open_set::CorrectKeywords &) {
 }
 
 void ModelImpl::playCalibration(const Calibration &p) {

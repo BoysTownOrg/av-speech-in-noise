@@ -86,6 +86,7 @@ class ModelImpl : public Model {
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     void submitResponse(const open_set::FreeResponse &) override;
+    void submit(const open_set::CorrectKeywords &) override;
     auto trialNumber() -> int override;
 
   private:

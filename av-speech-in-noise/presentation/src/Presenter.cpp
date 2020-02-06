@@ -176,6 +176,10 @@ void Presenter::submitSubjectResponse_() {
     model.submitResponse(subject.subjectResponse());
 }
 
+void Presenter::submitCorrectKeywords_() {
+    model.submit(testing.correctKeywords());
+}
+
 void Presenter::submitExperimenterResponse() {
     proceedToNextTrialAfter(&Presenter::submitExperimenterResponse_);
 }
@@ -192,6 +196,10 @@ void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
+}
+
+void Presenter::submitCorrectKeywords() {
+    proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
 }
 
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
@@ -533,6 +541,7 @@ void Presenter::Testing::submitFailedTrial() {
 }
 
 void Presenter::Testing::submitCorrectKeywords() {
+    parent->submitCorrectKeywords();
 }
 
 void Presenter::Testing::hide() {
@@ -561,6 +570,12 @@ void Presenter::Testing::submitResponse() {
 
 auto Presenter::Testing::openSetResponse() -> open_set::FreeResponse {
     return {view->response(), view->flagged()};
+}
+
+auto Presenter::Testing::correctKeywords() -> open_set::CorrectKeywords {
+    open_set::CorrectKeywords p{};
+    p.count = std::stoi(view->correctKeywords());
+    return p;
 }
 
 Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {

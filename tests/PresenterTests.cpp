@@ -655,6 +655,12 @@ TEST_F(PresenterTests, passedTrialSubmitsCorrectResponse) {
     assertTrue(model.correctResponseSubmitted());
 }
 
+TEST_F(PresenterTests, enteringCorrectKeywordsPassesCorrectKeywords) {
+    testingView.setCorrectKeywords("1");
+    run(enteringCorrectKeywords);
+    assertEqual(1, model.correctKeywords());
+}
+
 TEST_F(PresenterTests, failedTrialSubmitsIncorrectResponse) {
     run(submittingFailedTrial);
     assertTrue(model.incorrectResponseSubmitted());

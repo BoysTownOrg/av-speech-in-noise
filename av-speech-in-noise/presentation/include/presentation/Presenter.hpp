@@ -32,6 +32,7 @@ class View {
         virtual void showResponseSubmission() = 0;
         virtual void hideResponseSubmission() = 0;
         virtual auto response() -> std::string = 0;
+        virtual auto correctKeywords() -> std::string = 0;
         virtual auto flagged() -> bool = 0;
     };
 
@@ -173,6 +174,7 @@ class Presenter : public Model::EventListener {
         void showResponseSubmission();
         void showNextTrialButton();
         auto openSetResponse() -> open_set::FreeResponse;
+        auto correctKeywords() -> open_set::CorrectKeywords;
         void playTrial() override;
         void submitPassedTrial() override;
         void submitResponse() override;
@@ -351,6 +353,7 @@ class Presenter : public Model::EventListener {
     void playCalibration();
     void submitPassedTrial();
     void submitFailedTrial();
+    void submitCorrectKeywords();
     void exitTest();
     static int fullScaleLevel_dB_SPL;
     static int ceilingSnr_dB;
@@ -371,6 +374,7 @@ class Presenter : public Model::EventListener {
     void submitPassedTrial_();
     void submitExperimenterResponse_();
     void submitSubjectResponse_();
+    void submitCorrectKeywords_();
     void hideTestView();
     void switchToSetupView();
     void showErrorMessage(std::string);

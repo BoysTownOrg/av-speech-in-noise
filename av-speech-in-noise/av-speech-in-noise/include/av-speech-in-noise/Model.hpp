@@ -37,6 +37,10 @@ struct FreeResponse {
     bool flagged{};
 };
 
+struct CorrectKeywords {
+    int count;
+};
+
 struct Trial {
     std::string target;
 };
@@ -148,6 +152,7 @@ class Model {
     virtual void submitResponse(const open_set::FreeResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
+    virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> std::vector<std::string> = 0;
     virtual auto trialNumber() -> int = 0;

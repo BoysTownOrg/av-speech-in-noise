@@ -28,6 +28,7 @@ class ModelStub : public Model {
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
     open_set::FreeResponse freeResponse_{};
+    open_set::CorrectKeywords correctKeywords_{};
     EventListener *listener_{};
     int trialNumber_{};
     bool testComplete_{};
@@ -92,6 +93,8 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto freeResponse() const { return freeResponse_; }
 
+    auto correctKeywords() -> int { return correctKeywords_.count; }
+
     void completeTrial() { listener_->trialComplete(); }
 
     void setAudioDevices(std::vector<std::string> v) {
@@ -147,6 +150,8 @@ class ModelStub : public Model {
     void submitResponse(const open_set::FreeResponse &s) override {
         freeResponse_ = s;
     }
+
+    void submit(const open_set::CorrectKeywords &s) { correctKeywords_ = s; }
 
     [[nodiscard]] auto trialPlayed() const { return trialPlayed_; }
 
@@ -427,6 +432,7 @@ class ViewStub : public View {
 
     class TestingViewStub : public Testing {
         std::string response_;
+        std::string correctKeywords_;
         EventListener *listener_{};
         bool nextTrialButtonShown_{};
         bool correctKeywordsEntryShown_{};
@@ -471,9 +477,15 @@ class ViewStub : public View {
             return responseSubmissionShown_;
         }
 
+        auto correctKeywords() -> std::string override {
+            return correctKeywords_;
+        }
+
         void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
-        void showCorrectKeywordsEntry() { correctKeywordsEntryShown_ = true; }
+        void showCorrectKeywordsEntry() override {
+            correctKeywordsEntryShown_ = true;
+        }
 
         void hideCorrectKeywordsEntry() { correctKeywordsEntryHidden_ = true; }
 
@@ -518,6 +530,10 @@ class ViewStub : public View {
         void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
 
         void setResponse(std::string s) { response_ = std::move(s); }
+
+        void setCorrectKeywords(std::string s) {
+            correctKeywords_ = std::move(s);
+        }
 
         void flagResponse() { flagged_ = true; }
 
@@ -2260,6 +2276,10 @@ class RequestFailingModel : public Model {
     }
 
     void submitResponse(const open_set::FreeResponse &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void submit(const open_set::CorrectKeywords &) override {
         throw RequestFailure{errorMessage};
     }
 
