@@ -550,9 +550,7 @@ void Presenter::Testing::submitCorrectKeywords() {
     showNextTrialButton();
 }
 
-void Presenter::Testing::hide() {
-    view->hide();
-}
+void Presenter::Testing::hide() { view->hide(); }
 
 void Presenter::Testing::showEvaluationButtons() {
     view->showEvaluationButtons();
