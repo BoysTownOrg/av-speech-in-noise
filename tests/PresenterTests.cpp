@@ -72,6 +72,10 @@ TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTestingView) {
     assertShowsTestingView(confirmingAdaptiveOpenSetTest);
 }
 
+TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTestingView) {
+    assertShowsTestingView(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
 TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTestingView) {
     assertShowsTestingView(confirmingFixedLevelOpenSetTest);
 }
