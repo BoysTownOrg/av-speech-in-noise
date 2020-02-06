@@ -872,6 +872,10 @@ TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingAdaptiveOpenSetTest);
 }
 
+TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
 TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingFixedLevelClosedSetTest);
 }
