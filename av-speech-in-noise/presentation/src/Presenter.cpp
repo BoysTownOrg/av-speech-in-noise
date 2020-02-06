@@ -546,6 +546,7 @@ void Presenter::Testing::submitFailedTrial() {
 
 void Presenter::Testing::submitCorrectKeywords() {
     parent->submitCorrectKeywords();
+    prepareNextEvaluatedTrial();
 }
 
 void Presenter::Testing::hide() {

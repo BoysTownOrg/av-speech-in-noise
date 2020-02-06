@@ -812,6 +812,10 @@ TEST_F(PresenterTests, experimenterResponseShowsNextTrialButton) {
     assertShowsNextTrialButton(respondingFromExperimenter);
 }
 
+TEST_F(PresenterTests, enteringCorrectKeywordsShowsNextTrialButton) {
+    assertShowsNextTrialButton(enteringCorrectKeywords);
+}
+
 TEST_F(PresenterTests, subjectPassedTrialShowsNextTrialButtonForExperimenter) {
     assertShowsNextTrialButton(submittingPassedTrial);
 }
