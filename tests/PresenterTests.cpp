@@ -264,6 +264,10 @@ TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesMaskerLevel) {
     assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetTest);
 }
 
+TEST_F(PresenterTests, confirmingAdaptiveOpenSetKeywordsTestPassesMaskerLevel) {
+    assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
 TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesMaskerLevel) {
     assertMaskerLevelPassedToModel(confirmingFixedLevelOpenSetTest);
 }
