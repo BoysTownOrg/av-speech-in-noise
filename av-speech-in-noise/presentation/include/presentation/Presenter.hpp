@@ -207,6 +207,7 @@ class Presenter : public Model::EventListener {
         auto singleSpeaker() -> bool;
         auto adaptiveClosedSetDelayedMasker() -> bool;
         auto adaptiveClosedSetSingleSpeaker() -> bool;
+        auto adaptiveOpenSetKeywords() -> bool;
         auto delayedMasker() -> bool;
         void playCalibration() override;
         void browseForTargetList() override;
@@ -348,6 +349,7 @@ class Presenter : public Model::EventListener {
     auto delayedMasker() -> bool;
     auto adaptiveClosedSetDelayedMasker() -> bool;
     auto adaptiveClosedSetSingleSpeaker() -> bool;
+    auto adaptiveOpenSetKeywords() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();

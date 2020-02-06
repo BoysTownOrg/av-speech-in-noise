@@ -123,7 +123,8 @@ TEST_F(PresenterTests, confirmAdaptiveOpenSetTestDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(confirmingAdaptiveOpenSetTest);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestDoesNotShowSubjectView) {
+TEST_F(
+    PresenterTests, confirmAdaptiveOpenSetKeywordsTestDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
@@ -193,6 +194,12 @@ TEST_F(PresenterTests,
 TEST_F(
     PresenterTests, confirmAdaptiveOpenSetTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveOpenSetTest);
+}
+
+TEST_F(PresenterTests,
+    confirmAdaptiveOpenSetKeywordsTestDoesNotInitializeFixedLevelTest) {
+    assertDoesNotInitializeFixedLevelTest(
+        confirmingAdaptiveOpenSetKeywordsTest);
 }
 
 TEST_F(

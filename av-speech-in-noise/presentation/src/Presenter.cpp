@@ -68,7 +68,7 @@ void Presenter::initializeTest() {
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetSingleSpeaker())
         model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (defaultAdaptive())
+    else if (defaultAdaptive() || adaptiveOpenSetKeywords())
         model.initializeTest(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
         model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
@@ -100,6 +100,10 @@ auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
 
 auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
     return testSetup.adaptiveClosedSetSingleSpeaker();
+}
+
+auto Presenter::adaptiveOpenSetKeywords() -> bool {
+    return testSetup.adaptiveOpenSetKeywords();
 }
 
 auto Presenter::testComplete() -> bool { return model.testComplete(); }
@@ -409,6 +413,10 @@ auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
 
 auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
     return method(Method::adaptiveClosedSetSingleSpeaker);
+}
+
+auto Presenter::TestSetup::adaptiveOpenSetKeywords() -> bool {
+    return method(Method::adaptiveOpenSetKeywords);
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
