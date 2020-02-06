@@ -971,6 +971,11 @@ TEST_F(
     assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetTest);
 }
 
+TEST_F(
+    PresenterTests, confirmAdaptiveOpenSetKeywordsTestWithInvalidSnrShowsErrorMessage) {
+    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
 TEST_F(PresenterTests,
     confirmFixedLevelOpenSetTestWithInvalidSnrShowsErrorMessage) {
     assertInvalidSnrShowsErrorMessage(confirmingFixedLevelOpenSetTest);
