@@ -271,6 +271,10 @@ class SubmittingCorrectKeywords : public SubmittingResponse,
     auto writtenTarget(OutputFileStub &file) -> std::string override {
         return file.writtenCorrectKeywords().target;
     }
+
+    void setCorrectKeywords(int n) {
+        k.count = n;
+    }
 };
 
 class SubmittingCoordinateResponse : public SubmittingResponse {
@@ -1120,6 +1124,12 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
     submittingFreeResponse.setResponse("a");
     run(submittingFreeResponse);
     assertEqual("a", writtenFreeResponseTrial().response);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsWritesResponse) {
+    submittingCorrectKeywords.setCorrectKeywords(1);
+    run(submittingCorrectKeywords);
+    assertEqual(1, outputFile.writtenCorrectKeywords().count);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
