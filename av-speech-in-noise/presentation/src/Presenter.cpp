@@ -260,10 +260,12 @@ void Presenter::browseForTrackSettingsFile() {
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
-    view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
+    view->populateMethodMenu({
+        methodName(Method::defaultAdaptiveClosedSet),
         methodName(Method::adaptiveClosedSetSingleSpeaker),
         methodName(Method::adaptiveClosedSetDelayedMasker),
         methodName(Method::adaptiveOpenSet),
+        methodName(Method::adaptiveOpenSetKeywords),
         methodName(Method::defaultFixedLevelClosedSet),
         methodName(Method::fixedLevelClosedSetSilentIntervals),
         methodName(Method::defaultFixedLevelOpenSet),

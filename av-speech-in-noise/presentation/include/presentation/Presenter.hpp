@@ -122,6 +122,7 @@ class View {
 
 enum class Method {
     adaptiveOpenSet,
+    adaptiveOpenSetKeywords,
     defaultAdaptiveClosedSet,
     adaptiveClosedSetSingleSpeaker,
     adaptiveClosedSetDelayedMasker,
@@ -136,6 +137,8 @@ constexpr auto methodName(Method c) -> const char * {
     switch (c) {
     case Method::adaptiveOpenSet:
         return "adaptive open-set";
+    case Method::adaptiveOpenSetKeywords:
+        return "adaptive open-set keywords";
     case Method::defaultAdaptiveClosedSet:
         return "adaptive closed-set";
     case Method::adaptiveClosedSetSingleSpeaker:
