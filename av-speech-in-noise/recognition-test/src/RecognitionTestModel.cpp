@@ -295,7 +295,8 @@ void RecognitionTestModelImpl::submitResponse(
 }
 
 void RecognitionTestModelImpl::submit(
-    const open_set::CorrectKeywords &) {
+    const open_set::CorrectKeywords &k) {
+    write(k);
     prepareNextTrialIfNeeded();
 }
 
@@ -304,6 +305,12 @@ void RecognitionTestModelImpl::write(const open_set::FreeResponse &p) {
     trial.response = p.response;
     trial.target = targetName(evaluator, testMethod);
     trial.flagged = p.flagged;
+    outputFile->write(trial);
+    save(outputFile);
+}
+
+void RecognitionTestModelImpl::write(const open_set::CorrectKeywords &p) {
+    open_set::CorrectKeywordsTrial trial;
     outputFile->write(trial);
     save(outputFile);
 }

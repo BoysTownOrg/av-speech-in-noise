@@ -15,6 +15,7 @@ class OutputFile {
     virtual void write(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
     virtual void write(const open_set::FreeResponseTrial &) = 0;
+    virtual void write(const open_set::CorrectKeywordsTrial &) = 0;
     virtual void write(const open_set::AdaptiveTrial &) = 0;
     virtual void writeTest(const AdaptiveTest &) = 0;
     virtual void writeTest(const FixedLevelTest &) = 0;

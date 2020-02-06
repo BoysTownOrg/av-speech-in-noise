@@ -287,6 +287,8 @@ void OutputFileImpl::write(const open_set::FreeResponseTrial &trial) {
     justWroteFreeResponseTrial = true;
 }
 
+void OutputFileImpl::write(const open_set::CorrectKeywordsTrial &trial) {}
+
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
     if (!justWroteOpenSetAdaptiveTrial)
         write(formatOpenSetAdaptiveTrialHeading());

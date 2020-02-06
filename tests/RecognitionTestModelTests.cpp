@@ -976,6 +976,11 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitCorrectKeywordsSavesOutputFileAfterWritingTrial) {
+    assertSavesOutputFileAfterWritingTrial(submittingCorrectKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCorrectResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingCorrectResponse);
 }
