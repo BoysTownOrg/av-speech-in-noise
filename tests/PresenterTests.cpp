@@ -727,6 +727,11 @@ TEST_F(PresenterTests,
     assertCompleteTestHidesExperimenterView(respondingFromExperimenter);
 }
 
+TEST_F(PresenterTests,
+    enteringCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(enteringCorrectKeywords);
+}
+
 TEST_F(PresenterTests, submitPassedTrialHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingPassedTrial);
 }
