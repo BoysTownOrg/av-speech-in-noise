@@ -950,6 +950,10 @@ TEST_F(PresenterTests, submittingResponseFromExperimenterShowsTrialNumber) {
     assertShowsTrialNumber(respondingFromExperimenter);
 }
 
+TEST_F(PresenterTests, enteringCorrectKeywordsShowsTrialNumber) {
+    assertShowsTrialNumber(enteringCorrectKeywords);
+}
+
 TEST_F(PresenterTests, submittingResponseFromSubjectShowsTrialNumber) {
     assertShowsTrialNumber(respondingFromSubject);
 }
