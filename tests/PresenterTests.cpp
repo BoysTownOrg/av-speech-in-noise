@@ -702,6 +702,11 @@ TEST_F(PresenterTests,
     assertIncompleteTestDoesNotShowSetupView(respondingFromExperimenter);
 }
 
+TEST_F(PresenterTests,
+    enteringCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(enteringCorrectKeywords);
+}
+
 TEST_F(
     PresenterTests, submitPassedTrialDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(submittingPassedTrial);
