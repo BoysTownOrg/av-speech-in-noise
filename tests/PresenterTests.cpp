@@ -680,6 +680,10 @@ TEST_F(PresenterTests, respondFromExperimenterShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(respondingFromExperimenter);
 }
 
+TEST_F(PresenterTests, enteringCorrectKeywordsShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(enteringCorrectKeywords);
+}
+
 TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingPassedTrial);
 }

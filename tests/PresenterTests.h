@@ -434,7 +434,7 @@ class ViewStub : public View {
 
     class TestingViewStub : public Testing {
         std::string response_;
-        std::string correctKeywords_;
+        std::string correctKeywords_{"0"};
         EventListener *listener_{};
         bool nextTrialButtonShown_{};
         bool correctKeywordsEntryShown_{};
