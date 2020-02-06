@@ -882,6 +882,10 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSeeksToRandomMaskerPosition) {
+    assertMaskerPlayerSeekedToRandomTime(submittingCorrectKeywords);
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestSetsInitialMaskerPlayerLevel) {
     setMaskerLevel_dB_SPL(1);
     setTestingFullScaleLevel_dB_SPL(2);
