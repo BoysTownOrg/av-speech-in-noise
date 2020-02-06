@@ -911,6 +911,10 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingFreeResponse);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSetsTargetPlayerLevel) {
+    assertSetsTargetLevel(submittingCorrectKeywords);
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingCorrectResponse);
 }
