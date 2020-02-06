@@ -793,6 +793,11 @@ TEST_F(PresenterTests,
     assertDoesNotHideTestingView(respondingFromExperimenter);
 }
 
+TEST_F(PresenterTests,
+    enteringCorrectKeywordsDoesNotHideTestingViewWhenTestIncomplete) {
+    assertDoesNotHideTestingView(enteringCorrectKeywords);
+}
+
 TEST_F(
     PresenterTests, submitPassedTrialDoesNotHideTestingViewWhenTestIncomplete) {
     assertDoesNotHideTestingView(submittingPassedTrial);
