@@ -1,4 +1,5 @@
 #include "RecognitionTestModel.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 #include <cmath>
 
@@ -291,6 +292,10 @@ void RecognitionTestModelImpl::submitResponse(
     write(response);
     testMethod->submitResponse(response);
     prepareNextTrialIfNeeded();
+}
+
+void RecognitionTestModelImpl::submit(
+    const open_set::CorrectKeywords &) {
 }
 
 void RecognitionTestModelImpl::write(const open_set::FreeResponse &p) {

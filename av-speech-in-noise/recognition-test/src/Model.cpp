@@ -73,7 +73,8 @@ void ModelImpl::submitResponse(const open_set::FreeResponse &response) {
     model->submitResponse(response);
 }
 
-void ModelImpl::submit(const open_set::CorrectKeywords &) {
+void ModelImpl::submit(const open_set::CorrectKeywords &k) {
+    model->submit(k);
 }
 
 void ModelImpl::playCalibration(const Calibration &p) {

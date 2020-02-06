@@ -61,6 +61,7 @@ class RecognitionTestModel {
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual void submitResponse(const open_set::FreeResponse &) = 0;
+    virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual void throwIfTrialInProgress() = 0;
     virtual auto trialNumber() -> int = 0;
 };
