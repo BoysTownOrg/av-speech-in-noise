@@ -656,13 +656,13 @@ TEST_F(PresenterTests, passedTrialSubmitsCorrectResponse) {
 }
 
 TEST_F(PresenterTests, enteringCorrectKeywordsPassesCorrectKeywords) {
-    testingView.setCorrectKeywords("1");
+    setCorrectKeywords("1");
     run(enteringCorrectKeywords);
     assertEqual(1, model.correctKeywords());
 }
 
 TEST_F(PresenterTests, enteringInvalidCorrectKeywordsShowsErrorMessage) {
-    testingView.setCorrectKeywords("a");
+    setCorrectKeywords("a");
     run(enteringCorrectKeywords);
     assertErrorMessageEquals("'a' is not a valid number.");
 }

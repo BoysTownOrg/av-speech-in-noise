@@ -2232,6 +2232,10 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         assertFalse(model.adaptiveTestInitialized());
     }
+
+    void setCorrectKeywords(std::string s) {
+        testingView.setCorrectKeywords(std::move(s));
+    }
 };
 
 class RequestFailingModel : public Model {
