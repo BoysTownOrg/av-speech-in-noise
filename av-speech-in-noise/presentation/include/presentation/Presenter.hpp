@@ -15,6 +15,7 @@ class View {
             virtual ~EventListener() = default;
             virtual void playTrial() = 0;
             virtual void submitPassedTrial() = 0;
+            virtual void submitCorrectKeywords() = 0;
             virtual void submitFailedTrial() = 0;
             virtual void submitResponse() = 0;
         };
@@ -26,6 +27,7 @@ class View {
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void showEvaluationButtons() = 0;
+        virtual void showCorrectKeywordsEntry() = 0;
         virtual void hideEvaluationButtons() = 0;
         virtual void showResponseSubmission() = 0;
         virtual void hideResponseSubmission() = 0;
@@ -167,6 +169,7 @@ class Presenter : public Model::EventListener {
         void show();
         void hide();
         void showEvaluationButtons();
+        void showCorrectKeywordsEntry();
         void showResponseSubmission();
         void showNextTrialButton();
         auto openSetResponse() -> open_set::FreeResponse;
@@ -174,6 +177,7 @@ class Presenter : public Model::EventListener {
         void submitPassedTrial() override;
         void submitResponse() override;
         void submitFailedTrial() override;
+        void submitCorrectKeywords() override;
 
       private:
         void prepareNextEvaluatedTrial();
@@ -296,6 +300,18 @@ class Presenter : public Model::EventListener {
         Testing &testing;
     };
 
+    class AdaptiveOpenSetKeywordsTestTrialCompletionHandler
+        : public TrialCompletionHandler {
+      public:
+        explicit AdaptiveOpenSetKeywordsTestTrialCompletionHandler(Testing &testing)
+            : testing{testing} {}
+
+        void showResponseView() override { testing.showCorrectKeywordsEntry(); }
+
+      private:
+        Testing &testing;
+    };
+
     class FixedLevelOpenSetTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
@@ -382,6 +398,8 @@ class Presenter : public Model::EventListener {
         fixedLevelClosedSetTrialCompletionHandler;
     AdaptiveOpenSetTestTrialCompletionHandler
         adaptiveOpenSetTrialCompletionHandler;
+    AdaptiveOpenSetKeywordsTestTrialCompletionHandler
+        adaptiveOpenSetKeywordsTrialCompletionHandler;
     AdaptiveClosedSetTestTrialCompletionHandler
         adaptiveClosedSetTrialCompletionHandler;
     Model &model;

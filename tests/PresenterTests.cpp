@@ -951,6 +951,12 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveOpenSetKeywordsTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptiveOpenSetKeywordsTest, enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests,
     completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetTest) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelOpenSetTest, respondingFromExperimenter);

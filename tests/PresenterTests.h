@@ -429,6 +429,8 @@ class ViewStub : public View {
         std::string response_;
         EventListener *listener_{};
         bool nextTrialButtonShown_{};
+        bool correctKeywordsEntryShown_{};
+        bool correctKeywordsEntryHidden_{};
         bool shown_{};
         bool nextTrialButtonHidden_{};
         bool hidden_{};
@@ -453,6 +455,14 @@ class ViewStub : public View {
             return nextTrialButtonShown_;
         }
 
+        [[nodiscard]] auto correctKeywordsEntryShown() const {
+            return correctKeywordsEntryShown_;
+        }
+
+        [[nodiscard]] auto correctKeywordsEntryHidden() const {
+            return correctKeywordsEntryHidden_;
+        }
+
         [[nodiscard]] auto evaluationButtonsShown() const {
             return evaluationButtonsShown_;
         }
@@ -462,6 +472,10 @@ class ViewStub : public View {
         }
 
         void showNextTrialButton() override { nextTrialButtonShown_ = true; }
+
+        void showCorrectKeywordsEntry() { correctKeywordsEntryShown_ = true; }
+
+        void hideCorrectKeywordsEntry() { correctKeywordsEntryHidden_ = true; }
 
         [[nodiscard]] auto shown() const { return shown_; }
 
@@ -500,6 +514,8 @@ class ViewStub : public View {
         }
 
         void submitPassedTrial() { listener_->submitPassedTrial(); }
+
+        void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
 
         void setResponse(std::string s) { response_ = std::move(s); }
 
@@ -1553,6 +1569,28 @@ class SubmittingPassedTrial : public TrialSubmission {
     }
 };
 
+class EnteringCorrectKeywords : public TrialSubmission {
+    ViewStub::TestingViewStub *view;
+
+  public:
+    explicit EnteringCorrectKeywords(ViewStub::TestingViewStub *view)
+        : view{view} {}
+
+    void run() override { view->submitCorrectKeywords(); }
+
+    auto nextTrialButtonShown() -> bool override {
+        return view->nextTrialButtonShown();
+    }
+
+    auto responseViewShown() -> bool override {
+        return view->correctKeywordsEntryShown();
+    }
+
+    auto responseViewHidden() -> bool override {
+        return view->correctKeywordsEntryHidden();
+    }
+};
+
 class SubmittingFailedTrial : public TrialSubmission {
     ViewStub::TestingViewStub *view;
 
@@ -1770,6 +1808,7 @@ class PresenterTests : public ::testing::Test {
     RespondingFromSubject respondingFromSubject{&subjectView};
     RespondingFromExperimenter respondingFromExperimenter{&testingView};
     SubmittingPassedTrial submittingPassedTrial{&testingView};
+    EnteringCorrectKeywords enteringCorrectKeywords{&testingView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenterView};
 

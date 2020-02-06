@@ -34,6 +34,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     : fixedLevelOpenSetTrialCompletionHandler{testing},
       fixedLevelClosedSetTrialCompletionHandler{subject},
       adaptiveOpenSetTrialCompletionHandler{testing},
+      adaptiveOpenSetKeywordsTrialCompletionHandler{testing},
       adaptiveClosedSetTrialCompletionHandler{subject}, model{model},
       view{view}, testSetup{testSetup}, subject{subject},
       experimenter{experimenter}, testing{testing},
@@ -139,6 +140,8 @@ auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
         return &adaptiveClosedSetTrialCompletionHandler;
     if (adaptiveOpenSet())
         return &adaptiveOpenSetTrialCompletionHandler;
+    if (adaptiveOpenSetKeywords())
+        return &adaptiveOpenSetKeywordsTrialCompletionHandler;
     if (fixedLevelClosedSet())
         return &fixedLevelClosedSetTrialCompletionHandler;
     return &fixedLevelOpenSetTrialCompletionHandler;
@@ -529,6 +532,9 @@ void Presenter::Testing::submitFailedTrial() {
     prepareNextEvaluatedTrial();
 }
 
+void Presenter::Testing::submitCorrectKeywords() {
+}
+
 void Presenter::Testing::hide() {
     view->hideEvaluationButtons();
     view->hideResponseSubmission();
@@ -537,6 +543,10 @@ void Presenter::Testing::hide() {
 
 void Presenter::Testing::showEvaluationButtons() {
     view->showEvaluationButtons();
+}
+
+void Presenter::Testing::showCorrectKeywordsEntry() {
+    view->showCorrectKeywordsEntry();
 }
 
 void Presenter::Testing::showResponseSubmission() {
