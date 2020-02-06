@@ -551,8 +551,6 @@ void Presenter::Testing::submitCorrectKeywords() {
 }
 
 void Presenter::Testing::hide() {
-    view->hideEvaluationButtons();
-    view->hideResponseSubmission();
     view->hide();
 }
 
