@@ -774,6 +774,11 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    enteringCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests,
     submitPassedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(submittingPassedTrial);
 }
