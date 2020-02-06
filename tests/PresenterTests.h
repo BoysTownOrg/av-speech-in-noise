@@ -151,7 +151,9 @@ class ModelStub : public Model {
         freeResponse_ = s;
     }
 
-    void submit(const open_set::CorrectKeywords &s) { correctKeywords_ = s; }
+    void submit(const open_set::CorrectKeywords &s) override {
+        correctKeywords_ = s;
+    }
 
     [[nodiscard]] auto trialPlayed() const { return trialPlayed_; }
 
