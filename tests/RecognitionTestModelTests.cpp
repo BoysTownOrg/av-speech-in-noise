@@ -854,6 +854,12 @@ RECOGNITION_TEST_MODEL_TEST(
         submittingFreeResponse);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    submitCorrectKeywordsSeeksToRandomMaskerPositionWithinTrialDuration) {
+    assertSeeksToRandomMaskerPositionWithinTrialDuration(
+        submittingCorrectKeywords);
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(initializingTest);
 }
