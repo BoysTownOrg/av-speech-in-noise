@@ -296,6 +296,7 @@ void RecognitionTestModelImpl::submitResponse(
 
 void RecognitionTestModelImpl::submit(
     const open_set::CorrectKeywords &) {
+    prepareNextTrialIfNeeded();
 }
 
 void RecognitionTestModelImpl::write(const open_set::FreeResponse &p) {

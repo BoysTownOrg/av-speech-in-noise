@@ -6,6 +6,7 @@
 #include "ResponseEvaluatorStub.h"
 #include "TargetPlayerStub.h"
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <cmath>
 #include <gtest/gtest.h>
 
@@ -258,6 +259,20 @@ class SubmittingFreeResponse : public SubmittingResponse,
     void setFlagged() { response_.flagged = true; }
 };
 
+class SubmittingCorrectKeywords : public SubmittingResponse,
+                               public TargetWritingUseCase {
+    open_set::CorrectKeywords k{};
+
+  public:
+    void run(RecognitionTestModelImpl &m) override {
+        m.submit(k);
+    }
+
+    auto writtenTarget(OutputFileStub &file) -> std::string override {
+        return file.writtenCorrectKeywords().target;
+    }
+};
+
 class SubmittingCoordinateResponse : public SubmittingResponse {
     coordinate_response_measure::Response response_{};
 
@@ -319,6 +334,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    SubmittingCorrectKeywords submittingCorrectKeywords;
 
     RecognitionTestModelTests() { model.subscribe(&listener); }
 
@@ -753,6 +769,12 @@ RECOGNITION_TEST_MODEL_TEST(
     submittingFreeResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest);
     assertPassesNextTargetToPlayer(submittingFreeResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submittingCorrectKeywordsPassesNextTargetToTargetPlayer) {
+    run(initializingTest);
+    assertPassesNextTargetToPlayer(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
