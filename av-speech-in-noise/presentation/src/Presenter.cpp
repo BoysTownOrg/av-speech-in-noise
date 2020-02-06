@@ -199,7 +199,11 @@ void Presenter::submitFailedTrial() {
 }
 
 void Presenter::submitCorrectKeywords() {
-    proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
+    try {
+        proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
+    } catch (const std::runtime_error &e) {
+        showErrorMessage(e.what());
+    }
 }
 
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
@@ -574,7 +578,7 @@ auto Presenter::Testing::openSetResponse() -> open_set::FreeResponse {
 
 auto Presenter::Testing::correctKeywords() -> open_set::CorrectKeywords {
     open_set::CorrectKeywords p{};
-    p.count = std::stoi(view->correctKeywords());
+    p.count = readInteger(view->correctKeywords(), "number");
     return p;
 }
 
