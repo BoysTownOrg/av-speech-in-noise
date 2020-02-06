@@ -512,6 +512,12 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
+    confirmAdaptiveOpenSetKeywordsTestShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingAdaptiveOpenSetKeywordsTest, playingTrialFromExperimenter);
+}
+
+TEST_F(PresenterTests,
     confirmFixedLevelOpenSetTestShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelOpenSetTest, playingTrialFromExperimenter);
