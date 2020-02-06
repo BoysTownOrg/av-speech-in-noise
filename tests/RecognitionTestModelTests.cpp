@@ -747,6 +747,11 @@ RECOGNITION_TEST_MODEL_TEST(submittingFreeResponseIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingFreeResponse, 2);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsIncrementsTrialNumber) {
+    run(initializingTest);
+    assertYieldsTrialNumber(submittingCorrectKeywords, 2);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     submittingCoordinateResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest);
