@@ -1094,6 +1094,11 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitCorrectKeywordsDoesNotLoadNextTargetWhenComplete) {
+    assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCorrectResponseDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectResponse);
 }
