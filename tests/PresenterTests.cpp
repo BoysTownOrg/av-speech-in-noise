@@ -971,8 +971,8 @@ TEST_F(
     assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetTest);
 }
 
-TEST_F(
-    PresenterTests, confirmAdaptiveOpenSetKeywordsTestWithInvalidSnrShowsErrorMessage) {
+TEST_F(PresenterTests,
+    confirmAdaptiveOpenSetKeywordsTestWithInvalidSnrShowsErrorMessage) {
     assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
@@ -994,6 +994,12 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     confirmAdaptiveOpenSetTestWithInvalidInputDoesNotHideSetupView) {
     assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptiveOpenSetTest);
+}
+
+TEST_F(PresenterTests,
+    confirmAdaptiveOpenSetKeywordsTestWithInvalidInputDoesNotHideSetupView) {
+    assertSetupViewNotHiddenWhenSnrIsInvalid(
+        confirmingAdaptiveOpenSetKeywordsTest);
 }
 
 TEST_F(PresenterTests,
