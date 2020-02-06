@@ -120,9 +120,7 @@ void Presenter::showTestView() {
         testing.show();
 }
 
-auto Presenter::closedSet() -> bool {
-    return testSetup.closedSet();
-}
+auto Presenter::closedSet() -> bool { return testSetup.closedSet(); }
 
 auto Presenter::defaultAdaptive() -> bool {
     return testSetup.defaultAdaptive();
@@ -260,8 +258,7 @@ void Presenter::browseForTrackSettingsFile() {
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
-    view->populateMethodMenu({
-        methodName(Method::defaultAdaptiveClosedSet),
+    view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
         methodName(Method::adaptiveClosedSetSingleSpeaker),
         methodName(Method::adaptiveClosedSetDelayedMasker),
         methodName(Method::adaptiveOpenSet),
@@ -402,8 +399,7 @@ auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
 }
 
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
-    return defaultAdaptiveClosedSet() ||
-        adaptiveClosedSetSingleSpeaker() ||
+    return defaultAdaptiveClosedSet() || adaptiveClosedSetSingleSpeaker() ||
         adaptiveClosedSetDelayedMasker();
 }
 

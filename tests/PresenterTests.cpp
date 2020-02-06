@@ -42,6 +42,10 @@ TEST_F(PresenterTests, confirmAdaptiveOpenSetTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveOpenSetTest);
 }
 
+TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
 TEST_F(PresenterTests, confirmFixedLevelOpenSetTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingFixedLevelOpenSetTest);
 }

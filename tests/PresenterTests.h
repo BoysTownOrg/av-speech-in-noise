@@ -1025,6 +1025,76 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
         return presentation::trackBumpLimit(confirmingAdaptiveTest, m);
     }
 };
+class ConfirmingAdaptiveOpenSetKeywordsTest : public ConfirmingAdaptiveTest_ {
+    ConfirmingAdaptiveTest confirmingAdaptiveTest;
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit ConfirmingAdaptiveOpenSetKeywordsTest(
+        ViewStub::TestSetupViewStub *view)
+        : confirmingAdaptiveTest{view}, view{view} {}
+
+    void run() override {
+        setMethod(view, Method::adaptiveOpenSetKeywords);
+        presentation::run(confirmingAdaptiveTest);
+    }
+
+    auto snr_dB(ModelStub &m) -> int override {
+        return presentation::snr_dB(confirmingAdaptiveTest, m);
+    }
+
+    auto maskerLevel(ModelStub &m) -> int override {
+        return presentation::maskerLevel(confirmingAdaptiveTest, m);
+    }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return presentation::fullScaleLevel(confirmingAdaptiveTest, m);
+    }
+
+    auto targetListDirectory(ModelStub &m) -> std::string override {
+        return presentation::targetListDirectory(confirmingAdaptiveTest, m);
+    }
+
+    auto subjectId(ModelStub &m) -> std::string override {
+        return presentation::subjectId(confirmingAdaptiveTest, m);
+    }
+
+    auto testerId(ModelStub &m) -> std::string override {
+        return presentation::testerId(confirmingAdaptiveTest, m);
+    }
+
+    auto session(ModelStub &m) -> std::string override {
+        return presentation::session(confirmingAdaptiveTest, m);
+    }
+
+    auto method(ModelStub &m) -> std::string override {
+        return presentation::method(confirmingAdaptiveTest, m);
+    }
+
+    auto maskerFilePath(ModelStub &m) -> std::string override {
+        return presentation::maskerFilePath(confirmingAdaptiveTest, m);
+    }
+
+    auto condition(ModelStub &m) -> Condition override {
+        return presentation::condition(confirmingAdaptiveTest, m);
+    }
+
+    auto ceilingSnr_dB(ModelStub &m) -> int override {
+        return presentation::ceilingSnr_dB(confirmingAdaptiveTest, m);
+    }
+
+    auto floorSnr_dB(ModelStub &m) -> int override {
+        return presentation::floorSnr_dB(confirmingAdaptiveTest, m);
+    }
+
+    auto trackSettingsFile(ModelStub &m) -> std::string override {
+        return presentation::trackSettingsFile(confirmingAdaptiveTest, m);
+    }
+
+    auto trackBumpLimit(ModelStub &m) -> int override {
+        return presentation::trackBumpLimit(confirmingAdaptiveTest, m);
+    }
+};
 
 class ConfirmingFixedLevelTest : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
@@ -1346,8 +1416,7 @@ class ConfirmingFixedLevelOpenSetSilentIntervalsTest
     }
 };
 
-class ConfirmingFixedLevelOpenSetAllStimuliTest
-    : public ConfirmingTestSetup {
+class ConfirmingFixedLevelOpenSetAllStimuliTest : public ConfirmingTestSetup {
     ConfirmingFixedLevelTest confirmingFixedLevelTest;
     ViewStub::TestSetupViewStub *view;
 
@@ -1673,8 +1742,7 @@ class PresenterTests : public ::testing::Test {
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
     Presenter::Subject subject{&subjectView};
-    Presenter presenter{
-        model, view, testSetup, subject, experimenter, testing};
+    Presenter presenter{model, view, testSetup, subject, experimenter, testing};
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
     BrowsingForTargetList browsingForTargetList{&setupView};
     BrowsingForMasker browsingForMasker{&setupView};
@@ -1685,6 +1753,8 @@ class PresenterTests : public ::testing::Test {
     ConfirmingAdaptiveClosedSetDelayedMaskerTest
         confirmingAdaptiveClosedSetDelayedMaskerTest{&setupView};
     ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
+    ConfirmingAdaptiveOpenSetKeywordsTest confirmingAdaptiveOpenSetKeywordsTest{
+        &setupView};
     ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{
         &setupView};
