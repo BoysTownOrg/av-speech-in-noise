@@ -31,6 +31,7 @@ class View {
         virtual void hideEvaluationButtons() = 0;
         virtual void showResponseSubmission() = 0;
         virtual void hideResponseSubmission() = 0;
+        virtual void hideCorrectKeywordsEntry() = 0;
         virtual auto response() -> std::string = 0;
         virtual auto correctKeywords() -> std::string = 0;
         virtual auto flagged() -> bool = 0;

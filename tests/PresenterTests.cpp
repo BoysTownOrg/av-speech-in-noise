@@ -828,6 +828,10 @@ TEST_F(PresenterTests, experimenterResponseHidesResponseSubmission) {
     assertResponseViewHidden(respondingFromExperimenter);
 }
 
+TEST_F(PresenterTests, enteringCorrectKeywordsHidesCorrectKeywordsEntry) {
+    assertResponseViewHidden(enteringCorrectKeywords);
+}
+
 TEST_F(PresenterTests, correctResponseHidesEvaluationButtons) {
     assertResponseViewHidden(submittingPassedTrial);
 }
