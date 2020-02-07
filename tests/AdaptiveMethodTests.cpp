@@ -100,7 +100,7 @@ class SubmittingCorrectResponse : public UseCase {
 class SubmittingIncorrectResponse : public UseCase {
   public:
     void run(AdaptiveMethodImpl &method) override {
-        method.submitIncorrectResponse();
+        submitIncorrectResponse(method);
     }
 };
 
@@ -200,7 +200,7 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
     explicit WritingIncorrectResponse(OutputFile &file_) : file_{file_} {}
 
     void run(AdaptiveMethodImpl &method) override {
-        method.submitIncorrectResponse();
+        submitIncorrectResponse(method);
         method.writeLastIncorrectResponse(&file_);
     }
 
@@ -308,8 +308,6 @@ class AdaptiveMethodTests : public ::testing::Test {
         assertEqual(b, randomizer.upperIntBound());
     }
 
-    void submitIncorrectResponse() { method.submitIncorrectResponse(); }
-
     auto track(int n) { return tracks.at(n); }
 
     void setCurrentForTarget(int n, std::string s) {
@@ -332,7 +330,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
     void writeIncorrectResponse() {
-        submitIncorrectResponse();
+        submitIncorrectResponse(method);
         method.writeLastIncorrectResponse(&outputFile);
     }
 
