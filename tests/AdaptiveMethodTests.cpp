@@ -82,10 +82,18 @@ class SubmittingIncorrectCoordinateResponse : public UseCase {
     }
 };
 
+void submitCorrectResponse(AdaptiveMethodImpl &method) {
+    method.submitCorrectResponse();
+}
+
+void submitIncorrectResponse(AdaptiveMethodImpl &method) {
+    method.submitIncorrectResponse();
+}
+
 class SubmittingCorrectResponse : public UseCase {
   public:
     void run(AdaptiveMethodImpl &method) override {
-        method.submitCorrectResponse();
+        submitCorrectResponse(method);
     }
 };
 
@@ -167,7 +175,7 @@ class WritingCorrectResponse : public WritingResponseUseCase,
     explicit WritingCorrectResponse(OutputFile &file_) : file_{file_} {}
 
     void run(AdaptiveMethodImpl &method) override {
-        method.submitCorrectResponse();
+        submitCorrectResponse(method);
         method.writeLastCorrectResponse(&file_);
     }
 
@@ -300,14 +308,6 @@ class AdaptiveMethodTests : public ::testing::Test {
         assertEqual(b, randomizer.upperIntBound());
     }
 
-    void submitCoordinateResponse() {
-        method.submitResponse(coordinateResponse);
-    }
-
-    void submitCorrectKeywords() { method.submit(correctKeywords); }
-
-    void submitCorrectResponse() { method.submitCorrectResponse(); }
-
     void submitIncorrectResponse() { method.submitIncorrectResponse(); }
 
     auto track(int n) { return tracks.at(n); }
@@ -317,17 +317,17 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
     void writeCoordinateResponse() {
-        submitCoordinateResponse();
+        submit(method, coordinateResponse);
         method.writeLastCoordinateResponse(&outputFile);
     }
 
     void writeCorrectKeywords() {
-        submitCorrectKeywords();
+        method.submit(correctKeywords);
         method.writeLastCorrectKeywords(&outputFile);
     }
 
     void writeCorrectResponse() {
-        submitCorrectResponse();
+        submitCorrectResponse(method);
         method.writeLastCorrectResponse(&outputFile);
     }
 
@@ -372,12 +372,12 @@ class AdaptiveMethodTests : public ::testing::Test {
     void setSnrTrackComplete(int n) { track(n)->setComplete(); }
 
     void assertTestIncompleteAfterCoordinateResponse() {
-        submitCoordinateResponse();
+        submit(method, coordinateResponse);
         assertTestIncomplete();
     }
 
     void assertTestCompleteAfterCoordinateResponse() {
-        submitCoordinateResponse();
+        submit(method, coordinateResponse);
         assertTestComplete();
     }
 
@@ -571,7 +571,7 @@ ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCurrentToEvaluator) {
     initialize();
     setCurrentForTarget(1, "a");
     selectList(2);
-    submitCoordinateResponse();
+    submit(method, coordinateResponse);
     assertEqual("a", evaluator.correctColorFilePath());
     assertEqual("a", evaluator.correctNumberFilePath());
 }
@@ -581,13 +581,13 @@ ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCorrectFilePathToEvaluator) {
     initialize();
     setCurrentForTarget(1, "a");
     selectList(2);
-    submitCoordinateResponse();
+    submit(method, coordinateResponse);
     assertEqual("a", evaluator.correctFilePath());
 }
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesResponseToEvaluator) {
     initialize();
-    submitCoordinateResponse();
+    submit(method, coordinateResponse);
     assertEqual(&std::as_const(coordinateResponse), evaluator.response());
 }
 
