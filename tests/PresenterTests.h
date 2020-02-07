@@ -1069,7 +1069,7 @@ class ConfirmingAdaptiveOpenSetKeywordsTest : public ConfirmingAdaptiveTest_ {
         : confirmingAdaptiveTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveOpenSetKeywords);
+        setMethod(view, Method::adaptiveOpenSetCorrectKeywords);
         presentation::run(confirmingAdaptiveTest);
     }
 

@@ -69,7 +69,7 @@ void Presenter::initializeTest() {
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetSingleSpeaker())
         model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (defaultAdaptive() || adaptiveOpenSetKeywords())
+    else if (defaultAdaptive() || adaptiveOpenSetCorrectKeywords())
         model.initializeTest(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
         model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
@@ -103,8 +103,8 @@ auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
     return testSetup.adaptiveClosedSetSingleSpeaker();
 }
 
-auto Presenter::adaptiveOpenSetKeywords() -> bool {
-    return testSetup.adaptiveOpenSetKeywords();
+auto Presenter::adaptiveOpenSetCorrectKeywords() -> bool {
+    return testSetup.adaptiveOpenSetCorrectKeywords();
 }
 
 auto Presenter::testComplete() -> bool { return model.testComplete(); }
@@ -140,7 +140,7 @@ auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
         return &adaptiveClosedSetTrialCompletionHandler;
     if (defaultAdaptiveOpenSet())
         return &adaptiveOpenSetTrialCompletionHandler;
-    if (adaptiveOpenSetKeywords())
+    if (adaptiveOpenSetCorrectKeywords())
         return &adaptiveOpenSetKeywordsTrialCompletionHandler;
     if (fixedLevelClosedSet())
         return &fixedLevelClosedSetTrialCompletionHandler;
@@ -281,7 +281,7 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         methodName(Method::adaptiveClosedSetSingleSpeaker),
         methodName(Method::adaptiveClosedSetDelayedMasker),
         methodName(Method::defaultAdaptiveOpenSet),
-        methodName(Method::adaptiveOpenSetKeywords),
+        methodName(Method::adaptiveOpenSetCorrectKeywords),
         methodName(Method::defaultFixedLevelClosedSet),
         methodName(Method::fixedLevelClosedSetSilentIntervals),
         methodName(Method::defaultFixedLevelOpenSet),
@@ -430,8 +430,8 @@ auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
     return method(Method::adaptiveClosedSetSingleSpeaker);
 }
 
-auto Presenter::TestSetup::adaptiveOpenSetKeywords() -> bool {
-    return method(Method::adaptiveOpenSetKeywords);
+auto Presenter::TestSetup::adaptiveOpenSetCorrectKeywords() -> bool {
+    return method(Method::adaptiveOpenSetCorrectKeywords);
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {

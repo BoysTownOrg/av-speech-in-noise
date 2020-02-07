@@ -13,7 +13,7 @@ TEST_F(PresenterTests, populatesMethodMenu) {
     assertSetupViewMethodsContains(Method::fixedLevelOpenSetSilentIntervals);
     assertSetupViewMethodsContains(Method::fixedLevelClosedSetSilentIntervals);
     assertSetupViewMethodsContains(Method::defaultAdaptiveOpenSet);
-    assertSetupViewMethodsContains(Method::adaptiveOpenSetKeywords);
+    assertSetupViewMethodsContains(Method::adaptiveOpenSetCorrectKeywords);
     assertSetupViewMethodsContains(Method::defaultAdaptiveClosedSet);
     assertSetupViewMethodsContains(Method::adaptiveClosedSetSingleSpeaker);
     assertSetupViewMethodsContains(Method::adaptiveClosedSetDelayedMasker);

@@ -8,7 +8,7 @@
 namespace av_speech_in_noise {
 enum class Method {
     defaultAdaptiveOpenSet,
-    adaptiveOpenSetKeywords,
+    adaptiveOpenSetCorrectKeywords,
     defaultAdaptiveClosedSet,
     adaptiveClosedSetSingleSpeaker,
     adaptiveClosedSetDelayedMasker,
@@ -23,7 +23,7 @@ constexpr auto methodName(Method c) -> const char * {
     switch (c) {
     case Method::defaultAdaptiveOpenSet:
         return "adaptive open-set";
-    case Method::adaptiveOpenSetKeywords:
+    case Method::adaptiveOpenSetCorrectKeywords:
         return "adaptive open-set keywords";
     case Method::defaultAdaptiveClosedSet:
         return "adaptive closed-set";
@@ -214,7 +214,7 @@ class Presenter : public Model::EventListener {
         auto singleSpeaker() -> bool;
         auto adaptiveClosedSetDelayedMasker() -> bool;
         auto adaptiveClosedSetSingleSpeaker() -> bool;
-        auto adaptiveOpenSetKeywords() -> bool;
+        auto adaptiveOpenSetCorrectKeywords() -> bool;
         auto delayedMasker() -> bool;
         void playCalibration() override;
         void browseForTargetList() override;
@@ -370,7 +370,7 @@ class Presenter : public Model::EventListener {
     auto delayedMasker() -> bool;
     auto adaptiveClosedSetDelayedMasker() -> bool;
     auto adaptiveClosedSetSingleSpeaker() -> bool;
-    auto adaptiveOpenSetKeywords() -> bool;
+    auto adaptiveOpenSetCorrectKeywords() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
