@@ -680,6 +680,9 @@ CocoaTestingView::CocoaTestingView(NSRect r) :
     response_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
     ]},
+    correctKeywords_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
+    ]},
     flagged_{[[NSButton alloc] initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2 - labelHeight, 150, labelHeight)]},
     actions{[TestingViewActions alloc]}
 {
@@ -783,6 +786,10 @@ void CocoaTestingView::hideEvaluationButtons() {
 
 std::string CocoaTestingView::response() {
     return response_.stringValue.UTF8String;
+}
+
+auto CocoaTestingView::correctKeywords() -> std::string {
+    return correctKeywords_.stringValue.UTF8String;
 }
 
 bool CocoaTestingView::flagged() {
