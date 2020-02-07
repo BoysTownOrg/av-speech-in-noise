@@ -16,6 +16,7 @@ enum class HeadingItem {
     stimulus,
     reversals,
     target,
+    correctKeywords,
     freeResponse
 };
 
@@ -41,6 +42,8 @@ constexpr auto headingItemName(HeadingItem i) -> const char * {
         return "reversals";
     case HeadingItem::freeResponse:
         return "response";
+    case HeadingItem::correctKeywords:
+        return "# correct keywords";
     }
 }
 

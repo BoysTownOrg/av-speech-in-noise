@@ -1,5 +1,6 @@
 #include "LogString.h"
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/OutputFile.hpp>
 
@@ -172,6 +173,7 @@ class OutputFileTests : public ::testing::Test {
         writingFixedLevelCoordinateResponseTrial;
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     open_set::FreeResponseTrial freeResponseTrial;
+    open_set::CorrectKeywordsTrial correctKeywordsTrial;
     open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
@@ -184,6 +186,8 @@ class OutputFileTests : public ::testing::Test {
     void openNewFile() { file.openNewFile(testIdentity); }
 
     void writeFreeResponseTrial() { file.write(freeResponseTrial); }
+
+    void writeCorrectKeywordsTrial() { file.write(correctKeywordsTrial); }
 
     void writeOpenSetAdaptiveTrial() { file.write(openSetAdaptiveTrial); }
 
@@ -338,6 +342,14 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(HeadingItem::freeResponse, 2, n);
     }
 
+    void assertCorrectKeywordsHeadingAtLine(int n) {
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 2, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::correctKeywords, 3, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation, 4, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::reversals, 5, n);
+    }
+
     void assertOpenSetAdaptiveHeadingAtLine(int n) {
         assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
         assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 2, n);
@@ -416,6 +428,11 @@ TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
 TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
     writeFreeResponseTrial();
     assertFreeResponseHeadingAtLine(1);
+}
+
+TEST_F(OutputFileTests, writeCorrectKeywordsTrialHeading) {
+    writeCorrectKeywordsTrial();
+    assertCorrectKeywordsHeadingAtLine(1);
 }
 
 TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialHeading) {
