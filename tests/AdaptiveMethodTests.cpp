@@ -709,6 +709,13 @@ ADAPTIVE_METHOD_TEST(writeCorrectResponseIsCorrect) {
     assertTrue(outputFile.writtenOpenSetAdaptiveTrial().correct);
 }
 
+ADAPTIVE_METHOD_TEST(writeSufficientCorrectKeywordsIsCorrect) {
+    initialize();
+    run(submittingSufficientCorrectKeywords);
+    method.writeLastCorrectKeywords(&outputFile);
+    assertTrue(outputFile.writtenCorrectKeywords().correct);
+}
+
 ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {
     initialize();
     setIncorrectCoordinateResponse();

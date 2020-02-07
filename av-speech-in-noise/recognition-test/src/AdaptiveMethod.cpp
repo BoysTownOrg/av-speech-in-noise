@@ -172,6 +172,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
 
 void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
+    assignCorrectness(lastCorrectKeywordsTrial, true);
     assignSnr(lastCorrectKeywordsTrial, currentSnrTrack);
     assignTarget(
         lastCorrectKeywordsTrial, fileName(evaluator, currentTarget()));
