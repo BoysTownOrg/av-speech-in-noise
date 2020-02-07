@@ -57,14 +57,14 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
-    void submit(const open_set::CorrectKeywords &);
+    void submit(const open_set::CorrectKeywords &) override;
     auto complete() -> bool override;
     auto nextTarget() -> std::string override;
     auto currentTarget() -> std::string override;
     void writeLastCoordinateResponse(OutputFile *) override;
     void writeLastCorrectResponse(OutputFile *) override;
     void writeLastIncorrectResponse(OutputFile *) override;
-    void writeLastCorrectKeywords(OutputFile *);
+    void writeLastCorrectKeywords(OutputFile *) override;
     void writeTestingParameters(OutputFile *) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
     void submitResponse(const open_set::FreeResponse &) override;

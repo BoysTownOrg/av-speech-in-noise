@@ -76,6 +76,10 @@ auto AdaptiveMethodImpl::nextTarget() -> std::string {
     return currentTargetList->next();
 }
 
+static void assignReversals(Adaptive &trial, Track *track) {
+    trial.reversals = track->reversals();
+}
+
 void AdaptiveMethodImpl::submitResponse(
     const coordinate_response_measure::Response &response) {
     auto lastSnr_dB_{snr_dB()};
@@ -85,10 +89,9 @@ void AdaptiveMethodImpl::submitResponse(
         correct();
     else
         incorrect();
-    auto updatedReversals{currentSnrTrack->reversals()};
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
-    lastTrial.reversals = updatedReversals;
+    assignReversals(lastTrial, currentSnrTrack);
     lastTrial.correctColor = evaluator->correctColor(current_);
     lastTrial.correctNumber = evaluator->correctNumber(current_);
     lastTrial.SNR_dB = lastSnr_dB_;
@@ -129,10 +132,6 @@ void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
 
 void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
     file->write(lastCorrectKeywordsTrial);
-}
-
-static void assignReversals(open_set::AdaptiveTrial &trial, Track *track) {
-    trial.reversals = track->reversals();
 }
 
 static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
