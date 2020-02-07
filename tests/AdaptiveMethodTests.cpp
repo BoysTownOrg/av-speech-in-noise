@@ -142,6 +142,18 @@ auto writtenOpenSetAdaptiveTrial(OutputFileStub &file)
     return file.writtenOpenSetAdaptiveTrial();
 }
 
+auto writtenReversals(OutputFileStub &file) -> int {
+    return writtenOpenSetAdaptiveTrial(file).reversals;
+}
+
+auto writtenSnr(OutputFileStub &file) -> int {
+    return writtenOpenSetAdaptiveTrial(file).SNR_dB;
+}
+
+auto writtenTarget(OutputFileStub &file) -> std::string {
+    return writtenOpenSetAdaptiveTrial(file).target;
+}
+
 class WritingCorrectResponse : public WritingResponseUseCase,
                                public WritingTargetUseCase {
     OutputFile &file_;
@@ -155,15 +167,15 @@ class WritingCorrectResponse : public WritingResponseUseCase,
     }
 
     auto writtenReversals(OutputFileStub &file) -> int override {
-        return writtenOpenSetAdaptiveTrial(file).reversals;
+        return av_speech_in_noise::tests::writtenReversals(file);
     }
 
     auto writtenSnr(OutputFileStub &file) -> int override {
-        return writtenOpenSetAdaptiveTrial(file).SNR_dB;
+        return av_speech_in_noise::tests::writtenSnr(file);
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return writtenOpenSetAdaptiveTrial(file).target;
+        return av_speech_in_noise::tests::writtenTarget(file);
     }
 };
 
@@ -180,15 +192,15 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
     }
 
     auto writtenReversals(OutputFileStub &file) -> int override {
-        return writtenOpenSetAdaptiveTrial(file).reversals;
+        return av_speech_in_noise::tests::writtenReversals(file);
     }
 
     auto writtenSnr(OutputFileStub &file) -> int override {
-        return writtenOpenSetAdaptiveTrial(file).SNR_dB;
+        return av_speech_in_noise::tests::writtenSnr(file);
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return writtenOpenSetAdaptiveTrial(file).target;
+        return av_speech_in_noise::tests::writtenTarget(file);
     }
 };
 
