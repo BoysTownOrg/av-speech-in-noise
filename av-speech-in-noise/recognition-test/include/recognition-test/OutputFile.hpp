@@ -106,6 +106,7 @@ class OutputFileImpl : public OutputFile {
     bool justWroteAdaptiveCoordinateResponseTrial{};
     bool justWroteFreeResponseTrial{};
     bool justWroteOpenSetAdaptiveTrial{};
+    bool justWroteCorrectKeywordsTrial{};
 };
 }
 

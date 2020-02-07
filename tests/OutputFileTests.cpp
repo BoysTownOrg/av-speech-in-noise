@@ -495,6 +495,12 @@ TEST_F(
     assertWritesOpenSetAdaptiveTrialOnLine(3);
 }
 
+TEST_F(
+    OutputFileTests, writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
+    writeCorrectKeywordsTrial();
+    assertWritesCorrectKeywordsTrialOnLine(3);
+}
+
 TEST_F(OutputFileTests,
     writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     run(writingAdaptiveCoordinateResponseTrial);

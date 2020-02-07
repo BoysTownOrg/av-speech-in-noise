@@ -319,8 +319,10 @@ void OutputFileImpl::write(const open_set::FreeResponseTrial &trial) {
 }
 
 void OutputFileImpl::write(const open_set::CorrectKeywordsTrial &trial) {
-    write(formatCorrectKeywordsTrialHeading());
+    if (!justWroteCorrectKeywordsTrial)
+        write(formatCorrectKeywordsTrialHeading());
     write(formatTrial(trial));
+    justWroteCorrectKeywordsTrial = true;
 }
 
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
