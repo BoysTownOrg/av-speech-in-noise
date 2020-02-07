@@ -6,6 +6,15 @@
 #include <vector>
 
 namespace av_speech_in_noise {
+struct Adaptive {
+    int SNR_dB{};
+    int reversals{};
+};
+
+struct Target {
+    std::string target;
+};
+
 namespace coordinate_response_measure {
 enum class Color { green, red, blue, white, unknown };
 
@@ -14,8 +23,7 @@ struct Response {
     Color color{};
 };
 
-struct Trial {
-    std::string target;
+struct Trial : Target {
     int correctNumber{};
     int subjectNumber{};
     Color correctColor{};
@@ -23,9 +31,7 @@ struct Trial {
     bool correct{};
 };
 
-struct AdaptiveTrial : Trial {
-    int SNR_dB{};
-    int reversals{};
+struct AdaptiveTrial : Adaptive, Trial {
 };
 
 struct FixedLevelTrial : Trial {};
@@ -38,26 +44,20 @@ struct FreeResponse {
 };
 
 struct CorrectKeywords {
-    int count;
+    int count{};
 };
 
-struct Trial {
-    std::string target;
+struct Trial : Target {
 };
 
-struct FreeResponseTrial : Trial {
-    std::string response;
-    bool flagged{};
+struct FreeResponseTrial : FreeResponse, Trial {
 };
 
-struct AdaptiveTrial : Trial {
-    int SNR_dB{};
-    int reversals{};
+struct AdaptiveTrial : Adaptive, Trial {
     bool correct{};
 };
 
-struct CorrectKeywordsTrial : AdaptiveTrial {
-    int count{};
+struct CorrectKeywordsTrial : CorrectKeywords, AdaptiveTrial {
 };
 }
 
