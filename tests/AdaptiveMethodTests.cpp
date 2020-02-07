@@ -34,23 +34,26 @@ class UseCase {
 };
 
 class Initializing : public UseCase {
-    AdaptiveTest test_{};
+    AdaptiveTest test{};
 
   public:
-    void run(AdaptiveMethodImpl &method) override { method.initialize(test_); }
+    void run(AdaptiveMethodImpl &method) override { method.initialize(test); }
 };
 
+void submit(AdaptiveMethodImpl &method,
+    const coordinate_response_measure::Response &response) {
+    method.submitResponse(response);
+}
+
 class SubmittingCoordinateResponse : public UseCase {
-    coordinate_response_measure::Response response_{};
+    coordinate_response_measure::Response response{};
 
   public:
-    void run(AdaptiveMethodImpl &method) override {
-        method.submitResponse(response_);
-    }
+    void run(AdaptiveMethodImpl &method) override { submit(method, response); }
 };
 
 class SubmittingCorrectCoordinateResponse : public UseCase {
-    coordinate_response_measure::Response response_{};
+    coordinate_response_measure::Response response{};
     ResponseEvaluatorStub &evaluator;
 
   public:
@@ -60,12 +63,12 @@ class SubmittingCorrectCoordinateResponse : public UseCase {
 
     void run(AdaptiveMethodImpl &method) override {
         evaluator.setCorrect();
-        method.submitResponse(response_);
+        submit(method, response);
     }
 };
 
 class SubmittingIncorrectCoordinateResponse : public UseCase {
-    coordinate_response_measure::Response response_{};
+    coordinate_response_measure::Response response{};
     ResponseEvaluatorStub &evaluator;
 
   public:
@@ -75,7 +78,7 @@ class SubmittingIncorrectCoordinateResponse : public UseCase {
 
     void run(AdaptiveMethodImpl &method) override {
         evaluator.setIncorrect();
-        method.submitResponse(response_);
+        submit(method, response);
     }
 };
 
@@ -95,6 +98,7 @@ class SubmittingIncorrectResponse : public UseCase {
 
 class SubmittingCorrectKeywords : public UseCase {
     open_set::CorrectKeywords correctKeywords;
+
   public:
     void run(AdaptiveMethodImpl &method) override {
         method.submit(correctKeywords);
@@ -278,9 +282,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         method.submitResponse(coordinateResponse);
     }
 
-    void submitCorrectKeywords() {
-        method.submit(correctKeywords);
-    }
+    void submitCorrectKeywords() { method.submit(correctKeywords); }
 
     void submitCorrectResponse() { method.submitCorrectResponse(); }
 
