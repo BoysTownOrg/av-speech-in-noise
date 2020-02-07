@@ -116,6 +116,11 @@ class WritingTargetUseCase : public virtual UseCase {
     virtual auto writtenTarget(OutputFileStub &) -> std::string = 0;
 };
 
+auto writtenAdaptiveCoordinateResponseTrial(OutputFileStub &file)
+    -> const coordinate_response_measure::AdaptiveTrial & {
+    return file.writtenAdaptiveCoordinateResponseTrial();
+}
+
 class WritingCoordinateResponse : public WritingResponseUseCase {
     coordinate_response_measure::Response response{};
     OutputFile &file_;
@@ -129,11 +134,11 @@ class WritingCoordinateResponse : public WritingResponseUseCase {
     }
 
     auto writtenReversals(OutputFileStub &file) -> int override {
-        return file.writtenAdaptiveCoordinateResponseTrial().reversals;
+        return writtenAdaptiveCoordinateResponseTrial(file).reversals;
     }
 
     auto writtenSnr(OutputFileStub &file) -> int override {
-        return file.writtenAdaptiveCoordinateResponseTrial().SNR_dB;
+        return writtenAdaptiveCoordinateResponseTrial(file).SNR_dB;
     }
 };
 
