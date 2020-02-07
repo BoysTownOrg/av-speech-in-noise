@@ -745,6 +745,10 @@ ADAPTIVE_METHOD_TEST(writeIncorrectResponseWritesTarget) {
     assertWritesTarget(writingIncorrectResponse);
 }
 
+ADAPTIVE_METHOD_TEST(writeCorrectKeywordsWritesTarget) {
+    assertWritesTarget(writingCorrectKeywords);
+}
+
 ADAPTIVE_METHOD_TEST(submitCorrectResponsePassesCurrentToEvaluator) {
     assertPassesCurrentTargetToEvaluatorForFileName(submittingCorrectResponse);
 }
