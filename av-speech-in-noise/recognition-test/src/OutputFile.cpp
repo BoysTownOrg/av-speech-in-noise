@@ -348,6 +348,7 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
     justWroteFixedLevelCoordinateResponseTrial = false;
     justWroteFreeResponseTrial = false;
     justWroteOpenSetAdaptiveTrial = false;
+    justWroteCorrectKeywordsTrial = false;
 }
 
 auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
