@@ -162,6 +162,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
 
 void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
+    lastCorrectKeywordsTrial.target = evaluator->fileName(currentTarget());
     selectNextList();
 }
 

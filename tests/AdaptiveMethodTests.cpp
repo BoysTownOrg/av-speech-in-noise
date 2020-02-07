@@ -578,28 +578,32 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
     initialize();
     coordinateResponse.color = blueColor();
     writeCoordinateResponse();
-    assertEqual(blueColor(), writtenAdaptiveCoordinateResponseTrial(outputFile).subjectColor);
+    assertEqual(blueColor(),
+        writtenAdaptiveCoordinateResponseTrial(outputFile).subjectColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
     initialize();
     evaluator.setCorrectColor(blueColor());
     writeCoordinateResponse();
-    assertEqual(blueColor(), writtenAdaptiveCoordinateResponseTrial(outputFile).correctColor);
+    assertEqual(blueColor(),
+        writtenAdaptiveCoordinateResponseTrial(outputFile).correctColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
     initialize();
     coordinateResponse.number = 1;
     writeCoordinateResponse();
-    assertEqual(1, writtenAdaptiveCoordinateResponseTrial(outputFile).subjectNumber);
+    assertEqual(
+        1, writtenAdaptiveCoordinateResponseTrial(outputFile).subjectNumber);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
     initialize();
     evaluator.setCorrectNumber(1);
     writeCoordinateResponse();
-    assertEqual(1, writtenAdaptiveCoordinateResponseTrial(outputFile).correctNumber);
+    assertEqual(
+        1, writtenAdaptiveCoordinateResponseTrial(outputFile).correctNumber);
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
@@ -677,6 +681,10 @@ ADAPTIVE_METHOD_TEST(submitCorrectResponsePassesCurrentToEvaluator) {
 ADAPTIVE_METHOD_TEST(submitIncorrectResponsePassesCurrentToEvaluator) {
     assertPassesCurrentTargetToEvaluatorForFileName(
         submittingIncorrectResponse);
+}
+
+ADAPTIVE_METHOD_TEST(submitCorrectKeywordsPassesCurrentToEvaluator) {
+    assertPassesCurrentTargetToEvaluatorForFileName(submittingCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(submitCorrectCoordinateResponsePushesSnrTrackDown) {
