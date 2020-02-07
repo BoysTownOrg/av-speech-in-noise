@@ -97,7 +97,7 @@ class SubmittingIncorrectResponse : public UseCase {
 };
 
 class SubmittingCorrectKeywords : public UseCase {
-    open_set::CorrectKeywords correctKeywords;
+    open_set::CorrectKeywords correctKeywords{};
 
   public:
     void run(AdaptiveMethodImpl &method) override {
@@ -117,14 +117,14 @@ class WritingTargetUseCase : public virtual UseCase {
 };
 
 class WritingCoordinateResponse : public WritingResponseUseCase {
-    coordinate_response_measure::Response response_{};
+    coordinate_response_measure::Response response{};
     OutputFile &file_;
 
   public:
     explicit WritingCoordinateResponse(OutputFile &file_) : file_{file_} {}
 
     void run(AdaptiveMethodImpl &method) override {
-        method.submitResponse(response_);
+        method.submitResponse(response);
         method.writeLastCoordinateResponse(&file_);
     }
 
@@ -136,6 +136,11 @@ class WritingCoordinateResponse : public WritingResponseUseCase {
         return file.writtenAdaptiveCoordinateResponseTrial().SNR_dB;
     }
 };
+
+auto writtenOpenSetAdaptiveTrial(OutputFileStub &file)
+    -> const open_set::AdaptiveTrial & {
+    return file.writtenOpenSetAdaptiveTrial();
+}
 
 class WritingCorrectResponse : public WritingResponseUseCase,
                                public WritingTargetUseCase {
@@ -150,15 +155,15 @@ class WritingCorrectResponse : public WritingResponseUseCase,
     }
 
     auto writtenReversals(OutputFileStub &file) -> int override {
-        return file.writtenOpenSetAdaptiveTrial().reversals;
+        return writtenOpenSetAdaptiveTrial(file).reversals;
     }
 
     auto writtenSnr(OutputFileStub &file) -> int override {
-        return file.writtenOpenSetAdaptiveTrial().SNR_dB;
+        return writtenOpenSetAdaptiveTrial(file).SNR_dB;
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return file.writtenOpenSetAdaptiveTrial().target;
+        return writtenOpenSetAdaptiveTrial(file).target;
     }
 };
 
@@ -175,15 +180,15 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
     }
 
     auto writtenReversals(OutputFileStub &file) -> int override {
-        return file.writtenOpenSetAdaptiveTrial().reversals;
+        return writtenOpenSetAdaptiveTrial(file).reversals;
     }
 
     auto writtenSnr(OutputFileStub &file) -> int override {
-        return file.writtenOpenSetAdaptiveTrial().SNR_dB;
+        return writtenOpenSetAdaptiveTrial(file).SNR_dB;
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return file.writtenOpenSetAdaptiveTrial().target;
+        return writtenOpenSetAdaptiveTrial(file).target;
     }
 };
 
