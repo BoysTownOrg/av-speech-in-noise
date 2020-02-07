@@ -1,4 +1,5 @@
 #include "AdaptiveMethod.hpp"
+#include "Model.hpp"
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
@@ -142,10 +143,19 @@ static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
     trial.correct = c;
 }
 
+static auto fileName(ResponseEvaluator *evaluator, const std::string &target)
+    -> std::string {
+    return evaluator->fileName(target);
+}
+
+static auto target(open_set::Trial &trial) -> std::string & {
+    return trial.target;
+}
+
 void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    lastOpenSetTrial.target = evaluator->fileName(currentTarget());
+    target(lastOpenSetTrial) = fileName(evaluator, currentTarget());
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
@@ -154,7 +164,7 @@ void AdaptiveMethodImpl::submitIncorrectResponse() {
 void AdaptiveMethodImpl::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    lastOpenSetTrial.target = evaluator->fileName(currentTarget());
+    target(lastOpenSetTrial) = fileName(evaluator, currentTarget());
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
@@ -162,7 +172,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
 
 void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
-    lastCorrectKeywordsTrial.target = evaluator->fileName(currentTarget());
+    target(lastCorrectKeywordsTrial) = fileName(evaluator, currentTarget());
     selectNextList();
 }
 
