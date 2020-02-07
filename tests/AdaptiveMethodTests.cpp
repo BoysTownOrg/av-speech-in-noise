@@ -803,6 +803,12 @@ ADAPTIVE_METHOD_TEST(
         submittingIncorrectResponse);
 }
 
+ADAPTIVE_METHOD_TEST(
+    submitCorrectKeywordsSelectsListAmongThoseWithIncompleteTracks) {
+    assertSelectsListAmongThoseWithIncompleteTracks(
+        submittingCorrectKeywords);
+}
+
 ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
     initialize();
     setSnrTrackComplete(0);
