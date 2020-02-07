@@ -107,6 +107,16 @@ class SubmittingSufficientCorrectKeywords : public UseCase {
     }
 };
 
+class SubmittingInsufficientCorrectKeywords : public UseCase {
+    open_set::CorrectKeywords correctKeywords{};
+
+  public:
+    void run(AdaptiveMethodImpl &method) override {
+        correctKeywords.count = 1;
+        method.submit(correctKeywords);
+    }
+};
+
 class SubmittingIncorrectResponse : public UseCase {
   public:
     void run(AdaptiveMethodImpl &method) override {
@@ -246,6 +256,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingSufficientCorrectKeywords submittingSufficientCorrectKeywords;
     SubmittingIncorrectResponse submittingIncorrectResponse;
+    SubmittingInsufficientCorrectKeywords submittingInsufficientCorrectKeywords;
     SubmittingCorrectKeywords submittingCorrectKeywords;
     WritingCoordinateResponse writingCoordinateResponse{outputFile};
     WritingCorrectResponse writingCorrectResponse{outputFile};
@@ -716,6 +727,10 @@ ADAPTIVE_METHOD_TEST(submitIncorrectCoordinateResponsePushesSnrTrackUp) {
 
 ADAPTIVE_METHOD_TEST(submitIncorrectResponsePushesSnrTrackDown) {
     assertPushesSnrTrackUp(submittingIncorrectResponse);
+}
+
+ADAPTIVE_METHOD_TEST(submitInsufficientCorrectKeywordsPushesSnrTrackDown) {
+    assertPushesSnrTrackUp(submittingInsufficientCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(
