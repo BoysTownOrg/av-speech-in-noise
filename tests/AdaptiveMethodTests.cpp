@@ -691,6 +691,10 @@ ADAPTIVE_METHOD_TEST(writeIncorrectResponsePassesSnrBeforeUpdatingTrack) {
     assertWritesPreUpdatedSnr(writingIncorrectResponse);
 }
 
+ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesSnrBeforeUpdatingTrack) {
+    assertWritesPreUpdatedSnr(writingCorrectKeywords);
+}
+
 ADAPTIVE_METHOD_TEST(writeCorrectCoordinateResponseIsCorrect) {
     initialize();
     setCorrectCoordinateResponse();
