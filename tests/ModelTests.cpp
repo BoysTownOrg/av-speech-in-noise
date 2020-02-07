@@ -27,6 +27,9 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
+    void writeLastCorrectKeywords(OutputFile *) override {}
+    void submit(
+        const open_set::CorrectKeywords &) override {}
     void submitResponse(
         const coordinate_response_measure::Response &) override {}
 };
@@ -61,6 +64,9 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
+    void writeLastCorrectKeywords(OutputFile *) override {}
+    void submit(
+        const open_set::CorrectKeywords &) override {}
     void submitResponse(
         const coordinate_response_measure::Response &) override {}
 };

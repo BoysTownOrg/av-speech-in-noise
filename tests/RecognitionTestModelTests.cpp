@@ -86,6 +86,15 @@ class TestMethodStub : public TestMethod {
         log_.insert("writeLastIncorrectResponse ");
     }
 
+    void writeLastCorrectKeywords(OutputFile *) override {
+        log_.insert("writeLastCorrectKeywords ");
+    }
+
+    void submit(
+        const open_set::CorrectKeywords &) override {
+        log_.insert("submit ");
+    }
+
     void submitResponse(
         const coordinate_response_measure::Response &) override {
         log_.insert("submitResponse ");
@@ -1133,12 +1142,6 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
     assertEqual("a", writtenFreeResponseTrial().response);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsWritesResponse) {
-    submittingCorrectKeywords.setCorrectKeywords(1);
-    run(submittingCorrectKeywords);
-    assertEqual(1, outputFile.writtenCorrectKeywords().count);
-}
-
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
     submittingFreeResponse.setFlagged();
     run(submittingFreeResponse);
@@ -1154,20 +1157,10 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesTarget) {
     assertWritesTarget(submittingFreeResponse);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsWritesTarget) {
-    assertWritesTarget(submittingCorrectKeywords);
-}
-
 RECOGNITION_TEST_MODEL_TEST(
     submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
     assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
         submittingFreeResponse);
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    submitCorrectKeywordsPassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
-    assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
-        submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1186,6 +1179,12 @@ RECOGNITION_TEST_MODEL_TEST(
     submitIncorrectResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingIncorrectResponse,
         "submitIncorrectResponse writeLastIncorrectResponse ");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submitCorrectKeywordsWritesTrialAfterSubmittingResponse) {
+    assertTestMethodLogContains(submittingCorrectKeywords,
+        "submit writeLastCorrectKeywords ");
 }
 
 RECOGNITION_TEST_MODEL_TEST(
