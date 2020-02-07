@@ -172,11 +172,12 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
 
 void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
-    assignCorrectness(lastCorrectKeywordsTrial, true);
+    auto correct_{p.count >= 2};
+    assignCorrectness(lastCorrectKeywordsTrial, correct_);
     assignSnr(lastCorrectKeywordsTrial, currentSnrTrack);
     assignTarget(
         lastCorrectKeywordsTrial, fileName(evaluator, currentTarget()));
-    if (p.count >= 2)
+    if (correct_)
         correct();
     else
         incorrect();

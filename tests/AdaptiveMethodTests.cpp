@@ -730,6 +730,13 @@ ADAPTIVE_METHOD_TEST(writeIncorrectResponseIsIncorrect) {
     assertFalse(outputFile.writtenOpenSetAdaptiveTrial().correct);
 }
 
+ADAPTIVE_METHOD_TEST(writeInsufficientCorrectKeywordsIsIncorrect) {
+    initialize();
+    run(submittingInsufficientCorrectKeywords);
+    method.writeLastCorrectKeywords(&outputFile);
+    assertFalse(outputFile.writtenCorrectKeywords().correct);
+}
+
 ADAPTIVE_METHOD_TEST(writeCorrectResponseWritesTarget) {
     assertWritesTarget(writingCorrectResponse);
 }
