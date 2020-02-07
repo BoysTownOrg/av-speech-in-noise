@@ -1147,6 +1147,10 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesTarget) {
     assertWritesTarget(submittingFreeResponse);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsWritesTarget) {
+    assertWritesTarget(submittingCorrectKeywords);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     submitFreeResponsePassesCurrentTargetToEvaluatorBeforeAdvancingTarget) {
     assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(

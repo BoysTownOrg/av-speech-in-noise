@@ -312,6 +312,7 @@ void RecognitionTestModelImpl::write(const open_set::FreeResponse &p) {
 void RecognitionTestModelImpl::write(const open_set::CorrectKeywords &p) {
     open_set::CorrectKeywordsTrial trial;
     trial.count = p.count;
+    trial.target = targetName(evaluator, testMethod);
     outputFile->write(trial);
     save(outputFile);
 }
