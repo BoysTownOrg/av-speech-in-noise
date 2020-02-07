@@ -588,6 +588,10 @@ TEST_F(OutputFileTests, writeCorrectOpenSetAdaptiveTrial) {
     assertCorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
 }
 
+TEST_F(OutputFileTests, writeCorrectKeywordsTrialWritesCorrectEvaluation) {
+    assertCorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
+}
+
 TEST_F(OutputFileTests, writeFlaggedFreeResponseTrial) {
     assertFlaggedWritesFlagged();
 }
