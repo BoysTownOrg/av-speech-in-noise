@@ -24,7 +24,7 @@ constexpr auto methodName(Method c) -> const char * {
     case Method::defaultAdaptiveOpenSet:
         return "adaptive open-set";
     case Method::adaptiveOpenSetCorrectKeywords:
-        return "adaptive open-set keywords";
+        return "adaptive open-set correct keywords";
     case Method::defaultAdaptiveClosedSet:
         return "adaptive closed-set";
     case Method::adaptiveClosedSetSingleSpeaker:
