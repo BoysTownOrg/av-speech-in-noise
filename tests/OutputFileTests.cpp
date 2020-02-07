@@ -125,7 +125,7 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
 
     auto evaluationEntryIndex() -> int override { return 6; }
 
-    void run(av_speech_in_noise::OutputFileImpl &file) override {
+    void run(OutputFileImpl &file) override {
         file.write(trial_);
     }
 };
@@ -140,7 +140,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
 
     void correct() override { setCorrect(trial_); }
 
-    void run(av_speech_in_noise::OutputFileImpl &file) override {
+    void run(OutputFileImpl &file) override {
         file.write(trial_);
     }
 
@@ -155,7 +155,7 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
 
     void correct() override { trial_.correct = true; }
 
-    void run(av_speech_in_noise::OutputFileImpl &file) override {
+    void run(OutputFileImpl &file) override {
         file.write(trial_);
     }
 
@@ -170,7 +170,7 @@ class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
 
     void correct() override { trial_.correct = true; }
 
-    void run(av_speech_in_noise::OutputFileImpl &file) override {
+    void run(OutputFileImpl &file) override {
         file.write(trial_);
     }
 
