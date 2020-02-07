@@ -206,6 +206,22 @@ static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
     return stream.str();
 }
 
+static auto formatTrial(const open_set::CorrectKeywordsTrial &trial)
+    -> std::string {
+    FormattedStream stream;
+    insert(stream, trial.SNR_dB);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.target);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.count);
+    insertCommaAndSpace(stream);
+    insert(stream, evaluation(trial));
+    insertCommaAndSpace(stream);
+    insert(stream, trial.reversals);
+    insertNewLine(stream);
+    return stream.str();
+}
+
 static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
     FormattedStream stream;
     insert(stream, HeadingItem::target);
@@ -304,6 +320,7 @@ void OutputFileImpl::write(const open_set::FreeResponseTrial &trial) {
 
 void OutputFileImpl::write(const open_set::CorrectKeywordsTrial &trial) {
     write(formatCorrectKeywordsTrialHeading());
+    write(formatTrial(trial));
 }
 
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {

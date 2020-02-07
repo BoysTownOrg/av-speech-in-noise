@@ -409,6 +409,18 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine("22", 4, n);
     }
 
+    void assertWritesCorrectKeywordsTrialOnLine(int n) {
+        correctKeywordsTrial.SNR_dB = 11;
+        correctKeywordsTrial.target = "a";
+        correctKeywordsTrial.count = 22;
+        correctKeywordsTrial.reversals = 33;
+        writeCorrectKeywordsTrial();
+        assertNthCommaDelimitedEntryOfLine("11", 1, n);
+        assertNthCommaDelimitedEntryOfLine("a", 2, n);
+        assertNthCommaDelimitedEntryOfLine("22", 3, n);
+        assertNthCommaDelimitedEntryOfLine("33", 5, n);
+    }
+
     void assertColonDelimitedEntryWritten(
         const std::string &label, const std::string &what) {
         assertWriterContains(label + ": " + what + "\n");
@@ -454,6 +466,10 @@ TEST_F(OutputFileTests, writeFreeResponseTrial) {
 
 TEST_F(OutputFileTests, writeOpenSetAdaptiveTrial) {
     assertWritesOpenSetAdaptiveTrialOnLine(2);
+}
+
+TEST_F(OutputFileTests, writeCorrectKeywordsTrial) {
+    assertWritesCorrectKeywordsTrialOnLine(2);
 }
 
 TEST_F(OutputFileTests,
