@@ -319,21 +319,6 @@ class AdaptiveMethodTests : public ::testing::Test {
         method.writeLastCoordinateResponse(&outputFile);
     }
 
-    void writeCorrectKeywords() {
-        method.submit(correctKeywords);
-        method.writeLastCorrectKeywords(&outputFile);
-    }
-
-    void writeCorrectResponse() {
-        submitCorrectResponse(method);
-        method.writeLastCorrectResponse(&outputFile);
-    }
-
-    void writeIncorrectResponse() {
-        submitIncorrectResponse(method);
-        method.writeLastIncorrectResponse(&outputFile);
-    }
-
     void assertWritesUpdatedReversals(WritingResponseUseCase &useCase) {
         selectList(1);
         initialize();
@@ -620,7 +605,8 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
 ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
     initialize();
     correctKeywords.count = 1;
-    writeCorrectKeywords();
+    method.submit(correctKeywords);
+    method.writeLastCorrectKeywords(&outputFile);
     assertEqual(1, outputFile.writtenCorrectKeywords().count);
 }
 
@@ -657,7 +643,8 @@ ADAPTIVE_METHOD_TEST(writeCorrectCoordinateResponseIsCorrect) {
 
 ADAPTIVE_METHOD_TEST(writeCorrectResponseIsCorrect) {
     initialize();
-    writeCorrectResponse();
+    submitCorrectResponse(method);
+    method.writeLastCorrectResponse(&outputFile);
     assertTrue(outputFile.writtenOpenSetAdaptiveTrial().correct);
 }
 
@@ -670,7 +657,8 @@ ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {
 
 ADAPTIVE_METHOD_TEST(writeIncorrectResponseIsIncorrect) {
     initialize();
-    writeIncorrectResponse();
+    submitIncorrectResponse(method);
+    method.writeLastIncorrectResponse(&outputFile);
     assertFalse(outputFile.writtenOpenSetAdaptiveTrial().correct);
 }
 
