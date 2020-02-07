@@ -178,6 +178,7 @@ void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
         correct();
     else
         incorrect();
+    assignReversals(lastCorrectKeywordsTrial, currentSnrTrack);
     selectNextList();
 }
 

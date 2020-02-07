@@ -237,6 +237,32 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
     }
 };
 
+class WritingCorrectKeywords : public WritingResponseUseCase,
+                                 public WritingTargetUseCase {
+    OutputFile &file_;
+
+  public:
+    explicit WritingCorrectKeywords(OutputFile &file_) : file_{file_} {}
+
+    void run(AdaptiveMethodImpl &method) override {
+        open_set::CorrectKeywords correctKeywords{};
+        method.submit(correctKeywords);
+        method.writeLastCorrectKeywords(&file_);
+    }
+
+    auto writtenReversals(OutputFileStub &file) -> int override {
+        return file.writtenCorrectKeywords().reversals;
+    }
+
+    auto writtenSnr(OutputFileStub &file) -> int override {
+        return file.writtenCorrectKeywords().SNR_dB;
+    }
+
+    auto writtenTarget(OutputFileStub &file) -> std::string override {
+        return file.writtenCorrectKeywords().target;
+    }
+};
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TargetListSetReaderStub targetListSetReader;
@@ -261,6 +287,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     WritingCoordinateResponse writingCoordinateResponse{outputFile};
     WritingCorrectResponse writingCorrectResponse{outputFile};
     WritingIncorrectResponse writingIncorrectResponse{outputFile};
+    WritingCorrectKeywords writingCorrectKeywords{outputFile};
     AdaptiveTest test;
     coordinate_response_measure::Response coordinateResponse{};
     open_set::CorrectKeywords correctKeywords{};
@@ -646,6 +673,10 @@ ADAPTIVE_METHOD_TEST(writeCorrectResponsePassesReversalsAfterUpdatingTrack) {
 
 ADAPTIVE_METHOD_TEST(writeIncorrectResponsePassesReversalsAfterUpdatingTrack) {
     assertWritesUpdatedReversals(writingIncorrectResponse);
+}
+
+ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesReversalsAfterUpdatingTrack) {
+    assertWritesUpdatedReversals(writingCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSnrBeforeUpdatingTrack) {
