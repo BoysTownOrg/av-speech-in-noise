@@ -21,12 +21,17 @@ class TestMethodStub : public TestMethod {
     bool complete_{};
     bool submittedCorrectResponse_{};
     bool submittedIncorrectResponse_{};
+    bool submittedFreeResponse_{};
 
   public:
     auto submittedCorrectResponse() const { return submittedCorrectResponse_; }
 
     auto submittedIncorrectResponse() const {
         return submittedIncorrectResponse_;
+    }
+
+    auto submittedFreeResponse() const {
+        return submittedFreeResponse_;
     }
 
     void setComplete() { complete_ = true; }
@@ -61,7 +66,9 @@ class TestMethodStub : public TestMethod {
         submittedIncorrectResponse_ = true;
     }
 
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submitResponse(const open_set::FreeResponse &) override {
+        submittedFreeResponse_ = true;
+    }
 
     void writeTestingParameters(OutputFile *file) override {
         file->writeTest(AdaptiveTest{});
@@ -1209,6 +1216,12 @@ RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSubmitsIncorrectResponse) {
     run(initializingTest);
     run(submittingIncorrectResponse);
     assertTrue(testMethod.submittedIncorrectResponse());
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSubmitsResponse) {
+    run(initializingTest);
+    run(submittingFreeResponse);
+    assertTrue(testMethod.submittedFreeResponse());
 }
 }
 }
