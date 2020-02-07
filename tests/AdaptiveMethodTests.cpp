@@ -116,7 +116,7 @@ class WritingTargetUseCase : public virtual UseCase {
     virtual auto writtenTarget(OutputFileStub &) -> std::string = 0;
 };
 
-auto writtenAdaptiveCoordinateResponseTrial(OutputFileStub &file)
+auto writtenAdaptiveCoordinateResponseTrial(const OutputFileStub &file)
     -> const coordinate_response_measure::AdaptiveTrial & {
     return file.writtenAdaptiveCoordinateResponseTrial();
 }
@@ -316,10 +316,6 @@ class AdaptiveMethodTests : public ::testing::Test {
         lists.at(n)->setCurrent(std::move(s));
     }
 
-    auto writtenCoordinateResponseTrial() const {
-        return outputFile.writtenAdaptiveCoordinateResponseTrial();
-    }
-
     void writeCoordinateResponse() {
         submitCoordinateResponse();
         method.writeLastCoordinateResponse(&outputFile);
@@ -362,7 +358,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     static auto blueColor() { return coordinate_response_measure::Color::blue; }
 
     auto writtenCoordinateResponseTrialCorrect() -> bool {
-        return writtenCoordinateResponseTrial().correct;
+        return writtenAdaptiveCoordinateResponseTrial(outputFile).correct;
     }
 
     auto snrTrackPushedDown(int n) -> bool { return track(n)->pushedDown(); }
@@ -599,28 +595,28 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
     initialize();
     coordinateResponse.color = blueColor();
     writeCoordinateResponse();
-    assertEqual(blueColor(), writtenCoordinateResponseTrial().subjectColor);
+    assertEqual(blueColor(), writtenAdaptiveCoordinateResponseTrial(outputFile).subjectColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
     initialize();
     evaluator.setCorrectColor(blueColor());
     writeCoordinateResponse();
-    assertEqual(blueColor(), writtenCoordinateResponseTrial().correctColor);
+    assertEqual(blueColor(), writtenAdaptiveCoordinateResponseTrial(outputFile).correctColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
     initialize();
     coordinateResponse.number = 1;
     writeCoordinateResponse();
-    assertEqual(1, writtenCoordinateResponseTrial().subjectNumber);
+    assertEqual(1, writtenAdaptiveCoordinateResponseTrial(outputFile).subjectNumber);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
     initialize();
     evaluator.setCorrectNumber(1);
     writeCoordinateResponse();
-    assertEqual(1, writtenCoordinateResponseTrial().correctNumber);
+    assertEqual(1, writtenAdaptiveCoordinateResponseTrial(outputFile).correctNumber);
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
