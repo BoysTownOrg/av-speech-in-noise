@@ -5,6 +5,7 @@
 #include "TargetListStub.h"
 #include "TrackStub.h"
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <algorithm>
@@ -89,6 +90,14 @@ class SubmittingIncorrectResponse : public UseCase {
   public:
     void run(AdaptiveMethodImpl &method) override {
         method.submitIncorrectResponse();
+    }
+};
+
+class SubmittingCorrectKeywords : public UseCase {
+    open_set::CorrectKeywords correctKeywords;
+  public:
+    void run(AdaptiveMethodImpl &method) override {
+        method.submit(correctKeywords);
     }
 };
 
@@ -192,6 +201,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         evaluator};
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
+    SubmittingCorrectKeywords submittingCorrectKeywords;
     WritingCoordinateResponse writingCoordinateResponse{outputFile};
     WritingCorrectResponse writingCorrectResponse{outputFile};
     WritingIncorrectResponse writingIncorrectResponse{outputFile};
@@ -518,6 +528,12 @@ ADAPTIVE_METHOD_TEST(
     submitIncorrectResponseSelectsListInRangeAfterRemovingCompleteTracks) {
     assertSelectsListInRangeAfterRemovingCompleteTracks(
         submittingIncorrectResponse);
+}
+
+ADAPTIVE_METHOD_TEST(
+    submitCorrectKeywordsSelectsListInRangeAfterRemovingCompleteTracks) {
+    assertSelectsListInRangeAfterRemovingCompleteTracks(
+        submittingCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {

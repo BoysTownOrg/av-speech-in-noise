@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_ADAPTIVEMETHOD_HPP_
 
 #include "Model.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <limits>
 #include <memory>
 #include <vector>
@@ -56,6 +57,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
+    void submit(const open_set::CorrectKeywords &);
     auto complete() -> bool override;
     auto nextTarget() -> std::string override;
     auto currentTarget() -> std::string override;
