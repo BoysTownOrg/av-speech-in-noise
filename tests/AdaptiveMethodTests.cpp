@@ -507,6 +507,11 @@ ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterIncorrectResponse) {
     assertNextReturnsNextFilePathAfter(submittingIncorrectResponse);
 }
 
+ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCorrectKeywords) {
+    initialize();
+    assertNextReturnsNextFilePathAfter(submittingCorrectKeywords);
+}
+
 ADAPTIVE_METHOD_TEST(randomizerPassedIntegerBoundsOfLists) {
     initialize();
     assertRandomizerPassedIntegerBounds(0, 2);
