@@ -207,6 +207,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     WritingIncorrectResponse writingIncorrectResponse{outputFile};
     AdaptiveTest test;
     coordinate_response_measure::Response coordinateResponse{};
+    open_set::CorrectKeywords correctKeywords{};
     TrackingRule targetLevelRule_;
     std::vector<std::shared_ptr<TargetListStub>> lists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
@@ -277,6 +278,10 @@ class AdaptiveMethodTests : public ::testing::Test {
         method.submitResponse(coordinateResponse);
     }
 
+    void submitCorrectKeywords() {
+        method.submit(correctKeywords);
+    }
+
     void submitCorrectResponse() { method.submitCorrectResponse(); }
 
     void submitIncorrectResponse() { method.submitIncorrectResponse(); }
@@ -289,6 +294,10 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void writeLastCoordinateResponse() {
         method.writeLastCoordinateResponse(&outputFile);
+    }
+
+    void writeLastCorrectKeywords() {
+        method.writeLastCorrectKeywords(&outputFile);
     }
 
     void writeLastCorrectResponse() {
@@ -306,6 +315,11 @@ class AdaptiveMethodTests : public ::testing::Test {
     void writeCoordinateResponse() {
         submitCoordinateResponse();
         writeLastCoordinateResponse();
+    }
+
+    void writeCorrectKeywords() {
+        submitCorrectKeywords();
+        writeLastCorrectKeywords();
     }
 
     void writeCorrectResponse() {
@@ -599,6 +613,13 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
     evaluator.setCorrectNumber(1);
     writeCoordinateResponse();
     assertEqual(1, writtenCoordinateResponseTrial().correctNumber);
+}
+
+ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
+    initialize();
+    correctKeywords.count = 1;
+    writeCorrectKeywords();
+    assertEqual(1, outputFile.writtenCorrectKeywords().count);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesReversalsAfterUpdatingTrack) {

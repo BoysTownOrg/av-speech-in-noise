@@ -64,6 +64,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeLastCoordinateResponse(OutputFile *) override;
     void writeLastCorrectResponse(OutputFile *) override;
     void writeLastIncorrectResponse(OutputFile *) override;
+    void writeLastCorrectKeywords(OutputFile *);
     void writeTestingParameters(OutputFile *) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
     void submitResponse(const open_set::FreeResponse &) override;
@@ -91,6 +92,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     Track::Settings trackSettings{};
     coordinate_response_measure::AdaptiveTrial lastTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
+    open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     const AdaptiveTest *test{};
     TargetListReader *targetListSetReader;
     TrackSettingsReader *trackSettingsReader;

@@ -126,6 +126,10 @@ void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
     file->write(lastOpenSetTrial);
 }
 
+void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
+    file->write(lastCorrectKeywordsTrial);
+}
+
 static void assignReversals(open_set::AdaptiveTrial &trial, Track *track) {
     trial.reversals = track->reversals();
 }
@@ -156,7 +160,8 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &) {
+void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
+    lastCorrectKeywordsTrial.count = p.count;
     selectNextList();
 }
 
