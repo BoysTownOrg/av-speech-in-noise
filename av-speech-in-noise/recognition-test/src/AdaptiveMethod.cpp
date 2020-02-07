@@ -1,5 +1,6 @@
 #include "AdaptiveMethod.hpp"
 #include "Model.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
@@ -169,14 +170,17 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     selectNextList();
 }
 
+static auto correct(const open_set::CorrectKeywords &p) -> bool {
+    return p.count >= 2;
+}
+
 void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
-    auto correct_{p.count >= 2};
-    assignCorrectness(lastCorrectKeywordsTrial, correct_);
+    assignCorrectness(lastCorrectKeywordsTrial, av_speech_in_noise::correct(p));
     assignSnr(lastCorrectKeywordsTrial, currentSnrTrack);
     assignTarget(
         lastCorrectKeywordsTrial, fileName(evaluator, currentTarget()));
-    if (correct_)
+    if (av_speech_in_noise::correct(p))
         correct();
     else
         incorrect();
