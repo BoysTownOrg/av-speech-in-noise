@@ -50,14 +50,14 @@ struct FreeResponseTrial : Trial {
     bool flagged{};
 };
 
-struct CorrectKeywordsTrial : Trial {
-    int count;
-};
-
 struct AdaptiveTrial : Trial {
     int SNR_dB{};
     int reversals{};
     bool correct{};
+};
+
+struct CorrectKeywordsTrial : AdaptiveTrial {
+    int count{};
 };
 }
 
