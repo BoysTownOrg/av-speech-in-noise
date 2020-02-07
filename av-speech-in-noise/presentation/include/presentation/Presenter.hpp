@@ -6,6 +6,44 @@
 #include <string>
 
 namespace av_speech_in_noise {
+enum class Method {
+    defaultAdaptiveOpenSet,
+    adaptiveOpenSetKeywords,
+    defaultAdaptiveClosedSet,
+    adaptiveClosedSetSingleSpeaker,
+    adaptiveClosedSetDelayedMasker,
+    defaultFixedLevelOpenSet,
+    fixedLevelOpenSetSilentIntervals,
+    fixedLevelOpenSetAllStimuli,
+    defaultFixedLevelClosedSet,
+    fixedLevelClosedSetSilentIntervals
+};
+
+constexpr auto methodName(Method c) -> const char * {
+    switch (c) {
+    case Method::defaultAdaptiveOpenSet:
+        return "adaptive open-set";
+    case Method::adaptiveOpenSetKeywords:
+        return "adaptive open-set keywords";
+    case Method::defaultAdaptiveClosedSet:
+        return "adaptive closed-set";
+    case Method::adaptiveClosedSetSingleSpeaker:
+        return "adaptive closed-set single speaker";
+    case Method::adaptiveClosedSetDelayedMasker:
+        return "adaptive closed-set delayed masker";
+    case Method::defaultFixedLevelOpenSet:
+        return "fixed-level open-set with replacement";
+    case Method::defaultFixedLevelClosedSet:
+        return "fixed-level closed-set with replacement";
+    case Method::fixedLevelOpenSetSilentIntervals:
+        return "fixed-level open-set silent intervals";
+    case Method::fixedLevelClosedSetSilentIntervals:
+        return "fixed-level closed-set silent intervals";
+    case Method::fixedLevelOpenSetAllStimuli:
+        return "fixed-level open-set all stimuli";
+    }
+}
+
 class View {
   public:
     class Testing {
@@ -124,44 +162,6 @@ class View {
     virtual void showErrorMessage(std::string) = 0;
 };
 
-enum class Method {
-    adaptiveOpenSet,
-    adaptiveOpenSetKeywords,
-    defaultAdaptiveClosedSet,
-    adaptiveClosedSetSingleSpeaker,
-    adaptiveClosedSetDelayedMasker,
-    defaultFixedLevelOpenSet,
-    fixedLevelOpenSetSilentIntervals,
-    fixedLevelOpenSetAllStimuli,
-    defaultFixedLevelClosedSet,
-    fixedLevelClosedSetSilentIntervals
-};
-
-constexpr auto methodName(Method c) -> const char * {
-    switch (c) {
-    case Method::adaptiveOpenSet:
-        return "adaptive open-set";
-    case Method::adaptiveOpenSetKeywords:
-        return "adaptive open-set keywords";
-    case Method::defaultAdaptiveClosedSet:
-        return "adaptive closed-set";
-    case Method::adaptiveClosedSetSingleSpeaker:
-        return "adaptive closed-set single speaker";
-    case Method::adaptiveClosedSetDelayedMasker:
-        return "adaptive closed-set delayed masker";
-    case Method::defaultFixedLevelOpenSet:
-        return "fixed-level open-set with replacement";
-    case Method::defaultFixedLevelClosedSet:
-        return "fixed-level closed-set with replacement";
-    case Method::fixedLevelOpenSetSilentIntervals:
-        return "fixed-level open-set silent intervals";
-    case Method::fixedLevelClosedSetSilentIntervals:
-        return "fixed-level closed-set silent intervals";
-    case Method::fixedLevelOpenSetAllStimuli:
-        return "fixed-level open-set all stimuli";
-    }
-}
-
 class Presenter : public Model::EventListener {
   public:
     class Testing : public View::Testing::EventListener {
@@ -205,7 +205,7 @@ class Presenter : public Model::EventListener {
         auto closedSet() -> bool;
         auto defaultAdaptive() -> bool;
         auto adaptiveClosedSet() -> bool;
-        auto adaptiveOpenSet() -> bool;
+        auto defaultAdaptiveOpenSet() -> bool;
         auto fixedLevelOpenSet() -> bool;
         auto fixedLevelClosedSet() -> bool;
         auto fixedLevelClosedSetSilentIntervals() -> bool;
@@ -306,7 +306,8 @@ class Presenter : public Model::EventListener {
     class AdaptiveOpenSetKeywordsTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveOpenSetKeywordsTestTrialCompletionHandler(Testing &testing)
+        explicit AdaptiveOpenSetKeywordsTestTrialCompletionHandler(
+            Testing &testing)
             : testing{testing} {}
 
         void showResponseView() override { testing.showCorrectKeywordsEntry(); }
@@ -385,7 +386,7 @@ class Presenter : public Model::EventListener {
     void proceedToNextTrial();
     void hideTestSetup();
     auto adaptiveClosedSet() -> bool;
-    auto adaptiveOpenSet() -> bool;
+    auto defaultAdaptiveOpenSet() -> bool;
     auto closedSet() -> bool;
     auto fixedLevelClosedSet() -> bool;
     auto fixedLevelClosedSetSilentIntervals() -> bool;

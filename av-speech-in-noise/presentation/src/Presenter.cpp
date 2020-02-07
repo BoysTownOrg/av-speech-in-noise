@@ -83,8 +83,8 @@ auto Presenter::adaptiveClosedSet() -> bool {
     return testSetup.adaptiveClosedSet();
 }
 
-auto Presenter::adaptiveOpenSet() -> bool {
-    return testSetup.adaptiveOpenSet();
+auto Presenter::defaultAdaptiveOpenSet() -> bool {
+    return testSetup.defaultAdaptiveOpenSet();
 }
 
 auto Presenter::fixedLevelSilentIntervals() -> bool {
@@ -138,7 +138,7 @@ auto Presenter::fixedLevelClosedSet() -> bool {
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
     if (adaptiveClosedSet())
         return &adaptiveClosedSetTrialCompletionHandler;
-    if (adaptiveOpenSet())
+    if (defaultAdaptiveOpenSet())
         return &adaptiveOpenSetTrialCompletionHandler;
     if (adaptiveOpenSetKeywords())
         return &adaptiveOpenSetKeywordsTrialCompletionHandler;
@@ -280,7 +280,7 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
         methodName(Method::adaptiveClosedSetSingleSpeaker),
         methodName(Method::adaptiveClosedSetDelayedMasker),
-        methodName(Method::adaptiveOpenSet),
+        methodName(Method::defaultAdaptiveOpenSet),
         methodName(Method::adaptiveOpenSetKeywords),
         methodName(Method::defaultFixedLevelClosedSet),
         methodName(Method::fixedLevelClosedSetSilentIntervals),
@@ -406,15 +406,15 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
 }
 
 auto Presenter::TestSetup::defaultAdaptive() -> bool {
-    return defaultAdaptiveClosedSet() || adaptiveOpenSet();
+    return defaultAdaptiveClosedSet() || defaultAdaptiveOpenSet();
 }
 
 auto Presenter::TestSetup::defaultAdaptiveClosedSet() -> bool {
     return method(Method::defaultAdaptiveClosedSet);
 }
 
-auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
-    return method(Method::adaptiveOpenSet);
+auto Presenter::TestSetup::defaultAdaptiveOpenSet() -> bool {
+    return method(Method::defaultAdaptiveOpenSet);
 }
 
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
