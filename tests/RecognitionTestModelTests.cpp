@@ -22,6 +22,7 @@ class TestMethodStub : public TestMethod {
     bool submittedCorrectResponse_{};
     bool submittedIncorrectResponse_{};
     bool submittedFreeResponse_{};
+    bool submittedCorrectKeywords_{};
 
   public:
     auto submittedCorrectResponse() const { return submittedCorrectResponse_; }
@@ -30,9 +31,9 @@ class TestMethodStub : public TestMethod {
         return submittedIncorrectResponse_;
     }
 
-    auto submittedFreeResponse() const {
-        return submittedFreeResponse_;
-    }
+    auto submittedFreeResponse() const { return submittedFreeResponse_; }
+
+    auto submittedCorrectKeywords() const { return submittedCorrectKeywords_; }
 
     void setComplete() { complete_ = true; }
 
@@ -90,9 +91,9 @@ class TestMethodStub : public TestMethod {
         log_.insert("writeLastCorrectKeywords ");
     }
 
-    void submit(
-        const open_set::CorrectKeywords &) override {
+    void submit(const open_set::CorrectKeywords &) override {
         log_.insert("submit ");
+        submittedCorrectKeywords_ = true;
     }
 
     void submitResponse(
@@ -276,21 +277,17 @@ class SubmittingFreeResponse : public SubmittingResponse,
 };
 
 class SubmittingCorrectKeywords : public SubmittingResponse,
-                               public TargetWritingUseCase {
+                                  public TargetWritingUseCase {
     open_set::CorrectKeywords k{};
 
   public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.submit(k);
-    }
+    void run(RecognitionTestModelImpl &m) override { m.submit(k); }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
         return file.writtenCorrectKeywords().target;
     }
 
-    void setCorrectKeywords(int n) {
-        k.count = n;
-    }
+    void setCorrectKeywords(int n) { k.count = n; }
 };
 
 class SubmittingCoordinateResponse : public SubmittingResponse {
@@ -1183,8 +1180,8 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsWritesTrialAfterSubmittingResponse) {
-    assertTestMethodLogContains(submittingCorrectKeywords,
-        "submit writeLastCorrectKeywords ");
+    assertTestMethodLogContains(
+        submittingCorrectKeywords, "submit writeLastCorrectKeywords ");
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1221,6 +1218,12 @@ RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSubmitsResponse) {
     run(initializingTest);
     run(submittingFreeResponse);
     assertTrue(testMethod.submittedFreeResponse());
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSubmitsResponse) {
+    run(initializingTest);
+    run(submittingCorrectKeywords);
+    assertTrue(testMethod.submittedCorrectKeywords());
 }
 }
 }
