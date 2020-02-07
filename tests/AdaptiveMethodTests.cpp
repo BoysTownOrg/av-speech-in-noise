@@ -234,12 +234,12 @@ class AdaptiveMethodTests : public ::testing::Test {
     AdaptiveTest test;
     coordinate_response_measure::Response coordinateResponse{};
     open_set::CorrectKeywords correctKeywords{};
-    TrackingRule targetLevelRule_;
+    TrackingRule targetLevelRule;
     std::vector<std::shared_ptr<TargetListStub>> lists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
 
     AdaptiveMethodTests() : lists(3), tracks(3) {
-        trackSettingsReader.setTrackingRule(&targetLevelRule_);
+        trackSettingsReader.setTrackingRule(&targetLevelRule);
         std::generate(lists.begin(), lists.end(),
             []() { return std::make_shared<TargetListStub>(); });
         std::generate(tracks.begin(), tracks.end(),
@@ -260,7 +260,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     void initialize() { method.initialize(test); }
 
     void assertPassedTargetLevelRule(const Track::Settings &s) {
-        assertEqual(&std::as_const(targetLevelRule_), s.rule);
+        assertEqual(&std::as_const(targetLevelRule), s.rule);
     }
 
     void assertStartingXEqualsOne(const Track::Settings &s) {
@@ -316,44 +316,28 @@ class AdaptiveMethodTests : public ::testing::Test {
         lists.at(n)->setCurrent(std::move(s));
     }
 
-    void writeLastCoordinateResponse() {
-        method.writeLastCoordinateResponse(&outputFile);
-    }
-
-    void writeLastCorrectKeywords() {
-        method.writeLastCorrectKeywords(&outputFile);
-    }
-
-    void writeLastCorrectResponse() {
-        method.writeLastCorrectResponse(&outputFile);
-    }
-
-    void writeLastIncorrectResponse() {
-        method.writeLastIncorrectResponse(&outputFile);
-    }
-
     auto writtenCoordinateResponseTrial() const {
         return outputFile.writtenAdaptiveCoordinateResponseTrial();
     }
 
     void writeCoordinateResponse() {
         submitCoordinateResponse();
-        writeLastCoordinateResponse();
+        method.writeLastCoordinateResponse(&outputFile);
     }
 
     void writeCorrectKeywords() {
         submitCorrectKeywords();
-        writeLastCorrectKeywords();
+        method.writeLastCorrectKeywords(&outputFile);
     }
 
     void writeCorrectResponse() {
         submitCorrectResponse();
-        writeLastCorrectResponse();
+        method.writeLastCorrectResponse(&outputFile);
     }
 
     void writeIncorrectResponse() {
         submitIncorrectResponse();
-        writeLastIncorrectResponse();
+        method.writeLastIncorrectResponse(&outputFile);
     }
 
     void assertWritesUpdatedReversals(WritingResponseUseCase &useCase) {
