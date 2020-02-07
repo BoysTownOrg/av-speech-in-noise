@@ -148,14 +148,14 @@ static auto fileName(ResponseEvaluator *evaluator, const std::string &target)
     return evaluator->fileName(target);
 }
 
-static auto target(open_set::Trial &trial) -> std::string & {
-    return trial.target;
+static void assignTarget(open_set::Trial &trial, std::string s) {
+    trial.target = std::move(s);
 }
 
 void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    target(lastOpenSetTrial) = fileName(evaluator, currentTarget());
+    assignTarget(lastOpenSetTrial, fileName(evaluator, currentTarget()));
     incorrect();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
@@ -164,7 +164,7 @@ void AdaptiveMethodImpl::submitIncorrectResponse() {
 void AdaptiveMethodImpl::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    target(lastOpenSetTrial) = fileName(evaluator, currentTarget());
+    assignTarget(lastOpenSetTrial, fileName(evaluator, currentTarget()));
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
@@ -172,7 +172,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
 
 void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
-    target(lastCorrectKeywordsTrial) = fileName(evaluator, currentTarget());
+    assignTarget(lastCorrectKeywordsTrial, fileName(evaluator, currentTarget()));
     selectNextList();
 }
 
