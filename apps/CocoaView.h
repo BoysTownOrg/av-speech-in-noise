@@ -36,7 +36,7 @@ class CocoaTestingView;
 @interface TestingViewActions : NSObject
 @property CocoaTestingView *controller;
 - (void) playTrial;
-- (void) submitResponse;
+- (void) submitFreeResponse;
 - (void) submitPassedTrial;
 - (void) submitFailedTrial;
 - (void) submitCorrectKeywords;
@@ -75,7 +75,7 @@ public:
     CocoaTestingView(NSRect);
     NSView *view();
     void playTrial();
-    void submitResponse();
+    void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();
     void exitTest();

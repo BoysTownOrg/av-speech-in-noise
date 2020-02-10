@@ -541,7 +541,7 @@ class ViewStub : public View {
 
         auto flagged() -> bool override { return flagged_; }
 
-        void submitResponse() { listener_->submitResponse(); }
+        void submitFreeResponse() { listener_->submitFreeResponse(); }
     };
 
     class ExperimenterViewStub : public Experimenter {
@@ -1541,7 +1541,7 @@ class RespondingFromExperimenter : public TrialSubmission {
     explicit RespondingFromExperimenter(ViewStub::TestingViewStub *view)
         : view{view} {}
 
-    void run() override { view->submitResponse(); }
+    void run() override { view->submitFreeResponse(); }
 
     auto nextTrialButtonShown() -> bool override {
         return view->nextTrialButtonShown();
@@ -1840,7 +1840,7 @@ class PresenterTests : public ::testing::Test {
 
     void respondFromSubject() { subjectView.submitResponse(); }
 
-    void respondFromExperimenter() { testingView.submitResponse(); }
+    void respondFromExperimenter() { testingView.submitFreeResponse(); }
 
     void exitTest() { experimenterView.exitTest(); }
 

@@ -568,7 +568,7 @@ void Presenter::Testing::showResponseSubmission() {
     view->showResponseSubmission();
 }
 
-void Presenter::Testing::submitResponse() {
+void Presenter::Testing::submitFreeResponse() {
     parent->submitExperimenterResponse();
     view->hideResponseSubmission();
     showNextTrialButton();

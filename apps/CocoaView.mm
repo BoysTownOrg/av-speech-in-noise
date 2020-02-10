@@ -830,8 +830,8 @@ void CocoaTestingView::playTrial() {
     listener_->playTrial();
 }
 
-void CocoaTestingView::submitResponse() {
-    listener_->submitResponse();
+void CocoaTestingView::submitFreeResponse() {
+    listener_->submitFreeResponse();
 }
 
 void CocoaTestingView::submitPassedTrial() {
@@ -853,8 +853,8 @@ void CocoaTestingView::submitCorrectKeywords() {
     controller->playTrial();
 }
 
-- (void)submitResponse { 
-    controller->submitResponse();
+- (void)submitFreeResponse { 
+    controller->submitFreeResponse();
 }
 
 - (void)submitPassedTrial {

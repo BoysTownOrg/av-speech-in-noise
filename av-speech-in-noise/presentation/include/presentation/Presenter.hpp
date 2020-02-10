@@ -55,7 +55,7 @@ class View {
             virtual void submitPassedTrial() = 0;
             virtual void submitCorrectKeywords() = 0;
             virtual void submitFailedTrial() = 0;
-            virtual void submitResponse() = 0;
+            virtual void submitFreeResponse() = 0;
         };
 
         virtual ~Testing() = default;
@@ -179,7 +179,7 @@ class Presenter : public Model::EventListener {
         auto correctKeywords() -> open_set::CorrectKeywords;
         void playTrial() override;
         void submitPassedTrial() override;
-        void submitResponse() override;
+        void submitFreeResponse() override;
         void submitFailedTrial() override;
         void submitCorrectKeywords() override;
 
