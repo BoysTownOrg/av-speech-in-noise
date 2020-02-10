@@ -86,7 +86,7 @@ public:
     void show() override;
     void hide() override;
     void showEvaluationButtons() override;
-    void showResponseSubmission() override;
+    void showFreeResponseSubmission() override;
     std::string freeResponse() override;
     auto correctKeywords() -> std::string override;
     bool flagged() override;

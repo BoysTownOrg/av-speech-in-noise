@@ -790,7 +790,7 @@ void CocoaTestingView::showEvaluationButtons() {
     [evaluationButtons setHidden:NO];
 }
 
-void CocoaTestingView::showResponseSubmission() {
+void CocoaTestingView::showFreeResponseSubmission() {
     [responseSubmission setHidden:NO];
 }
 

@@ -60,13 +60,13 @@ class View {
 
         virtual ~Testing() = default;
         virtual void subscribe(EventListener *) = 0;
-        virtual void showNextTrialButton() = 0;
-        virtual void hideNextTrialButton() = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
+        virtual void showNextTrialButton() = 0;
+        virtual void hideNextTrialButton() = 0;
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
-        virtual void showResponseSubmission() = 0;
+        virtual void showFreeResponseSubmission() = 0;
         virtual void hideResponseSubmission() = 0;
         virtual void showCorrectKeywordsSubmission() = 0;
         virtual void hideCorrectKeywordsSubmission() = 0;
@@ -172,7 +172,7 @@ class Presenter : public Model::EventListener {
         void hide();
         void showEvaluationButtons();
         void showCorrectKeywordsSubmission();
-        void showResponseSubmission();
+        void showFreeResponseSubmission();
         void showNextTrialButton();
         void hideCorrectKeywordsSubmission();
         auto openSetResponse() -> open_set::FreeResponse;
@@ -323,7 +323,7 @@ class Presenter : public Model::EventListener {
         explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing &testing)
             : testing{testing} {}
 
-        void showResponseView() override { testing.showResponseSubmission(); }
+        void showResponseView() override { testing.showFreeResponseSubmission(); }
 
       private:
         Testing &testing;

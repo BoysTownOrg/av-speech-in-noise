@@ -564,8 +564,8 @@ void Presenter::Testing::showCorrectKeywordsSubmission() {
     view->showCorrectKeywordsSubmission();
 }
 
-void Presenter::Testing::showResponseSubmission() {
-    view->showResponseSubmission();
+void Presenter::Testing::showFreeResponseSubmission() {
+    view->showFreeResponseSubmission();
 }
 
 void Presenter::Testing::submitFreeResponse() {

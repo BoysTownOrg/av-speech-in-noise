@@ -509,7 +509,7 @@ class ViewStub : public View {
 
         auto freeResponse() -> std::string override { return response_; }
 
-        void showResponseSubmission() override {
+        void showFreeResponseSubmission() override {
             responseSubmissionShown_ = true;
         }
 
