@@ -810,7 +810,7 @@ void CocoaTestingView::hideCorrectKeywordsSubmission() {
     [correctKeywordsSubmission setHidden:YES];
 }
 
-std::string CocoaTestingView::response() {
+std::string CocoaTestingView::freeResponse() {
     return response_.stringValue.UTF8String;
 }
 

@@ -575,7 +575,7 @@ void Presenter::Testing::submitFreeResponse() {
 }
 
 auto Presenter::Testing::openSetResponse() -> open_set::FreeResponse {
-    return {view->response(), view->flagged()};
+    return {view->freeResponse(), view->flagged()};
 }
 
 auto Presenter::Testing::correctKeywords() -> open_set::CorrectKeywords {

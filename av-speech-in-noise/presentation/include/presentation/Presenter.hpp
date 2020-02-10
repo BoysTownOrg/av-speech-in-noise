@@ -70,7 +70,7 @@ class View {
         virtual void hideResponseSubmission() = 0;
         virtual void showCorrectKeywordsSubmission() = 0;
         virtual void hideCorrectKeywordsSubmission() = 0;
-        virtual auto response() -> std::string = 0;
+        virtual auto freeResponse() -> std::string = 0;
         virtual auto correctKeywords() -> std::string = 0;
         virtual auto flagged() -> bool = 0;
     };

@@ -507,7 +507,7 @@ class ViewStub : public View {
             evaluationButtonsShown_ = true;
         }
 
-        auto response() -> std::string override { return response_; }
+        auto freeResponse() -> std::string override { return response_; }
 
         void showResponseSubmission() override {
             responseSubmissionShown_ = true;
