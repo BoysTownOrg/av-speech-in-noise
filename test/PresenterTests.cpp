@@ -9,119 +9,114 @@ TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
 
 #define PRESENTER_TEST(a) TEST_F(PresenterTests, a)
 
-TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestHidesTestSetupView) {
+PRESENTER_TEST(confirmAdaptiveOpenSetKeywordsTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
-TEST_F(
-    PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsExperimenterView) {
+PRESENTER_TEST(confirmAdaptiveOpenSetKeywordsTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTestingView) {
+PRESENTER_TEST(confirmAdaptiveOpenSetKeywordsTestShowsTestingView) {
     assertShowsTestingView(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
-TEST_F(
-    PresenterTests, confirmAdaptiveOpenSetKeywordsTestDoesNotShowSubjectView) {
+PRESENTER_TEST(confirmAdaptiveOpenSetKeywordsTestDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     confirmAdaptiveOpenSetKeywordsTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(
         confirmingAdaptiveOpenSetKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetKeywordsTestPassesStartingSnr) {
+PRESENTER_TEST(confirmingAdaptiveOpenSetKeywordsTestPassesStartingSnr) {
     assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetKeywordsTestPassesMaskerLevel) {
+PRESENTER_TEST(confirmingAdaptiveOpenSetKeywordsTestPassesMaskerLevel) {
     assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     confirmAdaptiveOpenSetKeywordsTestShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingAdaptiveOpenSetKeywordsTest, playingTrialFromExperimenter);
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsPassesCorrectKeywords) {
+PRESENTER_TEST(enteringCorrectKeywordsPassesCorrectKeywords) {
     setCorrectKeywords("1");
     run(enteringCorrectKeywords);
     assertEqual(1, model.correctKeywords());
 }
 
-TEST_F(PresenterTests, enteringInvalidCorrectKeywordsShowsErrorMessage) {
+PRESENTER_TEST(enteringInvalidCorrectKeywordsShowsErrorMessage) {
     setCorrectKeywords("a");
     run(enteringCorrectKeywords);
     assertErrorMessageEquals("'a' is not a valid number.");
 }
 
-TEST_F(PresenterTests, enteringInvalidCorrectKeywordsDoesNotHideEntry) {
+PRESENTER_TEST(enteringInvalidCorrectKeywordsDoesNotHideEntry) {
     setCorrectKeywords("a");
     run(enteringCorrectKeywords);
     assertFalse(enteringCorrectKeywords.responseViewHidden());
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsShowsSetupViewWhenTestComplete) {
+PRESENTER_TEST(enteringCorrectKeywordsShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(enteringCorrectKeywords);
 }
 
-TEST_F(PresenterTests,
-    enteringCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
+PRESENTER_TEST(enteringCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(enteringCorrectKeywords);
 }
 
-TEST_F(PresenterTests,
-    enteringCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
+PRESENTER_TEST(enteringCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(enteringCorrectKeywords);
 }
 
-TEST_F(
-    PresenterTests, enteringCorrectKeywordsHidesTestingViewWhenTestComplete) {
+PRESENTER_TEST(enteringCorrectKeywordsHidesTestingViewWhenTestComplete) {
     assertCompleteTestHidesTestingView(enteringCorrectKeywords);
 }
 
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     enteringCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(enteringCorrectKeywords);
 }
 
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     enteringCorrectKeywordsDoesNotHideTestingViewWhenTestIncomplete) {
     assertDoesNotHideTestingView(enteringCorrectKeywords);
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsShowsNextTrialButton) {
+PRESENTER_TEST(enteringCorrectKeywordsShowsNextTrialButton) {
     assertShowsNextTrialButton(enteringCorrectKeywords);
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsHidesCorrectKeywordsEntry) {
+PRESENTER_TEST(enteringCorrectKeywordsHidesCorrectKeywordsEntry) {
     assertResponseViewHidden(enteringCorrectKeywords);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTrialNumber) {
+PRESENTER_TEST(confirmAdaptiveOpenSetKeywordsTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsShowsTrialNumber) {
+PRESENTER_TEST(enteringCorrectKeywordsShowsTrialNumber) {
     assertShowsTrialNumber(enteringCorrectKeywords);
 }
 
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveOpenSetKeywordsTest) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveOpenSetKeywordsTest, enteringCorrectKeywords);
 }
 
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     confirmAdaptiveOpenSetKeywordsTestWithInvalidSnrShowsErrorMessage) {
     assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetKeywordsTest);
 }
 
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     confirmAdaptiveOpenSetKeywordsTestWithInvalidInputDoesNotHideSetupView) {
     assertSetupViewNotHiddenWhenSnrIsInvalid(
         confirmingAdaptiveOpenSetKeywordsTest);
@@ -167,8 +162,7 @@ PRESENTER_TEST(
     assertHidesTestSetupView(confirmingAdaptiveClosedSetTestWithDelayedMasker);
 }
 
-PRESENTER_TEST(
-    confirmAdaptiveClosedSetTestWithEyeTrackingHidesTestSetupView) {
+PRESENTER_TEST(confirmAdaptiveClosedSetTestWithEyeTrackingHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveClosedSetTestWithEyeTracking);
 }
 
@@ -307,7 +301,8 @@ PRESENTER_TEST(
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
-PRESENTER_TEST(confirmDefaultAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
+PRESENTER_TEST(
+    confirmDefaultAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(
         confirmingDefaultAdaptiveClosedSetTest);
 }
@@ -599,7 +594,8 @@ PRESENTER_TEST(playCalibrationPassesAuditoryOnlyCondition) {
     assertAuditoryOnlyConditionPassedToModel(playingCalibration);
 }
 
-PRESENTER_TEST(confirmDefaultAdaptiveClosedSetTestShowsNextTrialButtonForSubject) {
+PRESENTER_TEST(
+    confirmDefaultAdaptiveClosedSetTestShowsNextTrialButtonForSubject) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingDefaultAdaptiveClosedSetTest, playingTrialFromSubject);
 }
@@ -1016,8 +1012,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTestWithEyeTracking) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveClosedSetTestWithEyeTracking,
-        respondingFromSubject);
+        confirmingAdaptiveClosedSetTestWithEyeTracking, respondingFromSubject);
 }
 
 PRESENTER_TEST(

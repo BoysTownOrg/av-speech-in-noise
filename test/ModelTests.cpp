@@ -122,7 +122,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     }
 
     void submit(
-        const open_set::CorrectKeywords &p) {
+        const open_set::CorrectKeywords &p) override {
         correctKeywords_ = &p;
     }
 

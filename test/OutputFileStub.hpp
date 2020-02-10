@@ -52,7 +52,7 @@ class OutputFileStub : public OutputFile {
         writtenFreeResponseTrial_ = p;
     }
 
-    void write(const open_set::CorrectKeywordsTrial &p) {
+    void write(const open_set::CorrectKeywordsTrial &p) override {
         addToLog("writeTrial ");
         writtenCorrectKeywords_ = p;
     }
