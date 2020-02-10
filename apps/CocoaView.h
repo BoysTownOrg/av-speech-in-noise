@@ -39,6 +39,7 @@ class CocoaTestingView;
 - (void) submitResponse;
 - (void) submitPassedTrial;
 - (void) submitFailedTrial;
+- (void) submitCorrectKeywords;
 @end
 
 class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
@@ -64,6 +65,7 @@ class CocoaTestingView : public av_speech_in_noise::View::Testing {
     NSView *nextTrialButton;
     NSView *evaluationButtons;
     NSView *responseSubmission;
+    NSView *correctKeywordsSubmission;
     NSTextField *response_;
     NSTextField *correctKeywords_;
     NSButton *flagged_;
@@ -77,6 +79,7 @@ public:
     void submitPassedTrial();
     void submitFailedTrial();
     void exitTest();
+    void submitCorrectKeywords();
     void subscribe(EventListener *) override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
@@ -89,6 +92,8 @@ public:
     bool flagged() override;
     void hideResponseSubmission() override;
     void hideEvaluationButtons() override;
+    void showCorrectKeywordsEntry() override;
+    void hideCorrectKeywordsEntry() override;
 };
 
 class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
