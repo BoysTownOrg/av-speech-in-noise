@@ -99,8 +99,7 @@ class TestMethodStub : public TestMethod {
         submittedCorrectKeywords_ = true;
     }
 
-    void submit(
-        const coordinate_response_measure::Response &) override {
+    void submit(const coordinate_response_measure::Response &) override {
         insert(log_, "submitResponse ");
     }
 
@@ -491,7 +490,9 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(x, targetPlayerLevel_dB());
     }
 
-    void setMaskerLevel_dB_SPL(int x) { av_speech_in_noise::setMaskerLevel_dB_SPL(test, x); }
+    void setMaskerLevel_dB_SPL(int x) {
+        av_speech_in_noise::setMaskerLevel_dB_SPL(test, x);
+    }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
         av_speech_in_noise::setTestingFullScaleLevel_dB_SPL(test, x);

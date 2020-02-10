@@ -238,7 +238,7 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
 };
 
 class WritingCorrectKeywords : public WritingResponseUseCase,
-                                 public WritingTargetUseCase {
+                               public WritingTargetUseCase {
     OutputFile &file_;
 
   public:
@@ -357,9 +357,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         assertEqual(b, randomizer.upperIntBound());
     }
 
-    void submitCoordinateResponse() {
-        method.submit(coordinateResponse);
-    }
+    void submitCoordinateResponse() { method.submit(coordinateResponse); }
 
     auto track(gsl::index n) { return tracks.at(n); }
 
@@ -809,8 +807,7 @@ ADAPTIVE_METHOD_TEST(
 
 ADAPTIVE_METHOD_TEST(
     submitCorrectKeywordsSelectsListAmongThoseWithIncompleteTracks) {
-    assertSelectsListAmongThoseWithIncompleteTracks(
-        submittingCorrectKeywords);
+    assertSelectsListAmongThoseWithIncompleteTracks(submittingCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
