@@ -7,8 +7,8 @@
 
 namespace av_speech_in_noise {
 enum class Method {
-    defaultAdaptiveOpenSet,
-    adaptiveOpenSetCorrectKeywords,
+    adaptivePassFail,
+    adaptiveCorrectKeywords,
     defaultAdaptiveClosedSet,
     adaptiveClosedSetSingleSpeaker,
     adaptiveClosedSetDelayedMasker,
@@ -21,9 +21,9 @@ enum class Method {
 
 constexpr auto methodName(Method c) -> const char * {
     switch (c) {
-    case Method::defaultAdaptiveOpenSet:
+    case Method::adaptivePassFail:
         return "adaptive open-set";
-    case Method::adaptiveOpenSetCorrectKeywords:
+    case Method::adaptiveCorrectKeywords:
         return "adaptive open-set correct keywords";
     case Method::defaultAdaptiveClosedSet:
         return "adaptive closed-set";
@@ -206,7 +206,7 @@ class Presenter : public Model::EventListener {
         auto closedSet() -> bool;
         auto defaultAdaptive() -> bool;
         auto adaptiveClosedSet() -> bool;
-        auto defaultAdaptiveOpenSet() -> bool;
+        auto adaptivePassFail() -> bool;
         auto fixedLevelOpenSet() -> bool;
         auto fixedLevelClosedSet() -> bool;
         auto fixedLevelClosedSetSilentIntervals() -> bool;
@@ -215,7 +215,7 @@ class Presenter : public Model::EventListener {
         auto singleSpeaker() -> bool;
         auto adaptiveClosedSetDelayedMasker() -> bool;
         auto adaptiveClosedSetSingleSpeaker() -> bool;
-        auto adaptiveOpenSetCorrectKeywords() -> bool;
+        auto adaptiveCorrectKeywords() -> bool;
         auto delayedMasker() -> bool;
         void playCalibration() override;
         void browseForTargetList() override;
@@ -371,7 +371,7 @@ class Presenter : public Model::EventListener {
     auto delayedMasker() -> bool;
     auto adaptiveClosedSetDelayedMasker() -> bool;
     auto adaptiveClosedSetSingleSpeaker() -> bool;
-    auto adaptiveOpenSetCorrectKeywords() -> bool;
+    auto adaptiveCorrectKeywords() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
@@ -387,7 +387,7 @@ class Presenter : public Model::EventListener {
     void proceedToNextTrial();
     void hideTestSetup();
     auto adaptiveClosedSet() -> bool;
-    auto defaultAdaptiveOpenSet() -> bool;
+    auto adaptivePassFail() -> bool;
     auto closedSet() -> bool;
     auto fixedLevelClosedSet() -> bool;
     auto fixedLevelClosedSetSilentIntervals() -> bool;

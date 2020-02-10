@@ -69,7 +69,7 @@ void Presenter::initializeTest() {
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetSingleSpeaker())
         model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (defaultAdaptive() || adaptiveOpenSetCorrectKeywords())
+    else if (defaultAdaptive() || adaptiveCorrectKeywords())
         model.initializeTest(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
         model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
@@ -83,8 +83,8 @@ auto Presenter::adaptiveClosedSet() -> bool {
     return testSetup.adaptiveClosedSet();
 }
 
-auto Presenter::defaultAdaptiveOpenSet() -> bool {
-    return testSetup.defaultAdaptiveOpenSet();
+auto Presenter::adaptivePassFail() -> bool {
+    return testSetup.adaptivePassFail();
 }
 
 auto Presenter::fixedLevelSilentIntervals() -> bool {
@@ -103,8 +103,8 @@ auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
     return testSetup.adaptiveClosedSetSingleSpeaker();
 }
 
-auto Presenter::adaptiveOpenSetCorrectKeywords() -> bool {
-    return testSetup.adaptiveOpenSetCorrectKeywords();
+auto Presenter::adaptiveCorrectKeywords() -> bool {
+    return testSetup.adaptiveCorrectKeywords();
 }
 
 auto Presenter::testComplete() -> bool { return model.testComplete(); }
@@ -138,9 +138,9 @@ auto Presenter::fixedLevelClosedSet() -> bool {
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
     if (adaptiveClosedSet())
         return &adaptiveClosedSetTrialCompletionHandler;
-    if (defaultAdaptiveOpenSet())
+    if (adaptivePassFail())
         return &adaptiveOpenSetTrialCompletionHandler;
-    if (adaptiveOpenSetCorrectKeywords())
+    if (adaptiveCorrectKeywords())
         return &adaptiveOpenSetKeywordsTrialCompletionHandler;
     if (fixedLevelClosedSet())
         return &fixedLevelClosedSetTrialCompletionHandler;
@@ -282,8 +282,8 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
         methodName(Method::adaptiveClosedSetSingleSpeaker),
         methodName(Method::adaptiveClosedSetDelayedMasker),
-        methodName(Method::defaultAdaptiveOpenSet),
-        methodName(Method::adaptiveOpenSetCorrectKeywords),
+        methodName(Method::adaptivePassFail),
+        methodName(Method::adaptiveCorrectKeywords),
         methodName(Method::defaultFixedLevelClosedSet),
         methodName(Method::fixedLevelClosedSetSilentIntervals),
         methodName(Method::defaultFixedLevelOpenSet),
@@ -408,15 +408,15 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
 }
 
 auto Presenter::TestSetup::defaultAdaptive() -> bool {
-    return defaultAdaptiveClosedSet() || defaultAdaptiveOpenSet();
+    return defaultAdaptiveClosedSet() || adaptivePassFail();
 }
 
 auto Presenter::TestSetup::defaultAdaptiveClosedSet() -> bool {
     return method(Method::defaultAdaptiveClosedSet);
 }
 
-auto Presenter::TestSetup::defaultAdaptiveOpenSet() -> bool {
-    return method(Method::defaultAdaptiveOpenSet);
+auto Presenter::TestSetup::adaptivePassFail() -> bool {
+    return method(Method::adaptivePassFail);
 }
 
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
@@ -432,8 +432,8 @@ auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
     return method(Method::adaptiveClosedSetSingleSpeaker);
 }
 
-auto Presenter::TestSetup::adaptiveOpenSetCorrectKeywords() -> bool {
-    return method(Method::adaptiveOpenSetCorrectKeywords);
+auto Presenter::TestSetup::adaptiveCorrectKeywords() -> bool {
+    return method(Method::adaptiveCorrectKeywords);
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {

@@ -999,7 +999,7 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
         : confirmingAdaptiveTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::defaultAdaptiveOpenSet);
+        setMethod(view, Method::adaptivePassFail);
         presentation::run(confirmingAdaptiveTest);
     }
 
@@ -1069,7 +1069,7 @@ class ConfirmingAdaptiveOpenSetKeywordsTest : public ConfirmingAdaptiveTest_ {
         : confirmingAdaptiveTest{view}, view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveOpenSetCorrectKeywords);
+        setMethod(view, Method::adaptiveCorrectKeywords);
         presentation::run(confirmingAdaptiveTest);
     }
 

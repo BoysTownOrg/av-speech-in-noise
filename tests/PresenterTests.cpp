@@ -12,8 +12,8 @@ TEST_F(PresenterTests, populatesMethodMenu) {
     assertSetupViewMethodsContains(Method::fixedLevelOpenSetAllStimuli);
     assertSetupViewMethodsContains(Method::fixedLevelOpenSetSilentIntervals);
     assertSetupViewMethodsContains(Method::fixedLevelClosedSetSilentIntervals);
-    assertSetupViewMethodsContains(Method::defaultAdaptiveOpenSet);
-    assertSetupViewMethodsContains(Method::adaptiveOpenSetCorrectKeywords);
+    assertSetupViewMethodsContains(Method::adaptivePassFail);
+    assertSetupViewMethodsContains(Method::adaptiveCorrectKeywords);
     assertSetupViewMethodsContains(Method::defaultAdaptiveClosedSet);
     assertSetupViewMethodsContains(Method::adaptiveClosedSetSingleSpeaker);
     assertSetupViewMethodsContains(Method::adaptiveClosedSetDelayedMasker);
