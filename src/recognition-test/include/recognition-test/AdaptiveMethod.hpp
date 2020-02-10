@@ -57,12 +57,14 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
+    void submit(const open_set::CorrectKeywords &) override;
     auto complete() -> bool override;
     auto nextTarget() -> std::string override;
     auto currentTarget() -> std::string override;
     void writeLastCoordinateResponse(OutputFile *) override;
     void writeLastCorrectResponse(OutputFile *) override;
     void writeLastIncorrectResponse(OutputFile *) override;
+    void writeLastCorrectKeywords(OutputFile *) override;
     void writeTestingParameters(OutputFile *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const open_set::FreeResponse &) override;
@@ -90,6 +92,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     Track::Settings trackSettings{};
     coordinate_response_measure::AdaptiveTrial lastTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
+    open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     const AdaptiveTest *test{};
     TargetListReader &targetListSetReader;
     TrackSettingsReader &trackSettingsReader;

@@ -15,6 +15,7 @@ class OutputFile {
     virtual void write(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
     virtual void write(const open_set::FreeResponseTrial &) = 0;
+    virtual void write(const open_set::CorrectKeywordsTrial &) = 0;
     virtual void write(const open_set::AdaptiveTrial &) = 0;
     virtual void writeTest(const AdaptiveTest &) = 0;
     virtual void writeTest(const FixedLevelTest &) = 0;
@@ -32,9 +33,11 @@ class TestMethod {
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual void submit(const open_set::FreeResponse &) = 0;
+    virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual void writeTestingParameters(OutputFile *) = 0;
     virtual void writeLastCoordinateResponse(OutputFile *) = 0;
     virtual void writeLastCorrectResponse(OutputFile *) = 0;
+    virtual void writeLastCorrectKeywords(OutputFile *) = 0;
     virtual void writeLastIncorrectResponse(OutputFile *) = 0;
     virtual void submit(
         const coordinate_response_measure::Response &) = 0;

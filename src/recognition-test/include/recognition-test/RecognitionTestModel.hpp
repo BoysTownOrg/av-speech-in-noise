@@ -109,6 +109,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     void submit(const open_set::FreeResponse &) override;
+    void submit(const open_set::CorrectKeywords &) override;
     void throwIfTrialInProgress() override;
     void fadeInComplete(const AudioSampleTime &) override;
     void fadeOutComplete() override;
@@ -121,6 +122,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
     void write(const open_set::FreeResponse &p);
+    void write(const open_set::CorrectKeywords &p);
     void prepareTest(const Test &);
     void storeLevels(const Test &common);
     void preparePlayersForNextTrial();

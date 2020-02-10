@@ -9,13 +9,132 @@ TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
 
 #define PRESENTER_TEST(a) TEST_F(PresenterTests, a)
 
+TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
+TEST_F(
+    PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsExperimenterView) {
+    assertShowsExperimenterView(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
+TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTestingView) {
+    assertShowsTestingView(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
+TEST_F(
+    PresenterTests, confirmAdaptiveOpenSetKeywordsTestDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
+TEST_F(PresenterTests,
+    confirmAdaptiveOpenSetKeywordsTestDoesNotInitializeFixedLevelTest) {
+    assertDoesNotInitializeFixedLevelTest(
+        confirmingAdaptiveOpenSetKeywordsTest);
+}
+
+TEST_F(PresenterTests, confirmingAdaptiveOpenSetKeywordsTestPassesStartingSnr) {
+    assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
+TEST_F(PresenterTests, confirmingAdaptiveOpenSetKeywordsTestPassesMaskerLevel) {
+    assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
+TEST_F(PresenterTests,
+    confirmAdaptiveOpenSetKeywordsTestShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingAdaptiveOpenSetKeywordsTest, playingTrialFromExperimenter);
+}
+
+TEST_F(PresenterTests, enteringCorrectKeywordsPassesCorrectKeywords) {
+    setCorrectKeywords("1");
+    run(enteringCorrectKeywords);
+    assertEqual(1, model.correctKeywords());
+}
+
+TEST_F(PresenterTests, enteringInvalidCorrectKeywordsShowsErrorMessage) {
+    setCorrectKeywords("a");
+    run(enteringCorrectKeywords);
+    assertErrorMessageEquals("'a' is not a valid number.");
+}
+
+TEST_F(PresenterTests, enteringInvalidCorrectKeywordsDoesNotHideEntry) {
+    setCorrectKeywords("a");
+    run(enteringCorrectKeywords);
+    assertFalse(enteringCorrectKeywords.responseViewHidden());
+}
+
+TEST_F(PresenterTests, enteringCorrectKeywordsShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests,
+    enteringCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests,
+    enteringCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(enteringCorrectKeywords);
+}
+
+TEST_F(
+    PresenterTests, enteringCorrectKeywordsHidesTestingViewWhenTestComplete) {
+    assertCompleteTestHidesTestingView(enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests,
+    enteringCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests,
+    enteringCorrectKeywordsDoesNotHideTestingViewWhenTestIncomplete) {
+    assertDoesNotHideTestingView(enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests, enteringCorrectKeywordsShowsNextTrialButton) {
+    assertShowsNextTrialButton(enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests, enteringCorrectKeywordsHidesCorrectKeywordsEntry) {
+    assertResponseViewHidden(enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
+TEST_F(PresenterTests, enteringCorrectKeywordsShowsTrialNumber) {
+    assertShowsTrialNumber(enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests,
+    completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveOpenSetKeywordsTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptiveOpenSetKeywordsTest, enteringCorrectKeywords);
+}
+
+TEST_F(PresenterTests,
+    confirmAdaptiveOpenSetKeywordsTestWithInvalidSnrShowsErrorMessage) {
+    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetKeywordsTest);
+}
+
+TEST_F(PresenterTests,
+    confirmAdaptiveOpenSetKeywordsTestWithInvalidInputDoesNotHideSetupView) {
+    assertSetupViewNotHiddenWhenSnrIsInvalid(
+        confirmingAdaptiveOpenSetKeywordsTest);
+}
+
 PRESENTER_TEST(populatesConditionMenu) {
     assertSetupViewConditionsContains(auditoryOnlyConditionName());
     assertSetupViewConditionsContains(audioVisualConditionName());
 }
 
 PRESENTER_TEST(populatesMethodMenu) {
-    assertSetupViewMethodsContains(Method::adaptiveOpenSet);
+    assertSetupViewMethodsContains(Method::adaptivePassFail);
+    assertSetupViewMethodsContains(Method::adaptiveCorrectKeywords);
     assertSetupViewMethodsContains(Method::defaultAdaptiveClosedSet);
     assertSetupViewMethodsContains(Method::adaptiveClosedSetWithSingleSpeaker);
     assertSetupViewMethodsContains(Method::adaptiveClosedSetWithDelayedMasker);

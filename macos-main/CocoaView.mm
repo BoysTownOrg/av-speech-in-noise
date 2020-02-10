@@ -26,9 +26,10 @@
 @interface TestingViewActions : NSObject
 @property av_speech_in_noise::CocoaTestingView *controller;
 - (void)playTrial;
-- (void)submitResponse;
+- (void)submitFreeResponse;
 - (void)submitPassedTrial;
 - (void)submitFailedTrial;
+- (void)submitCorrectKeywords;
 @end
 
 @implementation SetupViewActions
@@ -86,8 +87,8 @@
     controller->playTrial();
 }
 
-- (void)submitResponse {
-    controller->submitResponse();
+- (void)submitFreeResponse {
+    controller->submitFreeResponse();
 }
 
 - (void)submitPassedTrial {
@@ -96,6 +97,10 @@
 
 - (void)submitFailedTrial {
     controller->submitFailedTrial();
+}
+
+- (void)submitCorrectKeywords {
+    controller->submitCorrectKeywords();
 }
 @end
 
@@ -572,7 +577,13 @@ CocoaTestingView::CocoaTestingView(NSRect r)
       responseSubmission{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, r.size.width,
                                             r.size.height - buttonHeight)]},
+      correctKeywordsSubmission{
+          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, r.size.width,
+                                            r.size.height - buttonHeight)]},
       response_{[[NSTextField alloc]
+          initWithFrame:NSMakeRect(r.size.width / 10, r.size.height / 2, 150,
+                            labelHeight)]},
+      correctKeywordsEntry_{[[NSTextField alloc]
           initWithFrame:NSMakeRect(r.size.width / 10, r.size.height / 2, 150,
                             labelHeight)]},
       flagged_{
@@ -606,18 +617,27 @@ CocoaTestingView::CocoaTestingView(NSRect r)
                            action:@selector(submitFailedTrial)];
     [failButton_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0, buttonWidth,
                               buttonHeight)];
+    const auto submitCorrectKeywords_ =
+        [NSButton buttonWithTitle:@"submit"
+                           target:actions
+                           action:@selector(submitCorrectKeywords)];
+    [submitCorrectKeywords_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
+                                         buttonWidth, buttonHeight)];
     [nextTrialButton addSubview:nextTrialButton_];
     [responseSubmission addSubview:submitResponse_];
     [responseSubmission addSubview:response_];
     [responseSubmission addSubview:flagged_];
     [evaluationButtons addSubview:passButton_];
     [evaluationButtons addSubview:failButton_];
+    [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
+    [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
     [view_ addSubview:nextTrialButton];
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
     [evaluationButtons setHidden:YES];
     [nextTrialButton setHidden:YES];
     [responseSubmission setHidden:YES];
+    [correctKeywordsSubmission setHidden:YES];
     [view_ setHidden:YES];
     actions.controller = this;
 }
@@ -634,15 +654,23 @@ void CocoaTestingView::show() { [view_ setHidden:NO]; }
 
 void CocoaTestingView::hide() { [view_ setHidden:YES]; }
 
+void CocoaTestingView::showCorrectKeywordsSubmission() {
+    [correctKeywordsSubmission setHidden:NO];
+}
+
+void CocoaTestingView::hideCorrectKeywordsSubmission() {
+    [correctKeywordsSubmission setHidden:YES];
+}
+
 void CocoaTestingView::showEvaluationButtons() {
     [evaluationButtons setHidden:NO];
 }
 
-void CocoaTestingView::showResponseSubmission() {
+void CocoaTestingView::showFreeResponseSubmission() {
     [responseSubmission setHidden:NO];
 }
 
-void CocoaTestingView::hideResponseSubmission() {
+void CocoaTestingView::hideFreeResponseSubmission() {
     [responseSubmission setHidden:YES];
 }
 
@@ -650,8 +678,12 @@ void CocoaTestingView::hideEvaluationButtons() {
     [evaluationButtons setHidden:YES];
 }
 
-auto CocoaTestingView::response() -> std::string {
+auto CocoaTestingView::freeResponse() -> std::string {
     return response_.stringValue.UTF8String;
+}
+
+auto CocoaTestingView::correctKeywords() -> std::string {
+    return correctKeywordsEntry_.stringValue.UTF8String;
 }
 
 auto CocoaTestingView::flagged() -> bool {
@@ -662,11 +694,15 @@ auto CocoaTestingView::view() -> NSView * { return view_; }
 
 void CocoaTestingView::playTrial() { listener_->playTrial(); }
 
-void CocoaTestingView::submitResponse() { listener_->submitResponse(); }
+void CocoaTestingView::submitFreeResponse() { listener_->submitFreeResponse(); }
 
 void CocoaTestingView::submitPassedTrial() { listener_->submitPassedTrial(); }
 
 void CocoaTestingView::submitFailedTrial() { listener_->submitFailedTrial(); }
+
+void CocoaTestingView::submitCorrectKeywords() {
+    listener_->submitCorrectKeywords();
+}
 
 CocoaView::CocoaView(NSRect r)
     : app{[NSApplication sharedApplication]},

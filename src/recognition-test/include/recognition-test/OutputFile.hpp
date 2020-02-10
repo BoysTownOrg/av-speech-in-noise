@@ -15,6 +15,7 @@ enum class HeadingItem {
     stimulus,
     reversals,
     target,
+    correctKeywords,
     freeResponse
 };
 
@@ -40,6 +41,8 @@ constexpr auto headingItemName(HeadingItem i) -> const char * {
         return "reversals";
     case HeadingItem::freeResponse:
         return "response";
+    case HeadingItem::correctKeywords:
+        return "# correct keywords";
     }
 }
 
@@ -89,6 +92,7 @@ class OutputFileImpl : public OutputFile {
     void write(
         const coordinate_response_measure::FixedLevelTrial &) override;
     void write(const open_set::FreeResponseTrial &) override;
+    void write(const open_set::CorrectKeywordsTrial &) override;
     void write(const open_set::AdaptiveTrial &) override;
 
   private:
@@ -101,6 +105,7 @@ class OutputFileImpl : public OutputFile {
     bool justWroteAdaptiveCoordinateResponseTrial{};
     bool justWroteFreeResponseTrial{};
     bool justWroteOpenSetAdaptiveTrial{};
+    bool justWroteCorrectKeywordsTrial{};
 };
 }
 

@@ -76,6 +76,8 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto freeResponse() const { return freeResponse_; }
 
+    auto correctKeywords() -> int { return correctKeywords_.count; }
+
     [[nodiscard]] auto responseParameters() const -> auto & {
         return responseParameters_;
     }
@@ -138,8 +140,7 @@ class ModelStub : public Model {
         return audioDevices_;
     }
 
-    void submit(
-        const coordinate_response_measure::Response &p) override {
+    void submit(const coordinate_response_measure::Response &p) override {
         responseParameters_ = p;
     }
 
@@ -153,8 +154,10 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void submit(const open_set::FreeResponse &s) override {
-        freeResponse_ = s;
+    void submit(const open_set::FreeResponse &s) override { freeResponse_ = s; }
+
+    void submit(const open_set::CorrectKeywords &s) override {
+        correctKeywords_ = s;
     }
 
   private:
@@ -165,6 +168,7 @@ class ModelStub : public Model {
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
     open_set::FreeResponse freeResponse_{};
+    open_set::CorrectKeywords correctKeywords_{};
     EventListener *listener_{};
     int trialNumber_{};
     bool testComplete_{};
@@ -420,16 +424,16 @@ class ViewStub : public View {
       private:
         std::string numberResponse_{"0"};
         EventListener *listener_{};
+        bool responseButtonsShown_{};
+        bool responseButtonsHidden_{};
+        bool shown_{};
+        bool hidden_{};
         bool greenResponse_{};
         bool redResponse_{};
         bool blueResponse_{};
         bool grayResponse_{};
-        bool responseButtonsShown_{};
-        bool nextTrialButtonShown_{};
-        bool responseButtonsHidden_{};
         bool nextTrialButtonHidden_{};
-        bool shown_{};
-        bool hidden_{};
+        bool nextTrialButtonShown_{};
     };
 
     class TestingViewStub : public Testing {
@@ -448,6 +452,14 @@ class ViewStub : public View {
             return nextTrialButtonShown_;
         }
 
+        [[nodiscard]] auto correctKeywordsEntryShown() const {
+            return correctKeywordsEntryShown_;
+        }
+
+        [[nodiscard]] auto correctKeywordsEntryHidden() const {
+            return correctKeywordsEntryHidden_;
+        }
+
         [[nodiscard]] auto evaluationButtonsShown() const {
             return evaluationButtonsShown_;
         }
@@ -456,7 +468,19 @@ class ViewStub : public View {
             return responseSubmissionShown_;
         }
 
+        auto correctKeywords() -> std::string override {
+            return correctKeywords_;
+        }
+
         void showNextTrialButton() override { nextTrialButtonShown_ = true; }
+
+        void showCorrectKeywordsSubmission() override {
+            correctKeywordsEntryShown_ = true;
+        }
+
+        void hideCorrectKeywordsSubmission() override {
+            correctKeywordsEntryHidden_ = true;
+        }
 
         [[nodiscard]] auto shown() const { return shown_; }
 
@@ -474,13 +498,13 @@ class ViewStub : public View {
             evaluationButtonsShown_ = true;
         }
 
-        auto response() -> std::string override { return response_; }
+        auto freeResponse() -> std::string override { return response_; }
 
-        void showResponseSubmission() override {
+        void showFreeResponseSubmission() override {
             responseSubmissionShown_ = true;
         }
 
-        void hideResponseSubmission() override {
+        void hideFreeResponseSubmission() override {
             responseSubmissionHidden_ = true;
         }
 
@@ -496,25 +520,34 @@ class ViewStub : public View {
 
         void submitPassedTrial() { listener_->submitPassedTrial(); }
 
+        void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
+
         void setResponse(std::string s) { response_ = std::move(s); }
+
+        void setCorrectKeywords(std::string s) {
+            correctKeywords_ = std::move(s);
+        }
 
         void flagResponse() { flagged_ = true; }
 
         auto flagged() -> bool override { return flagged_; }
 
-        void submitResponse() { listener_->submitResponse(); }
+        void submitFreeResponse() { listener_->submitFreeResponse(); }
 
       private:
         std::string response_;
+        std::string correctKeywords_{"0"};
         EventListener *listener_{};
         bool nextTrialButtonShown_{};
-        bool shown_{};
         bool nextTrialButtonHidden_{};
-        bool hidden_{};
         bool evaluationButtonsShown_{};
         bool responseSubmissionShown_{};
         bool responseSubmissionHidden_{};
         bool evaluationButtonsHidden_{};
+        bool correctKeywordsEntryShown_{};
+        bool correctKeywordsEntryHidden_{};
+        bool shown_{};
+        bool hidden_{};
         bool flagged_{};
     };
 
@@ -552,10 +585,10 @@ class ViewStub : public View {
         std::string response_;
         std::string displayed_;
         EventListener *listener_{};
-        bool shown_{};
-        bool hidden_{};
         bool exitTestButtonHidden_{};
         bool exitTestButtonShown_{};
+        bool shown_{};
+        bool hidden_{};
     };
 
   private:
@@ -776,7 +809,35 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveOpenSet);
+        setMethod(view, Method::adaptivePassFail);
+        confirmTestSetup(view);
+    }
+
+    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
+
+    auto snr_dB(ModelStub &m) -> int override {
+        return adaptive_test::snr_dB(m);
+    }
+
+    auto fullScaleLevel(ModelStub &m) -> int override {
+        return adaptive_test::fullScaleLevel(m);
+    }
+
+    auto condition(ModelStub &m) -> Condition override {
+        return adaptive_test::condition(m);
+    }
+};
+
+class ConfirmingAdaptiveOpenSetKeywordsTest : public ConfirmingTestSetup {
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit ConfirmingAdaptiveOpenSetKeywordsTest(
+        ViewStub::TestSetupViewStub *view)
+        : view{view} {}
+
+    void run() override {
+        setMethod(view, Method::adaptiveCorrectKeywords);
         confirmTestSetup(view);
     }
 
@@ -984,7 +1045,7 @@ class RespondingFromExperimenter : public TrialSubmission {
     explicit RespondingFromExperimenter(ViewStub::TestingViewStub *view)
         : view{view} {}
 
-    void run() override { view->submitResponse(); }
+    void run() override { view->submitFreeResponse(); }
 
     auto nextTrialButtonShown() -> bool override {
         return view->nextTrialButtonShown();
@@ -1027,6 +1088,28 @@ class SubmittingPassedTrial : public TrialSubmission {
 
     auto responseViewHidden() -> bool override {
         return view->evaluationButtonsHidden();
+    }
+};
+
+class EnteringCorrectKeywords : public TrialSubmission {
+    ViewStub::TestingViewStub *view;
+
+  public:
+    explicit EnteringCorrectKeywords(ViewStub::TestingViewStub *view)
+        : view{view} {}
+
+    void run() override { view->submitCorrectKeywords(); }
+
+    auto nextTrialButtonShown() -> bool override {
+        return view->nextTrialButtonShown();
+    }
+
+    auto responseViewShown() -> bool override {
+        return view->correctKeywordsEntryShown();
+    }
+
+    auto responseViewHidden() -> bool override {
+        return view->correctKeywordsEntryHidden();
     }
 };
 
@@ -1231,6 +1314,8 @@ class PresenterTests : public ::testing::Test {
         confirmingDefaultFixedLevelOpenSetTest{&setupView};
     ConfirmingDefaultFixedLevelClosedSetTest
         confirmingDefaultFixedLevelClosedSetTest{&setupView};
+    ConfirmingAdaptiveOpenSetKeywordsTest confirmingAdaptiveOpenSetKeywordsTest{
+        &setupView};
     ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
         confirmingFixedLevelClosedSetSilentIntervalsTest{&setupView};
     ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
@@ -1243,6 +1328,7 @@ class PresenterTests : public ::testing::Test {
     RespondingFromSubject respondingFromSubject{&subjectView};
     RespondingFromExperimenter respondingFromExperimenter{&testingView};
     SubmittingPassedTrial submittingPassedTrial{&testingView};
+    EnteringCorrectKeywords enteringCorrectKeywords{&testingView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenterView};
 
@@ -1256,7 +1342,7 @@ class PresenterTests : public ::testing::Test {
 
     void respondFromSubject() { subjectView.submitResponse(); }
 
-    void respondFromExperimenter() { testingView.submitResponse(); }
+    void respondFromExperimenter() { testingView.submitFreeResponse(); }
 
     void exitTest() { experimenterView.exitTest(); }
 
@@ -1654,6 +1740,10 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         assertFalse(model.defaultAdaptiveTestInitialized());
     }
+
+    void setCorrectKeywords(std::string s) {
+        testingView.setCorrectKeywords(std::move(s));
+    }
 };
 
 class RequestFailingModel : public Model {
@@ -1696,12 +1786,15 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submit(
-        const coordinate_response_measure::Response &) override {
+    void submit(const coordinate_response_measure::Response &) override {
         throw RequestFailure{errorMessage};
     }
 
     void submit(const open_set::FreeResponse &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void submit(const open_set::CorrectKeywords &) override {
         throw RequestFailure{errorMessage};
     }
 

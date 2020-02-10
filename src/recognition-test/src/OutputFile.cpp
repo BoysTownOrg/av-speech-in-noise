@@ -205,11 +205,42 @@ static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
     return stream.str();
 }
 
+static auto formatTrial(const open_set::CorrectKeywordsTrial &trial)
+    -> std::string {
+    FormattedStream stream;
+    insert(stream, trial.SNR_dB);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.target);
+    insertCommaAndSpace(stream);
+    insert(stream, trial.count);
+    insertCommaAndSpace(stream);
+    insert(stream, evaluation(trial));
+    insertCommaAndSpace(stream);
+    insert(stream, trial.reversals);
+    insertNewLine(stream);
+    return stream.str();
+}
+
 static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
     FormattedStream stream;
     insert(stream, HeadingItem::target);
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::freeResponse);
+    insertNewLine(stream);
+    return stream.str();
+}
+
+static auto formatCorrectKeywordsTrialHeading() -> std::string {
+    FormattedStream stream;
+    insert(stream, HeadingItem::snr_dB);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::target);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::correctKeywords);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::evaluation);
+    insertCommaAndSpace(stream);
+    insert(stream, HeadingItem::reversals);
     insertNewLine(stream);
     return stream.str();
 }
@@ -286,6 +317,13 @@ void OutputFileImpl::write(const open_set::FreeResponseTrial &trial) {
     justWroteFreeResponseTrial = true;
 }
 
+void OutputFileImpl::write(const open_set::CorrectKeywordsTrial &trial) {
+    if (!justWroteCorrectKeywordsTrial)
+        write(formatCorrectKeywordsTrialHeading());
+    write(formatTrial(trial));
+    justWroteCorrectKeywordsTrial = true;
+}
+
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
     if (!justWroteOpenSetAdaptiveTrial)
         write(formatOpenSetAdaptiveTrialHeading());
@@ -309,6 +347,7 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
     justWroteFixedLevelCoordinateResponseTrial = false;
     justWroteFreeResponseTrial = false;
     justWroteOpenSetAdaptiveTrial = false;
+    justWroteCorrectKeywordsTrial = false;
 }
 
 auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)

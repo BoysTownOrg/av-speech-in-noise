@@ -35,28 +35,34 @@ class CocoaTestingView : public View::Testing {
     CocoaTestingView(NSRect);
     NSView *view();
     void playTrial();
-    void submitResponse();
+    void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();
     void exitTest();
+    void submitCorrectKeywords();
     void subscribe(EventListener *) override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
     void show() override;
     void hide() override;
     void showEvaluationButtons() override;
-    void showResponseSubmission() override;
-    std::string response() override;
+    void showFreeResponseSubmission() override;
+    std::string freeResponse() override;
+    auto correctKeywords() -> std::string override;
     bool flagged() override;
-    void hideResponseSubmission() override;
+    void hideFreeResponseSubmission() override;
     void hideEvaluationButtons() override;
+    void showCorrectKeywordsSubmission() override;
+    void hideCorrectKeywordsSubmission() override;
 
   private:
     NSView *view_;
     NSView *nextTrialButton;
     NSView *evaluationButtons;
     NSView *responseSubmission;
+    NSView *correctKeywordsSubmission;
     NSTextField *response_;
+    NSTextField *correctKeywordsEntry_;
     NSButton *flagged_;
     EventListener *listener_{};
     TestingViewActions *actions;

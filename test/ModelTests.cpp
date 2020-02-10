@@ -22,10 +22,12 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const open_set::FreeResponse &) override {}
+    void submit(const open_set::CorrectKeywords &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
+    void writeLastCorrectKeywords(OutputFile *) override {}
     void submit(
         const coordinate_response_measure::Response &) override {}
 };
@@ -56,10 +58,12 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const open_set::FreeResponse &) override {}
+    void submit(const open_set::CorrectKeywords &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
+    void writeLastCorrectKeywords(OutputFile *) override {}
     void submit(
         const coordinate_response_measure::Response &) override {}
 };
@@ -72,6 +76,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Test *test_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
+    const open_set::CorrectKeywords *correctKeywords_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
@@ -116,6 +121,11 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
+    void submit(
+        const open_set::CorrectKeywords &p) {
+        correctKeywords_ = &p;
+    }
+
     auto testComplete() -> bool override { return complete_; }
 
     auto audioDevices() -> std::vector<std::string> override {
@@ -140,6 +150,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     [[nodiscard]] auto coordinateResponse() const {
         return coordinateResponse_;
+    }
+
+    [[nodiscard]] auto correctKeywords() const {
+        return correctKeywords_;
     }
 
     [[nodiscard]] auto testMethod() const { return testMethod_; }
@@ -610,6 +624,12 @@ MODEL_TEST(submitResponsePassesCoordinateResponse) {
     coordinate_response_measure::Response response;
     model.submit(response);
     assertEqual(&std::as_const(response), internalModel.coordinateResponse());
+}
+
+MODEL_TEST(submitCorrectKeywordsPassesCorrectKeywords) {
+    open_set::CorrectKeywords k;
+    model.submit(k);
+    assertEqual(&std::as_const(k), internalModel.correctKeywords());
 }
 
 MODEL_TEST(playTrialPassesAudioSettings) {

@@ -11,6 +11,7 @@ class OutputFileStub : public OutputFile {
         writtenAdaptiveCoordinateResponseTrial_{};
     coordinate_response_measure::FixedLevelTrial writtenFixedLevelTrial_{};
     open_set::FreeResponseTrial writtenFreeResponseTrial_{};
+    open_set::CorrectKeywordsTrial writtenCorrectKeywords_{};
     open_set::AdaptiveTrial writtenOpenSetAdaptiveTrial_{};
     LogString log_{};
     const AdaptiveTest *adaptiveTest_{};
@@ -51,6 +52,11 @@ class OutputFileStub : public OutputFile {
         writtenFreeResponseTrial_ = p;
     }
 
+    void write(const open_set::CorrectKeywordsTrial &p) {
+        addToLog("writeTrial ");
+        writtenCorrectKeywords_ = p;
+    }
+
     void write(const open_set::AdaptiveTrial &p) override {
         addToLog("writeTrial ");
         writtenOpenSetAdaptiveTrial_ = p;
@@ -84,6 +90,10 @@ class OutputFileStub : public OutputFile {
 
     auto writtenFreeResponseTrial() const -> auto & {
         return writtenFreeResponseTrial_;
+    }
+
+    auto writtenCorrectKeywords() const -> auto & {
+        return writtenCorrectKeywords_;
     }
 
     auto writtenOpenSetAdaptiveTrial() const -> auto & {

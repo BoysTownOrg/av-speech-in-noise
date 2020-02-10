@@ -6,6 +6,15 @@
 #include <vector>
 
 namespace av_speech_in_noise {
+struct Adaptive {
+    int SNR_dB{};
+    int reversals{};
+};
+
+struct Target {
+    std::string target;
+};
+
 namespace coordinate_response_measure {
 enum class Color { green, red, blue, white, unknown };
 
@@ -14,8 +23,7 @@ struct Response {
     Color color{};
 };
 
-struct Trial {
-    std::string target;
+struct Trial : Target {
     int correctNumber{};
     int subjectNumber{};
     Color correctColor{};
@@ -23,9 +31,7 @@ struct Trial {
     bool correct{};
 };
 
-struct AdaptiveTrial : Trial {
-    int SNR_dB{};
-    int reversals{};
+struct AdaptiveTrial : Adaptive, Trial {
 };
 
 struct FixedLevelTrial : Trial {};
@@ -37,19 +43,21 @@ struct FreeResponse {
     bool flagged{};
 };
 
-struct Trial {
-    std::string target;
+struct CorrectKeywords {
+    int count{};
 };
 
-struct FreeResponseTrial : Trial {
-    std::string response;
-    bool flagged{};
+struct Trial : Target {
 };
 
-struct AdaptiveTrial : Trial {
-    int SNR_dB{};
-    int reversals{};
+struct FreeResponseTrial : FreeResponse, Trial {
+};
+
+struct AdaptiveTrial : Adaptive, Trial {
     bool correct{};
+};
+
+struct CorrectKeywordsTrial : CorrectKeywords, AdaptiveTrial {
 };
 }
 
@@ -150,6 +158,7 @@ class Model {
     virtual void submit(const open_set::FreeResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
+    virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> std::vector<std::string> = 0;
     virtual auto trialNumber() -> int = 0;
