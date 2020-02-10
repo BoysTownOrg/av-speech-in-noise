@@ -677,7 +677,13 @@ CocoaTestingView::CocoaTestingView(NSRect r) :
     responseSubmission{[[NSView alloc]
         initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
     ]},
+    correctKeywordsSubmission{[[NSView alloc]
+        initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
+    ]},
     response_{[[NSTextField alloc]
+        initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
+    ]},
+    correctKeywordsEntry_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
     ]},
     flagged_{[[NSButton alloc] initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2 - labelHeight, 150, labelHeight)]},
@@ -729,18 +735,33 @@ CocoaTestingView::CocoaTestingView(NSRect r) :
         buttonWidth,
         buttonHeight
     )];
+    const auto submitCorrectKeywords_ = [NSButton
+        buttonWithTitle:@"submit"
+        target:actions
+        action:@selector(submitCorrectKeywords)
+    ];
+    [submitCorrectKeywords_ setFrame:NSMakeRect(
+        r.size.width - buttonWidth,
+        0,
+        buttonWidth,
+        buttonHeight
+    )];
     [nextTrialButton addSubview:nextTrialButton_];
     [responseSubmission addSubview:submitResponse_];
     [responseSubmission addSubview:response_];
     [responseSubmission addSubview:flagged_];
     [evaluationButtons addSubview:passButton_];
     [evaluationButtons addSubview:failButton_];
+    [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
+    [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
     [view_ addSubview:nextTrialButton];
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
+    [view_ addSubview:correctKeywordsSubmission];
     [evaluationButtons setHidden:YES];
     [nextTrialButton setHidden:YES];
     [responseSubmission setHidden:YES];
+    [correctKeywordsSubmission setHidden:YES];
     [view_ setHidden:YES];
     actions.controller = this;
 }
@@ -769,11 +790,11 @@ void CocoaTestingView::showEvaluationButtons() {
     [evaluationButtons setHidden:NO];
 }
 
-void CocoaTestingView::showResponseSubmission() {
+void CocoaTestingView::showFreeResponseSubmission() {
     [responseSubmission setHidden:NO];
 }
 
-void CocoaTestingView::hideResponseSubmission() {
+void CocoaTestingView::hideFreeResponseSubmission() {
     [responseSubmission setHidden:YES];
 }
 
@@ -781,8 +802,20 @@ void CocoaTestingView::hideEvaluationButtons() {
     [evaluationButtons setHidden:YES];
 }
 
-std::string CocoaTestingView::response() {
+void CocoaTestingView::showCorrectKeywordsSubmission() {
+    [correctKeywordsSubmission setHidden:NO];
+}
+
+void CocoaTestingView::hideCorrectKeywordsSubmission() {
+    [correctKeywordsSubmission setHidden:YES];
+}
+
+std::string CocoaTestingView::freeResponse() {
     return response_.stringValue.UTF8String;
+}
+
+auto CocoaTestingView::correctKeywords() -> std::string {
+    return correctKeywordsEntry_.stringValue.UTF8String;
 }
 
 bool CocoaTestingView::flagged() {
@@ -797,8 +830,8 @@ void CocoaTestingView::playTrial() {
     listener_->playTrial();
 }
 
-void CocoaTestingView::submitResponse() {
-    listener_->submitResponse();
+void CocoaTestingView::submitFreeResponse() {
+    listener_->submitFreeResponse();
 }
 
 void CocoaTestingView::submitPassedTrial() {
@@ -809,6 +842,10 @@ void CocoaTestingView::submitFailedTrial() {
     listener_->submitFailedTrial();
 }
 
+void CocoaTestingView::submitCorrectKeywords() {
+    listener_->submitCorrectKeywords();
+}
+
 @implementation TestingViewActions
 @synthesize controller;
 
@@ -816,8 +853,8 @@ void CocoaTestingView::submitFailedTrial() {
     controller->playTrial();
 }
 
-- (void)submitResponse { 
-    controller->submitResponse();
+- (void)submitFreeResponse { 
+    controller->submitFreeResponse();
 }
 
 - (void)submitPassedTrial {
@@ -826,6 +863,10 @@ void CocoaTestingView::submitFailedTrial() {
 
 - (void)submitFailedTrial {
     controller->submitFailedTrial();
+}
+
+- (void)submitCorrectKeywords {
+    controller->submitCorrectKeywords();
 }
 @end
 

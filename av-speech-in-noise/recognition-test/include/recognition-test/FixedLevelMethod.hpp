@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_FIXEDLEVELMETHOD_HPP_
 
 #include "Model.hpp"
+#include "av-speech-in-noise/Model.hpp"
 
 namespace av_speech_in_noise {
 class EmptyTargetListTestConcluder : public TestConcluder {
@@ -38,9 +39,11 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void writeLastCoordinateResponse(OutputFile *) override;
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
+    void writeLastCorrectKeywords(OutputFile *) override {}
     void writeTestingParameters(OutputFile *) override;
     void submitResponse(const coordinate_response_measure::Response &) override;
     void submitResponse(const open_set::FreeResponse &) override;
+    void submit(const open_set::CorrectKeywords &) override {}
 
   private:
     coordinate_response_measure::FixedLevelTrial lastTrial{};

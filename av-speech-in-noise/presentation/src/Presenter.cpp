@@ -34,6 +34,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     : fixedLevelOpenSetTrialCompletionHandler{testing},
       fixedLevelClosedSetTrialCompletionHandler{subject},
       adaptiveOpenSetTrialCompletionHandler{testing},
+      adaptiveOpenSetKeywordsTrialCompletionHandler{testing},
       adaptiveClosedSetTrialCompletionHandler{subject}, model{model},
       view{view}, testSetup{testSetup}, subject{subject},
       experimenter{experimenter}, testing{testing},
@@ -68,7 +69,7 @@ void Presenter::initializeTest() {
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveClosedSetSingleSpeaker())
         model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (defaultAdaptive())
+    else if (defaultAdaptive() || adaptiveCorrectKeywords())
         model.initializeTest(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals())
         model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
@@ -82,8 +83,8 @@ auto Presenter::adaptiveClosedSet() -> bool {
     return testSetup.adaptiveClosedSet();
 }
 
-auto Presenter::adaptiveOpenSet() -> bool {
-    return testSetup.adaptiveOpenSet();
+auto Presenter::adaptivePassFail() -> bool {
+    return testSetup.adaptivePassFail();
 }
 
 auto Presenter::fixedLevelSilentIntervals() -> bool {
@@ -100,6 +101,10 @@ auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
 
 auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
     return testSetup.adaptiveClosedSetSingleSpeaker();
+}
+
+auto Presenter::adaptiveCorrectKeywords() -> bool {
+    return testSetup.adaptiveCorrectKeywords();
 }
 
 auto Presenter::testComplete() -> bool { return model.testComplete(); }
@@ -133,8 +138,10 @@ auto Presenter::fixedLevelClosedSet() -> bool {
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
     if (adaptiveClosedSet())
         return &adaptiveClosedSetTrialCompletionHandler;
-    if (adaptiveOpenSet())
+    if (adaptivePassFail())
         return &adaptiveOpenSetTrialCompletionHandler;
+    if (adaptiveCorrectKeywords())
+        return &adaptiveOpenSetKeywordsTrialCompletionHandler;
     if (fixedLevelClosedSet())
         return &fixedLevelClosedSetTrialCompletionHandler;
     return &fixedLevelOpenSetTrialCompletionHandler;
@@ -169,6 +176,10 @@ void Presenter::submitSubjectResponse_() {
     model.submitResponse(subject.subjectResponse());
 }
 
+void Presenter::submitCorrectKeywords_() {
+    model.submit(testing.correctKeywords());
+}
+
 void Presenter::submitExperimenterResponse() {
     proceedToNextTrialAfter(&Presenter::submitExperimenterResponse_);
 }
@@ -185,6 +196,16 @@ void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
+}
+
+void Presenter::submitCorrectKeywords() {
+    try {
+        proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
+        testing.hideCorrectKeywordsSubmission();
+        testing.showNextTrialButton();
+    } catch (const std::runtime_error &e) {
+        showErrorMessage(e.what());
+    }
 }
 
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
@@ -261,8 +282,8 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
         methodName(Method::adaptiveClosedSetSingleSpeaker),
         methodName(Method::adaptiveClosedSetDelayedMasker),
-        methodName(Method::adaptiveOpenSet),
-        methodName(Method::adaptiveOpenSetKeywords),
+        methodName(Method::adaptivePassFail),
+        methodName(Method::adaptiveCorrectKeywords),
         methodName(Method::defaultFixedLevelClosedSet),
         methodName(Method::fixedLevelClosedSetSilentIntervals),
         methodName(Method::defaultFixedLevelOpenSet),
@@ -387,15 +408,15 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
 }
 
 auto Presenter::TestSetup::defaultAdaptive() -> bool {
-    return defaultAdaptiveClosedSet() || adaptiveOpenSet();
+    return defaultAdaptiveClosedSet() || adaptivePassFail();
 }
 
 auto Presenter::TestSetup::defaultAdaptiveClosedSet() -> bool {
     return method(Method::defaultAdaptiveClosedSet);
 }
 
-auto Presenter::TestSetup::adaptiveOpenSet() -> bool {
-    return method(Method::adaptiveOpenSet);
+auto Presenter::TestSetup::adaptivePassFail() -> bool {
+    return method(Method::adaptivePassFail);
 }
 
 auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
@@ -409,6 +430,10 @@ auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
 
 auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
     return method(Method::adaptiveClosedSetSingleSpeaker);
+}
+
+auto Presenter::TestSetup::adaptiveCorrectKeywords() -> bool {
+    return method(Method::adaptiveCorrectKeywords);
 }
 
 auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
@@ -521,28 +546,42 @@ void Presenter::Testing::submitFailedTrial() {
     prepareNextEvaluatedTrial();
 }
 
-void Presenter::Testing::hide() {
-    view->hideEvaluationButtons();
-    view->hideResponseSubmission();
-    view->hide();
+void Presenter::Testing::submitCorrectKeywords() {
+    parent->submitCorrectKeywords();
 }
+
+void Presenter::Testing::hideCorrectKeywordsSubmission() {
+    view->hideCorrectKeywordsSubmission();
+}
+
+void Presenter::Testing::hide() { view->hide(); }
 
 void Presenter::Testing::showEvaluationButtons() {
     view->showEvaluationButtons();
 }
 
-void Presenter::Testing::showResponseSubmission() {
-    view->showResponseSubmission();
+void Presenter::Testing::showCorrectKeywordsSubmission() {
+    view->showCorrectKeywordsSubmission();
 }
 
-void Presenter::Testing::submitResponse() {
+void Presenter::Testing::showFreeResponseSubmission() {
+    view->showFreeResponseSubmission();
+}
+
+void Presenter::Testing::submitFreeResponse() {
     parent->submitExperimenterResponse();
-    view->hideResponseSubmission();
+    view->hideFreeResponseSubmission();
     showNextTrialButton();
 }
 
 auto Presenter::Testing::openSetResponse() -> open_set::FreeResponse {
-    return {view->response(), view->flagged()};
+    return {view->freeResponse(), view->flagged()};
+}
+
+auto Presenter::Testing::correctKeywords() -> open_set::CorrectKeywords {
+    open_set::CorrectKeywords p{};
+    p.count = readInteger(view->correctKeywords(), "number");
+    return p;
 }
 
 Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {

@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RECOGNITIONTESTMODEL_HPP_
 
 #include "Model.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 #include <string>
 #include <vector>
@@ -84,6 +85,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     void submitResponse(const open_set::FreeResponse &) override;
+    void submit(const open_set::CorrectKeywords &) override;
     void throwIfTrialInProgress() override;
     void fadeInComplete() override;
     void fadeOutComplete() override;
@@ -95,6 +97,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
     void write(const open_set::FreeResponse &p);
+    void write(const open_set::CorrectKeywords &p);
     void prepareTest(const Test &);
     void storeLevels(const Test &common);
     void preparePlayersForNextTrial();

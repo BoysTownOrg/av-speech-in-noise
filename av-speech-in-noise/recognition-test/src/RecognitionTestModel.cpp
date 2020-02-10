@@ -1,4 +1,5 @@
 #include "RecognitionTestModel.hpp"
+#include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 #include <cmath>
 
@@ -15,9 +16,11 @@ class NullTestMethod : public TestMethod {
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeTestingParameters(OutputFile *) override {}
+    void writeLastCorrectKeywords(OutputFile *) override {}
     void submitResponse(
         const coordinate_response_measure::Response &) override {}
     void submitResponse(const open_set::FreeResponse &) override {}
+    void submit(const open_set::CorrectKeywords &) override {}
 };
 }
 static NullTestMethod nullTestMethod;
@@ -290,6 +293,14 @@ void RecognitionTestModelImpl::submitResponse(
     const open_set::FreeResponse &response) {
     write(response);
     testMethod->submitResponse(response);
+    prepareNextTrialIfNeeded();
+}
+
+void RecognitionTestModelImpl::submit(
+    const open_set::CorrectKeywords &correctKeywords) {
+    testMethod->submit(correctKeywords);
+    testMethod->writeLastCorrectKeywords(outputFile);
+    save(outputFile);
     prepareNextTrialIfNeeded();
 }
 

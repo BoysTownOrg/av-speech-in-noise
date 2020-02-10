@@ -6,6 +6,7 @@
 #include "ResponseEvaluatorStub.h"
 #include "TargetPlayerStub.h"
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <cmath>
 #include <gtest/gtest.h>
 
@@ -20,6 +21,8 @@ class TestMethodStub : public TestMethod {
     bool complete_{};
     bool submittedCorrectResponse_{};
     bool submittedIncorrectResponse_{};
+    bool submittedFreeResponse_{};
+    bool submittedCorrectKeywords_{};
 
   public:
     auto submittedCorrectResponse() const { return submittedCorrectResponse_; }
@@ -27,6 +30,10 @@ class TestMethodStub : public TestMethod {
     auto submittedIncorrectResponse() const {
         return submittedIncorrectResponse_;
     }
+
+    auto submittedFreeResponse() const { return submittedFreeResponse_; }
+
+    auto submittedCorrectKeywords() const { return submittedCorrectKeywords_; }
 
     void setComplete() { complete_ = true; }
 
@@ -60,7 +67,9 @@ class TestMethodStub : public TestMethod {
         submittedIncorrectResponse_ = true;
     }
 
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submitResponse(const open_set::FreeResponse &) override {
+        submittedFreeResponse_ = true;
+    }
 
     void writeTestingParameters(OutputFile *file) override {
         file->writeTest(AdaptiveTest{});
@@ -76,6 +85,15 @@ class TestMethodStub : public TestMethod {
 
     void writeLastIncorrectResponse(OutputFile *) override {
         log_.insert("writeLastIncorrectResponse ");
+    }
+
+    void writeLastCorrectKeywords(OutputFile *) override {
+        log_.insert("writeLastCorrectKeywords ");
+    }
+
+    void submit(const open_set::CorrectKeywords &) override {
+        log_.insert("submit ");
+        submittedCorrectKeywords_ = true;
     }
 
     void submitResponse(
@@ -258,6 +276,20 @@ class SubmittingFreeResponse : public SubmittingResponse,
     void setFlagged() { response_.flagged = true; }
 };
 
+class SubmittingCorrectKeywords : public SubmittingResponse,
+                                  public TargetWritingUseCase {
+    open_set::CorrectKeywords k{};
+
+  public:
+    void run(RecognitionTestModelImpl &m) override { m.submit(k); }
+
+    auto writtenTarget(OutputFileStub &file) -> std::string override {
+        return file.writtenCorrectKeywords().target;
+    }
+
+    void setCorrectKeywords(int n) { k.count = n; }
+};
+
 class SubmittingCoordinateResponse : public SubmittingResponse {
     coordinate_response_measure::Response response_{};
 
@@ -319,6 +351,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
     SubmittingFreeResponse submittingFreeResponse;
+    SubmittingCorrectKeywords submittingCorrectKeywords;
 
     RecognitionTestModelTests() { model.subscribe(&listener); }
 
@@ -731,6 +764,11 @@ RECOGNITION_TEST_MODEL_TEST(submittingFreeResponseIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingFreeResponse, 2);
 }
 
+RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsIncrementsTrialNumber) {
+    run(initializingTest);
+    assertYieldsTrialNumber(submittingCorrectKeywords, 2);
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     submittingCoordinateResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest);
@@ -753,6 +791,12 @@ RECOGNITION_TEST_MODEL_TEST(
     submittingFreeResponsePassesNextTargetToTargetPlayer) {
     run(initializingTest);
     assertPassesNextTargetToPlayer(submittingFreeResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submittingCorrectKeywordsPassesNextTargetToTargetPlayer) {
+    run(initializingTest);
+    assertPassesNextTargetToPlayer(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
@@ -781,6 +825,11 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     submitFreeResponseSubscribesToTargetPlaybackCompletionNotification) {
     assertTargetPlayerPlaybackCompletionSubscribed(submittingFreeResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submitCorrectKeywordsSubscribesToTargetPlaybackCompletionNotification) {
+    assertTargetPlayerPlaybackCompletionSubscribed(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -822,6 +871,12 @@ RECOGNITION_TEST_MODEL_TEST(
         submittingFreeResponse);
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    submitCorrectKeywordsSeeksToRandomMaskerPositionWithinTrialDuration) {
+    assertSeeksToRandomMaskerPositionWithinTrialDuration(
+        submittingCorrectKeywords);
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializeTestSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(initializingTest);
 }
@@ -842,6 +897,10 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSeeksToRandomMaskerPosition) {
     assertMaskerPlayerSeekedToRandomTime(submittingFreeResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSeeksToRandomMaskerPosition) {
+    assertMaskerPlayerSeekedToRandomTime(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestSetsInitialMaskerPlayerLevel) {
@@ -867,6 +926,10 @@ RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseSetsTargetPlayerLevel) {
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSetsTargetPlayerLevel) {
     assertSetsTargetLevel(submittingFreeResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSetsTargetPlayerLevel) {
+    assertSetsTargetLevel(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCorrectResponseSetsTargetPlayerLevel) {
@@ -927,6 +990,11 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     submitFreeResponseSavesOutputFileAfterWritingTrial) {
     assertSavesOutputFileAfterWritingTrial(submittingFreeResponse);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    submitCorrectKeywordsSavesOutputFileAfterWritingTrial) {
+    assertSavesOutputFileAfterWritingTrial(submittingCorrectKeywords);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -1043,6 +1111,11 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitCorrectKeywordsDoesNotLoadNextTargetWhenComplete) {
+    assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectKeywords);
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCorrectResponseDoesNotLoadNextTargetWhenComplete) {
     assertResponseDoesNotLoadNextTargetWhenComplete(submittingCorrectResponse);
 }
@@ -1106,6 +1179,12 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
+    submitCorrectKeywordsWritesTrialAfterSubmittingResponse) {
+    assertTestMethodLogContains(
+        submittingCorrectKeywords, "submit writeLastCorrectKeywords ");
+}
+
+RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseQueriesNextTargetAfterWritingResponse) {
     assertTestMethodLogContains(
         submittingCoordinateResponse, "writeLastCoordinateResponse next ");
@@ -1133,6 +1212,18 @@ RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSubmitsIncorrectResponse) {
     run(initializingTest);
     run(submittingIncorrectResponse);
     assertTrue(testMethod.submittedIncorrectResponse());
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitFreeResponseSubmitsResponse) {
+    run(initializingTest);
+    run(submittingFreeResponse);
+    assertTrue(testMethod.submittedFreeResponse());
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSubmitsResponse) {
+    run(initializingTest);
+    run(submittingCorrectKeywords);
+    assertTrue(testMethod.submittedCorrectKeywords());
 }
 }
 }

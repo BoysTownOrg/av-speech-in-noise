@@ -1,5 +1,6 @@
 #include "LogString.h"
 #include "assert-utility.h"
+#include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
 #include <recognition-test/OutputFile.hpp>
 
@@ -124,7 +125,7 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
 
     auto evaluationEntryIndex() -> int override { return 6; }
 
-    void run(av_speech_in_noise::OutputFileImpl &file) override {
+    void run(OutputFileImpl &file) override {
         file.write(trial_);
     }
 };
@@ -139,7 +140,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
 
     void correct() override { setCorrect(trial_); }
 
-    void run(av_speech_in_noise::OutputFileImpl &file) override {
+    void run(OutputFileImpl &file) override {
         file.write(trial_);
     }
 
@@ -154,11 +155,26 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
 
     void correct() override { trial_.correct = true; }
 
-    void run(av_speech_in_noise::OutputFileImpl &file) override {
+    void run(OutputFileImpl &file) override {
         file.write(trial_);
     }
 
     auto evaluationEntryIndex() -> int override { return 3; }
+};
+
+class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
+    open_set::CorrectKeywordsTrial trial_{};
+
+  public:
+    void incorrect() override { trial_.correct = false; }
+
+    void correct() override { trial_.correct = true; }
+
+    void run(OutputFileImpl &file) override {
+        file.write(trial_);
+    }
+
+    auto evaluationEntryIndex() -> int override { return 4; }
 };
 
 class OutputFileTests : public ::testing::Test {
@@ -171,7 +187,9 @@ class OutputFileTests : public ::testing::Test {
     WritingFixedLevelCoordinateResponseTrial
         writingFixedLevelCoordinateResponseTrial;
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
+    WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     open_set::FreeResponseTrial freeResponseTrial;
+    open_set::CorrectKeywordsTrial correctKeywordsTrial;
     open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
@@ -184,6 +202,8 @@ class OutputFileTests : public ::testing::Test {
     void openNewFile() { file.openNewFile(testIdentity); }
 
     void writeFreeResponseTrial() { file.write(freeResponseTrial); }
+
+    void writeCorrectKeywordsTrial() { file.write(correctKeywordsTrial); }
 
     void writeOpenSetAdaptiveTrial() { file.write(openSetAdaptiveTrial); }
 
@@ -338,6 +358,14 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(HeadingItem::freeResponse, 2, n);
     }
 
+    void assertCorrectKeywordsHeadingAtLine(int n) {
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 2, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::correctKeywords, 3, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation, 4, n);
+        assertNthCommaDelimitedEntryOfLine(HeadingItem::reversals, 5, n);
+    }
+
     void assertOpenSetAdaptiveHeadingAtLine(int n) {
         assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
         assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 2, n);
@@ -397,6 +425,18 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine("22", 4, n);
     }
 
+    void assertWritesCorrectKeywordsTrialOnLine(int n) {
+        correctKeywordsTrial.SNR_dB = 11;
+        correctKeywordsTrial.target = "a";
+        correctKeywordsTrial.count = 22;
+        correctKeywordsTrial.reversals = 33;
+        writeCorrectKeywordsTrial();
+        assertNthCommaDelimitedEntryOfLine("11", 1, n);
+        assertNthCommaDelimitedEntryOfLine("a", 2, n);
+        assertNthCommaDelimitedEntryOfLine("22", 3, n);
+        assertNthCommaDelimitedEntryOfLine("33", 5, n);
+    }
+
     void assertColonDelimitedEntryWritten(
         const std::string &label, const std::string &what) {
         assertWriterContains(label + ": " + what + "\n");
@@ -416,6 +456,11 @@ TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
 TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
     writeFreeResponseTrial();
     assertFreeResponseHeadingAtLine(1);
+}
+
+TEST_F(OutputFileTests, writeCorrectKeywordsTrialHeading) {
+    writeCorrectKeywordsTrial();
+    assertCorrectKeywordsHeadingAtLine(1);
 }
 
 TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialHeading) {
@@ -439,6 +484,10 @@ TEST_F(OutputFileTests, writeOpenSetAdaptiveTrial) {
     assertWritesOpenSetAdaptiveTrialOnLine(2);
 }
 
+TEST_F(OutputFileTests, writeCorrectKeywordsTrial) {
+    assertWritesCorrectKeywordsTrialOnLine(2);
+}
+
 TEST_F(OutputFileTests,
     writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
     run(writingAdaptiveCoordinateResponseTrial);
@@ -460,6 +509,12 @@ TEST_F(
     OutputFileTests, writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
     writeOpenSetAdaptiveTrial();
     assertWritesOpenSetAdaptiveTrialOnLine(3);
+}
+
+TEST_F(
+    OutputFileTests, writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
+    writeCorrectKeywordsTrial();
+    assertWritesCorrectKeywordsTrialOnLine(3);
 }
 
 TEST_F(OutputFileTests,
@@ -494,6 +549,14 @@ TEST_F(OutputFileTests,
     assertOpenSetAdaptiveHeadingAtLine(3);
 }
 
+TEST_F(OutputFileTests,
+    writeCorrectKeywordsTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+    writeCorrectKeywordsTrial();
+    openNewFile();
+    writeCorrectKeywordsTrial();
+    assertCorrectKeywordsHeadingAtLine(3);
+}
+
 TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(
         writingAdaptiveCoordinateResponseTrial);
@@ -508,6 +571,10 @@ TEST_F(OutputFileTests, writeIncorrectOpenSetAdaptiveTrial) {
     assertIncorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
 }
 
+TEST_F(OutputFileTests, writeIncorrectKeywordsTrial) {
+    assertIncorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
+}
+
 TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
     assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
@@ -519,6 +586,10 @@ TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
 
 TEST_F(OutputFileTests, writeCorrectOpenSetAdaptiveTrial) {
     assertCorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
+}
+
+TEST_F(OutputFileTests, writeCorrectKeywordsTrialWritesCorrectEvaluation) {
+    assertCorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
 }
 
 TEST_F(OutputFileTests, writeFlaggedFreeResponseTrial) {
