@@ -667,6 +667,12 @@ TEST_F(PresenterTests, enteringInvalidCorrectKeywordsShowsErrorMessage) {
     assertErrorMessageEquals("'a' is not a valid number.");
 }
 
+TEST_F(PresenterTests, enteringInvalidCorrectKeywordsDoesNotHideEntry) {
+    setCorrectKeywords("a");
+    run(enteringCorrectKeywords);
+    assertFalse(enteringCorrectKeywords.responseViewHidden());
+}
+
 TEST_F(PresenterTests, failedTrialSubmitsIncorrectResponse) {
     run(submittingFailedTrial);
     assertTrue(model.incorrectResponseSubmitted());

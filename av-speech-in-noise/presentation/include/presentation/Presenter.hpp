@@ -174,6 +174,7 @@ class Presenter : public Model::EventListener {
         void showCorrectKeywordsEntry();
         void showResponseSubmission();
         void showNextTrialButton();
+        void hideCorrectKeywordsEntry();
         auto openSetResponse() -> open_set::FreeResponse;
         auto correctKeywords() -> open_set::CorrectKeywords;
         void playTrial() override;

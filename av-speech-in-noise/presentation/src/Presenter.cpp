@@ -201,6 +201,8 @@ void Presenter::submitFailedTrial() {
 void Presenter::submitCorrectKeywords() {
     try {
         proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
+        testing.hideCorrectKeywordsEntry();
+        testing.showNextTrialButton();
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -546,8 +548,10 @@ void Presenter::Testing::submitFailedTrial() {
 
 void Presenter::Testing::submitCorrectKeywords() {
     parent->submitCorrectKeywords();
+}
+
+void Presenter::Testing::hideCorrectKeywordsEntry() {
     view->hideCorrectKeywordsEntry();
-    showNextTrialButton();
 }
 
 void Presenter::Testing::hide() { view->hide(); }
