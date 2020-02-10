@@ -92,8 +92,8 @@ public:
     bool flagged() override;
     void hideResponseSubmission() override;
     void hideEvaluationButtons() override;
-    void showCorrectKeywordsEntry() override;
-    void hideCorrectKeywordsEntry() override;
+    void showCorrectKeywordsSubmission() override;
+    void hideCorrectKeywordsSubmission() override;
 };
 
 class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {

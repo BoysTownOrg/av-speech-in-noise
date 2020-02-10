@@ -24,7 +24,7 @@ constexpr auto methodName(Method c) -> const char * {
     case Method::adaptivePassFail:
         return "adaptive open-set";
     case Method::adaptiveCorrectKeywords:
-        return "adaptive open-set correct keywords";
+        return "adaptive correct keywords";
     case Method::defaultAdaptiveClosedSet:
         return "adaptive closed-set";
     case Method::adaptiveClosedSetSingleSpeaker:
@@ -65,11 +65,11 @@ class View {
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void showEvaluationButtons() = 0;
-        virtual void showCorrectKeywordsEntry() = 0;
         virtual void hideEvaluationButtons() = 0;
         virtual void showResponseSubmission() = 0;
         virtual void hideResponseSubmission() = 0;
-        virtual void hideCorrectKeywordsEntry() = 0;
+        virtual void showCorrectKeywordsSubmission() = 0;
+        virtual void hideCorrectKeywordsSubmission() = 0;
         virtual auto response() -> std::string = 0;
         virtual auto correctKeywords() -> std::string = 0;
         virtual auto flagged() -> bool = 0;
@@ -171,10 +171,10 @@ class Presenter : public Model::EventListener {
         void show();
         void hide();
         void showEvaluationButtons();
-        void showCorrectKeywordsEntry();
+        void showCorrectKeywordsSubmission();
         void showResponseSubmission();
         void showNextTrialButton();
-        void hideCorrectKeywordsEntry();
+        void hideCorrectKeywordsSubmission();
         auto openSetResponse() -> open_set::FreeResponse;
         auto correctKeywords() -> open_set::CorrectKeywords;
         void playTrial() override;
@@ -311,7 +311,7 @@ class Presenter : public Model::EventListener {
             Testing &testing)
             : testing{testing} {}
 
-        void showResponseView() override { testing.showCorrectKeywordsEntry(); }
+        void showResponseView() override { testing.showCorrectKeywordsSubmission(); }
 
       private:
         Testing &testing;

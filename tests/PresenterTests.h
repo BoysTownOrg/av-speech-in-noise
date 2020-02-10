@@ -485,11 +485,11 @@ class ViewStub : public View {
 
         void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
-        void showCorrectKeywordsEntry() override {
+        void showCorrectKeywordsSubmission() override {
             correctKeywordsEntryShown_ = true;
         }
 
-        void hideCorrectKeywordsEntry() { correctKeywordsEntryHidden_ = true; }
+        void hideCorrectKeywordsSubmission() { correctKeywordsEntryHidden_ = true; }
 
         [[nodiscard]] auto shown() const { return shown_; }
 

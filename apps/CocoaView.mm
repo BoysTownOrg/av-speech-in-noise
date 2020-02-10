@@ -802,11 +802,11 @@ void CocoaTestingView::hideEvaluationButtons() {
     [evaluationButtons setHidden:YES];
 }
 
-void CocoaTestingView::showCorrectKeywordsEntry() {
+void CocoaTestingView::showCorrectKeywordsSubmission() {
     [correctKeywordsSubmission setHidden:NO];
 }
 
-void CocoaTestingView::hideCorrectKeywordsEntry() {
+void CocoaTestingView::hideCorrectKeywordsSubmission() {
     [correctKeywordsSubmission setHidden:YES];
 }
 
