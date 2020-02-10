@@ -90,7 +90,7 @@ public:
     std::string freeResponse() override;
     auto correctKeywords() -> std::string override;
     bool flagged() override;
-    void hideResponseSubmission() override;
+    void hideFreeResponseSubmission() override;
     void hideEvaluationButtons() override;
     void showCorrectKeywordsSubmission() override;
     void hideCorrectKeywordsSubmission() override;

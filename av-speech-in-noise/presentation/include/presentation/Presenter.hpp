@@ -67,7 +67,7 @@ class View {
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
         virtual void showFreeResponseSubmission() = 0;
-        virtual void hideResponseSubmission() = 0;
+        virtual void hideFreeResponseSubmission() = 0;
         virtual void showCorrectKeywordsSubmission() = 0;
         virtual void hideCorrectKeywordsSubmission() = 0;
         virtual auto freeResponse() -> std::string = 0;

@@ -794,7 +794,7 @@ void CocoaTestingView::showFreeResponseSubmission() {
     [responseSubmission setHidden:NO];
 }
 
-void CocoaTestingView::hideResponseSubmission() {
+void CocoaTestingView::hideFreeResponseSubmission() {
     [responseSubmission setHidden:YES];
 }
 

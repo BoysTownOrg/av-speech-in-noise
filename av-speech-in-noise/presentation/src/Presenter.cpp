@@ -570,7 +570,7 @@ void Presenter::Testing::showFreeResponseSubmission() {
 
 void Presenter::Testing::submitFreeResponse() {
     parent->submitExperimenterResponse();
-    view->hideResponseSubmission();
+    view->hideFreeResponseSubmission();
     showNextTrialButton();
 }
 

@@ -513,7 +513,7 @@ class ViewStub : public View {
             responseSubmissionShown_ = true;
         }
 
-        void hideResponseSubmission() override {
+        void hideFreeResponseSubmission() override {
             responseSubmissionHidden_ = true;
         }
 
