@@ -67,7 +67,7 @@ class CocoaTestingView : public av_speech_in_noise::View::Testing {
     NSView *responseSubmission;
     NSView *correctKeywordsSubmission;
     NSTextField *response_;
-    NSTextField *correctKeywords_;
+    NSTextField *correctKeywordsEntry_;
     NSButton *flagged_;
     EventListener *listener_{};
     TestingViewActions *actions;

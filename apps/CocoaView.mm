@@ -683,7 +683,7 @@ CocoaTestingView::CocoaTestingView(NSRect r) :
     response_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
     ]},
-    correctKeywords_{[[NSTextField alloc]
+    correctKeywordsEntry_{[[NSTextField alloc]
         initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
     ]},
     flagged_{[[NSButton alloc] initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2 - labelHeight, 150, labelHeight)]},
@@ -752,7 +752,7 @@ CocoaTestingView::CocoaTestingView(NSRect r) :
     [responseSubmission addSubview:flagged_];
     [evaluationButtons addSubview:passButton_];
     [evaluationButtons addSubview:failButton_];
-    [correctKeywordsSubmission addSubview:correctKeywords_];
+    [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
     [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
     [view_ addSubview:nextTrialButton];
     [view_ addSubview:responseSubmission];
@@ -815,7 +815,7 @@ std::string CocoaTestingView::freeResponse() {
 }
 
 auto CocoaTestingView::correctKeywords() -> std::string {
-    return correctKeywords_.stringValue.UTF8String;
+    return correctKeywordsEntry_.stringValue.UTF8String;
 }
 
 bool CocoaTestingView::flagged() {
