@@ -13,7 +13,7 @@ enum class Method {
     adaptiveCoordinateResponseMeasureWithSingleSpeaker,
     adaptiveCoordinateResponseMeasureWithDelayedMasker,
     adaptiveCoordinateResponseMeasureWithEyeTracking,
-    defaultFixedLevelOpenSet,
+    fixedLevelFreeResponseWithTargetReplacement,
     fixedLevelOpenSetWithSilentIntervalTargets,
     fixedLevelOpenSetWithAllTargets,
     defaultFixedLevelCoordinateResponseMeasure,
@@ -34,7 +34,7 @@ constexpr auto methodName(Method c) -> const char * {
         return "adaptive closed-set delayed masker";
     case Method::adaptiveCoordinateResponseMeasureWithEyeTracking:
         return "adaptive closed-set eye tracking";
-    case Method::defaultFixedLevelOpenSet:
+    case Method::fixedLevelFreeResponseWithTargetReplacement:
         return "fixed-level open-set with replacement";
     case Method::defaultFixedLevelCoordinateResponseMeasure:
         return "fixed-level closed-set with replacement";

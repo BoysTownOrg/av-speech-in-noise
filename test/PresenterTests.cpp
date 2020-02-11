@@ -134,7 +134,7 @@ PRESENTER_TEST(populatesMethodMenu) {
     assertSetupViewMethodsContains(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
     assertSetupViewMethodsContains(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
     assertSetupViewMethodsContains(Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
-    assertSetupViewMethodsContains(Method::defaultFixedLevelOpenSet);
+    assertSetupViewMethodsContains(Method::fixedLevelFreeResponseWithTargetReplacement);
     assertSetupViewMethodsContains(Method::fixedLevelOpenSetWithAllTargets);
     assertSetupViewMethodsContains(
         Method::fixedLevelOpenSetWithSilentIntervalTargets);

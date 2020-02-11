@@ -865,7 +865,7 @@ class ConfirmingDefaultFixedLevelOpenSetTest : public ConfirmingTestSetup {
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::defaultFixedLevelOpenSet);
+        setMethod(view, Method::fixedLevelFreeResponseWithTargetReplacement);
         confirmTestSetup(view);
     }
 

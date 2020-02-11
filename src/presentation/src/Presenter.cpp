@@ -293,7 +293,7 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         methodName(Method::adaptiveCorrectKeywords),
         methodName(Method::defaultFixedLevelCoordinateResponseMeasure),
         methodName(Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
-        methodName(Method::defaultFixedLevelOpenSet),
+        methodName(Method::fixedLevelFreeResponseWithTargetReplacement),
         methodName(Method::fixedLevelOpenSetWithSilentIntervalTargets),
         methodName(Method::fixedLevelOpenSetWithAllTargets)});
     view->subscribe(this);
