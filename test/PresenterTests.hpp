@@ -1124,11 +1124,11 @@ class SubmittingFailedTrial : public TrialSubmission {
     }
 };
 
-class EnteringCorrectKeywords : public TrialSubmission {
+class SubmittingCorrectKeywords : public TrialSubmission {
     ViewStub::TestingViewStub *view;
 
   public:
-    explicit EnteringCorrectKeywords(ViewStub::TestingViewStub *view)
+    explicit SubmittingCorrectKeywords(ViewStub::TestingViewStub *view)
         : view{view} {}
 
     void run() override { view->submitCorrectKeywords(); }
@@ -1325,25 +1325,26 @@ class PresenterTests : public ::testing::Test {
             &setupView};
     ConfirmingAdaptivePassFailTest confirmingAdaptivePassFailTest{&setupView};
     ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
-        confirmingDefaultFixedLevelOpenSetTest{&setupView};
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest{&setupView};
     ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest
         confirmingDefaultFixedLevelCoordinateResponseMeasureTest{&setupView};
-    ConfirmingAdaptiveCorrectKeywordsTest confirmingAdaptiveOpenSetKeywordsTest{
+    ConfirmingAdaptiveCorrectKeywordsTest confirmingAdaptiveCorrectKeywordsTest{
         &setupView};
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest{
             &setupView};
     ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
-        confirmingFixedLevelOpenSetSilentIntervalsTest{&setupView};
+        confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest{
+            &setupView};
     ConfirmingFixedLevelFreeResponseTestWithAllTargets
-        confirmingFixedLevelOpenSetTestWithAllTargets{&setupView};
+        confirmingFixedLevelFreeResponseTestWithAllTargets{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{&testingView};
     RespondingFromSubject respondingFromSubject{&subjectView};
-    SubmittingFreeResponse respondingFromExperimenter{&testingView};
+    SubmittingFreeResponse submittingFreeResponse{&testingView};
     SubmittingPassedTrial submittingPassedTrial{&testingView};
-    EnteringCorrectKeywords enteringCorrectKeywords{&testingView};
+    SubmittingCorrectKeywords submittingCorrectKeywords{&testingView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenterView};
 
