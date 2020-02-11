@@ -686,16 +686,16 @@ static void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
     view->setMethod(methodName(m));
 }
 
-class ConfirmingDefaultAdaptiveClosedSetTest : public ConfirmingTestSetup {
+class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingDefaultAdaptiveClosedSetTest(
+    explicit ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::defaultAdaptiveClosedSet);
+        setMethod(view, Method::defaultAdaptiveCoordinateResponseMeasure);
         confirmTestSetup(view);
     }
 
@@ -714,17 +714,17 @@ class ConfirmingDefaultAdaptiveClosedSetTest : public ConfirmingTestSetup {
     }
 };
 
-class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
+class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingAdaptiveClosedSetTestWithSingleSpeaker(
+    explicit ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveClosedSetWithSingleSpeaker);
+        setMethod(view, Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
         confirmTestSetup(view);
     }
 
@@ -743,17 +743,17 @@ class ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
     }
 };
 
-class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
+class ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingAdaptiveClosedSetTestWithDelayedMasker(
+    explicit ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveClosedSetWithDelayedMasker);
+        setMethod(view, Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
         confirmTestSetup(view);
     }
 
@@ -772,17 +772,17 @@ class ConfirmingAdaptiveClosedSetTestWithDelayedMasker
     }
 };
 
-class ConfirmingAdaptiveClosedSetTestWithEyeTracking
+class ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingAdaptiveClosedSetTestWithEyeTracking(
+    explicit ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveClosedSetWithEyeTracking);
+        setMethod(view, Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
         confirmTestSetup(view);
     }
 
@@ -886,16 +886,16 @@ class ConfirmingDefaultFixedLevelOpenSetTest : public ConfirmingTestSetup {
     }
 };
 
-class ConfirmingDefaultFixedLevelClosedSetTest : public ConfirmingTestSetup {
+class ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingDefaultFixedLevelClosedSetTest(
+    explicit ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::defaultFixedLevelClosedSet);
+        setMethod(view, Method::defaultFixedLevelCoordinateResponseMeasure);
         confirmTestSetup(view);
     }
 
@@ -916,17 +916,17 @@ class ConfirmingDefaultFixedLevelClosedSetTest : public ConfirmingTestSetup {
     }
 };
 
-class ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
+class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets(
+    explicit ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelClosedSetWithSilentIntervalTargets);
+        setMethod(view, Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
         confirmTestSetup(view);
     }
 
@@ -1301,23 +1301,23 @@ class PresenterTests : public ::testing::Test {
     BrowsingForTargetList browsingForTargetList{&setupView};
     BrowsingForMasker browsingForMasker{&setupView};
     BrowsingForCalibration browsingForCalibration{&setupView};
-    ConfirmingDefaultAdaptiveClosedSetTest
-        confirmingDefaultAdaptiveClosedSetTest{&setupView};
-    ConfirmingAdaptiveClosedSetTestWithSingleSpeaker
-        confirmingAdaptiveClosedSetTestWithSingleSpeaker{&setupView};
-    ConfirmingAdaptiveClosedSetTestWithDelayedMasker
-        confirmingAdaptiveClosedSetTestWithDelayedMasker{&setupView};
-    ConfirmingAdaptiveClosedSetTestWithEyeTracking
-        confirmingAdaptiveClosedSetTestWithEyeTracking{&setupView};
+    ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest{&setupView};
+    ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
+        confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker{&setupView};
+    ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
+        confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker{&setupView};
+    ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking
+        confirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking{&setupView};
     ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
     ConfirmingDefaultFixedLevelOpenSetTest
         confirmingDefaultFixedLevelOpenSetTest{&setupView};
-    ConfirmingDefaultFixedLevelClosedSetTest
-        confirmingDefaultFixedLevelClosedSetTest{&setupView};
+    ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest
+        confirmingDefaultFixedLevelCoordinateResponseMeasureTest{&setupView};
     ConfirmingAdaptiveOpenSetKeywordsTest confirmingAdaptiveOpenSetKeywordsTest{
         &setupView};
-    ConfirmingFixedLevelClosedSetTestWithSilentIntervalTargets
-        confirmingFixedLevelClosedSetSilentIntervalsTest{&setupView};
+    ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest{&setupView};
     ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
         confirmingFixedLevelOpenSetSilentIntervalsTest{&setupView};
     ConfirmingFixedLevelOpenSetTestWithAllTargets

@@ -9,15 +9,15 @@ namespace av_speech_in_noise {
 enum class Method {
     adaptivePassFail,
     adaptiveCorrectKeywords,
-    defaultAdaptiveClosedSet,
-    adaptiveClosedSetWithSingleSpeaker,
-    adaptiveClosedSetWithDelayedMasker,
-    adaptiveClosedSetWithEyeTracking,
+    defaultAdaptiveCoordinateResponseMeasure,
+    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+    adaptiveCoordinateResponseMeasureWithDelayedMasker,
+    adaptiveCoordinateResponseMeasureWithEyeTracking,
     defaultFixedLevelOpenSet,
     fixedLevelOpenSetWithSilentIntervalTargets,
     fixedLevelOpenSetWithAllTargets,
-    defaultFixedLevelClosedSet,
-    fixedLevelClosedSetWithSilentIntervalTargets
+    defaultFixedLevelCoordinateResponseMeasure,
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets
 };
 
 constexpr auto methodName(Method c) -> const char * {
@@ -26,21 +26,21 @@ constexpr auto methodName(Method c) -> const char * {
         return "adaptive open-set";
     case Method::adaptiveCorrectKeywords:
         return "adaptive correct keywords";
-    case Method::defaultAdaptiveClosedSet:
+    case Method::defaultAdaptiveCoordinateResponseMeasure:
         return "adaptive closed-set";
-    case Method::adaptiveClosedSetWithSingleSpeaker:
+    case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
         return "adaptive closed-set single speaker";
-    case Method::adaptiveClosedSetWithDelayedMasker:
+    case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
         return "adaptive closed-set delayed masker";
-    case Method::adaptiveClosedSetWithEyeTracking:
+    case Method::adaptiveCoordinateResponseMeasureWithEyeTracking:
         return "adaptive closed-set eye tracking";
     case Method::defaultFixedLevelOpenSet:
         return "fixed-level open-set with replacement";
-    case Method::defaultFixedLevelClosedSet:
+    case Method::defaultFixedLevelCoordinateResponseMeasure:
         return "fixed-level closed-set with replacement";
     case Method::fixedLevelOpenSetWithSilentIntervalTargets:
         return "fixed-level open-set silent intervals";
-    case Method::fixedLevelClosedSetWithSilentIntervalTargets:
+    case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
         return "fixed-level closed-set silent intervals";
     case Method::fixedLevelOpenSetWithAllTargets:
         return "fixed-level open-set all stimuli";
@@ -206,19 +206,19 @@ class Presenter : public Model::EventListener {
         auto adaptiveTest() -> AdaptiveTest;
         auto fixedLevelTest() -> FixedLevelTest;
         auto calibrationParameters() -> Calibration;
-        auto closedSet() -> bool;
+        auto coordinateResponseMeasure() -> bool;
         auto defaultAdaptive() -> bool;
-        auto adaptiveClosedSet() -> bool;
+        auto adaptiveCoordinateResponseMeasure() -> bool;
         auto adaptivePassFail() -> bool;
         auto fixedLevelOpenSet() -> bool;
-        auto fixedLevelClosedSet() -> bool;
-        auto fixedLevelClosedSetWithSilentIntervalTargets() -> bool;
+        auto fixedLevelCoordinateResponseMeasure() -> bool;
+        auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool;
         auto fixedLevelSilentIntervals() -> bool;
         auto fixedLevelAllStimuli() -> bool;
         auto singleSpeaker() -> bool;
-        auto adaptiveClosedSetWithDelayedMasker() -> bool;
-        auto adaptiveClosedSetWithSingleSpeaker() -> bool;
-        auto adaptiveClosedSetWithEyeTracking() -> bool;
+        auto adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool;
+        auto adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool;
+        auto adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool;
         auto adaptiveCorrectKeywords() -> bool;
         auto delayedMasker() -> bool;
         void playCalibration() override;
@@ -229,7 +229,7 @@ class Presenter : public Model::EventListener {
         void browseForTrackSettingsFile() override;
 
       private:
-        auto defaultAdaptiveClosedSet() -> bool;
+        auto defaultAdaptiveCoordinateResponseMeasure() -> bool;
         auto testIdentity() -> TestIdentity;
         void initialize(Test &);
         auto readCondition() -> Condition;
@@ -284,10 +284,10 @@ class Presenter : public Model::EventListener {
         virtual void showResponseView() = 0;
     };
 
-    class AdaptiveClosedSetTestTrialCompletionHandler
+    class AdaptiveCoordinateResponseMeasureTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveClosedSetTestTrialCompletionHandler(Subject &subject)
+        explicit AdaptiveCoordinateResponseMeasureTestTrialCompletionHandler(Subject &subject)
             : subject{subject} {}
 
         void showResponseView() override { subject.showResponseButtons(); }
@@ -333,10 +333,10 @@ class Presenter : public Model::EventListener {
         Testing &testing;
     };
 
-    class FixedLevelClosedSetTestTrialCompletionHandler
+    class FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit FixedLevelClosedSetTestTrialCompletionHandler(Subject &subject)
+        explicit FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler(Subject &subject)
             : subject{subject} {}
 
         void showResponseView() override { subject.showResponseButtons(); }
@@ -373,9 +373,9 @@ class Presenter : public Model::EventListener {
     auto defaultAdaptive() -> bool;
     auto singleSpeaker() -> bool;
     auto delayedMasker() -> bool;
-    auto adaptiveClosedSetWithDelayedMasker() -> bool;
-    auto adaptiveClosedSetWithSingleSpeaker() -> bool;
-    auto adaptiveClosedSetWithEyeTracking() -> bool;
+    auto adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool;
+    auto adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool;
+    auto adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool;
     auto adaptiveCorrectKeywords() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
@@ -391,11 +391,11 @@ class Presenter : public Model::EventListener {
     auto testComplete() -> bool;
     void proceedToNextTrial();
     void hideTestSetup();
-    auto adaptiveClosedSet() -> bool;
+    auto adaptiveCoordinateResponseMeasure() -> bool;
     auto adaptivePassFail() -> bool;
-    auto closedSet() -> bool;
-    auto fixedLevelClosedSet() -> bool;
-    auto fixedLevelClosedSetWithSilentIntervalTargets() -> bool;
+    auto coordinateResponseMeasure() -> bool;
+    auto fixedLevelCoordinateResponseMeasure() -> bool;
+    auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool;
     void initializeTest();
     void showTestView();
     void switchToTestView();
@@ -406,14 +406,14 @@ class Presenter : public Model::EventListener {
 
     FixedLevelOpenSetTestTrialCompletionHandler
         fixedLevelOpenSetTrialCompletionHandler;
-    FixedLevelClosedSetTestTrialCompletionHandler
-        fixedLevelClosedSetTrialCompletionHandler;
+    FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler
+        fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
     AdaptiveOpenSetTestTrialCompletionHandler
         adaptiveOpenSetTrialCompletionHandler;
     AdaptiveOpenSetKeywordsTestTrialCompletionHandler
         adaptiveOpenSetKeywordsTrialCompletionHandler;
-    AdaptiveClosedSetTestTrialCompletionHandler
-        adaptiveClosedSetTrialCompletionHandler;
+    AdaptiveCoordinateResponseMeasureTestTrialCompletionHandler
+        adaptiveCoordinateResponseMeasureTrialCompletionHandler;
     Model &model;
     View &view;
     TestSetup &testSetup;

@@ -32,13 +32,13 @@ static void displayTrialNumber(
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     Subject &subject, Experimenter &experimenter, Testing &testing)
     : fixedLevelOpenSetTrialCompletionHandler{testing},
-      fixedLevelClosedSetTrialCompletionHandler{subject},
+      fixedLevelCoordinateResponseMeasureTrialCompletionHandler{subject},
       adaptiveOpenSetTrialCompletionHandler{testing},
       adaptiveOpenSetKeywordsTrialCompletionHandler{testing},
-      adaptiveClosedSetTrialCompletionHandler{subject}, model{model},
+      adaptiveCoordinateResponseMeasureTrialCompletionHandler{subject}, model{model},
       view{view}, testSetup{testSetup}, subject{subject},
       experimenter{experimenter}, testing{testing},
-      trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler} {
+      trialCompletionHandler_{&adaptiveCoordinateResponseMeasureTrialCompletionHandler} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     subject.becomeChild(this);
@@ -65,11 +65,11 @@ void Presenter::confirmTestSetup_() {
 }
 
 void Presenter::initializeTest() {
-    if (adaptiveClosedSetWithDelayedMasker())
+    if (adaptiveCoordinateResponseMeasureWithDelayedMasker())
         model.initializeWithDelayedMasker(adaptiveTest(testSetup));
-    else if (adaptiveClosedSetWithSingleSpeaker())
+    else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker())
         model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (adaptiveClosedSetWithEyeTracking())
+    else if (adaptiveCoordinateResponseMeasureWithEyeTracking())
         model.initializeWithEyeTracking(adaptiveTest(testSetup));
     else if (defaultAdaptive() || adaptiveCorrectKeywords())
         model.initialize(adaptiveTest(testSetup));
@@ -81,8 +81,8 @@ void Presenter::initializeTest() {
         model.initializeWithTargetReplacement(fixedLevelTest(testSetup));
 }
 
-auto Presenter::adaptiveClosedSet() -> bool {
-    return testSetup.adaptiveClosedSet();
+auto Presenter::adaptiveCoordinateResponseMeasure() -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasure();
 }
 
 auto Presenter::adaptivePassFail() -> bool {
@@ -97,16 +97,16 @@ auto Presenter::fixedLevelAllStimuli() -> bool {
     return testSetup.fixedLevelAllStimuli();
 }
 
-auto Presenter::adaptiveClosedSetWithDelayedMasker() -> bool {
-    return testSetup.adaptiveClosedSetWithDelayedMasker();
+auto Presenter::adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasureWithDelayedMasker();
 }
 
-auto Presenter::adaptiveClosedSetWithSingleSpeaker() -> bool {
-    return testSetup.adaptiveClosedSetWithSingleSpeaker();
+auto Presenter::adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasureWithSingleSpeaker();
 }
 
-auto Presenter::adaptiveClosedSetWithEyeTracking() -> bool {
-    return testSetup.adaptiveClosedSetWithEyeTracking();
+auto Presenter::adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasureWithEyeTracking();
 }
 
 auto Presenter::adaptiveCorrectKeywords() -> bool {
@@ -125,31 +125,31 @@ void Presenter::hideTestSetup() { testSetup.hide(); }
 void Presenter::showTestView() {
     experimenter.show();
     displayTrialNumber(experimenter, model);
-    if (closedSet())
+    if (coordinateResponseMeasure())
         subject.show();
     else
         testing.show();
 }
 
-auto Presenter::closedSet() -> bool { return testSetup.closedSet(); }
+auto Presenter::coordinateResponseMeasure() -> bool { return testSetup.coordinateResponseMeasure(); }
 
 auto Presenter::defaultAdaptive() -> bool {
     return testSetup.defaultAdaptive();
 }
 
-auto Presenter::fixedLevelClosedSet() -> bool {
-    return testSetup.fixedLevelClosedSet();
+auto Presenter::fixedLevelCoordinateResponseMeasure() -> bool {
+    return testSetup.fixedLevelCoordinateResponseMeasure();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
-    if (adaptiveClosedSet())
-        return &adaptiveClosedSetTrialCompletionHandler;
+    if (adaptiveCoordinateResponseMeasure())
+        return &adaptiveCoordinateResponseMeasureTrialCompletionHandler;
     if (adaptivePassFail())
         return &adaptiveOpenSetTrialCompletionHandler;
     if (adaptiveCorrectKeywords())
         return &adaptiveOpenSetKeywordsTrialCompletionHandler;
-    if (fixedLevelClosedSet())
-        return &fixedLevelClosedSetTrialCompletionHandler;
+    if (fixedLevelCoordinateResponseMeasure())
+        return &fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
     return &fixedLevelOpenSetTrialCompletionHandler;
 }
 
@@ -285,14 +285,14 @@ void Presenter::browseForTrackSettingsFile() {
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
-    view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
-        methodName(Method::adaptiveClosedSetWithSingleSpeaker),
-        methodName(Method::adaptiveClosedSetWithDelayedMasker),
-        methodName(Method::adaptiveClosedSetWithEyeTracking),
+    view->populateMethodMenu({methodName(Method::defaultAdaptiveCoordinateResponseMeasure),
+        methodName(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker),
+        methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker),
+        methodName(Method::adaptiveCoordinateResponseMeasureWithEyeTracking),
         methodName(Method::adaptivePassFail),
         methodName(Method::adaptiveCorrectKeywords),
-        methodName(Method::defaultFixedLevelClosedSet),
-        methodName(Method::fixedLevelClosedSetWithSilentIntervalTargets),
+        methodName(Method::defaultFixedLevelCoordinateResponseMeasure),
+        methodName(Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
         methodName(Method::defaultFixedLevelOpenSet),
         methodName(Method::fixedLevelOpenSetWithSilentIntervalTargets),
         methodName(Method::fixedLevelOpenSetWithAllTargets)});
@@ -415,51 +415,51 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
 }
 
 auto Presenter::TestSetup::defaultAdaptive() -> bool {
-    return defaultAdaptiveClosedSet() || adaptivePassFail();
+    return defaultAdaptiveCoordinateResponseMeasure() || adaptivePassFail();
 }
 
-auto Presenter::TestSetup::defaultAdaptiveClosedSet() -> bool {
-    return method(Method::defaultAdaptiveClosedSet);
+auto Presenter::TestSetup::defaultAdaptiveCoordinateResponseMeasure() -> bool {
+    return method(Method::defaultAdaptiveCoordinateResponseMeasure);
 }
 
 auto Presenter::TestSetup::adaptivePassFail() -> bool {
     return method(Method::adaptivePassFail);
 }
 
-auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
-    return defaultAdaptiveClosedSet() || adaptiveClosedSetWithSingleSpeaker() ||
-        adaptiveClosedSetWithDelayedMasker() ||
-        method(Method::adaptiveClosedSetWithEyeTracking);
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasure() -> bool {
+    return defaultAdaptiveCoordinateResponseMeasure() || adaptiveCoordinateResponseMeasureWithSingleSpeaker() ||
+        adaptiveCoordinateResponseMeasureWithDelayedMasker() ||
+        method(Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
 }
 
-auto Presenter::TestSetup::adaptiveClosedSetWithDelayedMasker() -> bool {
-    return method(Method::adaptiveClosedSetWithDelayedMasker);
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool {
+    return method(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
 }
 
-auto Presenter::TestSetup::adaptiveClosedSetWithSingleSpeaker() -> bool {
-    return method(Method::adaptiveClosedSetWithSingleSpeaker);
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool {
+    return method(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
 }
 
-auto Presenter::TestSetup::adaptiveClosedSetWithEyeTracking() -> bool {
-    return method(Method::adaptiveClosedSetWithEyeTracking);
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool {
+    return method(Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
 }
 
 auto Presenter::TestSetup::adaptiveCorrectKeywords() -> bool {
     return method(Method::adaptiveCorrectKeywords);
 }
 
-auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
-    return method(Method::defaultFixedLevelClosedSet) ||
-        fixedLevelClosedSetWithSilentIntervalTargets();
+auto Presenter::TestSetup::fixedLevelCoordinateResponseMeasure() -> bool {
+    return method(Method::defaultFixedLevelCoordinateResponseMeasure) ||
+        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets();
 }
 
-auto Presenter::TestSetup::fixedLevelClosedSetWithSilentIntervalTargets()
+auto Presenter::TestSetup::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets()
     -> bool {
-    return method(Method::fixedLevelClosedSetWithSilentIntervalTargets);
+    return method(Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
 }
 
 auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
-    return fixedLevelClosedSetWithSilentIntervalTargets() ||
+    return fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() ||
         method(Method::fixedLevelOpenSetWithSilentIntervalTargets);
 }
 
@@ -467,8 +467,8 @@ auto Presenter::TestSetup::fixedLevelAllStimuli() -> bool {
     return method(Method::fixedLevelOpenSetWithAllTargets);
 }
 
-auto Presenter::TestSetup::closedSet() -> bool {
-    return adaptiveClosedSet() || fixedLevelClosedSet();
+auto Presenter::TestSetup::coordinateResponseMeasure() -> bool {
+    return adaptiveCoordinateResponseMeasure() || fixedLevelCoordinateResponseMeasure();
 }
 
 auto Presenter::TestSetup::method(Method m) -> bool {
