@@ -686,7 +686,8 @@ static void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
     view->setMethod(methodName(m));
 }
 
-class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest : public ConfirmingTestSetup {
+class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
+    : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
@@ -724,7 +725,8 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
+        setMethod(
+            view, Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
         confirmTestSetup(view);
     }
 
@@ -753,7 +755,8 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
+        setMethod(
+            view, Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
         confirmTestSetup(view);
     }
 
@@ -782,7 +785,8 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
+        setMethod(
+            view, Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
         confirmTestSetup(view);
     }
 
@@ -801,11 +805,9 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking
     }
 };
 
-class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
-
+class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
   public:
-    explicit ConfirmingAdaptiveOpenSetTest(ViewStub::TestSetupViewStub *view)
+    explicit ConfirmingAdaptivePassFailTest(ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
     void run() override {
@@ -826,13 +828,14 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingTestSetup {
     auto condition(ModelStub &m) -> Condition override {
         return adaptive_test::condition(m);
     }
+
+  private:
+    ViewStub::TestSetupViewStub *view;
 };
 
-class ConfirmingAdaptiveOpenSetKeywordsTest : public ConfirmingTestSetup {
-    ViewStub::TestSetupViewStub *view;
-
+class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
   public:
-    explicit ConfirmingAdaptiveOpenSetKeywordsTest(
+    explicit ConfirmingAdaptiveCorrectKeywordsTest(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
@@ -854,13 +857,17 @@ class ConfirmingAdaptiveOpenSetKeywordsTest : public ConfirmingTestSetup {
     auto condition(ModelStub &m) -> Condition override {
         return adaptive_test::condition(m);
     }
+
+  private:
+    ViewStub::TestSetupViewStub *view;
 };
 
-class ConfirmingDefaultFixedLevelOpenSetTest : public ConfirmingTestSetup {
+class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
+    : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingDefaultFixedLevelOpenSetTest(
+    explicit ConfirmingFixedLevelFreeResponseWithTargetReplacementTest(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
@@ -886,7 +893,8 @@ class ConfirmingDefaultFixedLevelOpenSetTest : public ConfirmingTestSetup {
     }
 };
 
-class ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest : public ConfirmingTestSetup {
+class ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest
+    : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
@@ -926,7 +934,9 @@ class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
+        setMethod(view,
+            Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
         confirmTestSetup(view);
     }
 
@@ -947,17 +957,18 @@ class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
     }
 };
 
-class ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
+class ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets(
+    explicit ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelFreeResponseWithSilentIntervalTargets);
+        setMethod(
+            view, Method::fixedLevelFreeResponseWithSilentIntervalTargets);
         confirmTestSetup(view);
     }
 
@@ -978,12 +989,12 @@ class ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
     }
 };
 
-class ConfirmingFixedLevelOpenSetTestWithAllTargets
+class ConfirmingFixedLevelFreeResponseTestWithAllTargets
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingFixedLevelOpenSetTestWithAllTargets(
+    explicit ConfirmingFixedLevelFreeResponseTestWithAllTargets(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
@@ -1038,11 +1049,11 @@ class RespondingFromSubject : public TrialSubmission {
     }
 };
 
-class RespondingFromExperimenter : public TrialSubmission {
+class SubmittingFreeResponse : public TrialSubmission {
     ViewStub::TestingViewStub *view;
 
   public:
-    explicit RespondingFromExperimenter(ViewStub::TestingViewStub *view)
+    explicit SubmittingFreeResponse(ViewStub::TestingViewStub *view)
         : view{view} {}
 
     void run() override { view->submitFreeResponse(); }
@@ -1091,28 +1102,6 @@ class SubmittingPassedTrial : public TrialSubmission {
     }
 };
 
-class EnteringCorrectKeywords : public TrialSubmission {
-    ViewStub::TestingViewStub *view;
-
-  public:
-    explicit EnteringCorrectKeywords(ViewStub::TestingViewStub *view)
-        : view{view} {}
-
-    void run() override { view->submitCorrectKeywords(); }
-
-    auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
-    }
-
-    auto responseViewShown() -> bool override {
-        return view->correctKeywordsEntryShown();
-    }
-
-    auto responseViewHidden() -> bool override {
-        return view->correctKeywordsEntryHidden();
-    }
-};
-
 class SubmittingFailedTrial : public TrialSubmission {
     ViewStub::TestingViewStub *view;
 
@@ -1132,6 +1121,28 @@ class SubmittingFailedTrial : public TrialSubmission {
 
     auto responseViewHidden() -> bool override {
         return view->evaluationButtonsHidden();
+    }
+};
+
+class EnteringCorrectKeywords : public TrialSubmission {
+    ViewStub::TestingViewStub *view;
+
+  public:
+    explicit EnteringCorrectKeywords(ViewStub::TestingViewStub *view)
+        : view{view} {}
+
+    void run() override { view->submitCorrectKeywords(); }
+
+    auto nextTrialButtonShown() -> bool override {
+        return view->nextTrialButtonShown();
+    }
+
+    auto responseViewShown() -> bool override {
+        return view->correctKeywordsEntryShown();
+    }
+
+    auto responseViewHidden() -> bool override {
+        return view->correctKeywordsEntryHidden();
     }
 };
 
@@ -1304,29 +1315,33 @@ class PresenterTests : public ::testing::Test {
     ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest{&setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
-        confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker{&setupView};
+        confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker{
+            &setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
-        confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker{&setupView};
+        confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker{
+            &setupView};
     ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking
-        confirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking{&setupView};
-    ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
-    ConfirmingDefaultFixedLevelOpenSetTest
+        confirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking{
+            &setupView};
+    ConfirmingAdaptivePassFailTest confirmingAdaptivePassFailTest{&setupView};
+    ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
         confirmingDefaultFixedLevelOpenSetTest{&setupView};
     ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest
         confirmingDefaultFixedLevelCoordinateResponseMeasureTest{&setupView};
-    ConfirmingAdaptiveOpenSetKeywordsTest confirmingAdaptiveOpenSetKeywordsTest{
+    ConfirmingAdaptiveCorrectKeywordsTest confirmingAdaptiveOpenSetKeywordsTest{
         &setupView};
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
-        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest{&setupView};
-    ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest{
+            &setupView};
+    ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
         confirmingFixedLevelOpenSetSilentIntervalsTest{&setupView};
-    ConfirmingFixedLevelOpenSetTestWithAllTargets
+    ConfirmingFixedLevelFreeResponseTestWithAllTargets
         confirmingFixedLevelOpenSetTestWithAllTargets{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{&testingView};
     RespondingFromSubject respondingFromSubject{&subjectView};
-    RespondingFromExperimenter respondingFromExperimenter{&testingView};
+    SubmittingFreeResponse respondingFromExperimenter{&testingView};
     SubmittingPassedTrial submittingPassedTrial{&testingView};
     EnteringCorrectKeywords enteringCorrectKeywords{&testingView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};

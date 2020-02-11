@@ -31,14 +31,15 @@ static void displayTrialNumber(
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     Subject &subject, Experimenter &experimenter, Testing &testing)
-    : fixedLevelOpenSetTrialCompletionHandler{testing},
+    : fixedLevelFreeResponseTestTrialCompletionHandler{testing},
       fixedLevelCoordinateResponseMeasureTrialCompletionHandler{subject},
-      adaptiveOpenSetTrialCompletionHandler{testing},
-      adaptiveOpenSetKeywordsTrialCompletionHandler{testing},
-      adaptiveCoordinateResponseMeasureTrialCompletionHandler{subject}, model{model},
-      view{view}, testSetup{testSetup}, subject{subject},
+      adaptivePassFailTestTrialCompletionHandler{testing},
+      adaptiveCorrectKeywordsTestTrialCompletionHandler{testing},
+      adaptiveCoordinateResponseMeasureTrialCompletionHandler{subject},
+      model{model}, view{view}, testSetup{testSetup}, subject{subject},
       experimenter{experimenter}, testing{testing},
-      trialCompletionHandler_{&adaptiveCoordinateResponseMeasureTrialCompletionHandler} {
+      trialCompletionHandler_{
+          &adaptiveCoordinateResponseMeasureTrialCompletionHandler} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     subject.becomeChild(this);
@@ -131,7 +132,9 @@ void Presenter::showTestView() {
         testing.show();
 }
 
-auto Presenter::coordinateResponseMeasure() -> bool { return testSetup.coordinateResponseMeasure(); }
+auto Presenter::coordinateResponseMeasure() -> bool {
+    return testSetup.coordinateResponseMeasure();
+}
 
 auto Presenter::defaultAdaptive() -> bool {
     return testSetup.defaultAdaptive();
@@ -145,12 +148,12 @@ auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
     if (adaptiveCoordinateResponseMeasure())
         return &adaptiveCoordinateResponseMeasureTrialCompletionHandler;
     if (adaptivePassFail())
-        return &adaptiveOpenSetTrialCompletionHandler;
+        return &adaptivePassFailTestTrialCompletionHandler;
     if (adaptiveCorrectKeywords())
-        return &adaptiveOpenSetKeywordsTrialCompletionHandler;
+        return &adaptiveCorrectKeywordsTestTrialCompletionHandler;
     if (fixedLevelCoordinateResponseMeasure())
         return &fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
-    return &fixedLevelOpenSetTrialCompletionHandler;
+    return &fixedLevelFreeResponseTestTrialCompletionHandler;
 }
 
 void Presenter::showErrorMessage(std::string e) {
@@ -285,14 +288,16 @@ void Presenter::browseForTrackSettingsFile() {
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
-    view->populateMethodMenu({methodName(Method::defaultAdaptiveCoordinateResponseMeasure),
+    view->populateMethodMenu({methodName(Method::
+                                      defaultAdaptiveCoordinateResponseMeasure),
         methodName(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker),
         methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker),
         methodName(Method::adaptiveCoordinateResponseMeasureWithEyeTracking),
         methodName(Method::adaptivePassFail),
         methodName(Method::adaptiveCorrectKeywords),
         methodName(Method::defaultFixedLevelCoordinateResponseMeasure),
-        methodName(Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
+        methodName(Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
         methodName(Method::fixedLevelFreeResponseWithTargetReplacement),
         methodName(Method::fixedLevelFreeResponseWithSilentIntervalTargets),
         methodName(Method::fixedLevelFreeResponseWithAllTargets)});
@@ -427,20 +432,24 @@ auto Presenter::TestSetup::adaptivePassFail() -> bool {
 }
 
 auto Presenter::TestSetup::adaptiveCoordinateResponseMeasure() -> bool {
-    return defaultAdaptiveCoordinateResponseMeasure() || adaptiveCoordinateResponseMeasureWithSingleSpeaker() ||
+    return defaultAdaptiveCoordinateResponseMeasure() ||
+        adaptiveCoordinateResponseMeasureWithSingleSpeaker() ||
         adaptiveCoordinateResponseMeasureWithDelayedMasker() ||
         method(Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
 }
 
-auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool {
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithDelayedMasker()
+    -> bool {
     return method(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
 }
 
-auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool {
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithSingleSpeaker()
+    -> bool {
     return method(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
 }
 
-auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool {
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithEyeTracking()
+    -> bool {
     return method(Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
 }
 
@@ -453,9 +462,10 @@ auto Presenter::TestSetup::fixedLevelCoordinateResponseMeasure() -> bool {
         fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets();
 }
 
-auto Presenter::TestSetup::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets()
-    -> bool {
-    return method(Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
+auto Presenter::TestSetup::
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool {
+    return method(
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
 }
 
 auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
@@ -468,7 +478,8 @@ auto Presenter::TestSetup::fixedLevelAllStimuli() -> bool {
 }
 
 auto Presenter::TestSetup::coordinateResponseMeasure() -> bool {
-    return adaptiveCoordinateResponseMeasure() || fixedLevelCoordinateResponseMeasure();
+    return adaptiveCoordinateResponseMeasure() ||
+        fixedLevelCoordinateResponseMeasure();
 }
 
 auto Presenter::TestSetup::method(Method m) -> bool {

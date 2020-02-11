@@ -167,7 +167,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestWithEyeTrackingHidesT
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingAdaptiveOpenSetTest);
+    assertHidesTestSetupView(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestHidesTestSetupView) {
@@ -184,11 +184,11 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestShowsExperimenterView) {
-    assertShowsExperimenterView(confirmingAdaptiveOpenSetTest);
+    assertShowsExperimenterView(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestShowsTestingView) {
-    assertShowsTestingView(confirmingAdaptiveOpenSetTest);
+    assertShowsTestingView(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestShowsTestingView) {
@@ -237,7 +237,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptiveOpenSetTest);
+    assertDoesNotShowSubjectView(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestDoesNotShowSubjectView) {
@@ -308,7 +308,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestDoesNotInitializeFixedLevelTest) {
-    assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveOpenSetTest);
+    assertDoesNotInitializeFixedLevelTest(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestDoesNotInitializeAdaptiveTest) {
@@ -343,7 +343,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetTest);
+    assertStartingSnrPassedToModel(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesStartingSnr) {
@@ -365,7 +365,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesMaskerLevel) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetTest);
+    assertMaskerLevelPassedToModel(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesMaskerLevel) {
@@ -387,7 +387,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesTargetList) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesTargetList) {
-    assertPassesTargetListDirectory(confirmingAdaptiveOpenSetTest);
+    assertPassesTargetListDirectory(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesTargetList) {
@@ -403,7 +403,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesSubjectId) {
-    assertPassesSubjectId(confirmingAdaptiveOpenSetTest);
+    assertPassesSubjectId(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesSubjectId) {
@@ -419,7 +419,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesTesterId) {
-    assertPassesTesterId(confirmingAdaptiveOpenSetTest);
+    assertPassesTesterId(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesTesterId) {
@@ -435,7 +435,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesMasker) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesMasker) {
-    assertPassesMasker(confirmingAdaptiveOpenSetTest);
+    assertPassesMasker(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesMasker) {
@@ -457,7 +457,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesSession) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesSession) {
-    assertPassesSession(confirmingAdaptiveOpenSetTest);
+    assertPassesSession(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesSession) {
@@ -473,7 +473,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesMethod) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesMethod) {
-    assertPassesMethod(confirmingAdaptiveOpenSetTest);
+    assertPassesMethod(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesMethod) {
@@ -501,7 +501,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesCeilingSNR) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesCeilingSNR) {
-    assertPassesCeilingSNR(confirmingAdaptiveOpenSetTest);
+    assertPassesCeilingSNR(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesFloorSNR) {
@@ -509,7 +509,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesFloorSNR) {
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesFloorSNR) {
-    assertPassesFloorSNR(confirmingAdaptiveOpenSetTest);
+    assertPassesFloorSNR(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesTrackBumpLimit) {
@@ -517,7 +517,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesTrackBumpLimit)
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesTrackBumpLimit) {
-    assertPassesTrackBumpLimit(confirmingAdaptiveOpenSetTest);
+    assertPassesTrackBumpLimit(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesFullScaleLevel) {
@@ -525,7 +525,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesFullScaleLevel)
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(confirmingAdaptiveOpenSetTest);
+    assertPassesFullScaleLevel(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesFullScaleLevel) {
@@ -545,7 +545,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesTrackSettingsFi
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesTrackSettingsFile) {
-    assertPassesTrackSettingsFile(confirmingAdaptiveOpenSetTest);
+    assertPassesTrackSettingsFile(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesAudioVisualCondition) {
@@ -559,11 +559,11 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestPassesAuditoryOnlyCon
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(confirmingAdaptiveOpenSetTest);
+    assertAudioVisualConditionPassedToModel(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(confirmingAdaptiveOpenSetTest);
+    assertAuditoryOnlyConditionPassedToModel(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestPassesAudioVisualCondition) {
@@ -614,7 +614,7 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
-        confirmingAdaptiveOpenSetTest, playingTrialFromExperimenter);
+        confirmingAdaptivePassFailTest, playingTrialFromExperimenter);
 }
 
 PRESENTER_TEST(
@@ -644,8 +644,8 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveOpenSetTestWithInvalidMaskerLevelShowsErrorMessage) {
-    assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptiveOpenSetTest);
+    confirmingAdaptivePassFailTestWithInvalidMaskerLevelShowsErrorMessage) {
+    assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(
@@ -957,7 +957,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingAdaptiveOpenSetTest);
+    assertShowsTrialNumber(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelCoordinateResponseMeasureTestShowsTrialNumber) {
@@ -1031,7 +1031,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     completingTrialShowsExperimenterEvaluationButtonsForAdaptiveOpenSetTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveOpenSetTest, submittingPassedTrial);
+        confirmingAdaptivePassFailTest, submittingPassedTrial);
 }
 
 PRESENTER_TEST(
@@ -1059,7 +1059,7 @@ PRESENTER_TEST(confirmAdaptiveCoordinateResponseMeasureTestWithInvalidSnrShowsEr
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetTest);
+    assertInvalidSnrShowsErrorMessage(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(confirmFixedLevelOpenSetTestWithInvalidSnrShowsErrorMessage) {
@@ -1077,7 +1077,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(confirmAdaptiveOpenSetTestWithInvalidInputDoesNotHideSetupView) {
-    assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptiveOpenSetTest);
+    assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(
