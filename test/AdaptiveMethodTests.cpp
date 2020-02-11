@@ -357,8 +357,6 @@ class AdaptiveMethodTests : public ::testing::Test {
         assertEqual(b, randomizer.upperIntBound());
     }
 
-    void submitCoordinateResponse() { method.submit(coordinateResponse); }
-
     auto track(gsl::index n) { return tracks.at(n); }
 
     void setCurrentForTarget(gsl::index n, std::string s) {
