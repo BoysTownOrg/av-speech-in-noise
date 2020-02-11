@@ -196,6 +196,12 @@ class Presenter : public Model::EventListener {
     class TestSetup : public View::TestSetup::EventListener {
       public:
         explicit TestSetup(View::TestSetup *);
+        void playCalibration() override;
+        void browseForTargetList() override;
+        void browseForMasker() override;
+        void confirmTestSetup() override;
+        void browseForCalibration() override;
+        void browseForTrackSettingsFile() override;
         void show();
         void hide();
         void becomeChild(Presenter *parent);
@@ -210,7 +216,6 @@ class Presenter : public Model::EventListener {
         auto defaultAdaptive() -> bool;
         auto adaptiveCoordinateResponseMeasure() -> bool;
         auto adaptivePassFail() -> bool;
-        auto fixedLevelOpenSet() -> bool;
         auto fixedLevelCoordinateResponseMeasure() -> bool;
         auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool;
         auto fixedLevelSilentIntervals() -> bool;
@@ -221,12 +226,6 @@ class Presenter : public Model::EventListener {
         auto adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool;
         auto adaptiveCorrectKeywords() -> bool;
         auto delayedMasker() -> bool;
-        void playCalibration() override;
-        void browseForTargetList() override;
-        void browseForMasker() override;
-        void confirmTestSetup() override;
-        void browseForCalibration() override;
-        void browseForTrackSettingsFile() override;
 
       private:
         auto defaultAdaptiveCoordinateResponseMeasure() -> bool;
@@ -245,13 +244,13 @@ class Presenter : public Model::EventListener {
     class Subject : public View::Subject::EventListener {
       public:
         explicit Subject(View::Subject *);
+        void playTrial() override;
+        void submitResponse() override;
         void show();
         void hide();
         void becomeChild(Presenter *parent);
         void showResponseButtons();
         auto subjectResponse() -> coordinate_response_measure::Response;
-        void playTrial() override;
-        void submitResponse() override;
 
       private:
         void hideResponseButtons();
@@ -265,13 +264,13 @@ class Presenter : public Model::EventListener {
     class Experimenter : public View::Experimenter::EventListener {
       public:
         explicit Experimenter(View::Experimenter *);
+        void exitTest() override;
         void becomeChild(Presenter *parent);
         void show();
         void hide();
         void hideExitTestButton();
         void showExitTestButton();
         void display(std::string);
-        void exitTest() override;
 
       private:
         Presenter *parent{};
@@ -296,10 +295,10 @@ class Presenter : public Model::EventListener {
         Subject &subject;
     };
 
-    class AdaptiveOpenSetTestTrialCompletionHandler
+    class AdaptivePassFailTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveOpenSetTestTrialCompletionHandler(Testing &testing)
+        explicit AdaptivePassFailTestTrialCompletionHandler(Testing &testing)
             : testing{testing} {}
 
         void showResponseView() override { testing.showEvaluationButtons(); }
@@ -308,10 +307,10 @@ class Presenter : public Model::EventListener {
         Testing &testing;
     };
 
-    class AdaptiveOpenSetKeywordsTestTrialCompletionHandler
+    class AdaptiveCorrectKeywordsTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveOpenSetKeywordsTestTrialCompletionHandler(
+        explicit AdaptiveCorrectKeywordsTestTrialCompletionHandler(
             Testing &testing)
             : testing{testing} {}
 
@@ -321,10 +320,10 @@ class Presenter : public Model::EventListener {
         Testing &testing;
     };
 
-    class FixedLevelOpenSetTestTrialCompletionHandler
+    class FixedLevelFreeResponseTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing &testing)
+        explicit FixedLevelFreeResponseTestTrialCompletionHandler(Testing &testing)
             : testing{testing} {}
 
         void showResponseView() override { testing.showFreeResponseSubmission(); }
@@ -404,13 +403,13 @@ class Presenter : public Model::EventListener {
         std::string s, void (TestSetup::*f)(std::string));
     auto trialCompletionHandler() -> TrialCompletionHandler *;
 
-    FixedLevelOpenSetTestTrialCompletionHandler
+    FixedLevelFreeResponseTestTrialCompletionHandler
         fixedLevelOpenSetTrialCompletionHandler;
     FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler
         fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
-    AdaptiveOpenSetTestTrialCompletionHandler
+    AdaptivePassFailTestTrialCompletionHandler
         adaptiveOpenSetTrialCompletionHandler;
-    AdaptiveOpenSetKeywordsTestTrialCompletionHandler
+    AdaptiveCorrectKeywordsTestTrialCompletionHandler
         adaptiveOpenSetKeywordsTrialCompletionHandler;
     AdaptiveCoordinateResponseMeasureTestTrialCompletionHandler
         adaptiveCoordinateResponseMeasureTrialCompletionHandler;
