@@ -294,8 +294,8 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         methodName(Method::defaultFixedLevelCoordinateResponseMeasure),
         methodName(Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
         methodName(Method::fixedLevelFreeResponseWithTargetReplacement),
-        methodName(Method::fixedLevelOpenSetWithSilentIntervalTargets),
-        methodName(Method::fixedLevelOpenSetWithAllTargets)});
+        methodName(Method::fixedLevelFreeResponseWithSilentIntervalTargets),
+        methodName(Method::fixedLevelFreeResponseWithAllTargets)});
     view->subscribe(this);
 }
 
@@ -460,11 +460,11 @@ auto Presenter::TestSetup::fixedLevelCoordinateResponseMeasureWithSilentInterval
 
 auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
     return fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() ||
-        method(Method::fixedLevelOpenSetWithSilentIntervalTargets);
+        method(Method::fixedLevelFreeResponseWithSilentIntervalTargets);
 }
 
 auto Presenter::TestSetup::fixedLevelAllStimuli() -> bool {
-    return method(Method::fixedLevelOpenSetWithAllTargets);
+    return method(Method::fixedLevelFreeResponseWithAllTargets);
 }
 
 auto Presenter::TestSetup::coordinateResponseMeasure() -> bool {

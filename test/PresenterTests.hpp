@@ -957,7 +957,7 @@ class ConfirmingFixedLevelOpenSetTestWithSilentIntervalTargets
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelOpenSetWithSilentIntervalTargets);
+        setMethod(view, Method::fixedLevelFreeResponseWithSilentIntervalTargets);
         confirmTestSetup(view);
     }
 
@@ -988,7 +988,7 @@ class ConfirmingFixedLevelOpenSetTestWithAllTargets
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelOpenSetWithAllTargets);
+        setMethod(view, Method::fixedLevelFreeResponseWithAllTargets);
         confirmTestSetup(view);
     }
 

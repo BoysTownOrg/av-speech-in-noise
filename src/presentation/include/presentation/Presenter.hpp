@@ -14,8 +14,8 @@ enum class Method {
     adaptiveCoordinateResponseMeasureWithDelayedMasker,
     adaptiveCoordinateResponseMeasureWithEyeTracking,
     fixedLevelFreeResponseWithTargetReplacement,
-    fixedLevelOpenSetWithSilentIntervalTargets,
-    fixedLevelOpenSetWithAllTargets,
+    fixedLevelFreeResponseWithSilentIntervalTargets,
+    fixedLevelFreeResponseWithAllTargets,
     defaultFixedLevelCoordinateResponseMeasure,
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets
 };
@@ -38,11 +38,11 @@ constexpr auto methodName(Method c) -> const char * {
         return "fixed-level open-set with replacement";
     case Method::defaultFixedLevelCoordinateResponseMeasure:
         return "fixed-level closed-set with replacement";
-    case Method::fixedLevelOpenSetWithSilentIntervalTargets:
+    case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
         return "fixed-level open-set silent intervals";
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
         return "fixed-level closed-set silent intervals";
-    case Method::fixedLevelOpenSetWithAllTargets:
+    case Method::fixedLevelFreeResponseWithAllTargets:
         return "fixed-level open-set all stimuli";
     }
 }
