@@ -184,7 +184,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestHidesTestSetupView) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementHidesTestSetupView) {
     assertHidesTestSetupView(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -209,12 +210,14 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestShowsTestingView) {
     assertShowsTestingView(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestShowsTestingView) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementShowsTestingView) {
     assertShowsTestingView(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestShowsExperimenterView) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementShowsExperimenterView) {
     assertShowsExperimenterView(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -273,7 +276,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestDoesNotShowSubjectView) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -333,7 +337,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithAllTargetsInitializesModel) {
+    confirmingFixedLevelFreeResponseTestWithAllTargetsInitializesModel) {
     run(confirmingFixedLevelFreeResponseTestWithAllTargets);
     assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
 }
@@ -355,13 +359,13 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotInitializeFixedLevelTest) {
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestDoesNotInitializeAdaptiveTest) {
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementDoesNotInitializeAdaptiveTest) {
     assertDoesNotInitializeAdaptiveTest(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithAllTargetsDoesNotInitializeAdaptiveTest) {
+    confirmingFixedLevelFreeResponseTestWithAllTargetsDoesNotInitializeAdaptiveTest) {
     assertDoesNotInitializeAdaptiveTest(
         confirmingFixedLevelFreeResponseTestWithAllTargets);
 }
@@ -394,7 +398,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesStartingSnr) {
     assertStartingSnrPassedToModel(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesStartingSnr) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesStartingSnr) {
     assertStartingSnrPassedToModel(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -421,7 +426,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesMaskerLevel) {
     assertMaskerLevelPassedToModel(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesMaskerLevel) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesMaskerLevel) {
     assertMaskerLevelPassedToModel(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -448,7 +454,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTargetList) {
     assertPassesTargetListDirectory(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesTargetList) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesTargetList) {
     assertPassesTargetListDirectory(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -468,7 +475,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesSubjectId) {
     assertPassesSubjectId(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesSubjectId) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesSubjectId) {
     assertPassesSubjectId(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -488,7 +496,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTesterId) {
     assertPassesTesterId(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesTesterId) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesTesterId) {
     assertPassesTesterId(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -507,7 +516,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesMasker) {
     assertPassesMasker(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesMasker) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesMasker) {
     assertPassesMasker(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -532,7 +542,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesSession) {
     assertPassesSession(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesSession) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesSession) {
     assertPassesSession(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -551,7 +562,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesMethod) {
     assertPassesMethod(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesMethod) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesMethod) {
     assertPassesMethod(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -619,7 +631,8 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesFullScaleLevel) {
     assertPassesFullScaleLevel(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesFullScaleLevel) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesFullScaleLevel) {
     assertPassesFullScaleLevel(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -664,13 +677,14 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesAuditoryOnlyCondition) {
     assertAuditoryOnlyConditionPassedToModel(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestPassesAudioVisualCondition) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesAudioVisualCondition) {
     assertAudioVisualConditionPassedToModel(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestPassesAuditoryOnlyCondition) {
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesAuditoryOnlyCondition) {
     assertAuditoryOnlyConditionPassedToModel(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -681,7 +695,8 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
-PRESENTER_TEST(confirmingFixedLevelClosedetTestPassesAuditoryOnlyCondition) {
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesAuditoryOnlyCondition) {
     assertAuditoryOnlyConditionPassedToModel(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
@@ -722,14 +737,14 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestShowsNextTrialButtonForExperimenter) {
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest,
         playingTrialFromExperimenter);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithAllTargetsShowsNextTrialButtonForExperimenter) {
+    confirmingFixedLevelFreeResponseTestWithAllTargetsShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelFreeResponseTestWithAllTargets,
         playingTrialFromExperimenter);
@@ -754,7 +769,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithInvalidMaskerLevelShowsErrorMessage) {
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementWithInvalidMaskerLevelShowsErrorMessage) {
     assertInvalidMaskerLevelShowsErrorMessage(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -1048,13 +1063,14 @@ PRESENTER_TEST(completingTrialShowsExitTestButton) {
     assertTrue(exitTestButtonShown());
 }
 
-PRESENTER_TEST(confirmingFixedLevelFreeResponseTestShowsTrialNumber) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementShowsTrialNumber) {
     assertShowsTrialNumber(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithAllTargetsShowsTrialNumber) {
+    confirmingFixedLevelFreeResponseTestWithAllTargetsShowsTrialNumber) {
     assertShowsTrialNumber(confirmingFixedLevelFreeResponseTestWithAllTargets);
 }
 
@@ -1131,7 +1147,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureTest) {
+    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureWithTargetReplacementTest) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest,
         respondingFromSubject);
@@ -1182,7 +1198,7 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestWithInvalidSnrShowsErrorMessage) {
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithInvalidSnrShowsErrorMessage) {
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementWithInvalidSnrShowsErrorMessage) {
     assertInvalidSnrShowsErrorMessage(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
@@ -1205,7 +1221,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithInvalidInputDoesNotHideSetupView) {
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementWithInvalidInputDoesNotHideSetupView) {
     assertSetupViewNotHiddenWhenSnrIsInvalid(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
