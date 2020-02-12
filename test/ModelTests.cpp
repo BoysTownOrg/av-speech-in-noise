@@ -428,6 +428,29 @@ class InitializingFixedLevelTestWithAllTargets
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
+class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
+    : public InitializingFixedLevelTest {
+    FixedLevelTest test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelTestWithAllTargetsAndEyeTracking(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        model.initializeWithAllTargetsAndEyeTracking(test_);
+    }
+
+    void run(ModelImpl &model, const FixedLevelTest &test) override {
+        model.initializeWithAllTargetsAndEyeTracking(test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
 class ModelTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveMethod;
@@ -463,6 +486,8 @@ class ModelTests : public ::testing::Test {
             &fixedLevelMethod};
     InitializingFixedLevelTestWithAllTargets
         initializingFixedLevelTestWithAllTargets{&fixedLevelMethod};
+    InitializingFixedLevelTestWithAllTargetsAndEyeTracking
+        initializingFixedLevelTestWithAllTargetsAndEyeTracking{&fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -554,6 +579,11 @@ MODEL_TEST(
 MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesWithAllTargets) {
     assertInitializesFixedLevelTestWithTargetList(
         initializingFixedLevelTestWithAllTargets, everyTargetOnce);
+}
+
+MODEL_TEST(initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithAllTargets) {
+    assertInitializesFixedLevelTestWithTargetList(
+        initializingFixedLevelTestWithAllTargetsAndEyeTracking, everyTargetOnce);
 }
 
 MODEL_TEST(
