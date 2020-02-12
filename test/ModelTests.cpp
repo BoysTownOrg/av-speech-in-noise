@@ -571,6 +571,13 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
+    initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesWithFixedTrialTestConcluder) {
+    assertInitializesFixedLevelTestWithTestConcluder(
+        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking,
+        fixedTrialTestConcluder);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithEmptyTargetListTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
         initializingFixedLevelTestWithSilentIntervalTargets,
