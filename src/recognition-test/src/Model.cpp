@@ -90,8 +90,8 @@ void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
 
 void ModelImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
     const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(fixedLevelMethod, test,
-        silentIntervalTargets, fixedTrialTestConcluder);
+    av_speech_in_noise::initialize(
+        fixedLevelMethod, test, silentIntervalTargets, fixedTrialTestConcluder);
 }
 
 void ModelImpl::initializeWithEyeTracking(const AdaptiveTest &test) {
@@ -115,9 +115,7 @@ void ModelImpl::submit(const open_set::FreeResponse &response) {
     model.submit(response);
 }
 
-void ModelImpl::submit(const open_set::CorrectKeywords &k) {
-    model.submit(k);
-}
+void ModelImpl::submit(const open_set::CorrectKeywords &k) { model.submit(k); }
 
 void ModelImpl::playCalibration(const Calibration &p) {
     model.playCalibration(p);
