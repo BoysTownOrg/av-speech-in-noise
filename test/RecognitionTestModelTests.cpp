@@ -934,7 +934,8 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
     assertTargetPlayerPlayed();
 }
 
-RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAt) {
+RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
+    run(initializingTestWithEyeTracking);
     setMaskerPlayerFadeInCompleteAudioSampleSystemTime(1);
     setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(2);
     setMaskerPlayerSampleRateHz(3);
