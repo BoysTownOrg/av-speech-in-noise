@@ -619,6 +619,12 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
+    initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesInternalModel) {
+    assertInitializesInternalModel(
+        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsInitializesInternalModel) {
     assertInitializesInternalModel(
         initializingFixedLevelTestWithSilentIntervalTargets);
