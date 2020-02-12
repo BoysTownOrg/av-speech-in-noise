@@ -280,13 +280,17 @@ static system_time lastFadeInCompleteAudioSampleSystemTime{};
 static double lastFadeInCompleteAudioSampleOffset{};
 
 void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTime &t) {
-    lastFadeInCompleteAudioSampleSystemTime = t.systemTime;
-    lastFadeInCompleteAudioSampleOffset = t.systemTimeSampleOffset;
-    SystemTimeWithDelay timeToPlay{};
-    timeToPlay.systemTime = t.systemTime;
-    timeToPlay.secondsDelayed =
-        t.systemTimeSampleOffset / maskerPlayer.sampleRateHz() + 0.5;
-    targetPlayer.playAt(timeToPlay);
+    if (eyeTracking) {
+        lastFadeInCompleteAudioSampleSystemTime = t.systemTime;
+        lastFadeInCompleteAudioSampleOffset = t.systemTimeSampleOffset;
+        SystemTimeWithDelay timeToPlay{};
+        timeToPlay.systemTime = t.systemTime;
+        timeToPlay.secondsDelayed =
+            t.systemTimeSampleOffset / maskerPlayer.sampleRateHz() + 0.5;
+        targetPlayer.playAt(timeToPlay);
+    } else {
+        playTarget();
+    }
 }
 
 void RecognitionTestModelImpl::playTarget() { targetPlayer.play(); }

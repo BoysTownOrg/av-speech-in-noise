@@ -944,6 +944,12 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     assertEqual(2 / 3. + 0.5, targetPlayer.secondsDelayedPlayedAt());
 }
 
+RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {
+    run(initializingDefaultTest);
+    fadeInComplete();
+    assertTargetPlayerPlayed();
+}
+
 RECOGNITION_TEST_MODEL_TEST(
     initializeDefaultTestPassesNextTargetToTargetPlayer) {
     assertPassesNextTargetToPlayer(initializingDefaultTest);
