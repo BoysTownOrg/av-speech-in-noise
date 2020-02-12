@@ -487,7 +487,8 @@ class ModelTests : public ::testing::Test {
     InitializingFixedLevelTestWithAllTargets
         initializingFixedLevelTestWithAllTargets{&fixedLevelMethod};
     InitializingFixedLevelTestWithAllTargetsAndEyeTracking
-        initializingFixedLevelTestWithAllTargetsAndEyeTracking{&fixedLevelMethod};
+        initializingFixedLevelTestWithAllTargetsAndEyeTracking{
+            &fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
 
@@ -581,9 +582,11 @@ MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesWithAllTargets) {
         initializingFixedLevelTestWithAllTargets, everyTargetOnce);
 }
 
-MODEL_TEST(initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithAllTargets) {
+MODEL_TEST(
+    initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithAllTargets) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelTestWithAllTargetsAndEyeTracking, everyTargetOnce);
+        initializingFixedLevelTestWithAllTargetsAndEyeTracking,
+        everyTargetOnce);
 }
 
 MODEL_TEST(
@@ -618,6 +621,13 @@ MODEL_TEST(
     initializeFixedLevelTestWithAllTargetsInitializesWithEmptyTargetListTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
         initializingFixedLevelTestWithAllTargets, emptyTargetListTestConcluder);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithEmptyTargetListTestConcluder) {
+    assertInitializesFixedLevelTestWithTestConcluder(
+        initializingFixedLevelTestWithAllTargetsAndEyeTracking,
+        emptyTargetListTestConcluder);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
