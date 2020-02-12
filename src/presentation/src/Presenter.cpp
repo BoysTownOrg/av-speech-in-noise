@@ -295,7 +295,8 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
         methodName(Method::adaptiveCoordinateResponseMeasureWithEyeTracking),
         methodName(Method::adaptivePassFail),
         methodName(Method::adaptiveCorrectKeywords),
-        methodName(Method::defaultFixedLevelCoordinateResponseMeasure),
+        methodName(
+            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement),
         methodName(Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
         methodName(Method::fixedLevelFreeResponseWithTargetReplacement),
@@ -458,7 +459,8 @@ auto Presenter::TestSetup::adaptiveCorrectKeywords() -> bool {
 }
 
 auto Presenter::TestSetup::fixedLevelCoordinateResponseMeasure() -> bool {
-    return method(Method::defaultFixedLevelCoordinateResponseMeasure) ||
+    return method(Method::
+                   fixedLevelCoordinateResponseMeasureWithTargetReplacement) ||
         fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets();
 }
 

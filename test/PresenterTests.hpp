@@ -893,17 +893,18 @@ class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
     }
 };
 
-class ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest
+class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest(
+    explicit ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest(
         ViewStub::TestSetupViewStub *view)
         : view{view} {}
 
     void run() override {
-        setMethod(view, Method::defaultFixedLevelCoordinateResponseMeasure);
+        setMethod(view,
+            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
         confirmTestSetup(view);
     }
 
@@ -1326,8 +1327,9 @@ class PresenterTests : public ::testing::Test {
     ConfirmingAdaptivePassFailTest confirmingAdaptivePassFailTest{&setupView};
     ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
         confirmingFixedLevelFreeResponseWithTargetReplacementTest{&setupView};
-    ConfirmingDefaultFixedLevelCoordinateResponseMeasureTest
-        confirmingDefaultFixedLevelCoordinateResponseMeasureTest{&setupView};
+    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest{
+            &setupView};
     ConfirmingAdaptiveCorrectKeywordsTest confirmingAdaptiveCorrectKeywordsTest{
         &setupView};
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
