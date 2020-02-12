@@ -674,6 +674,10 @@ MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTestWithAllTargets);
 }
 
+MODEL_TEST(initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesInternalModel) {
+    assertInitializesInternalModel(initializingFixedLevelTestWithAllTargetsAndEyeTracking);
+}
+
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingDefaultAdaptiveTest);
 }
