@@ -74,6 +74,7 @@ class ModelImpl : public Model {
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
     void initializeWithTargetReplacementAndEyeTracking(const FixedLevelTest &);
+    void initializeWithSilentIntervalTargetsAndEyeTracking(const FixedLevelTest &);
     void initializeWithEyeTracking(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
     void submit(const coordinate_response_measure::Response &) override;

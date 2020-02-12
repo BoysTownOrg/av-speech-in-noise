@@ -88,6 +88,12 @@ void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
         model, fixedLevelMethod, test);
 }
 
+void ModelImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
+    const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(fixedLevelMethod, test,
+        silentIntervalTargets, fixedTrialTestConcluder);
+}
+
 void ModelImpl::initializeWithEyeTracking(const AdaptiveTest &test) {
     av_speech_in_noise::initialize(adaptiveMethod, test);
     av_speech_in_noise::initializeWithEyeTracking(model, adaptiveMethod, test);

@@ -28,8 +28,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
-    void submit(
-        const coordinate_response_measure::Response &) override {}
+    void submit(const coordinate_response_measure::Response &) override {}
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {
@@ -64,8 +63,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
-    void submit(
-        const coordinate_response_measure::Response &) override {}
+    void submit(const coordinate_response_measure::Response &) override {}
 };
 
 class RecognitionTestModelStub : public RecognitionTestModel {
@@ -116,13 +114,11 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void playTrial(const AudioSettings &s) override { playTrialSettings_ = &s; }
 
-    void submit(
-        const coordinate_response_measure::Response &p) override {
+    void submit(const coordinate_response_measure::Response &p) override {
         coordinateResponse_ = &p;
     }
 
-    void submit(
-        const open_set::CorrectKeywords &p) override {
+    void submit(const open_set::CorrectKeywords &p) override {
         correctKeywords_ = &p;
     }
 
@@ -152,9 +148,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return coordinateResponse_;
     }
 
-    [[nodiscard]] auto correctKeywords() const {
-        return correctKeywords_;
-    }
+    [[nodiscard]] auto correctKeywords() const { return correctKeywords_; }
 
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
@@ -221,6 +215,11 @@ void initializeWithSilentIntervalTargets(
 void initializeWithTargetReplacementAndEyeTracking(
     ModelImpl &model, const FixedLevelTest &test) {
     model.initializeWithTargetReplacementAndEyeTracking(test);
+}
+
+void initializeWithSilentIntervalTargetsAndEyeTracking(
+    ModelImpl &model, const FixedLevelTest &test) {
+    model.initializeWithSilentIntervalTargetsAndEyeTracking(test);
 }
 
 void initializeWithEyeTracking(ModelImpl &model, const AdaptiveTest &test) {
@@ -383,6 +382,29 @@ class InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
+class InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking
+    : public InitializingFixedLevelTest {
+    FixedLevelTest test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        initializeWithSilentIntervalTargetsAndEyeTracking(model, test_);
+    }
+
+    void run(ModelImpl &model, const FixedLevelTest &test) override {
+        initializeWithSilentIntervalTargetsAndEyeTracking(model, test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
 class InitializingFixedLevelTestWithAllTargets
     : public InitializingFixedLevelTest {
     FixedLevelTest test_;
@@ -417,8 +439,8 @@ class ModelTests : public ::testing::Test {
     TargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
     ModelImpl model{adaptiveMethod, fixedLevelMethod, targetsWithReplacement,
-        fixedTrialTestConcluder, silentIntervals,
-        emptyTargetListTestConcluder, everyTargetOnce, internalModel};
+        fixedTrialTestConcluder, silentIntervals, emptyTargetListTestConcluder,
+        everyTargetOnce, internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
@@ -435,6 +457,9 @@ class ModelTests : public ::testing::Test {
         initializingFixedLevelTestWithSilentIntervalTargets{&fixedLevelMethod};
     InitializingFixedLevelTestWithTargetReplacementAndEyeTracking
         initializingFixedLevelTestWithTargetReplacementAndEyeTracking{
+            &fixedLevelMethod};
+    InitializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking
+        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking{
             &fixedLevelMethod};
     InitializingFixedLevelTestWithAllTargets
         initializingFixedLevelTestWithAllTargets{&fixedLevelMethod};
@@ -491,6 +516,12 @@ MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesFixedLevelMethod) {
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
 }
 
 MODEL_TEST(
