@@ -4,7 +4,6 @@
 #include "tobii_research_streams.h"
 #include <gsl/gsl>
 #include <cmath>
-#include <iostream>
 
 namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
@@ -39,13 +38,6 @@ void TobiiEyeTracker::start() {
 void TobiiEyeTracker::stop() {
     tobii_research_unsubscribe_from_gaze_data(
         eyeTracker(eyeTrackers), gaze_data_callback);
-    for (auto d : gazeData) {
-        std::cout << "system time: " << d.system_time_stamp << '\n';
-        std::cout << "x (left eye): "
-                  << d.left_eye.gaze_point.position_on_display_area.x << '\n';
-        std::cout << "y (left eye): "
-                  << d.left_eye.gaze_point.position_on_display_area.y << '\n';
-    }
 }
 
 void TobiiEyeTracker::gaze_data_callback(
@@ -97,15 +89,19 @@ static auto rightEyeGaze(std::vector<BinocularGazes> &b, gsl::index i)
     return at(b, i).right;
 }
 
+static auto x(EyeGaze &p) -> float & { return p.x; }
+
+static auto y(EyeGaze &p) -> float & { return p.y; }
+
 auto TobiiEyeTracker::gazes() -> std::vector<BinocularGazes> {
-    std::vector<BinocularGazes> gazes_(gazeData.size());
+    std::vector<BinocularGazes> gazes_(head > 0 ? head - 1 : 0);
     for (gsl::index i{0}; i < gazes_.size(); ++i) {
         at(gazes_, i).systemTimeMilliseconds =
             at(gazeData, i).system_time_stamp;
-        leftEyeGaze(gazes_, i).x = x(leftEyeGaze(gazeData, i));
-        leftEyeGaze(gazes_, i).y = y(leftEyeGaze(gazeData, i));
-        rightEyeGaze(gazes_, i).x = x(rightEyeGaze(gazeData, i));
-        rightEyeGaze(gazes_, i).y = y(rightEyeGaze(gazeData, i));
+        x(leftEyeGaze(gazes_, i)) = x(leftEyeGaze(gazeData, i));
+        y(leftEyeGaze(gazes_, i)) = y(leftEyeGaze(gazeData, i));
+        x(rightEyeGaze(gazes_, i)) = x(rightEyeGaze(gazeData, i));
+        y(rightEyeGaze(gazes_, i)) = y(rightEyeGaze(gazeData, i));
     }
     return gazes_;
 }
