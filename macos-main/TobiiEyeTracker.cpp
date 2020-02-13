@@ -1,6 +1,7 @@
 #include "TobiiEyeTracker.hpp"
 #include "recognition-test/RecognitionTestModel.hpp"
 #include "tobii_research.h"
+#include "tobii_research_streams.h"
 #include <gsl/gsl>
 #include <cmath>
 #include <iostream>
@@ -67,9 +68,19 @@ static auto at(const std::vector<TobiiResearchGazeData> &b, gsl::index i)
     return b.at(i);
 }
 
+static auto eyeGaze(const TobiiResearchEyeData &d)
+    -> const TobiiResearchNormalizedPoint2D & {
+    return d.gaze_point.position_on_display_area;
+}
+
 static auto leftEyeGaze(const std::vector<TobiiResearchGazeData> &gaze,
     gsl::index i) -> const TobiiResearchNormalizedPoint2D & {
-    return at(gaze, i).left_eye.gaze_point.position_on_display_area;
+    return eyeGaze(at(gaze, i).left_eye);
+}
+
+static auto rightEyeGaze(const std::vector<TobiiResearchGazeData> &gaze,
+    gsl::index i) -> const TobiiResearchNormalizedPoint2D & {
+    return eyeGaze(at(gaze, i).right_eye);
 }
 
 auto TobiiEyeTracker::gazes() -> std::vector<BinocularGazes> {
@@ -79,10 +90,8 @@ auto TobiiEyeTracker::gazes() -> std::vector<BinocularGazes> {
             at(gazeData, i).system_time_stamp;
         at(gazes_, i).left.x = leftEyeGaze(gazeData, i).x;
         at(gazes_, i).left.y = leftEyeGaze(gazeData, i).y;
-        at(gazes_, i).right.x =
-            at(gazeData, i).right_eye.gaze_point.position_on_display_area.x;
-        at(gazes_, i).right.y =
-            at(gazeData, i).right_eye.gaze_point.position_on_display_area.y;
+        at(gazes_, i).right.x = rightEyeGaze(gazeData, i).x;
+        at(gazes_, i).right.y = rightEyeGaze(gazeData, i).y;
     }
     return gazes_;
 }
