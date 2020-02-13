@@ -5,13 +5,15 @@
 #include <tobii_research_streams.h>
 #include <vector>
 
-class TobiiEyeTracker : public av_speech_in_noise::EyeTracker {
+namespace av_speech_in_noise {
+class TobiiEyeTracker : public EyeTracker {
   public:
     TobiiEyeTracker();
     ~TobiiEyeTracker() override;
     void allocateRecordingTimeSeconds(double s) override;
     void start() override;
     void stop() override;
+    auto gazes() -> std::vector<BinocularGazes> override;
 
   private:
     static void gaze_data_callback(
@@ -22,5 +24,6 @@ class TobiiEyeTracker : public av_speech_in_noise::EyeTracker {
     TobiiResearchEyeTrackers *eyeTrackers{};
     std::size_t head{};
 };
+}
 
 #endif

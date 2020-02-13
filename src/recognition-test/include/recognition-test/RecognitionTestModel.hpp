@@ -83,12 +83,12 @@ class MaskerPlayer {
 };
 
 struct EyeGaze {
-    std::uintmax_t systemTimeMilliseconds;
     float x;
     float y;
 };
 
 struct BinocularGazes {
+    std::uintmax_t systemTimeMilliseconds;
     EyeGaze left;
     EyeGaze right;
 };

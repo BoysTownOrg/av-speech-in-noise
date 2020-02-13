@@ -1,8 +1,10 @@
 #include "TobiiEyeTracker.hpp"
+#include "recognition-test/RecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <cmath>
 #include <iostream>
 
+namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
     -> TobiiResearchEyeTracker * {
     return eyeTrackers == nullptr || eyeTrackers->count == 0U
@@ -37,8 +39,10 @@ void TobiiEyeTracker::stop() {
         eyeTracker(eyeTrackers), gaze_data_callback);
     for (auto d : gazeData) {
         std::cout << "system time: " << d.system_time_stamp << '\n';
-        std::cout << "x (left eye): " << d.left_eye.gaze_point.position_on_display_area.x << '\n';
-        std::cout << "y (left eye): " << d.left_eye.gaze_point.position_on_display_area.y << '\n';
+        std::cout << "x (left eye): "
+                  << d.left_eye.gaze_point.position_on_display_area.x << '\n';
+        std::cout << "y (left eye): "
+                  << d.left_eye.gaze_point.position_on_display_area.y << '\n';
     }
 }
 
@@ -50,4 +54,21 @@ void TobiiEyeTracker::gaze_data_callback(
 void TobiiEyeTracker::gazeDataReceived(TobiiResearchGazeData *gaze_data) {
     if (head < gazeData.size())
         gazeData.at(head++) = *gaze_data;
+}
+
+auto TobiiEyeTracker::gazes() -> std::vector<BinocularGazes> {
+    std::vector<BinocularGazes> gazes_(gazeData.size());
+    for (gsl::index i{0}; i < gazes_.size(); ++i) {
+        gazes_.at(i).systemTimeMilliseconds = gazeData.at(i).system_time_stamp;
+        gazes_.at(i).left.x =
+            gazeData.at(i).left_eye.gaze_point.position_on_display_area.x;
+        gazes_.at(i).left.y =
+            gazeData.at(i).left_eye.gaze_point.position_on_display_area.y;
+        gazes_.at(i).right.x =
+            gazeData.at(i).right_eye.gaze_point.position_on_display_area.x;
+        gazes_.at(i).right.y =
+            gazeData.at(i).right_eye.gaze_point.position_on_display_area.y;
+    }
+    return gazes_;
+}
 }
