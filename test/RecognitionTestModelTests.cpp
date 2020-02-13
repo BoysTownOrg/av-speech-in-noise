@@ -335,7 +335,7 @@ class EyeTrackerStub : public EyeTracker {
 
     auto recordingTimeAllocated() -> bool { return recordingTimeAllocated_; }
 
-    auto gazes() -> std::vector<EyeGaze> {
+    auto gazes() -> std::vector<BinocularGazes> override {
         insert(log_, "gazes ");
         return {};
     }

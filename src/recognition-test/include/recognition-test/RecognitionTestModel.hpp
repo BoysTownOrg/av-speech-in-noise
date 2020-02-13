@@ -88,13 +88,18 @@ struct EyeGaze {
     float y;
 };
 
+struct BinocularGazes {
+    EyeGaze left;
+    EyeGaze right;
+};
+
 class EyeTracker {
   public:
     virtual ~EyeTracker() = default;
     virtual void allocateRecordingTimeSeconds(double) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
-    virtual auto gazes() -> std::vector<EyeGaze> = 0;
+    virtual auto gazes() -> std::vector<BinocularGazes> = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,
