@@ -83,15 +83,23 @@ static auto rightEyeGaze(const std::vector<TobiiResearchGazeData> &gaze,
     return eyeGaze(at(gaze, i).right_eye);
 }
 
+static auto x(const TobiiResearchNormalizedPoint2D &p) -> float {
+    return p.x;
+}
+
+static auto y(const TobiiResearchNormalizedPoint2D &p) -> float {
+    return p.y;
+}
+
 auto TobiiEyeTracker::gazes() -> std::vector<BinocularGazes> {
     std::vector<BinocularGazes> gazes_(gazeData.size());
     for (gsl::index i{0}; i < gazes_.size(); ++i) {
         at(gazes_, i).systemTimeMilliseconds =
             at(gazeData, i).system_time_stamp;
-        at(gazes_, i).left.x = leftEyeGaze(gazeData, i).x;
-        at(gazes_, i).left.y = leftEyeGaze(gazeData, i).y;
-        at(gazes_, i).right.x = rightEyeGaze(gazeData, i).x;
-        at(gazes_, i).right.y = rightEyeGaze(gazeData, i).y;
+        at(gazes_, i).left.x = x(leftEyeGaze(gazeData, i));
+        at(gazes_, i).left.y = y(leftEyeGaze(gazeData, i));
+        at(gazes_, i).right.x = x(rightEyeGaze(gazeData, i));
+        at(gazes_, i).right.y = y(rightEyeGaze(gazeData, i));
     }
     return gazes_;
 }
