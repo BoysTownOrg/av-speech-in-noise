@@ -301,6 +301,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     targetPlayer.hideVideo();
     if (eyeTracking) {
         eyeTracker.stop();
+        eyeTracker.gazes();
         maskerPlayer.nanoseconds(lastFadeInCompleteAudioSampleSystemTime);
     }
     listener_->trialComplete();

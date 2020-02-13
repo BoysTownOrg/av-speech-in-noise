@@ -335,6 +335,11 @@ class EyeTrackerStub : public EyeTracker {
 
     auto recordingTimeAllocated() -> bool { return recordingTimeAllocated_; }
 
+    auto gazes() -> std::vector<EyeGaze> {
+        insert(log_, "gazes ");
+        return {};
+    }
+
   private:
     LogString log_{};
     double recordingTimeAllocatedSeconds_{};
@@ -944,12 +949,20 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     assertEqual(2 / 3. + 0.5, targetPlayer.secondsDelayedPlayedAt());
 }
 
-RECOGNITION_TEST_MODEL_TEST(fadeOutCompletePassesFadeInCompleteAudioSampleSystemTimeForConversion) {
+RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompletePassesFadeInCompleteAudioSampleSystemTimeForConversion) {
     run(initializingTestWithEyeTracking);
     setMaskerPlayerFadeInCompleteAudioSampleSystemTime(1);
     fadeInComplete();
     maskerFadeOutComplete();
     assertEqual(system_time{1}, maskerPlayer.toNanosecondsSystemTime());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompleteRetrievesEyeGazesAfterStoppingTracking) {
+    run(initializingTestWithEyeTracking);
+    maskerFadeOutComplete();
+    assertEqual("stop gazes ", eyeTracker.log());
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {

@@ -82,12 +82,19 @@ class MaskerPlayer {
     virtual auto nanoseconds(system_time) -> std::uintmax_t = 0;
 };
 
+struct EyeGaze {
+    std::uintmax_t systemTimeMilliseconds;
+    float x;
+    float y;
+};
+
 class EyeTracker {
   public:
     virtual ~EyeTracker() = default;
     virtual void allocateRecordingTimeSeconds(double) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
+    virtual auto gazes() -> std::vector<EyeGaze> = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,
