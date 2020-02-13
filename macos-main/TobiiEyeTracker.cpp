@@ -61,18 +61,24 @@ static auto at(std::vector<BinocularGazes> &b, gsl::index i)
     return b.at(i);
 }
 
+static auto at(const std::vector<TobiiResearchGazeData> &b, gsl::index i)
+    -> const TobiiResearchGazeData & {
+    return b.at(i);
+}
+
 auto TobiiEyeTracker::gazes() -> std::vector<BinocularGazes> {
     std::vector<BinocularGazes> gazes_(gazeData.size());
     for (gsl::index i{0}; i < gazes_.size(); ++i) {
-        at(gazes_, i).systemTimeMilliseconds = gazeData.at(i).system_time_stamp;
+        at(gazes_, i).systemTimeMilliseconds =
+            at(gazeData, i).system_time_stamp;
         at(gazes_, i).left.x =
-            gazeData.at(i).left_eye.gaze_point.position_on_display_area.x;
+            at(gazeData, i).left_eye.gaze_point.position_on_display_area.x;
         at(gazes_, i).left.y =
-            gazeData.at(i).left_eye.gaze_point.position_on_display_area.y;
+            at(gazeData, i).left_eye.gaze_point.position_on_display_area.y;
         at(gazes_, i).right.x =
-            gazeData.at(i).right_eye.gaze_point.position_on_display_area.x;
+            at(gazeData, i).right_eye.gaze_point.position_on_display_area.x;
         at(gazes_, i).right.y =
-            gazeData.at(i).right_eye.gaze_point.position_on_display_area.y;
+            at(gazeData, i).right_eye.gaze_point.position_on_display_area.y;
     }
     return gazes_;
 }
