@@ -56,17 +56,22 @@ void TobiiEyeTracker::gazeDataReceived(TobiiResearchGazeData *gaze_data) {
         gazeData.at(head++) = *gaze_data;
 }
 
+static auto at(std::vector<BinocularGazes> &b, gsl::index i)
+    -> BinocularGazes & {
+    return b.at(i);
+}
+
 auto TobiiEyeTracker::gazes() -> std::vector<BinocularGazes> {
     std::vector<BinocularGazes> gazes_(gazeData.size());
     for (gsl::index i{0}; i < gazes_.size(); ++i) {
-        gazes_.at(i).systemTimeMilliseconds = gazeData.at(i).system_time_stamp;
-        gazes_.at(i).left.x =
+        at(gazes_, i).systemTimeMilliseconds = gazeData.at(i).system_time_stamp;
+        at(gazes_, i).left.x =
             gazeData.at(i).left_eye.gaze_point.position_on_display_area.x;
-        gazes_.at(i).left.y =
+        at(gazes_, i).left.y =
             gazeData.at(i).left_eye.gaze_point.position_on_display_area.y;
-        gazes_.at(i).right.x =
+        at(gazes_, i).right.x =
             gazeData.at(i).right_eye.gaze_point.position_on_display_area.x;
-        gazes_.at(i).right.y =
+        at(gazes_, i).right.y =
             gazeData.at(i).right_eye.gaze_point.position_on_display_area.y;
     }
     return gazes_;
