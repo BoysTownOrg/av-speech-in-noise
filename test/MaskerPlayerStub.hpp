@@ -20,6 +20,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     double sampleRateHz_{};
     gsl::index channelDelayed_{};
     EventListener *listener_{};
+    std::uintmax_t toNanosecondsSystemTime_{};
     bool fadeInCalled_{};
     bool fadeOutCalled_{};
     bool playing_{};
@@ -31,6 +32,15 @@ class MaskerPlayerStub : public MaskerPlayer {
     bool channelDelaysCleared_{};
 
   public:
+    auto toNanosecondsSystemTime() const -> std::uintmax_t {
+        return toNanosecondsSystemTime_;
+    }
+
+    auto nanoseconds(system_time t) -> std::uintmax_t override {
+        toNanosecondsSystemTime_ = t;
+        return {};
+    }
+
     void setSampleRateHz(double x) { sampleRateHz_ = x; }
 
     auto sampleRateHz() -> double override { return sampleRateHz_; }
