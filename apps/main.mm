@@ -271,12 +271,13 @@ void main() {
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
     auto testerWindowViewMargin = 15;
     auto testingContentFrame =
-        NSMakeRect(testerWindowViewMargin + 100, testerWindowViewMargin,
-            testerWindowFrame.size.width - testerWindowViewMargin * 2 - 100,
-            testerWindowFrame.size.height - testerWindowViewMargin * 2);
+        NSMakeRect(testerWindowViewMargin, testerWindowViewMargin,
+            testerWindowFrame.size.width - testerWindowViewMargin * 2,
+            testerWindowFrame.size.height - testerWindowViewMargin * 2 - 30);
     auto experimenterContentFrame = NSMakeRect(testerWindowViewMargin,
-        testerWindowViewMargin, testerWindowViewMargin + 100,
-        testerWindowFrame.size.height - testerWindowViewMargin * 2);
+        testerWindowFrame.size.height - testerWindowViewMargin * 2 - 30,
+        testerWindowFrame.size.width - testerWindowViewMargin * 2,
+        100);
     auto testerContentFrame =
         NSMakeRect(testerWindowViewMargin, testerWindowViewMargin,
             testerWindowFrame.size.width - testerWindowViewMargin * 2,

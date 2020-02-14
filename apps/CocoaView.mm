@@ -600,16 +600,16 @@ void CocoaSubjectView::hide() {
 CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
     displayedText_{[[NSTextField alloc] initWithFrame:NSMakeRect(
-        r.origin.x + 15,
-        r.origin.y + 45,
-        r.size.width - 30,
-        30
+        buttonWidth + 15,
+        0,
+        labelWidth,
+        labelHeight
     )]},
     secondaryDisplayedText_{[[NSTextField alloc] initWithFrame:NSMakeRect(
-        r.origin.x + 15,
-        r.origin.y + 15,
-        r.size.width - 30,
-        30
+        buttonWidth + 15 + labelWidth + 15,
+        0,
+        labelWidth,
+        labelHeight
     )]},
     actions{[ExperimenterViewActions alloc]}
 {
@@ -620,7 +620,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     ];
     [exitTestButton_ setFrame:NSMakeRect(
         0,
-        r.size.height -  buttonHeight,
+        0,
         buttonWidth,
         buttonHeight
     )];
@@ -699,12 +699,12 @@ CocoaTestingView::CocoaTestingView(NSRect r) :
         initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height - buttonHeight)
     ]},
     response_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
+        initWithFrame:NSMakeRect(r.size.width - 150, buttonHeight + 15 + labelHeight + 15, 150, labelHeight)
     ]},
     correctKeywordsEntry_{[[NSTextField alloc]
-        initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2, 150, labelHeight)
+        initWithFrame:NSMakeRect(r.size.width - normalTextFieldWidth, buttonHeight + 15, normalTextFieldWidth, labelHeight)
     ]},
-    flagged_{[[NSButton alloc] initWithFrame:NSMakeRect(r.size.width/10, r.size.height/2 - labelHeight, 150, labelHeight)]},
+    flagged_{[[NSButton alloc] initWithFrame:NSMakeRect(r.size.width - 150, buttonHeight + 15, normalTextFieldWidth, labelHeight)]},
     actions{[TestingViewActions alloc]}
 {
     [flagged_ setButtonType:NSButtonTypeSwitch];
