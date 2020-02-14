@@ -54,6 +54,10 @@ static auto filePathTextFieldSizeWithHeight(CGFloat x) -> NSTextField * {
     return [[NSTextField alloc] initWithFrame:filePathTextFieldSizeAtHeight(x)];
 }
 
+static auto shortTextFieldWithHeight(CGFloat x) -> NSTextField * {
+    return [[NSTextField alloc] initWithFrame:shortTextFieldSizeAtHeight(x)];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       subjectIdLabel{normalLabelWithHeight(360, "subject:")},
@@ -72,15 +76,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       calibrationFilePath_{filePathTextFieldSizeWithHeight(180)},
       calibrationLevel_dB_SPL_label{
           normalLabelWithHeight(150, "calibration level (dB SPL):")},
-      calibrationLevel_dB_SPL_{
-          [[NSTextField alloc] initWithFrame:shortTextFieldSizeAtHeight(150)]},
+      calibrationLevel_dB_SPL_{shortTextFieldWithHeight(150)},
       maskerLevel_dB_SPL_label{
           normalLabelWithHeight(120, "masker level (dB SPL):")},
-      maskerLevel_dB_SPL_{
-          [[NSTextField alloc] initWithFrame:shortTextFieldSizeAtHeight(120)]},
+      maskerLevel_dB_SPL_{shortTextFieldWithHeight(120)},
       startingSnr_dB_label{normalLabelWithHeight(90, "starting SNR (dB):")},
-      startingSnr_dB_{
-          [[NSTextField alloc] initWithFrame:shortTextFieldSizeAtHeight(90)]},
+      startingSnr_dB_{shortTextFieldWithHeight(90)},
       condition_label{normalLabelWithHeight(60, "condition:")},
       conditionMenu{[[NSPopUpButton alloc]
           initWithFrame:NSMakeRect(textFieldLeadingEdge, 60, 120, labelHeight)

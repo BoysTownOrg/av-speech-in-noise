@@ -8,38 +8,38 @@ class CocoaTestSetupView;
 
 @interface SetupViewActions : NSObject
 @property CocoaTestSetupView *controller;
-- (void) confirmTestSetup;
-- (void) browseForTargetList;
-- (void) browseForMasker;
-- (void) browseForCalibration;
-- (void) browseForTrackSettings;
-- (void) playCalibration;
+- (void)confirmTestSetup;
+- (void)browseForTargetList;
+- (void)browseForMasker;
+- (void)browseForCalibration;
+- (void)browseForTrackSettings;
+- (void)playCalibration;
 @end
 
 class CocoaSubjectView;
 
 @interface SubjectViewActions : NSObject
 @property CocoaSubjectView *controller;
-- (void) respond:(id)sender;
-- (void) playTrial;
+- (void)respond:(id)sender;
+- (void)playTrial;
 @end
 
 class CocoaExperimenterView;
 
 @interface ExperimenterViewActions : NSObject
 @property CocoaExperimenterView *controller;
-- (void) exitTest;
+- (void)exitTest;
 @end
 
 class CocoaTestingView;
 
 @interface TestingViewActions : NSObject
 @property CocoaTestingView *controller;
-- (void) playTrial;
-- (void) submitFreeResponse;
-- (void) submitPassedTrial;
-- (void) submitFailedTrial;
-- (void) submitCorrectKeywords;
+- (void)playTrial;
+- (void)submitFreeResponse;
+- (void)submitPassedTrial;
+- (void)submitFailedTrial;
+- (void)submitCorrectKeywords;
 @end
 
 class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
@@ -49,7 +49,8 @@ class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
     NSButton *exitTestButton_;
     EventListener *listener_{};
     ExperimenterViewActions *actions;
-public:
+
+  public:
     CocoaExperimenterView(NSRect);
     NSView *view();
     void exitTest();
@@ -73,7 +74,8 @@ class CocoaTestingView : public av_speech_in_noise::View::Testing {
     NSButton *flagged_;
     EventListener *listener_{};
     TestingViewActions *actions;
-public:
+
+  public:
     CocoaTestingView(NSRect);
     NSView *view();
     void playTrial();
@@ -126,7 +128,8 @@ class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
     NSPopUpButton *methodMenu;
     SetupViewActions *actions;
     EventListener *listener_{};
-public:
+
+  public:
     CocoaTestSetupView(NSRect);
     void show() override;
     void hide() override;
@@ -160,9 +163,10 @@ public:
     void setStartingSnr_dB(std::string);
     void setCalibrationLevel_dB_SPL(std::string);
     void setCalibration(std::string);
-private:
+
+  private:
     void addSubview(NSView *subview);
-    const char * stringValue(NSTextField *field);
+    const char *stringValue(NSTextField *field);
 };
 
 class CocoaSubjectView : public av_speech_in_noise::View::Subject {
@@ -172,7 +176,8 @@ class CocoaSubjectView : public av_speech_in_noise::View::Subject {
     NSButton *lastButtonPressed;
     SubjectViewActions *actions;
     EventListener *listener_{};
-public:
+
+  public:
     CocoaSubjectView(NSRect);
     std::string numberResponse() override;
     bool greenResponse() override;
@@ -187,7 +192,8 @@ public:
     void hide() override;
     void respond(id sender);
     void playTrial();
-private:
+
+  private:
     void addNextTrialButton();
     NSColor *lastPressedColor();
     void addNumberButton(NSColor *color, int number, int row, std::size_t col);
@@ -200,7 +206,8 @@ class CocoaView : public av_speech_in_noise::View {
     NSTextField *audioDevice_label;
     NSPopUpButton *deviceMenu;
     bool browseCancelled_{};
-public:
+
+  public:
     CocoaView(NSRect);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
@@ -212,7 +219,8 @@ public:
     void addSubview(NSView *);
     void setDelegate(id<NSWindowDelegate>);
     void center();
-private:
+
+  private:
     std::string browseModal(NSOpenPanel *panel);
 };
 
