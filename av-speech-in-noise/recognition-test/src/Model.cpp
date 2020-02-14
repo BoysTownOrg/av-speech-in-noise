@@ -90,4 +90,8 @@ auto ModelImpl::audioDevices() -> std::vector<std::string> {
 void ModelImpl::subscribe(Model::EventListener *e) { model->subscribe(e); }
 
 auto ModelImpl::trialNumber() -> int { return model->trialNumber(); }
+
+auto ModelImpl::targetFileName() -> std::string {
+    return model->targetFileName();
+}
 }
