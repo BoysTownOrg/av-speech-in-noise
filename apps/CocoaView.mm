@@ -2,8 +2,12 @@
 #include "common-objc.h"
 #include <iterator>
 
+static auto textFieldWithFrame(NSRect r) -> NSTextField * {
+    return [[NSTextField alloc] initWithFrame:r];
+}
+
 static auto allocLabel(NSString *label, NSRect frame) -> NSTextField * {
-    const auto text = [[NSTextField alloc] initWithFrame:frame];
+    const auto text = textFieldWithFrame(frame);
     [text setStringValue:label];
     [text setBezeled:NO];
     [text setDrawsBackground:NO];
@@ -44,7 +48,7 @@ static auto filePathTextFieldSizeAtHeight(CGFloat y) -> NSRect {
 }
 
 static auto normalTextFieldWithHeight(CGFloat x) -> NSTextField * {
-    return [[NSTextField alloc] initWithFrame:normalTextFieldSizeAtHeight(x)];
+    return textFieldWithFrame(normalTextFieldSizeAtHeight(x));
 }
 
 static auto normalLabelWithHeight(CGFloat x, std::string s) -> NSTextField * {
@@ -53,11 +57,18 @@ static auto normalLabelWithHeight(CGFloat x, std::string s) -> NSTextField * {
 }
 
 static auto filePathTextFieldSizeWithHeight(CGFloat x) -> NSTextField * {
-    return [[NSTextField alloc] initWithFrame:filePathTextFieldSizeAtHeight(x)];
+    return textFieldWithFrame(filePathTextFieldSizeAtHeight(x));
 }
 
 static auto shortTextFieldWithHeight(CGFloat x) -> NSTextField * {
-    return [[NSTextField alloc] initWithFrame:shortTextFieldSizeAtHeight(x)];
+    return textFieldWithFrame(shortTextFieldSizeAtHeight(x));
+}
+
+static auto popUpButtonAtHeightWithWidth(CGFloat height, CGFloat width)
+    -> NSPopUpButton * {
+    return [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
+                                                    height, width, labelHeight)
+                                      pullsDown:NO];
 }
 
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
@@ -85,13 +96,9 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       startingSnr_dB_label{normalLabelWithHeight(90, "starting SNR (dB):")},
       startingSnr_dB_{shortTextFieldWithHeight(90)},
       condition_label{normalLabelWithHeight(60, "condition:")},
-      conditionMenu{[[NSPopUpButton alloc]
-          initWithFrame:NSMakeRect(textFieldLeadingEdge, 60, 120, labelHeight)
-              pullsDown:NO]},
+      conditionMenu{popUpButtonAtHeightWithWidth(60, 120)},
       method_label{normalLabelWithHeight(30, "method:")},
-      methodMenu{[[NSPopUpButton alloc]
-          initWithFrame:NSMakeRect(textFieldLeadingEdge, 30, 270, labelHeight)
-              pullsDown:NO]},
+      methodMenu{popUpButtonAtHeightWithWidth(30, 270)},
       actions{[SetupViewActions alloc]} {
     actions.controller = this;
     const auto browseForTargetListButton =
