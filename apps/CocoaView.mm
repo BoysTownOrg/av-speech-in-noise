@@ -19,11 +19,21 @@ static constexpr auto labelWidth = 140;
 static constexpr auto labelToTextFieldSpacing = 5;
 static constexpr auto textFieldLeadingEdge =
     labelWidth + labelToTextFieldSpacing;
+static constexpr auto shortTextFieldWidth = 75;
 static constexpr auto normalTextFieldWidth = 150;
 static constexpr auto menuWidth = 180;
 static constexpr auto filePathTextFieldWidth = 500;
 static constexpr auto buttonHeight = 25;
 static constexpr auto buttonWidth = 100;
+
+static auto shortTextFieldSizeAtHeight(CGFloat y) -> NSRect {
+    return NSMakeRect(
+        textFieldLeadingEdge,
+        y,
+        shortTextFieldWidth,
+        labelHeight
+    );
+}
 
 static NSRect normalTextFieldSizeAtHeight(CGFloat y) {
     return NSMakeRect(
@@ -71,7 +81,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         NSMakeRect(0, 240, labelWidth, labelHeight)
     )},
     maskerLevel_dB_SPL_{[[NSTextField alloc]
-        initWithFrame:normalTextFieldSizeAtHeight(240)
+        initWithFrame:shortTextFieldSizeAtHeight(240)
     ]},
     calibrationLevel_dB_SPL_label{allocLabel(
         @"calibration level (dB SPL):",
@@ -95,7 +105,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r) :
         NSMakeRect(0, 210, labelWidth, labelHeight)
     )},
     startingSnr_dB_{[[NSTextField alloc]
-        initWithFrame:normalTextFieldSizeAtHeight(210)
+        initWithFrame:shortTextFieldSizeAtHeight(210)
     ]},
     targetListDirectoryLabel{allocLabel(
         @"targets:",
