@@ -745,6 +745,13 @@ RECOGNITION_TEST_MODEL_TEST(returnsTargetFileName) {
     assertEqual("a", model.targetFileName());
 }
 
+RECOGNITION_TEST_MODEL_TEST(passesCurrentToEvaluatorWhenReturningTargetFileName) {
+    run(initializingTest);
+    testMethod.setCurrent("a");
+    model.targetFileName();
+    assertEqual("a", evaluator.filePathForFileName());
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializingTestResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTest, 1);
 }
