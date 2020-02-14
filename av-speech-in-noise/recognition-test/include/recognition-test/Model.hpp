@@ -89,6 +89,7 @@ class ModelImpl : public Model {
     void submitResponse(const open_set::FreeResponse &) override;
     void submit(const open_set::CorrectKeywords &) override;
     auto trialNumber() -> int override;
+    auto targetFileName() -> std::string override { return {}; }
 
   private:
     void initializeTest_(const AdaptiveTest &);

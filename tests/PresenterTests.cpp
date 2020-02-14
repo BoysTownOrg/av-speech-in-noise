@@ -43,7 +43,7 @@ TEST_F(PresenterTests, confirmAdaptiveOpenSetTestHidesTestSetupView) {
 }
 
 TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingAdaptiveOpenSetKeywordsTest);
+    assertHidesTestSetupView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests, confirmFixedLevelOpenSetTestHidesTestSetupView) {
@@ -65,7 +65,7 @@ TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsExperimenterView) {
 
 TEST_F(
     PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsExperimenterView) {
-    assertShowsExperimenterView(confirmingAdaptiveOpenSetKeywordsTest);
+    assertShowsExperimenterView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTestingView) {
@@ -73,7 +73,7 @@ TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTestingView) {
 }
 
 TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTestingView) {
-    assertShowsTestingView(confirmingAdaptiveOpenSetKeywordsTest);
+    assertShowsTestingView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTestingView) {
@@ -125,7 +125,7 @@ TEST_F(PresenterTests, confirmAdaptiveOpenSetTestDoesNotShowSubjectView) {
 
 TEST_F(
     PresenterTests, confirmAdaptiveOpenSetKeywordsTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptiveOpenSetKeywordsTest);
+    assertDoesNotShowSubjectView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests, confirmFixedLevelOpenSetTestDoesNotShowSubjectView) {
@@ -199,7 +199,7 @@ TEST_F(
 TEST_F(PresenterTests,
     confirmAdaptiveOpenSetKeywordsTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(
-        confirmingAdaptiveOpenSetKeywordsTest);
+        confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(
@@ -238,8 +238,8 @@ TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesStartingSnr) {
     assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetTest);
 }
 
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetKeywordsTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetKeywordsTest);
+TEST_F(PresenterTests, confirmingAdaptiveCorrectKeywordsTestPassesStartingSnr) {
+    assertStartingSnrPassedToModel(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesStartingSnr) {
@@ -264,8 +264,8 @@ TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesMaskerLevel) {
     assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetTest);
 }
 
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetKeywordsTestPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetKeywordsTest);
+TEST_F(PresenterTests, confirmingAdaptiveCorrectKeywordsTestPassesMaskerLevel) {
+    assertMaskerLevelPassedToModel(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesMaskerLevel) {
@@ -522,7 +522,7 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     confirmAdaptiveOpenSetKeywordsTestShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
-        confirmingAdaptiveOpenSetKeywordsTest, playingTrialFromExperimenter);
+        confirmingAdaptiveCorrectKeywordsTest, playingTrialFromExperimenter);
 }
 
 TEST_F(PresenterTests,
@@ -936,7 +936,7 @@ TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTrialNumber) {
 }
 
 TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingAdaptiveOpenSetKeywordsTest);
+    assertShowsTrialNumber(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsTrialNumber) {
@@ -970,6 +970,11 @@ TEST_F(PresenterTests, submittingPassedTrialShowsTrialNumber) {
 
 TEST_F(PresenterTests, submittingFailedTrialShowsTrialNumber) {
     assertShowsTrialNumber(submittingFailedTrial);
+}
+
+TEST_F(
+    PresenterTests, confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
+    assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests,
@@ -1012,7 +1017,7 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveOpenSetKeywordsTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveOpenSetKeywordsTest, enteringCorrectKeywords);
+        confirmingAdaptiveCorrectKeywordsTest, enteringCorrectKeywords);
 }
 
 TEST_F(PresenterTests,
@@ -1046,7 +1051,7 @@ TEST_F(
 
 TEST_F(PresenterTests,
     confirmAdaptiveOpenSetKeywordsTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetKeywordsTest);
+    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests,
@@ -1072,7 +1077,7 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     confirmAdaptiveOpenSetKeywordsTestWithInvalidInputDoesNotHideSetupView) {
     assertSetupViewNotHiddenWhenSnrIsInvalid(
-        confirmingAdaptiveOpenSetKeywordsTest);
+        confirmingAdaptiveCorrectKeywordsTest);
 }
 
 TEST_F(PresenterTests,

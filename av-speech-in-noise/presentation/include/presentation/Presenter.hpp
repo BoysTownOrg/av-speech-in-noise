@@ -150,6 +150,7 @@ class View {
         virtual void hideExitTestButton() = 0;
         virtual void showExitTestButton() = 0;
         virtual void display(std::string) = 0;
+        virtual void secondaryDisplay(std::string) = 0;
     };
 
     virtual ~View() = default;
@@ -267,6 +268,7 @@ class Presenter : public Model::EventListener {
         void hideExitTestButton();
         void showExitTestButton();
         void display(std::string);
+        void secondaryDisplay(std::string);
         void exitTest() override;
 
       private:

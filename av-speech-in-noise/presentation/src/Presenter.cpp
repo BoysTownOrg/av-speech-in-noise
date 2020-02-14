@@ -29,6 +29,11 @@ static void displayTrialNumber(
     experimenter.display("Trial " + std::to_string(model.trialNumber()));
 }
 
+static void displayTarget(
+    Presenter::Experimenter &experimenter, Model &model) {
+    experimenter.secondaryDisplay(model.targetFileName());
+}
+
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     Subject &subject, Experimenter &experimenter, Testing &testing)
     : fixedLevelOpenSetTrialCompletionHandler{testing},
@@ -123,6 +128,8 @@ void Presenter::showTestView() {
         subject.show();
     else
         testing.show();
+    if (adaptiveCorrectKeywords())
+        displayTarget(experimenter, model);
 }
 
 auto Presenter::closedSet() -> bool { return testSetup.closedSet(); }
@@ -600,6 +607,10 @@ void Presenter::Experimenter::showExitTestButton() {
 
 void Presenter::Experimenter::display(std::string s) {
     view->display(std::move(s));
+}
+
+void Presenter::Experimenter::secondaryDisplay(std::string s) {
+    view->secondaryDisplay(std::move(s));
 }
 
 void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
