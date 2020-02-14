@@ -71,6 +71,12 @@ static auto popUpButtonAtHeightWithWidth(CGFloat height, CGFloat width)
                                       pullsDown:NO];
 }
 
+static auto button(std::string s, id target, SEL action) -> NSButton * {
+    return [NSButton buttonWithTitle:asNsString(std::move(s))
+                              target:target
+                              action:action];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       subjectIdLabel{normalLabelWithHeight(360, "subject:")},
@@ -102,43 +108,31 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       actions{[SetupViewActions alloc]} {
     actions.controller = this;
     const auto browseForTargetListButton =
-        [NSButton buttonWithTitle:@"browse"
-                           target:actions
-                           action:@selector(browseForTargetList)];
+        button("browse", actions, @selector(browseForTargetList));
     [browseForTargetListButton
         setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10,
                      270, buttonWidth, buttonHeight)];
     const auto browseForMaskerButton =
-        [NSButton buttonWithTitle:@"browse"
-                           target:actions
-                           action:@selector(browseForMasker)];
+        button("browse", actions, @selector(browseForMasker));
     [browseForMaskerButton
         setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10,
                      240, buttonWidth, buttonHeight)];
     const auto browseForTrackSettingsButton =
-        [NSButton buttonWithTitle:@"browse"
-                           target:actions
-                           action:@selector(browseForTrackSettings)];
+        button("browse", actions, @selector(browseForTrackSettings));
     [browseForTrackSettingsButton
         setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10,
                      210, buttonWidth, buttonHeight)];
     const auto browseForCalibrationButton =
-        [NSButton buttonWithTitle:@"browse"
-                           target:actions
-                           action:@selector(browseForCalibration)];
+        button("browse", actions, @selector(browseForCalibration));
     [browseForCalibrationButton
         setFrame:NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10,
                      180, buttonWidth, buttonHeight)];
     const auto confirmButton =
-        [NSButton buttonWithTitle:@"Confirm"
-                           target:actions
-                           action:@selector(confirmTestSetup)];
+        button("Confirm", actions, @selector(confirmTestSetup));
     [confirmButton setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
                                 buttonWidth, buttonHeight)];
     const auto playCalibrationButton =
-        [NSButton buttonWithTitle:@"play"
-                           target:actions
-                           action:@selector(playCalibration)];
+        button("play", actions, @selector(playCalibration));
     [playCalibrationButton
         setFrame:NSMakeRect(shortTextFieldWidth + textFieldLeadingEdge + 10,
                      150, buttonWidth, buttonHeight)];
@@ -392,10 +386,8 @@ void CocoaSubjectView::addNumberButton(
 }
 
 void CocoaSubjectView::addNextTrialButton() {
-    const auto button = [NSButton buttonWithTitle:@""
-                                           target:actions
-                                           action:@selector(playTrial)];
-    [button setBezelStyle:NSBezelStyleTexturedSquare];
+    const auto button_ = button("", actions, @selector(playTrial));
+    [button_ setBezelStyle:NSBezelStyleTexturedSquare];
     auto style{[[NSMutableParagraphStyle alloc] init]};
     [style setAlignment:NSTextAlignmentCenter];
     auto font{[NSFont fontWithName:@"Courier" size:36]};
@@ -404,10 +396,10 @@ void CocoaSubjectView::addNextTrialButton() {
     auto attrString =
         [[NSAttributedString alloc] initWithString:@"Press when ready"
                                         attributes:attrsDictionary];
-    [button setAttributedTitle:attrString];
-    [button setFrame:NSMakeRect(0, 0, nextTrialButton.frame.size.width,
-                         nextTrialButton.frame.size.height)];
-    [nextTrialButton addSubview:button];
+    [button_ setAttributedTitle:attrString];
+    [button_ setFrame:NSMakeRect(0, 0, nextTrialButton.frame.size.width,
+                          nextTrialButton.frame.size.height)];
+    [nextTrialButton addSubview:button_];
 }
 
 auto CocoaSubjectView::numberResponse() -> std::string {
@@ -479,9 +471,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(buttonWidth + 15 + labelWidth + 15, 0,
                             labelWidth, labelHeight)]},
       actions{[ExperimenterViewActions alloc]} {
-    exitTestButton_ = [NSButton buttonWithTitle:@"exit test"
-                                         target:actions
-                                         action:@selector(exitTest)];
+    exitTestButton_ = button("exit test", actions, @selector(exitTest));
     [exitTestButton_ setFrame:NSMakeRect(0, 0, buttonWidth, buttonHeight)];
     [displayedText_ setBezeled:NO];
     [displayedText_ setDrawsBackground:NO];
@@ -559,33 +549,23 @@ CocoaTestingView::CocoaTestingView(NSRect r)
     [flagged_ setButtonType:NSButtonTypeSwitch];
     [flagged_ setTitle:@"flagged"];
     const auto nextTrialButton_ =
-        [NSButton buttonWithTitle:@"play trial"
-                           target:actions
-                           action:@selector(playTrial)];
+        button("play trial", actions, @selector(playTrial));
     [nextTrialButton_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
                                    buttonWidth, buttonHeight)];
     const auto submitResponse_ =
-        [NSButton buttonWithTitle:@"submit"
-                           target:actions
-                           action:@selector(submitResponse)];
+        button("submit", actions, @selector(submitResponse));
     [submitResponse_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
                                   buttonWidth, buttonHeight)];
     const auto passButton_ =
-        [NSButton buttonWithTitle:@"pass"
-                           target:actions
-                           action:@selector(submitPassedTrial)];
+        button("pass", actions, @selector(submitPassedTrial));
     [passButton_ setFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
                               buttonWidth, buttonHeight)];
     const auto failButton_ =
-        [NSButton buttonWithTitle:@"fail"
-                           target:actions
-                           action:@selector(submitFailedTrial)];
+        button("fail", actions, @selector(submitFailedTrial));
     [failButton_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0, buttonWidth,
                               buttonHeight)];
     const auto submitCorrectKeywords_ =
-        [NSButton buttonWithTitle:@"submit"
-                           target:actions
-                           action:@selector(submitCorrectKeywords)];
+        button("submit", actions, @selector(submitCorrectKeywords));
     [submitCorrectKeywords_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
                                          buttonWidth, buttonHeight)];
     [nextTrialButton addSubview:nextTrialButton_];
