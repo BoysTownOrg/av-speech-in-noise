@@ -26,19 +26,21 @@ static constexpr auto filePathTextFieldWidth = 500;
 static constexpr auto buttonHeight = 25;
 static constexpr auto buttonWidth = 100;
 
+static auto textFieldSizeAtHeightWithWidth(CGFloat height, CGFloat buttonWidth)
+    -> NSRect {
+    return NSMakeRect(textFieldLeadingEdge, height, buttonWidth, labelHeight);
+}
+
 static auto shortTextFieldSizeAtHeight(CGFloat y) -> NSRect {
-    return NSMakeRect(
-        textFieldLeadingEdge, y, shortTextFieldWidth, labelHeight);
+    return textFieldSizeAtHeightWithWidth(y, shortTextFieldWidth);
 }
 
 static auto normalTextFieldSizeAtHeight(CGFloat y) -> NSRect {
-    return NSMakeRect(
-        textFieldLeadingEdge, y, normalTextFieldWidth, labelHeight);
+    return textFieldSizeAtHeightWithWidth(y, normalTextFieldWidth);
 }
 
 static auto filePathTextFieldSizeAtHeight(CGFloat y) -> NSRect {
-    return NSMakeRect(
-        textFieldLeadingEdge, y, filePathTextFieldWidth, labelHeight);
+    return textFieldSizeAtHeightWithWidth(y, filePathTextFieldWidth);
 }
 
 static auto normalTextFieldWithHeight(CGFloat x) -> NSTextField * {
