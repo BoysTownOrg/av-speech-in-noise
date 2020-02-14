@@ -599,7 +599,13 @@ void CocoaSubjectView::hide() {
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     view_{[[NSView alloc] initWithFrame:r]},
-    displayedText_{[[NSTextView alloc] initWithFrame:NSMakeRect(
+    displayedText_{[[NSTextField alloc] initWithFrame:NSMakeRect(
+        r.origin.x + 15,
+        r.origin.y + 45,
+        r.size.width - 30,
+        30
+    )]},
+    secondaryDisplayedText_{[[NSTextField alloc] initWithFrame:NSMakeRect(
         r.origin.x + 15,
         r.origin.y + 15,
         r.size.width - 30,
@@ -618,9 +624,17 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
         buttonWidth,
         buttonHeight
     )];
-    [displayedText_ setFont:[NSFont userFontOfSize:22.0]];
+    [displayedText_ setBezeled:NO];
+    [displayedText_ setDrawsBackground:NO];
+    [displayedText_ setEditable:NO];
+    [displayedText_ setSelectable:NO];
+    [secondaryDisplayedText_ setBezeled:NO];
+    [secondaryDisplayedText_ setDrawsBackground:NO];
+    [secondaryDisplayedText_ setEditable:NO];
+    [secondaryDisplayedText_ setSelectable:NO];
     [view_ addSubview:exitTestButton_];
     [view_ addSubview:displayedText_];
+    [view_ addSubview:secondaryDisplayedText_];
     [view_ setHidden:YES];
     actions.controller = this;
 }
@@ -654,7 +668,11 @@ void CocoaExperimenterView::exitTest() {
 }
 
 void CocoaExperimenterView::display(std::string s) {
-    [displayedText_ setString:asNsString(std::move(s))];
+    [displayedText_ setStringValue:asNsString(std::move(s))];
+}
+
+void CocoaExperimenterView::secondaryDisplay(std::string s) {
+    [secondaryDisplayedText_ setStringValue:asNsString(std::move(s))];
 }
 
 @implementation ExperimenterViewActions

@@ -44,7 +44,8 @@ class CocoaTestingView;
 
 class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
     NSView *view_;
-    NSTextView *displayedText_;
+    NSTextField *displayedText_;
+    NSTextField *secondaryDisplayedText_;
     NSButton *exitTestButton_;
     EventListener *listener_{};
     ExperimenterViewActions *actions;
@@ -58,6 +59,7 @@ public:
     void show() override;
     void hide() override;
     void display(std::string) override;
+    void secondaryDisplay(std::string) override;
 };
 
 class CocoaTestingView : public av_speech_in_noise::View::Testing {
