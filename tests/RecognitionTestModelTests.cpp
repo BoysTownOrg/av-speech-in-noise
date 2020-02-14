@@ -7,6 +7,7 @@
 #include "TargetPlayerStub.h"
 #include "assert-utility.h"
 #include "av-speech-in-noise/Model.hpp"
+#include "recognition-test/RecognitionTestModel.hpp"
 #include <cmath>
 #include <gtest/gtest.h>
 
@@ -333,6 +334,14 @@ void setCurrentTarget(TestMethodStub &m, std::string s) {
     m.setCurrent(std::move(s));
 }
 
+auto targetFileName(RecognitionTestModelImpl &m) -> std::string {
+    return m.targetFileName();
+}
+
+auto filePathForFileName(ResponseEvaluatorStub &r) -> std::string {
+    return r.filePathForFileName();
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -589,7 +598,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         setCurrentTarget(testMethod, "a");
         testMethod.setCurrentWhenNext("b");
         run(useCase);
-        assertEqual("a", evaluator.filePathForFileName());
+        assertEqual("a", filePathForFileName(evaluator));
     }
 
     void assertTestMethodLogContains(
@@ -746,15 +755,15 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestPassesNextTargetToTargetPlayer) {
 
 RECOGNITION_TEST_MODEL_TEST(returnsTargetFileName) {
     evaluator.setFileName("a");
-    assertEqual("a", model.targetFileName());
+    assertEqual("a", targetFileName(model));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     passesCurrentToEvaluatorWhenReturningTargetFileName) {
     run(initializingTest);
     setCurrentTarget(testMethod, "a");
-    model.targetFileName();
-    assertEqual("a", evaluator.filePathForFileName());
+    targetFileName(model);
+    assertEqual("a", filePathForFileName(evaluator));
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializingTestResetsTrialNumber) {
