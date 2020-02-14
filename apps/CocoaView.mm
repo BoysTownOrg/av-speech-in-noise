@@ -169,55 +169,61 @@ void CocoaTestSetupView::addSubview(NSView *subview) {
     [view_ addSubview:subview];
 }
 
-NSView *CocoaTestSetupView::view() { return view_; }
+auto CocoaTestSetupView::view() -> NSView * { return view_; }
 
 void CocoaTestSetupView::show() { [view_ setHidden:NO]; }
 
 void CocoaTestSetupView::hide() { [view_ setHidden:YES]; }
 
-std::string CocoaTestSetupView::startingSnr_dB() {
+auto CocoaTestSetupView::startingSnr_dB() -> std::string {
     return stringValue(startingSnr_dB_);
 }
 
-const char *CocoaTestSetupView::stringValue(NSTextField *field) {
+auto CocoaTestSetupView::stringValue(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
 }
 
-std::string CocoaTestSetupView::maskerLevel_dB_SPL() {
+auto CocoaTestSetupView::maskerLevel_dB_SPL() -> std::string {
     return stringValue(maskerLevel_dB_SPL_);
 }
 
-std::string CocoaTestSetupView::calibrationLevel_dB_SPL() {
+auto CocoaTestSetupView::calibrationLevel_dB_SPL() -> std::string {
     return stringValue(calibrationLevel_dB_SPL_);
 }
 
-std::string CocoaTestSetupView::maskerFilePath() {
+auto CocoaTestSetupView::maskerFilePath() -> std::string {
     return stringValue(maskerFilePath_);
 }
 
-std::string CocoaTestSetupView::calibrationFilePath() {
+auto CocoaTestSetupView::calibrationFilePath() -> std::string {
     return stringValue(calibrationFilePath_);
 }
 
-std::string CocoaTestSetupView::targetListDirectory() {
+auto CocoaTestSetupView::targetListDirectory() -> std::string {
     return stringValue(targetListDirectory_);
 }
 
-std::string CocoaTestSetupView::testerId() { return stringValue(testerId_); }
+auto CocoaTestSetupView::testerId() -> std::string {
+    return stringValue(testerId_);
+}
 
-std::string CocoaTestSetupView::subjectId() { return stringValue(subjectId_); }
+auto CocoaTestSetupView::subjectId() -> std::string {
+    return stringValue(subjectId_);
+}
 
-std::string CocoaTestSetupView::session() { return stringValue(session_); }
+auto CocoaTestSetupView::session() -> std::string {
+    return stringValue(session_);
+}
 
-std::string CocoaTestSetupView::method() {
+auto CocoaTestSetupView::method() -> std::string {
     return methodMenu.titleOfSelectedItem.UTF8String;
 }
 
-std::string CocoaTestSetupView::condition() {
+auto CocoaTestSetupView::condition() -> std::string {
     return conditionMenu.titleOfSelectedItem.UTF8String;
 }
 
-std::string CocoaTestSetupView::trackSettingsFile() {
+auto CocoaTestSetupView::trackSettingsFile() -> std::string {
     return stringValue(trackSettingsFile_);
 }
 
@@ -254,12 +260,12 @@ void CocoaTestSetupView::setStartingSnr_dB(std::string s) {
 }
 
 void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
-    for (auto item : items)
+    for (const auto &item : items)
         [conditionMenu addItemWithTitle:asNsString(item)];
 }
 
 void CocoaTestSetupView::populateMethodMenu(std::vector<std::string> items) {
-    for (auto item : items)
+    for (const auto &item : items)
         [methodMenu addItemWithTitle:asNsString(item)];
 }
 
@@ -394,26 +400,26 @@ void CocoaSubjectView::addNextTrialButton() {
     [nextTrialButton addSubview:button];
 }
 
-std::string CocoaSubjectView::numberResponse() {
+auto CocoaSubjectView::numberResponse() -> std::string {
     return lastButtonPressed.title.UTF8String;
 }
 
-bool CocoaSubjectView::greenResponse() {
+auto CocoaSubjectView::greenResponse() -> bool {
     return lastPressedColor() == greenColor;
 }
 
-NSColor *CocoaSubjectView::lastPressedColor() {
+auto CocoaSubjectView::lastPressedColor() -> NSColor * {
     return [lastButtonPressed.attributedTitle
              attribute:NSForegroundColorAttributeName
                atIndex:0
         effectiveRange:nil];
 }
 
-bool CocoaSubjectView::blueResponse() {
+auto CocoaSubjectView::blueResponse() -> bool {
     return lastPressedColor() == blueColor;
 }
 
-bool CocoaSubjectView::whiteResponse() {
+auto CocoaSubjectView::whiteResponse() -> bool {
     return lastPressedColor() == whiteColor;
 }
 
@@ -494,7 +500,7 @@ void CocoaExperimenterView::show() { [view_ setHidden:NO]; }
 
 void CocoaExperimenterView::hide() { [view_ setHidden:YES]; }
 
-NSView *CocoaExperimenterView::view() { return view_; }
+auto CocoaExperimenterView::view() -> NSView * { return view_; }
 
 void CocoaExperimenterView::exitTest() { listener_->exitTest(); }
 
@@ -628,7 +634,7 @@ void CocoaTestingView::hideCorrectKeywordsSubmission() {
     [correctKeywordsSubmission setHidden:YES];
 }
 
-std::string CocoaTestingView::freeResponse() {
+auto CocoaTestingView::freeResponse() -> std::string {
     return response_.stringValue.UTF8String;
 }
 
@@ -636,11 +642,11 @@ auto CocoaTestingView::correctKeywords() -> std::string {
     return correctKeywordsEntry_.stringValue.UTF8String;
 }
 
-bool CocoaTestingView::flagged() {
+auto CocoaTestingView::flagged() -> bool {
     return flagged_.state == NSControlStateValueOn;
 }
 
-NSView *CocoaTestingView::view() { return view_; }
+auto CocoaTestingView::view() -> NSView * { return view_; }
 
 void CocoaTestingView::playTrial() { listener_->playTrial(); }
 
@@ -717,23 +723,23 @@ void CocoaView::showErrorMessage(std::string s) {
     [alert runModal];
 }
 
-std::string CocoaView::browseForDirectory() {
+auto CocoaView::browseForDirectory() -> std::string {
     auto panel = [NSOpenPanel openPanel];
-    panel.canChooseDirectories = true;
-    panel.canChooseFiles = false;
+    panel.canChooseDirectories = YES;
+    panel.canChooseFiles = NO;
     return browseModal(panel);
 }
 
-bool CocoaView::browseCancelled() { return browseCancelled_; }
+auto CocoaView::browseCancelled() -> bool { return browseCancelled_; }
 
-std::string CocoaView::browseForOpeningFile() {
+auto CocoaView::browseForOpeningFile() -> std::string {
     auto panel = [NSOpenPanel openPanel];
-    panel.canChooseDirectories = false;
-    panel.canChooseFiles = true;
+    panel.canChooseDirectories = NO;
+    panel.canChooseFiles = YES;
     return browseModal(panel);
 }
 
-std::string CocoaView::browseModal(NSOpenPanel *panel) {
+auto CocoaView::browseModal(NSOpenPanel *panel) -> std::string {
     switch ([panel runModal]) {
     case NSModalResponseOK:
         browseCancelled_ = false;
@@ -744,12 +750,12 @@ std::string CocoaView::browseModal(NSOpenPanel *panel) {
     }
 }
 
-std::string CocoaView::audioDevice() {
+auto CocoaView::audioDevice() -> std::string {
     return deviceMenu.titleOfSelectedItem.UTF8String;
 }
 
 void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
-    for (auto item : items)
+    for (const auto &item : items)
         [deviceMenu addItemWithTitle:asNsString(item)];
 }
 
