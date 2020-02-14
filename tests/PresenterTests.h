@@ -1604,11 +1604,11 @@ class SubmittingPassedTrial : public TrialSubmission {
     }
 };
 
-class EnteringCorrectKeywords : public TrialSubmission {
+class SubmittingCorrectKeywords : public TrialSubmission {
     ViewStub::TestingViewStub *view;
 
   public:
-    explicit EnteringCorrectKeywords(ViewStub::TestingViewStub *view)
+    explicit SubmittingCorrectKeywords(ViewStub::TestingViewStub *view)
         : view{view} {}
 
     void run() override { view->submitCorrectKeywords(); }
@@ -1843,7 +1843,7 @@ class PresenterTests : public ::testing::Test {
     RespondingFromSubject respondingFromSubject{&subjectView};
     RespondingFromExperimenter respondingFromExperimenter{&testingView};
     SubmittingPassedTrial submittingPassedTrial{&testingView};
-    EnteringCorrectKeywords enteringCorrectKeywords{&testingView};
+    SubmittingCorrectKeywords submittingCorrectKeywords{&testingView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenterView};
 

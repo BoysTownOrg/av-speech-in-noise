@@ -655,22 +655,22 @@ TEST_F(PresenterTests, passedTrialSubmitsCorrectResponse) {
     assertTrue(model.correctResponseSubmitted());
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsPassesCorrectKeywords) {
+TEST_F(PresenterTests, submittingCorrectKeywordsPassesCorrectKeywords) {
     setCorrectKeywords("1");
-    run(enteringCorrectKeywords);
+    run(submittingCorrectKeywords);
     assertEqual(1, model.correctKeywords());
 }
 
 TEST_F(PresenterTests, enteringInvalidCorrectKeywordsShowsErrorMessage) {
     setCorrectKeywords("a");
-    run(enteringCorrectKeywords);
+    run(submittingCorrectKeywords);
     assertErrorMessageEquals("'a' is not a valid number.");
 }
 
 TEST_F(PresenterTests, enteringInvalidCorrectKeywordsDoesNotHideEntry) {
     setCorrectKeywords("a");
-    run(enteringCorrectKeywords);
-    assertFalse(enteringCorrectKeywords.responseViewHidden());
+    run(submittingCorrectKeywords);
+    assertFalse(submittingCorrectKeywords.responseViewHidden());
 }
 
 TEST_F(PresenterTests, failedTrialSubmitsIncorrectResponse) {
@@ -686,8 +686,9 @@ TEST_F(PresenterTests, respondFromExperimenterShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(respondingFromExperimenter);
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(enteringCorrectKeywords);
+TEST_F(
+    PresenterTests, submittingCorrectKeywordsShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(submittingCorrectKeywords);
 }
 
 TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
@@ -709,8 +710,8 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    enteringCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
-    assertIncompleteTestDoesNotShowSetupView(enteringCorrectKeywords);
+    submittingCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
 }
 
 TEST_F(
@@ -734,8 +735,8 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    enteringCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(enteringCorrectKeywords);
+    submittingCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(submittingCorrectKeywords);
 }
 
 TEST_F(PresenterTests, submitPassedTrialHidesExperimenterViewWhenTestComplete) {
@@ -752,8 +753,8 @@ TEST_F(
 }
 
 TEST_F(
-    PresenterTests, enteringCorrectKeywordsHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(enteringCorrectKeywords);
+    PresenterTests, submittingCorrectKeywordsHidesTestingViewWhenTestComplete) {
+    assertCompleteTestHidesTestingView(submittingCorrectKeywords);
 }
 
 TEST_F(PresenterTests, submitPassedTrialHidesTestingViewWhenTestComplete) {
@@ -780,8 +781,8 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    enteringCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
-    assertDoesNotHideExperimenterView(enteringCorrectKeywords);
+    submittingCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(submittingCorrectKeywords);
 }
 
 TEST_F(PresenterTests,
@@ -800,8 +801,8 @@ TEST_F(PresenterTests,
 }
 
 TEST_F(PresenterTests,
-    enteringCorrectKeywordsDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(enteringCorrectKeywords);
+    submittingCorrectKeywordsDoesNotHideTestingViewWhenTestIncomplete) {
+    assertDoesNotHideTestingView(submittingCorrectKeywords);
 }
 
 TEST_F(
@@ -818,8 +819,8 @@ TEST_F(PresenterTests, experimenterResponseShowsNextTrialButton) {
     assertShowsNextTrialButton(respondingFromExperimenter);
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsShowsNextTrialButton) {
-    assertShowsNextTrialButton(enteringCorrectKeywords);
+TEST_F(PresenterTests, submittingCorrectKeywordsShowsNextTrialButton) {
+    assertShowsNextTrialButton(submittingCorrectKeywords);
 }
 
 TEST_F(PresenterTests, subjectPassedTrialShowsNextTrialButtonForExperimenter) {
@@ -834,8 +835,8 @@ TEST_F(PresenterTests, experimenterResponseHidesResponseSubmission) {
     assertResponseViewHidden(respondingFromExperimenter);
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsHidesCorrectKeywordsEntry) {
-    assertResponseViewHidden(enteringCorrectKeywords);
+TEST_F(PresenterTests, submittingCorrectKeywordsHidesCorrectKeywordsEntry) {
+    assertResponseViewHidden(submittingCorrectKeywords);
 }
 
 TEST_F(PresenterTests, correctResponseHidesEvaluationButtons) {
@@ -956,8 +957,8 @@ TEST_F(PresenterTests, submittingResponseFromExperimenterShowsTrialNumber) {
     assertShowsTrialNumber(respondingFromExperimenter);
 }
 
-TEST_F(PresenterTests, enteringCorrectKeywordsShowsTrialNumber) {
-    assertShowsTrialNumber(enteringCorrectKeywords);
+TEST_F(PresenterTests, submittingCorrectKeywordsShowsTrialNumber) {
+    assertShowsTrialNumber(submittingCorrectKeywords);
 }
 
 TEST_F(PresenterTests, submittingResponseFromSubjectShowsTrialNumber) {
@@ -975,6 +976,10 @@ TEST_F(PresenterTests, submittingFailedTrialShowsTrialNumber) {
 TEST_F(
     PresenterTests, confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
     assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);
+}
+
+TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
+    assertShowsTargetFileName(submittingCorrectKeywords);
 }
 
 TEST_F(PresenterTests,
@@ -1017,7 +1022,7 @@ TEST_F(PresenterTests,
 TEST_F(PresenterTests,
     completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveOpenSetKeywordsTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveCorrectKeywordsTest, enteringCorrectKeywords);
+        confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
 }
 
 TEST_F(PresenterTests,
