@@ -10,6 +10,7 @@ static NSTextField *allocLabel(NSString *label, NSRect frame) {
     [text setEditable:NO];
     [text setSelectable:NO];
     [text setAlignment:NSTextAlignmentRight];
+    [text setTextColor:NSColor.labelColor];
     return text;
 }
 
@@ -627,11 +628,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r) :
     [displayedText_ setBezeled:NO];
     [displayedText_ setDrawsBackground:NO];
     [displayedText_ setEditable:NO];
-    [displayedText_ setSelectable:NO];
     [secondaryDisplayedText_ setBezeled:NO];
     [secondaryDisplayedText_ setDrawsBackground:NO];
     [secondaryDisplayedText_ setEditable:NO];
-    [secondaryDisplayedText_ setSelectable:NO];
     [view_ addSubview:exitTestButton_];
     [view_ addSubview:displayedText_];
     [view_ addSubview:secondaryDisplayedText_];
