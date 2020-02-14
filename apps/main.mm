@@ -268,7 +268,7 @@ void main() {
     ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
         &fixedTrials, &silentIntervals, &completesWhenTargetsEmpty, &allStimuli,
         &model_internal};
-    auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
+    auto testerWindowFrame = NSMakeRect(15, 15, 900, 430);
     auto testerWindowViewMargin = 15;
     auto testingContentFrame =
         NSMakeRect(testerWindowViewMargin, testerWindowViewMargin,
