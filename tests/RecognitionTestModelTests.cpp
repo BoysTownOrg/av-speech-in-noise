@@ -329,6 +329,10 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
 
 auto dB(double x) -> double { return 20 * std::log10(x); }
 
+void setCurrentTarget(TestMethodStub &m, std::string s) {
+    m.setCurrent(std::move(s));
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -582,7 +586,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
         UseCase &useCase) {
         run(initializingTest);
-        testMethod.setCurrent("a");
+        setCurrentTarget(testMethod, "a");
         testMethod.setCurrentWhenNext("b");
         run(useCase);
         assertEqual("a", evaluator.filePathForFileName());
@@ -745,9 +749,10 @@ RECOGNITION_TEST_MODEL_TEST(returnsTargetFileName) {
     assertEqual("a", model.targetFileName());
 }
 
-RECOGNITION_TEST_MODEL_TEST(passesCurrentToEvaluatorWhenReturningTargetFileName) {
+RECOGNITION_TEST_MODEL_TEST(
+    passesCurrentToEvaluatorWhenReturningTargetFileName) {
     run(initializingTest);
-    testMethod.setCurrent("a");
+    setCurrentTarget(testMethod, "a");
     model.targetFileName();
     assertEqual("a", evaluator.filePathForFileName());
 }
