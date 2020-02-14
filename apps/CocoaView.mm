@@ -50,6 +50,10 @@ static auto normalLabelWithHeight(CGFloat x, std::string s) -> NSTextField * {
         asNsString(std::move(s)), NSMakeRect(0, x, labelWidth, labelHeight));
 }
 
+static auto filePathTextFieldSizeWithHeight(CGFloat x) -> NSTextField * {
+    return [[NSTextField alloc] initWithFrame:filePathTextFieldSizeAtHeight(x)];
+}
+
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       subjectIdLabel{normalLabelWithHeight(360, "subject:")},
@@ -59,17 +63,13 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       sessionLabel{normalLabelWithHeight(300, "session:")},
       session_{normalTextFieldWithHeight(300)},
       targetListDirectoryLabel{normalLabelWithHeight(270, "targets:")},
-      targetListDirectory_{[[NSTextField alloc]
-          initWithFrame:filePathTextFieldSizeAtHeight(270)]},
+      targetListDirectory_{filePathTextFieldSizeWithHeight(270)},
       maskerFilePath_label{normalLabelWithHeight(240, "masker:")},
-      maskerFilePath_{[[NSTextField alloc]
-          initWithFrame:filePathTextFieldSizeAtHeight(240)]},
+      maskerFilePath_{filePathTextFieldSizeWithHeight(240)},
       trackSettingsFile_label{normalLabelWithHeight(210, "track settings:")},
-      trackSettingsFile_{[[NSTextField alloc]
-          initWithFrame:filePathTextFieldSizeAtHeight(210)]},
+      trackSettingsFile_{filePathTextFieldSizeWithHeight(210)},
       calibrationFilePath_label{normalLabelWithHeight(180, "calibration:")},
-      calibrationFilePath_{[[NSTextField alloc]
-          initWithFrame:filePathTextFieldSizeAtHeight(180)]},
+      calibrationFilePath_{filePathTextFieldSizeWithHeight(180)},
       calibrationLevel_dB_SPL_label{
           normalLabelWithHeight(150, "calibration level (dB SPL):")},
       calibrationLevel_dB_SPL_{
