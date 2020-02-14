@@ -740,6 +740,11 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestPassesNextTargetToTargetPlayer) {
     assertPassesNextTargetToPlayer(initializingTest);
 }
 
+RECOGNITION_TEST_MODEL_TEST(returnsTargetFileName) {
+    evaluator.setFileName("a");
+    assertEqual("a", model.targetFileName());
+}
+
 RECOGNITION_TEST_MODEL_TEST(initializingTestResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTest, 1);
 }

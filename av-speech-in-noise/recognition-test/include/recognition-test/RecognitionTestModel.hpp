@@ -80,7 +80,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto testComplete() -> bool override;
     auto audioDevices() -> std::vector<std::string> override;
     auto trialNumber() -> int override;
-    auto targetFileName() -> std::string override { return {}; }
+    auto targetFileName() -> std::string override;
     void subscribe(Model::EventListener *) override;
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
