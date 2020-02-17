@@ -273,9 +273,9 @@ class Presenter : public Model::EventListener {
         CoordinateResponseMeasure &coordinateResponseMeasure;
     };
 
-    class PassFailTestTrialCompletionHandler : public TrialCompletionHandler {
+    class PassFailTrialCompletionHandler : public TrialCompletionHandler {
       public:
-        explicit PassFailTestTrialCompletionHandler(
+        explicit PassFailTrialCompletionHandler(
             Experimenter &experimenterPresenter)
             : experimenterPresenter{experimenterPresenter} {}
 
@@ -287,10 +287,10 @@ class Presenter : public Model::EventListener {
         Experimenter &experimenterPresenter;
     };
 
-    class CorrectKeywordsTestTrialCompletionHandler
+    class CorrectKeywordsTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit CorrectKeywordsTestTrialCompletionHandler(
+        explicit CorrectKeywordsTrialCompletionHandler(
             Experimenter &experimenterPresenter)
             : experimenterPresenter{experimenterPresenter} {}
 
@@ -302,10 +302,9 @@ class Presenter : public Model::EventListener {
         Experimenter &experimenterPresenter;
     };
 
-    class FreeResponseTestTrialCompletionHandler
-        : public TrialCompletionHandler {
+    class FreeResponseTrialCompletionHandler : public TrialCompletionHandler {
       public:
-        explicit FreeResponseTestTrialCompletionHandler(
+        explicit FreeResponseTrialCompletionHandler(
             Experimenter &experimenterPresenter)
             : experimenterPresenter{experimenterPresenter} {}
 
@@ -362,11 +361,9 @@ class Presenter : public Model::EventListener {
         std::string s, void (TestSetup::*f)(std::string));
     auto trialCompletionHandler() -> TrialCompletionHandler *;
 
-    FreeResponseTestTrialCompletionHandler
-        freeResponseTestTrialCompletionHandler;
-    PassFailTestTrialCompletionHandler passFailTestTrialCompletionHandler;
-    CorrectKeywordsTestTrialCompletionHandler
-        correctKeywordsTestTrialCompletionHandler;
+    FreeResponseTrialCompletionHandler freeResponseTrialCompletionHandler;
+    PassFailTrialCompletionHandler passFailTrialCompletionHandler;
+    CorrectKeywordsTrialCompletionHandler correctKeywordsTrialCompletionHandler;
     CoordinateResponseMeasureTestTrialCompletionHandler
         coordinateResponseMeasureTrialCompletionHandler;
     Model &model;
