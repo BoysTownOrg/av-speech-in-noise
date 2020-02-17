@@ -20,12 +20,14 @@ static auto adaptiveTest(Presenter::TestSetup &testSetup) -> AdaptiveTest {
 }
 
 static void displayTrialNumber(
-    Presenter::Experimenter &experimenter, Model &model) {
-    experimenter.display("Trial " + std::to_string(model.trialNumber()));
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    experimenterPresenter.display(
+        "Trial " + std::to_string(model.trialNumber()));
 }
 
-static void displayTarget(Presenter::Experimenter &experimenter, Model &model) {
-    experimenter.secondaryDisplay(model.targetFileName());
+static void displayTarget(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    experimenterPresenter.secondaryDisplay(model.targetFileName());
 }
 
 static auto adaptiveCoordinateResponseMeasure(Presenter::TestSetup &testSetup)
@@ -83,23 +85,23 @@ static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
-    Experimenter &experimenter)
-    : fixedLevelFreeResponseTestTrialCompletionHandler{experimenter},
+    Experimenter &experimenterPresenter)
+    : fixedLevelFreeResponseTestTrialCompletionHandler{experimenterPresenter},
       fixedLevelCoordinateResponseMeasureTrialCompletionHandler{
           coordinateResponseMeasurePresenter},
-      adaptivePassFailTestTrialCompletionHandler{experimenter},
-      adaptiveCorrectKeywordsTestTrialCompletionHandler{experimenter},
+      adaptivePassFailTestTrialCompletionHandler{experimenterPresenter},
+      adaptiveCorrectKeywordsTestTrialCompletionHandler{experimenterPresenter},
       adaptiveCoordinateResponseMeasureTrialCompletionHandler{
           coordinateResponseMeasurePresenter},
       model{model}, view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
-      experimenter{experimenter},
+      experimenterPresenter{experimenterPresenter},
       trialCompletionHandler_{
           &adaptiveCoordinateResponseMeasureTrialCompletionHandler} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     coordinateResponseMeasurePresenter.becomeChild(this);
-    experimenter.becomeChild(this);
+    experimenterPresenter.becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
@@ -139,13 +141,13 @@ void Presenter::initializeTest() {
 
 void Presenter::switchToTestView() {
     hide(testSetup);
-    showTestView();
+    showTest();
 }
 
-void Presenter::showTestView() {
-    experimenter.show();
-    displayTrialNumber(experimenter, model);
-    displayTarget(experimenter, model);
+void Presenter::showTest() {
+    experimenterPresenter.start();
+    displayTrialNumber(experimenterPresenter, model);
+    displayTarget(experimenterPresenter, model);
     if (coordinateResponseMeasure(testSetup))
         coordinateResponseMeasurePresenter.start();
 }
@@ -170,18 +172,18 @@ void Presenter::playTrial() {
     AudioSettings p;
     p.audioDevice = view.audioDevice();
     model.playTrial(p);
-    experimenter.hideExitTestButton();
+    experimenterPresenter.hideExitTestButton();
 }
 
 void Presenter::trialComplete() {
     trialCompletionHandler_->showResponseView();
-    experimenter.showExitTestButton();
+    experimenterPresenter.showExitTestButton();
 }
 
 void Presenter::submitSubjectResponse() {
     submitSubjectResponse_();
-    displayTrialNumber(experimenter, model);
-    displayTarget(experimenter, model);
+    displayTrialNumber(experimenterPresenter, model);
+    displayTarget(experimenterPresenter, model);
     if (testComplete(model))
         switchToSetupView();
     else
@@ -193,7 +195,7 @@ void Presenter::submitSubjectResponse_() {
 }
 
 void Presenter::submitCorrectKeywords_() {
-    model.submit(experimenter.correctKeywords());
+    model.submit(experimenterPresenter.correctKeywords());
 }
 
 void Presenter::submitExperimenterResponse() {
@@ -201,7 +203,7 @@ void Presenter::submitExperimenterResponse() {
 }
 
 void Presenter::submitExperimenterResponse_() {
-    model.submit(experimenter.openSetResponse());
+    model.submit(experimenterPresenter.openSetResponse());
 }
 
 void Presenter::submitPassedTrial() {
@@ -217,8 +219,8 @@ void Presenter::submitFailedTrial() {
 void Presenter::submitCorrectKeywords() {
     try {
         proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
-        experimenter.hideCorrectKeywordsSubmission();
-        experimenter.showNextTrialButton();
+        experimenterPresenter.hideCorrectKeywordsSubmission();
+        experimenterPresenter.showNextTrialButton();
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -232,8 +234,8 @@ void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
 }
 
 void Presenter::proceedToNextTrial() {
-    displayTrialNumber(experimenter, model);
-    displayTarget(experimenter, model);
+    displayTrialNumber(experimenterPresenter, model);
+    displayTarget(experimenterPresenter, model);
     if (testComplete(model))
         switchToSetupView();
 }
@@ -248,7 +250,7 @@ void Presenter::switchToSetupView() {
 void Presenter::showTestSetup() { testSetup.show(); }
 
 void Presenter::hideTestView() {
-    experimenter.hide();
+    experimenterPresenter.hide();
     coordinateResponseMeasurePresenter.hide();
 }
 
@@ -561,7 +563,7 @@ Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
     view->subscribe(this);
 }
 
-void Presenter::Experimenter::show() {
+void Presenter::Experimenter::start() {
     view->show();
     showNextTrialButton();
 }

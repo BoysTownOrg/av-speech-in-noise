@@ -235,7 +235,7 @@ class Presenter : public Model::EventListener {
         void submitFailedTrial() override;
         void submitCorrectKeywords() override;
         void becomeChild(Presenter *parent);
-        void show();
+        void start();
         void hide();
         void hideExitTestButton();
         void showExitTestButton();
@@ -280,45 +280,45 @@ class Presenter : public Model::EventListener {
         : public TrialCompletionHandler {
       public:
         explicit AdaptivePassFailTestTrialCompletionHandler(
-            Experimenter &experimenter)
-            : experimenter{experimenter} {}
+            Experimenter &experimenterPresenter)
+            : experimenterPresenter{experimenterPresenter} {}
 
         void showResponseView() override {
-            experimenter.showEvaluationButtons();
+            experimenterPresenter.showEvaluationButtons();
         }
 
       private:
-        Experimenter &experimenter;
+        Experimenter &experimenterPresenter;
     };
 
     class AdaptiveCorrectKeywordsTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
         explicit AdaptiveCorrectKeywordsTestTrialCompletionHandler(
-            Experimenter &experimenter)
-            : experimenter{experimenter} {}
+            Experimenter &experimenterPresenter)
+            : experimenterPresenter{experimenterPresenter} {}
 
         void showResponseView() override {
-            experimenter.showCorrectKeywordsSubmission();
+            experimenterPresenter.showCorrectKeywordsSubmission();
         }
 
       private:
-        Experimenter &experimenter;
+        Experimenter &experimenterPresenter;
     };
 
     class FixedLevelFreeResponseTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
         explicit FixedLevelFreeResponseTestTrialCompletionHandler(
-            Experimenter &experimenter)
-            : experimenter{experimenter} {}
+            Experimenter &experimenterPresenter)
+            : experimenterPresenter{experimenterPresenter} {}
 
         void showResponseView() override {
-            experimenter.showFreeResponseSubmission();
+            experimenterPresenter.showFreeResponseSubmission();
         }
 
       private:
-        Experimenter &experimenter;
+        Experimenter &experimenterPresenter;
     };
 
     class FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler
@@ -376,7 +376,7 @@ class Presenter : public Model::EventListener {
     void proceedToNextTrial();
     auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool;
     void initializeTest();
-    void showTestView();
+    void showTest();
     void switchToTestView();
     void confirmTestSetup_();
     void applyIfBrowseNotCancelled(
@@ -397,7 +397,7 @@ class Presenter : public Model::EventListener {
     View &view;
     TestSetup &testSetup;
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
-    Experimenter &experimenter;
+    Experimenter &experimenterPresenter;
     TrialCompletionHandler *trialCompletionHandler_{};
 };
 }
