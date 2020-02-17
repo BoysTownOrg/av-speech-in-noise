@@ -286,11 +286,9 @@ void main() {
     testSetupView.setCalibrationLevel_dB_SPL("65");
     testSetupView.setStartingSnr_dB("5");
     CocoaExperimenterView experimenterView{experimenterContentFrame};
-    CocoaTestingView testingView{testingContentFrame};
     CocoaView view{testerWindowFrame};
     view.addSubview(testSetupView.view());
     view.addSubview(experimenterView.view());
-    view.addSubview(testingView.view());
     view.center();
     auto delegate{[WindowDelegate alloc]};
     view.setDelegate(delegate);
@@ -305,8 +303,7 @@ void main() {
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::TestSetup testSetup{&testSetupView};
     Presenter::Experimenter experimenter{&experimenterView};
-    Presenter::Testing testing{&testingView};
-    Presenter presenter{model, view, testSetup, subject, experimenter, testing};
+    Presenter presenter{model, view, testSetup, subject, experimenter};
     presenter.run();
 }
 }

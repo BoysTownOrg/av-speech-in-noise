@@ -7,7 +7,6 @@
 @class SetupViewActions;
 @class SubjectViewActions;
 @class ExperimenterViewActions;
-@class TestingViewActions;
 
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public View::Experimenter {
@@ -22,31 +21,13 @@ class CocoaExperimenterView : public View::Experimenter {
     void hide() override;
     void display(std::string) override;
     void secondaryDisplay(std::string) override;
-
-  private:
-    NSView *view_;
-    NSTextField *displayedText_;
-    NSTextField *secondaryDisplayedText_;
-    NSButton *exitTestButton_;
-    EventListener *listener_{};
-    ExperimenterViewActions *actions;
-};
-
-class CocoaTestingView : public View::Testing {
-  public:
-    CocoaTestingView(NSRect);
-    NSView *view();
     void playTrial();
     void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();
-    void exitTest();
     void submitCorrectKeywords();
-    void subscribe(EventListener *) override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
-    void show() override;
-    void hide() override;
     void showEvaluationButtons() override;
     void showFreeResponseSubmission() override;
     std::string freeResponse() override;
@@ -65,9 +46,12 @@ class CocoaTestingView : public View::Testing {
     NSView *correctKeywordsSubmission;
     NSTextField *response_;
     NSTextField *correctKeywordsEntry_;
+    NSTextField *displayedText_;
+    NSTextField *secondaryDisplayedText_;
     NSButton *flagged_;
+    NSButton *exitTestButton_;
+    ExperimenterViewActions *actions;
     EventListener *listener_{};
-    TestingViewActions *actions;
 };
 
 class CocoaTestSetupView : public View::TestSetup {
