@@ -217,7 +217,6 @@ class Presenter : public Model::EventListener {
         auto subjectResponse() -> coordinate_response_measure::Response;
 
       private:
-        void showNextTrialButton();
         auto colorResponse() -> coordinate_response_measure::Color;
 
         View::CoordinateResponseMeasure *view;

@@ -515,9 +515,13 @@ static void hideResponseButtons(View::CoordinateResponseMeasure *view) {
     view->hideResponseButtons();
 }
 
+static void showNextTrialButton(View::CoordinateResponseMeasure *view) {
+    view->showNextTrialButton();
+}
+
 void Presenter::CoordinateResponseMeasure::start() {
     view->show();
-    showNextTrialButton();
+    showNextTrialButton(view);
 }
 
 void Presenter::CoordinateResponseMeasure::stop() {
@@ -537,10 +541,6 @@ void Presenter::CoordinateResponseMeasure::submitResponse() {
 
 void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) {
     parent = p;
-}
-
-void Presenter::CoordinateResponseMeasure::showNextTrialButton() {
-    view->showNextTrialButton();
 }
 
 void Presenter::CoordinateResponseMeasure::showResponseButtons() {
