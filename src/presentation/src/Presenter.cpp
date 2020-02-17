@@ -178,7 +178,7 @@ void Presenter::playTrial() {
 }
 
 void Presenter::trialComplete() {
-    trialCompletionHandler_->showResponseView();
+    trialCompletionHandler_->showResponseSubmission();
     experimenterPresenter.trialComplete();
 }
 
@@ -596,7 +596,7 @@ void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
     view->hideCorrectKeywordsSubmission();
 }
 
-void Presenter::Experimenter::showEvaluationButtons() {
+void Presenter::Experimenter::showPassFailSubmission() {
     view->showEvaluationButtons();
 }
 

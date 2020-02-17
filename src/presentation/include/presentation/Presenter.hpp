@@ -240,7 +240,7 @@ class Presenter : public Model::EventListener {
         void readyNextTrial();
         void display(std::string);
         void secondaryDisplay(std::string);
-        void showEvaluationButtons();
+        void showPassFailSubmission();
         void showCorrectKeywordsSubmission();
         void hideCorrectKeywordsSubmission();
         void showFreeResponseSubmission();
@@ -255,7 +255,7 @@ class Presenter : public Model::EventListener {
     class TrialCompletionHandler {
       public:
         virtual ~TrialCompletionHandler() = default;
-        virtual void showResponseView() = 0;
+        virtual void showResponseSubmission() = 0;
     };
 
     class CoordinateResponseMeasureTestTrialCompletionHandler
@@ -265,7 +265,7 @@ class Presenter : public Model::EventListener {
             CoordinateResponseMeasure &coordinateResponseMeasure)
             : coordinateResponseMeasure{coordinateResponseMeasure} {}
 
-        void showResponseView() override {
+        void showResponseSubmission() override {
             coordinateResponseMeasure.showResponseButtons();
         }
 
@@ -280,8 +280,8 @@ class Presenter : public Model::EventListener {
             Experimenter &experimenterPresenter)
             : experimenterPresenter{experimenterPresenter} {}
 
-        void showResponseView() override {
-            experimenterPresenter.showEvaluationButtons();
+        void showResponseSubmission() override {
+            experimenterPresenter.showPassFailSubmission();
         }
 
       private:
@@ -295,7 +295,7 @@ class Presenter : public Model::EventListener {
             Experimenter &experimenterPresenter)
             : experimenterPresenter{experimenterPresenter} {}
 
-        void showResponseView() override {
+        void showResponseSubmission() override {
             experimenterPresenter.showCorrectKeywordsSubmission();
         }
 
@@ -310,7 +310,7 @@ class Presenter : public Model::EventListener {
             Experimenter &experimenterPresenter)
             : experimenterPresenter{experimenterPresenter} {}
 
-        void showResponseView() override {
+        void showResponseSubmission() override {
             experimenterPresenter.showFreeResponseSubmission();
         }
 
@@ -325,7 +325,7 @@ class Presenter : public Model::EventListener {
             CoordinateResponseMeasure &coordinateResponseMeasure)
             : coordinateResponseMeasure{coordinateResponseMeasure} {}
 
-        void showResponseView() override {
+        void showResponseSubmission() override {
             coordinateResponseMeasure.showResponseButtons();
         }
 
