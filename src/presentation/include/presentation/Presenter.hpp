@@ -290,13 +290,13 @@ class Presenter : public Model::EventListener {
         : public TrialCompletionHandler {
       public:
         explicit AdaptiveCoordinateResponseMeasureTestTrialCompletionHandler(
-            CoordinateResponseMeasure &subject)
-            : subject{subject} {}
+            CoordinateResponseMeasure &coordinateResponseMeasure)
+            : coordinateResponseMeasure{coordinateResponseMeasure} {}
 
-        void showResponseView() override { subject.showResponseButtons(); }
+        void showResponseView() override { coordinateResponseMeasure.showResponseButtons(); }
 
       private:
-        CoordinateResponseMeasure &subject;
+        CoordinateResponseMeasure &coordinateResponseMeasure;
     };
 
     class AdaptivePassFailTestTrialCompletionHandler
@@ -345,13 +345,13 @@ class Presenter : public Model::EventListener {
         : public TrialCompletionHandler {
       public:
         explicit FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler(
-            CoordinateResponseMeasure &subject)
-            : subject{subject} {}
+            CoordinateResponseMeasure &coordinateResponseMeasure)
+            : coordinateResponseMeasure{coordinateResponseMeasure} {}
 
-        void showResponseView() override { subject.showResponseButtons(); }
+        void showResponseView() override { coordinateResponseMeasure.showResponseButtons(); }
 
       private:
-        CoordinateResponseMeasure &subject;
+        CoordinateResponseMeasure &coordinateResponseMeasure;
     };
 
     Presenter(
@@ -414,7 +414,7 @@ class Presenter : public Model::EventListener {
     Model &model;
     View &view;
     TestSetup &testSetup;
-    CoordinateResponseMeasure &subject;
+    CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
     Experimenter &experimenter;
     Testing &testing;
     TrialCompletionHandler *trialCompletionHandler_{};

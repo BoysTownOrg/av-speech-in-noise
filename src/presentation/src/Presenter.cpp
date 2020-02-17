@@ -82,19 +82,19 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    CoordinateResponseMeasure &subject, Experimenter &experimenter, Testing &testing)
+    CoordinateResponseMeasure &coordinateResponseMeasurePresenter, Experimenter &experimenter, Testing &testing)
     : fixedLevelFreeResponseTestTrialCompletionHandler{testing},
-      fixedLevelCoordinateResponseMeasureTrialCompletionHandler{subject},
+      fixedLevelCoordinateResponseMeasureTrialCompletionHandler{coordinateResponseMeasurePresenter},
       adaptivePassFailTestTrialCompletionHandler{testing},
       adaptiveCorrectKeywordsTestTrialCompletionHandler{testing},
-      adaptiveCoordinateResponseMeasureTrialCompletionHandler{subject},
-      model{model}, view{view}, testSetup{testSetup}, subject{subject},
+      adaptiveCoordinateResponseMeasureTrialCompletionHandler{coordinateResponseMeasurePresenter},
+      model{model}, view{view}, testSetup{testSetup}, coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       experimenter{experimenter}, testing{testing},
       trialCompletionHandler_{
           &adaptiveCoordinateResponseMeasureTrialCompletionHandler} {
     model.subscribe(this);
     testSetup.becomeChild(this);
-    subject.becomeChild(this);
+    coordinateResponseMeasurePresenter.becomeChild(this);
     experimenter.becomeChild(this);
     testing.becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
@@ -144,7 +144,7 @@ void Presenter::showTestView() {
     displayTrialNumber(experimenter, model);
     displayTarget(experimenter, model);
     if (coordinateResponseMeasure(testSetup))
-        subject.show();
+        coordinateResponseMeasurePresenter.show();
     else
         testing.show();
 }
@@ -188,7 +188,7 @@ void Presenter::submitSubjectResponse() {
 }
 
 void Presenter::submitSubjectResponse_() {
-    model.submit(subject.subjectResponse());
+    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
 }
 
 void Presenter::submitCorrectKeywords_() {
@@ -249,7 +249,7 @@ void Presenter::showTestSetup() { testSetup.show(); }
 void Presenter::hideTestView() {
     testing.hide();
     experimenter.hide();
-    subject.hide();
+    coordinateResponseMeasurePresenter.hide();
 }
 
 void Presenter::playCalibration() {
