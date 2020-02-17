@@ -378,7 +378,6 @@ class Presenter : public Model::EventListener {
     static constexpr auto trackBumpLimit{10};
 
   private:
-    auto defaultAdaptive() -> bool;
     auto singleSpeaker() -> bool;
     auto delayedMasker() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
@@ -393,8 +392,6 @@ class Presenter : public Model::EventListener {
     void playCalibration_();
     void showTestSetup();
     void proceedToNextTrial();
-    auto coordinateResponseMeasure() -> bool;
-    auto fixedLevelCoordinateResponseMeasure() -> bool;
     auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool;
     void initializeTest();
     void showTestView();

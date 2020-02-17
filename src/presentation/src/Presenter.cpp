@@ -64,9 +64,22 @@ static auto adaptiveCorrectKeywords(Presenter::TestSetup &testSetup) -> bool {
     return testSetup.adaptiveCorrectKeywords();
 }
 
+static auto coordinateResponseMeasure(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.coordinateResponseMeasure();
+}
+
+static auto defaultAdaptive(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.defaultAdaptive();
+}
+
+static auto fixedLevelCoordinateResponseMeasure(Presenter::TestSetup &testSetup)
+    -> bool {
+    return testSetup.fixedLevelCoordinateResponseMeasure();
+}
+
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
-static void hideTestSetup(Presenter::TestSetup &testSetup) { testSetup.hide(); }
+static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     Subject &subject, Experimenter &experimenter, Testing &testing)
@@ -111,7 +124,7 @@ void Presenter::initializeTest() {
         model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
     else if (adaptiveCoordinateResponseMeasureWithEyeTracking(testSetup))
         model.initializeWithEyeTracking(adaptiveTest(testSetup));
-    else if (defaultAdaptive() || adaptiveCorrectKeywords(testSetup))
+    else if (defaultAdaptive(testSetup) || adaptiveCorrectKeywords(testSetup))
         model.initialize(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals(testSetup))
         model.initializeWithSilentIntervalTargets(fixedLevelTest(testSetup));
@@ -122,7 +135,7 @@ void Presenter::initializeTest() {
 }
 
 void Presenter::switchToTestView() {
-    hideTestSetup(testSetup);
+    hide(testSetup);
     showTestView();
 }
 
@@ -130,22 +143,10 @@ void Presenter::showTestView() {
     experimenter.show();
     displayTrialNumber(experimenter, model);
     displayTarget(experimenter, model);
-    if (coordinateResponseMeasure())
+    if (coordinateResponseMeasure(testSetup))
         subject.show();
     else
         testing.show();
-}
-
-auto Presenter::coordinateResponseMeasure() -> bool {
-    return testSetup.coordinateResponseMeasure();
-}
-
-auto Presenter::defaultAdaptive() -> bool {
-    return testSetup.defaultAdaptive();
-}
-
-auto Presenter::fixedLevelCoordinateResponseMeasure() -> bool {
-    return testSetup.fixedLevelCoordinateResponseMeasure();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
@@ -155,7 +156,7 @@ auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
         return &adaptivePassFailTestTrialCompletionHandler;
     if (adaptiveCorrectKeywords(testSetup))
         return &adaptiveCorrectKeywordsTestTrialCompletionHandler;
-    if (fixedLevelCoordinateResponseMeasure())
+    if (fixedLevelCoordinateResponseMeasure(testSetup))
         return &fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
     return &fixedLevelFreeResponseTestTrialCompletionHandler;
 }
