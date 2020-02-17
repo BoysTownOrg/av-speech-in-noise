@@ -246,7 +246,6 @@ class Presenter : public Model::EventListener {
         void showFreeResponseSubmission();
         auto correctKeywords() -> open_set::CorrectKeywords;
         auto freeResponse() -> open_set::FreeResponse;
-        void prepareNextEvaluatedTrial();
 
       private:
         Presenter *parent{};

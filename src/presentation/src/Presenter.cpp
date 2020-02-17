@@ -201,14 +201,17 @@ void Presenter::submitSubjectResponse() {
 
 void Presenter::submitFreeResponse() {
     proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
+    experimenterPresenter.readyNextTrial();
 }
 
 void Presenter::submitPassedTrial() {
     proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
+    experimenterPresenter.readyNextTrial();
 }
 
 void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
+    experimenterPresenter.readyNextTrial();
 }
 
 void Presenter::submitCorrectKeywords() {
@@ -585,11 +588,14 @@ void Presenter::Experimenter::start() {
 void Presenter::Experimenter::stop() { view->hide(); }
 
 void Presenter::Experimenter::readyNextTrial() {
+    view->hideFreeResponseSubmission();
+    view->hideEvaluationButtons();
     showNextTrialButton(view);
 }
 
 void Presenter::Experimenter::trialPlayed() {
     view->hideExitTestButton();
+    view->hideNextTrialButton();
 }
 
 void Presenter::Experimenter::trialComplete() {
@@ -614,12 +620,10 @@ void Presenter::Experimenter::showFreeResponseSubmission() {
 
 void Presenter::Experimenter::submitPassedTrial() {
     parent->submitPassedTrial();
-    prepareNextEvaluatedTrial();
 }
 
 void Presenter::Experimenter::submitFailedTrial() {
     parent->submitFailedTrial();
-    prepareNextEvaluatedTrial();
 }
 
 void Presenter::Experimenter::submitCorrectKeywords() {
@@ -628,18 +632,10 @@ void Presenter::Experimenter::submitCorrectKeywords() {
 
 void Presenter::Experimenter::submitFreeResponse() {
     parent->submitFreeResponse();
-    view->hideFreeResponseSubmission();
-    showNextTrialButton(view);
-}
-
-void Presenter::Experimenter::prepareNextEvaluatedTrial() {
-    view->hideEvaluationButtons();
-    showNextTrialButton(view);
 }
 
 void Presenter::Experimenter::playTrial() {
     parent->playTrial();
-    view->hideNextTrialButton();
 }
 
 void Presenter::Experimenter::exitTest() { parent->exitTest(); }
