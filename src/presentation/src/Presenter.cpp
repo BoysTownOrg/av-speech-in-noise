@@ -73,6 +73,14 @@ static auto adaptivePassFail(Presenter::TestSetup &testSetup) -> bool {
     return testSetup.adaptivePassFail();
 }
 
+static auto fixedLevelSilentIntervals(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.fixedLevelSilentIntervals();
+}
+
+static auto fixedLevelAllStimuli(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.fixedLevelAllStimuli();
+}
+
 void Presenter::initializeTest() {
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker())
         model.initializeWithDelayedMasker(adaptiveTest(testSetup));
@@ -82,20 +90,12 @@ void Presenter::initializeTest() {
         model.initializeWithEyeTracking(adaptiveTest(testSetup));
     else if (defaultAdaptive() || adaptiveCorrectKeywords())
         model.initialize(adaptiveTest(testSetup));
-    else if (fixedLevelSilentIntervals())
+    else if (fixedLevelSilentIntervals(testSetup))
         model.initializeWithSilentIntervalTargets(fixedLevelTest(testSetup));
-    else if (fixedLevelAllStimuli())
+    else if (fixedLevelAllStimuli(testSetup))
         model.initializeWithAllTargets(fixedLevelTest(testSetup));
     else
         model.initializeWithTargetReplacement(fixedLevelTest(testSetup));
-}
-
-auto Presenter::fixedLevelSilentIntervals() -> bool {
-    return testSetup.fixedLevelSilentIntervals();
-}
-
-auto Presenter::fixedLevelAllStimuli() -> bool {
-    return testSetup.fixedLevelAllStimuli();
 }
 
 auto Presenter::adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool {

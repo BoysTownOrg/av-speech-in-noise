@@ -378,8 +378,6 @@ class Presenter : public Model::EventListener {
     static constexpr auto trackBumpLimit{10};
 
   private:
-    auto fixedLevelSilentIntervals() -> bool;
-    auto fixedLevelAllStimuli() -> bool;
     auto defaultAdaptive() -> bool;
     auto singleSpeaker() -> bool;
     auto delayedMasker() -> bool;
