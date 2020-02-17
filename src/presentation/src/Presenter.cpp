@@ -155,12 +155,12 @@ void Presenter::showTest() {
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
     if (adaptiveCoordinateResponseMeasure(testSetup))
         return &adaptiveCoordinateResponseMeasureTrialCompletionHandler;
+    if (fixedLevelCoordinateResponseMeasure(testSetup))
+        return &fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
     if (adaptivePassFail(testSetup))
         return &adaptivePassFailTestTrialCompletionHandler;
     if (adaptiveCorrectKeywords(testSetup))
         return &adaptiveCorrectKeywordsTestTrialCompletionHandler;
-    if (fixedLevelCoordinateResponseMeasure(testSetup))
-        return &fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
     return &fixedLevelFreeResponseTestTrialCompletionHandler;
 }
 
@@ -180,18 +180,19 @@ void Presenter::trialComplete() {
     experimenterPresenter.showExitTestButton();
 }
 
+static void submitSubjectResponse_(
+    Model &model, Presenter::CoordinateResponseMeasure &p) {
+    model.submit(p.subjectResponse());
+}
+
 void Presenter::submitSubjectResponse() {
-    submitSubjectResponse_();
+    submitSubjectResponse_(model, coordinateResponseMeasurePresenter);
     displayTrialNumber(experimenterPresenter, model);
     displayTarget(experimenterPresenter, model);
     if (testComplete(model))
         switchToSetupView();
     else
         playTrial();
-}
-
-void Presenter::submitSubjectResponse_() {
-    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
 }
 
 void Presenter::submitCorrectKeywords_() {

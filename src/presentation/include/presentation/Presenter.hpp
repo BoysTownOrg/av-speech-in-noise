@@ -366,7 +366,6 @@ class Presenter : public Model::EventListener {
     void submitFailedTrial_();
     void submitPassedTrial_();
     void submitExperimenterResponse_();
-    void submitSubjectResponse_();
     void submitCorrectKeywords_();
     void hideTestView();
     void switchToSetupView();
