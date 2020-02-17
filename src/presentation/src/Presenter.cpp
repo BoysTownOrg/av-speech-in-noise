@@ -201,24 +201,19 @@ void Presenter::submitSubjectResponse() {
 
 void Presenter::submitFreeResponse() {
     proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
-    experimenterPresenter.readyNextTrial();
 }
 
 void Presenter::submitPassedTrial() {
     proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
-    experimenterPresenter.readyNextTrial();
 }
 
 void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
-    experimenterPresenter.readyNextTrial();
 }
 
 void Presenter::submitCorrectKeywords() {
     try {
         proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
-        experimenterPresenter.hideCorrectKeywordsSubmission();
-        experimenterPresenter.readyNextTrial();
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -245,6 +240,8 @@ void Presenter::proceedToNextTrial() {
     displayTrialInformation(experimenterPresenter, model);
     if (testComplete(model))
         switchToTestSetupView();
+    else
+        experimenterPresenter.readyNextTrial();
 }
 
 void Presenter::exitTest() { switchToTestSetupView(); }
@@ -590,6 +587,7 @@ void Presenter::Experimenter::stop() { view->hide(); }
 void Presenter::Experimenter::readyNextTrial() {
     view->hideFreeResponseSubmission();
     view->hideEvaluationButtons();
+    view->hideCorrectKeywordsSubmission();
     showNextTrialButton(view);
 }
 
