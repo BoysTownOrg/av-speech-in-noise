@@ -215,7 +215,7 @@ void Presenter::submitCorrectKeywords() {
     try {
         proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
         experimenterPresenter.hideCorrectKeywordsSubmission();
-        experimenterPresenter.showNextTrialButton();
+        experimenterPresenter.readyNextTrial();
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -569,15 +569,19 @@ Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
 
 void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
 
+static void showNextTrialButton(View::Experimenter *view) {
+    view->showNextTrialButton();
+}
+
 void Presenter::Experimenter::start() {
     view->show();
-    showNextTrialButton();
+    showNextTrialButton(view);
 }
 
 void Presenter::Experimenter::stop() { view->hide(); }
 
-void Presenter::Experimenter::showNextTrialButton() {
-    view->showNextTrialButton();
+void Presenter::Experimenter::readyNextTrial() {
+    showNextTrialButton(view);
 }
 
 void Presenter::Experimenter::trialPlayed() {
@@ -621,12 +625,12 @@ void Presenter::Experimenter::submitCorrectKeywords() {
 void Presenter::Experimenter::submitFreeResponse() {
     parent->submitFreeResponse();
     view->hideFreeResponseSubmission();
-    showNextTrialButton();
+    showNextTrialButton(view);
 }
 
 void Presenter::Experimenter::prepareNextEvaluatedTrial() {
     view->hideEvaluationButtons();
-    showNextTrialButton();
+    showNextTrialButton(view);
 }
 
 void Presenter::Experimenter::playTrial() {

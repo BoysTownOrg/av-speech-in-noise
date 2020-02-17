@@ -239,6 +239,7 @@ class Presenter : public Model::EventListener {
         void stop();
         void trialPlayed();
         void trialComplete();
+        void readyNextTrial();
         void display(std::string);
         void secondaryDisplay(std::string);
         void showEvaluationButtons();
@@ -247,7 +248,6 @@ class Presenter : public Model::EventListener {
         void showFreeResponseSubmission();
         auto correctKeywords() -> open_set::CorrectKeywords;
         auto freeResponse() -> open_set::FreeResponse;
-        void showNextTrialButton();
         void prepareNextEvaluatedTrial();
 
       private:
