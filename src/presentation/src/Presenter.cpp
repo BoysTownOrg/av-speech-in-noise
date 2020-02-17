@@ -82,7 +82,7 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    Subject &subject, Experimenter &experimenter, Testing &testing)
+    CoordinateResponseMeasure &subject, Experimenter &experimenter, Testing &testing)
     : fixedLevelFreeResponseTestTrialCompletionHandler{testing},
       fixedLevelCoordinateResponseMeasureTrialCompletionHandler{subject},
       adaptivePassFailTestTrialCompletionHandler{testing},
@@ -495,39 +495,39 @@ auto Presenter::TestSetup::method(Method m) -> bool {
     return view->method() == methodName(m);
 }
 
-Presenter::Subject::Subject(View::Subject *view) : view{view} {
+Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(View::CoordinateResponseMeasure *view) : view{view} {
     view->subscribe(this);
 }
 
-void Presenter::Subject::show() {
+void Presenter::CoordinateResponseMeasure::show() {
     view->show();
     showNextTrialButton();
 }
 
-void Presenter::Subject::hide() {
+void Presenter::CoordinateResponseMeasure::hide() {
     hideResponseButtons();
     view->hide();
 }
 
-void Presenter::Subject::playTrial() {
+void Presenter::CoordinateResponseMeasure::playTrial() {
     parent->playTrial();
     view->hideNextTrialButton();
 }
 
-void Presenter::Subject::submitResponse() {
+void Presenter::CoordinateResponseMeasure::submitResponse() {
     parent->submitSubjectResponse();
     hideResponseButtons();
 }
 
-void Presenter::Subject::becomeChild(Presenter *p) { parent = p; }
+void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) { parent = p; }
 
-void Presenter::Subject::showNextTrialButton() { view->showNextTrialButton(); }
+void Presenter::CoordinateResponseMeasure::showNextTrialButton() { view->showNextTrialButton(); }
 
-void Presenter::Subject::hideResponseButtons() { view->hideResponseButtons(); }
+void Presenter::CoordinateResponseMeasure::hideResponseButtons() { view->hideResponseButtons(); }
 
-void Presenter::Subject::showResponseButtons() { view->showResponseButtons(); }
+void Presenter::CoordinateResponseMeasure::showResponseButtons() { view->showResponseButtons(); }
 
-auto Presenter::Subject::subjectResponse()
+auto Presenter::CoordinateResponseMeasure::subjectResponse()
     -> coordinate_response_measure::Response {
     coordinate_response_measure::Response p{};
     p.color = colorResponse();
@@ -535,7 +535,7 @@ auto Presenter::Subject::subjectResponse()
     return p;
 }
 
-auto Presenter::Subject::colorResponse() -> coordinate_response_measure::Color {
+auto Presenter::CoordinateResponseMeasure::colorResponse() -> coordinate_response_measure::Color {
     if (view->greenResponse())
         return coordinate_response_measure::Color::green;
     if (view->blueResponse())

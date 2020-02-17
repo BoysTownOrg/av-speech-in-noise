@@ -78,7 +78,7 @@ class View {
         virtual auto flagged() -> bool = 0;
     };
 
-    class Subject {
+    class CoordinateResponseMeasure {
       public:
         class EventListener {
           public:
@@ -87,7 +87,7 @@ class View {
             virtual void submitResponse() = 0;
         };
 
-        virtual ~Subject() = default;
+        virtual ~CoordinateResponseMeasure() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual auto numberResponse() -> std::string = 0;
         virtual auto greenResponse() -> bool = 0;
@@ -243,9 +243,9 @@ class Presenter : public Model::EventListener {
         Presenter *parent{};
     };
 
-    class Subject : public View::Subject::EventListener {
+    class CoordinateResponseMeasure : public View::CoordinateResponseMeasure::EventListener {
       public:
-        explicit Subject(View::Subject *);
+        explicit CoordinateResponseMeasure(View::CoordinateResponseMeasure *);
         void playTrial() override;
         void submitResponse() override;
         void show();
@@ -259,7 +259,7 @@ class Presenter : public Model::EventListener {
         void showNextTrialButton();
         auto colorResponse() -> coordinate_response_measure::Color;
 
-        View::Subject *view;
+        View::CoordinateResponseMeasure *view;
         Presenter *parent{};
     };
 
@@ -290,13 +290,13 @@ class Presenter : public Model::EventListener {
         : public TrialCompletionHandler {
       public:
         explicit AdaptiveCoordinateResponseMeasureTestTrialCompletionHandler(
-            Subject &subject)
+            CoordinateResponseMeasure &subject)
             : subject{subject} {}
 
         void showResponseView() override { subject.showResponseButtons(); }
 
       private:
-        Subject &subject;
+        CoordinateResponseMeasure &subject;
     };
 
     class AdaptivePassFailTestTrialCompletionHandler
@@ -345,17 +345,17 @@ class Presenter : public Model::EventListener {
         : public TrialCompletionHandler {
       public:
         explicit FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler(
-            Subject &subject)
+            CoordinateResponseMeasure &subject)
             : subject{subject} {}
 
         void showResponseView() override { subject.showResponseButtons(); }
 
       private:
-        Subject &subject;
+        CoordinateResponseMeasure &subject;
     };
 
     Presenter(
-        Model &, View &, TestSetup &, Subject &, Experimenter &, Testing &);
+        Model &, View &, TestSetup &, CoordinateResponseMeasure &, Experimenter &, Testing &);
     void trialComplete() override;
     void run();
     void browseForTargetList();
@@ -414,7 +414,7 @@ class Presenter : public Model::EventListener {
     Model &model;
     View &view;
     TestSetup &testSetup;
-    Subject &subject;
+    CoordinateResponseMeasure &subject;
     Experimenter &experimenter;
     Testing &testing;
     TrialCompletionHandler *trialCompletionHandler_{};

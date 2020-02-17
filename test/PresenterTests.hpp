@@ -364,7 +364,7 @@ class ViewStub : public View {
         bool useDelayedMasker_{};
     };
 
-    class SubjectViewStub : public Subject {
+    class SubjectViewStub : public CoordinateResponseMeasure {
       public:
         void show() override { shown_ = true; }
 
@@ -1301,7 +1301,7 @@ class PresenterConstructionTests : public ::testing::Test {
     ViewStub::TestingViewStub testingView;
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::Subject subject{&subjectView};
+    Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
 
@@ -1321,7 +1321,7 @@ class PresenterTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
-    Presenter::Subject subject{&subjectView};
+    Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter presenter{model, view, testSetup, subject, experimenter, testing};
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
     BrowsingForTargetList browsingForTargetList{&setupView};
@@ -1868,7 +1868,7 @@ class PresenterFailureTests : public ::testing::Test {
     ViewStub::ExperimenterViewStub experimenterView;
     ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
-    Presenter::Subject subject{&subjectView};
+    Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};
 

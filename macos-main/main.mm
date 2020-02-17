@@ -302,7 +302,7 @@ void main() {
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
     CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge,
         subjectScreenOrigin.y, subjectViewWidth, subjectViewHeight)};
-    Presenter::Subject subject{&subjectView};
+    Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::TestSetup testSetup{&testSetupView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::Testing testing{&testingView};

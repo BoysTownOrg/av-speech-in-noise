@@ -139,7 +139,7 @@ class CocoaTestSetupView : public View::TestSetup {
     EventListener *listener_{};
 };
 
-class CocoaSubjectView : public View::Subject {
+class CocoaSubjectView : public View::CoordinateResponseMeasure {
   public:
     CocoaSubjectView(NSRect);
     std::string numberResponse() override;
