@@ -371,10 +371,11 @@ class Presenter : public Model::EventListener {
     void submitFailedTrial();
     void submitCorrectKeywords();
     void exitTest();
-    static int fullScaleLevel_dB_SPL;
-    static int ceilingSnr_dB;
-    static int floorSnr_dB;
-    static int trackBumpLimit;
+
+    static constexpr auto fullScaleLevel_dB_SPL{119};
+    static constexpr auto ceilingSnr_dB{20};
+    static constexpr auto floorSnr_dB{-40};
+    static constexpr auto trackBumpLimit{10};
 
   private:
     auto fixedLevelSilentIntervals() -> bool;

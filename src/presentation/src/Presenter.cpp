@@ -11,11 +11,6 @@ class BadInput : public std::runtime_error {
 };
 }
 
-int Presenter::fullScaleLevel_dB_SPL = 119;
-int Presenter::ceilingSnr_dB = 20;
-int Presenter::floorSnr_dB = -40;
-int Presenter::trackBumpLimit = 10;
-
 static auto fixedLevelTest(Presenter::TestSetup &testSetup) -> FixedLevelTest {
     return testSetup.fixedLevelTest();
 }
