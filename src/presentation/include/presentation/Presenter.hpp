@@ -237,8 +237,8 @@ class Presenter : public Model::EventListener {
         void becomeChild(Presenter *parent);
         void start();
         void stop();
-        void hideExitTestButton();
-        void showExitTestButton();
+        void trialPlayed();
+        void trialComplete();
         void display(std::string);
         void secondaryDisplay(std::string);
         void showEvaluationButtons();

@@ -177,12 +177,12 @@ void Presenter::playTrial() {
     AudioSettings p;
     p.audioDevice = view.audioDevice();
     model.playTrial(p);
-    experimenterPresenter.hideExitTestButton();
+    experimenterPresenter.trialPlayed();
 }
 
 void Presenter::trialComplete() {
     trialCompletionHandler_->showResponseView();
-    experimenterPresenter.showExitTestButton();
+    experimenterPresenter.trialComplete();
 }
 
 static void submitSubjectResponse_(
@@ -567,41 +567,30 @@ Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
     view->subscribe(this);
 }
 
+void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
+
 void Presenter::Experimenter::start() {
     view->show();
     showNextTrialButton();
 }
 
+void Presenter::Experimenter::stop() { view->hide(); }
+
 void Presenter::Experimenter::showNextTrialButton() {
     view->showNextTrialButton();
 }
 
-void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
-
-void Presenter::Experimenter::submitPassedTrial() {
-    parent->submitPassedTrial();
-    prepareNextEvaluatedTrial();
+void Presenter::Experimenter::trialPlayed() {
+    view->hideExitTestButton();
 }
 
-void Presenter::Experimenter::prepareNextEvaluatedTrial() {
-    view->hideEvaluationButtons();
-    showNextTrialButton();
-}
-
-void Presenter::Experimenter::submitFailedTrial() {
-    parent->submitFailedTrial();
-    prepareNextEvaluatedTrial();
-}
-
-void Presenter::Experimenter::submitCorrectKeywords() {
-    parent->submitCorrectKeywords();
+void Presenter::Experimenter::trialComplete() {
+    view->showExitTestButton();
 }
 
 void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
     view->hideCorrectKeywordsSubmission();
 }
-
-void Presenter::Experimenter::stop() { view->hide(); }
 
 void Presenter::Experimenter::showEvaluationButtons() {
     view->showEvaluationButtons();
@@ -615,11 +604,37 @@ void Presenter::Experimenter::showFreeResponseSubmission() {
     view->showFreeResponseSubmission();
 }
 
+void Presenter::Experimenter::submitPassedTrial() {
+    parent->submitPassedTrial();
+    prepareNextEvaluatedTrial();
+}
+
+void Presenter::Experimenter::submitFailedTrial() {
+    parent->submitFailedTrial();
+    prepareNextEvaluatedTrial();
+}
+
+void Presenter::Experimenter::submitCorrectKeywords() {
+    parent->submitCorrectKeywords();
+}
+
 void Presenter::Experimenter::submitFreeResponse() {
     parent->submitFreeResponse();
     view->hideFreeResponseSubmission();
     showNextTrialButton();
 }
+
+void Presenter::Experimenter::prepareNextEvaluatedTrial() {
+    view->hideEvaluationButtons();
+    showNextTrialButton();
+}
+
+void Presenter::Experimenter::playTrial() {
+    parent->playTrial();
+    view->hideNextTrialButton();
+}
+
+void Presenter::Experimenter::exitTest() { parent->exitTest(); }
 
 auto Presenter::Experimenter::freeResponse() -> open_set::FreeResponse {
     return {view->freeResponse(), view->flagged()};
@@ -631,14 +646,6 @@ auto Presenter::Experimenter::correctKeywords() -> open_set::CorrectKeywords {
     return p;
 }
 
-void Presenter::Experimenter::hideExitTestButton() {
-    view->hideExitTestButton();
-}
-
-void Presenter::Experimenter::showExitTestButton() {
-    view->showExitTestButton();
-}
-
 void Presenter::Experimenter::display(std::string s) {
     view->display(std::move(s));
 }
@@ -646,11 +653,4 @@ void Presenter::Experimenter::display(std::string s) {
 void Presenter::Experimenter::secondaryDisplay(std::string s) {
     view->secondaryDisplay(std::move(s));
 }
-
-void Presenter::Experimenter::playTrial() {
-    parent->playTrial();
-    view->hideNextTrialButton();
-}
-
-void Presenter::Experimenter::exitTest() { parent->exitTest(); }
 }
