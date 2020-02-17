@@ -28,42 +28,6 @@ static void displayTarget(Presenter::Experimenter &experimenter, Model &model) {
     experimenter.secondaryDisplay(model.targetFileName());
 }
 
-Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    Subject &subject, Experimenter &experimenter, Testing &testing)
-    : fixedLevelFreeResponseTestTrialCompletionHandler{testing},
-      fixedLevelCoordinateResponseMeasureTrialCompletionHandler{subject},
-      adaptivePassFailTestTrialCompletionHandler{testing},
-      adaptiveCorrectKeywordsTestTrialCompletionHandler{testing},
-      adaptiveCoordinateResponseMeasureTrialCompletionHandler{subject},
-      model{model}, view{view}, testSetup{testSetup}, subject{subject},
-      experimenter{experimenter}, testing{testing},
-      trialCompletionHandler_{
-          &adaptiveCoordinateResponseMeasureTrialCompletionHandler} {
-    model.subscribe(this);
-    testSetup.becomeChild(this);
-    subject.becomeChild(this);
-    experimenter.becomeChild(this);
-    testing.becomeChild(this);
-    view.populateAudioDeviceMenu(model.audioDevices());
-}
-
-void Presenter::run() { view.eventLoop(); }
-
-void Presenter::confirmTestSetup() {
-    try {
-        confirmTestSetup_();
-    } catch (const std::runtime_error &e) {
-        showErrorMessage(e.what());
-    }
-}
-
-void Presenter::confirmTestSetup_() {
-    initializeTest();
-    if (!testComplete())
-        switchToTestView();
-    trialCompletionHandler_ = trialCompletionHandler();
-}
-
 static auto adaptiveCoordinateResponseMeasure(Presenter::TestSetup &testSetup)
     -> bool {
     return testSetup.adaptiveCoordinateResponseMeasure();
@@ -100,6 +64,44 @@ static auto adaptiveCorrectKeywords(Presenter::TestSetup &testSetup) -> bool {
     return testSetup.adaptiveCorrectKeywords();
 }
 
+static auto testComplete(Model &model) -> bool { return model.testComplete(); }
+
+Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
+    Subject &subject, Experimenter &experimenter, Testing &testing)
+    : fixedLevelFreeResponseTestTrialCompletionHandler{testing},
+      fixedLevelCoordinateResponseMeasureTrialCompletionHandler{subject},
+      adaptivePassFailTestTrialCompletionHandler{testing},
+      adaptiveCorrectKeywordsTestTrialCompletionHandler{testing},
+      adaptiveCoordinateResponseMeasureTrialCompletionHandler{subject},
+      model{model}, view{view}, testSetup{testSetup}, subject{subject},
+      experimenter{experimenter}, testing{testing},
+      trialCompletionHandler_{
+          &adaptiveCoordinateResponseMeasureTrialCompletionHandler} {
+    model.subscribe(this);
+    testSetup.becomeChild(this);
+    subject.becomeChild(this);
+    experimenter.becomeChild(this);
+    testing.becomeChild(this);
+    view.populateAudioDeviceMenu(model.audioDevices());
+}
+
+void Presenter::run() { view.eventLoop(); }
+
+void Presenter::confirmTestSetup() {
+    try {
+        confirmTestSetup_();
+    } catch (const std::runtime_error &e) {
+        showErrorMessage(e.what());
+    }
+}
+
+void Presenter::confirmTestSetup_() {
+    initializeTest();
+    if (!testComplete(model))
+        switchToTestView();
+    trialCompletionHandler_ = trialCompletionHandler();
+}
+
 void Presenter::initializeTest() {
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
         model.initializeWithDelayedMasker(adaptiveTest(testSetup));
@@ -116,8 +118,6 @@ void Presenter::initializeTest() {
     else
         model.initializeWithTargetReplacement(fixedLevelTest(testSetup));
 }
-
-auto Presenter::testComplete() -> bool { return model.testComplete(); }
 
 void Presenter::switchToTestView() {
     hideTestSetup();
@@ -180,7 +180,7 @@ void Presenter::submitSubjectResponse() {
     submitSubjectResponse_();
     displayTrialNumber(experimenter, model);
     displayTarget(experimenter, model);
-    if (testComplete())
+    if (testComplete(model))
         switchToSetupView();
     else
         playTrial();
@@ -232,7 +232,7 @@ void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
 void Presenter::proceedToNextTrial() {
     displayTrialNumber(experimenter, model);
     displayTarget(experimenter, model);
-    if (testComplete())
+    if (testComplete(model))
         switchToSetupView();
 }
 
