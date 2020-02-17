@@ -124,12 +124,11 @@ void Presenter::hideTestSetup() { testSetup.hide(); }
 void Presenter::showTestView() {
     experimenter.show();
     displayTrialNumber(experimenter, model);
+    displayTarget(experimenter, model);
     if (closedSet())
         subject.show();
     else
         testing.show();
-    if (adaptiveCorrectKeywords())
-        displayTarget(experimenter, model);
 }
 
 auto Presenter::closedSet() -> bool { return testSetup.closedSet(); }

@@ -978,6 +978,11 @@ TEST_F(
     assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);
 }
 
+TEST_F(
+    PresenterTests, confirmingAdaptiveClosedSetTestShowsTargetFileName) {
+    assertShowsTargetFileName(confirmingAdaptiveClosedSetTest);
+}
+
 TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
     assertShowsTargetFileName(submittingCorrectKeywords);
 }
