@@ -66,6 +66,8 @@ static auto adaptiveCorrectKeywords(Presenter::TestSetup &testSetup) -> bool {
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
+static void hideTestSetup(Presenter::TestSetup &testSetup) { testSetup.hide(); }
+
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     Subject &subject, Experimenter &experimenter, Testing &testing)
     : fixedLevelFreeResponseTestTrialCompletionHandler{testing},
@@ -120,11 +122,9 @@ void Presenter::initializeTest() {
 }
 
 void Presenter::switchToTestView() {
-    hideTestSetup();
+    hideTestSetup(testSetup);
     showTestView();
 }
-
-void Presenter::hideTestSetup() { testSetup.hide(); }
 
 void Presenter::showTestView() {
     experimenter.show();

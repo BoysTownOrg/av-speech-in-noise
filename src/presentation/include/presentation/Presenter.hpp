@@ -393,7 +393,6 @@ class Presenter : public Model::EventListener {
     void playCalibration_();
     void showTestSetup();
     void proceedToNextTrial();
-    void hideTestSetup();
     auto coordinateResponseMeasure() -> bool;
     auto fixedLevelCoordinateResponseMeasure() -> bool;
     auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool;
