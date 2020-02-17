@@ -173,6 +173,7 @@ void Presenter::trialComplete() {
 void Presenter::submitSubjectResponse() {
     submitSubjectResponse_();
     displayTrialNumber(experimenter, model);
+    displayTarget(experimenter, model);
     if (testComplete())
         switchToSetupView();
     else

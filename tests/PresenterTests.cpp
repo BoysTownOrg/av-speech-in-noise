@@ -982,6 +982,10 @@ TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
     assertShowsTargetFileName(submittingCorrectKeywords);
 }
 
+TEST_F(PresenterTests, submittingCoordinateResponseShowsTargetFileName) {
+    assertShowsTargetFileName(respondingFromSubject);
+}
+
 TEST_F(PresenterTests,
     completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest) {
     assertCompleteTrialShowsResponseView(
