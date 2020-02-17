@@ -258,10 +258,10 @@ class Presenter : public Model::EventListener {
         virtual void showResponseView() = 0;
     };
 
-    class AdaptiveCoordinateResponseMeasureTestTrialCompletionHandler
+    class CoordinateResponseMeasureTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveCoordinateResponseMeasureTestTrialCompletionHandler(
+        explicit CoordinateResponseMeasureTestTrialCompletionHandler(
             CoordinateResponseMeasure &coordinateResponseMeasure)
             : coordinateResponseMeasure{coordinateResponseMeasure} {}
 
@@ -380,14 +380,12 @@ class Presenter : public Model::EventListener {
 
     FixedLevelFreeResponseTestTrialCompletionHandler
         fixedLevelFreeResponseTestTrialCompletionHandler;
-    FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler
-        fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
     AdaptivePassFailTestTrialCompletionHandler
         adaptivePassFailTestTrialCompletionHandler;
     AdaptiveCorrectKeywordsTestTrialCompletionHandler
         adaptiveCorrectKeywordsTestTrialCompletionHandler;
-    AdaptiveCoordinateResponseMeasureTestTrialCompletionHandler
-        adaptiveCoordinateResponseMeasureTrialCompletionHandler;
+    CoordinateResponseMeasureTestTrialCompletionHandler
+        coordinateResponseMeasureTrialCompletionHandler;
     Model &model;
     View &view;
     TestSetup &testSetup;

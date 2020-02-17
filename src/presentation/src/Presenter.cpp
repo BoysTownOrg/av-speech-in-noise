@@ -110,17 +110,15 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter)
     : fixedLevelFreeResponseTestTrialCompletionHandler{experimenterPresenter},
-      fixedLevelCoordinateResponseMeasureTrialCompletionHandler{
-          coordinateResponseMeasurePresenter},
       adaptivePassFailTestTrialCompletionHandler{experimenterPresenter},
       adaptiveCorrectKeywordsTestTrialCompletionHandler{experimenterPresenter},
-      adaptiveCoordinateResponseMeasureTrialCompletionHandler{
+      coordinateResponseMeasureTrialCompletionHandler{
           coordinateResponseMeasurePresenter},
       model{model}, view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       experimenterPresenter{experimenterPresenter},
       trialCompletionHandler_{
-          &adaptiveCoordinateResponseMeasureTrialCompletionHandler} {
+          &coordinateResponseMeasureTrialCompletionHandler} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     coordinateResponseMeasurePresenter.becomeChild(this);
@@ -159,10 +157,8 @@ void Presenter::showTest() {
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
-    if (adaptiveCoordinateResponseMeasure(testSetup))
-        return &adaptiveCoordinateResponseMeasureTrialCompletionHandler;
-    if (fixedLevelCoordinateResponseMeasure(testSetup))
-        return &fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
+    if (coordinateResponseMeasure(testSetup))
+        return &coordinateResponseMeasureTrialCompletionHandler;
     if (adaptivePassFail(testSetup))
         return &adaptivePassFailTestTrialCompletionHandler;
     if (adaptiveCorrectKeywords(testSetup))
