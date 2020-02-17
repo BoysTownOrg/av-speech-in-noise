@@ -21,10 +21,12 @@ class CocoaExperimenterView : public View::Experimenter {
     void show() override;
     void hide() override;
     void display(std::string) override;
+    void secondaryDisplay(std::string) override;
 
   private:
     NSView *view_;
-    NSTextView *displayedText_;
+    NSTextField *displayedText_;
+    NSTextField *secondaryDisplayedText_;
     NSButton *exitTestButton_;
     EventListener *listener_{};
     ExperimenterViewActions *actions;

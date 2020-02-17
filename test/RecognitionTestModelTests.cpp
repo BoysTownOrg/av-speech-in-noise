@@ -350,6 +350,18 @@ class EyeTrackerStub : public EyeTracker {
 
 auto dB(double x) -> double { return 20 * std::log10(x); }
 
+void setCurrentTarget(TestMethodStub &m, std::string s) {
+    m.setCurrent(std::move(s));
+}
+
+auto targetFileName(RecognitionTestModelImpl &m) -> std::string {
+    return m.targetFileName();
+}
+
+auto filePathForFileName(ResponseEvaluatorStub &r) -> std::string {
+    return r.filePathForFileName();
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -616,10 +628,10 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
         UseCase &useCase) {
         run(initializingDefaultTest);
-        testMethod.setCurrent("a");
+        setCurrentTarget(testMethod, "a");
         testMethod.setCurrentWhenNext("b");
         run(useCase);
-        assertEqual("a", evaluator.filePathForFileName());
+        assertEqual("a", filePathForFileName(evaluator));
     }
 
     void assertTestMethodLogContains(
@@ -987,6 +999,23 @@ RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestResetsTrialNumber) {
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestWithEyeTrackingResetsTrialNumber) {
     assertYieldsTrialNumber(initializingTestWithEyeTracking, 1);
+}
+
+RECOGNITION_TEST_MODEL_TEST(returnsTargetFileName) {
+    evaluator.setFileName("a");
+    assertEqual("a", targetFileName(model));
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    passesCurrentToEvaluatorWhenReturningTargetFileName) {
+    run(initializingDefaultTest);
+    setCurrentTarget(testMethod, "a");
+    targetFileName(model);
+    assertEqual("a", filePathForFileName(evaluator));
+}
+
+RECOGNITION_TEST_MODEL_TEST(initializingTestResetsTrialNumber) {
+    assertYieldsTrialNumber(initializingDefaultTest, 1);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseIncrementsTrialNumber) {

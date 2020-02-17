@@ -27,6 +27,10 @@ class ModelStub : public Model {
 
     void setTrialNumber(int n) { trialNumber_ = n; }
 
+    void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
+
+    auto targetFileName() -> std::string override { return targetFileName_; }
+    
     [[nodiscard]] auto
     fixedLevelTestWithSilentIntervalTargetsInitialized() const {
         return fixedLevelTestWithSilentIntervalTargetsInitialized_;
@@ -169,6 +173,7 @@ class ModelStub : public Model {
     std::vector<std::string> audioDevices_{};
     open_set::FreeResponse freeResponse_{};
     open_set::CorrectKeywords correctKeywords_{};
+    std::string targetFileName_{};
     EventListener *listener_{};
     int trialNumber_{};
     bool testComplete_{};
@@ -555,6 +560,14 @@ class ViewStub : public View {
       public:
         void display(std::string s) override { displayed_ = std::move(s); }
 
+        void secondaryDisplay(std::string s) {
+            secondaryDisplayed_ = std::move(s);
+        }
+
+        [[nodiscard]] auto secondaryDisplayed() const {
+            return secondaryDisplayed_;
+        }
+
         [[nodiscard]] auto displayed() const { return displayed_; }
 
         void showExitTestButton() override { exitTestButtonShown_ = true; }
@@ -584,6 +597,7 @@ class ViewStub : public View {
       private:
         std::string response_;
         std::string displayed_;
+        std::string secondaryDisplayed_;
         EventListener *listener_{};
         bool exitTestButtonHidden_{};
         bool exitTestButtonShown_{};
@@ -1738,10 +1752,24 @@ class PresenterTests : public ::testing::Test {
         assertDisplayedToExperimenter("Trial 1");
     }
 
+    void assertShowsTargetFileName(UseCase &useCase) {
+        setTargetFileName("a");
+        run(useCase);
+        assertSecondaryDisplayedToExperimenter("a");
+    }
+
     void setTrialNumber(int n) { model.setTrialNumber(n); }
+
+    void setTargetFileName(std::string s) {
+        model.setTargetFileName(std::move(s));
+    }
 
     void assertDisplayedToExperimenter(const std::string &s) {
         assertEqual(s, experimenterView.displayed());
+    }
+
+    void assertSecondaryDisplayedToExperimenter(const std::string &s) {
+        assertEqual(s, experimenterView.secondaryDisplayed());
     }
 
     static void assertResponseViewHidden(TrialSubmission &useCase) {
@@ -1769,6 +1797,8 @@ class RequestFailingModel : public Model {
 
   public:
     auto trialNumber() -> int override { return 0; }
+
+    auto targetFileName() -> std::string override { return {}; }
 
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
 

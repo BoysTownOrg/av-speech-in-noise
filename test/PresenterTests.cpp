@@ -9,6 +9,28 @@ TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
 
 #define PRESENTER_TEST(a) TEST_F(PresenterTests, a)
 
+TEST_F(
+    PresenterTests, confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
+    assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);
+}
+
+TEST_F(
+    PresenterTests, confirmingAdaptiveClosedSetTestShowsTargetFileName) {
+    assertShowsTargetFileName(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
+    assertShowsTargetFileName(submittingCorrectKeywords);
+}
+
+TEST_F(PresenterTests, submittingCoordinateResponseShowsTargetFileName) {
+    assertShowsTargetFileName(respondingFromSubject);
+}
+
+TEST_F(PresenterTests, submittingFreeResponseShowsTargetFileName) {
+    assertShowsTargetFileName(submittingFreeResponse);
+}
+
 PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveCorrectKeywordsTest);
 }

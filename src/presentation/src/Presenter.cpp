@@ -29,6 +29,11 @@ static void displayTrialNumber(
     experimenter.display("Trial " + std::to_string(model.trialNumber()));
 }
 
+static void displayTarget(
+    Presenter::Experimenter &experimenter, Model &model) {
+    experimenter.secondaryDisplay(model.targetFileName());
+}
+
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     Subject &subject, Experimenter &experimenter, Testing &testing)
     : fixedLevelFreeResponseTestTrialCompletionHandler{testing},
@@ -126,6 +131,7 @@ void Presenter::hideTestSetup() { testSetup.hide(); }
 void Presenter::showTestView() {
     experimenter.show();
     displayTrialNumber(experimenter, model);
+    displayTarget(experimenter, model);
     if (coordinateResponseMeasure())
         subject.show();
     else
@@ -175,6 +181,7 @@ void Presenter::trialComplete() {
 void Presenter::submitSubjectResponse() {
     submitSubjectResponse_();
     displayTrialNumber(experimenter, model);
+    displayTarget(experimenter, model);
     if (testComplete())
         switchToSetupView();
     else
@@ -226,6 +233,7 @@ void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
 
 void Presenter::proceedToNextTrial() {
     displayTrialNumber(experimenter, model);
+    displayTarget(experimenter, model);
     if (testComplete())
         switchToSetupView();
 }
@@ -626,6 +634,10 @@ void Presenter::Experimenter::showExitTestButton() {
 
 void Presenter::Experimenter::display(std::string s) {
     view->display(std::move(s));
+}
+
+void Presenter::Experimenter::secondaryDisplay(std::string s) {
+    view->secondaryDisplay(std::move(s));
 }
 
 void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }

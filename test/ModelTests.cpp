@@ -68,6 +68,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
 
 class RecognitionTestModelStub : public RecognitionTestModel {
     std::vector<std::string> audioDevices_{};
+    std::string targetFileName_{};
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
@@ -111,6 +112,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
+
+    void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
+
+    auto targetFileName() -> std::string { return targetFileName_; }
 
     void playTrial(const AudioSettings &s) override { playTrialSettings_ = &s; }
 
@@ -759,6 +764,11 @@ MODEL_TEST(returnsAudioDevices) {
 MODEL_TEST(returnsTrialNumber) {
     internalModel.setTrialNumber(1);
     assertEqual(1, model.trialNumber());
+}
+
+MODEL_TEST(returnsTargetFileName) {
+    internalModel.setTargetFileName("a");
+    assertEqual("a", model.targetFileName());
 }
 
 MODEL_TEST(subscribesToListener) {
