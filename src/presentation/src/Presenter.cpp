@@ -576,13 +576,11 @@ void Presenter::Experimenter::start() {
     showNextTrialButton(view);
 }
 
-void Presenter::Experimenter::stop() { view->hide(); }
-
-void Presenter::Experimenter::readyNextTrial() {
-    view->hideFreeResponseSubmission();
-    view->hideEvaluationButtons();
-    view->hideCorrectKeywordsSubmission();
-    showNextTrialButton(view);
+void Presenter::Experimenter::stop() {
+    //    view->hideFreeResponseSubmission();
+    //    view->hideEvaluationButtons();
+    //    view->hideCorrectKeywordsSubmission();
+    view->hide();
 }
 
 void Presenter::Experimenter::trialPlayed() {
@@ -591,6 +589,13 @@ void Presenter::Experimenter::trialPlayed() {
 }
 
 void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
+
+void Presenter::Experimenter::readyNextTrial() {
+    view->hideFreeResponseSubmission();
+    view->hideEvaluationButtons();
+    view->hideCorrectKeywordsSubmission();
+    showNextTrialButton(view);
+}
 
 void Presenter::Experimenter::showPassFailSubmission() {
     view->showEvaluationButtons();
