@@ -592,10 +592,6 @@ void Presenter::Experimenter::trialPlayed() {
 
 void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
-void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
-    view->hideCorrectKeywordsSubmission();
-}
-
 void Presenter::Experimenter::showPassFailSubmission() {
     view->showEvaluationButtons();
 }

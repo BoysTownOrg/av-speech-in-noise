@@ -242,7 +242,6 @@ class Presenter : public Model::EventListener {
         void secondaryDisplay(std::string);
         void showPassFailSubmission();
         void showCorrectKeywordsSubmission();
-        void hideCorrectKeywordsSubmission();
         void showFreeResponseSubmission();
         auto correctKeywords() -> open_set::CorrectKeywords;
         auto freeResponse() -> open_set::FreeResponse;
@@ -320,15 +319,15 @@ class Presenter : public Model::EventListener {
         Experimenter &);
     void trialComplete() override;
     void run();
-    void browseForTargetList();
+    void confirmTestSetup();
     void playTrial();
-    void submitSubjectResponse();
-    void submitFreeResponse();
+    void playCalibration();
+    void browseForTargetList();
     void browseForMasker();
     void browseForCalibration();
     void browseForTrackSettingsFile();
-    void confirmTestSetup();
-    void playCalibration();
+    void submitSubjectResponse();
+    void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();
     void submitCorrectKeywords();
@@ -340,8 +339,6 @@ class Presenter : public Model::EventListener {
     static constexpr auto trackBumpLimit{10};
 
   private:
-    auto singleSpeaker() -> bool;
-    auto delayedMasker() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
@@ -353,7 +350,6 @@ class Presenter : public Model::EventListener {
     void playCalibration_();
     void showTestSetup();
     void readyNextTrialIfNeeded();
-    auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool;
     void showTest();
     void switchToTestView();
     void confirmTestSetup_();
