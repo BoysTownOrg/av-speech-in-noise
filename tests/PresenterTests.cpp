@@ -986,6 +986,10 @@ TEST_F(PresenterTests, submittingCoordinateResponseShowsTargetFileName) {
     assertShowsTargetFileName(respondingFromSubject);
 }
 
+TEST_F(PresenterTests, submittingFreeResponseShowsTargetFileName) {
+    assertShowsTargetFileName(respondingFromExperimenter);
+}
+
 TEST_F(PresenterTests,
     completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest) {
     assertCompleteTrialShowsResponseView(

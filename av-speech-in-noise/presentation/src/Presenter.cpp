@@ -211,7 +211,6 @@ void Presenter::submitCorrectKeywords() {
         proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
         testing.hideCorrectKeywordsSubmission();
         testing.showNextTrialButton();
-        displayTarget(experimenter, model);
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -226,6 +225,7 @@ void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
 
 void Presenter::proceedToNextTrial() {
     displayTrialNumber(experimenter, model);
+    displayTarget(experimenter, model);
     if (testComplete())
         switchToSetupView();
 }
