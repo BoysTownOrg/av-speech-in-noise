@@ -381,10 +381,6 @@ class Presenter : public Model::EventListener {
     auto defaultAdaptive() -> bool;
     auto singleSpeaker() -> bool;
     auto delayedMasker() -> bool;
-    auto adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool;
-    auto adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool;
-    auto adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool;
-    auto adaptiveCorrectKeywords() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();

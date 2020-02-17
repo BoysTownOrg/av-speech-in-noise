@@ -81,14 +81,33 @@ static auto fixedLevelAllStimuli(Presenter::TestSetup &testSetup) -> bool {
     return testSetup.fixedLevelAllStimuli();
 }
 
+static auto adaptiveCoordinateResponseMeasureWithDelayedMasker(
+    Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasureWithDelayedMasker();
+}
+
+static auto adaptiveCoordinateResponseMeasureWithSingleSpeaker(
+    Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasureWithSingleSpeaker();
+}
+
+static auto adaptiveCoordinateResponseMeasureWithEyeTracking(
+    Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasureWithEyeTracking();
+}
+
+static auto adaptiveCorrectKeywords(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.adaptiveCorrectKeywords();
+}
+
 void Presenter::initializeTest() {
-    if (adaptiveCoordinateResponseMeasureWithDelayedMasker())
+    if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
         model.initializeWithDelayedMasker(adaptiveTest(testSetup));
-    else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker())
+    else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
         model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (adaptiveCoordinateResponseMeasureWithEyeTracking())
+    else if (adaptiveCoordinateResponseMeasureWithEyeTracking(testSetup))
         model.initializeWithEyeTracking(adaptiveTest(testSetup));
-    else if (defaultAdaptive() || adaptiveCorrectKeywords())
+    else if (defaultAdaptive() || adaptiveCorrectKeywords(testSetup))
         model.initialize(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals(testSetup))
         model.initializeWithSilentIntervalTargets(fixedLevelTest(testSetup));
@@ -96,22 +115,6 @@ void Presenter::initializeTest() {
         model.initializeWithAllTargets(fixedLevelTest(testSetup));
     else
         model.initializeWithTargetReplacement(fixedLevelTest(testSetup));
-}
-
-auto Presenter::adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool {
-    return testSetup.adaptiveCoordinateResponseMeasureWithDelayedMasker();
-}
-
-auto Presenter::adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool {
-    return testSetup.adaptiveCoordinateResponseMeasureWithSingleSpeaker();
-}
-
-auto Presenter::adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool {
-    return testSetup.adaptiveCoordinateResponseMeasureWithEyeTracking();
-}
-
-auto Presenter::adaptiveCorrectKeywords() -> bool {
-    return testSetup.adaptiveCorrectKeywords();
 }
 
 auto Presenter::testComplete() -> bool { return model.testComplete(); }
@@ -150,7 +153,7 @@ auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
         return &adaptiveCoordinateResponseMeasureTrialCompletionHandler;
     if (adaptivePassFail(testSetup))
         return &adaptivePassFailTestTrialCompletionHandler;
-    if (adaptiveCorrectKeywords())
+    if (adaptiveCorrectKeywords(testSetup))
         return &adaptiveCorrectKeywordsTestTrialCompletionHandler;
     if (fixedLevelCoordinateResponseMeasure())
         return &fixedLevelCoordinateResponseMeasureTrialCompletionHandler;
