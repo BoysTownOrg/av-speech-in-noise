@@ -566,11 +566,11 @@ CocoaTestingView::CocoaTestingView(NSRect r)
     };
     [nextTrialButton_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
                                    buttonWidth, buttonHeight)];
-    const auto submitResponse_ {
-        button("submit", actions, @selector(submitResponse))
+    const auto submitFreeResponse_ {
+        button("submit", actions, @selector(submitFreeResponse))
     };
-    [submitResponse_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
-                                  buttonWidth, buttonHeight)];
+    [submitFreeResponse_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
+                                      buttonWidth, buttonHeight)];
     const auto passButton_ {
         button("pass", actions, @selector(submitPassedTrial))
     };
@@ -587,7 +587,7 @@ CocoaTestingView::CocoaTestingView(NSRect r)
     [submitCorrectKeywords_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
                                          buttonWidth, buttonHeight)];
     [nextTrialButton addSubview:nextTrialButton_];
-    [responseSubmission addSubview:submitResponse_];
+    [responseSubmission addSubview:submitFreeResponse_];
     [responseSubmission addSubview:response_];
     [responseSubmission addSubview:flagged_];
     [evaluationButtons addSubview:passButton_];
