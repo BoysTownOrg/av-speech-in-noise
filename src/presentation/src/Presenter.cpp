@@ -283,19 +283,23 @@ void Presenter::applyIfBrowseNotCancelled(
         (testSetup.*f)(std::move(s));
 }
 
+static auto browseForOpeningFile(View &view) -> std::string {
+    return view.browseForOpeningFile();
+}
+
 void Presenter::browseForMasker() {
     applyIfBrowseNotCancelled(
-        view.browseForOpeningFile(), &TestSetup::setMasker);
+        browseForOpeningFile(view), &TestSetup::setMasker);
 }
 
 void Presenter::browseForCalibration() {
     applyIfBrowseNotCancelled(
-        view.browseForOpeningFile(), &TestSetup::setCalibrationFilePath);
+        browseForOpeningFile(view), &TestSetup::setCalibrationFilePath);
 }
 
 void Presenter::browseForTrackSettingsFile() {
     applyIfBrowseNotCancelled(
-        view.browseForOpeningFile(), &TestSetup::setTrackSettingsFile);
+        browseForOpeningFile(view), &TestSetup::setTrackSettingsFile);
 }
 
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
@@ -507,13 +511,17 @@ Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
     view->subscribe(this);
 }
 
+static void hideResponseButtons(View::CoordinateResponseMeasure *view) {
+    view->hideResponseButtons();
+}
+
 void Presenter::CoordinateResponseMeasure::start() {
     view->show();
     showNextTrialButton();
 }
 
 void Presenter::CoordinateResponseMeasure::stop() {
-    hideResponseButtons();
+    hideResponseButtons(view);
     view->hide();
 }
 
@@ -524,7 +532,7 @@ void Presenter::CoordinateResponseMeasure::playTrial() {
 
 void Presenter::CoordinateResponseMeasure::submitResponse() {
     parent->submitSubjectResponse();
-    hideResponseButtons();
+    hideResponseButtons(view);
 }
 
 void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) {
@@ -533,10 +541,6 @@ void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) {
 
 void Presenter::CoordinateResponseMeasure::showNextTrialButton() {
     view->showNextTrialButton();
-}
-
-void Presenter::CoordinateResponseMeasure::hideResponseButtons() {
-    view->hideResponseButtons();
 }
 
 void Presenter::CoordinateResponseMeasure::showResponseButtons() {
