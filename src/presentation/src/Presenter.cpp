@@ -185,13 +185,8 @@ void Presenter::trialComplete() {
     experimenterPresenter.trialComplete();
 }
 
-static void submitSubjectResponse_(
-    Model &model, Presenter::CoordinateResponseMeasure &p) {
-    model.submit(p.subjectResponse());
-}
-
 void Presenter::submitSubjectResponse() {
-    submitSubjectResponse_(model, coordinateResponseMeasurePresenter);
+    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
     displayTrialInformation(experimenterPresenter, model);
     if (testComplete(model))
         switchToTestSetupView();
@@ -233,10 +228,10 @@ void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
 void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
-    proceedToNextTrial();
+    readyNextTrial();
 }
 
-void Presenter::proceedToNextTrial() {
+void Presenter::readyNextTrial() {
     displayTrialInformation(experimenterPresenter, model);
     if (testComplete(model))
         switchToTestSetupView();
@@ -596,9 +591,7 @@ void Presenter::Experimenter::trialPlayed() {
     view->hideNextTrialButton();
 }
 
-void Presenter::Experimenter::trialComplete() {
-    view->showExitTestButton();
-}
+void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
 void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
     view->hideCorrectKeywordsSubmission();
@@ -632,9 +625,7 @@ void Presenter::Experimenter::submitFreeResponse() {
     parent->submitFreeResponse();
 }
 
-void Presenter::Experimenter::playTrial() {
-    parent->playTrial();
-}
+void Presenter::Experimenter::playTrial() { parent->playTrial(); }
 
 void Presenter::Experimenter::exitTest() { parent->exitTest(); }
 
