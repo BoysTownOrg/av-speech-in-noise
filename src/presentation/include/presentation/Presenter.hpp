@@ -401,8 +401,6 @@ class Presenter : public Model::EventListener {
     auto testComplete() -> bool;
     void proceedToNextTrial();
     void hideTestSetup();
-    auto adaptiveCoordinateResponseMeasure() -> bool;
-    auto adaptivePassFail() -> bool;
     auto coordinateResponseMeasure() -> bool;
     auto fixedLevelCoordinateResponseMeasure() -> bool;
     auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool;

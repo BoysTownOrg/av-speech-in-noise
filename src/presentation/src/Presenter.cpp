@@ -24,8 +24,7 @@ static void displayTrialNumber(
     experimenter.display("Trial " + std::to_string(model.trialNumber()));
 }
 
-static void displayTarget(
-    Presenter::Experimenter &experimenter, Model &model) {
+static void displayTarget(Presenter::Experimenter &experimenter, Model &model) {
     experimenter.secondaryDisplay(model.targetFileName());
 }
 
@@ -65,6 +64,15 @@ void Presenter::confirmTestSetup_() {
     trialCompletionHandler_ = trialCompletionHandler();
 }
 
+static auto adaptiveCoordinateResponseMeasure(Presenter::TestSetup &testSetup)
+    -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasure();
+}
+
+static auto adaptivePassFail(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.adaptivePassFail();
+}
+
 void Presenter::initializeTest() {
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker())
         model.initializeWithDelayedMasker(adaptiveTest(testSetup));
@@ -80,14 +88,6 @@ void Presenter::initializeTest() {
         model.initializeWithAllTargets(fixedLevelTest(testSetup));
     else
         model.initializeWithTargetReplacement(fixedLevelTest(testSetup));
-}
-
-auto Presenter::adaptiveCoordinateResponseMeasure() -> bool {
-    return testSetup.adaptiveCoordinateResponseMeasure();
-}
-
-auto Presenter::adaptivePassFail() -> bool {
-    return testSetup.adaptivePassFail();
 }
 
 auto Presenter::fixedLevelSilentIntervals() -> bool {
@@ -146,9 +146,9 @@ auto Presenter::fixedLevelCoordinateResponseMeasure() -> bool {
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
-    if (adaptiveCoordinateResponseMeasure())
+    if (adaptiveCoordinateResponseMeasure(testSetup))
         return &adaptiveCoordinateResponseMeasureTrialCompletionHandler;
-    if (adaptivePassFail())
+    if (adaptivePassFail(testSetup))
         return &adaptivePassFailTestTrialCompletionHandler;
     if (adaptiveCorrectKeywords())
         return &adaptiveCorrectKeywordsTestTrialCompletionHandler;
