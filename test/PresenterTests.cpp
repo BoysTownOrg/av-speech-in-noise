@@ -875,13 +875,13 @@ PRESENTER_TEST(subjectResponsePassesWhiteColor) {
 }
 
 PRESENTER_TEST(experimenterResponsePassesResponse) {
-    testingView.setResponse("a");
+    experimenterView.setResponse("a");
     respondFromExperimenter();
     assertEqual("a", model.freeResponse().response);
 }
 
 PRESENTER_TEST(experimenterResponseFlagsResponse) {
-    testingView.flagResponse();
+    experimenterView.flagResponse();
     respondFromExperimenter();
     assertTrue(model.freeResponse().flagged);
 }

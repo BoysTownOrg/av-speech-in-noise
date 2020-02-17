@@ -49,35 +49,6 @@ constexpr auto methodName(Method c) -> const char * {
 
 class View {
   public:
-    class Testing {
-      public:
-        class EventListener {
-          public:
-            virtual ~EventListener() = default;
-            virtual void playTrial() = 0;
-            virtual void submitPassedTrial() = 0;
-            virtual void submitCorrectKeywords() = 0;
-            virtual void submitFailedTrial() = 0;
-            virtual void submitFreeResponse() = 0;
-        };
-
-        virtual ~Testing() = default;
-        virtual void subscribe(EventListener *) = 0;
-        virtual void show() = 0;
-        virtual void hide() = 0;
-        virtual void showNextTrialButton() = 0;
-        virtual void hideNextTrialButton() = 0;
-        virtual void showEvaluationButtons() = 0;
-        virtual void hideEvaluationButtons() = 0;
-        virtual void showFreeResponseSubmission() = 0;
-        virtual void hideFreeResponseSubmission() = 0;
-        virtual void showCorrectKeywordsSubmission() = 0;
-        virtual void hideCorrectKeywordsSubmission() = 0;
-        virtual auto freeResponse() -> std::string = 0;
-        virtual auto correctKeywords() -> std::string = 0;
-        virtual auto flagged() -> bool = 0;
-    };
-
     class CoordinateResponseMeasure {
       public:
         class EventListener {
@@ -144,14 +115,30 @@ class View {
           public:
             virtual ~EventListener() = default;
             virtual void exitTest() = 0;
+            virtual void playTrial() = 0;
+            virtual void submitPassedTrial() = 0;
+            virtual void submitCorrectKeywords() = 0;
+            virtual void submitFailedTrial() = 0;
+            virtual void submitFreeResponse() = 0;
         };
 
         virtual ~Experimenter() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
+        virtual void showEvaluationButtons() = 0;
+        virtual void hideEvaluationButtons() = 0;
+        virtual void showFreeResponseSubmission() = 0;
+        virtual void hideFreeResponseSubmission() = 0;
+        virtual void showCorrectKeywordsSubmission() = 0;
+        virtual void hideCorrectKeywordsSubmission() = 0;
+        virtual auto freeResponse() -> std::string = 0;
+        virtual auto correctKeywords() -> std::string = 0;
+        virtual auto flagged() -> bool = 0;
         virtual void hideExitTestButton() = 0;
         virtual void showExitTestButton() = 0;
+        virtual void showNextTrialButton() = 0;
+        virtual void hideNextTrialButton() = 0;
         virtual void display(std::string) = 0;
         virtual void secondaryDisplay(std::string) = 0;
     };
@@ -168,32 +155,6 @@ class View {
 
 class Presenter : public Model::EventListener {
   public:
-    class Testing : public View::Testing::EventListener {
-      public:
-        explicit Testing(View::Testing *);
-        void playTrial() override;
-        void submitPassedTrial() override;
-        void submitFreeResponse() override;
-        void submitFailedTrial() override;
-        void submitCorrectKeywords() override;
-        void becomeChild(Presenter *parent);
-        void show();
-        void hide();
-        void showEvaluationButtons();
-        void showCorrectKeywordsSubmission();
-        void showFreeResponseSubmission();
-        void showNextTrialButton();
-        void hideCorrectKeywordsSubmission();
-        auto openSetResponse() -> open_set::FreeResponse;
-        auto correctKeywords() -> open_set::CorrectKeywords;
-
-      private:
-        void prepareNextEvaluatedTrial();
-
-        Presenter *parent{};
-        View::Testing *view;
-    };
-
     class TestSetup : public View::TestSetup::EventListener {
       public:
         explicit TestSetup(View::TestSetup *);
@@ -243,12 +204,13 @@ class Presenter : public Model::EventListener {
         Presenter *parent{};
     };
 
-    class CoordinateResponseMeasure : public View::CoordinateResponseMeasure::EventListener {
+    class CoordinateResponseMeasure
+        : public View::CoordinateResponseMeasure::EventListener {
       public:
         explicit CoordinateResponseMeasure(View::CoordinateResponseMeasure *);
         void playTrial() override;
         void submitResponse() override;
-        void show();
+        void start();
         void hide();
         void becomeChild(Presenter *parent);
         void showResponseButtons();
@@ -267,6 +229,11 @@ class Presenter : public Model::EventListener {
       public:
         explicit Experimenter(View::Experimenter *);
         void exitTest() override;
+        void playTrial() override;
+        void submitPassedTrial() override;
+        void submitFreeResponse() override;
+        void submitFailedTrial() override;
+        void submitCorrectKeywords() override;
         void becomeChild(Presenter *parent);
         void show();
         void hide();
@@ -274,6 +241,14 @@ class Presenter : public Model::EventListener {
         void showExitTestButton();
         void display(std::string);
         void secondaryDisplay(std::string);
+        void showEvaluationButtons();
+        void showCorrectKeywordsSubmission();
+        void hideCorrectKeywordsSubmission();
+        void showFreeResponseSubmission();
+        auto correctKeywords() -> open_set::CorrectKeywords;
+        auto openSetResponse() -> open_set::FreeResponse;
+        void showNextTrialButton();
+        void prepareNextEvaluatedTrial();
 
       private:
         Presenter *parent{};
@@ -293,7 +268,9 @@ class Presenter : public Model::EventListener {
             CoordinateResponseMeasure &coordinateResponseMeasure)
             : coordinateResponseMeasure{coordinateResponseMeasure} {}
 
-        void showResponseView() override { coordinateResponseMeasure.showResponseButtons(); }
+        void showResponseView() override {
+            coordinateResponseMeasure.showResponseButtons();
+        }
 
       private:
         CoordinateResponseMeasure &coordinateResponseMeasure;
@@ -302,43 +279,46 @@ class Presenter : public Model::EventListener {
     class AdaptivePassFailTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptivePassFailTestTrialCompletionHandler(Testing &testing)
-            : testing{testing} {}
+        explicit AdaptivePassFailTestTrialCompletionHandler(
+            Experimenter &experimenter)
+            : experimenter{experimenter} {}
 
-        void showResponseView() override { testing.showEvaluationButtons(); }
+        void showResponseView() override {
+            experimenter.showEvaluationButtons();
+        }
 
       private:
-        Testing &testing;
+        Experimenter &experimenter;
     };
 
     class AdaptiveCorrectKeywordsTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
         explicit AdaptiveCorrectKeywordsTestTrialCompletionHandler(
-            Testing &testing)
-            : testing{testing} {}
+            Experimenter &experimenter)
+            : experimenter{experimenter} {}
 
         void showResponseView() override {
-            testing.showCorrectKeywordsSubmission();
+            experimenter.showCorrectKeywordsSubmission();
         }
 
       private:
-        Testing &testing;
+        Experimenter &experimenter;
     };
 
     class FixedLevelFreeResponseTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
         explicit FixedLevelFreeResponseTestTrialCompletionHandler(
-            Testing &testing)
-            : testing{testing} {}
+            Experimenter &experimenter)
+            : experimenter{experimenter} {}
 
         void showResponseView() override {
-            testing.showFreeResponseSubmission();
+            experimenter.showFreeResponseSubmission();
         }
 
       private:
-        Testing &testing;
+        Experimenter &experimenter;
     };
 
     class FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler
@@ -348,14 +328,16 @@ class Presenter : public Model::EventListener {
             CoordinateResponseMeasure &coordinateResponseMeasure)
             : coordinateResponseMeasure{coordinateResponseMeasure} {}
 
-        void showResponseView() override { coordinateResponseMeasure.showResponseButtons(); }
+        void showResponseView() override {
+            coordinateResponseMeasure.showResponseButtons();
+        }
 
       private:
         CoordinateResponseMeasure &coordinateResponseMeasure;
     };
 
-    Presenter(
-        Model &, View &, TestSetup &, CoordinateResponseMeasure &, Experimenter &, Testing &);
+    Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
+        Experimenter &);
     void trialComplete() override;
     void run();
     void browseForTargetList();
@@ -416,7 +398,6 @@ class Presenter : public Model::EventListener {
     TestSetup &testSetup;
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
     Experimenter &experimenter;
-    Testing &testing;
     TrialCompletionHandler *trialCompletionHandler_{};
 };
 }

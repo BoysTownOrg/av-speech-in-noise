@@ -441,7 +441,7 @@ class ViewStub : public View {
         bool nextTrialButtonShown_{};
     };
 
-    class TestingViewStub : public Testing {
+    class ExperimenterViewStub : public Experimenter {
       public:
         void submitFailedTrial() { listener_->submitFailedTrial(); }
 
@@ -451,10 +451,6 @@ class ViewStub : public View {
 
         [[nodiscard]] auto evaluationButtonsHidden() const {
             return evaluationButtonsHidden_;
-        }
-
-        [[nodiscard]] auto nextTrialButtonShown() const {
-            return nextTrialButtonShown_;
         }
 
         [[nodiscard]] auto correctKeywordsEntryShown() const {
@@ -477,8 +473,6 @@ class ViewStub : public View {
             return correctKeywords_;
         }
 
-        void showNextTrialButton() override { nextTrialButtonShown_ = true; }
-
         void showCorrectKeywordsSubmission() override {
             correctKeywordsEntryShown_ = true;
         }
@@ -494,8 +488,6 @@ class ViewStub : public View {
         void show() override { shown_ = true; }
 
         void subscribe(EventListener *e) override { listener_ = e; }
-
-        void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
 
         void hide() override { hidden_ = true; }
 
@@ -517,12 +509,6 @@ class ViewStub : public View {
             evaluationButtonsHidden_ = true;
         }
 
-        void playTrial() { listener_->playTrial(); }
-
-        [[nodiscard]] auto nextTrialButtonHidden() const {
-            return nextTrialButtonHidden_;
-        }
-
         void submitPassedTrial() { listener_->submitPassedTrial(); }
 
         void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
@@ -539,36 +525,23 @@ class ViewStub : public View {
 
         void submitFreeResponse() { listener_->submitFreeResponse(); }
 
-      private:
-        std::string response_;
-        std::string correctKeywords_{"0"};
-        EventListener *listener_{};
-        bool nextTrialButtonShown_{};
-        bool nextTrialButtonHidden_{};
-        bool evaluationButtonsShown_{};
-        bool responseSubmissionShown_{};
-        bool responseSubmissionHidden_{};
-        bool evaluationButtonsHidden_{};
-        bool correctKeywordsEntryShown_{};
-        bool correctKeywordsEntryHidden_{};
-        bool shown_{};
-        bool hidden_{};
-        bool flagged_{};
-    };
-
-    class ExperimenterViewStub : public Experimenter {
-      public:
         void display(std::string s) override { displayed_ = std::move(s); }
 
         void secondaryDisplay(std::string s) {
             secondaryDisplayed_ = std::move(s);
         }
 
+        void playTrial() { listener_->playTrial(); }
+
         [[nodiscard]] auto secondaryDisplayed() const {
             return secondaryDisplayed_;
         }
 
         [[nodiscard]] auto displayed() const { return displayed_; }
+
+        void showNextTrialButton() override { nextTrialButtonShown_ = true; }
+
+        void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
 
         void showExitTestButton() override { exitTestButtonShown_ = true; }
 
@@ -582,27 +555,35 @@ class ViewStub : public View {
             return exitTestButtonHidden_;
         }
 
-        [[nodiscard]] auto shown() const { return shown_; }
+        [[nodiscard]] auto nextTrialButtonShown() const {
+            return nextTrialButtonShown_;
+        }
 
-        [[nodiscard]] auto hidden() const { return hidden_; }
-
-        void show() override { shown_ = true; }
-
-        void subscribe(EventListener *e) override { listener_ = e; }
-
-        void hide() override { hidden_ = true; }
+        [[nodiscard]] auto nextTrialButtonHidden() const {
+            return nextTrialButtonHidden_;
+        }
 
         void exitTest() { listener_->exitTest(); }
 
       private:
-        std::string response_;
         std::string displayed_;
         std::string secondaryDisplayed_;
+        std::string response_;
+        std::string correctKeywords_{"0"};
         EventListener *listener_{};
         bool exitTestButtonHidden_{};
         bool exitTestButtonShown_{};
+        bool nextTrialButtonShown_{};
+        bool nextTrialButtonHidden_{};
+        bool evaluationButtonsShown_{};
+        bool responseSubmissionShown_{};
+        bool responseSubmissionHidden_{};
+        bool evaluationButtonsHidden_{};
+        bool correctKeywordsEntryShown_{};
+        bool correctKeywordsEntryHidden_{};
         bool shown_{};
         bool hidden_{};
+        bool flagged_{};
     };
 
   private:
@@ -1065,24 +1046,24 @@ class RespondingFromSubject : public TrialSubmission {
 };
 
 class SubmittingFreeResponse : public TrialSubmission {
-    ViewStub::TestingViewStub *view;
+    ViewStub::ExperimenterViewStub &view;
 
   public:
-    explicit SubmittingFreeResponse(ViewStub::TestingViewStub *view)
+    explicit SubmittingFreeResponse(ViewStub::ExperimenterViewStub &view)
         : view{view} {}
 
-    void run() override { view->submitFreeResponse(); }
+    void run() override { view.submitFreeResponse(); }
 
     auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
+        return view.nextTrialButtonShown();
     }
 
     auto responseViewShown() -> bool override {
-        return view->responseSubmissionShown();
+        return view.responseSubmissionShown();
     }
 
     auto responseViewHidden() -> bool override {
-        return view->responseSubmissionHidden();
+        return view.responseSubmissionHidden();
     }
 };
 
@@ -1096,68 +1077,68 @@ class ExitingTest : public UseCase {
 };
 
 class SubmittingPassedTrial : public TrialSubmission {
-    ViewStub::TestingViewStub *view;
+    ViewStub::ExperimenterViewStub &view;
 
   public:
-    explicit SubmittingPassedTrial(ViewStub::TestingViewStub *view)
+    explicit SubmittingPassedTrial(ViewStub::ExperimenterViewStub &view)
         : view{view} {}
 
-    void run() override { view->submitPassedTrial(); }
+    void run() override { view.submitPassedTrial(); }
 
     auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
+        return view.nextTrialButtonShown();
     }
 
     auto responseViewShown() -> bool override {
-        return view->evaluationButtonsShown();
+        return view.evaluationButtonsShown();
     }
 
     auto responseViewHidden() -> bool override {
-        return view->evaluationButtonsHidden();
+        return view.evaluationButtonsHidden();
     }
 };
 
 class SubmittingFailedTrial : public TrialSubmission {
-    ViewStub::TestingViewStub *view;
+    ViewStub::ExperimenterViewStub &view;
 
   public:
-    explicit SubmittingFailedTrial(ViewStub::TestingViewStub *view)
+    explicit SubmittingFailedTrial(ViewStub::ExperimenterViewStub &view)
         : view{view} {}
 
-    void run() override { view->submitFailedTrial(); }
+    void run() override { view.submitFailedTrial(); }
 
     auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
+        return view.nextTrialButtonShown();
     }
 
     auto responseViewShown() -> bool override {
-        return view->evaluationButtonsShown();
+        return view.evaluationButtonsShown();
     }
 
     auto responseViewHidden() -> bool override {
-        return view->evaluationButtonsHidden();
+        return view.evaluationButtonsHidden();
     }
 };
 
 class SubmittingCorrectKeywords : public TrialSubmission {
-    ViewStub::TestingViewStub *view;
+    ViewStub::ExperimenterViewStub &view;
 
   public:
-    explicit SubmittingCorrectKeywords(ViewStub::TestingViewStub *view)
+    explicit SubmittingCorrectKeywords(ViewStub::ExperimenterViewStub &view)
         : view{view} {}
 
-    void run() override { view->submitCorrectKeywords(); }
+    void run() override { view.submitCorrectKeywords(); }
 
     auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
+        return view.nextTrialButtonShown();
     }
 
     auto responseViewShown() -> bool override {
-        return view->correctKeywordsEntryShown();
+        return view.correctKeywordsEntryShown();
     }
 
     auto responseViewHidden() -> bool override {
-        return view->correctKeywordsEntryHidden();
+        return view.correctKeywordsEntryHidden();
     }
 };
 
@@ -1186,20 +1167,20 @@ class PlayingTrialFromSubject : public PlayingTrial {
 };
 
 class PlayingTrialFromExperimenter : public PlayingTrial {
-    ViewStub::TestingViewStub *view;
+    ViewStub::ExperimenterViewStub &view;
 
   public:
-    explicit PlayingTrialFromExperimenter(ViewStub::TestingViewStub *view)
+    explicit PlayingTrialFromExperimenter(ViewStub::ExperimenterViewStub &view)
         : view{view} {}
 
-    void run() override { view->playTrial(); }
+    void run() override { view.playTrial(); }
 
     auto nextTrialButtonHidden() -> bool override {
-        return view->nextTrialButtonHidden();
+        return view.nextTrialButtonHidden();
     }
 
     auto nextTrialButtonShown() -> bool override {
-        return view->nextTrialButtonShown();
+        return view.nextTrialButtonShown();
     }
 };
 
@@ -1298,15 +1279,13 @@ class PresenterConstructionTests : public ::testing::Test {
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
     ViewStub::ExperimenterViewStub experimenterView;
-    ViewStub::TestingViewStub testingView;
     ViewStub view;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
-    Presenter::Testing testing{&testingView};
 
     auto construct() -> Presenter {
-        return {model, view, testSetup, subject, experimenter, testing};
+        return {model, view, testSetup, subject, experimenter};
     }
 };
 
@@ -1317,12 +1296,10 @@ class PresenterTests : public ::testing::Test {
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
     ViewStub::ExperimenterViewStub experimenterView;
-    ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
-    Presenter::Testing testing{&testingView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
-    Presenter presenter{model, view, testSetup, subject, experimenter, testing};
+    Presenter presenter{model, view, testSetup, subject, experimenter};
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
     BrowsingForTargetList browsingForTargetList{&setupView};
     BrowsingForMasker browsingForMasker{&setupView};
@@ -1356,12 +1333,12 @@ class PresenterTests : public ::testing::Test {
         confirmingFixedLevelFreeResponseTestWithAllTargets{&setupView};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
-    PlayingTrialFromExperimenter playingTrialFromExperimenter{&testingView};
+    PlayingTrialFromExperimenter playingTrialFromExperimenter{experimenterView};
     RespondingFromSubject respondingFromSubject{&subjectView};
-    SubmittingFreeResponse submittingFreeResponse{&testingView};
-    SubmittingPassedTrial submittingPassedTrial{&testingView};
-    SubmittingCorrectKeywords submittingCorrectKeywords{&testingView};
-    SubmittingFailedTrial submittingFailedTrial{&testingView};
+    SubmittingFreeResponse submittingFreeResponse{experimenterView};
+    SubmittingPassedTrial submittingPassedTrial{experimenterView};
+    SubmittingCorrectKeywords submittingCorrectKeywords{experimenterView};
+    SubmittingFailedTrial submittingFailedTrial{experimenterView};
     ExitingTest exitingTest{&experimenterView};
 
     static auto auditoryOnlyConditionName() -> std::string {
@@ -1374,7 +1351,7 @@ class PresenterTests : public ::testing::Test {
 
     void respondFromSubject() { subjectView.submitResponse(); }
 
-    void respondFromExperimenter() { testingView.submitFreeResponse(); }
+    void respondFromExperimenter() { experimenterView.submitFreeResponse(); }
 
     void exitTest() { experimenterView.exitTest(); }
 
@@ -1398,7 +1375,7 @@ class PresenterTests : public ::testing::Test {
 
     auto experimenterViewShown() -> bool { return experimenterView.shown(); }
 
-    auto testingViewShown() -> bool { return testingView.shown(); }
+    auto testingViewShown() -> bool { return experimenterView.shown(); }
 
     void assertExperimenterViewHidden() {
         assertTrue(experimenterViewHidden());
@@ -1408,7 +1385,7 @@ class PresenterTests : public ::testing::Test {
 
     auto experimenterViewHidden() -> bool { return experimenterView.hidden(); }
 
-    auto testingViewHidden() -> bool { return testingView.hidden(); }
+    auto testingViewHidden() -> bool { return experimenterView.hidden(); }
 
     void assertExperimenterViewNotHidden() {
         assertFalse(experimenterViewHidden());
@@ -1788,7 +1765,7 @@ class PresenterTests : public ::testing::Test {
     }
 
     void setCorrectKeywords(std::string s) {
-        testingView.setCorrectKeywords(std::move(s));
+        experimenterView.setCorrectKeywords(std::move(s));
     }
 };
 
@@ -1866,11 +1843,9 @@ class PresenterFailureTests : public ::testing::Test {
     ViewStub::TestSetupViewStub setupView;
     ViewStub::SubjectViewStub subjectView;
     ViewStub::ExperimenterViewStub experimenterView;
-    ViewStub::TestingViewStub testingView;
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
-    Presenter::Testing testing{&testingView};
 
     void useFailingModel(std::string s = {}) {
         failure.setErrorMessage(std::move(s));
@@ -1879,7 +1854,7 @@ class PresenterFailureTests : public ::testing::Test {
 
     void confirmTestSetup() {
         Presenter presenter{
-            *model, view, testSetup, subject, experimenter, testing};
+            *model, view, testSetup, subject, experimenter};
         setupView.confirmTestSetup();
     }
 

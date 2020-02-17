@@ -82,21 +82,24 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    CoordinateResponseMeasure &coordinateResponseMeasurePresenter, Experimenter &experimenter, Testing &testing)
-    : fixedLevelFreeResponseTestTrialCompletionHandler{testing},
-      fixedLevelCoordinateResponseMeasureTrialCompletionHandler{coordinateResponseMeasurePresenter},
-      adaptivePassFailTestTrialCompletionHandler{testing},
-      adaptiveCorrectKeywordsTestTrialCompletionHandler{testing},
-      adaptiveCoordinateResponseMeasureTrialCompletionHandler{coordinateResponseMeasurePresenter},
-      model{model}, view{view}, testSetup{testSetup}, coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
-      experimenter{experimenter}, testing{testing},
+    CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
+    Experimenter &experimenter)
+    : fixedLevelFreeResponseTestTrialCompletionHandler{experimenter},
+      fixedLevelCoordinateResponseMeasureTrialCompletionHandler{
+          coordinateResponseMeasurePresenter},
+      adaptivePassFailTestTrialCompletionHandler{experimenter},
+      adaptiveCorrectKeywordsTestTrialCompletionHandler{experimenter},
+      adaptiveCoordinateResponseMeasureTrialCompletionHandler{
+          coordinateResponseMeasurePresenter},
+      model{model}, view{view}, testSetup{testSetup},
+      coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
+      experimenter{experimenter},
       trialCompletionHandler_{
           &adaptiveCoordinateResponseMeasureTrialCompletionHandler} {
     model.subscribe(this);
     testSetup.becomeChild(this);
     coordinateResponseMeasurePresenter.becomeChild(this);
     experimenter.becomeChild(this);
-    testing.becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
@@ -144,9 +147,7 @@ void Presenter::showTestView() {
     displayTrialNumber(experimenter, model);
     displayTarget(experimenter, model);
     if (coordinateResponseMeasure(testSetup))
-        coordinateResponseMeasurePresenter.show();
-    else
-        testing.show();
+        coordinateResponseMeasurePresenter.start();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
@@ -192,7 +193,7 @@ void Presenter::submitSubjectResponse_() {
 }
 
 void Presenter::submitCorrectKeywords_() {
-    model.submit(testing.correctKeywords());
+    model.submit(experimenter.correctKeywords());
 }
 
 void Presenter::submitExperimenterResponse() {
@@ -200,7 +201,7 @@ void Presenter::submitExperimenterResponse() {
 }
 
 void Presenter::submitExperimenterResponse_() {
-    model.submit(testing.openSetResponse());
+    model.submit(experimenter.openSetResponse());
 }
 
 void Presenter::submitPassedTrial() {
@@ -216,8 +217,8 @@ void Presenter::submitFailedTrial() {
 void Presenter::submitCorrectKeywords() {
     try {
         proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
-        testing.hideCorrectKeywordsSubmission();
-        testing.showNextTrialButton();
+        experimenter.hideCorrectKeywordsSubmission();
+        experimenter.showNextTrialButton();
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -247,7 +248,6 @@ void Presenter::switchToSetupView() {
 void Presenter::showTestSetup() { testSetup.show(); }
 
 void Presenter::hideTestView() {
-    testing.hide();
     experimenter.hide();
     coordinateResponseMeasurePresenter.hide();
 }
@@ -495,11 +495,13 @@ auto Presenter::TestSetup::method(Method m) -> bool {
     return view->method() == methodName(m);
 }
 
-Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(View::CoordinateResponseMeasure *view) : view{view} {
+Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
+    View::CoordinateResponseMeasure *view)
+    : view{view} {
     view->subscribe(this);
 }
 
-void Presenter::CoordinateResponseMeasure::show() {
+void Presenter::CoordinateResponseMeasure::start() {
     view->show();
     showNextTrialButton();
 }
@@ -519,13 +521,21 @@ void Presenter::CoordinateResponseMeasure::submitResponse() {
     hideResponseButtons();
 }
 
-void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) { parent = p; }
+void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) {
+    parent = p;
+}
 
-void Presenter::CoordinateResponseMeasure::showNextTrialButton() { view->showNextTrialButton(); }
+void Presenter::CoordinateResponseMeasure::showNextTrialButton() {
+    view->showNextTrialButton();
+}
 
-void Presenter::CoordinateResponseMeasure::hideResponseButtons() { view->hideResponseButtons(); }
+void Presenter::CoordinateResponseMeasure::hideResponseButtons() {
+    view->hideResponseButtons();
+}
 
-void Presenter::CoordinateResponseMeasure::showResponseButtons() { view->showResponseButtons(); }
+void Presenter::CoordinateResponseMeasure::showResponseButtons() {
+    view->showResponseButtons();
+}
 
 auto Presenter::CoordinateResponseMeasure::subjectResponse()
     -> coordinate_response_measure::Response {
@@ -535,7 +545,8 @@ auto Presenter::CoordinateResponseMeasure::subjectResponse()
     return p;
 }
 
-auto Presenter::CoordinateResponseMeasure::colorResponse() -> coordinate_response_measure::Color {
+auto Presenter::CoordinateResponseMeasure::colorResponse()
+    -> coordinate_response_measure::Color {
     if (view->greenResponse())
         return coordinate_response_measure::Color::green;
     if (view->blueResponse())
@@ -546,82 +557,73 @@ auto Presenter::CoordinateResponseMeasure::colorResponse() -> coordinate_respons
     return coordinate_response_measure::Color::red;
 }
 
-Presenter::Testing::Testing(View::Testing *view) : view{view} {
+Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
     view->subscribe(this);
 }
 
-void Presenter::Testing::show() {
+void Presenter::Experimenter::show() {
     view->show();
     showNextTrialButton();
 }
 
-void Presenter::Testing::showNextTrialButton() { view->showNextTrialButton(); }
-
-void Presenter::Testing::playTrial() {
-    parent->playTrial();
-    view->hideNextTrialButton();
+void Presenter::Experimenter::showNextTrialButton() {
+    view->showNextTrialButton();
 }
 
-void Presenter::Testing::becomeChild(Presenter *p) { parent = p; }
+void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
 
-void Presenter::Testing::submitPassedTrial() {
+void Presenter::Experimenter::submitPassedTrial() {
     parent->submitPassedTrial();
     prepareNextEvaluatedTrial();
 }
 
-void Presenter::Testing::prepareNextEvaluatedTrial() {
+void Presenter::Experimenter::prepareNextEvaluatedTrial() {
     view->hideEvaluationButtons();
     showNextTrialButton();
 }
 
-void Presenter::Testing::submitFailedTrial() {
+void Presenter::Experimenter::submitFailedTrial() {
     parent->submitFailedTrial();
     prepareNextEvaluatedTrial();
 }
 
-void Presenter::Testing::submitCorrectKeywords() {
+void Presenter::Experimenter::submitCorrectKeywords() {
     parent->submitCorrectKeywords();
 }
 
-void Presenter::Testing::hideCorrectKeywordsSubmission() {
+void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
     view->hideCorrectKeywordsSubmission();
 }
 
-void Presenter::Testing::hide() { view->hide(); }
+void Presenter::Experimenter::hide() { view->hide(); }
 
-void Presenter::Testing::showEvaluationButtons() {
+void Presenter::Experimenter::showEvaluationButtons() {
     view->showEvaluationButtons();
 }
 
-void Presenter::Testing::showCorrectKeywordsSubmission() {
+void Presenter::Experimenter::showCorrectKeywordsSubmission() {
     view->showCorrectKeywordsSubmission();
 }
 
-void Presenter::Testing::showFreeResponseSubmission() {
+void Presenter::Experimenter::showFreeResponseSubmission() {
     view->showFreeResponseSubmission();
 }
 
-void Presenter::Testing::submitFreeResponse() {
+void Presenter::Experimenter::submitFreeResponse() {
     parent->submitExperimenterResponse();
     view->hideFreeResponseSubmission();
     showNextTrialButton();
 }
 
-auto Presenter::Testing::openSetResponse() -> open_set::FreeResponse {
+auto Presenter::Experimenter::openSetResponse() -> open_set::FreeResponse {
     return {view->freeResponse(), view->flagged()};
 }
 
-auto Presenter::Testing::correctKeywords() -> open_set::CorrectKeywords {
+auto Presenter::Experimenter::correctKeywords() -> open_set::CorrectKeywords {
     open_set::CorrectKeywords p{};
     p.count = readInteger(view->correctKeywords(), "number");
     return p;
 }
-
-Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
-    view->subscribe(this);
-}
-
-void Presenter::Experimenter::show() { view->show(); }
 
 void Presenter::Experimenter::hideExitTestButton() {
     view->hideExitTestButton();
@@ -639,9 +641,10 @@ void Presenter::Experimenter::secondaryDisplay(std::string s) {
     view->secondaryDisplay(std::move(s));
 }
 
-void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
+void Presenter::Experimenter::playTrial() {
+    parent->playTrial();
+    view->hideNextTrialButton();
+}
 
 void Presenter::Experimenter::exitTest() { parent->exitTest(); }
-
-void Presenter::Experimenter::hide() { view->hide(); }
 }
