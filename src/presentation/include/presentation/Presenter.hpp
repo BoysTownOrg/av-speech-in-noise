@@ -369,9 +369,8 @@ class Presenter : public Model::EventListener {
     void showErrorMessage(std::string);
     void playCalibration_();
     void showTestSetup();
-    void readyNextTrial();
+    void readyNextTrialIfNeeded();
     auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool;
-    void initializeTest();
     void showTest();
     void switchToTestView();
     void confirmTestSetup_();

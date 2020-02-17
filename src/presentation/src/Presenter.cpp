@@ -89,6 +89,23 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
+static void initializeTest(Model &model, Presenter::TestSetup &testSetup) {
+    if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
+        model.initializeWithDelayedMasker(adaptiveTest(testSetup));
+    else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
+        model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
+    else if (adaptiveCoordinateResponseMeasureWithEyeTracking(testSetup))
+        model.initializeWithEyeTracking(adaptiveTest(testSetup));
+    else if (defaultAdaptive(testSetup) || adaptiveCorrectKeywords(testSetup))
+        model.initialize(adaptiveTest(testSetup));
+    else if (fixedLevelSilentIntervals(testSetup))
+        model.initializeWithSilentIntervalTargets(fixedLevelTest(testSetup));
+    else if (fixedLevelAllStimuli(testSetup))
+        model.initializeWithAllTargets(fixedLevelTest(testSetup));
+    else
+        model.initializeWithTargetReplacement(fixedLevelTest(testSetup));
+}
+
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter)
@@ -122,27 +139,11 @@ void Presenter::confirmTestSetup() {
 }
 
 void Presenter::confirmTestSetup_() {
-    initializeTest();
-    if (!testComplete(model))
+    initializeTest(model, testSetup);
+    if (!testComplete(model)) {
         switchToTestView();
-    trialCompletionHandler_ = trialCompletionHandler();
-}
-
-void Presenter::initializeTest() {
-    if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
-        model.initializeWithDelayedMasker(adaptiveTest(testSetup));
-    else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
-        model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (adaptiveCoordinateResponseMeasureWithEyeTracking(testSetup))
-        model.initializeWithEyeTracking(adaptiveTest(testSetup));
-    else if (defaultAdaptive(testSetup) || adaptiveCorrectKeywords(testSetup))
-        model.initialize(adaptiveTest(testSetup));
-    else if (fixedLevelSilentIntervals(testSetup))
-        model.initializeWithSilentIntervalTargets(fixedLevelTest(testSetup));
-    else if (fixedLevelAllStimuli(testSetup))
-        model.initializeWithAllTargets(fixedLevelTest(testSetup));
-    else
-        model.initializeWithTargetReplacement(fixedLevelTest(testSetup));
+        trialCompletionHandler_ = trialCompletionHandler();
+    }
 }
 
 void Presenter::switchToTestView() {
@@ -187,11 +188,12 @@ void Presenter::trialComplete() {
 
 void Presenter::submitSubjectResponse() {
     model.submit(coordinateResponseMeasurePresenter.subjectResponse());
-    displayTrialInformation(experimenterPresenter, model);
     if (testComplete(model))
         switchToTestSetupView();
-    else
+    else {
+        displayTrialInformation(experimenterPresenter, model);
         playTrial();
+    }
 }
 
 void Presenter::submitFreeResponse() {
@@ -228,15 +230,16 @@ void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
 void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
-    readyNextTrial();
+    readyNextTrialIfNeeded();
 }
 
-void Presenter::readyNextTrial() {
-    displayTrialInformation(experimenterPresenter, model);
+void Presenter::readyNextTrialIfNeeded() {
     if (testComplete(model))
         switchToTestSetupView();
-    else
+    else {
+        displayTrialInformation(experimenterPresenter, model);
         experimenterPresenter.readyNextTrial();
+    }
 }
 
 void Presenter::exitTest() { switchToTestSetupView(); }
