@@ -109,7 +109,7 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup) {
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter)
-    : fixedLevelFreeResponseTestTrialCompletionHandler{experimenterPresenter},
+    : freeResponseTestTrialCompletionHandler{experimenterPresenter},
       passFailTestTrialCompletionHandler{experimenterPresenter},
       correctKeywordsTestTrialCompletionHandler{experimenterPresenter},
       coordinateResponseMeasureTrialCompletionHandler{
@@ -163,7 +163,7 @@ auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
         return &passFailTestTrialCompletionHandler;
     if (adaptiveCorrectKeywords(testSetup))
         return &correctKeywordsTestTrialCompletionHandler;
-    return &fixedLevelFreeResponseTestTrialCompletionHandler;
+    return &freeResponseTestTrialCompletionHandler;
 }
 
 void Presenter::showErrorMessage(std::string e) {

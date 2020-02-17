@@ -273,8 +273,7 @@ class Presenter : public Model::EventListener {
         CoordinateResponseMeasure &coordinateResponseMeasure;
     };
 
-    class PassFailTestTrialCompletionHandler
-        : public TrialCompletionHandler {
+    class PassFailTestTrialCompletionHandler : public TrialCompletionHandler {
       public:
         explicit PassFailTestTrialCompletionHandler(
             Experimenter &experimenterPresenter)
@@ -303,10 +302,10 @@ class Presenter : public Model::EventListener {
         Experimenter &experimenterPresenter;
     };
 
-    class FixedLevelFreeResponseTestTrialCompletionHandler
+    class FreeResponseTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit FixedLevelFreeResponseTestTrialCompletionHandler(
+        explicit FreeResponseTestTrialCompletionHandler(
             Experimenter &experimenterPresenter)
             : experimenterPresenter{experimenterPresenter} {}
 
@@ -363,10 +362,9 @@ class Presenter : public Model::EventListener {
         std::string s, void (TestSetup::*f)(std::string));
     auto trialCompletionHandler() -> TrialCompletionHandler *;
 
-    FixedLevelFreeResponseTestTrialCompletionHandler
-        fixedLevelFreeResponseTestTrialCompletionHandler;
-    PassFailTestTrialCompletionHandler
-        passFailTestTrialCompletionHandler;
+    FreeResponseTestTrialCompletionHandler
+        freeResponseTestTrialCompletionHandler;
+    PassFailTestTrialCompletionHandler passFailTestTrialCompletionHandler;
     CorrectKeywordsTestTrialCompletionHandler
         correctKeywordsTestTrialCompletionHandler;
     CoordinateResponseMeasureTestTrialCompletionHandler
