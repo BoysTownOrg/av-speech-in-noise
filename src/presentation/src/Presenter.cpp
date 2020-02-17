@@ -30,6 +30,12 @@ static void displayTarget(
     experimenterPresenter.secondaryDisplay(model.targetFileName());
 }
 
+static void displayTrialInformation(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    displayTrialNumber(experimenterPresenter, model);
+    displayTarget(experimenterPresenter, model);
+}
+
 static auto adaptiveCoordinateResponseMeasure(Presenter::TestSetup &testSetup)
     -> bool {
     return testSetup.adaptiveCoordinateResponseMeasure();
@@ -146,8 +152,7 @@ void Presenter::switchToTestView() {
 
 void Presenter::showTest() {
     experimenterPresenter.start();
-    displayTrialNumber(experimenterPresenter, model);
-    displayTarget(experimenterPresenter, model);
+    displayTrialInformation(experimenterPresenter, model);
     if (coordinateResponseMeasure(testSetup))
         coordinateResponseMeasurePresenter.start();
 }
@@ -187,31 +192,20 @@ static void submitSubjectResponse_(
 
 void Presenter::submitSubjectResponse() {
     submitSubjectResponse_(model, coordinateResponseMeasurePresenter);
-    displayTrialNumber(experimenterPresenter, model);
-    displayTarget(experimenterPresenter, model);
+    displayTrialInformation(experimenterPresenter, model);
     if (testComplete(model))
-        switchToSetupView();
+        switchToTestSetupView();
     else
         playTrial();
 }
 
-void Presenter::submitCorrectKeywords_() {
-    model.submit(experimenterPresenter.correctKeywords());
-}
-
-void Presenter::submitExperimenterResponse() {
-    proceedToNextTrialAfter(&Presenter::submitExperimenterResponse_);
-}
-
-void Presenter::submitExperimenterResponse_() {
-    model.submit(experimenterPresenter.openSetResponse());
+void Presenter::submitFreeResponse() {
+    proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
 }
 
 void Presenter::submitPassedTrial() {
     proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
 }
-
-void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
@@ -227,6 +221,16 @@ void Presenter::submitCorrectKeywords() {
     }
 }
 
+void Presenter::submitCorrectKeywords_() {
+    model.submit(experimenterPresenter.correctKeywords());
+}
+
+void Presenter::submitFreeResponse_() {
+    model.submit(experimenterPresenter.freeResponse());
+}
+
+void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
+
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
 void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
@@ -235,23 +239,22 @@ void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
 }
 
 void Presenter::proceedToNextTrial() {
-    displayTrialNumber(experimenterPresenter, model);
-    displayTarget(experimenterPresenter, model);
+    displayTrialInformation(experimenterPresenter, model);
     if (testComplete(model))
-        switchToSetupView();
+        switchToTestSetupView();
 }
 
-void Presenter::exitTest() { switchToSetupView(); }
+void Presenter::exitTest() { switchToTestSetupView(); }
 
-void Presenter::switchToSetupView() {
+void Presenter::switchToTestSetupView() {
     showTestSetup();
-    hideTestView();
+    hideTest();
 }
 
 void Presenter::showTestSetup() { testSetup.show(); }
 
-void Presenter::hideTestView() {
-    experimenterPresenter.hide();
+void Presenter::hideTest() {
+    experimenterPresenter.stop();
     coordinateResponseMeasurePresenter.hide();
 }
 
@@ -598,7 +601,7 @@ void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
     view->hideCorrectKeywordsSubmission();
 }
 
-void Presenter::Experimenter::hide() { view->hide(); }
+void Presenter::Experimenter::stop() { view->hide(); }
 
 void Presenter::Experimenter::showEvaluationButtons() {
     view->showEvaluationButtons();
@@ -613,12 +616,12 @@ void Presenter::Experimenter::showFreeResponseSubmission() {
 }
 
 void Presenter::Experimenter::submitFreeResponse() {
-    parent->submitExperimenterResponse();
+    parent->submitFreeResponse();
     view->hideFreeResponseSubmission();
     showNextTrialButton();
 }
 
-auto Presenter::Experimenter::openSetResponse() -> open_set::FreeResponse {
+auto Presenter::Experimenter::freeResponse() -> open_set::FreeResponse {
     return {view->freeResponse(), view->flagged()};
 }
 

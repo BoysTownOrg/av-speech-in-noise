@@ -236,7 +236,7 @@ class Presenter : public Model::EventListener {
         void submitCorrectKeywords() override;
         void becomeChild(Presenter *parent);
         void start();
-        void hide();
+        void stop();
         void hideExitTestButton();
         void showExitTestButton();
         void display(std::string);
@@ -246,7 +246,7 @@ class Presenter : public Model::EventListener {
         void hideCorrectKeywordsSubmission();
         void showFreeResponseSubmission();
         auto correctKeywords() -> open_set::CorrectKeywords;
-        auto openSetResponse() -> open_set::FreeResponse;
+        auto freeResponse() -> open_set::FreeResponse;
         void showNextTrialButton();
         void prepareNextEvaluatedTrial();
 
@@ -343,7 +343,7 @@ class Presenter : public Model::EventListener {
     void browseForTargetList();
     void playTrial();
     void submitSubjectResponse();
-    void submitExperimenterResponse();
+    void submitFreeResponse();
     void browseForMasker();
     void browseForCalibration();
     void browseForTrackSettingsFile();
@@ -365,10 +365,10 @@ class Presenter : public Model::EventListener {
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
-    void submitExperimenterResponse_();
+    void submitFreeResponse_();
     void submitCorrectKeywords_();
-    void hideTestView();
-    void switchToSetupView();
+    void hideTest();
+    void switchToTestSetupView();
     void showErrorMessage(std::string);
     void playCalibration_();
     void showTestSetup();
