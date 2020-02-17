@@ -273,10 +273,10 @@ class Presenter : public Model::EventListener {
         CoordinateResponseMeasure &coordinateResponseMeasure;
     };
 
-    class AdaptivePassFailTestTrialCompletionHandler
+    class PassFailTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptivePassFailTestTrialCompletionHandler(
+        explicit PassFailTestTrialCompletionHandler(
             Experimenter &experimenterPresenter)
             : experimenterPresenter{experimenterPresenter} {}
 
@@ -288,10 +288,10 @@ class Presenter : public Model::EventListener {
         Experimenter &experimenterPresenter;
     };
 
-    class AdaptiveCorrectKeywordsTestTrialCompletionHandler
+    class CorrectKeywordsTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveCorrectKeywordsTestTrialCompletionHandler(
+        explicit CorrectKeywordsTestTrialCompletionHandler(
             Experimenter &experimenterPresenter)
             : experimenterPresenter{experimenterPresenter} {}
 
@@ -316,21 +316,6 @@ class Presenter : public Model::EventListener {
 
       private:
         Experimenter &experimenterPresenter;
-    };
-
-    class FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler
-        : public TrialCompletionHandler {
-      public:
-        explicit FixedLevelCoordinateResponseMeasureTestTrialCompletionHandler(
-            CoordinateResponseMeasure &coordinateResponseMeasure)
-            : coordinateResponseMeasure{coordinateResponseMeasure} {}
-
-        void showResponseSubmission() override {
-            coordinateResponseMeasure.showResponseButtons();
-        }
-
-      private:
-        CoordinateResponseMeasure &coordinateResponseMeasure;
     };
 
     Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
@@ -380,10 +365,10 @@ class Presenter : public Model::EventListener {
 
     FixedLevelFreeResponseTestTrialCompletionHandler
         fixedLevelFreeResponseTestTrialCompletionHandler;
-    AdaptivePassFailTestTrialCompletionHandler
-        adaptivePassFailTestTrialCompletionHandler;
-    AdaptiveCorrectKeywordsTestTrialCompletionHandler
-        adaptiveCorrectKeywordsTestTrialCompletionHandler;
+    PassFailTestTrialCompletionHandler
+        passFailTestTrialCompletionHandler;
+    CorrectKeywordsTestTrialCompletionHandler
+        correctKeywordsTestTrialCompletionHandler;
     CoordinateResponseMeasureTestTrialCompletionHandler
         coordinateResponseMeasureTrialCompletionHandler;
     Model &model;
