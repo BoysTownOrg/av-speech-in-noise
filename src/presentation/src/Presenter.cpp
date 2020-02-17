@@ -255,7 +255,7 @@ void Presenter::showTestSetup() { testSetup.show(); }
 
 void Presenter::hideTest() {
     experimenterPresenter.stop();
-    coordinateResponseMeasurePresenter.hide();
+    coordinateResponseMeasurePresenter.stop();
 }
 
 void Presenter::playCalibration() {
@@ -512,7 +512,7 @@ void Presenter::CoordinateResponseMeasure::start() {
     showNextTrialButton();
 }
 
-void Presenter::CoordinateResponseMeasure::hide() {
+void Presenter::CoordinateResponseMeasure::stop() {
     hideResponseButtons();
     view->hide();
 }

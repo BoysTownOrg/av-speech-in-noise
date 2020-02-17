@@ -211,7 +211,7 @@ class Presenter : public Model::EventListener {
         void playTrial() override;
         void submitResponse() override;
         void start();
-        void hide();
+        void stop();
         void becomeChild(Presenter *parent);
         void showResponseButtons();
         auto subjectResponse() -> coordinate_response_measure::Response;
