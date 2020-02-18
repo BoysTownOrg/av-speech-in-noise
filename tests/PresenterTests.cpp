@@ -621,6 +621,13 @@ PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
     assertPassesFullScaleLevel(playingCalibration);
 }
 
+PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
+    run(confirmingAdaptiveCorrectKeywordsTest);
+    completeTrial();
+    exitTest();
+    assertTrue(submittingCorrectKeywords.responseViewHidden());
+}
+
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTrackSettingsFile) {
     assertPassesTrackSettingsFile(

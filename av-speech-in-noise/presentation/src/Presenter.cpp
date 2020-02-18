@@ -565,7 +565,7 @@ void Presenter::Experimenter::start() {
 void Presenter::Experimenter::stop() {
     //    view->hideFreeResponseSubmission();
     //    view->hideEvaluationButtons();
-    //    view->hideCorrectKeywordsSubmission();
+    view->hideCorrectKeywordsSubmission();
     view->hide();
 }
 
