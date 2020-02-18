@@ -40,7 +40,6 @@ class CocoaExperimenterView : public View::Experimenter {
 
   private:
     NSView *view_;
-    NSView *nextTrialButton;
     NSView *evaluationButtons;
     NSView *responseSubmission;
     NSView *correctKeywordsSubmission;
@@ -50,6 +49,7 @@ class CocoaExperimenterView : public View::Experimenter {
     NSTextField *secondaryDisplayedText_;
     NSButton *flagged_;
     NSButton *exitTestButton_;
+    NSButton *nextTrialButton_;
     ExperimenterViewActions *actions;
     EventListener *listener_{};
 };

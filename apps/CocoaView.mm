@@ -563,37 +563,34 @@ void CocoaExperimenterView::secondaryDisplay(std::string s) {
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       displayedText_{
-          [[NSTextField alloc] initWithFrame:NSMakeRect(buttonWidth + 15, 0,
+          [[NSTextField alloc] initWithFrame:NSMakeRect(buttonWidth + 15, r.size.height - labelHeight,
                                                  labelWidth, labelHeight)]},
       secondaryDisplayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(buttonWidth + 15 + labelWidth + 15, 0,
+          initWithFrame:NSMakeRect(buttonWidth + 15 + labelWidth + 15, r.size.height - labelHeight,
                             labelWidth, labelHeight)]},
-      nextTrialButton{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, r.size.width,
-                                            r.size.height - buttonHeight)]},
       evaluationButtons{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, r.size.width,
-                                            r.size.height - buttonHeight)]},
+          [[NSView alloc] initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0, 3 * buttonWidth,
+                                            buttonHeight)]},
       responseSubmission{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, r.size.width,
-                                            r.size.height - buttonHeight)]},
+          [[NSView alloc] initWithFrame:NSMakeRect(r.size.width - 250, 0, 250,
+                                            buttonHeight + 15 + 2*labelHeight + 15)]},
       correctKeywordsSubmission{
-          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, r.size.width,
-                                            r.size.height - buttonHeight)]},
+          [[NSView alloc] initWithFrame:NSMakeRect(r.size.width - normalTextFieldWidth, 0, normalTextFieldWidth,
+                                            buttonHeight + 15 + labelHeight)]},
       response_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(r.size.width - 150,
-                            buttonHeight + 15 + labelHeight + 15, 150,
+          initWithFrame:NSMakeRect(0,
+                            buttonHeight + 15 + labelHeight + 15, 250,
                             labelHeight)]},
       correctKeywordsEntry_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(r.size.width - normalTextFieldWidth,
+          initWithFrame:NSMakeRect(0,
                             buttonHeight + 15, normalTextFieldWidth,
                             labelHeight)]},
       flagged_{[[NSButton alloc]
-          initWithFrame:NSMakeRect(r.size.width - 150, buttonHeight + 15,
+          initWithFrame:NSMakeRect(0, buttonHeight + 15,
                             normalTextFieldWidth, labelHeight)]},
       actions{[ExperimenterViewActions alloc]} {
     exitTestButton_ = button("exit test", actions, @selector(exitTest));
-    [exitTestButton_ setFrame:NSMakeRect(0, 0, buttonWidth, buttonHeight)];
+    [exitTestButton_ setFrame:NSMakeRect(0, r.size.height - buttonHeight, buttonWidth, buttonHeight)];
     [displayedText_ setBezeled:NO];
     [displayedText_ setDrawsBackground:NO];
     [displayedText_ setEditable:NO];
@@ -606,32 +603,29 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [view_ setHidden:YES];
     [flagged_ setButtonType:NSButtonTypeSwitch];
     [flagged_ setTitle:@"flagged"];
-    const auto nextTrialButton_ {
-        button("play trial", actions, @selector(playTrial))
-    };
+    nextTrialButton_ = button("play trial", actions, @selector(playTrial));
     [nextTrialButton_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
                                    buttonWidth, buttonHeight)];
     const auto submitFreeResponse_ {
         button("submit", actions, @selector(submitFreeResponse))
     };
-    [submitFreeResponse_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
+    [submitFreeResponse_ setFrame:NSMakeRect(responseSubmission.frame.size.width - buttonWidth, 0,
                                       buttonWidth, buttonHeight)];
     const auto passButton_ {
         button("pass", actions, @selector(submitPassedTrial))
     };
-    [passButton_ setFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
+    [passButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width - 3 * buttonWidth, 0,
                               buttonWidth, buttonHeight)];
     const auto failButton_ {
         button("fail", actions, @selector(submitFailedTrial))
     };
-    [failButton_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0, buttonWidth,
+    [failButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width - buttonWidth, 0, buttonWidth,
                               buttonHeight)];
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
-    [submitCorrectKeywords_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
+    [submitCorrectKeywords_ setFrame:NSMakeRect(correctKeywordsSubmission.frame.size.width - buttonWidth, 0,
                                          buttonWidth, buttonHeight)];
-    [nextTrialButton addSubview:nextTrialButton_];
     [responseSubmission addSubview:submitFreeResponse_];
     [responseSubmission addSubview:response_];
     [responseSubmission addSubview:flagged_];
@@ -639,22 +633,22 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [evaluationButtons addSubview:failButton_];
     [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
     [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
-    [view_ addSubview:nextTrialButton];
+    [view_ addSubview:nextTrialButton_];
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
     [view_ addSubview:correctKeywordsSubmission];
     [evaluationButtons setHidden:YES];
-    [nextTrialButton setHidden:YES];
+    [nextTrialButton_ setHidden:YES];
     [responseSubmission setHidden:YES];
     [correctKeywordsSubmission setHidden:YES];
     [view_ setHidden:YES];
     actions.controller = this;
 }
 
-void CocoaExperimenterView::showNextTrialButton() { [nextTrialButton setHidden:NO]; }
+void CocoaExperimenterView::showNextTrialButton() { [nextTrialButton_ setHidden:NO]; }
 
 void CocoaExperimenterView::hideNextTrialButton() {
-    [nextTrialButton setHidden:YES];
+    [nextTrialButton_ setHidden:YES];
 }
 
 void CocoaExperimenterView::showEvaluationButtons() {
