@@ -628,6 +628,13 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
     assertTrue(submittingCorrectKeywords.responseViewHidden());
 }
 
+PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
+    run(confirmingFixedLevelFreeResponseTestWithAllTargets);
+    completeTrial();
+    exitTest();
+    assertTrue(submittingFreeResponse.responseViewHidden());
+}
+
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTrackSettingsFile) {
     assertPassesTrackSettingsFile(
