@@ -1,975 +1,1094 @@
-#include "PresenterTests.h"
+#include "PresenterTests.hpp"
 
-namespace av_speech_in_noise::tests::presentation {
-TEST_F(PresenterTests, populatesConditionMenu) {
-    assertSetupViewConditionsContains(auditoryOnlyConditionName());
-    assertSetupViewConditionsContains(audioVisualConditionName());
+namespace av_speech_in_noise {
+TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
+    model.setAudioDevices({"a", "b", "c"});
+    construct();
+    assertEqual({"a", "b", "c"}, view.audioDevices());
 }
 
-TEST_F(PresenterTests, populatesMethodMenu) {
-    assertSetupViewMethodsContains(Method::defaultFixedLevelOpenSet);
-    assertSetupViewMethodsContains(Method::defaultFixedLevelClosedSet);
-    assertSetupViewMethodsContains(Method::fixedLevelOpenSetAllStimuli);
-    assertSetupViewMethodsContains(Method::fixedLevelOpenSetSilentIntervals);
-    assertSetupViewMethodsContains(Method::fixedLevelClosedSetSilentIntervals);
-    assertSetupViewMethodsContains(Method::adaptivePassFail);
-    assertSetupViewMethodsContains(Method::adaptiveCorrectKeywords);
-    assertSetupViewMethodsContains(Method::defaultAdaptiveClosedSet);
-    assertSetupViewMethodsContains(Method::adaptiveClosedSetSingleSpeaker);
-    assertSetupViewMethodsContains(Method::adaptiveClosedSetDelayedMasker);
-}
+#define PRESENTER_TEST(a) TEST_F(PresenterTests, a)
 
-TEST_F(PresenterTests, callsEventLoopWhenRun) {
-    presenter.run();
-    assertTrue(view.eventLoopCalled());
-}
-
-TEST_F(PresenterTests, confirmAdaptiveClosedSetTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetSingleSpeakerTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingAdaptiveClosedSetSingleSpeakerTest);
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetDelayedMaskerTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingAdaptiveClosedSetDelayedMaskerTest);
-}
-
-TEST_F(PresenterTests, confirmAdaptiveOpenSetTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestHidesTestSetupView) {
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestHidesTestSetupView) {
     assertHidesTestSetupView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmFixedLevelOpenSetTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmFixedLevelClosedSetTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingFixedLevelClosedSetSilentIntervalsTest);
-}
-
-TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsExperimenterView) {
-    assertShowsExperimenterView(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(
-    PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsExperimenterView) {
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTestingView) {
-    assertShowsTestingView(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTestingView) {
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTestingView) {
     assertShowsTestingView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTestingView) {
-    assertShowsTestingView(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsExperimenterView) {
-    assertShowsExperimenterView(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsSubjectView) {
-    assertShowsSubjectView(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(
-    PresenterTests, confirmAdaptiveClosedSetSingleSpeakerTestShowsSubjectView) {
-    assertShowsSubjectView(confirmingAdaptiveClosedSetSingleSpeakerTest);
-}
-
-TEST_F(
-    PresenterTests, confirmAdaptiveClosedSetDelayedMaskerTestShowsSubjectView) {
-    assertShowsSubjectView(confirmingAdaptiveClosedSetDelayedMaskerTest);
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetTestDoesNotShowSubjectViewWhenTestComplete) {
-    setTestComplete();
-    assertDoesNotShowSubjectView(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetTestDoesNotHideSetupViewWhenTestComplete) {
-    setTestComplete();
-    assertDoesNotHideTestSetupView(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsSubjectView) {
-    assertShowsSubjectView(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestShowsSubjectView) {
-    assertShowsSubjectView(confirmingFixedLevelClosedSetSilentIntervalsTest);
-}
-
-TEST_F(PresenterTests, confirmAdaptiveOpenSetTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(
-    PresenterTests, confirmAdaptiveOpenSetKeywordsTestDoesNotShowSubjectView) {
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmFixedLevelOpenSetTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetAllStimuliTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingFixedLevelOpenSetAllStimuliTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(
-        confirmingFixedLevelOpenSetSilentIntervalsTest);
-}
-
-TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsExperimenterView) {
-    assertShowsExperimenterView(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsExperimenterView) {
-    assertShowsExperimenterView(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestShowsExperimenterView) {
-    assertShowsExperimenterView(
-        confirmingFixedLevelClosedSetSilentIntervalsTest);
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetTestWithSingleSpeakerInitializesModel) {
-    run(confirmingAdaptiveClosedSetSingleSpeakerTest);
-    assertTrue(model.initializedWithSingleSpeaker());
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetTestWithDelayedMaskerInitializesModel) {
-    run(confirmingAdaptiveClosedSetDelayedMaskerTest);
-    assertTrue(model.initializedWithDelayedMasker());
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestInitializesModel) {
-    run(confirmingFixedLevelClosedSetSilentIntervalsTest);
-    assertTrue(model.fixedLevelSilentIntervalsTestInitialized());
-}
-
-TEST_F(PresenterTests, confirmFixedLevelOpenSetAllStimuliTestInitializesModel) {
-    run(confirmingFixedLevelOpenSetAllStimuliTest);
-    assertTrue(model.fixedLevelAllStimuliTestInitialized());
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestInitializesModel) {
-    run(confirmingFixedLevelOpenSetSilentIntervalsTest);
-    assertTrue(model.fixedLevelSilentIntervalsTestInitialized());
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetTestDoesNotInitializeFixedLevelTest) {
-    assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(
-    PresenterTests, confirmAdaptiveOpenSetTestDoesNotInitializeFixedLevelTest) {
-    assertDoesNotInitializeFixedLevelTest(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveOpenSetKeywordsTestDoesNotInitializeFixedLevelTest) {
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(
         confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(
-    PresenterTests, confirmFixedLevelOpenSetTestDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetAllStimuliTestDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(
-        confirmingFixedLevelOpenSetAllStimuliTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(
-        confirmingFixedLevelOpenSetSilentIntervalsTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetTestDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(
-        confirmingFixedLevelClosedSetSilentIntervalsTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveCorrectKeywordsTestPassesStartingSnr) {
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestPassesStartingSnr) {
     assertStartingSnrPassedToModel(confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmFixedLevelClosedSetTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(
-        confirmingFixedLevelClosedSetSilentIntervalsTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveCorrectKeywordsTestPassesMaskerLevel) {
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestPassesMaskerLevel) {
     assertMaskerLevelPassedToModel(confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmFixedLevelOpenSetTestPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmFixedLevelClosedSetTestPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests, playCalibrationPassesLevel) {
-    setCalibrationLevel("1");
-    playCalibration();
-    assertEqual(1, calibration().level_dB_SPL);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTargetList) {
-    assertPassesTargetListDirectory(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTargetList) {
-    assertPassesTargetListDirectory(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesTargetList) {
-    assertPassesTargetListDirectory(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesTargetList) {
-    assertPassesTargetListDirectory(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesSubjectId) {
-    assertPassesSubjectId(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesSubjectId) {
-    assertPassesSubjectId(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesSubjectId) {
-    assertPassesSubjectId(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesSubjectId) {
-    assertPassesSubjectId(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTesterId) {
-    assertPassesTesterId(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTesterId) {
-    assertPassesTesterId(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesTesterId) {
-    assertPassesTesterId(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesTesterId) {
-    assertPassesTesterId(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMasker) {
-    assertPassesMasker(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesMasker) {
-    assertPassesMasker(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesMasker) {
-    assertPassesMasker(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesMasker) {
-    assertPassesMasker(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests, playCalibrationPassesFilePath) {
-    setupView.setCalibrationFilePath("a");
-    playCalibration();
-    assertEqual("a", calibration().filePath);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesSession) {
-    assertPassesSession(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesSession) {
-    assertPassesSession(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesSession) {
-    assertPassesSession(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesSession) {
-    assertPassesSession(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesMethod) {
-    assertPassesMethod(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesMethod) {
-    assertPassesMethod(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesMethod) {
-    assertPassesMethod(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesMethod) {
-    assertPassesMethod(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(
-    PresenterTests, confirmingAdaptiveClosedSetDelayedMaskerTestPassesMethod) {
-    assertPassesMethod(confirmingAdaptiveClosedSetDelayedMaskerTest);
-}
-
-TEST_F(
-    PresenterTests, confirmingAdaptiveClosedSetSingleSpeakerTestPassesMethod) {
-    assertPassesMethod(confirmingAdaptiveClosedSetSingleSpeakerTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesCeilingSNR) {
-    assertPassesCeilingSNR(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesCeilingSNR) {
-    assertPassesCeilingSNR(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesFloorSNR) {
-    assertPassesFloorSNR(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesFloorSNR) {
-    assertPassesFloorSNR(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTrackBumpLimit) {
-    assertPassesTrackBumpLimit(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTrackBumpLimit) {
-    assertPassesTrackBumpLimit(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelOpenSetTestPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests, confirmingFixedLevelClosedSetTestPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests, playCalibrationPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(playingCalibration);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestPassesTrackSettingsFile) {
-    assertPassesTrackSettingsFile(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests, confirmingAdaptiveOpenSetTestPassesTrackSettingsFile) {
-    assertPassesTrackSettingsFile(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(
-    PresenterTests, confirmingAdaptiveClosedSetTestPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmingAdaptiveClosedSetTestPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(
-    PresenterTests, confirmingAdaptiveOpenSetTestPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(
-    PresenterTests, confirmingAdaptiveOpenSetTestPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(
-    PresenterTests, confirmingFixedLevelOpenSetTestPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmingFixedLevelOpenSetTestPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmingFixedLevelClosedSetTestPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmingFixedLevelClosedetTestPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests, playCalibrationPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(playingCalibration);
-}
-
-TEST_F(PresenterTests, playCalibrationPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(playingCalibration);
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetTestShowsNextTrialButtonForSubject) {
-    assertConfirmTestSetupShowsNextTrialButton(
-        confirmingAdaptiveClosedSetTest, playingTrialFromSubject);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetTestShowsNextTrialButtonForSubject) {
-    assertConfirmTestSetupShowsNextTrialButton(
-        confirmingFixedLevelClosedSetTest, playingTrialFromSubject);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestShowsNextTrialButtonForSubject) {
-    assertConfirmTestSetupShowsNextTrialButton(
-        confirmingFixedLevelClosedSetSilentIntervalsTest,
-        playingTrialFromSubject);
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveOpenSetTestShowsNextTrialButtonForExperimenter) {
-    assertConfirmTestSetupShowsNextTrialButton(
-        confirmingAdaptiveOpenSetTest, playingTrialFromExperimenter);
-}
-
-TEST_F(PresenterTests,
-    confirmAdaptiveOpenSetKeywordsTestShowsNextTrialButtonForExperimenter) {
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingAdaptiveCorrectKeywordsTest, playingTrialFromExperimenter);
 }
 
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetTestShowsNextTrialButtonForExperimenter) {
-    assertConfirmTestSetupShowsNextTrialButton(
-        confirmingFixedLevelOpenSetTest, playingTrialFromExperimenter);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetAllStimuliTestShowsNextTrialButtonForExperimenter) {
-    assertConfirmTestSetupShowsNextTrialButton(
-        confirmingFixedLevelOpenSetAllStimuliTest,
-        playingTrialFromExperimenter);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestShowsNextTrialButtonForExperimenter) {
-    assertConfirmTestSetupShowsNextTrialButton(
-        confirmingFixedLevelOpenSetSilentIntervalsTest,
-        playingTrialFromExperimenter);
-}
-
-TEST_F(PresenterTests,
-    confirmingAdaptiveClosedSetTestWithInvalidMaskerLevelShowsErrorMessage) {
-    assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptiveClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmingAdaptiveOpenSetTestWithInvalidMaskerLevelShowsErrorMessage) {
-    assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptiveOpenSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmingFixedLevelOpenSetTestWithInvalidMaskerLevelShowsErrorMessage) {
-    assertInvalidMaskerLevelShowsErrorMessage(confirmingFixedLevelOpenSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmingFixedLevelClosedSetTestWithInvalidMaskerLevelShowsErrorMessage) {
-    assertInvalidMaskerLevelShowsErrorMessage(
-        confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests, playCalibrationWithInvalidLevelShowsErrorMessage) {
-    assertInvalidCalibrationLevelShowsErrorMessage(playingCalibration);
-}
-
-TEST_F(PresenterTests, respondingFromSubjectPlaysTrial) {
-    assertPlaysTrial(respondingFromSubject);
-}
-
-TEST_F(PresenterTests, playingTrialFromSubjectPlaysTrial) {
-    assertPlaysTrial(playingTrialFromSubject);
-}
-
-TEST_F(PresenterTests, playingTrialFromExperimenterPlaysTrial) {
-    assertPlaysTrial(playingTrialFromExperimenter);
-}
-
-TEST_F(PresenterTests, playingTrialHidesNextTrialButton) {
-    assertHidesPlayTrialButton(playingTrialFromSubject);
-}
-
-TEST_F(PresenterTests, playingTrialHidesNextTrialButtonForExperimenter) {
-    assertHidesPlayTrialButton(playingTrialFromExperimenter);
-}
-
-TEST_F(PresenterTests, playingTrialFromSubjectHidesExitTestButton) {
-    assertHidesExitTestButton(playingTrialFromSubject);
-}
-
-TEST_F(PresenterTests, playingTrialFromSubjectPassesAudioDevice) {
-    assertAudioDevicePassedToTrial(playingTrialFromSubject);
-}
-
-TEST_F(PresenterTests, playingTrialFromExperimenterPassesAudioDevice) {
-    assertAudioDevicePassedToTrial(playingTrialFromExperimenter);
-}
-
-TEST_F(PresenterTests, playCalibrationPassesAudioDevice) {
-    setAudioDevice("b");
-    playCalibration();
-    assertEqual("b", calibration().audioSettings.audioDevice);
-}
-
-TEST_F(PresenterTests, subjectResponsePassesNumberResponse) {
-    subjectView.setNumberResponse("1");
-    respondFromSubject();
-    assertEqual(1, model.responseParameters().number);
-}
-
-TEST_F(PresenterTests, subjectResponsePassesGreenColor) {
-    subjectView.setGreenResponse();
-    respondFromSubject();
-    assertModelPassedCondition(coordinate_response_measure::Color::green);
-}
-
-TEST_F(PresenterTests, subjectResponsePassesRedColor) {
-    subjectView.setRedResponse();
-    respondFromSubject();
-    assertModelPassedCondition(coordinate_response_measure::Color::red);
-}
-
-TEST_F(PresenterTests, subjectResponsePassesBlueColor) {
-    subjectView.setBlueResponse();
-    respondFromSubject();
-    assertModelPassedCondition(coordinate_response_measure::Color::blue);
-}
-
-TEST_F(PresenterTests, subjectResponsePassesWhiteColor) {
-    subjectView.setGrayResponse();
-    respondFromSubject();
-    assertModelPassedCondition(coordinate_response_measure::Color::white);
-}
-
-TEST_F(PresenterTests, experimenterResponsePassesResponse) {
-    testingView.setResponse("a");
-    respondFromExperimenter();
-    assertEqual("a", model.freeResponse().response);
-}
-
-TEST_F(PresenterTests, experimenterResponseFlagsResponse) {
-    testingView.flagResponse();
-    respondFromExperimenter();
-    assertTrue(model.freeResponse().flagged);
-}
-
-TEST_F(PresenterTests, passedTrialSubmitsCorrectResponse) {
-    run(submittingPassedTrial);
-    assertTrue(model.correctResponseSubmitted());
-}
-
-TEST_F(PresenterTests, submittingCorrectKeywordsPassesCorrectKeywords) {
+PRESENTER_TEST(submittingCorrectKeywordsPassesCorrectKeywords) {
     setCorrectKeywords("1");
     run(submittingCorrectKeywords);
     assertEqual(1, model.correctKeywords());
 }
 
-TEST_F(PresenterTests, enteringInvalidCorrectKeywordsShowsErrorMessage) {
+PRESENTER_TEST(submittingInvalidCorrectKeywordsShowsErrorMessage) {
     setCorrectKeywords("a");
     run(submittingCorrectKeywords);
     assertErrorMessageEquals("'a' is not a valid number.");
 }
 
-TEST_F(PresenterTests, enteringInvalidCorrectKeywordsDoesNotHideEntry) {
+PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     setCorrectKeywords("a");
     run(submittingCorrectKeywords);
     assertFalse(submittingCorrectKeywords.responseViewHidden());
 }
 
-TEST_F(PresenterTests, failedTrialSubmitsIncorrectResponse) {
-    run(submittingFailedTrial);
-    assertTrue(model.incorrectResponseSubmitted());
-}
-
-TEST_F(PresenterTests, respondFromSubjectShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(respondingFromSubject);
-}
-
-TEST_F(PresenterTests, respondFromExperimenterShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(respondingFromExperimenter);
-}
-
-TEST_F(
-    PresenterTests, submittingCorrectKeywordsShowsSetupViewWhenTestComplete) {
+PRESENTER_TEST(submittingCorrectKeywordsShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingCorrectKeywords);
 }
 
-TEST_F(PresenterTests, submitPassedTrialShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(submittingPassedTrial);
-}
-
-TEST_F(PresenterTests, submitFailedTrialShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(submittingFailedTrial);
-}
-
-TEST_F(
-    PresenterTests, respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
-    assertIncompleteTestDoesNotShowSetupView(respondingFromSubject);
-}
-
-TEST_F(PresenterTests,
-    respondFromExperimenterDoesNotShowSetupViewWhenTestIncomplete) {
-    assertIncompleteTestDoesNotShowSetupView(respondingFromExperimenter);
-}
-
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     submittingCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
 }
 
-TEST_F(
-    PresenterTests, submitPassedTrialDoesNotShowSetupViewWhenTestIncomplete) {
-    assertIncompleteTestDoesNotShowSetupView(submittingPassedTrial);
-}
-
-TEST_F(
-    PresenterTests, submitFailedTrialDoesNotShowSetupViewWhenTestIncomplete) {
-    assertIncompleteTestDoesNotShowSetupView(submittingFailedTrial);
-}
-
-TEST_F(
-    PresenterTests, respondFromSubjectHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(respondingFromSubject);
-}
-
-TEST_F(PresenterTests,
-    respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(respondingFromExperimenter);
-}
-
-TEST_F(PresenterTests,
-    submittingCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
+PRESENTER_TEST(submittingCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingCorrectKeywords);
 }
 
-TEST_F(PresenterTests, submitPassedTrialHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(submittingPassedTrial);
-}
-
-TEST_F(PresenterTests, submitFailedTrialHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(submittingFailedTrial);
-}
-
-TEST_F(
-    PresenterTests, respondFromExperimenterHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(respondingFromExperimenter);
-}
-
-TEST_F(
-    PresenterTests, submittingCorrectKeywordsHidesTestingViewWhenTestComplete) {
+PRESENTER_TEST(submittingCorrectKeywordsHidesTestingViewWhenTestComplete) {
     assertCompleteTestHidesTestingView(submittingCorrectKeywords);
 }
 
-TEST_F(PresenterTests, submitPassedTrialHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingPassedTrial);
-}
-
-TEST_F(PresenterTests, submitFailedTrialHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingFailedTrial);
-}
-
-TEST_F(
-    PresenterTests, submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
-    assertCompleteTestDoesNotPlayTrial(respondingFromSubject);
-}
-
-TEST_F(PresenterTests,
-    respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
-    assertDoesNotHideExperimenterView(respondingFromSubject);
-}
-
-TEST_F(PresenterTests,
-    respondFromExperimenterDoesNotHideExperimenterViewWhenTestIncomplete) {
-    assertDoesNotHideExperimenterView(respondingFromExperimenter);
-}
-
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     submittingCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(submittingCorrectKeywords);
 }
 
-TEST_F(PresenterTests,
-    submitPassedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
-    assertDoesNotHideExperimenterView(submittingPassedTrial);
-}
-
-TEST_F(PresenterTests,
-    submitFailedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
-    assertDoesNotHideExperimenterView(submittingFailedTrial);
-}
-
-TEST_F(PresenterTests,
-    respondFromExperimenterDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(respondingFromExperimenter);
-}
-
-TEST_F(PresenterTests,
+PRESENTER_TEST(
     submittingCorrectKeywordsDoesNotHideTestingViewWhenTestIncomplete) {
     assertDoesNotHideTestingView(submittingCorrectKeywords);
 }
 
-TEST_F(
-    PresenterTests, submitPassedTrialDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingPassedTrial);
-}
-
-TEST_F(
-    PresenterTests, submitFailedTrialDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingFailedTrial);
-}
-
-TEST_F(PresenterTests, experimenterResponseShowsNextTrialButton) {
-    assertShowsNextTrialButton(respondingFromExperimenter);
-}
-
-TEST_F(PresenterTests, submittingCorrectKeywordsShowsNextTrialButton) {
+PRESENTER_TEST(submittingCorrectKeywordsShowsNextTrialButton) {
     assertShowsNextTrialButton(submittingCorrectKeywords);
 }
 
-TEST_F(PresenterTests, subjectPassedTrialShowsNextTrialButtonForExperimenter) {
-    assertShowsNextTrialButton(submittingPassedTrial);
-}
-
-TEST_F(PresenterTests, subjectFailedTrialShowsNextTrialButtonForExperimenter) {
-    assertShowsNextTrialButton(submittingFailedTrial);
-}
-
-TEST_F(PresenterTests, experimenterResponseHidesResponseSubmission) {
-    assertResponseViewHidden(respondingFromExperimenter);
-}
-
-TEST_F(PresenterTests, submittingCorrectKeywordsHidesCorrectKeywordsEntry) {
+PRESENTER_TEST(submittingCorrectKeywordsHidesCorrectKeywordsEntry) {
     assertResponseViewHidden(submittingCorrectKeywords);
 }
 
-TEST_F(PresenterTests, correctResponseHidesEvaluationButtons) {
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingAdaptiveCorrectKeywordsTest);
+}
+
+PRESENTER_TEST(submittingCorrectKeywordsShowsTrialNumber) {
+    assertShowsTrialNumber(submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(
+    completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveCorrectKeywordsTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestWithInvalidSnrShowsErrorMessage) {
+    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveCorrectKeywordsTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestWithInvalidInputDoesNotHideSetupView) {
+    assertSetupViewNotHiddenWhenSnrIsInvalid(
+        confirmingAdaptiveCorrectKeywordsTest);
+}
+
+PRESENTER_TEST(populatesConditionMenu) {
+    assertSetupViewConditionsContains(auditoryOnlyConditionName());
+    assertSetupViewConditionsContains(audioVisualConditionName());
+}
+
+PRESENTER_TEST(populatesMethodMenu) {
+    assertSetupViewMethodsContains(Method::adaptivePassFail);
+    assertSetupViewMethodsContains(Method::adaptiveCorrectKeywords);
+    assertSetupViewMethodsContains(
+        Method::defaultAdaptiveCoordinateResponseMeasure);
+    assertSetupViewMethodsContains(
+        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
+    assertSetupViewMethodsContains(
+        Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
+    assertSetupViewMethodsContains(
+        Method::fixedLevelFreeResponseWithTargetReplacement);
+    assertSetupViewMethodsContains(
+        Method::fixedLevelFreeResponseWithAllTargets);
+    assertSetupViewMethodsContains(
+        Method::fixedLevelFreeResponseWithSilentIntervalTargets);
+    assertSetupViewMethodsContains(
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
+    assertSetupViewMethodsContains(
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
+}
+
+PRESENTER_TEST(callsEventLoopWhenRun) {
+    presenter.run();
+    assertTrue(view.eventLoopCalled());
+}
+
+PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestHidesTestSetupView) {
+    assertHidesTestSetupView(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeakerHidesTestSetupView) {
+    assertHidesTestSetupView(
+        confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerHidesTestSetupView) {
+    assertHidesTestSetupView(
+        confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementHidesTestSetupView) {
+    assertHidesTestSetupView(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementHidesTestSetupView) {
+    assertHidesTestSetupView(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsHidesTestSetupView) {
+    assertHidesTestSetupView(
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestShowsExperimenterView) {
+    assertShowsExperimenterView(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestShowsTestingView) {
+    assertShowsTestingView(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementShowsTestingView) {
+    assertShowsTestingView(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementShowsExperimenterView) {
+    assertShowsExperimenterView(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsSubjectView) {
+    assertShowsSubjectView(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeakerShowsSubjectView) {
+    assertShowsSubjectView(
+        confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerShowsSubjectView) {
+    assertShowsSubjectView(
+        confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
+}
+
+PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotShowSubjectViewWhenTestComplete) {
+    setTestComplete();
+    assertDoesNotShowSubjectView(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotHideSetupViewWhenTestComplete) {
+    setTestComplete();
+    assertDoesNotHideTestSetupView(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsSubjectView) {
+    assertShowsSubjectView(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsSubjectView) {
+    assertShowsSubjectView(
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(
+        confirmingFixedLevelFreeResponseTestWithAllTargets);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(
+        confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
+}
+
+PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsExperimenterView) {
+    assertShowsExperimenterView(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsExperimenterView) {
+    assertShowsExperimenterView(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsExperimenterView) {
+    assertShowsExperimenterView(
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeakerInitializesModel) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker);
+    assertTrue(model.initializedWithSingleSpeaker());
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerInitializesModel) {
+    run(confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
+    assertTrue(model.initializedWithDelayedMasker());
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsInitializesModel) {
+    run(confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
+    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsInitializesModel) {
+    run(confirmingFixedLevelFreeResponseTestWithAllTargets);
+    assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsInitializesModel) {
+    run(confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
+    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+}
+
+PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotInitializeFixedLevelTest) {
+    assertDoesNotInitializeFixedLevelTest(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotInitializeFixedLevelTest) {
+    assertDoesNotInitializeFixedLevelTest(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementDoesNotInitializeAdaptiveTest) {
+    assertDoesNotInitializeAdaptiveTest(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsDoesNotInitializeAdaptiveTest) {
+    assertDoesNotInitializeAdaptiveTest(
+        confirmingFixedLevelFreeResponseTestWithAllTargets);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsDoesNotInitializeAdaptiveTest) {
+    assertDoesNotInitializeAdaptiveTest(
+        confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementDoesNotInitializeAdaptiveTest) {
+    assertDoesNotInitializeAdaptiveTest(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsDoesNotInitializeAdaptiveTest) {
+    assertDoesNotInitializeAdaptiveTest(
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
+    assertStartingSnrPassedToModel(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesStartingSnr) {
+    assertStartingSnrPassedToModel(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesStartingSnr) {
+    assertStartingSnrPassedToModel(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesStartingSnr) {
+    assertStartingSnrPassedToModel(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsPassesStartingSnr) {
+    assertStartingSnrPassedToModel(
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesMaskerLevel) {
+    assertMaskerLevelPassedToModel(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesMaskerLevel) {
+    assertMaskerLevelPassedToModel(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesMaskerLevel) {
+    assertMaskerLevelPassedToModel(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesMaskerLevel) {
+    assertMaskerLevelPassedToModel(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(playCalibrationPassesLevel) {
+    setCalibrationLevel("1");
+    playCalibration();
+    assertEqual(1, calibration().level_dB_SPL);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesTargetList) {
+    assertPassesTargetListDirectory(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTargetList) {
+    assertPassesTargetListDirectory(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesTargetList) {
+    assertPassesTargetListDirectory(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTargetList) {
+    assertPassesTargetListDirectory(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
+    assertPassesSubjectId(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesSubjectId) {
+    assertPassesSubjectId(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesSubjectId) {
+    assertPassesSubjectId(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesSubjectId) {
+    assertPassesSubjectId(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
+    assertPassesTesterId(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTesterId) {
+    assertPassesTesterId(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesTesterId) {
+    assertPassesTesterId(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTesterId) {
+    assertPassesTesterId(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesMasker) {
+    assertPassesMasker(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesMasker) {
+    assertPassesMasker(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesMasker) {
+    assertPassesMasker(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesMasker) {
+    assertPassesMasker(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(playCalibrationPassesFilePath) {
+    setupView.setCalibrationFilePath("a");
+    playCalibration();
+    assertEqual("a", calibration().filePath);
+}
+
+PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
+    assertPassesSession(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesSession) {
+    assertPassesSession(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesSession) {
+    assertPassesSession(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesSession) {
+    assertPassesSession(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesMethod) {
+    assertPassesMethod(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesMethod) {
+    assertPassesMethod(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesMethod) {
+    assertPassesMethod(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesMethod) {
+    assertPassesMethod(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerPassesMethod) {
+    assertPassesMethod(
+        confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureSingleSpeakerTestPassesMethod) {
+    assertPassesMethod(
+        confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesCeilingSNR) {
+    assertPassesCeilingSNR(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesCeilingSNR) {
+    assertPassesCeilingSNR(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesFloorSNR) {
+    assertPassesFloorSNR(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesFloorSNR) {
+    assertPassesFloorSNR(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesTrackBumpLimit) {
+    assertPassesTrackBumpLimit(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTrackBumpLimit) {
+    assertPassesTrackBumpLimit(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesFullScaleLevel) {
+    assertPassesFullScaleLevel(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesFullScaleLevel) {
+    assertPassesFullScaleLevel(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesFullScaleLevel) {
+    assertPassesFullScaleLevel(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesFullScaleLevel) {
+    assertPassesFullScaleLevel(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
+    assertPassesFullScaleLevel(playingCalibration);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesTrackSettingsFile) {
+    assertPassesTrackSettingsFile(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTrackSettingsFile) {
+    assertPassesTrackSettingsFile(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesAudioVisualCondition) {
+    assertAudioVisualConditionPassedToModel(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesAuditoryOnlyCondition) {
+    assertAuditoryOnlyConditionPassedToModel(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesAudioVisualCondition) {
+    assertAudioVisualConditionPassedToModel(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(confirmingAdaptivePassFailTestPassesAuditoryOnlyCondition) {
+    assertAuditoryOnlyConditionPassedToModel(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesAudioVisualCondition) {
+    assertAudioVisualConditionPassedToModel(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesAuditoryOnlyCondition) {
+    assertAuditoryOnlyConditionPassedToModel(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesAudioVisualCondition) {
+    assertAudioVisualConditionPassedToModel(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesAuditoryOnlyCondition) {
+    assertAuditoryOnlyConditionPassedToModel(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(playCalibrationPassesAudioVisualCondition) {
+    assertAudioVisualConditionPassedToModel(playingCalibration);
+}
+
+PRESENTER_TEST(playCalibrationPassesAuditoryOnlyCondition) {
+    assertAuditoryOnlyConditionPassedToModel(playingCalibration);
+}
+
+PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsNextTrialButtonForSubject) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest,
+        playingTrialFromSubject);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsNextTrialButtonForSubject) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest,
+        playingTrialFromSubject);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsNextTrialButtonForSubject) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest,
+        playingTrialFromSubject);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptivePassFailTestShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingAdaptivePassFailTest, playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest,
+        playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelFreeResponseTestWithAllTargets,
+        playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest,
+        playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidMaskerLevelShowsErrorMessage) {
+    assertInvalidMaskerLevelShowsErrorMessage(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptivePassFailTestWithInvalidMaskerLevelShowsErrorMessage) {
+    assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementWithInvalidMaskerLevelShowsErrorMessage) {
+    assertInvalidMaskerLevelShowsErrorMessage(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementWithInvalidMaskerLevelShowsErrorMessage) {
+    assertInvalidMaskerLevelShowsErrorMessage(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(playCalibrationWithInvalidLevelShowsErrorMessage) {
+    assertInvalidCalibrationLevelShowsErrorMessage(playingCalibration);
+}
+
+PRESENTER_TEST(respondingFromSubjectPlaysTrial) {
+    assertPlaysTrial(respondingFromSubject);
+}
+
+PRESENTER_TEST(playingTrialFromSubjectPlaysTrial) {
+    assertPlaysTrial(playingTrialFromSubject);
+}
+
+PRESENTER_TEST(playingTrialFromExperimenterPlaysTrial) {
+    assertPlaysTrial(playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(playingTrialHidesNextTrialButton) {
+    assertHidesPlayTrialButton(playingTrialFromSubject);
+}
+
+PRESENTER_TEST(playingTrialHidesNextTrialButtonForExperimenter) {
+    assertHidesPlayTrialButton(playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(playingTrialFromSubjectHidesExitTestButton) {
+    assertHidesExitTestButton(playingTrialFromSubject);
+}
+
+PRESENTER_TEST(playingTrialFromSubjectPassesAudioDevice) {
+    assertAudioDevicePassedToTrial(playingTrialFromSubject);
+}
+
+PRESENTER_TEST(playingTrialFromExperimenterPassesAudioDevice) {
+    assertAudioDevicePassedToTrial(playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(playCalibrationPassesAudioDevice) {
+    setAudioDevice("b");
+    playCalibration();
+    assertEqual("b", calibration().audioSettings.audioDevice);
+}
+
+PRESENTER_TEST(subjectResponsePassesNumberResponse) {
+    subjectView.setNumberResponse("1");
+    respondFromSubject();
+    assertEqual(1, model.responseParameters().number);
+}
+
+PRESENTER_TEST(subjectResponsePassesGreenColor) {
+    subjectView.setGreenResponse();
+    respondFromSubject();
+    assertModelPassedCondition(coordinate_response_measure::Color::green);
+}
+
+PRESENTER_TEST(subjectResponsePassesRedColor) {
+    subjectView.setRedResponse();
+    respondFromSubject();
+    assertModelPassedCondition(coordinate_response_measure::Color::red);
+}
+
+PRESENTER_TEST(subjectResponsePassesBlueColor) {
+    subjectView.setBlueResponse();
+    respondFromSubject();
+    assertModelPassedCondition(coordinate_response_measure::Color::blue);
+}
+
+PRESENTER_TEST(subjectResponsePassesWhiteColor) {
+    subjectView.setGrayResponse();
+    respondFromSubject();
+    assertModelPassedCondition(coordinate_response_measure::Color::white);
+}
+
+PRESENTER_TEST(experimenterResponsePassesResponse) {
+    experimenterView.setResponse("a");
+    respondFromExperimenter();
+    assertEqual("a", model.freeResponse().response);
+}
+
+PRESENTER_TEST(experimenterResponseFlagsResponse) {
+    experimenterView.flagResponse();
+    respondFromExperimenter();
+    assertTrue(model.freeResponse().flagged);
+}
+
+PRESENTER_TEST(passedTrialSubmitsCorrectResponse) {
+    run(submittingPassedTrial);
+    assertTrue(model.correctResponseSubmitted());
+}
+
+PRESENTER_TEST(failedTrialSubmitsIncorrectResponse) {
+    run(submittingFailedTrial);
+    assertTrue(model.incorrectResponseSubmitted());
+}
+
+PRESENTER_TEST(respondFromSubjectShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(respondingFromSubject);
+}
+
+PRESENTER_TEST(respondFromExperimenterShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(submittingFreeResponse);
+}
+
+PRESENTER_TEST(submitPassedTrialShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submitFailedTrialShowsSetupViewWhenTestComplete) {
+    assertCompleteTestShowsSetupView(submittingFailedTrial);
+}
+
+PRESENTER_TEST(respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(respondingFromSubject);
+}
+
+PRESENTER_TEST(respondFromExperimenterDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(submittingFreeResponse);
+}
+
+PRESENTER_TEST(submitPassedTrialDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submitFailedTrialDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(submittingFailedTrial);
+}
+
+PRESENTER_TEST(respondFromSubjectHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(respondingFromSubject);
+}
+
+PRESENTER_TEST(respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(submittingFreeResponse);
+}
+
+PRESENTER_TEST(submitPassedTrialHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submitFailedTrialHidesExperimenterViewWhenTestComplete) {
+    assertCompleteTestHidesExperimenterView(submittingFailedTrial);
+}
+
+PRESENTER_TEST(respondFromExperimenterHidesTestingViewWhenTestComplete) {
+    assertCompleteTestHidesTestingView(submittingFreeResponse);
+}
+
+PRESENTER_TEST(submitPassedTrialHidesTestingViewWhenTestComplete) {
+    assertCompleteTestHidesTestingView(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submitFailedTrialHidesTestingViewWhenTestComplete) {
+    assertCompleteTestHidesTestingView(submittingFailedTrial);
+}
+
+PRESENTER_TEST(submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
+    assertCompleteTestDoesNotPlayTrial(respondingFromSubject);
+}
+
+PRESENTER_TEST(
+    respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(respondingFromSubject);
+}
+
+PRESENTER_TEST(
+    respondFromExperimenterDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(submittingFreeResponse);
+}
+
+PRESENTER_TEST(submitPassedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submitFailedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(submittingFailedTrial);
+}
+
+PRESENTER_TEST(
+    respondFromExperimenterDoesNotHideTestingViewWhenTestIncomplete) {
+    assertDoesNotHideTestingView(submittingFreeResponse);
+}
+
+PRESENTER_TEST(submitPassedTrialDoesNotHideTestingViewWhenTestIncomplete) {
+    assertDoesNotHideTestingView(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submitFailedTrialDoesNotHideTestingViewWhenTestIncomplete) {
+    assertDoesNotHideTestingView(submittingFailedTrial);
+}
+
+PRESENTER_TEST(experimenterResponseShowsNextTrialButton) {
+    assertShowsNextTrialButton(submittingFreeResponse);
+}
+
+PRESENTER_TEST(subjectPassedTrialShowsNextTrialButtonForExperimenter) {
+    assertShowsNextTrialButton(submittingPassedTrial);
+}
+
+PRESENTER_TEST(subjectFailedTrialShowsNextTrialButtonForExperimenter) {
+    assertShowsNextTrialButton(submittingFailedTrial);
+}
+
+PRESENTER_TEST(experimenterResponseHidesResponseSubmission) {
+    assertResponseViewHidden(submittingFreeResponse);
+}
+
+PRESENTER_TEST(correctResponseHidesEvaluationButtons) {
     assertResponseViewHidden(submittingPassedTrial);
 }
 
-TEST_F(PresenterTests, incorrectResponseHidesEvaluationButtons) {
+PRESENTER_TEST(incorrectResponseHidesEvaluationButtons) {
     assertResponseViewHidden(submittingFailedTrial);
 }
 
-TEST_F(PresenterTests, subjectResponseHidesResponseButtons) {
+PRESENTER_TEST(subjectResponseHidesResponseButtons) {
     assertResponseViewHidden(respondingFromSubject);
 }
 
-TEST_F(PresenterTests, subjectResponseHidesSubjectViewWhenTestComplete) {
+PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
     setTestComplete();
     respondFromSubject();
     assertSubjectViewHidden();
 }
 
-TEST_F(PresenterTests, exitTestHidesSubjectView) {
+PRESENTER_TEST(exitTestHidesSubjectView) {
     exitTest();
     assertSubjectViewHidden();
 }
 
-TEST_F(PresenterTests, exitTestHidesExperimenterView) {
+PRESENTER_TEST(exitTestHidesExperimenterView) {
     assertHidesExperimenterView(exitingTest);
 }
 
-TEST_F(PresenterTests, exitTestHidesTestingView) {
+PRESENTER_TEST(exitTestHidesTestingView) {
     assertHidesTestingView(exitingTest);
 }
 
-TEST_F(PresenterTests, exitTestHidesResponseButtons) {
+PRESENTER_TEST(exitTestHidesResponseButtons) {
     run(exitingTest);
     assertTrue(respondingFromSubject.responseViewHidden());
 }
 
-TEST_F(PresenterTests, exitTestShowsTestSetupView) {
+PRESENTER_TEST(exitTestShowsTestSetupView) {
     exitTest();
     assertSetupViewShown();
 }
 
-TEST_F(PresenterTests, browseForTrackSettingsFileUpdatesTrackSettingsFile) {
+PRESENTER_TEST(browseForTrackSettingsFileUpdatesTrackSettingsFile) {
     assertBrowseResultPassedToEntry(browsingForTrackSettingsFile);
 }
 
-TEST_F(PresenterTests, browseForTargetListUpdatesTargetList) {
+PRESENTER_TEST(browseForTargetListUpdatesTargetList) {
     assertBrowseResultPassedToEntry(browsingForTargetList);
 }
 
-TEST_F(PresenterTests, browseForMaskerUpdatesMasker) {
+PRESENTER_TEST(browseForMaskerUpdatesMasker) {
     assertBrowseResultPassedToEntry(browsingForMasker);
 }
 
-TEST_F(PresenterTests, browseForCalibrationUpdatesCalibrationFilePaths) {
+PRESENTER_TEST(browseForCalibrationUpdatesCalibrationFilePaths) {
     assertBrowseResultPassedToEntry(browsingForCalibration);
 }
 
-TEST_F(PresenterTests, browseForTargetListCancelDoesNotChangeTargetList) {
+PRESENTER_TEST(browseForTargetListCancelDoesNotChangeTargetList) {
     assertCancellingBrowseDoesNotChangePath(browsingForTargetList);
 }
 
-TEST_F(PresenterTests, browseForMaskerCancelDoesNotChangeMasker) {
+PRESENTER_TEST(browseForMaskerCancelDoesNotChangeMasker) {
     assertCancellingBrowseDoesNotChangePath(browsingForMasker);
 }
 
-TEST_F(PresenterTests,
-    browseForCalibrationCancelDoesNotChangeCalibrationFilePath) {
+PRESENTER_TEST(browseForCalibrationCancelDoesNotChangeCalibrationFilePath) {
     assertCancellingBrowseDoesNotChangePath(browsingForCalibration);
 }
 
-TEST_F(PresenterTests,
-    browseForTrackSettingsFileCancelDoesNotChangeTrackSettingsFile) {
+PRESENTER_TEST(browseForTrackSettingsFileCancelDoesNotChangeTrackSettingsFile) {
     assertCancellingBrowseDoesNotChangePath(browsingForTrackSettingsFile);
 }
 
-TEST_F(PresenterTests, completingTrialShowsExitTestButton) {
+PRESENTER_TEST(completingTrialShowsExitTestButton) {
     completeTrial();
     assertTrue(exitTestButtonShown());
 }
 
-TEST_F(PresenterTests, confirmFixedLevelOpenSetTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingFixedLevelOpenSetTest);
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementShowsTrialNumber) {
+    assertShowsTrialNumber(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
-TEST_F(PresenterTests, confirmFixedLevelOpenSetAllStimuliTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingFixedLevelOpenSetAllStimuliTest);
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingFixedLevelFreeResponseTestWithAllTargets);
 }
 
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetSilentIntervalsTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingFixedLevelOpenSetSilentIntervalsTest);
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsShowsTrialNumber) {
+    assertShowsTrialNumber(
+        confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveOpenSetTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingAdaptiveOpenSetTest);
+PRESENTER_TEST(confirmingAdaptivePassFailTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingAdaptivePassFailTest);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveOpenSetKeywordsTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingAdaptiveCorrectKeywordsTest);
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsTrialNumber) {
+    assertShowsTrialNumber(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
-TEST_F(PresenterTests, confirmFixedLevelClosedSetTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingFixedLevelClosedSetTest);
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsTrialNumber) {
+    assertShowsTrialNumber(
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
 }
 
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingFixedLevelClosedSetSilentIntervalsTest);
+PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsTrialNumber) {
+    assertShowsTrialNumber(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
-TEST_F(PresenterTests, confirmAdaptiveClosedSetTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingAdaptiveClosedSetTest);
+PRESENTER_TEST(submittingResponseFromExperimenterShowsTrialNumber) {
+    assertShowsTrialNumber(submittingFreeResponse);
 }
 
-TEST_F(PresenterTests, submittingResponseFromExperimenterShowsTrialNumber) {
-    assertShowsTrialNumber(respondingFromExperimenter);
-}
-
-TEST_F(PresenterTests, submittingCorrectKeywordsShowsTrialNumber) {
-    assertShowsTrialNumber(submittingCorrectKeywords);
-}
-
-TEST_F(PresenterTests, submittingResponseFromSubjectShowsTrialNumber) {
+PRESENTER_TEST(submittingResponseFromSubjectShowsTrialNumber) {
     assertShowsTrialNumber(respondingFromSubject);
 }
 
-TEST_F(PresenterTests, submittingPassedTrialShowsTrialNumber) {
+PRESENTER_TEST(submittingPassedTrialShowsTrialNumber) {
     assertShowsTrialNumber(submittingPassedTrial);
 }
 
-TEST_F(PresenterTests, submittingFailedTrialShowsTrialNumber) {
+PRESENTER_TEST(submittingFailedTrialShowsTrialNumber) {
     assertShowsTrialNumber(submittingFailedTrial);
 }
 
@@ -980,7 +1099,7 @@ TEST_F(
 
 TEST_F(
     PresenterTests, confirmingAdaptiveClosedSetTestShowsTargetFileName) {
-    assertShowsTargetFileName(confirmingAdaptiveClosedSetTest);
+    assertShowsTargetFileName(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
 TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
@@ -992,126 +1111,120 @@ TEST_F(PresenterTests, submittingCoordinateResponseShowsTargetFileName) {
 }
 
 TEST_F(PresenterTests, submittingFreeResponseShowsTargetFileName) {
-    assertShowsTargetFileName(respondingFromExperimenter);
+    assertShowsTargetFileName(submittingFreeResponse);
 }
 
-TEST_F(PresenterTests,
-    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetTest) {
+PRESENTER_TEST(
+    completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveClosedSetTest, respondingFromSubject);
-}
-
-TEST_F(PresenterTests,
-    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetSingleSpeakerTest) {
-    assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveClosedSetSingleSpeakerTest, respondingFromSubject);
-}
-
-TEST_F(PresenterTests,
-    completingTrialShowsSubjectResponseButtonsForAdaptiveClosedSetDelayedMaskerTest) {
-    assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveClosedSetDelayedMaskerTest, respondingFromSubject);
-}
-
-TEST_F(PresenterTests,
-    completingTrialShowsSubjectResponseButtonsForFixedLevelClosedSetTest) {
-    assertCompleteTrialShowsResponseView(
-        confirmingFixedLevelClosedSetTest, respondingFromSubject);
-}
-
-TEST_F(PresenterTests,
-    completingTrialShowsSubjectResponseButtonsForFixedLevelClosedSetSilentIntervalsTest) {
-    assertCompleteTrialShowsResponseView(
-        confirmingFixedLevelClosedSetSilentIntervalsTest,
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest,
         respondingFromSubject);
 }
 
-TEST_F(PresenterTests,
-    completingTrialShowsExperimenterEvaluationButtonsForAdaptiveOpenSetTest) {
+PRESENTER_TEST(
+    completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureSingleSpeakerTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveOpenSetTest, submittingPassedTrial);
+        confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker,
+        respondingFromSubject);
 }
 
-TEST_F(PresenterTests,
-    completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveOpenSetKeywordsTest) {
+PRESENTER_TEST(
+    completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureTestWithDelayedMasker) {
     assertCompleteTrialShowsResponseView(
-        confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
+        confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker,
+        respondingFromSubject);
 }
 
-TEST_F(PresenterTests,
-    completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetTest) {
+PRESENTER_TEST(
+    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureWithTargetReplacementTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingFixedLevelOpenSetTest, respondingFromExperimenter);
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest,
+        respondingFromSubject);
 }
 
-TEST_F(PresenterTests,
-    completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetAllStimuliTest) {
+PRESENTER_TEST(
+    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureSilentIntervalsTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingFixedLevelOpenSetAllStimuliTest, respondingFromExperimenter);
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest,
+        respondingFromSubject);
 }
 
-TEST_F(PresenterTests,
-    completingTrialShowsExperimenterResponseSubmissionForFixedLevelOpenSetSilentIntervalsTest) {
+PRESENTER_TEST(
+    completingTrialShowsExperimenterEvaluationButtonsForAdaptivePassFailTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingFixedLevelOpenSetSilentIntervalsTest,
-        respondingFromExperimenter);
+        confirmingAdaptivePassFailTest, submittingPassedTrial);
 }
 
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveClosedSetTest);
+PRESENTER_TEST(
+    completingTrialShowsExperimenterResponseSubmissionForFixedLevelFreeResponseTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest,
+        submittingFreeResponse);
 }
 
-TEST_F(
-    PresenterTests, confirmAdaptiveOpenSetTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveOpenSetTest);
+PRESENTER_TEST(
+    completingTrialShowsExperimenterResponseSubmissionForFixedLevelFreeResponseAllStimuliTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelFreeResponseTestWithAllTargets,
+        submittingFreeResponse);
 }
 
-TEST_F(PresenterTests,
-    confirmAdaptiveOpenSetKeywordsTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveCorrectKeywordsTest);
+PRESENTER_TEST(
+    completingTrialShowsExperimenterResponseSubmissionForFixedLevelFreeResponseSilentIntervalsTest) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest,
+        submittingFreeResponse);
 }
 
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(confirmingFixedLevelOpenSetTest);
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidSnrShowsErrorMessage) {
+    assertInvalidSnrShowsErrorMessage(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(confirmingFixedLevelClosedSetTest);
+PRESENTER_TEST(confirmingAdaptivePassFailTestWithInvalidSnrShowsErrorMessage) {
+    assertInvalidSnrShowsErrorMessage(confirmingAdaptivePassFailTest);
 }
 
-TEST_F(PresenterTests,
-    confirmAdaptiveClosedSetTestWithInvalidInputDoesNotHideSetupView) {
-    assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptiveClosedSetTest);
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementWithInvalidSnrShowsErrorMessage) {
+    assertInvalidSnrShowsErrorMessage(
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
-TEST_F(PresenterTests,
-    confirmAdaptiveOpenSetTestWithInvalidInputDoesNotHideSetupView) {
-    assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptiveOpenSetTest);
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementWithInvalidSnrShowsErrorMessage) {
+    assertInvalidSnrShowsErrorMessage(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
-TEST_F(PresenterTests,
-    confirmAdaptiveOpenSetKeywordsTestWithInvalidInputDoesNotHideSetupView) {
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidInputDoesNotHideSetupView) {
     assertSetupViewNotHiddenWhenSnrIsInvalid(
-        confirmingAdaptiveCorrectKeywordsTest);
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
-TEST_F(PresenterTests,
-    confirmFixedLevelOpenSetTestWithInvalidInputDoesNotHideSetupView) {
-    assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingFixedLevelOpenSetTest);
+PRESENTER_TEST(
+    confirmingAdaptivePassFailTestWithInvalidInputDoesNotHideSetupView) {
+    assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingAdaptivePassFailTest);
 }
 
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetTestWithInvalidInputDoesNotHideSetupView) {
-    assertSetupViewNotHiddenWhenSnrIsInvalid(confirmingFixedLevelClosedSetTest);
-}
-
-TEST_F(PresenterTests,
-    confirmFixedLevelClosedSetSilentIntervalsTestWithInvalidInputDoesNotHideSetupView) {
+PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithTargetReplacementWithInvalidInputDoesNotHideSetupView) {
     assertSetupViewNotHiddenWhenSnrIsInvalid(
-        confirmingFixedLevelClosedSetSilentIntervalsTest);
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementWithInvalidInputDoesNotHideSetupView) {
+    assertSetupViewNotHiddenWhenSnrIsInvalid(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsWithInvalidInputDoesNotHideSetupView) {
+    assertSetupViewNotHiddenWhenSnrIsInvalid(
+        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
 }
 
 TEST_F(PresenterFailureTests,

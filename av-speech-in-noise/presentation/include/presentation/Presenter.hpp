@@ -9,14 +9,14 @@ namespace av_speech_in_noise {
 enum class Method {
     adaptivePassFail,
     adaptiveCorrectKeywords,
-    defaultAdaptiveClosedSet,
-    adaptiveClosedSetSingleSpeaker,
-    adaptiveClosedSetDelayedMasker,
-    defaultFixedLevelOpenSet,
-    fixedLevelOpenSetSilentIntervals,
-    fixedLevelOpenSetAllStimuli,
-    defaultFixedLevelClosedSet,
-    fixedLevelClosedSetSilentIntervals
+    defaultAdaptiveCoordinateResponseMeasure,
+    adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+    adaptiveCoordinateResponseMeasureWithDelayedMasker,
+    fixedLevelFreeResponseWithTargetReplacement,
+    fixedLevelFreeResponseWithSilentIntervalTargets,
+    fixedLevelFreeResponseWithAllTargets,
+    fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets
 };
 
 constexpr auto methodName(Method c) -> const char * {
@@ -25,57 +25,28 @@ constexpr auto methodName(Method c) -> const char * {
         return "adaptive open-set";
     case Method::adaptiveCorrectKeywords:
         return "adaptive correct keywords";
-    case Method::defaultAdaptiveClosedSet:
+    case Method::defaultAdaptiveCoordinateResponseMeasure:
         return "adaptive closed-set";
-    case Method::adaptiveClosedSetSingleSpeaker:
+    case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
         return "adaptive closed-set single speaker";
-    case Method::adaptiveClosedSetDelayedMasker:
+    case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
         return "adaptive closed-set delayed masker";
-    case Method::defaultFixedLevelOpenSet:
+    case Method::fixedLevelFreeResponseWithTargetReplacement:
         return "fixed-level open-set with replacement";
-    case Method::defaultFixedLevelClosedSet:
+    case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
         return "fixed-level closed-set with replacement";
-    case Method::fixedLevelOpenSetSilentIntervals:
+    case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
         return "fixed-level open-set silent intervals";
-    case Method::fixedLevelClosedSetSilentIntervals:
+    case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
         return "fixed-level closed-set silent intervals";
-    case Method::fixedLevelOpenSetAllStimuli:
+    case Method::fixedLevelFreeResponseWithAllTargets:
         return "fixed-level open-set all stimuli";
     }
 }
 
 class View {
   public:
-    class Testing {
-      public:
-        class EventListener {
-          public:
-            virtual ~EventListener() = default;
-            virtual void playTrial() = 0;
-            virtual void submitPassedTrial() = 0;
-            virtual void submitCorrectKeywords() = 0;
-            virtual void submitFailedTrial() = 0;
-            virtual void submitFreeResponse() = 0;
-        };
-
-        virtual ~Testing() = default;
-        virtual void subscribe(EventListener *) = 0;
-        virtual void show() = 0;
-        virtual void hide() = 0;
-        virtual void showNextTrialButton() = 0;
-        virtual void hideNextTrialButton() = 0;
-        virtual void showEvaluationButtons() = 0;
-        virtual void hideEvaluationButtons() = 0;
-        virtual void showFreeResponseSubmission() = 0;
-        virtual void hideFreeResponseSubmission() = 0;
-        virtual void showCorrectKeywordsSubmission() = 0;
-        virtual void hideCorrectKeywordsSubmission() = 0;
-        virtual auto freeResponse() -> std::string = 0;
-        virtual auto correctKeywords() -> std::string = 0;
-        virtual auto flagged() -> bool = 0;
-    };
-
-    class Subject {
+    class CoordinateResponseMeasure {
       public:
         class EventListener {
           public:
@@ -84,7 +55,7 @@ class View {
             virtual void submitResponse() = 0;
         };
 
-        virtual ~Subject() = default;
+        virtual ~CoordinateResponseMeasure() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual auto numberResponse() -> std::string = 0;
         virtual auto greenResponse() -> bool = 0;
@@ -141,14 +112,30 @@ class View {
           public:
             virtual ~EventListener() = default;
             virtual void exitTest() = 0;
+            virtual void playTrial() = 0;
+            virtual void submitPassedTrial() = 0;
+            virtual void submitCorrectKeywords() = 0;
+            virtual void submitFailedTrial() = 0;
+            virtual void submitFreeResponse() = 0;
         };
 
         virtual ~Experimenter() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
+        virtual void showEvaluationButtons() = 0;
+        virtual void hideEvaluationButtons() = 0;
+        virtual void showFreeResponseSubmission() = 0;
+        virtual void hideFreeResponseSubmission() = 0;
+        virtual void showCorrectKeywordsSubmission() = 0;
+        virtual void hideCorrectKeywordsSubmission() = 0;
+        virtual auto freeResponse() -> std::string = 0;
+        virtual auto correctKeywords() -> std::string = 0;
+        virtual auto flagged() -> bool = 0;
         virtual void hideExitTestButton() = 0;
         virtual void showExitTestButton() = 0;
+        virtual void showNextTrialButton() = 0;
+        virtual void hideNextTrialButton() = 0;
         virtual void display(std::string) = 0;
         virtual void secondaryDisplay(std::string) = 0;
     };
@@ -165,35 +152,15 @@ class View {
 
 class Presenter : public Model::EventListener {
   public:
-    class Testing : public View::Testing::EventListener {
-      public:
-        explicit Testing(View::Testing *);
-        void becomeChild(Presenter *parent);
-        void show();
-        void hide();
-        void showEvaluationButtons();
-        void showCorrectKeywordsSubmission();
-        void showFreeResponseSubmission();
-        void showNextTrialButton();
-        void hideCorrectKeywordsSubmission();
-        auto openSetResponse() -> open_set::FreeResponse;
-        auto correctKeywords() -> open_set::CorrectKeywords;
-        void playTrial() override;
-        void submitPassedTrial() override;
-        void submitFreeResponse() override;
-        void submitFailedTrial() override;
-        void submitCorrectKeywords() override;
-
-      private:
-        void prepareNextEvaluatedTrial();
-
-        Presenter *parent{};
-        View::Testing *view;
-    };
-
     class TestSetup : public View::TestSetup::EventListener {
       public:
         explicit TestSetup(View::TestSetup *);
+        void playCalibration() override;
+        void browseForTargetList() override;
+        void browseForMasker() override;
+        void confirmTestSetup() override;
+        void browseForCalibration() override;
+        void browseForTrackSettingsFile() override;
         void show();
         void hide();
         void becomeChild(Presenter *parent);
@@ -204,29 +171,24 @@ class Presenter : public Model::EventListener {
         auto adaptiveTest() -> AdaptiveTest;
         auto fixedLevelTest() -> FixedLevelTest;
         auto calibrationParameters() -> Calibration;
-        auto closedSet() -> bool;
+        auto coordinateResponseMeasure() -> bool;
         auto defaultAdaptive() -> bool;
-        auto adaptiveClosedSet() -> bool;
+        auto adaptiveCoordinateResponseMeasure() -> bool;
         auto adaptivePassFail() -> bool;
-        auto fixedLevelOpenSet() -> bool;
-        auto fixedLevelClosedSet() -> bool;
-        auto fixedLevelClosedSetSilentIntervals() -> bool;
+        auto fixedLevelCoordinateResponseMeasure() -> bool;
+        auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets()
+            -> bool;
         auto fixedLevelSilentIntervals() -> bool;
         auto fixedLevelAllStimuli() -> bool;
         auto singleSpeaker() -> bool;
-        auto adaptiveClosedSetDelayedMasker() -> bool;
-        auto adaptiveClosedSetSingleSpeaker() -> bool;
+        auto adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool;
+        auto adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool;
+        auto adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool;
         auto adaptiveCorrectKeywords() -> bool;
         auto delayedMasker() -> bool;
-        void playCalibration() override;
-        void browseForTargetList() override;
-        void browseForMasker() override;
-        void confirmTestSetup() override;
-        void browseForCalibration() override;
-        void browseForTrackSettingsFile() override;
 
       private:
-        auto defaultAdaptiveClosedSet() -> bool;
+        auto defaultAdaptiveCoordinateResponseMeasure() -> bool;
         auto testIdentity() -> TestIdentity;
         void initialize(Test &);
         auto readCondition() -> Condition;
@@ -239,37 +201,47 @@ class Presenter : public Model::EventListener {
         Presenter *parent{};
     };
 
-    class Subject : public View::Subject::EventListener {
+    class CoordinateResponseMeasure
+        : public View::CoordinateResponseMeasure::EventListener {
       public:
-        explicit Subject(View::Subject *);
-        void show();
-        void hide();
+        explicit CoordinateResponseMeasure(View::CoordinateResponseMeasure *);
+        void playTrial() override;
+        void submitResponse() override;
+        void start();
+        void stop();
         void becomeChild(Presenter *parent);
         void showResponseButtons();
         auto subjectResponse() -> coordinate_response_measure::Response;
-        void playTrial() override;
-        void submitResponse() override;
 
       private:
-        void hideResponseButtons();
-        void showNextTrialButton();
         auto colorResponse() -> coordinate_response_measure::Color;
 
-        View::Subject *view;
+        View::CoordinateResponseMeasure *view;
         Presenter *parent{};
     };
 
     class Experimenter : public View::Experimenter::EventListener {
       public:
         explicit Experimenter(View::Experimenter *);
+        void exitTest() override;
+        void playTrial() override;
+        void submitPassedTrial() override;
+        void submitFreeResponse() override;
+        void submitFailedTrial() override;
+        void submitCorrectKeywords() override;
         void becomeChild(Presenter *parent);
-        void show();
-        void hide();
-        void hideExitTestButton();
-        void showExitTestButton();
+        void start();
+        void stop();
+        void trialPlayed();
+        void trialComplete();
+        void readyNextTrial();
         void display(std::string);
         void secondaryDisplay(std::string);
-        void exitTest() override;
+        void showPassFailSubmission();
+        void showCorrectKeywordsSubmission();
+        void showFreeResponseSubmission();
+        auto correctKeywords() -> open_set::CorrectKeywords;
+        auto freeResponse() -> open_set::FreeResponse;
 
       private:
         Presenter *parent{};
@@ -279,144 +251,119 @@ class Presenter : public Model::EventListener {
     class TrialCompletionHandler {
       public:
         virtual ~TrialCompletionHandler() = default;
-        virtual void showResponseView() = 0;
+        virtual void showResponseSubmission() = 0;
     };
 
-    class AdaptiveClosedSetTestTrialCompletionHandler
+    class CoordinateResponseMeasureTestTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveClosedSetTestTrialCompletionHandler(Subject &subject)
-            : subject{subject} {}
+        explicit CoordinateResponseMeasureTestTrialCompletionHandler(
+            CoordinateResponseMeasure &coordinateResponseMeasure)
+            : coordinateResponseMeasure{coordinateResponseMeasure} {}
 
-        void showResponseView() override { subject.showResponseButtons(); }
+        void showResponseSubmission() override {
+            coordinateResponseMeasure.showResponseButtons();
+        }
 
       private:
-        Subject &subject;
+        CoordinateResponseMeasure &coordinateResponseMeasure;
     };
 
-    class AdaptiveOpenSetTestTrialCompletionHandler
+    class PassFailTrialCompletionHandler : public TrialCompletionHandler {
+      public:
+        explicit PassFailTrialCompletionHandler(
+            Experimenter &experimenterPresenter)
+            : experimenterPresenter{experimenterPresenter} {}
+
+        void showResponseSubmission() override {
+            experimenterPresenter.showPassFailSubmission();
+        }
+
+      private:
+        Experimenter &experimenterPresenter;
+    };
+
+    class CorrectKeywordsTrialCompletionHandler
         : public TrialCompletionHandler {
       public:
-        explicit AdaptiveOpenSetTestTrialCompletionHandler(Testing &testing)
-            : testing{testing} {}
+        explicit CorrectKeywordsTrialCompletionHandler(
+            Experimenter &experimenterPresenter)
+            : experimenterPresenter{experimenterPresenter} {}
 
-        void showResponseView() override { testing.showEvaluationButtons(); }
+        void showResponseSubmission() override {
+            experimenterPresenter.showCorrectKeywordsSubmission();
+        }
 
       private:
-        Testing &testing;
+        Experimenter &experimenterPresenter;
     };
 
-    class AdaptiveOpenSetKeywordsTestTrialCompletionHandler
-        : public TrialCompletionHandler {
+    class FreeResponseTrialCompletionHandler : public TrialCompletionHandler {
       public:
-        explicit AdaptiveOpenSetKeywordsTestTrialCompletionHandler(
-            Testing &testing)
-            : testing{testing} {}
+        explicit FreeResponseTrialCompletionHandler(
+            Experimenter &experimenterPresenter)
+            : experimenterPresenter{experimenterPresenter} {}
 
-        void showResponseView() override { testing.showCorrectKeywordsSubmission(); }
-
-      private:
-        Testing &testing;
-    };
-
-    class FixedLevelOpenSetTestTrialCompletionHandler
-        : public TrialCompletionHandler {
-      public:
-        explicit FixedLevelOpenSetTestTrialCompletionHandler(Testing &testing)
-            : testing{testing} {}
-
-        void showResponseView() override { testing.showFreeResponseSubmission(); }
+        void showResponseSubmission() override {
+            experimenterPresenter.showFreeResponseSubmission();
+        }
 
       private:
-        Testing &testing;
+        Experimenter &experimenterPresenter;
     };
 
-    class FixedLevelClosedSetTestTrialCompletionHandler
-        : public TrialCompletionHandler {
-      public:
-        explicit FixedLevelClosedSetTestTrialCompletionHandler(Subject &subject)
-            : subject{subject} {}
-
-        void showResponseView() override { subject.showResponseButtons(); }
-
-      private:
-        Subject &subject;
-    };
-
-    Presenter(
-        Model &, View &, TestSetup &, Subject &, Experimenter &, Testing &);
+    Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
+        Experimenter &);
     void trialComplete() override;
     void run();
-    void browseForTargetList();
+    void confirmTestSetup();
     void playTrial();
-    void submitSubjectResponse();
-    void submitExperimenterResponse();
+    void playCalibration();
+    void browseForTargetList();
     void browseForMasker();
     void browseForCalibration();
     void browseForTrackSettingsFile();
-    void confirmTestSetup();
-    void playCalibration();
+    void submitSubjectResponse();
+    void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();
     void submitCorrectKeywords();
     void exitTest();
-    static int fullScaleLevel_dB_SPL;
-    static int ceilingSnr_dB;
-    static int floorSnr_dB;
-    static int trackBumpLimit;
+
+    static constexpr auto fullScaleLevel_dB_SPL{119};
+    static constexpr auto ceilingSnr_dB{20};
+    static constexpr auto floorSnr_dB{-40};
+    static constexpr auto trackBumpLimit{10};
 
   private:
-    auto fixedLevelSilentIntervals() -> bool;
-    auto fixedLevelAllStimuli() -> bool;
-    auto defaultAdaptive() -> bool;
-    auto singleSpeaker() -> bool;
-    auto delayedMasker() -> bool;
-    auto adaptiveClosedSetDelayedMasker() -> bool;
-    auto adaptiveClosedSetSingleSpeaker() -> bool;
-    auto adaptiveCorrectKeywords() -> bool;
     void proceedToNextTrialAfter(void (Presenter::*f)());
     void submitFailedTrial_();
     void submitPassedTrial_();
-    void submitExperimenterResponse_();
-    void submitSubjectResponse_();
+    void submitFreeResponse_();
     void submitCorrectKeywords_();
-    void hideTestView();
-    void switchToSetupView();
+    void hideTest();
+    void switchToTestSetupView();
     void showErrorMessage(std::string);
     void playCalibration_();
     void showTestSetup();
-    auto testComplete() -> bool;
-    void proceedToNextTrial();
-    void hideTestSetup();
-    auto adaptiveClosedSet() -> bool;
-    auto adaptivePassFail() -> bool;
-    auto closedSet() -> bool;
-    auto fixedLevelClosedSet() -> bool;
-    auto fixedLevelClosedSetSilentIntervals() -> bool;
-    void initializeTest();
-    void showTestView();
+    void readyNextTrialIfNeeded();
+    void showTest();
     void switchToTestView();
     void confirmTestSetup_();
     void applyIfBrowseNotCancelled(
         std::string s, void (TestSetup::*f)(std::string));
     auto trialCompletionHandler() -> TrialCompletionHandler *;
 
-    FixedLevelOpenSetTestTrialCompletionHandler
-        fixedLevelOpenSetTrialCompletionHandler;
-    FixedLevelClosedSetTestTrialCompletionHandler
-        fixedLevelClosedSetTrialCompletionHandler;
-    AdaptiveOpenSetTestTrialCompletionHandler
-        adaptiveOpenSetTrialCompletionHandler;
-    AdaptiveOpenSetKeywordsTestTrialCompletionHandler
-        adaptiveOpenSetKeywordsTrialCompletionHandler;
-    AdaptiveClosedSetTestTrialCompletionHandler
-        adaptiveClosedSetTrialCompletionHandler;
+    FreeResponseTrialCompletionHandler freeResponseTrialCompletionHandler;
+    PassFailTrialCompletionHandler passFailTrialCompletionHandler;
+    CorrectKeywordsTrialCompletionHandler correctKeywordsTrialCompletionHandler;
+    CoordinateResponseMeasureTestTrialCompletionHandler
+        coordinateResponseMeasureTrialCompletionHandler;
     Model &model;
     View &view;
     TestSetup &testSetup;
-    Subject &subject;
-    Experimenter &experimenter;
-    Testing &testing;
+    CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
+    Experimenter &experimenterPresenter;
     TrialCompletionHandler *trialCompletionHandler_{};
 };
 }

@@ -2,6 +2,105 @@
 #include "common-objc.h"
 #include <iterator>
 
+@interface SetupViewActions : NSObject
+@property av_speech_in_noise::CocoaTestSetupView *controller;
+- (void)confirmTestSetup;
+- (void)browseForTargetList;
+- (void)browseForMasker;
+- (void)browseForCalibration;
+- (void)browseForTrackSettings;
+- (void)playCalibration;
+@end
+
+@interface SubjectViewActions : NSObject
+@property av_speech_in_noise::CocoaSubjectView *controller;
+- (void)respond:(id)sender;
+- (void)playTrial;
+@end
+
+@interface ExperimenterViewActions : NSObject
+@property av_speech_in_noise::CocoaExperimenterView *controller;
+- (void)exitTest;
+@end
+
+@interface TestingViewActions : NSObject
+@property av_speech_in_noise::CocoaExperimenterView *controller;
+- (void)playTrial;
+- (void)submitFreeResponse;
+- (void)submitPassedTrial;
+- (void)submitFailedTrial;
+- (void)submitCorrectKeywords;
+@end
+
+@implementation SetupViewActions
+@synthesize controller;
+
+- (void)confirmTestSetup {
+    controller->confirm();
+}
+
+- (void)browseForTargetList {
+    controller->browseForTargetList();
+}
+
+- (void)browseForMasker {
+    controller->browseForMasker();
+}
+
+- (void)browseForCalibration {
+    controller->browseForCalibration();
+}
+
+- (void)browseForTrackSettings {
+    controller->browseForTrackSettings();
+}
+
+- (void)playCalibration {
+    controller->playCalibration();
+}
+@end
+
+@implementation SubjectViewActions
+@synthesize controller;
+
+- (void)respond:(id)sender {
+    controller->respond(sender);
+}
+
+- (void)playTrial {
+    controller->playTrial();
+}
+@end
+
+@implementation ExperimenterViewActions
+@synthesize controller;
+
+- (void)exitTest {
+    controller->exitTest();
+}
+
+- (void)playTrial {
+    controller->playTrial();
+}
+
+- (void)submitFreeResponse {
+    controller->submitFreeResponse();
+}
+
+- (void)submitPassedTrial {
+    controller->submitPassedTrial();
+}
+
+- (void)submitFailedTrial {
+    controller->submitFailedTrial();
+}
+
+- (void)submitCorrectKeywords {
+    controller->submitCorrectKeywords();
+}
+@end
+
+namespace av_speech_in_noise {
 static auto textFieldWithFrame(NSRect r) -> NSTextField * {
     return [[NSTextField alloc] initWithFrame:r];
 }
@@ -305,34 +404,6 @@ void CocoaTestSetupView::browseForTrackSettings() {
 
 void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
 
-@implementation SetupViewActions
-@synthesize controller;
-
-- (void)confirmTestSetup {
-    controller->confirm();
-}
-
-- (void)browseForTargetList {
-    controller->browseForTargetList();
-}
-
-- (void)browseForMasker {
-    controller->browseForMasker();
-}
-
-- (void)browseForCalibration {
-    controller->browseForCalibration();
-}
-
-- (void)browseForTrackSettings {
-    controller->browseForTrackSettings();
-}
-
-- (void)playCalibration {
-    controller->playCalibration();
-}
-@end
-
 static auto greenColor{NSColor.greenColor};
 static auto redColor{NSColor.redColor};
 static auto blueColor{NSColor.blueColor};
@@ -365,7 +436,7 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
 }
 
 void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
-    for (std::size_t col = 0; col < responseNumbers; ++col)
+    for (std::size_t col{0}; col < responseNumbers; ++col)
         addNumberButton(color, numbers[col], row, col);
 }
 
@@ -463,42 +534,6 @@ void CocoaSubjectView::show() { [window makeKeyAndOrderFront:nil]; }
 
 void CocoaSubjectView::hide() { [window orderOut:nil]; }
 
-@implementation SubjectViewActions
-@synthesize controller;
-
-- (void)respond:(id)sender {
-    controller->respond(sender);
-}
-
-- (void)playTrial {
-    controller->playTrial();
-}
-@end
-
-CocoaExperimenterView::CocoaExperimenterView(NSRect r)
-    : view_{[[NSView alloc] initWithFrame:r]},
-      displayedText_{
-          [[NSTextField alloc] initWithFrame:NSMakeRect(buttonWidth + 15, 0,
-                                                 labelWidth, labelHeight)]},
-      secondaryDisplayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(buttonWidth + 15 + labelWidth + 15, 0,
-                            labelWidth, labelHeight)]},
-      actions{[ExperimenterViewActions alloc]} {
-    exitTestButton_ = button("exit test", actions, @selector(exitTest));
-    [exitTestButton_ setFrame:NSMakeRect(0, 0, buttonWidth, buttonHeight)];
-    [displayedText_ setBezeled:NO];
-    [displayedText_ setDrawsBackground:NO];
-    [displayedText_ setEditable:NO];
-    [secondaryDisplayedText_ setBezeled:NO];
-    [secondaryDisplayedText_ setDrawsBackground:NO];
-    [secondaryDisplayedText_ setEditable:NO];
-    [view_ addSubview:exitTestButton_];
-    [view_ addSubview:displayedText_];
-    [view_ addSubview:secondaryDisplayedText_];
-    [view_ setHidden:YES];
-    actions.controller = this;
-}
-
 void CocoaExperimenterView::subscribe(EventListener *e) { listener_ = e; }
 
 void CocoaExperimenterView::showExitTestButton() {
@@ -525,16 +560,14 @@ void CocoaExperimenterView::secondaryDisplay(std::string s) {
     [secondaryDisplayedText_ setStringValue:asNsString(std::move(s))];
 }
 
-@implementation ExperimenterViewActions
-@synthesize controller;
-
-- (void)exitTest {
-    controller->exitTest();
-}
-@end
-
-CocoaTestingView::CocoaTestingView(NSRect r)
+CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
+      displayedText_{
+          [[NSTextField alloc] initWithFrame:NSMakeRect(buttonWidth + 15, 0,
+                                                 labelWidth, labelHeight)]},
+      secondaryDisplayedText_{[[NSTextField alloc]
+          initWithFrame:NSMakeRect(buttonWidth + 15 + labelWidth + 15, 0,
+                            labelWidth, labelHeight)]},
       nextTrialButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, r.size.width,
                                             r.size.height - buttonHeight)]},
@@ -558,7 +591,19 @@ CocoaTestingView::CocoaTestingView(NSRect r)
       flagged_{[[NSButton alloc]
           initWithFrame:NSMakeRect(r.size.width - 150, buttonHeight + 15,
                             normalTextFieldWidth, labelHeight)]},
-      actions{[TestingViewActions alloc]} {
+      actions{[ExperimenterViewActions alloc]} {
+    exitTestButton_ = button("exit test", actions, @selector(exitTest));
+    [exitTestButton_ setFrame:NSMakeRect(0, 0, buttonWidth, buttonHeight)];
+    [displayedText_ setBezeled:NO];
+    [displayedText_ setDrawsBackground:NO];
+    [displayedText_ setEditable:NO];
+    [secondaryDisplayedText_ setBezeled:NO];
+    [secondaryDisplayedText_ setDrawsBackground:NO];
+    [secondaryDisplayedText_ setEditable:NO];
+    [view_ addSubview:exitTestButton_];
+    [view_ addSubview:displayedText_];
+    [view_ addSubview:secondaryDisplayedText_];
+    [view_ setHidden:YES];
     [flagged_ setButtonType:NSButtonTypeSwitch];
     [flagged_ setTitle:@"flagged"];
     const auto nextTrialButton_ {
@@ -606,91 +651,59 @@ CocoaTestingView::CocoaTestingView(NSRect r)
     actions.controller = this;
 }
 
-void CocoaTestingView::subscribe(EventListener *e) { listener_ = e; }
+void CocoaExperimenterView::showNextTrialButton() { [nextTrialButton setHidden:NO]; }
 
-void CocoaTestingView::showNextTrialButton() { [nextTrialButton setHidden:NO]; }
-
-void CocoaTestingView::hideNextTrialButton() {
+void CocoaExperimenterView::hideNextTrialButton() {
     [nextTrialButton setHidden:YES];
 }
 
-void CocoaTestingView::show() { [view_ setHidden:NO]; }
-
-void CocoaTestingView::hide() { [view_ setHidden:YES]; }
-
-void CocoaTestingView::showEvaluationButtons() {
+void CocoaExperimenterView::showEvaluationButtons() {
     [evaluationButtons setHidden:NO];
 }
 
-void CocoaTestingView::showFreeResponseSubmission() {
+void CocoaExperimenterView::showFreeResponseSubmission() {
     [responseSubmission setHidden:NO];
 }
 
-void CocoaTestingView::hideFreeResponseSubmission() {
+void CocoaExperimenterView::hideFreeResponseSubmission() {
     [responseSubmission setHidden:YES];
 }
 
-void CocoaTestingView::hideEvaluationButtons() {
+void CocoaExperimenterView::hideEvaluationButtons() {
     [evaluationButtons setHidden:YES];
 }
 
-void CocoaTestingView::showCorrectKeywordsSubmission() {
+void CocoaExperimenterView::showCorrectKeywordsSubmission() {
     [correctKeywordsSubmission setHidden:NO];
 }
 
-void CocoaTestingView::hideCorrectKeywordsSubmission() {
+void CocoaExperimenterView::hideCorrectKeywordsSubmission() {
     [correctKeywordsSubmission setHidden:YES];
 }
 
-auto CocoaTestingView::freeResponse() -> std::string {
+auto CocoaExperimenterView::freeResponse() -> std::string {
     return response_.stringValue.UTF8String;
 }
 
-auto CocoaTestingView::correctKeywords() -> std::string {
+auto CocoaExperimenterView::correctKeywords() -> std::string {
     return correctKeywordsEntry_.stringValue.UTF8String;
 }
 
-auto CocoaTestingView::flagged() -> bool {
+auto CocoaExperimenterView::flagged() -> bool {
     return flagged_.state == NSControlStateValueOn;
 }
 
-auto CocoaTestingView::view() -> NSView * { return view_; }
+void CocoaExperimenterView::playTrial() { listener_->playTrial(); }
 
-void CocoaTestingView::playTrial() { listener_->playTrial(); }
+void CocoaExperimenterView::submitFreeResponse() { listener_->submitFreeResponse(); }
 
-void CocoaTestingView::submitFreeResponse() { listener_->submitFreeResponse(); }
+void CocoaExperimenterView::submitPassedTrial() { listener_->submitPassedTrial(); }
 
-void CocoaTestingView::submitPassedTrial() { listener_->submitPassedTrial(); }
+void CocoaExperimenterView::submitFailedTrial() { listener_->submitFailedTrial(); }
 
-void CocoaTestingView::submitFailedTrial() { listener_->submitFailedTrial(); }
-
-void CocoaTestingView::submitCorrectKeywords() {
+void CocoaExperimenterView::submitCorrectKeywords() {
     listener_->submitCorrectKeywords();
 }
-
-@implementation TestingViewActions
-@synthesize controller;
-
-- (void)playTrial {
-    controller->playTrial();
-}
-
-- (void)submitFreeResponse {
-    controller->submitFreeResponse();
-}
-
-- (void)submitPassedTrial {
-    controller->submitPassedTrial();
-}
-
-- (void)submitFailedTrial {
-    controller->submitFailedTrial();
-}
-
-- (void)submitCorrectKeywords {
-    controller->submitCorrectKeywords();
-}
-@end
 
 CocoaView::CocoaView(NSRect r)
     : app{[NSApplication sharedApplication]},
@@ -776,3 +789,4 @@ void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {
 }
 
 void CocoaView::center() { [window center]; }
+}
