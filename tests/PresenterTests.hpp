@@ -29,6 +29,8 @@ class ModelStub : public Model {
 
     void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
 
+    auto targetFileName() -> std::string override { return targetFileName_; }
+
     [[nodiscard]] auto
     fixedLevelTestWithSilentIntervalTargetsInitialized() const {
         return fixedLevelTestWithSilentIntervalTargetsInitialized_;
@@ -1730,6 +1732,14 @@ class PresenterTests : public ::testing::Test {
     void setCorrectKeywords(std::string s) {
         experimenterView.setCorrectKeywords(std::move(s));
     }
+
+    void assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        UseCase &useCase, TrialSubmission &submission) {
+        run(useCase);
+        completeTrial();
+        exitTest();
+        assertTrue(submission.responseViewHidden());
+    }
 };
 
 class RequestFailingModel : public Model {
@@ -1737,6 +1747,8 @@ class RequestFailingModel : public Model {
 
   public:
     auto trialNumber() -> int override { return 0; }
+
+    auto targetFileName() -> std::string override { return {}; }
 
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
 

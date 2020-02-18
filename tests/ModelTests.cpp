@@ -28,8 +28,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
-    void submit(
-        const open_set::CorrectKeywords &) override {}
+    void submit(const open_set::CorrectKeywords &) override {}
     void submitResponse(
         const coordinate_response_measure::Response &) override {}
 };
@@ -65,14 +64,14 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
-    void submit(
-        const open_set::CorrectKeywords &) override {}
+    void submit(const open_set::CorrectKeywords &) override {}
     void submitResponse(
         const coordinate_response_measure::Response &) override {}
 };
 
 class RecognitionTestModelStub : public RecognitionTestModel {
     std::vector<std::string> audioDevices_{};
+    std::string targetFileName_{};
     const Model::EventListener *listener_{};
     const Calibration *calibration_{};
     const AudioSettings *playTrialSettings_{};
@@ -115,6 +114,10 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void setTrialNumber(int n) { trialNumber_ = n; }
 
+    void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
+
+    auto targetFileName() -> std::string { return targetFileName_; }
+
     void playTrial(const AudioSettings &s) override { playTrialSettings_ = &s; }
 
     void submitResponse(
@@ -122,10 +125,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    void submit(
-        const open_set::CorrectKeywords &p) {
-        correctKeywords_ = &p;
-    }
+    void submit(const open_set::CorrectKeywords &p) { correctKeywords_ = &p; }
 
     auto testComplete() -> bool override { return complete_; }
 
@@ -141,9 +141,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return coordinateResponse_;
     }
 
-    [[nodiscard]] auto correctKeywords() const {
-        return correctKeywords_;
-    }
+    [[nodiscard]] auto correctKeywords() const { return correctKeywords_; }
 
     [[nodiscard]] auto testMethod() const { return testMethod_; }
 
@@ -282,14 +280,12 @@ class InitializingFixedLevelSilentIntervalsTest
     const FixedLevelTest &fixedLevelTest() override { return test_; }
 };
 
-class InitializingFixedLevelAllStimuliTest
-    : public InitializingFixedLevelTest {
+class InitializingFixedLevelAllStimuliTest : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelAllStimuliTest(
-        FixedLevelMethodStub *method)
+    explicit InitializingFixedLevelAllStimuliTest(FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override {
@@ -327,8 +323,8 @@ class ModelTests : public ::testing::Test {
         &fixedLevelMethod};
     InitializingFixedLevelSilentIntervalsTest
         initializingFixedLevelSilentIntervalsTest{&fixedLevelMethod};
-    InitializingFixedLevelAllStimuliTest
-        initializingFixedLevelAllStimuliTest{&fixedLevelMethod};
+    InitializingFixedLevelAllStimuliTest initializingFixedLevelAllStimuliTest{
+        &fixedLevelMethod};
 
     void initializeFixedLevelTest() { model.initializeTest(fixedLevelTest); }
 
@@ -386,8 +382,7 @@ MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(initializingFixedLevelTest);
 }
 
-MODEL_TEST(
-    initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
+MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
         initializingFixedLevelSilentIntervalsTest);
 }
@@ -403,8 +398,7 @@ MODEL_TEST(
         initializingFixedLevelSilentIntervalsTest, silentIntervals);
 }
 
-MODEL_TEST(
-    initializeFixedLevelAllStimuliTestInitializesWithAllStimuli) {
+MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesWithAllStimuli) {
     assertInitializesFixedLevelTestWithTargetList(
         initializingFixedLevelAllStimuliTest, allStimuli);
 }
@@ -417,7 +411,8 @@ MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
 MODEL_TEST(
     initializeFixedLevelSilentIntervalsTestInitializesWithEmptyTargetListTestConcluder) {
     assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelSilentIntervalsTest, emptyTargetListTestConcluder);
+        initializingFixedLevelSilentIntervalsTest,
+        emptyTargetListTestConcluder);
 }
 
 MODEL_TEST(
@@ -444,7 +439,8 @@ MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTest);
 }
 
-MODEL_TEST(initializeFixedLevelSilentIntervalsTestTargetsInitializesInternalModel) {
+MODEL_TEST(
+    initializeFixedLevelSilentIntervalsTestTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelSilentIntervalsTest);
 }
 
@@ -512,6 +508,11 @@ MODEL_TEST(returnsAudioDevices) {
 MODEL_TEST(returnsTrialNumber) {
     internalModel.setTrialNumber(1);
     assertEqual(1, model.trialNumber());
+}
+
+MODEL_TEST(returnsTargetFileName) {
+    internalModel.setTargetFileName("a");
+    assertEqual("a", model.targetFileName());
 }
 
 MODEL_TEST(subscribesToListener) {

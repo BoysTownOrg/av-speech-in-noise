@@ -230,6 +230,7 @@ class Presenter : public Model::EventListener {
         void submitFailedTrial() override;
         void submitCorrectKeywords() override;
         void becomeChild(Presenter *parent);
+        void show();
         void start();
         void stop();
         void trialPlayed();

@@ -621,6 +621,23 @@ PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
     assertPassesFullScaleLevel(playingCalibration);
 }
 
+PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingFixedLevelFreeResponseTestWithAllTargets,
+        submittingFreeResponse);
+}
+
+PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingAdaptivePassFailTest,
+        submittingPassedTrial);
+}
+
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTrackSettingsFile) {
     assertPassesTrackSettingsFile(
@@ -752,6 +769,11 @@ PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementWithInvalidMaskerLevelShowsErrorMessage) {
     assertInvalidMaskerLevelShowsErrorMessage(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
+    run(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    assertFalse(experimenterView.nextTrialButtonShown());
 }
 
 PRESENTER_TEST(playCalibrationWithInvalidLevelShowsErrorMessage) {
@@ -1090,6 +1112,28 @@ PRESENTER_TEST(submittingPassedTrialShowsTrialNumber) {
 
 PRESENTER_TEST(submittingFailedTrialShowsTrialNumber) {
     assertShowsTrialNumber(submittingFailedTrial);
+}
+
+TEST_F(
+    PresenterTests, confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
+    assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);
+}
+
+TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestShowsTargetFileName) {
+    assertShowsTargetFileName(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
+    assertShowsTargetFileName(submittingCorrectKeywords);
+}
+
+TEST_F(PresenterTests, submittingCoordinateResponseShowsTargetFileName) {
+    assertShowsTargetFileName(respondingFromSubject);
+}
+
+TEST_F(PresenterTests, submittingFreeResponseShowsTargetFileName) {
+    assertShowsTargetFileName(submittingFreeResponse);
 }
 
 PRESENTER_TEST(

@@ -64,6 +64,7 @@ class RecognitionTestModel {
     virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual void throwIfTrialInProgress() = 0;
     virtual auto trialNumber() -> int = 0;
+    virtual auto targetFileName() -> std::string = 0;
 };
 
 class ModelImpl : public Model {
@@ -89,6 +90,7 @@ class ModelImpl : public Model {
     void submitResponse(const open_set::FreeResponse &) override;
     void submit(const open_set::CorrectKeywords &) override;
     auto trialNumber() -> int override;
+    auto targetFileName() -> std::string override;
 
   private:
     void initializeTest_(const AdaptiveTest &);

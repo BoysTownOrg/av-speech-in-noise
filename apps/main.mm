@@ -268,14 +268,11 @@ void main() {
     ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
         &fixedTrials, &silentIntervals, &completesWhenTargetsEmpty, &allStimuli,
         &model_internal};
-    auto testerWindowFrame = NSMakeRect(15, 15, 900, 400);
+    auto testerWindowFrame = NSMakeRect(15, 15, 900, 430);
     auto testerWindowViewMargin = 15;
-    auto testingContentFrame =
-        NSMakeRect(testerWindowViewMargin + 100, testerWindowViewMargin,
-            testerWindowFrame.size.width - testerWindowViewMargin * 2 - 100,
-            testerWindowFrame.size.height - testerWindowViewMargin * 2);
     auto experimenterContentFrame = NSMakeRect(testerWindowViewMargin,
-        testerWindowViewMargin, testerWindowViewMargin + 100,
+        testerWindowViewMargin,
+        testerWindowFrame.size.width - testerWindowViewMargin * 2,
         testerWindowFrame.size.height - testerWindowViewMargin * 2);
     auto testerContentFrame =
         NSMakeRect(testerWindowViewMargin, testerWindowViewMargin,

@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <presentation/Presenter.hpp>
 #include <algorithm>
+#include <string>
 #include <utility>
 
 namespace av_speech_in_noise::tests::presentation {
@@ -29,6 +30,7 @@ class ModelStub : public Model {
     std::vector<std::string> audioDevices_{};
     open_set::FreeResponse freeResponse_{};
     open_set::CorrectKeywords correctKeywords_{};
+    std::string targetFileName_{};
     EventListener *listener_{};
     int trialNumber_{};
     bool testComplete_{};
@@ -46,6 +48,10 @@ class ModelStub : public Model {
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
+
+    void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
+
+    auto targetFileName() -> std::string override { return targetFileName_; }
 
     [[nodiscard]] auto fixedLevelSilentIntervalsTestInitialized() const {
         return fixedLevelSilentIntervalsTestInitialized_;
@@ -489,7 +495,9 @@ class ViewStub : public View {
             correctKeywordsEntryShown_ = true;
         }
 
-        void hideCorrectKeywordsSubmission() { correctKeywordsEntryHidden_ = true; }
+        void hideCorrectKeywordsSubmission() {
+            correctKeywordsEntryHidden_ = true;
+        }
 
         [[nodiscard]] auto shown() const { return shown_; }
 
@@ -547,6 +555,7 @@ class ViewStub : public View {
     class ExperimenterViewStub : public Experimenter {
         std::string response_;
         std::string displayed_;
+        std::string secondaryDisplayed_;
         EventListener *listener_{};
         bool shown_{};
         bool hidden_{};
@@ -556,7 +565,15 @@ class ViewStub : public View {
       public:
         void display(std::string s) override { displayed_ = std::move(s); }
 
+        void secondaryDisplay(std::string s) {
+            secondaryDisplayed_ = std::move(s);
+        }
+
         [[nodiscard]] auto displayed() const { return displayed_; }
+
+        [[nodiscard]] auto secondaryDisplayed() const {
+            return secondaryDisplayed_;
+        }
 
         void showExitTestButton() override { exitTestButtonShown_ = true; }
 
@@ -1059,12 +1076,12 @@ class ConfirmingAdaptiveOpenSetTest : public ConfirmingAdaptiveTest_ {
         return presentation::trackBumpLimit(confirmingAdaptiveTest, m);
     }
 };
-class ConfirmingAdaptiveOpenSetKeywordsTest : public ConfirmingAdaptiveTest_ {
+class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingAdaptiveTest_ {
     ConfirmingAdaptiveTest confirmingAdaptiveTest;
     ViewStub::TestSetupViewStub *view;
 
   public:
-    explicit ConfirmingAdaptiveOpenSetKeywordsTest(
+    explicit ConfirmingAdaptiveCorrectKeywordsTest(
         ViewStub::TestSetupViewStub *view)
         : confirmingAdaptiveTest{view}, view{view} {}
 
@@ -1587,11 +1604,11 @@ class SubmittingPassedTrial : public TrialSubmission {
     }
 };
 
-class EnteringCorrectKeywords : public TrialSubmission {
+class SubmittingCorrectKeywords : public TrialSubmission {
     ViewStub::TestingViewStub *view;
 
   public:
-    explicit EnteringCorrectKeywords(ViewStub::TestingViewStub *view)
+    explicit SubmittingCorrectKeywords(ViewStub::TestingViewStub *view)
         : view{view} {}
 
     void run() override { view->submitCorrectKeywords(); }
@@ -1809,7 +1826,7 @@ class PresenterTests : public ::testing::Test {
     ConfirmingAdaptiveClosedSetDelayedMaskerTest
         confirmingAdaptiveClosedSetDelayedMaskerTest{&setupView};
     ConfirmingAdaptiveOpenSetTest confirmingAdaptiveOpenSetTest{&setupView};
-    ConfirmingAdaptiveOpenSetKeywordsTest confirmingAdaptiveOpenSetKeywordsTest{
+    ConfirmingAdaptiveCorrectKeywordsTest confirmingAdaptiveCorrectKeywordsTest{
         &setupView};
     ConfirmingFixedLevelOpenSetTest confirmingFixedLevelOpenSetTest{&setupView};
     ConfirmingFixedLevelClosedSetTest confirmingFixedLevelClosedSetTest{
@@ -1826,7 +1843,7 @@ class PresenterTests : public ::testing::Test {
     RespondingFromSubject respondingFromSubject{&subjectView};
     RespondingFromExperimenter respondingFromExperimenter{&testingView};
     SubmittingPassedTrial submittingPassedTrial{&testingView};
-    EnteringCorrectKeywords enteringCorrectKeywords{&testingView};
+    SubmittingCorrectKeywords submittingCorrectKeywords{&testingView};
     SubmittingFailedTrial submittingFailedTrial{&testingView};
     ExitingTest exitingTest{&experimenterView};
 
@@ -2214,10 +2231,24 @@ class PresenterTests : public ::testing::Test {
         assertDisplayedToExperimenter("Trial 1");
     }
 
+    void assertShowsTargetFileName(UseCase &useCase) {
+        setTargetFileName("a");
+        run(useCase);
+        assertSecondaryDisplayedToExperimenter("a");
+    }
+
     void setTrialNumber(int n) { model.setTrialNumber(n); }
+
+    void setTargetFileName(std::string s) {
+        model.setTargetFileName(std::move(s));
+    }
 
     void assertDisplayedToExperimenter(const std::string &s) {
         assertEqual(s, experimenterView.displayed());
+    }
+
+    void assertSecondaryDisplayedToExperimenter(const std::string &s) {
+        assertEqual(s, experimenterView.secondaryDisplayed());
     }
 
     static void assertResponseViewHidden(TrialSubmission &useCase) {
@@ -2245,6 +2276,8 @@ class RequestFailingModel : public Model {
 
   public:
     auto trialNumber() -> int override { return 0; }
+
+    auto targetFileName() -> std::string override { return {}; }
 
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
 
