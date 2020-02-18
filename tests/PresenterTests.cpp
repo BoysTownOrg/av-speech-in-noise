@@ -632,6 +632,12 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
         submittingFreeResponse);
 }
 
+PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingAdaptivePassFailTest,
+        submittingPassedTrial);
+}
+
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTrackSettingsFile) {
     assertPassesTrackSettingsFile(
