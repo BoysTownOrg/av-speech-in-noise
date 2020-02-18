@@ -9,6 +9,28 @@ TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
 
 #define PRESENTER_TEST(a) TEST_F(PresenterTests, a)
 
+PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
+    run(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    assertFalse(experimenterView.nextTrialButtonShown());
+}
+
+PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingFixedLevelFreeResponseTestWithAllTargets,
+        submittingFreeResponse);
+}
+
+PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingAdaptivePassFailTest,
+        submittingPassedTrial);
+}
+
 TEST_F(
     PresenterTests, confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
     assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);

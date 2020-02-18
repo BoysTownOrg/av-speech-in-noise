@@ -150,10 +150,12 @@ void Presenter::switchToTestView() {
 }
 
 void Presenter::showTest() {
-    experimenterPresenter.start();
+    experimenterPresenter.show();
     displayTrialInformation(experimenterPresenter, model);
     if (coordinateResponseMeasure(testSetup))
         coordinateResponseMeasurePresenter.start();
+    else
+        experimenterPresenter.start();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
@@ -571,15 +573,17 @@ static void showNextTrialButton(View::Experimenter *view) {
     view->showNextTrialButton();
 }
 
+void Presenter::Experimenter::show() { view->show(); }
+
 void Presenter::Experimenter::start() {
     view->show();
     showNextTrialButton(view);
 }
 
 void Presenter::Experimenter::stop() {
-    //    view->hideFreeResponseSubmission();
-    //    view->hideEvaluationButtons();
-    //    view->hideCorrectKeywordsSubmission();
+    view->hideFreeResponseSubmission();
+    view->hideEvaluationButtons();
+    view->hideCorrectKeywordsSubmission();
     view->hide();
 }
 

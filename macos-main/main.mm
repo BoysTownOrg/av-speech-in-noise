@@ -269,14 +269,10 @@ void main() {
         recognitionTestModel};
     auto testerWindowFrame{NSMakeRect(15, 15, 900, 430)};
     auto testerWindowViewMargin{15};
-    auto testingContentFrame =
-        NSMakeRect(testerWindowViewMargin, testerWindowViewMargin,
-            testerWindowFrame.size.width - testerWindowViewMargin * 2,
-            testerWindowFrame.size.height - testerWindowViewMargin * 2 - 30);
     auto experimenterContentFrame = NSMakeRect(testerWindowViewMargin,
-        testerWindowFrame.size.height - testerWindowViewMargin * 2 - 30,
+        testerWindowViewMargin,
         testerWindowFrame.size.width - testerWindowViewMargin * 2,
-        100);
+        testerWindowFrame.size.height - testerWindowViewMargin * 2);
     auto testerContentFrame =
         NSMakeRect(testerWindowViewMargin, testerWindowViewMargin,
             testerWindowFrame.size.width - testerWindowViewMargin * 2,
