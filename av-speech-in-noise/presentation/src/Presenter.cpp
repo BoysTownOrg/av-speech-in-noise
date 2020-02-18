@@ -1,5 +1,5 @@
 #include "Presenter.hpp"
-#include "av-speech-in-noise/Model.hpp"
+#include <av-speech-in-noise/Model.hpp>
 #include <string>
 #include <sstream>
 
@@ -11,11 +11,6 @@ class BadInput : public std::runtime_error {
 };
 }
 
-int Presenter::fullScaleLevel_dB_SPL = 119;
-int Presenter::ceilingSnr_dB = 20;
-int Presenter::floorSnr_dB = -40;
-int Presenter::trackBumpLimit = 10;
-
 static auto fixedLevelTest(Presenter::TestSetup &testSetup) -> FixedLevelTest {
     return testSetup.fixedLevelTest();
 }
@@ -25,25 +20,96 @@ static auto adaptiveTest(Presenter::TestSetup &testSetup) -> AdaptiveTest {
 }
 
 static void displayTrialNumber(
-    Presenter::Experimenter &experimenter, Model &model) {
-    experimenter.display("Trial " + std::to_string(model.trialNumber()));
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    experimenterPresenter.display(
+        "Trial " + std::to_string(model.trialNumber()));
+}
+
+static void displayTrialInformation(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    displayTrialNumber(experimenterPresenter, model);
+}
+
+static auto adaptiveCoordinateResponseMeasure(Presenter::TestSetup &testSetup)
+    -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasure();
+}
+
+static auto adaptivePassFail(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.adaptivePassFail();
+}
+
+static auto fixedLevelSilentIntervals(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.fixedLevelSilentIntervals();
+}
+
+static auto fixedLevelAllStimuli(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.fixedLevelAllStimuli();
+}
+
+static auto adaptiveCoordinateResponseMeasureWithDelayedMasker(
+    Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasureWithDelayedMasker();
+}
+
+static auto adaptiveCoordinateResponseMeasureWithSingleSpeaker(
+    Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.adaptiveCoordinateResponseMeasureWithSingleSpeaker();
+}
+
+static auto adaptiveCorrectKeywords(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.adaptiveCorrectKeywords();
+}
+
+static auto coordinateResponseMeasure(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.coordinateResponseMeasure();
+}
+
+static auto defaultAdaptive(Presenter::TestSetup &testSetup) -> bool {
+    return testSetup.defaultAdaptive();
+}
+
+static auto fixedLevelCoordinateResponseMeasure(Presenter::TestSetup &testSetup)
+    -> bool {
+    return testSetup.fixedLevelCoordinateResponseMeasure();
+}
+
+static auto testComplete(Model &model) -> bool { return model.testComplete(); }
+
+static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
+
+static void initializeTest(Model &model, Presenter::TestSetup &testSetup) {
+    if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
+        model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
+    else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
+        model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
+    else if (defaultAdaptive(testSetup) || adaptiveCorrectKeywords(testSetup))
+        model.initializeTest(adaptiveTest(testSetup));
+    else if (fixedLevelSilentIntervals(testSetup))
+        model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
+    else if (fixedLevelAllStimuli(testSetup))
+        model.initializeAllStimuliTest(fixedLevelTest(testSetup));
+    else
+        model.initializeTest(fixedLevelTest(testSetup));
 }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
-    Subject &subject, Experimenter &experimenter, Testing &testing)
-    : fixedLevelOpenSetTrialCompletionHandler{testing},
-      fixedLevelClosedSetTrialCompletionHandler{subject},
-      adaptiveOpenSetTrialCompletionHandler{testing},
-      adaptiveOpenSetKeywordsTrialCompletionHandler{testing},
-      adaptiveClosedSetTrialCompletionHandler{subject}, model{model},
-      view{view}, testSetup{testSetup}, subject{subject},
-      experimenter{experimenter}, testing{testing},
-      trialCompletionHandler_{&adaptiveClosedSetTrialCompletionHandler} {
+    CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
+    Experimenter &experimenterPresenter)
+    : freeResponseTrialCompletionHandler{experimenterPresenter},
+      passFailTrialCompletionHandler{experimenterPresenter},
+      correctKeywordsTrialCompletionHandler{experimenterPresenter},
+      coordinateResponseMeasureTrialCompletionHandler{
+          coordinateResponseMeasurePresenter},
+      model{model}, view{view}, testSetup{testSetup},
+      coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
+      experimenterPresenter{experimenterPresenter},
+      trialCompletionHandler_{
+          &coordinateResponseMeasureTrialCompletionHandler} {
     model.subscribe(this);
     testSetup.becomeChild(this);
-    subject.becomeChild(this);
-    experimenter.becomeChild(this);
-    testing.becomeChild(this);
+    coordinateResponseMeasurePresenter.becomeChild(this);
+    experimenterPresenter.becomeChild(this);
     view.populateAudioDeviceMenu(model.audioDevices());
 }
 
@@ -58,93 +124,33 @@ void Presenter::confirmTestSetup() {
 }
 
 void Presenter::confirmTestSetup_() {
-    initializeTest();
-    if (!testComplete())
+    initializeTest(model, testSetup);
+    if (!testComplete(model)) {
         switchToTestView();
-    trialCompletionHandler_ = trialCompletionHandler();
+        trialCompletionHandler_ = trialCompletionHandler();
+    }
 }
-
-void Presenter::initializeTest() {
-    if (adaptiveClosedSetDelayedMasker())
-        model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
-    else if (adaptiveClosedSetSingleSpeaker())
-        model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (defaultAdaptive() || adaptiveCorrectKeywords())
-        model.initializeTest(adaptiveTest(testSetup));
-    else if (fixedLevelSilentIntervals())
-        model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
-    else if (fixedLevelAllStimuli())
-        model.initializeAllStimuliTest(fixedLevelTest(testSetup));
-    else
-        model.initializeTest(fixedLevelTest(testSetup));
-}
-
-auto Presenter::adaptiveClosedSet() -> bool {
-    return testSetup.adaptiveClosedSet();
-}
-
-auto Presenter::adaptivePassFail() -> bool {
-    return testSetup.adaptivePassFail();
-}
-
-auto Presenter::fixedLevelSilentIntervals() -> bool {
-    return testSetup.fixedLevelSilentIntervals();
-}
-
-auto Presenter::fixedLevelAllStimuli() -> bool {
-    return testSetup.fixedLevelAllStimuli();
-}
-
-auto Presenter::adaptiveClosedSetDelayedMasker() -> bool {
-    return testSetup.adaptiveClosedSetDelayedMasker();
-}
-
-auto Presenter::adaptiveClosedSetSingleSpeaker() -> bool {
-    return testSetup.adaptiveClosedSetSingleSpeaker();
-}
-
-auto Presenter::adaptiveCorrectKeywords() -> bool {
-    return testSetup.adaptiveCorrectKeywords();
-}
-
-auto Presenter::testComplete() -> bool { return model.testComplete(); }
 
 void Presenter::switchToTestView() {
-    hideTestSetup();
-    showTestView();
+    hide(testSetup);
+    showTest();
 }
 
-void Presenter::hideTestSetup() { testSetup.hide(); }
-
-void Presenter::showTestView() {
-    experimenter.show();
-    displayTrialNumber(experimenter, model);
-    if (closedSet())
-        subject.show();
-    else
-        testing.show();
-}
-
-auto Presenter::closedSet() -> bool { return testSetup.closedSet(); }
-
-auto Presenter::defaultAdaptive() -> bool {
-    return testSetup.defaultAdaptive();
-}
-
-auto Presenter::fixedLevelClosedSet() -> bool {
-    return testSetup.fixedLevelClosedSet();
+void Presenter::showTest() {
+    experimenterPresenter.start();
+    displayTrialInformation(experimenterPresenter, model);
+    if (coordinateResponseMeasure(testSetup))
+        coordinateResponseMeasurePresenter.start();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
-    if (adaptiveClosedSet())
-        return &adaptiveClosedSetTrialCompletionHandler;
-    if (adaptivePassFail())
-        return &adaptiveOpenSetTrialCompletionHandler;
-    if (adaptiveCorrectKeywords())
-        return &adaptiveOpenSetKeywordsTrialCompletionHandler;
-    if (fixedLevelClosedSet())
-        return &fixedLevelClosedSetTrialCompletionHandler;
-    return &fixedLevelOpenSetTrialCompletionHandler;
+    if (coordinateResponseMeasure(testSetup))
+        return &coordinateResponseMeasureTrialCompletionHandler;
+    if (adaptivePassFail(testSetup))
+        return &passFailTrialCompletionHandler;
+    if (adaptiveCorrectKeywords(testSetup))
+        return &correctKeywordsTrialCompletionHandler;
+    return &freeResponseTrialCompletionHandler;
 }
 
 void Presenter::showErrorMessage(std::string e) {
@@ -155,44 +161,31 @@ void Presenter::playTrial() {
     AudioSettings p;
     p.audioDevice = view.audioDevice();
     model.playTrial(p);
-    experimenter.hideExitTestButton();
+    experimenterPresenter.trialPlayed();
 }
 
 void Presenter::trialComplete() {
-    trialCompletionHandler_->showResponseView();
-    experimenter.showExitTestButton();
+    trialCompletionHandler_->showResponseSubmission();
+    experimenterPresenter.trialComplete();
 }
 
 void Presenter::submitSubjectResponse() {
-    submitSubjectResponse_();
-    displayTrialNumber(experimenter, model);
-    if (testComplete())
-        switchToSetupView();
-    else
+    model.submitResponse(coordinateResponseMeasurePresenter.subjectResponse());
+    if (testComplete(model))
+        switchToTestSetupView();
+    else {
+        displayTrialInformation(experimenterPresenter, model);
         playTrial();
+    }
 }
 
-void Presenter::submitSubjectResponse_() {
-    model.submitResponse(subject.subjectResponse());
-}
-
-void Presenter::submitCorrectKeywords_() {
-    model.submit(testing.correctKeywords());
-}
-
-void Presenter::submitExperimenterResponse() {
-    proceedToNextTrialAfter(&Presenter::submitExperimenterResponse_);
-}
-
-void Presenter::submitExperimenterResponse_() {
-    model.submitResponse(testing.openSetResponse());
+void Presenter::submitFreeResponse() {
+    proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
 }
 
 void Presenter::submitPassedTrial() {
     proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
 }
-
-void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
@@ -201,39 +194,49 @@ void Presenter::submitFailedTrial() {
 void Presenter::submitCorrectKeywords() {
     try {
         proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
-        testing.hideCorrectKeywordsSubmission();
-        testing.showNextTrialButton();
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
 }
 
+void Presenter::submitCorrectKeywords_() {
+    model.submit(experimenterPresenter.correctKeywords());
+}
+
+void Presenter::submitFreeResponse_() {
+    model.submitResponse(experimenterPresenter.freeResponse());
+}
+
+void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
+
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
 void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
     (this->*f)();
-    proceedToNextTrial();
+    readyNextTrialIfNeeded();
 }
 
-void Presenter::proceedToNextTrial() {
-    displayTrialNumber(experimenter, model);
-    if (testComplete())
-        switchToSetupView();
+void Presenter::readyNextTrialIfNeeded() {
+    if (testComplete(model))
+        switchToTestSetupView();
+    else {
+        displayTrialInformation(experimenterPresenter, model);
+        experimenterPresenter.readyNextTrial();
+    }
 }
 
-void Presenter::exitTest() { switchToSetupView(); }
+void Presenter::exitTest() { switchToTestSetupView(); }
 
-void Presenter::switchToSetupView() {
+void Presenter::switchToTestSetupView() {
     showTestSetup();
-    hideTestView();
+    hideTest();
 }
 
 void Presenter::showTestSetup() { testSetup.show(); }
 
-void Presenter::hideTestView() {
-    testing.hide();
-    experimenter.hide();
-    subject.hide();
+void Presenter::hideTest() {
+    experimenterPresenter.stop();
+    coordinateResponseMeasurePresenter.stop();
 }
 
 void Presenter::playCalibration() {
@@ -261,34 +264,41 @@ void Presenter::applyIfBrowseNotCancelled(
         (testSetup.*f)(std::move(s));
 }
 
+static auto browseForOpeningFile(View &view) -> std::string {
+    return view.browseForOpeningFile();
+}
+
 void Presenter::browseForMasker() {
     applyIfBrowseNotCancelled(
-        view.browseForOpeningFile(), &TestSetup::setMasker);
+        browseForOpeningFile(view), &TestSetup::setMasker);
 }
 
 void Presenter::browseForCalibration() {
     applyIfBrowseNotCancelled(
-        view.browseForOpeningFile(), &TestSetup::setCalibrationFilePath);
+        browseForOpeningFile(view), &TestSetup::setCalibrationFilePath);
 }
 
 void Presenter::browseForTrackSettingsFile() {
     applyIfBrowseNotCancelled(
-        view.browseForOpeningFile(), &TestSetup::setTrackSettingsFile);
+        browseForOpeningFile(view), &TestSetup::setTrackSettingsFile);
 }
 
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
-    view->populateMethodMenu({methodName(Method::defaultAdaptiveClosedSet),
-        methodName(Method::adaptiveClosedSetSingleSpeaker),
-        methodName(Method::adaptiveClosedSetDelayedMasker),
+    view->populateMethodMenu({methodName(Method::
+                                      defaultAdaptiveCoordinateResponseMeasure),
+        methodName(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker),
+        methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker),
         methodName(Method::adaptivePassFail),
         methodName(Method::adaptiveCorrectKeywords),
-        methodName(Method::defaultFixedLevelClosedSet),
-        methodName(Method::fixedLevelClosedSetSilentIntervals),
-        methodName(Method::defaultFixedLevelOpenSet),
-        methodName(Method::fixedLevelOpenSetSilentIntervals),
-        methodName(Method::fixedLevelOpenSetAllStimuli)});
+        methodName(
+            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement),
+        methodName(Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
+        methodName(Method::fixedLevelFreeResponseWithTargetReplacement),
+        methodName(Method::fixedLevelFreeResponseWithSilentIntervalTargets),
+        methodName(Method::fixedLevelFreeResponseWithAllTargets)});
     view->subscribe(this);
 }
 
@@ -408,93 +418,110 @@ void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
 }
 
 auto Presenter::TestSetup::defaultAdaptive() -> bool {
-    return defaultAdaptiveClosedSet() || adaptivePassFail();
+    return defaultAdaptiveCoordinateResponseMeasure() || adaptivePassFail();
 }
 
-auto Presenter::TestSetup::defaultAdaptiveClosedSet() -> bool {
-    return method(Method::defaultAdaptiveClosedSet);
+auto Presenter::TestSetup::defaultAdaptiveCoordinateResponseMeasure() -> bool {
+    return method(Method::defaultAdaptiveCoordinateResponseMeasure);
 }
 
 auto Presenter::TestSetup::adaptivePassFail() -> bool {
     return method(Method::adaptivePassFail);
 }
 
-auto Presenter::TestSetup::adaptiveClosedSet() -> bool {
-    return defaultAdaptiveClosedSet() || adaptiveClosedSetSingleSpeaker() ||
-        adaptiveClosedSetDelayedMasker();
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasure() -> bool {
+    return defaultAdaptiveCoordinateResponseMeasure() ||
+        adaptiveCoordinateResponseMeasureWithSingleSpeaker() ||
+        adaptiveCoordinateResponseMeasureWithDelayedMasker();
 }
 
-auto Presenter::TestSetup::adaptiveClosedSetDelayedMasker() -> bool {
-    return method(Method::adaptiveClosedSetDelayedMasker);
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithDelayedMasker()
+    -> bool {
+    return method(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
 }
 
-auto Presenter::TestSetup::adaptiveClosedSetSingleSpeaker() -> bool {
-    return method(Method::adaptiveClosedSetSingleSpeaker);
+auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithSingleSpeaker()
+    -> bool {
+    return method(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
 }
 
 auto Presenter::TestSetup::adaptiveCorrectKeywords() -> bool {
     return method(Method::adaptiveCorrectKeywords);
 }
 
-auto Presenter::TestSetup::fixedLevelClosedSet() -> bool {
-    return method(Method::defaultFixedLevelClosedSet) ||
-        fixedLevelClosedSetSilentIntervals();
+auto Presenter::TestSetup::fixedLevelCoordinateResponseMeasure() -> bool {
+    return method(Method::
+                   fixedLevelCoordinateResponseMeasureWithTargetReplacement) ||
+        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets();
 }
 
-auto Presenter::TestSetup::fixedLevelClosedSetSilentIntervals() -> bool {
-    return method(Method::fixedLevelClosedSetSilentIntervals);
+auto Presenter::TestSetup::
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool {
+    return method(
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
 }
 
 auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
-    return fixedLevelClosedSetSilentIntervals() ||
-        method(Method::fixedLevelOpenSetSilentIntervals);
+    return fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() ||
+        method(Method::fixedLevelFreeResponseWithSilentIntervalTargets);
 }
 
 auto Presenter::TestSetup::fixedLevelAllStimuli() -> bool {
-    return method(Method::fixedLevelOpenSetAllStimuli);
+    return method(Method::fixedLevelFreeResponseWithAllTargets);
 }
 
-auto Presenter::TestSetup::closedSet() -> bool {
-    return adaptiveClosedSet() || fixedLevelClosedSet();
+auto Presenter::TestSetup::coordinateResponseMeasure() -> bool {
+    return adaptiveCoordinateResponseMeasure() ||
+        fixedLevelCoordinateResponseMeasure();
 }
 
 auto Presenter::TestSetup::method(Method m) -> bool {
     return view->method() == methodName(m);
 }
 
-Presenter::Subject::Subject(View::Subject *view) : view{view} {
+Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
+    View::CoordinateResponseMeasure *view)
+    : view{view} {
     view->subscribe(this);
 }
 
-void Presenter::Subject::show() {
-    view->show();
-    showNextTrialButton();
+static void hideResponseButtons(View::CoordinateResponseMeasure *view) {
+    view->hideResponseButtons();
 }
 
-void Presenter::Subject::hide() {
-    hideResponseButtons();
+static void showNextTrialButton(View::CoordinateResponseMeasure *view) {
+    view->showNextTrialButton();
+}
+
+void Presenter::CoordinateResponseMeasure::start() {
+    view->show();
+    showNextTrialButton(view);
+}
+
+void Presenter::CoordinateResponseMeasure::stop() {
+    hideResponseButtons(view);
     view->hide();
 }
 
-void Presenter::Subject::playTrial() {
+void Presenter::CoordinateResponseMeasure::playTrial() {
     parent->playTrial();
     view->hideNextTrialButton();
 }
 
-void Presenter::Subject::submitResponse() {
+void Presenter::CoordinateResponseMeasure::submitResponse() {
     parent->submitSubjectResponse();
-    hideResponseButtons();
+    hideResponseButtons(view);
 }
 
-void Presenter::Subject::becomeChild(Presenter *p) { parent = p; }
+void Presenter::CoordinateResponseMeasure::becomeChild(Presenter *p) {
+    parent = p;
+}
 
-void Presenter::Subject::showNextTrialButton() { view->showNextTrialButton(); }
+void Presenter::CoordinateResponseMeasure::showResponseButtons() {
+    view->showResponseButtons();
+}
 
-void Presenter::Subject::hideResponseButtons() { view->hideResponseButtons(); }
-
-void Presenter::Subject::showResponseButtons() { view->showResponseButtons(); }
-
-auto Presenter::Subject::subjectResponse()
+auto Presenter::CoordinateResponseMeasure::subjectResponse()
     -> coordinate_response_measure::Response {
     coordinate_response_measure::Response p{};
     p.color = colorResponse();
@@ -502,7 +529,8 @@ auto Presenter::Subject::subjectResponse()
     return p;
 }
 
-auto Presenter::Subject::colorResponse() -> coordinate_response_measure::Color {
+auto Presenter::CoordinateResponseMeasure::colorResponse()
+    -> coordinate_response_measure::Color {
     if (view->greenResponse())
         return coordinate_response_measure::Color::green;
     if (view->blueResponse())
@@ -513,98 +541,89 @@ auto Presenter::Subject::colorResponse() -> coordinate_response_measure::Color {
     return coordinate_response_measure::Color::red;
 }
 
-Presenter::Testing::Testing(View::Testing *view) : view{view} {
-    view->subscribe(this);
-}
-
-void Presenter::Testing::show() {
-    view->show();
-    showNextTrialButton();
-}
-
-void Presenter::Testing::showNextTrialButton() { view->showNextTrialButton(); }
-
-void Presenter::Testing::playTrial() {
-    parent->playTrial();
-    view->hideNextTrialButton();
-}
-
-void Presenter::Testing::becomeChild(Presenter *p) { parent = p; }
-
-void Presenter::Testing::submitPassedTrial() {
-    parent->submitPassedTrial();
-    prepareNextEvaluatedTrial();
-}
-
-void Presenter::Testing::prepareNextEvaluatedTrial() {
-    view->hideEvaluationButtons();
-    showNextTrialButton();
-}
-
-void Presenter::Testing::submitFailedTrial() {
-    parent->submitFailedTrial();
-    prepareNextEvaluatedTrial();
-}
-
-void Presenter::Testing::submitCorrectKeywords() {
-    parent->submitCorrectKeywords();
-}
-
-void Presenter::Testing::hideCorrectKeywordsSubmission() {
-    view->hideCorrectKeywordsSubmission();
-}
-
-void Presenter::Testing::hide() { view->hide(); }
-
-void Presenter::Testing::showEvaluationButtons() {
-    view->showEvaluationButtons();
-}
-
-void Presenter::Testing::showCorrectKeywordsSubmission() {
-    view->showCorrectKeywordsSubmission();
-}
-
-void Presenter::Testing::showFreeResponseSubmission() {
-    view->showFreeResponseSubmission();
-}
-
-void Presenter::Testing::submitFreeResponse() {
-    parent->submitExperimenterResponse();
-    view->hideFreeResponseSubmission();
-    showNextTrialButton();
-}
-
-auto Presenter::Testing::openSetResponse() -> open_set::FreeResponse {
-    return {view->freeResponse(), view->flagged()};
-}
-
-auto Presenter::Testing::correctKeywords() -> open_set::CorrectKeywords {
-    open_set::CorrectKeywords p{};
-    p.count = readInteger(view->correctKeywords(), "number");
-    return p;
-}
-
 Presenter::Experimenter::Experimenter(View::Experimenter *view) : view{view} {
     view->subscribe(this);
 }
 
-void Presenter::Experimenter::show() { view->show(); }
+void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
 
-void Presenter::Experimenter::hideExitTestButton() {
-    view->hideExitTestButton();
+static void showNextTrialButton(View::Experimenter *view) {
+    view->showNextTrialButton();
 }
 
-void Presenter::Experimenter::showExitTestButton() {
-    view->showExitTestButton();
+void Presenter::Experimenter::start() {
+    view->show();
+    showNextTrialButton(view);
+}
+
+void Presenter::Experimenter::stop() {
+    //    view->hideFreeResponseSubmission();
+    //    view->hideEvaluationButtons();
+    //    view->hideCorrectKeywordsSubmission();
+    view->hide();
+}
+
+void Presenter::Experimenter::trialPlayed() {
+    view->hideExitTestButton();
+    view->hideNextTrialButton();
+}
+
+void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
+
+void Presenter::Experimenter::readyNextTrial() {
+    view->hideFreeResponseSubmission();
+    view->hideEvaluationButtons();
+    view->hideCorrectKeywordsSubmission();
+    showNextTrialButton(view);
+}
+
+void Presenter::Experimenter::showPassFailSubmission() {
+    view->showEvaluationButtons();
+}
+
+void Presenter::Experimenter::showCorrectKeywordsSubmission() {
+    view->showCorrectKeywordsSubmission();
+}
+
+void Presenter::Experimenter::showFreeResponseSubmission() {
+    view->showFreeResponseSubmission();
+}
+
+void Presenter::Experimenter::submitPassedTrial() {
+    parent->submitPassedTrial();
+}
+
+void Presenter::Experimenter::submitFailedTrial() {
+    parent->submitFailedTrial();
+}
+
+void Presenter::Experimenter::submitCorrectKeywords() {
+    parent->submitCorrectKeywords();
+}
+
+void Presenter::Experimenter::submitFreeResponse() {
+    parent->submitFreeResponse();
+}
+
+void Presenter::Experimenter::playTrial() { parent->playTrial(); }
+
+void Presenter::Experimenter::exitTest() { parent->exitTest(); }
+
+auto Presenter::Experimenter::freeResponse() -> open_set::FreeResponse {
+    return {view->freeResponse(), view->flagged()};
+}
+
+auto Presenter::Experimenter::correctKeywords() -> open_set::CorrectKeywords {
+    open_set::CorrectKeywords p{};
+    p.count = readInteger(view->correctKeywords(), "number");
+    return p;
 }
 
 void Presenter::Experimenter::display(std::string s) {
     view->display(std::move(s));
 }
 
-void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
-
-void Presenter::Experimenter::exitTest() { parent->exitTest(); }
-
-void Presenter::Experimenter::hide() { view->hide(); }
+void Presenter::Experimenter::secondaryDisplay(std::string s) {
+    view->secondaryDisplay(std::move(s));
+}
 }

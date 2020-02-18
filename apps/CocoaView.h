@@ -1,54 +1,16 @@
-#ifndef CocoaView_h
-#define CocoaView_h
+#ifndef MACOS_MAIN_COCOAVIEW_H_
+#define MACOS_MAIN_COCOAVIEW_H_
 
 #include <presentation/Presenter.hpp>
 #import <Cocoa/Cocoa.h>
 
-class CocoaTestSetupView;
+@class SetupViewActions;
+@class SubjectViewActions;
+@class ExperimenterViewActions;
 
-@interface SetupViewActions : NSObject
-@property CocoaTestSetupView *controller;
-- (void) confirmTestSetup;
-- (void) browseForTargetList;
-- (void) browseForMasker;
-- (void) browseForCalibration;
-- (void) browseForTrackSettings;
-- (void) playCalibration;
-@end
-
-class CocoaSubjectView;
-
-@interface SubjectViewActions : NSObject
-@property CocoaSubjectView *controller;
-- (void) respond:(id)sender;
-- (void) playTrial;
-@end
-
-class CocoaExperimenterView;
-
-@interface ExperimenterViewActions : NSObject
-@property CocoaExperimenterView *controller;
-- (void) exitTest;
-@end
-
-class CocoaTestingView;
-
-@interface TestingViewActions : NSObject
-@property CocoaTestingView *controller;
-- (void) playTrial;
-- (void) submitFreeResponse;
-- (void) submitPassedTrial;
-- (void) submitFailedTrial;
-- (void) submitCorrectKeywords;
-@end
-
-class CocoaExperimenterView : public av_speech_in_noise::View::Experimenter {
-    NSView *view_;
-    NSTextView *displayedText_;
-    NSButton *exitTestButton_;
-    EventListener *listener_{};
-    ExperimenterViewActions *actions;
-public:
+namespace av_speech_in_noise {
+class CocoaExperimenterView : public View::Experimenter {
+  public:
     CocoaExperimenterView(NSRect);
     NSView *view();
     void exitTest();
@@ -58,33 +20,14 @@ public:
     void show() override;
     void hide() override;
     void display(std::string) override;
-};
-
-class CocoaTestingView : public av_speech_in_noise::View::Testing {
-    NSView *view_;
-    NSView *nextTrialButton;
-    NSView *evaluationButtons;
-    NSView *responseSubmission;
-    NSView *correctKeywordsSubmission;
-    NSTextField *response_;
-    NSTextField *correctKeywordsEntry_;
-    NSButton *flagged_;
-    EventListener *listener_{};
-    TestingViewActions *actions;
-public:
-    CocoaTestingView(NSRect);
-    NSView *view();
+    void secondaryDisplay(std::string) override;
     void playTrial();
     void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();
-    void exitTest();
     void submitCorrectKeywords();
-    void subscribe(EventListener *) override;
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
-    void show() override;
-    void hide() override;
     void showEvaluationButtons() override;
     void showFreeResponseSubmission() override;
     std::string freeResponse() override;
@@ -94,37 +37,25 @@ public:
     void hideEvaluationButtons() override;
     void showCorrectKeywordsSubmission() override;
     void hideCorrectKeywordsSubmission() override;
+
+  private:
+    NSView *view_;
+    NSView *nextTrialButton;
+    NSView *evaluationButtons;
+    NSView *responseSubmission;
+    NSView *correctKeywordsSubmission;
+    NSTextField *response_;
+    NSTextField *correctKeywordsEntry_;
+    NSTextField *displayedText_;
+    NSTextField *secondaryDisplayedText_;
+    NSButton *flagged_;
+    NSButton *exitTestButton_;
+    ExperimenterViewActions *actions;
+    EventListener *listener_{};
 };
 
-class CocoaTestSetupView : public av_speech_in_noise::View::TestSetup {
-    NSView *view_;
-    NSTextField *subjectIdLabel;
-    NSTextField *subjectId_;
-    NSTextField *testerIdLabel;
-    NSTextField *testerId_;
-    NSTextField *sessionLabel;
-    NSTextField *session_;
-    NSTextField *maskerLevel_dB_SPL_label;
-    NSTextField *maskerLevel_dB_SPL_;
-    NSTextField *calibrationLevel_dB_SPL_label;
-    NSTextField *calibrationLevel_dB_SPL_;
-    NSTextField *startingSnr_dB_label;
-    NSTextField *startingSnr_dB_;
-    NSTextField *targetListDirectoryLabel;
-    NSTextField *targetListDirectory_;
-    NSTextField *maskerFilePath_label;
-    NSTextField *maskerFilePath_;
-    NSTextField *calibrationFilePath_label;
-    NSTextField *calibrationFilePath_;
-    NSTextField *trackSettingsFile_label;
-    NSTextField *trackSettingsFile_;
-    NSTextField *condition_label;
-    NSPopUpButton *conditionMenu;
-    NSTextField *method_label;
-    NSPopUpButton *methodMenu;
-    SetupViewActions *actions;
-    EventListener *listener_{};
-public:
+class CocoaTestSetupView : public View::TestSetup {
+  public:
     CocoaTestSetupView(NSRect);
     void show() override;
     void hide() override;
@@ -158,19 +89,42 @@ public:
     void setStartingSnr_dB(std::string);
     void setCalibrationLevel_dB_SPL(std::string);
     void setCalibration(std::string);
-private:
+
+  private:
     void addSubview(NSView *subview);
-    const char * stringValue(NSTextField *field);
+    const char *stringValue(NSTextField *field);
+
+    NSView *view_;
+    NSTextField *subjectIdLabel;
+    NSTextField *subjectId_;
+    NSTextField *testerIdLabel;
+    NSTextField *testerId_;
+    NSTextField *sessionLabel;
+    NSTextField *session_;
+    NSTextField *maskerLevel_dB_SPL_label;
+    NSTextField *maskerLevel_dB_SPL_;
+    NSTextField *calibrationLevel_dB_SPL_label;
+    NSTextField *calibrationLevel_dB_SPL_;
+    NSTextField *startingSnr_dB_label;
+    NSTextField *startingSnr_dB_;
+    NSTextField *targetListDirectoryLabel;
+    NSTextField *targetListDirectory_;
+    NSTextField *maskerFilePath_label;
+    NSTextField *maskerFilePath_;
+    NSTextField *calibrationFilePath_label;
+    NSTextField *calibrationFilePath_;
+    NSTextField *trackSettingsFile_label;
+    NSTextField *trackSettingsFile_;
+    NSTextField *condition_label;
+    NSPopUpButton *conditionMenu;
+    NSTextField *method_label;
+    NSPopUpButton *methodMenu;
+    SetupViewActions *actions;
+    EventListener *listener_{};
 };
 
-class CocoaSubjectView : public av_speech_in_noise::View::Subject {
-    NSWindow *window;
-    NSView *responseButtons;
-    NSView *nextTrialButton;
-    NSButton *lastButtonPressed;
-    SubjectViewActions *actions;
-    EventListener *listener_{};
-public:
+class CocoaSubjectView : public View::CoordinateResponseMeasure {
+  public:
     CocoaSubjectView(NSRect);
     std::string numberResponse() override;
     bool greenResponse() override;
@@ -185,20 +139,23 @@ public:
     void hide() override;
     void respond(id sender);
     void playTrial();
-private:
+
+  private:
     void addNextTrialButton();
     NSColor *lastPressedColor();
     void addNumberButton(NSColor *color, int number, int row, std::size_t col);
     void addButtonRow(NSColor *color, int row);
+
+    NSWindow *window;
+    NSView *responseButtons;
+    NSView *nextTrialButton;
+    NSButton *lastButtonPressed;
+    SubjectViewActions *actions;
+    EventListener *listener_{};
 };
 
-class CocoaView : public av_speech_in_noise::View {
-    NSApplication *app;
-    NSWindow *window;
-    NSTextField *audioDevice_label;
-    NSPopUpButton *deviceMenu;
-    bool browseCancelled_{};
-public:
+class CocoaView : public View {
+  public:
     CocoaView(NSRect);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
@@ -210,8 +167,16 @@ public:
     void addSubview(NSView *);
     void setDelegate(id<NSWindowDelegate>);
     void center();
-private:
+
+  private:
     std::string browseModal(NSOpenPanel *panel);
+
+    NSApplication *app;
+    NSWindow *window;
+    NSTextField *audioDevice_label;
+    NSPopUpButton *deviceMenu;
+    bool browseCancelled_{};
 };
+}
 
 #endif
