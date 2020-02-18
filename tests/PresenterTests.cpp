@@ -771,6 +771,11 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
+PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
+    run(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    assertFalse(experimenterView.nextTrialButtonShown());
+}
+
 PRESENTER_TEST(playCalibrationWithInvalidLevelShowsErrorMessage) {
     assertInvalidCalibrationLevelShowsErrorMessage(playingCalibration);
 }

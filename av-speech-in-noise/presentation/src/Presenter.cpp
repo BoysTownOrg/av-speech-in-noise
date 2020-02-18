@@ -25,8 +25,7 @@ static void displayTrialNumber(
         "Trial " + std::to_string(model.trialNumber()));
 }
 
-static void displayTarget(
-    Presenter::Experimenter &experimenter, Model &model) {
+static void displayTarget(Presenter::Experimenter &experimenter, Model &model) {
     experimenter.secondaryDisplay(model.targetFileName());
 }
 
@@ -143,10 +142,12 @@ void Presenter::switchToTestView() {
 }
 
 void Presenter::showTest() {
-    experimenterPresenter.start();
+    experimenterPresenter.show();
     displayTrialInformation(experimenterPresenter, model);
     if (coordinateResponseMeasure(testSetup))
         coordinateResponseMeasurePresenter.start();
+    else
+        experimenterPresenter.start();
 }
 
 auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
@@ -555,6 +556,10 @@ void Presenter::Experimenter::becomeChild(Presenter *p) { parent = p; }
 
 static void showNextTrialButton(View::Experimenter *view) {
     view->showNextTrialButton();
+}
+
+void Presenter::Experimenter::show() {
+    view->show();
 }
 
 void Presenter::Experimenter::start() {
