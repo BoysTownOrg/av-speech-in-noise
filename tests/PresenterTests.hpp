@@ -1732,6 +1732,14 @@ class PresenterTests : public ::testing::Test {
     void setCorrectKeywords(std::string s) {
         experimenterView.setCorrectKeywords(std::move(s));
     }
+
+    void assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        UseCase &useCase, TrialSubmission &submission) {
+        run(useCase);
+        completeTrial();
+        exitTest();
+        assertTrue(submission.responseViewHidden());
+    }
 };
 
 class RequestFailingModel : public Model {

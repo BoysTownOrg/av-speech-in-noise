@@ -622,17 +622,14 @@ PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
 }
 
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
-    run(confirmingAdaptiveCorrectKeywordsTest);
-    completeTrial();
-    exitTest();
-    assertTrue(submittingCorrectKeywords.responseViewHidden());
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
-    run(confirmingFixedLevelFreeResponseTestWithAllTargets);
-    completeTrial();
-    exitTest();
-    assertTrue(submittingFreeResponse.responseViewHidden());
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingFixedLevelFreeResponseTestWithAllTargets,
+        submittingFreeResponse);
 }
 
 PRESENTER_TEST(
@@ -1111,9 +1108,9 @@ TEST_F(
     assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(
-    PresenterTests, confirmingAdaptiveClosedSetTestShowsTargetFileName) {
-    assertShowsTargetFileName(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestShowsTargetFileName) {
+    assertShowsTargetFileName(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
 TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
