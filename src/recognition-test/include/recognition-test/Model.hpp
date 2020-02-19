@@ -8,17 +8,6 @@
 #include <string>
 
 namespace av_speech_in_noise {
-struct EyeGaze {
-    float x;
-    float y;
-};
-
-struct BinocularGazes {
-    std::uintmax_t systemTimeMilliseconds;
-    EyeGaze left;
-    EyeGaze right;
-};
-
 class ResponseEvaluator {
   public:
     virtual ~ResponseEvaluator() = default;

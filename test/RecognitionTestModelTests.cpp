@@ -337,10 +337,15 @@ class EyeTrackerStub : public EyeTracker {
 
     auto gazes() -> std::vector<BinocularGazes> override {
         insert(log_, "gazes ");
-        return {};
+        return gazes_;
+    }
+
+    void setGazes(std::vector<BinocularGazes> g) {
+        gazes_ = std::move(g);
     }
 
   private:
+    std::vector<BinocularGazes> gazes_;
     LogString log_{};
     double recordingTimeAllocatedSeconds_{};
     bool recordingTimeAllocated_{};
@@ -520,6 +525,10 @@ class RecognitionTestModelTests : public ::testing::Test {
     void setSnr_dB(int x) { testMethod.setSnr_dB(x); }
 
     void maskerFadeOutComplete() { maskerPlayer.fadeOutComplete(); }
+
+    void setEyeGazes(std::vector<BinocularGazes> g) {
+        eyeTracker.setGazes(std::move(g));
+    }
 
     void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
         run(useCase);
@@ -975,6 +984,14 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTestWithEyeTracking);
     maskerFadeOutComplete();
     assertEqual("stop gazes ", eyeTracker.log());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompleteWritesEyeGazes) {
+    run(initializingTestWithEyeTracking);
+    setEyeGazes({{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}});
+    maskerFadeOutComplete();
+    assertEqual({{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {

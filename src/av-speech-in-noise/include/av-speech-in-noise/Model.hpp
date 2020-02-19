@@ -87,6 +87,27 @@ constexpr auto operator==(const TrackingSequence &a, const TrackingSequence &b)
 
 using TrackingRule = typename std::vector<TrackingSequence>;
 
+struct EyeGaze {
+    float x;
+    float y;
+};
+
+struct BinocularGazes {
+    std::uintmax_t systemTimeMilliseconds;
+    EyeGaze left;
+    EyeGaze right;
+};
+
+constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
+    return a.x == b.x && a.y == b.y;
+}
+
+constexpr auto operator==(const BinocularGazes &a, const BinocularGazes &b)
+    -> bool {
+    return a.systemTimeMilliseconds == b.systemTimeMilliseconds &&
+        a.left == b.left && a.right == b.right;
+}
+
 struct TestIdentity {
     std::string subjectId;
     std::string testerId;

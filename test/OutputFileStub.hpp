@@ -13,6 +13,7 @@ class OutputFileStub : public OutputFile {
     open_set::FreeResponseTrial writtenFreeResponseTrial_{};
     open_set::CorrectKeywordsTrial writtenCorrectKeywords_{};
     open_set::AdaptiveTrial writtenOpenSetAdaptiveTrial_{};
+    std::vector<BinocularGazes> eyeGazes_;
     LogString log_{};
     const AdaptiveTest *adaptiveTest_{};
     const FixedLevelTest *fixedLevelTest_{};
@@ -83,6 +84,10 @@ class OutputFileStub : public OutputFile {
     auto adaptiveTest() const { return adaptiveTest_; }
 
     auto fixedLevelTest() const { return fixedLevelTest_; }
+
+    auto eyeGazes() const -> std::vector<BinocularGazes> { return eyeGazes_; }
+
+    void write(const std::vector<BinocularGazes> &g) { eyeGazes_ = g; }
 
     auto writtenAdaptiveCoordinateResponseTrial() const -> auto & {
         return writtenAdaptiveCoordinateResponseTrial_;

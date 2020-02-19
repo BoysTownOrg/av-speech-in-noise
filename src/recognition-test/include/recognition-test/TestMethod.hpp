@@ -1,6 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_TEST_METHOD_HPP_
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_TEST_METHOD_HPP_
 
+#include "Model.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <string>
 
@@ -19,6 +20,7 @@ class OutputFile {
     virtual void write(const open_set::AdaptiveTrial &) = 0;
     virtual void writeTest(const AdaptiveTest &) = 0;
     virtual void writeTest(const FixedLevelTest &) = 0;
+    virtual void write(const std::vector<BinocularGazes> &) = 0;
     virtual void close() = 0;
     virtual void save() = 0;
 };
