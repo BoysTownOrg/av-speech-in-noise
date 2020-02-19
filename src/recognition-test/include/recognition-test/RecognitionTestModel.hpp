@@ -82,17 +82,6 @@ class MaskerPlayer {
     virtual auto nanoseconds(system_time) -> std::uintmax_t = 0;
 };
 
-struct EyeGaze {
-    float x;
-    float y;
-};
-
-struct BinocularGazes {
-    std::uintmax_t systemTimeMilliseconds;
-    EyeGaze left;
-    EyeGaze right;
-};
-
 class EyeTracker {
   public:
     virtual ~EyeTracker() = default;

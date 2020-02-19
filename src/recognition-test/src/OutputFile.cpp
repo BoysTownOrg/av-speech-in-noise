@@ -1,4 +1,6 @@
 #include "OutputFile.hpp"
+#include "Model.hpp"
+#include <algorithm>
 #include <sstream>
 
 namespace av_speech_in_noise {
@@ -137,6 +139,29 @@ static auto formatTest(const FixedLevelTest &test) -> std::string {
     stream.writeLabeledLine("SNR (dB)", test.snr_dB);
     stream.writeCondition(test);
     stream.insertNewLine();
+    return stream.str();
+}
+
+static auto format(const std::vector<BinocularGazes> &gazes) -> std::string {
+    FormattedStream stream;
+    insert(stream, "system time (us)");
+    insertCommaAndSpace(stream);
+    insert(stream, "left gaze [x y]");
+    insertCommaAndSpace(stream);
+    insert(stream, "right gaze [x y]");
+    std::for_each(gazes.begin(), gazes.end(), [&](auto g) {
+        insertNewLine(stream);
+        insert(stream, g.systemTimeMilliseconds);
+        insertCommaAndSpace(stream);
+        insert(stream, g.left.x);
+        insert(stream, " ");
+        insert(stream, g.left.y);
+        insertCommaAndSpace(stream);
+        insert(stream, g.right.x);
+        insert(stream, " ");
+        insert(stream, g.right.y);
+    });
+    insertNewLine(stream);
     return stream.str();
 }
 
@@ -337,6 +362,10 @@ void OutputFileImpl::writeTest(const AdaptiveTest &test) {
 
 void OutputFileImpl::writeTest(const FixedLevelTest &test) {
     write(formatTest(test));
+}
+
+void OutputFileImpl::write(const std::vector<BinocularGazes> &gazes) {
+    write(format(gazes));
 }
 
 void OutputFileImpl::openNewFile(const TestIdentity &test) {

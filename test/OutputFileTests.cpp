@@ -1,7 +1,10 @@
 #include "LogString.hpp"
 #include "assert-utility.hpp"
+#include "recognition-test/RecognitionTestModel.hpp"
 #include <recognition-test/OutputFile.hpp>
 #include <gtest/gtest.h>
+#include <cstdint>
+#include <algorithm>
 
 namespace av_speech_in_noise {
 namespace {
@@ -124,9 +127,7 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
 
     auto evaluationEntryIndex() -> int override { return 6; }
 
-    void run(OutputFileImpl &file) override {
-        file.write(trial_);
-    }
+    void run(OutputFileImpl &file) override { file.write(trial_); }
 };
 
 class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
@@ -139,9 +140,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
 
     void correct() override { setCorrect(trial_); }
 
-    void run(OutputFileImpl &file) override {
-        file.write(trial_);
-    }
+    void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 5; }
 };
@@ -154,9 +153,7 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
 
     void correct() override { trial_.correct = true; }
 
-    void run(OutputFileImpl &file) override {
-        file.write(trial_);
-    }
+    void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 3; }
 };
@@ -169,12 +166,14 @@ class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
 
     void correct() override { trial_.correct = true; }
 
-    void run(OutputFileImpl &file) override {
-        file.write(trial_);
-    }
+    void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 4; }
 };
+
+void write(OutputFileImpl &file, const std::vector<BinocularGazes> &gazes) {
+    file.write(gazes);
+}
 
 class OutputFileTests : public ::testing::Test {
   protected:
@@ -195,6 +194,7 @@ class OutputFileTests : public ::testing::Test {
     TestIdentity testIdentity;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
+    std::vector<BinocularGazes> eyeGazes;
 
     void run(UseCase &useCase) { useCase.run(file); }
 
@@ -432,6 +432,16 @@ class OutputFileTests : public ::testing::Test {
         const std::string &label, const std::string &what) {
         assertWriterContains(label + ": " + what + "\n");
     }
+
+    void setEyeGazes(std::vector<std::uintmax_t> t, std::vector<EyeGaze> left,
+        std::vector<EyeGaze> right) {
+        eyeGazes.resize(t.size());
+        std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
+            BinocularGazes gazes{t.at(n), left.at(n), right.at(n)};
+            ++n;
+            return gazes;
+        });
+    }
 };
 
 TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
@@ -640,6 +650,16 @@ TEST_F(OutputFileTests, writeFixedLevelTestWithAvCondition) {
 
 TEST_F(OutputFileTests, writeFixedLevelTestWithAuditoryOnlyCondition) {
     assertConditionNameWritten(writingFixedLevelTest, Condition::auditoryOnly);
+}
+
+TEST_F(OutputFileTests, writeEyeGazes) {
+    setEyeGazes({1, 2, 3}, {{0.4, 0.44}, {0.5, 0.55}, {0.6, 0.66}},
+        {{0.7, 0.77}, {0.8, 0.88}, {0.9, 0.99}});
+    write(file, eyeGazes);
+    assertWrittenLast("system time (us), left gaze [x y], right gaze [x y]\n"
+                      "1, 0.4 0.44, 0.7 0.77\n"
+                      "2, 0.5 0.55, 0.8 0.88\n"
+                      "3, 0.6 0.66, 0.9 0.99\n");
 }
 
 TEST_F(OutputFileTests, openPassesFormattedFilePath) {
