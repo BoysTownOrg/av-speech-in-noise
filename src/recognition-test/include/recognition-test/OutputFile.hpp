@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILE_HPP_
 
 #include "Model.hpp"
+#include "RecognitionTestModel.hpp"
 #include <string>
 
 namespace av_speech_in_noise {
@@ -95,6 +96,7 @@ class OutputFileImpl : public OutputFile {
     void write(const open_set::CorrectKeywordsTrial &) override;
     void write(const open_set::AdaptiveTrial &) override;
     void write(const BinocularGazeSamples &) override;
+    void writeFadeInComplete(const WrittenAudioSampleTime &);
 
   private:
     void write(std::string);

@@ -50,6 +50,11 @@ struct AudioSampleTime {
     gsl::index systemTimeSampleOffset;
 };
 
+struct WrittenAudioSampleTime {
+    std::uintmax_t systemTimeNanoseconds;
+    gsl::index systemTimeSampleOffset;
+};
+
 class MaskerPlayer {
   public:
     virtual ~MaskerPlayer() = default;

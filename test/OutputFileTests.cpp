@@ -175,6 +175,11 @@ void write(OutputFileImpl &file, const BinocularGazeSamples &gazes) {
     file.write(gazes);
 }
 
+void writeFadeInComplete(
+    OutputFileImpl &file, const WrittenAudioSampleTime &time) {
+    file.writeFadeInComplete(time);
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -195,6 +200,7 @@ class OutputFileTests : public ::testing::Test {
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
     BinocularGazeSamples eyeGazes;
+    WrittenAudioSampleTime audioSampleTime;
 
     void run(UseCase &useCase) { useCase.run(file); }
 
@@ -442,6 +448,11 @@ class OutputFileTests : public ::testing::Test {
             return gazes;
         });
     }
+
+    void setAudioSampleTime(std::uintmax_t t, gsl::index offset) {
+        audioSampleTime.systemTimeNanoseconds = t;
+        audioSampleTime.systemTimeSampleOffset = offset;
+    }
 };
 
 TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
@@ -660,6 +671,14 @@ TEST_F(OutputFileTests, writeEyeGazes) {
                       "1, 0.4 0.44, 0.7 0.77\n"
                       "2, 0.5 0.55, 0.8 0.88\n"
                       "3, 0.6 0.66, 0.9 0.99\n");
+}
+
+TEST_F(OutputFileTests, writeFadeInCompleteTime) {
+    setAudioSampleTime(1, 42);
+    writeFadeInComplete(file, audioSampleTime);
+    assertWrittenLast("fade in complete audio sample system time\n"
+                      "    system time (ns): 1\n"
+                      "    offset (samples): 42\n");
 }
 
 TEST_F(OutputFileTests, openPassesFormattedFilePath) {

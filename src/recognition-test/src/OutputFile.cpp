@@ -1,5 +1,6 @@
 #include "OutputFile.hpp"
 #include "Model.hpp"
+#include "RecognitionTestModel.hpp"
 #include <algorithm>
 #include <sstream>
 
@@ -162,6 +163,17 @@ static auto format(const BinocularGazeSamples &gazes) -> std::string {
         insert(stream, g.right.y);
     });
     insertNewLine(stream);
+    return stream.str();
+}
+
+static auto format(const WrittenAudioSampleTime &time) -> std::string {
+    FormattedStream stream;
+    insert(stream, "fade in complete audio sample system time");
+    insertNewLine(stream);
+    insert(stream, "    ");
+    stream.writeLabeledLine("system time (ns)", time.systemTimeNanoseconds);
+    insert(stream, "    ");
+    stream.writeLabeledLine("offset (samples)", time.systemTimeSampleOffset);
     return stream.str();
 }
 
@@ -366,6 +378,10 @@ void OutputFileImpl::writeTest(const FixedLevelTest &test) {
 
 void OutputFileImpl::write(const BinocularGazeSamples &gazes) {
     write(format(gazes));
+}
+
+void OutputFileImpl::writeFadeInComplete(const WrittenAudioSampleTime &time) {
+    write(format(time));
 }
 
 void OutputFileImpl::openNewFile(const TestIdentity &test) {
