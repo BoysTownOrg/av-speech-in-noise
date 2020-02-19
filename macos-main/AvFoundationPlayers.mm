@@ -1,6 +1,7 @@
 #include "AvFoundationPlayers.h"
 #include "common-objc.h"
 #include "recognition-test/RecognitionTestModel.hpp"
+#include <mach/mach_time.h>
 #include <gsl/gsl>
 #include <limits>
 #include <atomic>
@@ -531,5 +532,24 @@ void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
     return stimulus_players::outputDevice(index);
+}
+
+static auto numerator(const mach_timebase_info_data_t &t) -> uint32_t {
+    return t.numer;
+}
+
+static auto denominator(const mach_timebase_info_data_t &t) -> uint32_t {
+    return t.denom;
+}
+
+auto AvFoundationAudioPlayer::nanoseconds(av_speech_in_noise::system_time t) -> std::uintmax_t {
+    // https://stackoverflow.com/questions/23378063/how-can-i-use-mach-absolute-time-without-overflowing
+    mach_timebase_info_data_t tb;
+    mach_timebase_info(&tb);
+    auto high{(t >> 32) * numerator(tb)};
+    auto low{(t & 0xffffffffULL) * numerator(tb) / denominator(tb)};
+    auto highRem{((high % denominator(tb)) << 32) / denominator(tb)};
+    high /= denominator(tb);
+    return (high << 32) + highRem + low;
 }
 }
