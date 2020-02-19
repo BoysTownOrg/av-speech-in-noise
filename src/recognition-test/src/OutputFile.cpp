@@ -166,12 +166,12 @@ static auto format(const BinocularGazeSamples &gazes) -> std::string {
     return stream.str();
 }
 
-static auto format(const WrittenAudioSampleTime &time) -> std::string {
+static auto format(const ConvertedAudioSampleSystemTime &time) -> std::string {
     FormattedStream stream;
     insert(stream, "fade in complete audio sample system time");
     insertNewLine(stream);
     insert(stream, "    ");
-    stream.writeLabeledLine("system time (ns)", time.systemTimeNanoseconds);
+    stream.writeLabeledLine("system time (ns)", time.nanoseconds);
     insert(stream, "    ");
     stream.writeLabeledLine("offset (samples)", time.sampleOffset);
     return stream.str();
@@ -380,7 +380,7 @@ void OutputFileImpl::write(const BinocularGazeSamples &gazes) {
     write(format(gazes));
 }
 
-void OutputFileImpl::writeFadeInComplete(const WrittenAudioSampleTime &time) {
+void OutputFileImpl::writeFadeInComplete(const ConvertedAudioSampleSystemTime &time) {
     write(format(time));
 }
 

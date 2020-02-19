@@ -50,8 +50,8 @@ struct AudioSampleSystemTime {
     gsl::index sampleOffset;
 };
 
-struct WrittenAudioSampleTime {
-    std::uintmax_t systemTimeNanoseconds;
+struct ConvertedAudioSampleSystemTime {
+    std::uintmax_t nanoseconds;
     gsl::index sampleOffset;
 };
 

@@ -176,7 +176,7 @@ void write(OutputFileImpl &file, const BinocularGazeSamples &gazes) {
 }
 
 void writeFadeInComplete(
-    OutputFileImpl &file, const WrittenAudioSampleTime &time) {
+    OutputFileImpl &file, const ConvertedAudioSampleSystemTime &time) {
     file.writeFadeInComplete(time);
 }
 
@@ -200,7 +200,7 @@ class OutputFileTests : public ::testing::Test {
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
     BinocularGazeSamples eyeGazes;
-    WrittenAudioSampleTime audioSampleTime;
+    ConvertedAudioSampleSystemTime audioSampleTime;
 
     void run(UseCase &useCase) { useCase.run(file); }
 
@@ -450,7 +450,7 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void setAudioSampleTime(std::uintmax_t t, gsl::index offset) {
-        audioSampleTime.systemTimeNanoseconds = t;
+        audioSampleTime.nanoseconds = t;
         audioSampleTime.sampleOffset = offset;
     }
 };

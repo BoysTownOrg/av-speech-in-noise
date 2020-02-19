@@ -96,7 +96,7 @@ class OutputFileImpl : public OutputFile {
     void write(const open_set::CorrectKeywordsTrial &) override;
     void write(const open_set::AdaptiveTrial &) override;
     void write(const BinocularGazeSamples &) override;
-    void writeFadeInComplete(const WrittenAudioSampleTime &);
+    void writeFadeInComplete(const ConvertedAudioSampleSystemTime &);
 
   private:
     void write(std::string);
