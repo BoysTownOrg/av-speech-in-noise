@@ -173,7 +173,7 @@ static auto format(const WrittenAudioSampleTime &time) -> std::string {
     insert(stream, "    ");
     stream.writeLabeledLine("system time (ns)", time.systemTimeNanoseconds);
     insert(stream, "    ");
-    stream.writeLabeledLine("offset (samples)", time.systemTimeSampleOffset);
+    stream.writeLabeledLine("offset (samples)", time.sampleOffset);
     return stream.str();
 }
 

@@ -15,7 +15,7 @@ class InvalidAudioFile {};
 using system_time = std::uintmax_t;
 
 struct SystemTimeWithDelay {
-    system_time systemTime;
+    system_time time;
     double secondsDelayed;
 };
 
@@ -45,14 +45,14 @@ class TargetPlayer {
     virtual void useFirstChannelOnly() = 0;
 };
 
-struct AudioSampleTime {
-    system_time systemTime;
-    gsl::index systemTimeSampleOffset;
+struct AudioSampleSystemTime {
+    system_time time;
+    gsl::index sampleOffset;
 };
 
 struct WrittenAudioSampleTime {
     std::uintmax_t systemTimeNanoseconds;
-    gsl::index systemTimeSampleOffset;
+    gsl::index sampleOffset;
 };
 
 class MaskerPlayer {
@@ -62,7 +62,7 @@ class MaskerPlayer {
     class EventListener {
       public:
         virtual ~EventListener() = default;
-        virtual void fadeInComplete(const AudioSampleTime &) = 0;
+        virtual void fadeInComplete(const AudioSampleSystemTime &) = 0;
         virtual void fadeOutComplete() = 0;
     };
 
@@ -119,7 +119,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void submit(const open_set::FreeResponse &) override;
     void submit(const open_set::CorrectKeywords &) override;
     void throwIfTrialInProgress() override;
-    void fadeInComplete(const AudioSampleTime &) override;
+    void fadeInComplete(const AudioSampleSystemTime &) override;
     void fadeOutComplete() override;
     void playbackComplete() override;
     static constexpr double maskerChannelDelaySeconds = 0.004;

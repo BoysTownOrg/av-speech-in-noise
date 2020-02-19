@@ -279,14 +279,14 @@ void RecognitionTestModelImpl::startTrial() {
 static system_time lastFadeInCompleteAudioSampleSystemTime{};
 static double lastFadeInCompleteAudioSampleOffset{};
 
-void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTime &t) {
+void RecognitionTestModelImpl::fadeInComplete(const AudioSampleSystemTime &t) {
     if (eyeTracking) {
-        lastFadeInCompleteAudioSampleSystemTime = t.systemTime;
-        lastFadeInCompleteAudioSampleOffset = t.systemTimeSampleOffset;
+        lastFadeInCompleteAudioSampleSystemTime = t.time;
+        lastFadeInCompleteAudioSampleOffset = t.sampleOffset;
         SystemTimeWithDelay timeToPlay{};
-        timeToPlay.systemTime = t.systemTime;
+        timeToPlay.time = t.time;
         timeToPlay.secondsDelayed =
-            t.systemTimeSampleOffset / maskerPlayer.sampleRateHz() + 0.5;
+            t.sampleOffset / maskerPlayer.sampleRateHz() + 0.5;
         targetPlayer.playAt(timeToPlay);
     } else {
         playTarget();

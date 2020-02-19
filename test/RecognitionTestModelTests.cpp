@@ -391,7 +391,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingIncorrectResponse submittingIncorrectResponse;
     SubmittingFreeResponse submittingFreeResponse;
     av_speech_in_noise::Test test;
-    AudioSampleTime fadeInCompleteTime{};
+    AudioSampleSystemTime fadeInCompleteTime{};
     SubmittingCorrectKeywords submittingCorrectKeywords;
 
     RecognitionTestModelTests() { model.subscribe(&listener); }
@@ -732,11 +732,11 @@ class RecognitionTestModelTests : public ::testing::Test {
     auto eyeTrackerStopped() -> bool { return eyeTracker.stopped(); }
 
     void setMaskerPlayerFadeInCompleteAudioSampleSystemTime(system_time t) {
-        fadeInCompleteTime.systemTime = t;
+        fadeInCompleteTime.time = t;
     }
 
     void setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(gsl::index t) {
-        fadeInCompleteTime.systemTimeSampleOffset = t;
+        fadeInCompleteTime.sampleOffset = t;
     }
 
     void setMaskerPlayerSampleRateHz(double x) {

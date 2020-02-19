@@ -451,7 +451,7 @@ class OutputFileTests : public ::testing::Test {
 
     void setAudioSampleTime(std::uintmax_t t, gsl::index offset) {
         audioSampleTime.systemTimeNanoseconds = t;
-        audioSampleTime.systemTimeSampleOffset = offset;
+        audioSampleTime.sampleOffset = offset;
     }
 };
 
