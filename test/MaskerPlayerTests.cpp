@@ -68,7 +68,13 @@ class AudioPlayerStub : public AudioPlayer {
     }
 
     auto nanoseconds(av_speech_in_noise::system_time t) -> std::uintmax_t {
+        systemTimeForNanoseconds_ = t;
         return nanoseconds_;
+    }
+
+    [[nodiscard]] auto systemTimeForNanoseconds() const
+        -> av_speech_in_noise::system_time {
+        return systemTimeForNanoseconds_;
     }
 
   private:
@@ -79,6 +85,7 @@ class AudioPlayerStub : public AudioPlayer {
     std::string audioFilePath_;
     std::map<int, bool> outputDevices;
     std::uintmax_t nanoseconds_{};
+    av_speech_in_noise::system_time systemTimeForNanoseconds_{};
     double sampleRateHz_{};
     int deviceIndex_{};
     int deviceDescriptionDeviceIndex_{};
@@ -209,8 +216,14 @@ void setNanoseconds(AudioPlayerStub &player, std::uintmax_t t) {
     player.setNanoseconds(t);
 }
 
-auto nanoseconds(MaskerPlayerImpl &player) -> std::uintmax_t {
-    return player.nanoseconds({});
+auto nanoseconds(MaskerPlayerImpl &player,
+    av_speech_in_noise::system_time t = {}) -> std::uintmax_t {
+    return player.nanoseconds(t);
+}
+
+auto systemTimeForNanoseconds(AudioPlayerStub &player)
+    -> av_speech_in_noise::system_time {
+    return player.systemTimeForNanoseconds();
 }
 
 using channel_index_type = gsl::index;
@@ -967,6 +980,12 @@ MASKER_PLAYER_TEST(rmsPassesLoadedFileToVideoPlayer) {
 MASKER_PLAYER_TEST(returnsNanosecondConversion) {
     setNanoseconds(audioPlayer, 1);
     assertEqual(std::uintmax_t{1}, nanoseconds(player));
+}
+
+MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForNanoseconds) {
+    nanoseconds(player, 1);
+    assertEqual(av_speech_in_noise::system_time{1},
+        systemTimeForNanoseconds(audioPlayer));
 }
 
 MASKER_PLAYER_TEST(loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
