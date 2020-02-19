@@ -171,8 +171,8 @@ class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
     auto evaluationEntryIndex() -> int override { return 4; }
 };
 
-void write(OutputFileImpl &file, const BinocularGazeSamples &gazes) {
-    file.write(gazes);
+void write(OutputFileImpl &file, const BinocularGazeSamples &gazeSamples) {
+    file.write(gazeSamples);
 }
 
 void writeFadeInComplete(
@@ -443,9 +443,9 @@ class OutputFileTests : public ::testing::Test {
         std::vector<EyeGaze> right) {
         eyeGazes.resize(t.size());
         std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
-            BinocularGazeSample gazes{t.at(n), left.at(n), right.at(n)};
+            BinocularGazeSample gazeSamples{t.at(n), left.at(n), right.at(n)};
             ++n;
-            return gazes;
+            return gazeSamples;
         });
     }
 

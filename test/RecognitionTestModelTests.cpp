@@ -6,7 +6,7 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
-#include "recognition-test/RecognitionTestModel.hpp"
+#include <recognition-test/RecognitionTestModel.hpp>
 #include <cstdint>
 #include <gtest/gtest.h>
 #include <cmath>
@@ -336,15 +336,15 @@ class EyeTrackerStub : public EyeTracker {
 
     auto recordingTimeAllocated() -> bool { return recordingTimeAllocated_; }
 
-    auto gazes() -> BinocularGazeSamples override {
-        insert(log_, "gazes ");
-        return gazes_;
+    auto gazeSamples() -> BinocularGazeSamples override {
+        insert(log_, "gazeSamples ");
+        return gazeSamples_;
     }
 
-    void setGazes(BinocularGazeSamples g) { gazes_ = std::move(g); }
+    void setGazes(BinocularGazeSamples g) { gazeSamples_ = std::move(g); }
 
   private:
-    BinocularGazeSamples gazes_;
+    BinocularGazeSamples gazeSamples_;
     LogString log_{};
     double recordingTimeAllocatedSeconds_{};
     bool recordingTimeAllocated_{};
@@ -986,7 +986,7 @@ RECOGNITION_TEST_MODEL_TEST(
     fadeOutCompleteRetrievesEyeGazesAfterStoppingTracking) {
     run(initializingTestWithEyeTracking);
     maskerFadeOutComplete();
-    assertEqual("stop gazes ", eyeTracker.log());
+    assertEqual("stop gazeSamples ", eyeTracker.log());
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteWritesEyeGazes) {

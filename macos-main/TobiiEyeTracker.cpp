@@ -92,16 +92,16 @@ static auto x(EyeGaze &p) -> float & { return p.x; }
 
 static auto y(EyeGaze &p) -> float & { return p.y; }
 
-auto TobiiEyeTracker::gazes() -> BinocularGazeSamples {
-    BinocularGazeSamples gazes_(head > 0 ? head - 1 : 0);
-    for (gsl::index i{0}; i < gazes_.size(); ++i) {
-        at(gazes_, i).systemTimeMicroseconds =
+auto TobiiEyeTracker::gazeSamples() -> BinocularGazeSamples {
+    BinocularGazeSamples gazeSamples_(head > 0 ? head - 1 : 0);
+    for (gsl::index i{0}; i < gazeSamples_.size(); ++i) {
+        at(gazeSamples_, i).systemTimeMicroseconds =
             at(gazeData, i).system_time_stamp;
-        x(leftEyeGaze(gazes_, i)) = x(leftEyeGaze(gazeData, i));
-        y(leftEyeGaze(gazes_, i)) = y(leftEyeGaze(gazeData, i));
-        x(rightEyeGaze(gazes_, i)) = x(rightEyeGaze(gazeData, i));
-        y(rightEyeGaze(gazes_, i)) = y(rightEyeGaze(gazeData, i));
+        x(leftEyeGaze(gazeSamples_, i)) = x(leftEyeGaze(gazeData, i));
+        y(leftEyeGaze(gazeSamples_, i)) = y(leftEyeGaze(gazeData, i));
+        x(rightEyeGaze(gazeSamples_, i)) = x(rightEyeGaze(gazeData, i));
+        y(rightEyeGaze(gazeSamples_, i)) = y(rightEyeGaze(gazeData, i));
     }
-    return gazes_;
+    return gazeSamples_;
 }
 }

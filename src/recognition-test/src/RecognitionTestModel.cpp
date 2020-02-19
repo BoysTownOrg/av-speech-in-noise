@@ -302,7 +302,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
         time.nanoseconds = maskerPlayer.nanoseconds(
             lastFadeInCompleteAudioSampleSystemTime.time);
         outputFile.writeFadeInComplete(time);
-        outputFile.write(eyeTracker.gazes());
+        outputFile.write(eyeTracker.gazeSamples());
     }
     listener_->trialComplete();
 }

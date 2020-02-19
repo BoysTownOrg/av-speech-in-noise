@@ -143,14 +143,14 @@ static auto formatTest(const FixedLevelTest &test) -> std::string {
     return stream.str();
 }
 
-static auto format(const BinocularGazeSamples &gazes) -> std::string {
+static auto format(const BinocularGazeSamples &gazeSamples) -> std::string {
     FormattedStream stream;
     insert(stream, "system time (us)");
     insertCommaAndSpace(stream);
     insert(stream, "left gaze [x y]");
     insertCommaAndSpace(stream);
     insert(stream, "right gaze [x y]");
-    std::for_each(gazes.begin(), gazes.end(), [&](auto g) {
+    std::for_each(gazeSamples.begin(), gazeSamples.end(), [&](auto g) {
         insertNewLine(stream);
         insert(stream, g.systemTimeMicroseconds);
         insertCommaAndSpace(stream);
@@ -376,8 +376,8 @@ void OutputFileImpl::writeTest(const FixedLevelTest &test) {
     write(formatTest(test));
 }
 
-void OutputFileImpl::write(const BinocularGazeSamples &gazes) {
-    write(format(gazes));
+void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {
+    write(format(gazeSamples));
 }
 
 void OutputFileImpl::writeFadeInComplete(
