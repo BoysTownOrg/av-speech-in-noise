@@ -50,8 +50,8 @@ void TobiiEyeTracker::gazeDataReceived(TobiiResearchGazeData *gaze_data) {
         gazeData.at(head++) = *gaze_data;
 }
 
-static auto at(std::vector<BinocularGazes> &b, gsl::index i)
-    -> BinocularGazes & {
+static auto at(std::vector<BinocularGazeSample> &b, gsl::index i)
+    -> BinocularGazeSample & {
     return b.at(i);
 }
 
@@ -79,12 +79,12 @@ static auto x(const TobiiResearchNormalizedPoint2D &p) -> float { return p.x; }
 
 static auto y(const TobiiResearchNormalizedPoint2D &p) -> float { return p.y; }
 
-static auto leftEyeGaze(std::vector<BinocularGazes> &b, gsl::index i)
+static auto leftEyeGaze(std::vector<BinocularGazeSample> &b, gsl::index i)
     -> EyeGaze & {
     return at(b, i).left;
 }
 
-static auto rightEyeGaze(std::vector<BinocularGazes> &b, gsl::index i)
+static auto rightEyeGaze(BinocularGazeSamples &b, gsl::index i)
     -> EyeGaze & {
     return at(b, i).right;
 }
@@ -93,10 +93,10 @@ static auto x(EyeGaze &p) -> float & { return p.x; }
 
 static auto y(EyeGaze &p) -> float & { return p.y; }
 
-auto TobiiEyeTracker::gazes() -> std::vector<BinocularGazes> {
-    std::vector<BinocularGazes> gazes_(head > 0 ? head - 1 : 0);
+auto TobiiEyeTracker::gazes() -> BinocularGazeSamples {
+    BinocularGazeSamples gazes_(head > 0 ? head - 1 : 0);
     for (gsl::index i{0}; i < gazes_.size(); ++i) {
-        at(gazes_, i).systemTimeMilliseconds =
+        at(gazes_, i).systemTimeMicroseconds =
             at(gazeData, i).system_time_stamp;
         x(leftEyeGaze(gazes_, i)) = x(leftEyeGaze(gazeData, i));
         y(leftEyeGaze(gazes_, i)) = y(leftEyeGaze(gazeData, i));

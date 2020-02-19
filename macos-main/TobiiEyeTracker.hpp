@@ -13,7 +13,7 @@ class TobiiEyeTracker : public EyeTracker {
     void allocateRecordingTimeSeconds(double s) override;
     void start() override;
     void stop() override;
-    auto gazes() -> std::vector<BinocularGazes> override;
+    auto gazes() -> BinocularGazeSamples override;
 
   private:
     static void gaze_data_callback(

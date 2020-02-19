@@ -88,7 +88,7 @@ class EyeTracker {
     virtual void allocateRecordingTimeSeconds(double) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
-    virtual auto gazes() -> std::vector<BinocularGazes> = 0;
+    virtual auto gazes() -> BinocularGazeSamples = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,

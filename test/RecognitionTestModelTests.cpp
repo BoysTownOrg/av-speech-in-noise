@@ -335,17 +335,17 @@ class EyeTrackerStub : public EyeTracker {
 
     auto recordingTimeAllocated() -> bool { return recordingTimeAllocated_; }
 
-    auto gazes() -> std::vector<BinocularGazes> override {
+    auto gazes() -> BinocularGazeSamples override {
         insert(log_, "gazes ");
         return gazes_;
     }
 
-    void setGazes(std::vector<BinocularGazes> g) {
+    void setGazes(BinocularGazeSamples g) {
         gazes_ = std::move(g);
     }
 
   private:
-    std::vector<BinocularGazes> gazes_;
+    BinocularGazeSamples gazes_;
     LogString log_{};
     double recordingTimeAllocatedSeconds_{};
     bool recordingTimeAllocated_{};
@@ -526,7 +526,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void maskerFadeOutComplete() { maskerPlayer.fadeOutComplete(); }
 
-    void setEyeGazes(std::vector<BinocularGazes> g) {
+    void setEyeGazes(BinocularGazeSamples g) {
         eyeTracker.setGazes(std::move(g));
     }
 

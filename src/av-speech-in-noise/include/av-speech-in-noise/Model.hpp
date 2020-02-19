@@ -92,19 +92,21 @@ struct EyeGaze {
     float y;
 };
 
-struct BinocularGazes {
-    std::uintmax_t systemTimeMilliseconds;
+struct BinocularGazeSample {
+    std::uintmax_t systemTimeMicroseconds;
     EyeGaze left;
     EyeGaze right;
 };
+
+using BinocularGazeSamples = typename std::vector<BinocularGazeSample>;
 
 constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
     return a.x == b.x && a.y == b.y;
 }
 
-constexpr auto operator==(const BinocularGazes &a, const BinocularGazes &b)
+constexpr auto operator==(const BinocularGazeSample &a, const BinocularGazeSample &b)
     -> bool {
-    return a.systemTimeMilliseconds == b.systemTimeMilliseconds &&
+    return a.systemTimeMicroseconds == b.systemTimeMicroseconds &&
         a.left == b.left && a.right == b.right;
 }
 

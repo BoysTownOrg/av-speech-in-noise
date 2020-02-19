@@ -171,7 +171,7 @@ class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
     auto evaluationEntryIndex() -> int override { return 4; }
 };
 
-void write(OutputFileImpl &file, const std::vector<BinocularGazes> &gazes) {
+void write(OutputFileImpl &file, const BinocularGazeSamples &gazes) {
     file.write(gazes);
 }
 
@@ -194,7 +194,7 @@ class OutputFileTests : public ::testing::Test {
     TestIdentity testIdentity;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
-    std::vector<BinocularGazes> eyeGazes;
+    BinocularGazeSamples eyeGazes;
 
     void run(UseCase &useCase) { useCase.run(file); }
 
@@ -437,7 +437,7 @@ class OutputFileTests : public ::testing::Test {
         std::vector<EyeGaze> right) {
         eyeGazes.resize(t.size());
         std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
-            BinocularGazes gazes{t.at(n), left.at(n), right.at(n)};
+            BinocularGazeSample gazes{t.at(n), left.at(n), right.at(n)};
             ++n;
             return gazes;
         });
