@@ -98,7 +98,7 @@ class OutputFileStub : public OutputFile {
 
     void write(const BinocularGazeSamples &g) override { eyeGazes_ = g; }
 
-    void writeFadeInComplete(const ConvertedAudioSampleSystemTime &t) {
+    void writeFadeInComplete(const ConvertedAudioSampleSystemTime &t) override {
         fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_ =
             t.nanoseconds;
         fadeInCompleteAudioSampleOffset_ = t.sampleOffset;

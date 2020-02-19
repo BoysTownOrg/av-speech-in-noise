@@ -67,7 +67,8 @@ class AudioPlayerStub : public AudioPlayer {
         listener_->fillAudioBuffer(audio, t);
     }
 
-    auto nanoseconds(av_speech_in_noise::system_time t) -> std::uintmax_t {
+    auto nanoseconds(av_speech_in_noise::system_time t)
+        -> std::uintmax_t override {
         systemTimeForNanoseconds_ = t;
         return nanoseconds_;
     }

@@ -18,12 +18,12 @@ class TestMethod {
     virtual void submitIncorrectResponse() = 0;
     virtual void submit(const open_set::FreeResponse &) = 0;
     virtual void submit(const open_set::CorrectKeywords &) = 0;
+    virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void writeTestingParameters(OutputFile *) = 0;
     virtual void writeLastCoordinateResponse(OutputFile *) = 0;
     virtual void writeLastCorrectResponse(OutputFile *) = 0;
     virtual void writeLastCorrectKeywords(OutputFile *) = 0;
     virtual void writeLastIncorrectResponse(OutputFile *) = 0;
-    virtual void submit(const coordinate_response_measure::Response &) = 0;
 };
 }
 

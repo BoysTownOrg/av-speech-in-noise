@@ -111,7 +111,7 @@ static void writeMethod(FormattedStream &stream, const TestIdentity &identity) {
     stream.writeMethod(identity);
 }
 
-static auto formatTest(const AdaptiveTest &test) -> std::string {
+static auto format(const AdaptiveTest &test) -> std::string {
     FormattedStream stream;
     const auto &identity = test.identity;
     writeSubjectId(stream, identity);
@@ -127,7 +127,7 @@ static auto formatTest(const AdaptiveTest &test) -> std::string {
     return stream.str();
 }
 
-static auto formatTest(const FixedLevelTest &test) -> std::string {
+static auto format(const FixedLevelTest &test) -> std::string {
     FormattedStream stream;
     const auto &identity = test.identity;
     writeSubjectId(stream, identity);
@@ -177,8 +177,8 @@ static auto format(const ConvertedAudioSampleSystemTime &time) -> std::string {
     return stream.str();
 }
 
-static auto formatTrial(
-    const coordinate_response_measure::FixedLevelTrial &trial) -> std::string {
+static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
+    -> std::string {
     FormattedStream stream;
     insert(stream, trial.correctNumber);
     insertCommaAndSpace(stream);
@@ -195,7 +195,7 @@ static auto formatTrial(
     return stream.str();
 }
 
-static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
+static auto format(const coordinate_response_measure::AdaptiveTrial &trial)
     -> std::string {
     FormattedStream stream;
     insert(stream, trial.SNR_dB);
@@ -215,8 +215,7 @@ static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
     return stream.str();
 }
 
-static auto formatTrial(const open_set::FreeResponseTrial &trial)
-    -> std::string {
+static auto format(const open_set::FreeResponseTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.target);
     insertCommaAndSpace(stream);
@@ -229,7 +228,7 @@ static auto formatTrial(const open_set::FreeResponseTrial &trial)
     return stream.str();
 }
 
-static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
+static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.SNR_dB);
     insertCommaAndSpace(stream);
@@ -242,8 +241,7 @@ static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
     return stream.str();
 }
 
-static auto formatTrial(const open_set::CorrectKeywordsTrial &trial)
-    -> std::string {
+static auto format(const open_set::CorrectKeywordsTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.SNR_dB);
     insertCommaAndSpace(stream);
@@ -335,7 +333,7 @@ void OutputFileImpl::write(
     const coordinate_response_measure::AdaptiveTrial &trial) {
     if (!justWroteAdaptiveCoordinateResponseTrial)
         write(formatAdaptiveCoordinateResponseTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteAdaptiveCoordinateResponseTrial = true;
 }
 
@@ -343,37 +341,37 @@ void OutputFileImpl::write(
     const coordinate_response_measure::FixedLevelTrial &trial) {
     if (!justWroteFixedLevelCoordinateResponseTrial)
         write(formatFixedLevelCoordinateResponseTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteFixedLevelCoordinateResponseTrial = true;
 }
 
 void OutputFileImpl::write(const open_set::FreeResponseTrial &trial) {
     if (!justWroteFreeResponseTrial)
         write(formatOpenSetFreeResponseTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteFreeResponseTrial = true;
 }
 
 void OutputFileImpl::write(const open_set::CorrectKeywordsTrial &trial) {
     if (!justWroteCorrectKeywordsTrial)
         write(formatCorrectKeywordsTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteCorrectKeywordsTrial = true;
 }
 
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
     if (!justWroteOpenSetAdaptiveTrial)
         write(formatOpenSetAdaptiveTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteOpenSetAdaptiveTrial = true;
 }
 
 void OutputFileImpl::writeTest(const AdaptiveTest &test) {
-    write(formatTest(test));
+    write(format(test));
 }
 
 void OutputFileImpl::writeTest(const FixedLevelTest &test) {
-    write(formatTest(test));
+    write(format(test));
 }
 
 void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {
