@@ -567,7 +567,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                                                  labelWidth, labelHeight)]},
       secondaryDisplayedText_{[[NSTextField alloc]
           initWithFrame:NSMakeRect(buttonWidth + 15 + labelWidth + 15, r.size.height - labelHeight,
-                            labelWidth, labelHeight)]},
+                            r.size.width - buttonWidth - labelWidth - 30, labelHeight)]},
       evaluationButtons{
           [[NSView alloc] initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0, 3 * buttonWidth,
                                             buttonHeight)]},
