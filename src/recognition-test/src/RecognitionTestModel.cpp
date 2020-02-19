@@ -301,8 +301,11 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     targetPlayer.hideVideo();
     if (eyeTracking) {
         eyeTracker.stop();
+        ConvertedAudioSampleSystemTime time;
+        time.sampleOffset = lastFadeInCompleteAudioSampleOffset;
+        time.nanoseconds = maskerPlayer.nanoseconds(lastFadeInCompleteAudioSampleSystemTime);
+        outputFile.writeFadeInComplete(time);
         outputFile.write(eyeTracker.gazes());
-        maskerPlayer.nanoseconds(lastFadeInCompleteAudioSampleSystemTime);
     }
     listener_->trialComplete();
     std::cout << "Last fade in complete audio sample system time: "

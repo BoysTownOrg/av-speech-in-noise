@@ -2,6 +2,7 @@
 #define TESTS_MASKERPLAYERSTUB_HPP_
 
 #include "LogString.hpp"
+#include <cstdint>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <utility>
 
@@ -21,6 +22,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     gsl::index channelDelayed_{};
     EventListener *listener_{};
     std::uintmax_t toNanosecondsSystemTime_{};
+    std::uintmax_t nanoseconds_{};
     bool fadeInCalled_{};
     bool fadeOutCalled_{};
     bool playing_{};
@@ -38,7 +40,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     auto nanoseconds(system_time t) -> std::uintmax_t override {
         toNanosecondsSystemTime_ = t;
-        return {};
+        return nanoseconds_;
     }
 
     void setSampleRateHz(double x) { sampleRateHz_ = x; }
@@ -145,6 +147,8 @@ class MaskerPlayerStub : public MaskerPlayer {
     void setFadeTimeSeconds(double x) { fadeTimeSeconds_ = x; }
 
     void setDurationSeconds(double x) { durationSeconds_ = x; }
+
+    void setNanoseconds(std::uintmax_t t) { nanoseconds_ = t; }
 };
 }
 

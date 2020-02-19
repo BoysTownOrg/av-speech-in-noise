@@ -7,6 +7,7 @@
 #include "TargetPlayerStub.hpp"
 #include "assert-utility.hpp"
 #include "recognition-test/RecognitionTestModel.hpp"
+#include <cstdint>
 #include <gtest/gtest.h>
 #include <cmath>
 #include <functional>
@@ -735,6 +736,10 @@ class RecognitionTestModelTests : public ::testing::Test {
         fadeInCompleteTime.time = t;
     }
 
+    void setMaskerPlayerSystemTimeNanoseconds(std::uintmax_t t) {
+        maskerPlayer.setNanoseconds(t);
+    }
+
     void setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(gsl::index t) {
         fadeInCompleteTime.sampleOffset = t;
     }
@@ -990,6 +995,18 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteWritesEyeGazes) {
     maskerFadeOutComplete();
     assertEqual(
         {{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
+}
+
+RECOGNITION_TEST_MODEL_TEST(
+    fadeOutCompleteWritesFadeInCompleteConvertedAudioSampleSystemTime) {
+    run(initializingTestWithEyeTracking);
+    setMaskerPlayerSystemTimeNanoseconds(1);
+    setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(2);
+    fadeInComplete();
+    maskerFadeOutComplete();
+    assertEqual(std::uintmax_t{1},
+        outputFile.fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds());
+    assertEqual(gsl::index{2}, outputFile.fadeInCompleteAudioSampleOffset());
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {

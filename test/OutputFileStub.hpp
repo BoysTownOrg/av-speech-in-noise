@@ -2,6 +2,8 @@
 #define TESTS_OUTPUTFILESTUB_HPP_
 
 #include "LogString.hpp"
+#include "recognition-test/RecognitionTestModel.hpp"
+#include <cstdint>
 #include <recognition-test/Model.hpp>
 #include <string>
 
@@ -15,6 +17,8 @@ class OutputFileStub : public OutputFile {
     open_set::AdaptiveTrial writtenOpenSetAdaptiveTrial_{};
     BinocularGazeSamples eyeGazes_;
     LogString log_{};
+    std::uintmax_t fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_{};
+    gsl::index fadeInCompleteAudioSampleOffset_{};
     const AdaptiveTest *adaptiveTest_{};
     const FixedLevelTest *fixedLevelTest_{};
     const TestIdentity *openNewFileParameters_{};
@@ -87,7 +91,22 @@ class OutputFileStub : public OutputFile {
 
     auto eyeGazes() const -> BinocularGazeSamples { return eyeGazes_; }
 
+    auto fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds() const
+        -> std::uintmax_t {
+        return fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_;
+    }
+
     void write(const BinocularGazeSamples &g) override { eyeGazes_ = g; }
+
+    void writeFadeInComplete(const ConvertedAudioSampleSystemTime &t) {
+        fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_ =
+            t.nanoseconds;
+        fadeInCompleteAudioSampleOffset_ = t.sampleOffset;
+    }
+
+    auto fadeInCompleteAudioSampleOffset() const -> gsl::index {
+        return fadeInCompleteAudioSampleOffset_;
+    }
 
     auto writtenAdaptiveCoordinateResponseTrial() const -> auto & {
         return writtenAdaptiveCoordinateResponseTrial_;

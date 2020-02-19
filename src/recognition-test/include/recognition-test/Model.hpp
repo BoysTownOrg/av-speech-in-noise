@@ -4,10 +4,37 @@
 #include "TargetList.hpp"
 #include "TestMethod.hpp"
 #include <av-speech-in-noise/Model.hpp>
+#include <gsl/gsl>
+#include <cstdint>
 #include <vector>
 #include <string>
 
 namespace av_speech_in_noise {
+struct ConvertedAudioSampleSystemTime {
+    std::uintmax_t nanoseconds;
+    gsl::index sampleOffset;
+};
+
+class OutputFile {
+  public:
+    virtual ~OutputFile() = default;
+    virtual void openNewFile(const TestIdentity &) = 0;
+    class OpenFailure {};
+    virtual void write(const coordinate_response_measure::AdaptiveTrial &) = 0;
+    virtual void write(
+        const coordinate_response_measure::FixedLevelTrial &) = 0;
+    virtual void write(const open_set::FreeResponseTrial &) = 0;
+    virtual void write(const open_set::CorrectKeywordsTrial &) = 0;
+    virtual void write(const open_set::AdaptiveTrial &) = 0;
+    virtual void writeTest(const AdaptiveTest &) = 0;
+    virtual void writeTest(const FixedLevelTest &) = 0;
+    virtual void write(const BinocularGazeSamples &) = 0;
+    virtual void writeFadeInComplete(
+        const ConvertedAudioSampleSystemTime &) = 0;
+    virtual void close() = 0;
+    virtual void save() = 0;
+};
+
 class ResponseEvaluator {
   public:
     virtual ~ResponseEvaluator() = default;
