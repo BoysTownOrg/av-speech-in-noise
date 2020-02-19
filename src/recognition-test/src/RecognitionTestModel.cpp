@@ -1,7 +1,6 @@
 #include "RecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <cmath>
-#include <iostream>
 
 namespace av_speech_in_noise {
 namespace {
@@ -276,13 +275,9 @@ void RecognitionTestModelImpl::startTrial() {
     maskerPlayer.fadeIn();
 }
 
-static system_time lastFadeInCompleteAudioSampleSystemTime{};
-static double lastFadeInCompleteAudioSampleOffset{};
-
 void RecognitionTestModelImpl::fadeInComplete(const AudioSampleSystemTime &t) {
     if (eyeTracking) {
-        lastFadeInCompleteAudioSampleSystemTime = t.time;
-        lastFadeInCompleteAudioSampleOffset = t.sampleOffset;
+        lastFadeInCompleteAudioSampleSystemTime = t;
         SystemTimeWithDelay timeToPlay{};
         timeToPlay.time = t.time;
         timeToPlay.secondsDelayed =
@@ -301,17 +296,15 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     targetPlayer.hideVideo();
     if (eyeTracking) {
         eyeTracker.stop();
-        ConvertedAudioSampleSystemTime time;
-        time.sampleOffset = lastFadeInCompleteAudioSampleOffset;
-        time.nanoseconds = maskerPlayer.nanoseconds(lastFadeInCompleteAudioSampleSystemTime);
+        ConvertedAudioSampleSystemTime time{};
+        time.sampleOffset =
+            lastFadeInCompleteAudioSampleSystemTime.sampleOffset;
+        time.nanoseconds = maskerPlayer.nanoseconds(
+            lastFadeInCompleteAudioSampleSystemTime.time);
         outputFile.writeFadeInComplete(time);
         outputFile.write(eyeTracker.gazes());
     }
     listener_->trialComplete();
-    std::cout << "Last fade in complete audio sample system time: "
-              << lastFadeInCompleteAudioSampleSystemTime << '\n';
-    std::cout << "Last fade in complete audio sample offset: "
-              << lastFadeInCompleteAudioSampleOffset << '\n';
 }
 
 static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
