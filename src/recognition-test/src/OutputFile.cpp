@@ -380,7 +380,8 @@ void OutputFileImpl::write(const BinocularGazeSamples &gazes) {
     write(format(gazes));
 }
 
-void OutputFileImpl::writeFadeInComplete(const ConvertedAudioSampleSystemTime &time) {
+void OutputFileImpl::writeFadeInComplete(
+    const ConvertedAudioSampleSystemTime &time) {
     write(format(time));
 }
 
