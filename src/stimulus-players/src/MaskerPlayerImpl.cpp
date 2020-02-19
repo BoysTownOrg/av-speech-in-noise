@@ -156,6 +156,11 @@ auto MaskerPlayerImpl::sampleRateHz() -> double {
     return stimulus_players::sampleRateHz(player);
 }
 
+auto MaskerPlayerImpl::nanoseconds(av_speech_in_noise::system_time)
+    -> std::uintmax_t {
+    return player->nanoseconds({});
+}
+
 void MaskerPlayerImpl::loadFile(std::string filePath) {
     if (playing())
         return;

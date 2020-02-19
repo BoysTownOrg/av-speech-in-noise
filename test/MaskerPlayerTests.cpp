@@ -1,6 +1,5 @@
 #include "assert-utility.hpp"
 #include "AudioReaderStub.hpp"
-#include "gsl/gsl_util"
 #include <stimulus-players/AudioReader.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <gtest/gtest.h>
@@ -16,6 +15,8 @@ auto at(const std::vector<std::string> &v, gsl::index n) -> std::string {
 
 class AudioPlayerStub : public AudioPlayer {
   public:
+    void setNanoseconds(std::uintmax_t t) { nanoseconds_ = t; }
+
     auto outputDevice(int index) -> bool override {
         return outputDevices[index];
     }
@@ -66,6 +67,10 @@ class AudioPlayerStub : public AudioPlayer {
         listener_->fillAudioBuffer(audio, t);
     }
 
+    auto nanoseconds(av_speech_in_noise::system_time t) -> std::uintmax_t {
+        return nanoseconds_;
+    }
+
   private:
     audio_type audioRead_;
     std::vector<std::string> audioDeviceDescriptions_{10};
@@ -73,6 +78,7 @@ class AudioPlayerStub : public AudioPlayer {
     std::string deviceDescription_;
     std::string audioFilePath_;
     std::map<int, bool> outputDevices;
+    std::uintmax_t nanoseconds_{};
     double sampleRateHz_{};
     int deviceIndex_{};
     int deviceDescriptionDeviceIndex_{};
@@ -85,7 +91,8 @@ class AudioPlayerStub : public AudioPlayer {
 class MaskerPlayerListenerStub
     : public av_speech_in_noise::MaskerPlayer::EventListener {
   public:
-    void fadeInComplete(const av_speech_in_noise::AudioSampleSystemTime &t) override {
+    void fadeInComplete(
+        const av_speech_in_noise::AudioSampleSystemTime &t) override {
         fadeInCompleteSystemTime_ = t.time;
         fadeInCompleteSystemTimeSampleOffset_ = t.sampleOffset;
         fadeInCompleted_ = true;
@@ -197,6 +204,14 @@ auto NtoOne(int N) -> std::vector<float> { return reverse(oneToN(N)); }
 auto size(const std::vector<float> &v) -> gsl::index { return v.size(); }
 
 void resize(std::vector<float> &v, gsl::index n) { v.resize(n); }
+
+void setNanoseconds(AudioPlayerStub &player, std::uintmax_t t) {
+    player.setNanoseconds(t);
+}
+
+auto nanoseconds(MaskerPlayerImpl &player) -> std::uintmax_t {
+    return player.nanoseconds({});
+}
 
 using channel_index_type = gsl::index;
 
@@ -947,6 +962,11 @@ MASKER_PLAYER_TEST(rmsPassesLoadedFileToVideoPlayer) {
     loadFile("a");
     rms();
     assertEqual("a", audioReader.filePath());
+}
+
+MASKER_PLAYER_TEST(returnsNanosecondConversion) {
+    setNanoseconds(audioPlayer, 1);
+    assertEqual(std::uintmax_t{1}, nanoseconds(player));
 }
 
 MASKER_PLAYER_TEST(loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {

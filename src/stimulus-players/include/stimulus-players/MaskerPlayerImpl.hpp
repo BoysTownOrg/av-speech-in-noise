@@ -32,6 +32,8 @@ class AudioPlayer {
     virtual auto outputDevice(int index) -> bool = 0;
     virtual void setDevice(int index) = 0;
     virtual auto sampleRateHz() -> double = 0;
+    virtual auto nanoseconds(av_speech_in_noise::system_time)
+        -> std::uintmax_t = 0;
 };
 
 class Timer {
@@ -78,9 +80,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void clearChannelDelays() override;
     void useAllChannels() override;
     auto nanoseconds(av_speech_in_noise::system_time)
-        -> std::uintmax_t override {
-        return {};
-    }
+        -> std::uintmax_t override;
 
   private:
     auto readAudio(std::string) -> audio_type;
