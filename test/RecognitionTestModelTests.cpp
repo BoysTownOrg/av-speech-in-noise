@@ -340,9 +340,7 @@ class EyeTrackerStub : public EyeTracker {
         return gazes_;
     }
 
-    void setGazes(BinocularGazeSamples g) {
-        gazes_ = std::move(g);
-    }
+    void setGazes(BinocularGazeSamples g) { gazes_ = std::move(g); }
 
   private:
     BinocularGazeSamples gazes_;
@@ -986,12 +984,12 @@ RECOGNITION_TEST_MODEL_TEST(
     assertEqual("stop gazes ", eyeTracker.log());
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteWritesEyeGazes) {
+RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteWritesEyeGazes) {
     run(initializingTestWithEyeTracking);
     setEyeGazes({{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}});
     maskerFadeOutComplete();
-    assertEqual({{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
+    assertEqual(
+        {{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {

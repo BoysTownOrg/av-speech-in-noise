@@ -115,7 +115,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
 
-    auto targetFileName() -> std::string { return targetFileName_; }
+    auto targetFileName() -> std::string override { return targetFileName_; }
 
     void playTrial(const AudioSettings &s) override { playTrialSettings_ = &s; }
 

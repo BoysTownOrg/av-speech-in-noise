@@ -11,8 +11,7 @@ class OutputFile {
     virtual ~OutputFile() = default;
     virtual void openNewFile(const TestIdentity &) = 0;
     class OpenFailure {};
-    virtual void write(
-        const coordinate_response_measure::AdaptiveTrial &) = 0;
+    virtual void write(const coordinate_response_measure::AdaptiveTrial &) = 0;
     virtual void write(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
     virtual void write(const open_set::FreeResponseTrial &) = 0;
@@ -41,8 +40,7 @@ class TestMethod {
     virtual void writeLastCorrectResponse(OutputFile *) = 0;
     virtual void writeLastCorrectKeywords(OutputFile *) = 0;
     virtual void writeLastIncorrectResponse(OutputFile *) = 0;
-    virtual void submit(
-        const coordinate_response_measure::Response &) = 0;
+    virtual void submit(const coordinate_response_measure::Response &) = 0;
 };
 }
 

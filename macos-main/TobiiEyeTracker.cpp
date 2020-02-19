@@ -84,8 +84,7 @@ static auto leftEyeGaze(std::vector<BinocularGazeSample> &b, gsl::index i)
     return at(b, i).left;
 }
 
-static auto rightEyeGaze(BinocularGazeSamples &b, gsl::index i)
-    -> EyeGaze & {
+static auto rightEyeGaze(BinocularGazeSamples &b, gsl::index i) -> EyeGaze & {
     return at(b, i).right;
 }
 

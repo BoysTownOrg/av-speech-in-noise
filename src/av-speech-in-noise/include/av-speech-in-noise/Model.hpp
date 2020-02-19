@@ -31,8 +31,7 @@ struct Trial : Target {
     bool correct{};
 };
 
-struct AdaptiveTrial : Adaptive, Trial {
-};
+struct AdaptiveTrial : Adaptive, Trial {};
 
 struct FixedLevelTrial : Trial {};
 }
@@ -47,18 +46,15 @@ struct CorrectKeywords {
     int count{};
 };
 
-struct Trial : Target {
-};
+struct Trial : Target {};
 
-struct FreeResponseTrial : FreeResponse, Trial {
-};
+struct FreeResponseTrial : FreeResponse, Trial {};
 
 struct AdaptiveTrial : Adaptive, Trial {
     bool correct{};
 };
 
-struct CorrectKeywordsTrial : CorrectKeywords, AdaptiveTrial {
-};
+struct CorrectKeywordsTrial : CorrectKeywords, AdaptiveTrial {};
 }
 
 enum class Condition { auditoryOnly, audioVisual };
@@ -104,8 +100,8 @@ constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
     return a.x == b.x && a.y == b.y;
 }
 
-constexpr auto operator==(const BinocularGazeSample &a, const BinocularGazeSample &b)
-    -> bool {
+constexpr auto operator==(
+    const BinocularGazeSample &a, const BinocularGazeSample &b) -> bool {
     return a.systemTimeMicroseconds == b.systemTimeMicroseconds &&
         a.left == b.left && a.right == b.right;
 }
@@ -176,8 +172,7 @@ class Model {
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
-    virtual void submit(
-        const coordinate_response_measure::Response &) = 0;
+    virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const open_set::FreeResponse &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;

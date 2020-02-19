@@ -87,7 +87,7 @@ class OutputFileStub : public OutputFile {
 
     auto eyeGazes() const -> BinocularGazeSamples { return eyeGazes_; }
 
-    void write(const BinocularGazeSamples &g) { eyeGazes_ = g; }
+    void write(const BinocularGazeSamples &g) override { eyeGazes_ = g; }
 
     auto writtenAdaptiveCoordinateResponseTrial() const -> auto & {
         return writtenAdaptiveCoordinateResponseTrial_;

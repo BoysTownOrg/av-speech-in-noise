@@ -527,7 +527,7 @@ class ViewStub : public View {
 
         void display(std::string s) override { displayed_ = std::move(s); }
 
-        void secondaryDisplay(std::string s) {
+        void secondaryDisplay(std::string s) override {
             secondaryDisplayed_ = std::move(s);
         }
 
