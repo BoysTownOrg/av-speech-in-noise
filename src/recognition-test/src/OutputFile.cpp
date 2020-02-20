@@ -177,6 +177,12 @@ static auto format(const ConvertedAudioSampleSystemTime &time) -> std::string {
     return stream.str();
 }
 
+static auto formatTargetStartTimeNanoseconds(std::uintmax_t t) -> std::string {
+    FormattedStream stream;
+    stream.writeLabeledLine("target start time (ns)", t);
+    return stream.str();
+}
+
 static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
     -> std::string {
     FormattedStream stream;
@@ -381,6 +387,10 @@ void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {
 void OutputFileImpl::writeFadeInComplete(
     const ConvertedAudioSampleSystemTime &time) {
     write(format(time));
+}
+
+void OutputFileImpl::writeTargetStartTimeNanoseconds(std::uintmax_t t) {
+    write(formatTargetStartTimeNanoseconds(t));
 }
 
 void OutputFileImpl::openNewFile(const TestIdentity &test) {

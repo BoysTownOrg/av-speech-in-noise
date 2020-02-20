@@ -95,6 +95,7 @@ class OutputFileImpl : public OutputFile {
     void write(const open_set::AdaptiveTrial &) override;
     void write(const BinocularGazeSamples &) override;
     void writeFadeInComplete(const ConvertedAudioSampleSystemTime &) override;
+    void writeTargetStartTimeNanoseconds(std::uintmax_t);
 
   private:
     void write(std::string);

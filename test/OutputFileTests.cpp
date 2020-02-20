@@ -180,6 +180,10 @@ void writeFadeInComplete(
     file.writeFadeInComplete(time);
 }
 
+void writeTargetStartTimeNanoseconds(OutputFileImpl &file, std::uintmax_t t) {
+    file.writeTargetStartTimeNanoseconds(t);
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -674,11 +678,8 @@ TEST_F(OutputFileTests, writeEyeGazes) {
 }
 
 TEST_F(OutputFileTests, writeFadeInCompleteTime) {
-    setAudioSampleTime(1, 42);
-    writeFadeInComplete(file, audioSampleTime);
-    assertWrittenLast("fade in complete audio sample system time\n"
-                      "    system time (ns): 1\n"
-                      "    offset (samples): 42\n");
+    writeTargetStartTimeNanoseconds(file, 1);
+    assertColonDelimitedEntryWritten("target start time (ns)", "1");
 }
 
 TEST_F(OutputFileTests, openPassesFormattedFilePath) {
