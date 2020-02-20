@@ -712,7 +712,9 @@ class RecognitionTestModelTests : public ::testing::Test {
         setTargetPlayerDurationSeconds(3);
         setMaskerPlayerFadeTimeSeconds(4);
         run(useCase);
-        assertEqual(3 + 2 * 4., eyeTracker.recordingTimeAllocatedSeconds());
+        assertEqual(
+            3 + 2 * 4. + RecognitionTestModelImpl::additionalTargetDelaySeconds,
+            eyeTracker.recordingTimeAllocatedSeconds());
     }
 
     void assertPlayTrialDoesNotAllocateRecordingTime(UseCase &useCase) {
