@@ -18,6 +18,7 @@ class OutputFileStub : public OutputFile {
     BinocularGazeSamples eyeGazes_;
     LogString log_{};
     std::uintmax_t fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_{};
+    std::uintmax_t targetStartTimeNanoseconds_{};
     gsl::index fadeInCompleteAudioSampleOffset_{};
     const AdaptiveTest *adaptiveTest_{};
     const FixedLevelTest *fixedLevelTest_{};
@@ -91,6 +92,10 @@ class OutputFileStub : public OutputFile {
 
     auto eyeGazes() const -> BinocularGazeSamples { return eyeGazes_; }
 
+    auto targetStartTimeNanoseconds() const -> std::uintmax_t {
+        return targetStartTimeNanoseconds_;
+    }
+
     auto fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds() const
         -> std::uintmax_t {
         return fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_;
@@ -102,6 +107,10 @@ class OutputFileStub : public OutputFile {
         fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_ =
             t.nanoseconds;
         fadeInCompleteAudioSampleOffset_ = t.sampleOffset;
+    }
+
+    void writeTargetStartTimeNanoseconds(std::uintmax_t t) override {
+        targetStartTimeNanoseconds_ = t;
     }
 
     auto fadeInCompleteAudioSampleOffset() const -> gsl::index {

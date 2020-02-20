@@ -1010,6 +1010,23 @@ RECOGNITION_TEST_MODEL_TEST(
     assertEqual(gsl::index{2}, outputFile.fadeInCompleteAudioSampleOffset());
 }
 
+RECOGNITION_TEST_MODEL_TEST(
+    submitCoordinateResponseWritesTargetStartTimeWhenEyeTracking) {
+    run(initializingTestWithEyeTracking);
+    setMaskerPlayerSystemTimeNanoseconds(1);
+    setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(2);
+    setMaskerPlayerSampleRateHz(3);
+    fadeInComplete();
+    maskerFadeOutComplete();
+    run(submittingCoordinateResponse);
+    assertEqual(1 +
+            gsl::narrow_cast<std::uintmax_t>(
+                (2 / 3. +
+                    RecognitionTestModelImpl::additionalTargetDelaySeconds) *
+                1e9),
+        outputFile.targetStartTimeNanoseconds());
+}
+
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {
     run(initializingDefaultTest);
     fadeInComplete();

@@ -281,8 +281,10 @@ void RecognitionTestModelImpl::fadeInComplete(const AudioSampleSystemTime &t) {
         SystemTimeWithDelay timeToPlay{};
         timeToPlay.time = t.time;
         timeToPlay.secondsDelayed =
-            t.sampleOffset / maskerPlayer.sampleRateHz() + 0.5;
+            t.sampleOffset / maskerPlayer.sampleRateHz() +
+            additionalTargetDelaySeconds;
         targetPlayer.playAt(timeToPlay);
+        lastTargetStartTime = timeToPlay;
     } else {
         playTarget();
     }
@@ -316,6 +318,9 @@ static void save(OutputFile &file) { file.save(); }
 
 void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
+    outputFile.writeTargetStartTimeNanoseconds(
+        maskerPlayer.nanoseconds(lastTargetStartTime.time) +
+        lastTargetStartTime.secondsDelayed * 1e9);
     testMethod->submit(response);
     testMethod->writeLastCoordinateResponse(&outputFile);
     save(outputFile);

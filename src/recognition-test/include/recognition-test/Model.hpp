@@ -31,6 +31,7 @@ class OutputFile {
     virtual void write(const BinocularGazeSamples &) = 0;
     virtual void writeFadeInComplete(
         const ConvertedAudioSampleSystemTime &) = 0;
+    virtual void writeTargetStartTimeNanoseconds(std::uintmax_t) = 0;
     virtual void close() = 0;
     virtual void save() = 0;
 };

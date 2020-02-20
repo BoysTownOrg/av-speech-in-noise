@@ -174,6 +174,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     Randomizer &randomizer;
     EyeTracker &eyeTracker;
     AudioSampleSystemTime lastFadeInCompleteAudioSampleSystemTime{};
+    SystemTimeWithDelay lastTargetStartTime{};
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
     int maskerLevel_dB_SPL{};
