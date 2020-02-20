@@ -970,7 +970,8 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     setMaskerPlayerSampleRateHz(3);
     fadeInComplete();
     assertEqual(system_time{1}, targetPlayer.baseSystemTimePlayedAt());
-    assertEqual(2 / 3. + 0.5, targetPlayer.secondsDelayedPlayedAt());
+    assertEqual(2 / 3. + RecognitionTestModelImpl::additionalTargetDelaySeconds,
+        targetPlayer.secondsDelayedPlayedAt());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
