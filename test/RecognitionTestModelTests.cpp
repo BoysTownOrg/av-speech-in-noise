@@ -975,39 +975,26 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompletePassesFadeInCompleteAudioSampleSystemTimeForConversion) {
+    submitCoordinateResponsePassesTargetStartSystemTimeForConversionWhenEyeTracking) {
     run(initializingTestWithEyeTracking);
     setMaskerPlayerFadeInCompleteAudioSampleSystemTime(1);
     fadeInComplete();
-    maskerFadeOutComplete();
+    run(submittingCoordinateResponse);
     assertEqual(system_time{1}, maskerPlayer.toNanosecondsSystemTime());
 }
 
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteRetrievesEyeGazesAfterStoppingTracking) {
+RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
     run(initializingTestWithEyeTracking);
     maskerFadeOutComplete();
-    assertEqual("stop gazeSamples ", eyeTracker.log());
+    assertEqual("stop ", eyeTracker.log());
 }
 
-RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteWritesEyeGazes) {
+RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
     run(initializingTestWithEyeTracking);
     setEyeGazes({{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}});
-    maskerFadeOutComplete();
+    run(submittingCoordinateResponse);
     assertEqual(
         {{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
-}
-
-RECOGNITION_TEST_MODEL_TEST(
-    fadeOutCompleteWritesFadeInCompleteConvertedAudioSampleSystemTime) {
-    run(initializingTestWithEyeTracking);
-    setMaskerPlayerSystemTimeNanoseconds(1);
-    setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(2);
-    fadeInComplete();
-    maskerFadeOutComplete();
-    assertEqual(std::uintmax_t{1},
-        outputFile.fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds());
-    assertEqual(gsl::index{2}, outputFile.fadeInCompleteAudioSampleOffset());
 }
 
 RECOGNITION_TEST_MODEL_TEST(

@@ -277,7 +277,6 @@ void RecognitionTestModelImpl::startTrial() {
 
 void RecognitionTestModelImpl::fadeInComplete(const AudioSampleSystemTime &t) {
     if (eyeTracking) {
-        lastFadeInCompleteAudioSampleSystemTime = t;
         SystemTimeWithDelay timeToPlay{};
         timeToPlay.time = t.time;
         timeToPlay.secondsDelayed =
@@ -296,16 +295,8 @@ void RecognitionTestModelImpl::playbackComplete() { maskerPlayer.fadeOut(); }
 
 void RecognitionTestModelImpl::fadeOutComplete() {
     targetPlayer.hideVideo();
-    if (eyeTracking) {
+    if (eyeTracking)
         eyeTracker.stop();
-        ConvertedAudioSampleSystemTime time{};
-        time.sampleOffset =
-            lastFadeInCompleteAudioSampleSystemTime.sampleOffset;
-        time.nanoseconds = maskerPlayer.nanoseconds(
-            lastFadeInCompleteAudioSampleSystemTime.time);
-        outputFile.writeFadeInComplete(time);
-        outputFile.write(eyeTracker.gazeSamples());
-    }
     listener_->trialComplete();
 }
 
@@ -318,11 +309,14 @@ static void save(OutputFile &file) { file.save(); }
 
 void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
-    outputFile.writeTargetStartTimeNanoseconds(
-        maskerPlayer.nanoseconds(lastTargetStartTime.time) +
-        lastTargetStartTime.secondsDelayed * 1e9);
     testMethod->submit(response);
     testMethod->writeLastCoordinateResponse(&outputFile);
+    if (eyeTracking) {
+        outputFile.writeTargetStartTimeNanoseconds(
+            maskerPlayer.nanoseconds(lastTargetStartTime.time) +
+            lastTargetStartTime.secondsDelayed * 1e9);
+        outputFile.write(eyeTracker.gazeSamples());
+    }
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
