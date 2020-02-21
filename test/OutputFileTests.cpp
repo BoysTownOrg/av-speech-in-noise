@@ -671,10 +671,21 @@ TEST_F(OutputFileTests, writeEyeGazes) {
     setEyeGazes({1, 2, 3}, {{0.4, 0.44}, {0.5, 0.55}, {0.6, 0.66}},
         {{0.7, 0.77}, {0.8, 0.88}, {0.9, 0.99}});
     write(file, eyeGazes);
-    assertWrittenLast("system time (us), left gaze [x y], right gaze [x y]\n"
-                      "1, 0.4 0.44, 0.7 0.77\n"
-                      "2, 0.5 0.55, 0.8 0.88\n"
-                      "3, 0.6 0.66, 0.9 0.99\n");
+    assertNthCommaDelimitedEntryOfLine(
+        headingItemName(HeadingItem::systemTime), 1, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        headingItemName(HeadingItem::leftGaze), 2, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        headingItemName(HeadingItem::rightGaze), 3, 1);
+    assertNthCommaDelimitedEntryOfLine("1", 1, 2);
+    assertNthCommaDelimitedEntryOfLine("0.4 0.44", 2, 2);
+    assertNthCommaDelimitedEntryOfLine("0.7 0.77", 3, 2);
+    assertNthCommaDelimitedEntryOfLine("2", 1, 3);
+    assertNthCommaDelimitedEntryOfLine("0.5 0.55", 2, 3);
+    assertNthCommaDelimitedEntryOfLine("0.8 0.88", 3, 3);
+    assertNthCommaDelimitedEntryOfLine("3", 1, 4);
+    assertNthCommaDelimitedEntryOfLine("0.6 0.66", 2, 4);
+    assertNthCommaDelimitedEntryOfLine("0.9 0.99", 3, 4);
 }
 
 TEST_F(OutputFileTests, writeFadeInCompleteTime) {

@@ -145,11 +145,11 @@ static auto format(const FixedLevelTest &test) -> std::string {
 
 static auto format(const BinocularGazeSamples &gazeSamples) -> std::string {
     FormattedStream stream;
-    insert(stream, "system time (us)");
+    insert(stream, headingItemName(HeadingItem::systemTime));
     insertCommaAndSpace(stream);
-    insert(stream, "left gaze [x y]");
+    insert(stream, headingItemName(HeadingItem::leftGaze));
     insertCommaAndSpace(stream);
-    insert(stream, "right gaze [x y]");
+    insert(stream, headingItemName(HeadingItem::rightGaze));
     std::for_each(gazeSamples.begin(), gazeSamples.end(), [&](auto g) {
         insertNewLine(stream);
         insert(stream, g.systemTimeMicroseconds);

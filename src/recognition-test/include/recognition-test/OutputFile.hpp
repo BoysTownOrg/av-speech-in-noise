@@ -17,7 +17,10 @@ enum class HeadingItem {
     reversals,
     target,
     correctKeywords,
-    freeResponse
+    freeResponse,
+    systemTime,
+    leftGaze,
+    rightGaze
 };
 
 constexpr auto headingItemName(HeadingItem i) -> const char * {
@@ -44,6 +47,12 @@ constexpr auto headingItemName(HeadingItem i) -> const char * {
         return "response";
     case HeadingItem::correctKeywords:
         return "# correct keywords";
+    case HeadingItem::systemTime:
+        return "system time (us)";
+    case HeadingItem::leftGaze:
+        return "left gaze [x y]";
+    case HeadingItem::rightGaze:
+        return "right gaze [x y]";
     }
 }
 
@@ -95,7 +104,7 @@ class OutputFileImpl : public OutputFile {
     void write(const open_set::AdaptiveTrial &) override;
     void write(const BinocularGazeSamples &) override;
     void writeFadeInComplete(const ConvertedAudioSampleSystemTime &) override;
-    void writeTargetStartTimeNanoseconds(std::uintmax_t);
+    void writeTargetStartTimeNanoseconds(std::uintmax_t) override;
 
   private:
     void write(std::string);

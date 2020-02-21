@@ -174,9 +174,9 @@ class Model {
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const open_set::FreeResponse &) = 0;
+    virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> std::vector<std::string> = 0;
     virtual auto trialNumber() -> int = 0;
