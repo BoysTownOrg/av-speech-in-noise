@@ -671,12 +671,9 @@ TEST_F(OutputFileTests, writeEyeGazes) {
     setEyeGazes({1, 2, 3}, {{0.4, 0.44}, {0.5, 0.55}, {0.6, 0.66}},
         {{0.7, 0.77}, {0.8, 0.88}, {0.9, 0.99}});
     write(file, eyeGazes);
-    assertNthCommaDelimitedEntryOfLine(
-        headingItemName(HeadingItem::systemTime), 1, 1);
-    assertNthCommaDelimitedEntryOfLine(
-        headingItemName(HeadingItem::leftGaze), 2, 1);
-    assertNthCommaDelimitedEntryOfLine(
-        headingItemName(HeadingItem::rightGaze), 3, 1);
+    assertNthCommaDelimitedEntryOfLine(HeadingItem::systemTime, 1, 1);
+    assertNthCommaDelimitedEntryOfLine(HeadingItem::leftGaze, 2, 1);
+    assertNthCommaDelimitedEntryOfLine(HeadingItem::rightGaze, 3, 1);
     assertNthCommaDelimitedEntryOfLine("1", 1, 2);
     assertNthCommaDelimitedEntryOfLine("0.4 0.44", 2, 2);
     assertNthCommaDelimitedEntryOfLine("0.7 0.77", 3, 2);
