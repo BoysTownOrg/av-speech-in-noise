@@ -51,6 +51,8 @@ class TargetListStub : public virtual TargetList {
 
     auto log() const -> auto & { return log_; }
 };
+
+class FiniteTargetListStub : public FiniteTargetList, public TargetListStub {};
 }
 
 #endif

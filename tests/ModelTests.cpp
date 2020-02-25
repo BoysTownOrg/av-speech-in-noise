@@ -35,6 +35,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelTest *test_{};
     TargetList *targetList_{};
     TestConcluder *testConcluder_{};
+    bool initializedWithFiniteTargetList_{};
 
   public:
     void initialize(const FixedLevelTest &t, TargetList *list,
@@ -42,6 +43,18 @@ class FixedLevelMethodStub : public FixedLevelMethod {
         testConcluder_ = concluder;
         targetList_ = list;
         test_ = &t;
+    }
+
+    void initialize(const FixedLevelTest &t, FiniteTargetList *list,
+        TestConcluder *concluder) {
+        testConcluder_ = concluder;
+        targetList_ = list;
+        test_ = &t;
+        initializedWithFiniteTargetList_ = true;
+    }
+
+    [[nodiscard]] auto initializedWithFiniteTargetList() const -> bool {
+        return initializedWithFiniteTargetList_;
     }
 
     [[nodiscard]] auto testConcluder() const { return testConcluder_; }
@@ -360,7 +373,7 @@ class ModelTests : public ::testing::Test {
     FixedLevelMethodStub fixedLevelMethod;
     TargetListStub targetsWithReplacement;
     TestConcluderStub fixedTrialTestConcluder;
-    TargetListStub silentIntervals;
+    FiniteTargetListStub silentIntervals;
     TestConcluderStub emptyTargetListTestConcluder;
     TargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
@@ -460,6 +473,12 @@ MODEL_TEST(
     assertInitializesFixedLevelTestWithTestConcluder(
         initializingFixedLevelTestWithSilentIntervalTargets,
         emptyTargetListTestConcluder);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithFiniteTargetList) {
+    run(initializingFixedLevelTestWithSilentIntervalTargets);
+    assertTrue(fixedLevelMethod.initializedWithFiniteTargetList());
 }
 
 MODEL_TEST(

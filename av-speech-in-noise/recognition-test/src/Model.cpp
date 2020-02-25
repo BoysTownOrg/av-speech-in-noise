@@ -5,7 +5,8 @@
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FixedLevelMethod &fixedLevelMethod, TargetList &targetsWithReplacement,
-    TestConcluder &fixedTrialTestConcluder, TargetList &silentIntervalTargets,
+    TestConcluder &fixedTrialTestConcluder,
+    FiniteTargetList &silentIntervalTargets,
     TestConcluder &completesWhenTargetsEmpty, TargetList &everyTargetOnce,
     RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
@@ -22,6 +23,11 @@ static void initialize(
 
 static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
     TargetList &targets, TestConcluder &concluder) {
+    method.initialize(test, &targets, &concluder);
+}
+
+static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
+    FiniteTargetList &targets, TestConcluder &concluder) {
     method.initialize(test, &targets, &concluder);
 }
 

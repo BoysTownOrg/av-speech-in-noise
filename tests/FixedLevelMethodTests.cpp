@@ -10,8 +10,6 @@
 
 namespace av_speech_in_noise::tests {
 namespace {
-class FiniteTargetListStub : public FiniteTargetList, public TargetListStub {};
-
 class UseCase {
   public:
     virtual ~UseCase() = default;
