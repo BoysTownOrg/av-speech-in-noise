@@ -37,4 +37,5 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     bool usingFiniteTargetList_{};
 };
 }
+
 #endif

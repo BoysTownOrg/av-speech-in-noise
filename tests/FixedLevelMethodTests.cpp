@@ -18,33 +18,26 @@ class UseCase {
 
 class InitializingMethod : public UseCase {
     TargetList &list;
-    TestConcluder &concluder;
     const FixedLevelTest &test;
 
   public:
-    InitializingMethod(
-        TargetList &list, TestConcluder &concluder, const FixedLevelTest &test)
-        : list{list}, concluder{concluder}, test{test} {}
+    InitializingMethod(TargetList &list, const FixedLevelTest &test)
+        : list{list}, test{test} {}
 
-    void run(FixedLevelMethodImpl &m) override {
-        m.initialize(test, &list);
-    }
+    void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
 };
 
 class InitializingMethodWithFiniteTargetList : public UseCase {
   public:
-    InitializingMethodWithFiniteTargetList(FiniteTargetList &list,
-        TestConcluder &concluder, const FixedLevelTest &test)
-        : list{list}, concluder{concluder}, test{test} {}
+    InitializingMethodWithFiniteTargetList(
+        FiniteTargetList &list, const FixedLevelTest &test)
+        : list{list}, test{test} {}
 
-    void run(FixedLevelMethodImpl &m) override {
-        m.initialize(test, &list);
-    }
+    void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
 
   private:
     const FixedLevelTest &test;
     FiniteTargetList &list;
-    TestConcluder &concluder;
 };
 
 class SubmittingCoordinateResponse : public UseCase {
@@ -95,13 +88,12 @@ class FixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
     TargetListStub targetList;
-    TestConcluderStub testConcluder;
     OutputFileStub outputFile;
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test{};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
-    InitializingMethod initializingMethod{targetList, testConcluder, test};
+    InitializingMethod initializingMethod{targetList, test};
 
     FixedLevelMethodTests() { run(initializingMethod, method); }
 
@@ -126,38 +118,6 @@ class FixedLevelMethodTests : public ::testing::Test {
     auto testComplete() -> bool { return method.complete(); }
 
     void assertTestComplete() { assertTrue(testComplete()); }
-
-    void setTestComplete() { testConcluder.setComplete(); }
-
-    void setTestIncomplete() { testConcluder.setIncomplete(); }
-
-    void assertTargetListPassedToConcluderAfter(UseCase &useCase) {
-        run(useCase, method);
-        assertTestConcluderPassedTargetList();
-    }
-
-    void assertTestConcluderPassedTargetList() {
-        assertEqual(
-            static_cast<TargetList *>(&targetList), testConcluder.targetList());
-    }
-
-    void assertTestCompleteOnlyWhenComplete(UseCase &useCase) {
-        run(useCase, method);
-        assertTestIncomplete();
-        assertTestCompleteWhenComplete(useCase);
-    }
-
-    void assertTestCompleteWhenComplete(UseCase &useCase) {
-        setTestComplete();
-        run(useCase, method);
-        assertTestComplete();
-    }
-
-    void assertTestConcluderLogContainsAfter(
-        const std::string &s, UseCase &useCase) {
-        run(useCase, method);
-        assertLogContains(testConcluder, s);
-    }
 
     auto reinsertCurrentCalled() -> bool {
         return targetList.reinsertCurrentCalled();
@@ -279,13 +239,11 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator;
     TargetListStub targetList;
     FiniteTargetListStub finiteTargetList;
-    TestConcluderStub testConcluder;
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test{};
-    InitializingMethod initializingMethod{targetList, testConcluder, test};
+    InitializingMethod initializingMethod{targetList, test};
     InitializingMethodWithFiniteTargetList
-        initializingMethodWithFiniteTargetList{
-            finiteTargetList, testConcluder, test};
+        initializingMethodWithFiniteTargetList{finiteTargetList, test};
 };
 
 TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
@@ -342,11 +300,10 @@ class FixedLevelMethodWithFiniteTargetListTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
     FiniteTargetListStub targetList;
-    TestConcluderStub testConcluder;
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test{};
     InitializingMethodWithFiniteTargetList
-        initializingMethodWithFiniteTargetList{targetList, testConcluder, test};
+        initializingMethodWithFiniteTargetList{targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
 
