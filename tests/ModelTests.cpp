@@ -488,13 +488,13 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithFiniteTargetList) {
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethodWithFiniteTargetList) {
     assertInitializesFixedLevelMethodWithFiniteTargetList(
         initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
 MODEL_TEST(
-    initializingFixedLevelTestWithAllTargetsInitializesWithFiniteTargetList) {
+    initializingFixedLevelTestWithAllTargetsInitializesFixedLevelMethodWithFiniteTargetList) {
     assertInitializesFixedLevelMethodWithFiniteTargetList(
         initializingFixedLevelTestWithAllTargets);
 }
