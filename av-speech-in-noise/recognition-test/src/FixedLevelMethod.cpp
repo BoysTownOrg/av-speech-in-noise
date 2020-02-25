@@ -21,10 +21,12 @@ void FixedLevelMethodImpl::initialize(
 
 void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
     FiniteTargetList *list, TestConcluder *concluder_) {
+    concluder = concluder_;
     targetList = list;
     snr_dB_ = p.snr_dB;
     loadFromDirectory(targetList, p);
     concluder_->initialize(p);
+    complete_ = concluder->complete(targetList);
 }
 
 auto FixedLevelMethodImpl::complete() -> bool { return complete_; }

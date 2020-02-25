@@ -389,6 +389,11 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
     assertNextTargetEquals(method, "a");
 }
 
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    initializesConcluderBeforeQueryingCompletion) {
+    assertTrue(testConcluder.log().contains("initialize complete"));
+}
+
 class TargetListTestConcluderComboStub : public TargetList,
                                          public TestConcluder {
   public:
