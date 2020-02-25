@@ -393,11 +393,6 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
     assertNextTargetEquals(method, "a");
 }
 
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
-    initializesConcluderBeforeQueryingCompletion) {
-    assertLogContains(testConcluder, "initialize complete");
-}
-
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
     OutputFileStub outputFile;
     method.writeTestingParameters(&outputFile);
