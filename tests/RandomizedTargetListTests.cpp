@@ -74,6 +74,14 @@ void reinsertCurrent(RandomizedTargetListWithoutReplacement &list) {
     list.reinsertCurrent();
 }
 
+auto directory(DirectoryReaderStub &reader) -> std::string {
+    return reader.directory();
+}
+
+void assertDirectoryEquals(DirectoryReaderStub &reader, const std::string &s) {
+    assertEqual(s, directory(reader));
+}
+
 class RandomizedTargetListWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
@@ -107,19 +115,19 @@ class CyclicRandomizedTargetListTests : public ::testing::Test {
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectory(list, "a");
-    assertEqual("a", reader.directory());
+    assertDirectoryEquals(reader, "a");
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectory(list, "a");
-    assertEqual("a", reader.directory());
+    assertDirectoryEquals(reader, "a");
 }
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectory(list, "a");
-    assertEqual("a", reader.directory());
+    assertDirectoryEquals(reader, "a");
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
@@ -263,10 +271,6 @@ auto filter(FileFilter &filter_, std::vector<std::string> files = {})
 auto subDirectories(DirectoryReader &reader, std::string directory = {})
     -> std::vector<std::string> {
     return reader.subDirectories(std::move(directory));
-}
-
-auto directory(DirectoryReaderStub &reader) -> std::string {
-    return reader.directory();
 }
 
 class FileFilterStub : public FileFilter {
