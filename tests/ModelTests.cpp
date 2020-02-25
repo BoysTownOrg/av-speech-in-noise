@@ -1,6 +1,5 @@
 #include "ModelEventListenerStub.h"
 #include "TargetListStub.h"
-#include "TestConcluderStub.h"
 #include "assert-utility.h"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
@@ -34,7 +33,6 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelTest *test_{};
     TargetList *targetList_{};
-    TestConcluder *testConcluder_{};
     bool initializedWithFiniteTargetList_{};
 
   public:
@@ -52,8 +50,6 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     [[nodiscard]] auto initializedWithFiniteTargetList() const -> bool {
         return initializedWithFiniteTargetList_;
     }
-
-    [[nodiscard]] auto testConcluder() const { return testConcluder_; }
 
     [[nodiscard]] auto targetList() const { return targetList_; }
 
@@ -368,9 +364,7 @@ class ModelTests : public ::testing::Test {
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
     TargetListStub targetsWithReplacement;
-    TestConcluderStub fixedTrialTestConcluder;
     FiniteTargetListStub silentIntervals;
-    TestConcluderStub emptyTargetListTestConcluder;
     FiniteTargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
     ModelImpl model{adaptiveMethod, fixedLevelMethod, targetsWithReplacement,
@@ -410,12 +404,6 @@ class ModelTests : public ::testing::Test {
     void assertInitializesAdaptiveMethod(InitializingAdaptiveTest &useCase) {
         useCase.run(model, adaptiveTest);
         assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
-    }
-
-    void assertInitializesFixedLevelTestWithTestConcluder(
-        InitializingTestUseCase &useCase, TestConcluder &concluder) {
-        run(useCase);
-        assertEqual(&concluder, fixedLevelMethod.testConcluder());
     }
 
     void assertInitializesFixedLevelTestWithTargetList(

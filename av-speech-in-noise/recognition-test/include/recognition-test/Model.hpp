@@ -38,14 +38,6 @@ class ResponseEvaluator {
     virtual auto fileName(const std::string &filePath) -> std::string = 0;
 };
 
-class TestConcluder {
-  public:
-    virtual ~TestConcluder() = default;
-    virtual auto complete(TargetList *) -> bool = 0;
-    virtual void submitResponse() = 0;
-    virtual void initialize(const FixedLevelTest &) = 0;
-};
-
 class AdaptiveMethod : public virtual TestMethod {
   public:
     virtual void initialize(const AdaptiveTest &) = 0;

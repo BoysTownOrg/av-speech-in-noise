@@ -2,7 +2,6 @@
 #include "OutputFileStub.h"
 #include "ResponseEvaluatorStub.h"
 #include "TargetListStub.h"
-#include "TestConcluderStub.h"
 #include "assert-utility.h"
 #include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
@@ -78,10 +77,6 @@ void assertNextTargetEquals(
 
 void setNext(TargetListStub &list, std::string s) {
     list.setNext(std::move(s));
-}
-
-void assertLogContains(TestConcluderStub &concluder, const std::string &s) {
-    assertTrue(concluder.log().contains(s));
 }
 
 class FixedLevelMethodTests : public ::testing::Test {
@@ -343,8 +338,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
         initializingMethodWithFiniteTargetList, method, targetList);
 }
 
-class TargetListTestConcluderComboStub : public FiniteTargetList,
-                                         public TestConcluder {
+class TargetListTestConcluderComboStub : public FiniteTargetList {
   public:
     void loadFromDirectory(std::string) override {}
     auto next() -> std::string override { return {}; }
@@ -354,9 +348,6 @@ class TargetListTestConcluderComboStub : public FiniteTargetList,
         return {};
     }
     void reinsertCurrent() override { log_.insert("reinsertCurrent "); }
-    auto complete(TargetList *) -> bool override { return {}; }
-    void submitResponse() override {}
-    void initialize(const FixedLevelTest &) override {}
     auto log() const -> auto & { return log_; }
 
   private:
