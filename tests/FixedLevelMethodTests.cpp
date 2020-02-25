@@ -113,18 +113,6 @@ class FixedLevelMethodTests : public ::testing::Test {
     auto testComplete() -> bool { return method.complete(); }
 
     void assertTestComplete() { assertTrue(testComplete()); }
-
-    auto reinsertCurrentCalled() -> bool {
-        return targetList.reinsertCurrentCalled();
-    }
-
-    void assertCurrentTargetNotReinserted() {
-        assertFalse(reinsertCurrentCalled());
-    }
-
-    void assertCurrentTargetReinserted() {
-        assertTrue(reinsertCurrentCalled());
-    }
 };
 
 #define FIXED_LEVEL_METHOD_TEST(a) TEST_F(FixedLevelMethodTests, a)
@@ -218,17 +206,6 @@ FIXED_LEVEL_METHOD_TEST(
     assertEqual("a", evaluator.correctFilePath());
 }
 
-FIXED_LEVEL_METHOD_TEST(submitFreeResponseDoesNotReinsertCurrentTarget) {
-    run(submittingFreeResponse, method);
-    assertCurrentTargetNotReinserted();
-}
-
-FIXED_LEVEL_METHOD_TEST(submitFreeResponseReinsertsCurrentTargetIfFlagged) {
-    submittingFreeResponse.setFlagged();
-    run(submittingFreeResponse, method);
-    assertCurrentTargetReinserted();
-}
-
 class PreInitializedFixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -291,6 +268,18 @@ void assertTestCompleteOnlyAfter(UseCase &useCase, FixedLevelMethodImpl &method,
     assertComplete(method);
 }
 
+auto reinsertCurrentCalled(FiniteTargetListStub &list) -> bool {
+    return list.reinsertCurrentCalled();
+}
+
+void assertCurrentTargetNotReinserted(FiniteTargetListStub &list) {
+    assertFalse(reinsertCurrentCalled(list));
+}
+
+void assertCurrentTargetReinserted(FiniteTargetListStub &list) {
+    assertTrue(reinsertCurrentCalled(list));
+}
+
 class FixedLevelMethodWithFiniteTargetListTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -336,6 +325,19 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     completeWhenTestCompleteAfterInitializing) {
     assertTestCompleteOnlyAfter(
         initializingMethodWithFiniteTargetList, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    submitFreeResponseDoesNotReinsertCurrentTarget) {
+    run(submittingFreeResponse, method);
+    assertCurrentTargetNotReinserted(targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    submitFreeResponseReinsertsCurrentTargetIfFlagged) {
+    submittingFreeResponse.setFlagged();
+    run(submittingFreeResponse, method);
+    assertCurrentTargetReinserted(targetList);
 }
 
 class TargetListTestConcluderComboStub : public FiniteTargetList {

@@ -52,8 +52,6 @@ auto RandomizedTargetListWithReplacement::current() -> std::string {
     return fullPath(currentFile_);
 }
 
-void RandomizedTargetListWithReplacement::reinsertCurrent() {}
-
 RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}

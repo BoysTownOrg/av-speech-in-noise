@@ -71,9 +71,10 @@ void FixedLevelMethodImpl::submitCorrectResponse() {}
 
 void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
     --trials_;
-    if (response.flagged)
-        targetList->reinsertCurrent();
-    if (usingFiniteTargetList_)
+    if (usingFiniteTargetList_) {
+        if (response.flagged)
+            finiteTargetList->reinsertCurrent();
         finiteTargetsExhausted_ = finiteTargetList->empty();
+    }
 }
 }

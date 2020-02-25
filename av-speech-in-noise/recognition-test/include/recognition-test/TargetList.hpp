@@ -10,12 +10,12 @@ class TargetList {
     virtual void loadFromDirectory(std::string directory) = 0;
     virtual auto next() -> std::string = 0;
     virtual auto current() -> std::string = 0;
-    virtual void reinsertCurrent() = 0;
 };
 
 class FiniteTargetList : public virtual TargetList {
   public:
     virtual auto empty() -> bool = 0;
+    virtual void reinsertCurrent() = 0;
 };
 }
 

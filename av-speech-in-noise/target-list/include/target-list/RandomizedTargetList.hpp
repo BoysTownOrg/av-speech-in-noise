@@ -33,7 +33,6 @@ class RandomizedTargetListWithReplacement
     void loadFromDirectory(std::string) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
-    void reinsertCurrent() override;
 
   private:
     auto fullPath(std::string file) -> std::string;
@@ -85,7 +84,6 @@ class CyclicRandomizedTargetListWithoutReplacement
     void loadFromDirectory(std::string directory) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
-    void reinsertCurrent() override {}
 
   private:
     std::vector<std::string> files{};

@@ -13,13 +13,8 @@ class TargetListStub : public virtual TargetList {
     std::string next_{};
     std::string current_{};
     bool nextCalled_{};
-    bool reinsertCurrentCalled_{};
 
   public:
-    void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
-
-    auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
-
     auto current() -> std::string override { return current_; }
 
     void setCurrent(std::string s) { current_ = std::move(s); }
@@ -53,8 +48,13 @@ class FiniteTargetListStub : public FiniteTargetList, public TargetListStub {
 
     auto empty() -> bool override { return empty_; }
 
+    void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
+
+    auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
+
   private:
     bool empty_{};
+    bool reinsertCurrentCalled_{};
 };
 }
 

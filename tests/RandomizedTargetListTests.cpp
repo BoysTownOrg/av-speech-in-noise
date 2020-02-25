@@ -65,8 +65,6 @@ class RandomizedTargetListWithReplacementTests : public ::testing::Test {
     RandomizedTargetListWithReplacement list{&reader, &randomizer};
 
     auto shuffled() { return randomizer.toShuffle(); }
-
-    void reinsertCurrent() { list.reinsertCurrent(); }
 };
 
 #define RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(a)                        \
