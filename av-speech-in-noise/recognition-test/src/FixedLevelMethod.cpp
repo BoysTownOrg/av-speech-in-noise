@@ -4,13 +4,17 @@ namespace av_speech_in_noise {
 FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator *evaluator)
     : evaluator{evaluator} {}
 
+static void loadFromDirectory(TargetList *list, const FixedLevelTest &test) {
+    list->loadFromDirectory(test.targetListDirectory);
+}
+
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &p, TargetList *list, TestConcluder *concluder_) {
     concluder = concluder_;
     targetList = list;
     test = &p;
     snr_dB_ = p.snr_dB;
-    targetList->loadFromDirectory(p.targetListDirectory);
+    loadFromDirectory(targetList, p);
     concluder->initialize(p);
     complete_ = concluder->complete(targetList);
 }
@@ -19,7 +23,7 @@ void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
     FiniteTargetList *list, TestConcluder *concluder_) {
     targetList = list;
     snr_dB_ = p.snr_dB;
-    targetList->loadFromDirectory(p.targetListDirectory);
+    loadFromDirectory(targetList, p);
     concluder_->initialize(p);
 }
 
