@@ -263,10 +263,6 @@ FIXED_LEVEL_METHOD_TEST(
     assertEqual("a", evaluator.correctFilePath());
 }
 
-FIXED_LEVEL_METHOD_TEST(submitFreeResponsePassesTargetListToConcluder) {
-    assertTargetListPassedToConcluderAfter(submittingFreeResponse);
-}
-
 FIXED_LEVEL_METHOD_TEST(submitFreeResponseDoesNotReinsertCurrentTarget) {
     run(submittingFreeResponse, method);
     assertCurrentTargetNotReinserted();

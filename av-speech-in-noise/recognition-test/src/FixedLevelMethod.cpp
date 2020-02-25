@@ -75,7 +75,6 @@ void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
     --trials_;
     if (response.flagged)
         targetList->reinsertCurrent();
-    complete_ = concluder->complete(targetList);
     if (usingFiniteTargetList_)
         finiteTargetsExhausted_ = finiteTargetList->empty();
 }
