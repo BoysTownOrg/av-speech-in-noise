@@ -88,6 +88,13 @@ void loadFromDirectoryPassesDirectoryToDirectoryReader(
     assertDirectoryEquals(reader, "a");
 }
 
+void loadFromDirectoryShufflesFileNames(av_speech_in_noise::TargetList &list,
+    DirectoryReaderStub &reader, RandomizerStub &randomizer) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list);
+    assertShuffled(randomizer, {"a", "b", "c"});
+}
+
 class RandomizedTargetListWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
@@ -135,22 +142,16 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryShufflesFileNames) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list);
-    assertShuffled(randomizer, {"a", "b", "c"});
+    loadFromDirectoryShufflesFileNames(list, reader, randomizer);
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     loadFromDirectoryShufflesFileNames) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list);
-    assertShuffled(randomizer, {"a", "b", "c"});
+    loadFromDirectoryShufflesFileNames(list, reader, randomizer);
 }
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list);
-    assertShuffled(randomizer, {"a", "b", "c"});
+    loadFromDirectoryShufflesFileNames(list, reader, randomizer);
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
