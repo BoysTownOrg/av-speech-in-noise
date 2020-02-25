@@ -482,5 +482,11 @@ TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
     targetList.setEmpty();
     assertComplete();
 }
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(completeWhenTargetListComplete) {
+    assertFalse(method.complete());
+    targetList.setEmpty();
+    assertTrue(method.complete());
+}
 }
 }

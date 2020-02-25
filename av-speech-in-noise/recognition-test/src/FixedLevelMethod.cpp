@@ -10,6 +10,7 @@ static void loadFromDirectory(TargetList *list, const FixedLevelTest &test) {
 
 void FixedLevelMethodImpl::initialize(
     const FixedLevelTest &p, TargetList *list, TestConcluder *concluder_) {
+    usingFiniteTargetList_ = false;
     concluder = concluder_;
     targetList = list;
     test = &p;
@@ -21,8 +22,10 @@ void FixedLevelMethodImpl::initialize(
 
 void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
     FiniteTargetList *list, TestConcluder *concluder_) {
+    usingFiniteTargetList_ = true;
     concluder = concluder_;
     targetList = list;
+    finiteTargetList = list;
     test = &p;
     snr_dB_ = p.snr_dB;
     loadFromDirectory(targetList, p);
@@ -30,7 +33,9 @@ void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
     complete_ = concluder->complete(targetList);
 }
 
-auto FixedLevelMethodImpl::complete() -> bool { return complete_; }
+auto FixedLevelMethodImpl::complete() -> bool {
+    return usingFiniteTargetList_ ? finiteTargetList->empty() : complete_;
+}
 
 auto FixedLevelMethodImpl::nextTarget() -> std::string {
     return targetList->next();
@@ -67,8 +72,7 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submit(
-    const open_set::FreeResponse &response) {
+void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
     concluder->submitResponse();
     if (response.flagged)
         targetList->reinsertCurrent();

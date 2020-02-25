@@ -31,7 +31,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void initialize(
         const FixedLevelTest &, TargetList *, TestConcluder *) override;
     void initialize(
-        const FixedLevelTest &, FiniteTargetList *, TestConcluder *);
+        const FixedLevelTest &, FiniteTargetList *, TestConcluder *) override;
     auto snr_dB() -> int override;
     auto nextTarget() -> std::string override;
     auto complete() -> bool override;
@@ -51,10 +51,12 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     coordinate_response_measure::FixedLevelTrial lastTrial{};
     const FixedLevelTest *test{};
     TargetList *targetList{};
+    FiniteTargetList *finiteTargetList{};
     ResponseEvaluator *evaluator;
     TestConcluder *concluder{};
     int snr_dB_{};
     bool complete_{};
+    bool usingFiniteTargetList_{};
 };
 }
 #endif
