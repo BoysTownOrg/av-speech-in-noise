@@ -30,10 +30,6 @@ class RandomizedTargetListWithReplacement
     void loadFromDirectory(std::string) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
-
-  private:
-    auto fullPath(std::string file) -> std::string;
-    auto empty_() -> bool;
 };
 
 class RandomizedTargetListWithReplacementFactory : public TargetListFactory {
@@ -68,7 +64,6 @@ class RandomizedTargetListWithoutReplacement
     void reinsertCurrent() override;
 
   private:
-    auto empty_() -> bool;
     auto fullPath(std::string file) -> std::string;
 };
 

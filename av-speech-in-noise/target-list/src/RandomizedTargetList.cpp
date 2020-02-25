@@ -11,6 +11,19 @@ static auto shuffle(Randomizer *randomizer, gsl::span<std::string> v) {
     randomizer->shuffle(v);
 }
 
+static auto currentFile(const std::vector<std::string> &v) -> std::string {
+    return v.back();
+}
+
+static auto fullPathToLastFile(const std::string &directory,
+    const std::vector<std::string> &files) -> std::string {
+    return directory + '/' + currentFile(files);
+}
+
+static auto empty(const std::vector<std::string> &files) -> bool {
+    return files.empty();
+}
+
 RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
@@ -22,31 +35,18 @@ void RandomizedTargetListWithReplacement::loadFromDirectory(
     noFilesGotten = true;
 }
 
-static auto currentFile(const std::vector<std::string> &v) -> std::string {
-    return v.back();
-}
-
 auto RandomizedTargetListWithReplacement::next() -> std::string {
-    if (empty_())
+    if (target_list::empty(files))
         return "";
 
     std::rotate(files.begin(), files.begin() + 1, files.end());
     gsl::span<std::string> files_{files};
     shuffle(randomizer, files_.first(files_.size() - 1));
-    return fullPath(currentFile(files));
-}
-
-auto RandomizedTargetListWithReplacement::empty_() -> bool {
-    return files.empty();
-}
-
-auto RandomizedTargetListWithReplacement::fullPath(std::string file)
-    -> std::string {
-    return directory_ + "/" + std::move(file);
+    return fullPathToLastFile(directory_, files);
 }
 
 auto RandomizedTargetListWithReplacement::current() -> std::string {
-    return fullPath(currentFile(files));
+    return fullPathToLastFile(directory_, files);
 }
 
 RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
@@ -61,15 +61,11 @@ void RandomizedTargetListWithoutReplacement::loadFromDirectory(
 }
 
 auto RandomizedTargetListWithoutReplacement::empty() -> bool {
-    return empty_();
-}
-
-auto RandomizedTargetListWithoutReplacement::empty_() -> bool {
-    return files.empty();
+    return target_list::empty(files);
 }
 
 auto RandomizedTargetListWithoutReplacement::next() -> std::string {
-    if (empty_())
+    if (target_list::empty(files))
         return "";
 
     currentFile_ = files.front();
@@ -97,11 +93,6 @@ CyclicRandomizedTargetList::CyclicRandomizedTargetList(
 void CyclicRandomizedTargetList::loadFromDirectory(std::string directory) {
     files = filesIn(reader, directory_ = std::move(directory));
     shuffle(randomizer, files);
-}
-
-static auto fullPathToLastFile(const std::string &directory,
-    const std::vector<std::string> &files) -> std::string {
-    return directory + '/' + files.back();
 }
 
 auto CyclicRandomizedTargetList::next() -> std::string {
