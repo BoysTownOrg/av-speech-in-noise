@@ -394,6 +394,11 @@ TEST_F(FixedLevelMethodWithFiniteTargetListTests,
     assertEqual(&std::as_const(test), testConcluder.test());
 }
 
+TEST_F(FixedLevelMethodWithFiniteTargetListTests, nextReturnsNextTarget) {
+    targetList.setNext("a");
+    assertEqual("a", method.nextTarget());
+}
+
 class TargetListTestConcluderComboStub : public TargetList,
                                          public TestConcluder {
   public:

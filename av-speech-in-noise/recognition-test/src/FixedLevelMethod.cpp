@@ -17,6 +17,7 @@ void FixedLevelMethodImpl::initialize(
 
 void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
     FiniteTargetList *list, TestConcluder *concluder_) {
+    targetList = list;
     concluder_->initialize(p);
 }
 
