@@ -39,6 +39,10 @@ void setFileNames(DirectoryReaderStub &reader, std::vector<std::string> v) {
     reader.setFileNames(std::move(v));
 }
 
+auto next(av_speech_in_noise::TargetList &list) -> std::string {
+    return list.next();
+}
+
 void assertNextEquals(
     av_speech_in_noise::TargetList &list, const std::string &s) {
     assertEqual(s, list.next());
@@ -230,6 +234,18 @@ CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     nextReturnsFullPathToFileAtFront) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
+    assertNextEquals(list, "C:/a");
+    assertNextEquals(list, "C:/b");
+    assertNextEquals(list, "C:/c");
+}
+
+CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+    nextCyclesBackToBeginningOfFiles) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list, "C:");
+    next(list);
+    next(list);
+    next(list);
     assertNextEquals(list, "C:/a");
     assertNextEquals(list, "C:/b");
     assertNextEquals(list, "C:/c");

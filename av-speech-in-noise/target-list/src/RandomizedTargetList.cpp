@@ -1,4 +1,5 @@
 #include "RandomizedTargetList.hpp"
+#include <algorithm>
 
 namespace target_list {
 static auto filesIn(DirectoryReader *reader, std::string s)
@@ -107,8 +108,7 @@ void CyclicRandomizedTargetListWithoutReplacement::loadFromDirectory(
 }
 
 auto CyclicRandomizedTargetListWithoutReplacement::next() -> std::string {
-    const auto currentFile{files.front()};
-    files.erase(files.begin());
-    return directory_ + "/" + currentFile;
+    std::rotate(files.begin(), files.begin()+1, files.end());
+    return directory_ + "/" + files.back();
 }
 }
