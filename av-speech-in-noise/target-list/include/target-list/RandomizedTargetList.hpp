@@ -18,7 +18,8 @@ class Randomizer {
         int_shuffle_iterator begin, int_shuffle_iterator end) = 0;
 };
 
-class RandomizedTargetListWithReplacement : public av_speech_in_noise::TargetList {
+class RandomizedTargetListWithReplacement
+    : public av_speech_in_noise::TargetList {
     std::vector<std::string> files{};
     std::string directory_{};
     std::string currentFile_{};
@@ -46,15 +47,18 @@ class RandomizedTargetListWithReplacementFactory : public TargetListFactory {
     Randomizer *randomizer;
 
   public:
-    RandomizedTargetListWithReplacementFactory(DirectoryReader *reader, Randomizer *randomizer)
+    RandomizedTargetListWithReplacementFactory(
+        DirectoryReader *reader, Randomizer *randomizer)
         : reader{reader}, randomizer{randomizer} {}
 
     auto make() -> std::shared_ptr<av_speech_in_noise::TargetList> override {
-        return std::make_shared<RandomizedTargetListWithReplacement>(reader, randomizer);
+        return std::make_shared<RandomizedTargetListWithReplacement>(
+            reader, randomizer);
     }
 };
 
-class RandomizedTargetListWithoutReplacement : public av_speech_in_noise::TargetList {
+class RandomizedTargetListWithoutReplacement
+    : public av_speech_in_noise::TargetList {
     std::vector<std::string> files{};
     std::string directory_{};
     std::string currentFile_{};
@@ -74,14 +78,17 @@ class RandomizedTargetListWithoutReplacement : public av_speech_in_noise::Target
     auto fullPath(std::string file) -> std::string;
 };
 
-class CyclicRandomizedTargetListWithoutReplacement : public av_speech_in_noise::TargetList {
+class CyclicRandomizedTargetListWithoutReplacement
+    : public av_speech_in_noise::TargetList {
   public:
-    CyclicRandomizedTargetListWithoutReplacement(DirectoryReader *, Randomizer *);
+    CyclicRandomizedTargetListWithoutReplacement(
+        DirectoryReader *, Randomizer *);
     auto empty() -> bool override { return {}; }
     void loadFromDirectory(std::string directory) override;
     auto next() -> std::string override { return {}; }
     auto current() -> std::string override { return {}; }
     void reinsertCurrent() override {}
+
   private:
     DirectoryReader *reader;
     Randomizer *randomizer;

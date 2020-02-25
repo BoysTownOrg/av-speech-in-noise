@@ -5,7 +5,7 @@
 #include <target-list/FileFilterDecorator.hpp>
 #include <target-list/RandomizedTargetList.hpp>
 
-namespace target_list::tests {
+namespace target_list {
 namespace {
 class RandomizerStub : public Randomizer {
     std::vector<std::string> toShuffle_;
@@ -208,7 +208,8 @@ FINITE_RANDOMIZED_TARGET_LIST_TEST(reinsertCurrent) {
     assertNextEquals("C:/b");
 }
 
-void loadFromDirectory(CyclicRandomizedTargetListWithoutReplacement &list, std::string s) {
+void loadFromDirectory(
+    CyclicRandomizedTargetListWithoutReplacement &list, std::string s) {
     list.loadFromDirectory(std::move(s));
 }
 

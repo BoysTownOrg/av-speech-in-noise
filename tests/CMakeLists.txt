@@ -11,7 +11,7 @@ add_executable(tests
 	ModelTests.cpp
 	ResponseEvaluatorTests.cpp
 	SubdirectoryTargetListReaderTests.cpp
-	TargetListTests.cpp
+	RandomizedTargetListTests.cpp
 	TargetPlayerTests.cpp
     TrackSettingsInterpreterTests.cpp
 	TrackSettingsReaderTests.cpp
