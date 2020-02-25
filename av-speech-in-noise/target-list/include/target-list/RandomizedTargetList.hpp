@@ -11,11 +11,12 @@ namespace target_list {
 class Randomizer {
   public:
     virtual ~Randomizer() = default;
-    using shuffle_iterator = std::vector<std::string>::iterator;
-    virtual void shuffle(shuffle_iterator begin, shuffle_iterator end) = 0;
-    using int_shuffle_iterator = std::vector<int>::iterator;
+    using string_vector_iterator = std::vector<std::string>::iterator;
     virtual void shuffle(
-        int_shuffle_iterator begin, int_shuffle_iterator end) = 0;
+        string_vector_iterator begin, string_vector_iterator end) = 0;
+    using int_vector_iterator = std::vector<int>::iterator;
+    virtual void shuffle(
+        int_vector_iterator begin, int_vector_iterator end) = 0;
 };
 
 class RandomizedTargetListWithReplacement
@@ -57,7 +58,7 @@ class RandomizedTargetListWithReplacementFactory : public TargetListFactory {
 };
 
 class RandomizedTargetListWithoutReplacement
-    : public av_speech_in_noise::TargetList {
+    : public av_speech_in_noise::FiniteTargetList {
     std::vector<std::string> files{};
     std::string directory_{};
     std::string currentFile_{};

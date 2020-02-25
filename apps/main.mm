@@ -191,7 +191,7 @@ void main() {
     target_list::FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
     target_list::FileFilterDecorator fileExtensions{&reader, &fileExtensions_};
     MersenneTwisterRandomizer randomizer;
-    target_list::RandomizedTargetListFactory targetListFactory{
+    target_list::RandomizedTargetListWithReplacementFactory targetListFactory{
         &fileExtensions, &randomizer};
     target_list::SubdirectoryTargetListReader targetListReader{
         &targetListFactory, &reader};
@@ -222,7 +222,7 @@ void main() {
         &textFileReader, &trackSettingsInterpreter};
     AdaptiveMethodImpl adaptiveMethod{&targetListReader, &trackSettingsReader,
         &snrTrackFactory, &responseEvaluator, &randomizer};
-    target_list::RandomizedTargetList infiniteTargetList{
+    target_list::RandomizedTargetListWithReplacement infiniteTargetList{
         &fileExtensions, &randomizer};
     target_list::FileIdentifierExcluderFilter originalStimuli_{
         {"100", "200", "300", "400"}};
@@ -256,18 +256,18 @@ void main() {
             &randomSubsetTwoHundredMsStimuli,
             &randomSubsetThreeHundredMsStimuli,
             &randomSubsetFourHundredMsStimuli}};
-    target_list::RandomizedFiniteTargetList silentIntervals{
+    target_list::RandomizedTargetListWithoutReplacement silentIntervals{
         &composite, &randomizer};
-    target_list::RandomizedFiniteTargetList allStimuli{
+    target_list::RandomizedTargetListWithoutReplacement allStimuli{
         &fileExtensions, &randomizer};
     EmptyTargetListTestConcluder completesWhenTargetsEmpty;
     FixedTrialTestConcluder fixedTrials;
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
     RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
         &responseEvaluator, &outputFile, &randomizer};
-    ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
-        &fixedTrials, &silentIntervals, &completesWhenTargetsEmpty, &allStimuli,
-        &model_internal};
+    ModelImpl model{adaptiveMethod, fixedLevelMethod, infiniteTargetList,
+        fixedTrials, silentIntervals, completesWhenTargetsEmpty, allStimuli,
+        model_internal};
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 430);
     auto testerWindowViewMargin = 15;
     auto experimenterContentFrame = NSMakeRect(testerWindowViewMargin,

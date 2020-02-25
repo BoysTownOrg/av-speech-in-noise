@@ -17,12 +17,12 @@ class RandomizerStub : public Randomizer {
 
     [[nodiscard]] auto shuffledInts() const { return shuffledInts_; }
 
-    void shuffle(shuffle_iterator begin, shuffle_iterator end) override {
+    void shuffle(string_vector_iterator begin, string_vector_iterator end) override {
         toShuffle_ = {begin, end};
     }
 
     void shuffle(
-        int_shuffle_iterator begin, int_shuffle_iterator end) override {
+        int_vector_iterator begin, int_vector_iterator end) override {
         shuffledInts_ = {begin, end};
         std::rotate(begin, begin + rotateToTheLeft_, end);
     }
