@@ -340,6 +340,13 @@ TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
     assertEqual(1, method.snr_dB());
 }
 
+TEST_F(PreInitializedFixedLevelMethodTests,
+    snrReturnsInitializedWithFiniteTargetListSnr) {
+    test.snr_dB = 1;
+    run(initializingMethodWithFiniteTargetList, method);
+    assertEqual(1, method.snr_dB());
+}
+
 TEST_F(
     PreInitializedFixedLevelMethodTests, initializePassesTargetListDirectory) {
     initializingMethod.setTargetListDirectory("a");
