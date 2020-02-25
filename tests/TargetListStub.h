@@ -6,7 +6,7 @@
 #include <utility>
 
 namespace av_speech_in_noise::tests {
-class TargetListStub : public TargetList {
+class TargetListStub : public virtual TargetList {
     LogString log_{};
     std::string currentWhenNext_{};
     std::string directory_{};
