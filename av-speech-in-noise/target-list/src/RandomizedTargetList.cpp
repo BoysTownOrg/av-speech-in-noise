@@ -32,7 +32,6 @@ void RandomizedTargetListWithReplacement::loadFromDirectory(
     std::string directory) {
     files = filesIn(reader, directory_ = std::move(directory));
     shuffle(randomizer, files);
-    noFilesGotten = true;
 }
 
 auto RandomizedTargetListWithReplacement::next() -> std::string {
@@ -55,8 +54,7 @@ RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
 
 void RandomizedTargetListWithoutReplacement::loadFromDirectory(
     std::string directory) {
-    directory_ = std::move(directory);
-    files = filesIn(reader, directory_);
+    files = filesIn(reader, directory_ = std::move(directory));
     shuffle(randomizer, files);
 }
 

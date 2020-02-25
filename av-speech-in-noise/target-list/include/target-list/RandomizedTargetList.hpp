@@ -23,7 +23,6 @@ class RandomizedTargetListWithReplacement
     std::string currentFile_{};
     DirectoryReader *reader;
     Randomizer *randomizer;
-    bool noFilesGotten{};
 
   public:
     RandomizedTargetListWithReplacement(DirectoryReader *, Randomizer *);
