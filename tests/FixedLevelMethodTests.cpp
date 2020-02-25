@@ -96,6 +96,10 @@ void setNext(TargetListStub &list, std::string s) {
     list.setNext(std::move(s));
 }
 
+void assertLogContains(TestConcluderStub &concluder, const std::string &s) {
+    assertTrue(concluder.log().contains(s));
+}
+
 class FixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -157,14 +161,10 @@ class FixedLevelMethodTests : public ::testing::Test {
         assertTestComplete();
     }
 
-    void assertTestConcluderLogContains(const std::string &s) {
-        assertTrue(testConcluder.log().contains(s));
-    }
-
     void assertTestConcluderLogContainsAfter(
         const std::string &s, UseCase &useCase) {
         run(useCase, method);
-        assertTestConcluderLogContains(s);
+        assertLogContains(testConcluder, s);
     }
 
     auto reinsertCurrentCalled() -> bool {
@@ -308,7 +308,7 @@ FIXED_LEVEL_METHOD_TEST(submitFreeResponseReinsertsCurrentTargetIfFlagged) {
 }
 
 FIXED_LEVEL_METHOD_TEST(initializesConcluderBeforeQueryingCompletion) {
-    assertTestConcluderLogContains("initialize complete");
+    assertLogContains(testConcluder, "initialize complete");
 }
 
 FIXED_LEVEL_METHOD_TEST(initializePassesTargetListToConcluder) {
@@ -391,7 +391,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     initializesConcluderBeforeQueryingCompletion) {
-    assertTrue(testConcluder.log().contains("initialize complete"));
+    assertLogContains(testConcluder, "initialize complete");
 }
 
 class TargetListTestConcluderComboStub : public TargetList,
