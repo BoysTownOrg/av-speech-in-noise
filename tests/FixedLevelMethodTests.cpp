@@ -17,25 +17,18 @@ class UseCase {
 };
 
 class InitializingMethod : public UseCase {
-    FixedLevelTest test_;
     TargetList &list;
     TestConcluder &concluder;
+    const FixedLevelTest &test;
 
   public:
-    InitializingMethod(TargetList &list, TestConcluder &concluder)
-        : list{list}, concluder{concluder} {}
+    InitializingMethod(
+        TargetList &list, TestConcluder &concluder, const FixedLevelTest &test)
+        : list{list}, concluder{concluder}, test{test} {}
 
     void run(FixedLevelMethodImpl &m) override {
-        m.initialize(test_, &list, &concluder);
+        m.initialize(test, &list, &concluder);
     }
-
-    [[nodiscard]] auto test() const -> auto & { return test_; }
-
-    void setTargetListDirectory(std::string s) {
-        test_.targetListDirectory = std::move(s);
-    }
-
-    void setSnr(int x) { test_.snr_dB = x; }
 };
 
 class InitializingMethodWithFiniteTargetList : public UseCase {
@@ -105,9 +98,10 @@ class FixedLevelMethodTests : public ::testing::Test {
     TestConcluderStub testConcluder;
     OutputFileStub outputFile;
     FixedLevelMethodImpl method{&evaluator};
+    FixedLevelTest test{};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
-    InitializingMethod initializingMethod{targetList, testConcluder};
+    InitializingMethod initializingMethod{targetList, testConcluder, test};
 
     FixedLevelMethodTests() { run(initializingMethod, method); }
 
@@ -181,7 +175,7 @@ class FixedLevelMethodTests : public ::testing::Test {
 #define FIXED_LEVEL_METHOD_TEST(a) TEST_F(FixedLevelMethodTests, a)
 
 FIXED_LEVEL_METHOD_TEST(passesTestParametersToConcluder) {
-    assertEqual(&initializingMethod.test(), testConcluder.test());
+    assertEqual(&std::as_const(test), testConcluder.test());
 }
 
 FIXED_LEVEL_METHOD_TEST(nextReturnsNextTarget) {
@@ -240,7 +234,7 @@ FIXED_LEVEL_METHOD_TEST(writeIncorrectCoordinateResponse) {
 
 FIXED_LEVEL_METHOD_TEST(writeTestPassesSettings) {
     method.writeTestingParameters(&outputFile);
-    assertEqual(&initializingMethod.test(), outputFile.fixedLevelTest());
+    assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesResponse) {
@@ -326,14 +320,14 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
     TestConcluderStub testConcluder;
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test{};
-    InitializingMethod initializingMethod{targetList, testConcluder};
+    InitializingMethod initializingMethod{targetList, testConcluder, test};
     InitializingMethodWithFiniteTargetList
         initializingMethodWithFiniteTargetList{
             finiteTargetList, testConcluder, test};
 };
 
 TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
-    initializingMethod.setSnr(1);
+    test.snr_dB = 1;
     run(initializingMethod, method);
     assertEqual(1, method.snr_dB());
 }
@@ -347,7 +341,7 @@ TEST_F(PreInitializedFixedLevelMethodTests,
 
 TEST_F(
     PreInitializedFixedLevelMethodTests, initializePassesTargetListDirectory) {
-    initializingMethod.setTargetListDirectory("a");
+    test.targetListDirectory = "a";
     run(initializingMethod, method);
     assertEqual("a", targetList.directory());
 }
@@ -483,7 +477,8 @@ TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
     assertComplete();
 }
 
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(completeWhenTargetListComplete) {
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTargetListComplete) {
     assertFalse(method.complete());
     targetList.setEmpty();
     assertTrue(method.complete());
