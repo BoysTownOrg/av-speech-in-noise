@@ -7,6 +7,10 @@ static auto filesIn(DirectoryReader *reader, std::string s)
     return reader->filesIn(std::move(s));
 }
 
+static auto shuffle(Randomizer *randomizer, std::vector<std::string> &v) {
+    randomizer->shuffle(v.begin(), v.end());
+}
+
 RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
@@ -14,12 +18,8 @@ RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
 void RandomizedTargetListWithReplacement::loadFromDirectory(
     std::string directory) {
     files = filesIn(reader, directory_ = std::move(directory));
-    shuffle();
+    shuffle(randomizer, files);
     noFilesGotten = true;
-}
-
-void RandomizedTargetListWithReplacement::shuffle() {
-    randomizer->shuffle(files.begin(), files.end());
 }
 
 auto RandomizedTargetListWithReplacement::next() -> std::string {
@@ -29,7 +29,7 @@ auto RandomizedTargetListWithReplacement::next() -> std::string {
     auto nextFile_ = files.front();
     files.erase(files.begin());
     replaceLastFile();
-    shuffle();
+    shuffle(randomizer, files);
     return fullPath(currentFile_ = std::move(nextFile_));
 }
 
@@ -64,7 +64,7 @@ void RandomizedTargetListWithoutReplacement::loadFromDirectory(
     std::string directory) {
     directory_ = std::move(directory);
     files = filesIn(reader, directory_);
-    randomizer->shuffle(files.begin(), files.end());
+    shuffle(randomizer, files);
 }
 
 auto RandomizedTargetListWithoutReplacement::empty() -> bool {
@@ -105,11 +105,11 @@ CyclicRandomizedTargetListWithoutReplacement::
 void CyclicRandomizedTargetListWithoutReplacement::loadFromDirectory(
     std::string directory) {
     files = filesIn(reader, directory_ = std::move(directory));
-    randomizer->shuffle(files.begin(), files.end());
+    shuffle(randomizer, files);
 }
 
 auto CyclicRandomizedTargetListWithoutReplacement::next() -> std::string {
-    std::rotate(files.begin(), files.begin()+1, files.end());
+    std::rotate(files.begin(), files.begin() + 1, files.end());
     return directory_ + "/" + files.back();
 }
 }

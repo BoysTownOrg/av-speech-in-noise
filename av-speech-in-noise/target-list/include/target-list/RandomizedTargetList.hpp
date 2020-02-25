@@ -37,7 +37,6 @@ class RandomizedTargetListWithReplacement
 
   private:
     auto fullPath(std::string file) -> std::string;
-    void shuffle();
     auto empty_() -> bool;
     void replaceLastFile();
 };
