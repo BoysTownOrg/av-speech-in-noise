@@ -243,15 +243,10 @@ FIXED_LEVEL_METHOD_TEST(completeWhenTrialsExhausted) {
     run(initializingMethod, method);
     run(submittingCoordinateResponse, method);
     assertFalse(method.complete());
-    run(submittingCoordinateResponse, method);
+    run(submittingFreeResponse, method);
     assertFalse(method.complete());
     run(submittingCoordinateResponse, method);
     assertTrue(method.complete());
-}
-
-FIXED_LEVEL_METHOD_TEST(submitFreeResponseSubmitsResponseToConcluder) {
-    run(submittingFreeResponse, method);
-    assertTrue(testConcluder.responseSubmitted());
 }
 
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesCurrentToEvaluator) {

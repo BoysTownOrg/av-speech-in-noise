@@ -72,7 +72,6 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
 void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
-    concluder->submitResponse();
     --trials_;
     if (response.flagged)
         targetList->reinsertCurrent();
