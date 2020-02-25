@@ -95,6 +95,15 @@ void loadFromDirectoryShufflesFileNames(av_speech_in_noise::TargetList &list,
     assertShuffled(randomizer, {"a", "b", "c"});
 }
 
+void nextReturnsFullPathToFile(
+    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list, "C:");
+    assertNextEquals(list, "C:/a");
+    assertNextEquals(list, "C:/b");
+    assertNextEquals(list, "C:/c");
+}
+
 class RandomizedTargetListWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
@@ -171,28 +180,16 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReplacesSecondToLastTarget) {
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsFullPathToFile) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    assertNextEquals(list, "C:/a");
-    assertNextEquals(list, "C:/b");
-    assertNextEquals(list, "C:/c");
+    nextReturnsFullPathToFile(list, reader);
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     nextReturnsFullPathToFileAtFront) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    assertNextEquals(list, "C:/a");
-    assertNextEquals(list, "C:/b");
-    assertNextEquals(list, "C:/c");
+    nextReturnsFullPathToFile(list, reader);
 }
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFileAtFront) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    assertNextEquals(list, "C:/a");
-    assertNextEquals(list, "C:/b");
-    assertNextEquals(list, "C:/c");
+    nextReturnsFullPathToFile(list, reader);
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
