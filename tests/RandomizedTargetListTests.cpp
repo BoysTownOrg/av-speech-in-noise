@@ -82,6 +82,12 @@ void assertDirectoryEquals(DirectoryReaderStub &reader, const std::string &s) {
     assertEqual(s, directory(reader));
 }
 
+void loadFromDirectoryPassesDirectoryToDirectoryReader(
+    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+    loadFromDirectory(list, "a");
+    assertDirectoryEquals(reader, "a");
+}
+
 class RandomizedTargetListWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
@@ -114,20 +120,17 @@ class CyclicRandomizedTargetListTests : public ::testing::Test {
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
-    loadFromDirectory(list, "a");
-    assertDirectoryEquals(reader, "a");
+    loadFromDirectoryPassesDirectoryToDirectoryReader(list, reader);
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
-    loadFromDirectory(list, "a");
-    assertDirectoryEquals(reader, "a");
+    loadFromDirectoryPassesDirectoryToDirectoryReader(list, reader);
 }
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
-    loadFromDirectory(list, "a");
-    assertDirectoryEquals(reader, "a");
+    loadFromDirectoryPassesDirectoryToDirectoryReader(list, reader);
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
