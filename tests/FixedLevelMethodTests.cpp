@@ -330,8 +330,8 @@ void assertTestCompleteWhenTargetListEmpty(UseCase &useCase,
     assertComplete(method);
 }
 
-void assertTestCompleteOnlyAfter(UseCase &useCase,
-    FixedLevelMethodImpl &method, FiniteTargetListStub &list) {
+void assertTestCompleteOnlyAfter(UseCase &useCase, FixedLevelMethodImpl &method,
+    FiniteTargetListStub &list) {
     list.setEmpty();
     assertIncomplete(method);
     run(useCase, method);
@@ -377,8 +377,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     completeWhenTestCompleteAfterFreeResponse) {
-    assertTestCompleteOnlyAfter(
-        submittingFreeResponse, method, targetList);
+    assertTestCompleteOnlyAfter(submittingFreeResponse, method, targetList);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
@@ -393,13 +392,12 @@ class TargetListTestConcluderComboStub : public FiniteTargetList,
     void loadFromDirectory(std::string) override {}
     auto next() -> std::string override { return {}; }
     auto current() -> std::string override { return {}; }
-    auto empty() -> bool override { 
+    auto empty() -> bool override {
         log_.insert("empty ");
-        return {}; }
-    void reinsertCurrent() override { log_.insert("reinsertCurrent "); }
-    auto complete(TargetList *) -> bool override {
         return {};
     }
+    void reinsertCurrent() override { log_.insert("reinsertCurrent "); }
+    auto complete(TargetList *) -> bool override { return {}; }
     void submitResponse() override {}
     void initialize(const FixedLevelTest &) override {}
     auto log() const -> auto & { return log_; }

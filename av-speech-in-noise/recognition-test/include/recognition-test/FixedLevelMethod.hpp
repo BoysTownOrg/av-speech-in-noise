@@ -53,10 +53,8 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     TargetList *targetList{};
     FiniteTargetList *finiteTargetList{};
     ResponseEvaluator *evaluator;
-    TestConcluder *concluder{};
     int snr_dB_{};
     int trials_{};
-    bool complete_{};
     bool finiteTargetsExhausted_{};
     bool usingFiniteTargetList_{};
 };
