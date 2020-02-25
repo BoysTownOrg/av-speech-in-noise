@@ -196,25 +196,23 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
     assertNextEquals(list, "C:/b");
 }
 
-class CyclicRandomizedTargetListWithoutReplacementTests
-    : public ::testing::Test {
+class CyclicRandomizedTargetListTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    CyclicRandomizedTargetListWithoutReplacement list{&reader, &randomizer};
+    CyclicRandomizedTargetList list{&reader, &randomizer};
 };
 
-#define CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(a)              \
-    TEST_F(CyclicRandomizedTargetListWithoutReplacementTests, a)
+#define CYCLIC_RANDOMIZED_TARGET_LIST_TEST(a)                                  \
+    TEST_F(CyclicRandomizedTargetListTests, a)
 
-CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectory(list, "a");
     assertEqual("a", reader.directory());
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
-    nextReturnsFullPathToFileAtFront) {
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFileAtFront) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
     assertNextEquals(list, "C:/a");
@@ -222,8 +220,7 @@ CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     assertNextEquals(list, "C:/c");
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
-    nextCyclesBackToBeginningOfFiles) {
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextCyclesBackToBeginningOfFiles) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
     next(list);
@@ -234,15 +231,13 @@ CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     assertNextEquals(list, "C:/c");
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
-    loadFromDirectoryShufflesFileNames) {
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list);
     assertShuffled(randomizer, {"a", "b", "c"});
 }
 
-CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
-    currentReturnsFullPathToFile) {
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
     next(list);

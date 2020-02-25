@@ -93,13 +93,11 @@ void RandomizedTargetListWithoutReplacement::reinsertCurrent() {
     files.push_back(currentFile_);
 }
 
-CyclicRandomizedTargetListWithoutReplacement::
-    CyclicRandomizedTargetListWithoutReplacement(
-        DirectoryReader *reader, Randomizer *randomizer)
+CyclicRandomizedTargetList::CyclicRandomizedTargetList(
+    DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void CyclicRandomizedTargetListWithoutReplacement::loadFromDirectory(
-    std::string directory) {
+void CyclicRandomizedTargetList::loadFromDirectory(std::string directory) {
     files = filesIn(reader, directory_ = std::move(directory));
     shuffle(randomizer, files);
 }
@@ -109,12 +107,12 @@ static auto fullPathToLastFile(const std::string &directory,
     return directory + '/' + files.back();
 }
 
-auto CyclicRandomizedTargetListWithoutReplacement::next() -> std::string {
+auto CyclicRandomizedTargetList::next() -> std::string {
     std::rotate(files.begin(), files.begin() + 1, files.end());
     return fullPathToLastFile(directory_, files);
 }
 
-auto CyclicRandomizedTargetListWithoutReplacement::current() -> std::string {
+auto CyclicRandomizedTargetList::current() -> std::string {
     return fullPathToLastFile(directory_, files);
 }
 }

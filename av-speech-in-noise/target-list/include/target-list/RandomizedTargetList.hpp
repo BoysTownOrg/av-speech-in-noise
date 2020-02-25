@@ -76,11 +76,9 @@ class RandomizedTargetListWithoutReplacement
     auto fullPath(std::string file) -> std::string;
 };
 
-class CyclicRandomizedTargetListWithoutReplacement
-    : public av_speech_in_noise::TargetList {
+class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
   public:
-    CyclicRandomizedTargetListWithoutReplacement(
-        DirectoryReader *, Randomizer *);
+    CyclicRandomizedTargetList(DirectoryReader *, Randomizer *);
     void loadFromDirectory(std::string directory) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
