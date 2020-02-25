@@ -26,11 +26,10 @@ auto RandomizedTargetListWithReplacement::next() -> std::string {
     if (empty_())
         return "";
 
-    auto nextFile_ = files.front();
-    files.erase(files.begin());
-    replaceLastFile();
-    shuffle(randomizer, files);
-    return fullPath(currentFile_ = std::move(nextFile_));
+    std::rotate(files.begin(), files.begin() + 1, files.end());
+    gsl::span<std::string> files_{files};
+    shuffle(randomizer, files_.first(files_.size()-1));
+    return fullPath(currentFile_ = files.back());
 }
 
 auto RandomizedTargetListWithReplacement::empty_() -> bool {
