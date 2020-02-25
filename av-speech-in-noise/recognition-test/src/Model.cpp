@@ -7,7 +7,7 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FixedLevelMethod &fixedLevelMethod, TargetList &targetsWithReplacement,
     TestConcluder &fixedTrialTestConcluder,
     FiniteTargetList &silentIntervalTargets,
-    TestConcluder &completesWhenTargetsEmpty, TargetList &everyTargetOnce,
+    TestConcluder &completesWhenTargetsEmpty, FiniteTargetList &everyTargetOnce,
     RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacement{targetsWithReplacement},

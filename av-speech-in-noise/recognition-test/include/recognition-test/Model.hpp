@@ -86,8 +86,8 @@ class ModelImpl : public Model {
         TargetList &targetsWithReplacement,
         TestConcluder &fixedTrialTestConcluder,
         FiniteTargetList &silentIntervalTargets,
-        TestConcluder &completesWhenTargetsEmpty, TargetList &everyTargetOnce,
-        RecognitionTestModel &);
+        TestConcluder &completesWhenTargetsEmpty,
+        FiniteTargetList &everyTargetOnce, RecognitionTestModel &);
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(const FixedLevelTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
@@ -120,7 +120,7 @@ class ModelImpl : public Model {
     TestConcluder &fixedTrialTestConcluder;
     FiniteTargetList &silentIntervalTargets;
     TestConcluder &completesWhenTargetsEmpty;
-    TargetList &everyTargetOnce;
+    FiniteTargetList &everyTargetOnce;
     RecognitionTestModel &model;
 };
 }

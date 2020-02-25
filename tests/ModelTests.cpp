@@ -375,7 +375,7 @@ class ModelTests : public ::testing::Test {
     TestConcluderStub fixedTrialTestConcluder;
     FiniteTargetListStub silentIntervals;
     TestConcluderStub emptyTargetListTestConcluder;
-    TargetListStub everyTargetOnce;
+    FiniteTargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
     ModelImpl model{adaptiveMethod, fixedLevelMethod, targetsWithReplacement,
         fixedTrialTestConcluder, silentIntervals, emptyTargetListTestConcluder,
@@ -478,6 +478,12 @@ MODEL_TEST(
 MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithFiniteTargetList) {
     run(initializingFixedLevelTestWithSilentIntervalTargets);
+    assertTrue(fixedLevelMethod.initializedWithFiniteTargetList());
+}
+
+MODEL_TEST(
+    initializingFixedLevelTestWithAllTargetsInitializesWithFiniteTargetList) {
+    run(initializingFixedLevelTestWithAllTargets);
     assertTrue(fixedLevelMethod.initializedWithFiniteTargetList());
 }
 
