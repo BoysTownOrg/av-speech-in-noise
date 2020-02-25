@@ -268,10 +268,6 @@ FIXED_LEVEL_METHOD_TEST(
     assertEqual("a", evaluator.correctFilePath());
 }
 
-FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesTargetListToConcluder) {
-    assertTargetListPassedToConcluderAfter(submittingCoordinateResponse);
-}
-
 FIXED_LEVEL_METHOD_TEST(submitFreeResponsePassesTargetListToConcluder) {
     assertTargetListPassedToConcluderAfter(submittingFreeResponse);
 }

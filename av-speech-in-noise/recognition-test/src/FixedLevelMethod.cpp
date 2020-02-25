@@ -51,7 +51,6 @@ void FixedLevelMethodImpl::submit(
     lastTrial.correct = evaluator->correct(current_, response);
     lastTrial.target = current_;
     --trials_;
-    complete_ = concluder->complete(targetList);
     if (usingFiniteTargetList_)
         finiteTargetsExhausted_ = finiteTargetList->empty();
 }
