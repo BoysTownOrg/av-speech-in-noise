@@ -394,6 +394,12 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     assertLogContains(testConcluder, "initialize complete");
 }
 
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
+    OutputFileStub outputFile;
+    method.writeTestingParameters(&outputFile);
+    assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+}
+
 class TargetListTestConcluderComboStub : public TargetList,
                                          public TestConcluder {
   public:

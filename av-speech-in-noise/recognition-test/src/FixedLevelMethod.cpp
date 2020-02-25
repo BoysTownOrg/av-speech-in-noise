@@ -23,6 +23,7 @@ void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
     FiniteTargetList *list, TestConcluder *concluder_) {
     concluder = concluder_;
     targetList = list;
+    test = &p;
     snr_dB_ = p.snr_dB;
     loadFromDirectory(targetList, p);
     concluder_->initialize(p);
