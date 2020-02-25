@@ -48,9 +48,10 @@ void FixedLevelMethodImpl::submit(
     lastTrial.correctNumber = evaluator->correctNumber(current_);
     lastTrial.correct = evaluator->correct(current_, response);
     lastTrial.target = current_;
-    --trials_;
     if (usingFiniteTargetList_)
         finiteTargetsExhausted_ = finiteTargetList->empty();
+    else
+        --trials_;
 }
 
 auto FixedLevelMethodImpl::currentTarget() -> std::string {
@@ -70,11 +71,11 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
 void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
-    --trials_;
     if (usingFiniteTargetList_) {
         if (response.flagged)
             finiteTargetList->reinsertCurrent();
         finiteTargetsExhausted_ = finiteTargetList->empty();
-    }
+    } else
+        --trials_;
 }
 }
