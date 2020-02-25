@@ -87,16 +87,16 @@ class InitializingMethod : public UseCase {
 
 class InitializingMethodWithFiniteTargetList : public UseCase {
   public:
-    InitializingMethodWithFiniteTargetList(
-        FiniteTargetList &list, TestConcluder &concluder)
-        : list{list}, concluder{concluder} {}
+    InitializingMethodWithFiniteTargetList(FiniteTargetList &list,
+        TestConcluder &concluder, const FixedLevelTest &test)
+        : list{list}, concluder{concluder}, test{test} {}
 
     void run(FixedLevelMethodImpl &m) override {
-        m.initialize(test_, &list, &concluder);
+        m.initialize(test, &list, &concluder);
     }
 
   private:
-    FixedLevelTest test_;
+    const FixedLevelTest &test;
     FiniteTargetList &list;
     TestConcluder &concluder;
 };
@@ -380,13 +380,19 @@ class FixedLevelMethodWithFiniteTargetListTests : public ::testing::Test {
     FiniteTargetListStub targetList;
     TestConcluderStub testConcluder;
     FixedLevelMethodImpl method{&evaluator};
+    FixedLevelTest test{};
     InitializingMethodWithFiniteTargetList
-        initializingMethodWithFiniteTargetList{targetList, testConcluder};
+        initializingMethodWithFiniteTargetList{targetList, testConcluder, test};
 
     FixedLevelMethodWithFiniteTargetListTests() {
         run(initializingMethodWithFiniteTargetList, method);
     }
 };
+
+TEST_F(FixedLevelMethodWithFiniteTargetListTests,
+    passesTestParametersToConcluder) {
+    assertEqual(&std::as_const(test), testConcluder.test());
+}
 
 class TargetListTestConcluderComboStub : public TargetList,
                                          public TestConcluder {

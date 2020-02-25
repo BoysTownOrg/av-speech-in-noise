@@ -16,7 +16,9 @@ void FixedLevelMethodImpl::initialize(
 }
 
 void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
-    FiniteTargetList *list, TestConcluder *concluder_) {}
+    FiniteTargetList *list, TestConcluder *concluder_) {
+    concluder_->initialize(p);
+}
 
 auto FixedLevelMethodImpl::complete() -> bool { return complete_; }
 
