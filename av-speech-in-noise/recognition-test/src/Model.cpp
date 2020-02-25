@@ -17,7 +17,7 @@ ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
       everyTargetOnce{everyTargetOnce}, model{model} {}
 
 static void initialize(
-    RecognitionTestModel &model, TestMethod &method, const struct Test &test) {
+    RecognitionTestModel &model, TestMethod &method, const Test &test) {
     model.initialize(&method, test);
 }
 

@@ -427,6 +427,12 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(&targetList, fixedLevelMethod.targetList());
     }
+
+    void assertInitializesFixedLevelMethodWithFiniteTargetList(
+        InitializingTestUseCase &useCase) {
+        run(useCase);
+        assertTrue(fixedLevelMethod.initializedWithFiniteTargetList());
+    }
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
@@ -476,21 +482,21 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
+    initializeFixedLevelTestWithAllTargetsInitializesWithEmptyTargetListTestConcluder) {
+    assertInitializesFixedLevelTestWithTestConcluder(
+        initializingFixedLevelTestWithAllTargets, emptyTargetListTestConcluder);
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithFiniteTargetList) {
-    run(initializingFixedLevelTestWithSilentIntervalTargets);
-    assertTrue(fixedLevelMethod.initializedWithFiniteTargetList());
+    assertInitializesFixedLevelMethodWithFiniteTargetList(
+        initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
 MODEL_TEST(
     initializingFixedLevelTestWithAllTargetsInitializesWithFiniteTargetList) {
-    run(initializingFixedLevelTestWithAllTargets);
-    assertTrue(fixedLevelMethod.initializedWithFiniteTargetList());
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithAllTargetsInitializesWithEmptyTargetListTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithAllTargets, emptyTargetListTestConcluder);
+    assertInitializesFixedLevelMethodWithFiniteTargetList(
+        initializingFixedLevelTestWithAllTargets);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
