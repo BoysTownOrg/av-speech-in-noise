@@ -15,9 +15,14 @@ void FixedLevelMethodImpl::initialize(
     complete_ = concluder->complete(targetList);
 }
 
+void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
+    FiniteTargetList *list, TestConcluder *concluder_) {}
+
 auto FixedLevelMethodImpl::complete() -> bool { return complete_; }
 
-auto FixedLevelMethodImpl::nextTarget() -> std::string { return targetList->next(); }
+auto FixedLevelMethodImpl::nextTarget() -> std::string {
+    return targetList->next();
+}
 
 auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
 

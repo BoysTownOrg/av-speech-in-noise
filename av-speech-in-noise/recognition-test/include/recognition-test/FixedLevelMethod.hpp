@@ -30,6 +30,8 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     explicit FixedLevelMethodImpl(ResponseEvaluator *);
     void initialize(
         const FixedLevelTest &, TargetList *, TestConcluder *) override;
+    void initialize(
+        const FixedLevelTest &, FiniteTargetList *, TestConcluder *);
     auto snr_dB() -> int override;
     auto nextTarget() -> std::string override;
     auto complete() -> bool override;
