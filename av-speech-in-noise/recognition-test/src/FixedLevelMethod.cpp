@@ -18,6 +18,7 @@ void FixedLevelMethodImpl::initialize(
 void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
     FiniteTargetList *list, TestConcluder *concluder_) {
     targetList = list;
+    targetList->loadFromDirectory(p.targetListDirectory);
     concluder_->initialize(p);
 }
 

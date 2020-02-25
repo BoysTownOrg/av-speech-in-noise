@@ -324,9 +324,14 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
     TargetListStub targetList;
+    FiniteTargetListStub finiteTargetList;
     TestConcluderStub testConcluder;
     FixedLevelMethodImpl method{&evaluator};
+    FixedLevelTest test{};
     InitializingMethod initializingMethod{targetList, testConcluder};
+    InitializingMethodWithFiniteTargetList
+        initializingMethodWithFiniteTargetList{
+            finiteTargetList, testConcluder, test};
 };
 
 TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
@@ -340,6 +345,13 @@ TEST_F(
     initializingMethod.setTargetListDirectory("a");
     run(initializingMethod, method);
     assertEqual("a", targetList.directory());
+}
+
+TEST_F(PreInitializedFixedLevelMethodTests,
+    initializeWithFiniteTargetListPassesTargetListDirectory) {
+    test.targetListDirectory = "a";
+    run(initializingMethodWithFiniteTargetList, method);
+    assertEqual("a", finiteTargetList.directory());
 }
 
 class FixedLevelMethodWithFiniteTargetListTests : public ::testing::Test {
