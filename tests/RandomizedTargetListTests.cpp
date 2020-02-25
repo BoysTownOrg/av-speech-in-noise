@@ -48,6 +48,11 @@ void assertNextEquals(
     assertEqual(s, next(list));
 }
 
+void assertCurrentEquals(
+    av_speech_in_noise::TargetList &list, const std::string &s) {
+    assertEqual(s, list.current());
+}
+
 void assertShuffled(
     RandomizerStub &randomizer, const std::vector<std::string> &s) {
     assertEqual(s, randomizer.toShuffle());
@@ -125,7 +130,7 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
     next(list);
-    assertEqual("C:/a", list.current());
+    assertCurrentEquals(list, "C:/a");
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
@@ -191,7 +196,7 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
     next(list);
-    assertEqual("C:/a", list.current());
+    assertCurrentEquals(list, "C:/a");
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
@@ -260,7 +265,7 @@ CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
     next(list);
-    assertEqual("C:/a", list.current());
+    assertCurrentEquals(list, "C:/a");
 }
 
 auto filesIn(DirectoryReader &reader, std::string directory = {})
