@@ -260,13 +260,11 @@ void main() {
         &composite, &randomizer};
     target_list::RandomizedTargetListWithoutReplacement allStimuli{
         &fileExtensions, &randomizer};
-    EmptyTargetListTestConcluder completesWhenTargetsEmpty;
-    FixedTrialTestConcluder fixedTrials;
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
     RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
         &responseEvaluator, &outputFile, &randomizer};
     ModelImpl model{adaptiveMethod, fixedLevelMethod, infiniteTargetList,
-        fixedTrials, silentIntervals, completesWhenTargetsEmpty, allStimuli,
+        silentIntervals, allStimuli,
         model_internal};
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 430);
     auto testerWindowViewMargin = 15;

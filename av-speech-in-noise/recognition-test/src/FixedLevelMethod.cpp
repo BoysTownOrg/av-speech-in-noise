@@ -9,7 +9,7 @@ static void loadFromDirectory(TargetList *list, const FixedLevelTest &test) {
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, TargetList *list, TestConcluder *) {
+    const FixedLevelTest &p, TargetList *list) {
     usingFiniteTargetList_ = false;
     targetList = list;
     test = &p;
@@ -19,7 +19,7 @@ void FixedLevelMethodImpl::initialize(
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, FiniteTargetList *list, TestConcluder *) {
+    const FixedLevelTest &p, FiniteTargetList *list) {
     usingFiniteTargetList_ = true;
     targetList = list;
     finiteTargetList = list;

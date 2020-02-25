@@ -53,10 +53,8 @@ class AdaptiveMethod : public virtual TestMethod {
 
 class FixedLevelMethod : public virtual TestMethod {
   public:
-    virtual void initialize(
-        const FixedLevelTest &, TargetList *, TestConcluder *) = 0;
-    virtual void initialize(
-        const FixedLevelTest &, FiniteTargetList *, TestConcluder *) = 0;
+    virtual void initialize(const FixedLevelTest &, TargetList *) = 0;
+    virtual void initialize(const FixedLevelTest &, FiniteTargetList *) = 0;
 };
 
 class RecognitionTestModel {
@@ -84,9 +82,7 @@ class ModelImpl : public Model {
   public:
     ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
         TargetList &targetsWithReplacement,
-        TestConcluder &fixedTrialTestConcluder,
         FiniteTargetList &silentIntervalTargets,
-        TestConcluder &completesWhenTargetsEmpty,
         FiniteTargetList &everyTargetOnce, RecognitionTestModel &);
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(const FixedLevelTest &) override;
@@ -117,9 +113,7 @@ class ModelImpl : public Model {
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
     TargetList &targetsWithReplacement;
-    TestConcluder &fixedTrialTestConcluder;
     FiniteTargetList &silentIntervalTargets;
-    TestConcluder &completesWhenTargetsEmpty;
     FiniteTargetList &everyTargetOnce;
     RecognitionTestModel &model;
 };

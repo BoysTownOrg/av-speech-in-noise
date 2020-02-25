@@ -5,33 +5,11 @@
 #include "av-speech-in-noise/Model.hpp"
 
 namespace av_speech_in_noise {
-class EmptyTargetListTestConcluder : public TestConcluder {
-  public:
-    void initialize(const FixedLevelTest &) override {}
-
-    void submitResponse() override {}
-
-    auto complete(TargetList *t) -> bool override { return t->empty(); }
-};
-
-class FixedTrialTestConcluder : public TestConcluder {
-    int trials_{};
-
-  public:
-    void initialize(const FixedLevelTest &p) override { trials_ = p.trials; }
-
-    void submitResponse() override { --trials_; }
-
-    auto complete(TargetList *) -> bool override { return trials_ == 0; }
-};
-
 class FixedLevelMethodImpl : public FixedLevelMethod {
   public:
     explicit FixedLevelMethodImpl(ResponseEvaluator *);
-    void initialize(
-        const FixedLevelTest &, TargetList *, TestConcluder *) override;
-    void initialize(
-        const FixedLevelTest &, FiniteTargetList *, TestConcluder *) override;
+    void initialize(const FixedLevelTest &, TargetList *) override;
+    void initialize(const FixedLevelTest &, FiniteTargetList *) override;
     auto snr_dB() -> int override;
     auto nextTarget() -> std::string override;
     auto complete() -> bool override;

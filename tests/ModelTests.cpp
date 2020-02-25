@@ -38,16 +38,12 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     bool initializedWithFiniteTargetList_{};
 
   public:
-    void initialize(const FixedLevelTest &t, TargetList *list,
-        TestConcluder *concluder) override {
-        testConcluder_ = concluder;
+    void initialize(const FixedLevelTest &t, TargetList *list) override {
         targetList_ = list;
         test_ = &t;
     }
 
-    void initialize(const FixedLevelTest &t, FiniteTargetList *list,
-        TestConcluder *concluder) {
-        testConcluder_ = concluder;
+    void initialize(const FixedLevelTest &t, FiniteTargetList *list) override {
         targetList_ = list;
         test_ = &t;
         initializedWithFiniteTargetList_ = true;
@@ -378,7 +374,7 @@ class ModelTests : public ::testing::Test {
     FiniteTargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
     ModelImpl model{adaptiveMethod, fixedLevelMethod, targetsWithReplacement,
-        fixedTrialTestConcluder, silentIntervals, emptyTargetListTestConcluder,
+        silentIntervals,
         everyTargetOnce, internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
@@ -465,26 +461,6 @@ MODEL_TEST(
 MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesWithAllTargets) {
     assertInitializesFixedLevelTestWithTargetList(
         initializingFixedLevelTestWithAllTargets, everyTargetOnce);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithTargetReplacementInitializesWithFixedTrialTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithTargetReplacement,
-        fixedTrialTestConcluder);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithEmptyTargetListTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithSilentIntervalTargets,
-        emptyTargetListTestConcluder);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithAllTargetsInitializesWithEmptyTargetListTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithAllTargets, emptyTargetListTestConcluder);
 }
 
 MODEL_TEST(

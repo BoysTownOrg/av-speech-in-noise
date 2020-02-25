@@ -27,7 +27,7 @@ class InitializingMethod : public UseCase {
         : list{list}, concluder{concluder}, test{test} {}
 
     void run(FixedLevelMethodImpl &m) override {
-        m.initialize(test, &list, &concluder);
+        m.initialize(test, &list);
     }
 };
 
@@ -38,7 +38,7 @@ class InitializingMethodWithFiniteTargetList : public UseCase {
         : list{list}, concluder{concluder}, test{test} {}
 
     void run(FixedLevelMethodImpl &m) override {
-        m.initialize(test, &list, &concluder);
+        m.initialize(test, &list);
     }
 
   private:
@@ -412,63 +412,11 @@ TEST(FixedLevelMethodTestsTBD,
     TargetListTestConcluderComboStub combo;
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test;
-    method.initialize(test, &combo, &combo);
+    method.initialize(test, &combo);
     open_set::FreeResponse response;
     response.flagged = true;
     method.submit(response);
     assertTrue(combo.log().endsWith("reinsertCurrent empty "));
-}
-
-class FixedTrialTestConcluderTests : public ::testing::Test {
-  protected:
-    FixedTrialTestConcluder testConcluder{};
-    FixedLevelTest test;
-
-    void initialize() { testConcluder.initialize(test); }
-
-    void assertIncompleteAfterResponse() {
-        submitResponse();
-        assertIncomplete();
-    }
-
-    void submitResponse() { testConcluder.submitResponse(); }
-
-    void assertCompleteAfterResponse() {
-        submitResponse();
-        assertComplete();
-    }
-
-    void assertIncomplete() { assertFalse(complete()); }
-
-    auto complete() -> bool { return testConcluder.complete({}); }
-
-    void assertComplete() { assertTrue(complete()); }
-};
-
-TEST_F(FixedTrialTestConcluderTests, completeWhenTrialsExhausted) {
-    test.trials = 3;
-    initialize();
-    assertIncompleteAfterResponse();
-    assertIncompleteAfterResponse();
-    assertCompleteAfterResponse();
-}
-
-class EmptyTargetListTestConcluderTests : public ::testing::Test {
-  protected:
-    TargetListStub targetList;
-    EmptyTargetListTestConcluder testConcluder;
-
-    auto complete() -> bool { return testConcluder.complete(&targetList); }
-
-    void assertIncomplete() { assertFalse(complete()); }
-
-    void assertComplete() { assertTrue(complete()); }
-};
-
-TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
-    assertIncomplete();
-    targetList.setEmpty();
-    assertComplete();
 }
 }
 }
