@@ -104,6 +104,14 @@ void nextReturnsFullPathToFile(
     assertNextEquals(list, "C:/c");
 }
 
+void currentReturnsFullPathToFile(
+    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list, "C:");
+    next(list);
+    assertCurrentEquals(list, "C:/a");
+}
+
 class RandomizedTargetListWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
@@ -163,6 +171,43 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
     loadFromDirectoryShufflesFileNames(list, reader, randomizer);
 }
 
+RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsFullPathToFile) {
+    nextReturnsFullPathToFile(list, reader);
+}
+
+RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+    nextReturnsFullPathToFileAtFront) {
+    nextReturnsFullPathToFile(list, reader);
+}
+
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFileAtFront) {
+    nextReturnsFullPathToFile(list, reader);
+}
+
+RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
+    currentReturnsFullPathToFile(list, reader);
+}
+
+RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
+    currentReturnsFullPathToFile(list, reader);
+}
+
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
+    currentReturnsFullPathToFile(list, reader);
+}
+
+RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
+    setFileNames(reader, {});
+    loadFromDirectory(list);
+    assertNextEquals(list, "");
+}
+
+RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
+    setFileNames(reader, {});
+    loadFromDirectory(list);
+    assertNextEquals(list, "");
+}
+
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     nextShufflesNextSetNotIncludingCurrent) {
     setFileNames(reader, {"a", "b", "c", "d"});
@@ -179,46 +224,6 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReplacesSecondToLastTarget) {
     assertShuffled(randomizer, {"c", "d", "e", "a"});
 }
 
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsFullPathToFile) {
-    nextReturnsFullPathToFile(list, reader);
-}
-
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
-    nextReturnsFullPathToFileAtFront) {
-    nextReturnsFullPathToFile(list, reader);
-}
-
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFileAtFront) {
-    nextReturnsFullPathToFile(list, reader);
-}
-
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    next(list);
-    assertCurrentEquals(list, "C:/a");
-}
-
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    next(list);
-    assertCurrentEquals(list, "C:/a");
-}
-
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    next(list);
-    assertCurrentEquals(list, "C:/a");
-}
-
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
-    setFileNames(reader, {});
-    loadFromDirectory(list);
-    assertNextEquals(list, "");
-}
-
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     emptyWhenStimulusFilesExhausted) {
     setFileNames(reader, {"a", "b", "c"});
@@ -230,12 +235,6 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     assertNotEmpty(list);
     next(list);
     assertEmpty(list);
-}
-
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
-    setFileNames(reader, {});
-    loadFromDirectory(list);
-    assertNextEquals(list, "");
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
