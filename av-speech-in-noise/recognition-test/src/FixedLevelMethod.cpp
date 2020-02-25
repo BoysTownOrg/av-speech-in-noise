@@ -17,8 +17,6 @@ void FixedLevelMethodImpl::initialize(
     trials_ = p.trials;
     snr_dB_ = p.snr_dB;
     loadFromDirectory(targetList, p);
-    concluder->initialize(p);
-    complete_ = concluder->complete(targetList);
 }
 
 void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,

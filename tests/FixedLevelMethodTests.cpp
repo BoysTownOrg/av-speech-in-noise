@@ -174,10 +174,6 @@ class FixedLevelMethodTests : public ::testing::Test {
 
 #define FIXED_LEVEL_METHOD_TEST(a) TEST_F(FixedLevelMethodTests, a)
 
-FIXED_LEVEL_METHOD_TEST(passesTestParametersToConcluder) {
-    assertEqual(&std::as_const(test), testConcluder.test());
-}
-
 FIXED_LEVEL_METHOD_TEST(nextReturnsNextTarget) {
     setNext(targetList, "a");
     assertNextTargetEquals(method, "a");
@@ -289,14 +285,6 @@ FIXED_LEVEL_METHOD_TEST(submitFreeResponseReinsertsCurrentTargetIfFlagged) {
     submittingFreeResponse.setFlagged();
     run(submittingFreeResponse, method);
     assertCurrentTargetReinserted();
-}
-
-FIXED_LEVEL_METHOD_TEST(initializesConcluderBeforeQueryingCompletion) {
-    assertLogContains(testConcluder, "initialize complete");
-}
-
-FIXED_LEVEL_METHOD_TEST(initializePassesTargetListToConcluder) {
-    assertTestConcluderPassedTargetList();
 }
 
 class PreInitializedFixedLevelMethodTests : public ::testing::Test {
@@ -417,16 +405,17 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
         initializingMethodWithFiniteTargetList, method, targetList);
 }
 
-class TargetListTestConcluderComboStub : public TargetList,
+class TargetListTestConcluderComboStub : public FiniteTargetList,
                                          public TestConcluder {
   public:
     void loadFromDirectory(std::string) override {}
     auto next() -> std::string override { return {}; }
     auto current() -> std::string override { return {}; }
-    auto empty() -> bool override { return {}; }
+    auto empty() -> bool override { 
+        log_.insert("empty ");
+        return {}; }
     void reinsertCurrent() override { log_.insert("reinsertCurrent "); }
     auto complete(TargetList *) -> bool override {
-        log_.insert("complete ");
         return {};
     }
     void submitResponse() override {}
@@ -447,7 +436,7 @@ TEST(FixedLevelMethodTestsTBD,
     open_set::FreeResponse response;
     response.flagged = true;
     method.submit(response);
-    assertEqual("complete reinsertCurrent complete ", combo.log());
+    assertTrue(combo.log().endsWith("reinsertCurrent empty "));
 }
 
 class FixedTrialTestConcluderTests : public ::testing::Test {
