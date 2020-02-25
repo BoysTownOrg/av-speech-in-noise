@@ -238,9 +238,15 @@ FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesResponse) {
     assertEqual(&submittingCoordinateResponse.response(), evaluator.response());
 }
 
-FIXED_LEVEL_METHOD_TEST(submitCoordinateResponseSubmitsResponseToConcluder) {
+FIXED_LEVEL_METHOD_TEST(completeWhenTrialsExhausted) {
+    test.trials = 3;
+    run(initializingMethod, method);
     run(submittingCoordinateResponse, method);
-    assertTrue(testConcluder.responseSubmitted());
+    assertFalse(method.complete());
+    run(submittingCoordinateResponse, method);
+    assertFalse(method.complete());
+    run(submittingCoordinateResponse, method);
+    assertTrue(method.complete());
 }
 
 FIXED_LEVEL_METHOD_TEST(submitFreeResponseSubmitsResponseToConcluder) {
@@ -268,12 +274,6 @@ FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesTargetListToConcluder) {
 
 FIXED_LEVEL_METHOD_TEST(submitFreeResponsePassesTargetListToConcluder) {
     assertTargetListPassedToConcluderAfter(submittingFreeResponse);
-}
-
-FIXED_LEVEL_METHOD_TEST(
-    submitCoordinateResponseSubmitsResponsePriorToQueryingCompletion) {
-    assertTestConcluderLogContainsAfter(
-        "submitResponse complete", submittingCoordinateResponse);
 }
 
 FIXED_LEVEL_METHOD_TEST(submitFreeResponseDoesNotReinsertCurrentTarget) {
@@ -466,17 +466,6 @@ TEST_F(FixedTrialTestConcluderTests, completeWhenTrialsExhausted) {
     assertIncompleteAfterResponse();
     assertIncompleteAfterResponse();
     assertCompleteAfterResponse();
-}
-
-FIXED_LEVEL_METHOD_TEST(completeWhenTrialsExhausted) {
-    test.trials = 3;
-    run(initializingMethod, method);
-    method.submit(coordinate_response_measure::Response{});
-    assertFalse(method.complete());
-    method.submit(open_set::FreeResponse{});
-    assertFalse(method.complete());
-    method.submit(coordinate_response_measure::Response{});
-    assertTrue(method.complete());
 }
 
 class EmptyTargetListTestConcluderTests : public ::testing::Test {
