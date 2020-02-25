@@ -208,6 +208,23 @@ FINITE_RANDOMIZED_TARGET_LIST_TEST(reinsertCurrent) {
     assertNextEquals("C:/b");
 }
 
+void loadFromDirectory(CyclicRandomizedTargetList &list, std::string s) {
+    list.loadFromDirectory(std::move(s));
+}
+
+class CyclicRandomizedTargetListTests : public ::testing::Test {
+  protected:
+    DirectoryReaderStub reader;
+    RandomizerStub randomizer;
+    CyclicRandomizedTargetList list{&reader, &randomizer};
+};
+
+TEST_F(CyclicRandomizedTargetListTests,
+    loadFromDirectoryPassesDirectoryToDirectoryReader) {
+    loadFromDirectory(list, "a");
+    assertEqual("a", reader.directory());
+}
+
 auto filesIn(DirectoryReader &reader, std::string directory = {})
     -> std::vector<std::string> {
     return reader.filesIn(std::move(directory));

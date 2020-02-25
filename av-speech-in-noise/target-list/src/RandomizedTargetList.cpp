@@ -80,4 +80,12 @@ auto RandomizedFiniteTargetList::current() -> std::string {
 void RandomizedFiniteTargetList::reinsertCurrent() {
     files.push_back(currentFile_);
 }
+
+CyclicRandomizedTargetList::CyclicRandomizedTargetList(
+    DirectoryReader *reader, Randomizer *randomizer)
+    : reader{reader}, randomizer{randomizer} {}
+
+void CyclicRandomizedTargetList::loadFromDirectory(std::string directory) {
+    reader->filesIn(directory);
+}
 }

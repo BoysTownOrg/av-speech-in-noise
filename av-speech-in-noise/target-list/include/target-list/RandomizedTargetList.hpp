@@ -73,6 +73,19 @@ class RandomizedFiniteTargetList : public av_speech_in_noise::TargetList {
     auto empty_() -> bool;
     auto fullPath(std::string file) -> std::string;
 };
+
+class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
+  public:
+    CyclicRandomizedTargetList(DirectoryReader *, Randomizer *);
+    auto empty() -> bool override { return {}; }
+    void loadFromDirectory(std::string directory) override;
+    auto next() -> std::string override { return {}; }
+    auto current() -> std::string override { return {}; }
+    void reinsertCurrent() override {}
+  private:
+    DirectoryReader *reader;
+    Randomizer *randomizer;
+};
 }
 
 #endif
