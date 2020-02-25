@@ -1,24 +1,20 @@
 #include "DirectoryReaderStub.h"
 #include "assert-utility.h"
-#include <algorithm>
-#include <gtest/gtest.h>
 #include <target-list/FileFilterDecorator.hpp>
 #include <target-list/RandomizedTargetList.hpp>
+#include <gtest/gtest.h>
+#include <algorithm>
 
 namespace target_list {
 namespace {
 class RandomizerStub : public Randomizer {
-    std::vector<std::string> toShuffle_;
-    std::vector<int> shuffledInts_;
-    int rotateToTheLeft_{};
-
   public:
-    [[nodiscard]] auto toShuffle() const { return toShuffle_; }
+    [[nodiscard]] auto shuffledStrings() const { return shuffledStrings_; }
 
     [[nodiscard]] auto shuffledInts() const { return shuffledInts_; }
 
     void shuffle(gsl::span<std::string> s) override {
-        toShuffle_ = {s.begin(), s.end()};
+        shuffledStrings_ = {s.begin(), s.end()};
     }
 
     void shuffle(gsl::span<int> s) override {
@@ -27,6 +23,11 @@ class RandomizerStub : public Randomizer {
     }
 
     void rotateToTheLeft(int N) { rotateToTheLeft_ = N; }
+
+  private:
+    std::vector<std::string> shuffledStrings_;
+    std::vector<int> shuffledInts_;
+    int rotateToTheLeft_{};
 };
 
 void loadFromDirectory(
@@ -54,7 +55,23 @@ void assertCurrentEquals(
 
 void assertShuffled(
     RandomizerStub &randomizer, const std::vector<std::string> &s) {
-    assertEqual(s, randomizer.toShuffle());
+    assertEqual(s, randomizer.shuffledStrings());
+}
+
+auto empty(RandomizedTargetListWithoutReplacement &list) {
+    return list.empty();
+}
+
+void assertNotEmpty(RandomizedTargetListWithoutReplacement &list) {
+    assertFalse(empty(list));
+}
+
+void assertEmpty(RandomizedTargetListWithoutReplacement &list) {
+    assertTrue(empty(list));
+}
+
+void reinsertCurrent(RandomizedTargetListWithoutReplacement &list) {
+    list.reinsertCurrent();
 }
 
 class RandomizedTargetListWithReplacementTests : public ::testing::Test {
@@ -62,12 +79,30 @@ class RandomizedTargetListWithReplacementTests : public ::testing::Test {
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
     RandomizedTargetListWithReplacement list{&reader, &randomizer};
+};
 
-    auto shuffled() { return randomizer.toShuffle(); }
+class RandomizedTargetListWithoutReplacementTests : public ::testing::Test {
+  protected:
+    DirectoryReaderStub reader;
+    RandomizerStub randomizer;
+    RandomizedTargetListWithoutReplacement list{&reader, &randomizer};
+};
+
+class CyclicRandomizedTargetListTests : public ::testing::Test {
+  protected:
+    DirectoryReaderStub reader;
+    RandomizerStub randomizer;
+    CyclicRandomizedTargetList list{&reader, &randomizer};
 };
 
 #define RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(a)                        \
     TEST_F(RandomizedTargetListWithReplacementTests, a)
+
+#define RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(a)                     \
+    TEST_F(RandomizedTargetListWithoutReplacementTests, a)
+
+#define CYCLIC_RANDOMIZED_TARGET_LIST_TEST(a)                                  \
+    TEST_F(CyclicRandomizedTargetListTests, a)
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
@@ -75,8 +110,33 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     assertEqual("a", reader.directory());
 }
 
+RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+    loadFromDirectoryPassesDirectoryToDirectoryReader) {
+    loadFromDirectory(list, "a");
+    assertEqual("a", reader.directory());
+}
+
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(
+    loadFromDirectoryPassesDirectoryToDirectoryReader) {
+    loadFromDirectory(list, "a");
+    assertEqual("a", reader.directory());
+}
+
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryShufflesFileNames) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list);
+    assertShuffled(randomizer, {"a", "b", "c"});
+}
+
+RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+    loadFromDirectoryShufflesFileNames) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list);
+    assertShuffled(randomizer, {"a", "b", "c"});
+}
+
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list);
     assertShuffled(randomizer, {"a", "b", "c"});
@@ -106,7 +166,38 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsFullPathToFile) {
     assertNextEquals(list, "C:/c");
 }
 
+RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+    nextReturnsFullPathToFileAtFront) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list, "C:");
+    assertNextEquals(list, "C:/a");
+    assertNextEquals(list, "C:/b");
+    assertNextEquals(list, "C:/c");
+}
+
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFileAtFront) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list, "C:");
+    assertNextEquals(list, "C:/a");
+    assertNextEquals(list, "C:/b");
+    assertNextEquals(list, "C:/c");
+}
+
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list, "C:");
+    next(list);
+    assertCurrentEquals(list, "C:/a");
+}
+
+RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list, "C:");
+    next(list);
+    assertCurrentEquals(list, "C:/a");
+}
+
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
     next(list);
@@ -119,64 +210,17 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
     assertNextEquals(list, "");
 }
 
-class RandomizedTargetListWithoutReplacementTests : public ::testing::Test {
-  protected:
-    DirectoryReaderStub reader;
-    RandomizerStub randomizer;
-    RandomizedTargetListWithoutReplacement list{&reader, &randomizer};
-
-    auto empty() { return list.empty(); }
-
-    void assertNotEmpty() { EXPECT_FALSE(empty()); }
-
-    void assertEmpty() { EXPECT_TRUE(empty()); }
-
-    void reinsertCurrent() { list.reinsertCurrent(); }
-};
-
-#define RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(a)                     \
-    TEST_F(RandomizedTargetListWithoutReplacementTests, a)
-
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
-    loadFromDirectoryPassesDirectoryToDirectoryReader) {
-    loadFromDirectory(list, "a");
-    assertEqual("a", reader.directory());
-}
-
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     emptyWhenStimulusFilesExhausted) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list);
-    assertNotEmpty();
+    assertNotEmpty(list);
     next(list);
-    assertNotEmpty();
+    assertNotEmpty(list);
     next(list);
-    assertNotEmpty();
+    assertNotEmpty(list);
     next(list);
-    assertEmpty();
-}
-
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
-    nextReturnsFullPathToFileAtFront) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    assertNextEquals(list, "C:/a");
-    assertNextEquals(list, "C:/b");
-    assertNextEquals(list, "C:/c");
-}
-
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
-    loadFromDirectoryShufflesFileNames) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list);
-    assertShuffled(randomizer, {"a", "b", "c"});
-}
-
-RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    next(list);
-    assertCurrentEquals(list, "C:/a");
+    assertEmpty(list);
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
@@ -190,33 +234,9 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
     loadFromDirectory(list, "C:");
     assertNextEquals(list, "C:/a");
     assertNextEquals(list, "C:/b");
-    reinsertCurrent();
+    reinsertCurrent(list);
     assertNextEquals(list, "C:/c");
     assertNextEquals(list, "C:/b");
-}
-
-class CyclicRandomizedTargetListTests : public ::testing::Test {
-  protected:
-    DirectoryReaderStub reader;
-    RandomizerStub randomizer;
-    CyclicRandomizedTargetList list{&reader, &randomizer};
-};
-
-#define CYCLIC_RANDOMIZED_TARGET_LIST_TEST(a)                                  \
-    TEST_F(CyclicRandomizedTargetListTests, a)
-
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(
-    loadFromDirectoryPassesDirectoryToDirectoryReader) {
-    loadFromDirectory(list, "a");
-    assertEqual("a", reader.directory());
-}
-
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsFullPathToFileAtFront) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    assertNextEquals(list, "C:/a");
-    assertNextEquals(list, "C:/b");
-    assertNextEquals(list, "C:/c");
 }
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextCyclesBackToBeginningOfFiles) {
@@ -228,19 +248,6 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextCyclesBackToBeginningOfFiles) {
     assertNextEquals(list, "C:/a");
     assertNextEquals(list, "C:/b");
     assertNextEquals(list, "C:/c");
-}
-
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(loadFromDirectoryShufflesFileNames) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list);
-    assertShuffled(randomizer, {"a", "b", "c"});
-}
-
-CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
-    setFileNames(reader, {"a", "b", "c"});
-    loadFromDirectory(list, "C:");
-    next(list);
-    assertCurrentEquals(list, "C:/a");
 }
 
 auto filesIn(DirectoryReader &reader, std::string directory = {})
