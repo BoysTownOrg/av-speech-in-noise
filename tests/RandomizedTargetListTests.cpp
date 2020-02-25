@@ -45,7 +45,7 @@ auto next(av_speech_in_noise::TargetList &list) -> std::string {
 
 void assertNextEquals(
     av_speech_in_noise::TargetList &list, const std::string &s) {
-    assertEqual(s, list.next());
+    assertEqual(s, next(list));
 }
 
 class RandomizedTargetListWithReplacementTests : public ::testing::Test {
@@ -53,8 +53,6 @@ class RandomizedTargetListWithReplacementTests : public ::testing::Test {
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
     RandomizedTargetListWithReplacement list{&reader, &randomizer};
-
-    auto next() { return list.next(); }
 
     auto shuffled() { return randomizer.toShuffle(); }
 
@@ -79,9 +77,9 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(emptyOnlyWhenNoFilesLoaded) {
     setFileNames(reader, {"a", "b"});
     loadFromDirectory(list);
     assertNotEmpty();
-    next();
+    next(list);
     assertNotEmpty();
-    next();
+    next(list);
     assertNotEmpty();
 }
 
@@ -102,15 +100,15 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     nextShufflesNextSetNotIncludingCurrent) {
     setFileNames(reader, {"a", "b", "c", "d"});
     loadFromDirectory(list);
-    next();
+    next(list);
     assertHasBeenShuffled({"b", "c", "d"});
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReplacesSecondToLastTarget) {
     setFileNames(reader, {"a", "b", "c", "d", "e"});
     loadFromDirectory(list);
-    next();
-    next();
+    next(list);
+    next(list);
     assertHasBeenShuffled({"c", "d", "e", "a"});
 }
 
@@ -125,7 +123,7 @@ RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsFullPathToFile) {
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
-    next();
+    next(list);
     assertEqual("C:/a", list.current());
 }
 
@@ -140,8 +138,6 @@ class RandomizedTargetListWithoutReplacementTests : public ::testing::Test {
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
     RandomizedTargetListWithoutReplacement list{&reader, &randomizer};
-
-    auto next() { return list.next(); }
 
     auto empty() { return list.empty(); }
 
@@ -166,11 +162,11 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list);
     assertNotEmpty();
-    next();
+    next(list);
     assertNotEmpty();
-    next();
+    next(list);
     assertNotEmpty();
-    next();
+    next(list);
     assertEmpty();
 }
 
@@ -193,7 +189,7 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsFullPathToFile) {
     setFileNames(reader, {"a", "b", "c"});
     loadFromDirectory(list, "C:");
-    next();
+    next(list);
     assertEqual("C:/a", list.current());
 }
 
