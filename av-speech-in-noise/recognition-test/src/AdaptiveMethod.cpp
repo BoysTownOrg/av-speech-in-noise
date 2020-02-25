@@ -49,7 +49,7 @@ void AdaptiveMethodImpl::selectNextList() {
     if (targetListsWithTracks.empty())
         return;
     auto remainingLists{gsl::narrow<int>(targetListsWithTracks.size())};
-    auto index{randomizer->randomIntBetween(0, remainingLists - 1)};
+    auto index{randomizer->betweenInclusive(0, remainingLists - 1)};
     auto targetListsWithTrack{targetListsWithTracks.at(index)};
     currentSnrTrack = track(targetListsWithTrack);
     currentTargetList = targetListsWithTrack.list;
@@ -81,7 +81,7 @@ static void assignReversals(Adaptive &trial, Track *track) {
     trial.reversals = track->reversals();
 }
 
-void AdaptiveMethodImpl::submitResponse(
+void AdaptiveMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
     auto lastSnr_dB_{snr_dB()};
     auto current_{currentTarget()};
@@ -188,7 +188,7 @@ void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submitResponse(const open_set::FreeResponse &) {
+void AdaptiveMethodImpl::submit(const open_set::FreeResponse &) {
     selectNextList();
 }
 }

@@ -1,97 +1,120 @@
 #include "Model.hpp"
-#include "av-speech-in-noise/Model.hpp"
+#include "TestMethod.hpp"
+#include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
-ModelImpl::ModelImpl(AdaptiveMethod *adaptiveMethod,
-    FixedLevelMethod *fixedLevelMethod, TargetList *infiniteTargetList,
-    TestConcluder *fixedTrialTestConcluder, TargetList *silentIntervals,
-    TestConcluder *completesWhenTargetsEmpty, TargetList *allStimuli,
-    RecognitionTestModel *model)
+ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
+    FixedLevelMethod &fixedLevelMethod, TargetList &targetsWithReplacement,
+    TestConcluder &fixedTrialTestConcluder, TargetList &silentIntervalTargets,
+    TestConcluder &completesWhenTargetsEmpty, TargetList &everyTargetOnce,
+    RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
-      infiniteTargetList{infiniteTargetList},
+      targetsWithReplacement{targetsWithReplacement},
       fixedTrialTestConcluder{fixedTrialTestConcluder},
-      silentIntervals{silentIntervals},
+      silentIntervalTargets{silentIntervalTargets},
       completesWhenTargetsEmpty{completesWhenTargetsEmpty},
-      allStimuli{allStimuli}, model{model} {}
+      everyTargetOnce{everyTargetOnce}, model{model} {}
 
-static void initialize(RecognitionTestModel *model, class TestMethod *method,
-    const struct Test &test) {
-        model->initialize(method, test);
+static void initialize(
+    RecognitionTestModel &model, TestMethod &method, const struct Test &test) {
+    model.initialize(&method, test);
 }
 
-void ModelImpl::initializeTest(const FixedLevelTest &p) {
-    fixedLevelMethod->initialize(
-        p, infiniteTargetList, fixedTrialTestConcluder);
-    initialize(model, fixedLevelMethod, p);
+static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
+    TargetList &targets, TestConcluder &concluder) {
+    method.initialize(test, &targets, &concluder);
 }
 
-void ModelImpl::initializeSilentIntervalsTest(const FixedLevelTest &p) {
-    fixedLevelMethod->initialize(
-        p, silentIntervals, completesWhenTargetsEmpty);
-    initialize(model, fixedLevelMethod, p);
+static void initialize(AdaptiveMethod &method, const AdaptiveTest &test) {
+    method.initialize(test);
 }
 
-void ModelImpl::initializeAllStimuliTest(const FixedLevelTest &p) {
-    fixedLevelMethod->initialize(
-        p, allStimuli, completesWhenTargetsEmpty);
-    initialize(model, fixedLevelMethod, p);
+static void initializeWithSingleSpeaker(RecognitionTestModel &model,
+    AdaptiveMethod &method, const AdaptiveTest &test) {
+    model.initializeWithSingleSpeaker(&method, test);
 }
 
-void ModelImpl::initializeTest(const AdaptiveTest &p) {
-    initializeTest_(p);
+static void initializeWithDelayedMasker(
+    RecognitionTestModel &model, TestMethod &method, const Test &test) {
+    model.initializeWithDelayedMasker(&method, test);
 }
 
-void ModelImpl::initializeTest_(const AdaptiveTest &p) {
-    adaptiveMethod->initialize(p);
-    initialize(model, adaptiveMethod, p);
+void ModelImpl::initializeWithTargetReplacement(const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(fixedLevelMethod, test,
+        targetsWithReplacement, fixedTrialTestConcluder);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
-void ModelImpl::initializeTestWithSingleSpeaker(const AdaptiveTest &p) {
-    adaptiveMethod->initialize(p);
-    model->initializeWithSingleSpeaker(adaptiveMethod, p);
+void ModelImpl::initialize(const AdaptiveTest &test) {
+    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
 
-void ModelImpl::initializeTestWithDelayedMasker(const AdaptiveTest &p) {
-    adaptiveMethod->initialize(p);
-    model->initializeWithDelayedMasker(adaptiveMethod, p);
+void ModelImpl::initializeWithSilentIntervalTargets(
+    const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(fixedLevelMethod, test,
+        silentIntervalTargets, completesWhenTargetsEmpty);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, test);
+}
+
+void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(
+        fixedLevelMethod, test, everyTargetOnce, completesWhenTargetsEmpty);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, test);
+}
+
+void ModelImpl::initializeWithAllTargetsAndEyeTracking(
+    const FixedLevelTest &test) {
+    av_speech_in_noise::initialize(
+        fixedLevelMethod, test, everyTargetOnce, completesWhenTargetsEmpty);
+    av_speech_in_noise::initialize(model, fixedLevelMethod, test);
+}
+
+void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
+    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initializeWithSingleSpeaker(
+        model, adaptiveMethod, test);
+}
+
+void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
+    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initializeWithDelayedMasker(
+        model, adaptiveMethod, test);
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {
-    model->playTrial(settings);
+    model.playTrial(settings);
 }
 
-void ModelImpl::submitResponse(
-    const coordinate_response_measure::Response &response) {
-    model->submitResponse(response);
+void ModelImpl::submit(const coordinate_response_measure::Response &response) {
+    model.submit(response);
 }
 
-void ModelImpl::submitCorrectResponse() { model->submitCorrectResponse(); }
+void ModelImpl::submitCorrectResponse() { model.submitCorrectResponse(); }
 
-void ModelImpl::submitIncorrectResponse() { model->submitIncorrectResponse(); }
+void ModelImpl::submitIncorrectResponse() { model.submitIncorrectResponse(); }
 
-void ModelImpl::submitResponse(const open_set::FreeResponse &response) {
-    model->submitResponse(response);
+void ModelImpl::submit(const open_set::FreeResponse &response) {
+    model.submit(response);
 }
 
-void ModelImpl::submit(const open_set::CorrectKeywords &k) {
-    model->submit(k);
-}
+void ModelImpl::submit(const open_set::CorrectKeywords &k) { model.submit(k); }
 
 void ModelImpl::playCalibration(const Calibration &p) {
-    model->playCalibration(p);
+    model.playCalibration(p);
 }
 
-auto ModelImpl::testComplete() -> bool { return model->testComplete(); }
+auto ModelImpl::testComplete() -> bool { return model.testComplete(); }
 
 auto ModelImpl::audioDevices() -> std::vector<std::string> {
-    return model->audioDevices();
+    return model.audioDevices();
 }
 
-void ModelImpl::subscribe(Model::EventListener *e) { model->subscribe(e); }
+void ModelImpl::subscribe(Model::EventListener *e) { model.subscribe(e); }
 
-auto ModelImpl::trialNumber() -> int { return model->trialNumber(); }
+auto ModelImpl::trialNumber() -> int { return model.trialNumber(); }
 
 auto ModelImpl::targetFileName() -> std::string {
-    return model->targetFileName();
+    return model.targetFileName();
 }
 }

@@ -1,7 +1,7 @@
 #ifndef TESTS_RANDOMIZERSTUB_H_
 #define TESTS_RANDOMIZERSTUB_H_
 
-#include <recognition-test/Model.hpp>
+#include <recognition-test/Randomizer.hpp>
 
 namespace av_speech_in_noise::tests {
 class RandomizerStub : public Randomizer {
@@ -25,13 +25,13 @@ class RandomizerStub : public Randomizer {
 
     [[nodiscard]] auto upperFloatBound() const { return upperBound_; }
 
-    auto randomFloatBetween(double a, double b) -> double override {
+    auto betweenInclusive(double a, double b) -> double override {
         lowerBound_ = a;
         upperBound_ = b;
         return randomFloat_;
     }
 
-    auto randomIntBetween(int a, int b) -> int override {
+    auto betweenInclusive(int a, int b) -> int override {
         lowerIntBound_ = a;
         upperIntBound_ = b;
         return randomInt_;

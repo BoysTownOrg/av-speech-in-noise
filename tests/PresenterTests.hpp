@@ -90,32 +90,32 @@ class ModelStub : public Model {
         return trialParameters_;
     }
 
-    void initializeTest(const FixedLevelTest &p) override {
+    void initializeWithTargetReplacement(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         defaultFixedLevelTestInitialized_ = true;
     }
 
-    void initializeTest(const AdaptiveTest &p) override {
+    void initialize(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         defaultAdaptiveTestInitialized_ = true;
     }
 
-    void initializeTestWithSingleSpeaker(const AdaptiveTest &p) override {
+    void initializeWithSingleSpeaker(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithSingleSpeaker_ = true;
     }
 
-    void initializeTestWithDelayedMasker(const AdaptiveTest &p) override {
+    void initializeWithDelayedMasker(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithDelayedMasker_ = true;
     }
 
-    void initializeSilentIntervalsTest(const FixedLevelTest &p) override {
+    void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
     }
 
-    void initializeAllStimuliTest(const FixedLevelTest &p) override {
+    void initializeWithAllTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithAllTargetsInitialized_ = true;
     }
@@ -139,7 +139,7 @@ class ModelStub : public Model {
         return audioDevices_;
     }
 
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &p) override {
         responseParameters_ = p;
     }
@@ -154,7 +154,7 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void submitResponse(const open_set::FreeResponse &s) override {
+    void submit(const open_set::FreeResponse &s) override {
         freeResponse_ = s;
     }
 
@@ -1752,27 +1752,27 @@ class RequestFailingModel : public Model {
 
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
 
-    void initializeTest(const AdaptiveTest &) override {
+    void initialize(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeTest(const FixedLevelTest &) override {
+    void initializeWithTargetReplacement(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeSilentIntervalsTest(const FixedLevelTest &) override {
+    void initializeWithSilentIntervalTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeAllStimuliTest(const FixedLevelTest &) override {
+    void initializeWithAllTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeTestWithSingleSpeaker(const AdaptiveTest &) override {
+    void initializeWithSingleSpeaker(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeTestWithDelayedMasker(const AdaptiveTest &) override {
+    void initializeWithDelayedMasker(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
@@ -1780,12 +1780,12 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void submitResponse(const open_set::FreeResponse &) override {
+    void submit(const open_set::FreeResponse &) override {
         throw RequestFailure{errorMessage};
     }
 

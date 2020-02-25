@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_RECOGNITIONTESTMODEL_HPP_
 
 #include "Model.hpp"
+#include "Randomizer.hpp"
 #include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 #include <string>
@@ -76,7 +77,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
     void playTrial(const AudioSettings &) override;
-    void submitResponse(const coordinate_response_measure::Response &) override;
+    void submit(const coordinate_response_measure::Response &) override;
     auto testComplete() -> bool override;
     auto audioDevices() -> std::vector<std::string> override;
     auto trialNumber() -> int override;
@@ -85,7 +86,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
-    void submitResponse(const open_set::FreeResponse &) override;
+    void submit(const open_set::FreeResponse &) override;
     void submit(const open_set::CorrectKeywords &) override;
     void throwIfTrialInProgress() override;
     void fadeInComplete() override;

@@ -42,7 +42,7 @@ class Initializing : public UseCase {
 
 void submit(AdaptiveMethodImpl &method,
     const coordinate_response_measure::Response &response) {
-    method.submitResponse(response);
+    method.submit(response);
 }
 
 class SubmittingCoordinateResponse : public UseCase {
@@ -157,7 +157,7 @@ class WritingCoordinateResponse : public WritingResponseUseCase {
     explicit WritingCoordinateResponse(OutputFile &file_) : file_{file_} {}
 
     void run(AdaptiveMethodImpl &method) override {
-        method.submitResponse(response);
+        method.submit(response);
         method.writeLastCoordinateResponse(&file_);
     }
 

@@ -85,17 +85,17 @@ static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
 static void initializeTest(Model &model, Presenter::TestSetup &testSetup) {
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
-        model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
+        model.initializeWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
-        model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
+        model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
     else if (defaultAdaptive(testSetup) || adaptiveCorrectKeywords(testSetup))
-        model.initializeTest(adaptiveTest(testSetup));
+        model.initialize(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals(testSetup))
-        model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
+        model.initializeWithSilentIntervalTargets(fixedLevelTest(testSetup));
     else if (fixedLevelAllStimuli(testSetup))
-        model.initializeAllStimuliTest(fixedLevelTest(testSetup));
+        model.initializeWithAllTargets(fixedLevelTest(testSetup));
     else
-        model.initializeTest(fixedLevelTest(testSetup));
+        model.initializeWithTargetReplacement(fixedLevelTest(testSetup));
 }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
@@ -177,7 +177,7 @@ void Presenter::trialComplete() {
 }
 
 void Presenter::submitSubjectResponse() {
-    model.submitResponse(coordinateResponseMeasurePresenter.subjectResponse());
+    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
     if (testComplete(model))
         switchToTestSetupView();
     else {
@@ -211,7 +211,7 @@ void Presenter::submitCorrectKeywords_() {
 }
 
 void Presenter::submitFreeResponse_() {
-    model.submitResponse(experimenterPresenter.freeResponse());
+    model.submit(experimenterPresenter.freeResponse());
 }
 
 void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }

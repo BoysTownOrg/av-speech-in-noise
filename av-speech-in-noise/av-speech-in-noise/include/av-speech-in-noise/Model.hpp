@@ -31,8 +31,7 @@ struct Trial : Target {
     bool correct{};
 };
 
-struct AdaptiveTrial : Adaptive, Trial {
-};
+struct AdaptiveTrial : Adaptive, Trial {};
 
 struct FixedLevelTrial : Trial {};
 }
@@ -47,18 +46,15 @@ struct CorrectKeywords {
     int count{};
 };
 
-struct Trial : Target {
-};
+struct Trial : Target {};
 
-struct FreeResponseTrial : FreeResponse, Trial {
-};
+struct FreeResponseTrial : FreeResponse, Trial {};
 
 struct AdaptiveTrial : Adaptive, Trial {
     bool correct{};
 };
 
-struct CorrectKeywordsTrial : CorrectKeywords, AdaptiveTrial {
-};
+struct CorrectKeywordsTrial : CorrectKeywords, AdaptiveTrial {};
 }
 
 enum class Condition { auditoryOnly, audioVisual };
@@ -143,20 +139,20 @@ class Model {
 
     virtual ~Model() = default;
     virtual void subscribe(EventListener *) = 0;
-    virtual void initializeTest(const AdaptiveTest &) = 0;
-    virtual void initializeTest(const FixedLevelTest &) = 0;
-    virtual void initializeTestWithSingleSpeaker(const AdaptiveTest &) = 0;
-    virtual void initializeTestWithDelayedMasker(const AdaptiveTest &) = 0;
-    virtual void initializeSilentIntervalsTest(const FixedLevelTest &) = 0;
-    virtual void initializeAllStimuliTest(const FixedLevelTest &) = 0;
+    virtual void initialize(const AdaptiveTest &) = 0;
+    virtual void initializeWithTargetReplacement(const FixedLevelTest &) = 0;
+    virtual void initializeWithSingleSpeaker(const AdaptiveTest &) = 0;
+    virtual void initializeWithDelayedMasker(const AdaptiveTest &) = 0;
+    virtual void initializeWithSilentIntervalTargets(
+        const FixedLevelTest &) = 0;
+    virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
-    virtual void submitResponse(
-        const coordinate_response_measure::Response &) = 0;
-    virtual void submitResponse(const open_set::FreeResponse &) = 0;
+    virtual void submit(const coordinate_response_measure::Response &) = 0;
+    virtual void submit(const open_set::FreeResponse &) = 0;
+    virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual auto testComplete() -> bool = 0;
     virtual auto audioDevices() -> std::vector<std::string> = 0;
     virtual auto trialNumber() -> int = 0;

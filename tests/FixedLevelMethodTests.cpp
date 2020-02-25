@@ -60,7 +60,7 @@ class SubmittingCoordinateResponse : public UseCase {
     coordinate_response_measure::Response response_{};
 
   public:
-    void run(FixedLevelMethodImpl &m) override { m.submitResponse(response_); }
+    void run(FixedLevelMethodImpl &m) override { m.submit(response_); }
 
     void setColor(coordinate_response_measure::Color c) { response_.color = c; }
 
@@ -73,7 +73,7 @@ class SubmittingFreeResponse : public UseCase {
     open_set::FreeResponse response{};
 
   public:
-    void run(FixedLevelMethodImpl &m) override { m.submitResponse(response); }
+    void run(FixedLevelMethodImpl &m) override { m.submit(response); }
     void setFlagged() { response.flagged = true; }
 };
 
@@ -429,7 +429,7 @@ TEST(FixedLevelMethodTestsTBD,
     method.initialize(test, &combo, &combo);
     open_set::FreeResponse response;
     response.flagged = true;
-    method.submitResponse(response);
+    method.submit(response);
     assertEqual("complete reinsertCurrent complete ", combo.log());
 }
 

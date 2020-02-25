@@ -38,7 +38,7 @@ auto FixedLevelMethodImpl::nextTarget() -> std::string {
 
 auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
 
-void FixedLevelMethodImpl::submitResponse(
+void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
     auto current_ = currentTarget();
     lastTrial.subjectColor = response.color;
@@ -67,7 +67,7 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submitResponse(
+void FixedLevelMethodImpl::submit(
     const open_set::FreeResponse &response) {
     concluder->submitResponse();
     if (response.flagged)
