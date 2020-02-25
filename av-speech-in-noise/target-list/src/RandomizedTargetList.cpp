@@ -112,4 +112,8 @@ auto CyclicRandomizedTargetListWithoutReplacement::next() -> std::string {
     std::rotate(files.begin(), files.begin() + 1, files.end());
     return directory_ + "/" + files.back();
 }
+
+auto CyclicRandomizedTargetListWithoutReplacement::current() -> std::string {
+    return directory_ + "/" + files.back();
+}
 }

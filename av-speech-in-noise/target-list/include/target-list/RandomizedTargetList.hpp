@@ -85,7 +85,7 @@ class CyclicRandomizedTargetListWithoutReplacement
     auto empty() -> bool override { return {}; }
     void loadFromDirectory(std::string directory) override;
     auto next() -> std::string override;
-    auto current() -> std::string override { return {}; }
+    auto current() -> std::string override;
     void reinsertCurrent() override {}
 
   private:
