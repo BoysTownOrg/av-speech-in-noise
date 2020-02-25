@@ -33,8 +33,6 @@ auto RandomizedTargetListWithReplacement::next() -> std::string {
     return fullPath(currentFile_ = std::move(nextFile_));
 }
 
-auto RandomizedTargetListWithReplacement::empty() -> bool { return empty_(); }
-
 auto RandomizedTargetListWithReplacement::empty_() -> bool {
     return files.empty();
 }

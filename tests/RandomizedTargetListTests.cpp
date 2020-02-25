@@ -17,12 +17,12 @@ class RandomizerStub : public Randomizer {
 
     [[nodiscard]] auto shuffledInts() const { return shuffledInts_; }
 
-    void shuffle(string_vector_iterator begin, string_vector_iterator end) override {
+    void shuffle(
+        string_vector_iterator begin, string_vector_iterator end) override {
         toShuffle_ = {begin, end};
     }
 
-    void shuffle(
-        int_vector_iterator begin, int_vector_iterator end) override {
+    void shuffle(int_vector_iterator begin, int_vector_iterator end) override {
         shuffledInts_ = {begin, end};
         std::rotate(begin, begin + rotateToTheLeft_, end);
     }
@@ -66,28 +66,11 @@ class RandomizedTargetListWithReplacementTests : public ::testing::Test {
 
     auto shuffled() { return randomizer.toShuffle(); }
 
-    void assertEmpty() { assertTrue(empty()); }
-
-    auto empty() -> bool { return list.empty(); }
-
-    void assertNotEmpty() { assertFalse(empty()); }
-
     void reinsertCurrent() { list.reinsertCurrent(); }
 };
 
 #define RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(a)                        \
     TEST_F(RandomizedTargetListWithReplacementTests, a)
-
-RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(emptyOnlyWhenNoFilesLoaded) {
-    assertEmpty();
-    setFileNames(reader, {"a", "b"});
-    loadFromDirectory(list);
-    assertNotEmpty();
-    next(list);
-    assertNotEmpty();
-    next(list);
-    assertNotEmpty();
-}
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {

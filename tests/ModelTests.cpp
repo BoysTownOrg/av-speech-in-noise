@@ -368,8 +368,7 @@ class ModelTests : public ::testing::Test {
     FiniteTargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
     ModelImpl model{adaptiveMethod, fixedLevelMethod, targetsWithReplacement,
-        silentIntervals,
-        everyTargetOnce, internalModel};
+        silentIntervals, everyTargetOnce, internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{

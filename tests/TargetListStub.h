@@ -13,17 +13,12 @@ class TargetListStub : public virtual TargetList {
     std::string next_{};
     std::string current_{};
     bool nextCalled_{};
-    bool empty_{};
     bool reinsertCurrentCalled_{};
 
   public:
     void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
 
     auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
-
-    void setEmpty() { empty_ = true; }
-
-    auto empty() -> bool override { return empty_; }
 
     auto current() -> std::string override { return current_; }
 
@@ -52,7 +47,15 @@ class TargetListStub : public virtual TargetList {
     auto log() const -> auto & { return log_; }
 };
 
-class FiniteTargetListStub : public FiniteTargetList, public TargetListStub {};
+class FiniteTargetListStub : public FiniteTargetList, public TargetListStub {
+  public:
+    void setEmpty() { empty_ = true; }
+
+    auto empty() -> bool override { return empty_; }
+
+  private:
+    bool empty_{};
+};
 }
 
 #endif

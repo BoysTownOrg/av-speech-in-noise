@@ -33,7 +33,6 @@ class RandomizedTargetListWithReplacement
     void loadFromDirectory(std::string) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
-    auto empty() -> bool override;
     void reinsertCurrent() override;
 
   private:
@@ -83,7 +82,6 @@ class CyclicRandomizedTargetListWithoutReplacement
   public:
     CyclicRandomizedTargetListWithoutReplacement(
         DirectoryReader *, Randomizer *);
-    auto empty() -> bool override { return {}; }
     void loadFromDirectory(std::string directory) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
