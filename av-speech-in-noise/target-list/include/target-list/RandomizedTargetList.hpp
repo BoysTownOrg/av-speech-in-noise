@@ -3,6 +3,7 @@
 
 #include "SubdirectoryTargetListReader.hpp"
 #include <recognition-test/TargetList.hpp>
+#include <gsl/gsl>
 #include <vector>
 #include <string>
 #include <memory>
@@ -11,12 +12,8 @@ namespace target_list {
 class Randomizer {
   public:
     virtual ~Randomizer() = default;
-    using string_vector_iterator = std::vector<std::string>::iterator;
-    virtual void shuffle(
-        string_vector_iterator begin, string_vector_iterator end) = 0;
-    using int_vector_iterator = std::vector<int>::iterator;
-    virtual void shuffle(
-        int_vector_iterator begin, int_vector_iterator end) = 0;
+    virtual void shuffle(gsl::span<std::string>) = 0;
+    virtual void shuffle(gsl::span<int>) = 0;
 };
 
 class RandomizedTargetListWithReplacement

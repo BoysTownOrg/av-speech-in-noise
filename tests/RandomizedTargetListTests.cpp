@@ -17,14 +17,13 @@ class RandomizerStub : public Randomizer {
 
     [[nodiscard]] auto shuffledInts() const { return shuffledInts_; }
 
-    void shuffle(
-        string_vector_iterator begin, string_vector_iterator end) override {
-        toShuffle_ = {begin, end};
+    void shuffle(gsl::span<std::string> s) override {
+        toShuffle_ = {s.begin(), s.end()};
     }
 
-    void shuffle(int_vector_iterator begin, int_vector_iterator end) override {
-        shuffledInts_ = {begin, end};
-        std::rotate(begin, begin + rotateToTheLeft_, end);
+    void shuffle(gsl::span<int> s) override {
+        shuffledInts_ = {s.begin(), s.end()};
+        std::rotate(s.begin(), s.begin() + rotateToTheLeft_, s.end());
     }
 
     void rotateToTheLeft(int N) { rotateToTheLeft_ = N; }

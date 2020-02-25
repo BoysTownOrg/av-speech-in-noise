@@ -104,7 +104,7 @@ auto RandomSubsetFiles::filter(std::vector<std::string> files)
         return files;
     std::vector<int> indices(files.size());
     std::iota(indices.begin(), indices.end(), 0);
-    randomizer->shuffle(indices.begin(), indices.end());
+    randomizer->shuffle(indices);
     auto subset = vectorOfStrings(N);
     std::generate(subset.begin(), subset.end(),
         [&, n = 0]() mutable { return at(files, at(indices, n++)); });

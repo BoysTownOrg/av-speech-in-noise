@@ -7,8 +7,8 @@ static auto filesIn(DirectoryReader *reader, std::string s)
     return reader->filesIn(std::move(s));
 }
 
-static auto shuffle(Randomizer *randomizer, std::vector<std::string> &v) {
-    randomizer->shuffle(v.begin(), v.end());
+static auto shuffle(Randomizer *randomizer, gsl::span<std::string> v) {
+    randomizer->shuffle(v);
 }
 
 RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
