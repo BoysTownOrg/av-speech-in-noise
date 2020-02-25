@@ -85,11 +85,13 @@ class CyclicRandomizedTargetListWithoutReplacement
         DirectoryReader *, Randomizer *);
     auto empty() -> bool override { return {}; }
     void loadFromDirectory(std::string directory) override;
-    auto next() -> std::string override { return {}; }
+    auto next() -> std::string override;
     auto current() -> std::string override { return {}; }
     void reinsertCurrent() override {}
 
   private:
+    std::vector<std::string> files{};
+    std::string directory_{};
     DirectoryReader *reader;
     Randomizer *randomizer;
 };

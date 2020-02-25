@@ -103,6 +103,12 @@ CyclicRandomizedTargetListWithoutReplacement::
 
 void CyclicRandomizedTargetListWithoutReplacement::loadFromDirectory(
     std::string directory) {
-    filesIn(reader, directory);
+    files = filesIn(reader, directory_ = std::move(directory));
+}
+
+auto CyclicRandomizedTargetListWithoutReplacement::next() -> std::string {
+    const auto currentFile{files.front()};
+    files.erase(files.begin());
+    return directory_ + "/" + currentFile;
 }
 }

@@ -220,6 +220,15 @@ void loadFromDirectory(
     list.loadFromDirectory(std::move(s));
 }
 
+void setFileNames(DirectoryReaderStub &reader, std::vector<std::string> v) {
+    reader.setFileNames(std::move(v));
+}
+
+void assertNextEquals(
+    CyclicRandomizedTargetListWithoutReplacement &list, const std::string &s) {
+    assertEqual(s, list.next());
+}
+
 class CyclicRandomizedTargetListWithoutReplacementTests
     : public ::testing::Test {
   protected:
@@ -232,6 +241,15 @@ TEST_F(CyclicRandomizedTargetListWithoutReplacementTests,
     loadFromDirectoryPassesDirectoryToDirectoryReader) {
     loadFromDirectory(list, "a");
     assertEqual("a", reader.directory());
+}
+
+TEST_F(CyclicRandomizedTargetListWithoutReplacementTests,
+    nextReturnsFullPathToFileAtFront) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list, "C:");
+    assertNextEquals(list, "C:/a");
+    assertNextEquals(list, "C:/b");
+    assertNextEquals(list, "C:/c");
 }
 
 auto filesIn(DirectoryReader &reader, std::string directory = {})
