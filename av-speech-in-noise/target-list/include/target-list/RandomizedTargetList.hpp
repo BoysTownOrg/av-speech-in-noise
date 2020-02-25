@@ -18,7 +18,7 @@ class Randomizer {
         int_shuffle_iterator begin, int_shuffle_iterator end) = 0;
 };
 
-class RandomizedTargetList : public av_speech_in_noise::TargetList {
+class RandomizedTargetListWithReplacement : public av_speech_in_noise::TargetList {
     std::vector<std::string> files{};
     std::string directory_{};
     std::string currentFile_{};
@@ -27,7 +27,7 @@ class RandomizedTargetList : public av_speech_in_noise::TargetList {
     bool noFilesGotten{};
 
   public:
-    RandomizedTargetList(DirectoryReader *, Randomizer *);
+    RandomizedTargetListWithReplacement(DirectoryReader *, Randomizer *);
     void loadFromDirectory(std::string) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
@@ -41,20 +41,20 @@ class RandomizedTargetList : public av_speech_in_noise::TargetList {
     void replaceLastFile();
 };
 
-class RandomizedTargetListFactory : public TargetListFactory {
+class RandomizedTargetListWithReplacementFactory : public TargetListFactory {
     DirectoryReader *reader;
     Randomizer *randomizer;
 
   public:
-    RandomizedTargetListFactory(DirectoryReader *reader, Randomizer *randomizer)
+    RandomizedTargetListWithReplacementFactory(DirectoryReader *reader, Randomizer *randomizer)
         : reader{reader}, randomizer{randomizer} {}
 
     auto make() -> std::shared_ptr<av_speech_in_noise::TargetList> override {
-        return std::make_shared<RandomizedTargetList>(reader, randomizer);
+        return std::make_shared<RandomizedTargetListWithReplacement>(reader, randomizer);
     }
 };
 
-class RandomizedFiniteTargetList : public av_speech_in_noise::TargetList {
+class RandomizedTargetListWithoutReplacement : public av_speech_in_noise::TargetList {
     std::vector<std::string> files{};
     std::string directory_{};
     std::string currentFile_{};
@@ -62,7 +62,7 @@ class RandomizedFiniteTargetList : public av_speech_in_noise::TargetList {
     Randomizer *randomizer;
 
   public:
-    RandomizedFiniteTargetList(DirectoryReader *, Randomizer *);
+    RandomizedTargetListWithoutReplacement(DirectoryReader *, Randomizer *);
     auto empty() -> bool override;
     void loadFromDirectory(std::string directory) override;
     auto next() -> std::string override;
@@ -74,9 +74,9 @@ class RandomizedFiniteTargetList : public av_speech_in_noise::TargetList {
     auto fullPath(std::string file) -> std::string;
 };
 
-class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
+class CyclicRandomizedTargetListWithoutReplacement : public av_speech_in_noise::TargetList {
   public:
-    CyclicRandomizedTargetList(DirectoryReader *, Randomizer *);
+    CyclicRandomizedTargetListWithoutReplacement(DirectoryReader *, Randomizer *);
     auto empty() -> bool override { return {}; }
     void loadFromDirectory(std::string directory) override;
     auto next() -> std::string override { return {}; }

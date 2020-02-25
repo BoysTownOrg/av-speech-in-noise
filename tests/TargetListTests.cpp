@@ -34,7 +34,7 @@ class RandomizedTargetListTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    RandomizedTargetList list{&reader, &randomizer};
+    RandomizedTargetListWithReplacement list{&reader, &randomizer};
 
     void loadFromDirectory(std::string s = {}) {
         list.loadFromDirectory(std::move(s));
@@ -127,7 +127,7 @@ class FiniteRandomizedTargetListTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    RandomizedFiniteTargetList list{&reader, &randomizer};
+    RandomizedTargetListWithoutReplacement list{&reader, &randomizer};
 
     void loadFromDirectory(std::string s = {}) {
         list.loadFromDirectory(std::move(s));
@@ -208,7 +208,7 @@ FINITE_RANDOMIZED_TARGET_LIST_TEST(reinsertCurrent) {
     assertNextEquals("C:/b");
 }
 
-void loadFromDirectory(CyclicRandomizedTargetList &list, std::string s) {
+void loadFromDirectory(CyclicRandomizedTargetListWithoutReplacement &list, std::string s) {
     list.loadFromDirectory(std::move(s));
 }
 
@@ -216,7 +216,7 @@ class CyclicRandomizedTargetListTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    CyclicRandomizedTargetList list{&reader, &randomizer};
+    CyclicRandomizedTargetListWithoutReplacement list{&reader, &randomizer};
 };
 
 TEST_F(CyclicRandomizedTargetListTests,

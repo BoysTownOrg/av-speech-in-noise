@@ -6,21 +6,21 @@ static auto filesIn(DirectoryReader *reader, std::string s)
     return reader->filesIn(std::move(s));
 }
 
-RandomizedTargetList::RandomizedTargetList(
+RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetList::loadFromDirectory(std::string directory) {
+void RandomizedTargetListWithReplacement::loadFromDirectory(std::string directory) {
     files = filesIn(reader, directory_ = std::move(directory));
     shuffle();
     noFilesGotten = true;
 }
 
-void RandomizedTargetList::shuffle() {
+void RandomizedTargetListWithReplacement::shuffle() {
     randomizer->shuffle(files.begin(), files.end());
 }
 
-auto RandomizedTargetList::next() -> std::string {
+auto RandomizedTargetListWithReplacement::next() -> std::string {
     if (empty_())
         return "";
 
@@ -31,41 +31,41 @@ auto RandomizedTargetList::next() -> std::string {
     return fullPath(currentFile_ = std::move(nextFile_));
 }
 
-auto RandomizedTargetList::empty() -> bool { return empty_(); }
+auto RandomizedTargetListWithReplacement::empty() -> bool { return empty_(); }
 
-auto RandomizedTargetList::empty_() -> bool { return files.empty(); }
+auto RandomizedTargetListWithReplacement::empty_() -> bool { return files.empty(); }
 
-void RandomizedTargetList::replaceLastFile() {
+void RandomizedTargetListWithReplacement::replaceLastFile() {
     if (!noFilesGotten)
         files.push_back(currentFile_);
     noFilesGotten = false;
 }
 
-auto RandomizedTargetList::fullPath(std::string file) -> std::string {
+auto RandomizedTargetListWithReplacement::fullPath(std::string file) -> std::string {
     return directory_ + "/" + std::move(file);
 }
 
-auto RandomizedTargetList::current() -> std::string {
+auto RandomizedTargetListWithReplacement::current() -> std::string {
     return fullPath(currentFile_);
 }
 
-void RandomizedTargetList::reinsertCurrent() {}
+void RandomizedTargetListWithReplacement::reinsertCurrent() {}
 
-RandomizedFiniteTargetList::RandomizedFiniteTargetList(
+RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedFiniteTargetList::loadFromDirectory(std::string directory) {
+void RandomizedTargetListWithoutReplacement::loadFromDirectory(std::string directory) {
     directory_ = std::move(directory);
     files = filesIn(reader, directory_);
     randomizer->shuffle(files.begin(), files.end());
 }
 
-auto RandomizedFiniteTargetList::empty() -> bool { return empty_(); }
+auto RandomizedTargetListWithoutReplacement::empty() -> bool { return empty_(); }
 
-auto RandomizedFiniteTargetList::empty_() -> bool { return files.empty(); }
+auto RandomizedTargetListWithoutReplacement::empty_() -> bool { return files.empty(); }
 
-auto RandomizedFiniteTargetList::next() -> std::string {
+auto RandomizedTargetListWithoutReplacement::next() -> std::string {
     if (empty_())
         return "";
 
@@ -74,23 +74,23 @@ auto RandomizedFiniteTargetList::next() -> std::string {
     return fullPath(currentFile_);
 }
 
-auto RandomizedFiniteTargetList::fullPath(std::string file) -> std::string {
+auto RandomizedTargetListWithoutReplacement::fullPath(std::string file) -> std::string {
     return directory_ + "/" + std::move(file);
 }
 
-auto RandomizedFiniteTargetList::current() -> std::string {
+auto RandomizedTargetListWithoutReplacement::current() -> std::string {
     return fullPath(currentFile_);
 }
 
-void RandomizedFiniteTargetList::reinsertCurrent() {
+void RandomizedTargetListWithoutReplacement::reinsertCurrent() {
     files.push_back(currentFile_);
 }
 
-CyclicRandomizedTargetList::CyclicRandomizedTargetList(
+CyclicRandomizedTargetListWithoutReplacement::CyclicRandomizedTargetListWithoutReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void CyclicRandomizedTargetList::loadFromDirectory(std::string directory) {
+void CyclicRandomizedTargetListWithoutReplacement::loadFromDirectory(std::string directory) {
     filesIn(reader, directory);
 }
 }
