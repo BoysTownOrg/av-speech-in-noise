@@ -34,7 +34,6 @@ class RandomizedTargetListWithReplacement
   private:
     auto fullPath(std::string file) -> std::string;
     auto empty_() -> bool;
-    void replaceLastFile();
 };
 
 class RandomizedTargetListWithReplacementFactory : public TargetListFactory {

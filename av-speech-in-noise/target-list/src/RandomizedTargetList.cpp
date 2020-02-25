@@ -22,24 +22,22 @@ void RandomizedTargetListWithReplacement::loadFromDirectory(
     noFilesGotten = true;
 }
 
+static auto currentFile(const std::vector<std::string> &v) -> std::string {
+    return v.back();
+}
+
 auto RandomizedTargetListWithReplacement::next() -> std::string {
     if (empty_())
         return "";
 
     std::rotate(files.begin(), files.begin() + 1, files.end());
     gsl::span<std::string> files_{files};
-    shuffle(randomizer, files_.first(files_.size()-1));
-    return fullPath(currentFile_ = files.back());
+    shuffle(randomizer, files_.first(files_.size() - 1));
+    return fullPath(currentFile(files));
 }
 
 auto RandomizedTargetListWithReplacement::empty_() -> bool {
     return files.empty();
-}
-
-void RandomizedTargetListWithReplacement::replaceLastFile() {
-    if (!noFilesGotten)
-        files.push_back(currentFile_);
-    noFilesGotten = false;
 }
 
 auto RandomizedTargetListWithReplacement::fullPath(std::string file)
@@ -48,7 +46,7 @@ auto RandomizedTargetListWithReplacement::fullPath(std::string file)
 }
 
 auto RandomizedTargetListWithReplacement::current() -> std::string {
-    return fullPath(currentFile_);
+    return fullPath(currentFile(files));
 }
 
 RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
