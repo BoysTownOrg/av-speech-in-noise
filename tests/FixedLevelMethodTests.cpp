@@ -371,11 +371,6 @@ class FixedLevelMethodWithFiniteTargetListTests : public ::testing::Test {
 #define FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(a)                     \
     TEST_F(FixedLevelMethodWithFiniteTargetListTests, a)
 
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
-    passesTestParametersToConcluder) {
-    assertEqual(&std::as_const(test), testConcluder.test());
-}
-
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
     setNext(targetList, "a");
     assertNextTargetEquals(method, "a");

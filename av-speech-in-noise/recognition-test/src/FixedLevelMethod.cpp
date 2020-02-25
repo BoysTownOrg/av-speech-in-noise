@@ -28,7 +28,6 @@ void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
     test = &p;
     snr_dB_ = p.snr_dB;
     loadFromDirectory(targetList, p);
-    concluder_->initialize(p);
     finiteTargetsExhausted_ = finiteTargetList->empty();
 }
 
