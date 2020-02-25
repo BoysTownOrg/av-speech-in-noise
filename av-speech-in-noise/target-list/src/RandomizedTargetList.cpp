@@ -1,12 +1,17 @@
 #include "RandomizedTargetList.hpp"
 
 namespace target_list {
+static auto filesIn(DirectoryReader *reader, std::string s)
+    -> std::vector<std::string> {
+    return reader->filesIn(std::move(s));
+}
+
 RandomizedTargetList::RandomizedTargetList(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
 void RandomizedTargetList::loadFromDirectory(std::string directory) {
-    files = reader->filesIn(directory_ = std::move(directory));
+    files = filesIn(reader, directory_ = std::move(directory));
     shuffle();
     noFilesGotten = true;
 }
@@ -52,7 +57,7 @@ RandomizedFiniteTargetList::RandomizedFiniteTargetList(
 
 void RandomizedFiniteTargetList::loadFromDirectory(std::string directory) {
     directory_ = std::move(directory);
-    files = reader->filesIn(directory_);
+    files = filesIn(reader, directory_);
     randomizer->shuffle(files.begin(), files.end());
 }
 
@@ -86,6 +91,6 @@ CyclicRandomizedTargetList::CyclicRandomizedTargetList(
     : reader{reader}, randomizer{randomizer} {}
 
 void CyclicRandomizedTargetList::loadFromDirectory(std::string directory) {
-    reader->filesIn(directory);
+    filesIn(reader, directory);
 }
 }
