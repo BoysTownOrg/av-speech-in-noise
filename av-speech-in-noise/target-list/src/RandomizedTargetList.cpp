@@ -105,6 +105,7 @@ CyclicRandomizedTargetListWithoutReplacement::
 void CyclicRandomizedTargetListWithoutReplacement::loadFromDirectory(
     std::string directory) {
     files = filesIn(reader, directory_ = std::move(directory));
+    randomizer->shuffle(files.begin(), files.end());
 }
 
 auto CyclicRandomizedTargetListWithoutReplacement::next() -> std::string {

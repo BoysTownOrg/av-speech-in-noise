@@ -247,6 +247,13 @@ CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     assertNextEquals(list, "C:/c");
 }
 
+CYCLIC_RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
+    loadFromDirectoryShufflesFileNames) {
+    setFileNames(reader, {"a", "b", "c"});
+    loadFromDirectory(list);
+    assertEqual({"a", "b", "c"}, randomizer.toShuffle());
+}
+
 auto filesIn(DirectoryReader &reader, std::string directory = {})
     -> std::vector<std::string> {
     return reader.filesIn(std::move(directory));
