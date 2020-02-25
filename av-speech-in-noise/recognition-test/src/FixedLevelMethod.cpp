@@ -14,6 +14,7 @@ void FixedLevelMethodImpl::initialize(
     concluder = concluder_;
     targetList = list;
     test = &p;
+    trials_ = p.trials;
     snr_dB_ = p.snr_dB;
     loadFromDirectory(targetList, p);
     concluder->initialize(p);
@@ -31,10 +32,11 @@ void FixedLevelMethodImpl::initialize(const FixedLevelTest &p,
     loadFromDirectory(targetList, p);
     concluder_->initialize(p);
     complete_ = concluder->complete(targetList);
+    finiteTargetsExhausted_ = finiteTargetList->empty();
 }
 
 auto FixedLevelMethodImpl::complete() -> bool {
-    return usingFiniteTargetList_ ? finiteTargetList->empty() : complete_;
+    return usingFiniteTargetList_ ? finiteTargetsExhausted_ : trials_ == 0;
 }
 
 auto FixedLevelMethodImpl::nextTarget() -> std::string {
@@ -53,7 +55,10 @@ void FixedLevelMethodImpl::submit(
     lastTrial.correct = evaluator->correct(current_, response);
     lastTrial.target = current_;
     concluder->submitResponse();
+    --trials_;
     complete_ = concluder->complete(targetList);
+    if (usingFiniteTargetList_)
+        finiteTargetsExhausted_ = finiteTargetList->empty();
 }
 
 auto FixedLevelMethodImpl::currentTarget() -> std::string {
@@ -74,8 +79,11 @@ void FixedLevelMethodImpl::submitCorrectResponse() {}
 
 void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
     concluder->submitResponse();
+    --trials_;
     if (response.flagged)
         targetList->reinsertCurrent();
     complete_ = concluder->complete(targetList);
+    if (usingFiniteTargetList_)
+        finiteTargetsExhausted_ = finiteTargetList->empty();
 }
 }

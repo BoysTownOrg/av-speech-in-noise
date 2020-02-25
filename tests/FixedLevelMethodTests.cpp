@@ -266,14 +266,6 @@ FIXED_LEVEL_METHOD_TEST(
     assertEqual("a", evaluator.correctFilePath());
 }
 
-FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterCoordinateResponse) {
-    assertTestCompleteOnlyWhenComplete(submittingCoordinateResponse);
-}
-
-FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterFreeResponse) {
-    assertTestCompleteOnlyWhenComplete(submittingFreeResponse);
-}
-
 FIXED_LEVEL_METHOD_TEST(submitCoordinateResponsePassesTargetListToConcluder) {
     assertTargetListPassedToConcluderAfter(submittingCoordinateResponse);
 }
@@ -305,11 +297,6 @@ FIXED_LEVEL_METHOD_TEST(initializesConcluderBeforeQueryingCompletion) {
 
 FIXED_LEVEL_METHOD_TEST(initializePassesTargetListToConcluder) {
     assertTestConcluderPassedTargetList();
-}
-
-FIXED_LEVEL_METHOD_TEST(completeWhenTestCompleteAfterInitializing) {
-    assertTestIncomplete();
-    assertTestCompleteWhenComplete(initializingMethod);
 }
 
 class PreInitializedFixedLevelMethodTests : public ::testing::Test {
@@ -353,6 +340,29 @@ TEST_F(PreInitializedFixedLevelMethodTests,
     assertEqual("a", finiteTargetList.directory());
 }
 
+void assertComplete(FixedLevelMethodImpl &method) {
+    assertTrue(method.complete());
+}
+
+void assertIncomplete(FixedLevelMethodImpl &method) {
+    assertFalse(method.complete());
+}
+
+void assertTestCompleteWhenTargetListEmpty(UseCase &useCase,
+    FixedLevelMethodImpl &method, FiniteTargetListStub &list) {
+    list.setEmpty();
+    run(useCase, method);
+    assertComplete(method);
+}
+
+void assertTestCompleteOnlyAfter(UseCase &useCase,
+    FixedLevelMethodImpl &method, FiniteTargetListStub &list) {
+    list.setEmpty();
+    assertIncomplete(method);
+    run(useCase, method);
+    assertComplete(method);
+}
+
 class FixedLevelMethodWithFiniteTargetListTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
@@ -362,6 +372,8 @@ class FixedLevelMethodWithFiniteTargetListTests : public ::testing::Test {
     FixedLevelTest test{};
     InitializingMethodWithFiniteTargetList
         initializingMethodWithFiniteTargetList{targetList, testConcluder, test};
+    SubmittingCoordinateResponse submittingCoordinateResponse;
+    SubmittingFreeResponse submittingFreeResponse;
 
     FixedLevelMethodWithFiniteTargetListTests() {
         run(initializingMethodWithFiniteTargetList, method);
@@ -390,6 +402,24 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
     OutputFileStub outputFile;
     method.writeTestingParameters(&outputFile);
     assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterCoordinateResponse) {
+    assertTestCompleteOnlyAfter(
+        submittingCoordinateResponse, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterFreeResponse) {
+    assertTestCompleteOnlyAfter(
+        submittingFreeResponse, method, targetList);
+}
+
+FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
+    completeWhenTestCompleteAfterInitializing) {
+    assertTestCompleteOnlyAfter(
+        initializingMethodWithFiniteTargetList, method, targetList);
 }
 
 class TargetListTestConcluderComboStub : public TargetList,
@@ -459,6 +489,17 @@ TEST_F(FixedTrialTestConcluderTests, completeWhenTrialsExhausted) {
     assertCompleteAfterResponse();
 }
 
+FIXED_LEVEL_METHOD_TEST(completeWhenTrialsExhausted) {
+    test.trials = 3;
+    run(initializingMethod, method);
+    method.submit(coordinate_response_measure::Response{});
+    assertFalse(method.complete());
+    method.submit(open_set::FreeResponse{});
+    assertFalse(method.complete());
+    method.submit(coordinate_response_measure::Response{});
+    assertTrue(method.complete());
+}
+
 class EmptyTargetListTestConcluderTests : public ::testing::Test {
   protected:
     TargetListStub targetList;
@@ -475,13 +516,6 @@ TEST_F(EmptyTargetListTestConcluderTests, completeWhenTargetListComplete) {
     assertIncomplete();
     targetList.setEmpty();
     assertComplete();
-}
-
-FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
-    completeWhenTargetListComplete) {
-    assertFalse(method.complete());
-    targetList.setEmpty();
-    assertTrue(method.complete());
 }
 }
 }
