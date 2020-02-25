@@ -108,12 +108,17 @@ void CyclicRandomizedTargetListWithoutReplacement::loadFromDirectory(
     shuffle(randomizer, files);
 }
 
+static auto fullPathToLastFile(const std::string &directory,
+    const std::vector<std::string> &files) -> std::string {
+    return directory + '/' + files.back();
+}
+
 auto CyclicRandomizedTargetListWithoutReplacement::next() -> std::string {
     std::rotate(files.begin(), files.begin() + 1, files.end());
-    return directory_ + "/" + files.back();
+    return fullPathToLastFile(directory_, files);
 }
 
 auto CyclicRandomizedTargetListWithoutReplacement::current() -> std::string {
-    return directory_ + "/" + files.back();
+    return fullPathToLastFile(directory_, files);
 }
 }
