@@ -93,5 +93,8 @@ auto AdaptiveTrack::complete_() const -> bool {
 
 auto AdaptiveTrack::reversals() -> int { return reversals_; }
 
-void AdaptiveTrack::reset() { x_ = startingX_; }
+void AdaptiveTrack::reset() {
+    x_ = startingX_;
+    sameDirectionConsecutiveCount = 0;
+}
 }
