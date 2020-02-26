@@ -111,6 +111,7 @@ class ModelImpl : public Model {
 
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
+    TargetListReader &targetListReader;
     TargetList &targetsWithReplacement;
     FiniteTargetList &silentIntervalTargets;
     FiniteTargetList &everyTargetOnce;

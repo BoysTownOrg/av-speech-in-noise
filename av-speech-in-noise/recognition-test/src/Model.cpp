@@ -4,10 +4,11 @@
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
-    FixedLevelMethod &fixedLevelMethod, TargetListReader &,
+    FixedLevelMethod &fixedLevelMethod, TargetListReader &targetListReader,
     TargetList &targetsWithReplacement, FiniteTargetList &silentIntervalTargets,
     FiniteTargetList &everyTargetOnce, RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
+      targetListReader{targetListReader},
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},
       everyTargetOnce{everyTargetOnce}, model{model} {}
@@ -27,8 +28,9 @@ static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
     method.initialize(test, &targets);
 }
 
-static void initialize(AdaptiveMethod &method, const AdaptiveTest &test) {
-    method.initialize(test, {});
+static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
+    TargetListReader &reader) {
+    method.initialize(test, &reader);
 }
 
 static void initializeWithSingleSpeaker(RecognitionTestModel &model,
@@ -48,7 +50,7 @@ void ModelImpl::initializeWithTargetReplacement(const FixedLevelTest &test) {
 }
 
 void ModelImpl::initialize(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initialize(adaptiveMethod, test, targetListReader);
     av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
 
@@ -71,13 +73,13 @@ void ModelImpl::initializeWithAllTargetsAndEyeTracking(
 }
 
 void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initialize(adaptiveMethod, test, targetListReader);
     av_speech_in_noise::initializeWithSingleSpeaker(
         model, adaptiveMethod, test);
 }
 
 void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initialize(adaptiveMethod, test, targetListReader);
     av_speech_in_noise::initializeWithDelayedMasker(
         model, adaptiveMethod, test);
 }

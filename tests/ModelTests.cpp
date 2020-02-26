@@ -412,9 +412,11 @@ class ModelTests : public ::testing::Test {
         assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
     }
 
-    void assertInitializesAdaptiveMethod(InitializingAdaptiveTest &useCase) {
+    void assertInitializesAdaptiveMethod(
+        InitializingAdaptiveTest &useCase, TargetListReader &reader) {
         useCase.run(model, adaptiveTest);
         assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
+        assertEqual(&reader, adaptiveMethod.targetListReader());
     }
 
     void assertInitializesFixedLevelTestWithTargetList(
@@ -475,15 +477,18 @@ MODEL_TEST(
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingDefaultAdaptiveTest);
+    assertInitializesAdaptiveMethod(
+        initializingDefaultAdaptiveTest, targetListReader);
 }
 
 MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker);
+    assertInitializesAdaptiveMethod(
+        initializingAdaptiveTestWithSingleSpeaker, targetListReader);
 }
 
 MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker);
+    assertInitializesAdaptiveMethod(
+        initializingAdaptiveTestWithDelayedMasker, targetListReader);
 }
 
 MODEL_TEST(
