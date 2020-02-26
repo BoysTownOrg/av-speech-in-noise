@@ -73,6 +73,22 @@ class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
     auto next() -> std::string override;
     auto current() -> std::string override;
 
+    class Factory : public TargetListFactory {
+      public:
+        Factory(DirectoryReader *reader, Randomizer *randomizer)
+            : reader{reader}, randomizer{randomizer} {}
+
+        auto make()
+            -> std::shared_ptr<av_speech_in_noise::TargetList> override {
+            return std::make_shared<CyclicRandomizedTargetList>(
+                reader, randomizer);
+        }
+
+      private:
+        DirectoryReader *reader;
+        Randomizer *randomizer;
+    };
+
   private:
     std::vector<std::string> files{};
     std::string directory_{};
