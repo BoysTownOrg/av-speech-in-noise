@@ -92,6 +92,7 @@ void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
 
 void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
     av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
+    av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {

@@ -555,6 +555,10 @@ MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithDelayedMasker);
 }
 
+MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesInternalModel) {
+    assertInitializesInternalModel(initializingAdaptiveTestWithCyclicTargets);
+}
+
 MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithSingleSpeaker);
     assertTrue(internalModel.initializedWithSingleSpeaker());
