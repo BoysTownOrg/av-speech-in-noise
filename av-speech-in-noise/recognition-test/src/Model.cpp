@@ -6,10 +6,12 @@ namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FixedLevelMethod &fixedLevelMethod,
     TargetListReader &targetsWithReplacementReader,
-    TargetList &targetsWithReplacement, FiniteTargetList &silentIntervalTargets,
-    FiniteTargetList &everyTargetOnce, RecognitionTestModel &model)
+    TargetListReader &cyclicTargetsReader, TargetList &targetsWithReplacement,
+    FiniteTargetList &silentIntervalTargets, FiniteTargetList &everyTargetOnce,
+    RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
+      cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},
       everyTargetOnce{everyTargetOnce}, model{model} {}
@@ -86,6 +88,10 @@ void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
         adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithDelayedMasker(
         model, adaptiveMethod, test);
+}
+
+void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
+    av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {

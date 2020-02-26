@@ -81,6 +81,7 @@ class ModelImpl : public Model {
   public:
     ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
         TargetListReader &targetsWithReplacementReader,
+        TargetListReader &cyclicTargetsReader,
         TargetList &targetsWithReplacement,
         FiniteTargetList &silentIntervalTargets,
         FiniteTargetList &everyTargetOnce, RecognitionTestModel &);
@@ -91,6 +92,7 @@ class ModelImpl : public Model {
     void initializeWithAllTargetsAndEyeTracking(const FixedLevelTest &);
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
+    void initializeWithCyclicTargets(const AdaptiveTest &);
     void initializeWithTargetReplacementAndEyeTracking(const FixedLevelTest &);
     void initializeWithSilentIntervalTargetsAndEyeTracking(
         const FixedLevelTest &);
@@ -113,6 +115,7 @@ class ModelImpl : public Model {
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
     TargetListReader &targetsWithReplacementReader;
+    TargetListReader &cyclicTargetsReader;
     TargetList &targetsWithReplacement;
     FiniteTargetList &silentIntervalTargets;
     FiniteTargetList &everyTargetOnce;

@@ -220,6 +220,10 @@ void initializeWithDelayedMasker(ModelImpl &model, const AdaptiveTest &test) {
     model.initializeWithDelayedMasker(test);
 }
 
+void initializeWithCyclicTargets(ModelImpl &model, const AdaptiveTest &test) {
+    model.initializeWithCyclicTargets(test);
+}
+
 void initializeWithSilentIntervalTargets(
     ModelImpl &model, const FixedLevelTest &test) {
     model.initializeWithSilentIntervalTargets(test);
@@ -293,6 +297,29 @@ class InitializingAdaptiveTestWithDelayedMasker
 
     void run(ModelImpl &model, const AdaptiveTest &test) override {
         initializeWithDelayedMasker(model, test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
+class InitializingAdaptiveTestWithCyclicTargets
+    : public InitializingAdaptiveTest {
+    AdaptiveTest test_;
+    AdaptiveMethodStub *method;
+
+  public:
+    explicit InitializingAdaptiveTestWithCyclicTargets(
+        AdaptiveMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        initializeWithCyclicTargets(model, test_);
+    }
+
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
+        initializeWithCyclicTargets(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
@@ -375,12 +402,14 @@ class ModelTests : public ::testing::Test {
     FixedLevelMethodStub fixedLevelMethod;
     TargetListStub targetsWithReplacement;
     TargetListSetReaderStub targetsWithReplacementReader;
+    TargetListSetReaderStub cyclicTargetsReader;
     FiniteTargetListStub silentIntervals;
     FiniteTargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
-        targetsWithReplacementReader, targetsWithReplacement, silentIntervals,
-        everyTargetOnce, internalModel};
+        targetsWithReplacementReader, cyclicTargetsReader,
+        targetsWithReplacement, silentIntervals, everyTargetOnce,
+        internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
@@ -389,6 +418,8 @@ class ModelTests : public ::testing::Test {
         initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
     InitializingAdaptiveTestWithDelayedMasker
         initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
+    InitializingAdaptiveTestWithCyclicTargets
+        initializingAdaptiveTestWithCyclicTargets{&adaptiveMethod};
     InitializingFixedLevelTestWithTargetReplacement
         initializingFixedLevelTestWithTargetReplacement{&fixedLevelMethod};
     InitializingFixedLevelTestWithSilentIntervalTargets
@@ -489,6 +520,11 @@ MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
 MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker,
         targetsWithReplacementReader);
+}
+
+MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesAdaptiveMethod) {
+    assertInitializesAdaptiveMethod(
+        initializingAdaptiveTestWithCyclicTargets, cyclicTargetsReader);
 }
 
 MODEL_TEST(
