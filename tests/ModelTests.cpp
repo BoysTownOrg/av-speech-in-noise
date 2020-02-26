@@ -374,13 +374,13 @@ class ModelTests : public ::testing::Test {
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
     TargetListStub targetsWithReplacement;
-    TargetListSetReaderStub targetListReader;
+    TargetListSetReaderStub targetsWithReplacementReader;
     FiniteTargetListStub silentIntervals;
     FiniteTargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
-    ModelImpl model{adaptiveMethod, fixedLevelMethod, targetListReader,
-        targetsWithReplacement, silentIntervals, everyTargetOnce,
-        internalModel};
+    ModelImpl model{adaptiveMethod, fixedLevelMethod,
+        targetsWithReplacementReader, targetsWithReplacement, silentIntervals,
+        everyTargetOnce, internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
@@ -478,17 +478,17 @@ MODEL_TEST(
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(
-        initializingDefaultAdaptiveTest, targetListReader);
+        initializingDefaultAdaptiveTest, targetsWithReplacementReader);
 }
 
 MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(
-        initializingAdaptiveTestWithSingleSpeaker, targetListReader);
+    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker,
+        targetsWithReplacementReader);
 }
 
 MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(
-        initializingAdaptiveTestWithDelayedMasker, targetListReader);
+    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker,
+        targetsWithReplacementReader);
 }
 
 MODEL_TEST(

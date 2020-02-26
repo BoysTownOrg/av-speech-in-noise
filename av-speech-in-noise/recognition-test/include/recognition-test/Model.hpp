@@ -79,7 +79,8 @@ class RecognitionTestModel {
 
 class ModelImpl : public Model {
   public:
-    ModelImpl(AdaptiveMethod &, FixedLevelMethod &, TargetListReader &,
+    ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
+        TargetListReader &targetsWithReplacementReader,
         TargetList &targetsWithReplacement,
         FiniteTargetList &silentIntervalTargets,
         FiniteTargetList &everyTargetOnce, RecognitionTestModel &);
@@ -111,7 +112,7 @@ class ModelImpl : public Model {
 
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
-    TargetListReader &targetListReader;
+    TargetListReader &targetsWithReplacementReader;
     TargetList &targetsWithReplacement;
     FiniteTargetList &silentIntervalTargets;
     FiniteTargetList &everyTargetOnce;

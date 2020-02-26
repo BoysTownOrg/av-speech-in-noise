@@ -4,11 +4,12 @@
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
-    FixedLevelMethod &fixedLevelMethod, TargetListReader &targetListReader,
+    FixedLevelMethod &fixedLevelMethod,
+    TargetListReader &targetsWithReplacementReader,
     TargetList &targetsWithReplacement, FiniteTargetList &silentIntervalTargets,
     FiniteTargetList &everyTargetOnce, RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
-      targetListReader{targetListReader},
+      targetsWithReplacementReader{targetsWithReplacementReader},
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},
       everyTargetOnce{everyTargetOnce}, model{model} {}
@@ -50,7 +51,8 @@ void ModelImpl::initializeWithTargetReplacement(const FixedLevelTest &test) {
 }
 
 void ModelImpl::initialize(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test, targetListReader);
+    av_speech_in_noise::initialize(
+        adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
 
@@ -73,13 +75,15 @@ void ModelImpl::initializeWithAllTargetsAndEyeTracking(
 }
 
 void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test, targetListReader);
+    av_speech_in_noise::initialize(
+        adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithSingleSpeaker(
         model, adaptiveMethod, test);
 }
 
 void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test, targetListReader);
+    av_speech_in_noise::initialize(
+        adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithDelayedMasker(
         model, adaptiveMethod, test);
 }
