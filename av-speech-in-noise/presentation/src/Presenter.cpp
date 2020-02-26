@@ -88,8 +88,10 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup) {
         model.initializeWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
         model.initializeWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (defaultAdaptive(testSetup) || adaptiveCorrectKeywords(testSetup))
+    else if (defaultAdaptive(testSetup))
         model.initialize(adaptiveTest(testSetup));
+    else if (adaptiveCorrectKeywords(testSetup))
+        model.initializeWithCyclicTargets(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals(testSetup))
         model.initializeWithSilentIntervalTargets(fixedLevelTest(testSetup));
     else if (fixedLevelAllStimuli(testSetup))

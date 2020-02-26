@@ -48,6 +48,10 @@ class ModelStub : public Model {
         return initializedWithDelayedMasker_;
     }
 
+    [[nodiscard]] auto initializedWithCyclicTargets() const -> bool {
+        return initializedWithCyclicTargets_;
+    }
+
     [[nodiscard]] auto initializedWithEyeTracking() const {
         return initializedWithEyeTracking_;
     }
@@ -108,6 +112,11 @@ class ModelStub : public Model {
     void initializeWithDelayedMasker(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithDelayedMasker_ = true;
+    }
+
+    void initializeWithCyclicTargets(const AdaptiveTest &p) {
+        adaptiveTest_ = p;
+        initializedWithCyclicTargets_ = true;
     }
 
     void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
@@ -185,6 +194,7 @@ class ModelStub : public Model {
     bool initializedWithEyeTracking_{};
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
+    bool initializedWithCyclicTargets_{};
 };
 
 class ViewStub : public View {
@@ -1773,6 +1783,10 @@ class RequestFailingModel : public Model {
     }
 
     void initializeWithDelayedMasker(const AdaptiveTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void initializeWithCyclicTargets(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 

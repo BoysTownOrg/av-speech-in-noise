@@ -143,6 +143,7 @@ class Model {
     virtual void initializeWithTargetReplacement(const FixedLevelTest &) = 0;
     virtual void initializeWithSingleSpeaker(const AdaptiveTest &) = 0;
     virtual void initializeWithDelayedMasker(const AdaptiveTest &) = 0;
+    virtual void initializeWithCyclicTargets(const AdaptiveTest &) = 0;
     virtual void initializeWithSilentIntervalTargets(
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;

@@ -310,6 +310,11 @@ PRESENTER_TEST(
     assertTrue(model.initializedWithDelayedMasker());
 }
 
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestInitializesModel) {
+    run(confirmingAdaptiveCorrectKeywordsTest);
+    assertTrue(model.initializedWithCyclicTargets());
+}
+
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsInitializesModel) {
     run(confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
@@ -634,8 +639,7 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
 
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
-        confirmingAdaptivePassFailTest,
-        submittingPassedTrial);
+        confirmingAdaptivePassFailTest, submittingPassedTrial);
 }
 
 PRESENTER_TEST(
@@ -771,7 +775,8 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
     run(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
     assertFalse(experimenterView.nextTrialButtonShown());
 }
