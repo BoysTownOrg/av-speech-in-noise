@@ -7,10 +7,11 @@
 namespace av_speech_in_noise::tests {
 namespace {
 class AdaptiveMethodStub : public AdaptiveMethod {
-    const AdaptiveTest *test_{};
-
   public:
-    void initialize(const AdaptiveTest &t) override { test_ = &t; }
+    void initialize(const AdaptiveTest &t, TargetListReader *reader) override {
+        test_ = &t;
+        targetListReader = reader;
+    }
 
     [[nodiscard]] auto test() const { return test_; }
 
@@ -28,6 +29,10 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
     void submit(const coordinate_response_measure::Response &) override {}
+
+  private:
+    const AdaptiveTest *test_{};
+    TargetListReader *targetListReader{};
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {

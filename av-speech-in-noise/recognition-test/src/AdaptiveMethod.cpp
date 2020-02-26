@@ -12,7 +12,8 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(TargetListReader *targetListSetReader,
       snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
                                                                   randomizer} {}
 
-void AdaptiveMethodImpl::initialize(const AdaptiveTest &test_) {
+void AdaptiveMethodImpl::initialize(
+    const AdaptiveTest &test_, TargetListReader *) {
     test = &test_;
     trackSettings.rule = trackSettingsReader->read(test_.trackSettingsFile);
     trackSettings.ceiling = test_.ceilingSnr_dB;

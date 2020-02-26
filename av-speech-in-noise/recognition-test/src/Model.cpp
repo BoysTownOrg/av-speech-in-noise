@@ -28,7 +28,7 @@ static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
 }
 
 static void initialize(AdaptiveMethod &method, const AdaptiveTest &test) {
-    method.initialize(test);
+    method.initialize(test, {});
 }
 
 static void initializeWithSingleSpeaker(RecognitionTestModel &model,

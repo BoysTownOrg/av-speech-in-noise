@@ -43,18 +43,11 @@ class TrackSettingsReader {
     virtual auto read(std::string) -> const TrackingRule * = 0;
 };
 
-class TargetListReader {
-  public:
-    virtual ~TargetListReader() = default;
-    using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
-    virtual auto read(std::string directory) -> lists_type = 0;
-};
-
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
     AdaptiveMethodImpl(TargetListReader *, TrackSettingsReader *,
         Track::Factory *, ResponseEvaluator *, Randomizer *);
-    void initialize(const AdaptiveTest &) override;
+    void initialize(const AdaptiveTest &, TargetListReader *) override;
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;

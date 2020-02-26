@@ -38,9 +38,16 @@ class ResponseEvaluator {
     virtual auto fileName(const std::string &filePath) -> std::string = 0;
 };
 
+class TargetListReader {
+  public:
+    virtual ~TargetListReader() = default;
+    using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
+    virtual auto read(std::string directory) -> lists_type = 0;
+};
+
 class AdaptiveMethod : public virtual TestMethod {
   public:
-    virtual void initialize(const AdaptiveTest &) = 0;
+    virtual void initialize(const AdaptiveTest &, TargetListReader *) = 0;
 };
 
 class FixedLevelMethod : public virtual TestMethod {

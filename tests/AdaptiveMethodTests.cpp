@@ -34,10 +34,16 @@ class UseCase {
 };
 
 class Initializing : public UseCase {
-    AdaptiveTest test{};
-
   public:
-    void run(AdaptiveMethodImpl &method) override { method.initialize(test); }
+    explicit Initializing(TargetListReader &reader) : reader{reader} {}
+
+    void run(AdaptiveMethodImpl &method) override {
+        method.initialize(test, &reader);
+    }
+
+  private:
+    AdaptiveTest test{};
+    TargetListReader &reader;
 };
 
 void submit(AdaptiveMethodImpl &method,
@@ -238,7 +244,7 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
 };
 
 class WritingCorrectKeywords : public WritingResponseUseCase,
-                                 public WritingTargetUseCase {
+                               public WritingTargetUseCase {
     OutputFile &file_;
 
   public:
@@ -273,7 +279,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     OutputFileStub outputFile;
     AdaptiveMethodImpl method{&targetListSetReader, &trackSettingsReader,
         &snrTrackFactory, &evaluator, &randomizer};
-    Initializing initializing;
+    Initializing initializing{targetListSetReader};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectCoordinateResponse submittingCorrectCoordinateResponse{
         evaluator};
@@ -314,7 +320,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         return snrTrackFactoryParameters().at(x);
     }
 
-    void initialize() { method.initialize(test); }
+    void initialize() { method.initialize(test, &targetListSetReader); }
 
     void assertPassedTargetLevelRule(const Track::Settings &s) {
         assertEqual(&std::as_const(targetLevelRule), s.rule);
@@ -805,8 +811,7 @@ ADAPTIVE_METHOD_TEST(
 
 ADAPTIVE_METHOD_TEST(
     submitCorrectKeywordsSelectsListAmongThoseWithIncompleteTracks) {
-    assertSelectsListAmongThoseWithIncompleteTracks(
-        submittingCorrectKeywords);
+    assertSelectsListAmongThoseWithIncompleteTracks(submittingCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
