@@ -556,14 +556,14 @@ TEST_F(AdaptiveTrackTests, resetResetsTracking) {
 TEST_F(AdaptiveTrackTests, resetResetsReversals) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
-    setFirstSequenceStepSize(4);
     setFirstSequenceRunCount(999);
-    setStartingX(5);
     auto track = construct();
     down(track);
     up(track);
     assertReversalsEquals(track, 1);
     reset(track);
+    assertReversalsEquals(track, 0);
+    down(track);
     assertReversalsEquals(track, 0);
 }
 }
