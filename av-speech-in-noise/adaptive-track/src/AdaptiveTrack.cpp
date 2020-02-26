@@ -99,5 +99,6 @@ void AdaptiveTrack::reset() {
     reversals_ = 0;
     previousStep = Step::undefined;
     sequenceIndex = 0;
+    runCounter = 0;
 }
 }

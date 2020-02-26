@@ -602,5 +602,37 @@ TEST_F(AdaptiveTrackTests, twoSequencesWithReset) {
     assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
+
+TEST_F(AdaptiveTrackTests, twoSequencesWithReset2) {
+    setStartingX(65);
+    setFirstSequenceRunCount(2);
+    setFirstSequenceStepSize(8);
+    setFirstSequenceDown(2);
+    setFirstSequenceUp(1);
+    secondSequence().runCount = 1;
+    secondSequence().stepSize = 4;
+    secondSequence().down = 2;
+    secondSequence().up = 1;
+    auto track = construct();
+    assertXEqualsAfterDown(track, 65);
+    assertXEqualsAfterDown(track, 65 - 8);
+    assertXEqualsAfterDown(track, 65 - 8);
+    assertXEqualsAfterDown(track, 65 - 8 - 8);
+    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8);
+    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8);
+    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8);
+    reset(track);
+    assertXEqualsAfterDown(track, 65);
+    assertXEqualsAfterDown(track, 65 - 8);
+    assertXEqualsAfterDown(track, 65 - 8);
+    assertXEqualsAfterDown(track, 65 - 8 - 8);
+    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8);
+    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8);
+    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8);
+    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4);
+    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4);
+    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
+    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
+}
 }
 }
