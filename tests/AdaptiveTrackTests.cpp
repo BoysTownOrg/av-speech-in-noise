@@ -3,6 +3,9 @@
 #include <gtest/gtest.h>
 
 namespace adaptive_track::tests {
+namespace {
+void reset(AdaptiveTrack &track) { track.reset(); }
+
 class AdaptiveTrackFacade {
     AdaptiveTrack track;
 
@@ -39,7 +42,11 @@ class AdaptiveTrackFacade {
     void assertReversalsEquals(int expected) {
         assertEqual(expected, reversals());
     }
+
+    void reset() { tests::reset(track); }
 };
+
+void reset(AdaptiveTrackFacade &track) { track.reset(); }
 
 class AdaptiveTrackTests : public ::testing::Test {
   protected:
@@ -528,5 +535,26 @@ TEST_F(AdaptiveTrackTests, sanityTest) {
     assertCompleteAfterDown(track);
     assertCompleteAfterUp(track);
     assertXEquals(track, -10);
+}
+
+TEST_F(AdaptiveTrackTests, reset) {
+    setFirstSequenceUp(1);
+    setFirstSequenceDown(1);
+    setFirstSequenceStepSize(4);
+    setFirstSequenceRunCount(999);
+    setStartingX(5);
+    auto track = construct();
+    assertXEqualsAfterDown(track, 5 - 4);
+    assertXEqualsAfterUp(track, 5 - 4 + 4);
+    assertXEqualsAfterDown(track, 5 - 4 + 4 - 4);
+    assertXEqualsAfterDown(track, 5 - 4 + 4 - 4 - 4);
+    assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 - 4 + 4);
+    reset(track);
+    assertXEqualsAfterDown(track, 5 - 4);
+    assertXEqualsAfterUp(track, 5 - 4 + 4);
+    assertXEqualsAfterDown(track, 5 - 4 + 4 - 4);
+    assertXEqualsAfterDown(track, 5 - 4 + 4 - 4 - 4);
+    assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 - 4 + 4);
+}
 }
 }
