@@ -1,5 +1,6 @@
 #include "ModelEventListenerStub.h"
 #include "TargetListStub.h"
+#include "TargetListSetReaderStub.h"
 #include "assert-utility.h"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
@@ -10,10 +11,14 @@ class AdaptiveMethodStub : public AdaptiveMethod {
   public:
     void initialize(const AdaptiveTest &t, TargetListReader *reader) override {
         test_ = &t;
-        targetListReader = reader;
+        targetListReader_ = reader;
     }
 
     [[nodiscard]] auto test() const { return test_; }
+
+    [[nodiscard]] auto targetListReader() const -> TargetListReader * {
+        return targetListReader_;
+    }
 
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> std::string override { return {}; }
@@ -32,7 +37,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
 
   private:
     const AdaptiveTest *test_{};
-    TargetListReader *targetListReader{};
+    TargetListReader *targetListReader_{};
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {
@@ -369,11 +374,13 @@ class ModelTests : public ::testing::Test {
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
     TargetListStub targetsWithReplacement;
+    TargetListSetReaderStub targetListReader;
     FiniteTargetListStub silentIntervals;
     FiniteTargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
-    ModelImpl model{adaptiveMethod, fixedLevelMethod, targetsWithReplacement,
-        silentIntervals, everyTargetOnce, internalModel};
+    ModelImpl model{adaptiveMethod, fixedLevelMethod, targetListReader,
+        targetsWithReplacement, silentIntervals, everyTargetOnce,
+        internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{

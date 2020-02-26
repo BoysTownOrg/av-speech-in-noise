@@ -79,7 +79,7 @@ class RecognitionTestModel {
 
 class ModelImpl : public Model {
   public:
-    ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
+    ModelImpl(AdaptiveMethod &, FixedLevelMethod &, TargetListReader &,
         TargetList &targetsWithReplacement,
         FiniteTargetList &silentIntervalTargets,
         FiniteTargetList &everyTargetOnce, RecognitionTestModel &);

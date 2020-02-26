@@ -4,9 +4,9 @@
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
-    FixedLevelMethod &fixedLevelMethod, TargetList &targetsWithReplacement,
-    FiniteTargetList &silentIntervalTargets, FiniteTargetList &everyTargetOnce,
-    RecognitionTestModel &model)
+    FixedLevelMethod &fixedLevelMethod, TargetListReader &,
+    TargetList &targetsWithReplacement, FiniteTargetList &silentIntervalTargets,
+    FiniteTargetList &everyTargetOnce, RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacement{targetsWithReplacement},
       silentIntervalTargets{silentIntervalTargets},

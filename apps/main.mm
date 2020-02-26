@@ -263,7 +263,7 @@ void main() {
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
     RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
         &responseEvaluator, &outputFile, &randomizer};
-    ModelImpl model{adaptiveMethod, fixedLevelMethod, infiniteTargetList,
+    ModelImpl model{adaptiveMethod, fixedLevelMethod, targetListReader, infiniteTargetList,
         silentIntervals, allStimuli,
         model_internal};
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 430);
