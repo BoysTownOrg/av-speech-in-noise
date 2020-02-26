@@ -560,9 +560,7 @@ static void showNextTrialButton(View::Experimenter *view) {
     view->showNextTrialButton();
 }
 
-void Presenter::Experimenter::show() {
-    view->show();
-}
+void Presenter::Experimenter::show() { view->show(); }
 
 void Presenter::Experimenter::start() {
     view->show();

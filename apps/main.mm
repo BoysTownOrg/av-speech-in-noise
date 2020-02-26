@@ -191,10 +191,6 @@ void main() {
     target_list::FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
     target_list::FileFilterDecorator fileExtensions{&reader, &fileExtensions_};
     MersenneTwisterRandomizer randomizer;
-    target_list::RandomizedTargetListWithReplacementFactory targetListFactory{
-        &fileExtensions, &randomizer};
-    target_list::SubdirectoryTargetListReader targetListReader{
-        &targetListFactory, &reader};
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
@@ -263,7 +259,15 @@ void main() {
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
     RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
         &responseEvaluator, &outputFile, &randomizer};
-    ModelImpl model{adaptiveMethod, fixedLevelMethod, targetListReader, infiniteTargetList,
+    target_list::RandomizedTargetListWithReplacementFactory targetsWithReplacementFactory{
+        &fileExtensions, &randomizer};
+    target_list::SubdirectoryTargetListReader targetsWithReplacementReader{
+        &targetsWithReplacementFactory, &reader};
+    target_list::CyclicRandomizedTargetList::Factory cyclicTargetsFactory{
+        &fileExtensions, &randomizer};
+    target_list::SubdirectoryTargetListReader cyclicTargetsReader{
+        &cyclicTargetsFactory, &reader};
+    ModelImpl model{adaptiveMethod, fixedLevelMethod, targetsWithReplacementReader, cyclicTargetsReader, infiniteTargetList,
         silentIntervals, allStimuli,
         model_internal};
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 430);

@@ -114,7 +114,7 @@ class ModelStub : public Model {
         initializedWithDelayedMasker_ = true;
     }
 
-    void initializeWithCyclicTargets(const AdaptiveTest &p) {
+    void initializeWithCyclicTargets(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithCyclicTargets_ = true;
     }
@@ -148,8 +148,7 @@ class ModelStub : public Model {
         return audioDevices_;
     }
 
-    void submit(
-        const coordinate_response_measure::Response &p) override {
+    void submit(const coordinate_response_measure::Response &p) override {
         responseParameters_ = p;
     }
 
@@ -163,9 +162,7 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void submit(const open_set::FreeResponse &s) override {
-        freeResponse_ = s;
-    }
+    void submit(const open_set::FreeResponse &s) override { freeResponse_ = s; }
 
     void submit(const open_set::CorrectKeywords &s) override {
         correctKeywords_ = s;
@@ -1794,8 +1791,7 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submit(
-        const coordinate_response_measure::Response &) override {
+    void submit(const coordinate_response_measure::Response &) override {
         throw RequestFailure{errorMessage};
     }
 
