@@ -218,7 +218,7 @@ void main() {
         &textFileReader, &trackSettingsInterpreter};
     AdaptiveMethodImpl adaptiveMethod{&trackSettingsReader,
         &snrTrackFactory, &responseEvaluator, &randomizer};
-    target_list::RandomizedTargetListWithReplacement infiniteTargetList{
+    target_list::RandomizedTargetListWithReplacement targetsWithReplacement{
         &fileExtensions, &randomizer};
     target_list::FileIdentifierExcluderFilter originalStimuli_{
         {"100", "200", "300", "400"}};
@@ -267,9 +267,9 @@ void main() {
         &fileExtensions, &randomizer};
     target_list::SubdirectoryTargetListReader cyclicTargetsReader{
         &cyclicTargetsFactory, &reader};
-    ModelImpl model{adaptiveMethod, fixedLevelMethod, targetsWithReplacementReader, cyclicTargetsReader, infiniteTargetList,
-        silentIntervals, allStimuli,
-        model_internal};
+    ModelImpl model{adaptiveMethod, fixedLevelMethod,
+        targetsWithReplacementReader, cyclicTargetsReader,
+        targetsWithReplacement, silentIntervals, allStimuli, model_internal};
     auto testerWindowFrame = NSMakeRect(15, 15, 900, 430);
     auto testerWindowViewMargin = 15;
     auto experimenterContentFrame = NSMakeRect(testerWindowViewMargin,
