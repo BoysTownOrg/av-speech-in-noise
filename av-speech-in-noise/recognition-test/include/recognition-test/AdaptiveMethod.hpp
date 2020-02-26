@@ -88,7 +88,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     open_set::AdaptiveTrial lastOpenSetTrial{};
     open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     const AdaptiveTest *test{};
-    TargetListReader *targetListSetReader;
     TrackSettingsReader *trackSettingsReader;
     Track::Factory *snrTrackFactory;
     ResponseEvaluator *evaluator;
