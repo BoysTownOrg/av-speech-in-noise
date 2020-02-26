@@ -45,8 +45,8 @@ class TrackSettingsReader {
 
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
-    AdaptiveMethodImpl(TargetListReader *, TrackSettingsReader *,
-        Track::Factory *, ResponseEvaluator *, Randomizer *);
+    AdaptiveMethodImpl(TrackSettingsReader *, Track::Factory *,
+        ResponseEvaluator *, Randomizer *);
     void initialize(const AdaptiveTest &, TargetListReader *) override;
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;

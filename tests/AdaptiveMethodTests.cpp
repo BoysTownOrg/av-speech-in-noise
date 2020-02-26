@@ -277,8 +277,8 @@ class AdaptiveMethodTests : public ::testing::Test {
     ResponseEvaluatorStub evaluator;
     RandomizerStub randomizer;
     OutputFileStub outputFile;
-    AdaptiveMethodImpl method{&targetListSetReader, &trackSettingsReader,
-        &snrTrackFactory, &evaluator, &randomizer};
+    AdaptiveMethodImpl method{
+        &trackSettingsReader, &snrTrackFactory, &evaluator, &randomizer};
     Initializing initializing{targetListSetReader};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectCoordinateResponse submittingCorrectCoordinateResponse{

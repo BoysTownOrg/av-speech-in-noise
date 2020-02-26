@@ -220,7 +220,7 @@ void main() {
     TextFileReaderImpl textFileReader;
     TrackSettingsReaderImpl trackSettingsReader{
         &textFileReader, &trackSettingsInterpreter};
-    AdaptiveMethodImpl adaptiveMethod{&targetListReader, &trackSettingsReader,
+    AdaptiveMethodImpl adaptiveMethod{&trackSettingsReader,
         &snrTrackFactory, &responseEvaluator, &randomizer};
     target_list::RandomizedTargetListWithReplacement infiniteTargetList{
         &fileExtensions, &randomizer};

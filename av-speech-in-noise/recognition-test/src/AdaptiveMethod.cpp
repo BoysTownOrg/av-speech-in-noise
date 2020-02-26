@@ -4,9 +4,9 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-AdaptiveMethodImpl::AdaptiveMethodImpl(TargetListReader *,
-    TrackSettingsReader *trackSettingsReader, Track::Factory *snrTrackFactory,
-    ResponseEvaluator *evaluator, Randomizer *randomizer)
+AdaptiveMethodImpl::AdaptiveMethodImpl(TrackSettingsReader *trackSettingsReader,
+    Track::Factory *snrTrackFactory, ResponseEvaluator *evaluator,
+    Randomizer *randomizer)
     : trackSettingsReader{trackSettingsReader},
       snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
                                                                   randomizer} {}
