@@ -96,5 +96,6 @@ auto AdaptiveTrack::reversals() -> int { return reversals_; }
 void AdaptiveTrack::reset() {
     x_ = startingX_;
     sameDirectionConsecutiveCount = 0;
+    reversals_ = 0;
 }
 }

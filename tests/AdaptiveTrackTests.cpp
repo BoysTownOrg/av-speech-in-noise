@@ -537,7 +537,7 @@ TEST_F(AdaptiveTrackTests, sanityTest) {
     assertXEquals(track, -10);
 }
 
-TEST_F(AdaptiveTrackTests, reset) {
+TEST_F(AdaptiveTrackTests, resetResetsTracking) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(2);
     setFirstSequenceStepSize(4);
@@ -551,6 +551,20 @@ TEST_F(AdaptiveTrackTests, reset) {
     assertXEqualsAfterDown(track, 5);
     assertXEqualsAfterUp(track, 5 + 4);
     assertXEqualsAfterDown(track, 5 + 4);
+}
+
+TEST_F(AdaptiveTrackTests, resetResetsReversals) {
+    setFirstSequenceUp(1);
+    setFirstSequenceDown(1);
+    setFirstSequenceStepSize(4);
+    setFirstSequenceRunCount(999);
+    setStartingX(5);
+    auto track = construct();
+    down(track);
+    up(track);
+    assertReversalsEquals(track, 1);
+    reset(track);
+    assertReversalsEquals(track, 0);
 }
 }
 }
