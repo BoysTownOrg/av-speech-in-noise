@@ -634,5 +634,19 @@ TEST_F(AdaptiveTrackTests, twoSequencesWithReset2) {
     assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
+
+TEST_F(AdaptiveTrackTests,
+    completeIfPushedDownBumpLimitConsecutiveTimesAtFloorAfterReset) {
+    setStartingX(-10);
+    setFloor(-10);
+    setBumpLimit(3);
+    setFirstSequenceRunCount(999);
+    auto track = construct();
+    assertIncompleteAfterDown(track);
+    reset(track);
+    assertIncompleteAfterDown(track);
+    assertIncompleteAfterDown(track);
+    assertCompleteAfterDown(track);
+}
 }
 }

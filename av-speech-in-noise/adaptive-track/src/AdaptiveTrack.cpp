@@ -100,5 +100,6 @@ void AdaptiveTrack::reset() {
     previousStep = Step::undefined;
     sequenceIndex = 0;
     runCounter = 0;
+    bumpCount_ = 0;
 }
 }
