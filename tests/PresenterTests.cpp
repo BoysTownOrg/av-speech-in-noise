@@ -634,8 +634,7 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
 
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
-        confirmingAdaptivePassFailTest,
-        submittingPassedTrial);
+        confirmingAdaptivePassFailTest, submittingPassedTrial);
 }
 
 PRESENTER_TEST(
@@ -771,7 +770,8 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
     run(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
     assertFalse(experimenterView.nextTrialButtonShown());
 }

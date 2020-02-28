@@ -239,9 +239,7 @@ class ViewStub : public View {
             return trackSettingsFile_;
         }
 
-        auto testSettingsFile() -> std::string {
-            return testSettingsFile_;
-        }
+        auto testSettingsFile() -> std::string { return testSettingsFile_; }
 
         auto calibrationLevel_dB_SPL() -> std::string override {
             return calibrationLevel_;
@@ -297,7 +295,7 @@ class ViewStub : public View {
             trackSettingsFile_ = std::move(s);
         }
 
-        void setTestSettingsFile(std::string s) {
+        void setTestSettingsFile(std::string s) override {
             testSettingsFile_ = std::move(s);
         }
 
@@ -538,7 +536,7 @@ class ViewStub : public View {
 
         void display(std::string s) override { displayed_ = std::move(s); }
 
-        void secondaryDisplay(std::string s) {
+        void secondaryDisplay(std::string s) override {
             secondaryDisplayed_ = std::move(s);
         }
 
