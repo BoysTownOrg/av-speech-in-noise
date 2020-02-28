@@ -540,13 +540,7 @@ ADAPTIVE_TRACK_TEST(twoSequencesWithReset2) {
     secondSequence().down = 2;
     secondSequence().up = 1;
     auto track{construct()};
-    assertXEqualsAfterDown(track, 65);
-    assertXEqualsAfterDown(track, 65 - 8);
-    assertXEqualsAfterDown(track, 65 - 8);
-    assertXEqualsAfterDown(track, 65 - 8 - 8);
-    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8);
-    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8);
-    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8);
+    update(track, "dddduud");
     reset(track);
     assertXEqualsAfterDown(track, 65);
     assertXEqualsAfterDown(track, 65 - 8);
