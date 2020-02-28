@@ -122,6 +122,7 @@ class AdaptiveTrackTests : public ::testing::Test {
     AdaptiveTrackTests() {
         settings.rule = &rule;
         rule.resize(3);
+        setFirstSequenceRunCount(999);
     }
 
     auto firstSequence() -> auto & { return rule.at(0); }
@@ -170,7 +171,6 @@ ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize1Down1Up) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     setFirstSequenceStepSize(4);
-    setFirstSequenceRunCount(999);
     setStartingX(5);
     auto track = construct();
     assertXEqualsAfterDown(track, 5 - 4);
@@ -184,7 +184,6 @@ ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize2Down1Up) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(2);
     setFirstSequenceStepSize(4);
-    setFirstSequenceRunCount(999);
     setStartingX(5);
     auto track = construct();
     assertXEqualsAfterDown(track, 5);
@@ -199,7 +198,6 @@ ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize1Down2Up) {
     setFirstSequenceDown(1);
     setFirstSequenceUp(2);
     setFirstSequenceStepSize(4);
-    setFirstSequenceRunCount(999);
     setStartingX(5);
     auto track = construct();
     assertXEqualsAfterDown(track, 5 - 4);
@@ -227,7 +225,6 @@ ADAPTIVE_TRACK_TEST(floorActsAsLowerLimit) {
     setFirstSequenceDown(1);
     setFirstSequenceStepSize(4);
     setStartingX(5);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     assertXEquals(track, 5);
     assertXEqualsAfterDown(track, 5 - 4);
@@ -239,7 +236,6 @@ ADAPTIVE_TRACK_TEST(ceilingActsAsUpperLimit) {
     setFirstSequenceUp(1);
     setFirstSequenceStepSize(4);
     setStartingX(5);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     assertXEquals(track, 5);
     assertXEqualsAfterUp(track, 5 + 4);
@@ -268,7 +264,6 @@ TEST_F(
     setStartingX(10);
     setCeiling(10);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     assertIncompleteAfterUp(track);
     assertIncompleteAfterUp(track);
@@ -280,7 +275,6 @@ TEST_F(AdaptiveTrackTests,
     setStartingX(10);
     setCeiling(10);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     update(track, "uuu");
     assertCompleteAfterUp(track);
@@ -291,7 +285,6 @@ TEST_F(AdaptiveTrackTests,
     setStartingX(10);
     setCeiling(10);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     update(track, "uuu");
     assertCompleteAfterDown(track);
@@ -304,7 +297,6 @@ TEST_F(
     setFirstSequenceStepSize(7 - 5);
     setFirstSequenceUp(1);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     assertXEquals(track, 5);
     assertXEqualsAfterUp(track, 7);
@@ -318,7 +310,6 @@ TEST_F(
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     assertIncompleteAfterDown(track);
     assertIncompleteAfterDown(track);
@@ -330,7 +321,6 @@ TEST_F(AdaptiveTrackTests,
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     update(track, "ddd");
     assertCompleteAfterDown(track);
@@ -341,7 +331,6 @@ TEST_F(AdaptiveTrackTests,
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     update(track, "ddd");
     assertCompleteAfterUp(track);
@@ -354,7 +343,6 @@ TEST_F(
     setFirstSequenceStepSize(7 - 5);
     setFirstSequenceDown(1);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     assertXEquals(track, -5);
     assertXEqualsAfterDown(track, -7);
@@ -368,7 +356,6 @@ TEST_F(AdaptiveTrackTests,
     setStartingX(-5);
     setFloor(-5);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     update(track, "ddud");
     assertIncomplete(track);
@@ -379,7 +366,6 @@ TEST_F(AdaptiveTrackTests,
     setStartingX(5);
     setCeiling(5);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     update(track, "uudu");
     assertIncomplete(track);
@@ -495,7 +481,6 @@ ADAPTIVE_TRACK_TEST(sanityTest) {
     setFirstSequenceStepSize(3);
     setBumpLimit(5);
     setFloor(-10);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     assertIncomplete(track);
     assertXEqualsAfterDown(track, 0);
@@ -537,7 +522,6 @@ ADAPTIVE_TRACK_TEST(resetResetsTracking) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(2);
     setFirstSequenceStepSize(4);
-    setFirstSequenceRunCount(999);
     setStartingX(5);
     auto track = construct();
     assertXEqualsAfterDown(track, 5);
@@ -552,7 +536,6 @@ ADAPTIVE_TRACK_TEST(resetResetsTracking) {
 ADAPTIVE_TRACK_TEST(resetResetsReversals) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     down(track);
     up(track);
@@ -636,7 +619,6 @@ TEST_F(AdaptiveTrackTests,
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
-    setFirstSequenceRunCount(999);
     auto track = construct();
     assertIncompleteAfterDown(track);
     reset(track);
