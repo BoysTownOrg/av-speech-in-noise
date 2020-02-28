@@ -48,6 +48,72 @@ class AdaptiveTrackFacade {
 
 void reset(AdaptiveTrackFacade &track) { track.reset(); }
 
+void down(AdaptiveTrackFacade &track) { track.down(); }
+
+void up(AdaptiveTrackFacade &track) { track.up(); }
+
+template <typename T> void assertXEquals(AdaptiveTrackFacade &track, T x) {
+    track.assertXEquals(x);
+}
+
+void assertIncomplete(AdaptiveTrackFacade &track) { track.assertIncomplete(); }
+
+void assertComplete(AdaptiveTrackFacade &track) { track.assertComplete(); }
+
+void update(AdaptiveTrackFacade &track, const std::string &s) {
+    track.update(s);
+}
+
+void assertReversalsEquals(AdaptiveTrackFacade &track, int n) {
+    track.assertReversalsEquals(n);
+}
+
+void assertReversalsEqualsAfterDown(AdaptiveTrackFacade &track, int n) {
+    down(track);
+    assertReversalsEquals(track, n);
+}
+
+void assertReversalsEqualsAfterUp(AdaptiveTrackFacade &track, int n) {
+    up(track);
+    assertReversalsEquals(track, n);
+}
+
+void assertIncompleteAfterDown(AdaptiveTrackFacade &track) {
+    down(track);
+    assertIncomplete(track);
+}
+
+void assertIncompleteAfterUp(AdaptiveTrackFacade &track) {
+    up(track);
+    assertIncomplete(track);
+}
+
+void assertCompleteAfterUp(AdaptiveTrackFacade &track) {
+    up(track);
+    assertComplete(track);
+}
+
+void assertCompleteAfterDown(AdaptiveTrackFacade &track) {
+    down(track);
+    assertComplete(track);
+}
+
+void assertXEqualsAfterDown(AdaptiveTrackFacade &track, int x) {
+    down(track);
+    assertXEquals(track, x);
+}
+
+void assertXEqualsAfterUp(AdaptiveTrackFacade &track, int x) {
+    up(track);
+    assertXEquals(track, x);
+}
+
+void assertXEqualsAfter(
+    AdaptiveTrackFacade &track, const std::string &directions, int x) {
+    update(track, directions);
+    assertXEquals(track, x);
+}
+
 class AdaptiveTrackTests : public ::testing::Test {
   protected:
     AdaptiveTrack::Settings settings{};
@@ -83,94 +149,24 @@ class AdaptiveTrackTests : public ::testing::Test {
     void setFirstSequenceUp(int x) { firstSequence().up = x; }
 
     void setFirstSequenceDown(int x) { firstSequence().down = x; }
-
-    static void down(AdaptiveTrackFacade &track) { track.down(); }
-
-    static void up(AdaptiveTrackFacade &track) { track.up(); }
-
-    template <typename T> void assertXEquals(AdaptiveTrackFacade &track, T x) {
-        track.assertXEquals(x);
-    }
-
-    static void assertIncomplete(AdaptiveTrackFacade &track) {
-        track.assertIncomplete();
-    }
-
-    static void assertComplete(AdaptiveTrackFacade &track) {
-        track.assertComplete();
-    }
-
-    static void update(AdaptiveTrackFacade &track, const std::string &s) {
-        track.update(s);
-    }
-
-    static void assertReversalsEquals(AdaptiveTrackFacade &track, int n) {
-        track.assertReversalsEquals(n);
-    }
-
-    static void assertReversalsEqualsAfterDown(
-        AdaptiveTrackFacade &track, int n) {
-        down(track);
-        assertReversalsEquals(track, n);
-    }
-
-    static void assertReversalsEqualsAfterUp(
-        AdaptiveTrackFacade &track, int n) {
-        up(track);
-        assertReversalsEquals(track, n);
-    }
-
-    static void assertIncompleteAfterDown(AdaptiveTrackFacade &track) {
-        down(track);
-        assertIncomplete(track);
-    }
-
-    static void assertIncompleteAfterUp(AdaptiveTrackFacade &track) {
-        up(track);
-        assertIncomplete(track);
-    }
-
-    static void assertCompleteAfterUp(AdaptiveTrackFacade &track) {
-        up(track);
-        assertComplete(track);
-    }
-
-    static void assertCompleteAfterDown(AdaptiveTrackFacade &track) {
-        down(track);
-        assertComplete(track);
-    }
-
-    void assertXEqualsAfterDown(AdaptiveTrackFacade &track, int x) {
-        down(track);
-        assertXEquals(track, x);
-    }
-
-    void assertXEqualsAfterUp(AdaptiveTrackFacade &track, int x) {
-        up(track);
-        assertXEquals(track, x);
-    }
-
-    void assertXEqualsAfter(
-        AdaptiveTrackFacade &track, const std::string &directions, int x) {
-        update(track, directions);
-        assertXEquals(track, x);
-    }
 };
 
-TEST_F(AdaptiveTrackTests, xEqualToStartingX) {
+#define ADAPTIVE_TRACK_TEST(a) TEST_F(AdaptiveTrackTests, a)
+
+ADAPTIVE_TRACK_TEST(xEqualToStartingX) {
     setStartingX(1);
     auto track = construct();
     assertXEquals(track, 1);
 }
 
-TEST_F(AdaptiveTrackTests, noRunSequencesMeansNoChanges) {
+ADAPTIVE_TRACK_TEST(noRunSequencesMeansNoChanges) {
     setStartingX(5);
     auto track = construct();
     assertXEqualsAfterDown(track, 5);
     assertXEqualsAfterUp(track, 5);
 }
 
-TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize1Down1Up) {
+ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize1Down1Up) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     setFirstSequenceStepSize(4);
@@ -184,7 +180,7 @@ TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize1Down1Up) {
     assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 - 4 + 4);
 }
 
-TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize2Down1Up) {
+ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize2Down1Up) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(2);
     setFirstSequenceStepSize(4);
@@ -199,7 +195,7 @@ TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize2Down1Up) {
     assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 + 4);
 }
 
-TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize1Down2Up) {
+ADAPTIVE_TRACK_TEST(stepsAccordingToStepSize1Down2Up) {
     setFirstSequenceDown(1);
     setFirstSequenceUp(2);
     setFirstSequenceStepSize(4);
@@ -214,7 +210,7 @@ TEST_F(AdaptiveTrackTests, stepsAccordingToStepSize1Down2Up) {
     assertXEqualsAfterUp(track, 5 - 4 + 4 - 4 + 4);
 }
 
-TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
+ADAPTIVE_TRACK_TEST(exhaustedRunSequencesMeansNoMoreStepChanges) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     setFirstSequenceRunCount(3);
@@ -226,7 +222,7 @@ TEST_F(AdaptiveTrackTests, exhaustedRunSequencesMeansNoMoreStepChanges) {
     assertXEqualsAfterUp(track, 5 - 4 + 4 - 4);
 }
 
-TEST_F(AdaptiveTrackTests, floorActsAsLowerLimit) {
+ADAPTIVE_TRACK_TEST(floorActsAsLowerLimit) {
     setFloor(0);
     setFirstSequenceDown(1);
     setFirstSequenceStepSize(4);
@@ -238,7 +234,7 @@ TEST_F(AdaptiveTrackTests, floorActsAsLowerLimit) {
     assertXEqualsAfterDown(track, 0);
 }
 
-TEST_F(AdaptiveTrackTests, ceilingActsAsUpperLimit) {
+ADAPTIVE_TRACK_TEST(ceilingActsAsUpperLimit) {
     setCeiling(10);
     setFirstSequenceUp(1);
     setFirstSequenceStepSize(4);
@@ -250,13 +246,13 @@ TEST_F(AdaptiveTrackTests, ceilingActsAsUpperLimit) {
     assertXEqualsAfterUp(track, 10);
 }
 
-TEST_F(AdaptiveTrackTests, incompleteWhenNonZeroRunCount) {
+ADAPTIVE_TRACK_TEST(incompleteWhenNonZeroRunCount) {
     setFirstSequenceRunCount(3);
     auto track = construct();
     assertIncomplete(track);
 }
 
-TEST_F(AdaptiveTrackTests, completeWhenExhausted) {
+ADAPTIVE_TRACK_TEST(completeWhenExhausted) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     setFirstSequenceRunCount(3);
@@ -390,7 +386,7 @@ TEST_F(AdaptiveTrackTests,
 }
 
 // see https://doi.org/10.1121/1.1912375
-TEST_F(AdaptiveTrackTests, LevittFigure4) {
+ADAPTIVE_TRACK_TEST(LevittFigure4) {
     setStartingX(0);
     setFirstSequenceRunCount(8);
     setFirstSequenceStepSize(1);
@@ -401,7 +397,7 @@ TEST_F(AdaptiveTrackTests, LevittFigure4) {
 }
 
 // see https://doi.org/10.1121/1.1912375
-TEST_F(AdaptiveTrackTests, LevittFigure5) {
+ADAPTIVE_TRACK_TEST(LevittFigure5) {
     setStartingX(0);
     setFirstSequenceRunCount(5);
     setFirstSequenceStepSize(1);
@@ -411,7 +407,7 @@ TEST_F(AdaptiveTrackTests, LevittFigure5) {
     assertXEqualsAfter(track, "dddduduududdddduuuddddd", 1);
 }
 
-TEST_F(AdaptiveTrackTests, twoSequences) {
+ADAPTIVE_TRACK_TEST(twoSequences) {
     setStartingX(65);
     setFirstSequenceRunCount(2);
     setFirstSequenceStepSize(8);
@@ -435,7 +431,7 @@ TEST_F(AdaptiveTrackTests, twoSequences) {
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
 
-TEST_F(AdaptiveTrackTests, threeSequences) {
+ADAPTIVE_TRACK_TEST(threeSequences) {
     setStartingX(0);
     setFirstSequenceRunCount(1);
     setFirstSequenceStepSize(10);
@@ -453,7 +449,7 @@ TEST_F(AdaptiveTrackTests, threeSequences) {
     assertXEqualsAfter(track, "ddudddudddddudddddduddd", 3);
 }
 
-TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
+ADAPTIVE_TRACK_TEST(varyingDownUpRule) {
     setStartingX(65);
     setFirstSequenceRunCount(2);
     setFirstSequenceStepSize(8);
@@ -477,7 +473,7 @@ TEST_F(AdaptiveTrackTests, varyingDownUpRule) {
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
 
-TEST_F(AdaptiveTrackTests, reversals) {
+ADAPTIVE_TRACK_TEST(reversals) {
     setStartingX(0);
     setFirstSequenceRunCount(1000);
     setFirstSequenceDown(2);
@@ -492,7 +488,7 @@ TEST_F(AdaptiveTrackTests, reversals) {
     assertReversalsEqualsAfterDown(track, 3);
 }
 
-TEST_F(AdaptiveTrackTests, sanityTest) {
+ADAPTIVE_TRACK_TEST(sanityTest) {
     setStartingX(0);
     setFirstSequenceUp(1);
     setFirstSequenceDown(2);
@@ -537,7 +533,7 @@ TEST_F(AdaptiveTrackTests, sanityTest) {
     assertXEquals(track, -10);
 }
 
-TEST_F(AdaptiveTrackTests, resetResetsTracking) {
+ADAPTIVE_TRACK_TEST(resetResetsTracking) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(2);
     setFirstSequenceStepSize(4);
@@ -553,7 +549,7 @@ TEST_F(AdaptiveTrackTests, resetResetsTracking) {
     assertXEqualsAfterDown(track, 5 + 4);
 }
 
-TEST_F(AdaptiveTrackTests, resetResetsReversals) {
+ADAPTIVE_TRACK_TEST(resetResetsReversals) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
     setFirstSequenceRunCount(999);
@@ -567,7 +563,7 @@ TEST_F(AdaptiveTrackTests, resetResetsReversals) {
     assertReversalsEquals(track, 0);
 }
 
-TEST_F(AdaptiveTrackTests, twoSequencesWithReset) {
+ADAPTIVE_TRACK_TEST(twoSequencesWithReset) {
     setStartingX(65);
     setFirstSequenceRunCount(2);
     setFirstSequenceStepSize(8);
@@ -603,7 +599,7 @@ TEST_F(AdaptiveTrackTests, twoSequencesWithReset) {
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
 
-TEST_F(AdaptiveTrackTests, twoSequencesWithReset2) {
+ADAPTIVE_TRACK_TEST(twoSequencesWithReset2) {
     setStartingX(65);
     setFirstSequenceRunCount(2);
     setFirstSequenceStepSize(8);
