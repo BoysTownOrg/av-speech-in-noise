@@ -605,6 +605,15 @@ class ViewStub : public View {
     bool browseCancelled_{};
 };
 
+class TestSettingsInterpreterStub : public TestSettingsInterpreter {
+  public:
+    explicit TestSettingsInterpreterStub(const TestSettings &testSettings)
+        : testSettings{testSettings} {}
+
+  private:
+    const TestSettings &testSettings;
+};
+
 class UseCase {
   public:
     virtual ~UseCase() = default;
@@ -1337,6 +1346,8 @@ class PresenterTests : public ::testing::Test {
     SubmittingCorrectKeywords submittingCorrectKeywords{experimenterView};
     SubmittingFailedTrial submittingFailedTrial{experimenterView};
     ExitingTest exitingTest{&experimenterView};
+    TestSettings testSettings;
+    TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
 
     static auto auditoryOnlyConditionName() -> std::string {
         return conditionName(Condition::auditoryOnly);
@@ -1637,6 +1648,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertPassesTargetListDirectory(ConfirmingTestSetup &useCase) {
         setupView.setTargetListDirectory("a");
+        testSettings.targetListDirectory = "a";
         run(useCase);
         assertEqual("a", useCase.test(model).targetListDirectory);
     }

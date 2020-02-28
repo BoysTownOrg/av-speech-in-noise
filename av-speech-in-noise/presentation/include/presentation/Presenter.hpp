@@ -44,6 +44,15 @@ constexpr auto methodName(Method c) -> const char * {
     }
 }
 
+struct TestSettings {
+    std::string targetListDirectory;
+};
+
+class TestSettingsInterpreter {
+  public:
+    virtual ~TestSettingsInterpreter() = default;
+};
+
 class View {
   public:
     class CoordinateResponseMeasure {
