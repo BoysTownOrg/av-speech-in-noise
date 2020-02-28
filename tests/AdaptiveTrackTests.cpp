@@ -477,19 +477,6 @@ ADAPTIVE_TRACK_TEST(sanityTest) {
     assertXEquals(track, -10);
 }
 
-ADAPTIVE_TRACK_TEST(resetResetsTracking) {
-    setFirstSequenceUp(1);
-    setFirstSequenceDown(2);
-    setFirstSequenceStepSize(4);
-    setStartingX(5);
-    auto track{construct()};
-    update(track, "dud");
-    reset(track);
-    assertXEqualsAfterDown(track, 5);
-    assertXEqualsAfterUp(track, 5 + 4);
-    assertXEqualsAfterDown(track, 5 + 4);
-}
-
 ADAPTIVE_TRACK_TEST(resetResetsReversals) {
     setFirstSequenceUp(1);
     setFirstSequenceDown(1);
