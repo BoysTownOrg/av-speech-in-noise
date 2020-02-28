@@ -331,7 +331,7 @@ ADAPTIVE_TRACK_TEST(incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
     assertIncomplete(track);
 }
 
-// see https://doi.org/10.1121/1.1912375
+// https://doi.org/10.1121/1.1912375
 ADAPTIVE_TRACK_TEST(LevittFigure4) {
     setStartingX(0);
     setFirstSequenceRunCount(8);
@@ -342,7 +342,7 @@ ADAPTIVE_TRACK_TEST(LevittFigure4) {
     assertXEqualsAfter(track, "dduuuudduuuddddduuudduu", 1);
 }
 
-// see https://doi.org/10.1121/1.1912375
+// https://doi.org/10.1121/1.1912375
 ADAPTIVE_TRACK_TEST(LevittFigure5) {
     setStartingX(0);
     setFirstSequenceRunCount(5);
@@ -421,7 +421,6 @@ ADAPTIVE_TRACK_TEST(varyingDownUpRule) {
 
 ADAPTIVE_TRACK_TEST(reversals) {
     setStartingX(0);
-    setFirstSequenceRunCount(1000);
     setFirstSequenceDown(2);
     setFirstSequenceUp(1);
     auto track{construct()};
@@ -484,9 +483,7 @@ ADAPTIVE_TRACK_TEST(resetResetsTracking) {
     setFirstSequenceStepSize(4);
     setStartingX(5);
     auto track{construct()};
-    assertXEqualsAfterDown(track, 5);
-    assertXEqualsAfterUp(track, 5 + 4);
-    assertXEqualsAfterDown(track, 5 + 4);
+    update(track, "dud");
     reset(track);
     assertXEqualsAfterDown(track, 5);
     assertXEqualsAfterUp(track, 5 + 4);
@@ -517,17 +514,7 @@ ADAPTIVE_TRACK_TEST(twoSequencesWithReset) {
     secondSequence().down = 2;
     secondSequence().up = 1;
     auto track{construct()};
-    assertXEqualsAfterDown(track, 65);
-    assertXEqualsAfterDown(track, 65 - 8);
-    assertXEqualsAfterDown(track, 65 - 8);
-    assertXEqualsAfterDown(track, 65 - 8 - 8);
-    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8);
-    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8);
-    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8);
-    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4);
-    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4);
-    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
-    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
+    update(track, "dddduuddddu");
     reset(track);
     assertXEqualsAfterDown(track, 65);
     assertXEqualsAfterDown(track, 65 - 8);
