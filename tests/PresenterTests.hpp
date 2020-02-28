@@ -1291,9 +1291,12 @@ class PresenterConstructionTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
+    TestSettings testSettings;
+    TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
 
     auto construct() -> Presenter {
-        return {model, view, testSetup, subject, experimenter};
+        return {model, view, testSetup, subject, experimenter,
+            testSettingsInterpreter};
     }
 };
 
@@ -1307,7 +1310,10 @@ class PresenterTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
-    Presenter presenter{model, view, testSetup, subject, experimenter};
+    TestSettings testSettings;
+    TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
+    Presenter presenter{
+        model, view, testSetup, subject, experimenter, testSettingsInterpreter};
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     BrowsingForTargetList browsingForTargetList{&setupView};
@@ -1346,8 +1352,6 @@ class PresenterTests : public ::testing::Test {
     SubmittingCorrectKeywords submittingCorrectKeywords{experimenterView};
     SubmittingFailedTrial submittingFailedTrial{experimenterView};
     ExitingTest exitingTest{&experimenterView};
-    TestSettings testSettings;
-    TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
 
     static auto auditoryOnlyConditionName() -> std::string {
         return conditionName(Condition::auditoryOnly);
@@ -1860,6 +1864,8 @@ class PresenterFailureTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
+    TestSettings testSettings;
+    TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
 
     void useFailingModel(std::string s = {}) {
         failure.setErrorMessage(std::move(s));
@@ -1867,7 +1873,8 @@ class PresenterFailureTests : public ::testing::Test {
     }
 
     void confirmTestSetup() {
-        Presenter presenter{*model, view, testSetup, subject, experimenter};
+        Presenter presenter{*model, view, testSetup, subject, experimenter,
+            testSettingsInterpreter};
         setupView.confirmTestSetup();
     }
 

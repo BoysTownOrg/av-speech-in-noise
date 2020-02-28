@@ -100,7 +100,7 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup) {
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
-    Experimenter &experimenterPresenter)
+    Experimenter &experimenterPresenter, TestSettingsInterpreter &)
     : freeResponseTrialCompletionHandler{experimenterPresenter},
       passFailTrialCompletionHandler{experimenterPresenter},
       correctKeywordsTrialCompletionHandler{experimenterPresenter},

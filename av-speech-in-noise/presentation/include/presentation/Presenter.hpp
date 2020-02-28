@@ -327,7 +327,7 @@ class Presenter : public Model::EventListener {
     };
 
     Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
-        Experimenter &);
+        Experimenter &, TestSettingsInterpreter &);
     void trialComplete() override;
     void run();
     void confirmTestSetup();
