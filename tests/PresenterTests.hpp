@@ -239,6 +239,10 @@ class ViewStub : public View {
             return trackSettingsFile_;
         }
 
+        auto testSettingsFile() -> std::string {
+            return testSettingsFile_;
+        }
+
         auto calibrationLevel_dB_SPL() -> std::string override {
             return calibrationLevel_;
         }
@@ -293,6 +297,10 @@ class ViewStub : public View {
             trackSettingsFile_ = std::move(s);
         }
 
+        void setTestSettingsFile(std::string s) {
+            testSettingsFile_ = std::move(s);
+        }
+
         void setSession(std::string s) { session_ = std::move(s); }
 
         void setTargetListDirectory(std::string s) override {
@@ -337,6 +345,10 @@ class ViewStub : public View {
             listener_->browseForTrackSettingsFile();
         }
 
+        void browseForTestSettingsFile() {
+            listener_->browseForTestSettingsFile();
+        }
+
         void browseForCalibration() { listener_->browseForCalibration(); }
 
       private:
@@ -355,6 +367,7 @@ class ViewStub : public View {
         std::string calibrationFilePath_;
         std::string method_;
         std::string trackSettingsFile_;
+        std::string testSettingsFile_;
         EventListener *listener_{};
         bool shown_{};
         bool hidden_{};
@@ -1201,6 +1214,26 @@ class BrowsingForTrackSettingsFile : public BrowsingEnteredPathUseCase {
     }
 };
 
+class BrowsingForTestSettingsFile : public BrowsingEnteredPathUseCase {
+    ViewStub::TestSetupViewStub *view;
+
+  public:
+    explicit BrowsingForTestSettingsFile(ViewStub::TestSetupViewStub *view)
+        : view{view} {}
+
+    void run() override { view->browseForTestSettingsFile(); }
+
+    void setResult(ViewStub &view_, std::string s) override {
+        view_.setBrowseForOpeningFileResult(s);
+    }
+
+    auto entry() -> std::string override { return view->testSettingsFile(); }
+
+    void setEntry(std::string s) override {
+        view->setTestSettingsFile(std::move(s));
+    }
+};
+
 class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
     ViewStub::TestSetupViewStub *view;
 
@@ -1269,6 +1302,7 @@ class PresenterTests : public ::testing::Test {
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter presenter{model, view, testSetup, subject, experimenter};
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
+    BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     BrowsingForTargetList browsingForTargetList{&setupView};
     BrowsingForMasker browsingForMasker{&setupView};
     BrowsingForCalibration browsingForCalibration{&setupView};

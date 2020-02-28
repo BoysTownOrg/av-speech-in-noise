@@ -290,6 +290,11 @@ void Presenter::browseForTrackSettingsFile() {
         browseForOpeningFile(view), &TestSetup::setTrackSettingsFile);
 }
 
+void Presenter::browseForTestSettingsFile() {
+    applyIfBrowseNotCancelled(
+        browseForOpeningFile(view), &TestSetup::setTestSettingsFile);
+}
+
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
     view->populateConditionMenu({conditionName(Condition::audioVisual),
         conditionName(Condition::auditoryOnly)});
@@ -416,12 +421,20 @@ void Presenter::TestSetup::browseForTrackSettingsFile() {
     parent->browseForTrackSettingsFile();
 }
 
+void Presenter::TestSetup::browseForTestSettingsFile() {
+    parent->browseForTestSettingsFile();
+}
+
 void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
     view->setCalibrationFilePath(std::move(s));
 }
 
 void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
     view->setTrackSettingsFile(std::move(s));
+}
+
+void Presenter::TestSetup::setTestSettingsFile(std::string s) {
+    view->setTestSettingsFile(std::move(s));
 }
 
 auto Presenter::TestSetup::defaultAdaptive() -> bool {

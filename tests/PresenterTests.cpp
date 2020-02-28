@@ -1022,6 +1022,10 @@ PRESENTER_TEST(exitTestShowsTestSetupView) {
     assertSetupViewShown();
 }
 
+PRESENTER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
+    assertBrowseResultPassedToEntry(browsingForTestSettingsFile);
+}
+
 PRESENTER_TEST(browseForTrackSettingsFileUpdatesTrackSettingsFile) {
     assertBrowseResultPassedToEntry(browsingForTrackSettingsFile);
 }

@@ -80,6 +80,7 @@ class View {
             virtual void browseForMasker() = 0;
             virtual void browseForCalibration() = 0;
             virtual void browseForTrackSettingsFile() = 0;
+            virtual void browseForTestSettingsFile() = 0;
         };
 
         virtual ~TestSetup() = default;
@@ -102,6 +103,7 @@ class View {
         virtual void setTargetListDirectory(std::string) = 0;
         virtual void setCalibrationFilePath(std::string) = 0;
         virtual void setTrackSettingsFile(std::string) = 0;
+        virtual void setTestSettingsFile(std::string) = 0;
         virtual void populateConditionMenu(std::vector<std::string>) = 0;
         virtual void populateMethodMenu(std::vector<std::string>) = 0;
     };
@@ -161,6 +163,7 @@ class Presenter : public Model::EventListener {
         void confirmTestSetup() override;
         void browseForCalibration() override;
         void browseForTrackSettingsFile() override;
+        void browseForTestSettingsFile() override;
         void show();
         void hide();
         void becomeChild(Presenter *parent);
@@ -168,6 +171,7 @@ class Presenter : public Model::EventListener {
         void setStimulusList(std::string);
         void setCalibrationFilePath(std::string);
         void setTrackSettingsFile(std::string);
+        void setTestSettingsFile(std::string);
         auto adaptiveTest() -> AdaptiveTest;
         auto fixedLevelTest() -> FixedLevelTest;
         auto calibrationParameters() -> Calibration;
@@ -324,6 +328,7 @@ class Presenter : public Model::EventListener {
     void browseForMasker();
     void browseForCalibration();
     void browseForTrackSettingsFile();
+    void browseForTestSettingsFile();
     void submitSubjectResponse();
     void submitFreeResponse();
     void submitPassedTrial();
