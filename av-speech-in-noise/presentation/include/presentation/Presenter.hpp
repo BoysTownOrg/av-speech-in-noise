@@ -22,25 +22,25 @@ enum class Method {
 constexpr auto methodName(Method c) -> const char * {
     switch (c) {
     case Method::adaptivePassFail:
-        return "adaptive open-set";
+        return "adaptive pass fail";
     case Method::adaptiveCorrectKeywords:
-        return "adaptive correct keywords";
+        return "adaptive number keywords";
     case Method::defaultAdaptiveCoordinateResponseMeasure:
-        return "adaptive closed-set";
+        return "adaptive CRM";
     case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
-        return "adaptive closed-set single speaker";
+        return "adaptive CRM not spatial";
     case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
-        return "adaptive closed-set delayed masker";
+        return "adaptive CRM spatial";
     case Method::fixedLevelFreeResponseWithTargetReplacement:
-        return "fixed-level open-set with replacement";
+        return "fixed-level free response with replacement";
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-        return "fixed-level closed-set with replacement";
+        return "fixed-level CRM with replacement";
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
-        return "fixed-level open-set silent intervals";
+        return "fixed-level free response silent intervals";
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
-        return "fixed-level closed-set silent intervals";
+        return "fixed-level CRM silent intervals";
     case Method::fixedLevelFreeResponseWithAllTargets:
-        return "fixed-level open-set all stimuli";
+        return "fixed-level free response all stimuli";
     }
 }
 
