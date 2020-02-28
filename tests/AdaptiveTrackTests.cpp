@@ -483,11 +483,12 @@ ADAPTIVE_TRACK_TEST(resetResetsReversals) {
     auto track{construct()};
     down(track);
     up(track);
-    assertReversalsEquals(track, 1);
     reset(track);
     assertReversalsEquals(track, 0);
     down(track);
     assertReversalsEquals(track, 0);
+    up(track);
+    assertReversalsEquals(track, 1);
 }
 
 ADAPTIVE_TRACK_TEST(twoSequencesWithReset) {
