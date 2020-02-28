@@ -1058,6 +1058,10 @@ PRESENTER_TEST(browseForTrackSettingsFileCancelDoesNotChangeTrackSettingsFile) {
     assertCancellingBrowseDoesNotChangePath(browsingForTrackSettingsFile);
 }
 
+PRESENTER_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
+    assertCancellingBrowseDoesNotChangePath(browsingForTestSettingsFile);
+}
+
 PRESENTER_TEST(completingTrialShowsExitTestButton) {
     completeTrial();
     assertTrue(exitTestButtonShown());
