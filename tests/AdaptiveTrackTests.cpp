@@ -535,12 +535,6 @@ ADAPTIVE_TRACK_TEST(twoSequencesWithReset2) {
     assertXEqualsAfterDown(track, 65 - 8);
     assertXEqualsAfterDown(track, 65 - 8 - 8);
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8);
-    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8);
-    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8);
-    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4);
-    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4);
-    assertXEqualsAfterDown(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
-    assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
 
 ADAPTIVE_TRACK_TEST(
