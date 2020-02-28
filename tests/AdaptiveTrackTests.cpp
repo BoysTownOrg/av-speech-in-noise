@@ -561,7 +561,7 @@ ADAPTIVE_TRACK_TEST(
     setFloor(-10);
     setBumpLimit(3);
     auto track{construct()};
-    assertIncompleteAfterDown(track);
+    down(track);
     reset(track);
     assertIncompleteAfterDown(track);
     assertIncompleteAfterDown(track);
