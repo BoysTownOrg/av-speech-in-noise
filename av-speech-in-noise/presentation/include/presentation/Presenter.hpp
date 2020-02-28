@@ -53,6 +53,11 @@ class TestSettingsInterpreter {
     virtual ~TestSettingsInterpreter() = default;
 };
 
+class TextFileReader {
+  public:
+    virtual ~TextFileReader() = default;
+};
+
 class View {
   public:
     class CoordinateResponseMeasure {

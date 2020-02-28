@@ -614,6 +614,9 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     const TestSettings &testSettings;
 };
 
+class TextFileReaderStub : public TextFileReader {
+};
+
 class UseCase {
   public:
     virtual ~UseCase() = default;
