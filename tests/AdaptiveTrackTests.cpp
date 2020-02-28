@@ -259,8 +259,7 @@ ADAPTIVE_TRACK_TEST(completeWhenExhausted) {
     assertCompleteAfterUp(track);
 }
 
-TEST_F(
-    AdaptiveTrackTests, completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
+ADAPTIVE_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling) {
     setStartingX(10);
     setCeiling(10);
     setBumpLimit(3);
@@ -270,7 +269,7 @@ TEST_F(
     assertCompleteAfterUp(track);
 }
 
-TEST_F(AdaptiveTrackTests,
+ADAPTIVE_TRACK_TEST(
     stillCompleteIfPushedUpBumpLimitPlusOneConsecutiveTimesAtCeiling) {
     setStartingX(10);
     setCeiling(10);
@@ -280,7 +279,7 @@ TEST_F(AdaptiveTrackTests,
     assertCompleteAfterUp(track);
 }
 
-TEST_F(AdaptiveTrackTests,
+ADAPTIVE_TRACK_TEST(
     stillCompleteIfPushedUpBumpLimitConsecutiveTimesAtCeilingThenPushedDown) {
     setStartingX(10);
     setCeiling(10);
@@ -290,8 +289,7 @@ TEST_F(AdaptiveTrackTests,
     assertCompleteAfterDown(track);
 }
 
-TEST_F(
-    AdaptiveTrackTests, completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling2) {
+ADAPTIVE_TRACK_TEST(completeIfPushedUpBumpLimitConsecutiveTimesAtCeiling2) {
     setStartingX(5);
     setCeiling(7);
     setFirstSequenceStepSize(7 - 5);
@@ -305,8 +303,7 @@ TEST_F(
     assertCompleteAfterUp(track);
 }
 
-TEST_F(
-    AdaptiveTrackTests, completeIfPushedDownBumpLimitConsecutiveTimesAtFloor) {
+ADAPTIVE_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor) {
     setStartingX(-10);
     setFloor(-10);
     setBumpLimit(3);
@@ -316,7 +313,7 @@ TEST_F(
     assertCompleteAfterDown(track);
 }
 
-TEST_F(AdaptiveTrackTests,
+ADAPTIVE_TRACK_TEST(
     stillCompleteIfPushedDownBumpLimitPlusOneConsecutiveTimesAtFloor) {
     setStartingX(-10);
     setFloor(-10);
@@ -326,7 +323,7 @@ TEST_F(AdaptiveTrackTests,
     assertCompleteAfterDown(track);
 }
 
-TEST_F(AdaptiveTrackTests,
+ADAPTIVE_TRACK_TEST(
     stillCompleteIfPushedDownBumpLimitConsecutiveTimesAtFloorThenPushedUp) {
     setStartingX(-10);
     setFloor(-10);
@@ -336,8 +333,7 @@ TEST_F(AdaptiveTrackTests,
     assertCompleteAfterUp(track);
 }
 
-TEST_F(
-    AdaptiveTrackTests, completeIfPushedDownBumpLimitConsecutiveTimesAtFloor2) {
+ADAPTIVE_TRACK_TEST(completeIfPushedDownBumpLimitConsecutiveTimesAtFloor2) {
     setStartingX(-5);
     setFloor(-7);
     setFirstSequenceStepSize(7 - 5);
@@ -351,8 +347,7 @@ TEST_F(
     assertCompleteAfterDown(track);
 }
 
-TEST_F(AdaptiveTrackTests,
-    incompleteIfPushedDownBumpLimitNonconsecutiveTimesAtFloor) {
+ADAPTIVE_TRACK_TEST(incompleteIfPushedDownBumpLimitNonconsecutiveTimesAtFloor) {
     setStartingX(-5);
     setFloor(-5);
     setBumpLimit(3);
@@ -361,8 +356,7 @@ TEST_F(AdaptiveTrackTests,
     assertIncomplete(track);
 }
 
-TEST_F(AdaptiveTrackTests,
-    incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
+ADAPTIVE_TRACK_TEST(incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
     setStartingX(5);
     setCeiling(5);
     setBumpLimit(3);
@@ -614,7 +608,7 @@ ADAPTIVE_TRACK_TEST(twoSequencesWithReset2) {
     assertXEqualsAfterUp(track, 65 - 8 - 8 + 8 + 8 - 4 - 4);
 }
 
-TEST_F(AdaptiveTrackTests,
+ADAPTIVE_TRACK_TEST(
     completeIfPushedDownBumpLimitConsecutiveTimesAtFloorAfterReset) {
     setStartingX(-10);
     setFloor(-10);
