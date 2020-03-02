@@ -107,8 +107,11 @@ static auto adaptive(const std::string &contents) -> bool {
             return entry == methodName(Method::adaptivePassFail) ||
                 entry == methodName(Method::adaptiveCorrectKeywords) ||
                 entry ==
+                methodName(Method::
+                        adaptiveCoordinateResponseMeasureWithDelayedMasker) ||
+                entry ==
                 methodName(
-                    Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
+                    Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
     }
     return false;
 }
