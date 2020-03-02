@@ -98,6 +98,12 @@ static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
         test.startingSnr_dB = std::stoi(entry);
 }
 
+static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
+    const std::string &entry) {
+    if (entryName == name(TestSetting::startingSnr))
+        test.snr_dB = std::stoi(entry);
+}
+
 static auto adaptive(const std::string &contents) -> bool {
     std::stringstream stream{contents};
     for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream)) {
@@ -133,6 +139,11 @@ void TestSettingsInterpreterImpl::apply(
         model.initializeTest(test);
     } else {
         FixedLevelTest test;
+        applyToEachEntry(
+            [&](auto entryName, auto entry) {
+                assignFixedLevel(test, entryName, entry);
+            },
+            contents);
         applyToEachEntry(
             [&](auto entryName, auto entry) { assign(test, entryName, entry); },
             contents);

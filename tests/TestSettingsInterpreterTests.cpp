@@ -56,6 +56,20 @@ void assertPassesSimpleAdaptiveSettings(
     assertEqual(5, adaptiveTest(model).startingSnr_dB);
 }
 
+void assertPassesSimpleFixedLevelSettings(
+    TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, m),
+            entryWithNewline(TestSetting::targets, "a"),
+            entryWithNewline(TestSetting::masker, "b"),
+            entryWithNewline(TestSetting::maskerLevel, "65"),
+            entryWithNewline(TestSetting::startingSnr, "5")});
+    assertEqual("a", fixedLevelTest(model).targetListDirectory);
+    assertEqual("b", fixedLevelTest(model).maskerFilePath);
+    assertEqual(65, fixedLevelTest(model).maskerLevel_dB_SPL);
+    assertEqual(5, fixedLevelTest(model).snr_dB);
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -105,6 +119,10 @@ TEST_SETTINGS_INTERPRETER_TEST(tbd2) {
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFreeResponseWithAllTargetsPassesSimpleFixedLevelSettings) {
+    assertPassesSimpleFixedLevelSettings(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(tbd3) {
