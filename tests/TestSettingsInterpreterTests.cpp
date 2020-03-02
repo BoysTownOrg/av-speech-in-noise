@@ -81,6 +81,10 @@ void apply(TestSettingsInterpreterImpl &interpreter, Model &model, Method m) {
     apply(interpreter, model, {entryWithNewline(TestSetting::method, m)});
 }
 
+void assertDefaultAdaptiveTestInitialized(ModelStub &model) {
+    assertTrue(model.defaultAdaptiveTestInitialized());
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -92,18 +96,18 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     apply(interpreter, model, Method::adaptivePassFail);
-    assertTrue(model.defaultAdaptiveTestInitialized());
+    assertDefaultAdaptiveTestInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
     apply(interpreter, model, Method::adaptiveCorrectKeywords);
-    assertTrue(model.defaultAdaptiveTestInitialized());
+    assertDefaultAdaptiveTestInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     defaultAdaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
     apply(interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
-    assertTrue(model.defaultAdaptiveTestInitialized());
+    assertDefaultAdaptiveTestInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
