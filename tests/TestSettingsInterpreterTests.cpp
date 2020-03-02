@@ -148,6 +148,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithSilentIntervalTargetsInitializesAdaptiveTest) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+            Method::fixedLevelFreeResponseWithSilentIntervalTargets)});
+    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptivePassFail);

@@ -166,8 +166,11 @@ void TestSettingsInterpreterImpl::apply(
             contents);
         test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
         if (methodName(contents) ==
-            methodName(Method::
-                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets))
+                methodName(Method::
+                        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets) ||
+            methodName(contents) ==
+                methodName(
+                    Method::fixedLevelFreeResponseWithSilentIntervalTargets))
             model.initializeSilentIntervalsTest(test);
         else if (methodName(contents) ==
             methodName(Method::fixedLevelFreeResponseWithAllTargets))
