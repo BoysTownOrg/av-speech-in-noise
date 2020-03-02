@@ -85,6 +85,11 @@ void assertDefaultAdaptiveTestInitialized(ModelStub &model) {
     assertTrue(model.defaultAdaptiveTestInitialized());
 }
 
+void assertFixedLevelTestWithSilentIntervalTargetsInitialized(
+    ModelStub &model) {
+    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -128,7 +133,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsInitializesFixedLevelTest) {
     apply(interpreter, model,
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
-    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+    assertFixedLevelTestWithSilentIntervalTargetsInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -148,7 +153,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithSilentIntervalTargetsInitializesFixedLevelTest) {
     apply(interpreter, model,
         Method::fixedLevelFreeResponseWithSilentIntervalTargets);
-    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+    assertFixedLevelTestWithSilentIntervalTargetsInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
