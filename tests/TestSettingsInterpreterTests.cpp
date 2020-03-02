@@ -124,7 +124,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsInitializesAdaptiveTest) {
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsInitializesFixedLevelTest) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method,
             Method::
@@ -133,7 +133,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelCoordinateResponseMeasureWithTargetReplacementInitializesAdaptiveTest) {
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementInitializesFixedLevelTest) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method,
             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement)});
@@ -141,7 +141,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithAllTargetsInitializesAdaptiveTest) {
+    fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method,
             Method::fixedLevelFreeResponseWithAllTargets)});
@@ -149,11 +149,19 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
-    fixedLevelFreeResponseWithSilentIntervalTargetsInitializesAdaptiveTest) {
+    fixedLevelFreeResponseWithSilentIntervalTargetsInitializesFixedLevelTest) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method,
             Method::fixedLevelFreeResponseWithSilentIntervalTargets)});
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithTargetReplacementInitializesFixedLevelTest) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+            Method::fixedLevelFreeResponseWithTargetReplacement)});
+    assertTrue(model.defaultFixedLevelTestInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
