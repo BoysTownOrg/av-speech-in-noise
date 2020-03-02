@@ -30,8 +30,10 @@ auto entryWithNewline(TestSetting p, Condition c) -> std::string {
     return entryWithNewline(p, conditionName(c));
 }
 
-auto adaptiveTest(ModelStub &m) -> AdaptiveTest {
-    return m.adaptiveTest();
+auto adaptiveTest(ModelStub &m) -> AdaptiveTest { return m.adaptiveTest(); }
+
+auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
+    return m.fixedLevelTest();
 }
 
 class TestSettingsInterpreterTests : public ::testing::Test {
@@ -61,13 +63,27 @@ TEST_F(TestSettingsInterpreterTests, tbd) {
     assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
 }
 
+TEST_F(TestSettingsInterpreterTests, tbd2) {
+    apply({entryWithNewline(TestSetting::method,
+               Method::fixedLevelFreeResponseWithAllTargets),
+        entryWithNewline(TestSetting::targets, "a"),
+        entryWithNewline(TestSetting::masker, "b"),
+        entryWithNewline(TestSetting::maskerLevel, "65"),
+        entryWithNewline(TestSetting::condition, Condition::audioVisual)});
+    assertEqual("a", fixedLevelTest(model).targetListDirectory);
+    assertEqual("b", fixedLevelTest(model).maskerFilePath);
+    assertEqual(65, fixedLevelTest(model).maskerLevel_dB_SPL);
+    assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
+}
+
 TEST_F(TestSettingsInterpreterTests, oneSequence) {
     TrackingSequence sequence{};
     sequence.up = 1;
     sequence.down = 2;
     sequence.runCount = 3;
     sequence.stepSize = 4;
-    apply({entryWithNewline(TestSetting::up, "1"),
+    apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+        entryWithNewline(TestSetting::up, "1"),
         entryWithNewline(TestSetting::down, "2"),
         entryWithNewline(TestSetting::reversalsPerStepSize, "3"),
         entryWithNewline(TestSetting::stepSizes, "4")});
@@ -85,7 +101,8 @@ TEST_F(TestSettingsInterpreterTests, twoSequences) {
     second.down = 4;
     second.runCount = 6;
     second.stepSize = 8;
-    apply({entryWithNewline(TestSetting::up, "1 2"),
+    apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+        entryWithNewline(TestSetting::up, "1 2"),
         entryWithNewline(TestSetting::down, "3 4"),
         entryWithNewline(TestSetting::reversalsPerStepSize, "5 6"),
         entryWithNewline(TestSetting::stepSizes, "7 8")});
