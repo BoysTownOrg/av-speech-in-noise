@@ -110,8 +110,10 @@ static auto adaptive(const std::string &contents) -> bool {
                 methodName(Method::
                         adaptiveCoordinateResponseMeasureWithDelayedMasker) ||
                 entry ==
-                methodName(
-                    Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
+                methodName(Method::
+                        adaptiveCoordinateResponseMeasureWithSingleSpeaker) ||
+                entry ==
+                methodName(Method::defaultAdaptiveCoordinateResponseMeasure);
     }
     return false;
 }

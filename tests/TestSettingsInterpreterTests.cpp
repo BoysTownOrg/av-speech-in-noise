@@ -92,6 +92,12 @@ TEST_F(TestSettingsInterpreterTests,
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
 }
 
+TEST_F(TestSettingsInterpreterTests,
+    defaultAdaptiveCoordinateResponseMeasurePassesSimpleAdaptiveSettings) {
+    assertPassesSimpleAdaptiveSettings(
+        interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
+}
+
 TEST_F(TestSettingsInterpreterTests, tbd2) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
