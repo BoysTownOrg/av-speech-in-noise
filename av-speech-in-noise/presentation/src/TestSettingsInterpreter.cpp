@@ -45,7 +45,9 @@ static void applyToStepSize(TrackingSequence &sequence, int x) {
 
 static void applyToEachTrackingRule(AdaptiveTest &test,
     const std::function<void(TrackingSequence &, int)> &f,
-    const std::vector<int> &v) {
+    const std::string &entry) {
+    auto v{vectorOfInts(entry)};
+    resizeTrackingRuleEnough(test, v);
     for (gsl::index i{0}; i < v.size(); ++i)
         f(test.trackingRule.at(i), v.at(i));
 }
@@ -63,23 +65,15 @@ void TestSettingsInterpreterImpl::apply(
             test.maskerFilePath = entry;
         else if (entryName == name(TestSetting::maskerLevel))
             test.maskerLevel_dB_SPL = std::stoi(entry);
-        else if (entryName == name(TestSetting::up)) {
-            auto v{vectorOfInts(entry)};
-            resizeTrackingRuleEnough(test, v);
-            applyToEachTrackingRule(test, applyToUp, v);
-        } else if (entryName == name(TestSetting::down)) {
-            auto v{vectorOfInts(entry)};
-            resizeTrackingRuleEnough(test, v);
-            applyToEachTrackingRule(test, applyToDown, v);
-        } else if (entryName == name(TestSetting::reversalsPerStepSize)) {
-            auto v{vectorOfInts(entry)};
-            resizeTrackingRuleEnough(test, v);
-            applyToEachTrackingRule(test, applyToRunCount, v);
-        } else if (entryName == name(TestSetting::stepSizes)) {
-            auto v{vectorOfInts(entry)};
-            resizeTrackingRuleEnough(test, v);
-            applyToEachTrackingRule(test, applyToStepSize, v);
-        } else if (entryName == name(TestSetting::condition))
+        else if (entryName == name(TestSetting::up))
+            applyToEachTrackingRule(test, applyToUp, entry);
+        else if (entryName == name(TestSetting::down))
+            applyToEachTrackingRule(test, applyToDown, entry);
+        else if (entryName == name(TestSetting::reversalsPerStepSize))
+            applyToEachTrackingRule(test, applyToRunCount, entry);
+        else if (entryName == name(TestSetting::stepSizes))
+            applyToEachTrackingRule(test, applyToStepSize, entry);
+        else if (entryName == name(TestSetting::condition))
             if (entry == conditionName(Condition::audioVisual))
                 test.condition = Condition::audioVisual;
     }
