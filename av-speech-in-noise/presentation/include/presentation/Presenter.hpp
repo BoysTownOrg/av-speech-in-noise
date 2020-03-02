@@ -200,12 +200,9 @@ class Presenter : public Model::EventListener {
             -> bool;
         auto fixedLevelSilentIntervals() -> bool;
         auto fixedLevelAllStimuli() -> bool;
-        auto singleSpeaker() -> bool;
         auto adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool;
         auto adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool;
-        auto adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool;
         auto adaptiveCorrectKeywords() -> bool;
-        auto delayedMasker() -> bool;
         auto testSettingsFile() -> std::string;
 
       private:
