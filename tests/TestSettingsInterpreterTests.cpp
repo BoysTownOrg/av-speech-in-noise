@@ -44,9 +44,11 @@ TEST_F(TestSettingsInterpreterTests, adaptivePassFailInitializesAdaptiveTest) {
 TEST_F(TestSettingsInterpreterTests, tbd) {
     apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail),
         entryWithNewline(TestSetting::targets, "a"),
-        entryWithNewline(TestSetting::masker, "b")});
+        entryWithNewline(TestSetting::masker, "b"),
+        entryWithNewline(TestSetting::maskerLevel, "65")});
     assertEqual("a", model.adaptiveTest().targetListDirectory);
     assertEqual("b", model.adaptiveTest().maskerFilePath);
+    assertEqual(65, model.adaptiveTest().maskerLevel_dB_SPL);
 }
 }
 }

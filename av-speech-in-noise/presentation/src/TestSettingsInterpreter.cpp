@@ -24,6 +24,8 @@ void TestSettingsInterpreterImpl::apply(
             test.targetListDirectory = entry;
         else if (entryName == name(TestSetting::masker))
             test.maskerFilePath = entry;
+        else if (entryName == name(TestSetting::maskerLevel))
+            test.maskerLevel_dB_SPL = std::stoi(entry);
     }
     model.initializeTest(test);
 }
