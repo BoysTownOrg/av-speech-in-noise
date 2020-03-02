@@ -614,7 +614,18 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     const TestSettings &testSettings;
 };
 
-class TextFileReaderStub : public TextFileReader {};
+class TextFileReaderStub : public TextFileReader {
+  public:
+    [[nodiscard]] auto filePath() const -> std::string { return filePath_; }
+
+    auto read(const std::string &s) -> std::string {
+        filePath_ = s;
+        return {};
+    }
+
+  private:
+    std::string filePath_;
+};
 
 class UseCase {
   public:
@@ -1659,6 +1670,13 @@ class PresenterTests : public ::testing::Test {
         testSettings.targetListDirectory = "a";
         run(useCase);
         assertEqual("a", useCase.test(model).targetListDirectory);
+    }
+
+    void assertPassesTestSettingsFileToTextFileReader(
+        ConfirmingTestSetup &useCase) {
+        setupView.setTestSettingsFile("a");
+        run(useCase);
+        assertEqual("a", textFileReader.filePath());
     }
 
     void assertPassesSubjectId(ConfirmingTestSetup &useCase) {

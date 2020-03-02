@@ -56,6 +56,7 @@ class TestSettingsInterpreter {
 class TextFileReader {
   public:
     virtual ~TextFileReader() = default;
+    virtual auto read(const std::string &) -> std::string = 0;
 };
 
 class View {
@@ -108,6 +109,7 @@ class View {
         virtual auto calibrationFilePath() -> std::string = 0;
         virtual auto targetListDirectory() -> std::string = 0;
         virtual auto trackSettingsFile() -> std::string = 0;
+        virtual auto testSettingsFile() -> std::string = 0;
         virtual auto testerId() -> std::string = 0;
         virtual auto subjectId() -> std::string = 0;
         virtual auto condition() -> std::string = 0;
@@ -204,6 +206,7 @@ class Presenter : public Model::EventListener {
         auto adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool;
         auto adaptiveCorrectKeywords() -> bool;
         auto delayedMasker() -> bool;
+        auto testSettingsFile() -> std::string;
 
       private:
         auto defaultAdaptiveCoordinateResponseMeasure() -> bool;
@@ -384,6 +387,7 @@ class Presenter : public Model::EventListener {
     TestSetup &testSetup;
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
     Experimenter &experimenterPresenter;
+    TextFileReader &textFileReader;
     TrialCompletionHandler *trialCompletionHandler_{};
 };
 }

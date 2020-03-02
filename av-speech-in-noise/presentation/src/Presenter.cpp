@@ -83,7 +83,9 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
-static void initializeTest(Model &model, Presenter::TestSetup &testSetup) {
+static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
+    TextFileReader &textFileReader) {
+    textFileReader.read(testSetup.testSettingsFile());
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
@@ -101,7 +103,7 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup) {
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter, TestSettingsInterpreter &,
-    TextFileReader &)
+    TextFileReader &textFileReader)
     : freeResponseTrialCompletionHandler{experimenterPresenter},
       passFailTrialCompletionHandler{experimenterPresenter},
       correctKeywordsTrialCompletionHandler{experimenterPresenter},
@@ -110,6 +112,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       model{model}, view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       experimenterPresenter{experimenterPresenter},
+      textFileReader{textFileReader},
       trialCompletionHandler_{
           &coordinateResponseMeasureTrialCompletionHandler} {
     model.subscribe(this);
@@ -130,7 +133,7 @@ void Presenter::confirmTestSetup() {
 }
 
 void Presenter::confirmTestSetup_() {
-    initializeTest(model, testSetup);
+    initializeTest(model, testSetup, textFileReader);
     if (!testComplete(model)) {
         switchToTestView();
         trialCompletionHandler_ = trialCompletionHandler();
@@ -498,6 +501,10 @@ auto Presenter::TestSetup::coordinateResponseMeasure() -> bool {
 
 auto Presenter::TestSetup::method(Method m) -> bool {
     return view->method() == methodName(m);
+}
+
+auto Presenter::TestSetup::testSettingsFile() -> std::string {
+    return view->testSettingsFile();
 }
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(

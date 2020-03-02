@@ -425,6 +425,12 @@ PRESENTER_TEST(playCalibrationPassesLevel) {
 }
 
 PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsFileToTextFileReader) {
+    assertPassesTestSettingsFileToTextFileReader(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTargetList) {
     assertPassesTargetListDirectory(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
