@@ -62,50 +62,52 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TestSettingsInterpreterImpl interpreter;
 };
 
-TEST_F(TestSettingsInterpreterTests, adaptivePassFailInitializesAdaptiveTest) {
+#define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
+    TEST_F(TestSettingsInterpreterTests, a)
+
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail)});
     assertTrue(model.defaultAdaptiveTestInitialized());
 }
 
-TEST_F(TestSettingsInterpreterTests,
-    adaptivePassFailPassesSimpleAdaptiveSettings) {
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptivePassFail);
 }
 
-TEST_F(TestSettingsInterpreterTests,
+TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCorrectKeywordsPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptiveCorrectKeywords);
 }
 
-TEST_F(TestSettingsInterpreterTests,
+TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithDelayedMaskerPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
 }
 
-TEST_F(TestSettingsInterpreterTests,
+TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithSingleSpeakerPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
 }
 
-TEST_F(TestSettingsInterpreterTests,
+TEST_SETTINGS_INTERPRETER_TEST(
     defaultAdaptiveCoordinateResponseMeasurePassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
 }
 
-TEST_F(TestSettingsInterpreterTests, tbd2) {
+TEST_SETTINGS_INTERPRETER_TEST(tbd2) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
 }
 
-TEST_F(TestSettingsInterpreterTests, tbd3) {
+TEST_SETTINGS_INTERPRETER_TEST(tbd3) {
     apply(interpreter, model,
         {entryWithNewline(
              TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
@@ -119,7 +121,7 @@ TEST_F(TestSettingsInterpreterTests, tbd3) {
     assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
 }
 
-TEST_F(TestSettingsInterpreterTests, oneSequence) {
+TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
     TrackingSequence sequence{};
     sequence.up = 1;
     sequence.down = 2;
@@ -134,7 +136,7 @@ TEST_F(TestSettingsInterpreterTests, oneSequence) {
     assertEqual({sequence}, adaptiveTest(model).trackingRule);
 }
 
-TEST_F(TestSettingsInterpreterTests, twoSequences) {
+TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
     TrackingSequence first{};
     first.up = 1;
     first.down = 3;
