@@ -92,6 +92,21 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     assertTrue(model.defaultAdaptiveTestInitialized());
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
+    apply(interpreter, model,
+        {entryWithNewline(
+            TestSetting::method, Method::adaptiveCorrectKeywords)});
+    assertTrue(model.defaultAdaptiveTestInitialized());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    defaultAdaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+            Method::defaultAdaptiveCoordinateResponseMeasure)});
+    assertTrue(model.defaultAdaptiveTestInitialized());
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptivePassFail);
