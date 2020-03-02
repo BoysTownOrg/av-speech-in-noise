@@ -256,14 +256,6 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelFreeResponseWithTargetReplacement);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(tbd3) {
-    apply(interpreter, model,
-        {entryWithNewline(
-             TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
-            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
     TrackingSequence sequence{};
     sequence.up = 1;
