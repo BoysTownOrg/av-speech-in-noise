@@ -15,18 +15,26 @@ static auto nextLine(std::stringstream &stream) -> std::string {
 }
 
 static auto vectorOfInts(const std::string &s) -> std::vector<int> {
-    std::stringstream stream{s};
     std::vector<int> v;
+    std::stringstream stream{s};
     int x;
     while (stream >> x)
         v.push_back(x);
     return v;
 }
 
+static auto trackingRule(AdaptiveTest &test) -> TrackingRule & {
+    return test.trackingRule;
+}
+
+static auto trackingRule(const AdaptiveTest &test) -> const TrackingRule & {
+    return test.trackingRule;
+}
+
 static void resizeTrackingRuleEnough(
     AdaptiveTest &test, const std::vector<int> &v) {
-    if (test.trackingRule.size() < v.size())
-        test.trackingRule.resize(v.size());
+    if (trackingRule(test).size() < v.size())
+        trackingRule(test).resize(v.size());
 }
 
 static void applyToUp(TrackingSequence &sequence, int x) { sequence.up = x; }
@@ -49,24 +57,45 @@ static void applyToEachTrackingRule(AdaptiveTest &test,
     auto v{vectorOfInts(entry)};
     resizeTrackingRuleEnough(test, v);
     for (gsl::index i{0}; i < v.size(); ++i)
-        f(test.trackingRule.at(i), v.at(i));
+        f(trackingRule(test).at(i), v.at(i));
 }
 
-static void assign(Test &test, const std::string &contents) {
+static void applyToEachEntry(
+    const std::function<void(const std::string &, const std::string &)> &f,
+    const std::string &contents) {
     std::stringstream stream{contents};
     for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream)) {
         auto entryName{line.substr(0, entryDelimiter(line))};
         auto entry{line.substr(entryDelimiter(line) + 2)};
-        if (entryName == name(TestSetting::targets))
-            test.targetListDirectory = entry;
-        else if (entryName == name(TestSetting::masker))
-            test.maskerFilePath = entry;
-        else if (entryName == name(TestSetting::maskerLevel))
-            test.maskerLevel_dB_SPL = std::stoi(entry);
-        else if (entryName == name(TestSetting::condition))
-            if (entry == conditionName(Condition::audioVisual))
-                test.condition = Condition::audioVisual;
+        f(entryName, entry);
     }
+}
+
+static void assign(
+    Test &test, const std::string &entryName, const std::string &entry) {
+    if (entryName == name(TestSetting::targets))
+        test.targetListDirectory = entry;
+    else if (entryName == name(TestSetting::masker))
+        test.maskerFilePath = entry;
+    else if (entryName == name(TestSetting::maskerLevel))
+        test.maskerLevel_dB_SPL = std::stoi(entry);
+    else if (entryName == name(TestSetting::condition))
+        if (entry == conditionName(Condition::audioVisual))
+            test.condition = Condition::audioVisual;
+}
+
+static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
+    const std::string &entry) {
+    if (entryName == name(TestSetting::up))
+        applyToEachTrackingRule(test, applyToUp, entry);
+    else if (entryName == name(TestSetting::down))
+        applyToEachTrackingRule(test, applyToDown, entry);
+    else if (entryName == name(TestSetting::reversalsPerStepSize))
+        applyToEachTrackingRule(test, applyToRunCount, entry);
+    else if (entryName == name(TestSetting::stepSizes))
+        applyToEachTrackingRule(test, applyToStepSize, entry);
+    else if (entryName == name(TestSetting::startingSnr))
+        test.startingSnr_dB = std::stoi(entry);
 }
 
 static auto adaptive(const std::string &contents) -> bool {
@@ -80,34 +109,24 @@ static auto adaptive(const std::string &contents) -> bool {
     return false;
 }
 
-static auto assignAdaptive(AdaptiveTest &test, const std::string &contents) {
-    std::stringstream stream{contents};
-    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream)) {
-        auto entryName{line.substr(0, entryDelimiter(line))};
-        auto entry{line.substr(entryDelimiter(line) + 2)};
-        if (entryName == name(TestSetting::up))
-            applyToEachTrackingRule(test, applyToUp, entry);
-        else if (entryName == name(TestSetting::down))
-            applyToEachTrackingRule(test, applyToDown, entry);
-        else if (entryName == name(TestSetting::reversalsPerStepSize))
-            applyToEachTrackingRule(test, applyToRunCount, entry);
-        else if (entryName == name(TestSetting::stepSizes))
-            applyToEachTrackingRule(test, applyToStepSize, entry);
-        else if (entryName == name(TestSetting::startingSnr))
-            test.startingSnr_dB = std::stoi(entry);
-    }
-}
-
 void TestSettingsInterpreterImpl::apply(
     Model &model, const std::string &contents) {
     if (adaptive(contents)) {
         AdaptiveTest test;
-        assignAdaptive(test, contents);
-        assign(test, contents);
+        applyToEachEntry(
+            [&](auto entryName, auto entry) {
+                assignAdaptive(test, entryName, entry);
+            },
+            contents);
+        applyToEachEntry(
+            [&](auto entryName, auto entry) { assign(test, entryName, entry); },
+            contents);
         model.initializeTest(test);
     } else {
         FixedLevelTest test;
-        assign(test, contents);
+        applyToEachEntry(
+            [&](auto entryName, auto entry) { assign(test, entryName, entry); },
+            contents);
         model.initializeTest(test);
     }
 }
