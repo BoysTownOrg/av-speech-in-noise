@@ -210,6 +210,22 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveAuditoryOnly) {
     assertEqual(Condition::auditoryOnly, adaptiveTest(model).condition);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+             Method::fixedLevelFreeResponseWithTargetReplacement),
+            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
+    assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+             Method::fixedLevelFreeResponseWithTargetReplacement),
+            entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
+    assertEqual(Condition::auditoryOnly, fixedLevelTest(model).condition);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(
