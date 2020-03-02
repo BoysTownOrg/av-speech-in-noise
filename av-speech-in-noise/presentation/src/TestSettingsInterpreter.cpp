@@ -13,6 +13,15 @@ static auto nextLine(std::stringstream &stream) -> std::string {
     return line;
 }
 
+static auto vectorOfInts(const std::string &s) -> std::vector<int> {
+    std::stringstream stream{s};
+    std::vector<int> v;
+    int x;
+    while (stream >> x)
+        v.push_back(x);
+    return v;
+}
+
 void TestSettingsInterpreterImpl::apply(
     Model &model, const std::string &contents) {
     AdaptiveTest test;
@@ -27,15 +36,31 @@ void TestSettingsInterpreterImpl::apply(
             test.maskerFilePath = entry;
         else if (entryName == name(TestSetting::maskerLevel))
             test.maskerLevel_dB_SPL = std::stoi(entry);
-        else if (entryName == name(TestSetting::up))
-            test.trackingRule.front().up = std::stoi(entry);
-        else if (entryName == name(TestSetting::down))
-            test.trackingRule.front().down = std::stoi(entry);
-        else if (entryName == name(TestSetting::reversalsPerStepSize))
-            test.trackingRule.front().runCount = std::stoi(entry);
-        else if (entryName == name(TestSetting::stepSizes))
-            test.trackingRule.front().stepSize = std::stoi(entry);
-        else if (entryName == name(TestSetting::condition))
+        else if (entryName == name(TestSetting::up)) {
+            auto v{vectorOfInts(entry)};
+            if (test.trackingRule.size() < v.size())
+                test.trackingRule.resize(v.size());
+            for (gsl::index i{0}; i < v.size(); ++i)
+                test.trackingRule.at(i).up = v.at(i);
+        } else if (entryName == name(TestSetting::down)) {
+            auto v{vectorOfInts(entry)};
+            if (test.trackingRule.size() < v.size())
+                test.trackingRule.resize(v.size());
+            for (gsl::index i{0}; i < v.size(); ++i)
+                test.trackingRule.at(i).down = v.at(i);
+        } else if (entryName == name(TestSetting::reversalsPerStepSize)) {
+            auto v{vectorOfInts(entry)};
+            if (test.trackingRule.size() < v.size())
+                test.trackingRule.resize(v.size());
+            for (gsl::index i{0}; i < v.size(); ++i)
+                test.trackingRule.at(i).runCount = v.at(i);
+        } else if (entryName == name(TestSetting::stepSizes)) {
+            auto v{vectorOfInts(entry)};
+            if (test.trackingRule.size() < v.size())
+                test.trackingRule.resize(v.size());
+            for (gsl::index i{0}; i < v.size(); ++i)
+                test.trackingRule.at(i).stepSize = v.at(i);
+        } else if (entryName == name(TestSetting::condition))
             if (entry == conditionName(Condition::audioVisual))
                 test.condition = Condition::audioVisual;
     }

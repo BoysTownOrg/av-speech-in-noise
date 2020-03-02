@@ -30,6 +30,10 @@ auto entryWithNewline(TestSetting p, Condition c) -> std::string {
     return entryWithNewline(p, conditionName(c));
 }
 
+auto adaptiveTest(ModelStub &m) -> AdaptiveTest {
+    return m.adaptiveTest();
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -51,10 +55,10 @@ TEST_F(TestSettingsInterpreterTests, tbd) {
         entryWithNewline(TestSetting::masker, "b"),
         entryWithNewline(TestSetting::maskerLevel, "65"),
         entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    assertEqual("a", model.adaptiveTest().targetListDirectory);
-    assertEqual("b", model.adaptiveTest().maskerFilePath);
-    assertEqual(65, model.adaptiveTest().maskerLevel_dB_SPL);
-    assertEqual(Condition::audioVisual, model.adaptiveTest().condition);
+    assertEqual("a", adaptiveTest(model).targetListDirectory);
+    assertEqual("b", adaptiveTest(model).maskerFilePath);
+    assertEqual(65, adaptiveTest(model).maskerLevel_dB_SPL);
+    assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
 }
 
 TEST_F(TestSettingsInterpreterTests, oneSequence) {
@@ -67,8 +71,25 @@ TEST_F(TestSettingsInterpreterTests, oneSequence) {
         entryWithNewline(TestSetting::down, "2"),
         entryWithNewline(TestSetting::reversalsPerStepSize, "3"),
         entryWithNewline(TestSetting::stepSizes, "4")});
-    assertEqual({sequence}, model.adaptiveTest().trackingRule);
+    assertEqual({sequence}, adaptiveTest(model).trackingRule);
 }
 
+TEST_F(TestSettingsInterpreterTests, twoSequences) {
+    TrackingSequence first{};
+    first.up = 1;
+    first.down = 3;
+    first.runCount = 5;
+    first.stepSize = 7;
+    TrackingSequence second{};
+    second.up = 2;
+    second.down = 4;
+    second.runCount = 6;
+    second.stepSize = 8;
+    apply({entryWithNewline(TestSetting::up, "1 2"),
+        entryWithNewline(TestSetting::down, "3 4"),
+        entryWithNewline(TestSetting::reversalsPerStepSize, "5 6"),
+        entryWithNewline(TestSetting::stepSizes, "7 8")});
+    assertEqual({first, second}, adaptiveTest(model).trackingRule);
+}
 }
 }
