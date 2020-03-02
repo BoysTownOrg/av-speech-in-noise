@@ -115,6 +115,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertTrue(model.initializedWithDelayedMasker());
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    adaptiveCoordinateResponseMeasureWithSingleSpeakerInitializesAdaptiveTest) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)});
+    assertTrue(model.initializedWithSingleSpeaker());
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptivePassFail);

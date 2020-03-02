@@ -148,6 +148,10 @@ void TestSettingsInterpreterImpl::apply(
             methodName(
                 Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
             model.initializeTestWithDelayedMasker(test);
+        else if (methodName(contents) ==
+            methodName(
+                Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker))
+            model.initializeTestWithSingleSpeaker(test);
         else
             model.initializeTest(test);
     } else {
