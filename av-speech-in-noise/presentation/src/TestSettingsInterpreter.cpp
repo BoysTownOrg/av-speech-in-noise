@@ -165,7 +165,12 @@ void TestSettingsInterpreterImpl::apply(
             [&](auto entryName, auto entry) { assign(test, entryName, entry); },
             contents);
         test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
-        model.initializeTest(test);
+        if (methodName(contents) ==
+            methodName(Method::
+                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets))
+            model.initializeSilentIntervalsTest(test);
+        else
+            model.initializeTest(test);
     }
 }
 }

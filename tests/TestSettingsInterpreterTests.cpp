@@ -123,6 +123,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertTrue(model.initializedWithSingleSpeaker());
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsInitializesAdaptiveTest) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+            Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets)});
+    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptivePassFail);
