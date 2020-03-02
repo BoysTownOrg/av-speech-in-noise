@@ -332,7 +332,7 @@ class Presenter : public Model::EventListener {
     };
 
     Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
-        Experimenter &, TestSettingsInterpreter &);
+        Experimenter &, TestSettingsInterpreter &, TextFileReader &);
     void trialComplete() override;
     void run();
     void confirmTestSetup();

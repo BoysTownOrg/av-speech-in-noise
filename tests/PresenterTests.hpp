@@ -614,8 +614,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     const TestSettings &testSettings;
 };
 
-class TextFileReaderStub : public TextFileReader {
-};
+class TextFileReaderStub : public TextFileReader {};
 
 class UseCase {
   public:
@@ -1296,10 +1295,11 @@ class PresenterConstructionTests : public ::testing::Test {
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettings testSettings;
     TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
+    TextFileReaderStub textFileReader;
 
     auto construct() -> Presenter {
         return {model, view, testSetup, subject, experimenter,
-            testSettingsInterpreter};
+            testSettingsInterpreter, textFileReader};
     }
 };
 
@@ -1315,8 +1315,9 @@ class PresenterTests : public ::testing::Test {
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     TestSettings testSettings;
     TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
-    Presenter presenter{
-        model, view, testSetup, subject, experimenter, testSettingsInterpreter};
+    TextFileReaderStub textFileReader;
+    Presenter presenter{model, view, testSetup, subject, experimenter,
+        testSettingsInterpreter, textFileReader};
     BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
     BrowsingForTargetList browsingForTargetList{&setupView};
@@ -1869,6 +1870,7 @@ class PresenterFailureTests : public ::testing::Test {
     Presenter::Experimenter experimenter{&experimenterView};
     TestSettings testSettings;
     TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
+    TextFileReaderStub textFileReader;
 
     void useFailingModel(std::string s = {}) {
         failure.setErrorMessage(std::move(s));
@@ -1877,7 +1879,7 @@ class PresenterFailureTests : public ::testing::Test {
 
     void confirmTestSetup() {
         Presenter presenter{*model, view, testSetup, subject, experimenter,
-            testSettingsInterpreter};
+            testSettingsInterpreter, textFileReader};
         setupView.confirmTestSetup();
     }
 
