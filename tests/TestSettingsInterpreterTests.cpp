@@ -121,21 +121,41 @@ TEST_SETTINGS_INTERPRETER_TEST(tbd2) {
     assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFreeResponseWithAllTargetsPassesSimpleFixedLevelSettings) {
-    assertPassesSimpleFixedLevelSettings(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsPassesSimpleFixedLevelSettings) {
+    assertPassesSimpleFixedLevelSettings(
+        interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementPassesSimpleFixedLevelSettings) {
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelFreeResponseWithSilentIntervalTargets);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithTargetReplacementPassesSimpleFixedLevelSettings) {
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelFreeResponseWithTargetReplacement);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(tbd3) {
     apply(interpreter, model,
         {entryWithNewline(
              TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
-            entryWithNewline(TestSetting::targets, "a"),
-            entryWithNewline(TestSetting::masker, "b"),
-            entryWithNewline(TestSetting::maskerLevel, "65"),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
-    assertEqual("a", fixedLevelTest(model).targetListDirectory);
-    assertEqual("b", fixedLevelTest(model).maskerFilePath);
-    assertEqual(65, fixedLevelTest(model).maskerLevel_dB_SPL);
     assertEqual(Condition::audioVisual, fixedLevelTest(model).condition);
 }
 
