@@ -18,8 +18,12 @@ auto entry(TestSetting p, std::string s) -> std::string {
 
 auto withNewLine(std::string s) -> std::string { return std::move(s) + '\n'; }
 
+auto entryWithNewline(TestSetting p, std::string s) -> std::string {
+    return withNewLine(entry(p, std::move(s)));
+}
+
 auto entryWithNewline(TestSetting p, Method m) -> std::string {
-    return withNewLine(entry(p, methodName(m)));
+    return entryWithNewline(p, methodName(m));
 }
 
 class TestSettingsInterpreterTests : public ::testing::Test {
@@ -35,6 +39,12 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 TEST_F(TestSettingsInterpreterTests, adaptivePassFailInitializesAdaptiveTest) {
     apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail)});
     assertTrue(model.defaultAdaptiveTestInitialized());
+}
+
+TEST_F(TestSettingsInterpreterTests, tbd) {
+    apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+        entryWithNewline(TestSetting::targets, "a")});
+    assertEqual("a", model.adaptiveTest().targetListDirectory);
 }
 }
 }

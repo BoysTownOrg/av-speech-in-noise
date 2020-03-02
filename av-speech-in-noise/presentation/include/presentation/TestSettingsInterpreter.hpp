@@ -4,12 +4,14 @@
 #include "Presenter.hpp"
 
 namespace av_speech_in_noise {
-enum class TestSetting { method };
+enum class TestSetting { method, targets };
 
 constexpr auto name(TestSetting p) -> const char * {
     switch (p) {
     case TestSetting::method:
         return "method";
+    case TestSetting::targets:
+        return "targets";
     }
 }
 
