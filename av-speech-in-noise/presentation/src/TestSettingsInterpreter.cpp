@@ -105,7 +105,10 @@ static auto adaptive(const std::string &contents) -> bool {
         auto entry{line.substr(entryDelimiter(line) + 2)};
         if (entryName == name(TestSetting::method))
             return entry == methodName(Method::adaptivePassFail) ||
-                entry == methodName(Method::adaptiveCorrectKeywords);
+                entry == methodName(Method::adaptiveCorrectKeywords) ||
+                entry ==
+                methodName(
+                    Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
     }
     return false;
 }
