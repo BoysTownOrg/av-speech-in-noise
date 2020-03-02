@@ -51,7 +51,7 @@ struct TestSettings {
 class TestSettingsInterpreter {
   public:
     virtual ~TestSettingsInterpreter() = default;
-    virtual void apply(const std::string &) = 0;
+    virtual void apply(Model &, const std::string &) = 0;
 };
 
 class TextFileReader {

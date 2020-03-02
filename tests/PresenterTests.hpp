@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_TESTS_PRESENTERTESTS_HPP_
 
 #include "assert-utility.h"
+#include "ModelStub.hpp"
 #include "av-speech-in-noise/Model.hpp"
 #include <presentation/Presenter.hpp>
 #include <gtest/gtest.h>
@@ -19,172 +20,6 @@ template <typename T> class Collection {
 
   private:
     std::vector<T> items{};
-};
-
-class ModelStub : public Model {
-  public:
-    auto trialNumber() -> int override { return trialNumber_; }
-
-    void setTrialNumber(int n) { trialNumber_ = n; }
-
-    void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
-
-    auto targetFileName() -> std::string override { return targetFileName_; }
-
-    [[nodiscard]] auto
-    fixedLevelTestWithSilentIntervalTargetsInitialized() const {
-        return fixedLevelTestWithSilentIntervalTargetsInitialized_;
-    }
-
-    [[nodiscard]] auto fixedLevelTestWithAllTargetsInitialized() const {
-        return fixedLevelTestWithAllTargetsInitialized_;
-    }
-
-    [[nodiscard]] auto initializedWithSingleSpeaker() const {
-        return initializedWithSingleSpeaker_;
-    }
-
-    [[nodiscard]] auto initializedWithDelayedMasker() const {
-        return initializedWithDelayedMasker_;
-    }
-
-    [[nodiscard]] auto initializedWithEyeTracking() const {
-        return initializedWithEyeTracking_;
-    }
-
-    [[nodiscard]] auto defaultFixedLevelTestInitialized() const {
-        return defaultFixedLevelTestInitialized_;
-    }
-
-    [[nodiscard]] auto defaultAdaptiveTestInitialized() const {
-        return defaultAdaptiveTestInitialized_;
-    }
-
-    [[nodiscard]] auto trialPlayed() const { return trialPlayed_; }
-
-    [[nodiscard]] auto adaptiveTest() const -> auto & { return adaptiveTest_; }
-
-    [[nodiscard]] auto fixedLevelTest() const -> auto & {
-        return fixedLevelTest_;
-    }
-
-    [[nodiscard]] auto calibration() const -> auto & { return calibration_; }
-
-    [[nodiscard]] auto incorrectResponseSubmitted() const {
-        return incorrectResponseSubmitted_;
-    }
-
-    [[nodiscard]] auto correctResponseSubmitted() const {
-        return correctResponseSubmitted_;
-    }
-
-    [[nodiscard]] auto freeResponse() const { return freeResponse_; }
-
-    auto correctKeywords() -> int { return correctKeywords_.count; }
-
-    [[nodiscard]] auto responseParameters() const -> auto & {
-        return responseParameters_;
-    }
-
-    [[nodiscard]] auto trialParameters() const -> auto & {
-        return trialParameters_;
-    }
-
-    void initializeTest(const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        defaultFixedLevelTestInitialized_ = true;
-    }
-
-    void initializeTest(const AdaptiveTest &p) override {
-        adaptiveTest_ = p;
-        defaultAdaptiveTestInitialized_ = true;
-    }
-
-    void initializeTestWithSingleSpeaker(const AdaptiveTest &p) override {
-        adaptiveTest_ = p;
-        initializedWithSingleSpeaker_ = true;
-    }
-
-    void initializeTestWithDelayedMasker(const AdaptiveTest &p) override {
-        adaptiveTest_ = p;
-        initializedWithDelayedMasker_ = true;
-    }
-
-    void initializeSilentIntervalsTest(const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
-    }
-
-    void initializeAllStimuliTest(const FixedLevelTest &p) override {
-        fixedLevelTest_ = p;
-        fixedLevelTestWithAllTargetsInitialized_ = true;
-    }
-
-    void completeTrial() { listener_->trialComplete(); }
-
-    void setAudioDevices(std::vector<std::string> v) {
-        audioDevices_ = std::move(v);
-    }
-
-    void setTestComplete() { testComplete_ = true; }
-
-    auto testComplete() -> bool override { return testComplete_; }
-
-    void playTrial(const AudioSettings &p) override {
-        trialParameters_ = p;
-        trialPlayed_ = true;
-    }
-
-    auto audioDevices() -> std::vector<std::string> override {
-        return audioDevices_;
-    }
-
-    void submitResponse(
-        const coordinate_response_measure::Response &p) override {
-        responseParameters_ = p;
-    }
-
-    void subscribe(EventListener *listener) override { listener_ = listener; }
-
-    void playCalibration(const Calibration &p) override { calibration_ = p; }
-
-    void submitCorrectResponse() override { correctResponseSubmitted_ = true; }
-
-    void submitIncorrectResponse() override {
-        incorrectResponseSubmitted_ = true;
-    }
-
-    void submitResponse(const open_set::FreeResponse &s) override {
-        freeResponse_ = s;
-    }
-
-    void submit(const open_set::CorrectKeywords &s) override {
-        correctKeywords_ = s;
-    }
-
-  private:
-    AdaptiveTest adaptiveTest_{};
-    FixedLevelTest fixedLevelTest_{};
-    Calibration calibration_{};
-    AudioSettings trialParameters_{};
-    coordinate_response_measure::Response responseParameters_{};
-    std::vector<std::string> audioDevices_{};
-    open_set::FreeResponse freeResponse_{};
-    open_set::CorrectKeywords correctKeywords_{};
-    std::string targetFileName_{};
-    EventListener *listener_{};
-    int trialNumber_{};
-    bool testComplete_{};
-    bool trialPlayed_{};
-    bool defaultFixedLevelTestInitialized_{};
-    bool defaultAdaptiveTestInitialized_{};
-    bool fixedLevelTestWithSilentIntervalTargetsInitialized_{};
-    bool fixedLevelTestWithAllTargetsInitialized_{};
-    bool initializedWithSingleSpeaker_{};
-    bool initializedWithDelayedMasker_{};
-    bool initializedWithEyeTracking_{};
-    bool correctResponseSubmitted_{};
-    bool incorrectResponseSubmitted_{};
 };
 
 class ViewStub : public View {
@@ -612,7 +447,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     [[nodiscard]] auto text() const -> std::string { return text_; }
 
-    void apply(const std::string &t) { text_ = t; }
+    void apply(Model &, const std::string &t) override { text_ = t; }
 
   private:
     std::string text_;

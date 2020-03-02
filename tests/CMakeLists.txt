@@ -16,6 +16,7 @@ add_executable(tests
     TrackSettingsInterpreterTests.cpp
 	TrackSettingsReaderTests.cpp
 	TestSetupStateWriterTests.cpp
+	TestSettingsInterpreterTests.cpp
 )
 target_compile_features(tests PRIVATE cxx_std_17)
 target_link_libraries(tests 
