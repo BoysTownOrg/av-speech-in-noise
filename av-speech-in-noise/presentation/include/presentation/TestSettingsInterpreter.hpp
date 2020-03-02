@@ -4,7 +4,7 @@
 #include "Presenter.hpp"
 
 namespace av_speech_in_noise {
-enum class TestSetting { method, targets, masker, maskerLevel };
+enum class TestSetting { method, targets, masker, maskerLevel, condition };
 
 constexpr auto name(TestSetting p) -> const char * {
     switch (p) {
@@ -16,6 +16,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "masker";
     case TestSetting::maskerLevel:
         return "masker level (dB SPL)";
+    case TestSetting::condition:
+        return "condition";
     }
 }
 

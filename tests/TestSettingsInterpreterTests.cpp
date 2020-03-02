@@ -26,6 +26,10 @@ auto entryWithNewline(TestSetting p, Method m) -> std::string {
     return entryWithNewline(p, methodName(m));
 }
 
+auto entryWithNewline(TestSetting p, Condition c) -> std::string {
+    return entryWithNewline(p, conditionName(c));
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -45,10 +49,12 @@ TEST_F(TestSettingsInterpreterTests, tbd) {
     apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail),
         entryWithNewline(TestSetting::targets, "a"),
         entryWithNewline(TestSetting::masker, "b"),
-        entryWithNewline(TestSetting::maskerLevel, "65")});
+        entryWithNewline(TestSetting::maskerLevel, "65"),
+        entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     assertEqual("a", model.adaptiveTest().targetListDirectory);
     assertEqual("b", model.adaptiveTest().maskerFilePath);
     assertEqual(65, model.adaptiveTest().maskerLevel_dB_SPL);
+    assertEqual(Condition::audioVisual, model.adaptiveTest().condition);
 }
 }
 }

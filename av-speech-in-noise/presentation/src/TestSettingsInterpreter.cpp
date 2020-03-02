@@ -26,6 +26,9 @@ void TestSettingsInterpreterImpl::apply(
             test.maskerFilePath = entry;
         else if (entryName == name(TestSetting::maskerLevel))
             test.maskerLevel_dB_SPL = std::stoi(entry);
+        else if (entryName == name(TestSetting::condition))
+            if (entry == conditionName(Condition::audioVisual))
+                test.condition = Condition::audioVisual;
     }
     model.initializeTest(test);
 }
