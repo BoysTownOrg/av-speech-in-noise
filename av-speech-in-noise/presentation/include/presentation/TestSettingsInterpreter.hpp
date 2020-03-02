@@ -4,7 +4,17 @@
 #include "Presenter.hpp"
 
 namespace av_speech_in_noise {
-enum class TestSetting { method, targets, masker, maskerLevel, condition };
+enum class TestSetting {
+    method,
+    targets,
+    masker,
+    maskerLevel,
+    condition,
+    up,
+    down,
+    reversalsPerStepSize,
+    stepSizes
+};
 
 constexpr auto name(TestSetting p) -> const char * {
     switch (p) {
@@ -18,6 +28,14 @@ constexpr auto name(TestSetting p) -> const char * {
         return "masker level (dB SPL)";
     case TestSetting::condition:
         return "condition";
+    case TestSetting::up:
+        return "up";
+    case TestSetting::down:
+        return "down";
+    case TestSetting::reversalsPerStepSize:
+        return "reversals per step size";
+    case TestSetting::stepSizes:
+        return "step sizes (dB)";
     }
 }
 
