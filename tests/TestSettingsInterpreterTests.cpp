@@ -73,6 +73,8 @@ void assertPassesSimpleFixedLevelSettings(
     assertEqual("b", fixedLevelTest(model).maskerFilePath);
     assertEqual(65, fixedLevelTest(model).maskerLevel_dB_SPL);
     assertEqual(5, fixedLevelTest(model).snr_dB);
+    assertEqual(Presenter::fullScaleLevel_dB_SPL,
+        fixedLevelTest(model).fullScaleLevel_dB_SPL);
 }
 
 class TestSettingsInterpreterTests : public ::testing::Test {

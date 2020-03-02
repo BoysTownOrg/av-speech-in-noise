@@ -151,6 +151,7 @@ void TestSettingsInterpreterImpl::apply(
         applyToEachEntry(
             [&](auto entryName, auto entry) { assign(test, entryName, entry); },
             contents);
+        test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
         model.initializeTest(test);
     }
 }
