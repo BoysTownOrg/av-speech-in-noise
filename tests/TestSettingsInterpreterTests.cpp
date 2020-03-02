@@ -56,7 +56,7 @@ TEST_F(TestSettingsInterpreterTests, tbd) {
     assertEqual(65, model.adaptiveTest().maskerLevel_dB_SPL);
     assertEqual(Condition::audioVisual, model.adaptiveTest().condition);
 }
-/*
+
 TEST_F(TestSettingsInterpreterTests, oneSequence) {
     TrackingSequence sequence{};
     sequence.up = 1;
@@ -67,8 +67,8 @@ TEST_F(TestSettingsInterpreterTests, oneSequence) {
         entryWithNewline(TestSetting::down, "2"),
         entryWithNewline(TestSetting::reversalsPerStepSize, "3"),
         entryWithNewline(TestSetting::stepSizes, "4")});
-    assertEqual({sequence}, model.adaptiveTest().);
+    assertEqual({sequence}, model.adaptiveTest().trackingRule);
 }
-*/
+
 }
 }

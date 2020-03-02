@@ -104,6 +104,7 @@ struct Test {
 };
 
 struct AdaptiveTest : Test {
+    TrackingRule trackingRule;
     std::string trackSettingsFile;
     int startingSnr_dB{};
     int ceilingSnr_dB{};
