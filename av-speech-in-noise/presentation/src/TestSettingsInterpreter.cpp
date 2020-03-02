@@ -139,6 +139,7 @@ void TestSettingsInterpreterImpl::apply(
         test.ceilingSnr_dB = Presenter::ceilingSnr_dB;
         test.floorSnr_dB = Presenter::floorSnr_dB;
         test.trackBumpLimit = Presenter::trackBumpLimit;
+        test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
         model.initializeTest(test);
     } else {
         FixedLevelTest test;
