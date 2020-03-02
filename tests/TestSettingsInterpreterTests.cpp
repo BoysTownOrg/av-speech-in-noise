@@ -77,6 +77,10 @@ void assertPassesSimpleFixedLevelSettings(
         fixedLevelTest(model).fullScaleLevel_dB_SPL);
 }
 
+void apply(TestSettingsInterpreterImpl &interpreter, Model &model, Method m) {
+    apply(interpreter, model, {entryWithNewline(TestSetting::method, m)});
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -87,80 +91,66 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TEST_F(TestSettingsInterpreterTests, a)
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
-    apply(interpreter, model,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail)});
+    apply(interpreter, model, Method::adaptivePassFail);
     assertTrue(model.defaultAdaptiveTestInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
-    apply(interpreter, model,
-        {entryWithNewline(
-            TestSetting::method, Method::adaptiveCorrectKeywords)});
+    apply(interpreter, model, Method::adaptiveCorrectKeywords);
     assertTrue(model.defaultAdaptiveTestInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     defaultAdaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
-    apply(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-            Method::defaultAdaptiveCoordinateResponseMeasure)});
+    apply(interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
     assertTrue(model.defaultAdaptiveTestInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithDelayedMaskerInitializesAdaptiveTest) {
     apply(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)});
+        Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
     assertTrue(model.initializedWithDelayedMasker());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithSingleSpeakerInitializesAdaptiveTest) {
     apply(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)});
+        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
     assertTrue(model.initializedWithSingleSpeaker());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsInitializesFixedLevelTest) {
     apply(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-            Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets)});
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementInitializesFixedLevelTest) {
     apply(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement)});
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
     assertTrue(model.defaultFixedLevelTestInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
-    apply(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-            Method::fixedLevelFreeResponseWithAllTargets)});
+    apply(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
     assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithSilentIntervalTargetsInitializesFixedLevelTest) {
     apply(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-            Method::fixedLevelFreeResponseWithSilentIntervalTargets)});
+        Method::fixedLevelFreeResponseWithSilentIntervalTargets);
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementInitializesFixedLevelTest) {
     apply(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-            Method::fixedLevelFreeResponseWithTargetReplacement)});
+        Method::fixedLevelFreeResponseWithTargetReplacement);
     assertTrue(model.defaultFixedLevelTestInitialized());
 }
 
