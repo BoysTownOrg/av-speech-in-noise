@@ -136,6 +136,8 @@ void TestSettingsInterpreterImpl::apply(
         applyToEachEntry(
             [&](auto entryName, auto entry) { assign(test, entryName, entry); },
             contents);
+        test.ceilingSnr_dB = Presenter::ceilingSnr_dB;
+        test.floorSnr_dB = Presenter::floorSnr_dB;
         model.initializeTest(test);
     } else {
         FixedLevelTest test;

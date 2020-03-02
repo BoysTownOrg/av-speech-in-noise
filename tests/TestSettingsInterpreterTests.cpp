@@ -54,6 +54,8 @@ void assertPassesSimpleAdaptiveSettings(
     assertEqual("b", adaptiveTest(model).maskerFilePath);
     assertEqual(65, adaptiveTest(model).maskerLevel_dB_SPL);
     assertEqual(5, adaptiveTest(model).startingSnr_dB);
+    assertEqual(Presenter::ceilingSnr_dB, adaptiveTest(model).ceilingSnr_dB);
+    assertEqual(Presenter::floorSnr_dB, adaptiveTest(model).floorSnr_dB);
 }
 
 void assertPassesSimpleFixedLevelSettings(
