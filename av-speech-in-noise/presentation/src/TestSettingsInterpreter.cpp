@@ -128,55 +128,60 @@ static auto adaptive(const std::string &contents) -> bool {
         entry == methodName(Method::defaultAdaptiveCoordinateResponseMeasure);
 }
 
+static void initializeAdaptiveTest(Model &model, const std::string &contents) {
+    AdaptiveTest test;
+    applyToEachEntry(
+        [&](auto entryName, auto entry) {
+            assignAdaptive(test, entryName, entry);
+        },
+        contents);
+    applyToEachEntry(
+        [&](auto entryName, auto entry) { assign(test, entryName, entry); },
+        contents);
+    test.ceilingSnr_dB = Presenter::ceilingSnr_dB;
+    test.floorSnr_dB = Presenter::floorSnr_dB;
+    test.trackBumpLimit = Presenter::trackBumpLimit;
+    test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    if (methodName(contents) ==
+        methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
+        model.initializeTestWithDelayedMasker(test);
+    else if (methodName(contents) ==
+        methodName(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker))
+        model.initializeTestWithSingleSpeaker(test);
+    else
+        model.initializeTest(test);
+}
+
+static void initializeFixedLevelTest(
+    Model &model, const std::string &contents) {
+    FixedLevelTest test;
+    applyToEachEntry(
+        [&](auto entryName, auto entry) {
+            assignFixedLevel(test, entryName, entry);
+        },
+        contents);
+    applyToEachEntry(
+        [&](auto entryName, auto entry) { assign(test, entryName, entry); },
+        contents);
+    test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    if (methodName(contents) ==
+            methodName(Method::
+                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets) ||
+        methodName(contents) ==
+            methodName(Method::fixedLevelFreeResponseWithSilentIntervalTargets))
+        model.initializeSilentIntervalsTest(test);
+    else if (methodName(contents) ==
+        methodName(Method::fixedLevelFreeResponseWithAllTargets))
+        model.initializeAllStimuliTest(test);
+    else
+        model.initializeTest(test);
+}
+
 void TestSettingsInterpreterImpl::apply(
     Model &model, const std::string &contents) {
-    if (adaptive(contents)) {
-        AdaptiveTest test;
-        applyToEachEntry(
-            [&](auto entryName, auto entry) {
-                assignAdaptive(test, entryName, entry);
-            },
-            contents);
-        applyToEachEntry(
-            [&](auto entryName, auto entry) { assign(test, entryName, entry); },
-            contents);
-        test.ceilingSnr_dB = Presenter::ceilingSnr_dB;
-        test.floorSnr_dB = Presenter::floorSnr_dB;
-        test.trackBumpLimit = Presenter::trackBumpLimit;
-        test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
-        if (methodName(contents) ==
-            methodName(
-                Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
-            model.initializeTestWithDelayedMasker(test);
-        else if (methodName(contents) ==
-            methodName(
-                Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker))
-            model.initializeTestWithSingleSpeaker(test);
-        else
-            model.initializeTest(test);
-    } else {
-        FixedLevelTest test;
-        applyToEachEntry(
-            [&](auto entryName, auto entry) {
-                assignFixedLevel(test, entryName, entry);
-            },
-            contents);
-        applyToEachEntry(
-            [&](auto entryName, auto entry) { assign(test, entryName, entry); },
-            contents);
-        test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
-        if (methodName(contents) ==
-                methodName(Method::
-                        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets) ||
-            methodName(contents) ==
-                methodName(
-                    Method::fixedLevelFreeResponseWithSilentIntervalTargets))
-            model.initializeSilentIntervalsTest(test);
-        else if (methodName(contents) ==
-            methodName(Method::fixedLevelFreeResponseWithAllTargets))
-            model.initializeAllStimuliTest(test);
-        else
-            model.initializeTest(test);
-    }
+    if (adaptive(contents))
+        initializeAdaptiveTest(model, contents);
+    else
+        initializeFixedLevelTest(model, contents);
 }
 }
