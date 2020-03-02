@@ -132,6 +132,22 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementInitializesAdaptiveTest) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement)});
+    assertTrue(model.defaultFixedLevelTestInitialized());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsInitializesAdaptiveTest) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+            Method::fixedLevelFreeResponseWithAllTargets)});
+    assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptivePassFail);

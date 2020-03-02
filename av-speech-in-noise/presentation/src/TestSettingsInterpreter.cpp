@@ -169,6 +169,9 @@ void TestSettingsInterpreterImpl::apply(
             methodName(Method::
                     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets))
             model.initializeSilentIntervalsTest(test);
+        else if (methodName(contents) ==
+            methodName(Method::fixedLevelFreeResponseWithAllTargets))
+            model.initializeAllStimuliTest(test);
         else
             model.initializeTest(test);
     }
