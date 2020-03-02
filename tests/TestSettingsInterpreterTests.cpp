@@ -56,10 +56,12 @@ TEST_F(TestSettingsInterpreterTests, tbd) {
         entryWithNewline(TestSetting::targets, "a"),
         entryWithNewline(TestSetting::masker, "b"),
         entryWithNewline(TestSetting::maskerLevel, "65"),
+        entryWithNewline(TestSetting::startingSnr, "5"),
         entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     assertEqual("a", adaptiveTest(model).targetListDirectory);
     assertEqual("b", adaptiveTest(model).maskerFilePath);
     assertEqual(65, adaptiveTest(model).maskerLevel_dB_SPL);
+    assertEqual(5, adaptiveTest(model).startingSnr_dB);
     assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
 }
 

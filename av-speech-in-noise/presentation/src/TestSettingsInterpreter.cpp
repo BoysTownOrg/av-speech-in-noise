@@ -80,24 +80,29 @@ static auto adaptive(const std::string &contents) -> bool {
     return false;
 }
 
+static auto assignAdaptive(AdaptiveTest &test, const std::string &contents) {
+    std::stringstream stream{contents};
+    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream)) {
+        auto entryName{line.substr(0, entryDelimiter(line))};
+        auto entry{line.substr(entryDelimiter(line) + 2)};
+        if (entryName == name(TestSetting::up))
+            applyToEachTrackingRule(test, applyToUp, entry);
+        else if (entryName == name(TestSetting::down))
+            applyToEachTrackingRule(test, applyToDown, entry);
+        else if (entryName == name(TestSetting::reversalsPerStepSize))
+            applyToEachTrackingRule(test, applyToRunCount, entry);
+        else if (entryName == name(TestSetting::stepSizes))
+            applyToEachTrackingRule(test, applyToStepSize, entry);
+        else if (entryName == name(TestSetting::startingSnr))
+            test.startingSnr_dB = std::stoi(entry);
+    }
+}
+
 void TestSettingsInterpreterImpl::apply(
     Model &model, const std::string &contents) {
     if (adaptive(contents)) {
         AdaptiveTest test;
-        std::stringstream stream{contents};
-        for (auto line{nextLine(stream)}; !line.empty();
-             line = nextLine(stream)) {
-            auto entryName{line.substr(0, entryDelimiter(line))};
-            auto entry{line.substr(entryDelimiter(line) + 2)};
-            if (entryName == name(TestSetting::up))
-                applyToEachTrackingRule(test, applyToUp, entry);
-            else if (entryName == name(TestSetting::down))
-                applyToEachTrackingRule(test, applyToDown, entry);
-            else if (entryName == name(TestSetting::reversalsPerStepSize))
-                applyToEachTrackingRule(test, applyToRunCount, entry);
-            else if (entryName == name(TestSetting::stepSizes))
-                applyToEachTrackingRule(test, applyToStepSize, entry);
-        }
+        assignAdaptive(test, contents);
         assign(test, contents);
         model.initializeTest(test);
     } else {
