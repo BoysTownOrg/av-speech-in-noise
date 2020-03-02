@@ -104,26 +104,6 @@ static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
         test.snr_dB = std::stoi(entry);
 }
 
-static auto adaptive(const std::string &contents) -> bool {
-    std::stringstream stream{contents};
-    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream)) {
-        auto entryName{line.substr(0, entryDelimiter(line))};
-        auto entry{line.substr(entryDelimiter(line) + 2)};
-        if (entryName == name(TestSetting::method))
-            return entry == methodName(Method::adaptivePassFail) ||
-                entry == methodName(Method::adaptiveCorrectKeywords) ||
-                entry ==
-                methodName(Method::
-                        adaptiveCoordinateResponseMeasureWithDelayedMasker) ||
-                entry ==
-                methodName(Method::
-                        adaptiveCoordinateResponseMeasureWithSingleSpeaker) ||
-                entry ==
-                methodName(Method::defaultAdaptiveCoordinateResponseMeasure);
-    }
-    return false;
-}
-
 static auto methodName(const std::string &contents) -> std::string {
     std::stringstream stream{contents};
     for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream)) {
@@ -133,6 +113,19 @@ static auto methodName(const std::string &contents) -> std::string {
             return entry;
     }
     return {};
+}
+
+static auto adaptive(const std::string &contents) -> bool {
+    auto entry{methodName(contents)};
+    return entry == methodName(Method::adaptivePassFail) ||
+        entry == methodName(Method::adaptiveCorrectKeywords) ||
+        entry ==
+        methodName(
+            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker) ||
+        entry ==
+        methodName(
+            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker) ||
+        entry == methodName(Method::defaultAdaptiveCoordinateResponseMeasure);
 }
 
 void TestSettingsInterpreterImpl::apply(
