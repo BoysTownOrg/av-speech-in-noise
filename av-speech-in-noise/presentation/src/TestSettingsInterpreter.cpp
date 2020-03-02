@@ -104,7 +104,8 @@ static auto adaptive(const std::string &contents) -> bool {
         auto entryName{line.substr(0, entryDelimiter(line))};
         auto entry{line.substr(entryDelimiter(line) + 2)};
         if (entryName == name(TestSetting::method))
-            return entry == methodName(Method::adaptivePassFail);
+            return entry == methodName(Method::adaptivePassFail) ||
+                entry == methodName(Method::adaptiveCorrectKeywords);
     }
     return false;
 }

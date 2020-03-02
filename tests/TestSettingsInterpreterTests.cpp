@@ -36,42 +36,65 @@ auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
     return m.fixedLevelTest();
 }
 
-class TestSettingsInterpreterTests : public ::testing::Test {
-  protected:
-    ModelStub model;
-    TestSettingsInterpreterImpl interpreter;
-
-    void apply(const std::vector<std::string> &v) {
-        interpreter.apply(model, concatenate(v));
-    }
-};
-
-TEST_F(TestSettingsInterpreterTests, adaptivePassFailInitializesAdaptiveTest) {
-    apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail)});
-    assertTrue(model.defaultAdaptiveTestInitialized());
+void apply(TestSettingsInterpreterImpl &interpreter, Model &model,
+    const std::vector<std::string> &v) {
+    interpreter.apply(model, concatenate(v));
 }
 
-TEST_F(TestSettingsInterpreterTests, tbd) {
-    apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-        entryWithNewline(TestSetting::targets, "a"),
-        entryWithNewline(TestSetting::masker, "b"),
-        entryWithNewline(TestSetting::maskerLevel, "65"),
-        entryWithNewline(TestSetting::startingSnr, "5"),
-        entryWithNewline(TestSetting::condition, Condition::audioVisual)});
+void assertPassesSimpleAdaptiveSettings(
+    TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, m),
+            entryWithNewline(TestSetting::targets, "a"),
+            entryWithNewline(TestSetting::masker, "b"),
+            entryWithNewline(TestSetting::maskerLevel, "65"),
+            entryWithNewline(TestSetting::startingSnr, "5"),
+            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     assertEqual("a", adaptiveTest(model).targetListDirectory);
     assertEqual("b", adaptiveTest(model).maskerFilePath);
     assertEqual(65, adaptiveTest(model).maskerLevel_dB_SPL);
     assertEqual(5, adaptiveTest(model).startingSnr_dB);
-    assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
+}
+
+class TestSettingsInterpreterTests : public ::testing::Test {
+  protected:
+    ModelStub model;
+    TestSettingsInterpreterImpl interpreter;
+};
+
+TEST_F(TestSettingsInterpreterTests, adaptivePassFailInitializesAdaptiveTest) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail)});
+    assertTrue(model.defaultAdaptiveTestInitialized());
+}
+
+TEST_F(TestSettingsInterpreterTests,
+    adaptivePassFailPassesSimpleAdaptiveSettings) {
+    assertPassesSimpleAdaptiveSettings(
+        interpreter, model, Method::adaptivePassFail);
+}
+
+TEST_F(TestSettingsInterpreterTests,
+    adaptiveCorrectKeywordsPassesSimpleAdaptiveSettings) {
+    assertPassesSimpleAdaptiveSettings(
+        interpreter, model, Method::adaptiveCorrectKeywords);
 }
 
 TEST_F(TestSettingsInterpreterTests, tbd2) {
-    apply({entryWithNewline(TestSetting::method,
-               Method::fixedLevelFreeResponseWithAllTargets),
-        entryWithNewline(TestSetting::targets, "a"),
-        entryWithNewline(TestSetting::masker, "b"),
-        entryWithNewline(TestSetting::maskerLevel, "65"),
-        entryWithNewline(TestSetting::condition, Condition::audioVisual)});
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
+    assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
+}
+
+TEST_F(TestSettingsInterpreterTests, tbd3) {
+    apply(interpreter, model,
+        {entryWithNewline(
+             TestSetting::method, Method::fixedLevelFreeResponseWithAllTargets),
+            entryWithNewline(TestSetting::targets, "a"),
+            entryWithNewline(TestSetting::masker, "b"),
+            entryWithNewline(TestSetting::maskerLevel, "65"),
+            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     assertEqual("a", fixedLevelTest(model).targetListDirectory);
     assertEqual("b", fixedLevelTest(model).maskerFilePath);
     assertEqual(65, fixedLevelTest(model).maskerLevel_dB_SPL);
@@ -84,11 +107,12 @@ TEST_F(TestSettingsInterpreterTests, oneSequence) {
     sequence.down = 2;
     sequence.runCount = 3;
     sequence.stepSize = 4;
-    apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-        entryWithNewline(TestSetting::up, "1"),
-        entryWithNewline(TestSetting::down, "2"),
-        entryWithNewline(TestSetting::reversalsPerStepSize, "3"),
-        entryWithNewline(TestSetting::stepSizes, "4")});
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::up, "1"),
+            entryWithNewline(TestSetting::down, "2"),
+            entryWithNewline(TestSetting::reversalsPerStepSize, "3"),
+            entryWithNewline(TestSetting::stepSizes, "4")});
     assertEqual({sequence}, adaptiveTest(model).trackingRule);
 }
 
@@ -103,11 +127,12 @@ TEST_F(TestSettingsInterpreterTests, twoSequences) {
     second.down = 4;
     second.runCount = 6;
     second.stepSize = 8;
-    apply({entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-        entryWithNewline(TestSetting::up, "1 2"),
-        entryWithNewline(TestSetting::down, "3 4"),
-        entryWithNewline(TestSetting::reversalsPerStepSize, "5 6"),
-        entryWithNewline(TestSetting::stepSizes, "7 8")});
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::up, "1 2"),
+            entryWithNewline(TestSetting::down, "3 4"),
+            entryWithNewline(TestSetting::reversalsPerStepSize, "5 6"),
+            entryWithNewline(TestSetting::stepSizes, "7 8")});
     assertEqual({first, second}, adaptiveTest(model).trackingRule);
 }
 }
