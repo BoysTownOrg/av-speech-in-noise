@@ -56,6 +56,7 @@ void assertPassesSimpleAdaptiveSettings(
     assertEqual(5, adaptiveTest(model).startingSnr_dB);
     assertEqual(Presenter::ceilingSnr_dB, adaptiveTest(model).ceilingSnr_dB);
     assertEqual(Presenter::floorSnr_dB, adaptiveTest(model).floorSnr_dB);
+    assertEqual(Presenter::trackBumpLimit, adaptiveTest(model).trackBumpLimit);
 }
 
 void assertPassesSimpleFixedLevelSettings(
