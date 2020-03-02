@@ -84,8 +84,9 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
 static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
+    TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader) {
-    textFileReader.read(testSetup.testSettingsFile());
+    testSettingsInterpreter.apply(textFileReader.read(testSetup.testSettingsFile()));
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
@@ -102,7 +103,8 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
-    Experimenter &experimenterPresenter, TestSettingsInterpreter &,
+    Experimenter &experimenterPresenter,
+    TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader)
     : freeResponseTrialCompletionHandler{experimenterPresenter},
       passFailTrialCompletionHandler{experimenterPresenter},
@@ -112,6 +114,7 @@ Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
       model{model}, view{view}, testSetup{testSetup},
       coordinateResponseMeasurePresenter{coordinateResponseMeasurePresenter},
       experimenterPresenter{experimenterPresenter},
+      testSettingsInterpreter{testSettingsInterpreter},
       textFileReader{textFileReader},
       trialCompletionHandler_{
           &coordinateResponseMeasureTrialCompletionHandler} {
@@ -133,7 +136,7 @@ void Presenter::confirmTestSetup() {
 }
 
 void Presenter::confirmTestSetup_() {
-    initializeTest(model, testSetup, textFileReader);
+    initializeTest(model, testSetup, testSettingsInterpreter, textFileReader);
     if (!testComplete(model)) {
         switchToTestView();
         trialCompletionHandler_ = trialCompletionHandler();

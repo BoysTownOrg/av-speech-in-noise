@@ -51,6 +51,7 @@ struct TestSettings {
 class TestSettingsInterpreter {
   public:
     virtual ~TestSettingsInterpreter() = default;
+    virtual void apply(const std::string &) = 0;
 };
 
 class TextFileReader {
@@ -384,6 +385,7 @@ class Presenter : public Model::EventListener {
     TestSetup &testSetup;
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
     Experimenter &experimenterPresenter;
+    TestSettingsInterpreter &testSettingsInterpreter;
     TextFileReader &textFileReader;
     TrialCompletionHandler *trialCompletionHandler_{};
 };

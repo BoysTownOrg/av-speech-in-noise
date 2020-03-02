@@ -610,7 +610,12 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     explicit TestSettingsInterpreterStub(const TestSettings &testSettings)
         : testSettings{testSettings} {}
 
+    [[nodiscard]] auto text() const -> std::string { return text_; }
+
+    void apply(const std::string &t) { text_ = t; }
+
   private:
+    std::string text_;
     const TestSettings &testSettings;
 };
 
@@ -618,13 +623,16 @@ class TextFileReaderStub : public TextFileReader {
   public:
     [[nodiscard]] auto filePath() const -> std::string { return filePath_; }
 
-    auto read(const std::string &s) -> std::string {
+    auto read(const std::string &s) -> std::string override {
         filePath_ = s;
-        return {};
+        return read_;
     }
+
+    void setRead(std::string s) { read_ = std::move(s); }
 
   private:
     std::string filePath_;
+    std::string read_;
 };
 
 class UseCase {
@@ -1677,6 +1685,13 @@ class PresenterTests : public ::testing::Test {
         setupView.setTestSettingsFile("a");
         run(useCase);
         assertEqual("a", textFileReader.filePath());
+    }
+
+    void assertPassesTestSettingsTextToTestSettingsInterpreter(
+        ConfirmingTestSetup &useCase) {
+        textFileReader.setRead("a");
+        run(useCase);
+        assertEqual("a", testSettingsInterpreter.text());
     }
 
     void assertPassesSubjectId(ConfirmingTestSetup &useCase) {
