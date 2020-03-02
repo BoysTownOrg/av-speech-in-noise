@@ -124,6 +124,17 @@ static auto adaptive(const std::string &contents) -> bool {
     return false;
 }
 
+static auto methodName(const std::string &contents) -> std::string {
+    std::stringstream stream{contents};
+    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream)) {
+        auto entryName{line.substr(0, entryDelimiter(line))};
+        auto entry{line.substr(entryDelimiter(line) + 2)};
+        if (entryName == name(TestSetting::method))
+            return entry;
+    }
+    return {};
+}
+
 void TestSettingsInterpreterImpl::apply(
     Model &model, const std::string &contents) {
     if (adaptive(contents)) {
@@ -140,7 +151,12 @@ void TestSettingsInterpreterImpl::apply(
         test.floorSnr_dB = Presenter::floorSnr_dB;
         test.trackBumpLimit = Presenter::trackBumpLimit;
         test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
-        model.initializeTest(test);
+        if (methodName(contents) ==
+            methodName(
+                Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
+            model.initializeTestWithDelayedMasker(test);
+        else
+            model.initializeTest(test);
     } else {
         FixedLevelTest test;
         applyToEachEntry(

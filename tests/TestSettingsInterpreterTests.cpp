@@ -107,6 +107,14 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertTrue(model.defaultAdaptiveTestInitialized());
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    adaptiveCoordinateResponseMeasureWithDelayedMaskerInitializesAdaptiveTest) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method,
+            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)});
+    assertTrue(model.initializedWithDelayedMasker());
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptivePassFail);
