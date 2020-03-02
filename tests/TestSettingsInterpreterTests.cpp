@@ -90,6 +90,10 @@ void assertFixedLevelTestWithSilentIntervalTargetsInitialized(
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
 }
 
+void assertDefaultFixedLevelTestInitialized(ModelStub &model) {
+    assertTrue(model.defaultFixedLevelTestInitialized());
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -140,7 +144,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementInitializesFixedLevelTest) {
     apply(interpreter, model,
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
-    assertTrue(model.defaultFixedLevelTestInitialized());
+    assertDefaultFixedLevelTestInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -160,7 +164,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementInitializesFixedLevelTest) {
     apply(interpreter, model,
         Method::fixedLevelFreeResponseWithTargetReplacement);
-    assertTrue(model.defaultFixedLevelTestInitialized());
+    assertDefaultFixedLevelTestInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
@@ -192,11 +196,18 @@ TEST_SETTINGS_INTERPRETER_TEST(
         interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(tbd2) {
+TEST_SETTINGS_INTERPRETER_TEST(adaptiveAudioVisual) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(adaptiveAuditoryOnly) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
+    assertEqual(Condition::auditoryOnly, adaptiveTest(model).condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
