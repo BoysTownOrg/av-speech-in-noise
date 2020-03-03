@@ -3,11 +3,10 @@
 #include "CocoaView.h"
 #include "common-objc.h"
 #include <presentation/Presenter.hpp>
+#include <presentation/TestSettingsInterpreter.hpp>
 #include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/AdaptiveMethod.hpp>
-#include <recognition-test/TrackSettingsReader.hpp>
-#include <recognition-test/TrackSettingsInterpreter.hpp>
 #include <recognition-test/FixedLevelMethod.hpp>
 #include <recognition-test/OutputFile.hpp>
 #include <recognition-test/OutputFilePath.hpp>
@@ -166,7 +165,7 @@ class TimerImpl : public stimulus_players::Timer {
 
 namespace {
 class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
-    auto read(std::string s) -> std::string override {
+    auto read(const std::string &s) -> std::string override {
         std::ifstream file{s};
         std::stringstream stream;
         stream << file.rdbuf();
@@ -216,11 +215,8 @@ void main() {
     OutputFileImpl outputFile{&writer, &path};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
-    TrackSettingsInterpreterImpl trackSettingsInterpreter;
     TextFileReaderImpl textFileReader;
-    TrackSettingsReaderImpl trackSettingsReader{
-        &textFileReader, &trackSettingsInterpreter};
-    AdaptiveMethodImpl adaptiveMethod{&targetListReader, &trackSettingsReader,
+    AdaptiveMethodImpl adaptiveMethod{&targetListReader,
         &snrTrackFactory, &responseEvaluator, &randomizer};
     target_list::RandomizedTargetList infiniteTargetList{
         &fileExtensions, &randomizer};
@@ -279,9 +275,7 @@ void main() {
             testerWindowFrame.size.width - testerWindowViewMargin * 2,
             testerWindowFrame.size.height - testerWindowViewMargin * 2);
     CocoaTestSetupView testSetupView{testerContentFrame};
-    testSetupView.setMaskerLevel_dB_SPL("65");
     testSetupView.setCalibrationLevel_dB_SPL("65");
-    testSetupView.setStartingSnr_dB("5");
     CocoaExperimenterView experimenterView{experimenterContentFrame};
     CocoaView view{testerWindowFrame};
     view.addSubview(testSetupView.view());
@@ -300,8 +294,9 @@ void main() {
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::TestSetup testSetup{&testSetupView};
     Presenter::Experimenter experimenter{&experimenterView};
+    TestSettingsInterpreterImpl testSettingsInterpreter;
     Presenter presenter{
-        model, view, testSetup, subject, experimenter};
+        model, view, testSetup, subject, experimenter, testSettingsInterpreter, textFileReader};
     presenter.run();
 }
 }

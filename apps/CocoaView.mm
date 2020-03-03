@@ -5,10 +5,7 @@
 @interface SetupViewActions : NSObject
 @property av_speech_in_noise::CocoaTestSetupView *controller;
 - (void)confirmTestSetup;
-- (void)browseForTargetList;
-- (void)browseForMasker;
 - (void)browseForCalibration;
-- (void)browseForTrackSettings;
 - (void)playCalibration;
 @end
 
@@ -39,20 +36,12 @@
     controller->confirm();
 }
 
-- (void)browseForTargetList {
-    controller->browseForTargetList();
-}
-
-- (void)browseForMasker {
-    controller->browseForMasker();
-}
-
 - (void)browseForCalibration {
     controller->browseForCalibration();
 }
 
-- (void)browseForTrackSettings {
-    controller->browseForTrackSettings();
+- (void)browseForTestSettings {
+    controller->browseForTestSettings();
 }
 
 - (void)playCalibration {
@@ -193,40 +182,21 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       testerId_{normalTextFieldWithHeight(330)},
       sessionLabel{normalLabelWithHeight(300, "session:")},
       session_{normalTextFieldWithHeight(300)},
-      targetListDirectoryLabel{normalLabelWithHeight(270, "targets:")},
-      targetListDirectory_{filePathTextFieldSizeWithHeight(270)},
-      maskerFilePath_label{normalLabelWithHeight(240, "masker:")},
-      maskerFilePath_{filePathTextFieldSizeWithHeight(240)},
-      trackSettingsFile_label{normalLabelWithHeight(210, "track settings:")},
-      trackSettingsFile_{filePathTextFieldSizeWithHeight(210)},
+      testSettingsFile_label{normalLabelWithHeight(210, "test settings:")},
+      testSettingsFile_{filePathTextFieldSizeWithHeight(210)},
       calibrationFilePath_label{normalLabelWithHeight(180, "calibration:")},
       calibrationFilePath_{filePathTextFieldSizeWithHeight(180)},
       calibrationLevel_dB_SPL_label{
           normalLabelWithHeight(150, "calibration level (dB SPL):")},
       calibrationLevel_dB_SPL_{shortTextFieldWithHeight(150)},
-      maskerLevel_dB_SPL_label{
-          normalLabelWithHeight(120, "masker level (dB SPL):")},
-      maskerLevel_dB_SPL_{shortTextFieldWithHeight(120)},
-      startingSnr_dB_label{normalLabelWithHeight(90, "starting SNR (dB):")},
-      startingSnr_dB_{shortTextFieldWithHeight(90)},
       condition_label{normalLabelWithHeight(60, "condition:")},
       conditionMenu{popUpButtonAtHeightWithWidth(60, 120)},
       method_label{normalLabelWithHeight(30, "method:")},
       methodMenu{popUpButtonAtHeightWithWidth(30, 270)},
       actions{[SetupViewActions alloc]} {
     actions.controller = this;
-    const auto browseForTargetListButton {
-        button("browse", actions, @selector(browseForTargetList),
-            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 270,
-                buttonWidth, buttonHeight))
-    };
-    const auto browseForMaskerButton {
-        button("browse", actions, @selector(browseForMasker),
-            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 240,
-                buttonWidth, buttonHeight))
-    };
-    const auto browseForTrackSettingsButton {
-        button("browse", actions, @selector(browseForTrackSettings),
+    const auto browseForTestSettingsButton {
+        button("browse", actions, @selector(browseForTestSettings),
             NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 210,
                 buttonWidth, buttonHeight))
     };
@@ -245,10 +215,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
             NSMakeRect(shortTextFieldWidth + textFieldLeadingEdge + 10, 150,
                 buttonWidth, buttonHeight))
     };
-    addSubview(browseForMaskerButton);
-    addSubview(browseForTargetListButton);
     addSubview(browseForCalibrationButton);
-    addSubview(browseForTrackSettingsButton);
+    addSubview(browseForTestSettingsButton);
     addSubview(confirmButton);
     addSubview(playCalibrationButton);
     addSubview(subjectIdLabel);
@@ -257,18 +225,10 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(testerId_);
     addSubview(sessionLabel);
     addSubview(session_);
-    addSubview(maskerLevel_dB_SPL_label);
-    addSubview(maskerLevel_dB_SPL_);
+    addSubview(testSettingsFile_label);
+    addSubview(testSettingsFile_);
     addSubview(calibrationLevel_dB_SPL_label);
     addSubview(calibrationLevel_dB_SPL_);
-    addSubview(startingSnr_dB_label);
-    addSubview(startingSnr_dB_);
-    addSubview(targetListDirectoryLabel);
-    addSubview(targetListDirectory_);
-    addSubview(maskerFilePath_label);
-    addSubview(maskerFilePath_);
-    addSubview(trackSettingsFile_label);
-    addSubview(trackSettingsFile_);
     addSubview(calibrationFilePath_label);
     addSubview(calibrationFilePath_);
     addSubview(condition_label);
@@ -288,32 +248,20 @@ void CocoaTestSetupView::show() { [view_ setHidden:NO]; }
 
 void CocoaTestSetupView::hide() { [view_ setHidden:YES]; }
 
-auto CocoaTestSetupView::startingSnr_dB() -> std::string {
-    return stringValue(startingSnr_dB_);
-}
-
 auto CocoaTestSetupView::stringValue(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
-}
-
-auto CocoaTestSetupView::maskerLevel_dB_SPL() -> std::string {
-    return stringValue(maskerLevel_dB_SPL_);
 }
 
 auto CocoaTestSetupView::calibrationLevel_dB_SPL() -> std::string {
     return stringValue(calibrationLevel_dB_SPL_);
 }
 
-auto CocoaTestSetupView::maskerFilePath() -> std::string {
-    return stringValue(maskerFilePath_);
-}
-
 auto CocoaTestSetupView::calibrationFilePath() -> std::string {
     return stringValue(calibrationFilePath_);
 }
 
-auto CocoaTestSetupView::targetListDirectory() -> std::string {
-    return stringValue(targetListDirectory_);
+auto CocoaTestSetupView::testSettingsFile() -> std::string {
+    return stringValue(testSettingsFile_);
 }
 
 auto CocoaTestSetupView::testerId() -> std::string {
@@ -328,58 +276,24 @@ auto CocoaTestSetupView::session() -> std::string {
     return stringValue(session_);
 }
 
-auto CocoaTestSetupView::method() -> std::string {
-    return methodMenu.titleOfSelectedItem.UTF8String;
-}
-
 auto CocoaTestSetupView::condition() -> std::string {
     return conditionMenu.titleOfSelectedItem.UTF8String;
-}
-
-auto CocoaTestSetupView::trackSettingsFile() -> std::string {
-    return stringValue(trackSettingsFile_);
-}
-
-void CocoaTestSetupView::setTrackSettingsFile(std::string s) {
-    [trackSettingsFile_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setTargetListDirectory(std::string s) {
-    [targetListDirectory_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaTestSetupView::setCalibrationFilePath(std::string s) {
     [calibrationFilePath_ setStringValue:asNsString(std::move(s))];
 }
 
-void CocoaTestSetupView::setMasker(std::string s) {
-    [maskerFilePath_ setStringValue:asNsString(std::move(s))];
+void CocoaTestSetupView::setTestSettingsFile(std::string s) {
+    [testSettingsFile_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaTestSetupView::setCalibration(std::string s) {
     [calibrationFilePath_ setStringValue:asNsString(std::move(s))];
 }
 
-void CocoaTestSetupView::setMaskerLevel_dB_SPL(std::string s) {
-    [maskerLevel_dB_SPL_ setStringValue:asNsString(std::move(s))];
-}
-
 void CocoaTestSetupView::setCalibrationLevel_dB_SPL(std::string s) {
     [calibrationLevel_dB_SPL_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setStartingSnr_dB(std::string s) {
-    [startingSnr_dB_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
-    for (const auto &item : items)
-        [conditionMenu addItemWithTitle:asNsString(item)];
-}
-
-void CocoaTestSetupView::populateMethodMenu(std::vector<std::string> items) {
-    for (const auto &item : items)
-        [methodMenu addItemWithTitle:asNsString(item)];
 }
 
 void CocoaTestSetupView::confirm() { listener_->confirmTestSetup(); }
@@ -388,18 +302,12 @@ void CocoaTestSetupView::subscribe(EventListener *listener) {
     listener_ = listener;
 }
 
-void CocoaTestSetupView::browseForMasker() { listener_->browseForMasker(); }
-
-void CocoaTestSetupView::browseForTargetList() {
-    listener_->browseForTargetList();
-}
-
 void CocoaTestSetupView::browseForCalibration() {
     listener_->browseForCalibration();
 }
 
-void CocoaTestSetupView::browseForTrackSettings() {
-    listener_->browseForTrackSettingsFile();
+void CocoaTestSetupView::browseForTestSettings() {
+    //listener_->browseForTestSettings();
 }
 
 void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
