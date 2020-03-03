@@ -162,8 +162,6 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
         model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
     else if (defaultAdaptive(method) || adaptiveCorrectKeywords(method))
         model.initializeTest(adaptiveTest(testSetup));
-    else if (fixedLevelSilentIntervals(method))
-        model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
     else
         model.initializeTest(fixedLevelTest(testSetup));
 }

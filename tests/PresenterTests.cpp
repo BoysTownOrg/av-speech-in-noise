@@ -311,18 +311,6 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsInitializesModel) {
-    run(confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
-    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsInitializesModel) {
-    run(confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
-    assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());
-}
-
-PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
