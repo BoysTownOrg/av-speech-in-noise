@@ -454,10 +454,15 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         identity_ = id;
     }
 
+    void setMethod(Method m) { method_ = m; }
+
+    auto method(const std::string &) -> Method { return method_; }
+
   private:
     std::string text_;
     TestIdentity identity_;
     const TestSettings &testSettings;
+    Method method_{};
 };
 
 class TextFileReaderStub : public TextFileReader {
@@ -561,17 +566,25 @@ static void setMethod(ViewStub::TestSetupViewStub *view, Method m) {
     view->setMethod(methodName(m));
 }
 
+static void setMethod(TestSettingsInterpreterStub &interpeter, Method m) {
+    interpeter.setMethod(m);
+}
+
 class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
 
   public:
-    explicit ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest(
-        ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(view, Method::defaultAdaptiveCoordinateResponseMeasure);
+        setMethod(
+            interpreter, Method::defaultAdaptiveCoordinateResponseMeasure);
         confirmTestSetup(view);
     }
 
@@ -1184,7 +1197,8 @@ class PresenterTests : public ::testing::Test {
     BrowsingForMasker browsingForMasker{&setupView};
     BrowsingForCalibration browsingForCalibration{&setupView};
     ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest{&setupView};
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest{
+            &setupView, testSettingsInterpreter};
     ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
         confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker{
             &setupView};
