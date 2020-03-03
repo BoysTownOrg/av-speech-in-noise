@@ -16,7 +16,8 @@ enum class Method {
     fixedLevelFreeResponseWithSilentIntervalTargets,
     fixedLevelFreeResponseWithAllTargets,
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+    unknown
 };
 
 constexpr auto methodName(Method c) -> const char * {
@@ -41,6 +42,8 @@ constexpr auto methodName(Method c) -> const char * {
         return "fixed-level CRM silent intervals";
     case Method::fixedLevelFreeResponseWithAllTargets:
         return "fixed-level free response all stimuli";
+    case Method::unknown:
+        return "unknown";
     }
 }
 

@@ -118,17 +118,30 @@ static auto methodName(const std::string &contents) -> std::string {
     return {};
 }
 
+static auto method(const std::string &s) -> Method {
+    auto name{methodName(s)};
+    for (auto m : {Method::adaptivePassFail, Method::adaptiveCorrectKeywords,
+             Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+             Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
+             Method::fixedLevelFreeResponseWithTargetReplacement,
+             Method::fixedLevelFreeResponseWithSilentIntervalTargets,
+             Method::fixedLevelFreeResponseWithAllTargets,
+             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+             Method::
+                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+             Method::defaultAdaptiveCoordinateResponseMeasure})
+        if (name == methodName(m))
+            return m;
+    return Method::unknown;
+}
+
 static auto adaptive(const std::string &contents) -> bool {
-    auto entry{methodName(contents)};
-    return entry == methodName(Method::adaptivePassFail) ||
-        entry == methodName(Method::adaptiveCorrectKeywords) ||
-        entry ==
-        methodName(
-            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker) ||
-        entry ==
-        methodName(
-            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker) ||
-        entry == methodName(Method::defaultAdaptiveCoordinateResponseMeasure);
+    auto method_{av_speech_in_noise::method(contents)};
+    return method_ == Method::adaptivePassFail ||
+        method_ == Method::adaptiveCorrectKeywords ||
+        method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
+        method_ == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
+        method_ == Method::defaultAdaptiveCoordinateResponseMeasure;
 }
 
 static void initializeAdaptiveTest(
@@ -147,12 +160,12 @@ static void initializeAdaptiveTest(
     test.trackBumpLimit = Presenter::trackBumpLimit;
     test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     test.identity = identity;
-    test.identity.method = methodName(contents);
-    if (methodName(contents) ==
-        methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
+    auto method_{av_speech_in_noise::method(contents)};
+    test.identity.method = methodName(method_);
+    if (method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)
         model.initializeTestWithDelayedMasker(test);
-    else if (methodName(contents) ==
-        methodName(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker))
+    else if (method_ ==
+        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)
         model.initializeTestWithSingleSpeaker(test);
     else
         model.initializeTest(test);
@@ -171,15 +184,14 @@ static void initializeFixedLevelTest(
         contents);
     test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     test.identity = identity;
-    test.identity.method = methodName(contents);
-    if (methodName(contents) ==
-            methodName(Method::
-                    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets) ||
-        methodName(contents) ==
-            methodName(Method::fixedLevelFreeResponseWithSilentIntervalTargets))
+    auto method_{av_speech_in_noise::method(contents)};
+    test.identity.method = methodName(method_);
+    if (method_ ==
+            Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets ||
+        method_ == Method::fixedLevelFreeResponseWithSilentIntervalTargets)
         model.initializeSilentIntervalsTest(test);
-    else if (methodName(contents) ==
-        methodName(Method::fixedLevelFreeResponseWithAllTargets))
+    else if (method_ == Method::fixedLevelFreeResponseWithAllTargets)
         model.initializeAllStimuliTest(test);
     else
         model.initializeTest(test);
@@ -194,34 +206,6 @@ void TestSettingsInterpreterImpl::apply(
 }
 
 auto TestSettingsInterpreterImpl::method(const std::string &s) -> Method {
-    if (methodName(s) ==
-        methodName(Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets))
-        return Method::
-            fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
-    if (methodName(s) ==
-        methodName(
-            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement))
-        return Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement;
-    if (methodName(s) ==
-        methodName(Method::fixedLevelFreeResponseWithAllTargets))
-        return Method::fixedLevelFreeResponseWithAllTargets;
-    if (methodName(s) ==
-        methodName(Method::fixedLevelFreeResponseWithSilentIntervalTargets))
-        return Method::fixedLevelFreeResponseWithSilentIntervalTargets;
-    if (methodName(s) ==
-        methodName(Method::fixedLevelFreeResponseWithTargetReplacement))
-        return Method::fixedLevelFreeResponseWithTargetReplacement;
-    if (methodName(s) ==
-        methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
-        return Method::adaptiveCoordinateResponseMeasureWithDelayedMasker;
-    if (methodName(s) ==
-        methodName(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker))
-        return Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker;
-    if (methodName(s) == methodName(Method::adaptiveCorrectKeywords))
-        return Method::adaptiveCorrectKeywords;
-    if (methodName(s) == methodName(Method::adaptivePassFail))
-        return Method::adaptivePassFail;
-    return Method::defaultAdaptiveCoordinateResponseMeasure;
+    return av_speech_in_noise::method(s);
 }
 }
