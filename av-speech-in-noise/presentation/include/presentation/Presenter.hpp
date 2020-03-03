@@ -164,44 +164,20 @@ class Presenter : public Model::EventListener {
       public:
         explicit TestSetup(View::TestSetup *);
         void playCalibration() override;
-        void browseForTargetList() ;
-        void browseForMasker() ;
         void confirmTestSetup() override;
         void browseForCalibration() override;
-        void browseForTrackSettingsFile() ;
         void browseForTestSettingsFile() override;
         void show();
         void hide();
         void becomeChild(Presenter *parent);
-        void setMasker(std::string);
-        void setStimulusList(std::string);
         void setCalibrationFilePath(std::string);
-        void setTrackSettingsFile(std::string);
         void setTestSettingsFile(std::string);
-        auto adaptiveTest() -> AdaptiveTest;
-        auto fixedLevelTest() -> FixedLevelTest;
         auto calibrationParameters() -> Calibration;
-        auto coordinateResponseMeasure() -> bool;
-        auto defaultAdaptive() -> bool;
-        auto adaptiveCoordinateResponseMeasure() -> bool;
-        auto adaptivePassFail() -> bool;
-        auto fixedLevelCoordinateResponseMeasure() -> bool;
-        auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets()
-            -> bool;
-        auto fixedLevelSilentIntervals() -> bool;
-        auto fixedLevelAllStimuli() -> bool;
-        auto adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool;
-        auto adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool;
-        auto adaptiveCorrectKeywords() -> bool;
         auto testSettingsFile() -> std::string;
         auto testIdentity() -> TestIdentity;
 
       private:
-        auto defaultAdaptiveCoordinateResponseMeasure() -> bool;
-        void initialize(Test &);
         auto readCondition() -> Condition;
-        auto method(Method m) -> bool;
-        auto readMaskerLevel() -> int;
         auto readCalibrationLevel() -> int;
         auto auditoryOnly() -> bool;
 
@@ -328,10 +304,7 @@ class Presenter : public Model::EventListener {
     void confirmTestSetup();
     void playTrial();
     void playCalibration();
-    void browseForTargetList();
-    void browseForMasker();
     void browseForCalibration();
-    void browseForTrackSettingsFile();
     void browseForTestSettingsFile();
     void submitSubjectResponse();
     void submitFreeResponse();
