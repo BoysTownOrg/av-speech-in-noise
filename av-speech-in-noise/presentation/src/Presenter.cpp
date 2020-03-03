@@ -150,13 +150,6 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
-static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
-    TestSettingsInterpreter &testSettingsInterpreter,
-    const std::string &testSettings) {
-    testSettingsInterpreter.apply(model, testSettings, testIdentity(testSetup));
-    auto method{testSettingsInterpreter.method(testSettings)};
-}
-
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter,
@@ -193,7 +186,7 @@ void Presenter::confirmTestSetup() {
 
 void Presenter::confirmTestSetup_() {
     auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
-    initializeTest(model, testSetup, testSettingsInterpreter, testSettings);
+    testSettingsInterpreter.apply(model, testSettings, testIdentity(testSetup));
     auto method{testSettingsInterpreter.method(testSettings)};
     if (!testComplete(model)) {
         switchToTestView(method);
