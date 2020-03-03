@@ -354,21 +354,6 @@ void Presenter::browseForTestSettingsFile() {
 }
 
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
-    view->populateConditionMenu({conditionName(Condition::audioVisual),
-        conditionName(Condition::auditoryOnly)});
-    view->populateMethodMenu({methodName(Method::
-                                      defaultAdaptiveCoordinateResponseMeasure),
-        methodName(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker),
-        methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker),
-        methodName(Method::adaptivePassFail),
-        methodName(Method::adaptiveCorrectKeywords),
-        methodName(
-            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement),
-        methodName(Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets),
-        methodName(Method::fixedLevelFreeResponseWithTargetReplacement),
-        methodName(Method::fixedLevelFreeResponseWithSilentIntervalTargets),
-        methodName(Method::fixedLevelFreeResponseWithAllTargets)});
     view->subscribe(this);
 }
 
@@ -393,7 +378,6 @@ static auto readInteger(const std::string &x, const std::string &identifier)
 auto Presenter::TestSetup::fixedLevelTest() -> FixedLevelTest {
     FixedLevelTest p;
     initialize(p);
-    p.snr_dB = readInteger(view->startingSnr_dB(), "SNR");
     return p;
 }
 
@@ -402,14 +386,11 @@ auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
     p.session = view->session();
-    p.method = view->method();
     return p;
 }
 
 void Presenter::TestSetup::initialize(Test &p) {
     p.maskerLevel_dB_SPL = readMaskerLevel();
-    p.targetListDirectory = view->targetListDirectory();
-    p.maskerFilePath = view->maskerFilePath();
     p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
     p.condition = readCondition();
     p.identity = testIdentity();
@@ -418,7 +399,6 @@ void Presenter::TestSetup::initialize(Test &p) {
 auto Presenter::TestSetup::adaptiveTest() -> AdaptiveTest {
     AdaptiveTest p;
     initialize(p);
-    p.startingSnr_dB = readInteger(view->startingSnr_dB(), "SNR");
     p.ceilingSnr_dB = ceilingSnr_dB;
     p.floorSnr_dB = floorSnr_dB;
     p.trackBumpLimit = trackBumpLimit;
@@ -430,7 +410,7 @@ auto Presenter::TestSetup::readCondition() -> Condition {
 }
 
 auto Presenter::TestSetup::auditoryOnly() -> bool {
-    return view->condition() == conditionName(Condition::auditoryOnly);
+    return {};
 }
 
 void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
@@ -449,7 +429,7 @@ auto Presenter::TestSetup::readCalibrationLevel() -> int {
 }
 
 auto Presenter::TestSetup::readMaskerLevel() -> int {
-    return readInteger(view->maskerLevel_dB_SPL(), "masker level");
+    return {};
 }
 
 void Presenter::TestSetup::confirmTestSetup() { parent->confirmTestSetup(); }
@@ -457,11 +437,9 @@ void Presenter::TestSetup::confirmTestSetup() { parent->confirmTestSetup(); }
 void Presenter::TestSetup::becomeChild(Presenter *p) { parent = p; }
 
 void Presenter::TestSetup::setMasker(std::string s) {
-    view->setMasker(std::move(s));
 }
 
 void Presenter::TestSetup::setStimulusList(std::string s) {
-    view->setTargetListDirectory(std::move(s));
 }
 
 void Presenter::TestSetup::browseForTargetList() {
@@ -487,7 +465,6 @@ void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
 }
 
 void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
-    view->setTrackSettingsFile(std::move(s));
 }
 
 void Presenter::TestSetup::setTestSettingsFile(std::string s) {

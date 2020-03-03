@@ -379,26 +379,6 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesMethod) {
-    assertPassesMethod(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesMethod) {
-    assertPassesMethod(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesMethod) {
-    assertPassesMethod(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesMethod) {
-    assertPassesMethod(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);

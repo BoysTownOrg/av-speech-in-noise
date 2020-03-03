@@ -1458,13 +1458,6 @@ class PresenterTests : public ::testing::Test {
         assertFalse(model.defaultFixedLevelTestInitialized());
     }
 
-    void assertPassesTargetListDirectory(ConfirmingTestSetup &useCase) {
-        setupView.setTargetListDirectory("a");
-        testSettings.targetListDirectory = "a";
-        run(useCase);
-        assertEqual("a", useCase.test(model).targetListDirectory);
-    }
-
     void assertPassesTestSettingsFileToTextFileReader(
         ConfirmingTestSetup &useCase) {
         setupView.setTestSettingsFile("a");
@@ -1498,21 +1491,10 @@ class PresenterTests : public ::testing::Test {
         assertEqual("c", testSettingsInterpreter.identity().testerId);
     }
 
-    void assertPassesMasker(ConfirmingTestSetup &useCase) {
-        setupView.setMasker("d");
-        run(useCase);
-        assertEqual("d", useCase.test(model).maskerFilePath);
-    }
-
     void assertPassesSession(ConfirmingTestSetup &useCase) {
         setupView.setSession("e");
         run(useCase);
         assertEqual("e", testSettingsInterpreter.identity().session);
-    }
-
-    void assertPassesMethod(ConfirmingTestSetup &useCase) {
-        run(useCase);
-        assertEqual(setupView.method(), useCase.test(model).identity.method);
     }
 
     void assertPassesFullScaleLevel(LevelUseCase &useCase) {
