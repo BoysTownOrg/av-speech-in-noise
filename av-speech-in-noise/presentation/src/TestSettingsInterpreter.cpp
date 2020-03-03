@@ -158,7 +158,7 @@ static void initializeAdaptiveTest(
 }
 
 static void initializeFixedLevelTest(
-    Model &model, const std::string &contents) {
+    Model &model, const std::string &contents, const TestIdentity &identity) {
     FixedLevelTest test;
     applyToEachEntry(
         [&](auto entryName, auto entry) {
@@ -169,6 +169,7 @@ static void initializeFixedLevelTest(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
     test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    test.identity = identity;
     if (methodName(contents) ==
             methodName(Method::
                     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets) ||
@@ -187,6 +188,6 @@ void TestSettingsInterpreterImpl::apply(
     if (adaptive(contents))
         initializeAdaptiveTest(model, contents, identity);
     else
-        initializeFixedLevelTest(model, contents);
+        initializeFixedLevelTest(model, contents, identity);
 }
 }
