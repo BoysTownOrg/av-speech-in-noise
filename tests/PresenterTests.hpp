@@ -68,10 +68,6 @@ class ViewStub : public View {
       public:
         auto condition() -> std::string override { return condition_; }
 
-        void useSingleSpeaker() { useSingleSpeaker_ = true; }
-
-        void useDelayedMasker() { useDelayedMasker_ = true; }
-
         auto testSettingsFile() -> std::string override {
             return testSettingsFile_;
         }
@@ -97,8 +93,6 @@ class ViewStub : public View {
         void hide() override { hidden_ = true; }
 
         [[nodiscard]] auto hidden() const { return hidden_; }
-
-        void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
 
         void setMethod(std::string s) { method_ = std::move(s); }
 
@@ -1323,10 +1317,6 @@ class PresenterTests : public ::testing::Test {
         assertModelPassedCondition(useCase, Condition::auditoryOnly);
     }
 
-    void setStartingSnr(std::string s) {
-        setupView.setStartingSnr(std::move(s));
-    }
-
     void setTestComplete() { model.setTestComplete(); }
 
     void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
@@ -1416,12 +1406,6 @@ class PresenterTests : public ::testing::Test {
     static void assertShowsNextTrialButton(TrialSubmission &useCase) {
         run(useCase);
         assertTrue(useCase.nextTrialButtonShown());
-    }
-
-    void assertStartingSnrPassedToModel(ConfirmingTestSetup &useCase) {
-        setStartingSnr("1");
-        run(useCase);
-        assertEqual(1, useCase.snr_dB(model));
     }
 
     void assertMaskerLevelPassedToModel(ConfirmingTestSetup &useCase) {
@@ -1521,18 +1505,6 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         assertEqual(Presenter::trackBumpLimit,
             av_speech_in_noise::adaptiveTest(model).trackBumpLimit);
-    }
-
-    void assertInvalidSnrShowsErrorMessage(UseCase &useCase) {
-        setStartingSnr("a");
-        run(useCase);
-        assertErrorMessageEquals("'a' is not a valid SNR.");
-    }
-
-    void assertSetupViewNotHiddenWhenSnrIsInvalid(UseCase &useCase) {
-        setupView.setStartingSnr("?");
-        run(useCase);
-        assertSetupViewNotHidden();
     }
 
     void assertCompleteTrialShowsResponseView(
