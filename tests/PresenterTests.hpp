@@ -112,37 +112,19 @@ class ViewStub : public View {
 
         void setCondition(std::string s) { condition_ = std::move(s); }
 
-        void setMasker(std::string s) override { masker_ = std::move(s); }
-
-        void setTrackSettingsFile(std::string s) override {
-            trackSettingsFile_ = std::move(s);
-        }
-
         void setTestSettingsFile(std::string s) override {
             testSettingsFile_ = std::move(s);
         }
 
         void setSession(std::string s) { session_ = std::move(s); }
 
-        void setTargetListDirectory(std::string s) override {
-            stimulusList_ = std::move(s);
-        }
-
         void setSubjectId(std::string s) { subjectId_ = std::move(s); }
 
         void setTesterId(std::string s) { testerId_ = std::move(s); }
 
-        auto maskerFilePath() -> std::string override { return masker_; }
-
-        auto targetListDirectory() -> std::string override {
-            return stimulusList_;
-        }
-
         auto testerId() -> std::string override { return testerId_; }
 
         auto subjectId() -> std::string override { return subjectId_; }
-
-        auto condition() -> std::string override { return condition_; }
 
         auto calibrationFilePath() -> std::string override {
             return calibrationFilePath_;
@@ -150,12 +132,6 @@ class ViewStub : public View {
 
         void subscribe(EventListener *listener) override {
             listener_ = listener;
-        }
-
-        auto method() -> std::string override { return method_; }
-
-        void populateMethodMenu(std::vector<std::string> items) override {
-            methods_ = Collection{std::move(items)};
         }
 
         void browseForMasker() { listener_->browseForMasker(); }

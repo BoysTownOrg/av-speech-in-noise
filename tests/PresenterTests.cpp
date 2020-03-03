@@ -98,27 +98,6 @@ PRESENTER_TEST(
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
 }
 
-PRESENTER_TEST(populatesMethodMenu) {
-    assertSetupViewMethodsContains(Method::adaptivePassFail);
-    assertSetupViewMethodsContains(Method::adaptiveCorrectKeywords);
-    assertSetupViewMethodsContains(
-        Method::defaultAdaptiveCoordinateResponseMeasure);
-    assertSetupViewMethodsContains(
-        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
-    assertSetupViewMethodsContains(
-        Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
-    assertSetupViewMethodsContains(
-        Method::fixedLevelFreeResponseWithTargetReplacement);
-    assertSetupViewMethodsContains(
-        Method::fixedLevelFreeResponseWithAllTargets);
-    assertSetupViewMethodsContains(
-        Method::fixedLevelFreeResponseWithSilentIntervalTargets);
-    assertSetupViewMethodsContains(
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
-    assertSetupViewMethodsContains(
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
-}
-
 PRESENTER_TEST(callsEventLoopWhenRun) {
     presenter.run();
     assertTrue(view.eventLoopCalled());
