@@ -483,8 +483,7 @@ class PlayingCalibration : public ConditionUseCase, public LevelUseCase {
     }
 };
 
-class ConfirmingTestSetup : public virtual ConditionUseCase,
-                            public virtual LevelUseCase {};
+class ConfirmingTestSetup : public virtual UseCase {};
 
 static auto adaptiveTest(ModelStub &m) -> const AdaptiveTest & {
     return m.adaptiveTest();
@@ -544,14 +543,6 @@ class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
             interpreter, Method::defaultAdaptiveCoordinateResponseMeasure);
         confirmTestSetup(view);
     }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return adaptive_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return adaptive_test::condition(m);
-    }
 };
 
 class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
@@ -569,14 +560,6 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
         setMethod(interpreter,
             Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
         confirmTestSetup(view);
-    }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return adaptive_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return adaptive_test::condition(m);
     }
 };
 
@@ -596,14 +579,6 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
             Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
         confirmTestSetup(view);
     }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return adaptive_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return adaptive_test::condition(m);
-    }
 };
 
 class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
@@ -619,14 +594,6 @@ class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
         setMethod(interpreter, Method::adaptivePassFail);
         confirmTestSetup(view);
     }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return adaptive_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return adaptive_test::condition(m);
-    }
 };
 
 class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
@@ -641,14 +608,6 @@ class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
     void run() override {
         setMethod(interpreter, Method::adaptiveCorrectKeywords);
         confirmTestSetup(view);
-    }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return adaptive_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return adaptive_test::condition(m);
     }
 };
 
@@ -668,14 +627,6 @@ class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
             interpreter, Method::fixedLevelFreeResponseWithTargetReplacement);
         confirmTestSetup(view);
     }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return fixed_level_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return fixed_level_test::condition(m);
-    }
 };
 
 class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
@@ -693,14 +644,6 @@ class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
         setMethod(interpreter,
             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
         confirmTestSetup(view);
-    }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return fixed_level_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return fixed_level_test::condition(m);
     }
 };
 
@@ -722,14 +665,6 @@ class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
         confirmTestSetup(view);
     }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return fixed_level_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return fixed_level_test::condition(m);
-    }
 };
 
 class ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
@@ -748,14 +683,6 @@ class ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
             Method::fixedLevelFreeResponseWithSilentIntervalTargets);
         confirmTestSetup(view);
     }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return fixed_level_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return fixed_level_test::condition(m);
-    }
 };
 
 class ConfirmingFixedLevelFreeResponseTestWithAllTargets
@@ -772,14 +699,6 @@ class ConfirmingFixedLevelFreeResponseTestWithAllTargets
     void run() override {
         setMethod(interpreter, Method::fixedLevelFreeResponseWithAllTargets);
         confirmTestSetup(view);
-    }
-
-    auto fullScaleLevel(ModelStub &m) -> int override {
-        return fixed_level_test::fullScaleLevel(m);
-    }
-
-    auto condition(ModelStub &m) -> Condition override {
-        return fixed_level_test::condition(m);
     }
 };
 
