@@ -191,6 +191,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
         method(interpreter, Method::fixedLevelFreeResponseWithAllTargets));
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsReturnsMethod) {
+    assertEqual(
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+        method(interpreter,
+            Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets));
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {
     assertPassesTestMethod(
         interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
