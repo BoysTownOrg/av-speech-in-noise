@@ -270,11 +270,6 @@ void Presenter::playCalibration_() {
     model.playCalibration(p);
 }
 
-void Presenter::browseForTargetList() {
-    applyIfBrowseNotCancelled(
-        view.browseForDirectory(), &TestSetup::setStimulusList);
-}
-
 void Presenter::applyIfBrowseNotCancelled(
     std::string s, void (TestSetup::*f)(std::string)) {
     if (!view.browseCancelled())
@@ -285,19 +280,9 @@ static auto browseForOpeningFile(View &view) -> std::string {
     return view.browseForOpeningFile();
 }
 
-void Presenter::browseForMasker() {
-    applyIfBrowseNotCancelled(
-        browseForOpeningFile(view), &TestSetup::setMasker);
-}
-
 void Presenter::browseForCalibration() {
     applyIfBrowseNotCancelled(
         browseForOpeningFile(view), &TestSetup::setCalibrationFilePath);
-}
-
-void Presenter::browseForTrackSettingsFile() {
-    applyIfBrowseNotCancelled(
-        browseForOpeningFile(view), &TestSetup::setTrackSettingsFile);
 }
 
 void Presenter::browseForTestSettingsFile() {
@@ -388,18 +373,8 @@ void Presenter::TestSetup::setMasker(std::string s) {}
 
 void Presenter::TestSetup::setStimulusList(std::string s) {}
 
-void Presenter::TestSetup::browseForTargetList() {
-    parent->browseForTargetList();
-}
-
-void Presenter::TestSetup::browseForMasker() { parent->browseForMasker(); }
-
 void Presenter::TestSetup::browseForCalibration() {
     parent->browseForCalibration();
-}
-
-void Presenter::TestSetup::browseForTrackSettingsFile() {
-    parent->browseForTrackSettingsFile();
 }
 
 void Presenter::TestSetup::browseForTestSettingsFile() {
