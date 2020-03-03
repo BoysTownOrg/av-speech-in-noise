@@ -515,68 +515,6 @@ void Presenter::TestSetup::setTestSettingsFile(std::string s) {
     view->setTestSettingsFile(std::move(s));
 }
 
-auto Presenter::TestSetup::defaultAdaptive() -> bool {
-    return defaultAdaptiveCoordinateResponseMeasure() || adaptivePassFail();
-}
-
-auto Presenter::TestSetup::defaultAdaptiveCoordinateResponseMeasure() -> bool {
-    return method(Method::defaultAdaptiveCoordinateResponseMeasure);
-}
-
-auto Presenter::TestSetup::adaptivePassFail() -> bool {
-    return method(Method::adaptivePassFail);
-}
-
-auto Presenter::TestSetup::adaptiveCoordinateResponseMeasure() -> bool {
-    return defaultAdaptiveCoordinateResponseMeasure() ||
-        adaptiveCoordinateResponseMeasureWithSingleSpeaker() ||
-        adaptiveCoordinateResponseMeasureWithDelayedMasker();
-}
-
-auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithDelayedMasker()
-    -> bool {
-    return method(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
-}
-
-auto Presenter::TestSetup::adaptiveCoordinateResponseMeasureWithSingleSpeaker()
-    -> bool {
-    return method(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
-}
-
-auto Presenter::TestSetup::adaptiveCorrectKeywords() -> bool {
-    return method(Method::adaptiveCorrectKeywords);
-}
-
-auto Presenter::TestSetup::fixedLevelCoordinateResponseMeasure() -> bool {
-    return method(Method::
-                   fixedLevelCoordinateResponseMeasureWithTargetReplacement) ||
-        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets();
-}
-
-auto Presenter::TestSetup::
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() -> bool {
-    return method(
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
-}
-
-auto Presenter::TestSetup::fixedLevelSilentIntervals() -> bool {
-    return fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets() ||
-        method(Method::fixedLevelFreeResponseWithSilentIntervalTargets);
-}
-
-auto Presenter::TestSetup::fixedLevelAllStimuli() -> bool {
-    return method(Method::fixedLevelFreeResponseWithAllTargets);
-}
-
-auto Presenter::TestSetup::coordinateResponseMeasure() -> bool {
-    return adaptiveCoordinateResponseMeasure() ||
-        fixedLevelCoordinateResponseMeasure();
-}
-
-auto Presenter::TestSetup::method(Method m) -> bool {
-    return view->method() == methodName(m);
-}
-
 auto Presenter::TestSetup::testSettingsFile() -> std::string {
     return view->testSettingsFile();
 }
