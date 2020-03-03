@@ -100,8 +100,6 @@ class CocoaTestSetupView : public View::TestSetup {
     NSTextField *testSettingsFile_;
     NSTextField *condition_label;
     NSPopUpButton *conditionMenu;
-    NSTextField *method_label;
-    NSPopUpButton *methodMenu;
     SetupViewActions *actions;
     EventListener *listener_{};
 };

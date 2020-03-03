@@ -191,8 +191,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       calibrationLevel_dB_SPL_{shortTextFieldWithHeight(150)},
       condition_label{normalLabelWithHeight(60, "condition:")},
       conditionMenu{popUpButtonAtHeightWithWidth(60, 120)},
-      method_label{normalLabelWithHeight(30, "method:")},
-      methodMenu{popUpButtonAtHeightWithWidth(30, 270)},
       actions{[SetupViewActions alloc]} {
     actions.controller = this;
     const auto browseForTestSettingsButton {
@@ -233,8 +231,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(calibrationFilePath_);
     addSubview(condition_label);
     addSubview(conditionMenu);
-    addSubview(method_label);
-    addSubview(methodMenu);
     [view_ setHidden:NO];
 }
 
@@ -307,7 +303,7 @@ void CocoaTestSetupView::browseForCalibration() {
 }
 
 void CocoaTestSetupView::browseForTestSettings() {
-    //listener_->browseForTestSettings();
+    listener_->browseForTestSettingsFile();
 }
 
 void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
