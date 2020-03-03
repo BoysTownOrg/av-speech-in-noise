@@ -140,6 +140,11 @@ void assertSessionIdEquals(const std::string &s, const TestIdentity &identity) {
     assertEqual(s, session(identity));
 }
 
+void assertTestMethodEquals(
+    const std::string &s, const TestIdentity &identity) {
+    assertEqual(s, identity.method);
+}
+
 void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     ModelStub &model, Method m,
     const std::function<TestIdentity(ModelStub &)> &f) {
@@ -153,6 +158,13 @@ void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     assertSessionIdEquals("c", f(model));
 }
 
+void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
+    ModelStub &model, Method m,
+    const std::function<TestIdentity(ModelStub &)> &f) {
+    apply(interpreter, model, m);
+    assertTestMethodEquals(methodName(m), f(model));
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -162,6 +174,11 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
+
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {
+    assertPassesTestMethod(interpreter, model, Method::adaptivePassFail,
+        [](auto m) { return adaptiveTestIdentity(m); });
+}
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
     assertPassesTestIdentity(interpreter, model, Method::adaptivePassFail,

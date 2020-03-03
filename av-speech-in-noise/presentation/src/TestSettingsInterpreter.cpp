@@ -147,6 +147,7 @@ static void initializeAdaptiveTest(
     test.trackBumpLimit = Presenter::trackBumpLimit;
     test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     test.identity = identity;
+    test.identity.method = methodName(contents);
     if (methodName(contents) ==
         methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
         model.initializeTestWithDelayedMasker(test);
