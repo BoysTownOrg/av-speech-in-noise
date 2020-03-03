@@ -484,11 +484,7 @@ class PlayingCalibration : public ConditionUseCase, public LevelUseCase {
 };
 
 class ConfirmingTestSetup : public virtual ConditionUseCase,
-                            public virtual LevelUseCase {
-  public:
-    virtual auto snr_dB(ModelStub &) -> int { return {}; }
-    virtual auto test(ModelStub &) -> const Test & { return {}; }
-};
+                            public virtual LevelUseCase {};
 
 static auto adaptiveTest(ModelStub &m) -> const AdaptiveTest & {
     return m.adaptiveTest();
@@ -549,8 +545,6 @@ class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
-
     auto fullScaleLevel(ModelStub &m) -> int override {
         return adaptive_test::fullScaleLevel(m);
     }
@@ -576,8 +570,6 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
             Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
         confirmTestSetup(view);
     }
-
-    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
         return adaptive_test::fullScaleLevel(m);
@@ -605,8 +597,6 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
-
     auto fullScaleLevel(ModelStub &m) -> int override {
         return adaptive_test::fullScaleLevel(m);
     }
@@ -630,8 +620,6 @@ class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
-
     auto fullScaleLevel(ModelStub &m) -> int override {
         return adaptive_test::fullScaleLevel(m);
     }
@@ -654,8 +642,6 @@ class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
         setMethod(interpreter, Method::adaptiveCorrectKeywords);
         confirmTestSetup(view);
     }
-
-    auto test(ModelStub &m) -> const Test & override { return adaptiveTest(m); }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
         return adaptive_test::fullScaleLevel(m);
@@ -683,10 +669,6 @@ class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & override {
-        return fixedLevelTest(m);
-    }
-
     auto fullScaleLevel(ModelStub &m) -> int override {
         return fixed_level_test::fullScaleLevel(m);
     }
@@ -711,10 +693,6 @@ class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
         setMethod(interpreter,
             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
         confirmTestSetup(view);
-    }
-
-    auto test(ModelStub &m) -> const Test & override {
-        return fixedLevelTest(m);
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
@@ -745,10 +723,6 @@ class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & override {
-        return fixedLevelTest(m);
-    }
-
     auto fullScaleLevel(ModelStub &m) -> int override {
         return fixed_level_test::fullScaleLevel(m);
     }
@@ -775,10 +749,6 @@ class ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
         confirmTestSetup(view);
     }
 
-    auto test(ModelStub &m) -> const Test & override {
-        return fixedLevelTest(m);
-    }
-
     auto fullScaleLevel(ModelStub &m) -> int override {
         return fixed_level_test::fullScaleLevel(m);
     }
@@ -802,10 +772,6 @@ class ConfirmingFixedLevelFreeResponseTestWithAllTargets
     void run() override {
         setMethod(interpreter, Method::fixedLevelFreeResponseWithAllTargets);
         confirmTestSetup(view);
-    }
-
-    auto test(ModelStub &m) -> const Test & override {
-        return fixedLevelTest(m);
     }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
