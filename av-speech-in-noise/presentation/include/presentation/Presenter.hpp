@@ -369,12 +369,12 @@ class Presenter : public Model::EventListener {
     void playCalibration_();
     void showTestSetup();
     void readyNextTrialIfNeeded();
-    void showTest();
-    void switchToTestView();
+    void showTest(Method);
+    void switchToTestView(Method);
     void confirmTestSetup_();
     void applyIfBrowseNotCancelled(
         std::string s, void (TestSetup::*f)(std::string));
-    auto trialCompletionHandler() -> TrialCompletionHandler *;
+    auto trialCompletionHandler(Method) -> TrialCompletionHandler *;
 
     FreeResponseTrialCompletionHandler freeResponseTrialCompletionHandler;
     PassFailTrialCompletionHandler passFailTrialCompletionHandler;

@@ -70,8 +70,46 @@ static auto adaptiveCorrectKeywords(Presenter::TestSetup &testSetup) -> bool {
     return testSetup.adaptiveCorrectKeywords();
 }
 
-static auto coordinateResponseMeasure(Presenter::TestSetup &testSetup) -> bool {
-    return testSetup.coordinateResponseMeasure();
+static auto defaultAdaptiveCoordinateResponseMeasure(Method m) -> bool {
+    return m == Method::defaultAdaptiveCoordinateResponseMeasure;
+}
+
+static auto adaptiveCoordinateResponseMeasureWithSingleSpeaker(Method m)
+    -> bool {
+    return m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker;
+}
+
+static auto adaptiveCoordinateResponseMeasureWithDelayedMasker(Method m)
+    -> bool {
+    return m == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker;
+}
+
+static auto fixedLevelCoordinateResponseMeasureWithTargetReplacement(Method m)
+    -> bool {
+    return m ==
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement;
+}
+
+static auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(
+    Method m) -> bool {
+    return m ==
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
+}
+
+static auto adaptiveCoordinateResponseMeasure(Method m) -> bool {
+    return defaultAdaptiveCoordinateResponseMeasure(m) ||
+        adaptiveCoordinateResponseMeasureWithSingleSpeaker(m) ||
+        adaptiveCoordinateResponseMeasureWithDelayedMasker(m);
+}
+
+static auto fixedLevelCoordinateResponseMeasure(Method m) -> bool {
+    return fixedLevelCoordinateResponseMeasureWithTargetReplacement(m) ||
+        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(m);
+}
+
+static auto coordinateResponseMeasure(Method m) -> bool {
+    return adaptiveCoordinateResponseMeasure(m) ||
+        fixedLevelCoordinateResponseMeasure(m);
 }
 
 static auto defaultAdaptive(Presenter::TestSetup &testSetup) -> bool {
@@ -89,8 +127,7 @@ static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
 static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
     TestSettingsInterpreter &testSettingsInterpreter,
-    TextFileReader &textFileReader) {
-    auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
+    const std::string &testSettings) {
     testSettingsInterpreter.apply(model, testSettings, testIdentity(testSetup));
     auto method{testSettingsInterpreter.method(testSettings)};
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
@@ -143,29 +180,31 @@ void Presenter::confirmTestSetup() {
 }
 
 void Presenter::confirmTestSetup_() {
-    initializeTest(model, testSetup, testSettingsInterpreter, textFileReader);
+    auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
+    initializeTest(model, testSetup, testSettingsInterpreter, testSettings);
+    auto method{testSettingsInterpreter.method(testSettings)};
     if (!testComplete(model)) {
-        switchToTestView();
-        trialCompletionHandler_ = trialCompletionHandler();
+        switchToTestView(method);
+        trialCompletionHandler_ = trialCompletionHandler(method);
     }
 }
 
-void Presenter::switchToTestView() {
+void Presenter::switchToTestView(Method m) {
     hide(testSetup);
-    showTest();
+    showTest(m);
 }
 
-void Presenter::showTest() {
+void Presenter::showTest(Method m) {
     experimenterPresenter.show();
     displayTrialInformation(experimenterPresenter, model);
-    if (coordinateResponseMeasure(testSetup))
+    if (coordinateResponseMeasure(m))
         coordinateResponseMeasurePresenter.start();
     else
         experimenterPresenter.start();
 }
 
-auto Presenter::trialCompletionHandler() -> TrialCompletionHandler * {
-    if (coordinateResponseMeasure(testSetup))
+auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
+    if (coordinateResponseMeasure(m))
         return &coordinateResponseMeasureTrialCompletionHandler;
     if (adaptivePassFail(testSetup))
         return &passFailTrialCompletionHandler;
