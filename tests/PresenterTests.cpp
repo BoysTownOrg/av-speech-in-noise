@@ -529,29 +529,6 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidMaskerLevelShowsErrorMessage) {
-    assertInvalidMaskerLevelShowsErrorMessage(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptivePassFailTestWithInvalidMaskerLevelShowsErrorMessage) {
-    assertInvalidMaskerLevelShowsErrorMessage(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementWithInvalidMaskerLevelShowsErrorMessage) {
-    assertInvalidMaskerLevelShowsErrorMessage(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementWithInvalidMaskerLevelShowsErrorMessage) {
-    assertInvalidMaskerLevelShowsErrorMessage(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
     run(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
     assertFalse(experimenterView.nextTrialButtonShown());
@@ -985,28 +962,6 @@ PRESENTER_TEST(
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest,
         submittingFreeResponse);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
 PRESENTER_TEST(
