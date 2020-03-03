@@ -15,14 +15,6 @@ static auto testIdentity(Presenter::TestSetup &testSetup) -> TestIdentity {
     return testSetup.testIdentity();
 }
 
-static auto fixedLevelTest(Presenter::TestSetup &testSetup) -> FixedLevelTest {
-    return testSetup.fixedLevelTest();
-}
-
-static auto adaptiveTest(Presenter::TestSetup &testSetup) -> AdaptiveTest {
-    return testSetup.adaptiveTest();
-}
-
 static void displayTrialNumber(
     Presenter::Experimenter &experimenterPresenter, Model &model) {
     experimenterPresenter.display(
@@ -37,37 +29,6 @@ static void displayTrialInformation(
     Presenter::Experimenter &experimenterPresenter, Model &model) {
     displayTrialNumber(experimenterPresenter, model);
     displayTarget(experimenterPresenter, model);
-}
-
-static auto adaptiveCoordinateResponseMeasure(Presenter::TestSetup &testSetup)
-    -> bool {
-    return testSetup.adaptiveCoordinateResponseMeasure();
-}
-
-static auto adaptivePassFail(Presenter::TestSetup &testSetup) -> bool {
-    return testSetup.adaptivePassFail();
-}
-
-static auto fixedLevelSilentIntervals(Presenter::TestSetup &testSetup) -> bool {
-    return testSetup.fixedLevelSilentIntervals();
-}
-
-static auto fixedLevelAllStimuli(Presenter::TestSetup &testSetup) -> bool {
-    return testSetup.fixedLevelAllStimuli();
-}
-
-static auto adaptiveCoordinateResponseMeasureWithDelayedMasker(
-    Presenter::TestSetup &testSetup) -> bool {
-    return testSetup.adaptiveCoordinateResponseMeasureWithDelayedMasker();
-}
-
-static auto adaptiveCoordinateResponseMeasureWithSingleSpeaker(
-    Presenter::TestSetup &testSetup) -> bool {
-    return testSetup.adaptiveCoordinateResponseMeasureWithSingleSpeaker();
-}
-
-static auto adaptiveCorrectKeywords(Presenter::TestSetup &testSetup) -> bool {
-    return testSetup.adaptiveCorrectKeywords();
 }
 
 static auto defaultAdaptiveCoordinateResponseMeasure(Method m) -> bool {
@@ -135,15 +96,6 @@ static auto defaultAdaptive(Method m) -> bool {
 static auto fixedLevelSilentIntervals(Method m) -> bool {
     return fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(m) ||
         fixedLevelFreeResponseWithSilentIntervalTargets(m);
-}
-
-static auto defaultAdaptive(Presenter::TestSetup &testSetup) -> bool {
-    return testSetup.defaultAdaptive();
-}
-
-static auto fixedLevelCoordinateResponseMeasure(Presenter::TestSetup &testSetup)
-    -> bool {
-    return testSetup.fixedLevelCoordinateResponseMeasure();
 }
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
@@ -409,9 +361,7 @@ auto Presenter::TestSetup::readCondition() -> Condition {
     return auditoryOnly() ? Condition::auditoryOnly : Condition::audioVisual;
 }
 
-auto Presenter::TestSetup::auditoryOnly() -> bool {
-    return {};
-}
+auto Presenter::TestSetup::auditoryOnly() -> bool { return {}; }
 
 void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
 
@@ -428,19 +378,15 @@ auto Presenter::TestSetup::readCalibrationLevel() -> int {
     return readInteger(view->calibrationLevel_dB_SPL(), "calibration level");
 }
 
-auto Presenter::TestSetup::readMaskerLevel() -> int {
-    return {};
-}
+auto Presenter::TestSetup::readMaskerLevel() -> int { return {}; }
 
 void Presenter::TestSetup::confirmTestSetup() { parent->confirmTestSetup(); }
 
 void Presenter::TestSetup::becomeChild(Presenter *p) { parent = p; }
 
-void Presenter::TestSetup::setMasker(std::string s) {
-}
+void Presenter::TestSetup::setMasker(std::string s) {}
 
-void Presenter::TestSetup::setStimulusList(std::string s) {
-}
+void Presenter::TestSetup::setStimulusList(std::string s) {}
 
 void Presenter::TestSetup::browseForTargetList() {
     parent->browseForTargetList();
@@ -464,8 +410,7 @@ void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
     view->setCalibrationFilePath(std::move(s));
 }
 
-void Presenter::TestSetup::setTrackSettingsFile(std::string s) {
-}
+void Presenter::TestSetup::setTrackSettingsFile(std::string s) {}
 
 void Presenter::TestSetup::setTestSettingsFile(std::string s) {
     view->setTestSettingsFile(std::move(s));
