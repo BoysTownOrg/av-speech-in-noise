@@ -317,7 +317,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     void initialize() { method.initialize(test); }
 
     void assertPassedTargetLevelRule(const Track::Settings &s) {
-        assertEqual(&std::as_const(targetLevelRule), s.rule);
+        assertEqual(&std::as_const(test.trackingRule), s.rule);
     }
 
     void assertStartingXEqualsOne(const Track::Settings &s) {
