@@ -180,6 +180,12 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {
         interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsPassesMethod) {
+    assertPassesTestMethod(interpreter, model,
+        Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTestIdentity);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
     assertPassesTestIdentity(
         interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);

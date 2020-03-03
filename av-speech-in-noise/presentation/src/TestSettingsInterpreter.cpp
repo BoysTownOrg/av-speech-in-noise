@@ -171,6 +171,7 @@ static void initializeFixedLevelTest(
         contents);
     test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     test.identity = identity;
+    test.identity.method = methodName(contents);
     if (methodName(contents) ==
             methodName(Method::
                     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets) ||
