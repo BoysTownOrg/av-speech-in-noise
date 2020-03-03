@@ -140,6 +140,19 @@ void assertSessionIdEquals(const std::string &s, const TestIdentity &identity) {
     assertEqual(s, session(identity));
 }
 
+void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
+    ModelStub &model, Method m,
+    const std::function<TestIdentity(ModelStub &)> &f) {
+    TestIdentity testIdentity;
+    setSubjectId(testIdentity, "a");
+    setTesterId(testIdentity, "b");
+    setSession(testIdentity, "c");
+    apply(interpreter, model, m, testIdentity);
+    assertSubjectIdEquals("a", f(model));
+    assertTesterIdEquals("b", f(model));
+    assertSessionIdEquals("c", f(model));
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -151,25 +164,15 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TEST_F(TestSettingsInterpreterTests, a)
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
-    setSubjectId(testIdentity, "a");
-    setTesterId(testIdentity, "b");
-    setSession(testIdentity, "c");
-    apply(interpreter, model, Method::adaptivePassFail, testIdentity);
-    assertSubjectIdEquals("a", adaptiveTestIdentity(model));
-    assertTesterIdEquals("b", adaptiveTestIdentity(model));
-    assertSessionIdEquals("c", adaptiveTestIdentity(model));
+    assertPassesTestIdentity(interpreter, model, Method::adaptivePassFail,
+        [](auto m) { return adaptiveTestIdentity(m); });
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesTestIdentity) {
-    setSubjectId(testIdentity, "a");
-    setTesterId(testIdentity, "b");
-    setSession(testIdentity, "c");
-    apply(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets,
-        testIdentity);
-    assertSubjectIdEquals("a", fixedLevelTestIdentity(model));
-    assertTesterIdEquals("b", fixedLevelTestIdentity(model));
-    assertSessionIdEquals("c", fixedLevelTestIdentity(model));
+    assertPassesTestIdentity(interpreter, model,
+        Method::fixedLevelFreeResponseWithAllTargets,
+        [](auto m) { return fixedLevelTestIdentity(m); });
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
