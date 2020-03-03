@@ -337,16 +337,6 @@ PRESENTER_TEST(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesTargetList) {
-    assertPassesTargetListDirectory(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTargetList) {
-    assertPassesTargetListDirectory(confirmingAdaptivePassFailTest);
-}
-
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
     assertPassesSubjectId(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
@@ -433,35 +423,6 @@ PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesMethod) {
     assertPassesMethod(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesCeilingSNR) {
-    assertPassesCeilingSNR(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesCeilingSNR) {
-    assertPassesCeilingSNR(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesFloorSNR) {
-    assertPassesFloorSNR(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesFloorSNR) {
-    assertPassesFloorSNR(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesTrackBumpLimit) {
-    assertPassesTrackBumpLimit(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTrackBumpLimit) {
-    assertPassesTrackBumpLimit(confirmingAdaptivePassFailTest);
 }
 
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
