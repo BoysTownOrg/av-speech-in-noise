@@ -108,8 +108,12 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
     testIdentity.subjectId = "a";
+    testIdentity.testerId = "b";
+    testIdentity.session = "c";
     apply(interpreter, model, Method::adaptivePassFail, testIdentity);
     assertEqual("a", adaptiveTest(model).identity.subjectId);
+    assertEqual("b", adaptiveTest(model).identity.testerId);
+    assertEqual("c", adaptiveTest(model).identity.session);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
