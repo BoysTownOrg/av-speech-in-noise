@@ -312,33 +312,11 @@ static auto readInteger(const std::string &x, const std::string &identifier)
     }
 }
 
-auto Presenter::TestSetup::fixedLevelTest() -> FixedLevelTest {
-    FixedLevelTest p;
-    initialize(p);
-    return p;
-}
-
 auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     TestIdentity p;
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
     p.session = view->session();
-    return p;
-}
-
-void Presenter::TestSetup::initialize(Test &p) {
-    p.maskerLevel_dB_SPL = readMaskerLevel();
-    p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
-    p.condition = readCondition();
-    p.identity = testIdentity();
-}
-
-auto Presenter::TestSetup::adaptiveTest() -> AdaptiveTest {
-    AdaptiveTest p;
-    initialize(p);
-    p.ceilingSnr_dB = ceilingSnr_dB;
-    p.floorSnr_dB = floorSnr_dB;
-    p.trackBumpLimit = trackBumpLimit;
     return p;
 }
 
@@ -363,15 +341,9 @@ auto Presenter::TestSetup::readCalibrationLevel() -> int {
     return readInteger(view->calibrationLevel_dB_SPL(), "calibration level");
 }
 
-auto Presenter::TestSetup::readMaskerLevel() -> int { return {}; }
-
 void Presenter::TestSetup::confirmTestSetup() { parent->confirmTestSetup(); }
 
 void Presenter::TestSetup::becomeChild(Presenter *p) { parent = p; }
-
-void Presenter::TestSetup::setMasker(std::string s) {}
-
-void Presenter::TestSetup::setStimulusList(std::string s) {}
 
 void Presenter::TestSetup::browseForCalibration() {
     parent->browseForCalibration();
@@ -384,8 +356,6 @@ void Presenter::TestSetup::browseForTestSettingsFile() {
 void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
     view->setCalibrationFilePath(std::move(s));
 }
-
-void Presenter::TestSetup::setTrackSettingsFile(std::string s) {}
 
 void Presenter::TestSetup::setTestSettingsFile(std::string s) {
     view->setTestSettingsFile(std::move(s));
