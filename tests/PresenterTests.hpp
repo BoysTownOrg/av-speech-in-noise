@@ -1643,13 +1643,6 @@ class PresenterTests : public ::testing::Test {
             av_speech_in_noise::adaptiveTest(model).trackBumpLimit);
     }
 
-    void assertPassesTrackSettingsFile(UseCase &useCase) {
-        setupView.setTrackSettingsFile("e");
-        run(useCase);
-        assertEqual(
-            "e", av_speech_in_noise::adaptiveTest(model).trackSettingsFile);
-    }
-
     void assertInvalidSnrShowsErrorMessage(UseCase &useCase) {
         setStartingSnr("a");
         run(useCase);

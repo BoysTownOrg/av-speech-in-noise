@@ -442,7 +442,6 @@ auto Presenter::TestSetup::adaptiveTest() -> AdaptiveTest {
     p.ceilingSnr_dB = ceilingSnr_dB;
     p.floorSnr_dB = floorSnr_dB;
     p.trackBumpLimit = trackBumpLimit;
-    p.trackSettingsFile = view->trackSettingsFile();
     return p;
 }
 

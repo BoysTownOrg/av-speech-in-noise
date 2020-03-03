@@ -656,16 +656,6 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesTrackSettingsFile) {
-    assertPassesTrackSettingsFile(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTrackSettingsFile) {
-    assertPassesTrackSettingsFile(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesAudioVisualCondition) {
     assertAudioVisualConditionPassedToModel(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
