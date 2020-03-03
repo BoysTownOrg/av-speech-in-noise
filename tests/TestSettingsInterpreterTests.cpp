@@ -176,20 +176,19 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TEST_F(TestSettingsInterpreterTests, a)
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {
-    assertPassesTestMethod(interpreter, model, Method::adaptivePassFail,
-        [](auto m) { return adaptiveTestIdentity(m); });
+    assertPassesTestMethod(
+        interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
-    assertPassesTestIdentity(interpreter, model, Method::adaptivePassFail,
-        [](auto m) { return adaptiveTestIdentity(m); });
+    assertPassesTestIdentity(
+        interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesTestIdentity) {
     assertPassesTestIdentity(interpreter, model,
-        Method::fixedLevelFreeResponseWithAllTargets,
-        [](auto m) { return fixedLevelTestIdentity(m); });
+        Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTestIdentity);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
