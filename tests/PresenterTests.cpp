@@ -247,16 +247,6 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
 }
 
-PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotInitializeFixedLevelTest) {
-    assertDoesNotInitializeFixedLevelTest(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotInitializeFixedLevelTest) {
-    assertDoesNotInitializeFixedLevelTest(confirmingAdaptivePassFailTest);
-}
-
 PRESENTER_TEST(playCalibrationPassesLevel) {
     setCalibrationLevel("1");
     playCalibration();
@@ -470,25 +460,25 @@ PRESENTER_TEST(subjectResponsePassesNumberResponse) {
 PRESENTER_TEST(subjectResponsePassesGreenColor) {
     subjectView.setGreenResponse();
     respondFromSubject();
-    assertModelPassedCondition(coordinate_response_measure::Color::green);
+    assertModelPassedColor(coordinate_response_measure::Color::green);
 }
 
 PRESENTER_TEST(subjectResponsePassesRedColor) {
     subjectView.setRedResponse();
     respondFromSubject();
-    assertModelPassedCondition(coordinate_response_measure::Color::red);
+    assertModelPassedColor(coordinate_response_measure::Color::red);
 }
 
 PRESENTER_TEST(subjectResponsePassesBlueColor) {
     subjectView.setBlueResponse();
     respondFromSubject();
-    assertModelPassedCondition(coordinate_response_measure::Color::blue);
+    assertModelPassedColor(coordinate_response_measure::Color::blue);
 }
 
 PRESENTER_TEST(subjectResponsePassesWhiteColor) {
     subjectView.setGrayResponse();
     respondFromSubject();
-    assertModelPassedCondition(coordinate_response_measure::Color::white);
+    assertModelPassedColor(coordinate_response_measure::Color::white);
 }
 
 PRESENTER_TEST(experimenterResponsePassesResponse) {

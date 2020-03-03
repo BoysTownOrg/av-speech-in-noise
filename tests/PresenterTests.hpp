@@ -1263,11 +1263,9 @@ class PresenterTests : public ::testing::Test {
 
     auto errorMessage() -> std::string { return view.errorMessage(); }
 
-    void assertModelPassedCondition(coordinate_response_measure::Color c) {
+    void assertModelPassedColor(coordinate_response_measure::Color c) {
         assertEqual(c, model.responseParameters().color);
     }
-
-    auto adaptiveTest() -> const AdaptiveTest & { return model.adaptiveTest(); }
 
     auto calibration() -> const Calibration & { return model.calibration(); }
 
@@ -1281,20 +1279,10 @@ class PresenterTests : public ::testing::Test {
         assertEqual(s, errorMessage());
     }
 
-    void assertInvalidMaskerLevelShowsErrorMessage(UseCase &useCase) {
-        setMaskerLevel("a");
-        run(useCase);
-        assertErrorMessageEquals("'a' is not a valid masker level.");
-    }
-
     void setAudioDevice(std::string s) { view.setAudioDevice(std::move(s)); }
 
     void setCalibrationLevel(std::string s) {
         setupView.setCalibrationLevel(std::move(s));
-    }
-
-    void setMaskerLevel(std::string s) {
-        setupView.setMaskerLevel(std::move(s));
     }
 
     void assertAudioVisualConditionPassedToModel(ConditionUseCase &useCase) {
@@ -1408,12 +1396,6 @@ class PresenterTests : public ::testing::Test {
         assertTrue(useCase.nextTrialButtonShown());
     }
 
-    void assertMaskerLevelPassedToModel(ConfirmingTestSetup &useCase) {
-        setMaskerLevel("2");
-        run(useCase);
-        assertEqual(2, useCase.test(model).maskerLevel_dB_SPL);
-    }
-
     void assertHidesTestSetupView(UseCase &useCase) {
         run(useCase);
         assertSetupViewHidden();
@@ -1437,11 +1419,6 @@ class PresenterTests : public ::testing::Test {
     void assertDoesNotShowSubjectView(UseCase &useCase) {
         run(useCase);
         assertSubjectViewNotShown();
-    }
-
-    void assertDoesNotInitializeFixedLevelTest(UseCase &useCase) {
-        run(useCase);
-        assertFalse(model.defaultFixedLevelTestInitialized());
     }
 
     void assertPassesTestSettingsFileToTextFileReader(
@@ -1487,24 +1464,6 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         assertEqual(
             Presenter::fullScaleLevel_dB_SPL, useCase.fullScaleLevel(model));
-    }
-
-    void assertPassesCeilingSNR(UseCase &useCase) {
-        run(useCase);
-        assertEqual(Presenter::ceilingSnr_dB,
-            av_speech_in_noise::adaptiveTest(model).ceilingSnr_dB);
-    }
-
-    void assertPassesFloorSNR(UseCase &useCase) {
-        run(useCase);
-        assertEqual(Presenter::floorSnr_dB,
-            av_speech_in_noise::adaptiveTest(model).floorSnr_dB);
-    }
-
-    void assertPassesTrackBumpLimit(UseCase &useCase) {
-        run(useCase);
-        assertEqual(Presenter::trackBumpLimit,
-            av_speech_in_noise::adaptiveTest(model).trackBumpLimit);
     }
 
     void assertCompleteTrialShowsResponseView(
