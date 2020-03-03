@@ -128,6 +128,18 @@ auto session(const TestIdentity &identity) -> std::string {
     return identity.session;
 }
 
+void assertSubjectIdEquals(const std::string &s, const TestIdentity &identity) {
+    assertEqual(s, subjectId(identity));
+}
+
+void assertTesterIdEquals(const std::string &s, const TestIdentity &identity) {
+    assertEqual(s, testerId(identity));
+}
+
+void assertSessionIdEquals(const std::string &s, const TestIdentity &identity) {
+    assertEqual(s, session(identity));
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -143,9 +155,9 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
     setTesterId(testIdentity, "b");
     setSession(testIdentity, "c");
     apply(interpreter, model, Method::adaptivePassFail, testIdentity);
-    assertEqual("a", subjectId(adaptiveTestIdentity(model)));
-    assertEqual("b", testerId(adaptiveTestIdentity(model)));
-    assertEqual("c", session(adaptiveTestIdentity(model)));
+    assertSubjectIdEquals("a", adaptiveTestIdentity(model));
+    assertTesterIdEquals("b", adaptiveTestIdentity(model));
+    assertSessionIdEquals("c", adaptiveTestIdentity(model));
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -155,9 +167,9 @@ TEST_SETTINGS_INTERPRETER_TEST(
     setSession(testIdentity, "c");
     apply(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets,
         testIdentity);
-    assertEqual("a", subjectId(fixedLevelTestIdentity(model)));
-    assertEqual("b", testerId(fixedLevelTestIdentity(model)));
-    assertEqual("c", session(fixedLevelTestIdentity(model)));
+    assertSubjectIdEquals("a", fixedLevelTestIdentity(model));
+    assertTesterIdEquals("b", fixedLevelTestIdentity(model));
+    assertSessionIdEquals("c", fixedLevelTestIdentity(model));
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
