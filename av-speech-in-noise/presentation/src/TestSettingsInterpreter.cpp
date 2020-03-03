@@ -115,7 +115,7 @@ static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
 static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::startingSnr))
-        test.snr_dB = std::stoi(entry);
+        test.snr_dB = integer(entry);
 }
 
 static auto methodName(const std::string &contents) -> std::string {
