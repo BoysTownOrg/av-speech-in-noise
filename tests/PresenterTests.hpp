@@ -485,43 +485,9 @@ class PlayingCalibration : public ConditionUseCase, public LevelUseCase {
 
 class ConfirmingTestSetup : public virtual UseCase {};
 
-static auto adaptiveTest(ModelStub &m) -> const AdaptiveTest & {
-    return m.adaptiveTest();
-}
-
-static auto fixedLevelTest(ModelStub &m) -> const FixedLevelTest & {
-    return m.fixedLevelTest();
-}
-
 static void confirmTestSetup(ViewStub::TestSetupViewStub *view) {
     view->confirmTestSetup();
 }
-
-namespace adaptive_test {
-static auto snr_dB(ModelStub &m) -> int {
-    return adaptiveTest(m).startingSnr_dB;
-}
-
-static auto fullScaleLevel(ModelStub &m) -> int {
-    return adaptiveTest(m).fullScaleLevel_dB_SPL;
-}
-
-static auto condition(ModelStub &m) -> Condition {
-    return adaptiveTest(m).condition;
-}
-};
-
-namespace fixed_level_test {
-static auto snr_dB(ModelStub &m) -> int { return fixedLevelTest(m).snr_dB; }
-
-static auto fullScaleLevel(ModelStub &m) -> int {
-    return fixedLevelTest(m).fullScaleLevel_dB_SPL;
-}
-
-static auto condition(ModelStub &m) -> Condition {
-    return fixedLevelTest(m).condition;
-}
-};
 
 static void setMethod(TestSettingsInterpreterStub &interpeter, Method m) {
     interpeter.setMethod(m);
