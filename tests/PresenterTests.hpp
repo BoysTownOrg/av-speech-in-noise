@@ -453,17 +453,22 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return textForMethodQuery_;
     }
 
-    void apply(Model &, const std::string &t, const TestIdentity &id) override {
+    void apply(
+        Model &m, const std::string &t, const TestIdentity &id) override {
         text_ = t;
         identity_ = id;
+        if (initializeAnyTestOnApply_)
+            m.initializeTest(AdaptiveTest{});
     }
 
     void setMethod(Method m) { method_ = m; }
 
-    auto method(const std::string &t) -> Method {
+    auto method(const std::string &t) -> Method override {
         textForMethodQuery_ = t;
         return method_;
     }
+
+    void initializeAnyTestOnApply() { initializeAnyTestOnApply_ = true; }
 
   private:
     std::string text_;
@@ -471,6 +476,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     TestIdentity identity_;
     const TestSettings &testSettings;
     Method method_{};
+    bool initializeAnyTestOnApply_{};
 };
 
 class TextFileReaderStub : public TextFileReader {
@@ -590,7 +596,7 @@ class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-                setMethod(
+        setMethod(
             interpreter, Method::defaultAdaptiveCoordinateResponseMeasure);
         confirmTestSetup(view);
     }
@@ -717,7 +723,7 @@ class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-                setMethod(interpreter, Method::adaptiveCorrectKeywords);
+        setMethod(interpreter, Method::adaptiveCorrectKeywords);
         confirmTestSetup(view);
     }
 
@@ -748,7 +754,7 @@ class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-                setMethod(
+        setMethod(
             interpreter, Method::fixedLevelFreeResponseWithTargetReplacement);
         confirmTestSetup(view);
     }
@@ -782,7 +788,7 @@ class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-                setMethod(interpreter,
+        setMethod(interpreter,
             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
         confirmTestSetup(view);
     }
@@ -816,7 +822,7 @@ class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        
+
         setMethod(interpreter,
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
@@ -1796,6 +1802,7 @@ class PresenterFailureTests : public ::testing::Test {
     void useFailingModel(std::string s = {}) {
         failure.setErrorMessage(std::move(s));
         model = &failure;
+        testSettingsInterpreter.initializeAnyTestOnApply();
     }
 
     void confirmTestSetup() {
