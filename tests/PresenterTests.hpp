@@ -1251,14 +1251,6 @@ class PresenterTests : public ::testing::Test {
         assertTrue(setupView.conditions().contains(s));
     }
 
-    void assertSetupViewMethodsContains(const std::string &s) {
-        assertTrue(setupView.methods().contains(s));
-    }
-
-    void assertSetupViewMethodsContains(Method m) {
-        assertTrue(setupView.methods().contains(methodName(m)));
-    }
-
     void setCondition(std::string s) { setupView.setCondition(std::move(s)); }
 
     auto errorMessage() -> std::string { return view.errorMessage(); }
