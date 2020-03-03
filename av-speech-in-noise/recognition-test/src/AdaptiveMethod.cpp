@@ -14,7 +14,6 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(TargetListReader *targetListSetReader,
 
 void AdaptiveMethodImpl::initialize(const AdaptiveTest &test_) {
     test = &test_;
-    trackSettings.rule = trackSettingsReader->read(test_.trackSettingsFile);
     trackSettings.rule = &test_.trackingRule;
     trackSettings.ceiling = test_.ceilingSnr_dB;
     trackSettings.startingX = test_.startingSnr_dB;

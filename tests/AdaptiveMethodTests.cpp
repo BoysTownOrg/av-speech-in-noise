@@ -530,12 +530,6 @@ ADAPTIVE_METHOD_TEST(initializePassesTargetListDirectory) {
     assertEqual("a", targetListSetReader.directory());
 }
 
-ADAPTIVE_METHOD_TEST(initializePassesTrackSettingsFile) {
-    test.trackSettingsFile = "a";
-    initialize();
-    assertEqual("a", trackSettingsReader.filePath());
-}
-
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterInitialize) {
     assertNextReturnsNextFilePathAfter(initializing);
 }
