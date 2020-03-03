@@ -648,15 +648,19 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
 class ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
 
   public:
-    explicit ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker(
-        ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(
             view, Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
+        setMethod(interpreter,
+            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
         confirmTestSetup(view);
     }
 
@@ -676,12 +680,17 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
 };
 
 class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
+    ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
+
   public:
-    explicit ConfirmingAdaptivePassFailTest(ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    ConfirmingAdaptivePassFailTest(ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(view, Method::adaptivePassFail);
+        setMethod(interpreter, Method::adaptivePassFail);
         confirmTestSetup(view);
     }
 
@@ -698,19 +707,20 @@ class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
     auto condition(ModelStub &m) -> Condition override {
         return adaptive_test::condition(m);
     }
-
-  private:
-    ViewStub::TestSetupViewStub *view;
 };
 
 class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
+    ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
+
   public:
-    explicit ConfirmingAdaptiveCorrectKeywordsTest(
-        ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    ConfirmingAdaptiveCorrectKeywordsTest(ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(view, Method::adaptiveCorrectKeywords);
+        setMethod(interpreter, Method::adaptiveCorrectKeywords);
         confirmTestSetup(view);
     }
 
@@ -727,22 +737,23 @@ class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
     auto condition(ModelStub &m) -> Condition override {
         return adaptive_test::condition(m);
     }
-
-  private:
-    ViewStub::TestSetupViewStub *view;
 };
 
 class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
 
   public:
-    explicit ConfirmingFixedLevelFreeResponseWithTargetReplacementTest(
-        ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    ConfirmingFixedLevelFreeResponseWithTargetReplacementTest(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(view, Method::fixedLevelFreeResponseWithTargetReplacement);
+        setMethod(
+            interpreter, Method::fixedLevelFreeResponseWithTargetReplacement);
         confirmTestSetup(view);
     }
 
@@ -766,14 +777,18 @@ class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
 class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
 
   public:
-    explicit ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest(
-        ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(view,
+            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
+        setMethod(interpreter,
             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
         confirmTestSetup(view);
     }
@@ -798,14 +813,19 @@ class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
 class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
 
   public:
-    explicit ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets(
-        ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(view,
+            Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
+        setMethod(interpreter,
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
         confirmTestSetup(view);
@@ -831,15 +851,19 @@ class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
 class ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
 
   public:
-    explicit ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest(
-        ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(
             view, Method::fixedLevelFreeResponseWithSilentIntervalTargets);
+        setMethod(interpreter,
+            Method::fixedLevelFreeResponseWithSilentIntervalTargets);
         confirmTestSetup(view);
     }
 
@@ -863,14 +887,17 @@ class ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
 class ConfirmingFixedLevelFreeResponseTestWithAllTargets
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
 
   public:
-    explicit ConfirmingFixedLevelFreeResponseTestWithAllTargets(
-        ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+    ConfirmingFixedLevelFreeResponseTestWithAllTargets(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(view, Method::fixedLevelFreeResponseWithAllTargets);
+        setMethod(interpreter, Method::fixedLevelFreeResponseWithAllTargets);
         confirmTestSetup(view);
     }
 
@@ -1216,23 +1243,26 @@ class PresenterTests : public ::testing::Test {
             &setupView, testSettingsInterpreter};
     ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
         confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker{
-            &setupView};
-    ConfirmingAdaptivePassFailTest confirmingAdaptivePassFailTest{&setupView};
+            &setupView, testSettingsInterpreter};
+    ConfirmingAdaptivePassFailTest confirmingAdaptivePassFailTest{
+        &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest{&setupView};
+        confirmingFixedLevelFreeResponseWithTargetReplacementTest{
+            &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest{
-            &setupView};
+            &setupView, testSettingsInterpreter};
     ConfirmingAdaptiveCorrectKeywordsTest confirmingAdaptiveCorrectKeywordsTest{
-        &setupView};
+        &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest{
-            &setupView};
+            &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest
         confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest{
-            &setupView};
+            &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelFreeResponseTestWithAllTargets
-        confirmingFixedLevelFreeResponseTestWithAllTargets{&setupView};
+        confirmingFixedLevelFreeResponseTestWithAllTargets{
+            &setupView, testSettingsInterpreter};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{experimenterView};
