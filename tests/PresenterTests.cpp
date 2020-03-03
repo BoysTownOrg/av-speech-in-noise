@@ -389,26 +389,6 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
-PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesMasker) {
-    assertPassesMasker(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesMasker) {
-    assertPassesMasker(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesMasker) {
-    assertPassesMasker(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesMasker) {
-    assertPassesMasker(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
 PRESENTER_TEST(playCalibrationPassesFilePath) {
     setupView.setCalibrationFilePath("a");
     playCalibration();
@@ -484,32 +464,6 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTrackBumpLimit) {
     assertPassesTrackBumpLimit(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(playingCalibration);
-}
-
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
@@ -524,58 +478,6 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingAdaptivePassFailTest, submittingPassedTrial);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(playCalibrationPassesAudioVisualCondition) {
-    assertAudioVisualConditionPassedToModel(playingCalibration);
-}
-
-PRESENTER_TEST(playCalibrationPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(playingCalibration);
 }
 
 PRESENTER_TEST(
