@@ -37,7 +37,7 @@ auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
 }
 
 void apply(TestSettingsInterpreterImpl &interpreter, Model &model,
-    const std::vector<std::string> &v, const TestIdentity& identity = {}) {
+    const std::vector<std::string> &v, const TestIdentity &identity = {}) {
     interpreter.apply(model, concatenate(v), identity);
 }
 
@@ -104,6 +104,18 @@ auto fixedLevelTestIdentity(ModelStub &model) -> TestIdentity {
     return fixedLevelTest(model).identity;
 }
 
+void setSubjectId(TestIdentity &identity, std::string s) {
+    identity.subjectId = std::move(s);
+}
+
+void setTesterId(TestIdentity &identity, std::string s) {
+    identity.testerId = std::move(s);
+}
+
+void setSession(TestIdentity &identity, std::string s) {
+    identity.session = std::move(s);
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -115,20 +127,22 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TEST_F(TestSettingsInterpreterTests, a)
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
-    testIdentity.subjectId = "a";
-    testIdentity.testerId = "b";
-    testIdentity.session = "c";
+    setSubjectId(testIdentity, "a");
+    setTesterId(testIdentity, "b");
+    setSession(testIdentity, "c");
     apply(interpreter, model, Method::adaptivePassFail, testIdentity);
     assertEqual("a", adaptiveTestIdentity(model).subjectId);
     assertEqual("b", adaptiveTestIdentity(model).testerId);
     assertEqual("c", adaptiveTestIdentity(model).session);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(fixedLevelFreeResponseWithAllTargetsPassesTestIdentity) {
-    testIdentity.subjectId = "a";
-    testIdentity.testerId = "b";
-    testIdentity.session = "c";
-    apply(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets, testIdentity);
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsPassesTestIdentity) {
+    setSubjectId(testIdentity, "a");
+    setTesterId(testIdentity, "b");
+    setSession(testIdentity, "c");
+    apply(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets,
+        testIdentity);
     assertEqual("a", fixedLevelTestIdentity(model).subjectId);
     assertEqual("b", fixedLevelTestIdentity(model).testerId);
     assertEqual("c", fixedLevelTestIdentity(model).session);
