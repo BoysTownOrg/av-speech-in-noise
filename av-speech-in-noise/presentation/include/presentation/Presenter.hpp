@@ -98,9 +98,6 @@ class View {
             virtual void playCalibration() = 0;
             virtual void browseForCalibration() = 0;
             virtual void browseForTestSettingsFile() = 0;
-            virtual void browseForTargetList() {}
-            virtual void browseForMasker() {}
-            virtual void browseForTrackSettingsFile() {}
         };
 
         virtual ~TestSetup() = default;
@@ -179,11 +176,11 @@ class Presenter : public Model::EventListener {
       public:
         explicit TestSetup(View::TestSetup *);
         void playCalibration() override;
-        void browseForTargetList() override;
-        void browseForMasker() override;
+        void browseForTargetList() ;
+        void browseForMasker() ;
         void confirmTestSetup() override;
         void browseForCalibration() override;
-        void browseForTrackSettingsFile() override;
+        void browseForTrackSettingsFile() ;
         void browseForTestSettingsFile() override;
         void show();
         void hide();

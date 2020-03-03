@@ -134,14 +134,6 @@ class ViewStub : public View {
             listener_ = listener;
         }
 
-        void browseForMasker() { listener_->browseForMasker(); }
-
-        void browseForTargetList() { listener_->browseForTargetList(); }
-
-        void browseForTrackSettingsFile() {
-            listener_->browseForTrackSettingsFile();
-        }
-
         void browseForTestSettingsFile() {
             listener_->browseForTestSettingsFile();
         }
@@ -592,8 +584,6 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(
-            view, Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
         setMethod(interpreter,
             Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
         confirmTestSetup(view);
@@ -626,8 +616,6 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(
-            view, Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
         setMethod(interpreter,
             Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
         confirmTestSetup(view);
@@ -1058,44 +1046,6 @@ class BrowsingEnteredPathUseCase : public virtual BrowsingUseCase {
     virtual void setEntry(std::string) = 0;
 };
 
-class BrowsingForMasker : public BrowsingEnteredPathUseCase {
-    ViewStub::TestSetupViewStub *view;
-
-  public:
-    explicit BrowsingForMasker(ViewStub::TestSetupViewStub *view)
-        : view{view} {}
-
-    auto entry() -> std::string override { return view->maskerFilePath(); }
-
-    void setEntry(std::string s) override { view->setMasker(std::move(s)); }
-
-    void setResult(ViewStub &view_, std::string s) override {
-        return view_.setBrowseForOpeningFileResult(s);
-    }
-
-    void run() override { view->browseForMasker(); }
-};
-
-class BrowsingForTrackSettingsFile : public BrowsingEnteredPathUseCase {
-    ViewStub::TestSetupViewStub *view;
-
-  public:
-    explicit BrowsingForTrackSettingsFile(ViewStub::TestSetupViewStub *view)
-        : view{view} {}
-
-    void run() override { view->browseForTrackSettingsFile(); }
-
-    void setResult(ViewStub &view_, std::string s) override {
-        view_.setBrowseForOpeningFileResult(s);
-    }
-
-    auto entry() -> std::string override { return view->trackSettingsFile(); }
-
-    void setEntry(std::string s) override {
-        view->setTrackSettingsFile(std::move(s));
-    }
-};
-
 class BrowsingForTestSettingsFile : public BrowsingEnteredPathUseCase {
     ViewStub::TestSetupViewStub *view;
 
@@ -1113,26 +1063,6 @@ class BrowsingForTestSettingsFile : public BrowsingEnteredPathUseCase {
 
     void setEntry(std::string s) override {
         view->setTestSettingsFile(std::move(s));
-    }
-};
-
-class BrowsingForTargetList : public BrowsingEnteredPathUseCase {
-    ViewStub::TestSetupViewStub *view;
-
-  public:
-    explicit BrowsingForTargetList(ViewStub::TestSetupViewStub *view)
-        : view{view} {}
-
-    void run() override { view->browseForTargetList(); }
-
-    void setResult(ViewStub &view_, std::string s) override {
-        view_.setBrowseForDirectoryResult(s);
-    }
-
-    auto entry() -> std::string override { return view->targetListDirectory(); }
-
-    void setEntry(std::string s) override {
-        view->setTargetListDirectory(std::move(s));
     }
 };
 
@@ -1191,10 +1121,7 @@ class PresenterTests : public ::testing::Test {
     TextFileReaderStub textFileReader;
     Presenter presenter{model, view, testSetup, subject, experimenter,
         testSettingsInterpreter, textFileReader};
-    BrowsingForTrackSettingsFile browsingForTrackSettingsFile{&setupView};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
-    BrowsingForTargetList browsingForTargetList{&setupView};
-    BrowsingForMasker browsingForMasker{&setupView};
     BrowsingForCalibration browsingForCalibration{&setupView};
     ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest{
