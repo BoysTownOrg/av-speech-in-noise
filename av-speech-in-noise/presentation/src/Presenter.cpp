@@ -96,6 +96,14 @@ static auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
 
+static auto fixedLevelFreeResponseWithAllTargets(Method m) -> bool {
+    return m == Method::fixedLevelFreeResponseWithAllTargets;
+}
+
+static auto fixedLevelFreeResponseWithSilentIntervalTargets(Method m) -> bool {
+    return m == Method::fixedLevelFreeResponseWithSilentIntervalTargets;
+}
+
 static auto adaptivePassFail(Method m) -> bool {
     return m == Method::adaptivePassFail;
 }
@@ -120,6 +128,15 @@ static auto coordinateResponseMeasure(Method m) -> bool {
         fixedLevelCoordinateResponseMeasure(m);
 }
 
+static auto defaultAdaptive(Method m) -> bool {
+    return defaultAdaptiveCoordinateResponseMeasure(m) || adaptivePassFail(m);
+}
+
+static auto fixedLevelSilentIntervals(Method m) -> bool {
+    return fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(m) ||
+        fixedLevelFreeResponseWithSilentIntervalTargets(m);
+}
+
 static auto defaultAdaptive(Presenter::TestSetup &testSetup) -> bool {
     return testSetup.defaultAdaptive();
 }
@@ -138,16 +155,16 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
     const std::string &testSettings) {
     testSettingsInterpreter.apply(model, testSettings, testIdentity(testSetup));
     auto method{testSettingsInterpreter.method(testSettings)};
-    if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
+    if (adaptiveCoordinateResponseMeasureWithDelayedMasker(method))
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (method ==
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)
         model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
-    else if (defaultAdaptive(testSetup) || adaptiveCorrectKeywords(testSetup))
+    else if (defaultAdaptive(method) || adaptiveCorrectKeywords(method))
         model.initializeTest(adaptiveTest(testSetup));
-    else if (fixedLevelSilentIntervals(testSetup))
+    else if (fixedLevelSilentIntervals(method))
         model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
-    else if (fixedLevelAllStimuli(testSetup))
+    else if (fixedLevelFreeResponseWithAllTargets(method))
         model.initializeAllStimuliTest(fixedLevelTest(testSetup));
     else
         model.initializeTest(fixedLevelTest(testSetup));

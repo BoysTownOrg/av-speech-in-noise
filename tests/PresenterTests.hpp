@@ -590,8 +590,7 @@ class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(view, Method::defaultAdaptiveCoordinateResponseMeasure);
-        setMethod(
+                setMethod(
             interpreter, Method::defaultAdaptiveCoordinateResponseMeasure);
         confirmTestSetup(view);
     }
@@ -689,7 +688,6 @@ class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(view, Method::adaptivePassFail);
         setMethod(interpreter, Method::adaptivePassFail);
         confirmTestSetup(view);
     }
@@ -719,8 +717,7 @@ class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(view, Method::adaptiveCorrectKeywords);
-        setMethod(interpreter, Method::adaptiveCorrectKeywords);
+                setMethod(interpreter, Method::adaptiveCorrectKeywords);
         confirmTestSetup(view);
     }
 
@@ -751,8 +748,7 @@ class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelFreeResponseWithTargetReplacement);
-        setMethod(
+                setMethod(
             interpreter, Method::fixedLevelFreeResponseWithTargetReplacement);
         confirmTestSetup(view);
     }
@@ -786,9 +782,7 @@ class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(view,
-            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
-        setMethod(interpreter,
+                setMethod(interpreter,
             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
         confirmTestSetup(view);
     }
@@ -822,9 +816,7 @@ class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(view,
-            Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
+        
         setMethod(interpreter,
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
@@ -896,7 +888,6 @@ class ConfirmingFixedLevelFreeResponseTestWithAllTargets
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(view, Method::fixedLevelFreeResponseWithAllTargets);
         setMethod(interpreter, Method::fixedLevelFreeResponseWithAllTargets);
         confirmTestSetup(view);
     }
