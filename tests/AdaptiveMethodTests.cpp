@@ -12,21 +12,6 @@
 
 namespace av_speech_in_noise::tests {
 namespace {
-class TrackSettingsReaderStub : public TrackSettingsReader {
-    const TrackingRule *rule_{};
-    std::string filePath_{};
-
-  public:
-    [[nodiscard]] auto filePath() const { return filePath_; }
-
-    auto read(std::string s) -> const TrackingRule * override {
-        filePath_ = std::move(s);
-        return rule_;
-    }
-
-    void setTrackingRule(const TrackingRule *r) { rule_ = r; }
-};
-
 class UseCase {
   public:
     virtual ~UseCase() = default;
@@ -266,13 +251,12 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TargetListSetReaderStub targetListSetReader;
-    TrackSettingsReaderStub trackSettingsReader;
     TrackFactoryStub snrTrackFactory;
     ResponseEvaluatorStub evaluator;
     RandomizerStub randomizer;
     OutputFileStub outputFile;
-    AdaptiveMethodImpl method{&targetListSetReader, &trackSettingsReader,
-        &snrTrackFactory, &evaluator, &randomizer};
+    AdaptiveMethodImpl method{
+        &targetListSetReader, &snrTrackFactory, &evaluator, &randomizer};
     Initializing initializing;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectCoordinateResponse submittingCorrectCoordinateResponse{
