@@ -44,7 +44,7 @@ constexpr auto name(TestSetting p) -> const char * {
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    void apply(Model &, const std::string &) override;
+    void apply(Model &, const std::string &, const TestIdentity &) override;
 };
 }
 

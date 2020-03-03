@@ -87,7 +87,7 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader) {
     testSettingsInterpreter.apply(model,
-        textFileReader.read(testSetup.testSettingsFile()));
+        textFileReader.read(testSetup.testSettingsFile()), {});
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))

@@ -37,8 +37,8 @@ auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
 }
 
 void apply(TestSettingsInterpreterImpl &interpreter, Model &model,
-    const std::vector<std::string> &v) {
-    interpreter.apply(model, concatenate(v));
+    const std::vector<std::string> &v, const TestIdentity& identity = {}) {
+    interpreter.apply(model, concatenate(v), identity);
 }
 
 void assertPassesSimpleAdaptiveSettings(
@@ -77,8 +77,10 @@ void assertPassesSimpleFixedLevelSettings(
         fixedLevelTest(model).fullScaleLevel_dB_SPL);
 }
 
-void apply(TestSettingsInterpreterImpl &interpreter, Model &model, Method m) {
-    apply(interpreter, model, {entryWithNewline(TestSetting::method, m)});
+void apply(TestSettingsInterpreterImpl &interpreter, Model &model, Method m,
+    const TestIdentity &identity = {}) {
+    apply(interpreter, model, {entryWithNewline(TestSetting::method, m)},
+        identity);
 }
 
 void assertDefaultAdaptiveTestInitialized(ModelStub &model) {
@@ -98,10 +100,17 @@ class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
     TestSettingsInterpreterImpl interpreter;
+    TestIdentity testIdentity;
 };
 
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
+
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
+    testIdentity.subjectId = "a";
+    apply(interpreter, model, Method::adaptivePassFail, testIdentity);
+    assertEqual("a", adaptiveTest(model).identity.subjectId);
+}
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     apply(interpreter, model, Method::adaptivePassFail);

@@ -131,7 +131,8 @@ static auto adaptive(const std::string &contents) -> bool {
         entry == methodName(Method::defaultAdaptiveCoordinateResponseMeasure);
 }
 
-static void initializeAdaptiveTest(Model &model, const std::string &contents) {
+static void initializeAdaptiveTest(
+    Model &model, const std::string &contents, const TestIdentity &identity) {
     AdaptiveTest test;
     applyToEachEntry(
         [&](auto entryName, auto entry) {
@@ -145,6 +146,7 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents) {
     test.floorSnr_dB = Presenter::floorSnr_dB;
     test.trackBumpLimit = Presenter::trackBumpLimit;
     test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    test.identity = identity;
     if (methodName(contents) ==
         methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
         model.initializeTestWithDelayedMasker(test);
@@ -181,9 +183,9 @@ static void initializeFixedLevelTest(
 }
 
 void TestSettingsInterpreterImpl::apply(
-    Model &model, const std::string &contents) {
+    Model &model, const std::string &contents, const TestIdentity &identity) {
     if (adaptive(contents))
-        initializeAdaptiveTest(model, contents);
+        initializeAdaptiveTest(model, contents, identity);
     else
         initializeFixedLevelTest(model, contents);
 }

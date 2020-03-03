@@ -447,7 +447,9 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     [[nodiscard]] auto text() const -> std::string { return text_; }
 
-    void apply(Model &, const std::string &t) override { text_ = t; }
+    void apply(Model &, const std::string &t, const TestIdentity &) override {
+        text_ = t;
+    }
 
   private:
     std::string text_;
