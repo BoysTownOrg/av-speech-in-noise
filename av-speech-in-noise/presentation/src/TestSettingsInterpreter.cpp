@@ -119,7 +119,6 @@ static auto methodName(const std::string &contents) -> std::string {
 }
 
 static auto method(const std::string &s) -> Method {
-    auto name{methodName(s)};
     for (auto m : {Method::adaptivePassFail, Method::adaptiveCorrectKeywords,
              Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
              Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
@@ -130,7 +129,7 @@ static auto method(const std::string &s) -> Method {
              Method::
                  fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
              Method::defaultAdaptiveCoordinateResponseMeasure})
-        if (name == methodName(m))
+        if (methodName(s) == methodName(m))
             return m;
     return Method::unknown;
 }
