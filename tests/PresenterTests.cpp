@@ -299,12 +299,6 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerInitializesModel) {
-    run(confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
-    assertTrue(model.initializedWithDelayedMasker());
-}
-
-PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
@@ -546,12 +540,6 @@ PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesMethod) {
     assertPassesMethod(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerPassesMethod) {
-    assertPassesMethod(
-        confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
 }
 
 PRESENTER_TEST(

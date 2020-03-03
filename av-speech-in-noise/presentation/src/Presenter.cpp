@@ -155,9 +155,7 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
     const std::string &testSettings) {
     testSettingsInterpreter.apply(model, testSettings, testIdentity(testSetup));
     auto method{testSettingsInterpreter.method(testSettings)};
-    if (adaptiveCoordinateResponseMeasureWithDelayedMasker(method))
-        model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
-    else if (defaultAdaptive(method) || adaptiveCorrectKeywords(method))
+    if (defaultAdaptive(method) || adaptiveCorrectKeywords(method))
         model.initializeTest(adaptiveTest(testSetup));
     else
         model.initializeTest(fixedLevelTest(testSetup));
