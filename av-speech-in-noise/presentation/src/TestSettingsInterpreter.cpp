@@ -65,7 +65,9 @@ static auto entryName(const std::string &line) -> std::string {
 }
 
 static auto entry(const std::string &line) -> std::string {
-    return line.substr(entryDelimiter(line) + 2);
+    return entryDelimiter(line) + 2 > line.size()
+        ? ""
+        : line.substr(entryDelimiter(line) + 2);
 }
 
 static void applyToEachEntry(
