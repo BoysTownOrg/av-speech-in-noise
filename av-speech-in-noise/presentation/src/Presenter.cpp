@@ -155,7 +155,7 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
     const std::string &testSettings) {
     testSettingsInterpreter.apply(model, testSettings, testIdentity(testSetup));
     auto method{testSettingsInterpreter.method(testSettings)};
-    if (defaultAdaptive(method) || adaptiveCorrectKeywords(method))
+    if (defaultAdaptive(method))
         model.initializeTest(adaptiveTest(testSetup));
     else
         model.initializeTest(fixedLevelTest(testSetup));

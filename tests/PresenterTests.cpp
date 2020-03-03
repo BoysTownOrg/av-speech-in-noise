@@ -26,20 +26,6 @@ PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCorrectKeywordsTestDoesNotInitializeFixedLevelTest) {
-    assertDoesNotInitializeFixedLevelTest(
-        confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(
     confirmingAdaptiveCorrectKeywordsTestShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingAdaptiveCorrectKeywordsTest, playingTrialFromExperimenter);
