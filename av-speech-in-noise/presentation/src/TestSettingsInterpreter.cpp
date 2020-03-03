@@ -60,15 +60,20 @@ static void applyToEachTrackingRule(AdaptiveTest &test,
         f(trackingRule(test).at(i), v.at(i));
 }
 
+static auto entryName(const std::string &line) -> std::string {
+    return line.substr(0, entryDelimiter(line));
+}
+
+static auto entry(const std::string &line) -> std::string {
+    return line.substr(entryDelimiter(line) + 2);
+}
+
 static void applyToEachEntry(
     const std::function<void(const std::string &, const std::string &)> &f,
     const std::string &contents) {
     std::stringstream stream{contents};
-    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream)) {
-        auto entryName{line.substr(0, entryDelimiter(line))};
-        auto entry{line.substr(entryDelimiter(line) + 2)};
-        f(entryName, entry);
-    }
+    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream))
+        f(entryName(line), entry(line));
 }
 
 static void assign(
@@ -107,13 +112,10 @@ static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
 
 static auto methodName(const std::string &contents) -> std::string {
     std::stringstream stream{contents};
-    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream)) {
-        auto entryName{line.substr(0, entryDelimiter(line))};
-        auto entry{line.substr(entryDelimiter(line) + 2)};
-        if (entryName == name(TestSetting::method))
-            return entry;
-    }
-    return {};
+    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream))
+        if (entryName(line) == name(TestSetting::method))
+            return entry(line);
+    return methodName(Method::unknown);
 }
 
 static auto method(const std::string &s) -> Method {
