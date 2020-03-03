@@ -317,12 +317,6 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithAllTargetsInitializesModel) {
-    run(confirmingFixedLevelFreeResponseTestWithAllTargets);
-    assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
-}
-
-PRESENTER_TEST(
     confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsInitializesModel) {
     run(confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
     assertTrue(model.fixedLevelTestWithSilentIntervalTargetsInitialized());

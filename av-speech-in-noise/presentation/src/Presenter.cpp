@@ -164,8 +164,6 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
         model.initializeTest(adaptiveTest(testSetup));
     else if (fixedLevelSilentIntervals(method))
         model.initializeSilentIntervalsTest(fixedLevelTest(testSetup));
-    else if (fixedLevelFreeResponseWithAllTargets(method))
-        model.initializeAllStimuliTest(fixedLevelTest(testSetup));
     else
         model.initializeTest(fixedLevelTest(testSetup));
 }
