@@ -98,17 +98,6 @@ PRESENTER_TEST(
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
 }
 
-PRESENTER_TEST(
-    confirmingAdaptiveCorrectKeywordsTestWithInvalidSnrShowsErrorMessage) {
-    assertInvalidSnrShowsErrorMessage(confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCorrectKeywordsTestWithInvalidInputDoesNotHideSetupView) {
-    assertSetupViewNotHiddenWhenSnrIsInvalid(
-        confirmingAdaptiveCorrectKeywordsTest);
-}
-
 PRESENTER_TEST(populatesConditionMenu) {
     assertSetupViewConditionsContains(auditoryOnlyConditionName());
     assertSetupViewConditionsContains(audioVisualConditionName());
@@ -324,56 +313,6 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
 }
 
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesStartingSnr) {
-    assertStartingSnrPassedToModel(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesStartingSnr) {
-    assertStartingSnrPassedToModel(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesStartingSnr) {
-    assertStartingSnrPassedToModel(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsPassesStartingSnr) {
-    assertStartingSnrPassedToModel(
-        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesMaskerLevel) {
-    assertMaskerLevelPassedToModel(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
 PRESENTER_TEST(playCalibrationPassesLevel) {
     setCalibrationLevel("1");
     playCalibration();
@@ -406,18 +345,6 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTargetList) {
     assertPassesTargetListDirectory(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesTargetList) {
-    assertPassesTargetListDirectory(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTargetList) {
-    assertPassesTargetListDirectory(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {

@@ -1592,13 +1592,13 @@ class PresenterTests : public ::testing::Test {
     void assertPassesSubjectId(ConfirmingTestSetup &useCase) {
         setupView.setSubjectId("b");
         run(useCase);
-        assertEqual("b", useCase.test(model).identity.subjectId);
+        assertEqual("b", testSettingsInterpreter.identity().subjectId);
     }
 
     void assertPassesTesterId(ConfirmingTestSetup &useCase) {
         setupView.setTesterId("c");
         run(useCase);
-        assertEqual("c", useCase.test(model).identity.testerId);
+        assertEqual("c", testSettingsInterpreter.identity().testerId);
     }
 
     void assertPassesMasker(ConfirmingTestSetup &useCase) {
@@ -1610,7 +1610,6 @@ class PresenterTests : public ::testing::Test {
     void assertPassesSession(ConfirmingTestSetup &useCase) {
         setupView.setSession("e");
         run(useCase);
-        assertEqual("e", useCase.test(model).identity.session);
         assertEqual("e", testSettingsInterpreter.identity().session);
     }
 
