@@ -324,7 +324,9 @@ auto Presenter::TestSetup::readCondition() -> Condition {
     return auditoryOnly() ? Condition::auditoryOnly : Condition::audioVisual;
 }
 
-auto Presenter::TestSetup::auditoryOnly() -> bool { return {}; }
+auto Presenter::TestSetup::auditoryOnly() -> bool {
+    return view->condition() == conditionName(Condition::auditoryOnly);
+}
 
 void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
 

@@ -66,6 +66,8 @@ class ViewStub : public View {
 
     class TestSetupViewStub : public TestSetup {
       public:
+        auto condition() -> std::string override { return condition_; }
+
         void useSingleSpeaker() { useSingleSpeaker_ = true; }
 
         void useDelayedMasker() { useDelayedMasker_ = true; }

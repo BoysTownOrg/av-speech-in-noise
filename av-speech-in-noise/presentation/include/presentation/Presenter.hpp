@@ -110,6 +110,7 @@ class View {
         virtual auto testerId() -> std::string = 0;
         virtual auto subjectId() -> std::string = 0;
         virtual auto session() -> std::string = 0;
+        virtual auto condition() -> std::string = 0;
         virtual void setCalibrationFilePath(std::string) = 0;
         virtual void setTestSettingsFile(std::string) = 0;
     };
