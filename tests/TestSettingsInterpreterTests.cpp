@@ -175,6 +175,10 @@ void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
     assertTestMethodEquals(methodName(m), f(model));
 }
 
+void assertMethod(TestSettingsInterpreterImpl &interpreter, Method m) {
+    assertEqual(m, method(interpreter, m));
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -187,17 +191,13 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsReturnsMethod) {
-    assertEqual(Method::fixedLevelFreeResponseWithAllTargets,
-        method(interpreter, Method::fixedLevelFreeResponseWithAllTargets));
+    assertMethod(interpreter, Method::fixedLevelFreeResponseWithAllTargets);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsReturnsMethod) {
-    assertEqual(
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-        method(interpreter,
-            Method::
-                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets));
+    assertMethod(interpreter,
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {
