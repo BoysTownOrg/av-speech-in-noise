@@ -189,6 +189,13 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
 
+TEST_SETTINGS_INTERPRETER_TEST(badStartingSnrResolvesToZero) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::startingSnr, "a")});
+    assertEqual(0, adaptiveTest(model).startingSnr_dB);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {
     assertMethod(interpreter, Method::adaptivePassFail);
 }

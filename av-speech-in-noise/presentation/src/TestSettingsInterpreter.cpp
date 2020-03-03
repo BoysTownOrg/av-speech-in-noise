@@ -101,7 +101,11 @@ static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
     else if (entryName == name(TestSetting::stepSizes))
         applyToEachTrackingRule(test, applyToStepSize, entry);
     else if (entryName == name(TestSetting::startingSnr))
-        test.startingSnr_dB = std::stoi(entry);
+        try {
+            test.startingSnr_dB = std::stoi(entry);
+        } catch (const std::invalid_argument &) {
+            test.startingSnr_dB = 0;
+        }
 }
 
 static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
