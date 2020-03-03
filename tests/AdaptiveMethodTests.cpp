@@ -238,7 +238,7 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
 };
 
 class WritingCorrectKeywords : public WritingResponseUseCase,
-                                 public WritingTargetUseCase {
+                               public WritingTargetUseCase {
     OutputFile &file_;
 
   public:
@@ -291,16 +291,14 @@ class AdaptiveMethodTests : public ::testing::Test {
     AdaptiveTest test;
     coordinate_response_measure::Response coordinateResponse{};
     open_set::CorrectKeywords correctKeywords{};
-    TrackingRule targetLevelRule;
     std::vector<std::shared_ptr<TargetListStub>> lists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
 
     AdaptiveMethodTests() : lists(3), tracks(3) {
-        trackSettingsReader.setTrackingRule(&targetLevelRule);
-        std::generate(lists.begin(), lists.end(),
-            []() { return std::make_shared<TargetListStub>(); });
-        std::generate(tracks.begin(), tracks.end(),
-            []() { return std::make_shared<TrackStub>(); });
+        std::generate(
+            lists.begin(), lists.end(), std::make_shared<TargetListStub>);
+        std::generate(
+            tracks.begin(), tracks.end(), std::make_shared<TrackStub>);
         targetListSetReader.setTargetLists({lists.begin(), lists.end()});
         snrTrackFactory.setTracks({tracks.begin(), tracks.end()});
     }
@@ -805,8 +803,7 @@ ADAPTIVE_METHOD_TEST(
 
 ADAPTIVE_METHOD_TEST(
     submitCorrectKeywordsSelectsListAmongThoseWithIncompleteTracks) {
-    assertSelectsListAmongThoseWithIncompleteTracks(
-        submittingCorrectKeywords);
+    assertSelectsListAmongThoseWithIncompleteTracks(submittingCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
