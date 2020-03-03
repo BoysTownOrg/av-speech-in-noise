@@ -122,7 +122,7 @@ static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
 
 static auto methodName(const std::string &contents) -> std::string {
     std::stringstream stream{contents};
-    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream))
+    for (std::string line; std::getline(stream, line);)
         if (entryName(line) == name(TestSetting::method))
             return entry(line);
     return methodName(Method::unknown);

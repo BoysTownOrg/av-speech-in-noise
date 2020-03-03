@@ -192,17 +192,22 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-        "f:\n",
-            entryWithNewline(TestSetting::startingSnr, "1")});
-    assertEqual(1, adaptiveTest(model).startingSnr_dB);
+            "f:\n", entryWithNewline(TestSetting::targets, "a")});
+    assertEqual("a", adaptiveTest(model).targetListDirectory);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
     apply(interpreter, model,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-        "\n",
-            entryWithNewline(TestSetting::startingSnr, "1")});
-    assertEqual(1, adaptiveTest(model).startingSnr_dB);
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail), "\n",
+            entryWithNewline(TestSetting::targets, "a")});
+    assertEqual("a", adaptiveTest(model).targetListDirectory);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
+    apply(interpreter, model,
+        {"\n", entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            "\n", entryWithNewline(TestSetting::targets, "a")});
+    assertEqual("a", adaptiveTest(model).targetListDirectory);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badStartingSnrResolvesToZero) {
