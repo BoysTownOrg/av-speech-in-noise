@@ -189,6 +189,49 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
 
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {
+    assertMethod(interpreter, Method::adaptivePassFail);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsReturnsMethod) {
+    assertMethod(interpreter, Method::adaptiveCorrectKeywords);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    defaultAdaptiveCoordinateResponseMeasureReturnsMethod) {
+    assertMethod(interpreter, Method::defaultAdaptiveCoordinateResponseMeasure);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    adaptiveCoordinateResponseMeasureWithSingleSpeakerReturnsMethod) {
+    assertMethod(interpreter,
+        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    adaptiveCoordinateResponseMeasureWithDelayedMaskerReturnsMethod) {
+    assertMethod(interpreter,
+        Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithTargetReplacementReturnsMethod) {
+    assertMethod(
+        interpreter, Method::fixedLevelFreeResponseWithTargetReplacement);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementReturnsMethod) {
+    assertMethod(interpreter,
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithSilentIntervalTargetsReturnsMethod) {
+    assertMethod(
+        interpreter, Method::fixedLevelFreeResponseWithSilentIntervalTargets);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsReturnsMethod) {
     assertMethod(interpreter, Method::fixedLevelFreeResponseWithAllTargets);
