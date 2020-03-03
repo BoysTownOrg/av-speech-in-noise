@@ -96,6 +96,10 @@ void assertDefaultFixedLevelTestInitialized(ModelStub &model) {
     assertTrue(model.defaultFixedLevelTestInitialized());
 }
 
+auto adaptiveTestIdentity(ModelStub &model) -> TestIdentity {
+    return adaptiveTest(model).identity;
+}
+
 class TestSettingsInterpreterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -111,9 +115,9 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
     testIdentity.testerId = "b";
     testIdentity.session = "c";
     apply(interpreter, model, Method::adaptivePassFail, testIdentity);
-    assertEqual("a", adaptiveTest(model).identity.subjectId);
-    assertEqual("b", adaptiveTest(model).identity.testerId);
-    assertEqual("c", adaptiveTest(model).identity.session);
+    assertEqual("a", adaptiveTestIdentity(model).subjectId);
+    assertEqual("b", adaptiveTestIdentity(model).testerId);
+    assertEqual("c", adaptiveTestIdentity(model).session);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
