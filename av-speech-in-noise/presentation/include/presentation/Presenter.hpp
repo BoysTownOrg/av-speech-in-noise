@@ -205,10 +205,10 @@ class Presenter : public Model::EventListener {
         auto adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool;
         auto adaptiveCorrectKeywords() -> bool;
         auto testSettingsFile() -> std::string;
+        auto testIdentity() -> TestIdentity;
 
       private:
         auto defaultAdaptiveCoordinateResponseMeasure() -> bool;
-        auto testIdentity() -> TestIdentity;
         void initialize(Test &);
         auto readCondition() -> Condition;
         auto method(Method m) -> bool;

@@ -447,12 +447,16 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     [[nodiscard]] auto text() const -> std::string { return text_; }
 
-    void apply(Model &, const std::string &t, const TestIdentity &) override {
+    [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
+
+    void apply(Model &, const std::string &t, const TestIdentity &id) override {
         text_ = t;
+        identity_ = id;
     }
 
   private:
     std::string text_;
+    TestIdentity identity_;
     const TestSettings &testSettings;
 };
 
@@ -1553,6 +1557,7 @@ class PresenterTests : public ::testing::Test {
         setupView.setSession("e");
         run(useCase);
         assertEqual("e", useCase.test(model).identity.session);
+        assertEqual("e", testSettingsInterpreter.identity().session);
     }
 
     void assertPassesMethod(ConfirmingTestSetup &useCase) {

@@ -2,6 +2,7 @@
 #include "ModelStub.hpp"
 #include <presentation/TestSettingsInterpreter.hpp>
 #include <gtest/gtest.h>
+#include <functional>
 
 namespace av_speech_in_noise {
 namespace {

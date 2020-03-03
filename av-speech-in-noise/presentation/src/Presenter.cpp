@@ -11,6 +11,10 @@ class BadInput : public std::runtime_error {
 };
 }
 
+static auto testIdentity(Presenter::TestSetup &testSetup) -> TestIdentity {
+    return testSetup.testIdentity();
+}
+
 static auto fixedLevelTest(Presenter::TestSetup &testSetup) -> FixedLevelTest {
     return testSetup.fixedLevelTest();
 }
@@ -87,7 +91,7 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader) {
     testSettingsInterpreter.apply(model,
-        textFileReader.read(testSetup.testSettingsFile()), {});
+        textFileReader.read(testSetup.testSettingsFile()), testIdentity(testSetup));
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
