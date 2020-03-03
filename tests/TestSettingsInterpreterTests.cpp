@@ -84,6 +84,15 @@ void apply(TestSettingsInterpreterImpl &interpreter, Model &model, Method m,
         identity);
 }
 
+auto method(TestSettingsInterpreterImpl &interpreter,
+    const std::vector<std::string> &v) -> Method {
+    return interpreter.method(concatenate(v));
+}
+
+auto method(TestSettingsInterpreterImpl &interpreter, Method m) -> Method {
+    return method(interpreter, {entryWithNewline(TestSetting::method, m)});
+}
+
 void assertDefaultAdaptiveTestInitialized(ModelStub &model) {
     assertTrue(model.defaultAdaptiveTestInitialized());
 }
@@ -175,6 +184,12 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsReturnsMethod) {
+    assertEqual(Method::fixedLevelFreeResponseWithAllTargets,
+        method(interpreter, Method::fixedLevelFreeResponseWithAllTargets));
+}
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {
     assertPassesTestMethod(

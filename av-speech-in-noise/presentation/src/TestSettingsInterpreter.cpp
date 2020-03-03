@@ -192,4 +192,36 @@ void TestSettingsInterpreterImpl::apply(
     else
         initializeFixedLevelTest(model, contents, identity);
 }
+
+auto TestSettingsInterpreterImpl::method(const std::string &s) -> Method {
+    if (methodName(s) ==
+        methodName(Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets))
+        return Method::
+            fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
+    if (methodName(s) ==
+        methodName(
+            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement))
+        return Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement;
+    if (methodName(s) ==
+        methodName(Method::fixedLevelFreeResponseWithAllTargets))
+        return Method::fixedLevelFreeResponseWithAllTargets;
+    if (methodName(s) ==
+        methodName(Method::fixedLevelFreeResponseWithSilentIntervalTargets))
+        return Method::fixedLevelFreeResponseWithSilentIntervalTargets;
+    if (methodName(s) ==
+        methodName(Method::fixedLevelFreeResponseWithTargetReplacement))
+        return Method::fixedLevelFreeResponseWithTargetReplacement;
+    if (methodName(s) ==
+        methodName(Method::adaptiveCoordinateResponseMeasureWithDelayedMasker))
+        return Method::adaptiveCoordinateResponseMeasureWithDelayedMasker;
+    if (methodName(s) ==
+        methodName(Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker))
+        return Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker;
+    if (methodName(s) == methodName(Method::adaptiveCorrectKeywords))
+        return Method::adaptiveCorrectKeywords;
+    if (methodName(s) == methodName(Method::adaptivePassFail))
+        return Method::adaptivePassFail;
+    return Method::defaultAdaptiveCoordinateResponseMeasure;
+}
 }
