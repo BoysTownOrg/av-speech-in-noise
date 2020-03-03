@@ -79,12 +79,10 @@ static void assign(
         test.maskerFilePath = entry;
     else if (entryName == name(TestSetting::maskerLevel))
         test.maskerLevel_dB_SPL = std::stoi(entry);
-    else if (entryName == name(TestSetting::condition)) {
-        if (entry == conditionName(Condition::audioVisual))
-            test.condition = Condition::audioVisual;
-        else if (entry == conditionName(Condition::auditoryOnly))
-            test.condition = Condition::auditoryOnly;
-    }
+    else if (entryName == name(TestSetting::condition))
+        for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
+            if (entry == conditionName(c))
+                test.condition = c;
 }
 
 static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
