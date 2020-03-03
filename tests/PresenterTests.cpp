@@ -257,36 +257,6 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotInitializeFixedLevelTest) {
     assertDoesNotInitializeFixedLevelTest(confirmingAdaptivePassFailTest);
 }
 
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithAllTargetsDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(
-        confirmingFixedLevelFreeResponseTestWithAllTargets);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(
-        confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsDoesNotInitializeAdaptiveTest) {
-    assertDoesNotInitializeAdaptiveTest(
-        confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
-}
-
 PRESENTER_TEST(playCalibrationPassesLevel) {
     setCalibrationLevel("1");
     playCalibration();

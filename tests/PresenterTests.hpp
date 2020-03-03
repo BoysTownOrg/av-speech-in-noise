@@ -1550,11 +1550,6 @@ class PresenterTests : public ::testing::Test {
         assertSubjectViewShown();
     }
 
-    void assertDoesNotInitializeAdaptiveTest(UseCase &useCase) {
-        run(useCase);
-        assertFalse(model.defaultAdaptiveTestInitialized());
-    }
-
     void setCorrectKeywords(std::string s) {
         experimenterView.setCorrectKeywords(std::move(s));
     }
