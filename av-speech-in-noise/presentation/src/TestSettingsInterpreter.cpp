@@ -90,6 +90,14 @@ static void assign(
                 test.condition = c;
 }
 
+static auto integer(const std::string &s) -> int {
+    try {
+        return std::stoi(s);
+    } catch (const std::invalid_argument &) {
+        return 0;
+    }
+}
+
 static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::up))
@@ -101,11 +109,7 @@ static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
     else if (entryName == name(TestSetting::stepSizes))
         applyToEachTrackingRule(test, applyToStepSize, entry);
     else if (entryName == name(TestSetting::startingSnr))
-        try {
-            test.startingSnr_dB = std::stoi(entry);
-        } catch (const std::invalid_argument &) {
-            test.startingSnr_dB = 0;
-        }
+        test.startingSnr_dB = integer(entry);
 }
 
 static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
