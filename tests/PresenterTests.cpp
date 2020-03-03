@@ -299,12 +299,6 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeakerInitializesModel) {
-    run(confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker);
-    assertTrue(model.initializedWithSingleSpeaker());
-}
-
-PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerInitializesModel) {
     run(confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
     assertTrue(model.initializedWithDelayedMasker());
@@ -558,12 +552,6 @@ PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerPassesMethod) {
     assertPassesMethod(
         confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCoordinateResponseMeasureSingleSpeakerTestPassesMethod) {
-    assertPassesMethod(
-        confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker);
 }
 
 PRESENTER_TEST(

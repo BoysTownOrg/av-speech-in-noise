@@ -157,9 +157,6 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
     auto method{testSettingsInterpreter.method(testSettings)};
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker(method))
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
-    else if (method ==
-        Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)
-        model.initializeTestWithSingleSpeaker(adaptiveTest(testSetup));
     else if (defaultAdaptive(method) || adaptiveCorrectKeywords(method))
         model.initializeTest(adaptiveTest(testSetup));
     else
