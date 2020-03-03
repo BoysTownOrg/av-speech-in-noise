@@ -96,6 +96,14 @@ static auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
 
+static auto adaptivePassFail(Method m) -> bool {
+    return m == Method::adaptivePassFail;
+}
+
+static auto adaptiveCorrectKeywords(Method m) -> bool {
+    return m == Method::adaptiveCorrectKeywords;
+}
+
 static auto adaptiveCoordinateResponseMeasure(Method m) -> bool {
     return defaultAdaptiveCoordinateResponseMeasure(m) ||
         adaptiveCoordinateResponseMeasureWithSingleSpeaker(m) ||
@@ -206,9 +214,9 @@ void Presenter::showTest(Method m) {
 auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
     if (coordinateResponseMeasure(m))
         return &coordinateResponseMeasureTrialCompletionHandler;
-    if (adaptivePassFail(testSetup))
+    if (adaptivePassFail(m))
         return &passFailTrialCompletionHandler;
-    if (adaptiveCorrectKeywords(testSetup))
+    if (adaptiveCorrectKeywords(m))
         return &correctKeywordsTrialCompletionHandler;
     return &freeResponseTrialCompletionHandler;
 }
