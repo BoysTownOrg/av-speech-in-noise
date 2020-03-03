@@ -204,6 +204,13 @@ TEST_SETTINGS_INTERPRETER_TEST(badFixedSnrResolvesToZero) {
     assertEqual(0, fixedLevelTest(model).snr_dB);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+            entryWithNewline(TestSetting::maskerLevel, "a")});
+    assertEqual(0, adaptiveTest(model).maskerLevel_dB_SPL);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {
     assertMethod(interpreter, Method::adaptivePassFail);
 }

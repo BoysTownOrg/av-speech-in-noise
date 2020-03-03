@@ -76,6 +76,14 @@ static void applyToEachEntry(
         f(entryName(line), entry(line));
 }
 
+static auto integer(const std::string &s) -> int {
+    try {
+        return std::stoi(s);
+    } catch (const std::invalid_argument &) {
+        return 0;
+    }
+}
+
 static void assign(
     Test &test, const std::string &entryName, const std::string &entry) {
     if (entryName == name(TestSetting::targets))
@@ -83,19 +91,11 @@ static void assign(
     else if (entryName == name(TestSetting::masker))
         test.maskerFilePath = entry;
     else if (entryName == name(TestSetting::maskerLevel))
-        test.maskerLevel_dB_SPL = std::stoi(entry);
+        test.maskerLevel_dB_SPL = integer(entry);
     else if (entryName == name(TestSetting::condition))
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == conditionName(c))
                 test.condition = c;
-}
-
-static auto integer(const std::string &s) -> int {
-    try {
-        return std::stoi(s);
-    } catch (const std::invalid_argument &) {
-        return 0;
-    }
 }
 
 static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
