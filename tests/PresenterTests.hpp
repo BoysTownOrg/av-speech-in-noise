@@ -449,6 +449,10 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
 
+    [[nodiscard]] auto textForMethodQuery() const -> std::string {
+        return textForMethodQuery_;
+    }
+
     void apply(Model &, const std::string &t, const TestIdentity &id) override {
         text_ = t;
         identity_ = id;
@@ -456,10 +460,14 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
 
     void setMethod(Method m) { method_ = m; }
 
-    auto method(const std::string &) -> Method { return method_; }
+    auto method(const std::string &t) -> Method {
+        textForMethodQuery_ = t;
+        return method_;
+    }
 
   private:
     std::string text_;
+    std::string textForMethodQuery_;
     TestIdentity identity_;
     const TestSettings &testSettings;
     Method method_{};
@@ -606,15 +614,19 @@ class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
 class ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
 
   public:
     explicit ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker(
-        ViewStub::TestSetupViewStub *view)
-        : view{view} {}
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
 
     void run() override {
         setMethod(
             view, Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
+        setMethod(interpreter,
+            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
         confirmTestSetup(view);
     }
 
@@ -1201,7 +1213,7 @@ class PresenterTests : public ::testing::Test {
             &setupView, testSettingsInterpreter};
     ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
         confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker{
-            &setupView};
+            &setupView, testSettingsInterpreter};
     ConfirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker
         confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker{
             &setupView};
@@ -1547,6 +1559,13 @@ class PresenterTests : public ::testing::Test {
         textFileReader.setRead("a");
         run(useCase);
         assertEqual("a", testSettingsInterpreter.text());
+    }
+
+    void assertPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery(
+        ConfirmingTestSetup &useCase) {
+        textFileReader.setRead("a");
+        run(useCase);
+        assertEqual("a", testSettingsInterpreter.textForMethodQuery());
     }
 
     void assertPassesSubjectId(ConfirmingTestSetup &useCase) {

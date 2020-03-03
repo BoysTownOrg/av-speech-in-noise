@@ -52,6 +52,7 @@ class TestSettingsInterpreter {
   public:
     virtual ~TestSettingsInterpreter() = default;
     virtual void apply(Model &, const std::string &, const TestIdentity &) = 0;
+    virtual auto method(const std::string &) -> Method = 0;
 };
 
 class TextFileReader {

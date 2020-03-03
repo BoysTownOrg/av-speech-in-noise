@@ -431,6 +431,12 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery) {
+    assertPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreter) {
     assertPassesTestSettingsTextToTestSettingsInterpreter(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);

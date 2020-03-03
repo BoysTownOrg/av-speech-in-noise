@@ -90,8 +90,9 @@ static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
     TestSettingsInterpreter &testSettingsInterpreter,
     TextFileReader &textFileReader) {
-    testSettingsInterpreter.apply(model,
-        textFileReader.read(testSetup.testSettingsFile()), testIdentity(testSetup));
+    auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
+    testSettingsInterpreter.apply(model, testSettings, testIdentity(testSetup));
+    auto method{testSettingsInterpreter.method(testSettings)};
     if (adaptiveCoordinateResponseMeasureWithDelayedMasker(testSetup))
         model.initializeTestWithDelayedMasker(adaptiveTest(testSetup));
     else if (adaptiveCoordinateResponseMeasureWithSingleSpeaker(testSetup))
