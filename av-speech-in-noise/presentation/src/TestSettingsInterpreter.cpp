@@ -74,7 +74,7 @@ static void applyToEachEntry(
     const std::function<void(const std::string &, const std::string &)> &f,
     const std::string &contents) {
     std::stringstream stream{contents};
-    for (auto line{nextLine(stream)}; !line.empty(); line = nextLine(stream))
+    for (std::string line; std::getline(stream, line);)
         f(entryName(line), entry(line));
 }
 

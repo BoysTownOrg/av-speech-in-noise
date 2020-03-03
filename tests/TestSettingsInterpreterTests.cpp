@@ -197,6 +197,14 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     assertEqual(1, adaptiveTest(model).startingSnr_dB);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
+    apply(interpreter, model,
+        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
+        "\n",
+            entryWithNewline(TestSetting::startingSnr, "1")});
+    assertEqual(1, adaptiveTest(model).startingSnr_dB);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(badStartingSnrResolvesToZero) {
     apply(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
