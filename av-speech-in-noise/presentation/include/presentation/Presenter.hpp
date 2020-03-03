@@ -96,37 +96,37 @@ class View {
             virtual ~EventListener() = default;
             virtual void confirmTestSetup() = 0;
             virtual void playCalibration() = 0;
-            virtual void browseForTargetList() = 0;
-            virtual void browseForMasker() = 0;
             virtual void browseForCalibration() = 0;
-            virtual void browseForTrackSettingsFile() = 0;
             virtual void browseForTestSettingsFile() = 0;
+            virtual void browseForTargetList() {}
+            virtual void browseForMasker() {}
+            virtual void browseForTrackSettingsFile() {}
         };
 
         virtual ~TestSetup() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
-        virtual auto maskerLevel_dB_SPL() -> std::string = 0;
+        virtual auto maskerLevel_dB_SPL() -> std::string { return {}; }
         virtual auto calibrationLevel_dB_SPL() -> std::string = 0;
-        virtual auto startingSnr_dB() -> std::string = 0;
-        virtual auto maskerFilePath() -> std::string = 0;
+        virtual auto startingSnr_dB() -> std::string { return {}; }
+        virtual auto maskerFilePath() -> std::string { return {}; }
         virtual auto calibrationFilePath() -> std::string = 0;
-        virtual auto targetListDirectory() -> std::string = 0;
-        virtual auto trackSettingsFile() -> std::string = 0;
+        virtual auto targetListDirectory() -> std::string { return {}; }
+        virtual auto trackSettingsFile() -> std::string { return {}; }
         virtual auto testSettingsFile() -> std::string = 0;
         virtual auto testerId() -> std::string = 0;
         virtual auto subjectId() -> std::string = 0;
-        virtual auto condition() -> std::string = 0;
+        virtual auto condition() -> std::string { return {}; }
         virtual auto session() -> std::string = 0;
-        virtual auto method() -> std::string = 0;
-        virtual void setMasker(std::string) = 0;
-        virtual void setTargetListDirectory(std::string) = 0;
+        virtual auto method() -> std::string { return {}; }
+        virtual void setMasker(std::string) {}
+        virtual void setTargetListDirectory(std::string) {}
         virtual void setCalibrationFilePath(std::string) = 0;
-        virtual void setTrackSettingsFile(std::string) = 0;
+        virtual void setTrackSettingsFile(std::string) {}
         virtual void setTestSettingsFile(std::string) = 0;
-        virtual void populateConditionMenu(std::vector<std::string>) = 0;
-        virtual void populateMethodMenu(std::vector<std::string>) = 0;
+        virtual void populateConditionMenu(std::vector<std::string>) {}
+        virtual void populateMethodMenu(std::vector<std::string>) {}
     };
 
     class Experimenter {

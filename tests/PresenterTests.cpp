@@ -98,11 +98,6 @@ PRESENTER_TEST(
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
 }
 
-PRESENTER_TEST(populatesConditionMenu) {
-    assertSetupViewConditionsContains(auditoryOnlyConditionName());
-    assertSetupViewConditionsContains(audioVisualConditionName());
-}
-
 PRESENTER_TEST(populatesMethodMenu) {
     assertSetupViewMethodsContains(Method::adaptivePassFail);
     assertSetupViewMethodsContains(Method::adaptiveCorrectKeywords);

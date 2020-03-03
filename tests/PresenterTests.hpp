@@ -70,18 +70,12 @@ class ViewStub : public View {
 
         void useDelayedMasker() { useDelayedMasker_ = true; }
 
-        auto trackSettingsFile() -> std::string override {
-            return trackSettingsFile_;
+        auto testSettingsFile() -> std::string override {
+            return testSettingsFile_;
         }
-
-        auto testSettingsFile() -> std::string { return testSettingsFile_; }
 
         auto calibrationLevel_dB_SPL() -> std::string override {
             return calibrationLevel_;
-        }
-
-        auto maskerLevel_dB_SPL() -> std::string override {
-            return maskerLevel_;
         }
 
         void confirmTestSetup() { listener_->confirmTestSetup(); }
@@ -89,12 +83,6 @@ class ViewStub : public View {
         void playCalibration() { listener_->playCalibration(); }
 
         auto session() -> std::string override { return session_; }
-
-        auto startingSnr_dB() -> std::string override { return startingSnr_; }
-
-        void populateConditionMenu(std::vector<std::string> items) override {
-            conditions_ = Collection{std::move(items)};
-        }
 
         [[nodiscard]] auto conditions() const -> auto & { return conditions_; }
 
