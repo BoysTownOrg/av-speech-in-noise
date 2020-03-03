@@ -157,8 +157,6 @@ static void initializeTest(Model &model, Presenter::TestSetup &testSetup,
     auto method{testSettingsInterpreter.method(testSettings)};
     if (defaultAdaptive(method))
         model.initializeTest(adaptiveTest(testSetup));
-    else
-        model.initializeTest(fixedLevelTest(testSetup));
 }
 
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
