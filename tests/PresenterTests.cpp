@@ -745,36 +745,12 @@ PRESENTER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
     assertBrowseResultPassedToEntry(browsingForTestSettingsFile);
 }
 
-PRESENTER_TEST(browseForTrackSettingsFileUpdatesTrackSettingsFile) {
-    assertBrowseResultPassedToEntry(browsingForTrackSettingsFile);
-}
-
-PRESENTER_TEST(browseForTargetListUpdatesTargetList) {
-    assertBrowseResultPassedToEntry(browsingForTargetList);
-}
-
-PRESENTER_TEST(browseForMaskerUpdatesMasker) {
-    assertBrowseResultPassedToEntry(browsingForMasker);
-}
-
 PRESENTER_TEST(browseForCalibrationUpdatesCalibrationFilePaths) {
     assertBrowseResultPassedToEntry(browsingForCalibration);
 }
 
-PRESENTER_TEST(browseForTargetListCancelDoesNotChangeTargetList) {
-    assertCancellingBrowseDoesNotChangePath(browsingForTargetList);
-}
-
-PRESENTER_TEST(browseForMaskerCancelDoesNotChangeMasker) {
-    assertCancellingBrowseDoesNotChangePath(browsingForMasker);
-}
-
 PRESENTER_TEST(browseForCalibrationCancelDoesNotChangeCalibrationFilePath) {
     assertCancellingBrowseDoesNotChangePath(browsingForCalibration);
-}
-
-PRESENTER_TEST(browseForTrackSettingsFileCancelDoesNotChangeTrackSettingsFile) {
-    assertCancellingBrowseDoesNotChangePath(browsingForTrackSettingsFile);
 }
 
 PRESENTER_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
