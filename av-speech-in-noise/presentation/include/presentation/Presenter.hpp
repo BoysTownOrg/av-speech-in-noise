@@ -67,7 +67,6 @@ class View {
             virtual ~EventListener() = default;
             virtual void confirmTestSetup() = 0;
             virtual void playCalibration() = 0;
-            virtual void browseForCalibration() = 0;
             virtual void browseForTestSettingsFile() = 0;
         };
 
@@ -75,13 +74,10 @@ class View {
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
-        virtual auto calibrationLevel_dB_SPL() -> std::string = 0;
-        virtual auto calibrationFilePath() -> std::string = 0;
         virtual auto testSettingsFile() -> std::string = 0;
         virtual auto testerId() -> std::string = 0;
         virtual auto subjectId() -> std::string = 0;
         virtual auto session() -> std::string = 0;
-        virtual void setCalibrationFilePath(std::string) = 0;
         virtual void setTestSettingsFile(std::string) = 0;
     };
 
@@ -136,7 +132,6 @@ class Presenter : public Model::EventListener {
         explicit TestSetup(View::TestSetup *);
         void playCalibration() override;
         void confirmTestSetup() override;
-        void browseForCalibration() override;
         void browseForTestSettingsFile() override;
         void show();
         void hide();

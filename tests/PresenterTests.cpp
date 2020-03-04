@@ -664,14 +664,6 @@ PRESENTER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
     assertBrowseResultPassedToEntry(browsingForTestSettingsFile);
 }
 
-PRESENTER_TEST(browseForCalibrationUpdatesCalibrationFilePaths) {
-    assertBrowseResultPassedToEntry(browsingForCalibration);
-}
-
-PRESENTER_TEST(browseForCalibrationCancelDoesNotChangeCalibrationFilePath) {
-    assertCancellingBrowseDoesNotChangePath(browsingForCalibration);
-}
-
 PRESENTER_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
     assertCancellingBrowseDoesNotChangePath(browsingForTestSettingsFile);
 }

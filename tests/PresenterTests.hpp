@@ -70,10 +70,6 @@ class ViewStub : public View {
             return testSettingsFile_;
         }
 
-        auto calibrationLevel_dB_SPL() -> std::string override {
-            return calibrationLevel_;
-        }
-
         void confirmTestSetup() { listener_->confirmTestSetup(); }
 
         void playCalibration() { listener_->playCalibration(); }
@@ -100,10 +96,6 @@ class ViewStub : public View {
 
         void setMaskerLevel(std::string s) { maskerLevel_ = std::move(s); }
 
-        void setCalibrationFilePath(std::string s) override {
-            calibrationFilePath_ = std::move(s);
-        }
-
         void setCondition(std::string s) { condition_ = std::move(s); }
 
         void setTestSettingsFile(std::string s) override {
@@ -120,10 +112,6 @@ class ViewStub : public View {
 
         auto subjectId() -> std::string override { return subjectId_; }
 
-        auto calibrationFilePath() -> std::string override {
-            return calibrationFilePath_;
-        }
-
         void subscribe(EventListener *listener) override {
             listener_ = listener;
         }
@@ -131,8 +119,6 @@ class ViewStub : public View {
         void browseForTestSettingsFile() {
             listener_->browseForTestSettingsFile();
         }
-
-        void browseForCalibration() { listener_->browseForCalibration(); }
 
       private:
         Collection<std::string> conditions_;
@@ -866,26 +852,6 @@ class BrowsingForTestSettingsFile : public BrowsingEnteredPathUseCase {
     }
 };
 
-class BrowsingForCalibration : public BrowsingEnteredPathUseCase {
-    ViewStub::TestSetupViewStub *view;
-
-  public:
-    explicit BrowsingForCalibration(ViewStub::TestSetupViewStub *view)
-        : view{view} {}
-
-    auto entry() -> std::string override { return view->calibrationFilePath(); }
-
-    void setEntry(std::string s) override {
-        view->setCalibrationFilePath(std::move(s));
-    }
-
-    void setResult(ViewStub &view_, std::string s) override {
-        return view_.setBrowseForOpeningFileResult(s);
-    }
-
-    void run() override { view->browseForCalibration(); }
-};
-
 class PresenterConstructionTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -921,7 +887,6 @@ class PresenterTests : public ::testing::Test {
     Presenter presenter{model, view, testSetup, subject, experimenter,
         testSettingsInterpreter, textFileReader};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
-    BrowsingForCalibration browsingForCalibration{&setupView};
     ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest{
             &setupView, testSettingsInterpreter};

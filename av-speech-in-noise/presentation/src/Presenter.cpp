@@ -282,11 +282,6 @@ static auto browseForOpeningFile(View &view) -> std::string {
     return view.browseForOpeningFile();
 }
 
-void Presenter::browseForCalibration() {
-    applyIfBrowseNotCancelled(
-        browseForOpeningFile(view), &TestSetup::setCalibrationFilePath);
-}
-
 void Presenter::browseForTestSettingsFile() {
     applyIfBrowseNotCancelled(
         browseForOpeningFile(view), &TestSetup::setTestSettingsFile);
@@ -324,32 +319,12 @@ auto Presenter::TestSetup::testIdentity() -> TestIdentity {
 
 void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
 
-auto Presenter::TestSetup::calibrationParameters() -> Calibration {
-    Calibration p;
-    p.filePath = view->calibrationFilePath();
-    p.level_dB_SPL = readCalibrationLevel();
-    p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
-    return p;
-}
-
-auto Presenter::TestSetup::readCalibrationLevel() -> int {
-    return readInteger(view->calibrationLevel_dB_SPL(), "calibration level");
-}
-
 void Presenter::TestSetup::confirmTestSetup() { parent->confirmTestSetup(); }
 
 void Presenter::TestSetup::becomeChild(Presenter *p) { parent = p; }
 
-void Presenter::TestSetup::browseForCalibration() {
-    parent->browseForCalibration();
-}
-
 void Presenter::TestSetup::browseForTestSettingsFile() {
     parent->browseForTestSettingsFile();
-}
-
-void Presenter::TestSetup::setCalibrationFilePath(std::string s) {
-    view->setCalibrationFilePath(std::move(s));
 }
 
 void Presenter::TestSetup::setTestSettingsFile(std::string s) {
