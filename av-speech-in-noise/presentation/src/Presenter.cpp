@@ -266,7 +266,8 @@ void Presenter::playCalibration() {
 }
 
 void Presenter::playCalibration_() {
-    auto p{testSettingsInterpreter.calibration(textFileReader.read({}))};
+    auto p{testSettingsInterpreter.calibration(
+        textFileReader.read(testSetup.testSettingsFile()))};
     p.audioSettings.audioDevice = view.audioDevice();
     model.playCalibration(p);
 }

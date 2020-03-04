@@ -253,6 +253,10 @@ PRESENTER_TEST(playCalibrationPassesLevel) {
     assertEqual(1, calibration().level_dB_SPL);
 }
 
+PRESENTER_TEST(playingCalibrationPassesTestSettingsFileToTextFileReader) {
+    assertPassesTestSettingsFileToTextFileReader(playingCalibration);
+}
+
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsFileToTextFileReader) {
     assertPassesTestSettingsFileToTextFileReader(
@@ -273,8 +277,7 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(
     playingCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
-    assertPassesTestSettingsTextToTestSettingsInterpreter(
-        playingCalibration);
+    assertPassesTestSettingsTextToTestSettingsInterpreter(playingCalibration);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {

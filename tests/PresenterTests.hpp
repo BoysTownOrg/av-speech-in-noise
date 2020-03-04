@@ -1209,7 +1209,7 @@ class PresenterTests : public ::testing::Test {
     }
 
     void assertPassesTestSettingsFileToTextFileReader(
-        ConfirmingTestSetup &useCase) {
+        UseCase &useCase) {
         setupView.setTestSettingsFile("a");
         run(useCase);
         assertEqual("a", textFileReader.filePath());
