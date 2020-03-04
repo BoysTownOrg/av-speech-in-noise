@@ -62,7 +62,6 @@ class CocoaTestSetupView : public View::TestSetup {
     std::string calibrationLevel_dB_SPL() override;
     std::string testerId() override;
     std::string subjectId() override;
-    std::string condition() override;
     void setCalibrationFilePath(std::string) override;
     std::string calibrationFilePath() override;
     void setTestSettingsFile(std::string) override;
@@ -98,8 +97,6 @@ class CocoaTestSetupView : public View::TestSetup {
     NSTextField *calibrationFilePath_;
     NSTextField *testSettingsFile_label;
     NSTextField *testSettingsFile_;
-    NSTextField *condition_label;
-    NSPopUpButton *conditionMenu;
     SetupViewActions *actions;
     EventListener *listener_{};
 };

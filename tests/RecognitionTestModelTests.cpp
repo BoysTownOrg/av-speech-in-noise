@@ -637,12 +637,9 @@ RECOGNITION_TEST_MODEL_TEST(subscribesToPlayerEvents) {
         maskerPlayer.listener());
 }
 
-RECOGNITION_TEST_MODEL_TEST(playCalibrationHidesTargetVideoWhenAuditoryOnly) {
-    assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
-}
-
-RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetVideoWhenAudioVisual) {
-    assertTargetVideoShownWhenAudioVisual(playingCalibration);
+RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetVideo) {
+    run(playingCalibration);
+    assertTargetVideoOnlyShown();
 }
 
 RECOGNITION_TEST_MODEL_TEST(

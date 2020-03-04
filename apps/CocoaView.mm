@@ -189,8 +189,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       calibrationLevel_dB_SPL_label{
           normalLabelWithHeight(150, "calibration level (dB SPL):")},
       calibrationLevel_dB_SPL_{shortTextFieldWithHeight(150)},
-      condition_label{normalLabelWithHeight(60, "condition:")},
-      conditionMenu{popUpButtonAtHeightWithWidth(60, 120)},
       actions{[SetupViewActions alloc]} {
     actions.controller = this;
     const auto browseForTestSettingsButton {
@@ -229,8 +227,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(calibrationLevel_dB_SPL_);
     addSubview(calibrationFilePath_label);
     addSubview(calibrationFilePath_);
-    addSubview(condition_label);
-    addSubview(conditionMenu);
     [view_ setHidden:NO];
 }
 
@@ -270,10 +266,6 @@ auto CocoaTestSetupView::subjectId() -> std::string {
 
 auto CocoaTestSetupView::session() -> std::string {
     return stringValue(session_);
-}
-
-auto CocoaTestSetupView::condition() -> std::string {
-    return conditionMenu.titleOfSelectedItem.UTF8String;
 }
 
 void CocoaTestSetupView::setCalibrationFilePath(std::string s) {

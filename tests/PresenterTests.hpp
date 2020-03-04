@@ -66,8 +66,6 @@ class ViewStub : public View {
 
     class TestSetupViewStub : public TestSetup {
       public:
-        auto condition() -> std::string override { return condition_; }
-
         auto testSettingsFile() -> std::string override {
             return testSettingsFile_;
         }

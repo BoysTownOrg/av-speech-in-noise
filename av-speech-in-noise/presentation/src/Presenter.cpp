@@ -320,14 +320,6 @@ auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     return p;
 }
 
-auto Presenter::TestSetup::readCondition() -> Condition {
-    return auditoryOnly() ? Condition::auditoryOnly : Condition::audioVisual;
-}
-
-auto Presenter::TestSetup::auditoryOnly() -> bool {
-    return view->condition() == conditionName(Condition::auditoryOnly);
-}
-
 void Presenter::TestSetup::playCalibration() { parent->playCalibration(); }
 
 auto Presenter::TestSetup::calibrationParameters() -> Calibration {
@@ -335,7 +327,6 @@ auto Presenter::TestSetup::calibrationParameters() -> Calibration {
     p.filePath = view->calibrationFilePath();
     p.level_dB_SPL = readCalibrationLevel();
     p.fullScaleLevel_dB_SPL = fullScaleLevel_dB_SPL;
-    p.condition = readCondition();
     return p;
 }
 
