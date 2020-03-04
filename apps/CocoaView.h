@@ -137,12 +137,17 @@ class CocoaView : public View {
     void addSubview(NSView *);
     void setDelegate(id<NSWindowDelegate>);
     void center();
+    auto testSetup() -> View::TestSetup &;
+    auto experimenter() -> View::Experimenter &;
 
   private:
     std::string browseModal(NSOpenPanel *panel);
 
+    CocoaTestSetupView testSetup_;
+    CocoaExperimenterView experimenter_;
     NSApplication *app;
     NSWindow *window;
+    NSView *view;
     NSTextField *audioDevice_label;
     NSPopUpButton *deviceMenu;
     bool browseCancelled_{};

@@ -216,8 +216,8 @@ void main() {
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
     TextFileReaderImpl textFileReader;
-    AdaptiveMethodImpl adaptiveMethod{&targetListReader,
-        &snrTrackFactory, &responseEvaluator, &randomizer};
+    AdaptiveMethodImpl adaptiveMethod{
+        &targetListReader, &snrTrackFactory, &responseEvaluator, &randomizer};
     target_list::RandomizedTargetList infiniteTargetList{
         &fileExtensions, &randomizer};
     target_list::FileIdentifierExcluderFilter originalStimuli_{
@@ -264,21 +264,7 @@ void main() {
     ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
         &fixedTrials, &silentIntervals, &completesWhenTargetsEmpty, &allStimuli,
         &model_internal};
-    auto testerWindowFrame = NSMakeRect(15, 15, 900, 430);
-    auto testerWindowViewMargin = 15;
-    auto experimenterContentFrame = NSMakeRect(testerWindowViewMargin,
-        testerWindowViewMargin,
-        testerWindowFrame.size.width - testerWindowViewMargin * 2,
-        testerWindowFrame.size.height - testerWindowViewMargin * 2);
-    auto testerContentFrame =
-        NSMakeRect(testerWindowViewMargin, testerWindowViewMargin,
-            testerWindowFrame.size.width - testerWindowViewMargin * 2,
-            testerWindowFrame.size.height - testerWindowViewMargin * 2);
-    CocoaTestSetupView testSetupView{testerContentFrame};
-    CocoaExperimenterView experimenterView{experimenterContentFrame};
-    CocoaView view{testerWindowFrame};
-    view.addSubview(testSetupView.view());
-    view.addSubview(experimenterView.view());
+    CocoaView view{NSMakeRect(0, 0, 900, 180)};
     view.center();
     auto delegate = [WindowDelegate alloc];
     view.setDelegate(delegate);
@@ -291,11 +277,11 @@ void main() {
     CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge,
         subjectScreenOrigin.y, subjectViewWidth, subjectViewHeight)};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
-    Presenter::TestSetup testSetup{&testSetupView};
-    Presenter::Experimenter experimenter{&experimenterView};
+    Presenter::TestSetup testSetup{&view.testSetup()};
+    Presenter::Experimenter experimenter{&view.experimenter()};
     TestSettingsInterpreterImpl testSettingsInterpreter;
-    Presenter presenter{
-        model, view, testSetup, subject, experimenter, testSettingsInterpreter, textFileReader};
+    Presenter presenter{model, view, testSetup, subject, experimenter,
+        testSettingsInterpreter, textFileReader};
     presenter.run();
 }
 }
