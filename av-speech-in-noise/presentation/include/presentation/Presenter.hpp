@@ -136,17 +136,11 @@ class Presenter : public Model::EventListener {
         void show();
         void hide();
         void becomeChild(Presenter *parent);
-        void setCalibrationFilePath(std::string);
         void setTestSettingsFile(std::string);
-        auto calibrationParameters() -> Calibration;
         auto testSettingsFile() -> std::string;
         auto testIdentity() -> TestIdentity;
 
       private:
-        auto readCondition() -> Condition;
-        auto readCalibrationLevel() -> int;
-        auto auditoryOnly() -> bool;
-
         View::TestSetup *view;
         Presenter *parent{};
     };
@@ -270,7 +264,6 @@ class Presenter : public Model::EventListener {
     void confirmTestSetup();
     void playTrial();
     void playCalibration();
-    void browseForCalibration();
     void browseForTestSettingsFile();
     void submitSubjectResponse();
     void submitFreeResponse();
