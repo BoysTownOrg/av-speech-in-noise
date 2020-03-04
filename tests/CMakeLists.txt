@@ -13,8 +13,6 @@ add_executable(tests
 	SubdirectoryTargetListReaderTests.cpp
 	TargetListTests.cpp
 	TargetPlayerTests.cpp
-    TrackSettingsInterpreterTests.cpp
-	TrackSettingsReaderTests.cpp
 	TestSetupStateWriterTests.cpp
 	TestSettingsInterpreterTests.cpp
 )
