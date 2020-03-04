@@ -100,6 +100,14 @@ static void assign(
                 test.condition = c;
 }
 
+static void assign(Calibration &calibration, const std::string &entryName,
+    const std::string &entry) {
+    if (entryName == name(TestSetting::masker))
+        calibration.filePath = entry;
+    else if (entryName == name(TestSetting::maskerLevel))
+        calibration.level_dB_SPL = integer(entry);
+}
+
 static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::up))
@@ -216,5 +224,15 @@ void TestSettingsInterpreterImpl::initialize(
 
 auto TestSettingsInterpreterImpl::method(const std::string &s) -> Method {
     return av_speech_in_noise::method(s);
+}
+
+auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
+    -> Calibration {
+    Calibration calibration;
+    applyToEachEntry([&](auto entryName,
+                         auto entry) { assign(calibration, entryName, entry); },
+        contents);
+    calibration.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    return calibration;
 }
 }

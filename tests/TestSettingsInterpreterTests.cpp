@@ -78,8 +78,8 @@ void assertPassesSimpleFixedLevelSettings(
         fixedLevelTest(model).fullScaleLevel_dB_SPL);
 }
 
-void initialize(TestSettingsInterpreterImpl &interpreter, Model &model, Method m,
-    const TestIdentity &identity = {}) {
+void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
+    Method m, const TestIdentity &identity = {}) {
     initialize(interpreter, model, {entryWithNewline(TestSetting::method, m)},
         identity);
 }
@@ -188,6 +188,16 @@ class TestSettingsInterpreterTests : public ::testing::Test {
 
 #define TEST_SETTINGS_INTERPRETER_TEST(a)                                      \
     TEST_F(TestSettingsInterpreterTests, a)
+
+TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
+    auto calibration{interpreter.calibration(
+        concatenate({entryWithNewline(TestSetting::masker, "a"),
+            entryWithNewline(TestSetting::maskerLevel, "1")}))};
+    assertEqual("a", calibration.filePath);
+    assertEqual(1, calibration.level_dB_SPL);
+    assertEqual(
+        Presenter::fullScaleLevel_dB_SPL, calibration.fullScaleLevel_dB_SPL);
+}
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     initialize(interpreter, model,
@@ -320,7 +330,8 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
 
 TEST_SETTINGS_INTERPRETER_TEST(
     defaultAdaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
-    initialize(interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
+    initialize(
+        interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
     assertDefaultAdaptiveTestInitialized(model);
 }
 
@@ -354,7 +365,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
-    initialize(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
+    initialize(
+        interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
     assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
 }
 
