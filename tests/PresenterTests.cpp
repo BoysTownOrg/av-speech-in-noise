@@ -248,7 +248,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(playCalibrationPassesLevel) {
-    setCalibrationLevel("1");
+    setCalibrationLevel(1);
     playCalibration();
     assertEqual(1, calibration().level_dB_SPL);
 }
@@ -314,7 +314,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(playCalibrationPassesFilePath) {
-    setupView.setCalibrationFilePath("a");
+    interpretedCalibration.filePath = "a";
     playCalibration();
     assertEqual("a", calibration().filePath);
 }
@@ -407,10 +407,6 @@ PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
     run(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
     assertFalse(experimenterView.nextTrialButtonShown());
-}
-
-PRESENTER_TEST(playCalibrationWithInvalidLevelShowsErrorMessage) {
-    assertInvalidCalibrationLevelShowsErrorMessage(playingCalibration);
 }
 
 PRESENTER_TEST(respondingFromSubjectPlaysTrial) {
@@ -816,7 +812,9 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
-    assertPassesFullScaleLevel(playingCalibration);
+    interpretedCalibration.fullScaleLevel_dB_SPL = 1;
+    run(playingCalibration);
+    assertEqual(1, calibration().fullScaleLevel_dB_SPL);
 }
 
 TEST_F(PresenterFailureTests,

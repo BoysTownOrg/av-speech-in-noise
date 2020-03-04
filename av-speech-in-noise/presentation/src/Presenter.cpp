@@ -265,7 +265,7 @@ void Presenter::playCalibration() {
 }
 
 void Presenter::playCalibration_() {
-    auto p = testSetup.calibrationParameters();
+    auto p{testSettingsInterpreter.calibration({})};
     p.audioSettings.audioDevice = view.audioDevice();
     model.playCalibration(p);
 }

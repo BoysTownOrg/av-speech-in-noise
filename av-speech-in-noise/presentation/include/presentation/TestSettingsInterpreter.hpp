@@ -71,7 +71,8 @@ constexpr auto name(TestSetting p) -> const char * {
 
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
-    void initialize(Model &, const std::string &, const TestIdentity &) override;
+    void initialize(
+        Model &, const std::string &, const TestIdentity &) override;
     auto method(const std::string &) -> Method override;
     auto calibration(const std::string &) -> Calibration;
 };

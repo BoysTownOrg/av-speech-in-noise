@@ -392,6 +392,13 @@ class ViewStub : public View {
 
 class TestSettingsInterpreterStub : public TestSettingsInterpreter {
   public:
+    explicit TestSettingsInterpreterStub(const Calibration &calibration_ = {})
+        : calibration_{calibration_} {}
+
+    auto calibration(const std::string &) -> Calibration {
+        return calibration_;
+    }
+
     [[nodiscard]] auto text() const -> std::string { return text_; }
 
     [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
@@ -421,6 +428,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     std::string text_;
     std::string textForMethodQuery_;
     TestIdentity identity_;
+    const Calibration &calibration_;
     Method method_{};
     bool initializeAnyTestOnApply_{};
 };
@@ -906,7 +914,8 @@ class PresenterTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
-    TestSettingsInterpreterStub testSettingsInterpreter;
+    Calibration interpretedCalibration;
+    TestSettingsInterpreterStub testSettingsInterpreter{interpretedCalibration};
     TextFileReaderStub textFileReader;
     Presenter presenter{model, view, testSetup, subject, experimenter,
         testSettingsInterpreter, textFileReader};
@@ -1054,21 +1063,13 @@ class PresenterTests : public ::testing::Test {
 
     auto calibration() -> const Calibration & { return model.calibration(); }
 
-    void assertInvalidCalibrationLevelShowsErrorMessage(UseCase &useCase) {
-        setCalibrationLevel("a");
-        run(useCase);
-        assertErrorMessageEquals("'a' is not a valid calibration level.");
-    }
-
     void assertErrorMessageEquals(const std::string &s) {
         assertEqual(s, errorMessage());
     }
 
     void setAudioDevice(std::string s) { view.setAudioDevice(std::move(s)); }
 
-    void setCalibrationLevel(std::string s) {
-        setupView.setCalibrationLevel(std::move(s));
-    }
+    void setCalibrationLevel(int s) { interpretedCalibration.level_dB_SPL = s; }
 
     void assertAudioVisualConditionPassedToModel(ConditionUseCase &useCase) {
         setCondition(audioVisualConditionName());

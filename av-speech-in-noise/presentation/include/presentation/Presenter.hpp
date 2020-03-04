@@ -23,8 +23,10 @@ enum class Method {
 class TestSettingsInterpreter {
   public:
     virtual ~TestSettingsInterpreter() = default;
-    virtual void initialize(Model &, const std::string &, const TestIdentity &) = 0;
+    virtual void initialize(
+        Model &, const std::string &, const TestIdentity &) = 0;
     virtual auto method(const std::string &) -> Method = 0;
+    virtual auto calibration(const std::string &) -> Calibration = 0;
 };
 
 class TextFileReader {
