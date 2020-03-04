@@ -271,6 +271,12 @@ PRESENTER_TEST(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
+PRESENTER_TEST(
+    playingCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
+    assertPassesTestSettingsTextToTestSettingsInterpreter(
+        playingCalibration);
+}
+
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
     assertPassesSubjectId(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);

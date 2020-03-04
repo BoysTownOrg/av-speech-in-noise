@@ -395,7 +395,8 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     explicit TestSettingsInterpreterStub(const Calibration &calibration_ = {})
         : calibration_{calibration_} {}
 
-    auto calibration(const std::string &) -> Calibration {
+    auto calibration(const std::string &t) -> Calibration override {
+        text_ = t;
         return calibration_;
     }
 
@@ -1215,7 +1216,7 @@ class PresenterTests : public ::testing::Test {
     }
 
     void assertPassesTestSettingsTextToTestSettingsInterpreter(
-        ConfirmingTestSetup &useCase) {
+        UseCase &useCase) {
         textFileReader.setRead("a");
         run(useCase);
         assertEqual("a", testSettingsInterpreter.text());

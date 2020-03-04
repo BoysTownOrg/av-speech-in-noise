@@ -138,7 +138,8 @@ void Presenter::confirmTestSetup() {
 
 void Presenter::confirmTestSetup_() {
     auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
-    testSettingsInterpreter.initialize(model, testSettings, testIdentity(testSetup));
+    testSettingsInterpreter.initialize(
+        model, testSettings, testIdentity(testSetup));
     auto method{testSettingsInterpreter.method(testSettings)};
     if (!testComplete(model)) {
         switchToTestView(method);
@@ -265,7 +266,7 @@ void Presenter::playCalibration() {
 }
 
 void Presenter::playCalibration_() {
-    auto p{testSettingsInterpreter.calibration({})};
+    auto p{testSettingsInterpreter.calibration(textFileReader.read({}))};
     p.audioSettings.audioDevice = view.audioDevice();
     model.playCalibration(p);
 }
