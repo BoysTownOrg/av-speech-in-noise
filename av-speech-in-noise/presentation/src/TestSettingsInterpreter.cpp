@@ -8,12 +8,6 @@ static auto entryDelimiter(const std::string &s) -> gsl::index {
     return s.find(':');
 }
 
-static auto nextLine(std::stringstream &stream) -> std::string {
-    std::string line;
-    std::getline(stream, line);
-    return line;
-}
-
 static auto vectorOfInts(const std::string &s) -> std::vector<int> {
     std::vector<int> v;
     std::stringstream stream{s};
@@ -24,10 +18,6 @@ static auto vectorOfInts(const std::string &s) -> std::vector<int> {
 }
 
 static auto trackingRule(AdaptiveTest &test) -> TrackingRule & {
-    return test.trackingRule;
-}
-
-static auto trackingRule(const AdaptiveTest &test) -> const TrackingRule & {
     return test.trackingRule;
 }
 

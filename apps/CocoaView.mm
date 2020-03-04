@@ -5,7 +5,7 @@
 @interface SetupViewActions : NSObject
 @property av_speech_in_noise::CocoaTestSetupView *controller;
 - (void)confirmTestSetup;
-- (void)browseForCalibration;
+- (void)browseForTestSettings;
 - (void)playCalibration;
 @end
 

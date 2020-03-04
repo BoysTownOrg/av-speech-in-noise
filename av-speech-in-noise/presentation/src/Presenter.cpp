@@ -57,10 +57,6 @@ static auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
 
-static auto fixedLevelFreeResponseWithSilentIntervalTargets(Method m) -> bool {
-    return m == Method::fixedLevelFreeResponseWithSilentIntervalTargets;
-}
-
 static auto adaptivePassFail(Method m) -> bool {
     return m == Method::adaptivePassFail;
 }

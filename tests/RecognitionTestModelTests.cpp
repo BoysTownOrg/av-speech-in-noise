@@ -160,22 +160,6 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     void run(RecognitionTestModelImpl &m) override {
         m.initializeWithSingleSpeaker(method, test);
     }
-
-    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
-
-    void setMaskerFilePath(std::string s) {
-        test.maskerFilePath = std::move(s);
-    }
-
-    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
-
-    void setTestingFullScaleLevel_dB_SPL(int x) {
-        test.fullScaleLevel_dB_SPL = x;
-    }
-
-    void setAudioVisual() { test.condition = Condition::audioVisual; }
-
-    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
 };
 
 class InitializingTestWithDelayedMasker : public UseCase {

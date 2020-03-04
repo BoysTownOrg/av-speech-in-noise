@@ -140,8 +140,6 @@ class ViewStub : public View {
         EventListener *listener_{};
         bool shown_{};
         bool hidden_{};
-        bool useSingleSpeaker_{};
-        bool useDelayedMasker_{};
     };
 
     class SubjectViewStub : public CoordinateResponseMeasure {
@@ -1173,8 +1171,7 @@ class PresenterTests : public ::testing::Test {
         assertSubjectViewNotShown();
     }
 
-    void assertPassesTestSettingsFileToTextFileReader(
-        UseCase &useCase) {
+    void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
         setupView.setTestSettingsFile("a");
         run(useCase);
         assertEqual("a", textFileReader.filePath());

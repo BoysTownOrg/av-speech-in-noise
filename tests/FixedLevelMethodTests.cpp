@@ -98,8 +98,6 @@ class FixedLevelMethodTests : public ::testing::Test {
 
     void setTestComplete() { testConcluder.setComplete(); }
 
-    void setTestIncomplete() { testConcluder.setIncomplete(); }
-
     void run(UseCase &useCase) { useCase.run(method); }
 
     void assertTargetListPassedToConcluderAfter(UseCase &useCase) {

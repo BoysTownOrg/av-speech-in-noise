@@ -125,9 +125,7 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
 
     auto evaluationEntryIndex() -> int override { return 6; }
 
-    void run(OutputFileImpl &file) override {
-        file.write(trial_);
-    }
+    void run(OutputFileImpl &file) override { file.write(trial_); }
 };
 
 class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
@@ -140,9 +138,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
 
     void correct() override { setCorrect(trial_); }
 
-    void run(OutputFileImpl &file) override {
-        file.write(trial_);
-    }
+    void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 5; }
 };
@@ -155,9 +151,7 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
 
     void correct() override { trial_.correct = true; }
 
-    void run(OutputFileImpl &file) override {
-        file.write(trial_);
-    }
+    void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 3; }
 };
@@ -170,9 +164,7 @@ class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
 
     void correct() override { trial_.correct = true; }
 
-    void run(OutputFileImpl &file) override {
-        file.write(trial_);
-    }
+    void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 4; }
 };
@@ -275,10 +267,6 @@ class OutputFileTests : public ::testing::Test {
         assertColonDelimitedEntryWritten("targets", "d");
         assertColonDelimitedEntryWritten("masker level (dB SPL)", "1");
         assertWrittenLast("\n\n");
-    }
-
-    void assertNthEntryOfFirstLine(const std::string &what, int n) {
-        assertNthCommaDelimitedEntryOfLine(what, n, 1);
     }
 
     void assertNthEntryOfSecondLine(const std::string &what, int n) {

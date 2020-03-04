@@ -85,11 +85,11 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool initializedWithDelayedMasker_{};
 
   public:
-    auto initializedWithSingleSpeaker() const {
+    [[nodiscard]] auto initializedWithSingleSpeaker() const {
         return initializedWithSingleSpeaker_;
     }
 
-    auto initializedWithDelayedMasker() const {
+    [[nodiscard]] auto initializedWithDelayedMasker() const {
         return initializedWithDelayedMasker_;
     }
 
@@ -116,7 +116,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
 
-    auto targetFileName() -> std::string { return targetFileName_; }
+    auto targetFileName() -> std::string override { return targetFileName_; }
 
     void playTrial(const AudioSettings &s) override { playTrialSettings_ = &s; }
 
@@ -125,7 +125,9 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    void submit(const open_set::CorrectKeywords &p) { correctKeywords_ = &p; }
+    void submit(const open_set::CorrectKeywords &p) override {
+        correctKeywords_ = &p;
+    }
 
     auto testComplete() -> bool override { return complete_; }
 
@@ -325,22 +327,6 @@ class ModelTests : public ::testing::Test {
         initializingFixedLevelSilentIntervalsTest{&fixedLevelMethod};
     InitializingFixedLevelAllStimuliTest initializingFixedLevelAllStimuliTest{
         &fixedLevelMethod};
-
-    void initializeFixedLevelTest() { model.initializeTest(fixedLevelTest); }
-
-    void initializeFixedLevelSilentIntervalsTest() {
-        model.initializeSilentIntervalsTest(fixedLevelTest);
-    }
-
-    void initializeFixedLevelAllStimuliTest() {
-        model.initializeAllStimuliTest(fixedLevelTest);
-    }
-
-    void initializeAdaptiveTest() { model.initializeTest(adaptiveTest); }
-
-    void initializeAdaptiveTestWithSingleSpeaker() {
-        model.initializeTestWithSingleSpeaker(adaptiveTest);
-    }
 
     bool testComplete() { return model.testComplete(); }
 
