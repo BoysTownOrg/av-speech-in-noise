@@ -77,8 +77,6 @@ class ViewStub : public View {
 
         [[nodiscard]] auto hidden() const { return hidden_; }
 
-        void setCondition(std::string s) { condition_ = std::move(s); }
-
         void setTestSettingsFile(std::string s) override {
             testSettingsFile_ = std::move(s);
         }
@@ -102,20 +100,9 @@ class ViewStub : public View {
         }
 
       private:
-        Collection<std::string> conditions_;
-        Collection<std::string> methods_;
-        std::string signalLevel_{"0"};
-        std::string calibrationLevel_{"0"};
-        std::string startingSnr_{"0"};
-        std::string maskerLevel_{"0"};
-        std::string masker_;
-        std::string condition_;
-        std::string stimulusList_;
         std::string subjectId_;
         std::string testerId_;
         std::string session_;
-        std::string method_;
-        std::string trackSettingsFile_;
         std::string testSettingsFile_;
         EventListener *listener_{};
         bool shown_{};
@@ -1000,10 +987,6 @@ class PresenterTests : public ::testing::Test {
     void setAudioDevice(std::string s) { view.setAudioDevice(std::move(s)); }
 
     void setCalibrationLevel(int s) { interpretedCalibration.level_dB_SPL = s; }
-
-    auto modelCondition(ConditionUseCase &useCase) -> Condition {
-        return useCase.condition(model);
-    }
 
     void setTestComplete() { model.setTestComplete(); }
 
