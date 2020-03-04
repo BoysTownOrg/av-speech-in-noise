@@ -219,7 +219,7 @@ class ConditionUseCase : public virtual UseCase {
     virtual void setAudioVisual() = 0;
 };
 
-class PlayingCalibration : public AudioDeviceUseCase, public ConditionUseCase {
+class PlayingCalibration : public AudioDeviceUseCase {
     Calibration calibration{};
 
   public:
@@ -237,14 +237,6 @@ class PlayingCalibration : public AudioDeviceUseCase, public ConditionUseCase {
 
     void setFullScaleLevel_dB_SPL(int x) {
         calibration.fullScaleLevel_dB_SPL = x;
-    }
-
-    void setAudioVisual() override {
-        calibration.condition = Condition::audioVisual;
-    }
-
-    void setAuditoryOnly() override {
-        calibration.condition = Condition::auditoryOnly;
     }
 };
 

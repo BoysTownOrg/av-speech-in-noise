@@ -819,10 +819,6 @@ PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
     assertPassesFullScaleLevel(playingCalibration);
 }
 
-PRESENTER_TEST(playCalibrationPassesAuditoryOnlyCondition) {
-    assertAuditoryOnlyConditionPassedToModel(playingCalibration);
-}
-
 TEST_F(PresenterFailureTests,
     initializeTestShowsErrorMessageWhenModelFailsRequest) {
     useFailingModel("a");

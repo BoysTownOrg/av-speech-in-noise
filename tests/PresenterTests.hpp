@@ -459,16 +459,12 @@ class LevelUseCase : public virtual UseCase {
     virtual auto fullScaleLevel(ModelStub &) -> int = 0;
 };
 
-class PlayingCalibration : public ConditionUseCase, public LevelUseCase {
+class PlayingCalibration : public LevelUseCase {
     ViewStub::TestSetupViewStub *view;
 
   public:
     explicit PlayingCalibration(ViewStub::TestSetupViewStub *view)
         : view{view} {}
-
-    auto condition(ModelStub &m) -> Condition override {
-        return m.calibration().condition;
-    }
 
     void run() override { view->playCalibration(); }
 

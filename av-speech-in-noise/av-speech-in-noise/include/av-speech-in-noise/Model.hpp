@@ -125,7 +125,6 @@ struct Calibration {
     std::string filePath;
     int level_dB_SPL{};
     int fullScaleLevel_dB_SPL{};
-    Condition condition{};
 };
 
 class Model {
