@@ -37,14 +37,14 @@ auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
     return m.fixedLevelTest();
 }
 
-void apply(TestSettingsInterpreterImpl &interpreter, Model &model,
+void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
     const std::vector<std::string> &v, const TestIdentity &identity = {}) {
-    interpreter.apply(model, concatenate(v), identity);
+    interpreter.initialize(model, concatenate(v), identity);
 }
 
 void assertPassesSimpleAdaptiveSettings(
     TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::targets, "a"),
             entryWithNewline(TestSetting::masker, "b"),
@@ -64,7 +64,7 @@ void assertPassesSimpleAdaptiveSettings(
 
 void assertPassesSimpleFixedLevelSettings(
     TestSettingsInterpreterImpl &interpreter, ModelStub &model, Method m) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::targets, "a"),
             entryWithNewline(TestSetting::masker, "b"),
@@ -78,9 +78,9 @@ void assertPassesSimpleFixedLevelSettings(
         fixedLevelTest(model).fullScaleLevel_dB_SPL);
 }
 
-void apply(TestSettingsInterpreterImpl &interpreter, Model &model, Method m,
+void initialize(TestSettingsInterpreterImpl &interpreter, Model &model, Method m,
     const TestIdentity &identity = {}) {
-    apply(interpreter, model, {entryWithNewline(TestSetting::method, m)},
+    initialize(interpreter, model, {entryWithNewline(TestSetting::method, m)},
         identity);
 }
 
@@ -162,7 +162,7 @@ void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
     setSubjectId(testIdentity, "a");
     setTesterId(testIdentity, "b");
     setSession(testIdentity, "c");
-    apply(interpreter, model, m, testIdentity);
+    initialize(interpreter, model, m, testIdentity);
     assertSubjectIdEquals("a", f(model));
     assertTesterIdEquals("b", f(model));
     assertSessionIdEquals("c", f(model));
@@ -171,7 +171,7 @@ void assertPassesTestIdentity(TestSettingsInterpreterImpl &interpreter,
 void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
     ModelStub &model, Method m,
     const std::function<TestIdentity(ModelStub &)> &f) {
-    apply(interpreter, model, m);
+    initialize(interpreter, model, m);
     assertTestMethodEquals(methodName(m), f(model));
 }
 
@@ -190,35 +190,35 @@ class TestSettingsInterpreterTests : public ::testing::Test {
     TEST_F(TestSettingsInterpreterTests, a)
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             "f:\n", entryWithNewline(TestSetting::targets, "a")});
     assertEqual("a", adaptiveTest(model).targetListDirectory);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail), "\n",
             entryWithNewline(TestSetting::targets, "a")});
     assertEqual("a", adaptiveTest(model).targetListDirectory);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {"\n", entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             "\n", entryWithNewline(TestSetting::targets, "a")});
     assertEqual("a", adaptiveTest(model).targetListDirectory);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badStartingSnrResolvesToZero) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::startingSnr, "a")});
     assertEqual(0, adaptiveTest(model).startingSnr_dB);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badFixedSnrResolvesToZero) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::startingSnr, "a")});
@@ -226,7 +226,7 @@ TEST_SETTINGS_INTERPRETER_TEST(badFixedSnrResolvesToZero) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::maskerLevel, "a")});
     assertEqual(0, adaptiveTest(model).maskerLevel_dB_SPL);
@@ -309,65 +309,65 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
-    apply(interpreter, model, Method::adaptivePassFail);
+    initialize(interpreter, model, Method::adaptivePassFail);
     assertDefaultAdaptiveTestInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
-    apply(interpreter, model, Method::adaptiveCorrectKeywords);
+    initialize(interpreter, model, Method::adaptiveCorrectKeywords);
     assertDefaultAdaptiveTestInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     defaultAdaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
-    apply(interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
+    initialize(interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
     assertDefaultAdaptiveTestInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithDelayedMaskerInitializesAdaptiveTest) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithDelayedMasker);
     assertTrue(model.initializedWithDelayedMasker());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithSingleSpeakerInitializesAdaptiveTest) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
     assertTrue(model.initializedWithSingleSpeaker());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsInitializesFixedLevelTest) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
     assertFixedLevelTestWithSilentIntervalTargetsInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementInitializesFixedLevelTest) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement);
     assertDefaultFixedLevelTestInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
-    apply(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
+    initialize(interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);
     assertTrue(model.fixedLevelTestWithAllTargetsInitialized());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithSilentIntervalTargetsInitializesFixedLevelTest) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         Method::fixedLevelFreeResponseWithSilentIntervalTargets);
     assertFixedLevelTestWithSilentIntervalTargetsInitialized(model);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementInitializesFixedLevelTest) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         Method::fixedLevelFreeResponseWithTargetReplacement);
     assertDefaultFixedLevelTestInitialized(model);
 }
@@ -402,21 +402,21 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveAudioVisual) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     assertEqual(Condition::audioVisual, adaptiveTest(model).condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveAuditoryOnly) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
     assertEqual(Condition::auditoryOnly, adaptiveTest(model).condition);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
@@ -424,7 +424,7 @@ TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAudioVisual) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(fixedLevelAuditoryOnly) {
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method,
              Method::fixedLevelFreeResponseWithTargetReplacement),
             entryWithNewline(TestSetting::condition, Condition::auditoryOnly)});
@@ -467,7 +467,7 @@ TEST_SETTINGS_INTERPRETER_TEST(oneSequence) {
     sequence.down = 2;
     sequence.runCount = 3;
     sequence.stepSize = 4;
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::up, "1"),
             entryWithNewline(TestSetting::down, "2"),
@@ -487,7 +487,7 @@ TEST_SETTINGS_INTERPRETER_TEST(twoSequences) {
     second.down = 4;
     second.runCount = 6;
     second.stepSize = 8;
-    apply(interpreter, model,
+    initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::up, "1 2"),
             entryWithNewline(TestSetting::down, "3 4"),

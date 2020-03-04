@@ -206,7 +206,7 @@ static void initializeFixedLevelTest(
         model.initializeTest(test);
 }
 
-void TestSettingsInterpreterImpl::apply(
+void TestSettingsInterpreterImpl::initialize(
     Model &model, const std::string &contents, const TestIdentity &identity) {
     if (adaptive(contents))
         initializeAdaptiveTest(model, contents, identity);

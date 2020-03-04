@@ -402,7 +402,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return textForMethodQuery_;
     }
 
-    void apply(
+    void initialize(
         Model &m, const std::string &t, const TestIdentity &id) override {
         text_ = t;
         identity_ = id;

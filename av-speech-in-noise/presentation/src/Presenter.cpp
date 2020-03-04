@@ -138,7 +138,7 @@ void Presenter::confirmTestSetup() {
 
 void Presenter::confirmTestSetup_() {
     auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
-    testSettingsInterpreter.apply(model, testSettings, testIdentity(testSetup));
+    testSettingsInterpreter.initialize(model, testSettings, testIdentity(testSetup));
     auto method{testSettingsInterpreter.method(testSettings)};
     if (!testComplete(model)) {
         switchToTestView(method);
