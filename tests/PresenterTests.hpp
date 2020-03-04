@@ -394,9 +394,6 @@ class ViewStub : public View {
 
 class TestSettingsInterpreterStub : public TestSettingsInterpreter {
   public:
-    explicit TestSettingsInterpreterStub(const TestSettings &testSettings)
-        : testSettings{testSettings} {}
-
     [[nodiscard]] auto text() const -> std::string { return text_; }
 
     [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
@@ -426,7 +423,6 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     std::string text_;
     std::string textForMethodQuery_;
     TestIdentity identity_;
-    const TestSettings &testSettings;
     Method method_{};
     bool initializeAnyTestOnApply_{};
 };
@@ -897,8 +893,7 @@ class PresenterConstructionTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
-    TestSettings testSettings;
-    TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
+    TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
 
     auto construct() -> Presenter {
@@ -917,8 +912,7 @@ class PresenterTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::Experimenter experimenter{&experimenterView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
-    TestSettings testSettings;
-    TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
+    TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
     Presenter presenter{model, view, testSetup, subject, experimenter,
         testSettingsInterpreter, textFileReader};
@@ -1393,8 +1387,7 @@ class PresenterFailureTests : public ::testing::Test {
     Presenter::TestSetup testSetup{&setupView};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
     Presenter::Experimenter experimenter{&experimenterView};
-    TestSettings testSettings;
-    TestSettingsInterpreterStub testSettingsInterpreter{testSettings};
+    TestSettingsInterpreterStub testSettingsInterpreter;
     TextFileReaderStub textFileReader;
 
     void useFailingModel(std::string s = {}) {

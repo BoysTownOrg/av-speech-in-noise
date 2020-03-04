@@ -20,37 +20,6 @@ enum class Method {
     unknown
 };
 
-constexpr auto methodName(Method c) -> const char * {
-    switch (c) {
-    case Method::adaptivePassFail:
-        return "adaptive pass fail";
-    case Method::adaptiveCorrectKeywords:
-        return "adaptive number keywords";
-    case Method::defaultAdaptiveCoordinateResponseMeasure:
-        return "adaptive CRM";
-    case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
-        return "adaptive CRM not spatial";
-    case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
-        return "adaptive CRM spatial";
-    case Method::fixedLevelFreeResponseWithTargetReplacement:
-        return "fixed-level free response with replacement";
-    case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-        return "fixed-level CRM with replacement";
-    case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
-        return "fixed-level free response silent intervals";
-    case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
-        return "fixed-level CRM silent intervals";
-    case Method::fixedLevelFreeResponseWithAllTargets:
-        return "fixed-level free response all stimuli";
-    case Method::unknown:
-        return "unknown";
-    }
-}
-
-struct TestSettings {
-    std::string targetListDirectory;
-};
-
 class TestSettingsInterpreter {
   public:
     virtual ~TestSettingsInterpreter() = default;
