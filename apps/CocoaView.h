@@ -59,11 +59,8 @@ class CocoaTestSetupView : public View::TestSetup {
     CocoaTestSetupView(NSRect);
     void show() override;
     void hide() override;
-    std::string calibrationLevel_dB_SPL() override;
     std::string testerId() override;
     std::string subjectId() override;
-    void setCalibrationFilePath(std::string) override;
-    std::string calibrationFilePath() override;
     void setTestSettingsFile(std::string) override;
     std::string testSettingsFile() override;
     std::string session() override;
@@ -72,7 +69,6 @@ class CocoaTestSetupView : public View::TestSetup {
     void confirm();
     void browseForTargetList();
     void browseForMasker();
-    void browseForCalibration();
     void browseForTestSettings();
     void playCalibration();
     void setMaskerLevel_dB_SPL(std::string);
@@ -91,10 +87,6 @@ class CocoaTestSetupView : public View::TestSetup {
     NSTextField *testerId_;
     NSTextField *sessionLabel;
     NSTextField *session_;
-    NSTextField *calibrationLevel_dB_SPL_label;
-    NSTextField *calibrationLevel_dB_SPL_;
-    NSTextField *calibrationFilePath_label;
-    NSTextField *calibrationFilePath_;
     NSTextField *testSettingsFile_label;
     NSTextField *testSettingsFile_;
     SetupViewActions *actions;

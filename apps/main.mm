@@ -275,7 +275,6 @@ void main() {
             testerWindowFrame.size.width - testerWindowViewMargin * 2,
             testerWindowFrame.size.height - testerWindowViewMargin * 2);
     CocoaTestSetupView testSetupView{testerContentFrame};
-    testSetupView.setCalibrationLevel_dB_SPL("65");
     CocoaExperimenterView experimenterView{experimenterContentFrame};
     CocoaView view{testerWindowFrame};
     view.addSubview(testSetupView.view());

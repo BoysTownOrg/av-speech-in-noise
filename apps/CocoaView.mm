@@ -36,10 +36,6 @@
     controller->confirm();
 }
 
-- (void)browseForCalibration {
-    controller->browseForCalibration();
-}
-
 - (void)browseForTestSettings {
     controller->browseForTestSettings();
 }
@@ -184,21 +180,11 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       session_{normalTextFieldWithHeight(300)},
       testSettingsFile_label{normalLabelWithHeight(210, "test settings:")},
       testSettingsFile_{filePathTextFieldSizeWithHeight(210)},
-      calibrationFilePath_label{normalLabelWithHeight(180, "calibration:")},
-      calibrationFilePath_{filePathTextFieldSizeWithHeight(180)},
-      calibrationLevel_dB_SPL_label{
-          normalLabelWithHeight(150, "calibration level (dB SPL):")},
-      calibrationLevel_dB_SPL_{shortTextFieldWithHeight(150)},
       actions{[SetupViewActions alloc]} {
     actions.controller = this;
     const auto browseForTestSettingsButton {
         button("browse", actions, @selector(browseForTestSettings),
             NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 210,
-                buttonWidth, buttonHeight))
-    };
-    const auto browseForCalibrationButton {
-        button("browse", actions, @selector(browseForCalibration),
-            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 180,
                 buttonWidth, buttonHeight))
     };
     const auto confirmButton {
@@ -211,7 +197,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
             NSMakeRect(shortTextFieldWidth + textFieldLeadingEdge + 10, 150,
                 buttonWidth, buttonHeight))
     };
-    addSubview(browseForCalibrationButton);
     addSubview(browseForTestSettingsButton);
     addSubview(confirmButton);
     addSubview(playCalibrationButton);
@@ -223,10 +208,6 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(session_);
     addSubview(testSettingsFile_label);
     addSubview(testSettingsFile_);
-    addSubview(calibrationLevel_dB_SPL_label);
-    addSubview(calibrationLevel_dB_SPL_);
-    addSubview(calibrationFilePath_label);
-    addSubview(calibrationFilePath_);
     [view_ setHidden:NO];
 }
 
@@ -242,14 +223,6 @@ void CocoaTestSetupView::hide() { [view_ setHidden:YES]; }
 
 auto CocoaTestSetupView::stringValue(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
-}
-
-auto CocoaTestSetupView::calibrationLevel_dB_SPL() -> std::string {
-    return stringValue(calibrationLevel_dB_SPL_);
-}
-
-auto CocoaTestSetupView::calibrationFilePath() -> std::string {
-    return stringValue(calibrationFilePath_);
 }
 
 auto CocoaTestSetupView::testSettingsFile() -> std::string {
@@ -268,30 +241,14 @@ auto CocoaTestSetupView::session() -> std::string {
     return stringValue(session_);
 }
 
-void CocoaTestSetupView::setCalibrationFilePath(std::string s) {
-    [calibrationFilePath_ setStringValue:asNsString(std::move(s))];
-}
-
 void CocoaTestSetupView::setTestSettingsFile(std::string s) {
     [testSettingsFile_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setCalibration(std::string s) {
-    [calibrationFilePath_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setCalibrationLevel_dB_SPL(std::string s) {
-    [calibrationLevel_dB_SPL_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaTestSetupView::confirm() { listener_->confirmTestSetup(); }
 
 void CocoaTestSetupView::subscribe(EventListener *listener) {
     listener_ = listener;
-}
-
-void CocoaTestSetupView::browseForCalibration() {
-    listener_->browseForCalibration();
 }
 
 void CocoaTestSetupView::browseForTestSettings() {
