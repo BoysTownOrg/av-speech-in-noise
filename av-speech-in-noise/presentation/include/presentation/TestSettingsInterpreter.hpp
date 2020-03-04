@@ -74,7 +74,7 @@ class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
     void initialize(
         Model &, const std::string &, const TestIdentity &) override;
     auto method(const std::string &) -> Method override;
-    auto calibration(const std::string &) -> Calibration;
+    auto calibration(const std::string &) -> Calibration override;
 };
 }
 
