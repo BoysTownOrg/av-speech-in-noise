@@ -57,10 +57,6 @@ static auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
 
-static auto fixedLevelFreeResponseWithAllTargets(Method m) -> bool {
-    return m == Method::fixedLevelFreeResponseWithAllTargets;
-}
-
 static auto fixedLevelFreeResponseWithSilentIntervalTargets(Method m) -> bool {
     return m == Method::fixedLevelFreeResponseWithSilentIntervalTargets;
 }
@@ -87,15 +83,6 @@ static auto fixedLevelCoordinateResponseMeasure(Method m) -> bool {
 static auto coordinateResponseMeasure(Method m) -> bool {
     return adaptiveCoordinateResponseMeasure(m) ||
         fixedLevelCoordinateResponseMeasure(m);
-}
-
-static auto defaultAdaptive(Method m) -> bool {
-    return defaultAdaptiveCoordinateResponseMeasure(m) || adaptivePassFail(m);
-}
-
-static auto fixedLevelSilentIntervals(Method m) -> bool {
-    return fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(m) ||
-        fixedLevelFreeResponseWithSilentIntervalTargets(m);
 }
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
