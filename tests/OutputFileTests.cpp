@@ -282,10 +282,6 @@ class OutputFileTests : public ::testing::Test {
             std::count(line_.begin(), line_.end(), ','));
     }
 
-    void assertNthEntryOfThirdLine(const std::string &what, int n) {
-        assertNthCommaDelimitedEntryOfLine(what, n, 3);
-    }
-
     void assertNthCommaDelimitedEntryOfLine(
         const std::string &what, int n, int line) {
         assertEqual(what, nthCommaDelimitedEntryOfLine(n, line));

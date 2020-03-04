@@ -34,8 +34,6 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
 
     void setPlaying() { playing_ = true; }
 
-    void setDurationSeconds(double x) { durationSeconds_ = x; }
-
     auto playing() -> bool override { return playing_; }
 
     void loadFile(std::string s) override { filePath_ = std::move(s); }
