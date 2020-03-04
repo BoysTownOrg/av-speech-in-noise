@@ -1,37 +1,20 @@
-#ifndef APPS_AVFOUNDATIONPLAYERS_H_
-#define APPS_AVFOUNDATIONPLAYERS_H_
+#ifndef MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
+#define MACOS_MAIN_AVFOUNDATIONPLAYERS_H_
 
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
-#import <Cocoa/Cocoa.h>
+#import <CoreMedia/CoreMedia.h>
+#import <MediaToolbox/MediaToolbox.h>
 #import <AVFoundation/AVFoundation.h>
+#import <AppKit/AppKit.h>
 #include <vector>
 
-class CoreAudioDevices {
-    std::vector<AudioObjectID> devices{};
+@class VideoPlayerActions;
 
-  public:
-    CoreAudioDevices();
-    auto deviceCount() -> int;
-    auto description(int device) -> std::string;
-    auto uid(int device) -> std::string;
-    auto outputDevice(int device) -> bool;
-    auto objectId(int device) -> AudioObjectID;
-
-  private:
-    void loadDevices();
-    auto stringProperty(AudioObjectPropertySelector, int device) -> std::string;
-};
-
-class CoreAudioBuffer : public stimulus_players::AudioBuffer {
-    AudioBufferList audioBufferList{};
-    CMItemCount frames{};
-    CMSampleBufferRef sampleBuffer;
-    // possibly critical: initialize blockBuffer to null
-    CMBlockBufferRef blockBuffer{};
-
+namespace stimulus_players {
+class CoreAudioBuffer : public AudioBuffer {
   public:
     explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);
     ~CoreAudioBuffer() override;
@@ -39,43 +22,31 @@ class CoreAudioBuffer : public stimulus_players::AudioBuffer {
     auto channels() -> int override;
     auto channel(int) -> std::vector<int> override;
     auto empty() -> bool override;
+
+  private:
+    AudioBufferList audioBufferList{};
+    CMItemCount frames{};
+    CMSampleBufferRef sampleBuffer;
+    // possibly critical: initialize blockBuffer to null
+    CMBlockBufferRef blockBuffer{};
 };
 
-class CoreAudioBufferedReader : public stimulus_players::BufferedAudioReader {
-    AVAssetReaderTrackOutput *trackOutput{};
-
+class CoreAudioBufferedReader : public BufferedAudioReader {
   public:
     void loadFile(std::string) override;
     auto failed() -> bool override;
-    auto readNextBuffer()
-        -> std::shared_ptr<stimulus_players::AudioBuffer> override;
+    auto readNextBuffer() -> std::shared_ptr<AudioBuffer> override;
     auto minimumPossibleSample() -> int override;
     auto sampleRateHz() -> double;
+
+  private:
+    AVAssetReaderTrackOutput *trackOutput{};
 };
 
-class AvFoundationVideoPlayer;
-
-@interface VideoPlayerActions : NSObject
-@property AvFoundationVideoPlayer *controller;
-- (void)playbackComplete;
-@end
-
-class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
-    std::vector<gsl::span<float>> audio_;
-    MTAudioProcessingTapRef tap{};
-    CoreAudioDevices device{};
-    VideoPlayerActions *actions;
-    NSWindow *videoWindow;
-    AVPlayer *player;
-    AVPlayerLayer *playerLayer;
-    NSScreen *screen;
-    EventListener *listener_{};
-
+class AvFoundationVideoPlayer : public VideoPlayer {
   public:
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
-    auto audio() -> std::vector<gsl::span<float>> & { return audio_; }
-    void fillAudioBuffer();
     void play() override;
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
@@ -96,21 +67,32 @@ class AvFoundationVideoPlayer : public stimulus_players::VideoPlayer {
     void centerVideo();
     void resizeVideo();
     void prepareVideo();
+    static void prepareTap(MTAudioProcessingTapRef tap, CMItemCount maxFrames,
+        const AudioStreamBasicDescription *processingFormat);
+    void prepareTap_(MTAudioProcessingTapRef tap, CMItemCount maxFrames,
+        const AudioStreamBasicDescription *processingFormat);
+    static void processTap(MTAudioProcessingTapRef tap,
+        CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
+        AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
+        MTAudioProcessingTapFlags *flagsOut);
+    void processTap_(CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
+        AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
+        MTAudioProcessingTapFlags *flagsOut);
+
+    std::vector<gsl::span<float>> audio;
+    MTAudioProcessingTapRef tap{};
+    VideoPlayerActions *actions;
+    NSWindow *videoWindow;
+    AVPlayer *player;
+    AVPlayerLayer *playerLayer;
+    NSScreen *screen;
+    EventListener *listener_{};
 };
 
-class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
-    std::vector<gsl::span<float>> audio_;
-    CoreAudioDevices device{};
-    std::string filePath_{};
-    EventListener *listener_{};
-    AudioUnit audioUnit{};
-    double sampleRate_{};
-
+class AvFoundationAudioPlayer : public AudioPlayer {
   public:
     AvFoundationAudioPlayer();
     ~AvFoundationAudioPlayer() override;
-    auto audio() -> std::vector<gsl::span<float>> & { return audio_; }
-    void fillAudioBuffer();
     void subscribe(EventListener *) override;
     void loadFile(std::string filePath) override;
     auto deviceCount() -> int override;
@@ -122,7 +104,21 @@ class AvFoundationAudioPlayer : public stimulus_players::AudioPlayer {
     void stop() override;
     void timerCallback();
     auto outputDevice(int index) -> bool override;
-    auto durationSeconds() -> double override;
+
+  private:
+    static auto AU_RenderCallback(void *inRefCon,
+        AudioUnitRenderActionFlags *ioActionFlags,
+        const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
+        UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus;
+    auto audioBufferReady(AudioUnitRenderActionFlags *ioActionFlags,
+        const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
+        UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus;
+
+    std::vector<gsl::span<float>> audio;
+    EventListener *listener_{};
+    AudioUnit audioUnit{};
+    double sampleRate_{};
 };
+}
 
 #endif

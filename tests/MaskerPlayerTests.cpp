@@ -14,8 +14,6 @@ auto at(const std::vector<std::string> &v, gsl::index n) -> std::string {
 
 class AudioPlayerStub : public stimulus_players::AudioPlayer {
   public:
-    auto durationSeconds() -> double override { return durationSeconds_; }
-
     auto outputDevice(int index) -> bool override {
         return outputDevices[index];
     }
