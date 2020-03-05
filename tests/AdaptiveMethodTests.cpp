@@ -12,21 +12,6 @@
 
 namespace av_speech_in_noise::tests {
 namespace {
-class TrackSettingsReaderStub : public TrackSettingsReader {
-    const TrackingRule *rule_{};
-    std::string filePath_{};
-
-  public:
-    [[nodiscard]] auto filePath() const { return filePath_; }
-
-    auto read(std::string s) -> const TrackingRule * override {
-        filePath_ = std::move(s);
-        return rule_;
-    }
-
-    void setTrackingRule(const TrackingRule *r) { rule_ = r; }
-};
-
 class UseCase {
   public:
     virtual ~UseCase() = default;
@@ -238,7 +223,7 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
 };
 
 class WritingCorrectKeywords : public WritingResponseUseCase,
-                                 public WritingTargetUseCase {
+                               public WritingTargetUseCase {
     OutputFile &file_;
 
   public:
@@ -266,13 +251,12 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TargetListSetReaderStub targetListSetReader;
-    TrackSettingsReaderStub trackSettingsReader;
     TrackFactoryStub snrTrackFactory;
     ResponseEvaluatorStub evaluator;
     RandomizerStub randomizer;
     OutputFileStub outputFile;
-    AdaptiveMethodImpl method{&targetListSetReader, &trackSettingsReader,
-        &snrTrackFactory, &evaluator, &randomizer};
+    AdaptiveMethodImpl method{
+        &targetListSetReader, &snrTrackFactory, &evaluator, &randomizer};
     Initializing initializing;
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectCoordinateResponse submittingCorrectCoordinateResponse{
@@ -291,16 +275,14 @@ class AdaptiveMethodTests : public ::testing::Test {
     AdaptiveTest test;
     coordinate_response_measure::Response coordinateResponse{};
     open_set::CorrectKeywords correctKeywords{};
-    TrackingRule targetLevelRule;
     std::vector<std::shared_ptr<TargetListStub>> lists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
 
     AdaptiveMethodTests() : lists(3), tracks(3) {
-        trackSettingsReader.setTrackingRule(&targetLevelRule);
-        std::generate(lists.begin(), lists.end(),
-            []() { return std::make_shared<TargetListStub>(); });
-        std::generate(tracks.begin(), tracks.end(),
-            []() { return std::make_shared<TrackStub>(); });
+        std::generate(
+            lists.begin(), lists.end(), std::make_shared<TargetListStub>);
+        std::generate(
+            tracks.begin(), tracks.end(), std::make_shared<TrackStub>);
         targetListSetReader.setTargetLists({lists.begin(), lists.end()});
         snrTrackFactory.setTracks({tracks.begin(), tracks.end()});
     }
@@ -317,7 +299,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     void initialize() { method.initialize(test); }
 
     void assertPassedTargetLevelRule(const Track::Settings &s) {
-        assertEqual(&std::as_const(targetLevelRule), s.rule);
+        assertEqual(&std::as_const(test.trackingRule), s.rule);
     }
 
     void assertStartingXEqualsOne(const Track::Settings &s) {
@@ -530,12 +512,6 @@ ADAPTIVE_METHOD_TEST(initializePassesTargetListDirectory) {
     test.targetListDirectory = "a";
     initialize();
     assertEqual("a", targetListSetReader.directory());
-}
-
-ADAPTIVE_METHOD_TEST(initializePassesTrackSettingsFile) {
-    test.trackSettingsFile = "a";
-    initialize();
-    assertEqual("a", trackSettingsReader.filePath());
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterInitialize) {
@@ -805,8 +781,7 @@ ADAPTIVE_METHOD_TEST(
 
 ADAPTIVE_METHOD_TEST(
     submitCorrectKeywordsSelectsListAmongThoseWithIncompleteTracks) {
-    assertSelectsListAmongThoseWithIncompleteTracks(
-        submittingCorrectKeywords);
+    assertSelectsListAmongThoseWithIncompleteTracks(submittingCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {

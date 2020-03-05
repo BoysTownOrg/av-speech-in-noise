@@ -104,7 +104,7 @@ struct Test {
 };
 
 struct AdaptiveTest : Test {
-    std::string trackSettingsFile;
+    TrackingRule trackingRule;
     int startingSnr_dB{};
     int ceilingSnr_dB{};
     int floorSnr_dB{};
@@ -125,7 +125,6 @@ struct Calibration {
     std::string filePath;
     int level_dB_SPL{};
     int fullScaleLevel_dB_SPL{};
-    Condition condition{};
 };
 
 class Model {
