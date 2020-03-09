@@ -24,7 +24,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return targetListReader_;
     }
 
-    void resetTracks() { tracksResetted_ = true; }
+    void resetTracks() override { tracksResetted_ = true; }
 
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> std::string override { return {}; }

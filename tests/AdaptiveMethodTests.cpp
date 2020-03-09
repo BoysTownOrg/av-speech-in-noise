@@ -254,9 +254,7 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
     }
 };
 
-void resetTracks(AdaptiveMethodImpl &method) {
-    method.resetTracks();
-}
+void resetTracks(AdaptiveMethodImpl &method) { method.resetTracks(); }
 
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
