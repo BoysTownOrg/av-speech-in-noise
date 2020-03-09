@@ -100,6 +100,7 @@ class View {
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void showContinueTestingDialog() = 0;
+        virtual void hideContinueTestingDialog() = 0;
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
         virtual void showFreeResponseSubmission() = 0;

@@ -196,7 +196,17 @@ class ViewStub : public View {
             return continueTestingDialogShown_;
         }
 
-        void showContinueTestingDialog() { continueTestingDialogShown_ = true; }
+        [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
+            return continueTestingDialogHidden_;
+        }
+
+        void showContinueTestingDialog() override {
+            continueTestingDialogShown_ = true;
+        }
+
+        void hideContinueTestingDialog() override {
+            continueTestingDialogHidden_ = true;
+        }
 
         void submitFailedTrial() { listener_->submitFailedTrial(); }
 
@@ -337,6 +347,7 @@ class ViewStub : public View {
         bool correctKeywordsEntryShown_{};
         bool correctKeywordsEntryHidden_{};
         bool continueTestingDialogShown_{};
+        bool continueTestingDialogHidden_{};
         bool shown_{};
         bool hidden_{};
         bool flagged_{};
@@ -1068,6 +1079,11 @@ class PresenterTests : public ::testing::Test {
         assertTrue(experimenterView.continueTestingDialogShown());
     }
 
+    void assertHidesContinueTestingDialog(UseCase &useCase) {
+        run(useCase);
+        assertTrue(experimenterView.continueTestingDialogHidden());
+    }
+
     void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
         run(useCase);
         assertSetupViewNotShown();
@@ -1381,6 +1397,10 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     setCorrectKeywords("a");
     run(submittingCorrectKeywords);
     assertFalse(submittingCorrectKeywords.responseViewHidden());
+}
+
+PRESENTER_TEST(decliningContinuingTestingHidesContinueTestingDialog) {
+    assertHidesContinueTestingDialog(decliningContinuingTesting);
 }
 
 PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {

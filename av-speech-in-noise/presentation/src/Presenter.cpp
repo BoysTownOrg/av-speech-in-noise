@@ -412,6 +412,7 @@ void Presenter::Experimenter::stop() {
     view->hideFreeResponseSubmission();
     view->hideEvaluationButtons();
     view->hideCorrectKeywordsSubmission();
+    view->hideContinueTestingDialog();
     view->hide();
 }
 
