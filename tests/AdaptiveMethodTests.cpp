@@ -254,8 +254,8 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
     }
 };
 
-void reset(AdaptiveMethodImpl &method) {
-    method.reset();
+void resetTracks(AdaptiveMethodImpl &method) {
+    method.resetTracks();
 }
 
 class AdaptiveMethodTests : public ::testing::Test {
@@ -576,9 +576,9 @@ ADAPTIVE_METHOD_TEST(
         submittingCorrectKeywords);
 }
 
-ADAPTIVE_METHOD_TEST(resetResetsEachTrack) {
+ADAPTIVE_METHOD_TEST(resetTracksResetsEachTrack) {
     initialize();
-    reset(method);
+    resetTracks(method);
     assertTrue(track(0)->resetted());
     assertTrue(track(1)->resetted());
     assertTrue(track(2)->resetted());

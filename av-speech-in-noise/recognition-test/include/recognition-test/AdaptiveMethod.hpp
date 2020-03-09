@@ -56,7 +56,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeTestingParameters(OutputFile *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const open_set::FreeResponse &) override;
-    void reset();
+    void resetTracks();
 
   private:
     struct TargetListWithTrack {

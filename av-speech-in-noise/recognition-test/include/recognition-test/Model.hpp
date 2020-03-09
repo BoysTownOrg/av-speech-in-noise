@@ -48,6 +48,7 @@ class TargetListReader {
 class AdaptiveMethod : public virtual TestMethod {
   public:
     virtual void initialize(const AdaptiveTest &, TargetListReader *) = 0;
+    virtual void resetTracks() = 0;
 };
 
 class FixedLevelMethod : public virtual TestMethod {
@@ -108,7 +109,7 @@ class ModelImpl : public Model {
     void submit(const open_set::CorrectKeywords &) override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
-    void restartAdaptiveTestWhilePreservingCyclicTargets() override {}
+    void restartAdaptiveTestWhilePreservingCyclicTargets() override;
 
   private:
     void initializeTest_(const AdaptiveTest &);

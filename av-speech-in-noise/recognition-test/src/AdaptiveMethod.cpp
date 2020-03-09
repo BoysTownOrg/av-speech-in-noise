@@ -9,7 +9,7 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory *snrTrackFactory,
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
                                                                   randomizer} {}
 
-void AdaptiveMethodImpl::reset() {
+void AdaptiveMethodImpl::resetTracks() {
     for (const auto &t : targetListsWithTracks)
         t.track->reset();
 }

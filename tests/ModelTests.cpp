@@ -9,6 +9,10 @@ namespace av_speech_in_noise::tests {
 namespace {
 class AdaptiveMethodStub : public AdaptiveMethod {
   public:
+    [[nodiscard]] auto tracksResetted() const -> bool {
+        return tracksResetted_;
+    }
+
     void initialize(const AdaptiveTest &t, TargetListReader *reader) override {
         test_ = &t;
         targetListReader_ = reader;
@@ -19,6 +23,8 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     [[nodiscard]] auto targetListReader() const -> TargetListReader * {
         return targetListReader_;
     }
+
+    void resetTracks() { tracksResetted_ = true; }
 
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> std::string override { return {}; }
@@ -38,6 +44,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
   private:
     const AdaptiveTest *test_{};
     TargetListReader *targetListReader_{};
+    bool tracksResetted_{};
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {
@@ -464,6 +471,12 @@ class ModelTests : public ::testing::Test {
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
+
+MODEL_TEST(
+    restartAdaptiveTestWhilePreservingCyclicTargetsResetsAdaptiveMethodTracks) {
+    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    assertTrue(adaptiveMethod.tracksResetted());
+}
 
 MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementInitializesFixedLevelMethod) {
