@@ -93,6 +93,7 @@ class View {
             virtual void submitFailedTrial() = 0;
             virtual void submitFreeResponse() = 0;
             virtual void declineContinuingTesting() = 0;
+            virtual void acceptContinuingTesting() = 0;
         };
 
         virtual ~Experimenter() = default;
@@ -177,6 +178,7 @@ class Presenter : public Model::EventListener {
         void submitFailedTrial() override;
         void submitCorrectKeywords() override;
         void declineContinuingTesting() override;
+        void acceptContinuingTesting() override;
         void becomeChild(Presenter *parent);
         void show();
         void start();
@@ -276,6 +278,7 @@ class Presenter : public Model::EventListener {
     void submitFailedTrial();
     void submitCorrectKeywords();
     void declineContinuingTesting();
+    void acceptContinuingTesting();
     void exitTest();
 
     static constexpr auto fullScaleLevel_dB_SPL{119};

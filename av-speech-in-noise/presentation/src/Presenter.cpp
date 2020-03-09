@@ -196,6 +196,10 @@ void Presenter::declineContinuingTesting() {
     switchToTestSetupView();
 }
 
+void Presenter::acceptContinuingTesting() {
+    experimenterPresenter.readyNextTrial();
+}
+
 void Presenter::submitCorrectKeywords() {
     try {
         submitCorrectKeywords_();
@@ -427,6 +431,7 @@ void Presenter::Experimenter::readyNextTrial() {
     view->hideFreeResponseSubmission();
     view->hideEvaluationButtons();
     view->hideCorrectKeywordsSubmission();
+    view->hideContinueTestingDialog();
     showNextTrialButton(view);
 }
 
@@ -464,6 +469,10 @@ void Presenter::Experimenter::submitFreeResponse() {
 
 void Presenter::Experimenter::declineContinuingTesting() {
     parent->declineContinuingTesting();
+}
+
+void Presenter::Experimenter::acceptContinuingTesting() {
+    parent->acceptContinuingTesting();
 }
 
 void Presenter::Experimenter::playTrial() { parent->playTrial(); }

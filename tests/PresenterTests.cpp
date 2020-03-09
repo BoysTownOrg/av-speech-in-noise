@@ -192,6 +192,10 @@ class ViewStub : public View {
             listener_->declineContinuingTesting();
         }
 
+        void acceptContinuingTesting() {
+            listener_->acceptContinuingTesting();
+        }
+
         [[nodiscard]] auto continueTestingDialogShown() const -> bool {
             return continueTestingDialogShown_;
         }
@@ -777,6 +781,17 @@ class DecliningContinuingTesting : public UseCase {
     ViewStub::ExperimenterViewStub &view;
 };
 
+class AcceptingContinuingTesting : public UseCase {
+  public:
+    explicit AcceptingContinuingTesting(ViewStub::ExperimenterViewStub &view)
+        : view{view} {}
+
+    void run() override { view.acceptContinuingTesting(); }
+
+  private:
+    ViewStub::ExperimenterViewStub &view;
+};
+
 class PlayingTrial : public virtual UseCase {
   public:
     virtual auto nextTrialButtonHidden() -> bool = 0;
@@ -922,6 +937,7 @@ class PresenterTests : public ::testing::Test {
     SubmittingCorrectKeywords submittingCorrectKeywords{experimenterView};
     SubmittingFailedTrial submittingFailedTrial{experimenterView};
     DecliningContinuingTesting decliningContinuingTesting{experimenterView};
+    AcceptingContinuingTesting acceptingContinuingTesting{experimenterView};
     ExitingTest exitingTest{&experimenterView};
 
     void respondFromSubject() { subjectView.submitResponse(); }
@@ -1397,6 +1413,10 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     setCorrectKeywords("a");
     run(submittingCorrectKeywords);
     assertFalse(submittingCorrectKeywords.responseViewHidden());
+}
+
+PRESENTER_TEST(acceptingContinuingTestingHidesContinueTestingDialog) {
+    assertHidesContinueTestingDialog(acceptingContinuingTesting);
 }
 
 PRESENTER_TEST(decliningContinuingTestingHidesContinueTestingDialog) {
