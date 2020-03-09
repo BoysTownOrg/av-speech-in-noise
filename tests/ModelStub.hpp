@@ -2,9 +2,9 @@
 #define AV_SPEECH_IN_NOISE_TESTS_MODELSTUB_HPP_
 
 #include <av-speech-in-noise/Model.hpp>
+#include <utility>
 
 namespace av_speech_in_noise {
-
 class ModelStub : public Model {
   public:
     auto trialNumber() -> int override { return trialNumber_; }
@@ -68,9 +68,11 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto freeResponse() const { return freeResponse_; }
 
-    auto correctKeywords() -> int { return correctKeywords_.count; }
+    [[nodiscard]] auto correctKeywords() const -> int {
+        return correctKeywords_.count;
+    }
 
-    auto testContinued() const -> bool { return testContinued_; }
+    [[nodiscard]] auto testContinued() const -> bool { return testContinued_; }
 
     [[nodiscard]] auto responseParameters() const -> auto & {
         return responseParameters_;
@@ -154,9 +156,7 @@ class ModelStub : public Model {
         correctKeywords_ = s;
     }
 
-    void continueTest() {
-        testContinued_ = true;
-    }
+    void continueTest() override { testContinued_ = true; }
 
   private:
     AdaptiveTest adaptiveTest_{};

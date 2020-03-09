@@ -192,9 +192,7 @@ class ViewStub : public View {
             listener_->declineContinuingTesting();
         }
 
-        void acceptContinuingTesting() {
-            listener_->acceptContinuingTesting();
-        }
+        void acceptContinuingTesting() { listener_->acceptContinuingTesting(); }
 
         [[nodiscard]] auto continueTestingDialogShown() const -> bool {
             return continueTestingDialogShown_;

@@ -31,6 +31,12 @@ static void displayTrialInformation(
     displayTarget(experimenterPresenter, model);
 }
 
+static void readyNextTrial(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    displayTrialInformation(experimenterPresenter, model);
+    experimenterPresenter.readyNextTrial();
+}
+
 static auto defaultAdaptiveCoordinateResponseMeasure(Method m) -> bool {
     return m == Method::defaultAdaptiveCoordinateResponseMeasure;
 }
@@ -192,25 +198,20 @@ void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
 }
 
-void Presenter::declineContinuingTesting() {
-    switchToTestSetupView();
-}
+void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
 
 void Presenter::acceptContinuingTesting() {
     model.continueTest();
-    displayTrialInformation(experimenterPresenter, model);
-    experimenterPresenter.readyNextTrial();
+    readyNextTrial(experimenterPresenter, model);
 }
 
 void Presenter::submitCorrectKeywords() {
     try {
         submitCorrectKeywords_();
-        if (testComplete(model)) {
+        if (testComplete(model))
             experimenterPresenter.showContinueTestingDialog();
-        } else {
-            displayTrialInformation(experimenterPresenter, model);
-            experimenterPresenter.readyNextTrial();
-        }
+        else
+            readyNextTrial(experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -236,10 +237,8 @@ void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
 void Presenter::readyNextTrialIfNeeded() {
     if (testComplete(model))
         switchToTestSetupView();
-    else {
-        displayTrialInformation(experimenterPresenter, model);
-        experimenterPresenter.readyNextTrial();
-    }
+    else
+        readyNextTrial(experimenterPresenter, model);
 }
 
 void Presenter::exitTest() { switchToTestSetupView(); }
