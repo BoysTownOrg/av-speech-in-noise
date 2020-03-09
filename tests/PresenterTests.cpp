@@ -1474,6 +1474,10 @@ PRESENTER_TEST(submittingCorrectKeywordsShowsTrialNumber) {
     assertShowsTrialNumber(submittingCorrectKeywords);
 }
 
+PRESENTER_TEST(acceptingContinuingTestingDialogShowsTrialNumber) {
+    assertShowsTrialNumber(acceptingContinuingTesting);
+}
+
 PRESENTER_TEST(
     completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveCorrectKeywordsTest) {
     assertCompleteTrialShowsResponseView(

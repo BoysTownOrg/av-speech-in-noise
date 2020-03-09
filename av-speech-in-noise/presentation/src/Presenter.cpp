@@ -197,6 +197,7 @@ void Presenter::declineContinuingTesting() {
 }
 
 void Presenter::acceptContinuingTesting() {
+    displayTrialInformation(experimenterPresenter, model);
     experimenterPresenter.readyNextTrial();
 }
 
