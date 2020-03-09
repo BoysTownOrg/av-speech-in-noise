@@ -12,6 +12,7 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory *snrTrackFactory,
 void AdaptiveMethodImpl::resetTracks() {
     for (const auto &t : targetListsWithTracks)
         t.track->reset();
+    selectNextList();
 }
 
 void AdaptiveMethodImpl::initialize(

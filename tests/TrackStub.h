@@ -16,6 +16,7 @@ class TrackStub : public Track {
     bool pushedUp_{};
     bool complete_{};
     bool resetted_{};
+    bool incompleteOnReset_{};
 
   public:
     void setXWhenUpdated(int x) { xWhenUpdated_ = x; }
@@ -50,7 +51,13 @@ class TrackStub : public Track {
 
     void setComplete() { complete_ = true; }
 
-    void reset() override { resetted_ = true; }
+    void reset() override {
+        resetted_ = true;
+        if (incompleteOnReset_)
+            complete_ = false;
+    }
+
+    void incompleteOnReset() { incompleteOnReset_ = true; }
 
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
 };

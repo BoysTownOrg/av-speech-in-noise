@@ -778,6 +778,18 @@ ADAPTIVE_METHOD_TEST(submitInsufficientCorrectKeywordsPushesSnrTrackDown) {
 }
 
 ADAPTIVE_METHOD_TEST(
+    resettingTracksSelectsListAmongThoseWithIncompleteTracks) {
+    setSnrTrackComplete(0);
+    track(0)->incompleteOnReset();
+    initialize();
+    setNextForList(0, "a");
+    setSnrTrackComplete(1);
+    selectList(1);
+    method.resetTracks();
+    assertNextEquals("a");
+}
+
+ADAPTIVE_METHOD_TEST(
     submitCoordinateResponseSelectsListAmongThoseWithIncompleteTracks) {
     assertSelectsListAmongThoseWithIncompleteTracks(
         submittingCoordinateResponse);
