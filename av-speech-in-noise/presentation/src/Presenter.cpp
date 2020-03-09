@@ -412,11 +412,15 @@ void Presenter::Experimenter::start() {
     showNextTrialButton(view);
 }
 
-void Presenter::Experimenter::stop() {
+static void hideSubmissions(View::Experimenter *view) {
     view->hideFreeResponseSubmission();
     view->hideEvaluationButtons();
     view->hideCorrectKeywordsSubmission();
     view->hideContinueTestingDialog();
+}
+
+void Presenter::Experimenter::stop() {
+    hideSubmissions(view);
     view->hide();
 }
 
@@ -428,10 +432,7 @@ void Presenter::Experimenter::trialPlayed() {
 void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
 void Presenter::Experimenter::readyNextTrial() {
-    view->hideFreeResponseSubmission();
-    view->hideEvaluationButtons();
-    view->hideCorrectKeywordsSubmission();
-    view->hideContinueTestingDialog();
+    hideSubmissions(view);
     showNextTrialButton(view);
 }
 
