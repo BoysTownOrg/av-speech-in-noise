@@ -70,6 +70,8 @@ class ModelStub : public Model {
 
     auto correctKeywords() -> int { return correctKeywords_.count; }
 
+    auto testContinued() const -> bool { return testContinued_; }
+
     [[nodiscard]] auto responseParameters() const -> auto & {
         return responseParameters_;
     }
@@ -152,6 +154,10 @@ class ModelStub : public Model {
         correctKeywords_ = s;
     }
 
+    void continueTest() {
+        testContinued_ = true;
+    }
+
   private:
     AdaptiveTest adaptiveTest_{};
     FixedLevelTest fixedLevelTest_{};
@@ -176,6 +182,7 @@ class ModelStub : public Model {
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
     bool initializedWithCyclicTargets_{};
+    bool testContinued_{};
 };
 }
 

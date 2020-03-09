@@ -1307,6 +1307,7 @@ class RequestFailingModel : public Model {
     void subscribe(EventListener *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
+    void continueTest() override {}
 };
 
 class PresenterFailureTests : public ::testing::Test {
@@ -1392,6 +1393,11 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     setCorrectKeywords("a");
     run(submittingCorrectKeywords);
     assertFalse(submittingCorrectKeywords.responseViewHidden());
+}
+
+PRESENTER_TEST(acceptingContinuingTestingContinuesTest) {
+    run(acceptingContinuingTesting);
+    assertTrue(model.testContinued());
 }
 
 PRESENTER_TEST(acceptingContinuingTestingHidesContinueTestingDialog) {
