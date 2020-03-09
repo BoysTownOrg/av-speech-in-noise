@@ -76,6 +76,7 @@ class RecognitionTestModel {
     virtual void throwIfTrialInProgress() = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
+    virtual void prepareNextTrialIfNeeded() = 0;
 };
 
 class ModelImpl : public Model {

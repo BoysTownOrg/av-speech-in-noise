@@ -103,8 +103,15 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
     bool initializedWithEyeTracking_{};
+    bool nextTrialPreparedIfNeeded_{};
 
   public:
+    [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
+        return nextTrialPreparedIfNeeded_;
+    }
+
+    void prepareNextTrialIfNeeded() { nextTrialPreparedIfNeeded_ = true; }
+
     void initialize(TestMethod *method, const Test &test) override {
         testMethod_ = method;
         test_ = &test;
@@ -471,6 +478,12 @@ class ModelTests : public ::testing::Test {
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
+
+MODEL_TEST(
+    restartAdaptiveTestWhilePreservingCyclicTargetsPreparesNextTrialIfNeeded) {
+    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    assertTrue(internalModel.nextTrialPreparedIfNeeded());
+}
 
 MODEL_TEST(
     restartAdaptiveTestWhilePreservingCyclicTargetsResetsAdaptiveMethodTracks) {

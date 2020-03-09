@@ -97,6 +97,7 @@ void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
 
 void ModelImpl::restartAdaptiveTestWhilePreservingCyclicTargets() {
     adaptiveMethod.resetTracks();
+    model.prepareNextTrialIfNeeded();
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {
