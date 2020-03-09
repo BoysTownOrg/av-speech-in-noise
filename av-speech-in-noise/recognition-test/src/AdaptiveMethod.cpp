@@ -50,7 +50,7 @@ auto AdaptiveMethodImpl::track(const TargetListWithTrack &t) -> Track * {
 
 void AdaptiveMethodImpl::selectNextList() {
     removeCompleteTracks();
-    if (targetListsWithTracks.empty())
+    if (tracksInProgress == 0)
         return;
     auto index{randomizer->betweenInclusive(0, tracksInProgress - 1)};
     auto targetListsWithTrack{targetListsWithTracks.at(index)};
