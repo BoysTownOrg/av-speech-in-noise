@@ -972,17 +972,11 @@ class PresenterTests : public ::testing::Test {
         assertTrue(experimenterViewHidden());
     }
 
-    void assertTestingViewHidden() { assertTrue(testingViewHidden()); }
-
     auto experimenterViewHidden() -> bool { return experimenterView.hidden(); }
-
-    auto testingViewHidden() -> bool { return experimenterView.hidden(); }
 
     void assertExperimenterViewNotHidden() {
         assertFalse(experimenterViewHidden());
     }
-
-    void assertTestingViewNotHidden() { assertFalse(testingViewHidden()); }
 
     void assertSubjectViewShown() { assertTrue(subjectViewShown()); }
 
@@ -1110,19 +1104,9 @@ class PresenterTests : public ::testing::Test {
         assertHidesExperimenterView(useCase);
     }
 
-    void assertCompleteTestHidesTestingView(TrialSubmission &useCase) {
-        setTestComplete();
-        assertHidesTestingView(useCase);
-    }
-
     void assertHidesExperimenterView(UseCase &useCase) {
         run(useCase);
         assertExperimenterViewHidden();
-    }
-
-    void assertHidesTestingView(UseCase &useCase) {
-        run(useCase);
-        assertTestingViewHidden();
     }
 
     void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
@@ -1134,11 +1118,6 @@ class PresenterTests : public ::testing::Test {
     void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
         run(useCase);
         assertExperimenterViewNotHidden();
-    }
-
-    void assertDoesNotHideTestingView(TrialSubmission &useCase) {
-        run(useCase);
-        assertTestingViewNotHidden();
     }
 
     static void assertShowsNextTrialButton(TrialSubmission &useCase) {
@@ -1440,18 +1419,9 @@ PRESENTER_TEST(decliningContinuingTestingHidesExperimenterView) {
     assertHidesExperimenterView(decliningContinuingTesting);
 }
 
-PRESENTER_TEST(decliningContinuingTestingHidesTestingView) {
-    assertHidesTestingView(decliningContinuingTesting);
-}
-
 PRESENTER_TEST(
     submittingCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(submittingCorrectKeywords);
-}
-
-PRESENTER_TEST(
-    submittingCorrectKeywordsDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsNextTrialButton) {
@@ -1938,18 +1908,6 @@ PRESENTER_TEST(submitFailedTrialHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingFailedTrial);
 }
 
-PRESENTER_TEST(respondFromExperimenterHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingFreeResponse);
-}
-
-PRESENTER_TEST(submitPassedTrialHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingPassedTrial);
-}
-
-PRESENTER_TEST(submitFailedTrialHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingFailedTrial);
-}
-
 PRESENTER_TEST(submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
     assertCompleteTestDoesNotPlayTrial(respondingFromSubject);
 }
@@ -1970,19 +1928,6 @@ PRESENTER_TEST(submitPassedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
 
 PRESENTER_TEST(submitFailedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(submittingFailedTrial);
-}
-
-PRESENTER_TEST(
-    respondFromExperimenterDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingFreeResponse);
-}
-
-PRESENTER_TEST(submitPassedTrialDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingPassedTrial);
-}
-
-PRESENTER_TEST(submitFailedTrialDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingFailedTrial);
 }
 
 PRESENTER_TEST(experimenterResponseShowsNextTrialButton) {
@@ -2026,10 +1971,6 @@ PRESENTER_TEST(exitTestHidesSubjectView) {
 
 PRESENTER_TEST(exitTestHidesExperimenterView) {
     assertHidesExperimenterView(exitingTest);
-}
-
-PRESENTER_TEST(exitTestHidesTestingView) {
-    assertHidesTestingView(exitingTest);
 }
 
 PRESENTER_TEST(exitTestHidesResponseButtons) {
