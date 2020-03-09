@@ -160,22 +160,6 @@ class InitializingTestWithSingleSpeaker : public UseCase {
     void run(RecognitionTestModelImpl &m) override {
         m.initializeWithSingleSpeaker(method, test);
     }
-
-    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
-
-    void setMaskerFilePath(std::string s) {
-        test.maskerFilePath = std::move(s);
-    }
-
-    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
-
-    void setTestingFullScaleLevel_dB_SPL(int x) {
-        test.fullScaleLevel_dB_SPL = x;
-    }
-
-    void setAudioVisual() { test.condition = Condition::audioVisual; }
-
-    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
 };
 
 class InitializingTestWithDelayedMasker : public UseCase {
@@ -190,22 +174,6 @@ class InitializingTestWithDelayedMasker : public UseCase {
     void run(RecognitionTestModelImpl &m) override {
         m.initializeWithDelayedMasker(method, test);
     }
-
-    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
-
-    void setMaskerFilePath(std::string s) {
-        test.maskerFilePath = std::move(s);
-    }
-
-    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
-
-    void setTestingFullScaleLevel_dB_SPL(int x) {
-        test.fullScaleLevel_dB_SPL = x;
-    }
-
-    void setAudioVisual() { test.condition = Condition::audioVisual; }
-
-    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
 };
 
 class AudioDeviceUseCase : public virtual UseCase {
@@ -219,7 +187,7 @@ class ConditionUseCase : public virtual UseCase {
     virtual void setAudioVisual() = 0;
 };
 
-class PlayingCalibration : public AudioDeviceUseCase, public ConditionUseCase {
+class PlayingCalibration : public AudioDeviceUseCase {
     Calibration calibration{};
 
   public:
@@ -237,14 +205,6 @@ class PlayingCalibration : public AudioDeviceUseCase, public ConditionUseCase {
 
     void setFullScaleLevel_dB_SPL(int x) {
         calibration.fullScaleLevel_dB_SPL = x;
-    }
-
-    void setAudioVisual() override {
-        calibration.condition = Condition::audioVisual;
-    }
-
-    void setAuditoryOnly() override {
-        calibration.condition = Condition::auditoryOnly;
     }
 };
 
@@ -287,8 +247,6 @@ class SubmittingCorrectKeywords : public SubmittingResponse,
     auto writtenTarget(OutputFileStub &file) -> std::string override {
         return file.writtenCorrectKeywords().target;
     }
-
-    void setCorrectKeywords(int n) { k.count = n; }
 };
 
 class SubmittingCoordinateResponse : public SubmittingResponse {
@@ -298,12 +256,6 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
     void run(RecognitionTestModelImpl &m) override {
         m.submit(response_);
     }
-
-    void setNumber(int n) { response_.number = n; }
-
-    void setColor(coordinate_response_measure::Color c) { response_.color = c; }
-
-    [[nodiscard]] auto response() const -> auto & { return response_; }
 };
 
 class SubmittingCorrectResponse : public TargetWritingUseCase {
@@ -382,18 +334,6 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertTargetVideoNotShown() { assertFalse(targetPlayerVideoShown()); }
 
     auto targetPlayerVideoShown() -> bool { return targetPlayer.videoShown(); }
-
-    void assertTargetVideoHiddenWhenAuditoryOnly(ConditionUseCase &useCase) {
-        useCase.setAuditoryOnly();
-        run(useCase);
-        assertTargetVideoOnlyHidden();
-    }
-
-    void assertTargetVideoShownWhenAudioVisual(ConditionUseCase &useCase) {
-        useCase.setAudioVisual();
-        run(useCase);
-        assertTargetVideoOnlyShown();
-    }
 
     void assertTargetVideoOnlyShown() {
         assertTargetVideoNotHidden();
@@ -573,10 +513,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         return outputFile.writtenFreeResponseTrial();
     }
 
-    auto writtenOpenSetAdaptiveTrial() {
-        return outputFile.writtenOpenSetAdaptiveTrial();
-    }
-
     void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
         testMethod.setNextTarget("a");
         run(initializingTest);
@@ -637,12 +573,9 @@ RECOGNITION_TEST_MODEL_TEST(subscribesToPlayerEvents) {
         maskerPlayer.listener());
 }
 
-RECOGNITION_TEST_MODEL_TEST(playCalibrationHidesTargetVideoWhenAuditoryOnly) {
-    assertTargetVideoHiddenWhenAuditoryOnly(playingCalibration);
-}
-
-RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetVideoWhenAudioVisual) {
-    assertTargetVideoShownWhenAudioVisual(playingCalibration);
+RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetVideo) {
+    run(playingCalibration);
+    assertTargetVideoOnlyShown();
 }
 
 RECOGNITION_TEST_MODEL_TEST(

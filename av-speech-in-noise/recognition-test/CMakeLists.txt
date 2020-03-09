@@ -6,8 +6,6 @@ add_library(recognition-test
     src/Model.cpp
     src/RecognitionTestModel.cpp
     src/ResponseEvaluator.cpp
-    src/TrackSettingsInterpreter.cpp
-    src/TrackSettingsReader.cpp
 )
 target_include_directories(recognition-test PUBLIC include)
 target_include_directories(recognition-test PRIVATE include/recognition-test)

@@ -4,17 +4,15 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-AdaptiveMethodImpl::AdaptiveMethodImpl(TrackSettingsReader *trackSettingsReader,
-    Track::Factory *snrTrackFactory, ResponseEvaluator *evaluator,
-    Randomizer *randomizer)
-    : trackSettingsReader{trackSettingsReader},
-      snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
+AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory *snrTrackFactory,
+    ResponseEvaluator *evaluator, Randomizer *randomizer)
+    : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
                                                                   randomizer} {}
 
 void AdaptiveMethodImpl::initialize(
     const AdaptiveTest &test_, TargetListReader *targetListSetReader) {
     test = &test_;
-    trackSettings.rule = trackSettingsReader->read(test_.trackSettingsFile);
+    trackSettings.rule = &test_.trackingRule;
     trackSettings.ceiling = test_.ceilingSnr_dB;
     trackSettings.startingX = test_.startingSnr_dB;
     trackSettings.floor = test_.floorSnr_dB;

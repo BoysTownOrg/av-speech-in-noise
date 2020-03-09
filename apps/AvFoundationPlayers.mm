@@ -1,10 +1,24 @@
 #include "AvFoundationPlayers.h"
 #include "common-objc.h"
+#include "recognition-test/RecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <limits>
 
+@interface VideoPlayerActions : NSObject
+@property(nonatomic) stimulus_players::AvFoundationVideoPlayer *controller;
+- (void)playbackComplete;
+@end
+
+@implementation VideoPlayerActions
+@synthesize controller;
+- (void)playbackComplete {
+    controller->playbackComplete();
+}
+@end
+
+namespace stimulus_players {
 static auto sampleRateHz(AVAssetTrack *track) -> double {
-    auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
+    const auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
         static_cast<CMAudioFormatDescriptionRef>(
             track.formatDescriptions.firstObject));
     return description->mSampleRate;
@@ -47,20 +61,19 @@ static auto globalAddress(AudioObjectPropertySelector s)
 
 // https://stackoverflow.com/questions/4575408/audioobjectgetpropertydata-to-get-a-list-of-input-devices
 // http://fdiv.net/2008/08/12/nssound-setplaybackdeviceidentifier-coreaudio-output-device-enumeration
-CoreAudioDevices::CoreAudioDevices() { loadDevices(); }
-
-void CoreAudioDevices::loadDevices() {
-    auto address = globalAddress(kAudioHardwarePropertyDevices);
-    devices =
-        loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
+static auto loadDevices() -> std::vector<AudioObjectID> {
+    const auto address{globalAddress(kAudioHardwarePropertyDevices)};
+    return loadPropertyData<AudioDeviceID>(kAudioObjectSystemObject, &address);
 }
 
-auto CoreAudioDevices::deviceCount() -> int {
-    return gsl::narrow<int>(devices.size());
+static std::vector<AudioDeviceID> globalAudioDevices{loadDevices()};
+
+static auto deviceCount() -> int {
+    return gsl::narrow<int>(globalAudioDevices.size());
 }
 
-auto CoreAudioDevices::description(int device) -> std::string {
-    return stringProperty(kAudioObjectPropertyName, device);
+static auto objectId(gsl::index device) -> AudioObjectID {
+    return globalAudioDevices.at(device);
 }
 
 static auto toString(CFStringRef deviceName) -> std::string {
@@ -71,66 +84,57 @@ static auto toString(CFStringRef deviceName) -> std::string {
     return buffer;
 }
 
-auto CoreAudioDevices::stringProperty(AudioObjectPropertySelector s, int device)
+static auto stringProperty(AudioObjectPropertySelector s, int device)
     -> std::string {
-    auto address = globalAddress(s);
-    auto data = loadPropertyData<CFStringRef>(objectId(device), &address);
+    const auto address{globalAddress(s)};
+    const auto data{loadPropertyData<CFStringRef>(objectId(device), &address)};
     if (data.empty())
         return {};
 
     return toString(data.front());
 }
 
-auto CoreAudioDevices::objectId(int device) -> AudioObjectID {
-    return devices.at(device);
+static auto description(int device) -> std::string {
+    return stringProperty(kAudioObjectPropertyName, device);
 }
 
-auto CoreAudioDevices::uid(int device) -> std::string {
+static auto uid(int device) -> std::string {
     return stringProperty(kAudioDevicePropertyDeviceUID, device);
 }
 
-auto CoreAudioDevices::outputDevice(int device) -> bool {
-    auto address = masterAddress(kAudioDevicePropertyStreamConfiguration,
+static auto outputDevice(int device) -> bool {
+    const auto address = masterAddress(kAudioDevicePropertyStreamConfiguration,
         kAudioObjectPropertyScopeOutput);
-    auto bufferLists =
+    const auto bufferLists =
         loadPropertyData<AudioBufferList>(objectId(device), &address);
     for (auto list : bufferLists)
-        for (UInt32 j = 0; j < list.mNumberBuffers; ++j)
+        for (UInt32 j{0}; j < list.mNumberBuffers; ++j)
             if (list.mBuffers[j].mNumberChannels != 0)
                 return true;
     return false;
 }
 
-class AvAssetFacade {
-  public:
-    explicit AvAssetFacade(std::string filePath)
-        : asset{makeAvAsset(std::move(filePath))} {}
+static auto firstTrack(AVAsset *asset, AVMediaType mediaType)
+    -> AVAssetTrack * {
+    return [asset tracksWithMediaType:mediaType].firstObject;
+}
 
-    explicit AvAssetFacade(AVAsset *asset) : asset{asset} {}
+static auto audioTrack(AVAsset *asset) -> AVAssetTrack * {
+    return firstTrack(asset, AVMediaTypeAudio);
+}
 
-    auto audioTrack() -> AVAssetTrack * { return firstTrack(AVMediaTypeAudio); }
+static auto videoTrack(AVAsset *asset) -> AVAssetTrack * {
+    return firstTrack(asset, AVMediaTypeVideo);
+}
 
-    auto videoTrack() -> AVAssetTrack * { return firstTrack(AVMediaTypeVideo); }
-
-    auto get() -> AVAsset * { return asset; }
-
-  private:
-    auto firstTrack(AVMediaType mediaType) -> AVAssetTrack * {
-        return [asset tracksWithMediaType:mediaType].firstObject;
-    }
-
-    static auto makeAvAsset(std::string filePath) -> AVURLAsset * {
-        const auto withPercents = [asNsString(std::move(filePath))
-            stringByAddingPercentEncodingWithAllowedCharacters:
-                NSCharacterSet.URLQueryAllowedCharacterSet];
-        const auto url =
-            [NSURL URLWithString:[NSString stringWithFormat:@"file://%@/",
-                                           withPercents]];
-        return [AVURLAsset URLAssetWithURL:url options:nil];
-    }
-
-    AVAsset *asset;
-};
+static auto makeAvAsset(std::string filePath) -> AVURLAsset * {
+    const auto withPercents = [asNsString(std::move(filePath))
+        stringByAddingPercentEncodingWithAllowedCharacters:
+            NSCharacterSet.URLQueryAllowedCharacterSet];
+    const auto url = [NSURL
+        URLWithString:[NSString stringWithFormat:@"file://%@/", withPercents]];
+    return [AVURLAsset URLAssetWithURL:url options:nil];
+}
 
 // https://stackoverflow.com/questions/4972677/reading-audio-samples-via-avassetreader
 CoreAudioBuffer::CoreAudioBuffer(AVAssetReaderTrackOutput *trackOutput)
@@ -155,19 +159,19 @@ auto CoreAudioBuffer::channels() -> int {
 }
 
 auto CoreAudioBuffer::channel(int n) -> std::vector<int> {
-    std::vector<int> channel_{};
-    auto data = static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData);
+    std::vector<int> channel{};
+    const auto data{static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData)};
     for (int i{}; i < frames; ++i)
-        channel_.push_back(data[i]);
-    return channel_;
+        channel.push_back(data[i]);
+    return channel;
 }
 
 auto CoreAudioBuffer::empty() -> bool { return frames == 0; }
 
 void CoreAudioBufferedReader::loadFile(std::string filePath) {
-    AvAssetFacade asset{std::move(filePath)};
-    auto reader = [[AVAssetReader alloc] initWithAsset:asset.get() error:nil];
-    auto track = asset.audioTrack();
+    const auto asset{makeAvAsset(std::move(filePath))};
+    const auto reader{[[AVAssetReader alloc] initWithAsset:asset error:nil]};
+    const auto track{audioTrack(asset)};
 
     // assetReaderTrackOutputWithTrack throws if track is nil...
     // I do not handle the error here but by querying failed method.
@@ -187,7 +191,7 @@ void CoreAudioBufferedReader::loadFile(std::string filePath) {
 auto CoreAudioBufferedReader::failed() -> bool { return trackOutput == nil; }
 
 auto CoreAudioBufferedReader::readNextBuffer()
-    -> std::shared_ptr<stimulus_players::AudioBuffer> {
+    -> std::shared_ptr<AudioBuffer> {
     return std::make_shared<CoreAudioBuffer>(trackOutput);
 }
 
@@ -196,7 +200,7 @@ auto CoreAudioBufferedReader::minimumPossibleSample() -> int {
 }
 
 auto CoreAudioBufferedReader::sampleRateHz() -> double {
-    return ::sampleRateHz(trackOutput.track);
+    return stimulus_players::sampleRateHz(trackOutput.track);
 }
 
 static void init(
@@ -206,67 +210,7 @@ static void init(
 
 static void finalize(MTAudioProcessingTapRef) {}
 
-static void prepare(MTAudioProcessingTapRef tap, CMItemCount,
-    const AudioStreamBasicDescription *description) {
-    auto self = static_cast<AvFoundationVideoPlayer *>(
-        MTAudioProcessingTapGetStorage(tap));
-    self->audio().resize(description->mChannelsPerFrame);
-}
-
 static void unprepare(MTAudioProcessingTapRef) {}
-
-static void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
-    MTAudioProcessingTapFlags, AudioBufferList *bufferListInOut,
-    CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut) {
-    MTAudioProcessingTapGetSourceAudio(
-        tap, numberFrames, bufferListInOut, flagsOut, nullptr, numberFramesOut);
-
-    auto self = static_cast<AvFoundationVideoPlayer *>(
-        MTAudioProcessingTapGetStorage(tap));
-    if (self->audio().size() != bufferListInOut->mNumberBuffers)
-        return;
-
-    for (UInt32 j = 0; j < bufferListInOut->mNumberBuffers; ++j)
-        self->audio()[j] = {
-            static_cast<float *>(bufferListInOut->mBuffers[j].mData),
-            numberFrames};
-    self->fillAudioBuffer();
-}
-
-static void createAudioProcessingTap(
-    void *CM_NULLABLE clientInfo, MTAudioProcessingTapRef *tap) {
-    MTAudioProcessingTapCallbacks callbacks;
-    callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
-    callbacks.clientInfo = clientInfo;
-    callbacks.init = init;
-    callbacks.prepare = prepare;
-    callbacks.process = process;
-    callbacks.unprepare = unprepare;
-    callbacks.finalize = finalize;
-
-    MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
-        kMTAudioProcessingTapCreationFlag_PostEffects, tap);
-}
-
-static auto playerItemWithAudioProcessing(
-    std::string filePath, MTAudioProcessingTapRef tap) -> AVPlayerItem * {
-    AvAssetFacade asset{std::move(filePath)};
-    const auto playerItem = [AVPlayerItem playerItemWithAsset:asset.get()];
-    const auto audioMix = [AVMutableAudioMix audioMix];
-    const auto processing = [AVMutableAudioMixInputParameters
-        audioMixInputParametersWithTrack:asset.audioTrack()];
-    processing.audioTapProcessor = tap;
-    audioMix.inputParameters = @[ processing ];
-    playerItem.audioMix = audioMix;
-    return playerItem;
-}
-
-static void loadItemFromFileWithAudioProcessing(
-    std::string filePath, AVPlayer *player, MTAudioProcessingTapRef tap) {
-    const auto playerItem =
-        playerItemWithAudioProcessing(std::move(filePath), tap);
-    [player replaceCurrentItemWithPlayerItem:playerItem];
-}
 
 static auto currentAsset(AVPlayer *player) -> AVAsset * {
     return player.currentItem.asset;
@@ -282,9 +226,57 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
       player{[AVPlayer playerWithPlayerItem:nil]},
       playerLayer{[AVPlayerLayer playerLayerWithPlayer:player]}, screen{
                                                                      screen} {
-    createAudioProcessingTap(this, &tap);
+    MTAudioProcessingTapCallbacks callbacks;
+    callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
+    callbacks.clientInfo = this;
+    callbacks.init = init;
+    callbacks.prepare = prepareTap;
+    callbacks.process = processTap;
+    callbacks.unprepare = unprepare;
+    callbacks.finalize = finalize;
+
+    MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
+        kMTAudioProcessingTapCreationFlag_PostEffects, &tap);
     prepareWindow();
     actions.controller = this;
+}
+
+void AvFoundationVideoPlayer::prepareTap(MTAudioProcessingTapRef tap,
+    CMItemCount maxFrames,
+    const AudioStreamBasicDescription *processingFormat) {
+    return static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap))
+        ->prepareTap_(tap, maxFrames, processingFormat);
+}
+
+void AvFoundationVideoPlayer::prepareTap_(MTAudioProcessingTapRef, CMItemCount,
+    const AudioStreamBasicDescription *processingFormat) {
+    audio.resize(processingFormat->mChannelsPerFrame);
+}
+
+void AvFoundationVideoPlayer::processTap(MTAudioProcessingTapRef tap,
+    CMItemCount numberFrames, MTAudioProcessingTapFlags flags,
+    AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut,
+    MTAudioProcessingTapFlags *flagsOut) {
+    return static_cast<AvFoundationVideoPlayer *>(
+        MTAudioProcessingTapGetStorage(tap))
+        ->processTap_(
+            numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut);
+}
+
+void AvFoundationVideoPlayer::processTap_(CMItemCount numberFrames,
+    MTAudioProcessingTapFlags, AudioBufferList *bufferListInOut,
+    CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut) {
+    MTAudioProcessingTapGetSourceAudio(
+        tap, numberFrames, bufferListInOut, flagsOut, nullptr, numberFramesOut);
+
+    if (audio.size() != bufferListInOut->mNumberBuffers)
+        return;
+
+    for (UInt32 j{0}; j < bufferListInOut->mNumberBuffers; ++j)
+        audio.at(j) = {static_cast<float *>(bufferListInOut->mBuffers[j].mData),
+            numberFrames};
+    listener_->fillAudioBuffer(audio);
 }
 
 void AvFoundationVideoPlayer::prepareWindow() {
@@ -306,7 +298,20 @@ void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
 void AvFoundationVideoPlayer::play() { [player play]; }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
-    loadItemFromFileWithAudioProcessing(std::move(filePath), player, tap);
+    const auto asset{makeAvAsset(std::move(filePath))};
+    // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an 
+    // unplayable asset the player does not recover even when a subsequent call 
+    // passes one that is playable.
+    if (asset.playable == 0)
+        return;
+    const auto playerItem{[AVPlayerItem playerItemWithAsset:asset]};
+    const auto audioMix{[AVMutableAudioMix audioMix]};
+    const auto processing = [AVMutableAudioMixInputParameters
+        audioMixInputParametersWithTrack:audioTrack(asset)];
+    processing.audioTapProcessor = tap;
+    audioMix.inputParameters = @[ processing ];
+    playerItem.audioMix = audioMix;
+    [player replaceCurrentItemWithPlayerItem:playerItem];
     prepareVideo();
 }
 
@@ -316,8 +321,8 @@ void AvFoundationVideoPlayer::prepareVideo() {
 }
 
 void AvFoundationVideoPlayer::resizeVideo() {
-    AvAssetFacade asset{currentAsset(player)};
-    auto size = asset.videoTrack().naturalSize;
+    const auto asset{currentAsset(player)};
+    auto size{videoTrack(asset).naturalSize};
     // Kaylah requested that the video be reduced in size.
     // We landed on 2/3 scale.
     size.height *= 2;
@@ -329,13 +334,13 @@ void AvFoundationVideoPlayer::resizeVideo() {
 }
 
 void AvFoundationVideoPlayer::centerVideo() {
-    auto screenFrame = [screen frame];
-    auto screenOrigin = screenFrame.origin;
-    auto screenSize = screenFrame.size;
-    auto windowSize = videoWindow.frame.size;
-    auto videoLeadingEdge =
+    const auto screenFrame{[screen frame]};
+    const auto screenOrigin{screenFrame.origin};
+    const auto screenSize{screenFrame.size};
+    const auto windowSize{videoWindow.frame.size};
+    const auto videoLeadingEdge =
         screenOrigin.x + (screenSize.width - windowSize.width) / 2;
-    auto videoBottomEdge =
+    const auto videoBottomEdge =
         screenOrigin.y + (screenSize.height - windowSize.height) / 2;
     [videoWindow setFrameOrigin:NSMakePoint(videoLeadingEdge, videoBottomEdge)];
 }
@@ -357,7 +362,7 @@ void AvFoundationVideoPlayer::playbackComplete() {
 }
 
 void AvFoundationVideoPlayer::setDevice(int index) {
-    player.audioOutputDeviceUniqueID = asNsString(device.uid(index));
+    player.audioOutputDeviceUniqueID = asNsString(uid(index));
 }
 
 void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
@@ -365,22 +370,20 @@ void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
 void AvFoundationVideoPlayer::show() { showWindow(); }
 
 auto AvFoundationVideoPlayer::deviceCount() -> int {
-    return device.deviceCount();
+    return stimulus_players::deviceCount();
 }
 
 auto AvFoundationVideoPlayer::deviceDescription(int index) -> std::string {
-    return device.description(index);
-}
-
-void AvFoundationVideoPlayer::fillAudioBuffer() {
-    listener_->fillAudioBuffer(audio_);
+    return description(index);
 }
 
 static auto playing(AVPlayer *player) -> bool {
     return player.timeControlStatus == AVPlayerTimeControlStatusPlaying;
 }
 
-auto AvFoundationVideoPlayer::playing() -> bool { return ::playing(player); }
+auto AvFoundationVideoPlayer::playing() -> bool {
+    return stimulus_players::playing(player);
+}
 
 static auto durationSeconds_(AVAsset *asset) -> Float64 {
     return CMTimeGetSeconds(asset.duration);
@@ -397,26 +400,6 @@ auto AvFoundationVideoPlayer::durationSeconds() -> double {
     return durationSeconds_(player);
 }
 
-@implementation VideoPlayerActions
-@synthesize controller;
-- (void)playbackComplete {
-    controller->playbackComplete();
-}
-@end
-
-static auto AU_RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *,
-    const AudioTimeStamp *, UInt32, UInt32 inNumberFrames,
-    AudioBufferList *ioData) -> OSStatus {
-    auto self = static_cast<AvFoundationAudioPlayer *>(inRefCon);
-    if (self->audio().size() != ioData->mNumberBuffers)
-        return -1;
-    for (UInt32 j = 0; j < ioData->mNumberBuffers; ++j)
-        self->audio()[j] = {
-            static_cast<float *>(ioData->mBuffers[j].mData), inNumberFrames};
-    self->fillAudioBuffer();
-    return noErr;
-}
-
 AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     AudioComponentDescription audioComponentDescription;
     audioComponentDescription.componentType = kAudioUnitType_Output;
@@ -426,19 +409,19 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     audioComponentDescription.componentFlags = 0;
     audioComponentDescription.componentFlagsMask = 0;
 
-    auto audioComponent =
+    const auto audioComponent =
         AudioComponentFindNext(nullptr, &audioComponentDescription);
     AudioComponentInstanceNew(audioComponent, &audioUnit);
     AudioUnitInitialize(audioUnit);
     // enable output
     {
-        UInt32 enable = 1;
+        UInt32 enable{1};
         AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
             kAudioUnitScope_Output, 0, &enable, sizeof(enable));
     }
 
     // disable input
-    UInt32 enable = 0;
+    UInt32 enable{0};
     AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
         kAudioUnitScope_Input, 1, &enable, sizeof(enable));
 
@@ -456,16 +439,35 @@ AvFoundationAudioPlayer::~AvFoundationAudioPlayer() {
     AudioComponentInstanceDispose(audioUnit);
 }
 
+auto AvFoundationAudioPlayer::AU_RenderCallback(void *inRefCon,
+    AudioUnitRenderActionFlags *ioActionFlags,
+    const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber,
+    UInt32 inNumberFrames, AudioBufferList *ioData) -> OSStatus {
+    return static_cast<AvFoundationAudioPlayer *>(inRefCon)->audioBufferReady(
+        ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData);
+}
+
+auto AvFoundationAudioPlayer::audioBufferReady(AudioUnitRenderActionFlags *,
+    const AudioTimeStamp *inTimeStamp, UInt32, UInt32 inNumberFrames,
+    AudioBufferList *ioData) -> OSStatus {
+    if (audio.size() != ioData->mNumberBuffers)
+        return -1;
+    for (UInt32 j{0}; j < ioData->mNumberBuffers; ++j)
+        audio.at(j) = {
+            static_cast<float *>(ioData->mBuffers[j].mData), inNumberFrames};
+    listener_->fillAudioBuffer(audio);
+    return noErr;
+}
+
 void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
-    filePath_ = std::move(filePath);
-    
-    AvAssetFacade asset{filePath_};
+    const auto asset{makeAvAsset(std::move(filePath))};
 
     AudioStreamBasicDescription streamFormat{};
 
-    streamFormat.mSampleRate = ::sampleRateHz(asset.audioTrack());
+    streamFormat.mSampleRate =
+        stimulus_players::sampleRateHz(audioTrack(asset));
     streamFormat.mFormatID = kAudioFormatLinearPCM;
     streamFormat.mFramesPerPacket = 1;
     streamFormat.mBytesPerPacket = 4;
@@ -478,26 +480,26 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
         kAudioUnitScope_Input, 0, &streamFormat,
         sizeof(AudioStreamBasicDescription));
 
-    audio_.resize(2);
+    audio.resize(2);
 }
 
 auto AvFoundationAudioPlayer::deviceCount() -> int {
-    return device.deviceCount();
+    return stimulus_players::deviceCount();
 }
 
 auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
-    return device.description(index);
+    return description(index);
 }
 
 void AvFoundationAudioPlayer::setDevice(int index) {
-    auto deviceId = device.objectId(index);
+    const auto deviceId{objectId(index)};
     AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
         kAudioUnitScope_Global, 0, &deviceId, sizeof(deviceId));
 }
 
 auto AvFoundationAudioPlayer::playing() -> bool {
-    UInt32 auhalRunning = 0;
-    UInt32 size = sizeof(auhalRunning);
+    UInt32 auhalRunning{0};
+    UInt32 size{sizeof(auhalRunning)};
     AudioUnitGetProperty(audioUnit, kAudioOutputUnitProperty_IsRunning,
         kAudioUnitScope_Global, 0, &auhalRunning, &size);
     return auhalRunning != 0U;
@@ -507,24 +509,15 @@ void AvFoundationAudioPlayer::play() { AudioOutputUnitStart(audioUnit); }
 
 auto AvFoundationAudioPlayer::sampleRateHz() -> double {
     AudioStreamBasicDescription streamFormat{};
-    UInt32 size = sizeof(AudioStreamBasicDescription);
+    UInt32 size{sizeof(AudioStreamBasicDescription)};
     AudioUnitGetProperty(audioUnit, kAudioUnitProperty_StreamFormat,
-        kAudioUnitScope_Input, 0, &streamFormat,
-        &size);
+        kAudioUnitScope_Input, 0, &streamFormat, &size);
     return streamFormat.mSampleRate;
 }
 
 void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
-    return device.outputDevice(index);
+    return stimulus_players::outputDevice(index);
 }
-
-void AvFoundationAudioPlayer::fillAudioBuffer() {
-    listener_->fillAudioBuffer(audio_);
-}
-
-auto AvFoundationAudioPlayer::durationSeconds() -> double {
-    AvAssetFacade asset{filePath_};
-    return durationSeconds_(asset.get());
 }

@@ -37,16 +37,9 @@ class Track {
     };
 };
 
-class TrackSettingsReader {
-  public:
-    virtual ~TrackSettingsReader() = default;
-    virtual auto read(std::string) -> const TrackingRule * = 0;
-};
-
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
-    AdaptiveMethodImpl(TrackSettingsReader *, Track::Factory *,
-        ResponseEvaluator *, Randomizer *);
+    AdaptiveMethodImpl(Track::Factory *, ResponseEvaluator *, Randomizer *);
     void initialize(const AdaptiveTest &, TargetListReader *) override;
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
@@ -88,7 +81,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     open_set::AdaptiveTrial lastOpenSetTrial{};
     open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     const AdaptiveTest *test{};
-    TrackSettingsReader *trackSettingsReader;
     Track::Factory *snrTrackFactory;
     ResponseEvaluator *evaluator;
     Randomizer *randomizer;

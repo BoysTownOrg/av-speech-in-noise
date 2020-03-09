@@ -3,11 +3,10 @@
 #include "CocoaView.h"
 #include "common-objc.h"
 #include <presentation/Presenter.hpp>
+#include <presentation/TestSettingsInterpreter.hpp>
 #include <recognition-test/Model.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <recognition-test/AdaptiveMethod.hpp>
-#include <recognition-test/TrackSettingsReader.hpp>
-#include <recognition-test/TrackSettingsInterpreter.hpp>
 #include <recognition-test/FixedLevelMethod.hpp>
 #include <recognition-test/OutputFile.hpp>
 #include <recognition-test/OutputFilePath.hpp>
@@ -166,7 +165,7 @@ class TimerImpl : public stimulus_players::Timer {
 
 namespace {
 class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
-    auto read(std::string s) -> std::string override {
+    auto read(const std::string &s) -> std::string override {
         std::ifstream file{s};
         std::stringstream stream;
         stream << file.rdbuf();
@@ -194,11 +193,11 @@ void main() {
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
-    AvFoundationVideoPlayer videoPlayer{subjectScreen};
-    CoreAudioBufferedReader bufferedReader;
+    stimulus_players::AvFoundationVideoPlayer videoPlayer{subjectScreen};
+    stimulus_players::CoreAudioBufferedReader bufferedReader;
     stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
     stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
-    AvFoundationAudioPlayer audioPlayer;
+    stimulus_players::AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
     stimulus_players::MaskerPlayerImpl maskerPlayer{
         &audioPlayer, &audioReader, &timer};
@@ -212,11 +211,8 @@ void main() {
     OutputFileImpl outputFile{&writer, &path};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
-    TrackSettingsInterpreterImpl trackSettingsInterpreter;
     TextFileReaderImpl textFileReader;
-    TrackSettingsReaderImpl trackSettingsReader{
-        &textFileReader, &trackSettingsInterpreter};
-    AdaptiveMethodImpl adaptiveMethod{&trackSettingsReader,
+    AdaptiveMethodImpl adaptiveMethod{
         &snrTrackFactory, &responseEvaluator, &randomizer};
     target_list::RandomizedTargetListWithReplacement targetsWithReplacement{
         &fileExtensions, &randomizer};
@@ -270,24 +266,7 @@ void main() {
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, allStimuli, model_internal};
-    auto testerWindowFrame = NSMakeRect(15, 15, 900, 430);
-    auto testerWindowViewMargin = 15;
-    auto experimenterContentFrame = NSMakeRect(testerWindowViewMargin,
-        testerWindowViewMargin,
-        testerWindowFrame.size.width - testerWindowViewMargin * 2,
-        testerWindowFrame.size.height - testerWindowViewMargin * 2);
-    auto testerContentFrame =
-        NSMakeRect(testerWindowViewMargin, testerWindowViewMargin,
-            testerWindowFrame.size.width - testerWindowViewMargin * 2,
-            testerWindowFrame.size.height - testerWindowViewMargin * 2);
-    CocoaTestSetupView testSetupView{testerContentFrame};
-    testSetupView.setMaskerLevel_dB_SPL("65");
-    testSetupView.setCalibrationLevel_dB_SPL("65");
-    testSetupView.setStartingSnr_dB("5");
-    CocoaExperimenterView experimenterView{experimenterContentFrame};
-    CocoaView view{testerWindowFrame};
-    view.addSubview(testSetupView.view());
-    view.addSubview(experimenterView.view());
+    CocoaView view{NSMakeRect(0, 0, 900, 180)};
     view.center();
     auto delegate = [WindowDelegate alloc];
     view.setDelegate(delegate);
@@ -300,10 +279,11 @@ void main() {
     CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge,
         subjectScreenOrigin.y, subjectViewWidth, subjectViewHeight)};
     Presenter::CoordinateResponseMeasure subject{&subjectView};
-    Presenter::TestSetup testSetup{&testSetupView};
-    Presenter::Experimenter experimenter{&experimenterView};
-    Presenter presenter{
-        model, view, testSetup, subject, experimenter};
+    Presenter::TestSetup testSetup{&view.testSetup()};
+    Presenter::Experimenter experimenter{&view.experimenter()};
+    TestSettingsInterpreterImpl testSettingsInterpreter;
+    Presenter presenter{model, view, testSetup, subject, experimenter,
+        testSettingsInterpreter, textFileReader};
     presenter.run();
 }
 }
