@@ -1414,6 +1414,12 @@ PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
     assertCompleteTestShowsContinueTestingDialog(submittingCorrectKeywords);
 }
 
+PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
+    setTestComplete();
+    run(submittingCorrectKeywords);
+    assertTrue(submittingCorrectKeywords.responseViewHidden());
+}
+
 PRESENTER_TEST(
     submittingCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);

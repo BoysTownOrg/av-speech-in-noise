@@ -208,8 +208,10 @@ void Presenter::acceptContinuingTesting() {
 void Presenter::submitCorrectKeywords() {
     try {
         submitCorrectKeywords_();
-        if (testComplete(model))
+        if (testComplete(model)) {
+            experimenterPresenter.hideCorrectKeywordsSubmission();
             experimenterPresenter.showContinueTestingDialog();
+        }
         else
             readyNextTrial(experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
@@ -417,6 +419,10 @@ static void hideSubmissions(View::Experimenter *view) {
     view->hideEvaluationButtons();
     view->hideCorrectKeywordsSubmission();
     view->hideContinueTestingDialog();
+}
+
+void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
+    view->hideCorrectKeywordsSubmission();
 }
 
 void Presenter::Experimenter::stop() {

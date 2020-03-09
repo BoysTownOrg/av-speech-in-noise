@@ -179,6 +179,7 @@ class Presenter : public Model::EventListener {
         void submitCorrectKeywords() override;
         void declineContinuingTesting() override;
         void acceptContinuingTesting() override;
+        void hideCorrectKeywordsSubmission();
         void becomeChild(Presenter *parent);
         void show();
         void start();
