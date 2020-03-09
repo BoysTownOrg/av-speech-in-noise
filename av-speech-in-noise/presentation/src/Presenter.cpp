@@ -201,7 +201,7 @@ void Presenter::submitFailedTrial() {
 void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
 
 void Presenter::acceptContinuingTesting() {
-    model.continueTest();
+    model.restartAdaptiveTestWhilePreservingCyclicTargets();
     readyNextTrial(experimenterPresenter, model);
 }
 

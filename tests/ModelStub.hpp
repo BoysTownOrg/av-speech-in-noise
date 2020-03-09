@@ -156,7 +156,7 @@ class ModelStub : public Model {
         correctKeywords_ = s;
     }
 
-    void continueTest() override { testContinued_ = true; }
+    void restartAdaptiveTestWhilePreservingCyclicTargets() override { testContinued_ = true; }
 
   private:
     AdaptiveTest adaptiveTest_{};

@@ -157,7 +157,7 @@ class Model {
     virtual auto audioDevices() -> std::vector<std::string> = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
-    virtual void continueTest() = 0;
+    virtual void restartAdaptiveTestWhilePreservingCyclicTargets() = 0;
 };
 }
 

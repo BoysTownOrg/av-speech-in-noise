@@ -1305,7 +1305,7 @@ class RequestFailingModel : public Model {
     void subscribe(EventListener *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void continueTest() override {}
+    void restartAdaptiveTestWhilePreservingCyclicTargets() override {}
 };
 
 class PresenterFailureTests : public ::testing::Test {

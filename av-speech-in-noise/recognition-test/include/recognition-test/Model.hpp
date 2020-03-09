@@ -108,7 +108,7 @@ class ModelImpl : public Model {
     void submit(const open_set::CorrectKeywords &) override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
-    void continueTest() override {}
+    void restartAdaptiveTestWhilePreservingCyclicTargets() override {}
 
   private:
     void initializeTest_(const AdaptiveTest &);
