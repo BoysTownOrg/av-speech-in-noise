@@ -494,15 +494,15 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto continueButton_ {
         button("continue", actions, @selector(acceptContinuingTesting))
     };
-    [continueButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
-                                  3 * buttonWidth,
-                              0, buttonWidth, buttonHeight)];
     const auto exitButton_ {
         button("exit", actions, @selector(declineContinuingTesting))
     };
-    [exitButton_
+    [continueButton_
         setFrame:NSMakeRect(evaluationButtons.frame.size.width - buttonWidth, 0,
                      buttonWidth, buttonHeight)];
+    [exitButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
+                                  3 * buttonWidth,
+                              0, buttonWidth, buttonHeight)];
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
@@ -528,6 +528,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [nextTrialButton_ setHidden:YES];
     [responseSubmission setHidden:YES];
     [correctKeywordsSubmission setHidden:YES];
+    [continueTestingDialog setHidden:YES];
     [view_ setHidden:YES];
     actions.controller = this;
 }
