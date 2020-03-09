@@ -15,6 +15,7 @@ class TrackStub : public Track {
     bool pushedDown_{};
     bool pushedUp_{};
     bool complete_{};
+    bool resetted_{};
 
   public:
     void setXWhenUpdated(int x) { xWhenUpdated_ = x; }
@@ -48,6 +49,10 @@ class TrackStub : public Track {
     auto reversals() -> int override { return reversals_; }
 
     void setComplete() { complete_ = true; }
+
+    void reset() override { resetted_ = true; }
+
+    [[nodiscard]] auto resetted() const -> bool { return resetted_; }
 };
 
 class TrackFactoryStub : public Track::Factory {

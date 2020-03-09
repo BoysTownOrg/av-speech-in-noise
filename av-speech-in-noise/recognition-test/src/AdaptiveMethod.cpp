@@ -9,6 +9,10 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory *snrTrackFactory,
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
                                                                   randomizer} {}
 
+void AdaptiveMethodImpl::reset() {
+    targetListsWithTracks.at(0).track->reset();
+}
+
 void AdaptiveMethodImpl::initialize(
     const AdaptiveTest &test_, TargetListReader *targetListSetReader) {
     test = &test_;

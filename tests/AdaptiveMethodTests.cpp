@@ -254,6 +254,10 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
     }
 };
 
+void reset(AdaptiveMethodImpl &method) {
+    method.reset();
+}
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TargetListSetReaderStub targetListSetReader;
@@ -570,6 +574,12 @@ ADAPTIVE_METHOD_TEST(
     submitCorrectKeywordsSelectsListInRangeAfterRemovingCompleteTracks) {
     assertSelectsListInRangeAfterRemovingCompleteTracks(
         submittingCorrectKeywords);
+}
+
+ADAPTIVE_METHOD_TEST(resetResetsEachTrack) {
+    initialize();
+    reset(method);
+    assertTrue(track(0)->resetted());
 }
 
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {

@@ -29,6 +29,7 @@ class Track {
     virtual auto x() -> int = 0;
     virtual auto complete() -> bool = 0;
     virtual auto reversals() -> int = 0;
+    virtual void reset() = 0;
 
     class Factory {
       public:
@@ -55,6 +56,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeTestingParameters(OutputFile *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const open_set::FreeResponse &) override;
+    void reset();
 
   private:
     struct TargetListWithTrack {
