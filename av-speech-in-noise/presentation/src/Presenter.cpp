@@ -192,6 +192,10 @@ void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
 }
 
+void Presenter::declineContinuingTesting() {
+    switchToTestSetupView();
+}
+
 void Presenter::submitCorrectKeywords() {
     try {
         submitCorrectKeywords_();
@@ -455,6 +459,10 @@ void Presenter::Experimenter::submitCorrectKeywords() {
 
 void Presenter::Experimenter::submitFreeResponse() {
     parent->submitFreeResponse();
+}
+
+void Presenter::Experimenter::declineContinuingTesting() {
+    parent->declineContinuingTesting();
 }
 
 void Presenter::Experimenter::playTrial() { parent->playTrial(); }

@@ -188,13 +188,15 @@ class ViewStub : public View {
 
     class ExperimenterViewStub : public Experimenter {
       public:
+        void declineContinuingTesting() {
+            listener_->declineContinuingTesting();
+        }
+
         [[nodiscard]] auto continueTestingDialogShown() const -> bool {
             return continueTestingDialogShown_;
         }
 
-        void showContinueTestingDialog() {
-            continueTestingDialogShown_ = true;
-        }
+        void showContinueTestingDialog() { continueTestingDialogShown_ = true; }
 
         void submitFailedTrial() { listener_->submitFailedTrial(); }
 
@@ -753,6 +755,17 @@ class SubmittingCorrectKeywords : public TrialSubmission {
     }
 };
 
+class DecliningContinuingTesting : public UseCase {
+  public:
+    explicit DecliningContinuingTesting(ViewStub::ExperimenterViewStub &view)
+        : view{view} {}
+
+    void run() override { view.declineContinuingTesting(); }
+
+  private:
+    ViewStub::ExperimenterViewStub &view;
+};
+
 class PlayingTrial : public virtual UseCase {
   public:
     virtual auto nextTrialButtonHidden() -> bool = 0;
@@ -897,6 +910,7 @@ class PresenterTests : public ::testing::Test {
     SubmittingPassedTrial submittingPassedTrial{experimenterView};
     SubmittingCorrectKeywords submittingCorrectKeywords{experimenterView};
     SubmittingFailedTrial submittingFailedTrial{experimenterView};
+    DecliningContinuingTesting decliningContinuingTesting{experimenterView};
     ExitingTest exitingTest{&experimenterView};
 
     void respondFromSubject() { subjectView.submitResponse(); }
@@ -1038,6 +1052,11 @@ class PresenterTests : public ::testing::Test {
 
     void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
         setTestComplete();
+        run(useCase);
+        assertSetupViewShown();
+    }
+
+    void assertShowsSetupView(UseCase &useCase) {
         run(useCase);
         assertSetupViewShown();
     }
@@ -1362,6 +1381,10 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     setCorrectKeywords("a");
     run(submittingCorrectKeywords);
     assertFalse(submittingCorrectKeywords.responseViewHidden());
+}
+
+PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {
+    assertShowsSetupView(decliningContinuingTesting);
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsSetupViewWhenTestComplete) {
