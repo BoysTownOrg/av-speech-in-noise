@@ -1393,9 +1393,9 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     assertFalse(submittingCorrectKeywords.responseViewHidden());
 }
 
-PRESENTER_TEST(acceptingContinuingTestingContinuesTest) {
+PRESENTER_TEST(acceptingContinuingTestingRestartsAdaptiveTestWhilePreservingCyclicTargets) {
     run(acceptingContinuingTesting);
-    assertTrue(model.testContinued());
+    assertTrue(model.adaptiveTestRestartedWhilePreservingCyclicTargets());
 }
 
 PRESENTER_TEST(acceptingContinuingTestingHidesContinueTestingDialog) {

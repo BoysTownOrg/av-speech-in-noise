@@ -72,7 +72,8 @@ class ModelStub : public Model {
         return correctKeywords_.count;
     }
 
-    [[nodiscard]] auto testContinued() const -> bool { return testContinued_; }
+    [[nodiscard]] auto adaptiveTestRestartedWhilePreservingCyclicTargets() const
+        -> bool { return adaptiveTestRestartedWhilePreservingCyclicTargets_; }
 
     [[nodiscard]] auto responseParameters() const -> auto & {
         return responseParameters_;
@@ -156,7 +157,9 @@ class ModelStub : public Model {
         correctKeywords_ = s;
     }
 
-    void restartAdaptiveTestWhilePreservingCyclicTargets() override { testContinued_ = true; }
+    void restartAdaptiveTestWhilePreservingCyclicTargets() override {
+        adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
+    }
 
   private:
     AdaptiveTest adaptiveTest_{};
@@ -182,7 +185,7 @@ class ModelStub : public Model {
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
     bool initializedWithCyclicTargets_{};
-    bool testContinued_{};
+    bool adaptiveTestRestartedWhilePreservingCyclicTargets_{};
 };
 }
 
