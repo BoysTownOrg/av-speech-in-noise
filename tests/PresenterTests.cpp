@@ -1105,7 +1105,7 @@ class PresenterTests : public ::testing::Test {
         assertSetupViewNotShown();
     }
 
-    void assertCompleteTestHidesExperimenterView(TrialSubmission &useCase) {
+    void assertCompleteTestHidesExperimenterView(UseCase &useCase) {
         setTestComplete();
         assertHidesExperimenterView(useCase);
     }
@@ -1427,10 +1427,6 @@ PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {
     assertShowsSetupView(decliningContinuingTesting);
 }
 
-PRESENTER_TEST(submittingCorrectKeywordsShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(submittingCorrectKeywords);
-}
-
 PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
     assertCompleteTestShowsContinueTestingDialog(submittingCorrectKeywords);
 }
@@ -1440,12 +1436,12 @@ PRESENTER_TEST(
     assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
 }
 
-PRESENTER_TEST(submittingCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(submittingCorrectKeywords);
+PRESENTER_TEST(decliningContinuingTestingHidesExperimenterView) {
+    assertHidesExperimenterView(decliningContinuingTesting);
 }
 
-PRESENTER_TEST(submittingCorrectKeywordsHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingCorrectKeywords);
+PRESENTER_TEST(decliningContinuingTestingHidesTestingView) {
+    assertHidesTestingView(decliningContinuingTesting);
 }
 
 PRESENTER_TEST(

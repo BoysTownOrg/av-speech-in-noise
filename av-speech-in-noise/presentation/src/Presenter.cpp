@@ -205,7 +205,6 @@ void Presenter::submitCorrectKeywords() {
     try {
         submitCorrectKeywords_();
         if (testComplete(model)) {
-            switchToTestSetupView();
             experimenterPresenter.showContinueTestingDialog();
         } else {
             displayTrialInformation(experimenterPresenter, model);
