@@ -211,8 +211,7 @@ void Presenter::submitCorrectKeywords() {
         if (testComplete(model)) {
             experimenterPresenter.hideCorrectKeywordsSubmission();
             experimenterPresenter.showContinueTestingDialog();
-        }
-        else
+        } else
             readyNextTrial(experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());

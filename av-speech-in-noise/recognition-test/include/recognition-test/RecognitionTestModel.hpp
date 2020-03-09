@@ -92,6 +92,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void fadeInComplete() override;
     void fadeOutComplete() override;
     void playbackComplete() override;
+    void prepareNextTrialIfNeeded() override;
     static constexpr double maskerChannelDelaySeconds = 0.004;
 
   private:
@@ -138,7 +139,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
         const std::string &file);
     void loadTargetFile(std::string);
     void setTargetLevel_dB(double);
-    void prepareNextTrialIfNeeded();
 
     MaskerPlayer *maskerPlayer;
     TargetPlayer *targetPlayer;

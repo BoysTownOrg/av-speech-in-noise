@@ -102,7 +102,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
-    bool initializedWithEyeTracking_{};
     bool nextTrialPreparedIfNeeded_{};
 
   public:
@@ -110,7 +109,9 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         return nextTrialPreparedIfNeeded_;
     }
 
-    void prepareNextTrialIfNeeded() { nextTrialPreparedIfNeeded_ = true; }
+    void prepareNextTrialIfNeeded() override {
+        nextTrialPreparedIfNeeded_ = true;
+    }
 
     void initialize(TestMethod *method, const Test &test) override {
         testMethod_ = method;
@@ -165,10 +166,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     [[nodiscard]] auto initializedWithDelayedMasker() const -> bool {
         return initializedWithDelayedMasker_;
-    }
-
-    [[nodiscard]] auto initializedWithEyeTracking() const -> bool {
-        return initializedWithEyeTracking_;
     }
 
     [[nodiscard]] auto coordinateResponse() const {
@@ -241,16 +238,6 @@ void initializeWithCyclicTargets(ModelImpl &model, const AdaptiveTest &test) {
 void initializeWithSilentIntervalTargets(
     ModelImpl &model, const FixedLevelTest &test) {
     model.initializeWithSilentIntervalTargets(test);
-}
-
-void initializeWithTargetReplacementAndEyeTracking(
-    ModelImpl &model, const FixedLevelTest &test) {
-    model.initializeWithTargetReplacementAndEyeTracking(test);
-}
-
-void initializeWithSilentIntervalTargetsAndEyeTracking(
-    ModelImpl &model, const FixedLevelTest &test) {
-    model.initializeWithSilentIntervalTargetsAndEyeTracking(test);
 }
 
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {

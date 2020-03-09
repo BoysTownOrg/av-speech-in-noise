@@ -1393,7 +1393,8 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     assertFalse(submittingCorrectKeywords.responseViewHidden());
 }
 
-PRESENTER_TEST(acceptingContinuingTestingRestartsAdaptiveTestWhilePreservingCyclicTargets) {
+PRESENTER_TEST(
+    acceptingContinuingTestingRestartsAdaptiveTestWhilePreservingCyclicTargets) {
     run(acceptingContinuingTesting);
     assertTrue(model.adaptiveTestRestartedWhilePreservingCyclicTargets());
 }
