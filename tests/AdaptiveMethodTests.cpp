@@ -580,6 +580,8 @@ ADAPTIVE_METHOD_TEST(resetResetsEachTrack) {
     initialize();
     reset(method);
     assertTrue(track(0)->resetted());
+    assertTrue(track(1)->resetted());
+    assertTrue(track(2)->resetted());
 }
 
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {
