@@ -51,19 +51,17 @@ void AdaptiveMethodImpl::selectNextList() {
     removeCompleteTracks();
     if (targetListsWithTracks.empty())
         return;
-    auto remainingLists{gsl::narrow<int>(targetListsWithTracks.size())};
-    auto index{randomizer->betweenInclusive(0, remainingLists - 1)};
+    auto index{randomizer->betweenInclusive(0, tracksInProgress - 1)};
     auto targetListsWithTrack{targetListsWithTracks.at(index)};
     currentSnrTrack = track(targetListsWithTrack);
     currentTargetList = targetListsWithTrack.list;
 }
 
 void AdaptiveMethodImpl::removeCompleteTracks() {
-    auto end{targetListsWithTracks.end()};
-    targetListsWithTracks.erase(
-        std::remove_if(targetListsWithTracks.begin(), end,
-            [&](const TargetListWithTrack &t) { return complete(t); }),
-        end);
+    tracksInProgress = std::distance(targetListsWithTracks.begin(),
+        std::stable_partition(targetListsWithTracks.begin(),
+            targetListsWithTracks.end(),
+            [&](const TargetListWithTrack &t) { return !complete(t); }));
 }
 
 auto AdaptiveMethodImpl::complete(const TargetListWithTrack &t) -> bool {
