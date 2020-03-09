@@ -26,6 +26,8 @@ class CocoaExperimenterView : public View::Experimenter {
     void submitPassedTrial();
     void submitFailedTrial();
     void submitCorrectKeywords();
+    void acceptContinuingTesting();
+    void declineContinuingTesting();
     void showNextTrialButton() override;
     void hideNextTrialButton() override;
     void showEvaluationButtons() override;
@@ -37,12 +39,15 @@ class CocoaExperimenterView : public View::Experimenter {
     void hideEvaluationButtons() override;
     void showCorrectKeywordsSubmission() override;
     void hideCorrectKeywordsSubmission() override;
+    void showContinueTestingDialog() override;
+    void hideContinueTestingDialog() override;
 
   private:
     NSView *view_;
     NSView *evaluationButtons;
     NSView *responseSubmission;
     NSView *correctKeywordsSubmission;
+    NSView *continueTestingDialog;
     NSTextField *response_;
     NSTextField *correctKeywordsEntry_;
     NSTextField *displayedText_;
