@@ -188,6 +188,14 @@ class ViewStub : public View {
 
     class ExperimenterViewStub : public Experimenter {
       public:
+        [[nodiscard]] auto continueTestingDialogShown() const -> bool {
+            return continueTestingDialogShown_;
+        }
+
+        void showContinueTestingDialog() {
+            continueTestingDialogShown_ = true;
+        }
+
         void submitFailedTrial() { listener_->submitFailedTrial(); }
 
         [[nodiscard]] auto responseSubmissionHidden() const {
@@ -326,6 +334,7 @@ class ViewStub : public View {
         bool evaluationButtonsHidden_{};
         bool correctKeywordsEntryShown_{};
         bool correctKeywordsEntryHidden_{};
+        bool continueTestingDialogShown_{};
         bool shown_{};
         bool hidden_{};
         bool flagged_{};
@@ -1033,6 +1042,13 @@ class PresenterTests : public ::testing::Test {
         assertSetupViewShown();
     }
 
+    void assertCompleteTestShowsContinueTestingDialog(
+        TrialSubmission &useCase) {
+        setTestComplete();
+        run(useCase);
+        assertTrue(experimenterView.continueTestingDialogShown());
+    }
+
     void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
         run(useCase);
         assertSetupViewNotShown();
@@ -1350,6 +1366,10 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
+    assertCompleteTestShowsContinueTestingDialog(submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(

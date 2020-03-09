@@ -194,7 +194,14 @@ void Presenter::submitFailedTrial() {
 
 void Presenter::submitCorrectKeywords() {
     try {
-        proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
+        submitCorrectKeywords_();
+        if (testComplete(model)) {
+            switchToTestSetupView();
+            experimenterPresenter.showContinueTestingDialog();
+        } else {
+            displayTrialInformation(experimenterPresenter, model);
+            experimenterPresenter.readyNextTrial();
+        }
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -416,6 +423,10 @@ void Presenter::Experimenter::readyNextTrial() {
     view->hideEvaluationButtons();
     view->hideCorrectKeywordsSubmission();
     showNextTrialButton(view);
+}
+
+void Presenter::Experimenter::showContinueTestingDialog() {
+    view->showContinueTestingDialog();
 }
 
 void Presenter::Experimenter::showPassFailSubmission() {
