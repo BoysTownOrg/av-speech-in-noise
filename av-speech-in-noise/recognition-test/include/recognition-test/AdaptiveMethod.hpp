@@ -39,6 +39,11 @@ class Track {
     };
 };
 
+struct TargetListWithTrack {
+    TargetList *list;
+    std::shared_ptr<Track> track;
+};
+
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
     AdaptiveMethodImpl(Track::Factory *, ResponseEvaluator *, Randomizer *);
@@ -60,18 +65,12 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void resetTracks() override;
 
   private:
-    struct TargetListWithTrack {
-        TargetList *list;
-        std::shared_ptr<Track> track;
-    };
     void selectNextListAfter(void (AdaptiveMethodImpl::*)());
     void prepareSnrTracks();
     void makeSnrTracks();
     void makeTrackWithList(TargetList *list);
     void selectNextList();
-    void removeCompleteTracks();
-    static auto complete(const TargetListWithTrack &) -> bool;
-    static auto track(const TargetListWithTrack &) -> Track *;
+    void moveCompleteTracksToEnd();
     auto correct(const std::string &,
         const coordinate_response_measure::Response &) -> bool;
     void incorrect();

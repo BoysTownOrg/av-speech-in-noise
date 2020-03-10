@@ -1,6 +1,4 @@
 #include "AdaptiveMethod.hpp"
-#include "Model.hpp"
-#include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
@@ -44,35 +42,37 @@ void AdaptiveMethodImpl::makeTrackWithList(TargetList *list) {
         {list, snrTrackFactory->make(trackSettings)});
 }
 
-auto AdaptiveMethodImpl::track(const TargetListWithTrack &t) -> Track * {
+static auto track(const TargetListWithTrack &t) -> Track * {
     return t.track.get();
 }
 
+static auto complete(const TargetListWithTrack &t) -> bool {
+    return track(t)->complete();
+}
+
+static auto incomplete(const TargetListWithTrack &t) -> bool {
+    return !complete(t);
+}
+
 void AdaptiveMethodImpl::selectNextList() {
-    removeCompleteTracks();
+    moveCompleteTracksToEnd();
     if (tracksInProgress == 0)
         return;
-    auto index{randomizer->betweenInclusive(0, tracksInProgress - 1)};
-    auto targetListsWithTrack{targetListsWithTracks.at(index)};
+    auto targetListsWithTrack{targetListsWithTracks.at(
+        randomizer->betweenInclusive(0, tracksInProgress - 1))};
     currentSnrTrack = track(targetListsWithTrack);
     currentTargetList = targetListsWithTrack.list;
 }
 
-void AdaptiveMethodImpl::removeCompleteTracks() {
+void AdaptiveMethodImpl::moveCompleteTracksToEnd() {
     tracksInProgress = std::distance(targetListsWithTracks.begin(),
         std::stable_partition(targetListsWithTracks.begin(),
-            targetListsWithTracks.end(),
-            [&](const TargetListWithTrack &t) { return !complete(t); }));
-}
-
-auto AdaptiveMethodImpl::complete(const TargetListWithTrack &t) -> bool {
-    return track(t)->complete();
+            targetListsWithTracks.end(), incomplete));
 }
 
 auto AdaptiveMethodImpl::complete() -> bool {
     return std::all_of(targetListsWithTracks.begin(),
-        targetListsWithTracks.end(),
-        [&](const TargetListWithTrack &t) { return complete(t); });
+        targetListsWithTracks.end(), av_speech_in_noise::complete);
 }
 
 auto AdaptiveMethodImpl::nextTarget() -> std::string {
