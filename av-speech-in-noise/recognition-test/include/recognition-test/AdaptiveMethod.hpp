@@ -3,7 +3,6 @@
 
 #include "Model.hpp"
 #include "Randomizer.hpp"
-#include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 #include <limits>
 #include <memory>
