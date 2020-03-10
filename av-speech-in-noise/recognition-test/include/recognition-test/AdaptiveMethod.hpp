@@ -65,10 +65,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void resetTracks() override;
 
   private:
-    void selectNextListAfter(void (AdaptiveMethodImpl::*)());
-    void prepareSnrTracks();
-    void makeSnrTracks();
-    void makeTrackWithList(TargetList *list);
     void selectNextList();
     void moveCompleteTracksToEnd();
     auto correct(const std::string &,

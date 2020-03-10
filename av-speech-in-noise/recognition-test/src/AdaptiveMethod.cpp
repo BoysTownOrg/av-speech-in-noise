@@ -14,6 +14,31 @@ static auto incomplete(const TargetListWithTrack &t) -> bool {
     return !complete(t);
 }
 
+static void assignReversals(Adaptive &trial, Track *track) {
+    trial.reversals = track->reversals();
+}
+
+static auto correct(const open_set::CorrectKeywords &p) -> bool {
+    return p.count >= 2;
+}
+
+static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
+    trial.SNR_dB = track->x();
+}
+
+static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
+    trial.correct = c;
+}
+
+static auto fileName(ResponseEvaluator &evaluator, const std::string &target)
+    -> std::string {
+    return evaluator.fileName(target);
+}
+
+static void assignTarget(open_set::Trial &trial, std::string s) {
+    trial.target = std::move(s);
+}
+
 AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
@@ -42,16 +67,11 @@ void AdaptiveMethodImpl::resetTracks() {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::selectNextListAfter(void (AdaptiveMethodImpl::*f)()) {
-    (this->*f)();
-    selectNextList();
-}
-
 void AdaptiveMethodImpl::selectNextList() {
     moveCompleteTracksToEnd();
     if (tracksInProgress == 0)
         return;
-    auto targetListsWithTrack{targetListsWithTracks.at(
+    const auto &targetListsWithTrack{targetListsWithTracks.at(
         randomizer.betweenInclusive(0, tracksInProgress - 1))};
     currentSnrTrack = track(targetListsWithTrack);
     currentTargetList = targetListsWithTrack.list;
@@ -70,27 +90,6 @@ auto AdaptiveMethodImpl::complete() -> bool {
 
 auto AdaptiveMethodImpl::nextTarget() -> std::string {
     return currentTargetList->next();
-}
-
-static void assignReversals(Adaptive &trial, Track *track) {
-    trial.reversals = track->reversals();
-}
-
-void AdaptiveMethodImpl::submit(
-    const coordinate_response_measure::Response &response) {
-    auto lastSnr_dB_{snr_dB()};
-    if (correct(currentTarget(), response))
-        correct();
-    else
-        incorrect();
-    lastTrial.subjectColor = response.color;
-    lastTrial.subjectNumber = response.number;
-    assignReversals(lastTrial, currentSnrTrack);
-    lastTrial.correctColor = evaluator.correctColor(currentTarget());
-    lastTrial.correctNumber = evaluator.correctNumber(currentTarget());
-    lastTrial.SNR_dB = lastSnr_dB_;
-    lastTrial.correct = correct(currentTarget(), response);
-    selectNextList();
 }
 
 auto AdaptiveMethodImpl::snr_dB() -> int { return currentSnrTrack->x(); }
@@ -128,21 +127,21 @@ void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
     file->write(lastCorrectKeywordsTrial);
 }
 
-static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
-    trial.SNR_dB = track->x();
-}
-
-static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
-    trial.correct = c;
-}
-
-static auto fileName(ResponseEvaluator &evaluator, const std::string &target)
-    -> std::string {
-    return evaluator.fileName(target);
-}
-
-static void assignTarget(open_set::Trial &trial, std::string s) {
-    trial.target = std::move(s);
+void AdaptiveMethodImpl::submit(
+    const coordinate_response_measure::Response &response) {
+    const auto lastSnr_dB{snr_dB()};
+    if (correct(currentTarget(), response))
+        correct();
+    else
+        incorrect();
+    lastTrial.subjectColor = response.color;
+    lastTrial.subjectNumber = response.number;
+    assignReversals(lastTrial, currentSnrTrack);
+    lastTrial.correctColor = evaluator.correctColor(currentTarget());
+    lastTrial.correctNumber = evaluator.correctNumber(currentTarget());
+    lastTrial.SNR_dB = lastSnr_dB;
+    lastTrial.correct = correct(currentTarget(), response);
+    selectNextList();
 }
 
 void AdaptiveMethodImpl::submitIncorrectResponse() {
@@ -161,10 +160,6 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
-}
-
-static auto correct(const open_set::CorrectKeywords &p) -> bool {
-    return p.count >= 2;
 }
 
 void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
