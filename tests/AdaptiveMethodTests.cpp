@@ -5,10 +5,10 @@
 #include "TargetListStub.h"
 #include "TrackStub.h"
 #include "assert-utility.h"
-#include "av-speech-in-noise/Model.hpp"
-#include <gtest/gtest.h>
 #include <recognition-test/AdaptiveMethod.hpp>
+#include <gtest/gtest.h>
 #include <algorithm>
+#include <functional>
 
 namespace av_speech_in_noise::tests {
 namespace {
@@ -256,6 +256,25 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
 
 void resetTracks(AdaptiveMethodImpl &method) { method.resetTracks(); }
 
+void assertStartingXEqualsOne(const Track::Settings &s) {
+    assertEqual(1, s.startingX);
+}
+
+void assertCeilingEqualsOne(const Track::Settings &s) {
+    assertEqual(1, s.ceiling);
+}
+
+void assertFloorEqualsOne(const Track::Settings &s) { assertEqual(1, s.floor); }
+
+void assertBumpLimitEqualsOne(const Track::Settings &s) {
+    assertEqual(1, s.bumpLimit);
+}
+
+void assertPassedTargetLevelRule(
+    const TrackingRule &rule, const Track::Settings &s) {
+    assertEqual(&rule, s.rule);
+}
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TargetListSetReaderStub targetListSetReader;
@@ -305,30 +324,10 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void initialize() { method.initialize(test, &targetListSetReader); }
 
-    void assertPassedTargetLevelRule(const Track::Settings &s) {
-        assertEqual(&std::as_const(test.trackingRule), s.rule);
-    }
-
-    void assertStartingXEqualsOne(const Track::Settings &s) {
-        assertEqual(1, s.startingX);
-    }
-
-    void assertCeilingEqualsOne(const Track::Settings &s) {
-        assertEqual(1, s.ceiling);
-    }
-
-    void assertFloorEqualsOne(const Track::Settings &s) {
-        assertEqual(1, s.floor);
-    }
-
-    void assertBumpLimitEqualsOne(const Track::Settings &s) {
-        assertEqual(1, s.bumpLimit);
-    }
-
     void applyToSnrTrackFactoryParameters(
-        int n, void (AdaptiveMethodTests::*f)(const Track::Settings &)) {
+        int n, const std::function<void(const Track::Settings &)> &f) {
         for (int i = 0; i < n; ++i)
-            (this->*f)(snrTrackFactoryParameters(i));
+            f(snrTrackFactoryParameters(i));
     }
 
     void selectList(int n) { randomizer.setRandomInt(n); }
@@ -478,35 +477,31 @@ ADAPTIVE_METHOD_TEST(initializeCreatesSnrTrackForEachList) {
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithTargetLevelRule) {
     initialize();
     applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertPassedTargetLevelRule);
+        3, [&](auto s) { assertPassedTargetLevelRule(test.trackingRule, s); });
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
     test.startingSnr_dB = 1;
     initialize();
-    applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertStartingXEqualsOne);
+    applyToSnrTrackFactoryParameters(3, assertStartingXEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithCeiling) {
     test.ceilingSnr_dB = 1;
     initialize();
-    applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertCeilingEqualsOne);
+    applyToSnrTrackFactoryParameters(3, assertCeilingEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithFloor) {
     test.floorSnr_dB = 1;
     initialize();
-    applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertFloorEqualsOne);
+    applyToSnrTrackFactoryParameters(3, assertFloorEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithBumpLimit) {
     test.trackBumpLimit = 1;
     initialize();
-    applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertBumpLimitEqualsOne);
+    applyToSnrTrackFactoryParameters(3, assertBumpLimitEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(writeTestParametersPassesToOutputFile) {
@@ -777,8 +772,7 @@ ADAPTIVE_METHOD_TEST(submitInsufficientCorrectKeywordsPushesSnrTrackDown) {
     assertPushesSnrTrackUp(submittingInsufficientCorrectKeywords);
 }
 
-ADAPTIVE_METHOD_TEST(
-    resettingTracksSelectsListAmongThoseWithIncompleteTracks) {
+ADAPTIVE_METHOD_TEST(resettingTracksSelectsListAmongThoseWithIncompleteTracks) {
     setSnrTrackComplete(0);
     track(0)->incompleteOnReset();
     initialize();
