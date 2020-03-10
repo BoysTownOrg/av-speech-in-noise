@@ -40,7 +40,7 @@ class Track {
 };
 
 struct TargetListWithTrack {
-    TargetList *list;
+    std::shared_ptr<TargetList> list;
     std::shared_ptr<Track> track;
 };
 
@@ -72,7 +72,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void incorrect();
     void correct();
 
-    TargetListReader::lists_type targetLists{};
     std::vector<TargetListWithTrack> targetListsWithTracks{};
     coordinate_response_measure::AdaptiveTrial lastTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};

@@ -39,6 +39,16 @@ static void assignTarget(open_set::Trial &trial, std::string s) {
     trial.target = std::move(s);
 }
 
+static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
+    Track::Settings trackSettings{};
+    trackSettings.rule = &test.trackingRule;
+    trackSettings.ceiling = test.ceilingSnr_dB;
+    trackSettings.startingX = test.startingSnr_dB;
+    trackSettings.floor = test.floorSnr_dB;
+    trackSettings.bumpLimit = test.trackBumpLimit;
+    return trackSettings;
+}
+
 AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
@@ -48,16 +58,9 @@ void AdaptiveMethodImpl::initialize(
     const AdaptiveTest &t, TargetListReader *targetListSetReader) {
     test = &t;
     targetListsWithTracks.clear();
-    Track::Settings snrTrackSettings{};
-    snrTrackSettings.rule = &t.trackingRule;
-    snrTrackSettings.ceiling = t.ceilingSnr_dB;
-    snrTrackSettings.startingX = t.startingSnr_dB;
-    snrTrackSettings.floor = t.floorSnr_dB;
-    snrTrackSettings.bumpLimit = t.trackBumpLimit;
-    for (const auto &list :
-        targetLists = targetListSetReader->read(t.targetListDirectory))
+    for (auto &&list : targetListSetReader->read(t.targetListDirectory))
         targetListsWithTracks.push_back(
-            {list.get(), snrTrackFactory.make(snrTrackSettings)});
+            {list, snrTrackFactory.make(trackSettings(t))});
     selectNextList();
 }
 
@@ -74,7 +77,7 @@ void AdaptiveMethodImpl::selectNextList() {
     const auto &targetListsWithTrack{targetListsWithTracks.at(
         randomizer.betweenInclusive(0, tracksInProgress - 1))};
     currentSnrTrack = track(targetListsWithTrack);
-    currentTargetList = targetListsWithTrack.list;
+    currentTargetList = targetListsWithTrack.list.get();
 }
 
 void AdaptiveMethodImpl::moveCompleteTracksToEnd() {
