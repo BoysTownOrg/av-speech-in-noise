@@ -345,6 +345,14 @@ void setComplete(
     at(tracks, n)->setComplete();
 }
 
+void selectNextList(RandomizerStub &randomizer, int n) {
+    randomizer.setRandomInt(n);
+}
+
+void assertNextTargetEquals(AdaptiveMethodImpl &method, const std::string &s) {
+    assertEqual(s, method.nextTarget());
+}
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TrackFactoryStub snrTrackFactory;
@@ -384,32 +392,26 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
   public:
-    void selectList(int n) { randomizer.setRandomInt(n); }
-
-    void assertNextTargetEquals(const std::string &s) {
-        assertEqual(s, method.nextTarget());
-    }
-
     void assertRandomizerPassedIntegerBounds(int a, int b) {
         assertEqual(a, randomizer.lowerIntBound());
         assertEqual(b, randomizer.upperIntBound());
     }
 
     void assertWritesUpdatedReversals(WritingResponseUseCase &useCase) {
-        selectList(1);
+        selectNextList(randomizer, 1);
         initialize(method, test, targetListReader);
         at(tracks, 1)->setReversalsWhenUpdated(3);
-        selectList(2);
+        selectNextList(randomizer, 2);
         run(useCase);
         assertEqual(3, useCase.writtenReversals(outputFile));
     }
 
     void assertWritesPreUpdatedSnr(WritingResponseUseCase &useCase) {
-        selectList(1);
+        selectNextList(randomizer, 1);
         initialize(method, test, targetListReader);
         at(tracks, 1)->setX(4);
         at(tracks, 1)->setXWhenUpdated(3);
-        selectList(2);
+        selectNextList(randomizer, 2);
         run(useCase);
         assertEqual(4, useCase.writtenSnr(outputFile));
     }
@@ -445,24 +447,24 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void assertNextReturnsNextFilePathAfter(UseCase &useCase) {
         setNext(lists, 1, "a");
-        selectList(1);
+        selectNextList(randomizer, 1);
         run(useCase);
-        assertNextTargetEquals("a");
+        assertNextTargetEquals(method, "a");
     }
 
     void assertPushesSnrTrackDown(UseCase &useCase) {
-        selectList(1);
+        selectNextList(randomizer, 1);
         initialize(method, test, targetListReader);
-        selectList(2);
+        selectNextList(randomizer, 2);
         run(useCase);
         assertTrue(pushedDown(tracks, 1));
         assertFalse(pushedUp(tracks, 1));
     }
 
     void assertPushesSnrTrackUp(UseCase &useCase) {
-        selectList(1);
+        selectNextList(randomizer, 1);
         initialize(method, test, targetListReader);
-        selectList(2);
+        selectNextList(randomizer, 2);
         run(useCase);
         assertFalse(pushedDown(tracks, 1));
         assertTrue(pushedUp(tracks, 1));
@@ -472,9 +474,9 @@ class AdaptiveMethodTests : public ::testing::Test {
         initialize(method, test, targetListReader);
         setNext(lists, 2, "a");
         setComplete(tracks, 1);
-        selectList(1);
+        selectNextList(randomizer, 1);
         run(useCase);
-        assertNextTargetEquals("a");
+        assertNextTargetEquals(method, "a");
     }
 
     void assertWritesTarget(WritingTargetUseCase &useCase) {
@@ -485,10 +487,10 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
     void assertPassesCurrentTargetToEvaluatorForFileName(UseCase &useCase) {
-        selectList(1);
+        selectNextList(randomizer, 1);
         initialize(method, test, targetListReader);
         setCurrent(lists, 1, "a");
-        selectList(2);
+        selectNextList(randomizer, 2);
         run(useCase);
         assertEqual("a", evaluator.filePathForFileName());
     }
@@ -605,26 +607,26 @@ ADAPTIVE_METHOD_TEST(resetTracksResetsEachTrack) {
 
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {
     at(tracks, 0)->setX(1);
-    selectList(0);
+    selectNextList(randomizer, 0);
     initialize(method, test, targetListReader);
     assertEqual(1, method.snr_dB());
 }
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCurrentToEvaluator) {
-    selectList(1);
+    selectNextList(randomizer, 1);
     initialize(method, test, targetListReader);
     setCurrent(lists, 1, "a");
-    selectList(2);
+    selectNextList(randomizer, 2);
     submit(method, coordinateResponse);
     assertEqual("a", evaluator.correctColorFilePath());
     assertEqual("a", evaluator.correctNumberFilePath());
 }
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCorrectFilePathToEvaluator) {
-    selectList(1);
+    selectNextList(randomizer, 1);
     initialize(method, test, targetListReader);
     setCurrent(lists, 1, "a");
-    selectList(2);
+    selectNextList(randomizer, 2);
     submit(method, coordinateResponse);
     assertEqual("a", evaluator.correctFilePath());
 }
@@ -804,9 +806,9 @@ ADAPTIVE_METHOD_TEST(resettingTracksSelectsListAmongThoseWithIncompleteTracks) {
     initialize(method, test, targetListReader);
     setNext(lists, 0, "a");
     setComplete(tracks, 1);
-    selectList(1);
+    selectNextList(randomizer, 1);
     method.resetTracks();
-    assertNextTargetEquals("a");
+    assertNextTargetEquals(method, "a");
 }
 
 ADAPTIVE_METHOD_TEST(
