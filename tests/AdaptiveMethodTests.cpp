@@ -7,6 +7,7 @@
 #include "assert-utility.h"
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <gtest/gtest.h>
+#include <gsl/gsl>
 #include <algorithm>
 #include <functional>
 
@@ -287,6 +288,23 @@ void write(AdaptiveMethodImpl &method,
     method.writeLastCoordinateResponse(&outputFile);
 }
 
+auto settings(const TrackFactoryStub &factory) -> std::vector<Track::Settings> {
+    return factory.parameters();
+}
+
+auto settings(const TrackFactoryStub &factory, gsl::index i)
+    -> Track::Settings {
+    return settings(factory).at(i);
+}
+
+constexpr auto listCount{3};
+
+void forEachSettings(const TrackFactoryStub &factory,
+    const std::function<void(const Track::Settings &)> &f) {
+    for (int i = 0; i < listCount; ++i)
+        f(settings(factory, i));
+}
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TrackFactoryStub snrTrackFactory;
@@ -315,7 +333,6 @@ class AdaptiveMethodTests : public ::testing::Test {
     open_set::CorrectKeywords correctKeywords{};
     std::vector<std::shared_ptr<TargetListStub>> lists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
-    static constexpr auto listCount{3};
 
     AdaptiveMethodTests() : lists(listCount), tracks(listCount) {
         std::generate(
@@ -327,20 +344,6 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
   public:
-    auto snrTrackFactoryParameters() const {
-        return snrTrackFactory.parameters();
-    }
-
-    auto snrTrackFactoryParameters(int x) const {
-        return snrTrackFactoryParameters().at(x);
-    }
-
-    void forEachSnrTrackFactoryParameters(
-        const std::function<void(const Track::Settings &)> &f) {
-        for (int i = 0; i < listCount; ++i)
-            f(snrTrackFactoryParameters(i));
-    }
-
     void selectList(int n) { randomizer.setRandomInt(n); }
 
     auto next() -> std::string { return method.nextTarget(); }
@@ -477,37 +480,37 @@ class AdaptiveMethodTests : public ::testing::Test {
 
 ADAPTIVE_METHOD_TEST(initializeCreatesSnrTrackForEachList) {
     initialize(method, test, targetListReader);
-    assertEqual(std::size_t{3}, snrTrackFactoryParameters().size());
+    assertEqual(std::size_t{3}, settings(snrTrackFactory).size());
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithTargetLevelRule) {
     initialize(method, test, targetListReader);
-    forEachSnrTrackFactoryParameters(
+    forEachSettings(snrTrackFactory,
         [&](auto s) { assertTargetLevelRuleEquals(test.trackingRule, s); });
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
     test.startingSnr_dB = 1;
     initialize(method, test, targetListReader);
-    forEachSnrTrackFactoryParameters(assertStartingXEqualsOne);
+    forEachSettings(snrTrackFactory, assertStartingXEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithCeiling) {
     test.ceilingSnr_dB = 1;
     initialize(method, test, targetListReader);
-    forEachSnrTrackFactoryParameters(assertCeilingEqualsOne);
+    forEachSettings(snrTrackFactory, assertCeilingEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithFloor) {
     test.floorSnr_dB = 1;
     initialize(method, test, targetListReader);
-    forEachSnrTrackFactoryParameters(assertFloorEqualsOne);
+    forEachSettings(snrTrackFactory, assertFloorEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithBumpLimit) {
     test.trackBumpLimit = 1;
     initialize(method, test, targetListReader);
-    forEachSnrTrackFactoryParameters(assertBumpLimitEqualsOne);
+    forEachSettings(snrTrackFactory, assertBumpLimitEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(writeTestParametersPassesToOutputFile) {
