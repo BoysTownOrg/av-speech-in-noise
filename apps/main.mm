@@ -213,7 +213,7 @@ void main() {
     ResponseEvaluatorImpl responseEvaluator;
     TextFileReaderImpl textFileReader;
     AdaptiveMethodImpl adaptiveMethod{
-        &snrTrackFactory, &responseEvaluator, &randomizer};
+        snrTrackFactory, responseEvaluator, randomizer};
     target_list::RandomizedTargetListWithReplacement targetsWithReplacement{
         &fileExtensions, &randomizer};
     target_list::FileIdentifierExcluderFilter originalStimuli_{
