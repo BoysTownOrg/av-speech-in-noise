@@ -310,6 +310,33 @@ void setNext(const std::vector<std::shared_ptr<TargetListStub>> &lists,
     lists.at(n)->setNext(std::move(s));
 }
 
+auto at(const std::vector<std::shared_ptr<TrackStub>> &tracks, gsl::index n)
+    -> const std::shared_ptr<TrackStub> & {
+    return tracks.at(n);
+}
+
+auto testComplete(AdaptiveMethodImpl &method) -> bool {
+    return method.complete();
+}
+
+void assertTestComplete(AdaptiveMethodImpl &method) {
+    assertTrue(testComplete(method));
+}
+
+void assertTestIncomplete(AdaptiveMethodImpl &method) {
+    assertFalse(testComplete(method));
+}
+
+auto snrTrackPushedDown(const std::vector<std::shared_ptr<TrackStub>> &tracks,
+    gsl::index n) -> bool {
+    return at(tracks, n)->pushedDown();
+}
+
+auto snrTrackPushedUp(const std::vector<std::shared_ptr<TrackStub>> &tracks,
+    gsl::index n) -> bool {
+    return at(tracks, n)->pushedUp();
+}
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TrackFactoryStub snrTrackFactory;
@@ -360,16 +387,14 @@ class AdaptiveMethodTests : public ::testing::Test {
         assertEqual(b, randomizer.upperIntBound());
     }
 
-    auto track(int n) { return tracks.at(n); }
-
-    void setCurrentForTarget(int n, std::string s) {
+    void setCurrentForTarget(gsl::index n, std::string s) {
         lists.at(n)->setCurrent(std::move(s));
     }
 
     void assertWritesUpdatedReversals(WritingResponseUseCase &useCase) {
         selectList(1);
         initialize(method, test, targetListReader);
-        track(1)->setReversalsWhenUpdated(3);
+        at(tracks, 1)->setReversalsWhenUpdated(3);
         selectList(2);
         run(useCase);
         assertEqual(3, useCase.writtenReversals(outputFile));
@@ -378,8 +403,8 @@ class AdaptiveMethodTests : public ::testing::Test {
     void assertWritesPreUpdatedSnr(WritingResponseUseCase &useCase) {
         selectList(1);
         initialize(method, test, targetListReader);
-        track(1)->setX(4);
-        track(1)->setXWhenUpdated(3);
+        at(tracks, 1)->setX(4);
+        at(tracks, 1)->setXWhenUpdated(3);
         selectList(2);
         run(useCase);
         assertEqual(4, useCase.writtenSnr(outputFile));
@@ -391,31 +416,21 @@ class AdaptiveMethodTests : public ::testing::Test {
         return writtenAdaptiveCoordinateResponseTrial(outputFile).correct;
     }
 
-    auto snrTrackPushedDown(int n) -> bool { return track(n)->pushedDown(); }
-
-    auto snrTrackPushedUp(int n) -> bool { return track(n)->pushedUp(); }
-
     void setCorrectCoordinateResponse() { evaluator.setCorrect(); }
 
     void setIncorrectCoordinateResponse() { evaluator.setIncorrect(); }
 
-    void setSnrTrackComplete(int n) { track(n)->setComplete(); }
+    void setSnrTrackComplete(gsl::index n) { at(tracks, n)->setComplete(); }
 
     void assertTestIncompleteAfterCoordinateResponse() {
         submit(method, coordinateResponse);
-        assertTestIncomplete();
+        assertTestIncomplete(method);
     }
 
     void assertTestCompleteAfterCoordinateResponse() {
         submit(method, coordinateResponse);
-        assertTestComplete();
+        assertTestComplete(method);
     }
-
-    void assertTestIncomplete() { assertFalse(testComplete()); }
-
-    auto testComplete() -> bool { return method.complete(); }
-
-    void assertTestComplete() { assertTrue(testComplete()); }
 
     void run(UseCase &useCase) { useCase.run(method); }
 
@@ -438,8 +453,8 @@ class AdaptiveMethodTests : public ::testing::Test {
         initialize(method, test, targetListReader);
         selectList(2);
         run(useCase);
-        assertTrue(snrTrackPushedDown(1));
-        assertFalse(snrTrackPushedUp(1));
+        assertTrue(snrTrackPushedDown(tracks, 1));
+        assertFalse(snrTrackPushedUp(tracks, 1));
     }
 
     void assertPushesSnrTrackUp(UseCase &useCase) {
@@ -447,8 +462,8 @@ class AdaptiveMethodTests : public ::testing::Test {
         initialize(method, test, targetListReader);
         selectList(2);
         run(useCase);
-        assertFalse(snrTrackPushedDown(1));
-        assertTrue(snrTrackPushedUp(1));
+        assertFalse(snrTrackPushedDown(tracks, 1));
+        assertTrue(snrTrackPushedUp(tracks, 1));
     }
 
     void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
@@ -587,7 +602,7 @@ ADAPTIVE_METHOD_TEST(resetTracksResetsEachTrack) {
 }
 
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {
-    track(0)->setX(1);
+    at(tracks, 0)->setX(1);
     selectList(0);
     initialize(method, test, targetListReader);
     assertEqual(1, method.snr_dB());
@@ -783,7 +798,7 @@ ADAPTIVE_METHOD_TEST(submitInsufficientCorrectKeywordsPushesSnrTrackDown) {
 
 ADAPTIVE_METHOD_TEST(resettingTracksSelectsListAmongThoseWithIncompleteTracks) {
     setSnrTrackComplete(0);
-    track(0)->incompleteOnReset();
+    at(tracks, 0)->incompleteOnReset();
     initialize(method, test, targetListReader);
     setNext(lists, 0, "a");
     setSnrTrackComplete(1);
