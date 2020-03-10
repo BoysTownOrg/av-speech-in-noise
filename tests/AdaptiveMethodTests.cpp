@@ -305,6 +305,11 @@ void forEachSettings(const TrackFactoryStub &factory,
         f(settings(factory, i));
 }
 
+void setNext(const std::vector<std::shared_ptr<TargetListStub>> &lists,
+    gsl::index n, std::string s) {
+    lists.at(n)->setNext(std::move(s));
+}
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TrackFactoryStub snrTrackFactory;
@@ -346,12 +351,8 @@ class AdaptiveMethodTests : public ::testing::Test {
   public:
     void selectList(int n) { randomizer.setRandomInt(n); }
 
-    auto next() -> std::string { return method.nextTarget(); }
-
-    void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
-
-    void setNextForList(int n, std::string s) {
-        lists.at(n)->setNext(std::move(s));
+    void assertNextTargetEquals(const std::string &s) {
+        assertEqual(s, method.nextTarget());
     }
 
     void assertRandomizerPassedIntegerBounds(int a, int b) {
@@ -426,10 +427,10 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
     void assertNextReturnsNextFilePathAfter(UseCase &useCase) {
-        setNextForList(1, "a");
+        setNext(lists, 1, "a");
         selectList(1);
         run(useCase);
-        assertNextEquals("a");
+        assertNextTargetEquals("a");
     }
 
     void assertPushesSnrTrackDown(UseCase &useCase) {
@@ -452,11 +453,11 @@ class AdaptiveMethodTests : public ::testing::Test {
 
     void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
         initialize(method, test, targetListReader);
-        setNextForList(2, "a");
+        setNext(lists, 2, "a");
         setSnrTrackComplete(1);
         selectList(1);
         run(useCase);
-        assertNextEquals("a");
+        assertNextTargetEquals("a");
     }
 
     void assertWritesTarget(WritingTargetUseCase &useCase) {
@@ -784,11 +785,11 @@ ADAPTIVE_METHOD_TEST(resettingTracksSelectsListAmongThoseWithIncompleteTracks) {
     setSnrTrackComplete(0);
     track(0)->incompleteOnReset();
     initialize(method, test, targetListReader);
-    setNextForList(0, "a");
+    setNext(lists, 0, "a");
     setSnrTrackComplete(1);
     selectList(1);
     method.resetTracks();
-    assertNextEquals("a");
+    assertNextTargetEquals("a");
 }
 
 ADAPTIVE_METHOD_TEST(
