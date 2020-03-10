@@ -16,6 +16,7 @@ void AdaptiveMethodImpl::resetTracks() {
 void AdaptiveMethodImpl::initialize(
     const AdaptiveTest &test_, TargetListReader *targetListSetReader) {
     test = &test_;
+    Track::Settings trackSettings{};
     trackSettings.rule = &test_.trackingRule;
     trackSettings.ceiling = test_.ceilingSnr_dB;
     trackSettings.startingX = test_.startingSnr_dB;
@@ -23,23 +24,16 @@ void AdaptiveMethodImpl::initialize(
     trackSettings.bumpLimit = test_.trackBumpLimit;
     lists = targetListSetReader->read(test_.targetListDirectory);
 
-    selectNextListAfter(&AdaptiveMethodImpl::makeSnrTracks);
+    targetListsWithTracks.clear();
+    for (const auto &list : lists)
+        targetListsWithTracks.push_back(
+            {list.get(), snrTrackFactory->make(trackSettings)});
+    selectNextList();
 }
 
 void AdaptiveMethodImpl::selectNextListAfter(void (AdaptiveMethodImpl::*f)()) {
     (this->*f)();
     selectNextList();
-}
-
-void AdaptiveMethodImpl::makeSnrTracks() {
-    targetListsWithTracks.clear();
-    for (const auto &list : lists)
-        makeTrackWithList(list.get());
-}
-
-void AdaptiveMethodImpl::makeTrackWithList(TargetList *list) {
-    targetListsWithTracks.push_back(
-        {list, snrTrackFactory->make(trackSettings)});
 }
 
 static auto track(const TargetListWithTrack &t) -> Track * {

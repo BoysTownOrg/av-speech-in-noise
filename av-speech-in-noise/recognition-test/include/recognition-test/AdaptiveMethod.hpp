@@ -78,7 +78,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
 
     TargetListReader::lists_type lists{};
     std::vector<TargetListWithTrack> targetListsWithTracks{};
-    Track::Settings trackSettings{};
     coordinate_response_measure::AdaptiveTrial lastTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
     open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
