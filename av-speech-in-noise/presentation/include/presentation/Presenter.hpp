@@ -92,12 +92,16 @@ class View {
             virtual void submitCorrectKeywords() = 0;
             virtual void submitFailedTrial() = 0;
             virtual void submitFreeResponse() = 0;
+            virtual void declineContinuingTesting() = 0;
+            virtual void acceptContinuingTesting() = 0;
         };
 
         virtual ~Experimenter() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
+        virtual void showContinueTestingDialog() = 0;
+        virtual void hideContinueTestingDialog() = 0;
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
         virtual void showFreeResponseSubmission() = 0;
@@ -173,6 +177,9 @@ class Presenter : public Model::EventListener {
         void submitFreeResponse() override;
         void submitFailedTrial() override;
         void submitCorrectKeywords() override;
+        void declineContinuingTesting() override;
+        void acceptContinuingTesting() override;
+        void hideCorrectKeywordsSubmission();
         void becomeChild(Presenter *parent);
         void show();
         void start();
@@ -180,6 +187,7 @@ class Presenter : public Model::EventListener {
         void trialPlayed();
         void trialComplete();
         void readyNextTrial();
+        void showContinueTestingDialog();
         void display(std::string);
         void secondaryDisplay(std::string);
         void showPassFailSubmission();
@@ -270,6 +278,8 @@ class Presenter : public Model::EventListener {
     void submitPassedTrial();
     void submitFailedTrial();
     void submitCorrectKeywords();
+    void declineContinuingTesting();
+    void acceptContinuingTesting();
     void exitTest();
 
     static constexpr auto fullScaleLevel_dB_SPL{119};

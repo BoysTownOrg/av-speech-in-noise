@@ -170,12 +170,14 @@ static void initializeAdaptiveTest(
     auto method_{av_speech_in_noise::method(contents)};
     test.identity.method = methodName(method_);
     if (method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)
-        model.initializeTestWithDelayedMasker(test);
+        model.initializeWithDelayedMasker(test);
     else if (method_ ==
         Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker)
-        model.initializeTestWithSingleSpeaker(test);
+        model.initializeWithSingleSpeaker(test);
+    else if (method_ == Method::adaptiveCorrectKeywords)
+        model.initializeWithCyclicTargets(test);
     else
-        model.initializeTest(test);
+        model.initialize(test);
 }
 
 static void initializeFixedLevelTest(
@@ -197,11 +199,11 @@ static void initializeFixedLevelTest(
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets ||
         method_ == Method::fixedLevelFreeResponseWithSilentIntervalTargets)
-        model.initializeSilentIntervalsTest(test);
+        model.initializeWithSilentIntervalTargets(test);
     else if (method_ == Method::fixedLevelFreeResponseWithAllTargets)
-        model.initializeAllStimuliTest(test);
+        model.initializeWithAllTargets(test);
     else
-        model.initializeTest(test);
+        model.initializeWithTargetReplacement(test);
 }
 
 void TestSettingsInterpreterImpl::initialize(

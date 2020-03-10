@@ -68,7 +68,7 @@ class TestMethodStub : public TestMethod {
         submittedIncorrectResponse_ = true;
     }
 
-    void submitResponse(const open_set::FreeResponse &) override {
+    void submit(const open_set::FreeResponse &) override {
         submittedFreeResponse_ = true;
     }
 
@@ -97,7 +97,7 @@ class TestMethodStub : public TestMethod {
         submittedCorrectKeywords_ = true;
     }
 
-    void submitResponse(
+    void submit(
         const coordinate_response_measure::Response &) override {
         log_.insert("submitResponse ");
     }
@@ -225,7 +225,7 @@ class SubmittingFreeResponse : public SubmittingResponse,
 
   public:
     void run(RecognitionTestModelImpl &m) override {
-        m.submitResponse(response_);
+        m.submit(response_);
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
@@ -254,7 +254,7 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
 
   public:
     void run(RecognitionTestModelImpl &m) override {
-        m.submitResponse(response_);
+        m.submit(response_);
     }
 };
 

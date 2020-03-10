@@ -2,7 +2,8 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_ADAPTIVEMETHOD_HPP_
 
 #include "Model.hpp"
-#include "av-speech-in-noise/Model.hpp"
+#include "Randomizer.hpp"
+#include <gsl/gsl>
 #include <limits>
 #include <memory>
 #include <vector>
@@ -28,6 +29,7 @@ class Track {
     virtual auto x() -> int = 0;
     virtual auto complete() -> bool = 0;
     virtual auto reversals() -> int = 0;
+    virtual void reset() = 0;
 
     class Factory {
       public:
@@ -36,24 +38,15 @@ class Track {
     };
 };
 
-class TrackSettingsReader {
-  public:
-    virtual ~TrackSettingsReader() = default;
-    virtual auto read(std::string) -> const TrackingRule * = 0;
-};
-
-class TargetListReader {
-  public:
-    virtual ~TargetListReader() = default;
-    using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
-    virtual auto read(std::string directory) -> lists_type = 0;
+struct TargetListWithTrack {
+    std::shared_ptr<TargetList> list;
+    std::shared_ptr<Track> track;
 };
 
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
-    AdaptiveMethodImpl(TargetListReader *, Track::Factory *,
-        ResponseEvaluator *, Randomizer *);
-    void initialize(const AdaptiveTest &) override;
+    AdaptiveMethodImpl(Track::Factory &, ResponseEvaluator &, Randomizer &);
+    void initialize(const AdaptiveTest &, TargetListReader *) override;
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
@@ -66,40 +59,29 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeLastIncorrectResponse(OutputFile *) override;
     void writeLastCorrectKeywords(OutputFile *) override;
     void writeTestingParameters(OutputFile *) override;
-    void submitResponse(const coordinate_response_measure::Response &) override;
-    void submitResponse(const open_set::FreeResponse &) override;
+    void submit(const coordinate_response_measure::Response &) override;
+    void submit(const open_set::FreeResponse &) override;
+    void resetTracks() override;
 
   private:
-    struct TargetListWithTrack {
-        TargetList *list;
-        std::shared_ptr<Track> track;
-    };
-    void selectNextListAfter(void (AdaptiveMethodImpl::*)());
-    void prepareSnrTracks();
-    void makeSnrTracks();
-    void makeTrackWithList(TargetList *list);
     void selectNextList();
-    void removeCompleteTracks();
-    static auto complete(const TargetListWithTrack &) -> bool;
-    static auto track(const TargetListWithTrack &) -> Track *;
+    void moveCompleteTracksToEnd();
     auto correct(const std::string &,
         const coordinate_response_measure::Response &) -> bool;
     void incorrect();
     void correct();
 
-    TargetListReader::lists_type lists{};
     std::vector<TargetListWithTrack> targetListsWithTracks{};
-    Track::Settings trackSettings{};
     coordinate_response_measure::AdaptiveTrial lastTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
     open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     const AdaptiveTest *test{};
-    TargetListReader *targetListSetReader;
-    Track::Factory *snrTrackFactory;
-    ResponseEvaluator *evaluator;
-    Randomizer *randomizer;
+    Track::Factory &snrTrackFactory;
+    ResponseEvaluator &evaluator;
+    Randomizer &randomizer;
     Track *currentSnrTrack{};
     TargetList *currentTargetList{};
+    gsl::index tracksInProgress{};
 };
 }
 

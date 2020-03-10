@@ -31,6 +31,12 @@ static void displayTrialInformation(
     displayTarget(experimenterPresenter, model);
 }
 
+static void readyNextTrial(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    displayTrialInformation(experimenterPresenter, model);
+    experimenterPresenter.readyNextTrial();
+}
+
 static auto defaultAdaptiveCoordinateResponseMeasure(Method m) -> bool {
     return m == Method::defaultAdaptiveCoordinateResponseMeasure;
 }
@@ -171,7 +177,7 @@ void Presenter::trialComplete() {
 }
 
 void Presenter::submitSubjectResponse() {
-    model.submitResponse(coordinateResponseMeasurePresenter.subjectResponse());
+    model.submit(coordinateResponseMeasurePresenter.subjectResponse());
     if (testComplete(model))
         switchToTestSetupView();
     else {
@@ -192,9 +198,21 @@ void Presenter::submitFailedTrial() {
     proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
 }
 
+void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
+
+void Presenter::acceptContinuingTesting() {
+    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    readyNextTrial(experimenterPresenter, model);
+}
+
 void Presenter::submitCorrectKeywords() {
     try {
-        proceedToNextTrialAfter(&Presenter::submitCorrectKeywords_);
+        submitCorrectKeywords_();
+        if (testComplete(model)) {
+            experimenterPresenter.hideCorrectKeywordsSubmission();
+            experimenterPresenter.showContinueTestingDialog();
+        } else
+            readyNextTrial(experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -205,7 +223,7 @@ void Presenter::submitCorrectKeywords_() {
 }
 
 void Presenter::submitFreeResponse_() {
-    model.submitResponse(experimenterPresenter.freeResponse());
+    model.submit(experimenterPresenter.freeResponse());
 }
 
 void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
@@ -220,10 +238,8 @@ void Presenter::proceedToNextTrialAfter(void (Presenter::*f)()) {
 void Presenter::readyNextTrialIfNeeded() {
     if (testComplete(model))
         switchToTestSetupView();
-    else {
-        displayTrialInformation(experimenterPresenter, model);
-        experimenterPresenter.readyNextTrial();
-    }
+    else
+        readyNextTrial(experimenterPresenter, model);
 }
 
 void Presenter::exitTest() { switchToTestSetupView(); }
@@ -397,10 +413,19 @@ void Presenter::Experimenter::start() {
     showNextTrialButton(view);
 }
 
-void Presenter::Experimenter::stop() {
+static void hideSubmissions(View::Experimenter *view) {
     view->hideFreeResponseSubmission();
     view->hideEvaluationButtons();
     view->hideCorrectKeywordsSubmission();
+    view->hideContinueTestingDialog();
+}
+
+void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
+    view->hideCorrectKeywordsSubmission();
+}
+
+void Presenter::Experimenter::stop() {
+    hideSubmissions(view);
     view->hide();
 }
 
@@ -412,10 +437,12 @@ void Presenter::Experimenter::trialPlayed() {
 void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
 void Presenter::Experimenter::readyNextTrial() {
-    view->hideFreeResponseSubmission();
-    view->hideEvaluationButtons();
-    view->hideCorrectKeywordsSubmission();
+    hideSubmissions(view);
     showNextTrialButton(view);
+}
+
+void Presenter::Experimenter::showContinueTestingDialog() {
+    view->showContinueTestingDialog();
 }
 
 void Presenter::Experimenter::showPassFailSubmission() {
@@ -444,6 +471,14 @@ void Presenter::Experimenter::submitCorrectKeywords() {
 
 void Presenter::Experimenter::submitFreeResponse() {
     parent->submitFreeResponse();
+}
+
+void Presenter::Experimenter::declineContinuingTesting() {
+    parent->declineContinuingTesting();
+}
+
+void Presenter::Experimenter::acceptContinuingTesting() {
+    parent->acceptContinuingTesting();
 }
 
 void Presenter::Experimenter::playTrial() { parent->playTrial(); }

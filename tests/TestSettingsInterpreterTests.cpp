@@ -325,7 +325,7 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
     initialize(interpreter, model, Method::adaptiveCorrectKeywords);
-    assertDefaultAdaptiveTestInitialized(model);
+    assertTrue(model.initializedWithCyclicTargets());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

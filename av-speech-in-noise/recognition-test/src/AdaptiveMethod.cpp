@@ -1,102 +1,98 @@
 #include "AdaptiveMethod.hpp"
-#include "Model.hpp"
-#include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-AdaptiveMethodImpl::AdaptiveMethodImpl(TargetListReader *targetListSetReader,
-    Track::Factory *snrTrackFactory, ResponseEvaluator *evaluator,
-    Randomizer *randomizer)
-    : targetListSetReader{targetListSetReader},
-      snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
-                                                                  randomizer} {}
-
-void AdaptiveMethodImpl::initialize(const AdaptiveTest &test_) {
-    test = &test_;
-    trackSettings.rule = &test_.trackingRule;
-    trackSettings.ceiling = test_.ceilingSnr_dB;
-    trackSettings.startingX = test_.startingSnr_dB;
-    trackSettings.floor = test_.floorSnr_dB;
-    trackSettings.bumpLimit = test_.trackBumpLimit;
-    lists = targetListSetReader->read(test_.targetListDirectory);
-
-    selectNextListAfter(&AdaptiveMethodImpl::makeSnrTracks);
-}
-
-void AdaptiveMethodImpl::selectNextListAfter(void (AdaptiveMethodImpl::*f)()) {
-    (this->*f)();
-    selectNextList();
-}
-
-void AdaptiveMethodImpl::makeSnrTracks() {
-    targetListsWithTracks.clear();
-    for (const auto &list : lists)
-        makeTrackWithList(list.get());
-}
-
-void AdaptiveMethodImpl::makeTrackWithList(TargetList *list) {
-    targetListsWithTracks.push_back(
-        {list, snrTrackFactory->make(trackSettings)});
-}
-
-auto AdaptiveMethodImpl::track(const TargetListWithTrack &t) -> Track * {
+static auto track(const TargetListWithTrack &t) -> Track * {
     return t.track.get();
 }
 
-void AdaptiveMethodImpl::selectNextList() {
-    removeCompleteTracks();
-    if (targetListsWithTracks.empty())
-        return;
-    auto remainingLists{gsl::narrow<int>(targetListsWithTracks.size())};
-    auto index{randomizer->randomIntBetween(0, remainingLists - 1)};
-    auto targetListsWithTrack{targetListsWithTracks.at(index)};
-    currentSnrTrack = track(targetListsWithTrack);
-    currentTargetList = targetListsWithTrack.list;
-}
-
-void AdaptiveMethodImpl::removeCompleteTracks() {
-    auto end{targetListsWithTracks.end()};
-    targetListsWithTracks.erase(
-        std::remove_if(targetListsWithTracks.begin(), end,
-            [&](const TargetListWithTrack &t) { return complete(t); }),
-        end);
-}
-
-auto AdaptiveMethodImpl::complete(const TargetListWithTrack &t) -> bool {
+static auto complete(const TargetListWithTrack &t) -> bool {
     return track(t)->complete();
 }
 
-auto AdaptiveMethodImpl::complete() -> bool {
-    return std::all_of(targetListsWithTracks.begin(),
-        targetListsWithTracks.end(),
-        [&](const TargetListWithTrack &t) { return complete(t); });
-}
-
-auto AdaptiveMethodImpl::nextTarget() -> std::string {
-    return currentTargetList->next();
+static auto incomplete(const TargetListWithTrack &t) -> bool {
+    return !complete(t);
 }
 
 static void assignReversals(Adaptive &trial, Track *track) {
     trial.reversals = track->reversals();
 }
 
-void AdaptiveMethodImpl::submitResponse(
-    const coordinate_response_measure::Response &response) {
-    auto lastSnr_dB_{snr_dB()};
-    auto current_{currentTarget()};
-    auto correct_{correct(current_, response)};
-    if (correct_)
-        correct();
-    else
-        incorrect();
-    lastTrial.subjectColor = response.color;
-    lastTrial.subjectNumber = response.number;
-    assignReversals(lastTrial, currentSnrTrack);
-    lastTrial.correctColor = evaluator->correctColor(current_);
-    lastTrial.correctNumber = evaluator->correctNumber(current_);
-    lastTrial.SNR_dB = lastSnr_dB_;
-    lastTrial.correct = correct_;
+static auto correct(const open_set::CorrectKeywords &p) -> bool {
+    return p.count >= 2;
+}
+
+static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
+    trial.SNR_dB = track->x();
+}
+
+static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
+    trial.correct = c;
+}
+
+static auto fileName(ResponseEvaluator &evaluator, const std::string &target)
+    -> std::string {
+    return evaluator.fileName(target);
+}
+
+static void assignTarget(open_set::Trial &trial, std::string s) {
+    trial.target = std::move(s);
+}
+
+static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
+    Track::Settings trackSettings{};
+    trackSettings.rule = &test.trackingRule;
+    trackSettings.ceiling = test.ceilingSnr_dB;
+    trackSettings.startingX = test.startingSnr_dB;
+    trackSettings.floor = test.floorSnr_dB;
+    trackSettings.bumpLimit = test.trackBumpLimit;
+    return trackSettings;
+}
+
+AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
+    ResponseEvaluator &evaluator, Randomizer &randomizer)
+    : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
+                                                                  randomizer} {}
+
+void AdaptiveMethodImpl::initialize(
+    const AdaptiveTest &t, TargetListReader *targetListSetReader) {
+    test = &t;
+    targetListsWithTracks.clear();
+    for (auto &&list : targetListSetReader->read(t.targetListDirectory))
+        targetListsWithTracks.push_back(
+            {list, snrTrackFactory.make(trackSettings(t))});
     selectNextList();
+}
+
+void AdaptiveMethodImpl::resetTracks() {
+    for (const auto &t : targetListsWithTracks)
+        t.track->reset();
+    selectNextList();
+}
+
+void AdaptiveMethodImpl::selectNextList() {
+    moveCompleteTracksToEnd();
+    if (tracksInProgress == 0)
+        return;
+    const auto &targetListsWithTrack{targetListsWithTracks.at(
+        randomizer.betweenInclusive(0, tracksInProgress - 1))};
+    currentSnrTrack = track(targetListsWithTrack);
+    currentTargetList = targetListsWithTrack.list.get();
+}
+
+void AdaptiveMethodImpl::moveCompleteTracksToEnd() {
+    tracksInProgress = std::distance(targetListsWithTracks.begin(),
+        std::stable_partition(targetListsWithTracks.begin(),
+            targetListsWithTracks.end(), incomplete));
+}
+
+auto AdaptiveMethodImpl::complete() -> bool {
+    return std::all_of(targetListsWithTracks.begin(),
+        targetListsWithTracks.end(), av_speech_in_noise::complete);
+}
+
+auto AdaptiveMethodImpl::nextTarget() -> std::string {
+    return currentTargetList->next();
 }
 
 auto AdaptiveMethodImpl::snr_dB() -> int { return currentSnrTrack->x(); }
@@ -107,7 +103,7 @@ auto AdaptiveMethodImpl::currentTarget() -> std::string {
 
 auto AdaptiveMethodImpl::correct(const std::string &target,
     const coordinate_response_measure::Response &response) -> bool {
-    return evaluator->correct(target, response);
+    return evaluator.correct(target, response);
 }
 
 void AdaptiveMethodImpl::correct() { currentSnrTrack->down(); }
@@ -134,21 +130,21 @@ void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
     file->write(lastCorrectKeywordsTrial);
 }
 
-static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
-    trial.SNR_dB = track->x();
-}
-
-static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
-    trial.correct = c;
-}
-
-static auto fileName(ResponseEvaluator *evaluator, const std::string &target)
-    -> std::string {
-    return evaluator->fileName(target);
-}
-
-static void assignTarget(open_set::Trial &trial, std::string s) {
-    trial.target = std::move(s);
+void AdaptiveMethodImpl::submit(
+    const coordinate_response_measure::Response &response) {
+    const auto lastSnr_dB{snr_dB()};
+    if (correct(currentTarget(), response))
+        correct();
+    else
+        incorrect();
+    lastTrial.subjectColor = response.color;
+    lastTrial.subjectNumber = response.number;
+    assignReversals(lastTrial, currentSnrTrack);
+    lastTrial.correctColor = evaluator.correctColor(currentTarget());
+    lastTrial.correctNumber = evaluator.correctNumber(currentTarget());
+    lastTrial.SNR_dB = lastSnr_dB;
+    lastTrial.correct = correct(currentTarget(), response);
+    selectNextList();
 }
 
 void AdaptiveMethodImpl::submitIncorrectResponse() {
@@ -169,10 +165,6 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     selectNextList();
 }
 
-static auto correct(const open_set::CorrectKeywords &p) -> bool {
-    return p.count >= 2;
-}
-
 void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
     assignCorrectness(lastCorrectKeywordsTrial, av_speech_in_noise::correct(p));
@@ -187,7 +179,7 @@ void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submitResponse(const open_set::FreeResponse &) {
+void AdaptiveMethodImpl::submit(const open_set::FreeResponse &) {
     selectNextList();
 }
 }

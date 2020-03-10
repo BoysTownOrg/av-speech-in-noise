@@ -2,6 +2,7 @@
 #define AV_SPEECH_IN_NOISE_TESTS_MODELSTUB_HPP_
 
 #include <av-speech-in-noise/Model.hpp>
+#include <utility>
 
 namespace av_speech_in_noise {
 class ModelStub : public Model {
@@ -29,6 +30,10 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto initializedWithDelayedMasker() const {
         return initializedWithDelayedMasker_;
+    }
+
+    [[nodiscard]] auto initializedWithCyclicTargets() const -> bool {
+        return initializedWithCyclicTargets_;
     }
 
     [[nodiscard]] auto initializedWithEyeTracking() const {
@@ -63,7 +68,12 @@ class ModelStub : public Model {
 
     [[nodiscard]] auto freeResponse() const { return freeResponse_; }
 
-    auto correctKeywords() -> int { return correctKeywords_.count; }
+    [[nodiscard]] auto correctKeywords() const -> int {
+        return correctKeywords_.count;
+    }
+
+    [[nodiscard]] auto adaptiveTestRestartedWhilePreservingCyclicTargets() const
+        -> bool { return adaptiveTestRestartedWhilePreservingCyclicTargets_; }
 
     [[nodiscard]] auto responseParameters() const -> auto & {
         return responseParameters_;
@@ -73,32 +83,37 @@ class ModelStub : public Model {
         return trialParameters_;
     }
 
-    void initializeTest(const FixedLevelTest &p) override {
+    void initializeWithTargetReplacement(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         defaultFixedLevelTestInitialized_ = true;
     }
 
-    void initializeTest(const AdaptiveTest &p) override {
+    void initialize(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         defaultAdaptiveTestInitialized_ = true;
     }
 
-    void initializeTestWithSingleSpeaker(const AdaptiveTest &p) override {
+    void initializeWithSingleSpeaker(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithSingleSpeaker_ = true;
     }
 
-    void initializeTestWithDelayedMasker(const AdaptiveTest &p) override {
+    void initializeWithDelayedMasker(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithDelayedMasker_ = true;
     }
 
-    void initializeSilentIntervalsTest(const FixedLevelTest &p) override {
+    void initializeWithCyclicTargets(const AdaptiveTest &p) override {
+        adaptiveTest_ = p;
+        initializedWithCyclicTargets_ = true;
+    }
+
+    void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithSilentIntervalTargetsInitialized_ = true;
     }
 
-    void initializeAllStimuliTest(const FixedLevelTest &p) override {
+    void initializeWithAllTargets(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithAllTargetsInitialized_ = true;
     }
@@ -122,8 +137,7 @@ class ModelStub : public Model {
         return audioDevices_;
     }
 
-    void submitResponse(
-        const coordinate_response_measure::Response &p) override {
+    void submit(const coordinate_response_measure::Response &p) override {
         responseParameters_ = p;
     }
 
@@ -137,12 +151,14 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void submitResponse(const open_set::FreeResponse &s) override {
-        freeResponse_ = s;
-    }
+    void submit(const open_set::FreeResponse &s) override { freeResponse_ = s; }
 
     void submit(const open_set::CorrectKeywords &s) override {
         correctKeywords_ = s;
+    }
+
+    void restartAdaptiveTestWhilePreservingCyclicTargets() override {
+        adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
 
   private:
@@ -168,6 +184,8 @@ class ModelStub : public Model {
     bool initializedWithEyeTracking_{};
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
+    bool initializedWithCyclicTargets_{};
+    bool adaptiveTestRestartedWhilePreservingCyclicTargets_{};
 };
 }
 

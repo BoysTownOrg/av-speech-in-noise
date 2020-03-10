@@ -3,8 +3,8 @@
 
 namespace adaptive_track {
 AdaptiveTrack::AdaptiveTrack(const Settings &p)
-    : x_{p.startingX}, ceiling_{p.ceiling}, floor_{p.floor},
-      bumpLimit_{p.bumpLimit}, bumpCount_{0} {
+    : startingX_{p.startingX}, x_{p.startingX}, ceiling_{p.ceiling},
+      floor_{p.floor}, bumpLimit_{p.bumpLimit}, bumpCount_{0} {
     for (const auto &sequence : *p.rule)
         if (sequence.runCount != 0) {
             stepSizes.push_back(sequence.stepSize);
@@ -92,4 +92,14 @@ auto AdaptiveTrack::complete_() const -> bool {
 }
 
 auto AdaptiveTrack::reversals() -> int { return reversals_; }
+
+void AdaptiveTrack::reset() {
+    x_ = startingX_;
+    sameDirectionConsecutiveCount = 0;
+    reversals_ = 0;
+    previousStep = Step::undefined;
+    sequenceIndex = 0;
+    runCounter = 0;
+    bumpCount_ = 0;
+}
 }

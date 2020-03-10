@@ -190,10 +190,6 @@ void main() {
     target_list::FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
     target_list::FileFilterDecorator fileExtensions{&reader, &fileExtensions_};
     MersenneTwisterRandomizer randomizer;
-    target_list::RandomizedTargetListFactory targetListFactory{
-        &fileExtensions, &randomizer};
-    target_list::SubdirectoryTargetListReader targetListReader{
-        &targetListFactory, &reader};
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
@@ -217,8 +213,8 @@ void main() {
     ResponseEvaluatorImpl responseEvaluator;
     TextFileReaderImpl textFileReader;
     AdaptiveMethodImpl adaptiveMethod{
-        &targetListReader, &snrTrackFactory, &responseEvaluator, &randomizer};
-    target_list::RandomizedTargetList infiniteTargetList{
+        snrTrackFactory, responseEvaluator, randomizer};
+    target_list::RandomizedTargetListWithReplacement targetsWithReplacement{
         &fileExtensions, &randomizer};
     target_list::FileIdentifierExcluderFilter originalStimuli_{
         {"100", "200", "300", "400"}};
@@ -252,18 +248,24 @@ void main() {
             &randomSubsetTwoHundredMsStimuli,
             &randomSubsetThreeHundredMsStimuli,
             &randomSubsetFourHundredMsStimuli}};
-    target_list::RandomizedFiniteTargetList silentIntervals{
+    target_list::RandomizedTargetListWithoutReplacement silentIntervals{
         &composite, &randomizer};
-    target_list::RandomizedFiniteTargetList allStimuli{
+    target_list::RandomizedTargetListWithoutReplacement allStimuli{
         &fileExtensions, &randomizer};
-    EmptyTargetListTestConcluder completesWhenTargetsEmpty;
-    FixedTrialTestConcluder fixedTrials;
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
     RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
         &responseEvaluator, &outputFile, &randomizer};
-    ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
-        &fixedTrials, &silentIntervals, &completesWhenTargetsEmpty, &allStimuli,
-        &model_internal};
+    target_list::RandomizedTargetListWithReplacementFactory targetsWithReplacementFactory{
+        &fileExtensions, &randomizer};
+    target_list::SubdirectoryTargetListReader targetsWithReplacementReader{
+        &targetsWithReplacementFactory, &reader};
+    target_list::CyclicRandomizedTargetList::Factory cyclicTargetsFactory{
+        &fileExtensions, &randomizer};
+    target_list::SubdirectoryTargetListReader cyclicTargetsReader{
+        &cyclicTargetsFactory, &reader};
+    ModelImpl model{adaptiveMethod, fixedLevelMethod,
+        targetsWithReplacementReader, cyclicTargetsReader,
+        targetsWithReplacement, silentIntervals, allStimuli, model_internal};
     CocoaView view{NSMakeRect(0, 0, 900, 180)};
     view.center();
     auto delegate = [WindowDelegate alloc];

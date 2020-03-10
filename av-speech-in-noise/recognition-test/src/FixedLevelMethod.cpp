@@ -4,24 +4,42 @@ namespace av_speech_in_noise {
 FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator *evaluator)
     : evaluator{evaluator} {}
 
-void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, TargetList *list, TestConcluder *concluder_) {
-    concluder = concluder_;
-    targetList = list;
-    test = &p;
-    snr_dB_ = p.snr_dB;
-    targetList->loadFromDirectory(p.targetListDirectory);
-    concluder->initialize(p);
-    complete_ = concluder->complete(targetList);
+static void loadFromDirectory(TargetList *list, const FixedLevelTest &test) {
+    list->loadFromDirectory(test.targetListDirectory);
 }
 
-auto FixedLevelMethodImpl::complete() -> bool { return complete_; }
+void FixedLevelMethodImpl::initialize(
+    const FixedLevelTest &p, TargetList *list) {
+    usingFiniteTargetList_ = false;
+    targetList = list;
+    test = &p;
+    trials_ = p.trials;
+    snr_dB_ = p.snr_dB;
+    loadFromDirectory(targetList, p);
+}
 
-auto FixedLevelMethodImpl::nextTarget() -> std::string { return targetList->next(); }
+void FixedLevelMethodImpl::initialize(
+    const FixedLevelTest &p, FiniteTargetList *list) {
+    usingFiniteTargetList_ = true;
+    targetList = list;
+    finiteTargetList = list;
+    test = &p;
+    snr_dB_ = p.snr_dB;
+    loadFromDirectory(targetList, p);
+    finiteTargetsExhausted_ = finiteTargetList->empty();
+}
+
+auto FixedLevelMethodImpl::complete() -> bool {
+    return usingFiniteTargetList_ ? finiteTargetsExhausted_ : trials_ == 0;
+}
+
+auto FixedLevelMethodImpl::nextTarget() -> std::string {
+    return targetList->next();
+}
 
 auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
 
-void FixedLevelMethodImpl::submitResponse(
+void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
     auto current_ = currentTarget();
     lastTrial.subjectColor = response.color;
@@ -30,8 +48,10 @@ void FixedLevelMethodImpl::submitResponse(
     lastTrial.correctNumber = evaluator->correctNumber(current_);
     lastTrial.correct = evaluator->correct(current_, response);
     lastTrial.target = current_;
-    concluder->submitResponse();
-    complete_ = concluder->complete(targetList);
+    if (usingFiniteTargetList_)
+        finiteTargetsExhausted_ = finiteTargetList->empty();
+    else
+        --trials_;
 }
 
 auto FixedLevelMethodImpl::currentTarget() -> std::string {
@@ -50,11 +70,12 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submitResponse(
-    const open_set::FreeResponse &response) {
-    concluder->submitResponse();
-    if (response.flagged)
-        targetList->reinsertCurrent();
-    complete_ = concluder->complete(targetList);
+void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
+    if (usingFiniteTargetList_) {
+        if (response.flagged)
+            finiteTargetList->reinsertCurrent();
+        finiteTargetsExhausted_ = finiteTargetList->empty();
+    } else
+        --trials_;
 }
 }

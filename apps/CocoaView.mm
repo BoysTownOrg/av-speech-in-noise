@@ -83,6 +83,14 @@
 - (void)submitCorrectKeywords {
     controller->submitCorrectKeywords();
 }
+
+- (void)acceptContinuingTesting {
+    controller->acceptContinuingTesting();
+}
+
+- (void)declineContinuingTesting {
+    controller->declineContinuingTesting();
+}
 @end
 
 namespace av_speech_in_noise {
@@ -427,6 +435,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
       evaluationButtons{[[NSView alloc]
           initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
                             3 * buttonWidth, buttonHeight)]},
+      continueTestingDialog{[[NSView alloc]
+          initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
+                            3 * buttonWidth, buttonHeight)]},
       responseSubmission{[[NSView alloc]
           initWithFrame:NSMakeRect(r.size.width - 250, 0, 250,
                             buttonHeight + 15 + 2 * labelHeight + 15)]},
@@ -480,6 +491,18 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [failButton_
         setFrame:NSMakeRect(evaluationButtons.frame.size.width - buttonWidth, 0,
                      buttonWidth, buttonHeight)];
+    const auto continueButton_ {
+        button("continue", actions, @selector(acceptContinuingTesting))
+    };
+    const auto exitButton_ {
+        button("exit", actions, @selector(declineContinuingTesting))
+    };
+    [continueButton_
+        setFrame:NSMakeRect(evaluationButtons.frame.size.width - buttonWidth, 0,
+                     buttonWidth, buttonHeight)];
+    [exitButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
+                                  3 * buttonWidth,
+                              0, buttonWidth, buttonHeight)];
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
@@ -492,16 +515,20 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [responseSubmission addSubview:flagged_];
     [evaluationButtons addSubview:passButton_];
     [evaluationButtons addSubview:failButton_];
+    [continueTestingDialog addSubview:continueButton_];
+    [continueTestingDialog addSubview:exitButton_];
     [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
     [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
     [view_ addSubview:nextTrialButton_];
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
     [view_ addSubview:correctKeywordsSubmission];
+    [view_ addSubview:continueTestingDialog];
     [evaluationButtons setHidden:YES];
     [nextTrialButton_ setHidden:YES];
     [responseSubmission setHidden:YES];
     [correctKeywordsSubmission setHidden:YES];
+    [continueTestingDialog setHidden:YES];
     [view_ setHidden:YES];
     actions.controller = this;
 }
@@ -538,6 +565,14 @@ void CocoaExperimenterView::hideCorrectKeywordsSubmission() {
     [correctKeywordsSubmission setHidden:YES];
 }
 
+void CocoaExperimenterView::showContinueTestingDialog() {
+    [continueTestingDialog setHidden:NO];
+}
+
+void CocoaExperimenterView::hideContinueTestingDialog() {
+    [continueTestingDialog setHidden:YES];
+}
+
 auto CocoaExperimenterView::freeResponse() -> std::string {
     return response_.stringValue.UTF8String;
 }
@@ -566,6 +601,14 @@ void CocoaExperimenterView::submitFailedTrial() {
 
 void CocoaExperimenterView::submitCorrectKeywords() {
     listener_->submitCorrectKeywords();
+}
+
+void CocoaExperimenterView::acceptContinuingTesting() {
+    listener_->acceptContinuingTesting();
+}
+
+void CocoaExperimenterView::declineContinuingTesting() {
+    listener_->declineContinuingTesting();
 }
 
 constexpr auto windowPerimeterSpace{15};

@@ -188,6 +188,28 @@ class ViewStub : public View {
 
     class ExperimenterViewStub : public Experimenter {
       public:
+        void declineContinuingTesting() {
+            listener_->declineContinuingTesting();
+        }
+
+        void acceptContinuingTesting() { listener_->acceptContinuingTesting(); }
+
+        [[nodiscard]] auto continueTestingDialogShown() const -> bool {
+            return continueTestingDialogShown_;
+        }
+
+        [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
+            return continueTestingDialogHidden_;
+        }
+
+        void showContinueTestingDialog() override {
+            continueTestingDialogShown_ = true;
+        }
+
+        void hideContinueTestingDialog() override {
+            continueTestingDialogHidden_ = true;
+        }
+
         void submitFailedTrial() { listener_->submitFailedTrial(); }
 
         [[nodiscard]] auto responseSubmissionHidden() const {
@@ -326,6 +348,8 @@ class ViewStub : public View {
         bool evaluationButtonsHidden_{};
         bool correctKeywordsEntryShown_{};
         bool correctKeywordsEntryHidden_{};
+        bool continueTestingDialogShown_{};
+        bool continueTestingDialogHidden_{};
         bool shown_{};
         bool hidden_{};
         bool flagged_{};
@@ -364,7 +388,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
-            m.initializeTest(AdaptiveTest{});
+            m.initialize(AdaptiveTest{});
     }
 
     void setMethod(Method m) { method_ = m; }
@@ -744,6 +768,28 @@ class SubmittingCorrectKeywords : public TrialSubmission {
     }
 };
 
+class DecliningContinuingTesting : public UseCase {
+  public:
+    explicit DecliningContinuingTesting(ViewStub::ExperimenterViewStub &view)
+        : view{view} {}
+
+    void run() override { view.declineContinuingTesting(); }
+
+  private:
+    ViewStub::ExperimenterViewStub &view;
+};
+
+class AcceptingContinuingTesting : public UseCase {
+  public:
+    explicit AcceptingContinuingTesting(ViewStub::ExperimenterViewStub &view)
+        : view{view} {}
+
+    void run() override { view.acceptContinuingTesting(); }
+
+  private:
+    ViewStub::ExperimenterViewStub &view;
+};
+
 class PlayingTrial : public virtual UseCase {
   public:
     virtual auto nextTrialButtonHidden() -> bool = 0;
@@ -888,6 +934,8 @@ class PresenterTests : public ::testing::Test {
     SubmittingPassedTrial submittingPassedTrial{experimenterView};
     SubmittingCorrectKeywords submittingCorrectKeywords{experimenterView};
     SubmittingFailedTrial submittingFailedTrial{experimenterView};
+    DecliningContinuingTesting decliningContinuingTesting{experimenterView};
+    AcceptingContinuingTesting acceptingContinuingTesting{experimenterView};
     ExitingTest exitingTest{&experimenterView};
 
     void respondFromSubject() { subjectView.submitResponse(); }
@@ -922,17 +970,11 @@ class PresenterTests : public ::testing::Test {
         assertTrue(experimenterViewHidden());
     }
 
-    void assertTestingViewHidden() { assertTrue(testingViewHidden()); }
-
     auto experimenterViewHidden() -> bool { return experimenterView.hidden(); }
-
-    auto testingViewHidden() -> bool { return experimenterView.hidden(); }
 
     void assertExperimenterViewNotHidden() {
         assertFalse(experimenterViewHidden());
     }
-
-    void assertTestingViewNotHidden() { assertFalse(testingViewHidden()); }
 
     void assertSubjectViewShown() { assertTrue(subjectViewShown()); }
 
@@ -1033,29 +1075,36 @@ class PresenterTests : public ::testing::Test {
         assertSetupViewShown();
     }
 
+    void assertShowsSetupView(UseCase &useCase) {
+        run(useCase);
+        assertSetupViewShown();
+    }
+
+    void assertCompleteTestShowsContinueTestingDialog(
+        TrialSubmission &useCase) {
+        setTestComplete();
+        run(useCase);
+        assertTrue(experimenterView.continueTestingDialogShown());
+    }
+
+    void assertHidesContinueTestingDialog(UseCase &useCase) {
+        run(useCase);
+        assertTrue(experimenterView.continueTestingDialogHidden());
+    }
+
     void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
         run(useCase);
         assertSetupViewNotShown();
     }
 
-    void assertCompleteTestHidesExperimenterView(TrialSubmission &useCase) {
+    void assertCompleteTestHidesExperimenterView(UseCase &useCase) {
         setTestComplete();
         assertHidesExperimenterView(useCase);
-    }
-
-    void assertCompleteTestHidesTestingView(TrialSubmission &useCase) {
-        setTestComplete();
-        assertHidesTestingView(useCase);
     }
 
     void assertHidesExperimenterView(UseCase &useCase) {
         run(useCase);
         assertExperimenterViewHidden();
-    }
-
-    void assertHidesTestingView(UseCase &useCase) {
-        run(useCase);
-        assertTestingViewHidden();
     }
 
     void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
@@ -1067,11 +1116,6 @@ class PresenterTests : public ::testing::Test {
     void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
         run(useCase);
         assertExperimenterViewNotHidden();
-    }
-
-    void assertDoesNotHideTestingView(TrialSubmission &useCase) {
-        run(useCase);
-        assertTestingViewNotHidden();
     }
 
     static void assertShowsNextTrialButton(TrialSubmission &useCase) {
@@ -1208,27 +1252,31 @@ class RequestFailingModel : public Model {
 
     void setErrorMessage(std::string s) { errorMessage = std::move(s); }
 
-    void initializeTest(const AdaptiveTest &) override {
+    void initialize(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeTest(const FixedLevelTest &) override {
+    void initializeWithTargetReplacement(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeSilentIntervalsTest(const FixedLevelTest &) override {
+    void initializeWithSilentIntervalTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeAllStimuliTest(const FixedLevelTest &) override {
+    void initializeWithAllTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeTestWithSingleSpeaker(const AdaptiveTest &) override {
+    void initializeWithSingleSpeaker(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void initializeTestWithDelayedMasker(const AdaptiveTest &) override {
+    void initializeWithDelayedMasker(const AdaptiveTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
+    void initializeWithCyclicTargets(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }
 
@@ -1236,12 +1284,11 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submitResponse(
-        const coordinate_response_measure::Response &) override {
+    void submit(const coordinate_response_measure::Response &) override {
         throw RequestFailure{errorMessage};
     }
 
-    void submitResponse(const open_set::FreeResponse &) override {
+    void submit(const open_set::FreeResponse &) override {
         throw RequestFailure{errorMessage};
     }
 
@@ -1258,6 +1305,7 @@ class RequestFailingModel : public Model {
     void subscribe(EventListener *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
+    void restartAdaptiveTestWhilePreservingCyclicTargets() override {}
 };
 
 class PresenterFailureTests : public ::testing::Test {
@@ -1345,8 +1393,32 @@ PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
     assertFalse(submittingCorrectKeywords.responseViewHidden());
 }
 
-PRESENTER_TEST(submittingCorrectKeywordsShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(submittingCorrectKeywords);
+PRESENTER_TEST(
+    acceptingContinuingTestingRestartsAdaptiveTestWhilePreservingCyclicTargets) {
+    run(acceptingContinuingTesting);
+    assertTrue(model.adaptiveTestRestartedWhilePreservingCyclicTargets());
+}
+
+PRESENTER_TEST(acceptingContinuingTestingHidesContinueTestingDialog) {
+    assertHidesContinueTestingDialog(acceptingContinuingTesting);
+}
+
+PRESENTER_TEST(decliningContinuingTestingHidesContinueTestingDialog) {
+    assertHidesContinueTestingDialog(decliningContinuingTesting);
+}
+
+PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {
+    assertShowsSetupView(decliningContinuingTesting);
+}
+
+PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
+    assertCompleteTestShowsContinueTestingDialog(submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
+    setTestComplete();
+    run(submittingCorrectKeywords);
+    assertTrue(submittingCorrectKeywords.responseViewHidden());
 }
 
 PRESENTER_TEST(
@@ -1354,22 +1426,13 @@ PRESENTER_TEST(
     assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
 }
 
-PRESENTER_TEST(submittingCorrectKeywordsHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(submittingCorrectKeywords);
-}
-
-PRESENTER_TEST(submittingCorrectKeywordsHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingCorrectKeywords);
+PRESENTER_TEST(decliningContinuingTestingHidesExperimenterView) {
+    assertHidesExperimenterView(decliningContinuingTesting);
 }
 
 PRESENTER_TEST(
     submittingCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(submittingCorrectKeywords);
-}
-
-PRESENTER_TEST(
-    submittingCorrectKeywordsDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsNextTrialButton) {
@@ -1386,6 +1449,10 @@ PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTrialNumber) {
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsTrialNumber) {
     assertShowsTrialNumber(submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(acceptingContinuingTestingDialogShowsTrialNumber) {
+    assertShowsTrialNumber(acceptingContinuingTesting);
 }
 
 PRESENTER_TEST(
@@ -1852,18 +1919,6 @@ PRESENTER_TEST(submitFailedTrialHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingFailedTrial);
 }
 
-PRESENTER_TEST(respondFromExperimenterHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingFreeResponse);
-}
-
-PRESENTER_TEST(submitPassedTrialHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingPassedTrial);
-}
-
-PRESENTER_TEST(submitFailedTrialHidesTestingViewWhenTestComplete) {
-    assertCompleteTestHidesTestingView(submittingFailedTrial);
-}
-
 PRESENTER_TEST(submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
     assertCompleteTestDoesNotPlayTrial(respondingFromSubject);
 }
@@ -1884,19 +1939,6 @@ PRESENTER_TEST(submitPassedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
 
 PRESENTER_TEST(submitFailedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(submittingFailedTrial);
-}
-
-PRESENTER_TEST(
-    respondFromExperimenterDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingFreeResponse);
-}
-
-PRESENTER_TEST(submitPassedTrialDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingPassedTrial);
-}
-
-PRESENTER_TEST(submitFailedTrialDoesNotHideTestingViewWhenTestIncomplete) {
-    assertDoesNotHideTestingView(submittingFailedTrial);
 }
 
 PRESENTER_TEST(experimenterResponseShowsNextTrialButton) {
@@ -1940,10 +1982,6 @@ PRESENTER_TEST(exitTestHidesSubjectView) {
 
 PRESENTER_TEST(exitTestHidesExperimenterView) {
     assertHidesExperimenterView(exitingTest);
-}
-
-PRESENTER_TEST(exitTestHidesTestingView) {
-    assertHidesTestingView(exitingTest);
 }
 
 PRESENTER_TEST(exitTestHidesResponseButtons) {

@@ -1,20 +1,30 @@
 #include "ModelEventListenerStub.h"
 #include "TargetListStub.h"
-#include "TestConcluderStub.h"
+#include "TargetListSetReaderStub.h"
 #include "assert-utility.h"
-#include "av-speech-in-noise/Model.hpp"
-#include <gtest/gtest.h>
 #include <recognition-test/Model.hpp>
+#include <gtest/gtest.h>
 
 namespace av_speech_in_noise::tests {
 namespace {
 class AdaptiveMethodStub : public AdaptiveMethod {
-    const AdaptiveTest *test_{};
-
   public:
-    void initialize(const AdaptiveTest &t) override { test_ = &t; }
+    [[nodiscard]] auto tracksResetted() const -> bool {
+        return tracksResetted_;
+    }
+
+    void initialize(const AdaptiveTest &t, TargetListReader *reader) override {
+        test_ = &t;
+        targetListReader_ = reader;
+    }
 
     [[nodiscard]] auto test() const { return test_; }
+
+    [[nodiscard]] auto targetListReader() const -> TargetListReader * {
+        return targetListReader_;
+    }
+
+    void resetTracks() override { tracksResetted_ = true; }
 
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> std::string override { return {}; }
@@ -22,31 +32,41 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submit(const open_set::FreeResponse &) override {}
+    void submit(const open_set::CorrectKeywords &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
-    void submit(const open_set::CorrectKeywords &) override {}
-    void submitResponse(
-        const coordinate_response_measure::Response &) override {}
+    void submit(const coordinate_response_measure::Response &) override {}
+
+  private:
+    const AdaptiveTest *test_{};
+    TargetListReader *targetListReader_{};
+    bool tracksResetted_{};
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelTest *test_{};
     TargetList *targetList_{};
-    TestConcluder *testConcluder_{};
+    bool initializedWithFiniteTargetList_{};
 
   public:
-    void initialize(const FixedLevelTest &t, TargetList *list,
-        TestConcluder *concluder) override {
-        testConcluder_ = concluder;
+    void initialize(const FixedLevelTest &t, TargetList *list) override {
         targetList_ = list;
         test_ = &t;
     }
 
-    [[nodiscard]] auto testConcluder() const { return testConcluder_; }
+    void initialize(const FixedLevelTest &t, FiniteTargetList *list) override {
+        targetList_ = list;
+        test_ = &t;
+        initializedWithFiniteTargetList_ = true;
+    }
+
+    [[nodiscard]] auto initializedWithFiniteTargetList() const -> bool {
+        return initializedWithFiniteTargetList_;
+    }
 
     [[nodiscard]] auto targetList() const { return targetList_; }
 
@@ -58,15 +78,14 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submit(const open_set::FreeResponse &) override {}
+    void submit(const open_set::CorrectKeywords &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
-    void submit(const open_set::CorrectKeywords &) override {}
-    void submitResponse(
-        const coordinate_response_measure::Response &) override {}
+    void submit(const coordinate_response_measure::Response &) override {}
 };
 
 class RecognitionTestModelStub : public RecognitionTestModel {
@@ -83,30 +102,33 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
+    bool nextTrialPreparedIfNeeded_{};
 
   public:
-    [[nodiscard]] auto initializedWithSingleSpeaker() const {
-        return initializedWithSingleSpeaker_;
+    [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
+        return nextTrialPreparedIfNeeded_;
     }
 
-    [[nodiscard]] auto initializedWithDelayedMasker() const {
-        return initializedWithDelayedMasker_;
+    void prepareNextTrialIfNeeded() override {
+        nextTrialPreparedIfNeeded_ = true;
     }
 
-    void initialize(TestMethod *tm, const Test &ct) override {
-        testMethod_ = tm;
-        test_ = &ct;
+    void initialize(TestMethod *method, const Test &test) override {
+        testMethod_ = method;
+        test_ = &test;
     }
 
-    void initializeWithSingleSpeaker(TestMethod *tm, const Test &ct) override {
-        testMethod_ = tm;
-        test_ = &ct;
+    void initializeWithSingleSpeaker(
+        TestMethod *method, const Test &test) override {
+        testMethod_ = method;
+        test_ = &test;
         initializedWithSingleSpeaker_ = true;
     }
 
-    void initializeWithDelayedMasker(TestMethod *tm, const Test &ct) override {
-        testMethod_ = tm;
-        test_ = &ct;
+    void initializeWithDelayedMasker(
+        TestMethod *method, const Test &test) override {
+        testMethod_ = method;
+        test_ = &test;
         initializedWithDelayedMasker_ = true;
     }
 
@@ -120,8 +142,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void playTrial(const AudioSettings &s) override { playTrialSettings_ = &s; }
 
-    void submitResponse(
-        const coordinate_response_measure::Response &p) override {
+    void submit(const coordinate_response_measure::Response &p) override {
         coordinateResponse_ = &p;
     }
 
@@ -139,6 +160,14 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void playCalibration(const Calibration &c) override { calibration_ = &c; }
 
+    [[nodiscard]] auto initializedWithSingleSpeaker() const -> bool {
+        return initializedWithSingleSpeaker_;
+    }
+
+    [[nodiscard]] auto initializedWithDelayedMasker() const -> bool {
+        return initializedWithDelayedMasker_;
+    }
+
     [[nodiscard]] auto coordinateResponse() const {
         return coordinateResponse_;
     }
@@ -153,17 +182,17 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     [[nodiscard]] auto calibration() const { return calibration_; }
 
+    [[nodiscard]] auto listener() const { return listener_; }
+
     void setComplete() { complete_ = true; }
 
     void setAudioDevices(std::vector<std::string> v) {
         audioDevices_ = std::move(v);
     }
 
-    [[nodiscard]] auto listener() const { return listener_; }
-
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submitResponse(const open_set::FreeResponse &) override {}
+    void submit(const open_set::FreeResponse &) override {}
     void throwIfTrialInProgress() override {}
 };
 
@@ -177,13 +206,39 @@ class InitializingTestUseCase {
 
 class InitializingFixedLevelTest : public virtual InitializingTestUseCase {
   public:
-    virtual const FixedLevelTest &fixedLevelTest() = 0;
+    virtual void run(ModelImpl &model, const FixedLevelTest &test) = 0;
 };
 
 class InitializingAdaptiveTest : public virtual InitializingTestUseCase {
   public:
-    virtual const AdaptiveTest &adaptiveTest() = 0;
+    virtual void run(ModelImpl &model, const AdaptiveTest &test) = 0;
 };
+
+void initialize(ModelImpl &model, const AdaptiveTest &test) {
+    model.initialize(test);
+}
+
+void initializeWithTargetReplacement(
+    ModelImpl &model, const FixedLevelTest &test) {
+    model.initializeWithTargetReplacement(test);
+}
+
+void initializeWithSingleSpeaker(ModelImpl &model, const AdaptiveTest &test) {
+    model.initializeWithSingleSpeaker(test);
+}
+
+void initializeWithDelayedMasker(ModelImpl &model, const AdaptiveTest &test) {
+    model.initializeWithDelayedMasker(test);
+}
+
+void initializeWithCyclicTargets(ModelImpl &model, const AdaptiveTest &test) {
+    model.initializeWithCyclicTargets(test);
+}
+
+void initializeWithSilentIntervalTargets(
+    ModelImpl &model, const FixedLevelTest &test) {
+    model.initializeWithSilentIntervalTargets(test);
+}
 
 class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     AdaptiveTest test_;
@@ -193,13 +248,15 @@ class InitializingDefaultAdaptiveTest : public InitializingAdaptiveTest {
     explicit InitializingDefaultAdaptiveTest(AdaptiveMethodStub *method)
         : method{method} {}
 
-    void run(ModelImpl &model) override { model.initializeTest(test_); }
+    void run(ModelImpl &model) override { initialize(model, test_); }
 
-    const Test &test() override { return test_; }
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
+        initialize(model, test);
+    }
 
-    const AdaptiveTest &adaptiveTest() override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class InitializingAdaptiveTestWithSingleSpeaker
@@ -213,14 +270,16 @@ class InitializingAdaptiveTestWithSingleSpeaker
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeTestWithSingleSpeaker(test_);
+        initializeWithSingleSpeaker(model, test_);
     }
 
-    const Test &test() override { return test_; }
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
+        initializeWithSingleSpeaker(model, test);
+    }
 
-    const AdaptiveTest &adaptiveTest() override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
-    const TestMethod *testMethod() override { return method; }
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class InitializingAdaptiveTestWithDelayedMasker
@@ -234,103 +293,144 @@ class InitializingAdaptiveTestWithDelayedMasker
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeTestWithDelayedMasker(test_);
+        initializeWithDelayedMasker(model, test_);
     }
 
-    const Test &test() override { return test_; }
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
+        initializeWithDelayedMasker(model, test);
+    }
 
-    const AdaptiveTest &adaptiveTest() override { return test_; }
-
-    const TestMethod *testMethod() override { return method; }
-};
-
-class InitializingDefaultFixedLevelTest : public InitializingFixedLevelTest {
-    FixedLevelTest test_;
-    FixedLevelMethodStub *method;
-
-  public:
-    explicit InitializingDefaultFixedLevelTest(FixedLevelMethodStub *method)
-        : method{method} {}
-
-    void run(ModelImpl &model) override { model.initializeTest(test_); }
-
-    const Test &test() override { return test_; }
-
-    const FixedLevelTest &fixedLevelTest() override { return test_; }
+    auto test() -> const Test & override { return test_; }
 
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelSilentIntervalsTest
+class InitializingAdaptiveTestWithCyclicTargets
+    : public InitializingAdaptiveTest {
+    AdaptiveTest test_;
+    AdaptiveMethodStub *method;
+
+  public:
+    explicit InitializingAdaptiveTestWithCyclicTargets(
+        AdaptiveMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        initializeWithCyclicTargets(model, test_);
+    }
+
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
+        initializeWithCyclicTargets(model, test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
+class InitializingFixedLevelTestWithTargetReplacement
     : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelSilentIntervalsTest(
+    explicit InitializingFixedLevelTestWithTargetReplacement(
         FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeSilentIntervalsTest(test_);
+        initializeWithTargetReplacement(model, test_);
     }
 
-    const Test &test() override { return test_; }
+    void run(ModelImpl &model, const FixedLevelTest &test) override {
+        initializeWithTargetReplacement(model, test);
+    }
 
-    const TestMethod *testMethod() override { return method; }
+    auto test() -> const Test & override { return test_; }
 
-    const FixedLevelTest &fixedLevelTest() override { return test_; }
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingFixedLevelAllStimuliTest : public InitializingFixedLevelTest {
+class InitializingFixedLevelTestWithSilentIntervalTargets
+    : public InitializingFixedLevelTest {
     FixedLevelTest test_;
     FixedLevelMethodStub *method;
 
   public:
-    explicit InitializingFixedLevelAllStimuliTest(FixedLevelMethodStub *method)
+    explicit InitializingFixedLevelTestWithSilentIntervalTargets(
+        FixedLevelMethodStub *method)
         : method{method} {}
 
     void run(ModelImpl &model) override {
-        model.initializeAllStimuliTest(test_);
+        initializeWithSilentIntervalTargets(model, test_);
     }
 
-    const Test &test() override { return test_; }
+    void run(ModelImpl &model, const FixedLevelTest &test) override {
+        initializeWithSilentIntervalTargets(model, test);
+    }
 
-    const TestMethod *testMethod() override { return method; }
+    auto test() -> const Test & override { return test_; }
 
-    const FixedLevelTest &fixedLevelTest() override { return test_; }
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
+class InitializingFixedLevelTestWithAllTargets
+    : public InitializingFixedLevelTest {
+    FixedLevelTest test_;
+    FixedLevelMethodStub *method;
+
+  public:
+    explicit InitializingFixedLevelTestWithAllTargets(
+        FixedLevelMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        model.initializeWithAllTargets(test_);
+    }
+
+    void run(ModelImpl &model, const FixedLevelTest &test) override {
+        model.initializeWithAllTargets(test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
 };
 
 class ModelTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    TargetListStub infiniteTargetList;
-    TestConcluderStub fixedTrialTestConcluder;
-    TargetListStub silentIntervals;
-    TestConcluderStub emptyTargetListTestConcluder;
-    TargetListStub allStimuli;
+    TargetListStub targetsWithReplacement;
+    TargetListSetReaderStub targetsWithReplacementReader;
+    TargetListSetReaderStub cyclicTargetsReader;
+    FiniteTargetListStub silentIntervals;
+    FiniteTargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
-    ModelImpl model{&adaptiveMethod, &fixedLevelMethod, &infiniteTargetList,
-        &fixedTrialTestConcluder, &silentIntervals,
-        &emptyTargetListTestConcluder, &allStimuli, &internalModel};
+    ModelImpl model{adaptiveMethod, fixedLevelMethod,
+        targetsWithReplacementReader, cyclicTargetsReader,
+        targetsWithReplacement, silentIntervals, everyTargetOnce,
+        internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
-    InitializingDefaultAdaptiveTest initializingAdaptiveTest{&adaptiveMethod};
+    InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
+        &adaptiveMethod};
     InitializingAdaptiveTestWithSingleSpeaker
         initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
     InitializingAdaptiveTestWithDelayedMasker
         initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
-    InitializingDefaultFixedLevelTest initializingFixedLevelTest{
-        &fixedLevelMethod};
-    InitializingFixedLevelSilentIntervalsTest
-        initializingFixedLevelSilentIntervalsTest{&fixedLevelMethod};
-    InitializingFixedLevelAllStimuliTest initializingFixedLevelAllStimuliTest{
-        &fixedLevelMethod};
-
-    bool testComplete() { return model.testComplete(); }
+    InitializingAdaptiveTestWithCyclicTargets
+        initializingAdaptiveTestWithCyclicTargets{&adaptiveMethod};
+    InitializingFixedLevelTestWithTargetReplacement
+        initializingFixedLevelTestWithTargetReplacement{&fixedLevelMethod};
+    InitializingFixedLevelTestWithSilentIntervalTargets
+        initializingFixedLevelTestWithSilentIntervalTargets{&fixedLevelMethod};
+    InitializingFixedLevelTestWithAllTargets
+        initializingFixedLevelTestWithAllTargets{&fixedLevelMethod};
 
     void run(InitializingTestUseCase &useCase) { useCase.run(model); }
+
+    auto testComplete() -> bool { return model.testComplete(); }
 
     void assertInitializesInternalModel(InitializingTestUseCase &useCase) {
         run(useCase);
@@ -340,19 +440,15 @@ class ModelTests : public ::testing::Test {
 
     void assertInitializesFixedLevelMethod(
         InitializingFixedLevelTest &useCase) {
-        run(useCase);
-        assertEqual(&useCase.fixedLevelTest(), fixedLevelMethod.test());
+        useCase.run(model, fixedLevelTest);
+        assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
     }
 
-    void assertInitializesAdaptiveMethod(InitializingAdaptiveTest &useCase) {
-        run(useCase);
-        assertEqual(&useCase.adaptiveTest(), adaptiveMethod.test());
-    }
-
-    void assertInitializesFixedLevelTestWithTestConcluder(
-        InitializingTestUseCase &useCase, TestConcluder &concluder) {
-        run(useCase);
-        assertEqual(&concluder, fixedLevelMethod.testConcluder());
+    void assertInitializesAdaptiveMethod(
+        InitializingAdaptiveTest &useCase, TargetListReader &reader) {
+        useCase.run(model, adaptiveTest);
+        assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
+        assertEqual(&reader, adaptiveMethod.targetListReader());
     }
 
     void assertInitializesFixedLevelTestWithTargetList(
@@ -360,109 +456,139 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(&targetList, fixedLevelMethod.targetList());
     }
+
+    void assertInitializesFixedLevelMethodWithFiniteTargetList(
+        InitializingTestUseCase &useCase) {
+        run(useCase);
+        assertTrue(fixedLevelMethod.initializedWithFiniteTargetList());
+    }
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
 
-MODEL_TEST(initializeFixedLevelTestInitializesFixedLevelMethod) {
-    assertInitializesFixedLevelMethod(initializingFixedLevelTest);
+MODEL_TEST(
+    restartAdaptiveTestWhilePreservingCyclicTargetsPreparesNextTrialIfNeeded) {
+    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    assertTrue(internalModel.nextTrialPreparedIfNeeded());
 }
 
-MODEL_TEST(initializeFixedLevelSilentIntervalsTestInitializesFixedLevelMethod) {
+MODEL_TEST(
+    restartAdaptiveTestWhilePreservingCyclicTargetsResetsAdaptiveMethodTracks) {
+    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    assertTrue(adaptiveMethod.tracksResetted());
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithTargetReplacementInitializesFixedLevelMethod) {
     assertInitializesFixedLevelMethod(
-        initializingFixedLevelSilentIntervalsTest);
+        initializingFixedLevelTestWithTargetReplacement);
 }
 
-MODEL_TEST(initializeFixedLevelTestInitializesWithInfiniteTargetList) {
+MODEL_TEST(
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethod) {
+    assertInitializesFixedLevelMethod(
+        initializingFixedLevelTestWithSilentIntervalTargets);
+}
+
+MODEL_TEST(
+    initializeFixedLevelTestWithTargetReplacementInitializesWithTargetsWithReplacement) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelTest, infiniteTargetList);
+        initializingFixedLevelTestWithTargetReplacement,
+        targetsWithReplacement);
 }
 
 MODEL_TEST(
-    initializeFixedLevelSilentIntervalsTestInitializesWithSilentIntervals) {
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithSilentIntervals) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelSilentIntervalsTest, silentIntervals);
+        initializingFixedLevelTestWithSilentIntervalTargets, silentIntervals);
 }
 
-MODEL_TEST(initializeFixedLevelAllStimuliTestInitializesWithAllStimuli) {
+MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesWithAllTargets) {
     assertInitializesFixedLevelTestWithTargetList(
-        initializingFixedLevelAllStimuliTest, allStimuli);
-}
-
-MODEL_TEST(initializeFixedLevelTestInitializesWithFixedTrialTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTest, fixedTrialTestConcluder);
+        initializingFixedLevelTestWithAllTargets, everyTargetOnce);
 }
 
 MODEL_TEST(
-    initializeFixedLevelSilentIntervalsTestInitializesWithEmptyTargetListTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelSilentIntervalsTest,
-        emptyTargetListTestConcluder);
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethodWithFiniteTargetList) {
+    assertInitializesFixedLevelMethodWithFiniteTargetList(
+        initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
 MODEL_TEST(
-    initializeFixedLevelAllStimuliTestInitializesWithEmptyTargetListTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelAllStimuliTest, emptyTargetListTestConcluder);
+    initializingFixedLevelTestWithAllTargetsInitializesFixedLevelMethodWithFiniteTargetList) {
+    assertInitializesFixedLevelMethodWithFiniteTargetList(
+        initializingFixedLevelTestWithAllTargets);
 }
 
-TEST_F(ModelTests, initializeAdaptiveTestInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTest);
+MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
+    assertInitializesAdaptiveMethod(
+        initializingDefaultAdaptiveTest, targetsWithReplacementReader);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker);
+MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
+    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker,
+        targetsWithReplacementReader);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker);
+MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
+    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker,
+        targetsWithReplacementReader);
 }
 
-MODEL_TEST(initializeFixedLevelTestInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelTest);
+MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesAdaptiveMethod) {
+    assertInitializesAdaptiveMethod(
+        initializingAdaptiveTestWithCyclicTargets, cyclicTargetsReader);
 }
 
 MODEL_TEST(
-    initializeFixedLevelSilentIntervalsTestTargetsInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelSilentIntervalsTest);
+    initializeFixedLevelTestWithTargetReplacementInitializesInternalModel) {
+    assertInitializesInternalModel(
+        initializingFixedLevelTestWithTargetReplacement);
 }
 
-MODEL_TEST(initializeAdaptiveTestInitializesInternalModel) {
-    assertInitializesInternalModel(initializingAdaptiveTest);
+MODEL_TEST(
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesInternalModel) {
+    assertInitializesInternalModel(
+        initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithSingleSpeakerInitializesInternalModel) {
+MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesInternalModel) {
+    assertInitializesInternalModel(initializingFixedLevelTestWithAllTargets);
+}
+
+MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {
+    assertInitializesInternalModel(initializingDefaultAdaptiveTest);
+}
+
+MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithSingleSpeaker);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithDelayedMaskerInitializesInternalModel) {
+MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithDelayedMasker);
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
+MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesInternalModel) {
+    assertInitializesInternalModel(initializingAdaptiveTestWithCyclicTargets);
+}
+
+MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithSingleSpeaker);
     assertTrue(internalModel.initializedWithSingleSpeaker());
 }
 
-TEST_F(ModelTests,
-    initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
+MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithDelayedMasker);
     assertTrue(internalModel.initializedWithDelayedMasker());
 }
 
-TEST_F(ModelTests, submitResponsePassesCoordinateResponse) {
+MODEL_TEST(submitResponsePassesCoordinateResponse) {
     coordinate_response_measure::Response response;
-    model.submitResponse(response);
+    model.submit(response);
     assertEqual(&std::as_const(response), internalModel.coordinateResponse());
 }
 
-TEST_F(ModelTests, submitCorrectKeywordsPassesCorrectKeywords) {
+MODEL_TEST(submitCorrectKeywordsPassesCorrectKeywords) {
     open_set::CorrectKeywords k;
     model.submit(k);
     assertEqual(&std::as_const(k), internalModel.correctKeywords());
