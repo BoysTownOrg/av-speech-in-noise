@@ -18,12 +18,17 @@ class UseCase {
     virtual void run(AdaptiveMethodImpl &) = 0;
 };
 
+void initialize(AdaptiveMethodImpl &method, const AdaptiveTest &test,
+    TargetListReader &targetListReader) {
+    method.initialize(test, &targetListReader);
+}
+
 class Initializing : public UseCase {
   public:
     explicit Initializing(TargetListReader &reader) : reader{reader} {}
 
     void run(AdaptiveMethodImpl &method) override {
-        method.initialize(test, &reader);
+        initialize(method, test, reader);
     }
 
   private:
@@ -270,14 +275,16 @@ void assertBumpLimitEqualsOne(const Track::Settings &s) {
     assertEqual(1, s.bumpLimit);
 }
 
-void assertPassedTargetLevelRule(
+void assertTargetLevelRuleEquals(
     const TrackingRule &rule, const Track::Settings &s) {
     assertEqual(&rule, s.rule);
 }
 
-void initialize(AdaptiveMethodImpl &method, const AdaptiveTest &test,
-    TargetListReader &targetListReader) {
-    method.initialize(test, &targetListReader);
+void write(AdaptiveMethodImpl &method,
+    const coordinate_response_measure::Response &response,
+    OutputFile &outputFile) {
+    submit(method, response);
+    method.writeLastCoordinateResponse(&outputFile);
 }
 
 class AdaptiveMethodTests : public ::testing::Test {
@@ -328,9 +335,9 @@ class AdaptiveMethodTests : public ::testing::Test {
         return snrTrackFactoryParameters().at(x);
     }
 
-    void applyToSnrTrackFactoryParameters(
-        int n, const std::function<void(const Track::Settings &)> &f) {
-        for (int i = 0; i < n; ++i)
+    void forEachSnrTrackFactoryParameters(
+        const std::function<void(const Track::Settings &)> &f) {
+        for (int i = 0; i < listCount; ++i)
             f(snrTrackFactoryParameters(i));
     }
 
@@ -355,11 +362,6 @@ class AdaptiveMethodTests : public ::testing::Test {
         lists.at(n)->setCurrent(std::move(s));
     }
 
-    void writeCoordinateResponse() {
-        submit(method, coordinateResponse);
-        method.writeLastCoordinateResponse(&outputFile);
-    }
-
     void assertWritesUpdatedReversals(WritingResponseUseCase &useCase) {
         selectList(1);
         initialize(method, test, targetListReader);
@@ -379,7 +381,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         assertEqual(4, useCase.writtenSnr(outputFile));
     }
 
-    static auto blueColor() { return coordinate_response_measure::Color::blue; }
+    static constexpr auto blue{coordinate_response_measure::Color::blue};
 
     auto writtenCoordinateResponseTrialCorrect() -> bool {
         return writtenAdaptiveCoordinateResponseTrial(outputFile).correct;
@@ -480,32 +482,32 @@ ADAPTIVE_METHOD_TEST(initializeCreatesSnrTrackForEachList) {
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithTargetLevelRule) {
     initialize(method, test, targetListReader);
-    applyToSnrTrackFactoryParameters(
-        3, [&](auto s) { assertPassedTargetLevelRule(test.trackingRule, s); });
+    forEachSnrTrackFactoryParameters(
+        [&](auto s) { assertTargetLevelRuleEquals(test.trackingRule, s); });
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
     test.startingSnr_dB = 1;
     initialize(method, test, targetListReader);
-    applyToSnrTrackFactoryParameters(3, assertStartingXEqualsOne);
+    forEachSnrTrackFactoryParameters(assertStartingXEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithCeiling) {
     test.ceilingSnr_dB = 1;
     initialize(method, test, targetListReader);
-    applyToSnrTrackFactoryParameters(3, assertCeilingEqualsOne);
+    forEachSnrTrackFactoryParameters(assertCeilingEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithFloor) {
     test.floorSnr_dB = 1;
     initialize(method, test, targetListReader);
-    applyToSnrTrackFactoryParameters(3, assertFloorEqualsOne);
+    forEachSnrTrackFactoryParameters(assertFloorEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithBumpLimit) {
     test.trackBumpLimit = 1;
     initialize(method, test, targetListReader);
-    applyToSnrTrackFactoryParameters(3, assertBumpLimitEqualsOne);
+    forEachSnrTrackFactoryParameters(assertBumpLimitEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(writeTestParametersPassesToOutputFile) {
@@ -576,9 +578,8 @@ ADAPTIVE_METHOD_TEST(
 ADAPTIVE_METHOD_TEST(resetTracksResetsEachTrack) {
     initialize(method, test, targetListReader);
     resetTracks(method);
-    assertTrue(track(0)->resetted());
-    assertTrue(track(1)->resetted());
-    assertTrue(track(2)->resetted());
+    for (auto &track : tracks)
+        assertTrue(track->resetted());
 }
 
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {
@@ -615,24 +616,24 @@ ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesResponseToEvaluator) {
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
     initialize(method, test, targetListReader);
-    coordinateResponse.color = blueColor();
-    writeCoordinateResponse();
-    assertEqual(blueColor(),
-        writtenAdaptiveCoordinateResponseTrial(outputFile).subjectColor);
+    coordinateResponse.color = blue;
+    write(method, coordinateResponse, outputFile);
+    assertEqual(
+        blue, writtenAdaptiveCoordinateResponseTrial(outputFile).subjectColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
     initialize(method, test, targetListReader);
-    evaluator.setCorrectColor(blueColor());
-    writeCoordinateResponse();
-    assertEqual(blueColor(),
-        writtenAdaptiveCoordinateResponseTrial(outputFile).correctColor);
+    evaluator.setCorrectColor(blue);
+    write(method, coordinateResponse, outputFile);
+    assertEqual(
+        blue, writtenAdaptiveCoordinateResponseTrial(outputFile).correctColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
     initialize(method, test, targetListReader);
     coordinateResponse.number = 1;
-    writeCoordinateResponse();
+    write(method, coordinateResponse, outputFile);
     assertEqual(
         1, writtenAdaptiveCoordinateResponseTrial(outputFile).subjectNumber);
 }
@@ -640,7 +641,7 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
     initialize(method, test, targetListReader);
     evaluator.setCorrectNumber(1);
-    writeCoordinateResponse();
+    write(method, coordinateResponse, outputFile);
     assertEqual(
         1, writtenAdaptiveCoordinateResponseTrial(outputFile).correctNumber);
 }
@@ -688,7 +689,7 @@ ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesSnrBeforeUpdatingTrack) {
 ADAPTIVE_METHOD_TEST(writeCorrectCoordinateResponseIsCorrect) {
     initialize(method, test, targetListReader);
     setCorrectCoordinateResponse();
-    writeCoordinateResponse();
+    write(method, coordinateResponse, outputFile);
     assertTrue(writtenCoordinateResponseTrialCorrect());
 }
 
@@ -709,7 +710,7 @@ ADAPTIVE_METHOD_TEST(writeSufficientCorrectKeywordsIsCorrect) {
 ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {
     initialize(method, test, targetListReader);
     setIncorrectCoordinateResponse();
-    writeCoordinateResponse();
+    write(method, coordinateResponse, outputFile);
     assertFalse(writtenCoordinateResponseTrialCorrect());
 }
 
