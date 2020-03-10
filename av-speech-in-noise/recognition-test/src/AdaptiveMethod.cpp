@@ -2,8 +2,8 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory *snrTrackFactory,
-    ResponseEvaluator *evaluator, Randomizer *randomizer)
+AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
+    ResponseEvaluator &evaluator, Randomizer &randomizer)
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
                                                                   randomizer} {}
 
@@ -27,7 +27,7 @@ void AdaptiveMethodImpl::initialize(
     targetListsWithTracks.clear();
     for (const auto &list : lists)
         targetListsWithTracks.push_back(
-            {list.get(), snrTrackFactory->make(trackSettings)});
+            {list.get(), snrTrackFactory.make(trackSettings)});
     selectNextList();
 }
 
@@ -53,7 +53,7 @@ void AdaptiveMethodImpl::selectNextList() {
     if (tracksInProgress == 0)
         return;
     auto targetListsWithTrack{targetListsWithTracks.at(
-        randomizer->betweenInclusive(0, tracksInProgress - 1))};
+        randomizer.betweenInclusive(0, tracksInProgress - 1))};
     currentSnrTrack = track(targetListsWithTrack);
     currentTargetList = targetListsWithTrack.list;
 }
@@ -89,8 +89,8 @@ void AdaptiveMethodImpl::submit(
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
     assignReversals(lastTrial, currentSnrTrack);
-    lastTrial.correctColor = evaluator->correctColor(current_);
-    lastTrial.correctNumber = evaluator->correctNumber(current_);
+    lastTrial.correctColor = evaluator.correctColor(current_);
+    lastTrial.correctNumber = evaluator.correctNumber(current_);
     lastTrial.SNR_dB = lastSnr_dB_;
     lastTrial.correct = correct_;
     selectNextList();
@@ -104,7 +104,7 @@ auto AdaptiveMethodImpl::currentTarget() -> std::string {
 
 auto AdaptiveMethodImpl::correct(const std::string &target,
     const coordinate_response_measure::Response &response) -> bool {
-    return evaluator->correct(target, response);
+    return evaluator.correct(target, response);
 }
 
 void AdaptiveMethodImpl::correct() { currentSnrTrack->down(); }
@@ -139,9 +139,9 @@ static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
     trial.correct = c;
 }
 
-static auto fileName(ResponseEvaluator *evaluator, const std::string &target)
+static auto fileName(ResponseEvaluator &evaluator, const std::string &target)
     -> std::string {
-    return evaluator->fileName(target);
+    return evaluator.fileName(target);
 }
 
 static void assignTarget(open_set::Trial &trial, std::string s) {

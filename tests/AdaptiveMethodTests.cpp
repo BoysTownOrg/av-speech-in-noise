@@ -358,7 +358,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     TrackFactoryStub snrTrackFactory;
     ResponseEvaluatorStub evaluator;
     RandomizerStub randomizer;
-    AdaptiveMethodImpl method{&snrTrackFactory, &evaluator, &randomizer};
+    AdaptiveMethodImpl method{snrTrackFactory, evaluator, randomizer};
     OutputFileStub outputFile;
     TargetListSetReaderStub targetListReader;
     Initializing initializing{targetListReader};

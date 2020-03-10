@@ -46,7 +46,7 @@ struct TargetListWithTrack {
 
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
-    AdaptiveMethodImpl(Track::Factory *, ResponseEvaluator *, Randomizer *);
+    AdaptiveMethodImpl(Track::Factory &, ResponseEvaluator &, Randomizer &);
     void initialize(const AdaptiveTest &, TargetListReader *) override;
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
@@ -82,9 +82,9 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     open_set::AdaptiveTrial lastOpenSetTrial{};
     open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     const AdaptiveTest *test{};
-    Track::Factory *snrTrackFactory;
-    ResponseEvaluator *evaluator;
-    Randomizer *randomizer;
+    Track::Factory &snrTrackFactory;
+    ResponseEvaluator &evaluator;
+    Randomizer &randomizer;
     Track *currentSnrTrack{};
     TargetList *currentTargetList{};
     gsl::index tracksInProgress{};
