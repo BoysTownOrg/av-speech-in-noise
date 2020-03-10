@@ -2,40 +2,6 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
-    ResponseEvaluator &evaluator, Randomizer &randomizer)
-    : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
-                                                                  randomizer} {}
-
-void AdaptiveMethodImpl::resetTracks() {
-    for (const auto &t : targetListsWithTracks)
-        t.track->reset();
-    selectNextList();
-}
-
-void AdaptiveMethodImpl::initialize(
-    const AdaptiveTest &test_, TargetListReader *targetListSetReader) {
-    test = &test_;
-    Track::Settings trackSettings{};
-    trackSettings.rule = &test_.trackingRule;
-    trackSettings.ceiling = test_.ceilingSnr_dB;
-    trackSettings.startingX = test_.startingSnr_dB;
-    trackSettings.floor = test_.floorSnr_dB;
-    trackSettings.bumpLimit = test_.trackBumpLimit;
-    lists = targetListSetReader->read(test_.targetListDirectory);
-
-    targetListsWithTracks.clear();
-    for (const auto &list : lists)
-        targetListsWithTracks.push_back(
-            {list.get(), snrTrackFactory.make(trackSettings)});
-    selectNextList();
-}
-
-void AdaptiveMethodImpl::selectNextListAfter(void (AdaptiveMethodImpl::*f)()) {
-    (this->*f)();
-    selectNextList();
-}
-
 static auto track(const TargetListWithTrack &t) -> Track * {
     return t.track.get();
 }
@@ -46,6 +12,39 @@ static auto complete(const TargetListWithTrack &t) -> bool {
 
 static auto incomplete(const TargetListWithTrack &t) -> bool {
     return !complete(t);
+}
+
+AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
+    ResponseEvaluator &evaluator, Randomizer &randomizer)
+    : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
+                                                                  randomizer} {}
+
+void AdaptiveMethodImpl::initialize(
+    const AdaptiveTest &t, TargetListReader *targetListSetReader) {
+    test = &t;
+    targetListsWithTracks.clear();
+    Track::Settings snrTrackSettings{};
+    snrTrackSettings.rule = &t.trackingRule;
+    snrTrackSettings.ceiling = t.ceilingSnr_dB;
+    snrTrackSettings.startingX = t.startingSnr_dB;
+    snrTrackSettings.floor = t.floorSnr_dB;
+    snrTrackSettings.bumpLimit = t.trackBumpLimit;
+    for (const auto &list :
+        targetLists = targetListSetReader->read(t.targetListDirectory))
+        targetListsWithTracks.push_back(
+            {list.get(), snrTrackFactory.make(snrTrackSettings)});
+    selectNextList();
+}
+
+void AdaptiveMethodImpl::resetTracks() {
+    for (const auto &t : targetListsWithTracks)
+        t.track->reset();
+    selectNextList();
+}
+
+void AdaptiveMethodImpl::selectNextListAfter(void (AdaptiveMethodImpl::*f)()) {
+    (this->*f)();
+    selectNextList();
 }
 
 void AdaptiveMethodImpl::selectNextList() {
@@ -80,19 +79,17 @@ static void assignReversals(Adaptive &trial, Track *track) {
 void AdaptiveMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
     auto lastSnr_dB_{snr_dB()};
-    auto current_{currentTarget()};
-    auto correct_{correct(current_, response)};
-    if (correct_)
+    if (correct(currentTarget(), response))
         correct();
     else
         incorrect();
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
     assignReversals(lastTrial, currentSnrTrack);
-    lastTrial.correctColor = evaluator.correctColor(current_);
-    lastTrial.correctNumber = evaluator.correctNumber(current_);
+    lastTrial.correctColor = evaluator.correctColor(currentTarget());
+    lastTrial.correctNumber = evaluator.correctNumber(currentTarget());
     lastTrial.SNR_dB = lastSnr_dB_;
-    lastTrial.correct = correct_;
+    lastTrial.correct = correct(currentTarget(), response);
     selectNextList();
 }
 
