@@ -67,7 +67,7 @@ class ViewStub : public View {
             return transducers_;
         }
 
-        void populateTransducerMenu(std::vector<std::string> v) {
+        void populateTransducerMenu(std::vector<std::string> v) override {
             transducers_ = std::move(v);
         }
 
@@ -105,7 +105,7 @@ class ViewStub : public View {
 
         auto rmeSetting() -> std::string override { return rmeSetting_; }
 
-        auto transducer() -> std::string { return transducer_; }
+        auto transducer() -> std::string override { return transducer_; }
 
         void subscribe(EventListener *listener) override {
             listener_ = listener;
