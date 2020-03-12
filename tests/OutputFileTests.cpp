@@ -594,6 +594,7 @@ TEST_F(OutputFileTests, writeCommonAdaptiveTest) {
 }
 
 TEST_F(OutputFileTests, writesTrackSettings) {
+    AdaptiveTest test;
     TrackingSequence first;
     first.up = 1;
     first.down = 2;
@@ -604,9 +605,9 @@ TEST_F(OutputFileTests, writesTrackSettings) {
     second.down = 6;
     second.runCount = 7;
     second.stepSize = 8;
-    writingAdaptiveTest.test.trackingRule.push_back(first);
-    writingAdaptiveTest.test.trackingRule.push_back(second);
-    writingAdaptiveTest.run(file);
+    test.trackingRule.push_back(first);
+    test.trackingRule.push_back(second);
+    file.writeTest(test);
     assertColonDelimitedEntryWritten("up", "1 5");
     assertColonDelimitedEntryWritten("down", "2 6");
     assertColonDelimitedEntryWritten("reversals per step size", "3 7");
