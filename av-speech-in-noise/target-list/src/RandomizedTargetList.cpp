@@ -12,12 +12,12 @@ static auto shuffle(Randomizer *randomizer, gsl::span<std::string> v) {
 }
 
 static auto currentFile(const std::vector<std::string> &v) -> std::string {
-    return v.back();
+    return v.empty() ? "" : v.back();
 }
 
 static auto fullPathToLastFile(const std::string &directory,
     const std::vector<std::string> &files) -> std::string {
-    return directory + '/' + currentFile(files);
+    return files.empty() ? "" : directory + '/' + currentFile(files);
 }
 
 static auto empty(const std::vector<std::string> &files) -> bool {
@@ -77,7 +77,7 @@ auto RandomizedTargetListWithoutReplacement::fullPath(std::string file)
 }
 
 auto RandomizedTargetListWithoutReplacement::current() -> std::string {
-    return fullPath(currentFile_);
+    return currentFile_.empty() ? "" : fullPath(currentFile_);
 }
 
 void RandomizedTargetListWithoutReplacement::reinsertCurrent() {
