@@ -21,7 +21,7 @@ static auto sampleRateHz(AVAssetTrack *track) -> double {
     const auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
         static_cast<CMAudioFormatDescriptionRef>(
             track.formatDescriptions.firstObject));
-    return description->mSampleRate;
+    return description != nullptr ? description->mSampleRate : 0;
 }
 
 static auto getPropertyDataSize(AudioObjectID id_,
