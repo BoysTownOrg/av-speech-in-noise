@@ -63,6 +63,14 @@ class ViewStub : public View {
             return testSettingsFile_;
         }
 
+        [[nodiscard]] auto transducers() const -> std::vector<std::string> {
+            return transducers_;
+        }
+
+        void populateTransducerMenu(std::vector<std::string> v) {
+            transducers_ = std::move(v);
+        }
+
         void confirmTestSetup() { listener_->confirmTestSetup(); }
 
         void playCalibration() { listener_->playCalibration(); }
@@ -108,6 +116,7 @@ class ViewStub : public View {
         }
 
       private:
+        std::vector<std::string> transducers_;
         std::string subjectId_;
         std::string testerId_;
         std::string session_;
@@ -1368,10 +1377,18 @@ class PresenterFailureTests : public ::testing::Test {
         assertFalse(setupView.hidden());
     }
 };
+
 TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
     model.setAudioDevices({"a", "b", "c"});
     construct();
     assertEqual({"a", "b", "c"}, view.audioDevices());
+}
+
+TEST_F(PresenterConstructionTests, populatesTransducerMenu) {
+    construct();
+    assertEqual({name(Transducer::headphone), name(Transducer::oneSpeaker),
+                    name(Transducer::twoSpeakers)},
+        setupView.transducers());
 }
 
 #define PRESENTER_TEST(a) TEST_F(PresenterTests, a)

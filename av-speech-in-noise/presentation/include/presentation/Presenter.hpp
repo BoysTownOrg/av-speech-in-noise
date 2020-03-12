@@ -72,6 +72,7 @@ class View {
 
         virtual ~TestSetup() = default;
         virtual void subscribe(EventListener *) = 0;
+        virtual void populateTransducerMenu(std::vector<std::string>) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual auto testSettingsFile() -> std::string = 0;

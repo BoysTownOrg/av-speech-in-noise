@@ -287,6 +287,8 @@ void Presenter::browseForTestSettingsFile() {
 }
 
 Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
+    view->populateTransducerMenu({name(Transducer::headphone),
+        name(Transducer::oneSpeaker), name(Transducer::twoSpeakers)});
     view->subscribe(this);
 }
 
