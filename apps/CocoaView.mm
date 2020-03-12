@@ -180,12 +180,19 @@ static auto button(std::string s, id target, SEL action, NSRect frame)
 
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
-      subjectIdLabel{normalLabelWithHeight(120, "subject:")},
-      subjectId_{normalTextFieldWithHeight(120)},
-      testerIdLabel{normalLabelWithHeight(90, "tester:")},
-      testerId_{normalTextFieldWithHeight(90)},
-      sessionLabel{normalLabelWithHeight(60, "session:")},
-      session_{normalTextFieldWithHeight(60)},
+      subjectIdLabel{normalLabelWithHeight(180, "subject:")},
+      subjectId_{normalTextFieldWithHeight(180)},
+      testerIdLabel{normalLabelWithHeight(150, "tester:")},
+      testerId_{normalTextFieldWithHeight(150)},
+      sessionLabel{normalLabelWithHeight(120, "session:")},
+      session_{normalTextFieldWithHeight(120)},
+      rmeSettingLabel{normalLabelWithHeight(90, "RME setting:")},
+      rmeSetting_{normalTextFieldWithHeight(90)},
+      transducerLabel{normalLabelWithHeight(60, "transducer:")},
+      transducerMenu{
+          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
+                                                   60, menuWidth, labelHeight)
+                                     pullsDown:NO]},
       testSettingsFile_label{normalLabelWithHeight(30, "test settings:")},
       testSettingsFile_{filePathTextFieldSizeWithHeight(30)},
       actions{[SetupViewActions alloc]} {
@@ -214,6 +221,10 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(testerId_);
     addSubview(sessionLabel);
     addSubview(session_);
+    addSubview(rmeSettingLabel);
+    addSubview(rmeSetting_);
+    addSubview(transducerLabel);
+    addSubview(transducerMenu);
     addSubview(testSettingsFile_label);
     addSubview(testSettingsFile_);
     [view_ setHidden:NO];
@@ -247,6 +258,20 @@ auto CocoaTestSetupView::subjectId() -> std::string {
 
 auto CocoaTestSetupView::session() -> std::string {
     return stringValue(session_);
+}
+
+auto CocoaTestSetupView::transducer() -> std::string {
+    return transducerMenu.titleOfSelectedItem.UTF8String;
+}
+
+auto CocoaTestSetupView::rmeSetting() -> std::string {
+    return stringValue(rmeSetting_);
+}
+
+void CocoaTestSetupView::populateTransducerMenu(
+    std::vector<std::string> items) {
+    for (const auto &item : items)
+        [transducerMenu addItemWithTitle:asNsString(item)];
 }
 
 void CocoaTestSetupView::setTestSettingsFile(std::string s) {

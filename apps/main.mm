@@ -266,7 +266,7 @@ void main() {
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, allStimuli, model_internal};
-    CocoaView view{NSMakeRect(0, 0, 900, 180)};
+    CocoaView view{NSMakeRect(0, 0, 900, 240)};
     view.center();
     auto delegate = [WindowDelegate alloc];
     view.setDelegate(delegate);
