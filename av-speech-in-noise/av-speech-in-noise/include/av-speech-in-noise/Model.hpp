@@ -93,8 +93,9 @@ constexpr auto name(Transducer c) -> const char * {
         return "1 speaker";
     case Transducer::twoSpeakers:
         return "2 speakers";
+    default:
+        return "unknown";
     }
-    return "unknown";
 }
 
 struct TestIdentity {
