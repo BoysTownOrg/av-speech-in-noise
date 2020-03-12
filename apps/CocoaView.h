@@ -47,7 +47,7 @@ class CocoaExperimenterView : public View::Experimenter {
     NSView *evaluationButtons;
     NSView *responseSubmission;
     NSView *correctKeywordsSubmission;
-    NSView *continueTestingDialog;
+    NSWindow *continueTestingDialog;
     NSTextField *response_;
     NSTextField *correctKeywordsEntry_;
     NSTextField *displayedText_;
