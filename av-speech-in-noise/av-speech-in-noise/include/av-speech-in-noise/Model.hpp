@@ -86,7 +86,8 @@ using TrackingRule = typename std::vector<TrackingSequence>;
 enum class Transducer {
     headphone,
     oneSpeaker,
-    twoSpeakers
+    twoSpeakers,
+    unknown
 };
 
 constexpr auto name(Transducer c) -> const char * {
@@ -97,6 +98,8 @@ constexpr auto name(Transducer c) -> const char * {
         return "1 speaker";
     case Transducer::twoSpeakers:
         return "2 speakers";
+    case Transducer::unknown:
+        return "unknown";
     }
 }
 

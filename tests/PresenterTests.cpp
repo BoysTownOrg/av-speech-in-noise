@@ -85,6 +85,8 @@ class ViewStub : public View {
 
         void setRmeSetting(std::string s) { rmeSetting_ = std::move(s); }
 
+        void setTransducer(std::string s) { transducer_ = std::move(s); }
+
         void setSubjectId(std::string s) { subjectId_ = std::move(s); }
 
         void setTesterId(std::string s) { testerId_ = std::move(s); }
@@ -93,7 +95,9 @@ class ViewStub : public View {
 
         auto subjectId() -> std::string override { return subjectId_; }
 
-        auto rmeSetting() -> std::string { return rmeSetting_; }
+        auto rmeSetting() -> std::string override { return rmeSetting_; }
+
+        auto transducer() -> std::string { return transducer_; }
 
         void subscribe(EventListener *listener) override {
             listener_ = listener;
@@ -108,6 +112,7 @@ class ViewStub : public View {
         std::string testerId_;
         std::string session_;
         std::string rmeSetting_;
+        std::string transducer_;
         std::string testSettingsFile_;
         EventListener *listener_{};
         bool shown_{};
@@ -1197,6 +1202,13 @@ class PresenterTests : public ::testing::Test {
         assertEqual("e", testSettingsInterpreter.identity().rmeSetting);
     }
 
+    void assertPassesTransducer(ConfirmingTestSetup &useCase) {
+        setupView.setTransducer(name(Transducer::twoSpeakers));
+        run(useCase);
+        assertEqual(Transducer::twoSpeakers,
+            testSettingsInterpreter.identity().transducer);
+    }
+
     void assertCompleteTrialShowsResponseView(
         ConfirmingTestSetup &useCase, TrialSubmission &trialSubmission) {
         run(useCase);
@@ -1725,6 +1737,12 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
     assertPassesRmeSetting(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTransducer) {
+    assertPassesTransducer(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 

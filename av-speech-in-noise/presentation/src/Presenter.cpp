@@ -308,12 +308,23 @@ static auto readInteger(const std::string &x, const std::string &identifier)
     }
 }
 
+static auto transducer(const std::string &s) -> Transducer {
+    if (s == name(Transducer::headphone))
+        return Transducer::headphone;
+    if (s == name(Transducer::oneSpeaker))
+        return Transducer::oneSpeaker;
+    if (s == name(Transducer::twoSpeakers))
+        return Transducer::twoSpeakers;
+    return Transducer::unknown;
+}
+
 auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     TestIdentity p;
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
     p.session = view->session();
     p.rmeSetting = view->rmeSetting();
+    p.transducer = transducer(view->transducer());
     return p;
 }
 

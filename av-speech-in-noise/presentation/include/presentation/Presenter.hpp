@@ -79,6 +79,7 @@ class View {
         virtual auto subjectId() -> std::string = 0;
         virtual auto session() -> std::string = 0;
         virtual auto rmeSetting() -> std::string = 0;
+        virtual auto transducer() -> std::string = 0;
         virtual void setTestSettingsFile(std::string) = 0;
     };
 
