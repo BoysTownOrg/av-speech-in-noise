@@ -480,16 +480,16 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         setFrame:NSMakeRect(responseSubmission.frame.size.width - buttonWidth,
                      0, buttonWidth, buttonHeight)];
     const auto passButton_ {
-        button("pass", actions, @selector(submitPassedTrial))
+        button("correct", actions, @selector(submitPassedTrial))
     };
     [passButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
                                   3 * buttonWidth,
                               0, buttonWidth, buttonHeight)];
     const auto failButton_ {
-        button("fail", actions, @selector(submitFailedTrial))
+        button("incorrect", actions, @selector(submitFailedTrial))
     };
     [failButton_
-        setFrame:NSMakeRect(evaluationButtons.frame.size.width - buttonWidth, 0,
+        setFrame:NSMakeRect(evaluationButtons.frame.size.width - 2 * buttonWidth, 0,
                      buttonWidth, buttonHeight)];
     const auto continueButton_ {
         button("continue", actions, @selector(acceptContinuingTesting))
