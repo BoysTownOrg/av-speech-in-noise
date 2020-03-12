@@ -208,6 +208,12 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
     assertNextEquals(list, "");
 }
 
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsEmptyIfNoFiles) {
+    setFileNames(reader, {});
+    loadFromDirectory(list);
+    assertNextEquals(list, "");
+}
+
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     nextShufflesNextSetNotIncludingCurrent) {
     setFileNames(reader, {"a", "b", "c", "d"});

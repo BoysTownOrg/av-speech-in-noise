@@ -94,6 +94,9 @@ void CyclicRandomizedTargetList::loadFromDirectory(std::string directory) {
 }
 
 auto CyclicRandomizedTargetList::next() -> std::string {
+    if (target_list::empty(files))
+        return "";
+
     std::rotate(files.begin(), files.begin() + 1, files.end());
     return fullPathToLastFile(directory_, files);
 }
