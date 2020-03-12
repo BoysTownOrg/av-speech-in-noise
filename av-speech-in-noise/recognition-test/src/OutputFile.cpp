@@ -3,6 +3,23 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
+static auto operator<<(std::ostream &os, const std::vector<int> &v)
+    -> std::ostream & {
+    if (!v.empty()) {
+        auto first{true};
+        os << v.front();
+        for (auto x : v) {
+            if (first) {
+                first = false;
+                continue;
+            }
+            os << " ";
+            os << x;
+        }
+    }
+    return os;
+}
+
 namespace {
 class FormattedStream {
   public:
@@ -121,6 +138,20 @@ static auto formatTest(const AdaptiveTest &test) -> std::string {
     stream.writeMaskerLevel(test);
     stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
     stream.writeCondition(test);
+    std::vector<int> up;
+    std::vector<int> down;
+    std::vector<int> runCounts;
+    std::vector<int> stepSizes;
+    for (auto sequence : test.trackingRule) {
+        up.push_back(sequence.up);
+        down.push_back(sequence.down);
+        runCounts.push_back(sequence.runCount);
+        stepSizes.push_back(sequence.stepSize);
+    }
+    stream.writeLabeledLine("up", up);
+    stream.writeLabeledLine("down", down);
+    stream.writeLabeledLine("reversals per step size", runCounts);
+    stream.writeLabeledLine("step sizes (dB)", stepSizes);
     stream.insertNewLine();
     return stream.str();
 }
