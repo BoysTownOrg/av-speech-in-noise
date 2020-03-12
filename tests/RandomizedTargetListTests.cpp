@@ -112,6 +112,13 @@ void currentReturnsFullPathToFile(
     assertCurrentEquals(list, "C:/a");
 }
 
+void nextReturnsEmptyIfNoFiles(
+    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+    setFileNames(reader, {});
+    loadFromDirectory(list);
+    assertNextEquals(list, "");
+}
+
 class RandomizedTargetListWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
@@ -197,21 +204,15 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsFullPathToFile) {
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
-    setFileNames(reader, {});
-    loadFromDirectory(list);
-    assertNextEquals(list, "");
+    nextReturnsEmptyIfNoFiles(list, reader);
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
-    setFileNames(reader, {});
-    loadFromDirectory(list);
-    assertNextEquals(list, "");
+    nextReturnsEmptyIfNoFiles(list, reader);
 }
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsEmptyIfNoFiles) {
-    setFileNames(reader, {});
-    loadFromDirectory(list);
-    assertNextEquals(list, "");
+    nextReturnsEmptyIfNoFiles(list, reader);
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
