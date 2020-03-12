@@ -248,12 +248,17 @@ class OutputFileTests : public ::testing::Test {
         identity.testerId = "b";
         identity.session = "c";
         identity.method = "d";
+        identity.rmeSetting = "e";
+        identity.transducer = Transducer::twoSpeakers;
         useCase.setTestIdentity(identity);
         useCase.run(file);
         assertColonDelimitedEntryWritten("subject", "a");
         assertColonDelimitedEntryWritten("tester", "b");
         assertColonDelimitedEntryWritten("session", "c");
         assertColonDelimitedEntryWritten("method", "d");
+        assertColonDelimitedEntryWritten("RME setting", "e");
+        assertColonDelimitedEntryWritten(
+            "transducer", name(Transducer::twoSpeakers));
     }
 
     void assertCommonTestWritten(WritingTestUseCase &useCase) {

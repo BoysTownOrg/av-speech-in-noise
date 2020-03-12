@@ -55,6 +55,14 @@ class FormattedStream {
         writeLabeledLine("method", p.method);
     }
 
+    void writeRmeSetting(const TestIdentity &p) {
+        writeLabeledLine("RME setting", p.rmeSetting);
+    }
+
+    void writeTransducer(const TestIdentity &p) {
+        writeLabeledLine("transducer", name(p.transducer));
+    }
+
     void writeMasker(const Test &p) {
         writeLabeledLine("masker", p.maskerFilePath);
     }
@@ -126,6 +134,16 @@ static void writeMethod(FormattedStream &stream, const TestIdentity &identity) {
     stream.writeMethod(identity);
 }
 
+static void writeRmeSetting(
+    FormattedStream &stream, const TestIdentity &identity) {
+    stream.writeRmeSetting(identity);
+}
+
+static void writeTransducer(
+    FormattedStream &stream, const TestIdentity &identity) {
+    stream.writeTransducer(identity);
+}
+
 static auto formatTest(const AdaptiveTest &test) -> std::string {
     FormattedStream stream;
     const auto &identity = test.identity;
@@ -133,6 +151,8 @@ static auto formatTest(const AdaptiveTest &test) -> std::string {
     writeTester(stream, identity);
     writeSession(stream, identity);
     writeMethod(stream, identity);
+    writeRmeSetting(stream, identity);
+    writeTransducer(stream, identity);
     stream.writeMasker(test);
     stream.writeTargetList(test);
     stream.writeMaskerLevel(test);
@@ -163,6 +183,8 @@ static auto formatTest(const FixedLevelTest &test) -> std::string {
     writeTester(stream, identity);
     writeSession(stream, identity);
     writeMethod(stream, identity);
+    writeRmeSetting(stream, identity);
+    writeTransducer(stream, identity);
     stream.writeMasker(test);
     stream.writeTargetList(test);
     stream.writeMaskerLevel(test);

@@ -83,12 +83,7 @@ constexpr auto operator==(const TrackingSequence &a, const TrackingSequence &b)
 
 using TrackingRule = typename std::vector<TrackingSequence>;
 
-enum class Transducer {
-    headphone,
-    oneSpeaker,
-    twoSpeakers,
-    unknown
-};
+enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
 
 constexpr auto name(Transducer c) -> const char * {
     switch (c) {
@@ -98,9 +93,8 @@ constexpr auto name(Transducer c) -> const char * {
         return "1 speaker";
     case Transducer::twoSpeakers:
         return "2 speakers";
-    case Transducer::unknown:
-        return "unknown";
     }
+    return "unknown";
 }
 
 struct TestIdentity {
