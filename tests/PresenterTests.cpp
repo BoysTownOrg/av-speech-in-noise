@@ -83,6 +83,8 @@ class ViewStub : public View {
 
         void setSession(std::string s) { session_ = std::move(s); }
 
+        void setRmeSetting(std::string s) { rmeSetting_ = std::move(s); }
+
         void setSubjectId(std::string s) { subjectId_ = std::move(s); }
 
         void setTesterId(std::string s) { testerId_ = std::move(s); }
@@ -90,6 +92,8 @@ class ViewStub : public View {
         auto testerId() -> std::string override { return testerId_; }
 
         auto subjectId() -> std::string override { return subjectId_; }
+
+        auto rmeSetting() -> std::string { return rmeSetting_; }
 
         void subscribe(EventListener *listener) override {
             listener_ = listener;
@@ -103,6 +107,7 @@ class ViewStub : public View {
         std::string subjectId_;
         std::string testerId_;
         std::string session_;
+        std::string rmeSetting_;
         std::string testSettingsFile_;
         EventListener *listener_{};
         bool shown_{};
@@ -1186,6 +1191,12 @@ class PresenterTests : public ::testing::Test {
         assertEqual("e", testSettingsInterpreter.identity().session);
     }
 
+    void assertPassesRmeSetting(ConfirmingTestSetup &useCase) {
+        setupView.setRmeSetting("e");
+        run(useCase);
+        assertEqual("e", testSettingsInterpreter.identity().rmeSetting);
+    }
+
     void assertCompleteTrialShowsResponseView(
         ConfirmingTestSetup &useCase, TrialSubmission &trialSubmission) {
         run(useCase);
@@ -1708,6 +1719,12 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesSession) {
     assertPassesSession(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
+    assertPassesRmeSetting(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 

@@ -313,6 +313,7 @@ auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
     p.session = view->session();
+    p.rmeSetting = view->rmeSetting();
     return p;
 }
 
