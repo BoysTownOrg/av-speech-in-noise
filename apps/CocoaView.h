@@ -47,7 +47,7 @@ class CocoaExperimenterView : public View::Experimenter {
     NSView *evaluationButtons;
     NSView *responseSubmission;
     NSView *correctKeywordsSubmission;
-    NSView *continueTestingDialog;
+    NSWindow *continueTestingDialog;
     NSTextField *response_;
     NSTextField *correctKeywordsEntry_;
     NSTextField *displayedText_;
@@ -66,9 +66,12 @@ class CocoaTestSetupView : public View::TestSetup {
     void hide() override;
     std::string testerId() override;
     std::string subjectId() override;
-    void setTestSettingsFile(std::string) override;
-    std::string testSettingsFile() override;
     std::string session() override;
+    std::string testSettingsFile() override;
+    auto transducer() -> std::string override;
+    auto rmeSetting() -> std::string override;
+    void populateTransducerMenu(std::vector<std::string>) override;
+    void setTestSettingsFile(std::string) override;
     void subscribe(EventListener *) override;
     NSView *view();
     void confirm();
@@ -92,6 +95,10 @@ class CocoaTestSetupView : public View::TestSetup {
     NSTextField *testerId_;
     NSTextField *sessionLabel;
     NSTextField *session_;
+    NSTextField *rmeSettingLabel;
+    NSTextField *rmeSetting_;
+    NSTextField *transducerLabel;
+    NSPopUpButton *transducerMenu;
     NSTextField *testSettingsFile_label;
     NSTextField *testSettingsFile_;
     SetupViewActions *actions;

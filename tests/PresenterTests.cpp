@@ -63,6 +63,14 @@ class ViewStub : public View {
             return testSettingsFile_;
         }
 
+        [[nodiscard]] auto transducers() const -> std::vector<std::string> {
+            return transducers_;
+        }
+
+        void populateTransducerMenu(std::vector<std::string> v) override {
+            transducers_ = std::move(v);
+        }
+
         void confirmTestSetup() { listener_->confirmTestSetup(); }
 
         void playCalibration() { listener_->playCalibration(); }
@@ -83,6 +91,10 @@ class ViewStub : public View {
 
         void setSession(std::string s) { session_ = std::move(s); }
 
+        void setRmeSetting(std::string s) { rmeSetting_ = std::move(s); }
+
+        void setTransducer(std::string s) { transducer_ = std::move(s); }
+
         void setSubjectId(std::string s) { subjectId_ = std::move(s); }
 
         void setTesterId(std::string s) { testerId_ = std::move(s); }
@@ -90,6 +102,10 @@ class ViewStub : public View {
         auto testerId() -> std::string override { return testerId_; }
 
         auto subjectId() -> std::string override { return subjectId_; }
+
+        auto rmeSetting() -> std::string override { return rmeSetting_; }
+
+        auto transducer() -> std::string override { return transducer_; }
 
         void subscribe(EventListener *listener) override {
             listener_ = listener;
@@ -100,9 +116,12 @@ class ViewStub : public View {
         }
 
       private:
+        std::vector<std::string> transducers_;
         std::string subjectId_;
         std::string testerId_;
         std::string session_;
+        std::string rmeSetting_;
+        std::string transducer_;
         std::string testSettingsFile_;
         EventListener *listener_{};
         bool shown_{};
@@ -1186,6 +1205,19 @@ class PresenterTests : public ::testing::Test {
         assertEqual("e", testSettingsInterpreter.identity().session);
     }
 
+    void assertPassesRmeSetting(ConfirmingTestSetup &useCase) {
+        setupView.setRmeSetting("e");
+        run(useCase);
+        assertEqual("e", testSettingsInterpreter.identity().rmeSetting);
+    }
+
+    void assertPassesTransducer(ConfirmingTestSetup &useCase) {
+        setupView.setTransducer(name(Transducer::twoSpeakers));
+        run(useCase);
+        assertEqual(Transducer::twoSpeakers,
+            testSettingsInterpreter.identity().transducer);
+    }
+
     void assertCompleteTrialShowsResponseView(
         ConfirmingTestSetup &useCase, TrialSubmission &trialSubmission) {
         run(useCase);
@@ -1345,10 +1377,18 @@ class PresenterFailureTests : public ::testing::Test {
         assertFalse(setupView.hidden());
     }
 };
+
 TEST_F(PresenterConstructionTests, populatesAudioDeviceMenu) {
     model.setAudioDevices({"a", "b", "c"});
     construct();
     assertEqual({"a", "b", "c"}, view.audioDevices());
+}
+
+TEST_F(PresenterConstructionTests, populatesTransducerMenu) {
+    construct();
+    assertEqual({name(Transducer::headphone), name(Transducer::oneSpeaker),
+                    name(Transducer::twoSpeakers)},
+        setupView.transducers());
 }
 
 #define PRESENTER_TEST(a) TEST_F(PresenterTests, a)
@@ -1708,6 +1748,18 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesSession) {
     assertPassesSession(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
+    assertPassesRmeSetting(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTransducer) {
+    assertPassesTransducer(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 

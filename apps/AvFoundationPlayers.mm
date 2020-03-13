@@ -311,6 +311,7 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     processing.audioTapProcessor = tap;
     audioMix.inputParameters = @[ processing ];
     playerItem.audioMix = audioMix;
+    [player pause];
     [player replaceCurrentItemWithPlayerItem:playerItem];
     prepareVideo();
 }

@@ -3,6 +3,23 @@
 #include <sstream>
 
 namespace av_speech_in_noise {
+static auto operator<<(std::ostream &os, const std::vector<int> &v)
+    -> std::ostream & {
+    if (!v.empty()) {
+        auto first{true};
+        os << v.front();
+        for (auto x : v) {
+            if (first) {
+                first = false;
+                continue;
+            }
+            os << " ";
+            os << x;
+        }
+    }
+    return os;
+}
+
 namespace {
 class FormattedStream {
   public:
@@ -36,6 +53,14 @@ class FormattedStream {
 
     void writeMethod(const TestIdentity &p) {
         writeLabeledLine("method", p.method);
+    }
+
+    void writeRmeSetting(const TestIdentity &p) {
+        writeLabeledLine("RME setting", p.rmeSetting);
+    }
+
+    void writeTransducer(const TestIdentity &p) {
+        writeLabeledLine("transducer", name(p.transducer));
     }
 
     void writeMasker(const Test &p) {
@@ -109,6 +134,16 @@ static void writeMethod(FormattedStream &stream, const TestIdentity &identity) {
     stream.writeMethod(identity);
 }
 
+static void writeRmeSetting(
+    FormattedStream &stream, const TestIdentity &identity) {
+    stream.writeRmeSetting(identity);
+}
+
+static void writeTransducer(
+    FormattedStream &stream, const TestIdentity &identity) {
+    stream.writeTransducer(identity);
+}
+
 static auto formatTest(const AdaptiveTest &test) -> std::string {
     FormattedStream stream;
     const auto &identity = test.identity;
@@ -116,11 +151,27 @@ static auto formatTest(const AdaptiveTest &test) -> std::string {
     writeTester(stream, identity);
     writeSession(stream, identity);
     writeMethod(stream, identity);
+    writeRmeSetting(stream, identity);
+    writeTransducer(stream, identity);
     stream.writeMasker(test);
     stream.writeTargetList(test);
     stream.writeMaskerLevel(test);
     stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
     stream.writeCondition(test);
+    std::vector<int> up;
+    std::vector<int> down;
+    std::vector<int> runCounts;
+    std::vector<int> stepSizes;
+    for (auto sequence : test.trackingRule) {
+        up.push_back(sequence.up);
+        down.push_back(sequence.down);
+        runCounts.push_back(sequence.runCount);
+        stepSizes.push_back(sequence.stepSize);
+    }
+    stream.writeLabeledLine("up", up);
+    stream.writeLabeledLine("down", down);
+    stream.writeLabeledLine("reversals per step size", runCounts);
+    stream.writeLabeledLine("step sizes (dB)", stepSizes);
     stream.insertNewLine();
     return stream.str();
 }
@@ -132,6 +183,8 @@ static auto formatTest(const FixedLevelTest &test) -> std::string {
     writeTester(stream, identity);
     writeSession(stream, identity);
     writeMethod(stream, identity);
+    writeRmeSetting(stream, identity);
+    writeTransducer(stream, identity);
     stream.writeMasker(test);
     stream.writeTargetList(test);
     stream.writeMaskerLevel(test);

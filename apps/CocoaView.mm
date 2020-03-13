@@ -180,12 +180,19 @@ static auto button(std::string s, id target, SEL action, NSRect frame)
 
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
-      subjectIdLabel{normalLabelWithHeight(120, "subject:")},
-      subjectId_{normalTextFieldWithHeight(120)},
-      testerIdLabel{normalLabelWithHeight(90, "tester:")},
-      testerId_{normalTextFieldWithHeight(90)},
-      sessionLabel{normalLabelWithHeight(60, "session:")},
-      session_{normalTextFieldWithHeight(60)},
+      subjectIdLabel{normalLabelWithHeight(180, "subject:")},
+      subjectId_{normalTextFieldWithHeight(180)},
+      testerIdLabel{normalLabelWithHeight(150, "tester:")},
+      testerId_{normalTextFieldWithHeight(150)},
+      sessionLabel{normalLabelWithHeight(120, "session:")},
+      session_{normalTextFieldWithHeight(120)},
+      rmeSettingLabel{normalLabelWithHeight(90, "RME setting:")},
+      rmeSetting_{normalTextFieldWithHeight(90)},
+      transducerLabel{normalLabelWithHeight(60, "transducer:")},
+      transducerMenu{
+          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
+                                                   60, menuWidth, labelHeight)
+                                     pullsDown:NO]},
       testSettingsFile_label{normalLabelWithHeight(30, "test settings:")},
       testSettingsFile_{filePathTextFieldSizeWithHeight(30)},
       actions{[SetupViewActions alloc]} {
@@ -214,6 +221,10 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(testerId_);
     addSubview(sessionLabel);
     addSubview(session_);
+    addSubview(rmeSettingLabel);
+    addSubview(rmeSetting_);
+    addSubview(transducerLabel);
+    addSubview(transducerMenu);
     addSubview(testSettingsFile_label);
     addSubview(testSettingsFile_);
     [view_ setHidden:NO];
@@ -247,6 +258,20 @@ auto CocoaTestSetupView::subjectId() -> std::string {
 
 auto CocoaTestSetupView::session() -> std::string {
     return stringValue(session_);
+}
+
+auto CocoaTestSetupView::transducer() -> std::string {
+    return transducerMenu.titleOfSelectedItem.UTF8String;
+}
+
+auto CocoaTestSetupView::rmeSetting() -> std::string {
+    return stringValue(rmeSetting_);
+}
+
+void CocoaTestSetupView::populateTransducerMenu(
+    std::vector<std::string> items) {
+    for (const auto &item : items)
+        [transducerMenu addItemWithTitle:asNsString(item)];
 }
 
 void CocoaTestSetupView::setTestSettingsFile(std::string s) {
@@ -435,9 +460,11 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
       evaluationButtons{[[NSView alloc]
           initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
                             3 * buttonWidth, buttonHeight)]},
-      continueTestingDialog{[[NSView alloc]
-          initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
-                            3 * buttonWidth, buttonHeight)]},
+      continueTestingDialog{[[NSWindow alloc]
+          initWithContentRect:NSMakeRect(0, 0, 3 * buttonWidth, buttonHeight)
+                    styleMask:NSWindowStyleMaskBorderless
+                      backing:NSBackingStoreBuffered
+                        defer:YES]},
       responseSubmission{[[NSView alloc]
           initWithFrame:NSMakeRect(r.size.width - 250, 0, 250,
                             buttonHeight + 15 + 2 * labelHeight + 15)]},
@@ -480,17 +507,17 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         setFrame:NSMakeRect(responseSubmission.frame.size.width - buttonWidth,
                      0, buttonWidth, buttonHeight)];
     const auto passButton_ {
-        button("pass", actions, @selector(submitPassedTrial))
+        button("correct", actions, @selector(submitPassedTrial))
     };
     [passButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
                                   3 * buttonWidth,
                               0, buttonWidth, buttonHeight)];
     const auto failButton_ {
-        button("fail", actions, @selector(submitFailedTrial))
+        button("incorrect", actions, @selector(submitFailedTrial))
     };
-    [failButton_
-        setFrame:NSMakeRect(evaluationButtons.frame.size.width - buttonWidth, 0,
-                     buttonWidth, buttonHeight)];
+    [failButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
+                                  2 * buttonWidth,
+                              0, buttonWidth, buttonHeight)];
     const auto continueButton_ {
         button("continue", actions, @selector(acceptContinuingTesting))
     };
@@ -515,20 +542,18 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [responseSubmission addSubview:flagged_];
     [evaluationButtons addSubview:passButton_];
     [evaluationButtons addSubview:failButton_];
-    [continueTestingDialog addSubview:continueButton_];
-    [continueTestingDialog addSubview:exitButton_];
+    [continueTestingDialog.contentView addSubview:continueButton_];
+    [continueTestingDialog.contentView addSubview:exitButton_];
     [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
     [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
     [view_ addSubview:nextTrialButton_];
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
     [view_ addSubview:correctKeywordsSubmission];
-    [view_ addSubview:continueTestingDialog];
     [evaluationButtons setHidden:YES];
     [nextTrialButton_ setHidden:YES];
     [responseSubmission setHidden:YES];
     [correctKeywordsSubmission setHidden:YES];
-    [continueTestingDialog setHidden:YES];
     [view_ setHidden:YES];
     actions.controller = this;
 }
@@ -566,11 +591,13 @@ void CocoaExperimenterView::hideCorrectKeywordsSubmission() {
 }
 
 void CocoaExperimenterView::showContinueTestingDialog() {
-    [continueTestingDialog setHidden:NO];
+    [view_.window beginSheet:continueTestingDialog
+           completionHandler:^(NSModalResponse returnCode){
+           }];
 }
 
 void CocoaExperimenterView::hideContinueTestingDialog() {
-    [continueTestingDialog setHidden:YES];
+    [view_.window endSheet:continueTestingDialog];
 }
 
 auto CocoaExperimenterView::freeResponse() -> std::string {

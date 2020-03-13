@@ -69,9 +69,9 @@ class WritingTestUseCase : public virtual UseCase {
 };
 
 class WritingAdaptiveTest : public WritingTestUseCase {
+  public:
     AdaptiveTest test{};
 
-  public:
     void setCondition(Condition c) override { test.condition = c; }
 
     void setTestIdentity(const TestIdentity &p) override { test.identity = p; }
@@ -248,12 +248,17 @@ class OutputFileTests : public ::testing::Test {
         identity.testerId = "b";
         identity.session = "c";
         identity.method = "d";
+        identity.rmeSetting = "e";
+        identity.transducer = Transducer::twoSpeakers;
         useCase.setTestIdentity(identity);
         useCase.run(file);
         assertColonDelimitedEntryWritten("subject", "a");
         assertColonDelimitedEntryWritten("tester", "b");
         assertColonDelimitedEntryWritten("session", "c");
         assertColonDelimitedEntryWritten("method", "d");
+        assertColonDelimitedEntryWritten("RME setting", "e");
+        assertColonDelimitedEntryWritten(
+            "transducer", name(Transducer::twoSpeakers));
     }
 
     void assertCommonTestWritten(WritingTestUseCase &useCase) {
@@ -591,6 +596,28 @@ TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
 
 TEST_F(OutputFileTests, writeCommonAdaptiveTest) {
     assertCommonTestWritten(writingAdaptiveTest);
+}
+
+TEST_F(OutputFileTests, writesTrackSettings) {
+    AdaptiveTest test;
+    TrackingSequence first;
+    first.up = 1;
+    first.down = 2;
+    first.runCount = 3;
+    first.stepSize = 4;
+    TrackingSequence second;
+    second.up = 5;
+    second.down = 6;
+    second.runCount = 7;
+    second.stepSize = 8;
+    test.trackingRule.push_back(first);
+    test.trackingRule.push_back(second);
+    file.writeTest(test);
+    assertColonDelimitedEntryWritten("up", "1 5");
+    assertColonDelimitedEntryWritten("down", "2 6");
+    assertColonDelimitedEntryWritten("reversals per step size", "3 7");
+    assertColonDelimitedEntryWritten("step sizes (dB)", "4 8");
+    assertWrittenLast("\n\n");
 }
 
 TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
