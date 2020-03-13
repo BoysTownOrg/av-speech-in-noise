@@ -11,12 +11,12 @@ add_executable(tests
 	ModelTests.cpp
 	ResponseEvaluatorTests.cpp
 	SubdirectoryTargetListReaderTests.cpp
-	TargetListTests.cpp
+	RandomizedTargetListTests.cpp
 	TargetPlayerTests.cpp
-    TrackSettingsInterpreterTests.cpp
-	TrackSettingsReaderTests.cpp
+	TestSettingsInterpreterTests.cpp
 )
 target_compile_features(tests PRIVATE cxx_std_17)
+target_compile_options(tests PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
 target_link_libraries(tests 
 	recognition-test 
 	adaptive-track 

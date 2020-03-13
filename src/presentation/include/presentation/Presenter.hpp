@@ -17,35 +17,24 @@ enum class Method {
     fixedLevelFreeResponseWithSilentIntervalTargets,
     fixedLevelFreeResponseWithAllTargets,
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets
+    fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+    unknown
 };
 
-constexpr auto methodName(Method c) -> const char * {
-    switch (c) {
-    case Method::adaptivePassFail:
-        return "adaptive open-set";
-    case Method::adaptiveCorrectKeywords:
-        return "adaptive correct keywords";
-    case Method::defaultAdaptiveCoordinateResponseMeasure:
-        return "adaptive closed-set";
-    case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
-        return "adaptive closed-set single speaker";
-    case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
-        return "adaptive closed-set delayed masker";
-    case Method::adaptiveCoordinateResponseMeasureWithEyeTracking:
-        return "adaptive closed-set eye tracking";
-    case Method::fixedLevelFreeResponseWithTargetReplacement:
-        return "fixed-level open-set with replacement";
-    case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
-        return "fixed-level closed-set with replacement";
-    case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
-        return "fixed-level open-set silent intervals";
-    case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
-        return "fixed-level closed-set silent intervals";
-    case Method::fixedLevelFreeResponseWithAllTargets:
-        return "fixed-level open-set all stimuli";
-    }
-}
+class TestSettingsInterpreter {
+  public:
+    virtual ~TestSettingsInterpreter() = default;
+    virtual void initialize(
+        Model &, const std::string &, const TestIdentity &) = 0;
+    virtual auto method(const std::string &) -> Method = 0;
+    virtual auto calibration(const std::string &) -> Calibration = 0;
+};
+
+class TextFileReader {
+  public:
+    virtual ~TextFileReader() = default;
+    virtual auto read(const std::string &) -> std::string = 0;
+};
 
 class View {
   public:
@@ -79,34 +68,21 @@ class View {
             virtual ~EventListener() = default;
             virtual void confirmTestSetup() = 0;
             virtual void playCalibration() = 0;
-            virtual void browseForTargetList() = 0;
-            virtual void browseForMasker() = 0;
-            virtual void browseForCalibration() = 0;
-            virtual void browseForTrackSettingsFile() = 0;
+            virtual void browseForTestSettingsFile() = 0;
         };
 
         virtual ~TestSetup() = default;
         virtual void subscribe(EventListener *) = 0;
+        virtual void populateTransducerMenu(std::vector<std::string>) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
-        virtual auto maskerLevel_dB_SPL() -> std::string = 0;
-        virtual auto calibrationLevel_dB_SPL() -> std::string = 0;
-        virtual auto startingSnr_dB() -> std::string = 0;
-        virtual auto maskerFilePath() -> std::string = 0;
-        virtual auto calibrationFilePath() -> std::string = 0;
-        virtual auto targetListDirectory() -> std::string = 0;
-        virtual auto trackSettingsFile() -> std::string = 0;
+        virtual auto testSettingsFile() -> std::string = 0;
         virtual auto testerId() -> std::string = 0;
         virtual auto subjectId() -> std::string = 0;
-        virtual auto condition() -> std::string = 0;
         virtual auto session() -> std::string = 0;
-        virtual auto method() -> std::string = 0;
-        virtual void setMasker(std::string) = 0;
-        virtual void setTargetListDirectory(std::string) = 0;
-        virtual void setCalibrationFilePath(std::string) = 0;
-        virtual void setTrackSettingsFile(std::string) = 0;
-        virtual void populateConditionMenu(std::vector<std::string>) = 0;
-        virtual void populateMethodMenu(std::vector<std::string>) = 0;
+        virtual auto rmeSetting() -> std::string = 0;
+        virtual auto transducer() -> std::string = 0;
+        virtual void setTestSettingsFile(std::string) = 0;
     };
 
     class Experimenter {
@@ -120,12 +96,16 @@ class View {
             virtual void submitCorrectKeywords() = 0;
             virtual void submitFailedTrial() = 0;
             virtual void submitFreeResponse() = 0;
+            virtual void declineContinuingTesting() = 0;
+            virtual void acceptContinuingTesting() = 0;
         };
 
         virtual ~Experimenter() = default;
         virtual void subscribe(EventListener *) = 0;
         virtual void show() = 0;
         virtual void hide() = 0;
+        virtual void showContinueTestingDialog() = 0;
+        virtual void hideContinueTestingDialog() = 0;
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
         virtual void showFreeResponseSubmission() = 0;
@@ -159,47 +139,16 @@ class Presenter : public Model::EventListener {
       public:
         explicit TestSetup(View::TestSetup *);
         void playCalibration() override;
-        void browseForTargetList() override;
-        void browseForMasker() override;
         void confirmTestSetup() override;
-        void browseForCalibration() override;
-        void browseForTrackSettingsFile() override;
+        void browseForTestSettingsFile() override;
         void show();
         void hide();
         void becomeChild(Presenter *parent);
-        void setMasker(std::string);
-        void setStimulusList(std::string);
-        void setCalibrationFilePath(std::string);
-        void setTrackSettingsFile(std::string);
-        auto adaptiveTest() -> AdaptiveTest;
-        auto fixedLevelTest() -> FixedLevelTest;
-        auto calibrationParameters() -> Calibration;
-        auto coordinateResponseMeasure() -> bool;
-        auto defaultAdaptive() -> bool;
-        auto adaptiveCoordinateResponseMeasure() -> bool;
-        auto adaptivePassFail() -> bool;
-        auto fixedLevelCoordinateResponseMeasure() -> bool;
-        auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets()
-            -> bool;
-        auto fixedLevelSilentIntervals() -> bool;
-        auto fixedLevelAllStimuli() -> bool;
-        auto singleSpeaker() -> bool;
-        auto adaptiveCoordinateResponseMeasureWithDelayedMasker() -> bool;
-        auto adaptiveCoordinateResponseMeasureWithSingleSpeaker() -> bool;
-        auto adaptiveCoordinateResponseMeasureWithEyeTracking() -> bool;
-        auto adaptiveCorrectKeywords() -> bool;
-        auto delayedMasker() -> bool;
+        void setTestSettingsFile(std::string);
+        auto testSettingsFile() -> std::string;
+        auto testIdentity() -> TestIdentity;
 
       private:
-        auto defaultAdaptiveCoordinateResponseMeasure() -> bool;
-        auto testIdentity() -> TestIdentity;
-        void initialize(Test &);
-        auto readCondition() -> Condition;
-        auto method(Method m) -> bool;
-        auto readMaskerLevel() -> int;
-        auto readCalibrationLevel() -> int;
-        auto auditoryOnly() -> bool;
-
         View::TestSetup *view;
         Presenter *parent{};
     };
@@ -232,6 +181,9 @@ class Presenter : public Model::EventListener {
         void submitFreeResponse() override;
         void submitFailedTrial() override;
         void submitCorrectKeywords() override;
+        void declineContinuingTesting() override;
+        void acceptContinuingTesting() override;
+        void hideCorrectKeywordsSubmission();
         void becomeChild(Presenter *parent);
         void show();
         void start();
@@ -239,6 +191,7 @@ class Presenter : public Model::EventListener {
         void trialPlayed();
         void trialComplete();
         void readyNextTrial();
+        void showContinueTestingDialog();
         void display(std::string);
         void secondaryDisplay(std::string);
         void showPassFailSubmission();
@@ -317,21 +270,20 @@ class Presenter : public Model::EventListener {
     };
 
     Presenter(Model &, View &, TestSetup &, CoordinateResponseMeasure &,
-        Experimenter &);
+        Experimenter &, TestSettingsInterpreter &, TextFileReader &);
     void trialComplete() override;
     void run();
     void confirmTestSetup();
     void playTrial();
     void playCalibration();
-    void browseForTargetList();
-    void browseForMasker();
-    void browseForCalibration();
-    void browseForTrackSettingsFile();
+    void browseForTestSettingsFile();
     void submitSubjectResponse();
     void submitFreeResponse();
     void submitPassedTrial();
     void submitFailedTrial();
     void submitCorrectKeywords();
+    void declineContinuingTesting();
+    void acceptContinuingTesting();
     void exitTest();
 
     static constexpr auto fullScaleLevel_dB_SPL{119};
@@ -351,12 +303,12 @@ class Presenter : public Model::EventListener {
     void playCalibration_();
     void showTestSetup();
     void readyNextTrialIfNeeded();
-    void showTest();
-    void switchToTestView();
+    void showTest(Method);
+    void switchToTestView(Method);
     void confirmTestSetup_();
     void applyIfBrowseNotCancelled(
         std::string s, void (TestSetup::*f)(std::string));
-    auto trialCompletionHandler() -> TrialCompletionHandler *;
+    auto trialCompletionHandler(Method) -> TrialCompletionHandler *;
 
     FreeResponseTrialCompletionHandler freeResponseTrialCompletionHandler;
     PassFailTrialCompletionHandler passFailTrialCompletionHandler;
@@ -368,6 +320,8 @@ class Presenter : public Model::EventListener {
     TestSetup &testSetup;
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter;
     Experimenter &experimenterPresenter;
+    TestSettingsInterpreter &testSettingsInterpreter;
+    TextFileReader &textFileReader;
     TrialCompletionHandler *trialCompletionHandler_{};
 };
 }

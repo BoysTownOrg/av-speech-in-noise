@@ -5,10 +5,7 @@
 @interface SetupViewActions : NSObject
 @property av_speech_in_noise::CocoaTestSetupView *controller;
 - (void)confirmTestSetup;
-- (void)browseForTargetList;
-- (void)browseForMasker;
-- (void)browseForCalibration;
-- (void)browseForTrackSettings;
+- (void)browseForTestSettings;
 - (void)playCalibration;
 @end
 
@@ -39,20 +36,8 @@
     controller->confirm();
 }
 
-- (void)browseForTargetList {
-    controller->browseForTargetList();
-}
-
-- (void)browseForMasker {
-    controller->browseForMasker();
-}
-
-- (void)browseForCalibration {
-    controller->browseForCalibration();
-}
-
-- (void)browseForTrackSettings {
-    controller->browseForTrackSettings();
+- (void)browseForTestSettings {
+    controller->browseForTestSettings();
 }
 
 - (void)playCalibration {
@@ -98,6 +83,14 @@
 - (void)submitCorrectKeywords {
     controller->submitCorrectKeywords();
 }
+
+- (void)acceptContinuingTesting {
+    controller->acceptContinuingTesting();
+}
+
+- (void)declineContinuingTesting {
+    controller->declineContinuingTesting();
+}
 @end
 
 namespace av_speech_in_noise {
@@ -118,7 +111,7 @@ static auto allocLabel(NSString *label, NSRect frame) -> NSTextField * {
 }
 
 static constexpr auto labelHeight{22};
-static constexpr auto labelWidth{180};
+static constexpr auto labelWidth{90};
 static constexpr auto labelToTextFieldSpacing{5};
 static constexpr auto textFieldLeadingEdge{
     labelWidth + labelToTextFieldSpacing};
@@ -187,52 +180,26 @@ static auto button(std::string s, id target, SEL action, NSRect frame)
 
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
-      subjectIdLabel{normalLabelWithHeight(360, "subject:")},
-      subjectId_{normalTextFieldWithHeight(360)},
-      testerIdLabel{normalLabelWithHeight(330, "tester:")},
-      testerId_{normalTextFieldWithHeight(330)},
-      sessionLabel{normalLabelWithHeight(300, "session:")},
-      session_{normalTextFieldWithHeight(300)},
-      targetListDirectoryLabel{normalLabelWithHeight(270, "targets:")},
-      targetListDirectory_{filePathTextFieldSizeWithHeight(270)},
-      maskerFilePath_label{normalLabelWithHeight(240, "masker:")},
-      maskerFilePath_{filePathTextFieldSizeWithHeight(240)},
-      trackSettingsFile_label{normalLabelWithHeight(210, "track settings:")},
-      trackSettingsFile_{filePathTextFieldSizeWithHeight(210)},
-      calibrationFilePath_label{normalLabelWithHeight(180, "calibration:")},
-      calibrationFilePath_{filePathTextFieldSizeWithHeight(180)},
-      calibrationLevel_dB_SPL_label{
-          normalLabelWithHeight(150, "calibration level (dB SPL):")},
-      calibrationLevel_dB_SPL_{shortTextFieldWithHeight(150)},
-      maskerLevel_dB_SPL_label{
-          normalLabelWithHeight(120, "masker level (dB SPL):")},
-      maskerLevel_dB_SPL_{shortTextFieldWithHeight(120)},
-      startingSnr_dB_label{normalLabelWithHeight(90, "starting SNR (dB):")},
-      startingSnr_dB_{shortTextFieldWithHeight(90)},
-      condition_label{normalLabelWithHeight(60, "condition:")},
-      conditionMenu{popUpButtonAtHeightWithWidth(60, 120)},
-      method_label{normalLabelWithHeight(30, "method:")},
-      methodMenu{popUpButtonAtHeightWithWidth(30, 270)},
+      subjectIdLabel{normalLabelWithHeight(180, "subject:")},
+      subjectId_{normalTextFieldWithHeight(180)},
+      testerIdLabel{normalLabelWithHeight(150, "tester:")},
+      testerId_{normalTextFieldWithHeight(150)},
+      sessionLabel{normalLabelWithHeight(120, "session:")},
+      session_{normalTextFieldWithHeight(120)},
+      rmeSettingLabel{normalLabelWithHeight(90, "RME setting:")},
+      rmeSetting_{normalTextFieldWithHeight(90)},
+      transducerLabel{normalLabelWithHeight(60, "transducer:")},
+      transducerMenu{
+          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
+                                                   60, menuWidth, labelHeight)
+                                     pullsDown:NO]},
+      testSettingsFile_label{normalLabelWithHeight(30, "test settings:")},
+      testSettingsFile_{filePathTextFieldSizeWithHeight(30)},
       actions{[SetupViewActions alloc]} {
     actions.controller = this;
-    const auto browseForTargetListButton {
-        button("browse", actions, @selector(browseForTargetList),
-            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 270,
-                buttonWidth, buttonHeight))
-    };
-    const auto browseForMaskerButton {
-        button("browse", actions, @selector(browseForMasker),
-            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 240,
-                buttonWidth, buttonHeight))
-    };
-    const auto browseForTrackSettingsButton {
-        button("browse", actions, @selector(browseForTrackSettings),
-            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 210,
-                buttonWidth, buttonHeight))
-    };
-    const auto browseForCalibrationButton {
-        button("browse", actions, @selector(browseForCalibration),
-            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 180,
+    const auto browseForTestSettingsButton {
+        button("browse", actions, @selector(browseForTestSettings),
+            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 30,
                 buttonWidth, buttonHeight))
     };
     const auto confirmButton {
@@ -241,14 +208,11 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
                 r.size.width - buttonWidth, 0, buttonWidth, buttonHeight))
     };
     const auto playCalibrationButton {
-        button("play", actions, @selector(playCalibration),
-            NSMakeRect(shortTextFieldWidth + textFieldLeadingEdge + 10, 150,
-                buttonWidth, buttonHeight))
+        button("play calibration", actions, @selector(playCalibration),
+            NSMakeRect(r.size.width - buttonWidth - 15 - 1.5 * buttonWidth, 0,
+                1.5 * buttonWidth, buttonHeight))
     };
-    addSubview(browseForMaskerButton);
-    addSubview(browseForTargetListButton);
-    addSubview(browseForCalibrationButton);
-    addSubview(browseForTrackSettingsButton);
+    addSubview(browseForTestSettingsButton);
     addSubview(confirmButton);
     addSubview(playCalibrationButton);
     addSubview(subjectIdLabel);
@@ -257,24 +221,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(testerId_);
     addSubview(sessionLabel);
     addSubview(session_);
-    addSubview(maskerLevel_dB_SPL_label);
-    addSubview(maskerLevel_dB_SPL_);
-    addSubview(calibrationLevel_dB_SPL_label);
-    addSubview(calibrationLevel_dB_SPL_);
-    addSubview(startingSnr_dB_label);
-    addSubview(startingSnr_dB_);
-    addSubview(targetListDirectoryLabel);
-    addSubview(targetListDirectory_);
-    addSubview(maskerFilePath_label);
-    addSubview(maskerFilePath_);
-    addSubview(trackSettingsFile_label);
-    addSubview(trackSettingsFile_);
-    addSubview(calibrationFilePath_label);
-    addSubview(calibrationFilePath_);
-    addSubview(condition_label);
-    addSubview(conditionMenu);
-    addSubview(method_label);
-    addSubview(methodMenu);
+    addSubview(rmeSettingLabel);
+    addSubview(rmeSetting_);
+    addSubview(transducerLabel);
+    addSubview(transducerMenu);
+    addSubview(testSettingsFile_label);
+    addSubview(testSettingsFile_);
     [view_ setHidden:NO];
 }
 
@@ -288,32 +240,12 @@ void CocoaTestSetupView::show() { [view_ setHidden:NO]; }
 
 void CocoaTestSetupView::hide() { [view_ setHidden:YES]; }
 
-auto CocoaTestSetupView::startingSnr_dB() -> std::string {
-    return stringValue(startingSnr_dB_);
-}
-
 auto CocoaTestSetupView::stringValue(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
 }
 
-auto CocoaTestSetupView::maskerLevel_dB_SPL() -> std::string {
-    return stringValue(maskerLevel_dB_SPL_);
-}
-
-auto CocoaTestSetupView::calibrationLevel_dB_SPL() -> std::string {
-    return stringValue(calibrationLevel_dB_SPL_);
-}
-
-auto CocoaTestSetupView::maskerFilePath() -> std::string {
-    return stringValue(maskerFilePath_);
-}
-
-auto CocoaTestSetupView::calibrationFilePath() -> std::string {
-    return stringValue(calibrationFilePath_);
-}
-
-auto CocoaTestSetupView::targetListDirectory() -> std::string {
-    return stringValue(targetListDirectory_);
+auto CocoaTestSetupView::testSettingsFile() -> std::string {
+    return stringValue(testSettingsFile_);
 }
 
 auto CocoaTestSetupView::testerId() -> std::string {
@@ -328,58 +260,22 @@ auto CocoaTestSetupView::session() -> std::string {
     return stringValue(session_);
 }
 
-auto CocoaTestSetupView::method() -> std::string {
-    return methodMenu.titleOfSelectedItem.UTF8String;
+auto CocoaTestSetupView::transducer() -> std::string {
+    return transducerMenu.titleOfSelectedItem.UTF8String;
 }
 
-auto CocoaTestSetupView::condition() -> std::string {
-    return conditionMenu.titleOfSelectedItem.UTF8String;
+auto CocoaTestSetupView::rmeSetting() -> std::string {
+    return stringValue(rmeSetting_);
 }
 
-auto CocoaTestSetupView::trackSettingsFile() -> std::string {
-    return stringValue(trackSettingsFile_);
-}
-
-void CocoaTestSetupView::setTrackSettingsFile(std::string s) {
-    [trackSettingsFile_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setTargetListDirectory(std::string s) {
-    [targetListDirectory_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setCalibrationFilePath(std::string s) {
-    [calibrationFilePath_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setMasker(std::string s) {
-    [maskerFilePath_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setCalibration(std::string s) {
-    [calibrationFilePath_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setMaskerLevel_dB_SPL(std::string s) {
-    [maskerLevel_dB_SPL_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setCalibrationLevel_dB_SPL(std::string s) {
-    [calibrationLevel_dB_SPL_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::setStartingSnr_dB(std::string s) {
-    [startingSnr_dB_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaTestSetupView::populateConditionMenu(std::vector<std::string> items) {
+void CocoaTestSetupView::populateTransducerMenu(
+    std::vector<std::string> items) {
     for (const auto &item : items)
-        [conditionMenu addItemWithTitle:asNsString(item)];
+        [transducerMenu addItemWithTitle:asNsString(item)];
 }
 
-void CocoaTestSetupView::populateMethodMenu(std::vector<std::string> items) {
-    for (const auto &item : items)
-        [methodMenu addItemWithTitle:asNsString(item)];
+void CocoaTestSetupView::setTestSettingsFile(std::string s) {
+    [testSettingsFile_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaTestSetupView::confirm() { listener_->confirmTestSetup(); }
@@ -388,18 +284,8 @@ void CocoaTestSetupView::subscribe(EventListener *listener) {
     listener_ = listener;
 }
 
-void CocoaTestSetupView::browseForMasker() { listener_->browseForMasker(); }
-
-void CocoaTestSetupView::browseForTargetList() {
-    listener_->browseForTargetList();
-}
-
-void CocoaTestSetupView::browseForCalibration() {
-    listener_->browseForCalibration();
-}
-
-void CocoaTestSetupView::browseForTrackSettings() {
-    listener_->browseForTrackSettingsFile();
+void CocoaTestSetupView::browseForTestSettings() {
+    listener_->browseForTestSettingsFile();
 }
 
 void CocoaTestSetupView::playCalibration() { listener_->playCalibration(); }
@@ -563,34 +449,42 @@ void CocoaExperimenterView::secondaryDisplay(std::string s) {
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       displayedText_{
-          [[NSTextField alloc] initWithFrame:NSMakeRect(buttonWidth + 15, r.size.height - labelHeight,
+          [[NSTextField alloc] initWithFrame:NSMakeRect(buttonWidth + 15,
+                                                 r.size.height - labelHeight,
                                                  labelWidth, labelHeight)]},
       secondaryDisplayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(buttonWidth + 15 + labelWidth + 15, r.size.height - labelHeight,
-                            r.size.width - buttonWidth - labelWidth - 30, labelHeight)]},
-      evaluationButtons{
-          [[NSView alloc] initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0, 3 * buttonWidth,
-                                            buttonHeight)]},
-      responseSubmission{
-          [[NSView alloc] initWithFrame:NSMakeRect(r.size.width - 250, 0, 250,
-                                            buttonHeight + 15 + 2*labelHeight + 15)]},
-      correctKeywordsSubmission{
-          [[NSView alloc] initWithFrame:NSMakeRect(r.size.width - normalTextFieldWidth, 0, normalTextFieldWidth,
-                                            buttonHeight + 15 + labelHeight)]},
+          initWithFrame:NSMakeRect(buttonWidth + 15 + labelWidth + 15,
+                            r.size.height - labelHeight,
+                            r.size.width - buttonWidth - labelWidth - 30,
+                            labelHeight)]},
+      evaluationButtons{[[NSView alloc]
+          initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
+                            3 * buttonWidth, buttonHeight)]},
+      continueTestingDialog{[[NSWindow alloc]
+          initWithContentRect:NSMakeRect(0, 0, 3 * buttonWidth, buttonHeight)
+                    styleMask:NSWindowStyleMaskBorderless
+                      backing:NSBackingStoreBuffered
+                        defer:YES]},
+      responseSubmission{[[NSView alloc]
+          initWithFrame:NSMakeRect(r.size.width - 250, 0, 250,
+                            buttonHeight + 15 + 2 * labelHeight + 15)]},
+      correctKeywordsSubmission{[[NSView alloc]
+          initWithFrame:NSMakeRect(r.size.width - normalTextFieldWidth, 0,
+                            normalTextFieldWidth,
+                            buttonHeight + 15 + labelHeight)]},
       response_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0,
-                            buttonHeight + 15 + labelHeight + 15, 250,
+          initWithFrame:NSMakeRect(0, buttonHeight + 15 + labelHeight + 15, 250,
                             labelHeight)]},
       correctKeywordsEntry_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0,
-                            buttonHeight + 15, normalTextFieldWidth,
+          initWithFrame:NSMakeRect(0, buttonHeight + 15, normalTextFieldWidth,
                             labelHeight)]},
       flagged_{[[NSButton alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight + 15,
-                            normalTextFieldWidth, labelHeight)]},
+          initWithFrame:NSMakeRect(0, buttonHeight + 15, normalTextFieldWidth,
+                            labelHeight)]},
       actions{[ExperimenterViewActions alloc]} {
     exitTestButton_ = button("exit test", actions, @selector(exitTest));
-    [exitTestButton_ setFrame:NSMakeRect(0, r.size.height - buttonHeight, buttonWidth, buttonHeight)];
+    [exitTestButton_ setFrame:NSMakeRect(0, r.size.height - buttonHeight,
+                                  buttonWidth, buttonHeight)];
     [displayedText_ setBezeled:NO];
     [displayedText_ setDrawsBackground:NO];
     [displayedText_ setEditable:NO];
@@ -609,28 +503,47 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto submitFreeResponse_ {
         button("submit", actions, @selector(submitFreeResponse))
     };
-    [submitFreeResponse_ setFrame:NSMakeRect(responseSubmission.frame.size.width - buttonWidth, 0,
-                                      buttonWidth, buttonHeight)];
+    [submitFreeResponse_
+        setFrame:NSMakeRect(responseSubmission.frame.size.width - buttonWidth,
+                     0, buttonWidth, buttonHeight)];
     const auto passButton_ {
-        button("pass", actions, @selector(submitPassedTrial))
+        button("correct", actions, @selector(submitPassedTrial))
     };
-    [passButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width - 3 * buttonWidth, 0,
-                              buttonWidth, buttonHeight)];
+    [passButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
+                                  3 * buttonWidth,
+                              0, buttonWidth, buttonHeight)];
     const auto failButton_ {
-        button("fail", actions, @selector(submitFailedTrial))
+        button("incorrect", actions, @selector(submitFailedTrial))
     };
-    [failButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width - buttonWidth, 0, buttonWidth,
-                              buttonHeight)];
+    [failButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
+                                  2 * buttonWidth,
+                              0, buttonWidth, buttonHeight)];
+    const auto continueButton_ {
+        button("continue", actions, @selector(acceptContinuingTesting))
+    };
+    const auto exitButton_ {
+        button("exit", actions, @selector(declineContinuingTesting))
+    };
+    [continueButton_
+        setFrame:NSMakeRect(evaluationButtons.frame.size.width - buttonWidth, 0,
+                     buttonWidth, buttonHeight)];
+    [exitButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
+                                  3 * buttonWidth,
+                              0, buttonWidth, buttonHeight)];
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
-    [submitCorrectKeywords_ setFrame:NSMakeRect(correctKeywordsSubmission.frame.size.width - buttonWidth, 0,
-                                         buttonWidth, buttonHeight)];
+    [submitCorrectKeywords_
+        setFrame:NSMakeRect(
+                     correctKeywordsSubmission.frame.size.width - buttonWidth,
+                     0, buttonWidth, buttonHeight)];
     [responseSubmission addSubview:submitFreeResponse_];
     [responseSubmission addSubview:response_];
     [responseSubmission addSubview:flagged_];
     [evaluationButtons addSubview:passButton_];
     [evaluationButtons addSubview:failButton_];
+    [continueTestingDialog.contentView addSubview:continueButton_];
+    [continueTestingDialog.contentView addSubview:exitButton_];
     [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
     [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
     [view_ addSubview:nextTrialButton_];
@@ -645,7 +558,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     actions.controller = this;
 }
 
-void CocoaExperimenterView::showNextTrialButton() { [nextTrialButton_ setHidden:NO]; }
+void CocoaExperimenterView::showNextTrialButton() {
+    [nextTrialButton_ setHidden:NO];
+}
 
 void CocoaExperimenterView::hideNextTrialButton() {
     [nextTrialButton_ setHidden:YES];
@@ -675,6 +590,16 @@ void CocoaExperimenterView::hideCorrectKeywordsSubmission() {
     [correctKeywordsSubmission setHidden:YES];
 }
 
+void CocoaExperimenterView::showContinueTestingDialog() {
+    [view_.window beginSheet:continueTestingDialog
+           completionHandler:^(NSModalResponse returnCode){
+           }];
+}
+
+void CocoaExperimenterView::hideContinueTestingDialog() {
+    [view_.window endSheet:continueTestingDialog];
+}
+
 auto CocoaExperimenterView::freeResponse() -> std::string {
     return response_.stringValue.UTF8String;
 }
@@ -689,30 +614,63 @@ auto CocoaExperimenterView::flagged() -> bool {
 
 void CocoaExperimenterView::playTrial() { listener_->playTrial(); }
 
-void CocoaExperimenterView::submitFreeResponse() { listener_->submitFreeResponse(); }
+void CocoaExperimenterView::submitFreeResponse() {
+    listener_->submitFreeResponse();
+}
 
-void CocoaExperimenterView::submitPassedTrial() { listener_->submitPassedTrial(); }
+void CocoaExperimenterView::submitPassedTrial() {
+    listener_->submitPassedTrial();
+}
 
-void CocoaExperimenterView::submitFailedTrial() { listener_->submitFailedTrial(); }
+void CocoaExperimenterView::submitFailedTrial() {
+    listener_->submitFailedTrial();
+}
 
 void CocoaExperimenterView::submitCorrectKeywords() {
     listener_->submitCorrectKeywords();
 }
 
+void CocoaExperimenterView::acceptContinuingTesting() {
+    listener_->acceptContinuingTesting();
+}
+
+void CocoaExperimenterView::declineContinuingTesting() {
+    listener_->declineContinuingTesting();
+}
+
+constexpr auto windowPerimeterSpace{15};
+
+constexpr auto innerWidth(NSRect r) -> CGFloat {
+    return r.size.width - 2 * windowPerimeterSpace;
+}
+
+constexpr auto innerHeight(NSRect r) -> CGFloat {
+    return r.size.height - 2 * windowPerimeterSpace;
+}
+
+static auto embeddedFrame(NSRect r) -> NSRect {
+    return NSMakeRect(r.origin.x + windowPerimeterSpace,
+        r.origin.y + windowPerimeterSpace, innerWidth(r), innerHeight(r));
+}
+
+static auto innerFrame(NSRect r) -> NSRect {
+    return NSMakeRect(0, 0, innerWidth(r), innerHeight(r));
+}
+
 CocoaView::CocoaView(NSRect r)
-    : app{[NSApplication sharedApplication]},
-      window{[[NSWindow alloc]
-          initWithContentRect:r
-                    styleMask:NSWindowStyleMaskClosable |
-                    NSWindowStyleMaskResizable | NSWindowStyleMaskTitled
-                      backing:NSBackingStoreBuffered
-                        defer:NO]},
-      audioDevice_label{
-          allocLabel(@"audio output:", NSMakeRect(15, 15, 140, labelHeight))},
-      deviceMenu{[[NSPopUpButton alloc]
-          initWithFrame:NSMakeRect(15 + 140 + labelToTextFieldSpacing, 15,
-                            menuWidth, labelHeight)
-              pullsDown:NO]} {
+    : testSetup_{innerFrame(r)}, experimenter_{innerFrame(r)},
+      view{[[NSView alloc] initWithFrame:embeddedFrame(r)]},
+      audioDevice_label{normalLabelWithHeight(0, "audio output:")},
+      deviceMenu{
+          [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
+                                                   0, menuWidth, labelHeight)
+                                     pullsDown:NO]},
+      window{[[NSWindow alloc] initWithContentRect:r
+                                         styleMask:NSWindowStyleMaskClosable |
+                                         NSWindowStyleMaskTitled
+                                           backing:NSBackingStoreBuffered
+                                             defer:NO]},
+      app{[NSApplication sharedApplication]} {
     app.mainMenu = [[NSMenu alloc] init];
 
     auto appMenu{[[NSMenuItem alloc] init]};
@@ -722,9 +680,11 @@ CocoaView::CocoaView(NSRect r)
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-
-    [window.contentView addSubview:audioDevice_label];
-    [window.contentView addSubview:deviceMenu];
+    [view addSubview:testSetup_.view()];
+    [view addSubview:experimenter_.view()];
+    [view addSubview:audioDevice_label];
+    [view addSubview:deviceMenu];
+    [window.contentView addSubview:view];
     [window makeKeyAndOrderFront:nil];
 }
 
@@ -774,13 +734,15 @@ void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
         [deviceMenu addItemWithTitle:asNsString(item)];
 }
 
-void CocoaView::addSubview(NSView *view) {
-    [window.contentView addSubview:view];
-}
+void CocoaView::addSubview(NSView *v) { [view addSubview:v]; }
 
 void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {
     [window setDelegate:delegate];
 }
 
 void CocoaView::center() { [window center]; }
+
+auto CocoaView::testSetup() -> View::TestSetup & { return testSetup_; }
+
+auto CocoaView::experimenter() -> View::Experimenter & { return experimenter_; }
 }

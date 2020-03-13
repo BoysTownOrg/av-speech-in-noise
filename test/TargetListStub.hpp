@@ -6,16 +6,8 @@
 #include <utility>
 
 namespace av_speech_in_noise {
-class TargetListStub : public TargetList {
+class TargetListStub : public virtual TargetList {
   public:
-    void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
-
-    auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
-
-    void setEmpty() { empty_ = true; }
-
-    auto empty() -> bool override { return empty_; }
-
     auto current() -> std::string override { return current_; }
 
     void setCurrent(std::string s) { current_ = std::move(s); }
@@ -49,6 +41,19 @@ class TargetListStub : public TargetList {
     std::string next_{};
     std::string current_{};
     bool nextCalled_{};
+};
+
+class FiniteTargetListStub : public FiniteTargetList, public TargetListStub {
+  public:
+    void setEmpty() { empty_ = true; }
+
+    auto empty() -> bool override { return empty_; }
+
+    void reinsertCurrent() override { reinsertCurrentCalled_ = true; }
+
+    auto reinsertCurrentCalled() const { return reinsertCurrentCalled_; }
+
+  private:
     bool empty_{};
     bool reinsertCurrentCalled_{};
 };

@@ -384,7 +384,7 @@ void RecognitionTestModelImpl::playCalibration_(const Calibration &p) {
     setTargetPlayerDevice(p);
     loadTargetFile(p.filePath);
     trySettingTargetLevel(p);
-    prepareVideo(p.condition);
+    targetPlayer.showVideo();
     playTarget();
 }
 

@@ -10,13 +10,12 @@ class MersenneTwisterRandomizer : public target_list::Randomizer,
     std::mt19937 engine{std::random_device{}()};
 
   public:
-    void shuffle(string_vector_iterator begin, string_vector_iterator end) override {
-        std::shuffle(begin, end, engine);
+    void shuffle(gsl::span<std::string> s) override {
+        std::shuffle(s.begin(), s.end(), engine);
     }
 
-    void shuffle(
-        int_vector_iterator begin, int_vector_iterator end) override {
-        std::shuffle(begin, end, engine);
+    void shuffle(gsl::span<int> s) override {
+        std::shuffle(s.begin(), s.end(), engine);
     }
 
     auto betweenInclusive(double a, double b) -> double override {

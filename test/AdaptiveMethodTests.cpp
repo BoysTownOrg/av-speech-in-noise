@@ -9,35 +9,32 @@
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <algorithm>
+#include <functional>
 
 namespace av_speech_in_noise {
 namespace {
-class TrackSettingsReaderStub : public TrackSettingsReader {
-    const TrackingRule *rule_{};
-    std::string filePath_{};
-
-  public:
-    [[nodiscard]] auto filePath() const { return filePath_; }
-
-    auto read(std::string s) -> const TrackingRule * override {
-        filePath_ = std::move(s);
-        return rule_;
-    }
-
-    void setTrackingRule(const TrackingRule *r) { rule_ = r; }
-};
-
 class UseCase {
   public:
     virtual ~UseCase() = default;
     virtual void run(AdaptiveMethodImpl &) = 0;
 };
 
-class Initializing : public UseCase {
-    AdaptiveTest test{};
+void initialize(AdaptiveMethodImpl &method, const AdaptiveTest &test,
+    TargetListReader &targetListReader) {
+    method.initialize(test, &targetListReader);
+}
 
+class Initializing : public UseCase {
   public:
-    void run(AdaptiveMethodImpl &method) override { method.initialize(test); }
+    explicit Initializing(TargetListReader &reader) : reader{reader} {}
+
+    void run(AdaptiveMethodImpl &method) override {
+        initialize(method, test, reader);
+    }
+
+  private:
+    AdaptiveTest test{};
+    TargetListReader &reader;
 };
 
 void submit(AdaptiveMethodImpl &method,
@@ -263,17 +260,108 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
     }
 };
 
+void resetTracks(AdaptiveMethodImpl &method) { method.resetTracks(); }
+
+void assertStartingXEqualsOne(const Track::Settings &s) {
+    assertEqual(1, s.startingX);
+}
+
+void assertCeilingEqualsOne(const Track::Settings &s) {
+    assertEqual(1, s.ceiling);
+}
+
+void assertFloorEqualsOne(const Track::Settings &s) { assertEqual(1, s.floor); }
+
+void assertBumpLimitEqualsOne(const Track::Settings &s) {
+    assertEqual(1, s.bumpLimit);
+}
+
+void assertTargetLevelRuleEquals(
+    const TrackingRule &rule, const Track::Settings &s) {
+    assertEqual(&rule, s.rule);
+}
+
+void write(AdaptiveMethodImpl &method,
+    const coordinate_response_measure::Response &response,
+    OutputFile &outputFile) {
+    submit(method, response);
+    method.writeLastCoordinateResponse(&outputFile);
+}
+
+auto settings(const TrackFactoryStub &factory) -> std::vector<Track::Settings> {
+    return factory.parameters();
+}
+
+auto settings(const TrackFactoryStub &factory, gsl::index i)
+    -> Track::Settings {
+    return settings(factory).at(i);
+}
+
+constexpr auto listCount{3};
+
+void forEachSettings(const TrackFactoryStub &factory,
+    const std::function<void(const Track::Settings &)> &f) {
+    for (int i = 0; i < listCount; ++i)
+        f(settings(factory, i));
+}
+
+void setNext(const std::vector<std::shared_ptr<TargetListStub>> &lists,
+    gsl::index n, std::string s) {
+    lists.at(n)->setNext(std::move(s));
+}
+
+void setCurrent(const std::vector<std::shared_ptr<TargetListStub>> &lists,
+    gsl::index n, std::string s) {
+    lists.at(n)->setCurrent(std::move(s));
+}
+
+auto at(const std::vector<std::shared_ptr<TrackStub>> &tracks, gsl::index n)
+    -> const std::shared_ptr<TrackStub> & {
+    return tracks.at(n);
+}
+
+auto complete(AdaptiveMethodImpl &method) -> bool { return method.complete(); }
+
+void assertComplete(AdaptiveMethodImpl &method) {
+    assertTrue(complete(method));
+}
+
+void assertIncomplete(AdaptiveMethodImpl &method) {
+    assertFalse(complete(method));
+}
+
+auto pushedDown(const std::vector<std::shared_ptr<TrackStub>> &tracks,
+    gsl::index n) -> bool {
+    return at(tracks, n)->pushedDown();
+}
+
+auto pushedUp(const std::vector<std::shared_ptr<TrackStub>> &tracks,
+    gsl::index n) -> bool {
+    return at(tracks, n)->pushedUp();
+}
+
+void setComplete(
+    const std::vector<std::shared_ptr<TrackStub>> &tracks, gsl::index n) {
+    at(tracks, n)->setComplete();
+}
+
+void selectNextList(RandomizerStub &randomizer, int n) {
+    randomizer.setRandomInt(n);
+}
+
+void assertNextTargetEquals(AdaptiveMethodImpl &method, const std::string &s) {
+    assertEqual(s, method.nextTarget());
+}
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
-    TargetListSetReaderStub targetListSetReader;
-    TrackSettingsReaderStub trackSettingsReader;
     TrackFactoryStub snrTrackFactory;
     ResponseEvaluatorStub evaluator;
     RandomizerStub randomizer;
+    AdaptiveMethodImpl method{snrTrackFactory, evaluator, randomizer};
     OutputFileStub outputFile;
-    AdaptiveMethodImpl method{targetListSetReader, trackSettingsReader,
-        snrTrackFactory, evaluator, randomizer};
-    Initializing initializing;
+    TargetListSetReaderStub targetListReader;
+    Initializing initializing{targetListReader};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectCoordinateResponse submittingCorrectCoordinateResponse{
         evaluator};
@@ -288,192 +376,123 @@ class AdaptiveMethodTests : public ::testing::Test {
     WritingCorrectResponse writingCorrectResponse{outputFile};
     WritingIncorrectResponse writingIncorrectResponse{outputFile};
     WritingCorrectKeywords writingCorrectKeywords{outputFile};
-    AdaptiveTest test;
+    AdaptiveTest test{};
     coordinate_response_measure::Response coordinateResponse{};
     open_set::CorrectKeywords correctKeywords{};
-    TrackingRule targetLevelRule;
-    std::vector<std::shared_ptr<TargetListStub>> lists;
+    std::vector<std::shared_ptr<TargetListStub>> targetLists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
 
-    AdaptiveMethodTests() : lists(3), tracks(3) {
-        trackSettingsReader.setTrackingRule(&targetLevelRule);
-        std::generate(lists.begin(), lists.end(),
-            []() { return std::make_shared<TargetListStub>(); });
-        std::generate(tracks.begin(), tracks.end(),
-            []() { return std::make_shared<TrackStub>(); });
-        targetListSetReader.setTargetLists({lists.begin(), lists.end()});
+    AdaptiveMethodTests() : targetLists(listCount), tracks(listCount) {
+        std::generate(targetLists.begin(), targetLists.end(),
+            std::make_shared<TargetListStub>);
+        std::generate(
+            tracks.begin(), tracks.end(), std::make_shared<TrackStub>);
+        targetListReader.setTargetLists(
+            {targetLists.begin(), targetLists.end()});
         snrTrackFactory.setTracks({tracks.begin(), tracks.end()});
     }
 
   public:
-    auto snrTrackFactoryParameters() const {
-        return snrTrackFactory.parameters();
-    }
-
-    auto snrTrackFactoryParameters(int x) const {
-        return snrTrackFactoryParameters().at(x);
-    }
-
-    void initialize() { method.initialize(test); }
-
-    void assertPassedTargetLevelRule(const Track::Settings &s) {
-        assertEqual(&std::as_const(targetLevelRule), s.rule);
-    }
-
-    void assertStartingXEqualsOne(const Track::Settings &s) {
-        assertEqual(1, s.startingX);
-    }
-
-    void assertCeilingEqualsOne(const Track::Settings &s) {
-        assertEqual(1, s.ceiling);
-    }
-
-    void assertFloorEqualsOne(const Track::Settings &s) {
-        assertEqual(1, s.floor);
-    }
-
-    void assertBumpLimitEqualsOne(const Track::Settings &s) {
-        assertEqual(1, s.bumpLimit);
-    }
-
-    void applyToSnrTrackFactoryParameters(
-        int n, void (AdaptiveMethodTests::*f)(const Track::Settings &)) {
-        for (int i = 0; i < n; ++i)
-            (this->*f)(snrTrackFactoryParameters(i));
-    }
-
-    void selectList(int n) { randomizer.setRandomInt(n); }
-
-    auto next() -> std::string { return method.nextTarget(); }
-
-    void assertNextEquals(const std::string &s) { assertEqual(s, next()); }
-
-    void setNextForList(gsl::index n, std::string s) {
-        lists.at(n)->setNext(std::move(s));
-    }
-
     void assertRandomizerPassedIntegerBounds(int a, int b) {
         assertEqual(a, randomizer.lowerIntBound());
         assertEqual(b, randomizer.upperIntBound());
     }
 
-    auto track(gsl::index n) { return tracks.at(n); }
-
-    void setCurrentForTarget(gsl::index n, std::string s) {
-        lists.at(n)->setCurrent(std::move(s));
-    }
-
-    void writeCoordinateResponse() {
-        submit(method, coordinateResponse);
-        method.writeLastCoordinateResponse(&outputFile);
-    }
-
     void assertWritesUpdatedReversals(WritingResponseUseCase &useCase) {
-        selectList(1);
-        initialize();
-        track(1)->setReversalsWhenUpdated(3);
-        selectList(2);
+        selectNextList(randomizer, 1);
+        initialize(method, test, targetListReader);
+        at(tracks, 1)->setReversalsWhenUpdated(3);
+        selectNextList(randomizer, 2);
         run(useCase);
         assertEqual(3, useCase.writtenReversals(outputFile));
     }
 
     void assertWritesPreUpdatedSnr(WritingResponseUseCase &useCase) {
-        selectList(1);
-        initialize();
-        track(1)->setX(4);
-        track(1)->setXWhenUpdated(3);
-        selectList(2);
+        selectNextList(randomizer, 1);
+        initialize(method, test, targetListReader);
+        at(tracks, 1)->setX(4);
+        at(tracks, 1)->setXWhenUpdated(3);
+        selectNextList(randomizer, 2);
         run(useCase);
         assertEqual(4, useCase.writtenSnr(outputFile));
     }
 
-    static auto blueColor() { return coordinate_response_measure::Color::blue; }
+    static constexpr auto blue{coordinate_response_measure::Color::blue};
 
     auto writtenCoordinateResponseTrialCorrect() -> bool {
         return writtenAdaptiveCoordinateResponseTrial(outputFile).correct;
     }
 
-    auto snrTrackPushedDown(int n) -> bool { return track(n)->pushedDown(); }
-
-    auto snrTrackPushedUp(int n) -> bool { return track(n)->pushedUp(); }
-
     void setCorrectCoordinateResponse() { evaluator.setCorrect(); }
 
     void setIncorrectCoordinateResponse() { evaluator.setIncorrect(); }
 
-    void setSnrTrackComplete(int n) { track(n)->setComplete(); }
-
     void assertTestIncompleteAfterCoordinateResponse() {
         submit(method, coordinateResponse);
-        assertTestIncomplete();
+        assertIncomplete(method);
     }
 
     void assertTestCompleteAfterCoordinateResponse() {
         submit(method, coordinateResponse);
-        assertTestComplete();
+        assertComplete(method);
     }
-
-    void assertTestIncomplete() { assertFalse(testComplete()); }
-
-    auto testComplete() -> bool { return method.complete(); }
-
-    void assertTestComplete() { assertTrue(testComplete()); }
 
     void run(UseCase &useCase) { useCase.run(method); }
 
     void assertSelectsListInRangeAfterRemovingCompleteTracks(UseCase &useCase) {
-        initialize();
-        setSnrTrackComplete(2);
+        initialize(method, test, targetListReader);
+        setComplete(tracks, 2);
         run(useCase);
         assertRandomizerPassedIntegerBounds(0, 1);
     }
 
-    void assertNextReturnsNextFilePathAfter(UseCase &useCase) {
-        setNextForList(1, "a");
-        selectList(1);
+    void assertNextTargetEqualsNextFromSelectedTargetListAfter(
+        UseCase &useCase) {
+        setNext(targetLists, 1, "a");
+        selectNextList(randomizer, 1);
         run(useCase);
-        assertNextEquals("a");
+        assertNextTargetEquals(method, "a");
     }
 
     void assertPushesSnrTrackDown(UseCase &useCase) {
-        selectList(1);
-        initialize();
-        selectList(2);
+        selectNextList(randomizer, 1);
+        initialize(method, test, targetListReader);
+        selectNextList(randomizer, 2);
         run(useCase);
-        assertTrue(snrTrackPushedDown(1));
-        assertFalse(snrTrackPushedUp(1));
+        assertTrue(pushedDown(tracks, 1));
+        assertFalse(pushedUp(tracks, 1));
     }
 
     void assertPushesSnrTrackUp(UseCase &useCase) {
-        selectList(1);
-        initialize();
-        selectList(2);
+        selectNextList(randomizer, 1);
+        initialize(method, test, targetListReader);
+        selectNextList(randomizer, 2);
         run(useCase);
-        assertFalse(snrTrackPushedDown(1));
-        assertTrue(snrTrackPushedUp(1));
+        assertFalse(pushedDown(tracks, 1));
+        assertTrue(pushedUp(tracks, 1));
     }
 
     void assertSelectsListAmongThoseWithIncompleteTracks(UseCase &useCase) {
-        initialize();
-        setNextForList(2, "a");
-        setSnrTrackComplete(1);
-        selectList(1);
+        initialize(method, test, targetListReader);
+        setNext(targetLists, 2, "a");
+        setComplete(tracks, 1);
+        selectNextList(randomizer, 1);
         run(useCase);
-        assertNextEquals("a");
+        assertNextTargetEquals(method, "a");
     }
 
     void assertWritesTarget(WritingTargetUseCase &useCase) {
-        initialize();
+        initialize(method, test, targetListReader);
         evaluator.setFileName("a");
         run(useCase);
         assertEqual("a", useCase.writtenTarget(outputFile));
     }
 
     void assertPassesCurrentTargetToEvaluatorForFileName(UseCase &useCase) {
-        selectList(1);
-        initialize();
-        setCurrentForTarget(1, "a");
-        selectList(2);
+        selectNextList(randomizer, 1);
+        initialize(method, test, targetListReader);
+        setCurrent(targetLists, 1, "a");
+        selectNextList(randomizer, 2);
         run(useCase);
         assertEqual("a", evaluator.filePathForFileName());
     }
@@ -482,88 +501,82 @@ class AdaptiveMethodTests : public ::testing::Test {
 #define ADAPTIVE_METHOD_TEST(a) TEST_F(AdaptiveMethodTests, a)
 
 ADAPTIVE_METHOD_TEST(initializeCreatesSnrTrackForEachList) {
-    initialize();
-    assertEqual(std::size_t{3}, snrTrackFactoryParameters().size());
+    initialize(method, test, targetListReader);
+    assertEqual(std::size_t{3}, settings(snrTrackFactory).size());
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithTargetLevelRule) {
-    initialize();
-    applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertPassedTargetLevelRule);
+    initialize(method, test, targetListReader);
+    forEachSettings(snrTrackFactory,
+        [&](auto s) { assertTargetLevelRuleEquals(test.trackingRule, s); });
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
     test.startingSnr_dB = 1;
-    initialize();
-    applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertStartingXEqualsOne);
+    initialize(method, test, targetListReader);
+    forEachSettings(snrTrackFactory, assertStartingXEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithCeiling) {
     test.ceilingSnr_dB = 1;
-    initialize();
-    applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertCeilingEqualsOne);
+    initialize(method, test, targetListReader);
+    forEachSettings(snrTrackFactory, assertCeilingEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithFloor) {
     test.floorSnr_dB = 1;
-    initialize();
-    applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertFloorEqualsOne);
+    initialize(method, test, targetListReader);
+    forEachSettings(snrTrackFactory, assertFloorEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithBumpLimit) {
     test.trackBumpLimit = 1;
-    initialize();
-    applyToSnrTrackFactoryParameters(
-        3, &AdaptiveMethodTests::assertBumpLimitEqualsOne);
+    initialize(method, test, targetListReader);
+    forEachSettings(snrTrackFactory, assertBumpLimitEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(writeTestParametersPassesToOutputFile) {
-    initialize();
+    initialize(method, test, targetListReader);
     method.writeTestingParameters(&outputFile);
     assertEqual(&std::as_const(test), outputFile.adaptiveTest());
 }
 
 ADAPTIVE_METHOD_TEST(initializePassesTargetListDirectory) {
     test.targetListDirectory = "a";
-    initialize();
-    assertEqual("a", targetListSetReader.directory());
-}
-
-ADAPTIVE_METHOD_TEST(initializePassesTrackSettingsFile) {
-    test.trackSettingsFile = "a";
-    initialize();
-    assertEqual("a", trackSettingsReader.filePath());
+    initialize(method, test, targetListReader);
+    assertEqual("a", targetListReader.directory());
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterInitialize) {
-    assertNextReturnsNextFilePathAfter(initializing);
+    assertNextTargetEqualsNextFromSelectedTargetListAfter(initializing);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCoordinateResponse) {
-    initialize();
-    assertNextReturnsNextFilePathAfter(submittingCoordinateResponse);
+    initialize(method, test, targetListReader);
+    assertNextTargetEqualsNextFromSelectedTargetListAfter(
+        submittingCoordinateResponse);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCorrectResponse) {
-    initialize();
-    assertNextReturnsNextFilePathAfter(submittingCorrectResponse);
+    initialize(method, test, targetListReader);
+    assertNextTargetEqualsNextFromSelectedTargetListAfter(
+        submittingCorrectResponse);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterIncorrectResponse) {
-    initialize();
-    assertNextReturnsNextFilePathAfter(submittingIncorrectResponse);
+    initialize(method, test, targetListReader);
+    assertNextTargetEqualsNextFromSelectedTargetListAfter(
+        submittingIncorrectResponse);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCorrectKeywords) {
-    initialize();
-    assertNextReturnsNextFilePathAfter(submittingCorrectKeywords);
+    initialize(method, test, targetListReader);
+    assertNextTargetEqualsNextFromSelectedTargetListAfter(
+        submittingCorrectKeywords);
 }
 
 ADAPTIVE_METHOD_TEST(randomizerPassedIntegerBoundsOfLists) {
-    initialize();
+    initialize(method, test, targetListReader);
     assertRandomizerPassedIntegerBounds(0, 2);
 }
 
@@ -591,72 +604,79 @@ ADAPTIVE_METHOD_TEST(
         submittingCorrectKeywords);
 }
 
+ADAPTIVE_METHOD_TEST(resetTracksResetsEachTrack) {
+    initialize(method, test, targetListReader);
+    resetTracks(method);
+    for (auto &track : tracks)
+        assertTrue(track->resetted());
+}
+
 ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {
-    track(0)->setX(1);
-    selectList(0);
-    initialize();
+    at(tracks, 0)->setX(1);
+    selectNextList(randomizer, 0);
+    initialize(method, test, targetListReader);
     assertEqual(1, method.snr_dB());
 }
 
-ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCurrentToEvaluator) {
-    selectList(1);
-    initialize();
-    setCurrentForTarget(1, "a");
-    selectList(2);
+ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCurrentTargetToEvaluator) {
+    selectNextList(randomizer, 1);
+    initialize(method, test, targetListReader);
+    setCurrent(targetLists, 1, "a");
+    selectNextList(randomizer, 2);
     submit(method, coordinateResponse);
     assertEqual("a", evaluator.correctColorFilePath());
     assertEqual("a", evaluator.correctNumberFilePath());
 }
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCorrectFilePathToEvaluator) {
-    selectList(1);
-    initialize();
-    setCurrentForTarget(1, "a");
-    selectList(2);
+    selectNextList(randomizer, 1);
+    initialize(method, test, targetListReader);
+    setCurrent(targetLists, 1, "a");
+    selectNextList(randomizer, 2);
     submit(method, coordinateResponse);
     assertEqual("a", evaluator.correctFilePath());
 }
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesResponseToEvaluator) {
-    initialize();
+    initialize(method, test, targetListReader);
     submit(method, coordinateResponse);
     assertEqual(&std::as_const(coordinateResponse), evaluator.response());
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
-    initialize();
-    coordinateResponse.color = blueColor();
-    writeCoordinateResponse();
-    assertEqual(blueColor(),
-        writtenAdaptiveCoordinateResponseTrial(outputFile).subjectColor);
+    initialize(method, test, targetListReader);
+    coordinateResponse.color = blue;
+    write(method, coordinateResponse, outputFile);
+    assertEqual(
+        blue, writtenAdaptiveCoordinateResponseTrial(outputFile).subjectColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
-    initialize();
-    evaluator.setCorrectColor(blueColor());
-    writeCoordinateResponse();
-    assertEqual(blueColor(),
-        writtenAdaptiveCoordinateResponseTrial(outputFile).correctColor);
+    initialize(method, test, targetListReader);
+    evaluator.setCorrectColor(blue);
+    write(method, coordinateResponse, outputFile);
+    assertEqual(
+        blue, writtenAdaptiveCoordinateResponseTrial(outputFile).correctColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
-    initialize();
+    initialize(method, test, targetListReader);
     coordinateResponse.number = 1;
-    writeCoordinateResponse();
+    write(method, coordinateResponse, outputFile);
     assertEqual(
         1, writtenAdaptiveCoordinateResponseTrial(outputFile).subjectNumber);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
-    initialize();
+    initialize(method, test, targetListReader);
     evaluator.setCorrectNumber(1);
-    writeCoordinateResponse();
+    write(method, coordinateResponse, outputFile);
     assertEqual(
         1, writtenAdaptiveCoordinateResponseTrial(outputFile).correctNumber);
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
-    initialize();
+    initialize(method, test, targetListReader);
     correctKeywords.count = 1;
     method.submit(correctKeywords);
     method.writeLastCorrectKeywords(&outputFile);
@@ -696,42 +716,42 @@ ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesSnrBeforeUpdatingTrack) {
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectCoordinateResponseIsCorrect) {
-    initialize();
+    initialize(method, test, targetListReader);
     setCorrectCoordinateResponse();
-    writeCoordinateResponse();
+    write(method, coordinateResponse, outputFile);
     assertTrue(writtenCoordinateResponseTrialCorrect());
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectResponseIsCorrect) {
-    initialize();
+    initialize(method, test, targetListReader);
     submitCorrectResponse(method);
     method.writeLastCorrectResponse(&outputFile);
     assertTrue(outputFile.writtenOpenSetAdaptiveTrial().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeSufficientCorrectKeywordsIsCorrect) {
-    initialize();
+    initialize(method, test, targetListReader);
     run(submittingSufficientCorrectKeywords);
     method.writeLastCorrectKeywords(&outputFile);
     assertTrue(outputFile.writtenCorrectKeywords().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {
-    initialize();
+    initialize(method, test, targetListReader);
     setIncorrectCoordinateResponse();
-    writeCoordinateResponse();
+    write(method, coordinateResponse, outputFile);
     assertFalse(writtenCoordinateResponseTrialCorrect());
 }
 
 ADAPTIVE_METHOD_TEST(writeIncorrectResponseIsIncorrect) {
-    initialize();
+    initialize(method, test, targetListReader);
     submitIncorrectResponse(method);
     method.writeLastIncorrectResponse(&outputFile);
     assertFalse(outputFile.writtenOpenSetAdaptiveTrial().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeInsufficientCorrectKeywordsIsIncorrect) {
-    initialize();
+    initialize(method, test, targetListReader);
     run(submittingInsufficientCorrectKeywords);
     method.writeLastCorrectKeywords(&outputFile);
     assertFalse(outputFile.writtenCorrectKeywords().correct);
@@ -786,6 +806,17 @@ ADAPTIVE_METHOD_TEST(submitInsufficientCorrectKeywordsPushesSnrTrackDown) {
     assertPushesSnrTrackUp(submittingInsufficientCorrectKeywords);
 }
 
+ADAPTIVE_METHOD_TEST(resettingTracksSelectsListAmongThoseWithIncompleteTracks) {
+    setComplete(tracks, 0);
+    at(tracks, 0)->incompleteOnReset();
+    initialize(method, test, targetListReader);
+    setNext(targetLists, 0, "a");
+    setComplete(tracks, 1);
+    selectNextList(randomizer, 1);
+    method.resetTracks();
+    assertNextTargetEquals(method, "a");
+}
+
 ADAPTIVE_METHOD_TEST(
     submitCoordinateResponseSelectsListAmongThoseWithIncompleteTracks) {
     assertSelectsListAmongThoseWithIncompleteTracks(
@@ -809,12 +840,12 @@ ADAPTIVE_METHOD_TEST(
 }
 
 ADAPTIVE_METHOD_TEST(completeWhenAllTracksComplete) {
-    initialize();
-    setSnrTrackComplete(0);
+    initialize(method, test, targetListReader);
+    setComplete(tracks, 0);
     assertTestIncompleteAfterCoordinateResponse();
-    setSnrTrackComplete(1);
+    setComplete(tracks, 1);
     assertTestIncompleteAfterCoordinateResponse();
-    setSnrTrackComplete(2);
+    setComplete(tracks, 2);
     assertTestCompleteAfterCoordinateResponse();
 }
 }

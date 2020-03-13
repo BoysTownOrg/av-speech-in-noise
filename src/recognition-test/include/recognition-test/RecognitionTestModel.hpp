@@ -117,6 +117,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void fadeInComplete(const AudioSampleSystemTime &) override;
     void fadeOutComplete() override;
     void playbackComplete() override;
+    void prepareNextTrialIfNeeded() override;
     static constexpr auto maskerChannelDelaySeconds{0.004};
     static constexpr auto additionalTargetDelaySeconds{0.5};
 
@@ -165,7 +166,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
         const std::string &file);
     void loadTargetFile(std::string);
     void setTargetLevel_dB(double);
-    void prepareNextTrialIfNeeded();
 
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;

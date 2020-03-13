@@ -47,23 +47,23 @@ class ResponseEvaluator {
     virtual auto fileName(const std::string &filePath) -> std::string = 0;
 };
 
-class TestConcluder {
+class TargetListReader {
   public:
-    virtual ~TestConcluder() = default;
-    virtual auto complete(TargetList *) -> bool = 0;
-    virtual void submitResponse() = 0;
-    virtual void initialize(const FixedLevelTest &) = 0;
+    virtual ~TargetListReader() = default;
+    using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
+    virtual auto read(std::string directory) -> lists_type = 0;
 };
 
 class AdaptiveMethod : public virtual TestMethod {
   public:
-    virtual void initialize(const AdaptiveTest &) = 0;
+    virtual void initialize(const AdaptiveTest &, TargetListReader *) = 0;
+    virtual void resetTracks() = 0;
 };
 
 class FixedLevelMethod : public virtual TestMethod {
   public:
-    virtual void initialize(
-        const FixedLevelTest &, TargetList *, TestConcluder *) = 0;
+    virtual void initialize(const FixedLevelTest &, TargetList *) = 0;
+    virtual void initialize(const FixedLevelTest &, FiniteTargetList *) = 0;
 };
 
 class RecognitionTestModel {
@@ -86,16 +86,17 @@ class RecognitionTestModel {
     virtual void throwIfTrialInProgress() = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
+    virtual void prepareNextTrialIfNeeded() = 0;
 };
 
 class ModelImpl : public Model {
   public:
     ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
+        TargetListReader &targetsWithReplacementReader,
+        TargetListReader &cyclicTargetsReader,
         TargetList &targetsWithReplacement,
-        TestConcluder &fixedTrialTestConcluder,
-        TargetList &silentIntervalTargets,
-        TestConcluder &completesWhenTargetsEmpty, TargetList &everyTargetOnce,
-        RecognitionTestModel &);
+        FiniteTargetList &silentIntervalTargets,
+        FiniteTargetList &everyTargetOnce, RecognitionTestModel &);
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(const FixedLevelTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
@@ -107,6 +108,7 @@ class ModelImpl : public Model {
     void initializeWithSilentIntervalTargetsAndEyeTracking(
         const FixedLevelTest &);
     void initializeWithEyeTracking(const AdaptiveTest &) override;
+    void initializeWithCyclicTargets(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
     void submit(const coordinate_response_measure::Response &) override;
     auto testComplete() -> bool override;
@@ -119,17 +121,18 @@ class ModelImpl : public Model {
     void submit(const open_set::CorrectKeywords &) override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
+    void restartAdaptiveTestWhilePreservingCyclicTargets() override;
 
   private:
     void initializeTest_(const AdaptiveTest &);
 
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
+    TargetListReader &targetsWithReplacementReader;
+    TargetListReader &cyclicTargetsReader;
     TargetList &targetsWithReplacement;
-    TestConcluder &fixedTrialTestConcluder;
-    TargetList &silentIntervalTargets;
-    TestConcluder &completesWhenTargetsEmpty;
-    TargetList &everyTargetOnce;
+    FiniteTargetList &silentIntervalTargets;
+    FiniteTargetList &everyTargetOnce;
     RecognitionTestModel &model;
 };
 }

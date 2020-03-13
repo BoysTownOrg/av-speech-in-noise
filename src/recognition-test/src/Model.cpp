@@ -4,29 +4,36 @@
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
-    FixedLevelMethod &fixedLevelMethod, TargetList &targetsWithReplacement,
-    TestConcluder &fixedTrialTestConcluder, TargetList &silentIntervalTargets,
-    TestConcluder &completesWhenTargetsEmpty, TargetList &everyTargetOnce,
+    FixedLevelMethod &fixedLevelMethod,
+    TargetListReader &targetsWithReplacementReader,
+    TargetListReader &cyclicTargetsReader, TargetList &targetsWithReplacement,
+    FiniteTargetList &silentIntervalTargets, FiniteTargetList &everyTargetOnce,
     RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
+      targetsWithReplacementReader{targetsWithReplacementReader},
+      cyclicTargetsReader{cyclicTargetsReader},
       targetsWithReplacement{targetsWithReplacement},
-      fixedTrialTestConcluder{fixedTrialTestConcluder},
       silentIntervalTargets{silentIntervalTargets},
-      completesWhenTargetsEmpty{completesWhenTargetsEmpty},
       everyTargetOnce{everyTargetOnce}, model{model} {}
 
 static void initialize(
-    RecognitionTestModel &model, TestMethod &method, const struct Test &test) {
+    RecognitionTestModel &model, TestMethod &method, const Test &test) {
     model.initialize(&method, test);
 }
 
-static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
-    TargetList &targets, TestConcluder &concluder) {
-    method.initialize(test, &targets, &concluder);
+static void initialize(
+    FixedLevelMethod &method, const FixedLevelTest &test, TargetList &targets) {
+    method.initialize(test, &targets);
 }
 
-static void initialize(AdaptiveMethod &method, const AdaptiveTest &test) {
-    method.initialize(test);
+static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
+    FiniteTargetList &targets) {
+    method.initialize(test, &targets);
+}
+
+static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
+    TargetListReader &reader) {
+    method.initialize(test, &reader);
 }
 
 static void initializeWithSingleSpeaker(RecognitionTestModel &model,
@@ -45,52 +52,53 @@ static void initializeWithEyeTracking(
 }
 
 void ModelImpl::initializeWithTargetReplacement(const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(fixedLevelMethod, test,
-        targetsWithReplacement, fixedTrialTestConcluder);
+    av_speech_in_noise::initialize(
+        fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initialize(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initialize(
+        adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
 
 void ModelImpl::initializeWithSilentIntervalTargets(
     const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(fixedLevelMethod, test,
-        silentIntervalTargets, completesWhenTargetsEmpty);
+    av_speech_in_noise::initialize(
+        fixedLevelMethod, test, silentIntervalTargets);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initializeWithAllTargets(const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, everyTargetOnce, completesWhenTargetsEmpty);
+    av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initializeWithAllTargetsAndEyeTracking(
     const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(
-        fixedLevelMethod, test, everyTargetOnce, completesWhenTargetsEmpty);
+    av_speech_in_noise::initialize(fixedLevelMethod, test, everyTargetOnce);
     av_speech_in_noise::initialize(model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initializeWithSingleSpeaker(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initialize(
+        adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithSingleSpeaker(
         model, adaptiveMethod, test);
 }
 
 void ModelImpl::initializeWithDelayedMasker(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initialize(
+        adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithDelayedMasker(
         model, adaptiveMethod, test);
 }
 
 void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
     const FixedLevelTest &test) {
-    av_speech_in_noise::initialize(fixedLevelMethod, test,
-        targetsWithReplacement, fixedTrialTestConcluder);
+    av_speech_in_noise::initialize(
+        fixedLevelMethod, test, targetsWithReplacement);
     av_speech_in_noise::initializeWithEyeTracking(
         model, fixedLevelMethod, test);
 }
@@ -98,14 +106,25 @@ void ModelImpl::initializeWithTargetReplacementAndEyeTracking(
 void ModelImpl::initializeWithSilentIntervalTargetsAndEyeTracking(
     const FixedLevelTest &test) {
     av_speech_in_noise::initialize(
-        fixedLevelMethod, test, silentIntervalTargets, fixedTrialTestConcluder);
+        fixedLevelMethod, test, silentIntervalTargets);
     av_speech_in_noise::initializeWithEyeTracking(
         model, fixedLevelMethod, test);
 }
 
 void ModelImpl::initializeWithEyeTracking(const AdaptiveTest &test) {
-    av_speech_in_noise::initialize(adaptiveMethod, test);
+    av_speech_in_noise::initialize(
+        adaptiveMethod, test, targetsWithReplacementReader);
     av_speech_in_noise::initializeWithEyeTracking(model, adaptiveMethod, test);
+}
+
+void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
+    av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
+    av_speech_in_noise::initialize(model, adaptiveMethod, test);
+}
+
+void ModelImpl::restartAdaptiveTestWhilePreservingCyclicTargets() {
+    adaptiveMethod.resetTracks();
+    model.prepareNextTrialIfNeeded();
 }
 
 void ModelImpl::playTrial(const AudioSettings &settings) {

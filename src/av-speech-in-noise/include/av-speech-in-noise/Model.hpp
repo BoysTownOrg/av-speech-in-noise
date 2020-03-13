@@ -106,11 +106,28 @@ constexpr auto operator==(
         a.left == b.left && a.right == b.right;
 }
 
+enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
+
+constexpr auto name(Transducer c) -> const char * {
+    switch (c) {
+    case Transducer::headphone:
+        return "headphone";
+    case Transducer::oneSpeaker:
+        return "1 speaker";
+    case Transducer::twoSpeakers:
+        return "2 speakers";
+    default:
+        return "unknown";
+    }
+}
+
 struct TestIdentity {
     std::string subjectId;
     std::string testerId;
     std::string session;
     std::string method;
+    std::string rmeSetting;
+    Transducer transducer;
 };
 
 struct Test {
@@ -123,7 +140,7 @@ struct Test {
 };
 
 struct AdaptiveTest : Test {
-    std::string trackSettingsFile;
+    TrackingRule trackingRule;
     int startingSnr_dB{};
     int ceilingSnr_dB{};
     int floorSnr_dB{};
@@ -144,7 +161,6 @@ struct Calibration {
     std::string filePath;
     int level_dB_SPL{};
     int fullScaleLevel_dB_SPL{};
-    Condition condition{};
 };
 
 class Model {
@@ -167,6 +183,7 @@ class Model {
     virtual void initializeWithSingleSpeaker(const AdaptiveTest &) = 0;
     virtual void initializeWithDelayedMasker(const AdaptiveTest &) = 0;
     virtual void initializeWithEyeTracking(const AdaptiveTest &) = 0;
+    virtual void initializeWithCyclicTargets(const AdaptiveTest &) = 0;
     virtual void initializeWithSilentIntervalTargets(
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;
@@ -181,6 +198,7 @@ class Model {
     virtual auto audioDevices() -> std::vector<std::string> = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
+    virtual void restartAdaptiveTestWhilePreservingCyclicTargets() = 0;
 };
 }
 

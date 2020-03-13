@@ -23,7 +23,7 @@ static auto sampleRateHz(AVAssetTrack *track) -> double {
     const auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
         static_cast<CMAudioFormatDescriptionRef>(
             track.formatDescriptions.firstObject));
-    return description->mSampleRate;
+    return description != nullptr ? description->mSampleRate : 0;
 }
 
 static auto getPropertyDataSize(AudioObjectID id_,
@@ -317,6 +317,11 @@ void AvFoundationVideoPlayer::playAt(
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     const auto asset{makeAvAsset(std::move(filePath))};
+    // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an 
+    // unplayable asset the player does not recover even when a subsequent call 
+    // passes one that is playable.
+    if (asset.playable == 0)
+        return;
     const auto playerItem{[AVPlayerItem playerItemWithAsset:asset]};
     const auto audioMix{[AVMutableAudioMix audioMix]};
     const auto processing = [AVMutableAudioMixInputParameters
@@ -324,6 +329,7 @@ void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     processing.audioTapProcessor = tap;
     audioMix.inputParameters = @[ processing ];
     playerItem.audioMix = audioMix;
+    [player pause];
     [player replaceCurrentItemWithPlayerItem:playerItem];
     prepareVideo();
 }

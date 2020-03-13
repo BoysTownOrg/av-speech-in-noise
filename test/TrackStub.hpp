@@ -40,6 +40,16 @@ class TrackStub : public Track {
 
     void setComplete() { complete_ = true; }
 
+    void reset() override {
+        resetted_ = true;
+        if (incompleteOnReset_)
+            complete_ = false;
+    }
+
+    void incompleteOnReset() { incompleteOnReset_ = true; }
+
+    [[nodiscard]] auto resetted() const -> bool { return resetted_; }
+
   private:
     Settings settings_;
     int x_{};
@@ -49,6 +59,8 @@ class TrackStub : public Track {
     bool pushedDown_{};
     bool pushedUp_{};
     bool complete_{};
+    bool resetted_{};
+    bool incompleteOnReset_{};
 };
 
 class TrackFactoryStub : public Track::Factory {

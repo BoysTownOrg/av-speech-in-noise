@@ -1,6 +1,6 @@
 #include "ModelEventListenerStub.hpp"
 #include "TargetListStub.hpp"
-#include "TestConcluderStub.hpp"
+#include "TargetListSetReaderStub.hpp"
 #include "assert-utility.hpp"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
@@ -8,12 +8,23 @@
 namespace av_speech_in_noise {
 namespace {
 class AdaptiveMethodStub : public AdaptiveMethod {
-    const AdaptiveTest *test_{};
-
   public:
-    void initialize(const AdaptiveTest &t) override { test_ = &t; }
+    [[nodiscard]] auto tracksResetted() const -> bool {
+        return tracksResetted_;
+    }
+
+    void initialize(const AdaptiveTest &t, TargetListReader *reader) override {
+        test_ = &t;
+        targetListReader_ = reader;
+    }
 
     [[nodiscard]] auto test() const { return test_; }
+
+    [[nodiscard]] auto targetListReader() const -> TargetListReader * {
+        return targetListReader_;
+    }
+
+    void resetTracks() override { tracksResetted_ = true; }
 
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> std::string override { return {}; }
@@ -29,22 +40,33 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
     void submit(const coordinate_response_measure::Response &) override {}
+
+  private:
+    const AdaptiveTest *test_{};
+    TargetListReader *targetListReader_{};
+    bool tracksResetted_{};
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelTest *test_{};
     TargetList *targetList_{};
-    TestConcluder *testConcluder_{};
+    bool initializedWithFiniteTargetList_{};
 
   public:
-    void initialize(const FixedLevelTest &t, TargetList *list,
-        TestConcluder *concluder) override {
-        testConcluder_ = concluder;
+    void initialize(const FixedLevelTest &t, TargetList *list) override {
         targetList_ = list;
         test_ = &t;
     }
 
-    [[nodiscard]] auto testConcluder() const { return testConcluder_; }
+    void initialize(const FixedLevelTest &t, FiniteTargetList *list) override {
+        targetList_ = list;
+        test_ = &t;
+        initializedWithFiniteTargetList_ = true;
+    }
+
+    [[nodiscard]] auto initializedWithFiniteTargetList() const -> bool {
+        return initializedWithFiniteTargetList_;
+    }
 
     [[nodiscard]] auto targetList() const { return targetList_; }
 
@@ -81,8 +103,17 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
     bool initializedWithEyeTracking_{};
+    bool nextTrialPreparedIfNeeded_{};
 
   public:
+    [[nodiscard]] auto nextTrialPreparedIfNeeded() const -> bool {
+        return nextTrialPreparedIfNeeded_;
+    }
+
+    void prepareNextTrialIfNeeded() override {
+        nextTrialPreparedIfNeeded_ = true;
+    }
+
     void initialize(TestMethod *method, const Test &test) override {
         testMethod_ = method;
         test_ = &test;
@@ -212,6 +243,10 @@ void initializeWithDelayedMasker(ModelImpl &model, const AdaptiveTest &test) {
     model.initializeWithDelayedMasker(test);
 }
 
+void initializeWithCyclicTargets(ModelImpl &model, const AdaptiveTest &test) {
+    model.initializeWithCyclicTargets(test);
+}
+
 void initializeWithSilentIntervalTargets(
     ModelImpl &model, const FixedLevelTest &test) {
     model.initializeWithSilentIntervalTargets(test);
@@ -311,6 +346,29 @@ class InitializingAdaptiveTestWithDelayedMasker
 
     void run(ModelImpl &model, const AdaptiveTest &test) override {
         initializeWithDelayedMasker(model, test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
+class InitializingAdaptiveTestWithCyclicTargets
+    : public InitializingAdaptiveTest {
+    AdaptiveTest test_;
+    AdaptiveMethodStub *method;
+
+  public:
+    explicit InitializingAdaptiveTestWithCyclicTargets(
+        AdaptiveMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        initializeWithCyclicTargets(model, test_);
+    }
+
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
+        initializeWithCyclicTargets(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
@@ -461,14 +519,15 @@ class ModelTests : public ::testing::Test {
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
     TargetListStub targetsWithReplacement;
-    TestConcluderStub fixedTrialTestConcluder;
-    TargetListStub silentIntervals;
-    TestConcluderStub emptyTargetListTestConcluder;
-    TargetListStub everyTargetOnce;
+    TargetListSetReaderStub targetsWithReplacementReader;
+    TargetListSetReaderStub cyclicTargetsReader;
+    FiniteTargetListStub silentIntervals;
+    FiniteTargetListStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
-    ModelImpl model{adaptiveMethod, fixedLevelMethod, targetsWithReplacement,
-        fixedTrialTestConcluder, silentIntervals, emptyTargetListTestConcluder,
-        everyTargetOnce, internalModel};
+    ModelImpl model{adaptiveMethod, fixedLevelMethod,
+        targetsWithReplacementReader, cyclicTargetsReader,
+        targetsWithReplacement, silentIntervals, everyTargetOnce,
+        internalModel};
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     InitializingDefaultAdaptiveTest initializingDefaultAdaptiveTest{
@@ -479,6 +538,8 @@ class ModelTests : public ::testing::Test {
         initializingAdaptiveTestWithSingleSpeaker{&adaptiveMethod};
     InitializingAdaptiveTestWithDelayedMasker
         initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
+    InitializingAdaptiveTestWithCyclicTargets
+        initializingAdaptiveTestWithCyclicTargets{&adaptiveMethod};
     InitializingFixedLevelTestWithTargetReplacement
         initializingFixedLevelTestWithTargetReplacement{&fixedLevelMethod};
     InitializingFixedLevelTestWithSilentIntervalTargets
@@ -511,15 +572,11 @@ class ModelTests : public ::testing::Test {
         assertEqual(&std::as_const(fixedLevelTest), fixedLevelMethod.test());
     }
 
-    void assertInitializesAdaptiveMethod(InitializingAdaptiveTest &useCase) {
+    void assertInitializesAdaptiveMethod(
+        InitializingAdaptiveTest &useCase, TargetListReader &reader) {
         useCase.run(model, adaptiveTest);
         assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
-    }
-
-    void assertInitializesFixedLevelTestWithTestConcluder(
-        InitializingTestUseCase &useCase, TestConcluder &concluder) {
-        run(useCase);
-        assertEqual(&concluder, fixedLevelMethod.testConcluder());
+        assertEqual(&reader, adaptiveMethod.targetListReader());
     }
 
     void assertInitializesFixedLevelTestWithTargetList(
@@ -527,9 +584,27 @@ class ModelTests : public ::testing::Test {
         run(useCase);
         assertEqual(&targetList, fixedLevelMethod.targetList());
     }
+
+    void assertInitializesFixedLevelMethodWithFiniteTargetList(
+        InitializingTestUseCase &useCase) {
+        run(useCase);
+        assertTrue(fixedLevelMethod.initializedWithFiniteTargetList());
+    }
 };
 
 #define MODEL_TEST(a) TEST_F(ModelTests, a)
+
+MODEL_TEST(
+    restartAdaptiveTestWhilePreservingCyclicTargetsPreparesNextTrialIfNeeded) {
+    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    assertTrue(internalModel.nextTrialPreparedIfNeeded());
+}
+
+MODEL_TEST(
+    restartAdaptiveTestWhilePreservingCyclicTargetsResetsAdaptiveMethodTracks) {
+    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    assertTrue(adaptiveMethod.tracksResetted());
+}
 
 MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementInitializesFixedLevelMethod) {
@@ -595,60 +670,40 @@ MODEL_TEST(
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithTargetReplacementInitializesWithFixedTrialTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithTargetReplacement,
-        fixedTrialTestConcluder);
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethodWithFiniteTargetList) {
+    assertInitializesFixedLevelMethodWithFiniteTargetList(
+        initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithFixedTrialTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithTargetReplacementAndEyeTracking,
-        fixedTrialTestConcluder);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesWithFixedTrialTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking,
-        fixedTrialTestConcluder);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithEmptyTargetListTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithSilentIntervalTargets,
-        emptyTargetListTestConcluder);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithAllTargetsInitializesWithEmptyTargetListTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithAllTargets, emptyTargetListTestConcluder);
-}
-
-MODEL_TEST(
-    initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithEmptyTargetListTestConcluder) {
-    assertInitializesFixedLevelTestWithTestConcluder(
-        initializingFixedLevelTestWithAllTargetsAndEyeTracking,
-        emptyTargetListTestConcluder);
+    initializingFixedLevelTestWithAllTargetsInitializesFixedLevelMethodWithFiniteTargetList) {
+    assertInitializesFixedLevelMethodWithFiniteTargetList(
+        initializingFixedLevelTestWithAllTargets);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingDefaultAdaptiveTest);
+    assertInitializesAdaptiveMethod(
+        initializingDefaultAdaptiveTest, targetsWithReplacementReader);
 }
 
 MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithEyeTracking);
+    assertInitializesAdaptiveMethod(
+        initializingAdaptiveTestWithEyeTracking, targetsWithReplacementReader);
 }
 
 MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker);
+    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithSingleSpeaker,
+        targetsWithReplacementReader);
 }
 
 MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
-    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker);
+    assertInitializesAdaptiveMethod(initializingAdaptiveTestWithDelayedMasker,
+        targetsWithReplacementReader);
+}
+
+MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesAdaptiveMethod) {
+    assertInitializesAdaptiveMethod(
+        initializingAdaptiveTestWithCyclicTargets, cyclicTargetsReader);
 }
 
 MODEL_TEST(
@@ -679,8 +734,10 @@ MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingFixedLevelTestWithAllTargets);
 }
 
-MODEL_TEST(initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesInternalModel) {
-    assertInitializesInternalModel(initializingFixedLevelTestWithAllTargetsAndEyeTracking);
+MODEL_TEST(
+    initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesInternalModel) {
+    assertInitializesInternalModel(
+        initializingFixedLevelTestWithAllTargetsAndEyeTracking);
 }
 
 MODEL_TEST(initializeDefaultAdaptiveTestInitializesInternalModel) {
@@ -697,6 +754,10 @@ MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesInternalModel) {
 
 MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithDelayedMasker);
+}
+
+MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesInternalModel) {
+    assertInitializesInternalModel(initializingAdaptiveTestWithCyclicTargets);
 }
 
 MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
