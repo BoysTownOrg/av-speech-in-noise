@@ -119,6 +119,13 @@ void nextReturnsEmptyIfNoFiles(
     assertNextEquals(list, "");
 }
 
+void currentReturnsEmptyIfNoFiles(
+    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+    setFileNames(reader, {});
+    loadFromDirectory(list);
+    assertCurrentEquals(list, "");
+}
+
 class RandomizedTargetListWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
@@ -213,6 +220,18 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(nextReturnsEmptyIfNoFiles) {
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextReturnsEmptyIfNoFiles) {
     nextReturnsEmptyIfNoFiles(list, reader);
+}
+
+RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(currentReturnsEmptyIfNoFiles) {
+    currentReturnsEmptyIfNoFiles(list, reader);
+}
+
+RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(currentReturnsEmptyIfNoFiles) {
+    currentReturnsEmptyIfNoFiles(list, reader);
+}
+
+CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsEmptyIfNoFiles) {
+    currentReturnsEmptyIfNoFiles(list, reader);
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(

@@ -255,7 +255,7 @@ void main() {
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
     RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
         &responseEvaluator, &outputFile, &randomizer};
-    target_list::RandomizedTargetListWithReplacementFactory targetsWithReplacementFactory{
+    target_list::RandomizedTargetListWithReplacement::Factory targetsWithReplacementFactory{
         &fileExtensions, &randomizer};
     target_list::SubdirectoryTargetListReader targetsWithReplacementReader{
         &targetsWithReplacementFactory, &reader};
