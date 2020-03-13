@@ -11,17 +11,21 @@ static auto shuffle(Randomizer *randomizer, gsl::span<std::string> v) {
     randomizer->shuffle(v);
 }
 
+static auto empty(const std::vector<std::string> &files) -> bool {
+    return files.empty();
+}
+
 static auto currentFile(const std::vector<std::string> &v) -> std::string {
-    return v.empty() ? "" : v.back();
+    return empty(v) ? "" : v.back();
 }
 
 static auto fullPathToLastFile(const std::string &directory,
     const std::vector<std::string> &files) -> std::string {
-    return files.empty() ? "" : directory + '/' + currentFile(files);
+    return empty(files) ? "" : directory + '/' + currentFile(files);
 }
 
-static auto empty(const std::vector<std::string> &files) -> bool {
-    return files.empty();
+static void rotate(std::vector<std::string> &files) {
+    std::rotate(files.begin(), files.begin() + 1, files.end());
 }
 
 RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
@@ -38,7 +42,7 @@ auto RandomizedTargetListWithReplacement::next() -> std::string {
     if (target_list::empty(files))
         return "";
 
-    std::rotate(files.begin(), files.begin() + 1, files.end());
+    rotate(files);
     gsl::span<std::string> files_{files};
     shuffle(randomizer, files_.first(files_.size() - 1));
     return fullPathToLastFile(directory_, files);
@@ -97,7 +101,7 @@ auto CyclicRandomizedTargetList::next() -> std::string {
     if (target_list::empty(files))
         return "";
 
-    std::rotate(files.begin(), files.begin() + 1, files.end());
+    rotate(files);
     return fullPathToLastFile(directory_, files);
 }
 
