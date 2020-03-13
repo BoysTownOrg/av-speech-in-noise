@@ -19,7 +19,7 @@ class Randomizer {
 class RandomizedTargetListWithReplacement
     : public av_speech_in_noise::TargetList {
     std::vector<std::string> files{};
-    std::string directory_{};
+    std::string directory{};
     std::string currentFile_{};
     DirectoryReader *reader;
     Randomizer *randomizer;
@@ -49,7 +49,7 @@ class RandomizedTargetListWithReplacementFactory : public TargetListFactory {
 class RandomizedTargetListWithoutReplacement
     : public av_speech_in_noise::FiniteTargetList {
     std::vector<std::string> files{};
-    std::string directory_{};
+    std::string directory{};
     std::string currentFile_{};
     DirectoryReader *reader;
     Randomizer *randomizer;
@@ -91,7 +91,7 @@ class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
 
   private:
     std::vector<std::string> files{};
-    std::string directory_{};
+    std::string directory{};
     DirectoryReader *reader;
     Randomizer *randomizer;
 };

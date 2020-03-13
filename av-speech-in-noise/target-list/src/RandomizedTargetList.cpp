@@ -32,9 +32,8 @@ RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetListWithReplacement::loadFromDirectory(
-    std::string directory) {
-    files = filesIn(reader, directory_ = std::move(directory));
+void RandomizedTargetListWithReplacement::loadFromDirectory(std::string d) {
+    files = filesIn(reader, directory = std::move(d));
     shuffle(randomizer, files);
 }
 
@@ -45,20 +44,19 @@ auto RandomizedTargetListWithReplacement::next() -> std::string {
     rotate(files);
     gsl::span<std::string> files_{files};
     shuffle(randomizer, files_.first(files_.size() - 1));
-    return fullPathToLastFile(directory_, files);
+    return fullPathToLastFile(directory, files);
 }
 
 auto RandomizedTargetListWithReplacement::current() -> std::string {
-    return fullPathToLastFile(directory_, files);
+    return fullPathToLastFile(directory, files);
 }
 
 RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetListWithoutReplacement::loadFromDirectory(
-    std::string directory) {
-    files = filesIn(reader, directory_ = std::move(directory));
+void RandomizedTargetListWithoutReplacement::loadFromDirectory(std::string d) {
+    files = filesIn(reader, directory = std::move(d));
     shuffle(randomizer, files);
 }
 
@@ -77,7 +75,7 @@ auto RandomizedTargetListWithoutReplacement::next() -> std::string {
 
 auto RandomizedTargetListWithoutReplacement::fullPath(std::string file)
     -> std::string {
-    return directory_ + "/" + std::move(file);
+    return directory + "/" + std::move(file);
 }
 
 auto RandomizedTargetListWithoutReplacement::current() -> std::string {
@@ -92,9 +90,8 @@ CyclicRandomizedTargetList::CyclicRandomizedTargetList(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void CyclicRandomizedTargetList::loadFromDirectory(std::string directory) {
-    files = filesIn(reader, directory_ = std::move(directory));
-    shuffle(randomizer, files);
+void CyclicRandomizedTargetList::loadFromDirectory(std::string d) {
+    shuffle(randomizer, files = filesIn(reader, directory = std::move(d)));
 }
 
 auto CyclicRandomizedTargetList::next() -> std::string {
@@ -102,10 +99,10 @@ auto CyclicRandomizedTargetList::next() -> std::string {
         return "";
 
     rotate(files);
-    return fullPathToLastFile(directory_, files);
+    return fullPathToLastFile(directory, files);
 }
 
 auto CyclicRandomizedTargetList::current() -> std::string {
-    return fullPathToLastFile(directory_, files);
+    return fullPathToLastFile(directory, files);
 }
 }
