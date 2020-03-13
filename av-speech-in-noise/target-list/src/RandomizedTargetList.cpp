@@ -33,8 +33,7 @@ RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
     : reader{reader}, randomizer{randomizer} {}
 
 void RandomizedTargetListWithReplacement::loadFromDirectory(std::string d) {
-    files = filesIn(reader, directory = std::move(d));
-    shuffle(randomizer, files);
+    shuffle(randomizer, files = filesIn(reader, directory = std::move(d)));
 }
 
 auto RandomizedTargetListWithReplacement::next() -> std::string {
@@ -56,8 +55,7 @@ RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
     : reader{reader}, randomizer{randomizer} {}
 
 void RandomizedTargetListWithoutReplacement::loadFromDirectory(std::string d) {
-    files = filesIn(reader, directory = std::move(d));
-    shuffle(randomizer, files);
+    shuffle(randomizer, files = filesIn(reader, directory = std::move(d)));
 }
 
 auto RandomizedTargetListWithoutReplacement::empty() -> bool {
@@ -68,9 +66,9 @@ auto RandomizedTargetListWithoutReplacement::next() -> std::string {
     if (target_list::empty(files))
         return "";
 
-    currentFile_ = files.front();
+    currentFile = files.front();
     files.erase(files.begin());
-    return fullPath(currentFile_);
+    return fullPath(currentFile);
 }
 
 auto RandomizedTargetListWithoutReplacement::fullPath(std::string file)
@@ -79,11 +77,11 @@ auto RandomizedTargetListWithoutReplacement::fullPath(std::string file)
 }
 
 auto RandomizedTargetListWithoutReplacement::current() -> std::string {
-    return currentFile_.empty() ? "" : fullPath(currentFile_);
+    return currentFile.empty() ? "" : fullPath(currentFile);
 }
 
 void RandomizedTargetListWithoutReplacement::reinsertCurrent() {
-    files.push_back(currentFile_);
+    files.push_back(currentFile);
 }
 
 CyclicRandomizedTargetList::CyclicRandomizedTargetList(
