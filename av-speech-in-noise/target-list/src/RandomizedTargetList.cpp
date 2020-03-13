@@ -29,8 +29,12 @@ static auto fullPathToLastFile(const std::string &directory,
     return empty(files) ? "" : joinPaths(directory, currentFile(files));
 }
 
-static void rotate(std::vector<std::string> &files) {
+static void moveFrontToBack(std::vector<std::string> &files) {
     std::rotate(files.begin(), files.begin() + 1, files.end());
+}
+
+static auto allButLast(gsl::span<std::string> s) -> gsl::span<std::string> {
+    return s.first(s.size() - 1);
 }
 
 RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
@@ -45,9 +49,8 @@ auto RandomizedTargetListWithReplacement::next() -> std::string {
     if (empty(files))
         return "";
 
-    rotate(files);
-    gsl::span<std::string> files_{files};
-    shuffle(randomizer, files_.first(files_.size() - 1));
+    moveFrontToBack(files);
+    shuffle(randomizer, allButLast(files));
     return fullPathToLastFile(directory, files);
 }
 
@@ -96,7 +99,7 @@ auto CyclicRandomizedTargetList::next() -> std::string {
     if (empty(files))
         return "";
 
-    rotate(files);
+    moveFrontToBack(files);
     return fullPathToLastFile(directory, files);
 }
 
