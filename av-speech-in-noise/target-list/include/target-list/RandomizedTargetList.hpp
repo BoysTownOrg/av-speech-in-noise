@@ -18,42 +18,38 @@ class Randomizer {
 
 class RandomizedTargetListWithReplacement
     : public av_speech_in_noise::TargetList {
-    std::vector<std::string> files{};
-    std::string directory{};
-    std::string currentFile{};
-    DirectoryReader *reader;
-    Randomizer *randomizer;
-
   public:
+    class Factory : public TargetListFactory {
+      public:
+        Factory(DirectoryReader *reader, Randomizer *randomizer)
+            : reader{reader}, randomizer{randomizer} {}
+
+        auto make()
+            -> std::shared_ptr<av_speech_in_noise::TargetList> override {
+            return std::make_shared<RandomizedTargetListWithReplacement>(
+                reader, randomizer);
+        }
+
+      private:
+        DirectoryReader *reader;
+        Randomizer *randomizer;
+    };
+
     RandomizedTargetListWithReplacement(DirectoryReader *, Randomizer *);
     void loadFromDirectory(std::string) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
-};
 
-class RandomizedTargetListWithReplacementFactory : public TargetListFactory {
-    DirectoryReader *reader;
-    Randomizer *randomizer;
-
-  public:
-    RandomizedTargetListWithReplacementFactory(
-        DirectoryReader *reader, Randomizer *randomizer)
-        : reader{reader}, randomizer{randomizer} {}
-
-    auto make() -> std::shared_ptr<av_speech_in_noise::TargetList> override {
-        return std::make_shared<RandomizedTargetListWithReplacement>(
-            reader, randomizer);
-    }
-};
-
-class RandomizedTargetListWithoutReplacement
-    : public av_speech_in_noise::FiniteTargetList {
+  private:
     std::vector<std::string> files{};
     std::string directory{};
     std::string currentFile{};
     DirectoryReader *reader;
     Randomizer *randomizer;
+};
 
+class RandomizedTargetListWithoutReplacement
+    : public av_speech_in_noise::FiniteTargetList {
   public:
     RandomizedTargetListWithoutReplacement(DirectoryReader *, Randomizer *);
     auto empty() -> bool override;
@@ -63,16 +59,15 @@ class RandomizedTargetListWithoutReplacement
     void reinsertCurrent() override;
 
   private:
-    auto fullPath(std::string file) -> std::string;
+    std::vector<std::string> files{};
+    std::string directory{};
+    std::string currentFile{};
+    DirectoryReader *reader;
+    Randomizer *randomizer;
 };
 
 class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
   public:
-    CyclicRandomizedTargetList(DirectoryReader *, Randomizer *);
-    void loadFromDirectory(std::string directory) override;
-    auto next() -> std::string override;
-    auto current() -> std::string override;
-
     class Factory : public TargetListFactory {
       public:
         Factory(DirectoryReader *reader, Randomizer *randomizer)
@@ -88,6 +83,11 @@ class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
         DirectoryReader *reader;
         Randomizer *randomizer;
     };
+
+    CyclicRandomizedTargetList(DirectoryReader *, Randomizer *);
+    void loadFromDirectory(std::string directory) override;
+    auto next() -> std::string override;
+    auto current() -> std::string override;
 
   private:
     std::vector<std::string> files{};

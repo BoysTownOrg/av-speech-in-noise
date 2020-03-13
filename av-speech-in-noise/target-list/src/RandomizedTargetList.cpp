@@ -19,9 +19,14 @@ static auto currentFile(const std::vector<std::string> &v) -> std::string {
     return empty(v) ? "" : v.back();
 }
 
+static auto joinPaths(const std::string &directory, const std::string &file)
+    -> std::string {
+    return directory + '/' + file;
+}
+
 static auto fullPathToLastFile(const std::string &directory,
     const std::vector<std::string> &files) -> std::string {
-    return empty(files) ? "" : directory + '/' + currentFile(files);
+    return empty(files) ? "" : joinPaths(directory, currentFile(files));
 }
 
 static void rotate(std::vector<std::string> &files) {
@@ -37,7 +42,7 @@ void RandomizedTargetListWithReplacement::loadFromDirectory(std::string d) {
 }
 
 auto RandomizedTargetListWithReplacement::next() -> std::string {
-    if (target_list::empty(files))
+    if (empty(files))
         return "";
 
     rotate(files);
@@ -68,16 +73,11 @@ auto RandomizedTargetListWithoutReplacement::next() -> std::string {
 
     currentFile = files.front();
     files.erase(files.begin());
-    return fullPath(currentFile);
-}
-
-auto RandomizedTargetListWithoutReplacement::fullPath(std::string file)
-    -> std::string {
-    return directory + "/" + std::move(file);
+    return joinPaths(directory, currentFile);
 }
 
 auto RandomizedTargetListWithoutReplacement::current() -> std::string {
-    return currentFile.empty() ? "" : fullPath(currentFile);
+    return currentFile.empty() ? "" : joinPaths(directory, currentFile);
 }
 
 void RandomizedTargetListWithoutReplacement::reinsertCurrent() {
@@ -93,7 +93,7 @@ void CyclicRandomizedTargetList::loadFromDirectory(std::string d) {
 }
 
 auto CyclicRandomizedTargetList::next() -> std::string {
-    if (target_list::empty(files))
+    if (empty(files))
         return "";
 
     rotate(files);
