@@ -96,18 +96,20 @@ static auto evaluation(const coordinate_response_measure::Trial &trial)
     return trial.correct ? correct : incorrect;
 }
 
-static auto identity(const Test &test) -> TestIdentity {
-    return test.identity;
+static auto identity(const Test &test) -> TestIdentity { return test.identity; }
+
+static void write(std::stringstream &stream, const TestIdentity &identity) {
+    writeSubjectId(stream, identity);
+    writeTester(stream, identity);
+    writeSession(stream, identity);
+    writeMethod(stream, identity);
+    writeRmeSetting(stream, identity);
+    writeTransducer(stream, identity);
 }
 
 static auto format(const AdaptiveTest &test) -> std::string {
     std::stringstream stream;
-    writeSubjectId(stream, identity(test));
-    writeTester(stream, identity(test));
-    writeSession(stream, identity(test));
-    writeMethod(stream, identity(test));
-    writeRmeSetting(stream, identity(test));
-    writeTransducer(stream, identity(test));
+    write(stream, identity(test));
     writeMasker(stream, test);
     writeTargetList(stream, test);
     writeMaskerLevel(stream, test);
@@ -133,12 +135,7 @@ static auto format(const AdaptiveTest &test) -> std::string {
 
 static auto format(const FixedLevelTest &test) -> std::string {
     std::stringstream stream;
-    writeSubjectId(stream, identity(test));
-    writeTester(stream, identity(test));
-    writeSession(stream, identity(test));
-    writeMethod(stream, identity(test));
-    writeRmeSetting(stream, identity(test));
-    writeTransducer(stream, identity(test));
+    write(stream, identity(test));
     writeMasker(stream, test);
     writeTargetList(stream, test);
     writeMaskerLevel(stream, test);
