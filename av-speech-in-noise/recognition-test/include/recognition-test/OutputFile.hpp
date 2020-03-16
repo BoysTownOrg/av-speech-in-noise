@@ -2,7 +2,6 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILE_HPP_
 
 #include "Model.hpp"
-#include "av-speech-in-noise/Model.hpp"
 #include <string>
 
 namespace av_speech_in_noise {
@@ -88,10 +87,8 @@ class OutputFileImpl : public OutputFile {
     void save() override;
     void writeTest(const AdaptiveTest &) override;
     void writeTest(const FixedLevelTest &) override;
-    void write(
-        const coordinate_response_measure::AdaptiveTrial &) override;
-    void write(
-        const coordinate_response_measure::FixedLevelTrial &) override;
+    void write(const coordinate_response_measure::AdaptiveTrial &) override;
+    void write(const coordinate_response_measure::FixedLevelTrial &) override;
     void write(const open_set::FreeResponseTrial &) override;
     void write(const open_set::CorrectKeywordsTrial &) override;
     void write(const open_set::AdaptiveTrial &) override;

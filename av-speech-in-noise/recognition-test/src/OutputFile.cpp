@@ -1,5 +1,4 @@
 #include "OutputFile.hpp"
-#include "av-speech-in-noise/Model.hpp"
 #include <sstream>
 
 namespace av_speech_in_noise {
@@ -98,22 +97,16 @@ static void insertCommaAndSpace(FormattedStream &stream) {
 
 static void insertNewLine(FormattedStream &stream) { stream.insertNewLine(); }
 
-OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path)
-    : writer{writer}, path{path} {}
-
-void OutputFileImpl::write(std::string s) { writer->write(std::move(s)); }
-
-constexpr auto correct() -> const char * { return "correct"; }
-
-constexpr auto incorrect() -> const char * { return "incorrect"; }
+constexpr auto correct{"correct"};
+constexpr auto incorrect{"incorrect"};
 
 static auto evaluation(const open_set::AdaptiveTrial &trial) -> std::string {
-    return trial.correct ? correct() : incorrect();
+    return trial.correct ? correct : incorrect;
 }
 
 static auto evaluation(const coordinate_response_measure::Trial &trial)
     -> std::string {
-    return trial.correct ? correct() : incorrect();
+    return trial.correct ? correct : incorrect;
 }
 
 static void writeSubjectId(
@@ -144,7 +137,7 @@ static void writeTransducer(
     stream.writeTransducer(identity);
 }
 
-static auto formatTest(const AdaptiveTest &test) -> std::string {
+static auto format(const AdaptiveTest &test) -> std::string {
     FormattedStream stream;
     const auto &identity = test.identity;
     writeSubjectId(stream, identity);
@@ -176,7 +169,7 @@ static auto formatTest(const AdaptiveTest &test) -> std::string {
     return stream.str();
 }
 
-static auto formatTest(const FixedLevelTest &test) -> std::string {
+static auto format(const FixedLevelTest &test) -> std::string {
     FormattedStream stream;
     const auto &identity = test.identity;
     writeSubjectId(stream, identity);
@@ -194,8 +187,8 @@ static auto formatTest(const FixedLevelTest &test) -> std::string {
     return stream.str();
 }
 
-static auto formatTrial(
-    const coordinate_response_measure::FixedLevelTrial &trial) -> std::string {
+static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
+    -> std::string {
     FormattedStream stream;
     insert(stream, trial.correctNumber);
     insertCommaAndSpace(stream);
@@ -212,7 +205,7 @@ static auto formatTrial(
     return stream.str();
 }
 
-static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
+static auto format(const coordinate_response_measure::AdaptiveTrial &trial)
     -> std::string {
     FormattedStream stream;
     insert(stream, trial.SNR_dB);
@@ -232,8 +225,7 @@ static auto formatTrial(const coordinate_response_measure::AdaptiveTrial &trial)
     return stream.str();
 }
 
-static auto formatTrial(const open_set::FreeResponseTrial &trial)
-    -> std::string {
+static auto format(const open_set::FreeResponseTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.target);
     insertCommaAndSpace(stream);
@@ -246,7 +238,7 @@ static auto formatTrial(const open_set::FreeResponseTrial &trial)
     return stream.str();
 }
 
-static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
+static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.SNR_dB);
     insertCommaAndSpace(stream);
@@ -259,8 +251,7 @@ static auto formatTrial(const open_set::AdaptiveTrial &trial) -> std::string {
     return stream.str();
 }
 
-static auto formatTrial(const open_set::CorrectKeywordsTrial &trial)
-    -> std::string {
+static auto format(const open_set::CorrectKeywordsTrial &trial) -> std::string {
     FormattedStream stream;
     insert(stream, trial.SNR_dB);
     insertCommaAndSpace(stream);
@@ -272,6 +263,12 @@ static auto formatTrial(const open_set::CorrectKeywordsTrial &trial)
     insertCommaAndSpace(stream);
     insert(stream, trial.reversals);
     insertNewLine(stream);
+    return stream.str();
+}
+
+static auto format(const AdaptiveTestResult &result) -> std::string {
+    FormattedStream stream;
+    stream.writeLabeledLine("threshold", result.threshold);
     return stream.str();
 }
 
@@ -348,17 +345,16 @@ static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
     return stream.str();
 }
 
-static auto format(const AdaptiveTestResult &result) -> std::string {
-    FormattedStream stream;
-    stream.writeLabeledLine("threshold", result.threshold);
-    return stream.str();
-}
+OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path)
+    : writer{writer}, path{path} {}
+
+void OutputFileImpl::write(std::string s) { writer->write(std::move(s)); }
 
 void OutputFileImpl::write(
     const coordinate_response_measure::AdaptiveTrial &trial) {
     if (!justWroteAdaptiveCoordinateResponseTrial)
         write(formatAdaptiveCoordinateResponseTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteAdaptiveCoordinateResponseTrial = true;
 }
 
@@ -366,37 +362,37 @@ void OutputFileImpl::write(
     const coordinate_response_measure::FixedLevelTrial &trial) {
     if (!justWroteFixedLevelCoordinateResponseTrial)
         write(formatFixedLevelCoordinateResponseTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteFixedLevelCoordinateResponseTrial = true;
 }
 
 void OutputFileImpl::write(const open_set::FreeResponseTrial &trial) {
     if (!justWroteFreeResponseTrial)
         write(formatOpenSetFreeResponseTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteFreeResponseTrial = true;
 }
 
 void OutputFileImpl::write(const open_set::CorrectKeywordsTrial &trial) {
     if (!justWroteCorrectKeywordsTrial)
         write(formatCorrectKeywordsTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteCorrectKeywordsTrial = true;
 }
 
 void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
     if (!justWroteOpenSetAdaptiveTrial)
         write(formatOpenSetAdaptiveTrialHeading());
-    write(formatTrial(trial));
+    write(format(trial));
     justWroteOpenSetAdaptiveTrial = true;
 }
 
 void OutputFileImpl::writeTest(const AdaptiveTest &test) {
-    write(formatTest(test));
+    write(format(test));
 }
 
 void OutputFileImpl::writeTest(const FixedLevelTest &test) {
-    write(formatTest(test));
+    write(format(test));
 }
 
 void OutputFileImpl::openNewFile(const TestIdentity &test) {
