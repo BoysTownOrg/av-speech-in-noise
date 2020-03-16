@@ -40,7 +40,9 @@ void insertCommaAndSpace(std::stringstream &stream) { stream << ", "; }
 
 void insertNewLine(std::stringstream &stream) { stream << '\n'; }
 
-auto str(std::stringstream &stream) { return stream.str(); }
+auto string(const std::stringstream &stream) -> std::string {
+    return stream.str();
+}
 
 void writeSubjectId(std::stringstream &stream, const TestIdentity &p) {
     writeLabeledLine(stream, "subject", p.subjectId);
@@ -94,15 +96,18 @@ static auto evaluation(const coordinate_response_measure::Trial &trial)
     return trial.correct ? correct : incorrect;
 }
 
+static auto identity(const Test &test) -> TestIdentity {
+    return test.identity;
+}
+
 static auto format(const AdaptiveTest &test) -> std::string {
     std::stringstream stream;
-    const auto &identity = test.identity;
-    writeSubjectId(stream, identity);
-    writeTester(stream, identity);
-    writeSession(stream, identity);
-    writeMethod(stream, identity);
-    writeRmeSetting(stream, identity);
-    writeTransducer(stream, identity);
+    writeSubjectId(stream, identity(test));
+    writeTester(stream, identity(test));
+    writeSession(stream, identity(test));
+    writeMethod(stream, identity(test));
+    writeRmeSetting(stream, identity(test));
+    writeTransducer(stream, identity(test));
     writeMasker(stream, test);
     writeTargetList(stream, test);
     writeMaskerLevel(stream, test);
@@ -123,25 +128,24 @@ static auto format(const AdaptiveTest &test) -> std::string {
     writeLabeledLine(stream, "reversals per step size", runCounts);
     writeLabeledLine(stream, "step sizes (dB)", stepSizes);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto format(const FixedLevelTest &test) -> std::string {
     std::stringstream stream;
-    const auto &identity = test.identity;
-    writeSubjectId(stream, identity);
-    writeTester(stream, identity);
-    writeSession(stream, identity);
-    writeMethod(stream, identity);
-    writeRmeSetting(stream, identity);
-    writeTransducer(stream, identity);
+    writeSubjectId(stream, identity(test));
+    writeTester(stream, identity(test));
+    writeSession(stream, identity(test));
+    writeMethod(stream, identity(test));
+    writeRmeSetting(stream, identity(test));
+    writeTransducer(stream, identity(test));
     writeMasker(stream, test);
     writeTargetList(stream, test);
     writeMaskerLevel(stream, test);
     writeLabeledLine(stream, "SNR (dB)", test.snr_dB);
     writeCondition(stream, test);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
@@ -159,7 +163,7 @@ static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
     insertCommaAndSpace(stream);
     insert(stream, trial.target);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto format(const coordinate_response_measure::AdaptiveTrial &trial)
@@ -179,7 +183,7 @@ static auto format(const coordinate_response_measure::AdaptiveTrial &trial)
     insertCommaAndSpace(stream);
     insert(stream, trial.reversals);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto format(const open_set::FreeResponseTrial &trial) -> std::string {
@@ -192,7 +196,7 @@ static auto format(const open_set::FreeResponseTrial &trial) -> std::string {
         insert(stream, "FLAGGED");
     }
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
@@ -205,7 +209,7 @@ static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
     insertCommaAndSpace(stream);
     insert(stream, trial.reversals);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto format(const open_set::CorrectKeywordsTrial &trial) -> std::string {
@@ -220,13 +224,13 @@ static auto format(const open_set::CorrectKeywordsTrial &trial) -> std::string {
     insertCommaAndSpace(stream);
     insert(stream, trial.reversals);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto format(const AdaptiveTestResult &result) -> std::string {
     std::stringstream stream;
     writeLabeledLine(stream, "threshold", result.threshold);
-    return stream.str();
+    return string(stream);
 }
 
 static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
@@ -235,7 +239,7 @@ static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::freeResponse);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto formatCorrectKeywordsTrialHeading() -> std::string {
@@ -250,7 +254,7 @@ static auto formatCorrectKeywordsTrialHeading() -> std::string {
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::reversals);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto formatAdaptiveCoordinateResponseTrialHeading() -> std::string {
@@ -269,7 +273,7 @@ static auto formatAdaptiveCoordinateResponseTrialHeading() -> std::string {
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::reversals);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
@@ -286,7 +290,7 @@ static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::stimulus);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
@@ -299,7 +303,7 @@ static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::reversals);
     insertNewLine(stream);
-    return stream.str();
+    return string(stream);
 }
 
 OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path)
