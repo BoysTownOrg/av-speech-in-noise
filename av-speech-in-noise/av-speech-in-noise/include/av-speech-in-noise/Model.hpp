@@ -124,6 +124,10 @@ struct AdaptiveTest : Test {
     int trackBumpLimit{};
 };
 
+struct AdaptiveTestResult {
+    double threshold;
+};
+
 struct FixedLevelTest : Test {
     int snr_dB{};
     int trials{30};

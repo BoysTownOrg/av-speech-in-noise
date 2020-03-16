@@ -620,6 +620,13 @@ TEST_F(OutputFileTests, writesTrackSettings) {
     assertWrittenLast("\n\n");
 }
 
+TEST_F(OutputFileTests, writeAdaptiveTestResult) {
+    AdaptiveTestResult result{};
+    result.threshold = 1;
+    file.write(result);
+    assertColonDelimitedEntryWritten("threshold", "1");
+}
+
 TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
     assertCommonTestWritten(writingFixedLevelTest);
 }

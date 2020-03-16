@@ -348,6 +348,12 @@ static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
     return stream.str();
 }
 
+static auto format(const AdaptiveTestResult &result) -> std::string {
+    FormattedStream stream;
+    stream.writeLabeledLine("threshold", result.threshold);
+    return stream.str();
+}
+
 void OutputFileImpl::write(
     const coordinate_response_measure::AdaptiveTrial &trial) {
     if (!justWroteAdaptiveCoordinateResponseTrial)
@@ -413,4 +419,8 @@ auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
 void OutputFileImpl::close() { writer->close(); }
 
 void OutputFileImpl::save() { writer->save(); }
+
+void OutputFileImpl::write(const AdaptiveTestResult &result) {
+    write(format(result));
+}
 }
