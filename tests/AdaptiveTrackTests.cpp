@@ -353,6 +353,33 @@ ADAPTIVE_TRACK_TEST(threshold) {
     assertThresholdEquals(track, 4, (12 + 6 + 9 + 3) / 4);
 }
 
+ADAPTIVE_TRACK_TEST(thresholdFromTwoSequences) {
+    setStartingX(0);
+    setFirstSequenceRunCount(4);
+    setFirstSequenceStepSize(3);
+    setFirstSequenceDown(2);
+    setFirstSequenceUp(1);
+    secondSequence().runCount = 5;
+    secondSequence().stepSize = 6;
+    secondSequence().down = 2;
+    secondSequence().up = 1;
+    auto track{construct(settings)};
+    update(track, "dduudddduuu");
+    assertXEquals(track, 6);
+    update(track, "dd");
+    assertXEquals(track, 0);
+    update(track, "uuuu");
+    assertXEquals(track, 24);
+    update(track, "dd");
+    assertXEquals(track, 18);
+    update(track, "uuu");
+    assertXEquals(track, 36);
+    update(track, "dd");
+    assertXEquals(track, 30);
+    up(track);
+    assertThresholdEquals(track, 6, (6 + 0 + 24 + 18 + 36 + 30) / 6);
+}
+
 // https://doi.org/10.1121/1.1912375
 ADAPTIVE_TRACK_TEST(LevittFigure4) {
     setStartingX(0);
