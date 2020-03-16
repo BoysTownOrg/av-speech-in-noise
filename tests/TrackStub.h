@@ -8,6 +8,8 @@
 namespace av_speech_in_noise::tests {
 class TrackStub : public Track {
     Settings settings_;
+    double thresholdWhenUpdated_{};
+    double threshold_{};
     int x_{};
     int reversals_{};
     int reversalsWhenUpdated_{};
@@ -23,6 +25,8 @@ class TrackStub : public Track {
 
     void setReversalsWhenUpdated(int x) { reversalsWhenUpdated_ = x; }
 
+    void setThresholdWhenUpdated(double x) { thresholdWhenUpdated_ = x; }
+
     void setReversals(int x) { reversals_ = x; }
 
     [[nodiscard]] auto pushedUp() const { return pushedUp_; }
@@ -35,12 +39,14 @@ class TrackStub : public Track {
         pushedDown_ = true;
         reversals_ = reversalsWhenUpdated_;
         x_ = xWhenUpdated_;
+        threshold_ = thresholdWhenUpdated_;
     }
 
     void up() override {
         pushedUp_ = true;
         reversals_ = reversalsWhenUpdated_;
         x_ = xWhenUpdated_;
+        threshold_ = thresholdWhenUpdated_;
     }
 
     auto x() -> int override { return x_; }
@@ -60,6 +66,8 @@ class TrackStub : public Track {
     void incompleteOnReset() { incompleteOnReset_ = true; }
 
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
+
+    auto threshold(int reversals) -> double { return threshold_; }
 };
 
 class TrackFactoryStub : public Track::Factory {

@@ -30,6 +30,7 @@ class Track {
     virtual auto complete() -> bool = 0;
     virtual auto reversals() -> int = 0;
     virtual void reset() = 0;
+    virtual auto threshold(int reversals) -> double = 0;
 
     class Factory {
       public:
@@ -59,6 +60,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeLastIncorrectResponse(OutputFile *) override;
     void writeLastCorrectKeywords(OutputFile *) override;
     void writeTestingParameters(OutputFile *) override;
+    void writeTestResult(OutputFile *);
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const open_set::FreeResponse &) override;
     void resetTracks() override;
@@ -75,6 +77,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     coordinate_response_measure::AdaptiveTrial lastTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
     open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
+    AdaptiveTestResult lastAdaptiveTestResult{};
     const AdaptiveTest *test{};
     Track::Factory &snrTrackFactory;
     ResponseEvaluator &evaluator;

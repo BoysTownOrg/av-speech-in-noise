@@ -110,6 +110,10 @@ void AdaptiveMethodImpl::correct() { currentSnrTrack->down(); }
 
 void AdaptiveMethodImpl::incorrect() { currentSnrTrack->up(); }
 
+void AdaptiveMethodImpl::writeTestResult(OutputFile *file) {
+    file->write(lastAdaptiveTestResult);
+}
+
 void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
     file->writeTest(*test);
 }
@@ -162,6 +166,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     assignTarget(lastOpenSetTrial, fileName(evaluator, currentTarget()));
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
+    lastAdaptiveTestResult.threshold = currentSnrTrack->threshold({});
     selectNextList();
 }
 

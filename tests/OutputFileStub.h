@@ -14,6 +14,7 @@ class OutputFileStub : public OutputFile {
     open_set::FreeResponseTrial writtenFreeResponseTrial_{};
     open_set::CorrectKeywordsTrial writtenCorrectKeywords_{};
     open_set::AdaptiveTrial writtenOpenSetAdaptiveTrial_{};
+    AdaptiveTestResult adaptiveTestResult_{};
     LogString log_{};
     const AdaptiveTest *adaptiveTest_{};
     const FixedLevelTest *fixedLevelTest_{};
@@ -69,6 +70,10 @@ class OutputFileStub : public OutputFile {
         writtenFixedLevelTrial_ = trial;
     }
 
+    void write(const AdaptiveTestResult &result) {
+        adaptiveTestResult_ = result;
+    }
+
     auto writtenFixedLevelTrial() const -> auto & {
         return writtenFixedLevelTrial_;
     }
@@ -99,6 +104,10 @@ class OutputFileStub : public OutputFile {
 
     auto writtenOpenSetAdaptiveTrial() const -> auto & {
         return writtenOpenSetAdaptiveTrial_;
+    }
+
+    auto adaptiveTestResult() const -> AdaptiveTestResult {
+        return adaptiveTestResult_;
     }
 };
 }

@@ -176,6 +176,10 @@ auto writtenReversals(OutputFileStub &file) -> int {
     return writtenOpenSetAdaptiveTrial(file).reversals;
 }
 
+auto writtenThreshold(OutputFileStub &file) -> double {
+    return file.adaptiveTestResult().threshold;
+}
+
 auto writtenSnr(OutputFileStub &file) -> int {
     return writtenOpenSetAdaptiveTrial(file).SNR_dB;
 }
@@ -767,6 +771,16 @@ ADAPTIVE_METHOD_TEST(writeIncorrectResponseWritesTarget) {
 
 ADAPTIVE_METHOD_TEST(writeCorrectKeywordsWritesTarget) {
     assertWritesTarget(writingCorrectKeywords);
+}
+
+ADAPTIVE_METHOD_TEST(writeTestResult) {
+    selectNextList(randomizer, 1);
+    initialize(method, test, targetListReader);
+    at(tracks, 1)->setThresholdWhenUpdated(3.);
+    selectNextList(randomizer, 2);
+    method.submitCorrectResponse();
+    method.writeTestResult(&outputFile);
+    assertEqual(3., writtenThreshold(outputFile));
 }
 
 ADAPTIVE_METHOD_TEST(submitCorrectResponsePassesCurrentToEvaluator) {
