@@ -350,7 +350,7 @@ ADAPTIVE_TRACK_TEST(threshold) {
     update(track, "dddd");
     assertXEquals(track, 3);
     up(track);
-    assertThresholdEquals(track, 4, (12 + 6 + 9 + 3) / 4);
+    assertThresholdEquals(track, 4, (12 + 6 + 9 + 3) / 4.);
 }
 
 ADAPTIVE_TRACK_TEST(thresholdFromTwoSequences) {
@@ -377,7 +377,7 @@ ADAPTIVE_TRACK_TEST(thresholdFromTwoSequences) {
     update(track, "dd");
     assertXEquals(track, 30);
     up(track);
-    assertThresholdEquals(track, 6, (6 + 0 + 24 + 18 + 36 + 30) / 6);
+    assertThresholdEquals(track, 6, (6 + 0 + 24 + 18 + 36 + 30) / 6.);
 }
 
 // https://doi.org/10.1121/1.1912375

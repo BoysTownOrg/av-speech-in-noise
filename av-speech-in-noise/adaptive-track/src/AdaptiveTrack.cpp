@@ -107,6 +107,6 @@ void AdaptiveTrack::reset() {
 auto AdaptiveTrack::threshold(int reversals) -> double {
     return std::accumulate(
                reversalX.rbegin(), reversalX.rbegin() + reversals, 0) /
-        reversals;
+        (reversals*1.);
 }
 }
