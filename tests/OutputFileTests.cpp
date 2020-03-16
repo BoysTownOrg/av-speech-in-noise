@@ -294,7 +294,7 @@ class OutputFileTests : public ::testing::Test {
 
     void assertNthCommaDelimitedEntryOfLine(HeadingItem item, int n, int line) {
         assertEqual(
-            headingItemName(item), nthCommaDelimitedEntryOfLine(n, line));
+            name(item), nthCommaDelimitedEntryOfLine(n, line));
     }
 
     void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
@@ -375,8 +375,8 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine("1", 1, n);
         assertNthCommaDelimitedEntryOfLine("2", 2, n);
         assertNthCommaDelimitedEntryOfLine("3", 3, n);
-        assertNthCommaDelimitedEntryOfLine(colorName(Color::green), 4, n);
-        assertNthCommaDelimitedEntryOfLine(colorName(Color::red), 5, n);
+        assertNthCommaDelimitedEntryOfLine(name(Color::green), 4, n);
+        assertNthCommaDelimitedEntryOfLine(name(Color::red), 5, n);
         assertNthCommaDelimitedEntryOfLine("4", 7, n);
     }
 
@@ -391,8 +391,8 @@ class OutputFileTests : public ::testing::Test {
         run(writingFixedLevelCoordinateResponseTrial);
         assertNthCommaDelimitedEntryOfLine("2", 1, n);
         assertNthCommaDelimitedEntryOfLine("3", 2, n);
-        assertNthCommaDelimitedEntryOfLine(colorName(Color::green), 3, n);
-        assertNthCommaDelimitedEntryOfLine(colorName(Color::red), 4, n);
+        assertNthCommaDelimitedEntryOfLine(name(Color::green), 3, n);
+        assertNthCommaDelimitedEntryOfLine(name(Color::red), 4, n);
         assertNthCommaDelimitedEntryOfLine("a", 6, n);
     }
 

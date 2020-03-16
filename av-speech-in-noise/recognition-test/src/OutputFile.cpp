@@ -19,26 +19,26 @@ static auto operator<<(std::ostream &os, const std::vector<int> &v)
     return os;
 }
 
-template <typename T>
-void writeLabeledLine(
-    std::stringstream &stream, const std::string &label, T thing) {
-    stream << label;
-    stream << ": ";
-    stream << thing;
-    stream << '\n';
+static auto operator<<(std::ostream &os, HeadingItem item) {
+    os << name(item);
 }
 
 template <typename T> void insert(std::stringstream &stream, T item) {
     stream << item;
 }
 
-void insert(std::stringstream &stream, HeadingItem item) {
-    stream << headingItemName(item);
+void insertCommaAndSpace(std::stringstream &stream) { insert(stream, ", "); }
+
+void insertNewLine(std::stringstream &stream) { insert(stream, '\n'); }
+
+template <typename T>
+void writeLabeledLine(
+    std::stringstream &stream, const std::string &label, T thing) {
+    insert(stream, label);
+    insert(stream, ": ");
+    insert(stream, thing);
+    insertNewLine(stream);
 }
-
-void insertCommaAndSpace(std::stringstream &stream) { stream << ", "; }
-
-void insertNewLine(std::stringstream &stream) { stream << '\n'; }
 
 auto string(const std::stringstream &stream) -> std::string {
     return stream.str();
@@ -152,9 +152,9 @@ static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
     insertCommaAndSpace(stream);
     insert(stream, trial.subjectNumber);
     insertCommaAndSpace(stream);
-    insert(stream, colorName(trial.correctColor));
+    insert(stream, name(trial.correctColor));
     insertCommaAndSpace(stream);
-    insert(stream, colorName(trial.subjectColor));
+    insert(stream, name(trial.subjectColor));
     insertCommaAndSpace(stream);
     insert(stream, evaluation(trial));
     insertCommaAndSpace(stream);
@@ -172,9 +172,9 @@ static auto format(const coordinate_response_measure::AdaptiveTrial &trial)
     insertCommaAndSpace(stream);
     insert(stream, trial.subjectNumber);
     insertCommaAndSpace(stream);
-    insert(stream, colorName(trial.correctColor));
+    insert(stream, name(trial.correctColor));
     insertCommaAndSpace(stream);
-    insert(stream, colorName(trial.subjectColor));
+    insert(stream, name(trial.subjectColor));
     insertCommaAndSpace(stream);
     insert(stream, evaluation(trial));
     insertCommaAndSpace(stream);

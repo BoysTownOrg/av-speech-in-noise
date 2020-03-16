@@ -19,7 +19,7 @@ enum class HeadingItem {
     freeResponse
 };
 
-constexpr auto headingItemName(HeadingItem i) -> const char * {
+constexpr auto name(HeadingItem i) -> const char * {
     switch (i) {
     case HeadingItem::snr_dB:
         return "SNR (dB)";
@@ -46,7 +46,7 @@ constexpr auto headingItemName(HeadingItem i) -> const char * {
     }
 }
 
-constexpr auto colorName(coordinate_response_measure::Color c) -> const char * {
+constexpr auto name(coordinate_response_measure::Color c) -> const char * {
     switch (c) {
     case coordinate_response_measure::Color::green:
         return "green";
