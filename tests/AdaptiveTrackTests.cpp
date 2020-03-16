@@ -80,6 +80,10 @@ void assertXEqualsAfter(
     assertXEquals(track, x);
 }
 
+void assertThresholdEquals(AdaptiveTrack &track, int lastReversals, double x) {
+    assertEqual(x, track.threshold(lastReversals));
+}
+
 class AdaptiveTrackTests : public ::testing::Test {
   protected:
     AdaptiveTrack::Settings settings{};
@@ -329,6 +333,26 @@ ADAPTIVE_TRACK_TEST(incompleteIfPushedUpBumpLimitNonconsecutiveTimesAtCeiling) {
     auto track{construct()};
     update(track, "uudu");
     assertIncomplete(track);
+}
+
+ADAPTIVE_TRACK_TEST(threshold) {
+    setStartingX(0);
+    setFirstSequenceRunCount(7);
+    setFirstSequenceStepSize(3);
+    setFirstSequenceDown(2);
+    setFirstSequenceUp(1);
+    auto track{construct()};
+    update(track, "dduudd");
+    update(track, "uuuu");
+    assertXEquals(track, 12);
+    update(track, "dddd");
+    assertXEquals(track, 6);
+    up(track);
+    assertXEquals(track, 9);
+    update(track, "dddd");
+    assertXEquals(track, 3);
+    up(track);
+    assertThresholdEquals(track, 4, (12 + 6 + 9 + 3)/4);
 }
 
 // https://doi.org/10.1121/1.1912375

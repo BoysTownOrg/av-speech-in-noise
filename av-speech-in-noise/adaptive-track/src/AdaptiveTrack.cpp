@@ -66,6 +66,7 @@ auto AdaptiveTrack::stepSize() -> int { return stepSizes.at(sequenceIndex); }
 
 void AdaptiveTrack::reversal() {
     ++reversals_;
+    reversalX.push_back(x_);
     if (++runCounter == runCounts.at(sequenceIndex)) {
         runCounter = 0;
         ++sequenceIndex;
@@ -101,5 +102,11 @@ void AdaptiveTrack::reset() {
     sequenceIndex = 0;
     runCounter = 0;
     bumpCount_ = 0;
+}
+
+auto AdaptiveTrack::threshold(int reversals) -> double {
+    return std::accumulate(
+               reversalX.rbegin(), reversalX.rbegin() + reversals, 0) /
+        reversals;
 }
 }
