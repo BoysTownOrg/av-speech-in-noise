@@ -19,83 +19,68 @@ static auto operator<<(std::ostream &os, const std::vector<int> &v)
     return os;
 }
 
-namespace {
-class FormattedStream {
-  public:
-    template <typename T>
-    void writeLabeledLine(const std::string &label, T thing) {
-        stream << label;
-        stream << ": ";
-        stream << thing;
-        stream << '\n';
-    }
-
-    template <typename T> void insert(T item) { stream << item; }
-
-    void insertCommaAndSpace() { stream << ", "; }
-
-    void insertNewLine() { stream << '\n'; }
-
-    auto str() const { return stream.str(); }
-
-    void writeSubjectId(const TestIdentity &p) {
-        writeLabeledLine("subject", p.subjectId);
-    }
-
-    void writeTester(const TestIdentity &p) {
-        writeLabeledLine("tester", p.testerId);
-    }
-
-    void writeSession(const TestIdentity &p) {
-        writeLabeledLine("session", p.session);
-    }
-
-    void writeMethod(const TestIdentity &p) {
-        writeLabeledLine("method", p.method);
-    }
-
-    void writeRmeSetting(const TestIdentity &p) {
-        writeLabeledLine("RME setting", p.rmeSetting);
-    }
-
-    void writeTransducer(const TestIdentity &p) {
-        writeLabeledLine("transducer", name(p.transducer));
-    }
-
-    void writeMasker(const Test &p) {
-        writeLabeledLine("masker", p.maskerFilePath);
-    }
-
-    void writeTargetList(const Test &p) {
-        writeLabeledLine("targets", p.targetListDirectory);
-    }
-
-    void writeMaskerLevel(const Test &p) {
-        writeLabeledLine("masker level (dB SPL)", p.maskerLevel_dB_SPL);
-    }
-
-    void writeCondition(const Test &p) {
-        writeLabeledLine("condition", conditionName(p.condition));
-    }
-
-  private:
-    std::stringstream stream;
-};
+template <typename T>
+void writeLabeledLine(
+    std::stringstream &stream, const std::string &label, T thing) {
+    stream << label;
+    stream << ": ";
+    stream << thing;
+    stream << '\n';
 }
 
-template <typename T> void insert(FormattedStream &stream, T item) {
-    stream.insert(item);
+template <typename T> void insert(std::stringstream &stream, T item) {
+    stream << item;
 }
 
-static void insert(FormattedStream &stream, HeadingItem item) {
-    stream.insert(headingItemName(item));
+void insert(std::stringstream &stream, HeadingItem item) {
+    stream << headingItemName(item);
 }
 
-static void insertCommaAndSpace(FormattedStream &stream) {
-    stream.insertCommaAndSpace();
+void insertCommaAndSpace(std::stringstream &stream) { stream << ", "; }
+
+void insertNewLine(std::stringstream &stream) { stream << '\n'; }
+
+auto str(std::stringstream &stream) { return stream.str(); }
+
+void writeSubjectId(std::stringstream &stream, const TestIdentity &p) {
+    writeLabeledLine(stream, "subject", p.subjectId);
 }
 
-static void insertNewLine(FormattedStream &stream) { stream.insertNewLine(); }
+void writeTester(std::stringstream &stream, const TestIdentity &p) {
+    writeLabeledLine(stream, "tester", p.testerId);
+}
+
+void writeSession(std::stringstream &stream, const TestIdentity &p) {
+    writeLabeledLine(stream, "session", p.session);
+}
+
+void writeMethod(std::stringstream &stream, const TestIdentity &p) {
+    writeLabeledLine(stream, "method", p.method);
+}
+
+void writeRmeSetting(std::stringstream &stream, const TestIdentity &p) {
+    writeLabeledLine(stream, "RME setting", p.rmeSetting);
+}
+
+void writeTransducer(std::stringstream &stream, const TestIdentity &p) {
+    writeLabeledLine(stream, "transducer", name(p.transducer));
+}
+
+void writeMasker(std::stringstream &stream, const Test &p) {
+    writeLabeledLine(stream, "masker", p.maskerFilePath);
+}
+
+void writeTargetList(std::stringstream &stream, const Test &p) {
+    writeLabeledLine(stream, "targets", p.targetListDirectory);
+}
+
+void writeMaskerLevel(std::stringstream &stream, const Test &p) {
+    writeLabeledLine(stream, "masker level (dB SPL)", p.maskerLevel_dB_SPL);
+}
+
+void writeCondition(std::stringstream &stream, const Test &p) {
+    writeLabeledLine(stream, "condition", conditionName(p.condition));
+}
 
 constexpr auto correct{"correct"};
 constexpr auto incorrect{"incorrect"};
@@ -109,36 +94,8 @@ static auto evaluation(const coordinate_response_measure::Trial &trial)
     return trial.correct ? correct : incorrect;
 }
 
-static void writeSubjectId(
-    FormattedStream &stream, const TestIdentity &identity) {
-    stream.writeSubjectId(identity);
-}
-
-static void writeTester(FormattedStream &stream, const TestIdentity &identity) {
-    stream.writeTester(identity);
-}
-
-static void writeSession(
-    FormattedStream &stream, const TestIdentity &identity) {
-    stream.writeSession(identity);
-}
-
-static void writeMethod(FormattedStream &stream, const TestIdentity &identity) {
-    stream.writeMethod(identity);
-}
-
-static void writeRmeSetting(
-    FormattedStream &stream, const TestIdentity &identity) {
-    stream.writeRmeSetting(identity);
-}
-
-static void writeTransducer(
-    FormattedStream &stream, const TestIdentity &identity) {
-    stream.writeTransducer(identity);
-}
-
 static auto format(const AdaptiveTest &test) -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     const auto &identity = test.identity;
     writeSubjectId(stream, identity);
     writeTester(stream, identity);
@@ -146,11 +103,11 @@ static auto format(const AdaptiveTest &test) -> std::string {
     writeMethod(stream, identity);
     writeRmeSetting(stream, identity);
     writeTransducer(stream, identity);
-    stream.writeMasker(test);
-    stream.writeTargetList(test);
-    stream.writeMaskerLevel(test);
-    stream.writeLabeledLine("starting SNR (dB)", test.startingSnr_dB);
-    stream.writeCondition(test);
+    writeMasker(stream, test);
+    writeTargetList(stream, test);
+    writeMaskerLevel(stream, test);
+    writeLabeledLine(stream, "starting SNR (dB)", test.startingSnr_dB);
+    writeCondition(stream, test);
     std::vector<int> up;
     std::vector<int> down;
     std::vector<int> runCounts;
@@ -161,16 +118,16 @@ static auto format(const AdaptiveTest &test) -> std::string {
         runCounts.push_back(sequence.runCount);
         stepSizes.push_back(sequence.stepSize);
     }
-    stream.writeLabeledLine("up", up);
-    stream.writeLabeledLine("down", down);
-    stream.writeLabeledLine("reversals per step size", runCounts);
-    stream.writeLabeledLine("step sizes (dB)", stepSizes);
-    stream.insertNewLine();
+    writeLabeledLine(stream, "up", up);
+    writeLabeledLine(stream, "down", down);
+    writeLabeledLine(stream, "reversals per step size", runCounts);
+    writeLabeledLine(stream, "step sizes (dB)", stepSizes);
+    insertNewLine(stream);
     return stream.str();
 }
 
 static auto format(const FixedLevelTest &test) -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     const auto &identity = test.identity;
     writeSubjectId(stream, identity);
     writeTester(stream, identity);
@@ -178,18 +135,18 @@ static auto format(const FixedLevelTest &test) -> std::string {
     writeMethod(stream, identity);
     writeRmeSetting(stream, identity);
     writeTransducer(stream, identity);
-    stream.writeMasker(test);
-    stream.writeTargetList(test);
-    stream.writeMaskerLevel(test);
-    stream.writeLabeledLine("SNR (dB)", test.snr_dB);
-    stream.writeCondition(test);
-    stream.insertNewLine();
+    writeMasker(stream, test);
+    writeTargetList(stream, test);
+    writeMaskerLevel(stream, test);
+    writeLabeledLine(stream, "SNR (dB)", test.snr_dB);
+    writeCondition(stream, test);
+    insertNewLine(stream);
     return stream.str();
 }
 
 static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
     -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, trial.correctNumber);
     insertCommaAndSpace(stream);
     insert(stream, trial.subjectNumber);
@@ -207,7 +164,7 @@ static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
 
 static auto format(const coordinate_response_measure::AdaptiveTrial &trial)
     -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, trial.SNR_dB);
     insertCommaAndSpace(stream);
     insert(stream, trial.correctNumber);
@@ -226,7 +183,7 @@ static auto format(const coordinate_response_measure::AdaptiveTrial &trial)
 }
 
 static auto format(const open_set::FreeResponseTrial &trial) -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, trial.target);
     insertCommaAndSpace(stream);
     insert(stream, trial.response);
@@ -239,7 +196,7 @@ static auto format(const open_set::FreeResponseTrial &trial) -> std::string {
 }
 
 static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, trial.SNR_dB);
     insertCommaAndSpace(stream);
     insert(stream, trial.target);
@@ -252,7 +209,7 @@ static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
 }
 
 static auto format(const open_set::CorrectKeywordsTrial &trial) -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, trial.SNR_dB);
     insertCommaAndSpace(stream);
     insert(stream, trial.target);
@@ -267,13 +224,13 @@ static auto format(const open_set::CorrectKeywordsTrial &trial) -> std::string {
 }
 
 static auto format(const AdaptiveTestResult &result) -> std::string {
-    FormattedStream stream;
-    stream.writeLabeledLine("threshold", result.threshold);
+    std::stringstream stream;
+    writeLabeledLine(stream, "threshold", result.threshold);
     return stream.str();
 }
 
 static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, HeadingItem::target);
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::freeResponse);
@@ -282,7 +239,7 @@ static auto formatOpenSetFreeResponseTrialHeading() -> std::string {
 }
 
 static auto formatCorrectKeywordsTrialHeading() -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, HeadingItem::snr_dB);
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::target);
@@ -297,7 +254,7 @@ static auto formatCorrectKeywordsTrialHeading() -> std::string {
 }
 
 static auto formatAdaptiveCoordinateResponseTrialHeading() -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, HeadingItem::snr_dB);
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::correctNumber);
@@ -316,7 +273,7 @@ static auto formatAdaptiveCoordinateResponseTrialHeading() -> std::string {
 }
 
 static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, HeadingItem::correctNumber);
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::subjectNumber);
@@ -333,7 +290,7 @@ static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
 }
 
 static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
-    FormattedStream stream;
+    std::stringstream stream;
     insert(stream, HeadingItem::snr_dB);
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::target);
