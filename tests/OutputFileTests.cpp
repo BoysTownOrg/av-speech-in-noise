@@ -1,10 +1,9 @@
 #include "LogString.h"
 #include "assert-utility.h"
-#include "av-speech-in-noise/Model.hpp"
-#include <gtest/gtest.h>
 #include <recognition-test/OutputFile.hpp>
+#include <gtest/gtest.h>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 namespace {
 class WriterStub : public Writer {
     LogString written_;
@@ -293,8 +292,7 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertNthCommaDelimitedEntryOfLine(HeadingItem item, int n, int line) {
-        assertEqual(
-            name(item), nthCommaDelimitedEntryOfLine(n, line));
+        assertEqual(name(item), nthCommaDelimitedEntryOfLine(n, line));
     }
 
     void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
