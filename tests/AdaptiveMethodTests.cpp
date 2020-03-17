@@ -201,15 +201,13 @@ class WritingCorrectResponse : public WritingResponseUseCase,
     }
 
     auto reversals(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::openSetReversals(file);
+        return openSetReversals(file);
     }
 
-    auto snr(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::openSetSnr(file);
-    }
+    auto snr(OutputFileStub &file) -> int override { return openSetSnr(file); }
 
     auto target(OutputFileStub &file) -> std::string override {
-        return av_speech_in_noise::openSetTarget(file);
+        return openSetTarget(file);
     }
 };
 
@@ -226,15 +224,13 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
     }
 
     auto reversals(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::openSetReversals(file);
+        return openSetReversals(file);
     }
 
-    auto snr(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::openSetSnr(file);
-    }
+    auto snr(OutputFileStub &file) -> int override { return openSetSnr(file); }
 
     auto target(OutputFileStub &file) -> std::string override {
-        return av_speech_in_noise::openSetTarget(file);
+        return openSetTarget(file);
     }
 };
 
@@ -366,6 +362,11 @@ auto adaptiveTestResult(OutputFileStub &file) -> AdaptiveTestResult {
     return file.adaptiveTestResult();
 }
 
+void assertPassedIntegerBounds(RandomizerStub &randomizer, int a, int b) {
+    assertEqual(a, randomizer.lowerIntBound());
+    assertEqual(b, randomizer.upperIntBound());
+}
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TrackFactoryStub snrTrackFactory;
@@ -406,11 +407,6 @@ class AdaptiveMethodTests : public ::testing::Test {
     }
 
   public:
-    void assertRandomizerPassedIntegerBounds(int a, int b) {
-        assertEqual(a, randomizer.lowerIntBound());
-        assertEqual(b, randomizer.upperIntBound());
-    }
-
     void assertWritesUpdatedReversals(WritingResponseUseCase &useCase) {
         selectNextList(randomizer, 1);
         initialize(method, test, targetListReader);
@@ -456,7 +452,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         initialize(method, test, targetListReader);
         setComplete(tracks, 2);
         run(useCase);
-        assertRandomizerPassedIntegerBounds(0, 1);
+        assertPassedIntegerBounds(randomizer, 0, 1);
     }
 
     void assertNextTargetEqualsNextFromSelectedTargetListAfter(
@@ -590,7 +586,7 @@ ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCorrectKeywords) {
 
 ADAPTIVE_METHOD_TEST(randomizerPassedIntegerBoundsOfLists) {
     initialize(method, test, targetListReader);
-    assertRandomizerPassedIntegerBounds(0, 2);
+    assertPassedIntegerBounds(randomizer, 0, 2);
 }
 
 ADAPTIVE_METHOD_TEST(
