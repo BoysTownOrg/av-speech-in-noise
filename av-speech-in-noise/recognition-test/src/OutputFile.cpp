@@ -19,9 +19,7 @@ static auto operator<<(std::ostream &os, const std::vector<int> &v)
     return os;
 }
 
-static auto operator<<(std::ostream &os, HeadingItem item) {
-    os << name(item);
-}
+static auto operator<<(std::ostream &os, HeadingItem item) { os << name(item); }
 
 template <typename T> void insert(std::stringstream &stream, T item) {
     stream << item;
@@ -226,7 +224,8 @@ static auto format(const open_set::CorrectKeywordsTrial &trial) -> std::string {
 
 static auto format(const AdaptiveTestResult &result) -> std::string {
     std::stringstream stream;
-    writeLabeledLine(stream, "threshold", result.threshold);
+    writeLabeledLine(stream, "threshold for " + result.targetListDirectory,
+        result.threshold);
     return string(stream);
 }
 

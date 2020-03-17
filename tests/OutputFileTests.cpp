@@ -620,9 +620,10 @@ TEST_F(OutputFileTests, writesTrackSettings) {
 
 TEST_F(OutputFileTests, writeAdaptiveTestResult) {
     AdaptiveTestResult result{};
+    result.targetListDirectory = "a";
     result.threshold = 1;
     file.write(result);
-    assertColonDelimitedEntryWritten("threshold", "1");
+    assertColonDelimitedEntryWritten("threshold for a", "1");
 }
 
 TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
