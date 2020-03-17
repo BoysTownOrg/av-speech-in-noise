@@ -330,6 +330,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
 class TargetListTestConcluderComboStub : public FiniteTargetList {
   public:
     void loadFromDirectory(std::string) override {}
+    auto directory() -> std::string override { return {}; }
     auto next() -> std::string override { return {}; }
     auto current() -> std::string override { return {}; }
     auto empty() -> bool override {
