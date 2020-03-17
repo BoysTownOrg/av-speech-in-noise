@@ -72,6 +72,8 @@ static void resetTrack(TargetListWithTrack &targetListWithTrack) {
     track(targetListWithTrack)->reset();
 }
 
+static auto x(Track *track) -> int { return track->x(); }
+
 AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
@@ -112,7 +114,7 @@ auto AdaptiveMethodImpl::nextTarget() -> std::string {
     return targetList->next();
 }
 
-auto AdaptiveMethodImpl::snr_dB() -> int { return snrTrack->x(); }
+auto AdaptiveMethodImpl::snr_dB() -> int { return x(snrTrack); }
 
 auto AdaptiveMethodImpl::currentTarget() -> std::string {
     return targetList->current();
@@ -120,7 +122,7 @@ auto AdaptiveMethodImpl::currentTarget() -> std::string {
 
 void AdaptiveMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
-    const auto lastSnr_dB{snr_dB()};
+    const auto lastSnr_dB{x(snrTrack)};
     if (correct(evaluator, targetList, response))
         down(snrTrack);
     else
