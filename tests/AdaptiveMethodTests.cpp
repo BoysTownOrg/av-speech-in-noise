@@ -94,13 +94,17 @@ class SubmittingCorrectResponse : public UseCase {
     }
 };
 
+void submit(AdaptiveMethodImpl &method, open_set::CorrectKeywords &keywords) {
+    method.submit(keywords);
+}
+
 class SubmittingSufficientCorrectKeywords : public UseCase {
     open_set::CorrectKeywords correctKeywords{};
 
   public:
     void run(AdaptiveMethodImpl &method) override {
         correctKeywords.count = 2;
-        method.submit(correctKeywords);
+        submit(method, correctKeywords);
     }
 };
 
@@ -110,7 +114,7 @@ class SubmittingInsufficientCorrectKeywords : public UseCase {
   public:
     void run(AdaptiveMethodImpl &method) override {
         correctKeywords.count = 1;
-        method.submit(correctKeywords);
+        submit(method, correctKeywords);
     }
 };
 
@@ -126,7 +130,7 @@ class SubmittingCorrectKeywords : public UseCase {
 
   public:
     void run(AdaptiveMethodImpl &method) override {
-        method.submit(correctKeywords);
+        submit(method, correctKeywords);
     }
 };
 
