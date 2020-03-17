@@ -70,9 +70,7 @@ class OutputFileStub : public OutputFile {
         fixedLevelTrial_ = trial;
     }
 
-    void write(const AdaptiveTestResult &) override {}
-
-    void write(const std::vector<AdaptiveTestResult> &result) {
+    void write(const std::vector<AdaptiveTestResult> &result) override {
         adaptiveTestResult_ = result;
     }
 
