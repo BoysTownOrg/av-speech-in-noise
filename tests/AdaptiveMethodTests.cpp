@@ -1,5 +1,5 @@
 #include "OutputFileStub.hpp"
-#include "RandomizerStub.h"
+#include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.h"
 #include "TargetListSetReaderStub.h"
 #include "TargetListStub.h"

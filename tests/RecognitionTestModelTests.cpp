@@ -2,7 +2,7 @@
 #include "MaskerPlayerStub.h"
 #include "ModelEventListenerStub.h"
 #include "OutputFileStub.hpp"
-#include "RandomizerStub.h"
+#include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.h"
 #include "TargetPlayerStub.h"
 #include "assert-utility.h"

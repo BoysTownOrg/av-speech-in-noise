@@ -1,9 +1,9 @@
-#ifndef TESTS_RANDOMIZERSTUB_H_
-#define TESTS_RANDOMIZERSTUB_H_
+#ifndef TESTS_RANDOMIZERSTUB_HPP_
+#define TESTS_RANDOMIZERSTUB_HPP_
 
 #include <recognition-test/Randomizer.hpp>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class RandomizerStub : public Randomizer {
     double lowerBound_{};
     double upperBound_{};
