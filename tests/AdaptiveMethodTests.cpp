@@ -367,6 +367,10 @@ void assertPassedIntegerBounds(RandomizerStub &randomizer, int a, int b) {
     assertEqual(b, randomizer.upperIntBound());
 }
 
+auto coordinateResponseTrialCorrect(OutputFileStub &file) -> bool {
+    return adaptiveCoordinateResponseTrial(file).correct;
+}
+
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
     TrackFactoryStub snrTrackFactory;
@@ -724,7 +728,7 @@ ADAPTIVE_METHOD_TEST(writeCorrectCoordinateResponseIsCorrect) {
     initialize(method, test, targetListReader);
     setCorrectCoordinateResponse();
     write(method, coordinateResponse, outputFile);
-    assertTrue(writtenCoordinateResponseTrialCorrect());
+    assertTrue(coordinateResponseTrialCorrect(outputFile));
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectResponseIsCorrect) {
@@ -745,7 +749,7 @@ ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {
     initialize(method, test, targetListReader);
     setIncorrectCoordinateResponse();
     write(method, coordinateResponse, outputFile);
-    assertFalse(writtenCoordinateResponseTrialCorrect());
+    assertFalse(coordinateResponseTrialCorrect(outputFile));
 }
 
 ADAPTIVE_METHOD_TEST(writeIncorrectResponseIsIncorrect) {
