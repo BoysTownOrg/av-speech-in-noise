@@ -1,11 +1,11 @@
-#ifndef TESTS_TRACKSTUB_H_
-#define TESTS_TRACKSTUB_H_
+#ifndef TESTS_TRACKSTUB_HPP_
+#define TESTS_TRACKSTUB_HPP_
 
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <utility>
 #include <vector>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TrackStub : public Track {
     Settings settings_;
     double thresholdWhenUpdated_{};
