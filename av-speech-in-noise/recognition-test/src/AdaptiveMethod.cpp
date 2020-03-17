@@ -99,10 +99,11 @@ void AdaptiveMethodImpl::selectNextList() {
     const auto tracksInProgress{moveCompleteTracksToEnd(targetListsWithTracks)};
     if (tracksInProgress == 0)
         return;
-    const auto &targetListsWithTrack{targetListsWithTracks.at(
+
+    const auto &next{targetListsWithTracks.at(
         randomizer.betweenInclusive(0, tracksInProgress - 1))};
-    snrTrack = track(targetListsWithTrack);
-    targetList = targetListsWithTrack.list.get();
+    snrTrack = track(next);
+    targetList = next.list.get();
 }
 
 auto AdaptiveMethodImpl::complete() -> bool {

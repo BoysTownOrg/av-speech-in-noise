@@ -1,12 +1,12 @@
-#ifndef TESTS_OUTPUTFILESTUB_H_
-#define TESTS_OUTPUTFILESTUB_H_
+#ifndef TESTS_OUTPUTFILESTUB_HPP_
+#define TESTS_OUTPUTFILESTUB_HPP_
 
 #include "LogString.h"
 #include "av-speech-in-noise/Model.hpp"
 #include <recognition-test/Model.hpp>
 #include <string>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class OutputFileStub : public OutputFile {
     coordinate_response_measure::AdaptiveTrial
         writtenAdaptiveCoordinateResponseTrial_{};
