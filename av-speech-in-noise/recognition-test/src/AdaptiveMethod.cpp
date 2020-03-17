@@ -66,7 +66,7 @@ static auto correct(ResponseEvaluator &evaluator, const std::string &target,
 }
 
 static void resetTrack(TargetListWithTrack &targetListWithTrack) {
-    targetListWithTrack.track->reset();
+    track(targetListWithTrack)->reset();
 }
 
 AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
