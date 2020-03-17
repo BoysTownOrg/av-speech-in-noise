@@ -39,6 +39,8 @@ class TargetListStub : public virtual TargetList {
 
     auto directory() -> std::string override { return directory_; }
 
+    void setDirectory(std::string s) { directory_ = std::move(s); }
+
     auto log() const -> auto & { return log_; }
 };
 

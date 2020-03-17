@@ -777,10 +777,12 @@ ADAPTIVE_METHOD_TEST(writeTestResult) {
     selectNextList(randomizer, 1);
     initialize(method, test, targetListReader);
     at(tracks, 1)->setThresholdWhenUpdated(3.);
+    targetLists.at(1)->setDirectory("a");
     selectNextList(randomizer, 2);
     method.submitCorrectResponse();
     method.writeTestResult(&outputFile);
     assertEqual(3., writtenThreshold(outputFile));
+    assertEqual("a", outputFile.adaptiveTestResult().targetListDirectory);
 }
 
 ADAPTIVE_METHOD_TEST(submitCorrectResponsePassesCurrentToEvaluator) {

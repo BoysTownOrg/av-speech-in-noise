@@ -167,6 +167,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     correct();
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     lastAdaptiveTestResult.threshold = currentSnrTrack->threshold({});
+    lastAdaptiveTestResult.targetListDirectory = currentTargetList->directory();
     selectNextList();
 }
 
