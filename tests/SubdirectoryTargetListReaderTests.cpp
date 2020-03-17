@@ -1,5 +1,5 @@
 #include "DirectoryReaderStub.h"
-#include "TargetListStub.h"
+#include "TargetListStub.hpp"
 #include "assert-utility.h"
 #include <gsl/gsl>
 #include <gtest/gtest.h>
@@ -28,7 +28,7 @@ class SubdirectoryTargetListReaderTests : public ::testing::Test {
     DirectoryReaderStub directoryReader;
     target_list::SubdirectoryTargetListReader listReader{
         &targetListFactory, &directoryReader};
-    std::vector<std::shared_ptr<av_speech_in_noise::tests::TargetListStub>>
+    std::vector<std::shared_ptr<av_speech_in_noise::TargetListStub>>
         targetLists;
 
     SubdirectoryTargetListReaderTests() { setListCount(1); }
@@ -37,7 +37,7 @@ class SubdirectoryTargetListReaderTests : public ::testing::Test {
         targetLists.clear();
         for (int i = 0; i < n; ++i)
             targetLists.push_back(
-                std::make_shared<av_speech_in_noise::tests::TargetListStub>());
+                std::make_shared<av_speech_in_noise::TargetListStub>());
         targetListFactory.setLists({targetLists.begin(), targetLists.end()});
     }
 

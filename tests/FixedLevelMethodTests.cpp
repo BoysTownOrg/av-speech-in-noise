@@ -1,7 +1,7 @@
 #include "LogString.h"
 #include "OutputFileStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
-#include "TargetListStub.h"
+#include "TargetListStub.hpp"
 #include "assert-utility.h"
 #include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>

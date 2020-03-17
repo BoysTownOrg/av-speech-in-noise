@@ -2,7 +2,7 @@
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetListSetReaderStub.hpp"
-#include "TargetListStub.h"
+#include "TargetListStub.hpp"
 #include "TrackStub.h"
 #include "assert-utility.h"
 #include <recognition-test/AdaptiveMethod.hpp>

@@ -1,11 +1,11 @@
-#ifndef TESTS_TARGETLISTSTUB_H_
-#define TESTS_TARGETLISTSTUB_H_
+#ifndef TESTS_TARGETLISTSTUB_HPP_
+#define TESTS_TARGETLISTSTUB_HPP_
 
 #include "LogString.h"
 #include <recognition-test/Model.hpp>
 #include <utility>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TargetListStub : public virtual TargetList {
     LogString log_{};
     std::string currentWhenNext_{};
