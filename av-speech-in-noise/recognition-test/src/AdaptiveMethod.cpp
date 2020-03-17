@@ -65,6 +65,10 @@ static auto correct(ResponseEvaluator &evaluator, const std::string &target,
     return evaluator.correct(target, response);
 }
 
+static void resetTrack(TargetListWithTrack &targetListWithTrack) {
+    targetListWithTrack.track->reset();
+}
+
 AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
@@ -81,8 +85,8 @@ void AdaptiveMethodImpl::initialize(
 }
 
 void AdaptiveMethodImpl::resetTracks() {
-    for (const auto &t : targetListsWithTracks)
-        t.track->reset();
+    std::for_each(
+        targetListsWithTracks.begin(), targetListsWithTracks.end(), resetTrack);
     selectNextList();
 }
 
@@ -109,30 +113,6 @@ auto AdaptiveMethodImpl::snr_dB() -> int { return currentSnrTrack->x(); }
 
 auto AdaptiveMethodImpl::currentTarget() -> std::string {
     return currentTargetList->current();
-}
-
-void AdaptiveMethodImpl::writeTestResult(OutputFile *file) {
-    file->write(lastAdaptiveTestResult);
-}
-
-void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
-    file->writeTest(*test);
-}
-
-void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
-    file->write(lastTrial);
-}
-
-void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile *file) {
-    file->write(lastOpenSetTrial);
-}
-
-void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
-    file->write(lastOpenSetTrial);
-}
-
-void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
-    file->write(lastCorrectKeywordsTrial);
 }
 
 void AdaptiveMethodImpl::submit(
@@ -188,5 +168,29 @@ void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
 
 void AdaptiveMethodImpl::submit(const open_set::FreeResponse &) {
     selectNextList();
+}
+
+void AdaptiveMethodImpl::writeTestResult(OutputFile *file) {
+    file->write(lastAdaptiveTestResult);
+}
+
+void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
+    file->writeTest(*test);
+}
+
+void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
+    file->write(lastTrial);
+}
+
+void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile *file) {
+    file->write(lastOpenSetTrial);
+}
+
+void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
+    file->write(lastOpenSetTrial);
+}
+
+void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
+    file->write(lastCorrectKeywordsTrial);
 }
 }

@@ -9,9 +9,8 @@
 #include <string>
 
 namespace av_speech_in_noise {
-constexpr auto maximumInt() -> int { return std::numeric_limits<int>::max(); }
-
-constexpr auto minimumInt() -> int { return std::numeric_limits<int>::min(); }
+constexpr auto maximumInt{std::numeric_limits<int>::max()};
+constexpr auto minimumInt{std::numeric_limits<int>::min()};
 
 class Track {
   public:
@@ -19,9 +18,9 @@ class Track {
     struct Settings {
         const TrackingRule *rule{};
         int startingX{};
-        int ceiling{maximumInt()};
-        int floor{minimumInt()};
-        int bumpLimit{maximumInt()};
+        int ceiling{maximumInt};
+        int floor{minimumInt};
+        int bumpLimit{maximumInt};
     };
     virtual void down() = 0;
     virtual void up() = 0;
