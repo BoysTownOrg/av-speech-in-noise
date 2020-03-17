@@ -619,11 +619,14 @@ TEST_F(OutputFileTests, writesTrackSettings) {
 }
 
 TEST_F(OutputFileTests, writeAdaptiveTestResult) {
-    AdaptiveTestResult result{};
-    result.targetListDirectory = "a";
-    result.threshold = 1;
-    file.write(result);
+    std::vector<AdaptiveTestResult> results{};
+    results.push_back({"a", 1.});
+    results.push_back({"b", 2.});
+    results.push_back({"c", 3.});
+    file.write(results);
     assertColonDelimitedEntryWritten("threshold for a", "1");
+    assertColonDelimitedEntryWritten("threshold for b", "2");
+    assertColonDelimitedEntryWritten("threshold for c", "3");
 }
 
 TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
