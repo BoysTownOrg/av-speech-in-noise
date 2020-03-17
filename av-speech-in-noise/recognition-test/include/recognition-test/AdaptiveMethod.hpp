@@ -66,10 +66,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
 
   private:
     void selectNextList();
-    auto correct(const std::string &,
-        const coordinate_response_measure::Response &) -> bool;
-    void incorrect();
-    void correct();
 
     std::vector<TargetListWithTrack> targetListsWithTracks{};
     coordinate_response_measure::AdaptiveTrial lastTrial{};
