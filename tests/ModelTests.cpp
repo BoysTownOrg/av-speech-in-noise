@@ -1,6 +1,6 @@
 #include "ModelEventListenerStub.h"
 #include "TargetListStub.h"
-#include "TargetListSetReaderStub.h"
+#include "TargetListSetReaderStub.hpp"
 #include "assert-utility.h"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
