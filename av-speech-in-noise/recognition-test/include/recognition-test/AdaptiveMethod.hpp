@@ -75,8 +75,8 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     Track::Factory &snrTrackFactory;
     ResponseEvaluator &evaluator;
     Randomizer &randomizer;
-    Track *currentSnrTrack{};
-    TargetList *currentTargetList{};
+    Track *snrTrack{};
+    TargetList *targetList{};
 };
 }
 
