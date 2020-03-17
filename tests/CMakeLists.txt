@@ -13,7 +13,6 @@ add_executable(tests
 	SubdirectoryTargetListReaderTests.cpp
 	RandomizedTargetListTests.cpp
 	TargetPlayerTests.cpp
-	TestSetupStateWriterTests.cpp
 	TestSettingsInterpreterTests.cpp
 )
 target_compile_features(tests PRIVATE cxx_std_17)

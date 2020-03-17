@@ -107,12 +107,6 @@ class FixedLevelMethodTests : public ::testing::Test {
     void setCurrentTarget(std::string s) {
         targetList.setCurrent(std::move(s));
     }
-
-    void assertTestIncomplete() { assertFalse(testComplete()); }
-
-    auto testComplete() -> bool { return method.complete(); }
-
-    void assertTestComplete() { assertTrue(testComplete()); }
 };
 
 #define FIXED_LEVEL_METHOD_TEST(a) TEST_F(FixedLevelMethodTests, a)
@@ -251,13 +245,6 @@ void assertComplete(FixedLevelMethodImpl &method) {
 
 void assertIncomplete(FixedLevelMethodImpl &method) {
     assertFalse(method.complete());
-}
-
-void assertTestCompleteWhenTargetListEmpty(UseCase &useCase,
-    FixedLevelMethodImpl &method, FiniteTargetListStub &list) {
-    list.setEmpty();
-    run(useCase, method);
-    assertComplete(method);
 }
 
 void assertTestCompleteOnlyAfter(UseCase &useCase, FixedLevelMethodImpl &method,

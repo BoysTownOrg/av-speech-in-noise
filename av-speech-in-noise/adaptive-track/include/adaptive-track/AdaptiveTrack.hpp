@@ -15,7 +15,7 @@ class AdaptiveTrack : public av_speech_in_noise::Track {
     auto complete() -> bool override;
     auto reversals() -> int override;
     void reset() override;
-    auto threshold(int reversals) -> double;
+    auto threshold(int reversals) -> double override;
 
     class Factory : public Track::Factory {
         auto make(const Settings &s) -> std::shared_ptr<Track> override {

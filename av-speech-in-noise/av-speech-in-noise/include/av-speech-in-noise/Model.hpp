@@ -125,6 +125,7 @@ struct AdaptiveTest : Test {
 };
 
 struct AdaptiveTestResult {
+    std::string targetListDirectory;
     double threshold;
 };
 

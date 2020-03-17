@@ -70,7 +70,7 @@ class OutputFileStub : public OutputFile {
         writtenFixedLevelTrial_ = trial;
     }
 
-    void write(const AdaptiveTestResult &result) {
+    void write(const AdaptiveTestResult &result) override {
         adaptiveTestResult_ = result;
     }
 

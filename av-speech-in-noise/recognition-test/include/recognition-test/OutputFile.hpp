@@ -92,7 +92,7 @@ class OutputFileImpl : public OutputFile {
     void write(const open_set::FreeResponseTrial &) override;
     void write(const open_set::CorrectKeywordsTrial &) override;
     void write(const open_set::AdaptiveTrial &) override;
-    void write(const AdaptiveTestResult &);
+    void write(const AdaptiveTestResult &) override;
 
   private:
     void write(std::string);

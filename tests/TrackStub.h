@@ -67,7 +67,7 @@ class TrackStub : public Track {
 
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
 
-    auto threshold(int reversals) -> double { return threshold_; }
+    auto threshold(int reversals) -> double override { return threshold_; }
 };
 
 class TrackFactoryStub : public Track::Factory {
