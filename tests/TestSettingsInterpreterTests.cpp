@@ -50,11 +50,13 @@ void assertPassesSimpleAdaptiveSettings(
             entryWithNewline(TestSetting::masker, "b"),
             entryWithNewline(TestSetting::maskerLevel, "65"),
             entryWithNewline(TestSetting::startingSnr, "5"),
+            entryWithNewline(TestSetting::thresholdReversals, "4"),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)});
     assertEqual("a", adaptiveTest(model).targetListDirectory);
     assertEqual("b", adaptiveTest(model).maskerFilePath);
     assertEqual(65, adaptiveTest(model).maskerLevel_dB_SPL);
     assertEqual(5, adaptiveTest(model).startingSnr_dB);
+    assertEqual(4, adaptiveTest(model).thresholdReversals);
     assertEqual(Presenter::ceilingSnr_dB, adaptiveTest(model).ceilingSnr_dB);
     assertEqual(Presenter::floorSnr_dB, adaptiveTest(model).floorSnr_dB);
     assertEqual(Presenter::trackBumpLimit, adaptiveTest(model).trackBumpLimit);

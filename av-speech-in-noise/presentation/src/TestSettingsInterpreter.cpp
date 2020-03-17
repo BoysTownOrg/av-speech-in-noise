@@ -110,6 +110,8 @@ static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
         applyToEachTrackingRule(test, applyToStepSize, entry);
     else if (entryName == name(TestSetting::startingSnr))
         test.startingSnr_dB = integer(entry);
+    else if (entryName == name(TestSetting::thresholdReversals))
+        test.thresholdReversals = integer(entry);
 }
 
 static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,

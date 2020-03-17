@@ -122,6 +122,7 @@ struct AdaptiveTest : Test {
     int ceilingSnr_dB{};
     int floorSnr_dB{};
     int trackBumpLimit{};
+    int thresholdReversals{};
 };
 
 struct AdaptiveTestResult {
