@@ -67,7 +67,8 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void selectNextList();
 
     std::vector<TargetListWithTrack> targetListsWithTracks{};
-    coordinate_response_measure::AdaptiveTrial lastTrial{};
+    coordinate_response_measure::AdaptiveTrial
+        lastCoordinateResponseMeasureTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
     open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     AdaptiveTestResult lastAdaptiveTestResult{};

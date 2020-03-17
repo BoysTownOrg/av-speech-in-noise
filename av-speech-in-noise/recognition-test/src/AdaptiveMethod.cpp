@@ -125,13 +125,16 @@ void AdaptiveMethodImpl::submit(
         down(snrTrack);
     else
         up(snrTrack);
-    lastTrial.subjectColor = response.color;
-    lastTrial.subjectNumber = response.number;
-    assignReversals(lastTrial, snrTrack);
-    lastTrial.correctColor = evaluator.correctColor(current(targetList));
-    lastTrial.correctNumber = evaluator.correctNumber(current(targetList));
-    lastTrial.SNR_dB = lastSnr_dB;
-    lastTrial.correct = correct(evaluator, targetList, response);
+    lastCoordinateResponseMeasureTrial.subjectColor = response.color;
+    lastCoordinateResponseMeasureTrial.subjectNumber = response.number;
+    assignReversals(lastCoordinateResponseMeasureTrial, snrTrack);
+    lastCoordinateResponseMeasureTrial.correctColor =
+        evaluator.correctColor(current(targetList));
+    lastCoordinateResponseMeasureTrial.correctNumber =
+        evaluator.correctNumber(current(targetList));
+    lastCoordinateResponseMeasureTrial.SNR_dB = lastSnr_dB;
+    lastCoordinateResponseMeasureTrial.correct =
+        correct(evaluator, targetList, response);
     selectNextList();
 }
 
@@ -181,7 +184,7 @@ void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
 }
 
 void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
-    file->write(lastTrial);
+    file->write(lastCoordinateResponseMeasureTrial);
 }
 
 void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile *file) {
