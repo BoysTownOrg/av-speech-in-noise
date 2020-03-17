@@ -176,10 +176,6 @@ auto writtenReversals(OutputFileStub &file) -> int {
     return writtenOpenSetAdaptiveTrial(file).reversals;
 }
 
-auto writtenThreshold(OutputFileStub &file) -> double {
-    return file.adaptiveTestResult().threshold;
-}
-
 auto writtenSnr(OutputFileStub &file) -> int {
     return writtenOpenSetAdaptiveTrial(file).SNR_dB;
 }
@@ -355,6 +351,10 @@ void selectNextList(RandomizerStub &randomizer, int n) {
 
 void assertNextTargetEquals(AdaptiveMethodImpl &method, const std::string &s) {
     assertEqual(s, method.nextTarget());
+}
+
+auto adaptiveTestResult(OutputFileStub &file) -> AdaptiveTestResult {
+    return file.adaptiveTestResult();
 }
 
 class AdaptiveMethodTests : public ::testing::Test {
@@ -781,8 +781,8 @@ ADAPTIVE_METHOD_TEST(writeTestResult) {
     selectNextList(randomizer, 2);
     method.submitCorrectResponse();
     method.writeTestResult(&outputFile);
-    assertEqual(3., writtenThreshold(outputFile));
-    assertEqual("a", outputFile.adaptiveTestResult().targetListDirectory);
+    assertEqual(3., adaptiveTestResult(outputFile).threshold);
+    assertEqual("a", adaptiveTestResult(outputFile).targetListDirectory);
 }
 
 ADAPTIVE_METHOD_TEST(submitCorrectResponsePassesCurrentToEvaluator) {
