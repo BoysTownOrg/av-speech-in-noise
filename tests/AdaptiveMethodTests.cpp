@@ -1,6 +1,6 @@
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"
-#include "ResponseEvaluatorStub.h"
+#include "ResponseEvaluatorStub.hpp"
 #include "TargetListSetReaderStub.h"
 #include "TargetListStub.h"
 #include "TrackStub.h"

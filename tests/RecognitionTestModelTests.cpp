@@ -3,7 +3,7 @@
 #include "ModelEventListenerStub.h"
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"
-#include "ResponseEvaluatorStub.h"
+#include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.h"
 #include "assert-utility.h"
 #include "av-speech-in-noise/Model.hpp"

@@ -1,6 +1,6 @@
 #include "LogString.h"
 #include "OutputFileStub.hpp"
-#include "ResponseEvaluatorStub.h"
+#include "ResponseEvaluatorStub.hpp"
 #include "TargetListStub.h"
 #include "assert-utility.h"
 #include "av-speech-in-noise/Model.hpp"
