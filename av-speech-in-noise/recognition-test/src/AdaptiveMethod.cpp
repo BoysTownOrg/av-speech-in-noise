@@ -35,10 +35,6 @@ static auto fileName(ResponseEvaluator &evaluator, const std::string &target)
     return evaluator.fileName(target);
 }
 
-static void assignTarget(open_set::Trial &trial, std::string s) {
-    trial.target = std::move(s);
-}
-
 static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
     Track::Settings trackSettings{};
     trackSettings.rule = &test.trackingRule;
@@ -56,9 +52,16 @@ static auto moveCompleteTracksToEnd(
             targetListsWithTracks.end(), incomplete));
 }
 
-static void correct(Track *track) { track->down(); }
+static void down(Track *track) { track->down(); }
 
-static void incorrect(Track *track) { track->up(); }
+static void up(Track *track) { track->up(); }
+
+static auto current(TargetList *list) -> std::string { return list->current(); }
+
+static void assignTarget(open_set::Trial &trial, ResponseEvaluator &evaluator,
+    TargetList *targetList) {
+    trial.target = fileName(evaluator, current(targetList));
+}
 
 static auto correct(ResponseEvaluator &evaluator, const std::string &target,
     const coordinate_response_measure::Response &response) -> bool {
@@ -118,25 +121,27 @@ auto AdaptiveMethodImpl::currentTarget() -> std::string {
 void AdaptiveMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
     const auto lastSnr_dB{snr_dB()};
-    if (correct(evaluator, currentTarget(), response))
-        correct(currentSnrTrack);
+    if (correct(evaluator, current(currentTargetList), response))
+        down(currentSnrTrack);
     else
-        incorrect(currentSnrTrack);
+        up(currentSnrTrack);
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
     assignReversals(lastTrial, currentSnrTrack);
-    lastTrial.correctColor = evaluator.correctColor(currentTarget());
-    lastTrial.correctNumber = evaluator.correctNumber(currentTarget());
+    lastTrial.correctColor = evaluator.correctColor(current(currentTargetList));
+    lastTrial.correctNumber =
+        evaluator.correctNumber(current(currentTargetList));
     lastTrial.SNR_dB = lastSnr_dB;
-    lastTrial.correct = correct(evaluator, currentTarget(), response);
+    lastTrial.correct =
+        correct(evaluator, current(currentTargetList), response);
     selectNextList();
 }
 
 void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    assignTarget(lastOpenSetTrial, fileName(evaluator, currentTarget()));
-    incorrect(currentSnrTrack);
+    assignTarget(lastOpenSetTrial, evaluator, currentTargetList);
+    up(currentSnrTrack);
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     selectNextList();
 }
@@ -144,8 +149,8 @@ void AdaptiveMethodImpl::submitIncorrectResponse() {
 void AdaptiveMethodImpl::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
     assignSnr(lastOpenSetTrial, currentSnrTrack);
-    assignTarget(lastOpenSetTrial, fileName(evaluator, currentTarget()));
-    correct(currentSnrTrack);
+    assignTarget(lastOpenSetTrial, evaluator, currentTargetList);
+    down(currentSnrTrack);
     assignReversals(lastOpenSetTrial, currentSnrTrack);
     lastAdaptiveTestResult.threshold = currentSnrTrack->threshold({});
     lastAdaptiveTestResult.targetListDirectory = currentTargetList->directory();
@@ -156,12 +161,11 @@ void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
     assignCorrectness(lastCorrectKeywordsTrial, correct(p));
     assignSnr(lastCorrectKeywordsTrial, currentSnrTrack);
-    assignTarget(
-        lastCorrectKeywordsTrial, fileName(evaluator, currentTarget()));
+    assignTarget(lastCorrectKeywordsTrial, evaluator, currentTargetList);
     if (correct(p))
-        correct(currentSnrTrack);
+        down(currentSnrTrack);
     else
-        incorrect(currentSnrTrack);
+        up(currentSnrTrack);
     assignReversals(lastCorrectKeywordsTrial, currentSnrTrack);
     selectNextList();
 }
