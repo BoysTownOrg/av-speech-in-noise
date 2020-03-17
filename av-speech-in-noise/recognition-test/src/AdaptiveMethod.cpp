@@ -71,7 +71,7 @@ void AdaptiveMethodImpl::resetTracks() {
 }
 
 void AdaptiveMethodImpl::selectNextList() {
-    moveCompleteTracksToEnd();
+    auto tracksInProgress{moveCompleteTracksToEnd()};
     if (tracksInProgress == 0)
         return;
     const auto &targetListsWithTrack{targetListsWithTracks.at(
@@ -80,8 +80,8 @@ void AdaptiveMethodImpl::selectNextList() {
     currentTargetList = targetListsWithTrack.list.get();
 }
 
-void AdaptiveMethodImpl::moveCompleteTracksToEnd() {
-    tracksInProgress = std::distance(targetListsWithTracks.begin(),
+auto AdaptiveMethodImpl::moveCompleteTracksToEnd() -> gsl::index {
+    return std::distance(targetListsWithTracks.begin(),
         std::stable_partition(targetListsWithTracks.begin(),
             targetListsWithTracks.end(), incomplete));
 }

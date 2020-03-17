@@ -67,7 +67,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
 
   private:
     void selectNextList();
-    void moveCompleteTracksToEnd();
+    auto moveCompleteTracksToEnd() -> gsl::index;
     auto correct(const std::string &,
         const coordinate_response_measure::Response &) -> bool;
     void incorrect();
@@ -84,7 +84,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     Randomizer &randomizer;
     Track *currentSnrTrack{};
     TargetList *currentTargetList{};
-    gsl::index tracksInProgress{};
 };
 }
 
