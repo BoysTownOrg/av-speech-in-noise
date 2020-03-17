@@ -96,7 +96,7 @@ class OutputFileStub : public OutputFile {
         return freeResponseTrial_;
     }
 
-    auto correctKeywords() const -> auto & { return correctKeywords_; }
+    auto correctKeywordsTrial() const -> auto & { return correctKeywords_; }
 
     auto openSetAdaptiveTrial() const -> auto & {
         return openSetAdaptiveTrial_;

@@ -176,15 +176,15 @@ auto openSetAdaptiveTrial(OutputFileStub &file)
     return file.openSetAdaptiveTrial();
 }
 
-auto reversals(OutputFileStub &file) -> int {
+auto openSetReversals(OutputFileStub &file) -> int {
     return openSetAdaptiveTrial(file).reversals;
 }
 
-auto snr(OutputFileStub &file) -> int {
+auto openSetSnr(OutputFileStub &file) -> int {
     return openSetAdaptiveTrial(file).SNR_dB;
 }
 
-auto target(OutputFileStub &file) -> std::string {
+auto openSetTarget(OutputFileStub &file) -> std::string {
     return openSetAdaptiveTrial(file).target;
 }
 
@@ -201,15 +201,15 @@ class WritingCorrectResponse : public WritingResponseUseCase,
     }
 
     auto reversals(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::reversals(file);
+        return av_speech_in_noise::openSetReversals(file);
     }
 
     auto snr(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::snr(file);
+        return av_speech_in_noise::openSetSnr(file);
     }
 
     auto target(OutputFileStub &file) -> std::string override {
-        return av_speech_in_noise::target(file);
+        return av_speech_in_noise::openSetTarget(file);
     }
 };
 
@@ -226,17 +226,22 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
     }
 
     auto reversals(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::reversals(file);
+        return av_speech_in_noise::openSetReversals(file);
     }
 
     auto snr(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::snr(file);
+        return av_speech_in_noise::openSetSnr(file);
     }
 
     auto target(OutputFileStub &file) -> std::string override {
-        return av_speech_in_noise::target(file);
+        return av_speech_in_noise::openSetTarget(file);
     }
 };
+
+auto correctKeywordsTrial(OutputFileStub &file)
+    -> const open_set::CorrectKeywordsTrial & {
+    return file.correctKeywordsTrial();
+}
 
 class WritingCorrectKeywords : public WritingResponseUseCase,
                                public WritingTargetUseCase {
@@ -252,15 +257,15 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
     }
 
     auto reversals(OutputFileStub &file) -> int override {
-        return file.correctKeywords().reversals;
+        return correctKeywordsTrial(file).reversals;
     }
 
     auto snr(OutputFileStub &file) -> int override {
-        return file.correctKeywords().SNR_dB;
+        return correctKeywordsTrial(file).SNR_dB;
     }
 
     auto target(OutputFileStub &file) -> std::string override {
-        return file.correctKeywords().target;
+        return correctKeywordsTrial(file).target;
     }
 };
 
@@ -684,7 +689,7 @@ ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
     correctKeywords.count = 1;
     method.submit(correctKeywords);
     method.writeLastCorrectKeywords(&outputFile);
-    assertEqual(1, outputFile.correctKeywords().count);
+    assertEqual(1, correctKeywordsTrial(outputFile).count);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesReversalsAfterUpdatingTrack) {
@@ -737,7 +742,7 @@ ADAPTIVE_METHOD_TEST(writeSufficientCorrectKeywordsIsCorrect) {
     initialize(method, test, targetListReader);
     run(submittingSufficientCorrectKeywords);
     method.writeLastCorrectKeywords(&outputFile);
-    assertTrue(outputFile.correctKeywords().correct);
+    assertTrue(correctKeywordsTrial(outputFile).correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {
@@ -758,7 +763,7 @@ ADAPTIVE_METHOD_TEST(writeInsufficientCorrectKeywordsIsIncorrect) {
     initialize(method, test, targetListReader);
     run(submittingInsufficientCorrectKeywords);
     method.writeLastCorrectKeywords(&outputFile);
-    assertFalse(outputFile.correctKeywords().correct);
+    assertFalse(correctKeywordsTrial(outputFile).correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectResponseWritesTarget) {

@@ -245,7 +245,7 @@ class SubmittingCorrectKeywords : public SubmittingResponse,
     void run(RecognitionTestModelImpl &m) override { m.submit(k); }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return file.correctKeywords().target;
+        return file.correctKeywordsTrial().target;
     }
 };
 
