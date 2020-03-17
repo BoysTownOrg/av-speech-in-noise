@@ -82,6 +82,7 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
 void AdaptiveMethodImpl::initialize(
     const AdaptiveTest &t, TargetListReader *targetListSetReader) {
     test = &t;
+    thresholdReversals = t.thresholdReversals;
     targetListsWithTracks.clear();
     for (auto &&list : targetListSetReader->read(t.targetListDirectory))
         targetListsWithTracks.push_back(
@@ -180,8 +181,9 @@ void AdaptiveMethodImpl::submit(const open_set::FreeResponse &) {
 
 void AdaptiveMethodImpl::writeTestResult(OutputFile *file) {
     std::vector<AdaptiveTestResult> results;
-    for (const auto& t : targetListsWithTracks)
-        results.push_back({t.list->directory(), t.track->threshold({})});
+    for (const auto &t : targetListsWithTracks)
+        results.push_back(
+            {t.list->directory(), t.track->threshold(thresholdReversals)});
     file->write(results);
 }
 

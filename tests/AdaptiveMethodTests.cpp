@@ -793,6 +793,15 @@ ADAPTIVE_METHOD_TEST(writeTestResult) {
     assertEqual("c", adaptiveTestResult(outputFile).at(2).targetListDirectory);
 }
 
+ADAPTIVE_METHOD_TEST(writeTestResultPassThresholdReversals) {
+    test.thresholdReversals = 1;
+    initialize(method, test, targetListReader);
+    method.writeTestResult(&outputFile);
+    assertEqual(1, at(tracks, 0)->thresholdReversals());
+    assertEqual(1, at(tracks, 1)->thresholdReversals());
+    assertEqual(1, at(tracks, 2)->thresholdReversals());
+}
+
 ADAPTIVE_METHOD_TEST(submitCorrectResponsePassesCurrentToEvaluator) {
     assertPassesCurrentTargetToEvaluatorForFileName(submittingCorrectResponse);
 }

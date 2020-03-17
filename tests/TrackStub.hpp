@@ -14,6 +14,7 @@ class TrackStub : public Track {
     int reversals_{};
     int reversalsWhenUpdated_{};
     int xWhenUpdated_{};
+    int thresholdReversals_{};
     bool pushedDown_{};
     bool pushedUp_{};
     bool complete_{};
@@ -69,7 +70,14 @@ class TrackStub : public Track {
 
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
 
-    auto threshold(int reversals) -> double override { return threshold_; }
+    auto threshold(int reversals) -> double override {
+        thresholdReversals_ = reversals;
+        return threshold_;
+    }
+
+    [[nodiscard]] auto thresholdReversals() const -> int {
+        return thresholdReversals_;
+    }
 };
 
 class TrackFactoryStub : public Track::Factory {
