@@ -27,6 +27,8 @@ class TrackStub : public Track {
 
     void setThresholdWhenUpdated(double x) { thresholdWhenUpdated_ = x; }
 
+    void setThreshold(double x) { threshold_ = x; }
+
     void setReversals(int x) { reversals_ = x; }
 
     [[nodiscard]] auto pushedUp() const { return pushedUp_; }

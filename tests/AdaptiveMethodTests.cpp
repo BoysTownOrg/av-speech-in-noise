@@ -358,7 +358,8 @@ void assertNextTargetEquals(AdaptiveMethodImpl &method, const std::string &s) {
     assertEqual(s, method.nextTarget());
 }
 
-auto adaptiveTestResult(OutputFileStub &file) -> AdaptiveTestResult {
+auto adaptiveTestResult(OutputFileStub &file)
+    -> std::vector<AdaptiveTestResult> {
     return file.adaptiveTestResult();
 }
 
@@ -370,6 +371,8 @@ void assertPassedIntegerBounds(RandomizerStub &randomizer, int a, int b) {
 auto coordinateResponseTrialCorrect(OutputFileStub &file) -> bool {
     return adaptiveCoordinateResponseTrial(file).correct;
 }
+
+constexpr auto blue{coordinate_response_measure::Color::blue};
 
 class AdaptiveMethodTests : public ::testing::Test {
   protected:
@@ -428,12 +431,6 @@ class AdaptiveMethodTests : public ::testing::Test {
         selectNextList(randomizer, 2);
         run(useCase);
         assertEqual(4, useCase.snr(outputFile));
-    }
-
-    static constexpr auto blue{coordinate_response_measure::Color::blue};
-
-    auto writtenCoordinateResponseTrialCorrect() -> bool {
-        return adaptiveCoordinateResponseTrial(outputFile).correct;
     }
 
     void setCorrectCoordinateResponse() { evaluator.setCorrect(); }
@@ -588,7 +585,8 @@ ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCorrectKeywords) {
         submittingCorrectKeywords);
 }
 
-ADAPTIVE_METHOD_TEST(randomizerPassedIntegerBoundsOfLists) {
+ADAPTIVE_METHOD_TEST(
+    randomizerPassedIntegerBoundsOfListsForSelectingListInRange) {
     initialize(method, test, targetListReader);
     assertPassedIntegerBounds(randomizer, 0, 2);
 }
@@ -779,15 +777,20 @@ ADAPTIVE_METHOD_TEST(writeCorrectKeywordsWritesTarget) {
 }
 
 ADAPTIVE_METHOD_TEST(writeTestResult) {
-    selectNextList(randomizer, 1);
     initialize(method, test, targetListReader);
-    at(tracks, 1)->setThresholdWhenUpdated(3.);
-    targetLists.at(1)->setDirectory("a");
-    selectNextList(randomizer, 2);
-    method.submitCorrectResponse();
+    at(tracks, 0)->setThreshold(11.);
+    targetLists.at(0)->setDirectory("a");
+    at(tracks, 1)->setThreshold(22.);
+    targetLists.at(1)->setDirectory("b");
+    at(tracks, 2)->setThreshold(33.);
+    targetLists.at(2)->setDirectory("c");
     method.writeTestResult(&outputFile);
-    assertEqual(3., adaptiveTestResult(outputFile).threshold);
-    assertEqual("a", adaptiveTestResult(outputFile).targetListDirectory);
+    assertEqual(11., adaptiveTestResult(outputFile).at(0).threshold);
+    assertEqual("a", adaptiveTestResult(outputFile).at(0).targetListDirectory);
+    assertEqual(22., adaptiveTestResult(outputFile).at(1).threshold);
+    assertEqual("b", adaptiveTestResult(outputFile).at(1).targetListDirectory);
+    assertEqual(33., adaptiveTestResult(outputFile).at(2).threshold);
+    assertEqual("c", adaptiveTestResult(outputFile).at(2).targetListDirectory);
 }
 
 ADAPTIVE_METHOD_TEST(submitCorrectResponsePassesCurrentToEvaluator) {

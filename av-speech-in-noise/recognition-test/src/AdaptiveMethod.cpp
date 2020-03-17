@@ -179,7 +179,10 @@ void AdaptiveMethodImpl::submit(const open_set::FreeResponse &) {
 }
 
 void AdaptiveMethodImpl::writeTestResult(OutputFile *file) {
-    file->write(lastAdaptiveTestResult);
+    std::vector<AdaptiveTestResult> results;
+    for (const auto& t : targetListsWithTracks)
+        results.push_back({t.list->directory(), t.track->threshold({})});
+    file->write(results);
 }
 
 void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
