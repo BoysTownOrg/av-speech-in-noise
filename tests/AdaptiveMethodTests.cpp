@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <functional>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 namespace {
 class UseCase {
   public:
@@ -197,15 +197,15 @@ class WritingCorrectResponse : public WritingResponseUseCase,
     }
 
     auto writtenReversals(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::tests::writtenReversals(file);
+        return av_speech_in_noise::writtenReversals(file);
     }
 
     auto writtenSnr(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::tests::writtenSnr(file);
+        return av_speech_in_noise::writtenSnr(file);
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return av_speech_in_noise::tests::writtenTarget(file);
+        return av_speech_in_noise::writtenTarget(file);
     }
 };
 
@@ -222,15 +222,15 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
     }
 
     auto writtenReversals(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::tests::writtenReversals(file);
+        return av_speech_in_noise::writtenReversals(file);
     }
 
     auto writtenSnr(OutputFileStub &file) -> int override {
-        return av_speech_in_noise::tests::writtenSnr(file);
+        return av_speech_in_noise::writtenSnr(file);
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return av_speech_in_noise::tests::writtenTarget(file);
+        return av_speech_in_noise::writtenTarget(file);
     }
 };
 
