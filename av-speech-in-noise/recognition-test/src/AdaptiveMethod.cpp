@@ -49,6 +49,13 @@ static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
     return trackSettings;
 }
 
+static auto moveCompleteTracksToEnd(
+    std::vector<TargetListWithTrack> &targetListsWithTracks) -> gsl::index {
+    return std::distance(targetListsWithTracks.begin(),
+        std::stable_partition(targetListsWithTracks.begin(),
+            targetListsWithTracks.end(), incomplete));
+}
+
 AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
@@ -71,19 +78,13 @@ void AdaptiveMethodImpl::resetTracks() {
 }
 
 void AdaptiveMethodImpl::selectNextList() {
-    auto tracksInProgress{moveCompleteTracksToEnd()};
+    const auto tracksInProgress{moveCompleteTracksToEnd(targetListsWithTracks)};
     if (tracksInProgress == 0)
         return;
     const auto &targetListsWithTrack{targetListsWithTracks.at(
         randomizer.betweenInclusive(0, tracksInProgress - 1))};
     currentSnrTrack = track(targetListsWithTrack);
     currentTargetList = targetListsWithTrack.list.get();
-}
-
-auto AdaptiveMethodImpl::moveCompleteTracksToEnd() -> gsl::index {
-    return std::distance(targetListsWithTracks.begin(),
-        std::stable_partition(targetListsWithTracks.begin(),
-            targetListsWithTracks.end(), incomplete));
 }
 
 auto AdaptiveMethodImpl::complete() -> bool {

@@ -3,7 +3,6 @@
 
 #include "Model.hpp"
 #include "Randomizer.hpp"
-#include <gsl/gsl>
 #include <limits>
 #include <memory>
 #include <vector>
@@ -67,7 +66,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
 
   private:
     void selectNextList();
-    auto moveCompleteTracksToEnd() -> gsl::index;
     auto correct(const std::string &,
         const coordinate_response_measure::Response &) -> bool;
     void incorrect();
