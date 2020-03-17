@@ -88,7 +88,7 @@ class OutputFileStub : public OutputFile {
 
     auto fixedLevelTest() const { return fixedLevelTest_; }
 
-    auto writtenAdaptiveCoordinateResponseTrial() const -> auto & {
+    auto adaptiveCoordinateResponseTrial() const -> auto & {
         return adaptiveCoordinateResponseTrial_;
     }
 
@@ -96,9 +96,9 @@ class OutputFileStub : public OutputFile {
         return freeResponseTrial_;
     }
 
-    auto writtenCorrectKeywords() const -> auto & { return correctKeywords_; }
+    auto correctKeywords() const -> auto & { return correctKeywords_; }
 
-    auto writtenOpenSetAdaptiveTrial() const -> auto & {
+    auto openSetAdaptiveTrial() const -> auto & {
         return openSetAdaptiveTrial_;
     }
 

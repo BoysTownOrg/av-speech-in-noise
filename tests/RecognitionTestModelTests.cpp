@@ -245,7 +245,7 @@ class SubmittingCorrectKeywords : public SubmittingResponse,
     void run(RecognitionTestModelImpl &m) override { m.submit(k); }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return file.writtenCorrectKeywords().target;
+        return file.correctKeywords().target;
     }
 };
 
@@ -265,7 +265,7 @@ class SubmittingCorrectResponse : public TargetWritingUseCase {
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return file.writtenOpenSetAdaptiveTrial().target;
+        return file.openSetAdaptiveTrial().target;
     }
 };
 
@@ -276,7 +276,7 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return file.writtenOpenSetAdaptiveTrial().target;
+        return file.openSetAdaptiveTrial().target;
     }
 };
 

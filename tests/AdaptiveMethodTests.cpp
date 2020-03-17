@@ -145,9 +145,9 @@ class WritingTargetUseCase : public virtual UseCase {
     virtual auto writtenTarget(OutputFileStub &) -> std::string = 0;
 };
 
-auto writtenAdaptiveCoordinateResponseTrial(const OutputFileStub &file)
+auto adaptiveCoordinateResponseTrial(const OutputFileStub &file)
     -> const coordinate_response_measure::AdaptiveTrial & {
-    return file.writtenAdaptiveCoordinateResponseTrial();
+    return file.adaptiveCoordinateResponseTrial();
 }
 
 class WritingCoordinateResponse : public WritingResponseUseCase {
@@ -163,29 +163,29 @@ class WritingCoordinateResponse : public WritingResponseUseCase {
     }
 
     auto writtenReversals(OutputFileStub &file) -> int override {
-        return writtenAdaptiveCoordinateResponseTrial(file).reversals;
+        return adaptiveCoordinateResponseTrial(file).reversals;
     }
 
     auto writtenSnr(OutputFileStub &file) -> int override {
-        return writtenAdaptiveCoordinateResponseTrial(file).SNR_dB;
+        return adaptiveCoordinateResponseTrial(file).SNR_dB;
     }
 };
 
-auto writtenOpenSetAdaptiveTrial(OutputFileStub &file)
+auto openSetAdaptiveTrial(OutputFileStub &file)
     -> const open_set::AdaptiveTrial & {
-    return file.writtenOpenSetAdaptiveTrial();
+    return file.openSetAdaptiveTrial();
 }
 
 auto writtenReversals(OutputFileStub &file) -> int {
-    return writtenOpenSetAdaptiveTrial(file).reversals;
+    return openSetAdaptiveTrial(file).reversals;
 }
 
 auto writtenSnr(OutputFileStub &file) -> int {
-    return writtenOpenSetAdaptiveTrial(file).SNR_dB;
+    return openSetAdaptiveTrial(file).SNR_dB;
 }
 
 auto writtenTarget(OutputFileStub &file) -> std::string {
-    return writtenOpenSetAdaptiveTrial(file).target;
+    return openSetAdaptiveTrial(file).target;
 }
 
 class WritingCorrectResponse : public WritingResponseUseCase,
@@ -252,15 +252,15 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
     }
 
     auto writtenReversals(OutputFileStub &file) -> int override {
-        return file.writtenCorrectKeywords().reversals;
+        return file.correctKeywords().reversals;
     }
 
     auto writtenSnr(OutputFileStub &file) -> int override {
-        return file.writtenCorrectKeywords().SNR_dB;
+        return file.correctKeywords().SNR_dB;
     }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return file.writtenCorrectKeywords().target;
+        return file.correctKeywords().target;
     }
 };
 
@@ -428,7 +428,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     static constexpr auto blue{coordinate_response_measure::Color::blue};
 
     auto writtenCoordinateResponseTrialCorrect() -> bool {
-        return writtenAdaptiveCoordinateResponseTrial(outputFile).correct;
+        return adaptiveCoordinateResponseTrial(outputFile).correct;
     }
 
     void setCorrectCoordinateResponse() { evaluator.setCorrect(); }
@@ -655,32 +655,28 @@ ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectColor) {
     initialize(method, test, targetListReader);
     coordinateResponse.color = blue;
     write(method, coordinateResponse, outputFile);
-    assertEqual(
-        blue, writtenAdaptiveCoordinateResponseTrial(outputFile).subjectColor);
+    assertEqual(blue, adaptiveCoordinateResponseTrial(outputFile).subjectColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectColor) {
     initialize(method, test, targetListReader);
     evaluator.setCorrectColor(blue);
     write(method, coordinateResponse, outputFile);
-    assertEqual(
-        blue, writtenAdaptiveCoordinateResponseTrial(outputFile).correctColor);
+    assertEqual(blue, adaptiveCoordinateResponseTrial(outputFile).correctColor);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesSubjectNumber) {
     initialize(method, test, targetListReader);
     coordinateResponse.number = 1;
     write(method, coordinateResponse, outputFile);
-    assertEqual(
-        1, writtenAdaptiveCoordinateResponseTrial(outputFile).subjectNumber);
+    assertEqual(1, adaptiveCoordinateResponseTrial(outputFile).subjectNumber);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesCorrectNumber) {
     initialize(method, test, targetListReader);
     evaluator.setCorrectNumber(1);
     write(method, coordinateResponse, outputFile);
-    assertEqual(
-        1, writtenAdaptiveCoordinateResponseTrial(outputFile).correctNumber);
+    assertEqual(1, adaptiveCoordinateResponseTrial(outputFile).correctNumber);
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
@@ -688,7 +684,7 @@ ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
     correctKeywords.count = 1;
     method.submit(correctKeywords);
     method.writeLastCorrectKeywords(&outputFile);
-    assertEqual(1, outputFile.writtenCorrectKeywords().count);
+    assertEqual(1, outputFile.correctKeywords().count);
 }
 
 ADAPTIVE_METHOD_TEST(writeCoordinateResponsePassesReversalsAfterUpdatingTrack) {
@@ -734,14 +730,14 @@ ADAPTIVE_METHOD_TEST(writeCorrectResponseIsCorrect) {
     initialize(method, test, targetListReader);
     submitCorrectResponse(method);
     method.writeLastCorrectResponse(&outputFile);
-    assertTrue(outputFile.writtenOpenSetAdaptiveTrial().correct);
+    assertTrue(outputFile.openSetAdaptiveTrial().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeSufficientCorrectKeywordsIsCorrect) {
     initialize(method, test, targetListReader);
     run(submittingSufficientCorrectKeywords);
     method.writeLastCorrectKeywords(&outputFile);
-    assertTrue(outputFile.writtenCorrectKeywords().correct);
+    assertTrue(outputFile.correctKeywords().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {
@@ -755,14 +751,14 @@ ADAPTIVE_METHOD_TEST(writeIncorrectResponseIsIncorrect) {
     initialize(method, test, targetListReader);
     submitIncorrectResponse(method);
     method.writeLastIncorrectResponse(&outputFile);
-    assertFalse(outputFile.writtenOpenSetAdaptiveTrial().correct);
+    assertFalse(outputFile.openSetAdaptiveTrial().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeInsufficientCorrectKeywordsIsIncorrect) {
     initialize(method, test, targetListReader);
     run(submittingInsufficientCorrectKeywords);
     method.writeLastCorrectKeywords(&outputFile);
-    assertFalse(outputFile.writtenCorrectKeywords().correct);
+    assertFalse(outputFile.correctKeywords().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeCorrectResponseWritesTarget) {
