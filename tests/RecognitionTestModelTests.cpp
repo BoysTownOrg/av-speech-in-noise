@@ -246,6 +246,10 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
     }
 };
 
+auto openSetAdaptiveTarget(OutputFileStub &file) -> std::string {
+    return file.openSetAdaptiveTrial().target;
+}
+
 class SubmittingCorrectResponse : public TargetWritingUseCase {
   public:
     void run(RecognitionTestModelImpl &m) override {
@@ -253,7 +257,7 @@ class SubmittingCorrectResponse : public TargetWritingUseCase {
     }
 
     auto target(OutputFileStub &file) -> std::string override {
-        return file.openSetAdaptiveTrial().target;
+        return openSetAdaptiveTarget(file);
     }
 };
 
@@ -264,7 +268,7 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
     }
 
     auto target(OutputFileStub &file) -> std::string override {
-        return file.openSetAdaptiveTrial().target;
+        return openSetAdaptiveTarget(file);
     }
 };
 
