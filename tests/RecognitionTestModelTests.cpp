@@ -36,23 +36,25 @@ class TestMethodStub : public TestMethod {
 
     auto snr_dB() -> int override { return snr_dB_; }
 
-    void setNextTarget(std::string s) { next_ = std::move(s); }
+    void setNextTarget(std::string s) { nextTarget_ = std::move(s); }
 
     auto nextTarget() -> std::string override {
         insert(log_, "next ");
-        current_ = currentWhenNext_;
-        return next_;
+        currentTarget_ = currentTargetWhenNext_;
+        return nextTarget_;
     }
 
     void setComplete() { complete_ = true; }
 
     auto complete() -> bool override { return complete_; }
 
-    auto currentTarget() -> std::string override { return current_; }
+    auto currentTarget() -> std::string override { return currentTarget_; }
 
-    void setCurrent(std::string s) { current_ = std::move(s); }
+    void setCurrentTarget(std::string s) { currentTarget_ = std::move(s); }
 
-    void setCurrentWhenNext(std::string s) { currentWhenNext_ = std::move(s); }
+    void setCurrentTargetWhenNextTarget(std::string s) {
+        currentTargetWhenNext_ = std::move(s);
+    }
 
     void submitCorrectResponse() override {
         insert(log_, "submitCorrectResponse ");
@@ -107,9 +109,9 @@ class TestMethodStub : public TestMethod {
 
   private:
     LogString log_{};
-    std::string current_{};
-    std::string currentWhenNext_{};
-    std::string next_{};
+    std::string currentTarget_{};
+    std::string currentTargetWhenNext_{};
+    std::string nextTarget_{};
     int snr_dB_{};
     bool complete_{};
     bool submittedCorrectResponse_{};
@@ -275,7 +277,7 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
 auto dB(double x) -> double { return 20 * std::log10(x); }
 
 void setCurrentTarget(TestMethodStub &m, std::string s) {
-    m.setCurrent(std::move(s));
+    m.setCurrentTarget(std::move(s));
 }
 
 auto targetFileName(RecognitionTestModelImpl &m) -> std::string {
@@ -523,7 +525,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         UseCase &useCase) {
         run(initializingTest);
         setCurrentTarget(testMethod, "a");
-        testMethod.setCurrentWhenNext("b");
+        testMethod.setCurrentTargetWhenNextTarget("b");
         run(useCase);
         assertEqual("a", filePathForFileName(evaluator));
     }
