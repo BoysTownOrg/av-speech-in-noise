@@ -1099,13 +1099,6 @@ class PresenterTests : public ::testing::Test {
         assertSetupViewShown();
     }
 
-    void assertCompleteTestShowsContinueTestingDialog(
-        TrialSubmission &useCase) {
-        setTestComplete();
-        run(useCase);
-        assertTrue(experimenterView.continueTestingDialogShown());
-    }
-
     void assertHidesContinueTestingDialog(UseCase &useCase) {
         run(useCase);
         assertTrue(experimenterView.continueTestingDialogHidden());
@@ -1452,7 +1445,9 @@ PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
-    assertCompleteTestShowsContinueTestingDialog(submittingCorrectKeywords);
+    setTestComplete();
+    run(submittingCorrectKeywords);
+    assertTrue(experimenterView.continueTestingDialogShown());
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
