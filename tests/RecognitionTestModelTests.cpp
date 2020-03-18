@@ -74,7 +74,7 @@ class TestMethodStub : public TestMethod {
     }
 
     void submit(const coordinate_response_measure::Response &) override {
-        insert(log_, "submitResponse ");
+        insert(log_, "submitCoordinateResponse ");
     }
 
     void writeTestingParameters(OutputFile *file) override {
@@ -1138,7 +1138,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseWritesTrialAfterSubmittingResponse) {
     assertTestMethodLogContains(submittingCoordinateResponse,
-        "submitResponse writeLastCoordinateResponse ");
+        "submitCoordinateResponse writeLastCoordinateResponse ");
 }
 
 RECOGNITION_TEST_MODEL_TEST(
