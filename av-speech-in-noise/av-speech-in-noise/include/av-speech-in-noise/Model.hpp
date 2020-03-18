@@ -130,6 +130,12 @@ struct AdaptiveTestResult {
     double threshold;
 };
 
+inline auto operator==(
+    const AdaptiveTestResult &a, const AdaptiveTestResult &b) -> bool {
+    return a.targetListDirectory == b.targetListDirectory &&
+        a.threshold == b.threshold;
+}
+
 struct FixedLevelTest : Test {
     int snr_dB{};
     int trials{30};

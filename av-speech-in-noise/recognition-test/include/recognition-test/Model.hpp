@@ -50,6 +50,7 @@ class AdaptiveMethod : public virtual TestMethod {
   public:
     virtual void initialize(const AdaptiveTest &, TargetListReader *) = 0;
     virtual void resetTracks() = 0;
+    virtual auto testResults() -> std::vector<AdaptiveTestResult> = 0;
 };
 
 class FixedLevelMethod : public virtual TestMethod {
@@ -112,9 +113,7 @@ class ModelImpl : public Model {
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
     void restartAdaptiveTestWhilePreservingCyclicTargets() override;
-    auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> override {
-        return {};
-    }
+    auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> override;
 
   private:
     void initializeTest_(const AdaptiveTest &);

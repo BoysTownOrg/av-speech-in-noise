@@ -62,6 +62,9 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const open_set::FreeResponse &) override;
     void resetTracks() override;
+    auto testResults() -> std::vector<AdaptiveTestResult> override {
+        return {};
+    }
 
   private:
     void selectNextList();
