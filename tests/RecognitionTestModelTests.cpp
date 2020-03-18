@@ -1,5 +1,5 @@
 #include "LogString.hpp"
-#include "MaskerPlayerStub.h"
+#include "MaskerPlayerStub.hpp"
 #include "ModelEventListenerStub.h"
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"

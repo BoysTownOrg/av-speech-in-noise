@@ -1,5 +1,5 @@
-#ifndef TESTS_MASKERPLAYERSTUB_H_
-#define TESTS_MASKERPLAYERSTUB_H_
+#ifndef TESTS_MASKERPLAYERSTUB_HPP_
+#define TESTS_MASKERPLAYERSTUB_HPP_
 
 #include "LogString.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
