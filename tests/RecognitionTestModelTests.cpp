@@ -292,6 +292,14 @@ auto shown(TargetPlayerStub &targetPlayer) -> bool {
     return targetPlayer.videoShown();
 }
 
+void assertNotShown(TargetPlayerStub &targetPlayer) {
+    assertFalse(shown(targetPlayer));
+}
+
+void assertNotHidden(TargetPlayerStub &targetPlayer) {
+    assertFalse(hidden(targetPlayer));
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -325,17 +333,13 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertTargetVideoOnlyHidden() {
         assertTrue(hidden(targetPlayer));
-        assertTargetVideoNotShown();
+        assertNotShown(targetPlayer);
     }
-
-    void assertTargetVideoNotShown() { assertFalse(shown(targetPlayer)); }
 
     void assertTargetVideoOnlyShown() {
-        assertTargetVideoNotHidden();
+        assertNotHidden(targetPlayer);
         assertTrue(shown(targetPlayer));
     }
-
-    void assertTargetVideoNotHidden() { assertFalse(hidden(targetPlayer)); }
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase);
@@ -921,7 +925,7 @@ RECOGNITION_TEST_MODEL_TEST(startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
     test.condition = Condition::auditoryOnly;
     run(initializingTest);
     run(playingTrial);
-    assertTargetVideoNotShown();
+    assertNotShown(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestHidesTargetPlayer) {
@@ -1041,7 +1045,7 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress) {
     test.condition = Condition::auditoryOnly;
     runIgnoringFailureWithTrialInProgress(initializingTest);
-    assertTargetVideoNotHidden();
+    assertNotHidden(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(audioDevicesReturnsOutputAudioDeviceDescriptions) {
