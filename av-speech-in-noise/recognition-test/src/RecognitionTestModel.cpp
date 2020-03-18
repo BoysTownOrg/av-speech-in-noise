@@ -18,8 +18,7 @@ class NullTestMethod : public TestMethod {
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
     void writeTestResult(OutputFile *) override {}
-    void submit(
-        const coordinate_response_measure::Response &) override {}
+    void submit(const coordinate_response_measure::Response &) override {}
     void submit(const open_set::FreeResponse &) override {}
     void submit(const open_set::CorrectKeywords &) override {}
 };
@@ -49,9 +48,7 @@ void RecognitionTestModelImpl::throwIfTrialInProgress() {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
-static void useAllChannels(MaskerPlayer *player) {
-    player->useAllChannels();
-}
+static void useAllChannels(MaskerPlayer *player) { player->useAllChannels(); }
 
 static void clearChannelDelays(MaskerPlayer *player) {
     player->clearChannelDelays();
@@ -276,8 +273,7 @@ void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial();
-    }
-    else {
+    } else {
         testMethod->writeTestResult(outputFile);
         save(outputFile);
     }
@@ -294,8 +290,7 @@ void RecognitionTestModelImpl::submitIncorrectResponse_() {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submit(
-    const open_set::FreeResponse &response) {
+void RecognitionTestModelImpl::submit(const open_set::FreeResponse &response) {
     write(response);
     testMethod->submit(response);
     prepareNextTrialIfNeeded();

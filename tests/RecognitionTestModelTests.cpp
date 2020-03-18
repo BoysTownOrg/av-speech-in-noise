@@ -91,7 +91,7 @@ class TestMethodStub : public TestMethod {
         log_.insert("writeLastCorrectKeywords ");
     }
 
-    void writeTestResult(OutputFile *) {
+    void writeTestResult(OutputFile *) override {
         log_.insert("writeTestResult ");
     }
 
@@ -100,8 +100,7 @@ class TestMethodStub : public TestMethod {
         submittedCorrectKeywords_ = true;
     }
 
-    void submit(
-        const coordinate_response_measure::Response &) override {
+    void submit(const coordinate_response_measure::Response &) override {
         log_.insert("submitResponse ");
     }
 
@@ -111,7 +110,6 @@ class TestMethodStub : public TestMethod {
 class UseCase {
   public:
     virtual ~UseCase() = default;
-    virtual void run(ModelImpl &) {}
     virtual void run(RecognitionTestModelImpl &) = 0;
 };
 
@@ -227,9 +225,7 @@ class SubmittingFreeResponse : public SubmittingResponse,
     open_set::FreeResponse response_{};
 
   public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.submit(response_);
-    }
+    void run(RecognitionTestModelImpl &m) override { m.submit(response_); }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
         return file.writtenFreeResponseTrial().target;
@@ -256,9 +252,7 @@ class SubmittingCoordinateResponse : public SubmittingResponse {
     coordinate_response_measure::Response response_{};
 
   public:
-    void run(RecognitionTestModelImpl &m) override {
-        m.submit(response_);
-    }
+    void run(RecognitionTestModelImpl &m) override { m.submit(response_); }
 };
 
 class SubmittingCorrectResponse : public TargetWritingUseCase {
@@ -731,7 +725,8 @@ RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsIncrementsTrialNumber) {
     assertYieldsTrialNumber(submittingCorrectKeywords, 2);
 }
 
-RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsWritesTestResultWhenComplete) {
+RECOGNITION_TEST_MODEL_TEST(
+    submittingCorrectKeywordsWritesTestResultWhenComplete) {
     run(initializingTest);
     testMethod.setComplete();
     run(submittingCorrectKeywords);
