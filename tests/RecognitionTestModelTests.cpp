@@ -300,6 +300,18 @@ void assertNotHidden(TargetPlayerStub &targetPlayer) {
     assertFalse(hidden(targetPlayer));
 }
 
+void assertOnlyHidden(TargetPlayerStub &targetPlayer) {
+    assertTrue(hidden(targetPlayer));
+    assertNotShown(targetPlayer);
+}
+
+void assertOnlyShown(TargetPlayerStub &targetPlayer) {
+    assertNotHidden(targetPlayer);
+    assertTrue(shown(targetPlayer));
+}
+
+auto log(OutputFileStub &file) -> const LogString & { return file.log(); }
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -331,25 +343,13 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void run(UseCase &useCase) { useCase.run(model); }
 
-    void assertTargetVideoOnlyHidden() {
-        assertTrue(hidden(targetPlayer));
-        assertNotShown(targetPlayer);
-    }
-
-    void assertTargetVideoOnlyShown() {
-        assertNotHidden(targetPlayer);
-        assertTrue(shown(targetPlayer));
-    }
-
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase);
         assertOutputFileLog("close openNewFile writeTest ");
     }
 
-    auto outputFileLog() -> auto & { return outputFile.log(); }
-
     void assertOutputFileLog(const std::string &s) {
-        assertEqual(s, outputFileLog());
+        assertEqual(s, log(outputFile));
     }
 
     template <typename T>
@@ -433,7 +433,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
         run(useCase);
-        assertTrue(outputFileLog().endsWith("save "));
+        assertTrue(log(outputFile).endsWith("save "));
     }
 
     void assertCallThrowsRequestFailure(
@@ -568,7 +568,7 @@ RECOGNITION_TEST_MODEL_TEST(subscribesToPlayerEvents) {
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetVideo) {
     run(playingCalibration);
-    assertTargetVideoOnlyShown();
+    assertOnlyShown(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -727,7 +727,7 @@ RECOGNITION_TEST_MODEL_TEST(
     testMethod.setComplete();
     run(submittingCorrectKeywords);
     assertTrue(testMethod.log().endsWith("writeTestResult "));
-    assertTrue(outputFileLog().endsWith("save "));
+    assertTrue(log(outputFile).endsWith("save "));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -918,7 +918,7 @@ RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
 
 RECOGNITION_TEST_MODEL_TEST(maskerFadeOutCompleteHidesTargetPlayer) {
     maskerFadeOutComplete();
-    assertTargetVideoOnlyHidden();
+    assertOnlyHidden(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
@@ -930,7 +930,7 @@ RECOGNITION_TEST_MODEL_TEST(startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestHidesTargetPlayer) {
     run(initializingTest);
-    assertTargetVideoOnlyHidden();
+    assertOnlyHidden(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(targetPlaybackCompleteFadesOutMasker) {
