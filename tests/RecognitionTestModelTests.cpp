@@ -6,10 +6,9 @@
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetPlayerStub.h"
 #include "assert-utility.h"
-#include "av-speech-in-noise/Model.hpp"
-#include "recognition-test/RecognitionTestModel.hpp"
-#include <cmath>
+#include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
+#include <cmath>
 
 namespace av_speech_in_noise::tests {
 namespace {
@@ -90,6 +89,10 @@ class TestMethodStub : public TestMethod {
 
     void writeLastCorrectKeywords(OutputFile *) override {
         log_.insert("writeLastCorrectKeywords ");
+    }
+
+    void writeTestResult(OutputFile *) {
+        log_.insert("writeTestResult ");
     }
 
     void submit(const open_set::CorrectKeywords &) override {
@@ -726,6 +729,14 @@ RECOGNITION_TEST_MODEL_TEST(submittingFreeResponseIncrementsTrialNumber) {
 RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsIncrementsTrialNumber) {
     run(initializingTest);
     assertYieldsTrialNumber(submittingCorrectKeywords, 2);
+}
+
+RECOGNITION_TEST_MODEL_TEST(submittingCorrectKeywordsWritesTestResultWhenComplete) {
+    run(initializingTest);
+    testMethod.setComplete();
+    run(submittingCorrectKeywords);
+    assertTrue(testMethod.log().endsWith("writeTestResult "));
+    assertTrue(outputFileLog().endsWith("save "));
 }
 
 RECOGNITION_TEST_MODEL_TEST(

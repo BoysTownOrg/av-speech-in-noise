@@ -17,6 +17,7 @@ class NullTestMethod : public TestMethod {
     void writeLastIncorrectResponse(OutputFile *) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCorrectKeywords(OutputFile *) override {}
+    void writeTestResult(OutputFile *) override {}
     void submit(
         const coordinate_response_measure::Response &) override {}
     void submit(const open_set::FreeResponse &) override {}
@@ -275,6 +276,10 @@ void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     if (!testMethod->complete()) {
         ++trialNumber_;
         preparePlayersForNextTrial();
+    }
+    else {
+        testMethod->writeTestResult(outputFile);
+        save(outputFile);
     }
 }
 

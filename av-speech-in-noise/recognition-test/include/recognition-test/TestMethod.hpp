@@ -24,6 +24,7 @@ class TestMethod {
     virtual void writeLastCorrectResponse(OutputFile *) = 0;
     virtual void writeLastCorrectKeywords(OutputFile *) = 0;
     virtual void writeLastIncorrectResponse(OutputFile *) = 0;
+    virtual void writeTestResult(OutputFile *) = 0;
 };
 }
 
