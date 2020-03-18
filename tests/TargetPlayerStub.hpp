@@ -1,12 +1,12 @@
-#ifndef TESTS_TARGETPLAYERSTUB_H_
-#define TESTS_TARGETPLAYERSTUB_H_
+#ifndef TESTS_TARGETPLAYERSTUB_HPP_
+#define TESTS_TARGETPLAYERSTUB_HPP_
 
 #include "LogString.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <utility>
 #include <string>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TargetPlayerStub : public TargetPlayer {
     LogString log_;
     std::string filePath_;

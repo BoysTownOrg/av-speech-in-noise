@@ -1,10 +1,10 @@
 #include "LogString.hpp"
 #include "MaskerPlayerStub.hpp"
-#include "ModelEventListenerStub.h"
+#include "ModelEventListenerStub.hpp"
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
-#include "TargetPlayerStub.h"
+#include "TargetPlayerStub.hpp"
 #include "assert-utility.h"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <gtest/gtest.h>
