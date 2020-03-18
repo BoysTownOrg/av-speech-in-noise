@@ -206,4 +206,12 @@ void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
 void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
     file->write(lastCorrectKeywordsTrial);
 }
+
+auto AdaptiveMethodImpl::testResults() -> std::vector<AdaptiveTestResult> {
+    std::vector<AdaptiveTestResult> results;
+    for (const auto &t : targetListsWithTracks)
+        results.push_back(
+            {t.list->directory(), t.track->threshold(thresholdReversals)});
+    return results;
+}
 }
