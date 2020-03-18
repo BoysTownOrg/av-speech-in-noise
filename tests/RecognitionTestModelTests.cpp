@@ -126,7 +126,7 @@ class UseCase {
 
 class TargetWritingUseCase : public virtual UseCase {
   public:
-    virtual auto writtenTarget(OutputFileStub &) -> std::string = 0;
+    virtual auto target(OutputFileStub &) -> std::string = 0;
 };
 
 class SubmittingResponse : public virtual UseCase {};
@@ -219,7 +219,7 @@ class SubmittingFreeResponse : public SubmittingResponse,
 
     void run(RecognitionTestModelImpl &m) override { m.submit(response); }
 
-    auto writtenTarget(OutputFileStub &file) -> std::string override {
+    auto target(OutputFileStub &file) -> std::string override {
         return file.freeResponseTrial().target;
     }
 
@@ -229,21 +229,21 @@ class SubmittingFreeResponse : public SubmittingResponse,
 
 class SubmittingCorrectKeywords : public SubmittingResponse,
                                   public TargetWritingUseCase {
-    open_set::CorrectKeywords k{};
-
   public:
-    void run(RecognitionTestModelImpl &m) override { m.submit(k); }
+    void run(RecognitionTestModelImpl &m) override {
+        m.submit(open_set::CorrectKeywords{});
+    }
 
-    auto writtenTarget(OutputFileStub &file) -> std::string override {
+    auto target(OutputFileStub &file) -> std::string override {
         return file.correctKeywordsTrial().target;
     }
 };
 
 class SubmittingCoordinateResponse : public SubmittingResponse {
-    coordinate_response_measure::Response response_{};
-
   public:
-    void run(RecognitionTestModelImpl &m) override { m.submit(response_); }
+    void run(RecognitionTestModelImpl &m) override {
+        m.submit(coordinate_response_measure::Response{});
+    }
 };
 
 class SubmittingCorrectResponse : public TargetWritingUseCase {
@@ -252,7 +252,7 @@ class SubmittingCorrectResponse : public TargetWritingUseCase {
         m.submitCorrectResponse();
     }
 
-    auto writtenTarget(OutputFileStub &file) -> std::string override {
+    auto target(OutputFileStub &file) -> std::string override {
         return file.openSetAdaptiveTrial().target;
     }
 };
@@ -263,7 +263,7 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
         m.submitIncorrectResponse();
     }
 
-    auto writtenTarget(OutputFileStub &file) -> std::string override {
+    auto target(OutputFileStub &file) -> std::string override {
         return file.openSetAdaptiveTrial().target;
     }
 };
@@ -512,7 +512,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertWritesTarget(TargetWritingUseCase &useCase) {
         evaluator.setFileName("a");
         run(useCase);
-        assertEqual("a", useCase.writtenTarget(outputFile));
+        assertEqual("a", useCase.target(outputFile));
     }
 
     void assertPassesCurrentTargetToEvaluatorBeforeAdvancingTarget(
