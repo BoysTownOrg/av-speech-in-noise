@@ -12,7 +12,99 @@
 
 namespace av_speech_in_noise {
 namespace {
+void insert(LogString &log, const std::string &s) { log.insert(s); }
+
 class TestMethodStub : public TestMethod {
+  public:
+    auto submittedCorrectResponse() const -> bool {
+        return submittedCorrectResponse_;
+    }
+
+    auto submittedIncorrectResponse() const -> bool {
+        return submittedIncorrectResponse_;
+    }
+
+    auto submittedFreeResponse() const -> bool {
+        return submittedFreeResponse_;
+    }
+
+    auto submittedCorrectKeywords() const -> bool {
+        return submittedCorrectKeywords_;
+    }
+
+    void setSnr_dB(int x) { snr_dB_ = x; }
+
+    auto snr_dB() -> int override { return snr_dB_; }
+
+    void setNextTarget(std::string s) { next_ = std::move(s); }
+
+    auto nextTarget() -> std::string override {
+        insert(log_, "next ");
+        current_ = currentWhenNext_;
+        return next_;
+    }
+
+    void setComplete() { complete_ = true; }
+
+    auto complete() -> bool override { return complete_; }
+
+    auto currentTarget() -> std::string override { return current_; }
+
+    void setCurrent(std::string s) { current_ = std::move(s); }
+
+    void setCurrentWhenNext(std::string s) { currentWhenNext_ = std::move(s); }
+
+    void submitCorrectResponse() override {
+        insert(log_, "submitCorrectResponse ");
+        submittedCorrectResponse_ = true;
+    }
+
+    void submitIncorrectResponse() override {
+        insert(log_, "submitIncorrectResponse ");
+        submittedIncorrectResponse_ = true;
+    }
+
+    void submit(const open_set::FreeResponse &) override {
+        submittedFreeResponse_ = true;
+    }
+
+    void submit(const open_set::CorrectKeywords &) override {
+        insert(log_, "submit ");
+        submittedCorrectKeywords_ = true;
+    }
+
+    void submit(const coordinate_response_measure::Response &) override {
+        insert(log_, "submitResponse ");
+    }
+
+    void writeTestingParameters(OutputFile *file) override {
+        insert(log_, "writeTestingParameters ");
+        file->writeTest(AdaptiveTest{});
+    }
+
+    void writeLastCoordinateResponse(OutputFile *) override {
+        insert(log_, "writeLastCoordinateResponse ");
+    }
+
+    void writeLastCorrectResponse(OutputFile *) override {
+        insert(log_, "writeLastCorrectResponse ");
+    }
+
+    void writeLastIncorrectResponse(OutputFile *) override {
+        insert(log_, "writeLastIncorrectResponse ");
+    }
+
+    void writeLastCorrectKeywords(OutputFile *) override {
+        insert(log_, "writeLastCorrectKeywords ");
+    }
+
+    void writeTestResult(OutputFile *) override {
+        insert(log_, "writeTestResult ");
+    }
+
+    auto log() const -> const LogString & { return log_; }
+
+  private:
     LogString log_{};
     std::string current_{};
     std::string currentWhenNext_{};
@@ -23,88 +115,6 @@ class TestMethodStub : public TestMethod {
     bool submittedIncorrectResponse_{};
     bool submittedFreeResponse_{};
     bool submittedCorrectKeywords_{};
-
-  public:
-    auto submittedCorrectResponse() const { return submittedCorrectResponse_; }
-
-    auto submittedIncorrectResponse() const {
-        return submittedIncorrectResponse_;
-    }
-
-    auto submittedFreeResponse() const { return submittedFreeResponse_; }
-
-    auto submittedCorrectKeywords() const { return submittedCorrectKeywords_; }
-
-    void setComplete() { complete_ = true; }
-
-    void setSnr_dB(int x) { snr_dB_ = x; }
-
-    void setNextTarget(std::string s) { next_ = std::move(s); }
-
-    auto complete() -> bool override { return complete_; }
-
-    auto nextTarget() -> std::string override {
-        log_.insert("next ");
-        current_ = currentWhenNext_;
-        return next_;
-    }
-
-    auto currentTarget() -> std::string override { return current_; }
-
-    void setCurrent(std::string s) { current_ = std::move(s); }
-
-    void setCurrentWhenNext(std::string s) { currentWhenNext_ = std::move(s); }
-
-    auto snr_dB() -> int override { return snr_dB_; }
-
-    void submitCorrectResponse() override {
-        log_.insert("submitCorrectResponse ");
-        submittedCorrectResponse_ = true;
-    }
-
-    void submitIncorrectResponse() override {
-        log_.insert("submitIncorrectResponse ");
-        submittedIncorrectResponse_ = true;
-    }
-
-    void submit(const open_set::FreeResponse &) override {
-        submittedFreeResponse_ = true;
-    }
-
-    void writeTestingParameters(OutputFile *file) override {
-        file->writeTest(AdaptiveTest{});
-    }
-
-    void writeLastCoordinateResponse(OutputFile *) override {
-        log_.insert("writeLastCoordinateResponse ");
-    }
-
-    void writeLastCorrectResponse(OutputFile *) override {
-        log_.insert("writeLastCorrectResponse ");
-    }
-
-    void writeLastIncorrectResponse(OutputFile *) override {
-        log_.insert("writeLastIncorrectResponse ");
-    }
-
-    void writeLastCorrectKeywords(OutputFile *) override {
-        log_.insert("writeLastCorrectKeywords ");
-    }
-
-    void writeTestResult(OutputFile *) override {
-        log_.insert("writeTestResult ");
-    }
-
-    void submit(const open_set::CorrectKeywords &) override {
-        log_.insert("submit ");
-        submittedCorrectKeywords_ = true;
-    }
-
-    void submit(const coordinate_response_measure::Response &) override {
-        log_.insert("submitResponse ");
-    }
-
-    auto log() const -> auto & { return log_; }
 };
 
 class UseCase {
