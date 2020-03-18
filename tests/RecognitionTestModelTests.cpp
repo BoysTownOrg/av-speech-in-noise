@@ -65,6 +65,7 @@ class TestMethodStub : public TestMethod {
     }
 
     void submit(const open_set::FreeResponse &) override {
+        insert(log_, "submitFreeResponse ");
         submittedFreeResponse_ = true;
     }
 
@@ -131,32 +132,17 @@ class TargetWritingUseCase : public virtual UseCase {
 class SubmittingResponse : public virtual UseCase {};
 
 class InitializingTest : public UseCase {
-    TestIdentity information{};
-    Test test{};
-    TestMethod *method;
-
   public:
-    explicit InitializingTest(TestMethod *method) : method{method} {}
+    explicit InitializingTest(TestMethod *method, const Test &test)
+        : test{test}, method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
         m.initialize(method, test);
     }
 
-    [[nodiscard]] auto testIdentity() const -> auto & { return test.identity; }
-
-    void setMaskerFilePath(std::string s) {
-        test.maskerFilePath = std::move(s);
-    }
-
-    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
-
-    void setTestingFullScaleLevel_dB_SPL(int x) {
-        test.fullScaleLevel_dB_SPL = x;
-    }
-
-    void setAudioVisual() { test.condition = Condition::audioVisual; }
-
-    void setAuditoryOnly() { test.condition = Condition::auditoryOnly; }
+  private:
+    const Test &test{};
+    TestMethod *method;
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
@@ -313,7 +299,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         &targetPlayer, &maskerPlayer, &evaluator, &outputFile, &randomizer};
     TestMethodStub testMethod;
     PlayingCalibration playingCalibration{};
-    InitializingTest initializingTest{&testMethod};
+    av_speech_in_noise::Test test{};
+    InitializingTest initializingTest{&testMethod, test};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
         &testMethod};
     InitializingTestWithDelayedMasker initializingTestWithDelayedMasker{
@@ -430,11 +417,11 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void setMaskerLevel_dB_SPL(int x) {
-        initializingTest.setMaskerLevel_dB_SPL(x);
+        test.maskerLevel_dB_SPL = x;
     }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
-        initializingTest.setTestingFullScaleLevel_dB_SPL(x);
+        test.fullScaleLevel_dB_SPL = x;
     }
 
     void setMaskerRms(double x) { maskerPlayer.setRms(x); }
@@ -461,7 +448,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void setMaskerFilePath(std::string s) {
-        initializingTest.setMaskerFilePath(std::move(s));
+        test.maskerFilePath = std::move(s);
     }
 
     void assertThrowsRequestFailureWhenInvalidAudioDevice(
@@ -659,7 +646,7 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeTestOpensNewOutputFilePassingTestInformation) {
     run(initializingTest);
     assertEqual(
-        outputFile.openNewFileParameters(), &initializingTest.testIdentity());
+        outputFile.openNewFileParameters(), &std::as_const(test.identity));
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToTargetPlayer) {
@@ -924,7 +911,7 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
-    initializingTest.setAudioVisual();
+    test.condition = Condition::audioVisual;
     run(initializingTest);
     run(playingTrial);
     assertTrue(targetPlayerVideoShown());
@@ -936,7 +923,7 @@ RECOGNITION_TEST_MODEL_TEST(maskerFadeOutCompleteHidesTargetPlayer) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialDoesNotShowTargetPlayerWhenAuditoryOnly) {
-    initializingTest.setAuditoryOnly();
+    test.condition = Condition::auditoryOnly;
     run(initializingTest);
     run(playingTrial);
     assertTargetVideoNotShown();
@@ -1057,7 +1044,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadMaskerIfTrialInProgress) {
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestDoesNotHideTargetPlayerWhenAuditoryOnlyButTrialInProgress) {
-    initializingTest.setAuditoryOnly();
+    test.condition = Condition::auditoryOnly;
     runIgnoringFailureWithTrialInProgress(initializingTest);
     assertTargetVideoNotHidden();
 }
