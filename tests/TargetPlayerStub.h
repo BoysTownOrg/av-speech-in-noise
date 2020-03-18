@@ -1,7 +1,7 @@
 #ifndef TESTS_TARGETPLAYERSTUB_H_
 #define TESTS_TARGETPLAYERSTUB_H_
 
-#include "LogString.h"
+#include "LogString.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <utility>
 #include <string>

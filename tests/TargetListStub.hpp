@@ -1,7 +1,7 @@
 #ifndef TESTS_TARGETLISTSTUB_HPP_
 #define TESTS_TARGETLISTSTUB_HPP_
 
-#include "LogString.h"
+#include "LogString.hpp"
 #include <recognition-test/Model.hpp>
 #include <utility>
 

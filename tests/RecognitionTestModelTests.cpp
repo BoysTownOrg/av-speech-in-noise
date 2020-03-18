@@ -1,4 +1,4 @@
-#include "LogString.h"
+#include "LogString.hpp"
 #include "MaskerPlayerStub.h"
 #include "ModelEventListenerStub.h"
 #include "OutputFileStub.hpp"

@@ -1,4 +1,4 @@
-#include "LogString.h"
+#include "LogString.hpp"
 #include "assert-utility.h"
 #include <recognition-test/OutputFile.hpp>
 #include <gtest/gtest.h>

@@ -1,4 +1,4 @@
-#include "LogString.h"
+#include "LogString.hpp"
 #include "OutputFileStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
 #include "TargetListStub.hpp"

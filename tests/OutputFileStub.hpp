@@ -1,7 +1,7 @@
 #ifndef TESTS_OUTPUTFILESTUB_HPP_
 #define TESTS_OUTPUTFILESTUB_HPP_
 
-#include "LogString.h"
+#include "LogString.hpp"
 #include "av-speech-in-noise/Model.hpp"
 #include <recognition-test/Model.hpp>
 #include <string>
