@@ -74,6 +74,16 @@ static void resetTrack(TargetListWithTrack &targetListWithTrack) {
 
 static auto x(Track *track) -> int { return track->x(); }
 
+static auto testResults(
+    const std::vector<TargetListWithTrack> &targetListsWithTracks,
+    int thresholdReversals) -> std::vector<AdaptiveTestResult> {
+    std::vector<AdaptiveTestResult> results;
+    for (const auto &t : targetListsWithTracks)
+        results.push_back(
+            {t.list->directory(), t.track->threshold(thresholdReversals)});
+    return results;
+}
+
 AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
@@ -180,11 +190,8 @@ void AdaptiveMethodImpl::submit(const open_set::FreeResponse &) {
 }
 
 void AdaptiveMethodImpl::writeTestResult(OutputFile *file) {
-    std::vector<AdaptiveTestResult> results;
-    for (const auto &t : targetListsWithTracks)
-        results.push_back(
-            {t.list->directory(), t.track->threshold(thresholdReversals)});
-    file->write(results);
+    file->write(av_speech_in_noise::testResults(
+        targetListsWithTracks, thresholdReversals));
 }
 
 void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
@@ -208,10 +215,7 @@ void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
 }
 
 auto AdaptiveMethodImpl::testResults() -> std::vector<AdaptiveTestResult> {
-    std::vector<AdaptiveTestResult> results;
-    for (const auto &t : targetListsWithTracks)
-        results.push_back(
-            {t.list->directory(), t.track->threshold(thresholdReversals)});
-    return results;
+    return av_speech_in_noise::testResults(
+        targetListsWithTracks, thresholdReversals);
 }
 }
