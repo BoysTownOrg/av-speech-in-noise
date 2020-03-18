@@ -200,30 +200,31 @@ class PlayingCalibration : public AudioDeviceUseCase {
 };
 
 class PlayingTrial : public AudioDeviceUseCase {
-    AudioSettings trial;
-
   public:
     void setAudioDevice(std::string s) override {
         trial.audioDevice = std::move(s);
     }
 
     void run(RecognitionTestModelImpl &m) override { m.playTrial(trial); }
+
+  private:
+    AudioSettings trial;
 };
 
 class SubmittingFreeResponse : public SubmittingResponse,
                                public TargetWritingUseCase {
-    open_set::FreeResponse response_{};
-
   public:
-    void run(RecognitionTestModelImpl &m) override { m.submit(response_); }
+    explicit SubmittingFreeResponse(const open_set::FreeResponse &response = {})
+        : response{response} {}
+
+    void run(RecognitionTestModelImpl &m) override { m.submit(response); }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
         return file.freeResponseTrial().target;
     }
 
-    void setResponse(std::string s) { response_.response = std::move(s); }
-
-    void setFlagged() { response_.flagged = true; }
+  private:
+    const open_set::FreeResponse &response;
 };
 
 class SubmittingCorrectKeywords : public SubmittingResponse,
@@ -304,7 +305,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
-    SubmittingFreeResponse submittingFreeResponse;
+    open_set::FreeResponse freeResponse{};
+    SubmittingFreeResponse submittingFreeResponse{freeResponse};
     SubmittingCorrectKeywords submittingCorrectKeywords;
 
     RecognitionTestModelTests() { model.subscribe(&listener); }
@@ -1087,13 +1089,13 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadNextTargetWhenComplete) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
-    submittingFreeResponse.setResponse("a");
+    freeResponse.response = "a";
     run(submittingFreeResponse);
     assertEqual("a", writtenFreeResponseTrial().response);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
-    submittingFreeResponse.setFlagged();
+    freeResponse.flagged = true;
     run(submittingFreeResponse);
     assertTrue(writtenFreeResponseTrial().flagged);
 }
