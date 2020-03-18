@@ -345,11 +345,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase);
-        assertOutputFileLog("close openNewFile writeTest ");
-    }
-
-    void assertOutputFileLog(const std::string &s) {
-        assertEqual(s, log(outputFile));
+        assertEqual("close openNewFile writeTest ", log(outputFile));
     }
 
     template <typename T>
