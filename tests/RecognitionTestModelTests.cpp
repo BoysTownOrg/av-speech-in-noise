@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 namespace {
 class TestMethodStub : public TestMethod {
     LogString log_{};
