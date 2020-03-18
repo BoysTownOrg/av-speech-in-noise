@@ -69,7 +69,7 @@ class TestMethodStub : public TestMethod {
     }
 
     void submit(const open_set::CorrectKeywords &) override {
-        insert(log_, "submit ");
+        insert(log_, "submitCorrectKeywords ");
         submittedCorrectKeywords_ = true;
     }
 
@@ -1155,8 +1155,8 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     submitCorrectKeywordsWritesTrialAfterSubmittingResponse) {
-    assertTestMethodLogContains(
-        submittingCorrectKeywords, "submit writeLastCorrectKeywords ");
+    assertTestMethodLogContains(submittingCorrectKeywords,
+        "submitCorrectKeywords writeLastCorrectKeywords ");
 }
 
 RECOGNITION_TEST_MODEL_TEST(
