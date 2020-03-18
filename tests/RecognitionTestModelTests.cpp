@@ -146,31 +146,29 @@ class InitializingTest : public UseCase {
 };
 
 class InitializingTestWithSingleSpeaker : public UseCase {
-    TestIdentity information{};
-    Test test{};
-    TestMethod *method;
-
   public:
     explicit InitializingTestWithSingleSpeaker(TestMethod *method)
         : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
-        m.initializeWithSingleSpeaker(method, test);
+        m.initializeWithSingleSpeaker(method, {});
     }
+
+  private:
+    TestMethod *method;
 };
 
 class InitializingTestWithDelayedMasker : public UseCase {
-    TestIdentity information{};
-    Test test{};
-    TestMethod *method;
-
   public:
     explicit InitializingTestWithDelayedMasker(TestMethod *method)
         : method{method} {}
 
     void run(RecognitionTestModelImpl &m) override {
-        m.initializeWithDelayedMasker(method, test);
+        m.initializeWithDelayedMasker(method, {});
     }
+
+  private:
+    TestMethod *method;
 };
 
 class AudioDeviceUseCase : public virtual UseCase {
@@ -416,9 +414,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(x, targetPlayerLevel_dB());
     }
 
-    void setMaskerLevel_dB_SPL(int x) {
-        test.maskerLevel_dB_SPL = x;
-    }
+    void setMaskerLevel_dB_SPL(int x) { test.maskerLevel_dB_SPL = x; }
 
     void setTestingFullScaleLevel_dB_SPL(int x) {
         test.fullScaleLevel_dB_SPL = x;
