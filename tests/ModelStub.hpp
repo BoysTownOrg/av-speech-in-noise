@@ -7,6 +7,10 @@
 namespace av_speech_in_noise {
 class ModelStub : public Model {
   public:
+    void setAdaptiveTestResults(std::vector<AdaptiveTestResult> v) {
+        adaptiveTestResults_ = std::move(v);
+    }
+
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
@@ -161,6 +165,10 @@ class ModelStub : public Model {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
 
+    auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> {
+        return adaptiveTestResults_;
+    }
+
   private:
     AdaptiveTest adaptiveTest_{};
     FixedLevelTest fixedLevelTest_{};
@@ -168,6 +176,7 @@ class ModelStub : public Model {
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
+    std::vector<AdaptiveTestResult> adaptiveTestResults_{};
     open_set::FreeResponse freeResponse_{};
     open_set::CorrectKeywords correctKeywords_{};
     std::string targetFileName_{};

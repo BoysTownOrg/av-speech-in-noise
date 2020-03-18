@@ -211,6 +211,14 @@ class ViewStub : public View {
             listener_->declineContinuingTesting();
         }
 
+        [[nodiscard]] auto continueTestingDialogMessage() const -> std::string {
+            return continueTestingDialogMessage_;
+        }
+
+        void setContinueTestingDialogMessage(const std::string &s) {
+            continueTestingDialogMessage_ = s;
+        }
+
         void acceptContinuingTesting() { listener_->acceptContinuingTesting(); }
 
         [[nodiscard]] auto continueTestingDialogShown() const -> bool {
@@ -354,6 +362,7 @@ class ViewStub : public View {
       private:
         std::string displayed_;
         std::string secondaryDisplayed_;
+        std::string continueTestingDialogMessage_;
         std::string response_;
         std::string correctKeywords_{"0"};
         EventListener *listener_{};
@@ -1327,6 +1336,9 @@ class RequestFailingModel : public Model {
 
     auto testComplete() -> bool override { return {}; }
     auto audioDevices() -> std::vector<std::string> override { return {}; }
+    auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> override {
+        return {};
+    }
     void subscribe(EventListener *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
@@ -1448,6 +1460,14 @@ PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
     setTestComplete();
     run(submittingCorrectKeywords);
     assertTrue(experimenterView.continueTestingDialogShown());
+}
+
+PRESENTER_TEST(submittingCorrectKeywordsShowsThresholdsWhenTestingComplete) {
+    setTestComplete();
+    model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
+    run(submittingCorrectKeywords);
+    assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
+        experimenterView.continueTestingDialogMessage());
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {

@@ -211,6 +211,14 @@ void Presenter::submitCorrectKeywords() {
         if (testComplete(model)) {
             experimenterPresenter.hideCorrectKeywordsSubmission();
             experimenterPresenter.showContinueTestingDialog();
+            std::stringstream thresholds;
+            thresholds << "thresholds (targets: dB SNR)";
+            for (const auto &result : model.adaptiveTestResults())
+                thresholds << '\n'
+                           << result.targetListDirectory << ": "
+                           << result.threshold;
+            experimenterPresenter.setContinueTestingDialogMessage(
+                thresholds.str());
         } else
             readyNextTrial(experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
@@ -457,6 +465,11 @@ void Presenter::Experimenter::readyNextTrial() {
 
 void Presenter::Experimenter::showContinueTestingDialog() {
     view->showContinueTestingDialog();
+}
+
+void Presenter::Experimenter::setContinueTestingDialogMessage(
+    const std::string &s) {
+    view->setContinueTestingDialogMessage(s);
 }
 
 void Presenter::Experimenter::showPassFailSubmission() {

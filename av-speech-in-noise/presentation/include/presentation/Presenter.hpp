@@ -105,6 +105,7 @@ class View {
         virtual void hide() = 0;
         virtual void showContinueTestingDialog() = 0;
         virtual void hideContinueTestingDialog() = 0;
+        virtual void setContinueTestingDialogMessage(const std::string &) = 0;
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
         virtual void showFreeResponseSubmission() = 0;
@@ -191,6 +192,7 @@ class Presenter : public Model::EventListener {
         void trialComplete();
         void readyNextTrial();
         void showContinueTestingDialog();
+        void setContinueTestingDialogMessage(const std::string &);
         void display(std::string);
         void secondaryDisplay(std::string);
         void showPassFailSubmission();

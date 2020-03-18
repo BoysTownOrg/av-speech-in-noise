@@ -112,6 +112,9 @@ class ModelImpl : public Model {
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
     void restartAdaptiveTestWhilePreservingCyclicTargets() override;
+    auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> override {
+        return {};
+    }
 
   private:
     void initializeTest_(const AdaptiveTest &);

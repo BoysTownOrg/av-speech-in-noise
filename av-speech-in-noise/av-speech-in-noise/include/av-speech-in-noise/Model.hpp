@@ -181,6 +181,7 @@ class Model {
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
     virtual void restartAdaptiveTestWhilePreservingCyclicTargets() = 0;
+    virtual auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> = 0;
 };
 }
 
