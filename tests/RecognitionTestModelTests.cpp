@@ -40,7 +40,7 @@ class TestMethodStub : public TestMethod {
 
     auto nextTarget() -> std::string override {
         insert(log_, "next ");
-        currentTarget_ = currentTargetWhenNext_;
+        currentTarget_ = currentTargetWhenNextTarget_;
         return nextTarget_;
     }
 
@@ -53,7 +53,7 @@ class TestMethodStub : public TestMethod {
     void setCurrentTarget(std::string s) { currentTarget_ = std::move(s); }
 
     void setCurrentTargetWhenNextTarget(std::string s) {
-        currentTargetWhenNext_ = std::move(s);
+        currentTargetWhenNextTarget_ = std::move(s);
     }
 
     void submitCorrectResponse() override {
@@ -110,7 +110,7 @@ class TestMethodStub : public TestMethod {
   private:
     LogString log_{};
     std::string currentTarget_{};
-    std::string currentTargetWhenNext_{};
+    std::string currentTargetWhenNextTarget_{};
     std::string nextTarget_{};
     int snr_dB_{};
     bool complete_{};
@@ -130,8 +130,6 @@ class TargetWritingUseCase : public virtual UseCase {
   public:
     virtual auto target(OutputFileStub &) -> std::string = 0;
 };
-
-class SubmittingResponse : public virtual UseCase {};
 
 class InitializingTest : public UseCase {
   public:
@@ -213,8 +211,7 @@ class PlayingTrial : public AudioDeviceUseCase {
     AudioSettings trial;
 };
 
-class SubmittingFreeResponse : public SubmittingResponse,
-                               public TargetWritingUseCase {
+class SubmittingFreeResponse : public TargetWritingUseCase {
   public:
     explicit SubmittingFreeResponse(const open_set::FreeResponse &response = {})
         : response{response} {}
@@ -229,8 +226,7 @@ class SubmittingFreeResponse : public SubmittingResponse,
     const open_set::FreeResponse &response;
 };
 
-class SubmittingCorrectKeywords : public SubmittingResponse,
-                                  public TargetWritingUseCase {
+class SubmittingCorrectKeywords : public TargetWritingUseCase {
   public:
     void run(RecognitionTestModelImpl &m) override {
         m.submit(open_set::CorrectKeywords{});
@@ -241,7 +237,7 @@ class SubmittingCorrectKeywords : public SubmittingResponse,
     }
 };
 
-class SubmittingCoordinateResponse : public SubmittingResponse {
+class SubmittingCoordinateResponse : public UseCase {
   public:
     void run(RecognitionTestModelImpl &m) override {
         m.submit(coordinate_response_measure::Response{});
@@ -288,18 +284,26 @@ auto filePathForFileName(ResponseEvaluatorStub &r) -> std::string {
     return r.filePathForFileName();
 }
 
+auto hidden(TargetPlayerStub &targetPlayer) -> bool {
+    return targetPlayer.videoHidden();
+}
+
+auto shown(TargetPlayerStub &targetPlayer) -> bool {
+    return targetPlayer.videoShown();
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
-    TargetPlayerStub targetPlayer{};
-    MaskerPlayerStub maskerPlayer{};
-    ResponseEvaluatorStub evaluator{};
-    OutputFileStub outputFile{};
-    RandomizerStub randomizer{};
+    TargetPlayerStub targetPlayer;
+    MaskerPlayerStub maskerPlayer;
+    ResponseEvaluatorStub evaluator;
+    OutputFileStub outputFile;
+    RandomizerStub randomizer;
     RecognitionTestModelImpl model{
         &targetPlayer, &maskerPlayer, &evaluator, &outputFile, &randomizer};
     TestMethodStub testMethod;
-    Calibration calibration;
+    Calibration calibration{};
     PlayingCalibration playingCalibration{calibration};
     av_speech_in_noise::Test test{};
     InitializingTest initializingTest{&testMethod, test};
@@ -320,26 +324,18 @@ class RecognitionTestModelTests : public ::testing::Test {
     void run(UseCase &useCase) { useCase.run(model); }
 
     void assertTargetVideoOnlyHidden() {
-        assertTrue(targetPlayerVideoHidden());
+        assertTrue(hidden(targetPlayer));
         assertTargetVideoNotShown();
     }
 
-    auto targetPlayerVideoHidden() -> bool {
-        return targetPlayer.videoHidden();
-    }
-
-    void assertTargetVideoNotShown() { assertFalse(targetPlayerVideoShown()); }
-
-    auto targetPlayerVideoShown() -> bool { return targetPlayer.videoShown(); }
+    void assertTargetVideoNotShown() { assertFalse(shown(targetPlayer)); }
 
     void assertTargetVideoOnlyShown() {
         assertTargetVideoNotHidden();
-        assertTrue(targetPlayerVideoShown());
+        assertTrue(shown(targetPlayer));
     }
 
-    void assertTargetVideoNotHidden() {
-        assertFalse(targetPlayerVideoHidden());
-    }
+    void assertTargetVideoNotHidden() { assertFalse(hidden(targetPlayer)); }
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase);
@@ -913,7 +909,7 @@ RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
     test.condition = Condition::audioVisual;
     run(initializingTest);
     run(playingTrial);
-    assertTrue(targetPlayerVideoShown());
+    assertTrue(shown(targetPlayer));
 }
 
 RECOGNITION_TEST_MODEL_TEST(maskerFadeOutCompleteHidesTargetPlayer) {
