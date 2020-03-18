@@ -215,7 +215,7 @@ class ViewStub : public View {
             return continueTestingDialogMessage_;
         }
 
-        void setContinueTestingDialogMessage(const std::string &s) {
+        void setContinueTestingDialogMessage(const std::string &s) override {
             continueTestingDialogMessage_ = s;
         }
 

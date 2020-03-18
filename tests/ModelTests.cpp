@@ -28,7 +28,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         testResults_ = std::move(v);
     }
 
-    auto testResults() -> std::vector<AdaptiveTestResult> {
+    auto testResults() -> std::vector<AdaptiveTestResult> override {
         return testResults_;
     }
 

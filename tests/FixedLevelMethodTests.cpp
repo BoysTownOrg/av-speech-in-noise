@@ -35,8 +35,8 @@ class InitializingMethodWithFiniteTargetList : public UseCase {
     void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
 
   private:
-    const FixedLevelTest &test;
     FiniteTargetList &list;
+    const FixedLevelTest &test;
 };
 
 class SubmittingCoordinateResponse : public UseCase {

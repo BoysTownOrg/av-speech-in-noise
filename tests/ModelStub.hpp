@@ -77,7 +77,9 @@ class ModelStub : public Model {
     }
 
     [[nodiscard]] auto adaptiveTestRestartedWhilePreservingCyclicTargets() const
-        -> bool { return adaptiveTestRestartedWhilePreservingCyclicTargets_; }
+        -> bool {
+        return adaptiveTestRestartedWhilePreservingCyclicTargets_;
+    }
 
     [[nodiscard]] auto responseParameters() const -> auto & {
         return responseParameters_;
@@ -165,7 +167,7 @@ class ModelStub : public Model {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
 
-    auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> {
+    auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> override {
         return adaptiveTestResults_;
     }
 
