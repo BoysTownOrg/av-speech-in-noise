@@ -222,7 +222,7 @@ class SubmittingFreeResponse : public SubmittingResponse,
     void run(RecognitionTestModelImpl &m) override { m.submit(response_); }
 
     auto writtenTarget(OutputFileStub &file) -> std::string override {
-        return file.writtenFreeResponseTrial().target;
+        return file.freeResponseTrial().target;
     }
 
     void setResponse(std::string s) { response_.response = std::move(s); }
@@ -499,9 +499,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
     }
 
-    auto writtenFreeResponseTrial() {
-        return outputFile.writtenFreeResponseTrial();
-    }
+    auto writtenFreeResponseTrial() { return outputFile.freeResponseTrial(); }
 
     void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
         testMethod.setNextTarget("a");
