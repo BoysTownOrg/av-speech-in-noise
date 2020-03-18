@@ -183,9 +183,10 @@ class ConditionUseCase : public virtual UseCase {
 };
 
 class PlayingCalibration : public AudioDeviceUseCase {
-    Calibration calibration{};
-
   public:
+    explicit PlayingCalibration(Calibration &calibration)
+        : calibration{calibration} {}
+
     void setAudioDevice(std::string s) override {
         calibration.audioSettings.audioDevice = std::move(s);
     }
@@ -194,13 +195,8 @@ class PlayingCalibration : public AudioDeviceUseCase {
         m.playCalibration(calibration);
     }
 
-    void setFilePath(std::string s) { calibration.filePath = std::move(s); }
-
-    void setLevel_dB_SPL(int x) { calibration.level_dB_SPL = x; }
-
-    void setFullScaleLevel_dB_SPL(int x) {
-        calibration.fullScaleLevel_dB_SPL = x;
-    }
+  private:
+    Calibration &calibration;
 };
 
 class PlayingTrial : public AudioDeviceUseCase {
@@ -296,7 +292,8 @@ class RecognitionTestModelTests : public ::testing::Test {
     RecognitionTestModelImpl model{
         &targetPlayer, &maskerPlayer, &evaluator, &outputFile, &randomizer};
     TestMethodStub testMethod;
-    PlayingCalibration playingCalibration{};
+    Calibration calibration;
+    PlayingCalibration playingCalibration{calibration};
     av_speech_in_noise::Test test{};
     InitializingTest initializingTest{&testMethod, test};
     InitializingTestWithSingleSpeaker initializingTestWithSingleSpeaker{
@@ -756,7 +753,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
-    playingCalibration.setFilePath("a");
+    calibration.filePath = "a";
     run(playingCalibration);
     assertTargetFilePathEquals("a");
 }
@@ -897,8 +894,8 @@ RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSetsTargetPlayerLevel) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
-    playingCalibration.setLevel_dB_SPL(1);
-    playingCalibration.setFullScaleLevel_dB_SPL(2);
+    calibration.level_dB_SPL = 1;
+    calibration.fullScaleLevel_dB_SPL = 2;
     targetPlayer.setRms(3);
     run(playingCalibration);
     assertTargetPlayerLevelEquals_dB(1 - 2 - dB(3));
@@ -972,7 +969,7 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile) {
-    playingCalibration.setFilePath("a");
+    calibration.filePath = "a";
     targetPlayer.throwInvalidAudioFileOnRms();
     assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
 }
