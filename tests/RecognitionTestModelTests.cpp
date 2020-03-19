@@ -366,6 +366,18 @@ auto freeResponseTrial(OutputFileStub &file) {
     return file.freeResponseTrial();
 }
 
+void assertOnlyUsingFirstChannel(TargetPlayerStub &player) {
+    assertTrue(player.usingFirstChannelOnly());
+}
+
+void assertUsingAllChannels(MaskerPlayerStub &player) {
+    assertTrue(player.usingAllChannels());
+}
+
+void assertChannelDelaysCleared(MaskerPlayerStub &player) {
+    assertTrue(player.channelDelaysCleared());
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -531,23 +543,9 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertTrue(testMethod.log().contains(what));
     }
 
-    void assertTrialNumber(int n) { assertEqual(n, model.trialNumber()); }
-
     void assertYieldsTrialNumber(UseCase &useCase, int n) {
         run(useCase, model);
-        assertTrialNumber(n);
-    }
-
-    void assertOnlyUsingFirstChannelOfTargetPlayer() {
-        assertTrue(targetPlayer.usingFirstChannelOnly());
-    }
-
-    void assertUsingAllMaskerPlayerChannels() {
-        assertTrue(maskerPlayer.usingAllChannels());
-    }
-
-    void assertMaskerPlayerChannelDelaysCleared() {
-        assertTrue(maskerPlayer.channelDelaysCleared());
+        assertEqual(n, model.trialNumber());
     }
 };
 
@@ -589,24 +587,24 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllTargetPlayerChannels) {
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestUsesAllMaskerPlayerChannels) {
     run(initializingTest, model);
-    assertUsingAllMaskerPlayerChannels();
+    assertUsingAllChannels(maskerPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestClearsAllMaskerPlayerChannelDelays) {
     run(initializingTest, model);
-    assertMaskerPlayerChannelDelaysCleared();
+    assertChannelDelaysCleared(maskerPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerUsesFirstChannelOnlyOfTargetPlayer) {
     run(initializingTestWithSingleSpeaker, model);
-    assertOnlyUsingFirstChannelOfTargetPlayer();
+    assertOnlyUsingFirstChannel(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithSingleSpeakerClearsAllMaskerPlayerChannelDelays) {
     run(initializingTestWithSingleSpeaker, model);
-    assertMaskerPlayerChannelDelaysCleared();
+    assertChannelDelaysCleared(maskerPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -618,13 +616,13 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerUsesFirstChannelOnlyOfTargetPlayer) {
     run(initializingTestWithDelayedMasker, model);
-    assertOnlyUsingFirstChannelOfTargetPlayer();
+    assertOnlyUsingFirstChannel(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerUsesAllMaskerPlayerChannels) {
     run(initializingTestWithDelayedMasker, model);
-    assertUsingAllMaskerPlayerChannels();
+    assertUsingAllChannels(maskerPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(
