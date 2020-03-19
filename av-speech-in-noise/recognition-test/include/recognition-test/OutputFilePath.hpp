@@ -2,7 +2,6 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILEPATH_HPP_
 
 #include "OutputFile.hpp"
-#include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
 class TimeStamp {

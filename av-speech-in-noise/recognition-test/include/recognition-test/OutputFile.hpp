@@ -88,10 +88,10 @@ class OutputFileImpl : public OutputFile {
     void write(const AdaptiveTest &) override;
     void write(const FixedLevelTest &) override;
     void write(const coordinate_response_measure::AdaptiveTrial &) override;
+    void write(const open_set::AdaptiveTrial &) override;
     void write(const coordinate_response_measure::FixedLevelTrial &) override;
     void write(const FreeResponseTrial &) override;
     void write(const CorrectKeywordsTrial &) override;
-    void write(const open_set::AdaptiveTrial &) override;
     void write(const AdaptiveTestResults &) override;
 
   private:

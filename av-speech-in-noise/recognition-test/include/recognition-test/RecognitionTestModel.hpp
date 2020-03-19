@@ -3,7 +3,6 @@
 
 #include "Model.hpp"
 #include "Randomizer.hpp"
-#include "av-speech-in-noise/Model.hpp"
 #include <gsl/gsl>
 #include <string>
 #include <vector>
@@ -73,27 +72,27 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
   public:
     RecognitionTestModelImpl(TargetPlayer *, MaskerPlayer *,
         ResponseEvaluator *, OutputFile *, Randomizer *);
+    void subscribe(Model::EventListener *) override;
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
     void initializeWithDelayedMasker(TestMethod *, const Test &) override;
     void playTrial(const AudioSettings &) override;
+    void playCalibration(const Calibration &) override;
     void submit(const coordinate_response_measure::Response &) override;
+    void submit(const FreeResponse &) override;
+    void submit(const CorrectKeywords &) override;
+    void submitCorrectResponse() override;
+    void submitIncorrectResponse() override;
     auto testComplete() -> bool override;
     auto audioDevices() -> std::vector<std::string> override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
-    void subscribe(Model::EventListener *) override;
-    void playCalibration(const Calibration &) override;
-    void submitCorrectResponse() override;
-    void submitIncorrectResponse() override;
-    void submit(const FreeResponse &) override;
-    void submit(const CorrectKeywords &) override;
     void throwIfTrialInProgress() override;
     void fadeInComplete() override;
     void fadeOutComplete() override;
     void playbackComplete() override;
     void prepareNextTrialIfNeeded() override;
-    static constexpr double maskerChannelDelaySeconds = 0.004;
+    static constexpr auto maskerChannelDelaySeconds{0.004};
 
   private:
     void initialize_(TestMethod *, const Test &);
