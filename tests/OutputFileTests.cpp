@@ -172,6 +172,10 @@ void write(OutputFileImpl &file, const FreeResponseTrial &trial) {
     file.write(trial);
 }
 
+void write(OutputFileImpl &file, const CorrectKeywordsTrial &trial) {
+    file.write(trial);
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -191,8 +195,6 @@ class OutputFileTests : public ::testing::Test {
     TestIdentity testIdentity;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
-
-    void writeCorrectKeywordsTrial() { file.write(correctKeywordsTrial); }
 
     void writeOpenSetAdaptiveTrial() { file.write(openSetAdaptiveTrial); }
 
@@ -409,7 +411,7 @@ class OutputFileTests : public ::testing::Test {
         correctKeywordsTrial.target = "a";
         correctKeywordsTrial.count = 22;
         correctKeywordsTrial.reversals = 33;
-        writeCorrectKeywordsTrial();
+        write(file, correctKeywordsTrial);
         assertNthCommaDelimitedEntryOfLine("11", 1, n);
         assertNthCommaDelimitedEntryOfLine("a", 2, n);
         assertNthCommaDelimitedEntryOfLine("22", 3, n);
@@ -438,7 +440,7 @@ TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
 }
 
 TEST_F(OutputFileTests, writeCorrectKeywordsTrialHeading) {
-    writeCorrectKeywordsTrial();
+    write(file, correctKeywordsTrial);
     assertCorrectKeywordsHeadingAtLine(1);
 }
 
@@ -492,7 +494,7 @@ TEST_F(
 
 TEST_F(
     OutputFileTests, writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
-    writeCorrectKeywordsTrial();
+    write(file, correctKeywordsTrial);
     assertWritesCorrectKeywordsTrialOnLine(3);
 }
 
@@ -530,9 +532,9 @@ TEST_F(OutputFileTests,
 
 TEST_F(OutputFileTests,
     writeCorrectKeywordsTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    writeCorrectKeywordsTrial();
+    write(file, correctKeywordsTrial);
     openNewFile(file, testIdentity);
-    writeCorrectKeywordsTrial();
+    write(file, correctKeywordsTrial);
     assertCorrectKeywordsHeadingAtLine(3);
 }
 
