@@ -66,15 +66,12 @@ class UseCase {
 
 class WritingTestUseCase : public virtual UseCase {
   public:
-    virtual void setCondition(Condition) = 0;
     virtual auto test() -> Test & = 0;
 };
 
 class WritingAdaptiveTest : public WritingTestUseCase {
   public:
     AdaptiveTest test_{};
-
-    void setCondition(Condition c) override { test_.condition = c; }
 
     void run(OutputFileImpl &file) override { file.write(test_); }
 
@@ -85,8 +82,6 @@ class WritingFixedLevelTest : public WritingTestUseCase {
     FixedLevelTest test_{};
 
   public:
-    void setCondition(Condition c) override { test_.condition = c; }
-
     void run(OutputFileImpl &file) override { file.write(test_); }
 
     auto test() -> Test & override { return test_; }
@@ -231,7 +226,7 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertConditionNameWritten(WritingTestUseCase &useCase, Condition c) {
-        useCase.setCondition(c);
+        useCase.test().condition = c;
         useCase.run(file);
         assertWriterContainsConditionName(c);
     }
