@@ -84,7 +84,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
     auto testComplete() -> bool override;
-    auto audioDevices() -> std::vector<std::string> override;
+    auto audioDevices() -> AudioDevices override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
     void fadeInComplete() override;
