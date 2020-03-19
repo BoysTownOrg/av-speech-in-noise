@@ -346,6 +346,8 @@ void setRms(MaskerPlayerStub &player, double x) { player.setRms(x); }
 
 void setSnr_dB(TestMethodStub &method, int x) { method.setSnr_dB(x); }
 
+void fadeOutComplete(MaskerPlayerStub &player) { player.fadeOutComplete(); }
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -426,8 +428,6 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertTargetPlayerLevelEquals_dB(double x) {
         assertEqual(x, targetPlayer.level_dB());
     }
-
-    void maskerFadeOutComplete() { maskerPlayer.fadeOutComplete(); }
 
     void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
         run(useCase, model);
@@ -915,7 +915,7 @@ RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(maskerFadeOutCompleteHidesTargetPlayer) {
-    maskerFadeOutComplete();
+    fadeOutComplete(maskerPlayer);
     assertOnlyHidden(targetPlayer);
 }
 
@@ -937,7 +937,7 @@ RECOGNITION_TEST_MODEL_TEST(targetPlaybackCompleteFadesOutMasker) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteNotifiesTrialComplete) {
-    maskerFadeOutComplete();
+    fadeOutComplete(maskerPlayer);
     assertTrue(listener.notified());
 }
 
