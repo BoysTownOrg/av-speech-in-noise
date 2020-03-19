@@ -186,14 +186,10 @@ auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
 }
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
-    prepareTargetPlayer();
-    seekRandomMaskerPosition();
-}
-
-void RecognitionTestModelImpl::prepareTargetPlayer() {
     loadFile(targetPlayer, testMethod->nextTarget());
     setLevel_dB(targetPlayer, targetLevel_dB());
     targetPlayer.subscribeToPlaybackCompletion();
+    seekRandomMaskerPosition();
 }
 
 auto RecognitionTestModelImpl::targetLevel_dB() -> double {
