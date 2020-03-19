@@ -176,6 +176,14 @@ void write(OutputFileImpl &file, const CorrectKeywordsTrial &trial) {
     file.write(trial);
 }
 
+void write(OutputFileImpl &file, const open_set::AdaptiveTrial &trial) {
+    file.write(trial);
+}
+
+void assertEndsWith(WriterStub &writer, const std::string &s) {
+    assertTrue(written(writer).endsWith(s));
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -196,18 +204,8 @@ class OutputFileTests : public ::testing::Test {
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
 
-    void writeOpenSetAdaptiveTrial() { file.write(openSetAdaptiveTrial); }
-
     void assertWriterContainsConditionName(Condition c) {
         assertColonDelimitedEntryWritten("condition", name(c));
-    }
-
-    void assertWriterContains(const std::string &s) {
-        assertTrue(written(writer).contains(s));
-    }
-
-    void assertWrittenLast(const std::string &s) {
-        assertTrue(written(writer).endsWith(s));
     }
 
     auto nthCommaDelimitedEntryOfLine(int n, int line) -> std::string {
@@ -264,7 +262,7 @@ class OutputFileTests : public ::testing::Test {
         assertColonDelimitedEntryWritten("masker", "a");
         assertColonDelimitedEntryWritten("targets", "d");
         assertColonDelimitedEntryWritten("masker level (dB SPL)", "1");
-        assertWrittenLast("\n\n");
+        assertEndsWith(writer, "\n\n");
     }
 
     void assertNthEntryOfSecondLine(const std::string &what, int n) {
@@ -400,7 +398,7 @@ class OutputFileTests : public ::testing::Test {
         openSetAdaptiveTrial.SNR_dB = 11;
         openSetAdaptiveTrial.target = "a";
         openSetAdaptiveTrial.reversals = 22;
-        writeOpenSetAdaptiveTrial();
+        write(file, openSetAdaptiveTrial);
         assertNthCommaDelimitedEntryOfLine("11", 1, n);
         assertNthCommaDelimitedEntryOfLine("a", 2, n);
         assertNthCommaDelimitedEntryOfLine("22", 4, n);
@@ -420,7 +418,7 @@ class OutputFileTests : public ::testing::Test {
 
     void assertColonDelimitedEntryWritten(
         const std::string &label, const std::string &what) {
-        assertWriterContains(label + ": " + what + "\n");
+        assertTrue(written(writer).contains(label + ": " + what + '\n'));
     }
 };
 
@@ -445,7 +443,7 @@ TEST_F(OutputFileTests, writeCorrectKeywordsTrialHeading) {
 }
 
 TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialHeading) {
-    writeOpenSetAdaptiveTrial();
+    write(file, openSetAdaptiveTrial);
     assertOpenSetAdaptiveHeadingAtLine(1);
 }
 
@@ -488,7 +486,7 @@ TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
 
 TEST_F(
     OutputFileTests, writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
-    writeOpenSetAdaptiveTrial();
+    write(file, openSetAdaptiveTrial);
     assertWritesOpenSetAdaptiveTrialOnLine(3);
 }
 
@@ -524,9 +522,9 @@ TEST_F(OutputFileTests,
 
 TEST_F(OutputFileTests,
     writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    writeOpenSetAdaptiveTrial();
+    write(file, openSetAdaptiveTrial);
     openNewFile(file, testIdentity);
-    writeOpenSetAdaptiveTrial();
+    write(file, openSetAdaptiveTrial);
     assertOpenSetAdaptiveHeadingAtLine(3);
 }
 
@@ -609,7 +607,7 @@ TEST_F(OutputFileTests, writesTrackSettings) {
     assertColonDelimitedEntryWritten("down", "2 6");
     assertColonDelimitedEntryWritten("reversals per step size", "3 7");
     assertColonDelimitedEntryWritten("step sizes (dB)", "4 8");
-    assertWrittenLast("\n\n");
+    assertEndsWith(writer, "\n\n");
 }
 
 TEST_F(OutputFileTests, writeAdaptiveTestResult) {
@@ -631,14 +629,14 @@ TEST_F(OutputFileTests, writeAdaptiveTest) {
     adaptiveTest.startingSnr_dB = 2;
     file.write(adaptiveTest);
     assertColonDelimitedEntryWritten("starting SNR (dB)", "2");
-    assertWrittenLast("\n\n");
+    assertEndsWith(writer, "\n\n");
 }
 
 TEST_F(OutputFileTests, writeFixedLevelTest) {
     fixedLevelTest.snr_dB = 2;
     file.write(fixedLevelTest);
     assertColonDelimitedEntryWritten("SNR (dB)", "2");
-    assertWrittenLast("\n\n");
+    assertEndsWith(writer, "\n\n");
 }
 
 TEST_F(OutputFileTests, writeAdaptiveTestInformation) {
