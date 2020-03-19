@@ -212,6 +212,11 @@ auto nthCommaDelimitedEntryOfLine(WriterStub &writer, int n, int line)
     return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
 }
 
+void assertColonDelimitedEntryWritten(
+    WriterStub &writer, const std::string &label, const std::string &what) {
+    assertTrue(written(writer).contains(label + ": " + what + '\n'));
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -233,7 +238,7 @@ class OutputFileTests : public ::testing::Test {
     WritingAdaptiveTest writingAdaptiveTest;
 
     void assertWriterContainsConditionName(Condition c) {
-        assertColonDelimitedEntryWritten("condition", name(c));
+        assertColonDelimitedEntryWritten(writer, "condition", name(c));
     }
 
     void assertConditionNameWritten(WritingTest &useCase, Condition c) {
@@ -251,13 +256,13 @@ class OutputFileTests : public ::testing::Test {
         av_speech_in_noise::testIdentity(useCase).transducer =
             Transducer::twoSpeakers;
         run(file, useCase);
-        assertColonDelimitedEntryWritten("subject", "a");
-        assertColonDelimitedEntryWritten("tester", "b");
-        assertColonDelimitedEntryWritten("session", "c");
-        assertColonDelimitedEntryWritten("method", "d");
-        assertColonDelimitedEntryWritten("RME setting", "e");
+        assertColonDelimitedEntryWritten(writer, "subject", "a");
+        assertColonDelimitedEntryWritten(writer, "tester", "b");
+        assertColonDelimitedEntryWritten(writer, "session", "c");
+        assertColonDelimitedEntryWritten(writer, "method", "d");
+        assertColonDelimitedEntryWritten(writer, "RME setting", "e");
         assertColonDelimitedEntryWritten(
-            "transducer", name(Transducer::twoSpeakers));
+            writer, "transducer", name(Transducer::twoSpeakers));
     }
 
     void assertCommonTestWritten(WritingTest &useCase) {
@@ -265,9 +270,9 @@ class OutputFileTests : public ::testing::Test {
         useCase.test().targetListDirectory = "d";
         useCase.test().maskerLevel_dB_SPL = 1;
         run(file, useCase);
-        assertColonDelimitedEntryWritten("masker", "a");
-        assertColonDelimitedEntryWritten("targets", "d");
-        assertColonDelimitedEntryWritten("masker level (dB SPL)", "1");
+        assertColonDelimitedEntryWritten(writer, "masker", "a");
+        assertColonDelimitedEntryWritten(writer, "targets", "d");
+        assertColonDelimitedEntryWritten(writer, "masker level (dB SPL)", "1");
         assertEndsWith(writer, "\n\n");
     }
 
@@ -420,11 +425,6 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine("a", 2, n);
         assertNthCommaDelimitedEntryOfLine("22", 3, n);
         assertNthCommaDelimitedEntryOfLine("33", 5, n);
-    }
-
-    void assertColonDelimitedEntryWritten(
-        const std::string &label, const std::string &what) {
-        assertTrue(written(writer).contains(label + ": " + what + '\n'));
     }
 };
 
@@ -609,10 +609,10 @@ TEST_F(OutputFileTests, writesTrackSettings) {
     test.trackingRule.push_back(first);
     test.trackingRule.push_back(second);
     file.write(test);
-    assertColonDelimitedEntryWritten("up", "1 5");
-    assertColonDelimitedEntryWritten("down", "2 6");
-    assertColonDelimitedEntryWritten("reversals per step size", "3 7");
-    assertColonDelimitedEntryWritten("step sizes (dB)", "4 8");
+    assertColonDelimitedEntryWritten(writer, "up", "1 5");
+    assertColonDelimitedEntryWritten(writer, "down", "2 6");
+    assertColonDelimitedEntryWritten(writer, "reversals per step size", "3 7");
+    assertColonDelimitedEntryWritten(writer, "step sizes (dB)", "4 8");
     assertEndsWith(writer, "\n\n");
 }
 
@@ -622,9 +622,9 @@ TEST_F(OutputFileTests, writeAdaptiveTestResult) {
     results.push_back({"b", 2.});
     results.push_back({"c", 3.});
     file.write(results);
-    assertColonDelimitedEntryWritten("threshold for a", "1");
-    assertColonDelimitedEntryWritten("threshold for b", "2");
-    assertColonDelimitedEntryWritten("threshold for c", "3");
+    assertColonDelimitedEntryWritten(writer, "threshold for a", "1");
+    assertColonDelimitedEntryWritten(writer, "threshold for b", "2");
+    assertColonDelimitedEntryWritten(writer, "threshold for c", "3");
 }
 
 TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
@@ -634,14 +634,14 @@ TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
 TEST_F(OutputFileTests, writeAdaptiveTest) {
     adaptiveTest.startingSnr_dB = 2;
     file.write(adaptiveTest);
-    assertColonDelimitedEntryWritten("starting SNR (dB)", "2");
+    assertColonDelimitedEntryWritten(writer, "starting SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");
 }
 
 TEST_F(OutputFileTests, writeFixedLevelTest) {
     fixedLevelTest.snr_dB = 2;
     file.write(fixedLevelTest);
-    assertColonDelimitedEntryWritten("SNR (dB)", "2");
+    assertColonDelimitedEntryWritten(writer, "SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");
 }
 
