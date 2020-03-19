@@ -566,7 +566,7 @@ RECOGNITION_TEST_MODEL_TEST(subscribesToPlayerEvents) {
     assertEqual(maskerPlayerEventListener(model), maskerPlayer.listener());
 }
 
-RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetVideo) {
+RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetPlayer) {
     run(playingCalibration, model);
     assertOnlyShown(targetPlayer);
 }
@@ -642,7 +642,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    initializeTestOpensNewOutputFilePassingTestInformation) {
+    initializeTestOpensNewOutputFilePassingTestIdentity) {
     run(initializingTest, model);
     assertEqual(
         outputFile.openNewFileParameters(), &std::as_const(test.identity));
@@ -685,7 +685,7 @@ RECOGNITION_TEST_MODEL_TEST(returnsTargetFileName) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    passesCurrentToEvaluatorWhenReturningTargetFileName) {
+    passesCurrentTargetToEvaluatorWhenReturningTargetFileName) {
     run(initializingTest, model);
     setCurrentTarget(testMethod, "a");
     targetFileName(model);
