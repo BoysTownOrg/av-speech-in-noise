@@ -352,6 +352,8 @@ void setSnr_dB(TestMethodStub &method, int x) { method.setSnr_dB(x); }
 
 void fadeOutComplete(MaskerPlayerStub &player) { player.fadeOutComplete(); }
 
+void setTrialInProgress(MaskerPlayerStub &player) { player.setPlaying(); }
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -464,11 +466,9 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void runIgnoringFailureWithTrialInProgress(UseCase &useCase) {
-        setTrialInProgress();
+        setTrialInProgress(maskerPlayer);
         runIgnoringFailure(useCase);
     }
-
-    void setTrialInProgress() { maskerPlayer.setPlaying(); }
 
     void runIgnoringFailure(UseCase &useCase) {
         try {
@@ -482,7 +482,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertTargetPlayerNotPlayed() { assertFalse(played(targetPlayer)); }
 
     void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
-        setTrialInProgress();
+        setTrialInProgress(maskerPlayer);
         assertCallThrowsRequestFailure(useCase, "Trial in progress.");
     }
 
