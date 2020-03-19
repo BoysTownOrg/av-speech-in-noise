@@ -477,10 +477,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         }
     }
 
-    void assertMaskerPlayerNotPlayed() { assertFalse(fadedIn(maskerPlayer)); }
-
-    void assertTargetPlayerNotPlayed() { assertFalse(played(targetPlayer)); }
-
     void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
         setTrialInProgress(maskerPlayer);
         assertCallThrowsRequestFailure(useCase, "Trial in progress.");
@@ -1011,12 +1007,12 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(playTrialDoesNotPlayIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingTrial);
-    assertMaskerPlayerNotPlayed();
+    assertFalse(fadedIn(maskerPlayer));
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationDoesNotPlayIfTrialInProgress) {
     runIgnoringFailureWithTrialInProgress(playingCalibration);
-    assertTargetPlayerNotPlayed();
+    assertFalse(played(targetPlayer));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
