@@ -184,6 +184,19 @@ void assertEndsWith(WriterStub &writer, const std::string &s) {
     assertTrue(written(writer).endsWith(s));
 }
 
+auto find_nth_element(const std::string &content, int n, char what)
+    -> std::string::size_type {
+    auto found{std::string::npos};
+    for (int i = 0; i < n; ++i)
+        found = content.find(what, found + 1U);
+    return found;
+}
+
+auto upUntilFirstOfAny(const std::string &content, std::vector<char> v)
+    -> std::string {
+    return content.substr(0, content.find_first_of({v.begin(), v.end()}));
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -210,25 +223,12 @@ class OutputFileTests : public ::testing::Test {
 
     auto nthCommaDelimitedEntryOfLine(int n, int line) -> std::string {
         std::string written_ = written(writer);
-        auto precedingNewLine = find_nth_element(written_, line - 1, '\n');
-        auto line_ = written_.substr(precedingNewLine + 1);
-        auto precedingComma = find_nth_element(line_, n - 1, ',');
+        auto precedingNewLine{find_nth_element(written_, line - 1, '\n')};
+        auto line_{written_.substr(precedingNewLine + 1)};
+        auto precedingComma{find_nth_element(line_, n - 1, ',')};
         auto entryBeginning =
             (precedingComma == std::string::npos) ? 0U : precedingComma + 2;
         return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
-    }
-
-    static auto find_nth_element(const std::string &content, int n, char what)
-        -> std::string::size_type {
-        auto found = std::string::npos;
-        for (int i = 0; i < n; ++i)
-            found = content.find(what, found + 1U);
-        return found;
-    }
-
-    static auto upUntilFirstOfAny(
-        const std::string &content, std::vector<char> v) -> std::string {
-        return content.substr(0, content.find_first_of({v.begin(), v.end()}));
     }
 
     void assertConditionNameWritten(WritingTestUseCase &useCase, Condition c) {
@@ -271,8 +271,8 @@ class OutputFileTests : public ::testing::Test {
 
     void assertEntriesOfSecondLine(int n) {
         std::string written_ = written(writer);
-        auto precedingNewLine = find_nth_element(written_, 2 - 1, '\n');
-        auto line_ = written_.substr(precedingNewLine + 1);
+        auto precedingNewLine{find_nth_element(written_, 2 - 1, '\n')};
+        auto line_{written_.substr(precedingNewLine + 1)};
         assertEqual(
             std::iterator_traits<std::string::iterator>::difference_type{n - 1},
             std::count(line_.begin(), line_.end(), ','));
