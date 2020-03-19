@@ -95,7 +95,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
 
   private:
     void initialize_(TestMethod *, const Test &);
-    void submitIncorrectResponse_();
     void write(const FreeResponse &p);
     void write(const CorrectKeywords &p);
     void prepareTest(const Test &);

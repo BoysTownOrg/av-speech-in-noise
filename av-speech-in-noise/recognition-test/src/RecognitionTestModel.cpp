@@ -243,6 +243,16 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     listener_->trialComplete();
 }
 
+void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
+    if (!testMethod->complete()) {
+        ++trialNumber_;
+        preparePlayersForNextTrial();
+    } else {
+        testMethod->writeTestResult(outputFile);
+        save(outputFile);
+    }
+}
+
 void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
     testMethod->submit(response);
@@ -258,21 +268,7 @@ void RecognitionTestModelImpl::submitCorrectResponse() {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
-    if (!testMethod->complete()) {
-        ++trialNumber_;
-        preparePlayersForNextTrial();
-    } else {
-        testMethod->writeTestResult(outputFile);
-        save(outputFile);
-    }
-}
-
 void RecognitionTestModelImpl::submitIncorrectResponse() {
-    submitIncorrectResponse_();
-}
-
-void RecognitionTestModelImpl::submitIncorrectResponse_() {
     testMethod->submitIncorrectResponse();
     testMethod->writeLastIncorrectResponse(outputFile);
     save(outputFile);
