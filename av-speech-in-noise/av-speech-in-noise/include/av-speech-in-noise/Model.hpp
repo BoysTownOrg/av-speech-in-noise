@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace av_speech_in_noise {
-struct Adaptive {
+struct AdaptiveProgress {
     int SNR_dB{};
     int reversals{};
 };
@@ -31,7 +31,7 @@ struct Trial : Target {
     bool correct{};
 };
 
-struct AdaptiveTrial : Adaptive, Trial {};
+struct AdaptiveTrial : AdaptiveProgress, Trial {};
 
 struct FixedLevelTrial : Trial {};
 }
@@ -50,7 +50,7 @@ struct Trial : Target {};
 
 struct FreeResponseTrial : FreeResponse, Trial {};
 
-struct AdaptiveTrial : Adaptive, Trial {
+struct AdaptiveTrial : AdaptiveProgress, Trial {
     bool correct{};
 };
 

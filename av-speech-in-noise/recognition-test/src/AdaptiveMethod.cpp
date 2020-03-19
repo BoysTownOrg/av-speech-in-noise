@@ -14,7 +14,7 @@ static auto incomplete(const TargetListWithTrack &t) -> bool {
     return !complete(t);
 }
 
-static void assignReversals(Adaptive &trial, Track *track) {
+static void assignReversals(AdaptiveProgress &trial, Track *track) {
     trial.reversals = track->reversals();
 }
 
