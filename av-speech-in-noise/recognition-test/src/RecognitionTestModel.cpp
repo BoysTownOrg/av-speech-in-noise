@@ -54,7 +54,7 @@ static void setAudioDevices(MaskerPlayer &maskerPlayer,
     setAudioDevice(targetPlayer, device);
 }
 
-static void throwInvalidAudioDeviceOnError(
+static void throwRequestFailureOnInvalidAudioDevice(
     const std::function<void(const std::string &)> &f,
     const std::string &device) {
     try {
@@ -65,7 +65,7 @@ static void throwInvalidAudioDeviceOnError(
     }
 }
 
-static void throwIfTrialInProgress(MaskerPlayer &player) {
+static void throwRequestFailureIfTrialInProgress(MaskerPlayer &player) {
     if (trialInProgress(player))
         throw Model::RequestFailure{"Trial in progress."};
 }
@@ -144,7 +144,7 @@ void RecognitionTestModelImpl::initialize(
 
 void RecognitionTestModelImpl::initialize_(
     TestMethod *testMethod_, const Test &test) {
-    throwIfTrialInProgress(maskerPlayer);
+    throwRequestFailureIfTrialInProgress(maskerPlayer);
 
     testMethod = testMethod_;
     fullScaleLevel_dB_SPL = test.fullScaleLevel_dB_SPL;
@@ -207,9 +207,9 @@ void RecognitionTestModelImpl::seekRandomMaskerPosition() {
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
-    throwIfTrialInProgress(maskerPlayer);
+    throwRequestFailureIfTrialInProgress(maskerPlayer);
 
-    throwInvalidAudioDeviceOnError(
+    throwRequestFailureOnInvalidAudioDevice(
         [&](auto device) {
             setAudioDevices(maskerPlayer, targetPlayer, device);
         },
@@ -279,9 +279,9 @@ void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
 }
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
-    throwIfTrialInProgress(maskerPlayer);
+    throwRequestFailureIfTrialInProgress(maskerPlayer);
 
-    throwInvalidAudioDeviceOnError(
+    throwRequestFailureOnInvalidAudioDevice(
         [&](auto device) { setAudioDevice(targetPlayer, device); },
         calibration.audioDevice);
     throwRequestFailureOnInvalidAudioFile(
