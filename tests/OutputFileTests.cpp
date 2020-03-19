@@ -36,24 +36,26 @@ class OutputFilePathStub : public OutputFilePath {
   public:
     auto outputDirectory() -> std::string override { return outputDirectory_; }
 
-    void setOutputDirectory(std::string s) { outputDirectory_ = std::move(s); }
-
-    void setFileName(std::string s) { fileName_ = std::move(s); }
-
     auto generateFileName(const TestIdentity &p) -> std::string override {
-        testInformation_ = &p;
+        testIdentity_ = &p;
         return fileName_;
     }
 
     auto homeDirectory() -> std::string override { return homeDirectory_; }
 
-    [[nodiscard]] auto testIdentity() const { return testInformation_; }
+    void setFileName(std::string s) { fileName_ = std::move(s); }
+
+    [[nodiscard]] auto testIdentity() const -> const TestIdentity * {
+        return testIdentity_;
+    }
+
+    void setOutputDirectory(std::string s) { outputDirectory_ = std::move(s); }
 
   private:
     std::string fileName_;
     std::string homeDirectory_;
     std::string outputDirectory_;
-    const TestIdentity *testInformation_{};
+    const TestIdentity *testIdentity_{};
 };
 
 class UseCase {
@@ -66,37 +68,33 @@ class WritingTestUseCase : public virtual UseCase {
   public:
     virtual void setCondition(Condition) = 0;
     virtual void setTestIdentity(const TestIdentity &) = 0;
-    virtual void setCommonTest(const Test &) = 0;
+    virtual auto test() -> Test & = 0;
 };
 
 class WritingAdaptiveTest : public WritingTestUseCase {
   public:
-    AdaptiveTest test{};
+    AdaptiveTest test_{};
 
-    void setCondition(Condition c) override { test.condition = c; }
+    void setCondition(Condition c) override { test_.condition = c; }
 
-    void setTestIdentity(const TestIdentity &p) override { test.identity = p; }
+    void setTestIdentity(const TestIdentity &p) override { test_.identity = p; }
 
-    void setCommonTest(const Test &p) override {
-        static_cast<Test &>(test) = p;
-    }
+    void run(OutputFileImpl &file) override { file.write(test_); }
 
-    void run(OutputFileImpl &file) override { file.write(test); }
+    auto test() -> Test & override { return test_; }
 };
 
 class WritingFixedLevelTest : public WritingTestUseCase {
-    FixedLevelTest test{};
+    FixedLevelTest test_{};
 
   public:
-    void setCondition(Condition c) override { test.condition = c; }
+    void setCondition(Condition c) override { test_.condition = c; }
 
-    void setCommonTest(const Test &p) override {
-        static_cast<Test &>(test) = p;
-    }
+    void setTestIdentity(const TestIdentity &p) override { test_.identity = p; }
 
-    void setTestIdentity(const TestIdentity &p) override { test.identity = p; }
+    void run(OutputFileImpl &file) override { file.write(test_); }
 
-    void run(OutputFileImpl &file) override { file.write(test); }
+    auto test() -> Test & override { return test_; }
 };
 
 class WritingTrialUseCase : public virtual UseCase {
@@ -263,11 +261,9 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertCommonTestWritten(WritingTestUseCase &useCase) {
-        av_speech_in_noise::Test common;
-        common.maskerFilePath = "a";
-        common.targetListDirectory = "d";
-        common.maskerLevel_dB_SPL = 1;
-        useCase.setCommonTest(common);
+        useCase.test().maskerFilePath = "a";
+        useCase.test().targetListDirectory = "d";
+        useCase.test().maskerLevel_dB_SPL = 1;
         useCase.run(file);
         assertColonDelimitedEntryWritten("masker", "a");
         assertColonDelimitedEntryWritten("targets", "d");
