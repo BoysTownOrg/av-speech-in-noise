@@ -154,12 +154,12 @@ void RecognitionTestModelImpl::initialize_(
     maskerLevel_dB_SPL = test.maskerLevel_dB_SPL;
     condition = test.condition;
 
+    tryOpening(outputFile, test.identity);
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) { maskerPlayer.loadFile(file); }, maskerFilePath(test));
     maskerPlayer.setLevel_dB(maskerLevel_dB());
     hide(targetPlayer);
     preparePlayersForNextTrial();
-    tryOpening(outputFile, test.identity);
     testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;
 }
