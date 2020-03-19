@@ -284,12 +284,12 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
     throwInvalidAudioDeviceOnError(
         [&](auto device) { setAudioDevice(targetPlayer, device); },
         calibration.audioDevice);
-    loadFile(targetPlayer, calibration.filePath);
-    try {
-        setLevel_dB(targetPlayer, level_dB(targetPlayer, calibration));
-    } catch (const InvalidAudioFile &) {
-        throw Model::RequestFailure{"unable to read " + calibration.filePath};
-    }
+    throwRequestFailureOnInvalidAudioFile(
+        [&](auto file) {
+            loadFile(targetPlayer, file);
+            setLevel_dB(targetPlayer, level_dB(targetPlayer, calibration));
+        },
+        calibration.filePath);
     show(targetPlayer);
     play(targetPlayer);
 }
