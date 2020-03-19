@@ -44,10 +44,6 @@ static auto trialInProgress(MaskerPlayer &player) -> bool {
     return player.playing();
 }
 
-static void loadFile(MaskerPlayer &player, const std::string &p) {
-    player.loadFile(p);
-}
-
 static void setAudioDevice(TargetPlayer &player, const std::string &device) {
     player.setAudioDevice(device);
 }
@@ -92,6 +88,15 @@ static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
 }
 
 static void save(OutputFile &file) { file.save(); }
+
+static void tryOpening(OutputFile &file, const TestIdentity &p) {
+    file.close();
+    try {
+        file.openNewFile(p);
+    } catch (const OutputFile::OpenFailure &) {
+        throw Model::RequestFailure{"Unable to open output file."};
+    }
+}
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
@@ -146,13 +151,13 @@ void RecognitionTestModelImpl::prepareTest(const Test &test) {
     condition = test.condition;
     if (!testMethod->complete())
         preparePlayersForNextTrial();
-    tryOpeningOutputFile(test.identity);
+    tryOpening(outputFile, test.identity);
     testMethod->writeTestingParameters(outputFile);
 }
 
-void RecognitionTestModelImpl::storeLevels(const Test &common) {
-    fullScaleLevel_dB_SPL = common.fullScaleLevel_dB_SPL;
-    maskerLevel_dB_SPL = common.maskerLevel_dB_SPL;
+void RecognitionTestModelImpl::storeLevels(const Test &test) {
+    fullScaleLevel_dB_SPL = test.fullScaleLevel_dB_SPL;
+    maskerLevel_dB_SPL = test.maskerLevel_dB_SPL;
 }
 
 void RecognitionTestModelImpl::prepareMasker(const std::string &file) {
@@ -198,19 +203,6 @@ void RecognitionTestModelImpl::seekRandomMaskerPosition() {
     auto upperLimit = maskerPlayer.durationSeconds() -
         2 * maskerPlayer.fadeTimeSeconds() - targetPlayer.durationSeconds();
     maskerPlayer.seekSeconds(randomizer.betweenInclusive(0., upperLimit));
-}
-
-void RecognitionTestModelImpl::tryOpeningOutputFile(const TestIdentity &p) {
-    outputFile.close();
-    tryOpeningOutputFile_(p);
-}
-
-void RecognitionTestModelImpl::tryOpeningOutputFile_(const TestIdentity &p) {
-    try {
-        outputFile.openNewFile(p);
-    } catch (const OutputFile::OpenFailure &) {
-        throw Model::RequestFailure{"Unable to open output file."};
-    }
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
@@ -276,8 +268,13 @@ void RecognitionTestModelImpl::submitIncorrectResponse() {
 }
 
 void RecognitionTestModelImpl::submit(const FreeResponse &response) {
-    write(response);
     testMethod->submit(response);
+    FreeResponseTrial trial;
+    trial.response = response.response;
+    trial.target = targetName(evaluator, testMethod);
+    trial.flagged = response.flagged;
+    outputFile.write(trial);
+    save(outputFile);
     prepareNextTrialIfNeeded();
 }
 
@@ -286,15 +283,6 @@ void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
     testMethod->writeLastCorrectKeywords(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
-}
-
-void RecognitionTestModelImpl::write(const FreeResponse &p) {
-    FreeResponseTrial trial;
-    trial.response = p.response;
-    trial.target = targetName(evaluator, testMethod);
-    trial.flagged = p.flagged;
-    outputFile.write(trial);
-    save(outputFile);
 }
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &p) {
@@ -324,11 +312,7 @@ void RecognitionTestModelImpl::trySettingTargetLevel(const Calibration &p) {
 auto RecognitionTestModelImpl::calibrationLevel_dB(const Calibration &p)
     -> double {
     return gsl::narrow_cast<double>(p.level_dB_SPL - p.fullScaleLevel_dB_SPL) -
-        unalteredTargetLevel_dB();
-}
-
-auto RecognitionTestModelImpl::unalteredTargetLevel_dB() -> double {
-    return dB(targetPlayer.rms());
+        dB(targetPlayer.rms());
 }
 
 auto RecognitionTestModelImpl::testComplete() -> bool {

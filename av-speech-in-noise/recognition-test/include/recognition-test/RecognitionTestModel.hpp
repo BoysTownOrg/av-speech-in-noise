@@ -95,10 +95,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
 
   private:
     void initialize_(TestMethod *, const Test &);
-    void write(const FreeResponse &p);
-    void write(const CorrectKeywords &p);
     void prepareTest(const Test &);
-    void storeLevels(const Test &common);
+    void storeLevels(const Test &);
     void preparePlayersForNextTrial();
     auto currentTarget() -> std::string;
     auto correct(const coordinate_response_measure::Response &) -> bool;
@@ -107,8 +105,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void trySettingTargetLevel(const Calibration &);
     void playCalibration_(const Calibration &);
     void prepareMasker(const std::string &);
-    void tryOpeningOutputFile_(const TestIdentity &);
-    void tryOpeningOutputFile(const TestIdentity &);
     auto noMoreTrials() -> bool;
     void prepareTargetPlayer();
     void seekRandomMaskerPosition();
