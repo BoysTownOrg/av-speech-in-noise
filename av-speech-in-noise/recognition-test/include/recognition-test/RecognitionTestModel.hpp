@@ -70,8 +70,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
                                  public MaskerPlayer::EventListener,
                                  public RecognitionTestModel {
   public:
-    RecognitionTestModelImpl(TargetPlayer *, MaskerPlayer *,
-        ResponseEvaluator *, OutputFile *, Randomizer *);
+    RecognitionTestModelImpl(TargetPlayer &, MaskerPlayer &,
+        ResponseEvaluator &, OutputFile &, Randomizer &);
     void subscribe(Model::EventListener *) override;
     void initialize(TestMethod *, const Test &) override;
     void initializeWithSingleSpeaker(TestMethod *, const Test &) override;
@@ -139,11 +139,11 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void loadTargetFile(std::string);
     void setTargetLevel_dB(double);
 
-    MaskerPlayer *maskerPlayer;
-    TargetPlayer *targetPlayer;
-    ResponseEvaluator *evaluator;
-    OutputFile *outputFile;
-    Randomizer *randomizer;
+    MaskerPlayer &maskerPlayer;
+    TargetPlayer &targetPlayer;
+    ResponseEvaluator &evaluator;
+    OutputFile &outputFile;
+    Randomizer &randomizer;
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
     int maskerLevel_dB_SPL{};

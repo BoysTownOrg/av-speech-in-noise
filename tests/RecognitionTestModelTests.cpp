@@ -397,7 +397,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     OutputFileStub outputFile;
     RandomizerStub randomizer;
     RecognitionTestModelImpl model{
-        &targetPlayer, &maskerPlayer, &evaluator, &outputFile, &randomizer};
+        targetPlayer, maskerPlayer, evaluator, outputFile, randomizer};
     TestMethodStub testMethod;
     Calibration calibration{};
     PlayingCalibration playingCalibration{calibration};
