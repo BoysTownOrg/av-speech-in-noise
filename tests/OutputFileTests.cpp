@@ -64,12 +64,12 @@ class UseCase {
     virtual void run(OutputFileImpl &) = 0;
 };
 
-class WritingTestUseCase : public virtual UseCase {
+class WritingTest : public virtual UseCase {
   public:
     virtual auto test() -> Test & = 0;
 };
 
-class WritingAdaptiveTest : public WritingTestUseCase {
+class WritingAdaptiveTest : public WritingTest {
   public:
     AdaptiveTest test_{};
 
@@ -78,7 +78,7 @@ class WritingAdaptiveTest : public WritingTestUseCase {
     auto test() -> Test & override { return test_; }
 };
 
-class WritingFixedLevelTest : public WritingTestUseCase {
+class WritingFixedLevelTest : public WritingTest {
     FixedLevelTest test_{};
 
   public:
@@ -197,6 +197,21 @@ auto upUntilFirstOfAny(const std::string &content, std::vector<char> v)
     return content.substr(0, content.find_first_of({v.begin(), v.end()}));
 }
 
+auto testIdentity(WritingTest &useCase) -> TestIdentity & {
+    return useCase.test().identity;
+}
+
+auto nthCommaDelimitedEntryOfLine(WriterStub &writer, int n, int line)
+    -> std::string {
+    std::string written_ = written(writer);
+    auto precedingNewLine{find_nth_element(written_, line - 1, '\n')};
+    auto line_{written_.substr(precedingNewLine + 1)};
+    auto precedingComma{find_nth_element(line_, n - 1, ',')};
+    auto entryBeginning =
+        (precedingComma == std::string::npos) ? 0U : precedingComma + 2;
+    return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -221,29 +236,20 @@ class OutputFileTests : public ::testing::Test {
         assertColonDelimitedEntryWritten("condition", name(c));
     }
 
-    auto nthCommaDelimitedEntryOfLine(int n, int line) -> std::string {
-        std::string written_ = written(writer);
-        auto precedingNewLine{find_nth_element(written_, line - 1, '\n')};
-        auto line_{written_.substr(precedingNewLine + 1)};
-        auto precedingComma{find_nth_element(line_, n - 1, ',')};
-        auto entryBeginning =
-            (precedingComma == std::string::npos) ? 0U : precedingComma + 2;
-        return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
-    }
-
-    void assertConditionNameWritten(WritingTestUseCase &useCase, Condition c) {
+    void assertConditionNameWritten(WritingTest &useCase, Condition c) {
         useCase.test().condition = c;
         run(file, useCase);
         assertWriterContainsConditionName(c);
     }
 
-    void assertTestIdentityWritten(WritingTestUseCase &useCase) {
-        useCase.test().identity.subjectId = "a";
-        useCase.test().identity.testerId = "b";
-        useCase.test().identity.session = "c";
-        useCase.test().identity.method = "d";
-        useCase.test().identity.rmeSetting = "e";
-        useCase.test().identity.transducer = Transducer::twoSpeakers;
+    void assertTestIdentityWritten(WritingTest &useCase) {
+        av_speech_in_noise::testIdentity(useCase).subjectId = "a";
+        av_speech_in_noise::testIdentity(useCase).testerId = "b";
+        av_speech_in_noise::testIdentity(useCase).session = "c";
+        av_speech_in_noise::testIdentity(useCase).method = "d";
+        av_speech_in_noise::testIdentity(useCase).rmeSetting = "e";
+        av_speech_in_noise::testIdentity(useCase).transducer =
+            Transducer::twoSpeakers;
         run(file, useCase);
         assertColonDelimitedEntryWritten("subject", "a");
         assertColonDelimitedEntryWritten("tester", "b");
@@ -254,7 +260,7 @@ class OutputFileTests : public ::testing::Test {
             "transducer", name(Transducer::twoSpeakers));
     }
 
-    void assertCommonTestWritten(WritingTestUseCase &useCase) {
+    void assertCommonTestWritten(WritingTest &useCase) {
         useCase.test().maskerFilePath = "a";
         useCase.test().targetListDirectory = "d";
         useCase.test().maskerLevel_dB_SPL = 1;
@@ -280,11 +286,11 @@ class OutputFileTests : public ::testing::Test {
 
     void assertNthCommaDelimitedEntryOfLine(
         const std::string &what, int n, int line) {
-        assertEqual(what, nthCommaDelimitedEntryOfLine(n, line));
+        assertEqual(what, nthCommaDelimitedEntryOfLine(writer, n, line));
     }
 
     void assertNthCommaDelimitedEntryOfLine(HeadingItem item, int n, int line) {
-        assertEqual(name(item), nthCommaDelimitedEntryOfLine(n, line));
+        assertEqual(name(item), nthCommaDelimitedEntryOfLine(writer, n, line));
     }
 
     void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
