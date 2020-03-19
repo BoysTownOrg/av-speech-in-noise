@@ -107,6 +107,10 @@ static void show(TargetPlayer &player) { player.showVideo(); }
 
 static void hide(TargetPlayer &player) { player.hideVideo(); }
 
+static auto maskerFilePath(const Test &test) -> std::string {
+    return test.maskerFilePath;
+}
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer)
@@ -136,7 +140,12 @@ void RecognitionTestModelImpl::initialize_(
     testMethod = testMethod_;
     fullScaleLevel_dB_SPL = test.fullScaleLevel_dB_SPL;
     maskerLevel_dB_SPL = test.maskerLevel_dB_SPL;
-    prepareMasker(test.maskerFilePath);
+    try {
+        maskerPlayer.loadFile(maskerFilePath(test));
+    } catch (const InvalidAudioFile &) {
+        throw Model::RequestFailure{"unable to read " + maskerFilePath(test)};
+    }
+    maskerPlayer.setLevel_dB(maskerLevel_dB());
     hide(targetPlayer);
     condition = test.condition;
     if (!testMethod->complete())
