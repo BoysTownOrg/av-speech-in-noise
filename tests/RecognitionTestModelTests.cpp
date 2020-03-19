@@ -82,7 +82,7 @@ class TestMethodStub : public TestMethod {
 
     void writeTestingParameters(OutputFile *file) override {
         insert(log_, "writeTestingParameters ");
-        file->writeTest(AdaptiveTest{});
+        file->write(AdaptiveTest{});
     }
 
     void writeLastCoordinateResponse(OutputFile *) override {
@@ -419,7 +419,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);
-        assertEqual("close openNewFile writeTest ", log(outputFile));
+        assertEqual("close openNewFile write ", log(outputFile));
     }
 
     template <typename T>

@@ -79,7 +79,7 @@ class WritingAdaptiveTest : public WritingTestUseCase {
         static_cast<Test &>(test) = p;
     }
 
-    void run(OutputFileImpl &file) override { file.writeTest(test); }
+    void run(OutputFileImpl &file) override { file.write(test); }
 };
 
 class WritingFixedLevelTest : public WritingTestUseCase {
@@ -94,7 +94,7 @@ class WritingFixedLevelTest : public WritingTestUseCase {
 
     void setTestIdentity(const TestIdentity &p) override { test.identity = p; }
 
-    void run(OutputFileImpl &file) override { file.writeTest(test); }
+    void run(OutputFileImpl &file) override { file.write(test); }
 };
 
 class WritingTrialUseCase : public virtual UseCase {
@@ -610,7 +610,7 @@ TEST_F(OutputFileTests, writesTrackSettings) {
     second.stepSize = 8;
     test.trackingRule.push_back(first);
     test.trackingRule.push_back(second);
-    file.writeTest(test);
+    file.write(test);
     assertColonDelimitedEntryWritten("up", "1 5");
     assertColonDelimitedEntryWritten("down", "2 6");
     assertColonDelimitedEntryWritten("reversals per step size", "3 7");
@@ -635,14 +635,14 @@ TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
 
 TEST_F(OutputFileTests, writeAdaptiveTest) {
     adaptiveTest.startingSnr_dB = 2;
-    file.writeTest(adaptiveTest);
+    file.write(adaptiveTest);
     assertColonDelimitedEntryWritten("starting SNR (dB)", "2");
     assertWrittenLast("\n\n");
 }
 
 TEST_F(OutputFileTests, writeFixedLevelTest) {
     fixedLevelTest.snr_dB = 2;
-    file.writeTest(fixedLevelTest);
+    file.write(fixedLevelTest);
     assertColonDelimitedEntryWritten("SNR (dB)", "2");
     assertWrittenLast("\n\n");
 }

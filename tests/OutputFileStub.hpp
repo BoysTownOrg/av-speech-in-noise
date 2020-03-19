@@ -39,13 +39,13 @@ class OutputFileStub : public OutputFile {
 
     void close() override { addToLog("close "); }
 
-    void writeTest(const AdaptiveTest &test) override {
-        addToLog("writeTest ");
+    void write(const AdaptiveTest &test) override {
+        addToLog("write ");
         adaptiveTest_ = &test;
     }
 
-    void writeTest(const FixedLevelTest &p) override {
-        addToLog("writeTest ");
+    void write(const FixedLevelTest &p) override {
+        addToLog("write ");
         fixedLevelTest_ = &p;
     }
 

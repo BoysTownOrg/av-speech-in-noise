@@ -191,7 +191,7 @@ void AdaptiveMethodImpl::writeTestResult(OutputFile *file) {
 }
 
 void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
-    file->writeTest(*test);
+    file->write(*test);
 }
 
 void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile *file) {

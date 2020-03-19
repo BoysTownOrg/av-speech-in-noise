@@ -344,13 +344,9 @@ void OutputFileImpl::write(const open_set::AdaptiveTrial &trial) {
     justWroteOpenSetAdaptiveTrial = true;
 }
 
-void OutputFileImpl::writeTest(const AdaptiveTest &test) {
-    write(format(test));
-}
+void OutputFileImpl::write(const AdaptiveTest &test) { write(format(test)); }
 
-void OutputFileImpl::writeTest(const FixedLevelTest &test) {
-    write(format(test));
-}
+void OutputFileImpl::write(const FixedLevelTest &test) { write(format(test)); }
 
 void OutputFileImpl::openNewFile(const TestIdentity &test) {
     writer->open(generateNewFilePath(test));

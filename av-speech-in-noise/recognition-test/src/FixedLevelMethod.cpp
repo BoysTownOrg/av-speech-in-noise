@@ -59,7 +59,7 @@ auto FixedLevelMethodImpl::currentTarget() -> std::string {
 }
 
 void FixedLevelMethodImpl::writeTestingParameters(OutputFile *file) {
-    file->writeTest(*test);
+    file->write(*test);
 }
 
 void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile *file) {

@@ -85,8 +85,8 @@ class OutputFileImpl : public OutputFile {
     void openNewFile(const TestIdentity &) override;
     void close() override;
     void save() override;
-    void writeTest(const AdaptiveTest &) override;
-    void writeTest(const FixedLevelTest &) override;
+    void write(const AdaptiveTest &) override;
+    void write(const FixedLevelTest &) override;
     void write(const coordinate_response_measure::AdaptiveTrial &) override;
     void write(const coordinate_response_measure::FixedLevelTrial &) override;
     void write(const FreeResponseTrial &) override;
