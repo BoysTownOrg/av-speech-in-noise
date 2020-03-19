@@ -78,6 +78,10 @@ static void setLevel_dB(TargetPlayer &player, double x) {
     player.setLevel_dB(x);
 }
 
+static void loadFile(TargetPlayer &player, std::string s) {
+    player.loadFile(std::move(s));
+}
+
 static auto dB(double x) -> double { return 20 * std::log10(x); }
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
@@ -172,13 +176,9 @@ void RecognitionTestModelImpl::preparePlayersForNextTrial() {
 }
 
 void RecognitionTestModelImpl::prepareTargetPlayer() {
-    loadTargetFile(testMethod->nextTarget());
+    loadFile(targetPlayer, testMethod->nextTarget());
     setLevel_dB(targetPlayer, targetLevel_dB());
     targetPlayer.subscribeToPlaybackCompletion();
-}
-
-void RecognitionTestModelImpl::loadTargetFile(std::string s) {
-    targetPlayer.loadFile(std::move(s));
 }
 
 auto RecognitionTestModelImpl::targetLevel_dB() -> double {
@@ -315,7 +315,7 @@ void RecognitionTestModelImpl::playCalibration_(const Calibration &p) {
     throwInvalidAudioDeviceOnError(
         [&](auto device) { setAudioDevice(targetPlayer, device); },
         p.audioDevice);
-    loadTargetFile(p.filePath);
+    loadFile(targetPlayer, p.filePath);
     trySettingTargetLevel(p);
     targetPlayer.showVideo();
     playTarget();
