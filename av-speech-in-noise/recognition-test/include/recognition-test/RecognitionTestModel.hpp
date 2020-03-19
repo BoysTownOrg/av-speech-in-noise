@@ -106,7 +106,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto currentTarget() -> std::string;
     auto correct(const coordinate_response_measure::Response &) -> bool;
     void submitResponse_(const coordinate_response_measure::Response &);
-    void setTargetPlayerDevice(const Calibration &);
     auto calibrationLevel_dB(const Calibration &) -> double;
     void trySettingTargetLevel(const Calibration &);
     void playCalibration_(const Calibration &);
@@ -116,7 +115,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void loadMaskerFile(const std::string &);
     void playTarget();
     auto noMoreTrials() -> bool;
-    auto trialInProgress() -> bool;
     void prepareTargetPlayer();
     void seekRandomMaskerPosition();
     void preparePlayersToPlay(const AudioSettings &);
@@ -126,16 +124,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto unalteredTargetLevel_dB() -> double;
     auto targetLevel_dB() -> double;
     auto maskerLevel_dB() -> double;
-    void setTargetPlayerDevice_(const std::string &);
-    void setAudioDevices_(const std::string &);
-    void setAudioDevices(const AudioSettings &);
     auto findDeviceIndex(const AudioSettings &) -> int;
-    void throwInvalidAudioDeviceOnErrorSettingDevice(
-        void (RecognitionTestModelImpl::*f)(const std::string &),
-        const std::string &);
-    void throwInvalidAudioFileOnErrorLoading(
-        void (RecognitionTestModelImpl::*f)(const std::string &),
-        const std::string &file);
     void loadTargetFile(std::string);
     void setTargetLevel_dB(double);
 

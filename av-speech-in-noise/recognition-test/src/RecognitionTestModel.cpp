@@ -1,6 +1,7 @@
 #include "RecognitionTestModel.hpp"
 #include <gsl/gsl>
 #include <cmath>
+#include <functional>
 
 namespace av_speech_in_noise {
 namespace {
@@ -25,6 +26,49 @@ class NullTestMethod : public TestMethod {
 
 static NullTestMethod nullTestMethod;
 
+static auto auditoryOnly(const Condition &c) -> bool {
+    return c == Condition::auditoryOnly;
+}
+
+static void useAllChannels(MaskerPlayer &player) { player.useAllChannels(); }
+
+static void clearChannelDelays(MaskerPlayer &player) {
+    player.clearChannelDelays();
+}
+
+static void useFirstChannelOnly(TargetPlayer &player) {
+    player.useFirstChannelOnly();
+}
+
+static auto trialInProgress(MaskerPlayer &player) -> bool {
+    return player.playing();
+}
+
+static void loadFile(MaskerPlayer &player, const std::string &p) {
+    player.loadFile(p);
+}
+
+static void setAudioDevice(TargetPlayer &player, const std::string &device) {
+    player.setAudioDevice(device);
+}
+
+static void setAudioDevices(MaskerPlayer &maskerPlayer,
+    TargetPlayer &targetPlayer, const std::string &device) {
+    maskerPlayer.setAudioDevice(device);
+    setAudioDevice(targetPlayer, device);
+}
+
+static void throwInvalidAudioDeviceOnError(
+    const std::function<void(const std::string &)> &f,
+    const std::string &device) {
+    try {
+        f(device);
+    } catch (const InvalidAudioDevice &) {
+        throw Model::RequestFailure{
+            "'" + device + "' is not a valid audio device."};
+    }
+}
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer)
@@ -35,23 +79,13 @@ RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     maskerPlayer.subscribe(this);
 }
 
-static auto auditoryOnly(const Condition &c) -> bool {
-    return c == Condition::auditoryOnly;
-}
-
 void RecognitionTestModelImpl::subscribe(Model::EventListener *listener) {
     listener_ = listener;
 }
 
 void RecognitionTestModelImpl::throwIfTrialInProgress() {
-    if (trialInProgress())
+    if (trialInProgress(maskerPlayer))
         throw Model::RequestFailure{"Trial in progress."};
-}
-
-static void useAllChannels(MaskerPlayer &player) { player.useAllChannels(); }
-
-static void clearChannelDelays(MaskerPlayer &player) {
-    player.clearChannelDelays();
 }
 
 void RecognitionTestModelImpl::initialize(
@@ -70,10 +104,6 @@ void RecognitionTestModelImpl::initialize_(
     trialNumber_ = 1;
 }
 
-static void useFirstChannelOnly(TargetPlayer &player) {
-    player.useFirstChannelOnly();
-}
-
 void RecognitionTestModelImpl::initializeWithSingleSpeaker(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
@@ -88,10 +118,6 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     useFirstChannelOnly(targetPlayer);
     useAllChannels(maskerPlayer);
     maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelaySeconds);
-}
-
-auto RecognitionTestModelImpl::trialInProgress() -> bool {
-    return maskerPlayer.playing();
 }
 
 void RecognitionTestModelImpl::prepareTest(const Test &test) {
@@ -110,20 +136,13 @@ void RecognitionTestModelImpl::storeLevels(const Test &common) {
     maskerLevel_dB_SPL = common.maskerLevel_dB_SPL;
 }
 
-void RecognitionTestModelImpl::prepareMasker(const std::string &p) {
-    throwInvalidAudioFileOnErrorLoading(
-        &RecognitionTestModelImpl::loadMaskerFile, p);
-    maskerPlayer.setLevel_dB(maskerLevel_dB());
-}
-
-void RecognitionTestModelImpl::throwInvalidAudioFileOnErrorLoading(
-    void (RecognitionTestModelImpl::*f)(const std::string &),
-    const std::string &file) {
+void RecognitionTestModelImpl::prepareMasker(const std::string &file) {
     try {
-        (this->*f)(file);
+        loadMaskerFile(file);
     } catch (const InvalidAudioFile &) {
         throw Model::RequestFailure{"unable to read " + file};
     }
+    maskerPlayer.setLevel_dB(maskerLevel_dB());
 }
 
 void RecognitionTestModelImpl::loadMaskerFile(const std::string &p) {
@@ -197,33 +216,11 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
 }
 
 void RecognitionTestModelImpl::preparePlayersToPlay(const AudioSettings &p) {
-    setAudioDevices(p);
-}
-
-void RecognitionTestModelImpl::setAudioDevices(const AudioSettings &p) {
-    throwInvalidAudioDeviceOnErrorSettingDevice(
-        &RecognitionTestModelImpl::setAudioDevices_, p.audioDevice);
-}
-
-void RecognitionTestModelImpl::throwInvalidAudioDeviceOnErrorSettingDevice(
-    void (RecognitionTestModelImpl::*f)(const std::string &),
-    const std::string &device) {
-    try {
-        (this->*f)(device);
-    } catch (const InvalidAudioDevice &) {
-        throw Model::RequestFailure{
-            "'" + device + "' is not a valid audio device."};
-    }
-}
-
-void RecognitionTestModelImpl::setAudioDevices_(const std::string &device) {
-    maskerPlayer.setAudioDevice(device);
-    setTargetPlayerDevice_(device);
-}
-
-void RecognitionTestModelImpl::setTargetPlayerDevice_(
-    const std::string &device) {
-    targetPlayer.setAudioDevice(device);
+    throwInvalidAudioDeviceOnError(
+        [&](auto device) {
+            setAudioDevices(maskerPlayer, targetPlayer, device);
+        },
+        p.audioDevice);
 }
 
 void RecognitionTestModelImpl::startTrial() {
@@ -319,16 +316,13 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &p) {
 }
 
 void RecognitionTestModelImpl::playCalibration_(const Calibration &p) {
-    setTargetPlayerDevice(p);
+    throwInvalidAudioDeviceOnError(
+        [&](auto device) { setAudioDevice(targetPlayer, device); },
+        p.audioDevice);
     loadTargetFile(p.filePath);
     trySettingTargetLevel(p);
     targetPlayer.showVideo();
     playTarget();
-}
-
-void RecognitionTestModelImpl::setTargetPlayerDevice(const Calibration &p) {
-    throwInvalidAudioDeviceOnErrorSettingDevice(
-        &RecognitionTestModelImpl::setTargetPlayerDevice_, p.audioDevice);
 }
 
 void RecognitionTestModelImpl::trySettingTargetLevel(const Calibration &p) {
