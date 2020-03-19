@@ -322,6 +322,8 @@ auto fadedIn(MaskerPlayerStub &maskerPlayer) -> bool {
 
 auto played(TargetPlayerStub &player) -> bool { return player.played(); }
 
+void assertPlayed(TargetPlayerStub &player) { assertTrue(played(player)); }
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -371,8 +373,6 @@ class RecognitionTestModelTests : public ::testing::Test {
     void assertDevicePassedToMaskerPlayer(AudioDeviceUseCase &useCase) {
         assertDevicePassedToPlayer(maskerPlayer, useCase);
     }
-
-    void assertTargetPlayerPlayed() { assertTrue(played(targetPlayer)); }
 
     auto targetFilePath() { return targetPlayer.filePath(); }
 
@@ -667,12 +667,12 @@ RECOGNITION_TEST_MODEL_TEST(playTrialFadesInMasker) {
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
     run(playingCalibration, model);
-    assertTargetPlayerPlayed();
+    assertPlayed(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTarget) {
     maskerPlayer.fadeInComplete();
-    assertTargetPlayerPlayed();
+    assertPlayed(targetPlayer);
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesNextTargetToTargetPlayer) {
