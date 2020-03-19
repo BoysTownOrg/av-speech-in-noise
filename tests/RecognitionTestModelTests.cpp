@@ -354,6 +354,10 @@ void fadeOutComplete(MaskerPlayerStub &player) { player.fadeOutComplete(); }
 
 void setTrialInProgress(MaskerPlayerStub &player) { player.setPlaying(); }
 
+void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
+    assertEqual(x, player.level_dB());
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -431,10 +435,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(1., secondsSeeked(maskerPlayer));
     }
 
-    void assertTargetPlayerLevelEquals_dB(double x) {
-        assertEqual(x, targetPlayer.level_dB());
-    }
-
     void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
         run(useCase, model);
         assertTrue(log(outputFile).endsWith("save "));
@@ -499,7 +499,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         setRms(maskerPlayer, 5);
         setSnr_dB(testMethod, 2);
         run(useCase, model);
-        assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
+        assertLevelEquals_dB(targetPlayer, 2 + 3 - 4 - dB(5));
     }
 
     auto writtenFreeResponseTrial() { return outputFile.freeResponseTrial(); }
@@ -876,7 +876,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestSetsTargetPlayerLevel) {
     setFullScaleLevel_dB_SPL(test, 4);
     setRms(maskerPlayer, 5);
     run(initializingTest, model);
-    assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
+    assertLevelEquals_dB(targetPlayer, 2 + 3 - 4 - dB(5));
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseSetsTargetPlayerLevel) {
@@ -904,7 +904,7 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
     calibration.fullScaleLevel_dB_SPL = 2;
     targetPlayer.setRms(3);
     run(playingCalibration, model);
-    assertTargetPlayerLevelEquals_dB(1 - 2 - dB(3));
+    assertLevelEquals_dB(targetPlayer, 1 - 2 - dB(3));
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {
