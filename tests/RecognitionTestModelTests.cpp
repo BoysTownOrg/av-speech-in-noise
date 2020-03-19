@@ -362,6 +362,10 @@ auto testComplete(RecognitionTestModelImpl &model) -> bool {
     return model.testComplete();
 }
 
+auto freeResponseTrial(OutputFileStub &file) {
+    return file.freeResponseTrial();
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -495,8 +499,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(useCase, model);
         assertLevelEquals_dB(targetPlayer, 2 + 3 - 4 - dB(5));
     }
-
-    auto writtenFreeResponseTrial() { return outputFile.freeResponseTrial(); }
 
     void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
         testMethod.setNextTarget("a");
@@ -1089,18 +1091,18 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadNextTargetWhenComplete) {
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
     freeResponse.response = "a";
     run(submittingFreeResponse, model);
-    assertEqual("a", writtenFreeResponseTrial().response);
+    assertEqual("a", freeResponseTrial(outputFile).response);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesFlagged) {
     freeResponse.flagged = true;
     run(submittingFreeResponse, model);
-    assertTrue(writtenFreeResponseTrial().flagged);
+    assertTrue(freeResponseTrial(outputFile).flagged);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesWithoutFlag) {
     run(submittingFreeResponse, model);
-    assertFalse(writtenFreeResponseTrial().flagged);
+    assertFalse(freeResponseTrial(outputFile).flagged);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesTarget) {
