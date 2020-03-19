@@ -358,6 +358,10 @@ void assertLevelEquals_dB(TargetPlayerStub &player, double x) {
     assertEqual(x, player.level_dB());
 }
 
+auto testComplete(RecognitionTestModelImpl &model) -> bool {
+    return model.testComplete();
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -481,12 +485,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         setTrialInProgress(maskerPlayer);
         assertCallThrowsRequestFailure(useCase, "Trial in progress.");
     }
-
-    void assertTestIncomplete() { assertFalse(testComplete()); }
-
-    auto testComplete() -> bool { return model.testComplete(); }
-
-    void assertTestComplete() { assertTrue(testComplete()); }
 
     void assertSetsTargetLevel(UseCase &useCase) {
         setMaskerLevel_dB_SPL(test, 3);
@@ -1049,9 +1047,9 @@ RECOGNITION_TEST_MODEL_TEST(audioDevicesReturnsOutputAudioDeviceDescriptions) {
 
 RECOGNITION_TEST_MODEL_TEST(testCompleteWhenComplete) {
     run(initializingTest, model);
-    assertTestIncomplete();
+    assertFalse(testComplete(model));
     testMethod.setComplete();
-    assertTestComplete();
+    assertTrue(testComplete(model));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
