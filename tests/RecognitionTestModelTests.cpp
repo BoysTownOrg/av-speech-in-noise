@@ -342,6 +342,10 @@ void setFullScaleLevel_dB_SPL(Test &test, int x) {
     test.fullScaleLevel_dB_SPL = x;
 }
 
+void setMaskerFilePath(Test &test, std::string s) {
+    test.maskerFilePath = std::move(s);
+}
+
 void setRms(MaskerPlayerStub &player, double x) { player.setRms(x); }
 
 void setSnr_dB(TestMethodStub &method, int x) { method.setSnr_dB(x); }
@@ -444,10 +448,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         } catch (const ModelImpl::RequestFailure &e) {
             assertEqual(what, e.what());
         }
-    }
-
-    void setMaskerFilePath(std::string s) {
-        test.maskerFilePath = std::move(s);
     }
 
     void assertThrowsRequestFailureWhenInvalidAudioDevice(
@@ -765,7 +765,7 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
-    setMaskerFilePath("a");
+    setMaskerFilePath(test, "a");
     run(initializingTest, model);
     assertEqual("a", maskerPlayer.filePath());
 }
@@ -982,7 +982,7 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     initializeTestThrowsRequestFailureWhenMaskerPlayerThrowsInvalidAudioFile) {
-    setMaskerFilePath("a");
+    setMaskerFilePath(test, "a");
     maskerPlayer.throwInvalidAudioFileOnLoad();
     assertCallThrowsRequestFailure(initializingTest, "unable to read a");
 }
@@ -1034,7 +1034,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadMaskerIfTrialInProgress) {
-    setMaskerFilePath("a");
+    setMaskerFilePath(test, "a");
     runIgnoringFailureWithTrialInProgress(initializingTest);
     assertEqual("", maskerPlayer.filePath());
 }
