@@ -41,7 +41,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
-    void submit(const open_set::CorrectKeywords &) override {}
+    void submit(const CorrectKeywords &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
@@ -89,7 +89,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
-    void submit(const open_set::CorrectKeywords &) override {}
+    void submit(const CorrectKeywords &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
     void writeLastCorrectResponse(OutputFile *) override {}
@@ -108,7 +108,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Test *test_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
-    const open_set::CorrectKeywords *correctKeywords_{};
+    const CorrectKeywords *correctKeywords_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
@@ -157,7 +157,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    void submit(const open_set::CorrectKeywords &p) override {
+    void submit(const CorrectKeywords &p) override {
         correctKeywords_ = &p;
     }
 
@@ -600,7 +600,7 @@ MODEL_TEST(submitResponsePassesCoordinateResponse) {
 }
 
 MODEL_TEST(submitCorrectKeywordsPassesCorrectKeywords) {
-    open_set::CorrectKeywords k;
+    CorrectKeywords k;
     model.submit(k);
     assertEqual(&std::as_const(k), internalModel.correctKeywords());
 }

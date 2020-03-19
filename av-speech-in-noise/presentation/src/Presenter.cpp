@@ -516,8 +516,8 @@ auto Presenter::Experimenter::freeResponse() -> FreeResponse {
     return {view->freeResponse(), view->flagged()};
 }
 
-auto Presenter::Experimenter::correctKeywords() -> open_set::CorrectKeywords {
-    open_set::CorrectKeywords p{};
+auto Presenter::Experimenter::correctKeywords() -> CorrectKeywords {
+    CorrectKeywords p{};
     p.count = readInteger(view->correctKeywords(), "number");
     return p;
 }

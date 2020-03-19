@@ -20,7 +20,7 @@ class NullTestMethod : public TestMethod {
     void writeTestResult(OutputFile *) override {}
     void submit(const coordinate_response_measure::Response &) override {}
     void submit(const FreeResponse &) override {}
-    void submit(const open_set::CorrectKeywords &) override {}
+    void submit(const CorrectKeywords &) override {}
 };
 }
 static NullTestMethod nullTestMethod;
@@ -297,7 +297,7 @@ void RecognitionTestModelImpl::submit(const FreeResponse &response) {
 }
 
 void RecognitionTestModelImpl::submit(
-    const open_set::CorrectKeywords &correctKeywords) {
+    const CorrectKeywords &correctKeywords) {
     testMethod->submit(correctKeywords);
     testMethod->writeLastCorrectKeywords(outputFile);
     save(outputFile);

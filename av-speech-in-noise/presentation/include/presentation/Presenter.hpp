@@ -198,7 +198,7 @@ class Presenter : public Model::EventListener {
         void showPassFailSubmission();
         void showCorrectKeywordsSubmission();
         void showFreeResponseSubmission();
-        auto correctKeywords() -> open_set::CorrectKeywords;
+        auto correctKeywords() -> CorrectKeywords;
         auto freeResponse() -> FreeResponse;
 
       private:

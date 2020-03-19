@@ -24,7 +24,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void writeTestResult(OutputFile *) override {}
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
-    void submit(const open_set::CorrectKeywords &) override {}
+    void submit(const CorrectKeywords &) override {}
 
   private:
     coordinate_response_measure::FixedLevelTrial lastTrial{};

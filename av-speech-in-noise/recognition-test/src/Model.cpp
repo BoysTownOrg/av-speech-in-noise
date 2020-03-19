@@ -116,7 +116,7 @@ void ModelImpl::submit(const FreeResponse &response) {
     model.submit(response);
 }
 
-void ModelImpl::submit(const open_set::CorrectKeywords &k) { model.submit(k); }
+void ModelImpl::submit(const CorrectKeywords &k) { model.submit(k); }
 
 void ModelImpl::playCalibration(const Calibration &p) {
     model.playCalibration(p);

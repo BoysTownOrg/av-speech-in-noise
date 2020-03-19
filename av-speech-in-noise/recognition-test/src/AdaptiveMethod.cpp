@@ -18,7 +18,7 @@ static void assignReversals(AdaptiveProgress &trial, Track *track) {
     trial.reversals = track->reversals();
 }
 
-static auto correct(const open_set::CorrectKeywords &p) -> bool {
+static auto correct(const CorrectKeywords &p) -> bool {
     return p.count >= 2;
 }
 
@@ -172,7 +172,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
+void AdaptiveMethodImpl::submit(const CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
     assignCorrectness(lastCorrectKeywordsTrial, correct(p));
     assignSnr(lastCorrectKeywordsTrial, snrTrack);

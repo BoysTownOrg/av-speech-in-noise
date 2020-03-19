@@ -159,7 +159,7 @@ class ModelStub : public Model {
 
     void submit(const FreeResponse &s) override { freeResponse_ = s; }
 
-    void submit(const open_set::CorrectKeywords &s) override {
+    void submit(const CorrectKeywords &s) override {
         correctKeywords_ = s;
     }
 
@@ -180,7 +180,7 @@ class ModelStub : public Model {
     std::vector<std::string> audioDevices_{};
     std::vector<AdaptiveTestResult> adaptiveTestResults_{};
     FreeResponse freeResponse_{};
-    open_set::CorrectKeywords correctKeywords_{};
+    CorrectKeywords correctKeywords_{};
     std::string targetFileName_{};
     EventListener *listener_{};
     int trialNumber_{};

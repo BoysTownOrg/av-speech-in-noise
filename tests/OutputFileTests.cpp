@@ -156,7 +156,7 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
 };
 
 class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
-    open_set::CorrectKeywordsTrial trial_{};
+    CorrectKeywordsTrial trial_{};
 
   public:
     void incorrect() override { trial_.correct = false; }
@@ -180,7 +180,7 @@ class OutputFileTests : public ::testing::Test {
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     FreeResponseTrial freeResponseTrial;
-    open_set::CorrectKeywordsTrial correctKeywordsTrial;
+    CorrectKeywordsTrial correctKeywordsTrial;
     open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;

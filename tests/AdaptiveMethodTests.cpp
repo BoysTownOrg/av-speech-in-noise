@@ -94,12 +94,12 @@ class SubmittingCorrectResponse : public UseCase {
     }
 };
 
-void submit(AdaptiveMethodImpl &method, open_set::CorrectKeywords &keywords) {
+void submit(AdaptiveMethodImpl &method, CorrectKeywords &keywords) {
     method.submit(keywords);
 }
 
 class SubmittingSufficientCorrectKeywords : public UseCase {
-    open_set::CorrectKeywords correctKeywords{};
+    CorrectKeywords correctKeywords{};
 
   public:
     void run(AdaptiveMethodImpl &method) override {
@@ -109,7 +109,7 @@ class SubmittingSufficientCorrectKeywords : public UseCase {
 };
 
 class SubmittingInsufficientCorrectKeywords : public UseCase {
-    open_set::CorrectKeywords correctKeywords{};
+    CorrectKeywords correctKeywords{};
 
   public:
     void run(AdaptiveMethodImpl &method) override {
@@ -126,7 +126,7 @@ class SubmittingIncorrectResponse : public UseCase {
 };
 
 class SubmittingCorrectKeywords : public UseCase {
-    open_set::CorrectKeywords correctKeywords{};
+    CorrectKeywords correctKeywords{};
 
   public:
     void run(AdaptiveMethodImpl &method) override {
@@ -235,7 +235,7 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
 };
 
 auto correctKeywordsTrial(OutputFileStub &file)
-    -> const open_set::CorrectKeywordsTrial & {
+    -> const CorrectKeywordsTrial & {
     return file.correctKeywordsTrial();
 }
 
@@ -247,7 +247,7 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
     explicit WritingCorrectKeywords(OutputFile &file_) : file_{file_} {}
 
     void run(AdaptiveMethodImpl &method) override {
-        open_set::CorrectKeywords correctKeywords{};
+        CorrectKeywords correctKeywords{};
         method.submit(correctKeywords);
         method.writeLastCorrectKeywords(&file_);
     }
@@ -399,7 +399,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     WritingCorrectKeywords writingCorrectKeywords{outputFile};
     AdaptiveTest test{};
     coordinate_response_measure::Response coordinateResponse{};
-    open_set::CorrectKeywords correctKeywords{};
+    CorrectKeywords correctKeywords{};
     std::vector<std::shared_ptr<TargetListStub>> targetLists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
 

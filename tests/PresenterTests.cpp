@@ -1326,7 +1326,7 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submit(const open_set::CorrectKeywords &) override {
+    void submit(const CorrectKeywords &) override {
         throw RequestFailure{errorMessage};
     }
 

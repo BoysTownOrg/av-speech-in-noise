@@ -71,7 +71,7 @@ class TestMethodStub : public TestMethod {
         submittedFreeResponse_ = true;
     }
 
-    void submit(const open_set::CorrectKeywords &) override {
+    void submit(const CorrectKeywords &) override {
         insert(log_, "submitCorrectKeywords ");
         submittedCorrectKeywords_ = true;
     }
@@ -229,7 +229,7 @@ class SubmittingFreeResponse : public TargetWritingUseCase {
 class SubmittingCorrectKeywords : public TargetWritingUseCase {
   public:
     void run(RecognitionTestModelImpl &m) override {
-        m.submit(open_set::CorrectKeywords{});
+        m.submit(CorrectKeywords{});
     }
 
     auto target(OutputFileStub &file) -> std::string override {

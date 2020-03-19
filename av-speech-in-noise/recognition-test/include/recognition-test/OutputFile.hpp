@@ -90,7 +90,7 @@ class OutputFileImpl : public OutputFile {
     void write(const coordinate_response_measure::AdaptiveTrial &) override;
     void write(const coordinate_response_measure::FixedLevelTrial &) override;
     void write(const FreeResponseTrial &) override;
-    void write(const open_set::CorrectKeywordsTrial &) override;
+    void write(const CorrectKeywordsTrial &) override;
     void write(const open_set::AdaptiveTrial &) override;
     void write(const std::vector<AdaptiveTestResult> &) override;
 

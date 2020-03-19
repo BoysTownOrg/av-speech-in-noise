@@ -49,7 +49,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
-    void submit(const open_set::CorrectKeywords &) override;
+    void submit(const CorrectKeywords &) override;
     auto complete() -> bool override;
     auto nextTarget() -> std::string override;
     auto currentTarget() -> std::string override;
@@ -71,7 +71,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     coordinate_response_measure::AdaptiveTrial
         lastCoordinateResponseMeasureTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
-    open_set::CorrectKeywordsTrial lastCorrectKeywordsTrial{};
+    CorrectKeywordsTrial lastCorrectKeywordsTrial{};
     AdaptiveTestResult lastAdaptiveTestResult{};
     const AdaptiveTest *test{};
     Track::Factory &snrTrackFactory;

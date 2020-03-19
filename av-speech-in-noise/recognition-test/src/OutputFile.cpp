@@ -207,7 +207,7 @@ static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
     return string(stream);
 }
 
-static auto format(const open_set::CorrectKeywordsTrial &trial) -> std::string {
+static auto format(const CorrectKeywordsTrial &trial) -> std::string {
     std::stringstream stream;
     insert(stream, trial.SNR_dB);
     insertCommaAndSpace(stream);
@@ -330,7 +330,7 @@ void OutputFileImpl::write(const FreeResponseTrial &trial) {
     justWroteFreeResponseTrial = true;
 }
 
-void OutputFileImpl::write(const open_set::CorrectKeywordsTrial &trial) {
+void OutputFileImpl::write(const CorrectKeywordsTrial &trial) {
     if (!justWroteCorrectKeywordsTrial)
         write(formatCorrectKeywordsTrialHeading());
     write(format(trial));
