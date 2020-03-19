@@ -46,23 +46,23 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
     AdaptiveMethodImpl(Track::Factory &, ResponseEvaluator &, Randomizer &);
     void initialize(const AdaptiveTest &, TargetListReader *) override;
-    auto snr_dB() -> int override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     void submit(const CorrectKeywords &) override;
-    auto complete() -> bool override;
-    auto nextTarget() -> std::string override;
-    auto currentTarget() -> std::string override;
+    void submit(const coordinate_response_measure::Response &) override;
+    void submit(const FreeResponse &) override;
     void writeLastCoordinateResponse(OutputFile *) override;
     void writeLastCorrectResponse(OutputFile *) override;
     void writeLastIncorrectResponse(OutputFile *) override;
     void writeLastCorrectKeywords(OutputFile *) override;
     void writeTestingParameters(OutputFile *) override;
     void writeTestResult(OutputFile *) override;
-    void submit(const coordinate_response_measure::Response &) override;
-    void submit(const FreeResponse &) override;
-    void resetTracks() override;
+    auto snr_dB() -> int override;
+    auto complete() -> bool override;
+    auto nextTarget() -> std::string override;
+    auto currentTarget() -> std::string override;
     auto testResults() -> AdaptiveTestResults override;
+    void resetTracks() override;
 
   private:
     void selectNextList();
