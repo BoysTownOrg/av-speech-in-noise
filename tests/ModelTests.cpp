@@ -198,7 +198,6 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
-    void throwIfTrialInProgress() override {}
 };
 
 class InitializingTestUseCase {

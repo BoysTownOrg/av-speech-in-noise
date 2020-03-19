@@ -87,7 +87,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto audioDevices() -> std::vector<std::string> override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
-    void throwIfTrialInProgress() override;
     void fadeInComplete() override;
     void fadeOutComplete() override;
     void playbackComplete() override;
@@ -95,6 +94,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     static constexpr auto maskerChannelDelaySeconds{0.004};
 
   private:
+    void throwIfTrialInProgress();
     void initialize_(TestMethod *, const Test &);
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
