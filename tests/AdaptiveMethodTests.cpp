@@ -358,8 +358,7 @@ void assertNextTargetEquals(AdaptiveMethodImpl &method, const std::string &s) {
     assertEqual(s, method.nextTarget());
 }
 
-auto adaptiveTestResult(OutputFileStub &file)
-    -> AdaptiveTestResults {
+auto adaptiveTestResult(OutputFileStub &file) -> AdaptiveTestResults {
     return file.adaptiveTestResult();
 }
 

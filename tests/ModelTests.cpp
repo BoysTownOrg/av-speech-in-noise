@@ -24,13 +24,9 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return targetListReader_;
     }
 
-    void setTestResults(AdaptiveTestResults v) {
-        testResults_ = std::move(v);
-    }
+    void setTestResults(AdaptiveTestResults v) { testResults_ = std::move(v); }
 
-    auto testResults() -> AdaptiveTestResults override {
-        return testResults_;
-    }
+    auto testResults() -> AdaptiveTestResults override { return testResults_; }
 
     void resetTracks() override { tracksResetted_ = true; }
 
@@ -157,9 +153,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    void submit(const CorrectKeywords &p) override {
-        correctKeywords_ = &p;
-    }
+    void submit(const CorrectKeywords &p) override { correctKeywords_ = &p; }
 
     auto testComplete() -> bool override { return complete_; }
 

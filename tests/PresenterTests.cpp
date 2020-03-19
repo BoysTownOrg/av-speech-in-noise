@@ -1336,9 +1336,7 @@ class RequestFailingModel : public Model {
 
     auto testComplete() -> bool override { return {}; }
     auto audioDevices() -> std::vector<std::string> override { return {}; }
-    auto adaptiveTestResults() -> AdaptiveTestResults override {
-        return {};
-    }
+    auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
     void subscribe(EventListener *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}

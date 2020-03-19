@@ -18,9 +18,7 @@ static void assignReversals(AdaptiveProgress &trial, Track *track) {
     trial.reversals = track->reversals();
 }
 
-static auto correct(const CorrectKeywords &p) -> bool {
-    return p.count >= 2;
-}
+static auto correct(const CorrectKeywords &p) -> bool { return p.count >= 2; }
 
 static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
     trial.SNR_dB = track->x();
@@ -185,9 +183,7 @@ void AdaptiveMethodImpl::submit(const CorrectKeywords &p) {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submit(const FreeResponse &) {
-    selectNextList();
-}
+void AdaptiveMethodImpl::submit(const FreeResponse &) { selectNextList(); }
 
 void AdaptiveMethodImpl::writeTestResult(OutputFile *file) {
     file->write(av_speech_in_noise::testResults(

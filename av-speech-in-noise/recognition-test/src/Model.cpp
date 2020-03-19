@@ -112,9 +112,7 @@ void ModelImpl::submitCorrectResponse() { model.submitCorrectResponse(); }
 
 void ModelImpl::submitIncorrectResponse() { model.submitIncorrectResponse(); }
 
-void ModelImpl::submit(const FreeResponse &response) {
-    model.submit(response);
-}
+void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
 
 void ModelImpl::submit(const CorrectKeywords &k) { model.submit(k); }
 

@@ -159,9 +159,7 @@ class ModelStub : public Model {
 
     void submit(const FreeResponse &s) override { freeResponse_ = s; }
 
-    void submit(const CorrectKeywords &s) override {
-        correctKeywords_ = s;
-    }
+    void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
 
     void restartAdaptiveTestWhilePreservingCyclicTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;

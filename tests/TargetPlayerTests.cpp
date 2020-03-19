@@ -126,9 +126,7 @@ class TargetPlayerTests : public ::testing::Test {
 
     void setLevel_dB(double x) { player.setLevel_dB(x); }
 
-    void setFirstChannelOnly() {
-        player.useFirstChannelOnly();
-    }
+    void setFirstChannelOnly() { player.useFirstChannelOnly(); }
 
     void useAllChannels() { player.useAllChannels(); }
 };

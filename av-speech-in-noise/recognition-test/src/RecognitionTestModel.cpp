@@ -296,8 +296,7 @@ void RecognitionTestModelImpl::submit(const FreeResponse &response) {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submit(
-    const CorrectKeywords &correctKeywords) {
+void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
     testMethod->submit(correctKeywords);
     testMethod->writeLastCorrectKeywords(outputFile);
     save(outputFile);

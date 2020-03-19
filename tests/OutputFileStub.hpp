@@ -92,9 +92,7 @@ class OutputFileStub : public OutputFile {
         return adaptiveCoordinateResponseTrial_;
     }
 
-    auto freeResponseTrial() const -> auto & {
-        return freeResponseTrial_;
-    }
+    auto freeResponseTrial() const -> auto & { return freeResponseTrial_; }
 
     auto correctKeywordsTrial() const -> auto & { return correctKeywords_; }
 

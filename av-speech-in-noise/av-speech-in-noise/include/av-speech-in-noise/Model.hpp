@@ -132,8 +132,8 @@ struct AdaptiveTestResult {
 
 using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
 
-inline auto operator==(
-    const AdaptiveTestResult &a, const AdaptiveTestResult &b) -> bool {
+inline auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
+    -> bool {
     return a.targetListDirectory == b.targetListDirectory &&
         a.threshold == b.threshold;
 }
