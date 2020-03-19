@@ -108,8 +108,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto noMoreTrials() -> bool;
     void prepareTargetPlayer();
     void seekRandomMaskerPosition();
-    void preparePlayersToPlay(const AudioSettings &);
-    void startTrial();
     void prepareVideo(const Condition &);
     auto desiredMaskerLevel_dB() -> int;
     auto unalteredTargetLevel_dB() -> double;

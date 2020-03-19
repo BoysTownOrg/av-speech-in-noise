@@ -208,19 +208,11 @@ void RecognitionTestModelImpl::seekRandomMaskerPosition() {
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     throwIfTrialInProgress(maskerPlayer);
 
-    preparePlayersToPlay(settings);
-    startTrial();
-}
-
-void RecognitionTestModelImpl::preparePlayersToPlay(const AudioSettings &p) {
     throwInvalidAudioDeviceOnError(
         [&](auto device) {
             setAudioDevices(maskerPlayer, targetPlayer, device);
         },
-        p.audioDevice);
-}
-
-void RecognitionTestModelImpl::startTrial() {
+        settings.audioDevice);
     if (!auditoryOnly(condition))
         targetPlayer.showVideo();
     maskerPlayer.fadeIn();
