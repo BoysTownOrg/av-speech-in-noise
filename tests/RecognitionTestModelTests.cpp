@@ -378,6 +378,16 @@ void assertChannelDelaysCleared(MaskerPlayerStub &player) {
     assertTrue(player.channelDelaysCleared());
 }
 
+auto targetPlayerEventListener(const RecognitionTestModelImpl &model)
+    -> const TargetPlayer::EventListener * {
+    return &model;
+}
+
+auto maskerPlayerEventListener(const RecognitionTestModelImpl &model)
+    -> const MaskerPlayer::EventListener * {
+    return &model;
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -552,10 +562,8 @@ class RecognitionTestModelTests : public ::testing::Test {
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
 
 RECOGNITION_TEST_MODEL_TEST(subscribesToPlayerEvents) {
-    assertEqual(static_cast<TargetPlayer::EventListener *>(&model),
-        targetPlayer.listener());
-    assertEqual(static_cast<MaskerPlayer::EventListener *>(&model),
-        maskerPlayer.listener());
+    assertEqual(targetPlayerEventListener(model), targetPlayer.listener());
+    assertEqual(maskerPlayerEventListener(model), maskerPlayer.listener());
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationShowsTargetVideo) {

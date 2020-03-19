@@ -96,7 +96,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     void playbackComplete() { listener_->playbackComplete(); }
 
-    auto listener() const { return listener_; }
+    auto listener() const -> const EventListener * { return listener_; }
 
     auto filePath() const { return filePath_; }
 

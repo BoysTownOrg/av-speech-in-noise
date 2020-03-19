@@ -100,7 +100,7 @@ class MaskerPlayerStub : public MaskerPlayer {
         return outputAudioDeviceDescriptions_;
     }
 
-    auto listener() const { return listener_; }
+    auto listener() const -> const EventListener * { return listener_; }
 
     void fadeInComplete() { listener_->fadeInComplete(); }
 
