@@ -158,6 +158,12 @@ class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
     auto evaluationEntryIndex() -> int override { return 4; }
 };
 
+void run(OutputFileImpl &file, UseCase &useCase) { useCase.run(file); }
+
+auto written(WriterStub &writer) -> const LogString & {
+    return writer.written();
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -178,8 +184,6 @@ class OutputFileTests : public ::testing::Test {
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
 
-    void run(UseCase &useCase) { useCase.run(file); }
-
     void openNewFile() { file.openNewFile(testIdentity); }
 
     void writeFreeResponseTrial() { file.write(freeResponseTrial); }
@@ -188,22 +192,20 @@ class OutputFileTests : public ::testing::Test {
 
     void writeOpenSetAdaptiveTrial() { file.write(openSetAdaptiveTrial); }
 
-    auto written() -> const auto & { return writer.written(); }
-
     void assertWriterContainsConditionName(Condition c) {
         assertColonDelimitedEntryWritten("condition", name(c));
     }
 
     void assertWriterContains(const std::string &s) {
-        assertTrue(written().contains(s));
+        assertTrue(written(writer).contains(s));
     }
 
     void assertWrittenLast(const std::string &s) {
-        assertTrue(written().endsWith(s));
+        assertTrue(written(writer).endsWith(s));
     }
 
     auto nthCommaDelimitedEntryOfLine(int n, int line) -> std::string {
-        std::string written_ = written();
+        std::string written_ = written(writer);
         auto precedingNewLine = find_nth_element(written_, line - 1, '\n');
         auto line_ = written_.substr(precedingNewLine + 1);
         auto precedingComma = find_nth_element(line_, n - 1, ',');
@@ -227,7 +229,7 @@ class OutputFileTests : public ::testing::Test {
 
     void assertConditionNameWritten(WritingTestUseCase &useCase, Condition c) {
         useCase.test().condition = c;
-        useCase.run(file);
+        run(file, useCase);
         assertWriterContainsConditionName(c);
     }
 
@@ -238,7 +240,7 @@ class OutputFileTests : public ::testing::Test {
         useCase.test().identity.method = "d";
         useCase.test().identity.rmeSetting = "e";
         useCase.test().identity.transducer = Transducer::twoSpeakers;
-        useCase.run(file);
+        run(file, useCase);
         assertColonDelimitedEntryWritten("subject", "a");
         assertColonDelimitedEntryWritten("tester", "b");
         assertColonDelimitedEntryWritten("session", "c");
@@ -252,7 +254,7 @@ class OutputFileTests : public ::testing::Test {
         useCase.test().maskerFilePath = "a";
         useCase.test().targetListDirectory = "d";
         useCase.test().maskerLevel_dB_SPL = 1;
-        useCase.run(file);
+        run(file, useCase);
         assertColonDelimitedEntryWritten("masker", "a");
         assertColonDelimitedEntryWritten("targets", "d");
         assertColonDelimitedEntryWritten("masker level (dB SPL)", "1");
@@ -264,7 +266,7 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertEntriesOfSecondLine(int n) {
-        std::string written_ = written();
+        std::string written_ = written(writer);
         auto precedingNewLine = find_nth_element(written_, 2 - 1, '\n');
         auto line_ = written_.substr(precedingNewLine + 1);
         assertEqual(
@@ -283,13 +285,13 @@ class OutputFileTests : public ::testing::Test {
 
     void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
         useCase.incorrect();
-        run(useCase);
+        run(file, useCase);
         assertNthEntryOfSecondLine("incorrect", useCase.evaluationEntryIndex());
     }
 
     void assertCorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
         useCase.correct();
-        run(useCase);
+        run(file, useCase);
         assertNthEntryOfSecondLine("correct", useCase.evaluationEntryIndex());
     }
 
@@ -355,7 +357,7 @@ class OutputFileTests : public ::testing::Test {
         trial.correctColor = Color::green;
         trial.subjectColor = Color::red;
         trial.reversals = 4;
-        run(writingAdaptiveCoordinateResponseTrial);
+        run(file, writingAdaptiveCoordinateResponseTrial);
         assertNthCommaDelimitedEntryOfLine("1", 1, n);
         assertNthCommaDelimitedEntryOfLine("2", 2, n);
         assertNthCommaDelimitedEntryOfLine("3", 3, n);
@@ -372,7 +374,7 @@ class OutputFileTests : public ::testing::Test {
         trial.correctColor = Color::green;
         trial.subjectColor = Color::red;
         trial.target = "a";
-        run(writingFixedLevelCoordinateResponseTrial);
+        run(file, writingFixedLevelCoordinateResponseTrial);
         assertNthCommaDelimitedEntryOfLine("2", 1, n);
         assertNthCommaDelimitedEntryOfLine("3", 2, n);
         assertNthCommaDelimitedEntryOfLine(name(Color::green), 3, n);
@@ -417,12 +419,12 @@ class OutputFileTests : public ::testing::Test {
 };
 
 TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
-    run(writingAdaptiveCoordinateResponseTrial);
+    run(file, writingAdaptiveCoordinateResponseTrial);
     assertAdaptiveCoordinateHeadingAtLine(1);
 }
 
 TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
-    run(writingFixedLevelCoordinateResponseTrial);
+    run(file, writingFixedLevelCoordinateResponseTrial);
     assertFixedLevelCoordinateResponseHeadingAtLine(1);
 }
 
@@ -463,13 +465,13 @@ TEST_F(OutputFileTests, writeCorrectKeywordsTrial) {
 
 TEST_F(OutputFileTests,
     writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
-    run(writingAdaptiveCoordinateResponseTrial);
+    run(file, writingAdaptiveCoordinateResponseTrial);
     assertWritesAdaptiveCoordinateResponseTrialOnLine(3);
 }
 
 TEST_F(OutputFileTests,
     writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
-    run(writingFixedLevelCoordinateResponseTrial);
+    run(file, writingFixedLevelCoordinateResponseTrial);
     assertWritesFixedLevelCoordinateResponseTrialOnLine(3);
 }
 
@@ -492,17 +494,17 @@ TEST_F(
 
 TEST_F(OutputFileTests,
     writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    run(writingAdaptiveCoordinateResponseTrial);
+    run(file, writingAdaptiveCoordinateResponseTrial);
     openNewFile();
-    run(writingAdaptiveCoordinateResponseTrial);
+    run(file, writingAdaptiveCoordinateResponseTrial);
     assertAdaptiveCoordinateHeadingAtLine(3);
 }
 
 TEST_F(OutputFileTests,
     writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    run(writingFixedLevelCoordinateResponseTrial);
+    run(file, writingFixedLevelCoordinateResponseTrial);
     openNewFile();
-    run(writingFixedLevelCoordinateResponseTrial);
+    run(file, writingFixedLevelCoordinateResponseTrial);
     assertFixedLevelCoordinateResponseHeadingAtLine(3);
 }
 
