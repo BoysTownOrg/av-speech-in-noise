@@ -330,6 +330,10 @@ void assertFilePathEquals(TargetPlayerStub &player, const std::string &what) {
     assertEqual(what, filePath(player));
 }
 
+auto playbackCompletionSubscribed(TargetPlayerStub &player) -> bool {
+    return player.playbackCompletionSubscribedTo();
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -388,11 +392,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
         run(useCase, model);
-        assertTrue(targetPlayerPlaybackCompletionSubscribed());
-    }
-
-    auto targetPlayerPlaybackCompletionSubscribed() -> bool {
-        return targetPlayer.playbackCompletionSubscribedTo();
+        assertTrue(playbackCompletionSubscribed(targetPlayer));
     }
 
     void assertSeeksToRandomMaskerPositionWithinTrialDuration(
