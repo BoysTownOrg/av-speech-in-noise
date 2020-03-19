@@ -124,7 +124,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto maskerLevel_dB() -> double;
     auto findDeviceIndex(const AudioSettings &) -> int;
     void loadTargetFile(std::string);
-    void setTargetLevel_dB(double);
 
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;

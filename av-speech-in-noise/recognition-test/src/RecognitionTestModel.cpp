@@ -74,6 +74,12 @@ static void throwIfTrialInProgress(MaskerPlayer &player) {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
+static void setLevel_dB(TargetPlayer &player, double x) {
+    player.setLevel_dB(x);
+}
+
+static auto dB(double x) -> double { return 20 * std::log10(x); }
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer)
@@ -145,8 +151,6 @@ void RecognitionTestModelImpl::prepareMasker(const std::string &file) {
     maskerPlayer.setLevel_dB(maskerLevel_dB());
 }
 
-static auto dB(double x) -> double { return 20 * std::log10(x); }
-
 auto RecognitionTestModelImpl::maskerLevel_dB() -> double {
     return desiredMaskerLevel_dB() - dB(maskerPlayer.rms());
 }
@@ -169,16 +173,12 @@ void RecognitionTestModelImpl::preparePlayersForNextTrial() {
 
 void RecognitionTestModelImpl::prepareTargetPlayer() {
     loadTargetFile(testMethod->nextTarget());
-    setTargetLevel_dB(targetLevel_dB());
+    setLevel_dB(targetPlayer, targetLevel_dB());
     targetPlayer.subscribeToPlaybackCompletion();
 }
 
 void RecognitionTestModelImpl::loadTargetFile(std::string s) {
     targetPlayer.loadFile(std::move(s));
-}
-
-void RecognitionTestModelImpl::setTargetLevel_dB(double x) {
-    targetPlayer.setLevel_dB(x);
 }
 
 auto RecognitionTestModelImpl::targetLevel_dB() -> double {
@@ -323,7 +323,7 @@ void RecognitionTestModelImpl::playCalibration_(const Calibration &p) {
 
 void RecognitionTestModelImpl::trySettingTargetLevel(const Calibration &p) {
     try {
-        setTargetLevel_dB(calibrationLevel_dB(p));
+        setLevel_dB(targetPlayer, calibrationLevel_dB(p));
     } catch (const InvalidAudioFile &) {
         throw Model::RequestFailure{"unable to read " + p.filePath};
     }
