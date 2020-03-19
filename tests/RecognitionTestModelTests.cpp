@@ -334,6 +334,8 @@ auto playbackCompletionSubscribed(TargetPlayerStub &player) -> bool {
     return player.playbackCompletionSubscribedTo();
 }
 
+auto secondsSeeked(MaskerPlayerStub &player) { return player.secondsSeeked(); }
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -405,12 +407,10 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(3. - 2 - 1 - 2, randomizer.upperFloatBound());
     }
 
-    auto maskerPlayerSecondsSeeked() { return maskerPlayer.secondsSeeked(); }
-
     void assertMaskerPlayerSeekedToRandomTime(UseCase &useCase) {
         randomizer.setRandomFloat(1);
         run(useCase, model);
-        assertEqual(1., maskerPlayerSecondsSeeked());
+        assertEqual(1., secondsSeeked(maskerPlayer));
     }
 
     auto targetPlayerLevel_dB() { return targetPlayer.level_dB(); }
