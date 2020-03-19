@@ -138,15 +138,11 @@ void RecognitionTestModelImpl::storeLevels(const Test &common) {
 
 void RecognitionTestModelImpl::prepareMasker(const std::string &file) {
     try {
-        loadMaskerFile(file);
+        maskerPlayer.loadFile(file);
     } catch (const InvalidAudioFile &) {
         throw Model::RequestFailure{"unable to read " + file};
     }
     maskerPlayer.setLevel_dB(maskerLevel_dB());
-}
-
-void RecognitionTestModelImpl::loadMaskerFile(const std::string &p) {
-    maskerPlayer.loadFile(p);
 }
 
 static auto dB(double x) -> double { return 20 * std::log10(x); }
