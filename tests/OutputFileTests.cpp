@@ -426,81 +426,81 @@ class OutputFileTests : public ::testing::Test {
     }
 };
 
-TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrialHeading) {
+#define OUTPUT_FILE_TEST(a) TEST_F(OutputFileTests, a)
+
+OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialHeading) {
     run(file, writingAdaptiveCoordinateResponseTrial);
     assertAdaptiveCoordinateHeadingAtLine(1);
 }
 
-TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
+OUTPUT_FILE_TEST(writeFixedLevelCoordinateResponseTrialHeading) {
     run(file, writingFixedLevelCoordinateResponseTrial);
     assertFixedLevelCoordinateResponseHeadingAtLine(1);
 }
 
-TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
+OUTPUT_FILE_TEST(writeFreeResponseTrialHeading) {
     write(file, freeResponseTrial);
     assertFreeResponseHeadingAtLine(writer, 1);
 }
 
-TEST_F(OutputFileTests, writeCorrectKeywordsTrialHeading) {
+OUTPUT_FILE_TEST(writeCorrectKeywordsTrialHeading) {
     write(file, correctKeywordsTrial);
     assertCorrectKeywordsHeadingAtLine(writer, 1);
 }
 
-TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialHeading) {
+OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialHeading) {
     write(file, openSetAdaptiveTrial);
     assertOpenSetAdaptiveHeadingAtLine(writer, 1);
 }
 
-TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
+OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrial) {
     assertWritesAdaptiveCoordinateResponseTrialOnLine(2);
 }
 
-TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrial) {
+OUTPUT_FILE_TEST(writeFixedLevelCoordinateResponseTrial) {
     assertWritesFixedLevelCoordinateResponseTrialOnLine(2);
 }
 
-TEST_F(OutputFileTests, writeFreeResponseTrial) {
+OUTPUT_FILE_TEST(writeFreeResponseTrial) {
     assertWritesFreeResponseTrialOnLine(2);
 }
 
-TEST_F(OutputFileTests, writeOpenSetAdaptiveTrial) {
+OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrial) {
     assertWritesOpenSetAdaptiveTrialOnLine(2);
 }
 
-TEST_F(OutputFileTests, writeCorrectKeywordsTrial) {
+OUTPUT_FILE_TEST(writeCorrectKeywordsTrial) {
     assertWritesCorrectKeywordsTrialOnLine(2);
 }
 
-TEST_F(OutputFileTests,
+OUTPUT_FILE_TEST(
     writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
     run(file, writingAdaptiveCoordinateResponseTrial);
     assertWritesAdaptiveCoordinateResponseTrialOnLine(3);
 }
 
-TEST_F(OutputFileTests,
+OUTPUT_FILE_TEST(
     writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
     run(file, writingFixedLevelCoordinateResponseTrial);
     assertWritesFixedLevelCoordinateResponseTrialOnLine(3);
 }
 
-TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
+OUTPUT_FILE_TEST(writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
     write(file, freeResponseTrial);
     assertWritesFreeResponseTrialOnLine(3);
 }
 
-TEST_F(
-    OutputFileTests, writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
+OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
     write(file, openSetAdaptiveTrial);
     assertWritesOpenSetAdaptiveTrialOnLine(3);
 }
 
-TEST_F(
-    OutputFileTests, writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
+OUTPUT_FILE_TEST(writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
     write(file, correctKeywordsTrial);
     assertWritesCorrectKeywordsTrialOnLine(3);
 }
 
-TEST_F(OutputFileTests,
+OUTPUT_FILE_TEST(
     writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     run(file, writingAdaptiveCoordinateResponseTrial);
     openNewFile(file, testIdentity);
@@ -508,7 +508,7 @@ TEST_F(OutputFileTests,
     assertAdaptiveCoordinateHeadingAtLine(3);
 }
 
-TEST_F(OutputFileTests,
+OUTPUT_FILE_TEST(
     writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     run(file, writingFixedLevelCoordinateResponseTrial);
     openNewFile(file, testIdentity);
@@ -516,7 +516,7 @@ TEST_F(OutputFileTests,
     assertFixedLevelCoordinateResponseHeadingAtLine(3);
 }
 
-TEST_F(OutputFileTests,
+OUTPUT_FILE_TEST(
     writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     write(file, freeResponseTrial);
     openNewFile(file, testIdentity);
@@ -524,7 +524,7 @@ TEST_F(OutputFileTests,
     assertFreeResponseHeadingAtLine(writer, 3);
 }
 
-TEST_F(OutputFileTests,
+OUTPUT_FILE_TEST(
     writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     write(file, openSetAdaptiveTrial);
     openNewFile(file, testIdentity);
@@ -532,7 +532,7 @@ TEST_F(OutputFileTests,
     assertOpenSetAdaptiveHeadingAtLine(writer, 3);
 }
 
-TEST_F(OutputFileTests,
+OUTPUT_FILE_TEST(
     writeCorrectKeywordsTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     write(file, correctKeywordsTrial);
     openNewFile(file, testIdentity);
@@ -540,64 +540,64 @@ TEST_F(OutputFileTests,
     assertCorrectKeywordsHeadingAtLine(writer, 3);
 }
 
-TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
+OUTPUT_FILE_TEST(writeIncorrectAdaptiveCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(
         writingAdaptiveCoordinateResponseTrial);
 }
 
-TEST_F(OutputFileTests, writeIncorrectFixedLevelCoordinateResponseTrial) {
+OUTPUT_FILE_TEST(writeIncorrectFixedLevelCoordinateResponseTrial) {
     assertIncorrectTrialWritesEvaluation(
         writingFixedLevelCoordinateResponseTrial);
 }
 
-TEST_F(OutputFileTests, writeIncorrectOpenSetAdaptiveTrial) {
+OUTPUT_FILE_TEST(writeIncorrectOpenSetAdaptiveTrial) {
     assertIncorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
 }
 
-TEST_F(OutputFileTests, writeIncorrectKeywordsTrial) {
+OUTPUT_FILE_TEST(writeIncorrectKeywordsTrial) {
     assertIncorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
 }
 
-TEST_F(OutputFileTests, writeCorrectAdaptiveCoordinateResponseTrial) {
+OUTPUT_FILE_TEST(writeCorrectAdaptiveCoordinateResponseTrial) {
     assertCorrectTrialWritesEvaluation(writingAdaptiveCoordinateResponseTrial);
 }
 
-TEST_F(OutputFileTests, writeCorrectFixedLevelCoordinateResponseTrial) {
+OUTPUT_FILE_TEST(writeCorrectFixedLevelCoordinateResponseTrial) {
     assertCorrectTrialWritesEvaluation(
         writingFixedLevelCoordinateResponseTrial);
 }
 
-TEST_F(OutputFileTests, writeCorrectOpenSetAdaptiveTrial) {
+OUTPUT_FILE_TEST(writeCorrectOpenSetAdaptiveTrial) {
     assertCorrectTrialWritesEvaluation(writingOpenSetAdaptiveTrial);
 }
 
-TEST_F(OutputFileTests, writeCorrectKeywordsTrialWritesCorrectEvaluation) {
+OUTPUT_FILE_TEST(writeCorrectKeywordsTrialWritesCorrectEvaluation) {
     assertCorrectTrialWritesEvaluation(writingCorrectKeywordsTrial);
 }
 
-TEST_F(OutputFileTests, writeFlaggedFreeResponseTrial) {
+OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {
     freeResponseTrial.flagged = true;
     write(file, freeResponseTrial);
     assertNthEntryOfSecondLine(writer, "FLAGGED", 3);
 }
 
-TEST_F(OutputFileTests, writeNoFlagFreeResponseTrialOnlyTwoEntries) {
+OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
 
     freeResponseTrial.flagged = false;
     write(file, freeResponseTrial);
     assertEntriesOfSecondLine(2);
 }
 
-TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
+OUTPUT_FILE_TEST(uninitializedColorDoesNotBreak) {
     coordinate_response_measure::AdaptiveTrial uninitialized;
     file.write(uninitialized);
 }
 
-TEST_F(OutputFileTests, writeCommonAdaptiveTest) {
+OUTPUT_FILE_TEST(writeCommonAdaptiveTest) {
     assertCommonTestWritten(writingAdaptiveTest);
 }
 
-TEST_F(OutputFileTests, writesTrackSettings) {
+OUTPUT_FILE_TEST(writesTrackSettings) {
     AdaptiveTest test;
     TrackingSequence first;
     first.up = 1;
@@ -619,7 +619,7 @@ TEST_F(OutputFileTests, writesTrackSettings) {
     assertEndsWith(writer, "\n\n");
 }
 
-TEST_F(OutputFileTests, writeAdaptiveTestResult) {
+OUTPUT_FILE_TEST(writeAdaptiveTestResult) {
     AdaptiveTestResults results{};
     results.push_back({"a", 1.});
     results.push_back({"b", 2.});
@@ -630,66 +630,66 @@ TEST_F(OutputFileTests, writeAdaptiveTestResult) {
     assertContainsColonDelimitedEntry(writer, "threshold for c", "3");
 }
 
-TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
+OUTPUT_FILE_TEST(writeCommonFixedLevelTest) {
     assertCommonTestWritten(writingFixedLevelTest);
 }
 
-TEST_F(OutputFileTests, writeAdaptiveTest) {
+OUTPUT_FILE_TEST(writeAdaptiveTest) {
     adaptiveTest.startingSnr_dB = 2;
     file.write(adaptiveTest);
     assertContainsColonDelimitedEntry(writer, "starting SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");
 }
 
-TEST_F(OutputFileTests, writeFixedLevelTest) {
+OUTPUT_FILE_TEST(writeFixedLevelTest) {
     fixedLevelTest.snr_dB = 2;
     file.write(fixedLevelTest);
     assertContainsColonDelimitedEntry(writer, "SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");
 }
 
-TEST_F(OutputFileTests, writeAdaptiveTestInformation) {
+OUTPUT_FILE_TEST(writeAdaptiveTestInformation) {
     assertTestIdentityWritten(writingAdaptiveTest);
 }
 
-TEST_F(OutputFileTests, writeFixedLevelTestInformation) {
+OUTPUT_FILE_TEST(writeFixedLevelTestInformation) {
     assertTestIdentityWritten(writingFixedLevelTest);
 }
 
-TEST_F(OutputFileTests, writeAdaptiveTestWithAvCondition) {
+OUTPUT_FILE_TEST(writeAdaptiveTestWithAvCondition) {
     assertConditionNameWritten(writingAdaptiveTest, Condition::audioVisual);
 }
 
-TEST_F(OutputFileTests, writeAdaptiveTestWithAuditoryOnlyCondition) {
+OUTPUT_FILE_TEST(writeAdaptiveTestWithAuditoryOnlyCondition) {
     assertConditionNameWritten(writingAdaptiveTest, Condition::auditoryOnly);
 }
 
-TEST_F(OutputFileTests, writeFixedLevelTestWithAvCondition) {
+OUTPUT_FILE_TEST(writeFixedLevelTestWithAvCondition) {
     assertConditionNameWritten(writingFixedLevelTest, Condition::audioVisual);
 }
 
-TEST_F(OutputFileTests, writeFixedLevelTestWithAuditoryOnlyCondition) {
+OUTPUT_FILE_TEST(writeFixedLevelTestWithAuditoryOnlyCondition) {
     assertConditionNameWritten(writingFixedLevelTest, Condition::auditoryOnly);
 }
 
-TEST_F(OutputFileTests, openPassesFormattedFilePath) {
+OUTPUT_FILE_TEST(openPassesFormattedFilePath) {
     path.setFileName("a");
     path.setOutputDirectory("b");
     openNewFile(file, testIdentity);
     assertEqual("b/a.txt", writer.filePath());
 }
 
-TEST_F(OutputFileTests, closeClosesWriter) {
+OUTPUT_FILE_TEST(closeClosesWriter) {
     file.close();
     assertTrue(writer.closed());
 }
 
-TEST_F(OutputFileTests, saveSavesWriter) {
+OUTPUT_FILE_TEST(saveSavesWriter) {
     file.save();
     assertTrue(writer.saved());
 }
 
-TEST_F(OutputFileTests, openPassesTestInformation) {
+OUTPUT_FILE_TEST(openPassesTestInformation) {
     openNewFile(file, testIdentity);
     EXPECT_EQ(&testIdentity, path.testIdentity());
 }
