@@ -86,6 +86,13 @@ static void play(TargetPlayer &player) { player.play(); }
 
 static auto dB(double x) -> double { return 20 * std::log10(x); }
 
+static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
+    -> std::string {
+    return evaluator.fileName(testMethod->currentTarget());
+}
+
+static void save(OutputFile &file) { file.save(); }
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer)
@@ -236,13 +243,6 @@ void RecognitionTestModelImpl::fadeOutComplete() {
     listener_->trialComplete();
 }
 
-static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
-    -> std::string {
-    return evaluator.fileName(testMethod->currentTarget());
-}
-
-static void save(OutputFile &file) { file.save(); }
-
 void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
     testMethod->submit(response);
@@ -252,10 +252,6 @@ void RecognitionTestModelImpl::submit(
 }
 
 void RecognitionTestModelImpl::submitCorrectResponse() {
-    submitCorrectResponse_();
-}
-
-void RecognitionTestModelImpl::submitCorrectResponse_() {
     testMethod->submitCorrectResponse();
     testMethod->writeLastCorrectResponse(outputFile);
     save(outputFile);
