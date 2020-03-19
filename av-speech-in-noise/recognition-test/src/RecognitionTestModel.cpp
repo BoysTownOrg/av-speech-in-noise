@@ -105,6 +105,8 @@ static auto level_dB(TargetPlayer &player, const Calibration &p) -> double {
 
 static void show(TargetPlayer &player) { player.showVideo(); }
 
+static void hide(TargetPlayer &player) { player.hideVideo(); }
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer)
@@ -154,7 +156,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
 void RecognitionTestModelImpl::prepareTest(const Test &test) {
     storeLevels(test);
     prepareMasker(test.maskerFilePath);
-    targetPlayer.hideVideo();
+    hide(targetPlayer);
     condition = test.condition;
     if (!testMethod->complete())
         preparePlayersForNextTrial();
@@ -186,7 +188,7 @@ auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
 
 void RecognitionTestModelImpl::prepareVideo(const Condition &p) {
     if (auditoryOnly(p))
-        targetPlayer.hideVideo();
+        hide(targetPlayer);
     else
         show(targetPlayer);
 }
@@ -230,7 +232,7 @@ void RecognitionTestModelImpl::fadeInComplete() { play(targetPlayer); }
 void RecognitionTestModelImpl::playbackComplete() { maskerPlayer.fadeOut(); }
 
 void RecognitionTestModelImpl::fadeOutComplete() {
-    targetPlayer.hideVideo();
+    hide(targetPlayer);
     listener_->trialComplete();
 }
 
@@ -284,21 +286,17 @@ void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::playCalibration(const Calibration &p) {
+void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
     throwIfTrialInProgress(maskerPlayer);
 
-    playCalibration_(p);
-}
-
-void RecognitionTestModelImpl::playCalibration_(const Calibration &p) {
     throwInvalidAudioDeviceOnError(
         [&](auto device) { setAudioDevice(targetPlayer, device); },
-        p.audioDevice);
-    loadFile(targetPlayer, p.filePath);
+        calibration.audioDevice);
+    loadFile(targetPlayer, calibration.filePath);
     try {
-        setLevel_dB(targetPlayer, level_dB(targetPlayer, p));
+        setLevel_dB(targetPlayer, level_dB(targetPlayer, calibration));
     } catch (const InvalidAudioFile &) {
-        throw Model::RequestFailure{"unable to read " + p.filePath};
+        throw Model::RequestFailure{"unable to read " + calibration.filePath};
     }
     show(targetPlayer);
     play(targetPlayer);
