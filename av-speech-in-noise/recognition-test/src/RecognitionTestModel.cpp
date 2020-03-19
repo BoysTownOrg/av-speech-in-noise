@@ -82,6 +82,8 @@ static void loadFile(TargetPlayer &player, std::string s) {
     player.loadFile(std::move(s));
 }
 
+static void play(TargetPlayer &player) { player.play(); }
+
 static auto dB(double x) -> double { return 20 * std::log10(x); }
 
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
@@ -225,9 +227,7 @@ void RecognitionTestModelImpl::startTrial() {
     maskerPlayer.fadeIn();
 }
 
-void RecognitionTestModelImpl::fadeInComplete() { playTarget(); }
-
-void RecognitionTestModelImpl::playTarget() { targetPlayer.play(); }
+void RecognitionTestModelImpl::fadeInComplete() { play(targetPlayer); }
 
 void RecognitionTestModelImpl::playbackComplete() { maskerPlayer.fadeOut(); }
 
@@ -318,7 +318,7 @@ void RecognitionTestModelImpl::playCalibration_(const Calibration &p) {
     loadFile(targetPlayer, p.filePath);
     trySettingTargetLevel(p);
     targetPlayer.showVideo();
-    playTarget();
+    play(targetPlayer);
 }
 
 void RecognitionTestModelImpl::trySettingTargetLevel(const Calibration &p) {

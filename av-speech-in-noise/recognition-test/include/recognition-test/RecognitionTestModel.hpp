@@ -111,7 +111,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void prepareMasker(const std::string &);
     void tryOpeningOutputFile_(const TestIdentity &);
     void tryOpeningOutputFile(const TestIdentity &);
-    void playTarget();
     auto noMoreTrials() -> bool;
     void prepareTargetPlayer();
     void seekRandomMaskerPosition();
