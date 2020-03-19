@@ -13,14 +13,13 @@ class InvalidAudioFile {};
 
 class TargetPlayer {
   public:
-    virtual ~TargetPlayer() = default;
-
     class EventListener {
       public:
         virtual ~EventListener() = default;
         virtual void playbackComplete() = 0;
     };
 
+    virtual ~TargetPlayer() = default;
     virtual void subscribe(EventListener *) = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void play() = 0;
@@ -38,8 +37,6 @@ class TargetPlayer {
 
 class MaskerPlayer {
   public:
-    virtual ~MaskerPlayer() = default;
-
     class EventListener {
       public:
         virtual ~EventListener() = default;
@@ -47,6 +44,7 @@ class MaskerPlayer {
         virtual void fadeOutComplete() = 0;
     };
 
+    virtual ~MaskerPlayer() = default;
     virtual void subscribe(EventListener *) = 0;
     virtual auto outputAudioDeviceDescriptions()
         -> std::vector<std::string> = 0;
