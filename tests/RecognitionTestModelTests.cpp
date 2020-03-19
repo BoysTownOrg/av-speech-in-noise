@@ -188,7 +188,7 @@ class PlayingCalibration : public AudioDeviceUseCase {
         : calibration{calibration} {}
 
     void setAudioDevice(std::string s) override {
-        calibration.audioSettings.audioDevice = std::move(s);
+        calibration.audioDevice = std::move(s);
     }
 
     void run(RecognitionTestModelImpl &m) override {

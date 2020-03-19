@@ -147,8 +147,7 @@ struct AudioSettings {
     std::string audioDevice;
 };
 
-struct Calibration {
-    AudioSettings audioSettings;
+struct Calibration : AudioSettings {
     std::string filePath;
     int level_dB_SPL{};
     int fullScaleLevel_dB_SPL{};

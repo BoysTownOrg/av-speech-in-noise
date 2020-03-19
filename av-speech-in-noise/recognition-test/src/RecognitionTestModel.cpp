@@ -328,8 +328,7 @@ void RecognitionTestModelImpl::playCalibration_(const Calibration &p) {
 
 void RecognitionTestModelImpl::setTargetPlayerDevice(const Calibration &p) {
     throwInvalidAudioDeviceOnErrorSettingDevice(
-        &RecognitionTestModelImpl::setTargetPlayerDevice_,
-        p.audioSettings.audioDevice);
+        &RecognitionTestModelImpl::setTargetPlayerDevice_, p.audioDevice);
 }
 
 void RecognitionTestModelImpl::trySettingTargetLevel(const Calibration &p) {

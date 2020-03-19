@@ -1881,7 +1881,7 @@ PRESENTER_TEST(playingTrialFromExperimenterPassesAudioDevice) {
 PRESENTER_TEST(playCalibrationPassesAudioDevice) {
     setAudioDevice("b");
     playCalibration();
-    assertEqual("b", calibration().audioSettings.audioDevice);
+    assertEqual("b", calibration().audioDevice);
 }
 
 PRESENTER_TEST(subjectResponsePassesNumberResponse) {
