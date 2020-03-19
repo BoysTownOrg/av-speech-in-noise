@@ -94,7 +94,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     static constexpr auto maskerChannelDelaySeconds{0.004};
 
   private:
-    void throwIfTrialInProgress();
     void initialize_(TestMethod *, const Test &);
     void submitCorrectResponse_();
     void submitIncorrectResponse_();

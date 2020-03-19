@@ -69,6 +69,11 @@ static void throwInvalidAudioDeviceOnError(
     }
 }
 
+static void throwIfTrialInProgress(MaskerPlayer &player) {
+    if (trialInProgress(player))
+        throw Model::RequestFailure{"Trial in progress."};
+}
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer)
@@ -83,11 +88,6 @@ void RecognitionTestModelImpl::subscribe(Model::EventListener *listener) {
     listener_ = listener;
 }
 
-void RecognitionTestModelImpl::throwIfTrialInProgress() {
-    if (trialInProgress(maskerPlayer))
-        throw Model::RequestFailure{"Trial in progress."};
-}
-
 void RecognitionTestModelImpl::initialize(
     TestMethod *testMethod_, const Test &test) {
     initialize_(testMethod_, test);
@@ -98,7 +98,7 @@ void RecognitionTestModelImpl::initialize(
 
 void RecognitionTestModelImpl::initialize_(
     TestMethod *testMethod_, const Test &test) {
-    throwIfTrialInProgress();
+    throwIfTrialInProgress(maskerPlayer);
     testMethod = testMethod_;
     prepareTest(test);
     trialNumber_ = 1;
@@ -209,7 +209,7 @@ void RecognitionTestModelImpl::tryOpeningOutputFile_(const TestIdentity &p) {
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
-    throwIfTrialInProgress();
+    throwIfTrialInProgress(maskerPlayer);
 
     preparePlayersToPlay(settings);
     startTrial();
@@ -310,7 +310,7 @@ void RecognitionTestModelImpl::write(const FreeResponse &p) {
 }
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &p) {
-    throwIfTrialInProgress();
+    throwIfTrialInProgress(maskerPlayer);
 
     playCalibration_(p);
 }
