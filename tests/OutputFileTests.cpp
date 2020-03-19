@@ -67,7 +67,6 @@ class UseCase {
 class WritingTestUseCase : public virtual UseCase {
   public:
     virtual void setCondition(Condition) = 0;
-    virtual void setTestIdentity(const TestIdentity &) = 0;
     virtual auto test() -> Test & = 0;
 };
 
@@ -76,8 +75,6 @@ class WritingAdaptiveTest : public WritingTestUseCase {
     AdaptiveTest test_{};
 
     void setCondition(Condition c) override { test_.condition = c; }
-
-    void setTestIdentity(const TestIdentity &p) override { test_.identity = p; }
 
     void run(OutputFileImpl &file) override { file.write(test_); }
 
@@ -89,8 +86,6 @@ class WritingFixedLevelTest : public WritingTestUseCase {
 
   public:
     void setCondition(Condition c) override { test_.condition = c; }
-
-    void setTestIdentity(const TestIdentity &p) override { test_.identity = p; }
 
     void run(OutputFileImpl &file) override { file.write(test_); }
 
@@ -242,14 +237,12 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertTestIdentityWritten(WritingTestUseCase &useCase) {
-        TestIdentity identity;
-        identity.subjectId = "a";
-        identity.testerId = "b";
-        identity.session = "c";
-        identity.method = "d";
-        identity.rmeSetting = "e";
-        identity.transducer = Transducer::twoSpeakers;
-        useCase.setTestIdentity(identity);
+        useCase.test().identity.subjectId = "a";
+        useCase.test().identity.testerId = "b";
+        useCase.test().identity.session = "c";
+        useCase.test().identity.method = "d";
+        useCase.test().identity.rmeSetting = "e";
+        useCase.test().identity.transducer = Transducer::twoSpeakers;
         useCase.run(file);
         assertColonDelimitedEntryWritten("subject", "a");
         assertColonDelimitedEntryWritten("tester", "b");
