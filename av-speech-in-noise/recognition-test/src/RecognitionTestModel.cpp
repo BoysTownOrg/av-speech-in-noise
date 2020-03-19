@@ -98,6 +98,13 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
     }
 }
 
+static auto level_dB(TargetPlayer &player, const Calibration &p) -> double {
+    return gsl::narrow_cast<double>(p.level_dB_SPL - p.fullScaleLevel_dB_SPL) -
+        dB(player.rms());
+}
+
+static void show(TargetPlayer &player) { player.showVideo(); }
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer)
@@ -181,7 +188,7 @@ void RecognitionTestModelImpl::prepareVideo(const Condition &p) {
     if (auditoryOnly(p))
         targetPlayer.hideVideo();
     else
-        targetPlayer.showVideo();
+        show(targetPlayer);
 }
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
@@ -214,7 +221,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         },
         settings.audioDevice);
     if (!auditoryOnly(condition))
-        targetPlayer.showVideo();
+        show(targetPlayer);
     maskerPlayer.fadeIn();
 }
 
@@ -237,14 +244,6 @@ void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
     }
 }
 
-void RecognitionTestModelImpl::submit(
-    const coordinate_response_measure::Response &response) {
-    testMethod->submit(response);
-    testMethod->writeLastCoordinateResponse(outputFile);
-    save(outputFile);
-    prepareNextTrialIfNeeded();
-}
-
 void RecognitionTestModelImpl::submitCorrectResponse() {
     testMethod->submitCorrectResponse();
     testMethod->writeLastCorrectResponse(outputFile);
@@ -255,6 +254,14 @@ void RecognitionTestModelImpl::submitCorrectResponse() {
 void RecognitionTestModelImpl::submitIncorrectResponse() {
     testMethod->submitIncorrectResponse();
     testMethod->writeLastIncorrectResponse(outputFile);
+    save(outputFile);
+    prepareNextTrialIfNeeded();
+}
+
+void RecognitionTestModelImpl::submit(
+    const coordinate_response_measure::Response &response) {
+    testMethod->submit(response);
+    testMethod->writeLastCoordinateResponse(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
@@ -288,23 +295,13 @@ void RecognitionTestModelImpl::playCalibration_(const Calibration &p) {
         [&](auto device) { setAudioDevice(targetPlayer, device); },
         p.audioDevice);
     loadFile(targetPlayer, p.filePath);
-    trySettingTargetLevel(p);
-    targetPlayer.showVideo();
-    play(targetPlayer);
-}
-
-void RecognitionTestModelImpl::trySettingTargetLevel(const Calibration &p) {
     try {
-        setLevel_dB(targetPlayer, calibrationLevel_dB(p));
+        setLevel_dB(targetPlayer, level_dB(targetPlayer, p));
     } catch (const InvalidAudioFile &) {
         throw Model::RequestFailure{"unable to read " + p.filePath};
     }
-}
-
-auto RecognitionTestModelImpl::calibrationLevel_dB(const Calibration &p)
-    -> double {
-    return gsl::narrow_cast<double>(p.level_dB_SPL - p.fullScaleLevel_dB_SPL) -
-        dB(targetPlayer.rms());
+    show(targetPlayer);
+    play(targetPlayer);
 }
 
 auto RecognitionTestModelImpl::testComplete() -> bool {

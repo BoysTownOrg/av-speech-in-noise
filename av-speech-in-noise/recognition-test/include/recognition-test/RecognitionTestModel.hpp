@@ -101,8 +101,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto currentTarget() -> std::string;
     auto correct(const coordinate_response_measure::Response &) -> bool;
     void submitResponse_(const coordinate_response_measure::Response &);
-    auto calibrationLevel_dB(const Calibration &) -> double;
-    void trySettingTargetLevel(const Calibration &);
     void playCalibration_(const Calibration &);
     void prepareMasker(const std::string &);
     auto noMoreTrials() -> bool;
