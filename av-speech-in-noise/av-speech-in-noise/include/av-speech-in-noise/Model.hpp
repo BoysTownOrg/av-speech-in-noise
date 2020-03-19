@@ -130,6 +130,8 @@ struct AdaptiveTestResult {
     double threshold;
 };
 
+using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
+
 inline auto operator==(
     const AdaptiveTestResult &a, const AdaptiveTestResult &b) -> bool {
     return a.targetListDirectory == b.targetListDirectory &&
@@ -187,7 +189,7 @@ class Model {
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
     virtual void restartAdaptiveTestWhilePreservingCyclicTargets() = 0;
-    virtual auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> = 0;
+    virtual auto adaptiveTestResults() -> AdaptiveTestResults = 0;
 };
 }
 

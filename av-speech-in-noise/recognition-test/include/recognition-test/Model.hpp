@@ -23,7 +23,7 @@ class OutputFile {
     virtual void write(const open_set::AdaptiveTrial &) = 0;
     virtual void writeTest(const AdaptiveTest &) = 0;
     virtual void writeTest(const FixedLevelTest &) = 0;
-    virtual void write(const std::vector<AdaptiveTestResult> &) = 0;
+    virtual void write(const AdaptiveTestResults &) = 0;
     virtual void close() = 0;
     virtual void save() = 0;
 };
@@ -50,7 +50,7 @@ class AdaptiveMethod : public virtual TestMethod {
   public:
     virtual void initialize(const AdaptiveTest &, TargetListReader *) = 0;
     virtual void resetTracks() = 0;
-    virtual auto testResults() -> std::vector<AdaptiveTestResult> = 0;
+    virtual auto testResults() -> AdaptiveTestResults = 0;
 };
 
 class FixedLevelMethod : public virtual TestMethod {
@@ -113,7 +113,7 @@ class ModelImpl : public Model {
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
     void restartAdaptiveTestWhilePreservingCyclicTargets() override;
-    auto adaptiveTestResults() -> std::vector<AdaptiveTestResult> override;
+    auto adaptiveTestResults() -> AdaptiveTestResults override;
 
   private:
     void initializeTest_(const AdaptiveTest &);

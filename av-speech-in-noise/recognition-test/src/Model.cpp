@@ -127,7 +127,7 @@ auto ModelImpl::testComplete() -> bool { return model.testComplete(); }
 auto ModelImpl::audioDevices() -> std::vector<std::string> {
     return model.audioDevices();
 }
-auto ModelImpl::adaptiveTestResults() -> std::vector<AdaptiveTestResult> {
+auto ModelImpl::adaptiveTestResults() -> AdaptiveTestResults {
     return adaptiveMethod.testResults();
 }
 

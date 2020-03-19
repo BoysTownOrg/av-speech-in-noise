@@ -619,7 +619,7 @@ TEST_F(OutputFileTests, writesTrackSettings) {
 }
 
 TEST_F(OutputFileTests, writeAdaptiveTestResult) {
-    std::vector<AdaptiveTestResult> results{};
+    AdaptiveTestResults results{};
     results.push_back({"a", 1.});
     results.push_back({"b", 2.});
     results.push_back({"c", 3.});

@@ -24,11 +24,11 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return targetListReader_;
     }
 
-    void setTestResults(std::vector<AdaptiveTestResult> v) {
+    void setTestResults(AdaptiveTestResults v) {
         testResults_ = std::move(v);
     }
 
-    auto testResults() -> std::vector<AdaptiveTestResult> override {
+    auto testResults() -> AdaptiveTestResults override {
         return testResults_;
     }
 
@@ -51,7 +51,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submit(const coordinate_response_measure::Response &) override {}
 
   private:
-    std::vector<AdaptiveTestResult> testResults_;
+    AdaptiveTestResults testResults_;
     const AdaptiveTest *test_{};
     TargetListReader *targetListReader_{};
     bool tracksResetted_{};

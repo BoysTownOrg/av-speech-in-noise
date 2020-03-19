@@ -14,7 +14,7 @@ class OutputFileStub : public OutputFile {
     FreeResponseTrial freeResponseTrial_{};
     CorrectKeywordsTrial correctKeywords_{};
     open_set::AdaptiveTrial openSetAdaptiveTrial_{};
-    std::vector<AdaptiveTestResult> adaptiveTestResult_{};
+    AdaptiveTestResults adaptiveTestResult_{};
     LogString log_{};
     const AdaptiveTest *adaptiveTest_{};
     const FixedLevelTest *fixedLevelTest_{};
@@ -70,7 +70,7 @@ class OutputFileStub : public OutputFile {
         fixedLevelTrial_ = trial;
     }
 
-    void write(const std::vector<AdaptiveTestResult> &result) override {
+    void write(const AdaptiveTestResults &result) override {
         adaptiveTestResult_ = result;
     }
 
@@ -102,7 +102,7 @@ class OutputFileStub : public OutputFile {
         return openSetAdaptiveTrial_;
     }
 
-    auto adaptiveTestResult() const -> std::vector<AdaptiveTestResult> {
+    auto adaptiveTestResult() const -> AdaptiveTestResults {
         return adaptiveTestResult_;
     }
 };

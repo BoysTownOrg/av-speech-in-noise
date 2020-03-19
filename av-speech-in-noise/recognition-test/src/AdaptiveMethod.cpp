@@ -76,8 +76,8 @@ static auto x(Track *track) -> int { return track->x(); }
 
 static auto testResults(
     const std::vector<TargetListWithTrack> &targetListsWithTracks,
-    int thresholdReversals) -> std::vector<AdaptiveTestResult> {
-    std::vector<AdaptiveTestResult> results;
+    int thresholdReversals) -> AdaptiveTestResults {
+    AdaptiveTestResults results;
     for (const auto &t : targetListsWithTracks)
         results.push_back(
             {t.list->directory(), t.track->threshold(thresholdReversals)});
@@ -214,7 +214,7 @@ void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
     file->write(lastCorrectKeywordsTrial);
 }
 
-auto AdaptiveMethodImpl::testResults() -> std::vector<AdaptiveTestResult> {
+auto AdaptiveMethodImpl::testResults() -> AdaptiveTestResults {
     return av_speech_in_noise::testResults(
         targetListsWithTracks, thresholdReversals);
 }

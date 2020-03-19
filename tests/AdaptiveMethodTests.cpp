@@ -359,7 +359,7 @@ void assertNextTargetEquals(AdaptiveMethodImpl &method, const std::string &s) {
 }
 
 auto adaptiveTestResult(OutputFileStub &file)
-    -> std::vector<AdaptiveTestResult> {
+    -> AdaptiveTestResults {
     return file.adaptiveTestResult();
 }
 
