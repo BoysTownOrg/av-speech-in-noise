@@ -310,18 +310,6 @@ class OutputFileTests : public ::testing::Test {
             writer, "correct", useCase.evaluationEntryIndex());
     }
 
-    void assertFlaggedWritesFlagged() {
-        freeResponseTrial.flagged = true;
-        write(file, freeResponseTrial);
-        assertNthEntryOfSecondLine(writer, "FLAGGED", 3);
-    }
-
-    void assertNoFlagYieldsEntries(int n) {
-        freeResponseTrial.flagged = false;
-        write(file, freeResponseTrial);
-        assertEntriesOfSecondLine(n);
-    }
-
     void assertAdaptiveCoordinateHeadingAtLine(int n) {
         assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
         assertNthCommaDelimitedEntryOfLine(
@@ -593,11 +581,16 @@ TEST_F(OutputFileTests, writeCorrectKeywordsTrialWritesCorrectEvaluation) {
 }
 
 TEST_F(OutputFileTests, writeFlaggedFreeResponseTrial) {
-    assertFlaggedWritesFlagged();
+    freeResponseTrial.flagged = true;
+    write(file, freeResponseTrial);
+    assertNthEntryOfSecondLine(writer, "FLAGGED", 3);
 }
 
 TEST_F(OutputFileTests, writeNoFlagFreeResponseTrialOnlyTwoEntries) {
-    assertNoFlagYieldsEntries(2);
+
+    freeResponseTrial.flagged = false;
+    write(file, freeResponseTrial);
+    assertEntriesOfSecondLine(2);
 }
 
 TEST_F(OutputFileTests, uninitializedColorDoesNotBreak) {
