@@ -324,6 +324,12 @@ auto played(TargetPlayerStub &player) -> bool { return player.played(); }
 
 void assertPlayed(TargetPlayerStub &player) { assertTrue(played(player)); }
 
+auto filePath(TargetPlayerStub &player) { return player.filePath(); }
+
+void assertFilePathEquals(TargetPlayerStub &player, const std::string &what) {
+    assertEqual(what, filePath(player));
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -374,16 +380,10 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertDevicePassedToPlayer(maskerPlayer, useCase);
     }
 
-    auto targetFilePath() { return targetPlayer.filePath(); }
-
-    void assertTargetFilePathEquals(const std::string &what) {
-        assertEqual(what, targetFilePath());
-    }
-
     void assertPassesNextTargetToPlayer(UseCase &useCase) {
         testMethod.setNextTarget("a");
         run(useCase, model);
-        assertTargetFilePathEquals("a");
+        assertFilePathEquals(targetPlayer, "a");
     }
 
     void assertTargetPlayerPlaybackCompletionSubscribed(UseCase &useCase) {
@@ -512,7 +512,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         testMethod.setComplete();
         testMethod.setNextTarget("b");
         run(useCase, model);
-        assertTargetFilePathEquals("a");
+        assertFilePathEquals(targetPlayer, "a");
     }
 
     void assertWritesTarget(TargetWritingUseCase &useCase) {
@@ -763,7 +763,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
     calibration.filePath = "a";
     run(playingCalibration, model);
-    assertTargetFilePathEquals("a");
+    assertFilePathEquals(targetPlayer, "a");
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestPassesMaskerFilePathToMaskerPlayer) {
@@ -1091,7 +1091,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestDoesNotLoadNextTargetWhenComplete) {
     testMethod.setNextTarget("a");
     testMethod.setComplete();
     run(initializingTest, model);
-    assertTargetFilePathEquals("");
+    assertFilePathEquals(targetPlayer, "");
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitFreeResponseWritesResponse) {
