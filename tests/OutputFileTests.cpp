@@ -232,6 +232,27 @@ void assertNthEntryOfSecondLine(
     assertNthCommaDelimitedEntryOfLine(writer, what, n, 2);
 }
 
+void assertFreeResponseHeadingAtLine(WriterStub &writer, int n) {
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 1, n);
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::freeResponse, 2, n);
+}
+
+void assertCorrectKeywordsHeadingAtLine(WriterStub &writer, int n) {
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 2, n);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::correctKeywords, 3, n);
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::evaluation, 4, n);
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::reversals, 5, n);
+}
+
+void assertOpenSetAdaptiveHeadingAtLine(WriterStub &writer, int n) {
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 2, n);
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::evaluation, 3, n);
+    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::reversals, 4, n);
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -340,32 +361,6 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::stimulus, 6, n);
     }
 
-    void assertFreeResponseHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 1, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::freeResponse, 2, n);
-    }
-
-    void assertCorrectKeywordsHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
-        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 2, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::correctKeywords, 3, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::evaluation, 4, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::reversals, 5, n);
-    }
-
-    void assertOpenSetAdaptiveHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
-        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 2, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::evaluation, 3, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::reversals, 4, n);
-    }
-
     void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {
         using coordinate_response_measure::Color;
         auto &trial = writingAdaptiveCoordinateResponseTrial.trial();
@@ -443,17 +438,17 @@ TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
 
 TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
     write(file, freeResponseTrial);
-    assertFreeResponseHeadingAtLine(1);
+    assertFreeResponseHeadingAtLine(writer, 1);
 }
 
 TEST_F(OutputFileTests, writeCorrectKeywordsTrialHeading) {
     write(file, correctKeywordsTrial);
-    assertCorrectKeywordsHeadingAtLine(1);
+    assertCorrectKeywordsHeadingAtLine(writer, 1);
 }
 
 TEST_F(OutputFileTests, writeOpenSetAdaptiveTrialHeading) {
     write(file, openSetAdaptiveTrial);
-    assertOpenSetAdaptiveHeadingAtLine(1);
+    assertOpenSetAdaptiveHeadingAtLine(writer, 1);
 }
 
 TEST_F(OutputFileTests, writeAdaptiveCoordinateResponseTrial) {
@@ -526,7 +521,7 @@ TEST_F(OutputFileTests,
     write(file, freeResponseTrial);
     openNewFile(file, testIdentity);
     write(file, freeResponseTrial);
-    assertFreeResponseHeadingAtLine(3);
+    assertFreeResponseHeadingAtLine(writer, 3);
 }
 
 TEST_F(OutputFileTests,
@@ -534,7 +529,7 @@ TEST_F(OutputFileTests,
     write(file, openSetAdaptiveTrial);
     openNewFile(file, testIdentity);
     write(file, openSetAdaptiveTrial);
-    assertOpenSetAdaptiveHeadingAtLine(3);
+    assertOpenSetAdaptiveHeadingAtLine(writer, 3);
 }
 
 TEST_F(OutputFileTests,
@@ -542,7 +537,7 @@ TEST_F(OutputFileTests,
     write(file, correctKeywordsTrial);
     openNewFile(file, testIdentity);
     write(file, correctKeywordsTrial);
-    assertCorrectKeywordsHeadingAtLine(3);
+    assertCorrectKeywordsHeadingAtLine(writer, 3);
 }
 
 TEST_F(OutputFileTests, writeIncorrectAdaptiveCoordinateResponseTrial) {
