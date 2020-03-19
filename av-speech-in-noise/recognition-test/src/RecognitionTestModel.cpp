@@ -149,16 +149,17 @@ void RecognitionTestModelImpl::initialize_(
     if (testMethod_->complete())
         return;
 
+    tryOpening(outputFile, test.identity);
+    throwRequestFailureOnInvalidAudioFile(
+        [&](auto file) { maskerPlayer.loadFile(file); }, maskerFilePath(test));
+
     testMethod = testMethod_;
     fullScaleLevel_dB_SPL = test.fullScaleLevel_dB_SPL;
     maskerLevel_dB_SPL = test.maskerLevel_dB_SPL;
     condition = test.condition;
 
-    tryOpening(outputFile, test.identity);
-    throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) { maskerPlayer.loadFile(file); }, maskerFilePath(test));
-    maskerPlayer.setLevel_dB(maskerLevel_dB());
     hide(targetPlayer);
+    maskerPlayer.setLevel_dB(maskerLevel_dB());
     preparePlayersForNextTrial();
     testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;
@@ -213,6 +214,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
             setAudioDevices(maskerPlayer, targetPlayer, device);
         },
         settings.audioDevice);
+
     if (!auditoryOnly(condition))
         show(targetPlayer);
     maskerPlayer.fadeIn();
@@ -225,16 +227,6 @@ void RecognitionTestModelImpl::playbackComplete() { maskerPlayer.fadeOut(); }
 void RecognitionTestModelImpl::fadeOutComplete() {
     hide(targetPlayer);
     listener_->trialComplete();
-}
-
-void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
-    if (!testMethod->complete()) {
-        ++trialNumber_;
-        preparePlayersForNextTrial();
-    } else {
-        testMethod->writeTestResult(outputFile);
-        save(outputFile);
-    }
 }
 
 void RecognitionTestModelImpl::submitCorrectResponse() {
@@ -275,6 +267,16 @@ void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
     testMethod->writeLastCorrectKeywords(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
+}
+
+void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
+    if (!testMethod->complete()) {
+        ++trialNumber_;
+        preparePlayersForNextTrial();
+    } else {
+        testMethod->writeTestResult(outputFile);
+        save(outputFile);
+    }
 }
 
 void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
