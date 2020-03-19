@@ -217,6 +217,16 @@ void assertColonDelimitedEntryWritten(
     assertTrue(written(writer).contains(label + ": " + what + '\n'));
 }
 
+void assertNthCommaDelimitedEntryOfLine(
+    WriterStub &writer, const std::string &what, int n, int line) {
+    assertEqual(what, nthCommaDelimitedEntryOfLine(writer, n, line));
+}
+
+void assertNthCommaDelimitedEntryOfLine(
+    WriterStub &writer, HeadingItem item, int n, int line) {
+    assertEqual(name(item), nthCommaDelimitedEntryOfLine(writer, n, line));
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -273,7 +283,7 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertNthEntryOfSecondLine(const std::string &what, int n) {
-        assertNthCommaDelimitedEntryOfLine(what, n, 2);
+        assertNthCommaDelimitedEntryOfLine(writer, what, n, 2);
     }
 
     void assertEntriesOfSecondLine(int n) {
@@ -283,15 +293,6 @@ class OutputFileTests : public ::testing::Test {
         assertEqual(
             std::iterator_traits<std::string::iterator>::difference_type{n - 1},
             std::count(line_.begin(), line_.end(), ','));
-    }
-
-    void assertNthCommaDelimitedEntryOfLine(
-        const std::string &what, int n, int line) {
-        assertEqual(what, nthCommaDelimitedEntryOfLine(writer, n, line));
-    }
-
-    void assertNthCommaDelimitedEntryOfLine(HeadingItem item, int n, int line) {
-        assertEqual(name(item), nthCommaDelimitedEntryOfLine(writer, n, line));
     }
 
     void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
@@ -319,44 +320,59 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertAdaptiveCoordinateHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::correctNumber, 2, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectNumber, 3, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::correctColor, 4, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectColor, 5, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation,
+        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::correctNumber, 2, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::subjectNumber, 3, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::correctColor, 4, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::subjectColor, 5, n);
+        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::evaluation,
             writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::reversals, 7, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::reversals, 7, n);
     }
 
     void assertFixedLevelCoordinateResponseHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::correctNumber, 1, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectNumber, 2, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::correctColor, 3, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::subjectColor, 4, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation,
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::correctNumber, 1, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::subjectNumber, 2, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::correctColor, 3, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::subjectColor, 4, n);
+        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::evaluation,
             writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::stimulus, 6, n);
+        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::stimulus, 6, n);
     }
 
     void assertFreeResponseHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 1, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::freeResponse, 2, n);
+        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 1, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::freeResponse, 2, n);
     }
 
     void assertCorrectKeywordsHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 2, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::correctKeywords, 3, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation, 4, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::reversals, 5, n);
+        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
+        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 2, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::correctKeywords, 3, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::evaluation, 4, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::reversals, 5, n);
     }
 
     void assertOpenSetAdaptiveHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::snr_dB, 1, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::target, 2, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::evaluation, 3, n);
-        assertNthCommaDelimitedEntryOfLine(HeadingItem::reversals, 4, n);
+        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
+        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 2, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::evaluation, 3, n);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, HeadingItem::reversals, 4, n);
     }
 
     void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {
@@ -369,12 +385,12 @@ class OutputFileTests : public ::testing::Test {
         trial.subjectColor = Color::red;
         trial.reversals = 4;
         run(file, writingAdaptiveCoordinateResponseTrial);
-        assertNthCommaDelimitedEntryOfLine("1", 1, n);
-        assertNthCommaDelimitedEntryOfLine("2", 2, n);
-        assertNthCommaDelimitedEntryOfLine("3", 3, n);
-        assertNthCommaDelimitedEntryOfLine(name(Color::green), 4, n);
-        assertNthCommaDelimitedEntryOfLine(name(Color::red), 5, n);
-        assertNthCommaDelimitedEntryOfLine("4", 7, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "1", 1, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "2", 2, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "3", 3, n);
+        assertNthCommaDelimitedEntryOfLine(writer, name(Color::green), 4, n);
+        assertNthCommaDelimitedEntryOfLine(writer, name(Color::red), 5, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "4", 7, n);
     }
 
     void assertWritesFixedLevelCoordinateResponseTrialOnLine(int n) {
@@ -386,19 +402,19 @@ class OutputFileTests : public ::testing::Test {
         trial.subjectColor = Color::red;
         trial.target = "a";
         run(file, writingFixedLevelCoordinateResponseTrial);
-        assertNthCommaDelimitedEntryOfLine("2", 1, n);
-        assertNthCommaDelimitedEntryOfLine("3", 2, n);
-        assertNthCommaDelimitedEntryOfLine(name(Color::green), 3, n);
-        assertNthCommaDelimitedEntryOfLine(name(Color::red), 4, n);
-        assertNthCommaDelimitedEntryOfLine("a", 6, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "2", 1, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "3", 2, n);
+        assertNthCommaDelimitedEntryOfLine(writer, name(Color::green), 3, n);
+        assertNthCommaDelimitedEntryOfLine(writer, name(Color::red), 4, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 6, n);
     }
 
     void assertWritesFreeResponseTrialOnLine(int n) {
         freeResponseTrial.target = "a";
         freeResponseTrial.response = "b";
         write(file, freeResponseTrial);
-        assertNthCommaDelimitedEntryOfLine("a", 1, n);
-        assertNthCommaDelimitedEntryOfLine("b", 2, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 1, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "b", 2, n);
     }
 
     void assertWritesOpenSetAdaptiveTrialOnLine(int n) {
@@ -406,9 +422,9 @@ class OutputFileTests : public ::testing::Test {
         openSetAdaptiveTrial.target = "a";
         openSetAdaptiveTrial.reversals = 22;
         write(file, openSetAdaptiveTrial);
-        assertNthCommaDelimitedEntryOfLine("11", 1, n);
-        assertNthCommaDelimitedEntryOfLine("a", 2, n);
-        assertNthCommaDelimitedEntryOfLine("22", 4, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "22", 4, n);
     }
 
     void assertWritesCorrectKeywordsTrialOnLine(int n) {
@@ -417,10 +433,10 @@ class OutputFileTests : public ::testing::Test {
         correctKeywordsTrial.count = 22;
         correctKeywordsTrial.reversals = 33;
         write(file, correctKeywordsTrial);
-        assertNthCommaDelimitedEntryOfLine("11", 1, n);
-        assertNthCommaDelimitedEntryOfLine("a", 2, n);
-        assertNthCommaDelimitedEntryOfLine("22", 3, n);
-        assertNthCommaDelimitedEntryOfLine("33", 5, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "22", 3, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "33", 5, n);
     }
 };
 
