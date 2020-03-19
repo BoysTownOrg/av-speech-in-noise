@@ -168,6 +168,10 @@ void openNewFile(OutputFileImpl &file, const TestIdentity &identity) {
     file.openNewFile(identity);
 }
 
+void write(OutputFileImpl &file, const FreeResponseTrial &trial) {
+    file.write(trial);
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -187,8 +191,6 @@ class OutputFileTests : public ::testing::Test {
     TestIdentity testIdentity;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
-
-    void writeFreeResponseTrial() { file.write(freeResponseTrial); }
 
     void writeCorrectKeywordsTrial() { file.write(correctKeywordsTrial); }
 
@@ -299,13 +301,13 @@ class OutputFileTests : public ::testing::Test {
 
     void assertFlaggedWritesFlagged() {
         freeResponseTrial.flagged = true;
-        writeFreeResponseTrial();
+        write(file, freeResponseTrial);
         assertNthEntryOfSecondLine("FLAGGED", 3);
     }
 
     void assertNoFlagYieldsEntries(int n) {
         freeResponseTrial.flagged = false;
-        writeFreeResponseTrial();
+        write(file, freeResponseTrial);
         assertEntriesOfSecondLine(n);
     }
 
@@ -387,7 +389,7 @@ class OutputFileTests : public ::testing::Test {
     void assertWritesFreeResponseTrialOnLine(int n) {
         freeResponseTrial.target = "a";
         freeResponseTrial.response = "b";
-        writeFreeResponseTrial();
+        write(file, freeResponseTrial);
         assertNthCommaDelimitedEntryOfLine("a", 1, n);
         assertNthCommaDelimitedEntryOfLine("b", 2, n);
     }
@@ -431,7 +433,7 @@ TEST_F(OutputFileTests, writeFixedLevelCoordinateResponseTrialHeading) {
 }
 
 TEST_F(OutputFileTests, writeFreeResponseTrialHeading) {
-    writeFreeResponseTrial();
+    write(file, freeResponseTrial);
     assertFreeResponseHeadingAtLine(1);
 }
 
@@ -478,7 +480,7 @@ TEST_F(OutputFileTests,
 }
 
 TEST_F(OutputFileTests, writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
-    writeFreeResponseTrial();
+    write(file, freeResponseTrial);
     assertWritesFreeResponseTrialOnLine(3);
 }
 
@@ -512,9 +514,9 @@ TEST_F(OutputFileTests,
 
 TEST_F(OutputFileTests,
     writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    writeFreeResponseTrial();
+    write(file, freeResponseTrial);
     openNewFile(file, testIdentity);
-    writeFreeResponseTrial();
+    write(file, freeResponseTrial);
     assertFreeResponseHeadingAtLine(3);
 }
 
