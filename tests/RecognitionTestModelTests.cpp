@@ -316,6 +316,12 @@ void run(UseCase &useCase, RecognitionTestModelImpl &model) {
     useCase.run(model);
 }
 
+auto fadedIn(MaskerPlayerStub &maskerPlayer) -> bool {
+    return maskerPlayer.fadeInCalled();
+}
+
+auto played(TargetPlayerStub &player) -> bool { return player.played(); }
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -366,11 +372,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertDevicePassedToPlayer(maskerPlayer, useCase);
     }
 
-    auto maskerPlayerFadedIn() -> bool { return maskerPlayer.fadeInCalled(); }
-
-    void assertTargetPlayerPlayed() { assertTrue(targetPlayerPlayed()); }
-
-    auto targetPlayerPlayed() -> bool { return targetPlayer.played(); }
+    void assertTargetPlayerPlayed() { assertTrue(played(targetPlayer)); }
 
     auto targetFilePath() { return targetPlayer.filePath(); }
 
@@ -477,9 +479,9 @@ class RecognitionTestModelTests : public ::testing::Test {
         }
     }
 
-    void assertMaskerPlayerNotPlayed() { assertFalse(maskerPlayerFadedIn()); }
+    void assertMaskerPlayerNotPlayed() { assertFalse(fadedIn(maskerPlayer)); }
 
-    void assertTargetPlayerNotPlayed() { assertFalse(targetPlayerPlayed()); }
+    void assertTargetPlayerNotPlayed() { assertFalse(played(targetPlayer)); }
 
     void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
         setTrialInProgress();
@@ -660,7 +662,7 @@ RECOGNITION_TEST_MODEL_TEST(playTrialPassesAudioDeviceToMaskerPlayer) {
 
 RECOGNITION_TEST_MODEL_TEST(playTrialFadesInMasker) {
     run(playingTrial, model);
-    assertTrue(maskerPlayerFadedIn());
+    assertTrue(fadedIn(maskerPlayer));
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
