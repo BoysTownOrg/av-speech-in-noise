@@ -344,6 +344,8 @@ void setFullScaleLevel_dB_SPL(Test &test, int x) {
 
 void setRms(MaskerPlayerStub &player, double x) { player.setRms(x); }
 
+void setSnr_dB(TestMethodStub &method, int x) { method.setSnr_dB(x); }
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -425,8 +427,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(x, targetPlayer.level_dB());
     }
 
-    void setSnr_dB(int x) { testMethod.setSnr_dB(x); }
-
     void maskerFadeOutComplete() { maskerPlayer.fadeOutComplete(); }
 
     void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
@@ -497,7 +497,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         setFullScaleLevel_dB_SPL(test, 4);
         run(initializingTest, model);
         setRms(maskerPlayer, 5);
-        setSnr_dB(2);
+        setSnr_dB(testMethod, 2);
         run(useCase, model);
         assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
     }
@@ -871,7 +871,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestSetsInitialMaskerPlayerLevel) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestSetsTargetPlayerLevel) {
-    setSnr_dB(2);
+    setSnr_dB(testMethod, 2);
     setMaskerLevel_dB_SPL(test, 3);
     setFullScaleLevel_dB_SPL(test, 4);
     setRms(maskerPlayer, 5);
