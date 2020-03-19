@@ -164,6 +164,10 @@ auto written(WriterStub &writer) -> const LogString & {
     return writer.written();
 }
 
+void openNewFile(OutputFileImpl &file, const TestIdentity &identity) {
+    file.openNewFile(identity);
+}
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -183,8 +187,6 @@ class OutputFileTests : public ::testing::Test {
     TestIdentity testIdentity;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
-
-    void openNewFile() { file.openNewFile(testIdentity); }
 
     void writeFreeResponseTrial() { file.write(freeResponseTrial); }
 
@@ -495,7 +497,7 @@ TEST_F(
 TEST_F(OutputFileTests,
     writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     run(file, writingAdaptiveCoordinateResponseTrial);
-    openNewFile();
+    openNewFile(file, testIdentity);
     run(file, writingAdaptiveCoordinateResponseTrial);
     assertAdaptiveCoordinateHeadingAtLine(3);
 }
@@ -503,7 +505,7 @@ TEST_F(OutputFileTests,
 TEST_F(OutputFileTests,
     writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     run(file, writingFixedLevelCoordinateResponseTrial);
-    openNewFile();
+    openNewFile(file, testIdentity);
     run(file, writingFixedLevelCoordinateResponseTrial);
     assertFixedLevelCoordinateResponseHeadingAtLine(3);
 }
@@ -511,7 +513,7 @@ TEST_F(OutputFileTests,
 TEST_F(OutputFileTests,
     writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     writeFreeResponseTrial();
-    openNewFile();
+    openNewFile(file, testIdentity);
     writeFreeResponseTrial();
     assertFreeResponseHeadingAtLine(3);
 }
@@ -519,7 +521,7 @@ TEST_F(OutputFileTests,
 TEST_F(OutputFileTests,
     writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     writeOpenSetAdaptiveTrial();
-    openNewFile();
+    openNewFile(file, testIdentity);
     writeOpenSetAdaptiveTrial();
     assertOpenSetAdaptiveHeadingAtLine(3);
 }
@@ -527,7 +529,7 @@ TEST_F(OutputFileTests,
 TEST_F(OutputFileTests,
     writeCorrectKeywordsTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     writeCorrectKeywordsTrial();
-    openNewFile();
+    openNewFile(file, testIdentity);
     writeCorrectKeywordsTrial();
     assertCorrectKeywordsHeadingAtLine(3);
 }
@@ -662,7 +664,7 @@ TEST_F(OutputFileTests, writeFixedLevelTestWithAuditoryOnlyCondition) {
 TEST_F(OutputFileTests, openPassesFormattedFilePath) {
     path.setFileName("a");
     path.setOutputDirectory("b");
-    openNewFile();
+    openNewFile(file, testIdentity);
     assertEqual("b/a.txt", writer.filePath());
 }
 
@@ -677,7 +679,7 @@ TEST_F(OutputFileTests, saveSavesWriter) {
 }
 
 TEST_F(OutputFileTests, openPassesTestInformation) {
-    openNewFile();
+    openNewFile(file, testIdentity);
     EXPECT_EQ(&testIdentity, path.testIdentity());
 }
 
