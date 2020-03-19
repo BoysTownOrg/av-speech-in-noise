@@ -59,7 +59,7 @@ struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
 enum class Condition { auditoryOnly, audioVisual };
 
-constexpr auto conditionName(Condition c) -> const char * {
+constexpr auto name(Condition c) -> const char * {
     switch (c) {
     case Condition::auditoryOnly:
         return "auditory-only";

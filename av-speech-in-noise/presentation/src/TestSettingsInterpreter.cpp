@@ -86,7 +86,7 @@ static void assign(
         test.maskerLevel_dB_SPL = integer(entry);
     else if (entryName == name(TestSetting::condition))
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
-            if (entry == conditionName(c))
+            if (entry == name(c))
                 test.condition = c;
 }
 
@@ -120,12 +120,12 @@ static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
         test.snr_dB = integer(entry);
 }
 
-static auto methodName(const std::string &contents) -> std::string {
+static auto name(const std::string &contents) -> std::string {
     std::stringstream stream{contents};
     for (std::string line; std::getline(stream, line);)
         if (entryName(line) == name(TestSetting::method))
             return entry(line);
-    return methodName(Method::unknown);
+    return name(Method::unknown);
 }
 
 static auto method(const std::string &s) -> Method {
@@ -139,7 +139,7 @@ static auto method(const std::string &s) -> Method {
              Method::
                  fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
              Method::defaultAdaptiveCoordinateResponseMeasure})
-        if (methodName(s) == methodName(m))
+        if (name(s) == name(m))
             return m;
     return Method::unknown;
 }
@@ -170,7 +170,7 @@ static void initializeAdaptiveTest(
     test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     test.identity = identity;
     auto method_{av_speech_in_noise::method(contents)};
-    test.identity.method = methodName(method_);
+    test.identity.method = name(method_);
     if (method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)
         model.initializeWithDelayedMasker(test);
     else if (method_ ==
@@ -196,7 +196,7 @@ static void initializeFixedLevelTest(
     test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     test.identity = identity;
     auto method_{av_speech_in_noise::method(contents)};
-    test.identity.method = methodName(method_);
+    test.identity.method = name(method_);
     if (method_ ==
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets ||

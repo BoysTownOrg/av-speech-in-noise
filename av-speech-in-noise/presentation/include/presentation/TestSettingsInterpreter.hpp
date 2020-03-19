@@ -4,7 +4,7 @@
 #include "Presenter.hpp"
 
 namespace av_speech_in_noise {
-constexpr auto methodName(Method c) -> const char * {
+constexpr auto name(Method c) -> const char * {
     switch (c) {
     case Method::adaptivePassFail:
         return "adaptive pass fail";

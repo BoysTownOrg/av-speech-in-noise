@@ -201,7 +201,7 @@ class OutputFileTests : public ::testing::Test {
     auto written() -> const auto & { return writer.written(); }
 
     void assertWriterContainsConditionName(Condition c) {
-        assertColonDelimitedEntryWritten("condition", conditionName(c));
+        assertColonDelimitedEntryWritten("condition", name(c));
     }
 
     void assertWriterContains(const std::string &s) {

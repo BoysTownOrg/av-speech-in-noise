@@ -24,11 +24,11 @@ auto entryWithNewline(TestSetting p, std::string s) -> std::string {
 }
 
 auto entryWithNewline(TestSetting p, Method m) -> std::string {
-    return entryWithNewline(p, methodName(m));
+    return entryWithNewline(p, name(m));
 }
 
 auto entryWithNewline(TestSetting p, Condition c) -> std::string {
-    return entryWithNewline(p, conditionName(c));
+    return entryWithNewline(p, name(c));
 }
 
 auto adaptiveTest(ModelStub &m) -> AdaptiveTest { return m.adaptiveTest(); }
@@ -174,7 +174,7 @@ void assertPassesTestMethod(TestSettingsInterpreterImpl &interpreter,
     ModelStub &model, Method m,
     const std::function<TestIdentity(ModelStub &)> &f) {
     initialize(interpreter, model, m);
-    assertTestMethodEquals(methodName(m), f(model));
+    assertTestMethodEquals(name(m), f(model));
 }
 
 void assertMethod(TestSettingsInterpreterImpl &interpreter, Method m) {

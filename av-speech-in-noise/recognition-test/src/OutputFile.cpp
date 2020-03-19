@@ -79,7 +79,7 @@ void writeMaskerLevel(std::stringstream &stream, const Test &p) {
 }
 
 void writeCondition(std::stringstream &stream, const Test &p) {
-    writeLabeledLine(stream, "condition", conditionName(p.condition));
+    writeLabeledLine(stream, "condition", name(p.condition));
 }
 
 constexpr auto correct{"correct"};
