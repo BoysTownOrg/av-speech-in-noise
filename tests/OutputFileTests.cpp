@@ -6,37 +6,33 @@
 namespace av_speech_in_noise {
 namespace {
 class WriterStub : public Writer {
-    LogString written_;
-    std::string filePath_;
-    bool closed_{};
-    bool saved_{};
-
   public:
     void save() override { saved_ = true; }
-
-    auto saved() const { return saved_; }
 
     void close() override { closed_ = true; }
 
     void open(std::string f) override { filePath_ = std::move(f); }
 
-    auto filePath() const { return filePath_; }
-
-    auto closed() const { return closed_; }
-
-    auto written() const -> auto & { return written_; }
-
     void write(std::string s) override { written_.insert(s); }
 
     auto failed() -> bool override { return {}; }
+
+    auto saved() const -> bool { return saved_; }
+
+    auto filePath() const -> std::string { return filePath_; }
+
+    auto closed() const -> bool { return closed_; }
+
+    auto written() const -> const LogString & { return written_; }
+
+  private:
+    LogString written_;
+    std::string filePath_;
+    bool closed_{};
+    bool saved_{};
 };
 
 class OutputFilePathStub : public OutputFilePath {
-    std::string fileName_;
-    std::string homeDirectory_;
-    std::string outputDirectory_;
-    const TestIdentity *testInformation_{};
-
   public:
     auto outputDirectory() -> std::string override { return outputDirectory_; }
 
@@ -52,6 +48,12 @@ class OutputFilePathStub : public OutputFilePath {
     auto homeDirectory() -> std::string override { return homeDirectory_; }
 
     [[nodiscard]] auto testIdentity() const { return testInformation_; }
+
+  private:
+    std::string fileName_;
+    std::string homeDirectory_;
+    std::string outputDirectory_;
+    const TestIdentity *testInformation_{};
 };
 
 class UseCase {
