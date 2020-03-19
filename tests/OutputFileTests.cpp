@@ -212,7 +212,7 @@ auto nthCommaDelimitedEntryOfLine(WriterStub &writer, int n, int line)
     return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
 }
 
-void assertColonDelimitedEntryWritten(
+void assertContainsColonDelimitedEntry(
     WriterStub &writer, const std::string &label, const std::string &what) {
     assertTrue(written(writer).contains(label + ": " + what + '\n'));
 }
@@ -225,6 +225,11 @@ void assertNthCommaDelimitedEntryOfLine(
 void assertNthCommaDelimitedEntryOfLine(
     WriterStub &writer, HeadingItem item, int n, int line) {
     assertEqual(name(item), nthCommaDelimitedEntryOfLine(writer, n, line));
+}
+
+void assertNthEntryOfSecondLine(
+    WriterStub &writer, const std::string &what, int n) {
+    assertNthCommaDelimitedEntryOfLine(writer, what, n, 2);
 }
 
 class OutputFileTests : public ::testing::Test {
@@ -250,7 +255,7 @@ class OutputFileTests : public ::testing::Test {
     void assertConditionNameWritten(WritingTest &useCase, Condition c) {
         useCase.test().condition = c;
         run(file, useCase);
-        assertColonDelimitedEntryWritten(writer, "condition", name(c));
+        assertContainsColonDelimitedEntry(writer, "condition", name(c));
     }
 
     void assertTestIdentityWritten(WritingTest &useCase) {
@@ -262,12 +267,12 @@ class OutputFileTests : public ::testing::Test {
         av_speech_in_noise::testIdentity(useCase).transducer =
             Transducer::twoSpeakers;
         run(file, useCase);
-        assertColonDelimitedEntryWritten(writer, "subject", "a");
-        assertColonDelimitedEntryWritten(writer, "tester", "b");
-        assertColonDelimitedEntryWritten(writer, "session", "c");
-        assertColonDelimitedEntryWritten(writer, "method", "d");
-        assertColonDelimitedEntryWritten(writer, "RME setting", "e");
-        assertColonDelimitedEntryWritten(
+        assertContainsColonDelimitedEntry(writer, "subject", "a");
+        assertContainsColonDelimitedEntry(writer, "tester", "b");
+        assertContainsColonDelimitedEntry(writer, "session", "c");
+        assertContainsColonDelimitedEntry(writer, "method", "d");
+        assertContainsColonDelimitedEntry(writer, "RME setting", "e");
+        assertContainsColonDelimitedEntry(
             writer, "transducer", name(Transducer::twoSpeakers));
     }
 
@@ -276,14 +281,10 @@ class OutputFileTests : public ::testing::Test {
         useCase.test().targetListDirectory = "d";
         useCase.test().maskerLevel_dB_SPL = 1;
         run(file, useCase);
-        assertColonDelimitedEntryWritten(writer, "masker", "a");
-        assertColonDelimitedEntryWritten(writer, "targets", "d");
-        assertColonDelimitedEntryWritten(writer, "masker level (dB SPL)", "1");
+        assertContainsColonDelimitedEntry(writer, "masker", "a");
+        assertContainsColonDelimitedEntry(writer, "targets", "d");
+        assertContainsColonDelimitedEntry(writer, "masker level (dB SPL)", "1");
         assertEndsWith(writer, "\n\n");
-    }
-
-    void assertNthEntryOfSecondLine(const std::string &what, int n) {
-        assertNthCommaDelimitedEntryOfLine(writer, what, n, 2);
     }
 
     void assertEntriesOfSecondLine(int n) {
@@ -298,19 +299,21 @@ class OutputFileTests : public ::testing::Test {
     void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
         useCase.incorrect();
         run(file, useCase);
-        assertNthEntryOfSecondLine("incorrect", useCase.evaluationEntryIndex());
+        assertNthEntryOfSecondLine(
+            writer, "incorrect", useCase.evaluationEntryIndex());
     }
 
     void assertCorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
         useCase.correct();
         run(file, useCase);
-        assertNthEntryOfSecondLine("correct", useCase.evaluationEntryIndex());
+        assertNthEntryOfSecondLine(
+            writer, "correct", useCase.evaluationEntryIndex());
     }
 
     void assertFlaggedWritesFlagged() {
         freeResponseTrial.flagged = true;
         write(file, freeResponseTrial);
-        assertNthEntryOfSecondLine("FLAGGED", 3);
+        assertNthEntryOfSecondLine(writer, "FLAGGED", 3);
     }
 
     void assertNoFlagYieldsEntries(int n) {
@@ -621,10 +624,10 @@ TEST_F(OutputFileTests, writesTrackSettings) {
     test.trackingRule.push_back(first);
     test.trackingRule.push_back(second);
     file.write(test);
-    assertColonDelimitedEntryWritten(writer, "up", "1 5");
-    assertColonDelimitedEntryWritten(writer, "down", "2 6");
-    assertColonDelimitedEntryWritten(writer, "reversals per step size", "3 7");
-    assertColonDelimitedEntryWritten(writer, "step sizes (dB)", "4 8");
+    assertContainsColonDelimitedEntry(writer, "up", "1 5");
+    assertContainsColonDelimitedEntry(writer, "down", "2 6");
+    assertContainsColonDelimitedEntry(writer, "reversals per step size", "3 7");
+    assertContainsColonDelimitedEntry(writer, "step sizes (dB)", "4 8");
     assertEndsWith(writer, "\n\n");
 }
 
@@ -634,9 +637,9 @@ TEST_F(OutputFileTests, writeAdaptiveTestResult) {
     results.push_back({"b", 2.});
     results.push_back({"c", 3.});
     file.write(results);
-    assertColonDelimitedEntryWritten(writer, "threshold for a", "1");
-    assertColonDelimitedEntryWritten(writer, "threshold for b", "2");
-    assertColonDelimitedEntryWritten(writer, "threshold for c", "3");
+    assertContainsColonDelimitedEntry(writer, "threshold for a", "1");
+    assertContainsColonDelimitedEntry(writer, "threshold for b", "2");
+    assertContainsColonDelimitedEntry(writer, "threshold for c", "3");
 }
 
 TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
@@ -646,14 +649,14 @@ TEST_F(OutputFileTests, writeCommonFixedLevelTest) {
 TEST_F(OutputFileTests, writeAdaptiveTest) {
     adaptiveTest.startingSnr_dB = 2;
     file.write(adaptiveTest);
-    assertColonDelimitedEntryWritten(writer, "starting SNR (dB)", "2");
+    assertContainsColonDelimitedEntry(writer, "starting SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");
 }
 
 TEST_F(OutputFileTests, writeFixedLevelTest) {
     fixedLevelTest.snr_dB = 2;
     file.write(fixedLevelTest);
-    assertColonDelimitedEntryWritten(writer, "SNR (dB)", "2");
+    assertContainsColonDelimitedEntry(writer, "SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");
 }
 
