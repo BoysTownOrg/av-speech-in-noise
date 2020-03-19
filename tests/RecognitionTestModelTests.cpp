@@ -66,7 +66,7 @@ class TestMethodStub : public TestMethod {
         submittedIncorrectResponse_ = true;
     }
 
-    void submit(const open_set::FreeResponse &) override {
+    void submit(const FreeResponse &) override {
         insert(log_, "submitFreeResponse ");
         submittedFreeResponse_ = true;
     }
@@ -213,7 +213,7 @@ class PlayingTrial : public AudioDeviceUseCase {
 
 class SubmittingFreeResponse : public TargetWritingUseCase {
   public:
-    explicit SubmittingFreeResponse(const open_set::FreeResponse &response = {})
+    explicit SubmittingFreeResponse(const FreeResponse &response = {})
         : response{response} {}
 
     void run(RecognitionTestModelImpl &m) override { m.submit(response); }
@@ -223,7 +223,7 @@ class SubmittingFreeResponse : public TargetWritingUseCase {
     }
 
   private:
-    const open_set::FreeResponse &response;
+    const FreeResponse &response;
 };
 
 class SubmittingCorrectKeywords : public TargetWritingUseCase {
@@ -411,7 +411,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectResponse submittingCorrectResponse;
     SubmittingIncorrectResponse submittingIncorrectResponse;
-    open_set::FreeResponse freeResponse{};
+    FreeResponse freeResponse{};
     SubmittingFreeResponse submittingFreeResponse{freeResponse};
     SubmittingCorrectKeywords submittingCorrectKeywords;
 

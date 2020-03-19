@@ -37,10 +37,6 @@ struct FixedLevelTrial : Trial {};
 }
 
 namespace open_set {
-struct FreeResponse {
-    std::string response;
-    bool flagged{};
-};
 
 struct CorrectKeywords {
     int count{};
@@ -48,14 +44,19 @@ struct CorrectKeywords {
 
 struct Trial : Target {};
 
-struct FreeResponseTrial : FreeResponse, Trial {};
-
 struct AdaptiveTrial : AdaptiveProgress, Trial {
     bool correct{};
 };
 
 struct CorrectKeywordsTrial : CorrectKeywords, AdaptiveTrial {};
 }
+
+struct FreeResponse {
+    std::string response;
+    bool flagged{};
+};
+
+struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
 enum class Condition { auditoryOnly, audioVisual };
 
@@ -178,7 +179,7 @@ class Model {
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
-    virtual void submit(const open_set::FreeResponse &) = 0;
+    virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;

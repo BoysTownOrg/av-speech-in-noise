@@ -1322,7 +1322,7 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
-    void submit(const open_set::FreeResponse &) override {
+    void submit(const FreeResponse &) override {
         throw RequestFailure{errorMessage};
     }
 

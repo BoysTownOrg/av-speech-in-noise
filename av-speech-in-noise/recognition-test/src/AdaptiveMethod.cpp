@@ -185,7 +185,7 @@ void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submit(const open_set::FreeResponse &) {
+void AdaptiveMethodImpl::submit(const FreeResponse &) {
     selectNextList();
 }
 

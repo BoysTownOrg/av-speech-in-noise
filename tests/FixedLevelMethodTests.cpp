@@ -53,7 +53,7 @@ class SubmittingCoordinateResponse : public UseCase {
 };
 
 class SubmittingFreeResponse : public UseCase {
-    open_set::FreeResponse response{};
+    FreeResponse response{};
 
   public:
     void run(FixedLevelMethodImpl &m) override { m.submit(response); }
@@ -351,7 +351,7 @@ TEST(FixedLevelMethodTestsTBD,
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test;
     method.initialize(test, &combo);
-    open_set::FreeResponse response;
+    FreeResponse response;
     response.flagged = true;
     method.submit(response);
     assertTrue(combo.log().endsWith("reinsertCurrent empty "));

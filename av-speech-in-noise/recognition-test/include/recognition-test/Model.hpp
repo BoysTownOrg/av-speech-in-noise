@@ -18,7 +18,7 @@ class OutputFile {
     virtual void write(const coordinate_response_measure::AdaptiveTrial &) = 0;
     virtual void write(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
-    virtual void write(const open_set::FreeResponseTrial &) = 0;
+    virtual void write(const FreeResponseTrial &) = 0;
     virtual void write(const open_set::CorrectKeywordsTrial &) = 0;
     virtual void write(const open_set::AdaptiveTrial &) = 0;
     virtual void writeTest(const AdaptiveTest &) = 0;
@@ -73,7 +73,7 @@ class RecognitionTestModel {
     virtual void playCalibration(const Calibration &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submit(const open_set::FreeResponse &) = 0;
+    virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual void throwIfTrialInProgress() = 0;
     virtual auto trialNumber() -> int = 0;
@@ -108,7 +108,7 @@ class ModelImpl : public Model {
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
-    void submit(const open_set::FreeResponse &) override;
+    void submit(const FreeResponse &) override;
     void submit(const open_set::CorrectKeywords &) override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;

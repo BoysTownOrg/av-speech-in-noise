@@ -199,7 +199,7 @@ class Presenter : public Model::EventListener {
         void showCorrectKeywordsSubmission();
         void showFreeResponseSubmission();
         auto correctKeywords() -> open_set::CorrectKeywords;
-        auto freeResponse() -> open_set::FreeResponse;
+        auto freeResponse() -> FreeResponse;
 
       private:
         Presenter *parent{};

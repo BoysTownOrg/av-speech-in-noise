@@ -512,7 +512,7 @@ void Presenter::Experimenter::playTrial() { parent->playTrial(); }
 
 void Presenter::Experimenter::exitTest() { parent->exitTest(); }
 
-auto Presenter::Experimenter::freeResponse() -> open_set::FreeResponse {
+auto Presenter::Experimenter::freeResponse() -> FreeResponse {
     return {view->freeResponse(), view->flagged()};
 }
 

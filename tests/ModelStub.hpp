@@ -157,7 +157,7 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void submit(const open_set::FreeResponse &s) override { freeResponse_ = s; }
+    void submit(const FreeResponse &s) override { freeResponse_ = s; }
 
     void submit(const open_set::CorrectKeywords &s) override {
         correctKeywords_ = s;
@@ -179,7 +179,7 @@ class ModelStub : public Model {
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
     std::vector<AdaptiveTestResult> adaptiveTestResults_{};
-    open_set::FreeResponse freeResponse_{};
+    FreeResponse freeResponse_{};
     open_set::CorrectKeywords correctKeywords_{};
     std::string targetFileName_{};
     EventListener *listener_{};

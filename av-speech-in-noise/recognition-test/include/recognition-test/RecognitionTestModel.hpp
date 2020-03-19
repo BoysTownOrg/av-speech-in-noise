@@ -86,7 +86,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void playCalibration(const Calibration &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
-    void submit(const open_set::FreeResponse &) override;
+    void submit(const FreeResponse &) override;
     void submit(const open_set::CorrectKeywords &) override;
     void throwIfTrialInProgress() override;
     void fadeInComplete() override;
@@ -99,7 +99,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void initialize_(TestMethod *, const Test &);
     void submitCorrectResponse_();
     void submitIncorrectResponse_();
-    void write(const open_set::FreeResponse &p);
+    void write(const FreeResponse &p);
     void write(const open_set::CorrectKeywords &p);
     void prepareTest(const Test &);
     void storeLevels(const Test &common);

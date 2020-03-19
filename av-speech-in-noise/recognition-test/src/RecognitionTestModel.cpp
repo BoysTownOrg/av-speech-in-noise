@@ -19,7 +19,7 @@ class NullTestMethod : public TestMethod {
     void writeLastCorrectKeywords(OutputFile *) override {}
     void writeTestResult(OutputFile *) override {}
     void submit(const coordinate_response_measure::Response &) override {}
-    void submit(const open_set::FreeResponse &) override {}
+    void submit(const FreeResponse &) override {}
     void submit(const open_set::CorrectKeywords &) override {}
 };
 }
@@ -290,7 +290,7 @@ void RecognitionTestModelImpl::submitIncorrectResponse_() {
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::submit(const open_set::FreeResponse &response) {
+void RecognitionTestModelImpl::submit(const FreeResponse &response) {
     write(response);
     testMethod->submit(response);
     prepareNextTrialIfNeeded();
@@ -304,8 +304,8 @@ void RecognitionTestModelImpl::submit(
     prepareNextTrialIfNeeded();
 }
 
-void RecognitionTestModelImpl::write(const open_set::FreeResponse &p) {
-    open_set::FreeResponseTrial trial;
+void RecognitionTestModelImpl::write(const FreeResponse &p) {
+    FreeResponseTrial trial;
     trial.response = p.response;
     trial.target = targetName(evaluator, testMethod);
     trial.flagged = p.flagged;

@@ -60,7 +60,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeTestingParameters(OutputFile *) override;
     void writeTestResult(OutputFile *) override;
     void submit(const coordinate_response_measure::Response &) override;
-    void submit(const open_set::FreeResponse &) override;
+    void submit(const FreeResponse &) override;
     void resetTracks() override;
     auto testResults() -> std::vector<AdaptiveTestResult> override;
 

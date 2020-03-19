@@ -16,7 +16,7 @@ class TestMethod {
     virtual auto snr_dB() -> int = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submit(const open_set::FreeResponse &) = 0;
+    virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const open_set::CorrectKeywords &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void writeTestingParameters(OutputFile *) = 0;

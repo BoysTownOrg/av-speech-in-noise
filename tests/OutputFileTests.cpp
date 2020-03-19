@@ -179,7 +179,7 @@ class OutputFileTests : public ::testing::Test {
         writingFixedLevelCoordinateResponseTrial;
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
-    open_set::FreeResponseTrial freeResponseTrial;
+    FreeResponseTrial freeResponseTrial;
     open_set::CorrectKeywordsTrial correctKeywordsTrial;
     open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;

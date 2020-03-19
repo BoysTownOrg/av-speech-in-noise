@@ -70,7 +70,7 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
+void FixedLevelMethodImpl::submit(const FreeResponse &response) {
     if (usingFiniteTargetList_) {
         if (response.flagged)
             finiteTargetList->reinsertCurrent();

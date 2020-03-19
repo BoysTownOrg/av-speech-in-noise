@@ -40,7 +40,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submit(const open_set::FreeResponse &) override {}
+    void submit(const FreeResponse &) override {}
     void submit(const open_set::CorrectKeywords &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
@@ -88,7 +88,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submit(const open_set::FreeResponse &) override {}
+    void submit(const FreeResponse &) override {}
     void submit(const open_set::CorrectKeywords &) override {}
     void writeTestingParameters(OutputFile *) override {}
     void writeLastCoordinateResponse(OutputFile *) override {}
@@ -203,7 +203,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submit(const open_set::FreeResponse &) override {}
+    void submit(const FreeResponse &) override {}
     void throwIfTrialInProgress() override {}
 };
 
