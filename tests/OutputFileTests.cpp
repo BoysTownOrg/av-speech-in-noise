@@ -237,14 +237,10 @@ class OutputFileTests : public ::testing::Test {
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
 
-    void assertWriterContainsConditionName(Condition c) {
-        assertColonDelimitedEntryWritten(writer, "condition", name(c));
-    }
-
     void assertConditionNameWritten(WritingTest &useCase, Condition c) {
         useCase.test().condition = c;
         run(file, useCase);
-        assertWriterContainsConditionName(c);
+        assertColonDelimitedEntryWritten(writer, "condition", name(c));
     }
 
     void assertTestIdentityWritten(WritingTest &useCase) {
