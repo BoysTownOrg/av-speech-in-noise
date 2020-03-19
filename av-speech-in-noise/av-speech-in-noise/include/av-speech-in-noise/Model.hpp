@@ -153,6 +153,8 @@ struct Calibration : AudioSettings {
     int fullScaleLevel_dB_SPL{};
 };
 
+using AudioDevices = typename std::vector<std::string>;
+
 class Model {
   public:
     class EventListener {
@@ -184,7 +186,7 @@ class Model {
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;
-    virtual auto audioDevices() -> std::vector<std::string> = 0;
+    virtual auto audioDevices() -> AudioDevices = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
     virtual void restartAdaptiveTestWhilePreservingCyclicTargets() = 0;

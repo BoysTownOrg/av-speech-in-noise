@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace av_speech_in_noise {
 class OutputFile {
@@ -62,22 +63,22 @@ class FixedLevelMethod : public virtual TestMethod {
 class RecognitionTestModel {
   public:
     virtual ~RecognitionTestModel() = default;
+    virtual void subscribe(Model::EventListener *) = 0;
     virtual void initialize(TestMethod *, const Test &) = 0;
     virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;
     virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
-    virtual void submit(const coordinate_response_measure::Response &) = 0;
-    virtual auto testComplete() -> bool = 0;
-    virtual auto audioDevices() -> std::vector<std::string> = 0;
-    virtual void subscribe(Model::EventListener *) = 0;
     virtual void playCalibration(const Calibration &) = 0;
-    virtual void submitCorrectResponse() = 0;
-    virtual void submitIncorrectResponse() = 0;
+    virtual void submit(const coordinate_response_measure::Response &) = 0;
     virtual void submit(const FreeResponse &) = 0;
     virtual void submit(const CorrectKeywords &) = 0;
-    virtual void throwIfTrialInProgress() = 0;
+    virtual void submitCorrectResponse() = 0;
+    virtual void submitIncorrectResponse() = 0;
+    virtual auto testComplete() -> bool = 0;
+    virtual auto audioDevices() -> AudioDevices = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
+    virtual void throwIfTrialInProgress() = 0;
     virtual void prepareNextTrialIfNeeded() = 0;
 };
 
@@ -89,6 +90,7 @@ class ModelImpl : public Model {
         TargetList &targetsWithReplacement,
         FiniteTargetList &silentIntervalTargets,
         FiniteTargetList &everyTargetOnce, RecognitionTestModel &);
+    void subscribe(Model::EventListener *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(const FixedLevelTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
@@ -97,23 +99,19 @@ class ModelImpl : public Model {
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
     void initializeWithCyclicTargets(const AdaptiveTest &) override;
-    void initializeWithTargetReplacementAndEyeTracking(const FixedLevelTest &);
-    void initializeWithSilentIntervalTargetsAndEyeTracking(
-        const FixedLevelTest &);
     void playTrial(const AudioSettings &) override;
-    void submit(const coordinate_response_measure::Response &) override;
-    auto testComplete() -> bool override;
-    auto audioDevices() -> std::vector<std::string> override;
-    void subscribe(Model::EventListener *) override;
     void playCalibration(const Calibration &) override;
-    void submitCorrectResponse() override;
-    void submitIncorrectResponse() override;
+    void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override;
+    void submitCorrectResponse() override;
+    void submitIncorrectResponse() override;
+    auto testComplete() -> bool override;
+    auto audioDevices() -> AudioDevices override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
-    void restartAdaptiveTestWhilePreservingCyclicTargets() override;
     auto adaptiveTestResults() -> AdaptiveTestResults override;
+    void restartAdaptiveTestWhilePreservingCyclicTargets() override;
 
   private:
     void initializeTest_(const AdaptiveTest &);
