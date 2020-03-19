@@ -185,29 +185,29 @@ void AdaptiveMethodImpl::submit(const CorrectKeywords &p) {
 
 void AdaptiveMethodImpl::submit(const FreeResponse &) { selectNextList(); }
 
-void AdaptiveMethodImpl::writeTestResult(OutputFile *file) {
-    file->write(av_speech_in_noise::testResults(
+void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
+    file.write(av_speech_in_noise::testResults(
         targetListsWithTracks, thresholdReversals));
 }
 
-void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
-    file->write(*test);
+void AdaptiveMethodImpl::writeTestingParameters(OutputFile &file) {
+    file.write(*test);
 }
 
-void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
-    file->write(lastCoordinateResponseMeasureTrial);
+void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
+    file.write(lastCoordinateResponseMeasureTrial);
 }
 
-void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile *file) {
-    file->write(lastOpenSetTrial);
+void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile &file) {
+    file.write(lastOpenSetTrial);
 }
 
-void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
-    file->write(lastOpenSetTrial);
+void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile &file) {
+    file.write(lastOpenSetTrial);
 }
 
-void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
-    file->write(lastCorrectKeywordsTrial);
+void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile &file) {
+    file.write(lastCorrectKeywordsTrial);
 }
 
 auto AdaptiveMethodImpl::testResults() -> AdaptiveTestResults {

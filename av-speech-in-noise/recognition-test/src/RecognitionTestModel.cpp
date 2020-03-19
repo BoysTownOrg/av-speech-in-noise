@@ -14,12 +14,12 @@ class NullTestMethod : public TestMethod {
     void submit(const CorrectKeywords &) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void writeLastCoordinateResponse(OutputFile *) override {}
-    void writeLastCorrectResponse(OutputFile *) override {}
-    void writeLastIncorrectResponse(OutputFile *) override {}
-    void writeTestingParameters(OutputFile *) override {}
-    void writeLastCorrectKeywords(OutputFile *) override {}
-    void writeTestResult(OutputFile *) override {}
+    void writeLastCoordinateResponse(OutputFile &) override {}
+    void writeLastCorrectResponse(OutputFile &) override {}
+    void writeLastIncorrectResponse(OutputFile &) override {}
+    void writeTestingParameters(OutputFile &) override {}
+    void writeLastCorrectKeywords(OutputFile &) override {}
+    void writeTestResult(OutputFile &) override {}
 };
 }
 
@@ -102,7 +102,7 @@ void RecognitionTestModelImpl::prepareTest(const Test &test) {
     if (!testMethod->complete())
         preparePlayersForNextTrial();
     tryOpeningOutputFile(test.identity);
-    testMethod->writeTestingParameters(&outputFile);
+    testMethod->writeTestingParameters(outputFile);
 }
 
 void RecognitionTestModelImpl::storeLevels(const Test &common) {
@@ -253,7 +253,7 @@ static void save(OutputFile &file) { file.save(); }
 void RecognitionTestModelImpl::submit(
     const coordinate_response_measure::Response &response) {
     testMethod->submit(response);
-    testMethod->writeLastCoordinateResponse(&outputFile);
+    testMethod->writeLastCoordinateResponse(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
@@ -264,7 +264,7 @@ void RecognitionTestModelImpl::submitCorrectResponse() {
 
 void RecognitionTestModelImpl::submitCorrectResponse_() {
     testMethod->submitCorrectResponse();
-    testMethod->writeLastCorrectResponse(&outputFile);
+    testMethod->writeLastCorrectResponse(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
@@ -274,7 +274,7 @@ void RecognitionTestModelImpl::prepareNextTrialIfNeeded() {
         ++trialNumber_;
         preparePlayersForNextTrial();
     } else {
-        testMethod->writeTestResult(&outputFile);
+        testMethod->writeTestResult(outputFile);
         save(outputFile);
     }
 }
@@ -285,7 +285,7 @@ void RecognitionTestModelImpl::submitIncorrectResponse() {
 
 void RecognitionTestModelImpl::submitIncorrectResponse_() {
     testMethod->submitIncorrectResponse();
-    testMethod->writeLastIncorrectResponse(&outputFile);
+    testMethod->writeLastIncorrectResponse(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }
@@ -298,7 +298,7 @@ void RecognitionTestModelImpl::submit(const FreeResponse &response) {
 
 void RecognitionTestModelImpl::submit(const CorrectKeywords &correctKeywords) {
     testMethod->submit(correctKeywords);
-    testMethod->writeLastCorrectKeywords(&outputFile);
+    testMethod->writeLastCorrectKeywords(outputFile);
     save(outputFile);
     prepareNextTrialIfNeeded();
 }

@@ -93,7 +93,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     FixedLevelMethodTests() { run(initializingMethod, method); }
 
     void writeLastCoordinateResponse() {
-        method.writeLastCoordinateResponse(&outputFile);
+        method.writeLastCoordinateResponse(outputFile);
     }
 
     auto writtenFixedLevelTrial() {
@@ -166,7 +166,7 @@ FIXED_LEVEL_METHOD_TEST(writeIncorrectCoordinateResponse) {
 }
 
 FIXED_LEVEL_METHOD_TEST(writeTestPassesSettings) {
-    method.writeTestingParameters(&outputFile);
+    method.writeTestingParameters(outputFile);
     assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
 }
 
@@ -293,7 +293,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
     OutputFileStub outputFile;
-    method.writeTestingParameters(&outputFile);
+    method.writeTestingParameters(outputFile);
     assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
 }
 

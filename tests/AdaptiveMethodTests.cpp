@@ -159,7 +159,7 @@ class WritingCoordinateResponse : public WritingResponseUseCase {
 
     void run(AdaptiveMethodImpl &method) override {
         method.submit(response);
-        method.writeLastCoordinateResponse(&file_);
+        method.writeLastCoordinateResponse(file_);
     }
 
     auto reversals(OutputFileStub &file) -> int override {
@@ -197,7 +197,7 @@ class WritingCorrectResponse : public WritingResponseUseCase,
 
     void run(AdaptiveMethodImpl &method) override {
         submitCorrectResponse(method);
-        method.writeLastCorrectResponse(&file_);
+        method.writeLastCorrectResponse(file_);
     }
 
     auto reversals(OutputFileStub &file) -> int override {
@@ -220,7 +220,7 @@ class WritingIncorrectResponse : public WritingResponseUseCase,
 
     void run(AdaptiveMethodImpl &method) override {
         submitIncorrectResponse(method);
-        method.writeLastIncorrectResponse(&file_);
+        method.writeLastIncorrectResponse(file_);
     }
 
     auto reversals(OutputFileStub &file) -> int override {
@@ -249,7 +249,7 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
     void run(AdaptiveMethodImpl &method) override {
         CorrectKeywords correctKeywords{};
         method.submit(correctKeywords);
-        method.writeLastCorrectKeywords(&file_);
+        method.writeLastCorrectKeywords(file_);
     }
 
     auto reversals(OutputFileStub &file) -> int override {
@@ -290,7 +290,7 @@ void write(AdaptiveMethodImpl &method,
     const coordinate_response_measure::Response &response,
     OutputFile &outputFile) {
     submit(method, response);
-    method.writeLastCoordinateResponse(&outputFile);
+    method.writeLastCoordinateResponse(outputFile);
 }
 
 auto settings(const TrackFactoryStub &factory) -> std::vector<Track::Settings> {
@@ -546,7 +546,7 @@ ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithBumpLimit) {
 
 ADAPTIVE_METHOD_TEST(writeTestParametersPassesToOutputFile) {
     initialize(method, test, targetListReader);
-    method.writeTestingParameters(&outputFile);
+    method.writeTestingParameters(outputFile);
     assertEqual(&std::as_const(test), outputFile.adaptiveTest());
 }
 
@@ -685,7 +685,7 @@ ADAPTIVE_METHOD_TEST(writeCorrectKeywordsPassesCorrectKeywords) {
     initialize(method, test, targetListReader);
     correctKeywords.count = 1;
     method.submit(correctKeywords);
-    method.writeLastCorrectKeywords(&outputFile);
+    method.writeLastCorrectKeywords(outputFile);
     assertEqual(1, correctKeywordsTrial(outputFile).count);
 }
 
@@ -731,14 +731,14 @@ ADAPTIVE_METHOD_TEST(writeCorrectCoordinateResponseIsCorrect) {
 ADAPTIVE_METHOD_TEST(writeCorrectResponseIsCorrect) {
     initialize(method, test, targetListReader);
     submitCorrectResponse(method);
-    method.writeLastCorrectResponse(&outputFile);
+    method.writeLastCorrectResponse(outputFile);
     assertTrue(outputFile.openSetAdaptiveTrial().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeSufficientCorrectKeywordsIsCorrect) {
     initialize(method, test, targetListReader);
     run(submittingSufficientCorrectKeywords);
-    method.writeLastCorrectKeywords(&outputFile);
+    method.writeLastCorrectKeywords(outputFile);
     assertTrue(correctKeywordsTrial(outputFile).correct);
 }
 
@@ -752,14 +752,14 @@ ADAPTIVE_METHOD_TEST(writeIncorrectCoordinateResponseIsIncorrect) {
 ADAPTIVE_METHOD_TEST(writeIncorrectResponseIsIncorrect) {
     initialize(method, test, targetListReader);
     submitIncorrectResponse(method);
-    method.writeLastIncorrectResponse(&outputFile);
+    method.writeLastIncorrectResponse(outputFile);
     assertFalse(outputFile.openSetAdaptiveTrial().correct);
 }
 
 ADAPTIVE_METHOD_TEST(writeInsufficientCorrectKeywordsIsIncorrect) {
     initialize(method, test, targetListReader);
     run(submittingInsufficientCorrectKeywords);
-    method.writeLastCorrectKeywords(&outputFile);
+    method.writeLastCorrectKeywords(outputFile);
     assertFalse(correctKeywordsTrial(outputFile).correct);
 }
 
@@ -783,7 +783,7 @@ ADAPTIVE_METHOD_TEST(writeTestResult) {
     targetLists.at(1)->setDirectory("b");
     at(tracks, 2)->setThreshold(33.);
     targetLists.at(2)->setDirectory("c");
-    method.writeTestResult(&outputFile);
+    method.writeTestResult(outputFile);
     assertEqual(11., adaptiveTestResult(outputFile).at(0).threshold);
     assertEqual("a", adaptiveTestResult(outputFile).at(0).targetListDirectory);
     assertEqual(22., adaptiveTestResult(outputFile).at(1).threshold);
@@ -806,7 +806,7 @@ ADAPTIVE_METHOD_TEST(testResults) {
 ADAPTIVE_METHOD_TEST(writeTestResultPassThresholdReversals) {
     test.thresholdReversals = 1;
     initialize(method, test, targetListReader);
-    method.writeTestResult(&outputFile);
+    method.writeTestResult(outputFile);
     assertEqual(1, at(tracks, 0)->thresholdReversals());
     assertEqual(1, at(tracks, 1)->thresholdReversals());
     assertEqual(1, at(tracks, 2)->thresholdReversals());

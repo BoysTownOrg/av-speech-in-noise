@@ -14,12 +14,12 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void submit(const CorrectKeywords &) override {}
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
-    void writeLastCoordinateResponse(OutputFile *) override;
-    void writeLastCorrectResponse(OutputFile *) override {}
-    void writeLastIncorrectResponse(OutputFile *) override {}
-    void writeLastCorrectKeywords(OutputFile *) override {}
-    void writeTestingParameters(OutputFile *) override;
-    void writeTestResult(OutputFile *) override {}
+    void writeLastCoordinateResponse(OutputFile &) override;
+    void writeLastCorrectResponse(OutputFile &) override {}
+    void writeLastIncorrectResponse(OutputFile &) override {}
+    void writeLastCorrectKeywords(OutputFile &) override {}
+    void writeTestingParameters(OutputFile &) override;
+    void writeTestResult(OutputFile &) override {}
     auto snr_dB() -> int override;
     auto nextTarget() -> std::string override;
     auto complete() -> bool override;

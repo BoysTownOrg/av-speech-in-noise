@@ -38,12 +38,12 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
-    void writeTestingParameters(OutputFile *) override {}
-    void writeLastCoordinateResponse(OutputFile *) override {}
-    void writeLastCorrectResponse(OutputFile *) override {}
-    void writeLastIncorrectResponse(OutputFile *) override {}
-    void writeLastCorrectKeywords(OutputFile *) override {}
-    void writeTestResult(OutputFile *) override {}
+    void writeTestingParameters(OutputFile &) override {}
+    void writeLastCoordinateResponse(OutputFile &) override {}
+    void writeLastCorrectResponse(OutputFile &) override {}
+    void writeLastIncorrectResponse(OutputFile &) override {}
+    void writeLastCorrectKeywords(OutputFile &) override {}
+    void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
 
   private:
@@ -86,12 +86,12 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
-    void writeTestingParameters(OutputFile *) override {}
-    void writeLastCoordinateResponse(OutputFile *) override {}
-    void writeLastCorrectResponse(OutputFile *) override {}
-    void writeLastIncorrectResponse(OutputFile *) override {}
-    void writeLastCorrectKeywords(OutputFile *) override {}
-    void writeTestResult(OutputFile *) override {}
+    void writeTestingParameters(OutputFile &) override {}
+    void writeLastCoordinateResponse(OutputFile &) override {}
+    void writeLastCorrectResponse(OutputFile &) override {}
+    void writeLastIncorrectResponse(OutputFile &) override {}
+    void writeLastCorrectKeywords(OutputFile &) override {}
+    void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
 };
 

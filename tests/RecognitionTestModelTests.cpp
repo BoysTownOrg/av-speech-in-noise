@@ -80,28 +80,28 @@ class TestMethodStub : public TestMethod {
         insert(log_, "submitCoordinateResponse ");
     }
 
-    void writeTestingParameters(OutputFile *file) override {
+    void writeTestingParameters(OutputFile &file) override {
         insert(log_, "writeTestingParameters ");
-        file->write(AdaptiveTest{});
+        file.write(AdaptiveTest{});
     }
 
-    void writeLastCoordinateResponse(OutputFile *) override {
+    void writeLastCoordinateResponse(OutputFile &) override {
         insert(log_, "writeLastCoordinateResponse ");
     }
 
-    void writeLastCorrectResponse(OutputFile *) override {
+    void writeLastCorrectResponse(OutputFile &) override {
         insert(log_, "writeLastCorrectResponse ");
     }
 
-    void writeLastIncorrectResponse(OutputFile *) override {
+    void writeLastIncorrectResponse(OutputFile &) override {
         insert(log_, "writeLastIncorrectResponse ");
     }
 
-    void writeLastCorrectKeywords(OutputFile *) override {
+    void writeLastCorrectKeywords(OutputFile &) override {
         insert(log_, "writeLastCorrectKeywords ");
     }
 
-    void writeTestResult(OutputFile *) override {
+    void writeTestResult(OutputFile &) override {
         insert(log_, "writeTestResult ");
     }
 
