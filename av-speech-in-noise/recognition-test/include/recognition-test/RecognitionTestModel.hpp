@@ -99,7 +99,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto currentTarget() -> std::string;
     auto correct(const coordinate_response_measure::Response &) -> bool;
     void submitResponse_(const coordinate_response_measure::Response &);
-    void prepareMasker(const std::string &);
     auto noMoreTrials() -> bool;
     void prepareTargetPlayer();
     void seekRandomMaskerPosition();

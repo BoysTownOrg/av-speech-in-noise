@@ -111,6 +111,15 @@ static auto maskerFilePath(const Test &test) -> std::string {
     return test.maskerFilePath;
 }
 
+static void throwRequestFailureOnInvalidAudioFile(
+    const std::function<void(const std::string &)> &f, const std::string &s) {
+    try {
+        f(s);
+    } catch (const InvalidAudioFile &) {
+        throw Model::RequestFailure{"unable to read " + s};
+    }
+}
+
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer)
@@ -140,11 +149,8 @@ void RecognitionTestModelImpl::initialize_(
     testMethod = testMethod_;
     fullScaleLevel_dB_SPL = test.fullScaleLevel_dB_SPL;
     maskerLevel_dB_SPL = test.maskerLevel_dB_SPL;
-    try {
-        maskerPlayer.loadFile(maskerFilePath(test));
-    } catch (const InvalidAudioFile &) {
-        throw Model::RequestFailure{"unable to read " + maskerFilePath(test)};
-    }
+    throwRequestFailureOnInvalidAudioFile(
+        [&](auto file) { maskerPlayer.loadFile(file); }, maskerFilePath(test));
     maskerPlayer.setLevel_dB(maskerLevel_dB());
     hide(targetPlayer);
     condition = test.condition;
@@ -169,15 +175,6 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     useFirstChannelOnly(targetPlayer);
     useAllChannels(maskerPlayer);
     maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelaySeconds);
-}
-
-void RecognitionTestModelImpl::prepareMasker(const std::string &file) {
-    try {
-        maskerPlayer.loadFile(file);
-    } catch (const InvalidAudioFile &) {
-        throw Model::RequestFailure{"unable to read " + file};
-    }
-    maskerPlayer.setLevel_dB(maskerLevel_dB());
 }
 
 auto RecognitionTestModelImpl::maskerLevel_dB() -> double {
