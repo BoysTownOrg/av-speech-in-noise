@@ -146,16 +146,19 @@ void RecognitionTestModelImpl::initialize_(
     TestMethod *testMethod_, const Test &test) {
     throwRequestFailureIfTrialInProgress(maskerPlayer);
 
+    if (testMethod_->complete())
+        return;
+
     testMethod = testMethod_;
     fullScaleLevel_dB_SPL = test.fullScaleLevel_dB_SPL;
     maskerLevel_dB_SPL = test.maskerLevel_dB_SPL;
+    condition = test.condition;
+
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) { maskerPlayer.loadFile(file); }, maskerFilePath(test));
     maskerPlayer.setLevel_dB(maskerLevel_dB());
     hide(targetPlayer);
-    condition = test.condition;
-    if (!testMethod->complete())
-        preparePlayersForNextTrial();
+    preparePlayersForNextTrial();
     tryOpening(outputFile, test.identity);
     testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;

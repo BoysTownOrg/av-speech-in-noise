@@ -96,16 +96,10 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
   private:
     void initialize_(TestMethod *, const Test &);
     void preparePlayersForNextTrial();
-    auto currentTarget() -> std::string;
-    auto correct(const coordinate_response_measure::Response &) -> bool;
-    void submitResponse_(const coordinate_response_measure::Response &);
-    auto noMoreTrials() -> bool;
     void seekRandomMaskerPosition();
     auto desiredMaskerLevel_dB() -> int;
-    auto unalteredTargetLevel_dB() -> double;
     auto targetLevel_dB() -> double;
     auto maskerLevel_dB() -> double;
-    auto findDeviceIndex(const AudioSettings &) -> int;
 
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
