@@ -132,8 +132,17 @@ void RecognitionTestModelImpl::initialize(
 void RecognitionTestModelImpl::initialize_(
     TestMethod *testMethod_, const Test &test) {
     throwIfTrialInProgress(maskerPlayer);
+
     testMethod = testMethod_;
-    prepareTest(test);
+    fullScaleLevel_dB_SPL = test.fullScaleLevel_dB_SPL;
+    maskerLevel_dB_SPL = test.maskerLevel_dB_SPL;
+    prepareMasker(test.maskerFilePath);
+    hide(targetPlayer);
+    condition = test.condition;
+    if (!testMethod->complete())
+        preparePlayersForNextTrial();
+    tryOpening(outputFile, test.identity);
+    testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;
 }
 
@@ -153,22 +162,6 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelaySeconds);
 }
 
-void RecognitionTestModelImpl::prepareTest(const Test &test) {
-    storeLevels(test);
-    prepareMasker(test.maskerFilePath);
-    hide(targetPlayer);
-    condition = test.condition;
-    if (!testMethod->complete())
-        preparePlayersForNextTrial();
-    tryOpening(outputFile, test.identity);
-    testMethod->writeTestingParameters(outputFile);
-}
-
-void RecognitionTestModelImpl::storeLevels(const Test &test) {
-    fullScaleLevel_dB_SPL = test.fullScaleLevel_dB_SPL;
-    maskerLevel_dB_SPL = test.maskerLevel_dB_SPL;
-}
-
 void RecognitionTestModelImpl::prepareMasker(const std::string &file) {
     try {
         maskerPlayer.loadFile(file);
@@ -184,13 +177,6 @@ auto RecognitionTestModelImpl::maskerLevel_dB() -> double {
 
 auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
     return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
-}
-
-void RecognitionTestModelImpl::prepareVideo(const Condition &p) {
-    if (auditoryOnly(p))
-        hide(targetPlayer);
-    else
-        show(targetPlayer);
 }
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
