@@ -338,6 +338,10 @@ auto secondsSeeked(MaskerPlayerStub &player) { return player.secondsSeeked(); }
 
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel_dB_SPL = x; }
 
+void setFullScaleLevel_dB_SPL(Test &test, int x) {
+    test.fullScaleLevel_dB_SPL = x;
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -419,10 +423,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(x, targetPlayer.level_dB());
     }
 
-    void setTestingFullScaleLevel_dB_SPL(int x) {
-        test.fullScaleLevel_dB_SPL = x;
-    }
-
     void setMaskerRms(double x) { maskerPlayer.setRms(x); }
 
     void setSnr_dB(int x) { testMethod.setSnr_dB(x); }
@@ -494,7 +494,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertSetsTargetLevel(UseCase &useCase) {
         setMaskerLevel_dB_SPL(test, 3);
-        setTestingFullScaleLevel_dB_SPL(4);
+        setFullScaleLevel_dB_SPL(test, 4);
         run(initializingTest, model);
         setMaskerRms(5);
         setSnr_dB(2);
@@ -864,7 +864,7 @@ RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSeeksToRandomMaskerPosition) {
 
 RECOGNITION_TEST_MODEL_TEST(initializeTestSetsInitialMaskerPlayerLevel) {
     setMaskerLevel_dB_SPL(test, 1);
-    setTestingFullScaleLevel_dB_SPL(2);
+    setFullScaleLevel_dB_SPL(test, 2);
     setMaskerRms(3);
     run(initializingTest, model);
     assertEqual(1 - 2 - dB(3), maskerPlayer.level_dB());
@@ -873,7 +873,7 @@ RECOGNITION_TEST_MODEL_TEST(initializeTestSetsInitialMaskerPlayerLevel) {
 RECOGNITION_TEST_MODEL_TEST(initializeTestSetsTargetPlayerLevel) {
     setSnr_dB(2);
     setMaskerLevel_dB_SPL(test, 3);
-    setTestingFullScaleLevel_dB_SPL(4);
+    setFullScaleLevel_dB_SPL(test, 4);
     setMaskerRms(5);
     run(initializingTest, model);
     assertTargetPlayerLevelEquals_dB(2 + 3 - 4 - dB(5));
