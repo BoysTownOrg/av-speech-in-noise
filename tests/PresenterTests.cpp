@@ -910,6 +910,15 @@ class PresenterConstructionTests : public ::testing::Test {
     }
 };
 
+auto entry(BrowsingEnteredPathUseCase &useCase) -> std::string {
+    return useCase.entry();
+}
+
+void assertEntryEquals(
+    BrowsingEnteredPathUseCase &useCase, const std::string &s) {
+    assertEqual(s, entry(useCase));
+}
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -978,15 +987,7 @@ class PresenterTests : public ::testing::Test {
 
     auto setupViewShown() -> bool { return setupView.shown(); }
 
-    void assertSetupViewNotShown() { assertFalse(setupViewShown()); }
-
-    void assertSetupViewHidden() { assertTrue(setupViewHidden()); }
-
     auto setupViewHidden() -> bool { return setupView.hidden(); }
-
-    void assertSetupViewNotHidden() { assertFalse(setupViewHidden()); }
-
-    void assertExperimenterViewShown() { assertTrue(experimenterViewShown()); }
 
     auto experimenterViewShown() -> bool { return experimenterView.shown(); }
 
@@ -1004,15 +1005,6 @@ class PresenterTests : public ::testing::Test {
 
     void setBrowsingResult(BrowsingEnteredPathUseCase &useCase, std::string s) {
         useCase.setResult(view, std::move(s));
-    }
-
-    static void assertEntryEquals(
-        BrowsingEnteredPathUseCase &useCase, const std::string &s) {
-        assertEqual(s, entry(useCase));
-    }
-
-    static auto entry(BrowsingEnteredPathUseCase &useCase) -> std::string {
-        return useCase.entry();
     }
 
     void assertCancellingBrowseDoesNotChangePath(
@@ -1033,10 +1025,6 @@ class PresenterTests : public ::testing::Test {
     }
 
     auto calibration() -> const Calibration & { return model.calibration(); }
-
-    void assertErrorMessageEquals(const std::string &s) {
-        assertEqual(s, errorMessage());
-    }
 
     void setAudioDevice(std::string s) { view.setAudioDevice(std::move(s)); }
 
@@ -1099,7 +1087,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
         run(useCase);
-        assertSetupViewNotShown();
+        assertFalse(setupViewShown());
     }
 
     void assertCompleteTestHidesExperimenterView(UseCase &useCase) {
@@ -1130,17 +1118,17 @@ class PresenterTests : public ::testing::Test {
 
     void assertHidesTestSetupView(UseCase &useCase) {
         run(useCase);
-        assertSetupViewHidden();
+        assertTrue(setupViewHidden());
     }
 
     void assertDoesNotHideTestSetupView(UseCase &useCase) {
         run(useCase);
-        assertSetupViewNotHidden();
+        assertFalse(setupViewHidden());
     }
 
     void assertShowsExperimenterView(UseCase &useCase) {
         run(useCase);
-        assertExperimenterViewShown();
+        assertTrue(experimenterViewShown());
     }
 
     void assertDoesNotShowSubjectView(UseCase &useCase) {
@@ -1402,7 +1390,7 @@ PRESENTER_TEST(submittingCorrectKeywordsPassesCorrectKeywords) {
 PRESENTER_TEST(submittingInvalidCorrectKeywordsShowsErrorMessage) {
     setCorrectKeywords("a");
     run(submittingCorrectKeywords);
-    assertErrorMessageEquals("'a' is not a valid number.");
+    assertEqual("'a' is not a valid number.", errorMessage());
 }
 
 PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
