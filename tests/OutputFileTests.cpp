@@ -167,6 +167,11 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
 
     auto evaluationEntryIndex() -> int override { return 3; }
 
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
+            {3, HeadingItem::evaluation}, {4, HeadingItem::reversals}};
+    }
+
   private:
     open_set::AdaptiveTrial trial_{};
 };
@@ -484,7 +489,7 @@ OUTPUT_FILE_TEST(writeCorrectKeywordsTrialHeading) {
 
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialHeading) {
     writeOpenSetAdaptiveTrial(file);
-    assertOpenSetAdaptiveHeadingAtLine(writer, 1);
+    assertHeadingAtLine(writingOpenSetAdaptiveTrial, 1);
 }
 
 OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrial) {
