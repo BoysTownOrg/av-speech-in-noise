@@ -980,6 +980,10 @@ auto calibration(ModelStub &model) -> const Calibration & {
     return model.calibration();
 }
 
+void setAudioDevice(ViewStub &view, std::string s) {
+    view.setAudioDevice(std::move(s));
+}
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -1055,14 +1059,12 @@ class PresenterTests : public ::testing::Test {
         assertEntryEquals(useCase, "a");
     }
 
-    void setAudioDevice(std::string s) { view.setAudioDevice(std::move(s)); }
-
     void setCalibrationLevel(int s) { interpretedCalibration.level_dB_SPL = s; }
 
     void setTestComplete() { model.setTestComplete(); }
 
     void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
-        setAudioDevice("a");
+        setAudioDevice(view, "a");
         run(useCase);
         assertEqual("a", model.trialParameters().audioDevice);
     }
@@ -1832,7 +1834,7 @@ PRESENTER_TEST(playingTrialFromExperimenterPassesAudioDevice) {
 }
 
 PRESENTER_TEST(playCalibrationPassesAudioDevice) {
-    setAudioDevice("b");
+    setAudioDevice(view, "b");
     playCalibration(setupView);
     assertEqual("b", calibration(model).audioDevice);
 }
