@@ -1406,40 +1406,6 @@ PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
 }
 
 PRESENTER_TEST(
-    submittingCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
-    assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
-}
-
-PRESENTER_TEST(decliningContinuingTestingHidesExperimenterView) {
-    assertHidesExperimenterView(decliningContinuingTesting);
-}
-
-PRESENTER_TEST(
-    submittingCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
-    assertDoesNotHideExperimenterView(submittingCorrectKeywords);
-}
-
-PRESENTER_TEST(submittingCorrectKeywordsShowsNextTrialButton) {
-    assertShowsNextTrialButton(submittingCorrectKeywords);
-}
-
-PRESENTER_TEST(submittingCorrectKeywordsHidesCorrectKeywordsEntry) {
-    assertResponseViewHidden(submittingCorrectKeywords);
-}
-
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTrialNumber) {
-    assertShowsTrialNumber(confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(submittingCorrectKeywordsShowsTrialNumber) {
-    assertShowsTrialNumber(submittingCorrectKeywords);
-}
-
-PRESENTER_TEST(acceptingContinuingTestingDialogShowsTrialNumber) {
-    assertShowsTrialNumber(acceptingContinuingTesting);
-}
-
-PRESENTER_TEST(
     completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveCorrectKeywordsTest) {
     assertCompleteTrialShowsResponseView(
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
@@ -1891,6 +1857,11 @@ PRESENTER_TEST(submitFailedTrialShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingFailedTrial);
 }
 
+PRESENTER_TEST(
+    submittingCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
+    assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
+}
+
 PRESENTER_TEST(respondFromSubjectDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(respondingFromSubject);
 }
@@ -1928,6 +1899,11 @@ PRESENTER_TEST(submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
 }
 
 PRESENTER_TEST(
+    submittingCorrectKeywordsDoesNotHideExperimenterViewWhenTestIncomplete) {
+    assertDoesNotHideExperimenterView(submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(
     respondFromSubjectDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(respondingFromSubject);
 }
@@ -1945,6 +1921,10 @@ PRESENTER_TEST(submitFailedTrialDoesNotHideExperimenterViewWhenTestIncomplete) {
     assertDoesNotHideExperimenterView(submittingFailedTrial);
 }
 
+PRESENTER_TEST(submittingCorrectKeywordsShowsNextTrialButton) {
+    assertShowsNextTrialButton(submittingCorrectKeywords);
+}
+
 PRESENTER_TEST(experimenterResponseShowsNextTrialButton) {
     assertShowsNextTrialButton(submittingFreeResponse);
 }
@@ -1955,6 +1935,10 @@ PRESENTER_TEST(subjectPassedTrialShowsNextTrialButtonForExperimenter) {
 
 PRESENTER_TEST(subjectFailedTrialShowsNextTrialButtonForExperimenter) {
     assertShowsNextTrialButton(submittingFailedTrial);
+}
+
+PRESENTER_TEST(submittingCorrectKeywordsHidesCorrectKeywordsEntry) {
+    assertResponseViewHidden(submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(experimenterResponseHidesResponseSubmission) {
@@ -1984,6 +1968,10 @@ PRESENTER_TEST(exitTestHidesSubjectView) {
     assertHidden(subjectView);
 }
 
+PRESENTER_TEST(decliningContinuingTestingHidesExperimenterView) {
+    assertHidesExperimenterView(decliningContinuingTesting);
+}
+
 PRESENTER_TEST(exitTestHidesExperimenterView) {
     assertHidesExperimenterView(exitingTest);
 }
@@ -2009,6 +1997,18 @@ PRESENTER_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
 PRESENTER_TEST(completingTrialShowsExitTestButton) {
     completeTrial(model);
     assertTrue(experimenterView.exitTestButtonShown());
+}
+
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingAdaptiveCorrectKeywordsTest);
+}
+
+PRESENTER_TEST(submittingCorrectKeywordsShowsTrialNumber) {
+    assertShowsTrialNumber(submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(acceptingContinuingTestingDialogShowsTrialNumber) {
+    assertShowsTrialNumber(acceptingContinuingTesting);
 }
 
 PRESENTER_TEST(
