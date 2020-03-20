@@ -23,6 +23,8 @@ class ViewStub : public View {
   public:
     void setAudioDevice(std::string s) { audioDevice_ = std::move(s); }
 
+    auto audioDevice() -> std::string override { return audioDevice_; }
+
     void showErrorMessage(std::string s) override {
         errorMessage_ = std::move(s);
     }
@@ -30,6 +32,8 @@ class ViewStub : public View {
     auto errorMessage() { return errorMessage_; }
 
     void eventLoop() override { eventLoopCalled_ = true; }
+
+    [[nodiscard]] auto eventLoopCalled() const { return eventLoopCalled_; }
 
     auto browseForDirectory() -> std::string override {
         return browseForDirectoryResult_;
@@ -40,10 +44,6 @@ class ViewStub : public View {
     auto browseForOpeningFile() -> std::string override {
         return browseForOpeningFileResult_;
     }
-
-    auto audioDevice() -> std::string override { return audioDevice_; }
-
-    [[nodiscard]] auto eventLoopCalled() const { return eventLoopCalled_; }
 
     void setBrowseForOpeningFileResult(std::string s) {
         browseForOpeningFileResult_ = std::move(s);
@@ -63,6 +63,14 @@ class ViewStub : public View {
             return testSettingsFile_;
         }
 
+        void setTestSettingsFile(std::string s) override {
+            testSettingsFile_ = std::move(s);
+        }
+
+        void browseForTestSettingsFile() {
+            listener_->browseForTestSettingsFile();
+        }
+
         [[nodiscard]] auto transducers() const -> std::vector<std::string> {
             return transducers_;
         }
@@ -77,42 +85,34 @@ class ViewStub : public View {
 
         auto session() -> std::string override { return session_; }
 
-        [[nodiscard]] auto shown() const { return shown_; }
+        void setSession(std::string s) { session_ = std::move(s); }
 
         void show() override { shown_ = true; }
+
+        [[nodiscard]] auto shown() const { return shown_; }
 
         void hide() override { hidden_ = true; }
 
         [[nodiscard]] auto hidden() const { return hidden_; }
 
-        void setTestSettingsFile(std::string s) override {
-            testSettingsFile_ = std::move(s);
-        }
-
-        void setSession(std::string s) { session_ = std::move(s); }
-
         void setRmeSetting(std::string s) { rmeSetting_ = std::move(s); }
+
+        auto rmeSetting() -> std::string override { return rmeSetting_; }
 
         void setTransducer(std::string s) { transducer_ = std::move(s); }
 
         void setSubjectId(std::string s) { subjectId_ = std::move(s); }
 
+        auto subjectId() -> std::string override { return subjectId_; }
+
         void setTesterId(std::string s) { testerId_ = std::move(s); }
 
         auto testerId() -> std::string override { return testerId_; }
-
-        auto subjectId() -> std::string override { return subjectId_; }
-
-        auto rmeSetting() -> std::string override { return rmeSetting_; }
 
         auto transducer() -> std::string override { return transducer_; }
 
         void subscribe(EventListener *listener) override {
             listener_ = listener;
-        }
-
-        void browseForTestSettingsFile() {
-            listener_->browseForTestSettingsFile();
         }
 
       private:
