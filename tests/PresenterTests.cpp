@@ -976,6 +976,10 @@ void assertPassedColor(ModelStub &model, coordinate_response_measure::Color c) {
     assertEqual(c, model.responseParameters().color);
 }
 
+auto calibration(ModelStub &model) -> const Calibration & {
+    return model.calibration();
+}
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -1050,8 +1054,6 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         assertEntryEquals(useCase, "a");
     }
-
-    auto calibration() -> const Calibration & { return model.calibration(); }
 
     void setAudioDevice(std::string s) { view.setAudioDevice(std::move(s)); }
 
@@ -1617,7 +1619,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(playCalibrationPassesLevel) {
     setCalibrationLevel(1);
     playCalibration(setupView);
-    assertEqual(1, calibration().level_dB_SPL);
+    assertEqual(1, calibration(model).level_dB_SPL);
 }
 
 PRESENTER_TEST(playingCalibrationPassesTestSettingsFileToTextFileReader) {
@@ -1692,7 +1694,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(playCalibrationPassesFilePath) {
     interpretedCalibration.filePath = "a";
     playCalibration(setupView);
-    assertEqual("a", calibration().filePath);
+    assertEqual("a", calibration(model).filePath);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
@@ -1832,7 +1834,7 @@ PRESENTER_TEST(playingTrialFromExperimenterPassesAudioDevice) {
 PRESENTER_TEST(playCalibrationPassesAudioDevice) {
     setAudioDevice("b");
     playCalibration(setupView);
-    assertEqual("b", calibration().audioDevice);
+    assertEqual("b", calibration(model).audioDevice);
 }
 
 PRESENTER_TEST(subjectResponsePassesNumberResponse) {
@@ -2165,7 +2167,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
     interpretedCalibration.fullScaleLevel_dB_SPL = 1;
     run(playingCalibration);
-    assertEqual(1, calibration().fullScaleLevel_dB_SPL);
+    assertEqual(1, calibration(model).fullScaleLevel_dB_SPL);
 }
 
 TEST_F(PresenterFailureTests,
