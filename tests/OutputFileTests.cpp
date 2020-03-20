@@ -178,8 +178,16 @@ void write(OutputFileImpl &file, const FreeResponseTrial &trial) {
     file.write(trial);
 }
 
+void writeFreeResponseTrial(OutputFileImpl &file) {
+    write(file, FreeResponseTrial{});
+}
+
 void write(OutputFileImpl &file, const CorrectKeywordsTrial &trial) {
     file.write(trial);
+}
+
+void writeCorrectKeywordsTrial(OutputFileImpl &file) {
+    write(file, CorrectKeywordsTrial{});
 }
 
 void write(OutputFileImpl &file, const open_set::AdaptiveTrial &trial) {
@@ -275,7 +283,6 @@ class OutputFileTests : public ::testing::Test {
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     FreeResponseTrial freeResponseTrial;
-    CorrectKeywordsTrial correctKeywordsTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     WritingFixedLevelTest writingFixedLevelTest;
@@ -413,6 +420,7 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertWritesCorrectKeywordsTrialOnLine(int n) {
+        CorrectKeywordsTrial correctKeywordsTrial;
         correctKeywordsTrial.SNR_dB = 11;
         correctKeywordsTrial.target = "a";
         correctKeywordsTrial.count = 22;
@@ -438,12 +446,12 @@ OUTPUT_FILE_TEST(writeFixedLevelCoordinateResponseTrialHeading) {
 }
 
 OUTPUT_FILE_TEST(writeFreeResponseTrialHeading) {
-    write(file, freeResponseTrial);
+    writeFreeResponseTrial(file);
     assertFreeResponseHeadingAtLine(writer, 1);
 }
 
 OUTPUT_FILE_TEST(writeCorrectKeywordsTrialHeading) {
-    write(file, correctKeywordsTrial);
+    writeCorrectKeywordsTrial(file);
     assertCorrectKeywordsHeadingAtLine(writer, 1);
 }
 
@@ -485,7 +493,7 @@ OUTPUT_FILE_TEST(
 }
 
 OUTPUT_FILE_TEST(writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
-    write(file, freeResponseTrial);
+    writeFreeResponseTrial(file);
     assertWritesFreeResponseTrialOnLine(3);
 }
 
@@ -495,7 +503,7 @@ OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
 }
 
 OUTPUT_FILE_TEST(writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
-    write(file, correctKeywordsTrial);
+    writeCorrectKeywordsTrial(file);
     assertWritesCorrectKeywordsTrialOnLine(3);
 }
 
@@ -517,9 +525,9 @@ OUTPUT_FILE_TEST(
 
 OUTPUT_FILE_TEST(
     writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    write(file, freeResponseTrial);
+    writeFreeResponseTrial(file);
     openNewFile(file);
-    write(file, freeResponseTrial);
+    writeFreeResponseTrial(file);
     assertFreeResponseHeadingAtLine(writer, 3);
 }
 
@@ -533,9 +541,9 @@ OUTPUT_FILE_TEST(
 
 OUTPUT_FILE_TEST(
     writeCorrectKeywordsTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    write(file, correctKeywordsTrial);
+    writeCorrectKeywordsTrial(file);
     openNewFile(file);
-    write(file, correctKeywordsTrial);
+    writeCorrectKeywordsTrial(file);
     assertCorrectKeywordsHeadingAtLine(writer, 3);
 }
 
