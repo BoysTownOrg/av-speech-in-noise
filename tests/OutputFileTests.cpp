@@ -186,6 +186,12 @@ class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
 
     auto evaluationEntryIndex() -> int override { return 4; }
 
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
+            {3, HeadingItem::correctKeywords}, {4, HeadingItem::evaluation},
+            {5, HeadingItem::reversals}};
+    }
+
   private:
     CorrectKeywordsTrial trial_{};
 };
@@ -486,8 +492,7 @@ OUTPUT_FILE_TEST(writeFreeResponseTrialHeading) {
 }
 
 OUTPUT_FILE_TEST(writeCorrectKeywordsTrialHeading) {
-    writeCorrectKeywordsTrial(file);
-    assertCorrectKeywordsHeadingAtLine(writer, 1);
+    assertWritesHeadingOnFirstLine(writingCorrectKeywordsTrial);
 }
 
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialHeading) {
