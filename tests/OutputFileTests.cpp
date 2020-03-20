@@ -438,7 +438,7 @@ class OutputFileTests : public ::testing::Test {
         assertHeadingAtLine(useCase, 1);
     }
 
-    void assertWritesHeadingTwiceWhenOpenedNewFile(WritingTrial &useCase) {
+    void assertWritesHeadingTwiceWhenNewFileOpened(WritingTrial &useCase) {
         run(useCase, file);
         openNewFile(file);
         run(useCase, file);
@@ -448,23 +448,25 @@ class OutputFileTests : public ::testing::Test {
 
 #define OUTPUT_FILE_TEST(a) TEST_F(OutputFileTests, a)
 
-OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialHeading) {
+OUTPUT_FILE_TEST(
+    writingAdaptiveCoordinateResponseTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingAdaptiveCoordinateResponseTrial);
 }
 
-OUTPUT_FILE_TEST(writeFixedLevelCoordinateResponseTrialHeading) {
+OUTPUT_FILE_TEST(
+    writingFixedLevelCoordinateResponseTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingFixedLevelCoordinateResponseTrial);
 }
 
-OUTPUT_FILE_TEST(writeFreeResponseTrialHeading) {
+OUTPUT_FILE_TEST(writingFreeResponseTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingFreeResponseTrial);
 }
 
-OUTPUT_FILE_TEST(writeCorrectKeywordsTrialHeading) {
+OUTPUT_FILE_TEST(writingCorrectKeywordsTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingCorrectKeywordsTrial);
 }
 
-OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialHeading) {
+OUTPUT_FILE_TEST(writingOpenSetAdaptiveTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingOpenSetAdaptiveTrial);
 }
 
@@ -516,30 +518,30 @@ OUTPUT_FILE_TEST(writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
 }
 
 OUTPUT_FILE_TEST(
-    writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    assertWritesHeadingTwiceWhenOpenedNewFile(
+    writingAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+    assertWritesHeadingTwiceWhenNewFileOpened(
         writingAdaptiveCoordinateResponseTrial);
 }
 
 OUTPUT_FILE_TEST(
-    writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    assertWritesHeadingTwiceWhenOpenedNewFile(
+    writingFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+    assertWritesHeadingTwiceWhenNewFileOpened(
         writingFixedLevelCoordinateResponseTrial);
 }
 
 OUTPUT_FILE_TEST(
-    writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    assertWritesHeadingTwiceWhenOpenedNewFile(writingFreeResponseTrial);
+    writingFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+    assertWritesHeadingTwiceWhenNewFileOpened(writingFreeResponseTrial);
 }
 
 OUTPUT_FILE_TEST(
-    writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    assertWritesHeadingTwiceWhenOpenedNewFile(writingOpenSetAdaptiveTrial);
+    writingOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+    assertWritesHeadingTwiceWhenNewFileOpened(writingOpenSetAdaptiveTrial);
 }
 
 OUTPUT_FILE_TEST(
-    writeCorrectKeywordsTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    assertWritesHeadingTwiceWhenOpenedNewFile(writingCorrectKeywordsTrial);
+    writingCorrectKeywordsTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
+    assertWritesHeadingTwiceWhenNewFileOpened(writingCorrectKeywordsTrial);
 }
 
 OUTPUT_FILE_TEST(writeIncorrectAdaptiveCoordinateResponseTrial) {
