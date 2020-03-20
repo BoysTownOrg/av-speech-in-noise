@@ -968,6 +968,8 @@ void assertHidden(ViewStub::SubjectViewStub &view) {
     assertTrue(view.hidden());
 }
 
+void completeTrial(ModelStub &model) { model.completeTrial(); }
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -1042,8 +1044,6 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         assertEntryEquals(useCase, "a");
     }
-
-    void completeTrial() { model.completeTrial(); }
 
     auto errorMessage() -> std::string { return view.errorMessage(); }
 
@@ -1201,7 +1201,7 @@ class PresenterTests : public ::testing::Test {
     void assertCompleteTrialShowsResponseView(
         ConfirmingTestSetup &useCase, TrialSubmission &trialSubmission) {
         run(useCase);
-        completeTrial();
+        completeTrial(model);
         assertTrue(trialSubmission.responseViewShown());
     }
 
@@ -1235,7 +1235,7 @@ class PresenterTests : public ::testing::Test {
     void assertExitTestAfterCompletingTrialHidesResponseSubmission(
         UseCase &useCase, TrialSubmission &submission) {
         run(useCase);
-        completeTrial();
+        completeTrial(model);
         exitTest(experimenterView);
         assertTrue(submission.responseViewHidden());
     }
@@ -2019,7 +2019,7 @@ PRESENTER_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
 }
 
 PRESENTER_TEST(completingTrialShowsExitTestButton) {
-    completeTrial();
+    completeTrial(model);
     assertTrue(exitTestButtonShown());
 }
 
