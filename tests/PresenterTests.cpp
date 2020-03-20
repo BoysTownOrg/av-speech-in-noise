@@ -1475,6 +1475,13 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotHideSetupViewWhenTestComplete) {
+    setTestComplete(model);
+    assertDoesNotHideTestSetupView(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsSubjectView) {
     assertShowsSubjectView(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
@@ -1492,24 +1499,6 @@ PRESENTER_TEST(
         confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
 }
 
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotShowSubjectViewWhenTestComplete) {
-    setTestComplete(model);
-    assertDoesNotShowSubjectView(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
-PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotHideSetupViewWhenTestComplete) {
-    setTestComplete(model);
-    assertDoesNotHideTestSetupView(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
-}
-
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsSubjectView) {
     assertShowsSubjectView(
@@ -1520,6 +1509,17 @@ PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsSubjectView) {
     assertShowsSubjectView(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
+}
+
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(confirmingAdaptiveCorrectKeywordsTest);
+}
+
+PRESENTER_TEST(
+    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotShowSubjectViewWhenTestComplete) {
+    setTestComplete(model);
+    assertDoesNotShowSubjectView(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotShowSubjectView) {
