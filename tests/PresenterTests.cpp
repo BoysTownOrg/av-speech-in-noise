@@ -1076,15 +1076,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertHidesExitTestButton(PlayingTrial &useCase) {
         run(useCase);
-        assertTrue(exitTestButtonHidden());
-    }
-
-    auto exitTestButtonHidden() -> bool {
-        return experimenterView.exitTestButtonHidden();
-    }
-
-    auto exitTestButtonShown() -> bool {
-        return experimenterView.exitTestButtonShown();
+        assertTrue(experimenterView.exitTestButtonHidden());
     }
 
     void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
@@ -2022,7 +2014,7 @@ PRESENTER_TEST(browseForTestSettingsCancelDoesNotChangeTestSettingsFile) {
 
 PRESENTER_TEST(completingTrialShowsExitTestButton) {
     completeTrial(model);
-    assertTrue(exitTestButtonShown());
+    assertTrue(experimenterView.exitTestButtonShown());
 }
 
 PRESENTER_TEST(
