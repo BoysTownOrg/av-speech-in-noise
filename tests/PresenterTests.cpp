@@ -984,6 +984,10 @@ void setAudioDevice(ViewStub &view, std::string s) {
     view.setAudioDevice(std::move(s));
 }
 
+void setTestComplete(ModelStub &model) { model.setTestComplete(); }
+
+auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -1059,10 +1063,6 @@ class PresenterTests : public ::testing::Test {
         assertEntryEquals(useCase, "a");
     }
 
-    void setCalibrationLevel(int s) { interpretedCalibration.level_dB_SPL = s; }
-
-    void setTestComplete() { model.setTestComplete(); }
-
     void assertAudioDevicePassedToTrial(PlayingTrial &useCase) {
         setAudioDevice(view, "a");
         run(useCase);
@@ -1071,10 +1071,8 @@ class PresenterTests : public ::testing::Test {
 
     void assertPlaysTrial(UseCase &useCase) {
         run(useCase);
-        assertTrue(trialPlayed());
+        assertTrue(trialPlayed(model));
     }
-
-    auto trialPlayed() -> bool { return model.trialPlayed(); }
 
     void assertHidesExitTestButton(PlayingTrial &useCase) {
         run(useCase);
@@ -1090,7 +1088,7 @@ class PresenterTests : public ::testing::Test {
     }
 
     void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
-        setTestComplete();
+        setTestComplete(model);
         run(useCase);
         assertShown(setupView);
     }
@@ -1111,7 +1109,7 @@ class PresenterTests : public ::testing::Test {
     }
 
     void assertCompleteTestHidesExperimenterView(UseCase &useCase) {
-        setTestComplete();
+        setTestComplete(model);
         assertHidesExperimenterView(useCase);
     }
 
@@ -1121,9 +1119,9 @@ class PresenterTests : public ::testing::Test {
     }
 
     void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
-        setTestComplete();
+        setTestComplete(model);
         run(useCase);
-        assertFalse(trialPlayed());
+        assertFalse(trialPlayed(model));
     }
 
     void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
@@ -1420,13 +1418,13 @@ PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
-    setTestComplete();
+    setTestComplete(model);
     run(submittingCorrectKeywords);
     assertTrue(experimenterView.continueTestingDialogShown());
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsThresholdsWhenTestingComplete) {
-    setTestComplete();
+    setTestComplete(model);
     model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
     run(submittingCorrectKeywords);
     assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
@@ -1434,7 +1432,7 @@ PRESENTER_TEST(submittingCorrectKeywordsShowsThresholdsWhenTestingComplete) {
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
-    setTestComplete();
+    setTestComplete(model);
     run(submittingCorrectKeywords);
     assertTrue(submittingCorrectKeywords.responseViewHidden());
 }
@@ -1554,14 +1552,14 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotShowSubjectViewWhenTestComplete) {
-    setTestComplete();
+    setTestComplete(model);
     assertDoesNotShowSubjectView(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotHideSetupViewWhenTestComplete) {
-    setTestComplete();
+    setTestComplete(model);
     assertDoesNotHideTestSetupView(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
@@ -1619,7 +1617,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(playCalibrationPassesLevel) {
-    setCalibrationLevel(1);
+    interpretedCalibration.level_dB_SPL = 1;
     playCalibration(setupView);
     assertEqual(1, calibration(model).level_dB_SPL);
 }
@@ -1990,7 +1988,7 @@ PRESENTER_TEST(subjectResponseHidesResponseButtons) {
 }
 
 PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
-    setTestComplete();
+    setTestComplete(model);
     submitResponse(subjectView);
     assertHidden(subjectView);
 }
