@@ -930,6 +930,54 @@ void assertConfirmTestSetupShowsNextTrialButton(
     assertTrue(playingTrial.nextTrialButtonShown());
 }
 
+void assertShowsNextTrialButton(TrialSubmission &useCase) {
+    run(useCase);
+    assertTrue(useCase.nextTrialButtonShown());
+}
+
+void assertResponseViewHidden(TrialSubmission &useCase) {
+    run(useCase);
+    assertTrue(useCase.responseViewHidden());
+}
+
+void respondFromSubject(ViewStub::SubjectViewStub &view) {
+    view.submitResponse();
+}
+
+void respondFromExperimenter(ViewStub::ExperimenterViewStub &view) {
+    view.submitFreeResponse();
+}
+
+void exitTest(ViewStub::ExperimenterViewStub &view) { view.exitTest(); }
+
+void playCalibration(ViewStub::TestSetupViewStub &view) {
+    view.playCalibration();
+}
+
+auto setupViewShown(ViewStub::TestSetupViewStub &view) -> bool {
+    return view.shown();
+}
+
+void assertSetupViewShown(ViewStub::TestSetupViewStub &view) {
+    assertTrue(setupViewShown(view));
+}
+
+auto setupViewHidden(ViewStub::TestSetupViewStub &view) -> bool {
+    return view.hidden();
+}
+
+auto experimenterViewHidden(ViewStub::ExperimenterViewStub &view) -> bool {
+    return view.hidden();
+}
+
+auto subjectViewShown(ViewStub::SubjectViewStub &view) -> bool {
+    return view.shown();
+}
+
+void assertSubjectViewHidden(ViewStub::SubjectViewStub &view) {
+    assertTrue(view.hidden());
+}
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -985,28 +1033,6 @@ class PresenterTests : public ::testing::Test {
     DecliningContinuingTesting decliningContinuingTesting{experimenterView};
     AcceptingContinuingTesting acceptingContinuingTesting{experimenterView};
     ExitingTest exitingTest{&experimenterView};
-
-    void respondFromSubject() { subjectView.submitResponse(); }
-
-    void respondFromExperimenter() { experimenterView.submitFreeResponse(); }
-
-    void exitTest() { experimenterView.exitTest(); }
-
-    void playCalibration() { setupView.playCalibration(); }
-
-    void assertSetupViewShown() { assertTrue(setupViewShown()); }
-
-    auto setupViewShown() -> bool { return setupView.shown(); }
-
-    auto setupViewHidden() -> bool { return setupView.hidden(); }
-
-    auto experimenterViewShown() -> bool { return experimenterView.shown(); }
-
-    auto experimenterViewHidden() -> bool { return experimenterView.hidden(); }
-
-    auto subjectViewShown() -> bool { return subjectView.shown(); }
-
-    void assertSubjectViewHidden() { assertTrue(subjectView.hidden()); }
 
     void assertBrowseResultPassedToEntry(BrowsingEnteredPathUseCase &useCase) {
         setBrowsingResult(useCase, "a");
@@ -1072,12 +1098,12 @@ class PresenterTests : public ::testing::Test {
     void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
         setTestComplete();
         run(useCase);
-        assertSetupViewShown();
+        assertSetupViewShown(setupView);
     }
 
     void assertShowsSetupView(UseCase &useCase) {
         run(useCase);
-        assertSetupViewShown();
+        assertSetupViewShown(setupView);
     }
 
     void assertHidesContinueTestingDialog(UseCase &useCase) {
@@ -1087,7 +1113,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertIncompleteTestDoesNotShowSetupView(TrialSubmission &useCase) {
         run(useCase);
-        assertFalse(setupViewShown());
+        assertFalse(setupViewShown(setupView));
     }
 
     void assertCompleteTestHidesExperimenterView(UseCase &useCase) {
@@ -1097,7 +1123,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertHidesExperimenterView(UseCase &useCase) {
         run(useCase);
-        assertTrue(experimenterViewHidden());
+        assertTrue(experimenterViewHidden(experimenterView));
     }
 
     void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
@@ -1108,32 +1134,27 @@ class PresenterTests : public ::testing::Test {
 
     void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
         run(useCase);
-        assertFalse(experimenterViewHidden());
-    }
-
-    static void assertShowsNextTrialButton(TrialSubmission &useCase) {
-        run(useCase);
-        assertTrue(useCase.nextTrialButtonShown());
+        assertFalse(experimenterViewHidden(experimenterView));
     }
 
     void assertHidesTestSetupView(UseCase &useCase) {
         run(useCase);
-        assertTrue(setupViewHidden());
+        assertTrue(setupViewHidden(setupView));
     }
 
     void assertDoesNotHideTestSetupView(UseCase &useCase) {
         run(useCase);
-        assertFalse(setupViewHidden());
+        assertFalse(setupViewHidden(setupView));
     }
 
     void assertShowsExperimenterView(UseCase &useCase) {
         run(useCase);
-        assertTrue(experimenterViewShown());
+        assertTrue(experimenterView.shown());
     }
 
     void assertDoesNotShowSubjectView(UseCase &useCase) {
         run(useCase);
-        assertFalse(subjectViewShown());
+        assertFalse(subjectViewShown(subjectView));
     }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
@@ -1197,13 +1218,13 @@ class PresenterTests : public ::testing::Test {
     void assertShowsTrialNumber(UseCase &useCase) {
         setTrialNumber(1);
         run(useCase);
-        assertDisplayedToExperimenter("Trial 1");
+        assertEqual("Trial 1", experimenterView.displayed());
     }
 
     void assertShowsTargetFileName(UseCase &useCase) {
         setTargetFileName("a");
         run(useCase);
-        assertSecondaryDisplayedToExperimenter("a");
+        assertEqual("a", experimenterView.secondaryDisplayed());
     }
 
     void setTrialNumber(int n) { model.setTrialNumber(n); }
@@ -1212,22 +1233,9 @@ class PresenterTests : public ::testing::Test {
         model.setTargetFileName(std::move(s));
     }
 
-    void assertDisplayedToExperimenter(const std::string &s) {
-        assertEqual(s, experimenterView.displayed());
-    }
-
-    void assertSecondaryDisplayedToExperimenter(const std::string &s) {
-        assertEqual(s, experimenterView.secondaryDisplayed());
-    }
-
-    static void assertResponseViewHidden(TrialSubmission &useCase) {
-        run(useCase);
-        assertTrue(useCase.responseViewHidden());
-    }
-
     void assertShowsSubjectView(UseCase &useCase) {
         run(useCase);
-        assertTrue(subjectViewShown());
+        assertTrue(subjectViewShown(subjectView));
     }
 
     void setCorrectKeywords(std::string s) {
@@ -1238,7 +1246,7 @@ class PresenterTests : public ::testing::Test {
         UseCase &useCase, TrialSubmission &submission) {
         run(useCase);
         completeTrial();
-        exitTest();
+        exitTest(experimenterView);
         assertTrue(submission.responseViewHidden());
     }
 };
@@ -1302,7 +1310,7 @@ class RequestFailingModel : public Model {
     }
 
     auto testComplete() -> bool override { return {}; }
-    auto audioDevices() -> std::vector<std::string> override { return {}; }
+    auto audioDevices() -> AudioDevices override { return {}; }
     auto adaptiveTestResults() -> AdaptiveTestResults override { return {}; }
     void subscribe(EventListener *) override {}
     void submitCorrectResponse() override {}
@@ -1618,7 +1626,7 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(playCalibrationPassesLevel) {
     setCalibrationLevel(1);
-    playCalibration();
+    playCalibration(setupView);
     assertEqual(1, calibration().level_dB_SPL);
 }
 
@@ -1693,7 +1701,7 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(playCalibrationPassesFilePath) {
     interpretedCalibration.filePath = "a";
-    playCalibration();
+    playCalibration(setupView);
     assertEqual("a", calibration().filePath);
 }
 
@@ -1833,49 +1841,49 @@ PRESENTER_TEST(playingTrialFromExperimenterPassesAudioDevice) {
 
 PRESENTER_TEST(playCalibrationPassesAudioDevice) {
     setAudioDevice("b");
-    playCalibration();
+    playCalibration(setupView);
     assertEqual("b", calibration().audioDevice);
 }
 
 PRESENTER_TEST(subjectResponsePassesNumberResponse) {
     subjectView.setNumberResponse("1");
-    respondFromSubject();
+    respondFromSubject(subjectView);
     assertEqual(1, model.responseParameters().number);
 }
 
 PRESENTER_TEST(subjectResponsePassesGreenColor) {
     subjectView.setGreenResponse();
-    respondFromSubject();
+    respondFromSubject(subjectView);
     assertModelPassedColor(coordinate_response_measure::Color::green);
 }
 
 PRESENTER_TEST(subjectResponsePassesRedColor) {
     subjectView.setRedResponse();
-    respondFromSubject();
+    respondFromSubject(subjectView);
     assertModelPassedColor(coordinate_response_measure::Color::red);
 }
 
 PRESENTER_TEST(subjectResponsePassesBlueColor) {
     subjectView.setBlueResponse();
-    respondFromSubject();
+    respondFromSubject(subjectView);
     assertModelPassedColor(coordinate_response_measure::Color::blue);
 }
 
 PRESENTER_TEST(subjectResponsePassesWhiteColor) {
     subjectView.setGrayResponse();
-    respondFromSubject();
+    respondFromSubject(subjectView);
     assertModelPassedColor(coordinate_response_measure::Color::white);
 }
 
 PRESENTER_TEST(experimenterResponsePassesResponse) {
     experimenterView.setResponse("a");
-    respondFromExperimenter();
+    respondFromExperimenter(experimenterView);
     assertEqual("a", model.freeResponse().response);
 }
 
 PRESENTER_TEST(experimenterResponseFlagsResponse) {
     experimenterView.flagResponse();
-    respondFromExperimenter();
+    respondFromExperimenter(experimenterView);
     assertTrue(model.freeResponse().flagged);
 }
 
@@ -1989,13 +1997,13 @@ PRESENTER_TEST(subjectResponseHidesResponseButtons) {
 
 PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
     setTestComplete();
-    respondFromSubject();
-    assertSubjectViewHidden();
+    respondFromSubject(subjectView);
+    assertSubjectViewHidden(subjectView);
 }
 
 PRESENTER_TEST(exitTestHidesSubjectView) {
-    exitTest();
-    assertSubjectViewHidden();
+    exitTest(experimenterView);
+    assertSubjectViewHidden(subjectView);
 }
 
 PRESENTER_TEST(exitTestHidesExperimenterView) {
@@ -2008,8 +2016,8 @@ PRESENTER_TEST(exitTestHidesResponseButtons) {
 }
 
 PRESENTER_TEST(exitTestShowsTestSetupView) {
-    exitTest();
-    assertSetupViewShown();
+    exitTest(experimenterView);
+    assertSetupViewShown(setupView);
 }
 
 PRESENTER_TEST(browseForTestSettingsFileUpdatesTestSettingsFile) {
