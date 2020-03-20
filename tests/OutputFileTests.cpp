@@ -71,20 +71,22 @@ class WritingTest : public virtual UseCase {
 
 class WritingAdaptiveTest : public WritingTest {
   public:
-    AdaptiveTest test_{};
-
     void run(OutputFileImpl &file) override { file.write(test_); }
 
     auto test() -> Test & override { return test_; }
+
+  private:
+    AdaptiveTest test_{};
 };
 
 class WritingFixedLevelTest : public WritingTest {
-    FixedLevelTest test_{};
-
   public:
     void run(OutputFileImpl &file) override { file.write(test_); }
 
     auto test() -> Test & override { return test_; }
+
+  private:
+    FixedLevelTest test_{};
 };
 
 class WritingTrialUseCase : public virtual UseCase {
@@ -103,8 +105,6 @@ void setIncorrect(coordinate_response_measure::Trial &trial) {
 }
 
 class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
-    coordinate_response_measure::AdaptiveTrial trial_{};
-
   public:
     auto trial() -> auto & { return trial_; }
 
@@ -115,11 +115,12 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
     auto evaluationEntryIndex() -> int override { return 6; }
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
+
+  private:
+    coordinate_response_measure::AdaptiveTrial trial_{};
 };
 
 class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
-    coordinate_response_measure::FixedLevelTrial trial_{};
-
   public:
     auto trial() -> auto & { return trial_; }
 
@@ -130,11 +131,12 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 5; }
+
+  private:
+    coordinate_response_measure::FixedLevelTrial trial_{};
 };
 
 class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
-    open_set::AdaptiveTrial trial_{};
-
   public:
     void incorrect() override { trial_.correct = false; }
 
@@ -143,11 +145,12 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 3; }
+
+  private:
+    open_set::AdaptiveTrial trial_{};
 };
 
 class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
-    CorrectKeywordsTrial trial_{};
-
   public:
     void incorrect() override { trial_.correct = false; }
 
@@ -156,6 +159,9 @@ class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 4; }
+
+  private:
+    CorrectKeywordsTrial trial_{};
 };
 
 void run(OutputFileImpl &file, UseCase &useCase) { useCase.run(file); }
