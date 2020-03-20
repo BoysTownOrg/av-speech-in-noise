@@ -972,6 +972,10 @@ void completeTrial(ModelStub &model) { model.completeTrial(); }
 
 auto errorMessage(ViewStub &view) -> std::string { return view.errorMessage(); }
 
+void assertPassedColor(ModelStub &model, coordinate_response_measure::Color c) {
+    assertEqual(c, model.responseParameters().color);
+}
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -1045,10 +1049,6 @@ class PresenterTests : public ::testing::Test {
         view.setBrowseCancelled();
         run(useCase);
         assertEntryEquals(useCase, "a");
-    }
-
-    void assertModelPassedColor(coordinate_response_measure::Color c) {
-        assertEqual(c, model.responseParameters().color);
     }
 
     auto calibration() -> const Calibration & { return model.calibration(); }
@@ -1844,25 +1844,25 @@ PRESENTER_TEST(subjectResponsePassesNumberResponse) {
 PRESENTER_TEST(subjectResponsePassesGreenColor) {
     subjectView.setGreenResponse();
     submitResponse(subjectView);
-    assertModelPassedColor(coordinate_response_measure::Color::green);
+    assertPassedColor(model, coordinate_response_measure::Color::green);
 }
 
 PRESENTER_TEST(subjectResponsePassesRedColor) {
     subjectView.setRedResponse();
     submitResponse(subjectView);
-    assertModelPassedColor(coordinate_response_measure::Color::red);
+    assertPassedColor(model, coordinate_response_measure::Color::red);
 }
 
 PRESENTER_TEST(subjectResponsePassesBlueColor) {
     subjectView.setBlueResponse();
     submitResponse(subjectView);
-    assertModelPassedColor(coordinate_response_measure::Color::blue);
+    assertPassedColor(model, coordinate_response_measure::Color::blue);
 }
 
 PRESENTER_TEST(subjectResponsePassesWhiteColor) {
     subjectView.setGrayResponse();
     submitResponse(subjectView);
-    assertModelPassedColor(coordinate_response_measure::Color::white);
+    assertPassedColor(model, coordinate_response_measure::Color::white);
 }
 
 PRESENTER_TEST(experimenterResponsePassesResponse) {
