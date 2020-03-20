@@ -247,7 +247,7 @@ void assertEndsWith(WriterStub &writer, const std::string &s) {
     assertTrue(written(writer).endsWith(s));
 }
 
-auto find_nth_element(const std::string &content, int n, char what)
+auto find_nth_element(const std::string &content, gsl::index n, char what)
     -> std::string::size_type {
     auto found{std::string::npos};
     for (int i = 0; i < n; ++i)
@@ -264,7 +264,7 @@ auto testIdentity(WritingTest &useCase) -> TestIdentity & {
     return useCase.test().identity;
 }
 
-auto nthCommaDelimitedEntryOfLine(WriterStub &writer, int n, int line)
+auto nthCommaDelimitedEntryOfLine(WriterStub &writer, gsl::index n, int line)
     -> std::string {
     std::string written_ = written(writer);
     auto precedingNewLine{find_nth_element(written_, line - 1, '\n')};
@@ -286,18 +286,13 @@ void assertNthCommaDelimitedEntryOfLine(
 }
 
 void assertNthCommaDelimitedEntryOfLine(
-    WriterStub &writer, HeadingItem item, int n, int line) {
+    WriterStub &writer, HeadingItem item, gsl::index n, int line) {
     assertEqual(name(item), nthCommaDelimitedEntryOfLine(writer, n, line));
 }
 
 void assertNthEntryOfSecondLine(
     WriterStub &writer, const std::string &what, int n) {
     assertNthCommaDelimitedEntryOfLine(writer, what, n, 2);
-}
-
-void assertFreeResponseHeadingAtLine(WriterStub &writer, int n) {
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 1, n);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::freeResponse, 2, n);
 }
 
 auto test(WritingTest &useCase) -> Test & { return useCase.test(); }
@@ -442,6 +437,13 @@ class OutputFileTests : public ::testing::Test {
         run(useCase, file);
         assertHeadingAtLine(useCase, 1);
     }
+
+    void assertWritesHeadingTwiceWhenOpenedNewFile(WritingTrial &useCase) {
+        run(useCase, file);
+        openNewFile(file);
+        run(useCase, file);
+        assertHeadingAtLine(useCase, 3);
+    }
 };
 
 #define OUTPUT_FILE_TEST(a) TEST_F(OutputFileTests, a)
@@ -515,42 +517,29 @@ OUTPUT_FILE_TEST(writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
 
 OUTPUT_FILE_TEST(
     writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    run(writingAdaptiveCoordinateResponseTrial, file);
-    openNewFile(file);
-    run(writingAdaptiveCoordinateResponseTrial, file);
-    assertHeadingAtLine(writingAdaptiveCoordinateResponseTrial, 3);
+    assertWritesHeadingTwiceWhenOpenedNewFile(
+        writingAdaptiveCoordinateResponseTrial);
 }
 
 OUTPUT_FILE_TEST(
     writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    run(writingFixedLevelCoordinateResponseTrial, file);
-    openNewFile(file);
-    run(writingFixedLevelCoordinateResponseTrial, file);
-    assertHeadingAtLine(writingFixedLevelCoordinateResponseTrial, 3);
+    assertWritesHeadingTwiceWhenOpenedNewFile(
+        writingFixedLevelCoordinateResponseTrial);
 }
 
 OUTPUT_FILE_TEST(
     writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    writeFreeResponseTrial(file);
-    openNewFile(file);
-    writeFreeResponseTrial(file);
-    assertFreeResponseHeadingAtLine(writer, 3);
+    assertWritesHeadingTwiceWhenOpenedNewFile(writingFreeResponseTrial);
 }
 
 OUTPUT_FILE_TEST(
     writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    writeOpenSetAdaptiveTrial(file);
-    openNewFile(file);
-    writeOpenSetAdaptiveTrial(file);
-    assertHeadingAtLine(writingOpenSetAdaptiveTrial, 3);
+    assertWritesHeadingTwiceWhenOpenedNewFile(writingOpenSetAdaptiveTrial);
 }
 
 OUTPUT_FILE_TEST(
     writeCorrectKeywordsTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    writeCorrectKeywordsTrial(file);
-    openNewFile(file);
-    writeCorrectKeywordsTrial(file);
-    assertHeadingAtLine(writingCorrectKeywordsTrial, 3);
+    assertWritesHeadingTwiceWhenOpenedNewFile(writingCorrectKeywordsTrial);
 }
 
 OUTPUT_FILE_TEST(writeIncorrectAdaptiveCoordinateResponseTrial) {
