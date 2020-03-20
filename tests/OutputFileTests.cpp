@@ -309,9 +309,9 @@ class OutputFileTests : public ::testing::Test {
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     WritingFreeResponseTrial writingFreeResponseTrial;
-    FreeResponseTrial freeResponseTrial;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
+    FreeResponseTrial freeResponseTrial;
 
     void assertConditionNameWritten(WritingTest &useCase, Condition c) {
         useCase.test().condition = c;
