@@ -95,12 +95,16 @@ struct HeadingLabel {
     HeadingItem headingItem;
 };
 
-class WritingTrialUseCase : public virtual UseCase {
+class WritingTrial : public virtual UseCase {
+  public:
+    virtual auto headingLabels() -> std::vector<HeadingLabel> = 0;
+};
+
+class WritingEvaluatedTrial : public virtual WritingTrial {
   public:
     virtual void incorrect() = 0;
     virtual void correct() = 0;
     virtual auto evaluationEntryIndex() -> int = 0;
-    virtual auto headingLabels() -> std::vector<HeadingLabel> { return {}; }
 };
 
 void setCorrect(coordinate_response_measure::Trial &trial) {
@@ -111,7 +115,7 @@ void setIncorrect(coordinate_response_measure::Trial &trial) {
     trial.correct = false;
 }
 
-class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
+class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
   public:
     auto trial() -> auto & { return trial_; }
 
@@ -134,7 +138,7 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
     coordinate_response_measure::AdaptiveTrial trial_{};
 };
 
-class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
+class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
   public:
     auto trial() -> auto & { return trial_; }
 
@@ -157,7 +161,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
     coordinate_response_measure::FixedLevelTrial trial_{};
 };
 
-class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
+class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
   public:
     void incorrect() override { trial_.correct = false; }
 
@@ -176,7 +180,7 @@ class WritingOpenSetAdaptiveTrial : public WritingTrialUseCase {
     open_set::AdaptiveTrial trial_{};
 };
 
-class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
+class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
   public:
     void incorrect() override { trial_.correct = false; }
 
@@ -194,6 +198,15 @@ class WritingCorrectKeywordsTrial : public WritingTrialUseCase {
 
   private:
     CorrectKeywordsTrial trial_{};
+};
+
+class WritingFreeResponseTrial : public WritingTrial {
+  public:
+    void run(OutputFileImpl &file) override { file.write(FreeResponseTrial{}); }
+
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::target}, {2, HeadingItem::freeResponse}};
+    }
 };
 
 void run(UseCase &useCase, OutputFileImpl &file) { useCase.run(file); }
@@ -287,22 +300,6 @@ void assertFreeResponseHeadingAtLine(WriterStub &writer, int n) {
     assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::freeResponse, 2, n);
 }
 
-void assertCorrectKeywordsHeadingAtLine(WriterStub &writer, int n) {
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 2, n);
-    assertNthCommaDelimitedEntryOfLine(
-        writer, HeadingItem::correctKeywords, 3, n);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::evaluation, 4, n);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::reversals, 5, n);
-}
-
-void assertOpenSetAdaptiveHeadingAtLine(WriterStub &writer, int n) {
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::target, 2, n);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::evaluation, 3, n);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::reversals, 4, n);
-}
-
 auto test(WritingTest &useCase) -> Test & { return useCase.test(); }
 
 class OutputFileTests : public ::testing::Test {
@@ -316,6 +313,7 @@ class OutputFileTests : public ::testing::Test {
         writingFixedLevelCoordinateResponseTrial;
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
+    WritingFreeResponseTrial writingFreeResponseTrial;
     FreeResponseTrial freeResponseTrial;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
@@ -326,7 +324,7 @@ class OutputFileTests : public ::testing::Test {
         assertContainsColonDelimitedEntry(writer, "condition", name(c));
     }
 
-    void assertHeadingAtLine(WritingTrialUseCase &useCase, int n) {
+    void assertHeadingAtLine(WritingTrial &useCase, int n) {
         for (auto label : useCase.headingLabels())
             assertNthCommaDelimitedEntryOfLine(
                 writer, label.headingItem, label.index, n);
@@ -360,48 +358,18 @@ class OutputFileTests : public ::testing::Test {
         assertEndsWith(writer, "\n\n");
     }
 
-    void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
+    void assertIncorrectTrialWritesEvaluation(WritingEvaluatedTrial &useCase) {
         useCase.incorrect();
         run(useCase, file);
         assertNthEntryOfSecondLine(
             writer, "incorrect", useCase.evaluationEntryIndex());
     }
 
-    void assertCorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
+    void assertCorrectTrialWritesEvaluation(WritingEvaluatedTrial &useCase) {
         useCase.correct();
         run(useCase, file);
         assertNthEntryOfSecondLine(
             writer, "correct", useCase.evaluationEntryIndex());
-    }
-
-    void assertAdaptiveCoordinateHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::snr_dB, 1, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::correctNumber, 2, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::subjectNumber, 3, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::correctColor, 4, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::subjectColor, 5, n);
-        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::evaluation,
-            writingAdaptiveCoordinateResponseTrial.evaluationEntryIndex(), n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::reversals, 7, n);
-    }
-
-    void assertFixedLevelCoordinateResponseHeadingAtLine(int n) {
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::correctNumber, 1, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::subjectNumber, 2, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::correctColor, 3, n);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, HeadingItem::subjectColor, 4, n);
-        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::evaluation,
-            writingFixedLevelCoordinateResponseTrial.evaluationEntryIndex(), n);
-        assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::stimulus, 6, n);
     }
 
     void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {
@@ -470,7 +438,7 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(writer, "33", 5, n);
     }
 
-    void assertWritesHeadingOnFirstLine(WritingTrialUseCase &useCase) {
+    void assertWritesHeadingOnFirstLine(WritingTrial &useCase) {
         run(useCase, file);
         assertHeadingAtLine(useCase, 1);
     }
@@ -487,8 +455,7 @@ OUTPUT_FILE_TEST(writeFixedLevelCoordinateResponseTrialHeading) {
 }
 
 OUTPUT_FILE_TEST(writeFreeResponseTrialHeading) {
-    writeFreeResponseTrial(file);
-    assertFreeResponseHeadingAtLine(writer, 1);
+    assertWritesHeadingOnFirstLine(writingFreeResponseTrial);
 }
 
 OUTPUT_FILE_TEST(writeCorrectKeywordsTrialHeading) {
@@ -551,7 +518,7 @@ OUTPUT_FILE_TEST(
     run(writingAdaptiveCoordinateResponseTrial, file);
     openNewFile(file);
     run(writingAdaptiveCoordinateResponseTrial, file);
-    assertAdaptiveCoordinateHeadingAtLine(3);
+    assertHeadingAtLine(writingAdaptiveCoordinateResponseTrial, 3);
 }
 
 OUTPUT_FILE_TEST(
@@ -559,7 +526,7 @@ OUTPUT_FILE_TEST(
     run(writingFixedLevelCoordinateResponseTrial, file);
     openNewFile(file);
     run(writingFixedLevelCoordinateResponseTrial, file);
-    assertFixedLevelCoordinateResponseHeadingAtLine(3);
+    assertHeadingAtLine(writingFixedLevelCoordinateResponseTrial, 3);
 }
 
 OUTPUT_FILE_TEST(
@@ -575,7 +542,7 @@ OUTPUT_FILE_TEST(
     writeOpenSetAdaptiveTrial(file);
     openNewFile(file);
     writeOpenSetAdaptiveTrial(file);
-    assertOpenSetAdaptiveHeadingAtLine(writer, 3);
+    assertHeadingAtLine(writingOpenSetAdaptiveTrial, 3);
 }
 
 OUTPUT_FILE_TEST(
@@ -583,7 +550,7 @@ OUTPUT_FILE_TEST(
     writeCorrectKeywordsTrial(file);
     openNewFile(file);
     writeCorrectKeywordsTrial(file);
-    assertCorrectKeywordsHeadingAtLine(writer, 3);
+    assertHeadingAtLine(writingCorrectKeywordsTrial, 3);
 }
 
 OUTPUT_FILE_TEST(writeIncorrectAdaptiveCoordinateResponseTrial) {
