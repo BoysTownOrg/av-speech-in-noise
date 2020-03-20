@@ -134,6 +134,8 @@ class ViewStub : public View {
 
         [[nodiscard]] auto shown() const { return shown_; }
 
+        void hide() override { hidden_ = true; }
+
         [[nodiscard]] auto hidden() const { return hidden_; }
 
         auto whiteResponse() -> bool override { return grayResponse_; }
@@ -145,6 +147,10 @@ class ViewStub : public View {
         void setBlueResponse() { blueResponse_ = true; }
 
         void setRedResponse() { redResponse_ = true; }
+
+        void setGreenResponse() { greenResponse_ = true; }
+
+        auto greenResponse() -> bool override { return greenResponse_; }
 
         void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
 
@@ -164,11 +170,11 @@ class ViewStub : public View {
             return nextTrialButtonShown_;
         }
 
+        void showResponseButtons() override { responseButtonsShown_ = true; }
+
         [[nodiscard]] auto responseButtonsShown() const {
             return responseButtonsShown_;
         }
-
-        void setGreenResponse() { greenResponse_ = true; }
 
         void setNumberResponse(std::string s) {
             numberResponse_ = std::move(s);
@@ -178,13 +184,7 @@ class ViewStub : public View {
             return numberResponse_;
         }
 
-        auto greenResponse() -> bool override { return greenResponse_; }
-
-        void showResponseButtons() override { responseButtonsShown_ = true; }
-
         void subscribe(EventListener *e) override { listener_ = e; }
-
-        void hide() override { hidden_ = true; }
 
         void submitResponse() { listener_->submitResponse(); }
 
@@ -221,143 +221,143 @@ class ViewStub : public View {
 
         void acceptContinuingTesting() { listener_->acceptContinuingTesting(); }
 
-        [[nodiscard]] auto continueTestingDialogShown() const -> bool {
-            return continueTestingDialogShown_;
-        }
-
-        [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
-            return continueTestingDialogHidden_;
-        }
-
         void showContinueTestingDialog() override {
             continueTestingDialogShown_ = true;
+        }
+
+        [[nodiscard]] auto continueTestingDialogShown() const -> bool {
+            return continueTestingDialogShown_;
         }
 
         void hideContinueTestingDialog() override {
             continueTestingDialogHidden_ = true;
         }
 
+        [[nodiscard]] auto continueTestingDialogHidden() const -> bool {
+            return continueTestingDialogHidden_;
+        }
+
         void submitFailedTrial() { listener_->submitFailedTrial(); }
-
-        [[nodiscard]] auto responseSubmissionHidden() const {
-            return responseSubmissionHidden_;
-        }
-
-        [[nodiscard]] auto evaluationButtonsHidden() const {
-            return evaluationButtonsHidden_;
-        }
-
-        [[nodiscard]] auto correctKeywordsEntryShown() const {
-            return correctKeywordsEntryShown_;
-        }
-
-        [[nodiscard]] auto correctKeywordsEntryHidden() const {
-            return correctKeywordsEntryHidden_;
-        }
-
-        [[nodiscard]] auto evaluationButtonsShown() const {
-            return evaluationButtonsShown_;
-        }
-
-        [[nodiscard]] auto responseSubmissionShown() const {
-            return responseSubmissionShown_;
-        }
-
-        auto correctKeywords() -> std::string override {
-            return correctKeywords_;
-        }
-
-        void showCorrectKeywordsSubmission() override {
-            correctKeywordsEntryShown_ = true;
-        }
-
-        void hideCorrectKeywordsSubmission() override {
-            correctKeywordsEntryHidden_ = true;
-        }
-
-        [[nodiscard]] auto shown() const { return shown_; }
-
-        [[nodiscard]] auto hidden() const { return hidden_; }
-
-        void show() override { shown_ = true; }
-
-        void subscribe(EventListener *e) override { listener_ = e; }
-
-        void hide() override { hidden_ = true; }
-
-        void showEvaluationButtons() override {
-            evaluationButtonsShown_ = true;
-        }
-
-        auto freeResponse() -> std::string override { return response_; }
-
-        void showFreeResponseSubmission() override {
-            responseSubmissionShown_ = true;
-        }
 
         void hideFreeResponseSubmission() override {
             responseSubmissionHidden_ = true;
+        }
+
+        [[nodiscard]] auto responseSubmissionHidden() const {
+            return responseSubmissionHidden_;
         }
 
         void hideEvaluationButtons() override {
             evaluationButtonsHidden_ = true;
         }
 
-        void submitPassedTrial() { listener_->submitPassedTrial(); }
+        [[nodiscard]] auto evaluationButtonsHidden() const {
+            return evaluationButtonsHidden_;
+        }
 
-        void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
+        void showCorrectKeywordsSubmission() override {
+            correctKeywordsEntryShown_ = true;
+        }
 
-        void setResponse(std::string s) { response_ = std::move(s); }
+        [[nodiscard]] auto correctKeywordsEntryShown() const {
+            return correctKeywordsEntryShown_;
+        }
+
+        void hideCorrectKeywordsSubmission() override {
+            correctKeywordsEntryHidden_ = true;
+        }
+
+        [[nodiscard]] auto correctKeywordsEntryHidden() const {
+            return correctKeywordsEntryHidden_;
+        }
+
+        void showEvaluationButtons() override {
+            evaluationButtonsShown_ = true;
+        }
+
+        [[nodiscard]] auto evaluationButtonsShown() const {
+            return evaluationButtonsShown_;
+        }
+
+        void showFreeResponseSubmission() override {
+            responseSubmissionShown_ = true;
+        }
+
+        [[nodiscard]] auto responseSubmissionShown() const {
+            return responseSubmissionShown_;
+        }
 
         void setCorrectKeywords(std::string s) {
             correctKeywords_ = std::move(s);
         }
 
+        auto correctKeywords() -> std::string override {
+            return correctKeywords_;
+        }
+
+        void show() override { shown_ = true; }
+
+        [[nodiscard]] auto shown() const { return shown_; }
+
+        void hide() override { hidden_ = true; }
+
+        [[nodiscard]] auto hidden() const { return hidden_; }
+
+        void subscribe(EventListener *e) override { listener_ = e; }
+
+        void setResponse(std::string s) { response_ = std::move(s); }
+
+        auto freeResponse() -> std::string override { return response_; }
+
+        void submitPassedTrial() { listener_->submitPassedTrial(); }
+
+        void submitFreeResponse() { listener_->submitFreeResponse(); }
+
+        void submitCorrectKeywords() { listener_->submitCorrectKeywords(); }
+
+        void exitTest() { listener_->exitTest(); }
+
+        void playTrial() { listener_->playTrial(); }
+
         void flagResponse() { flagged_ = true; }
 
         auto flagged() -> bool override { return flagged_; }
 
-        void submitFreeResponse() { listener_->submitFreeResponse(); }
-
         void display(std::string s) override { displayed_ = std::move(s); }
+
+        [[nodiscard]] auto displayed() const { return displayed_; }
 
         void secondaryDisplay(std::string s) override {
             secondaryDisplayed_ = std::move(s);
         }
 
-        void playTrial() { listener_->playTrial(); }
-
         [[nodiscard]] auto secondaryDisplayed() const {
             return secondaryDisplayed_;
         }
 
-        [[nodiscard]] auto displayed() const { return displayed_; }
-
         void showNextTrialButton() override { nextTrialButtonShown_ = true; }
-
-        void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
-
-        void showExitTestButton() override { exitTestButtonShown_ = true; }
-
-        void hideExitTestButton() override { exitTestButtonHidden_ = true; }
-
-        [[nodiscard]] auto exitTestButtonShown() const {
-            return exitTestButtonShown_;
-        }
-
-        [[nodiscard]] auto exitTestButtonHidden() const {
-            return exitTestButtonHidden_;
-        }
 
         [[nodiscard]] auto nextTrialButtonShown() const {
             return nextTrialButtonShown_;
         }
 
+        void hideNextTrialButton() override { nextTrialButtonHidden_ = true; }
+
         [[nodiscard]] auto nextTrialButtonHidden() const {
             return nextTrialButtonHidden_;
         }
 
-        void exitTest() { listener_->exitTest(); }
+        void showExitTestButton() override { exitTestButtonShown_ = true; }
+
+        [[nodiscard]] auto exitTestButtonShown() const {
+            return exitTestButtonShown_;
+        }
+
+        void hideExitTestButton() override { exitTestButtonHidden_ = true; }
+
+        [[nodiscard]] auto exitTestButtonHidden() const {
+            return exitTestButtonHidden_;
+        }
 
       private:
         std::string displayed_;
