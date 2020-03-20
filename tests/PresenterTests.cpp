@@ -970,6 +970,8 @@ void assertHidden(ViewStub::SubjectViewStub &view) {
 
 void completeTrial(ModelStub &model) { model.completeTrial(); }
 
+auto errorMessage(ViewStub &view) -> std::string { return view.errorMessage(); }
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -1044,8 +1046,6 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         assertEntryEquals(useCase, "a");
     }
-
-    auto errorMessage() -> std::string { return view.errorMessage(); }
 
     void assertModelPassedColor(coordinate_response_measure::Color c) {
         assertEqual(c, model.responseParameters().color);
@@ -1337,7 +1337,7 @@ class PresenterFailureTests : public ::testing::Test {
 
     void assertConfirmTestSetupShowsErrorMessage(const std::string &s) {
         confirmTestSetup();
-        assertEqual(s, view.errorMessage());
+        assertEqual(s, errorMessage(view));
     }
 
     void assertConfirmTestSetupDoesNotHideSetupView() {
@@ -1388,7 +1388,7 @@ PRESENTER_TEST(submittingCorrectKeywordsPassesCorrectKeywords) {
 PRESENTER_TEST(submittingInvalidCorrectKeywordsShowsErrorMessage) {
     setCorrectKeywords("a");
     run(submittingCorrectKeywords);
-    assertEqual("'a' is not a valid number.", errorMessage());
+    assertEqual("'a' is not a valid number.", errorMessage(view));
 }
 
 PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
