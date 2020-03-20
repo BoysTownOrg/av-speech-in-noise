@@ -2,6 +2,7 @@
 #include "assert-utility.h"
 #include <recognition-test/OutputFile.hpp>
 #include <gtest/gtest.h>
+#include <gsl/gsl>
 
 namespace av_speech_in_noise {
 namespace {
@@ -89,11 +90,17 @@ class WritingFixedLevelTest : public WritingTest {
     FixedLevelTest test_{};
 };
 
+struct HeadingLabel {
+    gsl::index index;
+    HeadingItem headingItem;
+};
+
 class WritingTrialUseCase : public virtual UseCase {
   public:
     virtual void incorrect() = 0;
     virtual void correct() = 0;
     virtual auto evaluationEntryIndex() -> int = 0;
+    virtual auto headingLabels() -> std::vector<HeadingLabel> { return {}; }
 };
 
 void setCorrect(coordinate_response_measure::Trial &trial) {
@@ -116,6 +123,13 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingTrialUseCase {
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::correctNumber},
+            {3, HeadingItem::subjectNumber}, {4, HeadingItem::correctColor},
+            {5, HeadingItem::subjectColor}, {6, HeadingItem::evaluation},
+            {7, HeadingItem::reversals}};
+    }
+
   private:
     coordinate_response_measure::AdaptiveTrial trial_{};
 };
@@ -131,6 +145,13 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingTrialUseCase {
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
     auto evaluationEntryIndex() -> int override { return 5; }
+
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::correctNumber},
+            {2, HeadingItem::subjectNumber}, {3, HeadingItem::correctColor},
+            {4, HeadingItem::subjectColor}, {5, HeadingItem::evaluation},
+            {6, HeadingItem::stimulus}};
+    }
 
   private:
     coordinate_response_measure::FixedLevelTrial trial_{};
@@ -271,6 +292,8 @@ void assertOpenSetAdaptiveHeadingAtLine(WriterStub &writer, int n) {
     assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::reversals, 4, n);
 }
 
+auto test(WritingTest &useCase) -> Test & { return useCase.test(); }
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -292,6 +315,12 @@ class OutputFileTests : public ::testing::Test {
         assertContainsColonDelimitedEntry(writer, "condition", name(c));
     }
 
+    void assertHeadingAtLine(WritingTrialUseCase &useCase, int n) {
+        for (auto label : useCase.headingLabels())
+            assertNthCommaDelimitedEntryOfLine(
+                writer, label.headingItem, label.index, n);
+    }
+
     void assertTestIdentityWritten(WritingTest &useCase) {
         testIdentity(useCase).subjectId = "a";
         testIdentity(useCase).testerId = "b";
@@ -310,9 +339,9 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertCommonTestWritten(WritingTest &useCase) {
-        useCase.test().maskerFilePath = "a";
-        useCase.test().targetListDirectory = "d";
-        useCase.test().maskerLevel_dB_SPL = 1;
+        test(useCase).maskerFilePath = "a";
+        test(useCase).targetListDirectory = "d";
+        test(useCase).maskerLevel_dB_SPL = 1;
         run(useCase, file);
         assertContainsColonDelimitedEntry(writer, "masker", "a");
         assertContainsColonDelimitedEntry(writer, "targets", "d");
@@ -435,12 +464,12 @@ class OutputFileTests : public ::testing::Test {
 
 OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialHeading) {
     run(writingAdaptiveCoordinateResponseTrial, file);
-    assertAdaptiveCoordinateHeadingAtLine(1);
+    assertHeadingAtLine(writingAdaptiveCoordinateResponseTrial, 1);
 }
 
 OUTPUT_FILE_TEST(writeFixedLevelCoordinateResponseTrialHeading) {
     run(writingFixedLevelCoordinateResponseTrial, file);
-    assertFixedLevelCoordinateResponseHeadingAtLine(1);
+    assertHeadingAtLine(writingFixedLevelCoordinateResponseTrial, 1);
 }
 
 OUTPUT_FILE_TEST(writeFreeResponseTrialHeading) {
