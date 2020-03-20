@@ -919,6 +919,17 @@ void assertEntryEquals(
     assertEqual(s, entry(useCase));
 }
 
+void assertHidesPlayTrialButton(PlayingTrial &useCase) {
+    run(useCase);
+    assertTrue(useCase.nextTrialButtonHidden());
+}
+
+void assertConfirmTestSetupShowsNextTrialButton(
+    ConfirmingTestSetup &confirmingTest, PlayingTrial &playingTrial) {
+    run(confirmingTest);
+    assertTrue(playingTrial.nextTrialButtonShown());
+}
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -1045,11 +1056,6 @@ class PresenterTests : public ::testing::Test {
 
     auto trialPlayed() -> bool { return model.trialPlayed(); }
 
-    static void assertHidesPlayTrialButton(PlayingTrial &useCase) {
-        run(useCase);
-        assertTrue(useCase.nextTrialButtonHidden());
-    }
-
     void assertHidesExitTestButton(PlayingTrial &useCase) {
         run(useCase);
         assertTrue(exitTestButtonHidden());
@@ -1061,12 +1067,6 @@ class PresenterTests : public ::testing::Test {
 
     auto exitTestButtonShown() -> bool {
         return experimenterView.exitTestButtonShown();
-    }
-
-    static void assertConfirmTestSetupShowsNextTrialButton(
-        ConfirmingTestSetup &confirmingTest, PlayingTrial &playingTrial) {
-        run(confirmingTest);
-        assertTrue(playingTrial.nextTrialButtonShown());
     }
 
     void assertCompleteTestShowsSetupView(TrialSubmission &useCase) {
