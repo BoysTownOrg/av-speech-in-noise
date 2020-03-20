@@ -702,7 +702,7 @@ OUTPUT_FILE_TEST(saveSavesWriter) {
 OUTPUT_FILE_TEST(openPassesTestInformation) {
     TestIdentity testIdentity;
     openNewFile(file, testIdentity);
-    EXPECT_EQ(&testIdentity, path.testIdentity());
+    assertEqual(&std::as_const(testIdentity), path.testIdentity());
 }
 
 class FailingWriter : public Writer {
@@ -723,7 +723,7 @@ TEST(FailingOutputFileTests, openThrowsOpenFailureWhenWriterFails) {
     OutputFilePathStub path;
     OutputFileImpl file{writer, path};
     try {
-        file.openNewFile({});
+        openNewFile(file);
         FAIL() << "Expected OutputFileImpl::OpenFailure";
     } catch (const OutputFileImpl::OpenFailure &) {
     }
