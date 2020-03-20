@@ -170,7 +170,7 @@ auto written(WriterStub &writer) -> const LogString & {
     return writer.written();
 }
 
-void openNewFile(OutputFileImpl &file, const TestIdentity &identity) {
+void openNewFile(OutputFileImpl &file, const TestIdentity &identity = {}) {
     file.openNewFile(identity);
 }
 
@@ -275,7 +275,6 @@ class OutputFileTests : public ::testing::Test {
     open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
-    TestIdentity testIdentity;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
 
@@ -286,13 +285,12 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertTestIdentityWritten(WritingTest &useCase) {
-        av_speech_in_noise::testIdentity(useCase).subjectId = "a";
-        av_speech_in_noise::testIdentity(useCase).testerId = "b";
-        av_speech_in_noise::testIdentity(useCase).session = "c";
-        av_speech_in_noise::testIdentity(useCase).method = "d";
-        av_speech_in_noise::testIdentity(useCase).rmeSetting = "e";
-        av_speech_in_noise::testIdentity(useCase).transducer =
-            Transducer::twoSpeakers;
+        testIdentity(useCase).subjectId = "a";
+        testIdentity(useCase).testerId = "b";
+        testIdentity(useCase).session = "c";
+        testIdentity(useCase).method = "d";
+        testIdentity(useCase).rmeSetting = "e";
+        testIdentity(useCase).transducer = Transducer::twoSpeakers;
         run(useCase, file);
         assertContainsColonDelimitedEntry(writer, "subject", "a");
         assertContainsColonDelimitedEntry(writer, "tester", "b");
@@ -312,15 +310,6 @@ class OutputFileTests : public ::testing::Test {
         assertContainsColonDelimitedEntry(writer, "targets", "d");
         assertContainsColonDelimitedEntry(writer, "masker level (dB SPL)", "1");
         assertEndsWith(writer, "\n\n");
-    }
-
-    void assertEntriesOfSecondLine(int n) {
-        std::string written_ = written(writer);
-        auto precedingNewLine{find_nth_element(written_, 2 - 1, '\n')};
-        auto line_{written_.substr(precedingNewLine + 1)};
-        assertEqual(
-            std::iterator_traits<std::string::iterator>::difference_type{n - 1},
-            std::count(line_.begin(), line_.end(), ','));
     }
 
     void assertIncorrectTrialWritesEvaluation(WritingTrialUseCase &useCase) {
@@ -509,7 +498,7 @@ OUTPUT_FILE_TEST(writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
 OUTPUT_FILE_TEST(
     writeAdaptiveCoordinateResponseTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     run(writingAdaptiveCoordinateResponseTrial, file);
-    openNewFile(file, testIdentity);
+    openNewFile(file);
     run(writingAdaptiveCoordinateResponseTrial, file);
     assertAdaptiveCoordinateHeadingAtLine(3);
 }
@@ -517,7 +506,7 @@ OUTPUT_FILE_TEST(
 OUTPUT_FILE_TEST(
     writeFixedLevelCoordinateResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     run(writingFixedLevelCoordinateResponseTrial, file);
-    openNewFile(file, testIdentity);
+    openNewFile(file);
     run(writingFixedLevelCoordinateResponseTrial, file);
     assertFixedLevelCoordinateResponseHeadingAtLine(3);
 }
@@ -525,7 +514,7 @@ OUTPUT_FILE_TEST(
 OUTPUT_FILE_TEST(
     writeFreeResponseTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     write(file, freeResponseTrial);
-    openNewFile(file, testIdentity);
+    openNewFile(file);
     write(file, freeResponseTrial);
     assertFreeResponseHeadingAtLine(writer, 3);
 }
@@ -533,7 +522,7 @@ OUTPUT_FILE_TEST(
 OUTPUT_FILE_TEST(
     writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     write(file, openSetAdaptiveTrial);
-    openNewFile(file, testIdentity);
+    openNewFile(file);
     write(file, openSetAdaptiveTrial);
     assertOpenSetAdaptiveHeadingAtLine(writer, 3);
 }
@@ -541,7 +530,7 @@ OUTPUT_FILE_TEST(
 OUTPUT_FILE_TEST(
     writeCorrectKeywordsTrialTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
     write(file, correctKeywordsTrial);
-    openNewFile(file, testIdentity);
+    openNewFile(file);
     write(file, correctKeywordsTrial);
     assertCorrectKeywordsHeadingAtLine(writer, 3);
 }
@@ -588,10 +577,14 @@ OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {
 }
 
 OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
-
     freeResponseTrial.flagged = false;
     write(file, freeResponseTrial);
-    assertEntriesOfSecondLine(2);
+    std::string written_ = written(writer);
+    auto precedingNewLine{find_nth_element(written_, 2 - 1, '\n')};
+    auto line_{written_.substr(precedingNewLine + 1)};
+    assertEqual(
+        std::iterator_traits<std::string::iterator>::difference_type{2 - 1},
+        std::count(line_.begin(), line_.end(), ','));
 }
 
 OUTPUT_FILE_TEST(uninitializedColorDoesNotBreak) {
@@ -681,7 +674,7 @@ OUTPUT_FILE_TEST(writeFixedLevelTestWithAuditoryOnlyCondition) {
 OUTPUT_FILE_TEST(openPassesFormattedFilePath) {
     path.setFileName("a");
     path.setOutputDirectory("b");
-    openNewFile(file, testIdentity);
+    openNewFile(file);
     assertEqual("b/a.txt", writer.filePath());
 }
 
@@ -696,6 +689,7 @@ OUTPUT_FILE_TEST(saveSavesWriter) {
 }
 
 OUTPUT_FILE_TEST(openPassesTestInformation) {
+    TestIdentity testIdentity;
     openNewFile(file, testIdentity);
     EXPECT_EQ(&testIdentity, path.testIdentity());
 }
