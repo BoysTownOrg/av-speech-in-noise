@@ -25,9 +25,11 @@ template <typename T> void insert(std::stringstream &stream, T item) {
     stream << item;
 }
 
-void insertCommaAndSpace(std::stringstream &stream) { insert(stream, ", "); }
+static void insertCommaAndSpace(std::stringstream &stream) {
+    insert(stream, ", ");
+}
 
-void insertNewLine(std::stringstream &stream) { insert(stream, '\n'); }
+static void insertNewLine(std::stringstream &stream) { insert(stream, '\n'); }
 
 template <typename T>
 void writeLabeledLine(
@@ -38,47 +40,47 @@ void writeLabeledLine(
     insertNewLine(stream);
 }
 
-auto string(const std::stringstream &stream) -> std::string {
+static auto string(const std::stringstream &stream) -> std::string {
     return stream.str();
 }
 
-void writeSubjectId(std::stringstream &stream, const TestIdentity &p) {
+static void writeSubjectId(std::stringstream &stream, const TestIdentity &p) {
     writeLabeledLine(stream, "subject", p.subjectId);
 }
 
-void writeTester(std::stringstream &stream, const TestIdentity &p) {
+static void writeTester(std::stringstream &stream, const TestIdentity &p) {
     writeLabeledLine(stream, "tester", p.testerId);
 }
 
-void writeSession(std::stringstream &stream, const TestIdentity &p) {
+static void writeSession(std::stringstream &stream, const TestIdentity &p) {
     writeLabeledLine(stream, "session", p.session);
 }
 
-void writeMethod(std::stringstream &stream, const TestIdentity &p) {
+static void writeMethod(std::stringstream &stream, const TestIdentity &p) {
     writeLabeledLine(stream, "method", p.method);
 }
 
-void writeRmeSetting(std::stringstream &stream, const TestIdentity &p) {
+static void writeRmeSetting(std::stringstream &stream, const TestIdentity &p) {
     writeLabeledLine(stream, "RME setting", p.rmeSetting);
 }
 
-void writeTransducer(std::stringstream &stream, const TestIdentity &p) {
+static void writeTransducer(std::stringstream &stream, const TestIdentity &p) {
     writeLabeledLine(stream, "transducer", name(p.transducer));
 }
 
-void writeMasker(std::stringstream &stream, const Test &p) {
+static void writeMasker(std::stringstream &stream, const Test &p) {
     writeLabeledLine(stream, "masker", p.maskerFilePath);
 }
 
-void writeTargetList(std::stringstream &stream, const Test &p) {
+static void writeTargetList(std::stringstream &stream, const Test &p) {
     writeLabeledLine(stream, "targets", p.targetListDirectory);
 }
 
-void writeMaskerLevel(std::stringstream &stream, const Test &p) {
+static void writeMaskerLevel(std::stringstream &stream, const Test &p) {
     writeLabeledLine(stream, "masker level (dB SPL)", p.maskerLevel_dB_SPL);
 }
 
-void writeCondition(std::stringstream &stream, const Test &p) {
+static void writeCondition(std::stringstream &stream, const Test &p) {
     writeLabeledLine(stream, "condition", name(p.condition));
 }
 
@@ -361,8 +363,7 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
 
 auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
     -> std::string {
-    return path.outputDirectory() + "/" + path.generateFileName(test) +
-        ".txt";
+    return path.outputDirectory() + "/" + path.generateFileName(test) + ".txt";
 }
 
 void OutputFileImpl::close() { writer.close(); }
