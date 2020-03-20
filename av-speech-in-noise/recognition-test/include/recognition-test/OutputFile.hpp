@@ -81,7 +81,7 @@ class OutputFilePath {
 
 class OutputFileImpl : public OutputFile {
   public:
-    OutputFileImpl(Writer *, OutputFilePath *);
+    OutputFileImpl(Writer &, OutputFilePath &);
     void openNewFile(const TestIdentity &) override;
     void close() override;
     void save() override;
@@ -98,8 +98,8 @@ class OutputFileImpl : public OutputFile {
     void write(std::string);
     auto generateNewFilePath(const TestIdentity &) -> std::string;
 
-    Writer *writer;
-    OutputFilePath *path;
+    Writer &writer;
+    OutputFilePath &path;
     bool justWroteFixedLevelCoordinateResponseTrial{};
     bool justWroteAdaptiveCoordinateResponseTrial{};
     bool justWroteFreeResponseTrial{};

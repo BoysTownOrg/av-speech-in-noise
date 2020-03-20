@@ -263,7 +263,7 @@ class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
     OutputFilePathStub path;
-    OutputFileImpl file{&writer, &path};
+    OutputFileImpl file{writer, path};
     WritingAdaptiveCoordinateResponseTrial
         writingAdaptiveCoordinateResponseTrial;
     WritingFixedLevelCoordinateResponseTrial
@@ -710,7 +710,7 @@ class FailingWriter : public Writer {
 TEST(FailingOutputFileTests, openThrowsOpenFailureWhenWriterFails) {
     FailingWriter writer;
     OutputFilePathStub path;
-    OutputFileImpl file{&writer, &path};
+    OutputFileImpl file{writer, path};
     try {
         file.openNewFile({});
         FAIL() << "Expected OutputFileImpl::OpenFailure";

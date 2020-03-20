@@ -302,10 +302,10 @@ static auto formatOpenSetAdaptiveTrialHeading() -> std::string {
     return string(stream);
 }
 
-OutputFileImpl::OutputFileImpl(Writer *writer, OutputFilePath *path)
+OutputFileImpl::OutputFileImpl(Writer &writer, OutputFilePath &path)
     : writer{writer}, path{path} {}
 
-void OutputFileImpl::write(std::string s) { writer->write(std::move(s)); }
+void OutputFileImpl::write(std::string s) { writer.write(std::move(s)); }
 
 void OutputFileImpl::write(
     const coordinate_response_measure::AdaptiveTrial &trial) {
@@ -349,8 +349,8 @@ void OutputFileImpl::write(const AdaptiveTest &test) { write(format(test)); }
 void OutputFileImpl::write(const FixedLevelTest &test) { write(format(test)); }
 
 void OutputFileImpl::openNewFile(const TestIdentity &test) {
-    writer->open(generateNewFilePath(test));
-    if (writer->failed())
+    writer.open(generateNewFilePath(test));
+    if (writer.failed())
         throw OpenFailure{};
     justWroteAdaptiveCoordinateResponseTrial = false;
     justWroteFixedLevelCoordinateResponseTrial = false;
@@ -361,13 +361,13 @@ void OutputFileImpl::openNewFile(const TestIdentity &test) {
 
 auto OutputFileImpl::generateNewFilePath(const TestIdentity &test)
     -> std::string {
-    return path->outputDirectory() + "/" + path->generateFileName(test) +
+    return path.outputDirectory() + "/" + path.generateFileName(test) +
         ".txt";
 }
 
-void OutputFileImpl::close() { writer->close(); }
+void OutputFileImpl::close() { writer.close(); }
 
-void OutputFileImpl::save() { writer->save(); }
+void OutputFileImpl::save() { writer.save(); }
 
 void OutputFileImpl::write(const AdaptiveTestResults &results) {
     for (const auto &result : results)
