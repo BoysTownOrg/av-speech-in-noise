@@ -1349,24 +1349,6 @@ TEST_F(PresenterConstructionTests, populatesTransducerMenu) {
 
 #define PRESENTER_TEST(a) TEST_F(PresenterTests, a)
 
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestHidesTestSetupView) {
-    assertHidesTestSetupView(confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsExperimenterView) {
-    assertShowsExperimenterView(confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
-    assertDoesNotShowSubjectView(confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(
-    confirmingAdaptiveCorrectKeywordsTestShowsNextTrialButtonForExperimenter) {
-    assertConfirmTestSetupShowsNextTrialButton(
-        confirmingAdaptiveCorrectKeywordsTest, playingTrialFromExperimenter);
-}
-
 PRESENTER_TEST(submittingCorrectKeywordsPassesCorrectKeywords) {
     setCorrectKeywords(experimenterView, "1");
     run(submittingCorrectKeywords);
@@ -1468,6 +1450,10 @@ PRESENTER_TEST(callsEventLoopWhenRun) {
     assertTrue(view.eventLoopCalled());
 }
 
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptiveCorrectKeywordsTest);
+}
+
 PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestHidesTestSetupView) {
     assertHidesTestSetupView(
@@ -1508,6 +1494,10 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
 }
 
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsExperimenterView) {
+    assertShowsExperimenterView(confirmingAdaptiveCorrectKeywordsTest);
+}
+
 PRESENTER_TEST(confirmingAdaptivePassFailTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingAdaptivePassFailTest);
 }
@@ -1534,6 +1524,10 @@ PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMaskerShowsSubjectView) {
     assertShowsSubjectView(
         confirmingAdaptiveCoordinateResponseMeasureTestWithDelayedMasker);
+}
+
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 PRESENTER_TEST(
@@ -1729,6 +1723,12 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingAdaptivePassFailTest, submittingPassedTrial);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingAdaptiveCorrectKeywordsTest, playingTrialFromExperimenter);
 }
 
 PRESENTER_TEST(
