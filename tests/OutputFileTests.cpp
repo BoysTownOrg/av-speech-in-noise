@@ -186,6 +186,10 @@ void write(OutputFileImpl &file, const open_set::AdaptiveTrial &trial) {
     file.write(trial);
 }
 
+void writeOpenSetAdaptiveTrial(OutputFileImpl &file) {
+    write(file, open_set::AdaptiveTrial{});
+}
+
 void assertEndsWith(WriterStub &writer, const std::string &s) {
     assertTrue(written(writer).endsWith(s));
 }
@@ -272,7 +276,6 @@ class OutputFileTests : public ::testing::Test {
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     FreeResponseTrial freeResponseTrial;
     CorrectKeywordsTrial correctKeywordsTrial;
-    open_set::AdaptiveTrial openSetAdaptiveTrial;
     AdaptiveTest adaptiveTest;
     FixedLevelTest fixedLevelTest;
     WritingFixedLevelTest writingFixedLevelTest;
@@ -399,6 +402,7 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertWritesOpenSetAdaptiveTrialOnLine(int n) {
+        open_set::AdaptiveTrial openSetAdaptiveTrial;
         openSetAdaptiveTrial.SNR_dB = 11;
         openSetAdaptiveTrial.target = "a";
         openSetAdaptiveTrial.reversals = 22;
@@ -444,7 +448,7 @@ OUTPUT_FILE_TEST(writeCorrectKeywordsTrialHeading) {
 }
 
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialHeading) {
-    write(file, openSetAdaptiveTrial);
+    writeOpenSetAdaptiveTrial(file);
     assertOpenSetAdaptiveHeadingAtLine(writer, 1);
 }
 
@@ -486,7 +490,7 @@ OUTPUT_FILE_TEST(writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
 }
 
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
-    write(file, openSetAdaptiveTrial);
+    writeOpenSetAdaptiveTrial(file);
     assertWritesOpenSetAdaptiveTrialOnLine(3);
 }
 
@@ -521,9 +525,9 @@ OUTPUT_FILE_TEST(
 
 OUTPUT_FILE_TEST(
     writeOpenSetAdaptiveTwiceWritesTrialHeadingTwiceWhenNewFileOpened) {
-    write(file, openSetAdaptiveTrial);
+    writeOpenSetAdaptiveTrial(file);
     openNewFile(file);
-    write(file, openSetAdaptiveTrial);
+    writeOpenSetAdaptiveTrial(file);
     assertOpenSetAdaptiveHeadingAtLine(writer, 3);
 }
 
