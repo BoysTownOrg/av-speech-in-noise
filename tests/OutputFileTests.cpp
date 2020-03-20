@@ -463,18 +463,21 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(writer, "22", 3, n);
         assertNthCommaDelimitedEntryOfLine(writer, "33", 5, n);
     }
+
+    void assertWritesHeadingOnFirstLine(WritingTrialUseCase &useCase) {
+        run(useCase, file);
+        assertHeadingAtLine(useCase, 1);
+    }
 };
 
 #define OUTPUT_FILE_TEST(a) TEST_F(OutputFileTests, a)
 
 OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialHeading) {
-    run(writingAdaptiveCoordinateResponseTrial, file);
-    assertHeadingAtLine(writingAdaptiveCoordinateResponseTrial, 1);
+    assertWritesHeadingOnFirstLine(writingAdaptiveCoordinateResponseTrial);
 }
 
 OUTPUT_FILE_TEST(writeFixedLevelCoordinateResponseTrialHeading) {
-    run(writingFixedLevelCoordinateResponseTrial, file);
-    assertHeadingAtLine(writingFixedLevelCoordinateResponseTrial, 1);
+    assertWritesHeadingOnFirstLine(writingFixedLevelCoordinateResponseTrial);
 }
 
 OUTPUT_FILE_TEST(writeFreeResponseTrialHeading) {
@@ -488,8 +491,7 @@ OUTPUT_FILE_TEST(writeCorrectKeywordsTrialHeading) {
 }
 
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialHeading) {
-    writeOpenSetAdaptiveTrial(file);
-    assertHeadingAtLine(writingOpenSetAdaptiveTrial, 1);
+    assertWritesHeadingOnFirstLine(writingOpenSetAdaptiveTrial);
 }
 
 OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrial) {
