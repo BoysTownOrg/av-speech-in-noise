@@ -283,8 +283,6 @@ class OutputFileTests : public ::testing::Test {
     WritingOpenSetAdaptiveTrial writingOpenSetAdaptiveTrial;
     WritingCorrectKeywordsTrial writingCorrectKeywordsTrial;
     FreeResponseTrial freeResponseTrial;
-    AdaptiveTest adaptiveTest;
-    FixedLevelTest fixedLevelTest;
     WritingFixedLevelTest writingFixedLevelTest;
     WritingAdaptiveTest writingAdaptiveTest;
 
@@ -646,6 +644,7 @@ OUTPUT_FILE_TEST(writeCommonFixedLevelTest) {
 }
 
 OUTPUT_FILE_TEST(writeAdaptiveTest) {
+    AdaptiveTest adaptiveTest;
     adaptiveTest.startingSnr_dB = 2;
     file.write(adaptiveTest);
     assertContainsColonDelimitedEntry(writer, "starting SNR (dB)", "2");
@@ -653,6 +652,7 @@ OUTPUT_FILE_TEST(writeAdaptiveTest) {
 }
 
 OUTPUT_FILE_TEST(writeFixedLevelTest) {
+    FixedLevelTest fixedLevelTest;
     fixedLevelTest.snr_dB = 2;
     file.write(fixedLevelTest);
     assertContainsColonDelimitedEntry(writer, "SNR (dB)", "2");
