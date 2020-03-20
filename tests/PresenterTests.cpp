@@ -403,20 +403,20 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return calibration_;
     }
 
-    [[nodiscard]] auto text() const -> std::string { return text_; }
-
-    [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
-
-    [[nodiscard]] auto textForMethodQuery() const -> std::string {
-        return textForMethodQuery_;
-    }
-
     void initialize(
         Model &m, const std::string &t, const TestIdentity &id) override {
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
             m.initialize(AdaptiveTest{});
+    }
+
+    [[nodiscard]] auto text() const -> std::string { return text_; }
+
+    [[nodiscard]] auto identity() const -> TestIdentity { return identity_; }
+
+    [[nodiscard]] auto textForMethodQuery() const -> std::string {
+        return textForMethodQuery_;
     }
 
     void setMethod(Method m) { method_ = m; }
@@ -431,7 +431,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
   private:
     std::string text_;
     std::string textForMethodQuery_;
-    TestIdentity identity_;
+    TestIdentity identity_{};
     const Calibration &calibration_;
     Method method_{};
     bool initializeAnyTestOnApply_{};
@@ -988,27 +988,11 @@ class PresenterTests : public ::testing::Test {
 
     void assertExperimenterViewShown() { assertTrue(experimenterViewShown()); }
 
-    void assertTestingViewShown() { assertTrue(testingViewShown()); }
-
     auto experimenterViewShown() -> bool { return experimenterView.shown(); }
-
-    auto testingViewShown() -> bool { return experimenterView.shown(); }
-
-    void assertExperimenterViewHidden() {
-        assertTrue(experimenterViewHidden());
-    }
 
     auto experimenterViewHidden() -> bool { return experimenterView.hidden(); }
 
-    void assertExperimenterViewNotHidden() {
-        assertFalse(experimenterViewHidden());
-    }
-
-    void assertSubjectViewShown() { assertTrue(subjectViewShown()); }
-
     auto subjectViewShown() -> bool { return subjectView.shown(); }
-
-    void assertSubjectViewNotShown() { assertFalse(subjectViewShown()); }
 
     void assertSubjectViewHidden() { assertTrue(subjectView.hidden()); }
 
@@ -1125,7 +1109,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertHidesExperimenterView(UseCase &useCase) {
         run(useCase);
-        assertExperimenterViewHidden();
+        assertTrue(experimenterViewHidden());
     }
 
     void assertCompleteTestDoesNotPlayTrial(UseCase &useCase) {
@@ -1136,7 +1120,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertDoesNotHideExperimenterView(TrialSubmission &useCase) {
         run(useCase);
-        assertExperimenterViewNotHidden();
+        assertFalse(experimenterViewHidden());
     }
 
     static void assertShowsNextTrialButton(TrialSubmission &useCase) {
@@ -1159,14 +1143,9 @@ class PresenterTests : public ::testing::Test {
         assertExperimenterViewShown();
     }
 
-    void assertShowsTestingView(UseCase &useCase) {
-        run(useCase);
-        assertTestingViewShown();
-    }
-
     void assertDoesNotShowSubjectView(UseCase &useCase) {
         run(useCase);
-        assertSubjectViewNotShown();
+        assertFalse(subjectViewShown());
     }
 
     void assertPassesTestSettingsFileToTextFileReader(UseCase &useCase) {
@@ -1260,7 +1239,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertShowsSubjectView(UseCase &useCase) {
         run(useCase);
-        assertSubjectViewShown();
+        assertTrue(subjectViewShown());
     }
 
     void setCorrectKeywords(std::string s) {
@@ -1402,10 +1381,6 @@ PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestHidesTestSetupView) {
 
 PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingAdaptiveCorrectKeywordsTest);
-}
-
-PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTestingView) {
-    assertShowsTestingView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
@@ -1561,16 +1536,6 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(confirmingAdaptivePassFailTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(confirmingAdaptivePassFailTestShowsTestingView) {
-    assertShowsTestingView(confirmingAdaptivePassFailTest);
-}
-
-PRESENTER_TEST(
-    confirmingFixedLevelFreeResponseTestWithTargetReplacementShowsTestingView) {
-    assertShowsTestingView(
-        confirmingFixedLevelFreeResponseWithTargetReplacementTest);
 }
 
 PRESENTER_TEST(
