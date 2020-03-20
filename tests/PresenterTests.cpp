@@ -988,6 +988,10 @@ void setTestComplete(ModelStub &model) { model.setTestComplete(); }
 
 auto trialPlayed(ModelStub &model) -> bool { return model.trialPlayed(); }
 
+void setCorrectKeywords(ViewStub::ExperimenterViewStub &view, std::string s) {
+    view.setCorrectKeywords(std::move(s));
+}
+
 class PresenterTests : public ::testing::Test {
   protected:
     ModelStub model;
@@ -1200,30 +1204,20 @@ class PresenterTests : public ::testing::Test {
     }
 
     void assertShowsTrialNumber(UseCase &useCase) {
-        setTrialNumber(1);
+        model.setTrialNumber(1);
         run(useCase);
         assertEqual("Trial 1", experimenterView.displayed());
     }
 
     void assertShowsTargetFileName(UseCase &useCase) {
-        setTargetFileName("a");
+        model.setTargetFileName("a");
         run(useCase);
         assertEqual("a", experimenterView.secondaryDisplayed());
-    }
-
-    void setTrialNumber(int n) { model.setTrialNumber(n); }
-
-    void setTargetFileName(std::string s) {
-        model.setTargetFileName(std::move(s));
     }
 
     void assertShowsSubjectView(UseCase &useCase) {
         run(useCase);
         assertTrue(shown(subjectView));
-    }
-
-    void setCorrectKeywords(std::string s) {
-        experimenterView.setCorrectKeywords(std::move(s));
     }
 
     void assertExitTestAfterCompletingTrialHidesResponseSubmission(
@@ -1374,19 +1368,19 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsPassesCorrectKeywords) {
-    setCorrectKeywords("1");
+    setCorrectKeywords(experimenterView, "1");
     run(submittingCorrectKeywords);
     assertEqual(1, model.correctKeywords());
 }
 
 PRESENTER_TEST(submittingInvalidCorrectKeywordsShowsErrorMessage) {
-    setCorrectKeywords("a");
+    setCorrectKeywords(experimenterView, "a");
     run(submittingCorrectKeywords);
     assertEqual("'a' is not a valid number.", errorMessage(view));
 }
 
 PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
-    setCorrectKeywords("a");
+    setCorrectKeywords(experimenterView, "a");
     run(submittingCorrectKeywords);
     assertFalse(submittingCorrectKeywords.responseViewHidden());
 }
