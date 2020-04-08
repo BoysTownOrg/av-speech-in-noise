@@ -88,7 +88,6 @@ class CocoaTestSetupView : public View::TestSetup {
 
   private:
     void addSubview(NSView *subview);
-    const char *stringValue(NSTextField *field);
 
     NSView *view_;
     NSTextField *subjectIdLabel;

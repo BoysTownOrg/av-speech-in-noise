@@ -98,6 +98,10 @@ static auto textFieldWithFrame(NSRect r) -> NSTextField * {
     return [[NSTextField alloc] initWithFrame:r];
 }
 
+static void addSubview(NSView *parent, NSView *child) {
+    [parent addSubview:child];
+}
+
 static void hide(NSView *v) { [v setHidden:YES]; }
 
 static void show(NSView *v) { [v setHidden:NO]; }
@@ -239,7 +243,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
 }
 
 void CocoaTestSetupView::addSubview(NSView *subview) {
-    [view_ addSubview:subview];
+    av_speech_in_noise::addSubview(view_, subview);
 }
 
 auto CocoaTestSetupView::view() -> NSView * { return view_; }
@@ -248,32 +252,28 @@ void CocoaTestSetupView::show() { av_speech_in_noise::show(view_); }
 
 void CocoaTestSetupView::hide() { av_speech_in_noise::hide(view_); }
 
-auto CocoaTestSetupView::stringValue(NSTextField *field) -> const char * {
+static auto string(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
 }
 
 auto CocoaTestSetupView::testSettingsFile() -> std::string {
-    return stringValue(testSettingsFile_);
+    return string(testSettingsFile_);
 }
 
-auto CocoaTestSetupView::testerId() -> std::string {
-    return stringValue(testerId_);
-}
+auto CocoaTestSetupView::testerId() -> std::string { return string(testerId_); }
 
 auto CocoaTestSetupView::subjectId() -> std::string {
-    return stringValue(subjectId_);
+    return string(subjectId_);
 }
 
-auto CocoaTestSetupView::session() -> std::string {
-    return stringValue(session_);
-}
+auto CocoaTestSetupView::session() -> std::string { return string(session_); }
 
 auto CocoaTestSetupView::transducer() -> std::string {
     return transducerMenu.titleOfSelectedItem.UTF8String;
 }
 
 auto CocoaTestSetupView::rmeSetting() -> std::string {
-    return stringValue(rmeSetting_);
+    return string(rmeSetting_);
 }
 
 void CocoaTestSetupView::populateTransducerMenu(
@@ -360,7 +360,7 @@ void CocoaSubjectView::addNumberButton(
         [[NSAttributedString alloc] initWithString:title
                                         attributes:attrsDictionary]};
     [button setAttributedTitle:attrString];
-    [responseButtons addSubview:button];
+    av_speech_in_noise::addSubview(responseButtons, button);
 }
 
 void CocoaSubjectView::addNextTrialButton() {
@@ -377,7 +377,7 @@ void CocoaSubjectView::addNextTrialButton() {
     [button_ setAttributedTitle:attrString];
     [button_ setFrame:NSMakeRect(0, 0, nextTrialButton.frame.size.width,
                           nextTrialButton.frame.size.height)];
-    [nextTrialButton addSubview:button_];
+    av_speech_in_noise::addSubview(nextTrialButton, button_);
 }
 
 auto CocoaSubjectView::numberResponse() -> std::string {
@@ -478,9 +478,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     setStaticLike(displayedText_);
     setStaticLike(secondaryDisplayedText_);
     setStaticLike(continueTestingDialogMessage_);
-    [view_ addSubview:exitTestButton_];
-    [view_ addSubview:displayedText_];
-    [view_ addSubview:secondaryDisplayedText_];
+    av_speech_in_noise::addSubview(view_, exitTestButton_);
+    av_speech_in_noise::addSubview(view_, displayedText_);
+    av_speech_in_noise::addSubview(view_, secondaryDisplayedText_);
     av_speech_in_noise::hide(view_);
     [flagged_ setButtonType:NSButtonTypeSwitch];
     [flagged_ setTitle:@"flagged"];
@@ -522,21 +522,23 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         setFrame:NSMakeRect(
                      correctKeywordsSubmission.frame.size.width - buttonWidth,
                      0, buttonWidth, buttonHeight)];
-    [responseSubmission addSubview:submitFreeResponse_];
-    [responseSubmission addSubview:response_];
-    [responseSubmission addSubview:flagged_];
-    [evaluationButtons addSubview:passButton_];
-    [evaluationButtons addSubview:failButton_];
+    av_speech_in_noise::addSubview(responseSubmission, submitFreeResponse_);
+    av_speech_in_noise::addSubview(responseSubmission, response_);
+    av_speech_in_noise::addSubview(responseSubmission, flagged_);
+    av_speech_in_noise::addSubview(evaluationButtons, passButton_);
+    av_speech_in_noise::addSubview(evaluationButtons, failButton_);
     [continueTestingDialog.contentView addSubview:continueButton_];
     [continueTestingDialog.contentView addSubview:exitButton_];
     [continueTestingDialog.contentView
         addSubview:continueTestingDialogMessage_];
-    [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
-    [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
-    [view_ addSubview:nextTrialButton_];
-    [view_ addSubview:responseSubmission];
-    [view_ addSubview:evaluationButtons];
-    [view_ addSubview:correctKeywordsSubmission];
+    av_speech_in_noise::addSubview(
+        correctKeywordsSubmission, correctKeywordsEntry_);
+    av_speech_in_noise::addSubview(
+        correctKeywordsSubmission, submitCorrectKeywords_);
+    av_speech_in_noise::addSubview(view_, nextTrialButton_);
+    av_speech_in_noise::addSubview(view_, responseSubmission);
+    av_speech_in_noise::addSubview(view_, evaluationButtons);
+    av_speech_in_noise::addSubview(view_, correctKeywordsSubmission);
     av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton_);
     av_speech_in_noise::hide(responseSubmission);
@@ -700,8 +702,8 @@ CocoaView::CocoaView(NSRect r)
     [app.mainMenu addItem:appMenu];
     [view addSubview:testSetup_.view()];
     [view addSubview:experimenter_.view()];
-    [view addSubview:audioDevice_label];
-    [view addSubview:deviceMenu];
+    av_speech_in_noise::addSubview(view, audioDevice_label);
+    av_speech_in_noise::addSubview(view, deviceMenu);
     [window.contentView addSubview:view];
     [window makeKeyAndOrderFront:nil];
 }
@@ -752,7 +754,9 @@ void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
         [deviceMenu addItemWithTitle:asNsString(item)];
 }
 
-void CocoaView::addSubview(NSView *v) { [view addSubview:v]; }
+void CocoaView::addSubview(NSView *v) {
+    av_speech_in_noise::addSubview(view, v);
+}
 
 void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {
     [window setDelegate:delegate];
