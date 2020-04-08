@@ -224,26 +224,22 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
             NSMakeRect(r.size.width - buttonWidth - 15 - 1.5 * buttonWidth, 0,
                 1.5 * buttonWidth, buttonHeight))
     };
-    addSubview(browseForTestSettingsButton);
-    addSubview(confirmButton);
-    addSubview(playCalibrationButton);
-    addSubview(subjectIdLabel);
-    addSubview(subjectId_);
-    addSubview(testerIdLabel);
-    addSubview(testerId_);
-    addSubview(sessionLabel);
-    addSubview(session_);
-    addSubview(rmeSettingLabel);
-    addSubview(rmeSetting_);
-    addSubview(transducerLabel);
-    addSubview(transducerMenu);
-    addSubview(testSettingsFile_label);
-    addSubview(testSettingsFile_);
+    addSubview(view_, browseForTestSettingsButton);
+    addSubview(view_, confirmButton);
+    addSubview(view_, playCalibrationButton);
+    addSubview(view_, subjectIdLabel);
+    addSubview(view_, subjectId_);
+    addSubview(view_, testerIdLabel);
+    addSubview(view_, testerId_);
+    addSubview(view_, sessionLabel);
+    addSubview(view_, session_);
+    addSubview(view_, rmeSettingLabel);
+    addSubview(view_, rmeSetting_);
+    addSubview(view_, transducerLabel);
+    addSubview(view_, transducerMenu);
+    addSubview(view_, testSettingsFile_label);
+    addSubview(view_, testSettingsFile_);
     av_speech_in_noise::show(view_);
-}
-
-void CocoaTestSetupView::addSubview(NSView *subview) {
-    av_speech_in_noise::addSubview(view_, subview);
 }
 
 auto CocoaTestSetupView::view() -> NSView * { return view_; }
@@ -360,7 +356,7 @@ void CocoaSubjectView::addNumberButton(
         [[NSAttributedString alloc] initWithString:title
                                         attributes:attrsDictionary]};
     [button setAttributedTitle:attrString];
-    av_speech_in_noise::addSubview(responseButtons, button);
+    addSubview(responseButtons, button);
 }
 
 void CocoaSubjectView::addNextTrialButton() {
@@ -377,7 +373,7 @@ void CocoaSubjectView::addNextTrialButton() {
     [button_ setAttributedTitle:attrString];
     [button_ setFrame:NSMakeRect(0, 0, nextTrialButton.frame.size.width,
                           nextTrialButton.frame.size.height)];
-    av_speech_in_noise::addSubview(nextTrialButton, button_);
+    addSubview(nextTrialButton, button_);
 }
 
 auto CocoaSubjectView::numberResponse() -> std::string {
@@ -478,9 +474,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     setStaticLike(displayedText_);
     setStaticLike(secondaryDisplayedText_);
     setStaticLike(continueTestingDialogMessage_);
-    av_speech_in_noise::addSubview(view_, exitTestButton_);
-    av_speech_in_noise::addSubview(view_, displayedText_);
-    av_speech_in_noise::addSubview(view_, secondaryDisplayedText_);
+    addSubview(view_, exitTestButton_);
+    addSubview(view_, displayedText_);
+    addSubview(view_, secondaryDisplayedText_);
     av_speech_in_noise::hide(view_);
     [flagged_ setButtonType:NSButtonTypeSwitch];
     [flagged_ setTitle:@"flagged"];
@@ -522,23 +518,21 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         setFrame:NSMakeRect(
                      correctKeywordsSubmission.frame.size.width - buttonWidth,
                      0, buttonWidth, buttonHeight)];
-    av_speech_in_noise::addSubview(responseSubmission, submitFreeResponse_);
-    av_speech_in_noise::addSubview(responseSubmission, response_);
-    av_speech_in_noise::addSubview(responseSubmission, flagged_);
-    av_speech_in_noise::addSubview(evaluationButtons, passButton_);
-    av_speech_in_noise::addSubview(evaluationButtons, failButton_);
+    addSubview(responseSubmission, submitFreeResponse_);
+    addSubview(responseSubmission, response_);
+    addSubview(responseSubmission, flagged_);
+    addSubview(evaluationButtons, passButton_);
+    addSubview(evaluationButtons, failButton_);
     [continueTestingDialog.contentView addSubview:continueButton_];
     [continueTestingDialog.contentView addSubview:exitButton_];
     [continueTestingDialog.contentView
         addSubview:continueTestingDialogMessage_];
-    av_speech_in_noise::addSubview(
-        correctKeywordsSubmission, correctKeywordsEntry_);
-    av_speech_in_noise::addSubview(
-        correctKeywordsSubmission, submitCorrectKeywords_);
-    av_speech_in_noise::addSubview(view_, nextTrialButton_);
-    av_speech_in_noise::addSubview(view_, responseSubmission);
-    av_speech_in_noise::addSubview(view_, evaluationButtons);
-    av_speech_in_noise::addSubview(view_, correctKeywordsSubmission);
+    addSubview(correctKeywordsSubmission, correctKeywordsEntry_);
+    addSubview(correctKeywordsSubmission, submitCorrectKeywords_);
+    addSubview(view_, nextTrialButton_);
+    addSubview(view_, responseSubmission);
+    addSubview(view_, evaluationButtons);
+    addSubview(view_, correctKeywordsSubmission);
     av_speech_in_noise::hide(evaluationButtons);
     av_speech_in_noise::hide(nextTrialButton_);
     av_speech_in_noise::hide(responseSubmission);
@@ -702,8 +696,8 @@ CocoaView::CocoaView(NSRect r)
     [app.mainMenu addItem:appMenu];
     [view addSubview:testSetup_.view()];
     [view addSubview:experimenter_.view()];
-    av_speech_in_noise::addSubview(view, audioDevice_label);
-    av_speech_in_noise::addSubview(view, deviceMenu);
+    addSubview(view, audioDevice_label);
+    addSubview(view, deviceMenu);
     [window.contentView addSubview:view];
     [window makeKeyAndOrderFront:nil];
 }
@@ -752,10 +746,6 @@ auto CocoaView::audioDevice() -> std::string {
 void CocoaView::populateAudioDeviceMenu(std::vector<std::string> items) {
     for (const auto &item : items)
         [deviceMenu addItemWithTitle:asNsString(item)];
-}
-
-void CocoaView::addSubview(NSView *v) {
-    av_speech_in_noise::addSubview(view, v);
 }
 
 void CocoaView::setDelegate(id<NSWindowDelegate> delegate) {

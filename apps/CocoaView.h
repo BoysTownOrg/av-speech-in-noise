@@ -87,8 +87,6 @@ class CocoaTestSetupView : public View::TestSetup {
     void setCalibration(std::string);
 
   private:
-    void addSubview(NSView *subview);
-
     NSView *view_;
     NSTextField *subjectIdLabel;
     NSTextField *subjectId_;
@@ -147,7 +145,6 @@ class CocoaView : public View {
     std::string browseForOpeningFile() override;
     std::string audioDevice() override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
-    void addSubview(NSView *);
     void setDelegate(id<NSWindowDelegate>);
     void center();
     auto testSetup() -> View::TestSetup &;
