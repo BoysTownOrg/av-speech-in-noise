@@ -112,9 +112,14 @@ static void setStaticLike(NSTextField *f) {
     [f setEditable:NO];
 }
 
-static auto allocLabel(NSString *label, NSRect frame) -> NSTextField * {
+static void set(NSTextField *field, const std::string &s) {
+    [field setStringValue:asNsString(s)];
+}
+
+static auto allocLabel(const std::string &label, NSRect frame)
+    -> NSTextField * {
     const auto text{textFieldWithFrame(frame)};
-    [text setStringValue:label];
+    set(text, label);
     setStaticLike(text);
     [text setSelectable:NO];
     [text setAlignment:NSTextAlignmentRight];
@@ -155,9 +160,9 @@ static auto normalTextFieldWithHeight(CGFloat x) -> NSTextField * {
     return textFieldWithFrame(normalTextFieldSizeAtHeight(x));
 }
 
-static auto normalLabelWithHeight(CGFloat x, std::string s) -> NSTextField * {
-    return allocLabel(
-        asNsString(std::move(s)), NSMakeRect(0, x, labelWidth, labelHeight));
+static auto normalLabelWithHeight(CGFloat x, const std::string &s)
+    -> NSTextField * {
+    return allocLabel(s, NSMakeRect(0, x, labelWidth, labelHeight));
 }
 
 static auto filePathTextFieldSizeWithHeight(CGFloat x) -> NSTextField * {
@@ -175,19 +180,21 @@ static auto popUpButtonAtHeightWithWidth(CGFloat height, CGFloat width)
                                       pullsDown:NO];
 }
 
-static auto button(std::string s, id target, SEL action) -> NSButton * {
-    return [NSButton buttonWithTitle:asNsString(std::move(s))
+static auto button(const std::string& s, id target, SEL action) -> NSButton * {
+    return [NSButton buttonWithTitle:asNsString(s)
                               target:target
                               action:action];
 }
 
-static auto button(std::string s, id target, SEL action, NSRect frame)
+static auto button(const std::string& s, id target, SEL action, NSRect frame)
     -> NSButton * {
-    auto button_{[NSButton buttonWithTitle:asNsString(std::move(s))
-                                    target:target
-                                    action:action]};
+    const auto button_{button(s, target, action)};
     [button_ setFrame:frame];
     return button_;
+}
+
+static auto string(NSTextField *field) -> const char * {
+    return field.stringValue.UTF8String;
 }
 
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
@@ -248,10 +255,6 @@ void CocoaTestSetupView::show() { av_speech_in_noise::show(view_); }
 
 void CocoaTestSetupView::hide() { av_speech_in_noise::hide(view_); }
 
-static auto string(NSTextField *field) -> const char * {
-    return field.stringValue.UTF8String;
-}
-
 auto CocoaTestSetupView::testSettingsFile() -> std::string {
     return string(testSettingsFile_);
 }
@@ -279,7 +282,7 @@ void CocoaTestSetupView::populateTransducerMenu(
 }
 
 void CocoaTestSetupView::setTestSettingsFile(std::string s) {
-    [testSettingsFile_ setStringValue:asNsString(std::move(s))];
+    set(testSettingsFile_, s);
 }
 
 void CocoaTestSetupView::confirm() { listener_->confirmTestSetup(); }
@@ -559,12 +562,10 @@ auto CocoaExperimenterView::view() -> NSView * { return view_; }
 
 void CocoaExperimenterView::exitTest() { listener_->exitTest(); }
 
-void CocoaExperimenterView::display(std::string s) {
-    [displayedText_ setStringValue:asNsString(std::move(s))];
-}
+void CocoaExperimenterView::display(std::string s) { set(displayedText_, s); }
 
 void CocoaExperimenterView::secondaryDisplay(std::string s) {
-    [secondaryDisplayedText_ setStringValue:asNsString(std::move(s))];
+    set(secondaryDisplayedText_, s);
 }
 
 void CocoaExperimenterView::showNextTrialButton() {
@@ -611,15 +612,15 @@ void CocoaExperimenterView::hideContinueTestingDialog() {
 
 void CocoaExperimenterView::setContinueTestingDialogMessage(
     const std::string &s) {
-    [continueTestingDialogMessage_ setStringValue:asNsString(s)];
+    set(continueTestingDialogMessage_, s);
 }
 
 auto CocoaExperimenterView::freeResponse() -> std::string {
-    return response_.stringValue.UTF8String;
+    return string(response_);
 }
 
 auto CocoaExperimenterView::correctKeywords() -> std::string {
-    return correctKeywordsEntry_.stringValue.UTF8String;
+    return string(correctKeywordsEntry_);
 }
 
 auto CocoaExperimenterView::flagged() -> bool {
@@ -707,7 +708,7 @@ void CocoaView::eventLoop() { [app run]; }
 void CocoaView::showErrorMessage(std::string s) {
     auto alert{[[NSAlert alloc] init]};
     [alert setMessageText:@"Error."];
-    [alert setInformativeText:asNsString(std::move(s))];
+    [alert setInformativeText:asNsString(s)];
     [alert addButtonWithTitle:@"Ok"];
     [alert runModal];
 }
