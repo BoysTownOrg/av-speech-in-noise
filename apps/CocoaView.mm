@@ -459,12 +459,12 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             labelHeight)]},
       continueTestingDialogMessage_{[[NSTextField alloc]
           initWithFrame:NSMakeRect(0, buttonHeight,
-                     3 * buttonWidth, 2 * labelHeight)]},
+                     r.size.width, 2 * labelHeight)]},
       evaluationButtons{[[NSView alloc]
           initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
                             3 * buttonWidth, buttonHeight)]},
       continueTestingDialog{[[NSWindow alloc]
-          initWithContentRect:NSMakeRect(0, 0, 3 * buttonWidth, buttonHeight + 2 * labelHeight)
+          initWithContentRect:NSMakeRect(0, 0, r.size.width, buttonHeight + 2 * labelHeight)
                     styleMask:NSWindowStyleMaskBorderless
                       backing:NSBackingStoreBuffered
                         defer:YES]},
@@ -528,9 +528,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         button("exit", actions, @selector(declineContinuingTesting))
     };
     [continueButton_
-        setFrame:NSMakeRect(2 * buttonWidth, 0,
+        setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
                      buttonWidth, buttonHeight)];
-    [exitButton_ setFrame:NSMakeRect(0,
+    [exitButton_ setFrame:NSMakeRect(r.size.width - 3 * buttonWidth,
                               0, buttonWidth, buttonHeight)];
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))

@@ -19,7 +19,7 @@ jobs:
     - name: generate build system
       env:
         CXX: ${{ matrix.compiler }}
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
     - name: build
       run: cmake --build build
     - name: test

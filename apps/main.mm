@@ -208,7 +208,7 @@ void main() {
     OutputFilePathImpl path{&timeStamp, &systemPath};
     path.setRelativeOutputDirectory(
         "Documents/AvSpeechInNoise Data");
-    OutputFileImpl outputFile{&writer, &path};
+    OutputFileImpl outputFile{writer, path};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
     TextFileReaderImpl textFileReader;
@@ -253,8 +253,8 @@ void main() {
     target_list::RandomizedTargetListWithoutReplacement allStimuli{
         &fileExtensions, &randomizer};
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
-    RecognitionTestModelImpl model_internal{&targetPlayer, &maskerPlayer,
-        &responseEvaluator, &outputFile, &randomizer};
+    RecognitionTestModelImpl model_internal{targetPlayer, maskerPlayer,
+        responseEvaluator, outputFile, randomizer};
     target_list::RandomizedTargetListWithReplacement::Factory targetsWithReplacementFactory{
         &fileExtensions, &randomizer};
     target_list::SubdirectoryTargetListReader targetsWithReplacementReader{
