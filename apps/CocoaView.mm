@@ -98,6 +98,10 @@ static auto textFieldWithFrame(NSRect r) -> NSTextField * {
     return [[NSTextField alloc] initWithFrame:r];
 }
 
+static void hide(NSView *v) { [v setHidden:YES]; }
+
+static void show(NSView *v) { [v setHidden:NO]; }
+
 static void setStaticLike(NSTextField *f) {
     [f setBezeled:NO];
     [f setDrawsBackground:NO];
@@ -231,7 +235,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(transducerMenu);
     addSubview(testSettingsFile_label);
     addSubview(testSettingsFile_);
-    [view_ setHidden:NO];
+    av_speech_in_noise::show(view_);
 }
 
 void CocoaTestSetupView::addSubview(NSView *subview) {
@@ -240,9 +244,9 @@ void CocoaTestSetupView::addSubview(NSView *subview) {
 
 auto CocoaTestSetupView::view() -> NSView * { return view_; }
 
-void CocoaTestSetupView::show() { [view_ setHidden:NO]; }
+void CocoaTestSetupView::show() { av_speech_in_noise::show(view_); }
 
-void CocoaTestSetupView::hide() { [view_ setHidden:YES]; }
+void CocoaTestSetupView::hide() { av_speech_in_noise::hide(view_); }
 
 auto CocoaTestSetupView::stringValue(NSTextField *field) -> const char * {
     return field.stringValue.UTF8String;
@@ -404,18 +408,22 @@ void CocoaSubjectView::respond(id sender) {
     listener_->submitResponse();
 }
 
-void CocoaSubjectView::showResponseButtons() { [responseButtons setHidden:NO]; }
+void CocoaSubjectView::showResponseButtons() {
+    av_speech_in_noise::show(responseButtons);
+}
 
-void CocoaSubjectView::showNextTrialButton() { [nextTrialButton setHidden:NO]; }
+void CocoaSubjectView::showNextTrialButton() {
+    av_speech_in_noise::show(nextTrialButton);
+}
 
 void CocoaSubjectView::hideNextTrialButton() {
-    [nextTrialButton setHidden:YES];
+    av_speech_in_noise::hide(nextTrialButton);
 }
 
 void CocoaSubjectView::playTrial() { listener_->playTrial(); }
 
 void CocoaSubjectView::hideResponseButtons() {
-    [responseButtons setHidden:YES];
+    av_speech_in_noise::hide(responseButtons);
 }
 
 void CocoaSubjectView::subscribe(EventListener *e) { listener_ = e; }
@@ -423,8 +431,6 @@ void CocoaSubjectView::subscribe(EventListener *e) { listener_ = e; }
 void CocoaSubjectView::show() { [window makeKeyAndOrderFront:nil]; }
 
 void CocoaSubjectView::hide() { [window orderOut:nil]; }
-
-void CocoaExperimenterView::subscribe(EventListener *e) { listener_ = e; }
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
@@ -475,7 +481,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [view_ addSubview:exitTestButton_];
     [view_ addSubview:displayedText_];
     [view_ addSubview:secondaryDisplayedText_];
-    [view_ setHidden:YES];
+    av_speech_in_noise::hide(view_);
     [flagged_ setButtonType:NSButtonTypeSwitch];
     [flagged_ setTitle:@"flagged"];
     nextTrialButton_ = button("play trial", actions, @selector(playTrial));
@@ -531,25 +537,27 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [view_ addSubview:responseSubmission];
     [view_ addSubview:evaluationButtons];
     [view_ addSubview:correctKeywordsSubmission];
-    [evaluationButtons setHidden:YES];
-    [nextTrialButton_ setHidden:YES];
-    [responseSubmission setHidden:YES];
-    [correctKeywordsSubmission setHidden:YES];
-    [view_ setHidden:YES];
+    av_speech_in_noise::hide(evaluationButtons);
+    av_speech_in_noise::hide(nextTrialButton_);
+    av_speech_in_noise::hide(responseSubmission);
+    av_speech_in_noise::hide(correctKeywordsSubmission);
+    av_speech_in_noise::hide(view_);
     actions.controller = this;
 }
 
+void CocoaExperimenterView::subscribe(EventListener *e) { listener_ = e; }
+
 void CocoaExperimenterView::showExitTestButton() {
-    [exitTestButton_ setHidden:NO];
+    av_speech_in_noise::show(exitTestButton_);
 }
 
 void CocoaExperimenterView::hideExitTestButton() {
-    [exitTestButton_ setHidden:YES];
+    av_speech_in_noise::hide(exitTestButton_);
 }
 
-void CocoaExperimenterView::show() { [view_ setHidden:NO]; }
+void CocoaExperimenterView::show() { av_speech_in_noise::show(view_); }
 
-void CocoaExperimenterView::hide() { [view_ setHidden:YES]; }
+void CocoaExperimenterView::hide() { av_speech_in_noise::hide(view_); }
 
 auto CocoaExperimenterView::view() -> NSView * { return view_; }
 
@@ -564,35 +572,35 @@ void CocoaExperimenterView::secondaryDisplay(std::string s) {
 }
 
 void CocoaExperimenterView::showNextTrialButton() {
-    [nextTrialButton_ setHidden:NO];
+    av_speech_in_noise::show(nextTrialButton_);
 }
 
 void CocoaExperimenterView::hideNextTrialButton() {
-    [nextTrialButton_ setHidden:YES];
+    av_speech_in_noise::hide(nextTrialButton_);
 }
 
 void CocoaExperimenterView::showEvaluationButtons() {
-    [evaluationButtons setHidden:NO];
+    av_speech_in_noise::show(evaluationButtons);
 }
 
 void CocoaExperimenterView::showFreeResponseSubmission() {
-    [responseSubmission setHidden:NO];
+    av_speech_in_noise::show(responseSubmission);
 }
 
 void CocoaExperimenterView::hideFreeResponseSubmission() {
-    [responseSubmission setHidden:YES];
+    av_speech_in_noise::hide(responseSubmission);
 }
 
 void CocoaExperimenterView::hideEvaluationButtons() {
-    [evaluationButtons setHidden:YES];
+    av_speech_in_noise::hide(evaluationButtons);
 }
 
 void CocoaExperimenterView::showCorrectKeywordsSubmission() {
-    [correctKeywordsSubmission setHidden:NO];
+    av_speech_in_noise::show(correctKeywordsSubmission);
 }
 
 void CocoaExperimenterView::hideCorrectKeywordsSubmission() {
-    [correctKeywordsSubmission setHidden:YES];
+    av_speech_in_noise::hide(correctKeywordsSubmission);
 }
 
 void CocoaExperimenterView::showContinueTestingDialog() {
