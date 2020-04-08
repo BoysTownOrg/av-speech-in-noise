@@ -41,6 +41,7 @@ class CocoaExperimenterView : public View::Experimenter {
     void hideCorrectKeywordsSubmission() override;
     void showContinueTestingDialog() override;
     void hideContinueTestingDialog() override;
+    void setContinueTestingDialogMessage(const std::string &) override;
 
   private:
     NSView *view_;
@@ -52,6 +53,7 @@ class CocoaExperimenterView : public View::Experimenter {
     NSTextField *correctKeywordsEntry_;
     NSTextField *displayedText_;
     NSTextField *secondaryDisplayedText_;
+    NSTextField *continueTestingDialogMessage_;
     NSButton *flagged_;
     NSButton *exitTestButton_;
     NSButton *nextTrialButton_;

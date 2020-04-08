@@ -457,11 +457,14 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             r.size.height - labelHeight,
                             r.size.width - buttonWidth - labelWidth - 30,
                             labelHeight)]},
+      continueTestingDialogMessage_{[[NSTextField alloc]
+          initWithFrame:NSMakeRect(0, buttonHeight,
+                     3 * buttonWidth, 2 * labelHeight)]},
       evaluationButtons{[[NSView alloc]
           initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
                             3 * buttonWidth, buttonHeight)]},
       continueTestingDialog{[[NSWindow alloc]
-          initWithContentRect:NSMakeRect(0, 0, 3 * buttonWidth, buttonHeight)
+          initWithContentRect:NSMakeRect(0, 0, 3 * buttonWidth, buttonHeight + 2 * labelHeight)
                     styleMask:NSWindowStyleMaskBorderless
                       backing:NSBackingStoreBuffered
                         defer:YES]},
@@ -525,10 +528,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
         button("exit", actions, @selector(declineContinuingTesting))
     };
     [continueButton_
-        setFrame:NSMakeRect(evaluationButtons.frame.size.width - buttonWidth, 0,
+        setFrame:NSMakeRect(2 * buttonWidth, 0,
                      buttonWidth, buttonHeight)];
-    [exitButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
-                                  3 * buttonWidth,
+    [exitButton_ setFrame:NSMakeRect(0,
                               0, buttonWidth, buttonHeight)];
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
@@ -544,6 +546,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [evaluationButtons addSubview:failButton_];
     [continueTestingDialog.contentView addSubview:continueButton_];
     [continueTestingDialog.contentView addSubview:exitButton_];
+    [continueTestingDialog.contentView addSubview:continueTestingDialogMessage_];
     [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
     [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
     [view_ addSubview:nextTrialButton_];
@@ -598,6 +601,10 @@ void CocoaExperimenterView::showContinueTestingDialog() {
 
 void CocoaExperimenterView::hideContinueTestingDialog() {
     [view_.window endSheet:continueTestingDialog];
+}
+
+void CocoaExperimenterView::setContinueTestingDialogMessage(const std::string &s) {
+    [continueTestingDialogMessage_ setStringValue:asNsString(s)];
 }
 
 auto CocoaExperimenterView::freeResponse() -> std::string {
