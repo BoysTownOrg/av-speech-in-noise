@@ -494,6 +494,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [secondaryDisplayedText_ setBezeled:NO];
     [secondaryDisplayedText_ setDrawsBackground:NO];
     [secondaryDisplayedText_ setEditable:NO];
+    [continueTestingDialogMessage_ setBezeled:NO];
+    [continueTestingDialogMessage_ setDrawsBackground:NO];
+    [continueTestingDialogMessage_ setEditable:NO];
     [view_ addSubview:exitTestButton_];
     [view_ addSubview:displayedText_];
     [view_ addSubview:secondaryDisplayedText_];
