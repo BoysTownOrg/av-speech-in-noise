@@ -1,6 +1,7 @@
 #include "assert-utility.h"
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <gtest/gtest.h>
+#include <cmath>
 
 namespace adaptive_track {
 namespace {
@@ -380,7 +381,7 @@ ADAPTIVE_TRACK_TEST(thresholdFromTwoSequences) {
     assertThresholdEquals(track, 6, (6 + 0 + 24 + 18 + 36 + 30) / 6.);
 }
 
-ADAPTIVE_TRACK_TEST(thresholdNotEnoughReversals) {
+ADAPTIVE_TRACK_TEST(thresholdTooManyReversals) {
     setStartingX(0);
     setFirstSequenceRunCount(4);
     setFirstSequenceStepSize(3);
@@ -397,6 +398,17 @@ ADAPTIVE_TRACK_TEST(thresholdNotEnoughReversals) {
     assertXEquals(track, 3);
     update(track, "dd");
     assertThresholdEquals(track, 5, (-9 - 3 - 6 + 3)/4.);
+}
+
+ADAPTIVE_TRACK_TEST(thresholdNegativeReversals) {
+    setStartingX(0);
+    setFirstSequenceRunCount(4);
+    setFirstSequenceStepSize(3);
+    setFirstSequenceDown(2);
+    setFirstSequenceUp(1);
+    auto track{construct(settings)};
+    update(track, "dduddudd");
+    assertTrue(std::isnan(track.threshold(-1)));
 }
 
 // https://doi.org/10.1121/1.1912375

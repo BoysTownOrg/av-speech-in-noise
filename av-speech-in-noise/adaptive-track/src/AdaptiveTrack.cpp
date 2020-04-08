@@ -107,14 +107,15 @@ void AdaptiveTrack::reset() {
 
 static auto size(const std::vector<int> &v) -> gsl::index { return v.size(); }
 
-static auto upperBound(int reversals, const std::vector<int> &reversalX)
+static auto bounded(int reversals, const std::vector<int> &reversalX)
     -> gsl::index {
-    return std::min<gsl::index>(reversals, size(reversalX));
+    return std::max(
+        std::min<gsl::index>(reversals, size(reversalX)), gsl::index{0});
 }
 
 auto AdaptiveTrack::threshold(int reversals) -> double {
     return std::accumulate(reversalX.rbegin(),
-               reversalX.rbegin() + upperBound(reversals, reversalX), 0) /
-        (upperBound(reversals, reversalX) * 1.);
+               reversalX.rbegin() + bounded(reversals, reversalX), 0) /
+        (bounded(reversals, reversalX) * 1.);
 }
 }
