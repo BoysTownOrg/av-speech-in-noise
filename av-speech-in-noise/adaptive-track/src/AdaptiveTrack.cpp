@@ -1,4 +1,5 @@
 #include "AdaptiveTrack.hpp"
+#include <gsl/gsl>
 #include <algorithm>
 
 namespace adaptive_track {
@@ -104,9 +105,16 @@ void AdaptiveTrack::reset() {
     bumpCount_ = 0;
 }
 
+static auto size(const std::vector<int> &v) -> gsl::index { return v.size(); }
+
+static auto upperBound(int reversals, const std::vector<int> &reversalX)
+    -> gsl::index {
+    return std::min<gsl::index>(reversals, size(reversalX));
+}
+
 auto AdaptiveTrack::threshold(int reversals) -> double {
-    return std::accumulate(
-               reversalX.rbegin(), reversalX.rbegin() + reversals, 0) /
-        (reversals * 1.);
+    return std::accumulate(reversalX.rbegin(),
+               reversalX.rbegin() + upperBound(reversals, reversalX), 0) /
+        (upperBound(reversals, reversalX) * 1.);
 }
 }
