@@ -98,12 +98,16 @@ static auto textFieldWithFrame(NSRect r) -> NSTextField * {
     return [[NSTextField alloc] initWithFrame:r];
 }
 
+static void setStaticLike(NSTextField *f) {
+    [f setBezeled:NO];
+    [f setDrawsBackground:NO];
+    [f setEditable:NO];
+}
+
 static auto allocLabel(NSString *label, NSRect frame) -> NSTextField * {
     const auto text{textFieldWithFrame(frame)};
     [text setStringValue:label];
-    [text setBezeled:NO];
-    [text setDrawsBackground:NO];
-    [text setEditable:NO];
+    setStaticLike(text);
     [text setSelectable:NO];
     [text setAlignment:NSTextAlignmentRight];
     [text setTextColor:NSColor.labelColor];
@@ -422,30 +426,6 @@ void CocoaSubjectView::hide() { [window orderOut:nil]; }
 
 void CocoaExperimenterView::subscribe(EventListener *e) { listener_ = e; }
 
-void CocoaExperimenterView::showExitTestButton() {
-    [exitTestButton_ setHidden:NO];
-}
-
-void CocoaExperimenterView::hideExitTestButton() {
-    [exitTestButton_ setHidden:YES];
-}
-
-void CocoaExperimenterView::show() { [view_ setHidden:NO]; }
-
-void CocoaExperimenterView::hide() { [view_ setHidden:YES]; }
-
-auto CocoaExperimenterView::view() -> NSView * { return view_; }
-
-void CocoaExperimenterView::exitTest() { listener_->exitTest(); }
-
-void CocoaExperimenterView::display(std::string s) {
-    [displayedText_ setStringValue:asNsString(std::move(s))];
-}
-
-void CocoaExperimenterView::secondaryDisplay(std::string s) {
-    [secondaryDisplayedText_ setStringValue:asNsString(std::move(s))];
-}
-
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       displayedText_{
@@ -458,13 +438,14 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             r.size.width - buttonWidth - labelWidth - 30,
                             labelHeight)]},
       continueTestingDialogMessage_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight,
-                     r.size.width, 2 * labelHeight)]},
+          initWithFrame:NSMakeRect(
+                            0, buttonHeight, r.size.width, 2 * labelHeight)]},
       evaluationButtons{[[NSView alloc]
           initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
                             3 * buttonWidth, buttonHeight)]},
       continueTestingDialog{[[NSWindow alloc]
-          initWithContentRect:NSMakeRect(0, 0, r.size.width, buttonHeight + 2 * labelHeight)
+          initWithContentRect:NSMakeRect(0, 0, r.size.width,
+                                  buttonHeight + 2 * labelHeight)
                     styleMask:NSWindowStyleMaskBorderless
                       backing:NSBackingStoreBuffered
                         defer:YES]},
@@ -488,15 +469,9 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     exitTestButton_ = button("exit test", actions, @selector(exitTest));
     [exitTestButton_ setFrame:NSMakeRect(0, r.size.height - buttonHeight,
                                   buttonWidth, buttonHeight)];
-    [displayedText_ setBezeled:NO];
-    [displayedText_ setDrawsBackground:NO];
-    [displayedText_ setEditable:NO];
-    [secondaryDisplayedText_ setBezeled:NO];
-    [secondaryDisplayedText_ setDrawsBackground:NO];
-    [secondaryDisplayedText_ setEditable:NO];
-    [continueTestingDialogMessage_ setBezeled:NO];
-    [continueTestingDialogMessage_ setDrawsBackground:NO];
-    [continueTestingDialogMessage_ setEditable:NO];
+    setStaticLike(displayedText_);
+    setStaticLike(secondaryDisplayedText_);
+    setStaticLike(continueTestingDialogMessage_);
     [view_ addSubview:exitTestButton_];
     [view_ addSubview:displayedText_];
     [view_ addSubview:secondaryDisplayedText_];
@@ -530,11 +505,10 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto exitButton_ {
         button("exit", actions, @selector(declineContinuingTesting))
     };
-    [continueButton_
-        setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
-                     buttonWidth, buttonHeight)];
-    [exitButton_ setFrame:NSMakeRect(r.size.width - 3 * buttonWidth,
-                              0, buttonWidth, buttonHeight)];
+    [continueButton_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
+                                  buttonWidth, buttonHeight)];
+    [exitButton_ setFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
+                              buttonWidth, buttonHeight)];
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
@@ -549,7 +523,8 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [evaluationButtons addSubview:failButton_];
     [continueTestingDialog.contentView addSubview:continueButton_];
     [continueTestingDialog.contentView addSubview:exitButton_];
-    [continueTestingDialog.contentView addSubview:continueTestingDialogMessage_];
+    [continueTestingDialog.contentView
+        addSubview:continueTestingDialogMessage_];
     [correctKeywordsSubmission addSubview:correctKeywordsEntry_];
     [correctKeywordsSubmission addSubview:submitCorrectKeywords_];
     [view_ addSubview:nextTrialButton_];
@@ -562,6 +537,30 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [correctKeywordsSubmission setHidden:YES];
     [view_ setHidden:YES];
     actions.controller = this;
+}
+
+void CocoaExperimenterView::showExitTestButton() {
+    [exitTestButton_ setHidden:NO];
+}
+
+void CocoaExperimenterView::hideExitTestButton() {
+    [exitTestButton_ setHidden:YES];
+}
+
+void CocoaExperimenterView::show() { [view_ setHidden:NO]; }
+
+void CocoaExperimenterView::hide() { [view_ setHidden:YES]; }
+
+auto CocoaExperimenterView::view() -> NSView * { return view_; }
+
+void CocoaExperimenterView::exitTest() { listener_->exitTest(); }
+
+void CocoaExperimenterView::display(std::string s) {
+    [displayedText_ setStringValue:asNsString(std::move(s))];
+}
+
+void CocoaExperimenterView::secondaryDisplay(std::string s) {
+    [secondaryDisplayedText_ setStringValue:asNsString(std::move(s))];
 }
 
 void CocoaExperimenterView::showNextTrialButton() {
@@ -606,7 +605,8 @@ void CocoaExperimenterView::hideContinueTestingDialog() {
     [view_.window endSheet:continueTestingDialog];
 }
 
-void CocoaExperimenterView::setContinueTestingDialogMessage(const std::string &s) {
+void CocoaExperimenterView::setContinueTestingDialogMessage(
+    const std::string &s) {
     [continueTestingDialogMessage_ setStringValue:asNsString(s)];
 }
 
