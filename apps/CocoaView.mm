@@ -432,20 +432,24 @@ void CocoaSubjectView::show() { [window makeKeyAndOrderFront:nil]; }
 void CocoaSubjectView::hide() { [window orderOut:nil]; }
 
 constexpr auto responseSubmissionWidth{250};
+constexpr auto leadingPrimaryTextEdge{buttonWidth + reasonableSpacing};
+constexpr auto primaryTextWidth{labelWidth};
+constexpr auto leadingSecondaryTextEdge{
+    leadingPrimaryTextEdge + primaryTextWidth + reasonableSpacing};
+constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
+    return r.size.height - labelHeight;
+}
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       displayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(buttonWidth + reasonableSpacing,
-                            r.size.height - labelHeight, labelWidth,
+          initWithFrame:NSMakeRect(leadingPrimaryTextEdge,
+                            lowerPrimaryTextEdge(r), primaryTextWidth,
                             labelHeight)]},
       secondaryDisplayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(
-                            buttonWidth + labelWidth + 2 * reasonableSpacing,
-                            r.size.height - labelHeight,
-                            r.size.width - buttonWidth - labelWidth -
-                                2 * reasonableSpacing,
-                            labelHeight)]},
+          initWithFrame:
+              NSMakeRect(leadingSecondaryTextEdge, lowerPrimaryTextEdge(r),
+                  r.size.width - leadingSecondaryTextEdge, labelHeight)]},
       continueTestingDialogMessage_{[[NSTextField alloc]
           initWithFrame:NSMakeRect(
                             0, buttonHeight, r.size.width, 2 * labelHeight)]},
