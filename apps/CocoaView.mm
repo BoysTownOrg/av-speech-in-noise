@@ -314,10 +314,10 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
                                          styleMask:NSWindowStyleMaskBorderless
                                            backing:NSBackingStoreBuffered
                                              defer:YES]},
-      responseButtons{[[NSView alloc]
-          initWithFrame:NSMakeRect(0, 0, width(r), r.size.height)]},
-      nextTrialButton{[[NSView alloc]
-          initWithFrame:NSMakeRect(0, 0, width(r), r.size.height)]},
+      responseButtons{
+          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
+      nextTrialButton{
+          [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[SubjectViewActions alloc]} {
     actions.controller = this;
     addButtonRow(blueColor, 0);
@@ -345,7 +345,7 @@ void CocoaSubjectView::addNumberButton(
                            action:@selector(respond:)]
     };
     auto responseWidth{width(responseButtons.frame) / responseNumbers};
-    auto responseHeight{responseButtons.frame.size.height / responseColors};
+    auto responseHeight{height(responseButtons.frame) / responseColors};
     [button setFrame:NSMakeRect(responseWidth * col, responseHeight * row,
                          responseWidth, responseHeight)];
     [button setBezelStyle:NSBezelStyleTexturedSquare];
@@ -378,7 +378,7 @@ void CocoaSubjectView::addNextTrialButton() {
                                         attributes:attrsDictionary]};
     [button_ setAttributedTitle:attrString];
     [button_ setFrame:NSMakeRect(0, 0, width(nextTrialButton.frame),
-                          nextTrialButton.frame.size.height)];
+                          height(nextTrialButton.frame))];
     addSubview(nextTrialButton, button_);
 }
 
@@ -439,8 +439,13 @@ constexpr auto leadingPrimaryTextEdge{buttonWidth + reasonableSpacing};
 constexpr auto primaryTextWidth{labelWidth};
 constexpr auto leadingSecondaryTextEdge{
     leadingPrimaryTextEdge + primaryTextWidth + reasonableSpacing};
+constexpr auto evaluationButtonsInnerGap{0};
+constexpr auto evaluationButtonsWidth{
+    2 * buttonWidth + evaluationButtonsInnerGap};
+constexpr auto continueTestingDialogHeight{2 * labelHeight};
+
 constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
-    return r.size.height - labelHeight;
+    return height(r) - labelHeight;
 }
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
@@ -453,15 +458,15 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
                             lowerPrimaryTextEdge(r),
                             width(r) - leadingSecondaryTextEdge, labelHeight)]},
-      continueTestingDialogMessage_{
-          [[NSTextField alloc] initWithFrame:NSMakeRect(0, buttonHeight,
-                                                 width(r), 2 * labelHeight)]},
-      evaluationButtons{
-          [[NSView alloc] initWithFrame:NSMakeRect(width(r) - 3 * buttonWidth,
-                                            0, 3 * buttonWidth, buttonHeight)]},
+      continueTestingDialogMessage_{[[NSTextField alloc]
+          initWithFrame:NSMakeRect(0, buttonHeight, width(r),
+                            continueTestingDialogHeight)]},
+      evaluationButtons{[[NSView alloc]
+          initWithFrame:NSMakeRect(width(r) - evaluationButtonsWidth, 0,
+                            evaluationButtonsWidth, buttonHeight)]},
       continueTestingDialog{[[NSWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, width(r),
-                                  buttonHeight + 2 * labelHeight)
+                                  buttonHeight + continueTestingDialogHeight)
                     styleMask:NSWindowStyleMaskBorderless
                       backing:NSBackingStoreBuffered
                         defer:YES]},
@@ -487,7 +492,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             normalTextFieldWidth, labelHeight)]},
       actions{[ExperimenterViewActions alloc]} {
     exitTestButton_ = button("exit test", actions, @selector(exitTest));
-    [exitTestButton_ setFrame:NSMakeRect(0, r.size.height - buttonHeight,
+    [exitTestButton_ setFrame:NSMakeRect(0, height(r) - buttonHeight,
                                   buttonWidth, buttonHeight)];
     setStaticLike(displayedText_);
     setStaticLike(secondaryDisplayedText_);
@@ -510,15 +515,16 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     const auto passButton_ {
         button("correct", actions, @selector(submitPassedTrial))
     };
-    [passButton_
-        setFrame:NSMakeRect(width(evaluationButtons.frame) - 3 * buttonWidth, 0,
-                     buttonWidth, buttonHeight)];
+    [passButton_ setFrame:NSMakeRect(width(evaluationButtons.frame) -
+                                  evaluationButtonsWidth,
+                              0, buttonWidth, buttonHeight)];
     const auto failButton_ {
         button("incorrect", actions, @selector(submitFailedTrial))
     };
-    [failButton_
-        setFrame:NSMakeRect(width(evaluationButtons.frame) - 2 * buttonWidth, 0,
-                     buttonWidth, buttonHeight)];
+    [failButton_ setFrame:NSMakeRect(width(evaluationButtons.frame) -
+                                  evaluationButtonsWidth + buttonWidth +
+                                  evaluationButtonsInnerGap,
+                              0, buttonWidth, buttonHeight)];
     const auto continueButton_ {
         button("continue", actions, @selector(acceptContinuingTesting))
     };
@@ -675,7 +681,7 @@ constexpr auto innerWidth(NSRect r) -> CGFloat {
 }
 
 constexpr auto innerHeight(NSRect r) -> CGFloat {
-    return r.size.height - 2 * windowPerimeterSpace;
+    return height(r) - 2 * windowPerimeterSpace;
 }
 
 static auto embeddedFrame(NSRect r) -> NSRect {
