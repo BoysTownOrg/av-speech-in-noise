@@ -140,6 +140,10 @@ static constexpr auto buttonHeight{25};
 static constexpr auto buttonWidth{100};
 constexpr auto reasonableSpacing{15};
 
+constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
+
+constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
+
 static auto textFieldSizeAtHeightWithWidth(CGFloat height, CGFloat buttonWidth)
     -> NSRect {
     return NSMakeRect(textFieldLeadingEdge, height, buttonWidth, labelHeight);
@@ -222,13 +226,12 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     };
     const auto confirmButton {
         button("Confirm", actions, @selector(confirmTestSetup),
-            NSMakeRect(
-                r.size.width - buttonWidth, 0, buttonWidth, buttonHeight))
+            NSMakeRect(width(r) - buttonWidth, 0, buttonWidth, buttonHeight))
     };
     const auto playCalibrationButton {
         button("play calibration", actions, @selector(playCalibration),
-            NSMakeRect(r.size.width - buttonWidth - reasonableSpacing -
-                    1.5 * buttonWidth,
+            NSMakeRect(
+                width(r) - buttonWidth - reasonableSpacing - 1.5 * buttonWidth,
                 0, 1.5 * buttonWidth, buttonHeight))
     };
     addSubview(view_, browseForTestSettingsButton);
@@ -312,9 +315,9 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
                                            backing:NSBackingStoreBuffered
                                              defer:YES]},
       responseButtons{[[NSView alloc]
-          initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)]},
+          initWithFrame:NSMakeRect(0, 0, width(r), r.size.height)]},
       nextTrialButton{[[NSView alloc]
-          initWithFrame:NSMakeRect(0, 0, r.size.width, r.size.height)]},
+          initWithFrame:NSMakeRect(0, 0, width(r), r.size.height)]},
       actions{[SubjectViewActions alloc]} {
     actions.controller = this;
     addButtonRow(blueColor, 0);
@@ -341,7 +344,7 @@ void CocoaSubjectView::addNumberButton(
                            target:actions
                            action:@selector(respond:)]
     };
-    auto responseWidth{responseButtons.frame.size.width / responseNumbers};
+    auto responseWidth{width(responseButtons.frame) / responseNumbers};
     auto responseHeight{responseButtons.frame.size.height / responseColors};
     [button setFrame:NSMakeRect(responseWidth * col, responseHeight * row,
                          responseWidth, responseHeight)];
@@ -374,7 +377,7 @@ void CocoaSubjectView::addNextTrialButton() {
         [[NSAttributedString alloc] initWithString:@"Press when ready"
                                         attributes:attrsDictionary]};
     [button_ setAttributedTitle:attrString];
-    [button_ setFrame:NSMakeRect(0, 0, nextTrialButton.frame.size.width,
+    [button_ setFrame:NSMakeRect(0, 0, width(nextTrialButton.frame),
                           nextTrialButton.frame.size.height)];
     addSubview(nextTrialButton, button_);
 }
@@ -447,28 +450,28 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                             lowerPrimaryTextEdge(r), primaryTextWidth,
                             labelHeight)]},
       secondaryDisplayedText_{[[NSTextField alloc]
-          initWithFrame:
-              NSMakeRect(leadingSecondaryTextEdge, lowerPrimaryTextEdge(r),
-                  r.size.width - leadingSecondaryTextEdge, labelHeight)]},
-      continueTestingDialogMessage_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(
-                            0, buttonHeight, r.size.width, 2 * labelHeight)]},
-      evaluationButtons{[[NSView alloc]
-          initWithFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
-                            3 * buttonWidth, buttonHeight)]},
+          initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
+                            lowerPrimaryTextEdge(r),
+                            width(r) - leadingSecondaryTextEdge, labelHeight)]},
+      continueTestingDialogMessage_{
+          [[NSTextField alloc] initWithFrame:NSMakeRect(0, buttonHeight,
+                                                 width(r), 2 * labelHeight)]},
+      evaluationButtons{
+          [[NSView alloc] initWithFrame:NSMakeRect(width(r) - 3 * buttonWidth,
+                                            0, 3 * buttonWidth, buttonHeight)]},
       continueTestingDialog{[[NSWindow alloc]
-          initWithContentRect:NSMakeRect(0, 0, r.size.width,
+          initWithContentRect:NSMakeRect(0, 0, width(r),
                                   buttonHeight + 2 * labelHeight)
                     styleMask:NSWindowStyleMaskBorderless
                       backing:NSBackingStoreBuffered
                         defer:YES]},
       responseSubmission{[[NSView alloc]
-          initWithFrame:NSMakeRect(r.size.width - responseSubmissionWidth, 0,
+          initWithFrame:NSMakeRect(width(r) - responseSubmissionWidth, 0,
                             responseSubmissionWidth,
                             buttonHeight + reasonableSpacing + 2 * labelHeight +
                                 reasonableSpacing)]},
       correctKeywordsSubmission{[[NSView alloc]
-          initWithFrame:NSMakeRect(r.size.width - normalTextFieldWidth, 0,
+          initWithFrame:NSMakeRect(width(r) - normalTextFieldWidth, 0,
                             normalTextFieldWidth,
                             buttonHeight + reasonableSpacing + labelHeight)]},
       response_{[[NSTextField alloc]
@@ -496,43 +499,43 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     [flagged_ setButtonType:NSButtonTypeSwitch];
     [flagged_ setTitle:@"flagged"];
     nextTrialButton_ = button("play trial", actions, @selector(playTrial));
-    [nextTrialButton_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
+    [nextTrialButton_ setFrame:NSMakeRect(width(r) - buttonWidth, 0,
                                    buttonWidth, buttonHeight)];
     const auto submitFreeResponse_ {
         button("submit", actions, @selector(submitFreeResponse))
     };
     [submitFreeResponse_
-        setFrame:NSMakeRect(responseSubmission.frame.size.width - buttonWidth,
-                     0, buttonWidth, buttonHeight)];
+        setFrame:NSMakeRect(width(responseSubmission.frame) - buttonWidth, 0,
+                     buttonWidth, buttonHeight)];
     const auto passButton_ {
         button("correct", actions, @selector(submitPassedTrial))
     };
-    [passButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
-                                  3 * buttonWidth,
-                              0, buttonWidth, buttonHeight)];
+    [passButton_
+        setFrame:NSMakeRect(width(evaluationButtons.frame) - 3 * buttonWidth, 0,
+                     buttonWidth, buttonHeight)];
     const auto failButton_ {
         button("incorrect", actions, @selector(submitFailedTrial))
     };
-    [failButton_ setFrame:NSMakeRect(evaluationButtons.frame.size.width -
-                                  2 * buttonWidth,
-                              0, buttonWidth, buttonHeight)];
+    [failButton_
+        setFrame:NSMakeRect(width(evaluationButtons.frame) - 2 * buttonWidth, 0,
+                     buttonWidth, buttonHeight)];
     const auto continueButton_ {
         button("continue", actions, @selector(acceptContinuingTesting))
     };
     const auto exitButton_ {
         button("exit", actions, @selector(declineContinuingTesting))
     };
-    [continueButton_ setFrame:NSMakeRect(r.size.width - buttonWidth, 0,
-                                  buttonWidth, buttonHeight)];
-    [exitButton_ setFrame:NSMakeRect(r.size.width - 3 * buttonWidth, 0,
-                              buttonWidth, buttonHeight)];
+    [continueButton_ setFrame:NSMakeRect(width(r) - buttonWidth, 0, buttonWidth,
+                                  buttonHeight)];
+    [exitButton_ setFrame:NSMakeRect(width(r) - 3 * buttonWidth, 0, buttonWidth,
+                              buttonHeight)];
     const auto submitCorrectKeywords_ {
         button("submit", actions, @selector(submitCorrectKeywords))
     };
     [submitCorrectKeywords_
         setFrame:NSMakeRect(
-                     correctKeywordsSubmission.frame.size.width - buttonWidth,
-                     0, buttonWidth, buttonHeight)];
+                     width(correctKeywordsSubmission.frame) - buttonWidth, 0,
+                     buttonWidth, buttonHeight)];
     addSubview(responseSubmission, submitFreeResponse_);
     addSubview(responseSubmission, response_);
     addSubview(responseSubmission, flagged_);
@@ -668,7 +671,7 @@ void CocoaExperimenterView::declineContinuingTesting() {
 constexpr auto windowPerimeterSpace{reasonableSpacing};
 
 constexpr auto innerWidth(NSRect r) -> CGFloat {
-    return r.size.width - 2 * windowPerimeterSpace;
+    return width(r) - 2 * windowPerimeterSpace;
 }
 
 constexpr auto innerHeight(NSRect r) -> CGFloat {
