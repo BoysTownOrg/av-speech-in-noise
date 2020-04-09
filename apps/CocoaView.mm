@@ -462,7 +462,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
           initWithFrame:NSMakeRect(0, buttonHeight, width(r),
                             continueTestingDialogHeight)]},
       evaluationButtons{[[NSView alloc]
-          initWithFrame:NSMakeRect(width(r) - evaluationButtonsWidth, 0,
+          initWithFrame:NSMakeRect(width(r) - evaluationButtonsWidth - buttonWidth, 0,
                             evaluationButtonsWidth, buttonHeight)]},
       continueTestingDialog{[[NSWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, width(r),

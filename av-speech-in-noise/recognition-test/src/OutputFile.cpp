@@ -129,6 +129,7 @@ static auto format(const AdaptiveTest &test) -> std::string {
     writeLabeledLine(stream, "down", down);
     writeLabeledLine(stream, "reversals per step size", runCounts);
     writeLabeledLine(stream, "step sizes (dB)", stepSizes);
+    writeLabeledLine(stream, "threshold reversals", test.thresholdReversals);
     insertNewLine(stream);
     return string(stream);
 }

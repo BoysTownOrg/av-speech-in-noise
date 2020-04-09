@@ -619,11 +619,13 @@ OUTPUT_FILE_TEST(writesTrackSettings) {
     second.stepSize = 8;
     test.trackingRule.push_back(first);
     test.trackingRule.push_back(second);
+    test.thresholdReversals = 9;
     file.write(test);
     assertContainsColonDelimitedEntry(writer, "up", "1 5");
     assertContainsColonDelimitedEntry(writer, "down", "2 6");
     assertContainsColonDelimitedEntry(writer, "reversals per step size", "3 7");
     assertContainsColonDelimitedEntry(writer, "step sizes (dB)", "4 8");
+    assertContainsColonDelimitedEntry(writer, "threshold reversals", "9");
     assertEndsWith(writer, "\n\n");
 }
 
