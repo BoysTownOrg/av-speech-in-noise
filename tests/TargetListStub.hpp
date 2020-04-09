@@ -1,11 +1,11 @@
-#ifndef TESTS_TARGETLISTSTUB_H_
-#define TESTS_TARGETLISTSTUB_H_
+#ifndef TESTS_TARGETLISTSTUB_HPP_
+#define TESTS_TARGETLISTSTUB_HPP_
 
-#include "LogString.h"
+#include "LogString.hpp"
 #include <recognition-test/Model.hpp>
 #include <utility>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TargetListStub : public virtual TargetList {
     LogString log_{};
     std::string currentWhenNext_{};
@@ -37,7 +37,9 @@ class TargetListStub : public virtual TargetList {
 
     void setNext(std::string s) { next_ = std::move(s); }
 
-    auto directory() { return directory_; }
+    auto directory() -> std::string override { return directory_; }
+
+    void setDirectory(std::string s) { directory_ = std::move(s); }
 
     auto log() const -> auto & { return log_; }
 };

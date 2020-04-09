@@ -1,7 +1,7 @@
-#include "LogString.h"
-#include "OutputFileStub.h"
-#include "ResponseEvaluatorStub.h"
-#include "TargetListStub.h"
+#include "LogString.hpp"
+#include "OutputFileStub.hpp"
+#include "ResponseEvaluatorStub.hpp"
+#include "TargetListStub.hpp"
 #include "assert-utility.h"
 #include "av-speech-in-noise/Model.hpp"
 #include <gtest/gtest.h>
@@ -35,8 +35,8 @@ class InitializingMethodWithFiniteTargetList : public UseCase {
     void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
 
   private:
-    const FixedLevelTest &test;
     FiniteTargetList &list;
+    const FixedLevelTest &test;
 };
 
 class SubmittingCoordinateResponse : public UseCase {
@@ -53,7 +53,7 @@ class SubmittingCoordinateResponse : public UseCase {
 };
 
 class SubmittingFreeResponse : public UseCase {
-    open_set::FreeResponse response{};
+    FreeResponse response{};
 
   public:
     void run(FixedLevelMethodImpl &m) override { m.submit(response); }
@@ -93,7 +93,7 @@ class FixedLevelMethodTests : public ::testing::Test {
     FixedLevelMethodTests() { run(initializingMethod, method); }
 
     void writeLastCoordinateResponse() {
-        method.writeLastCoordinateResponse(&outputFile);
+        method.writeLastCoordinateResponse(outputFile);
     }
 
     auto writtenFixedLevelTrial() {
@@ -107,12 +107,6 @@ class FixedLevelMethodTests : public ::testing::Test {
     void setCurrentTarget(std::string s) {
         targetList.setCurrent(std::move(s));
     }
-
-    void assertTestIncomplete() { assertFalse(testComplete()); }
-
-    auto testComplete() -> bool { return method.complete(); }
-
-    void assertTestComplete() { assertTrue(testComplete()); }
 };
 
 #define FIXED_LEVEL_METHOD_TEST(a) TEST_F(FixedLevelMethodTests, a)
@@ -172,7 +166,7 @@ FIXED_LEVEL_METHOD_TEST(writeIncorrectCoordinateResponse) {
 }
 
 FIXED_LEVEL_METHOD_TEST(writeTestPassesSettings) {
-    method.writeTestingParameters(&outputFile);
+    method.writeTestingParameters(outputFile);
     assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
 }
 
@@ -253,13 +247,6 @@ void assertIncomplete(FixedLevelMethodImpl &method) {
     assertFalse(method.complete());
 }
 
-void assertTestCompleteWhenTargetListEmpty(UseCase &useCase,
-    FixedLevelMethodImpl &method, FiniteTargetListStub &list) {
-    list.setEmpty();
-    run(useCase, method);
-    assertComplete(method);
-}
-
 void assertTestCompleteOnlyAfter(UseCase &useCase, FixedLevelMethodImpl &method,
     FiniteTargetListStub &list) {
     list.setEmpty();
@@ -306,7 +293,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(writeTestPassesSettings) {
     OutputFileStub outputFile;
-    method.writeTestingParameters(&outputFile);
+    method.writeTestingParameters(outputFile);
     assertEqual(&std::as_const(test), outputFile.fixedLevelTest());
 }
 
@@ -343,6 +330,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
 class TargetListTestConcluderComboStub : public FiniteTargetList {
   public:
     void loadFromDirectory(std::string) override {}
+    auto directory() -> std::string override { return {}; }
     auto next() -> std::string override { return {}; }
     auto current() -> std::string override { return {}; }
     auto empty() -> bool override {
@@ -363,7 +351,7 @@ TEST(FixedLevelMethodTestsTBD,
     FixedLevelMethodImpl method{&evaluator};
     FixedLevelTest test;
     method.initialize(test, &combo);
-    open_set::FreeResponse response;
+    FreeResponse response;
     response.flagged = true;
     method.submit(response);
     assertTrue(combo.log().endsWith("reinsertCurrent empty "));

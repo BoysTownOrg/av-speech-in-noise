@@ -1,9 +1,9 @@
-#ifndef TESTS_MODELEVENTLISTENERSTUB_H_
-#define TESTS_MODELEVENTLISTENERSTUB_H_
+#ifndef TESTS_MODELEVENTLISTENERSTUB_HPP_
+#define TESTS_MODELEVENTLISTENERSTUB_HPP_
 
 #include <av-speech-in-noise/Model.hpp>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class ModelEventListenerStub : public Model::EventListener {
     bool notified_{};
 

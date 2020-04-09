@@ -71,7 +71,6 @@ class AudioPlayerStub : public stimulus_players::AudioPlayer {
     std::string audioFilePath_;
     std::map<int, bool> outputDevices;
     double sampleRateHz_{};
-    double durationSeconds_{};
     int deviceIndex_{};
     int deviceDescriptionDeviceIndex_{};
     EventListener *listener_{};

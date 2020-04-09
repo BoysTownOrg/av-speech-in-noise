@@ -1,12 +1,12 @@
-#ifndef TESTS_TARGETPLAYERSTUB_H_
-#define TESTS_TARGETPLAYERSTUB_H_
+#ifndef TESTS_TARGETPLAYERSTUB_HPP_
+#define TESTS_TARGETPLAYERSTUB_HPP_
 
-#include "LogString.h"
+#include "LogString.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <utility>
 #include <string>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TargetPlayerStub : public TargetPlayer {
     LogString log_;
     std::string filePath_;
@@ -96,7 +96,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     void playbackComplete() { listener_->playbackComplete(); }
 
-    auto listener() const { return listener_; }
+    auto listener() const -> const EventListener * { return listener_; }
 
     auto filePath() const { return filePath_; }
 

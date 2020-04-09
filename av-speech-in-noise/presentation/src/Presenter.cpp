@@ -211,6 +211,14 @@ void Presenter::submitCorrectKeywords() {
         if (testComplete(model)) {
             experimenterPresenter.hideCorrectKeywordsSubmission();
             experimenterPresenter.showContinueTestingDialog();
+            std::stringstream thresholds;
+            thresholds << "thresholds (targets: dB SNR)";
+            for (const auto &result : model.adaptiveTestResults())
+                thresholds << '\n'
+                           << result.targetListDirectory << ": "
+                           << result.threshold;
+            experimenterPresenter.setContinueTestingDialogMessage(
+                thresholds.str());
         } else
             readyNextTrial(experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
@@ -267,7 +275,7 @@ void Presenter::playCalibration() {
 void Presenter::playCalibration_() {
     auto p{testSettingsInterpreter.calibration(
         textFileReader.read(testSetup.testSettingsFile()))};
-    p.audioSettings.audioDevice = view.audioDevice();
+    p.audioDevice = view.audioDevice();
     model.playCalibration(p);
 }
 
@@ -459,6 +467,11 @@ void Presenter::Experimenter::showContinueTestingDialog() {
     view->showContinueTestingDialog();
 }
 
+void Presenter::Experimenter::setContinueTestingDialogMessage(
+    const std::string &s) {
+    view->setContinueTestingDialogMessage(s);
+}
+
 void Presenter::Experimenter::showPassFailSubmission() {
     view->showEvaluationButtons();
 }
@@ -499,12 +512,12 @@ void Presenter::Experimenter::playTrial() { parent->playTrial(); }
 
 void Presenter::Experimenter::exitTest() { parent->exitTest(); }
 
-auto Presenter::Experimenter::freeResponse() -> open_set::FreeResponse {
+auto Presenter::Experimenter::freeResponse() -> FreeResponse {
     return {view->freeResponse(), view->flagged()};
 }
 
-auto Presenter::Experimenter::correctKeywords() -> open_set::CorrectKeywords {
-    open_set::CorrectKeywords p{};
+auto Presenter::Experimenter::correctKeywords() -> CorrectKeywords {
+    CorrectKeywords p{};
     p.count = readInteger(view->correctKeywords(), "number");
     return p;
 }

@@ -1,17 +1,20 @@
-#ifndef TESTS_TRACKSTUB_H_
-#define TESTS_TRACKSTUB_H_
+#ifndef TESTS_TRACKSTUB_HPP_
+#define TESTS_TRACKSTUB_HPP_
 
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <utility>
 #include <vector>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TrackStub : public Track {
     Settings settings_;
+    double thresholdWhenUpdated_{};
+    double threshold_{};
     int x_{};
     int reversals_{};
     int reversalsWhenUpdated_{};
     int xWhenUpdated_{};
+    int thresholdReversals_{};
     bool pushedDown_{};
     bool pushedUp_{};
     bool complete_{};
@@ -22,6 +25,10 @@ class TrackStub : public Track {
     void setXWhenUpdated(int x) { xWhenUpdated_ = x; }
 
     void setReversalsWhenUpdated(int x) { reversalsWhenUpdated_ = x; }
+
+    void setThresholdWhenUpdated(double x) { thresholdWhenUpdated_ = x; }
+
+    void setThreshold(double x) { threshold_ = x; }
 
     void setReversals(int x) { reversals_ = x; }
 
@@ -35,12 +42,14 @@ class TrackStub : public Track {
         pushedDown_ = true;
         reversals_ = reversalsWhenUpdated_;
         x_ = xWhenUpdated_;
+        threshold_ = thresholdWhenUpdated_;
     }
 
     void up() override {
         pushedUp_ = true;
         reversals_ = reversalsWhenUpdated_;
         x_ = xWhenUpdated_;
+        threshold_ = thresholdWhenUpdated_;
     }
 
     auto x() -> int override { return x_; }
@@ -60,6 +69,15 @@ class TrackStub : public Track {
     void incompleteOnReset() { incompleteOnReset_ = true; }
 
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
+
+    auto threshold(int reversals) -> double override {
+        thresholdReversals_ = reversals;
+        return threshold_;
+    }
+
+    [[nodiscard]] auto thresholdReversals() const -> int {
+        return thresholdReversals_;
+    }
 };
 
 class TrackFactoryStub : public Track::Factory {

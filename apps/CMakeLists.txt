@@ -28,6 +28,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         CocoaView.mm
         main.mm
     )
+    set_target_properties(AvSpeechInNoise PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION})
     target_compile_features(AvSpeechInNoise PRIVATE cxx_std_17)
     target_link_libraries(AvSpeechInNoise 
         recognition-test 

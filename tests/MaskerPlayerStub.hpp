@@ -1,11 +1,11 @@
-#ifndef TESTS_MASKERPLAYERSTUB_H_
-#define TESTS_MASKERPLAYERSTUB_H_
+#ifndef TESTS_MASKERPLAYERSTUB_HPP_
+#define TESTS_MASKERPLAYERSTUB_HPP_
 
-#include "LogString.h"
+#include "LogString.hpp"
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <utility>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class MaskerPlayerStub : public MaskerPlayer {
     std::vector<std::string> outputAudioDeviceDescriptions_;
     LogString log_;
@@ -100,7 +100,7 @@ class MaskerPlayerStub : public MaskerPlayer {
         return outputAudioDeviceDescriptions_;
     }
 
-    auto listener() const { return listener_; }
+    auto listener() const -> const EventListener * { return listener_; }
 
     void fadeInComplete() { listener_->fadeInComplete(); }
 

@@ -1,10 +1,10 @@
-#ifndef TESTS_TARGETLISTSETREADERSTUB_H_
-#define TESTS_TARGETLISTSETREADERSTUB_H_
+#ifndef TESTS_TARGETLISTSETREADERSTUB_HPP_
+#define TESTS_TARGETLISTSETREADERSTUB_HPP_
 
 #include <recognition-test/AdaptiveMethod.hpp>
 #include <utility>
 
-namespace av_speech_in_noise::tests {
+namespace av_speech_in_noise {
 class TargetListSetReaderStub : public TargetListReader {
     lists_type targetLists_{};
     std::string directory_{};

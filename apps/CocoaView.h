@@ -41,6 +41,7 @@ class CocoaExperimenterView : public View::Experimenter {
     void hideCorrectKeywordsSubmission() override;
     void showContinueTestingDialog() override;
     void hideContinueTestingDialog() override;
+    void setContinueTestingDialogMessage(const std::string &) override;
 
   private:
     NSView *view_;
@@ -52,6 +53,7 @@ class CocoaExperimenterView : public View::Experimenter {
     NSTextField *correctKeywordsEntry_;
     NSTextField *displayedText_;
     NSTextField *secondaryDisplayedText_;
+    NSTextField *continueTestingDialogMessage_;
     NSButton *flagged_;
     NSButton *exitTestButton_;
     NSButton *nextTrialButton_;
@@ -85,9 +87,6 @@ class CocoaTestSetupView : public View::TestSetup {
     void setCalibration(std::string);
 
   private:
-    void addSubview(NSView *subview);
-    const char *stringValue(NSTextField *field);
-
     NSView *view_;
     NSTextField *subjectIdLabel;
     NSTextField *subjectId_;
@@ -146,7 +145,6 @@ class CocoaView : public View {
     std::string browseForOpeningFile() override;
     std::string audioDevice() override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
-    void addSubview(NSView *);
     void setDelegate(id<NSWindowDelegate>);
     void center();
     auto testSetup() -> View::TestSetup &;
