@@ -138,6 +138,7 @@ static constexpr auto menuWidth{180};
 static constexpr auto filePathTextFieldWidth{500};
 static constexpr auto buttonHeight{25};
 static constexpr auto buttonWidth{100};
+constexpr auto reasonableSpacing{15};
 
 static auto textFieldSizeAtHeightWithWidth(CGFloat height, CGFloat buttonWidth)
     -> NSRect {
@@ -180,17 +181,15 @@ static auto popUpButtonAtHeightWithWidth(CGFloat height, CGFloat width)
                                       pullsDown:NO];
 }
 
-static auto button(const std::string& s, id target, SEL action) -> NSButton * {
-    return [NSButton buttonWithTitle:asNsString(s)
-                              target:target
-                              action:action];
+static auto button(const std::string &s, id target, SEL action) -> NSButton * {
+    return [NSButton buttonWithTitle:asNsString(s) target:target action:action];
 }
 
-static auto button(const std::string& s, id target, SEL action, NSRect frame)
+static auto button(const std::string &s, id target, SEL action, NSRect frame)
     -> NSButton * {
-    const auto button_{button(s, target, action)};
-    [button_ setFrame:frame];
-    return button_;
+    const auto b{button(s, target, action)};
+    [b setFrame:frame];
+    return b;
 }
 
 static auto string(NSTextField *field) -> const char * {
@@ -228,8 +227,9 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     };
     const auto playCalibrationButton {
         button("play calibration", actions, @selector(playCalibration),
-            NSMakeRect(r.size.width - buttonWidth - 15 - 1.5 * buttonWidth, 0,
-                1.5 * buttonWidth, buttonHeight))
+            NSMakeRect(r.size.width - buttonWidth - reasonableSpacing -
+                    1.5 * buttonWidth,
+                0, 1.5 * buttonWidth, buttonHeight))
     };
     addSubview(view_, browseForTestSettingsButton);
     addSubview(view_, confirmButton);
@@ -322,8 +322,8 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
     addButtonRow(whiteColor, 2);
     addButtonRow(redColor, 3);
     addNextTrialButton();
-    [window.contentView addSubview:nextTrialButton];
-    [window.contentView addSubview:responseButtons];
+    addSubview(window.contentView, nextTrialButton);
+    addSubview(window.contentView, responseButtons);
     hideResponseButtons();
     hideNextTrialButton();
 }
@@ -431,16 +431,20 @@ void CocoaSubjectView::show() { [window makeKeyAndOrderFront:nil]; }
 
 void CocoaSubjectView::hide() { [window orderOut:nil]; }
 
+constexpr auto responseSubmissionWidth{250};
+
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
-      displayedText_{
-          [[NSTextField alloc] initWithFrame:NSMakeRect(buttonWidth + 15,
-                                                 r.size.height - labelHeight,
-                                                 labelWidth, labelHeight)]},
+      displayedText_{[[NSTextField alloc]
+          initWithFrame:NSMakeRect(buttonWidth + reasonableSpacing,
+                            r.size.height - labelHeight, labelWidth,
+                            labelHeight)]},
       secondaryDisplayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(buttonWidth + 15 + labelWidth + 15,
+          initWithFrame:NSMakeRect(
+                            buttonWidth + labelWidth + 2 * reasonableSpacing,
                             r.size.height - labelHeight,
-                            r.size.width - buttonWidth - labelWidth - 30,
+                            r.size.width - buttonWidth - labelWidth -
+                                2 * reasonableSpacing,
                             labelHeight)]},
       continueTestingDialogMessage_{[[NSTextField alloc]
           initWithFrame:NSMakeRect(
@@ -455,21 +459,25 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                       backing:NSBackingStoreBuffered
                         defer:YES]},
       responseSubmission{[[NSView alloc]
-          initWithFrame:NSMakeRect(r.size.width - 250, 0, 250,
-                            buttonHeight + 15 + 2 * labelHeight + 15)]},
+          initWithFrame:NSMakeRect(r.size.width - responseSubmissionWidth, 0,
+                            responseSubmissionWidth,
+                            buttonHeight + reasonableSpacing + 2 * labelHeight +
+                                reasonableSpacing)]},
       correctKeywordsSubmission{[[NSView alloc]
           initWithFrame:NSMakeRect(r.size.width - normalTextFieldWidth, 0,
                             normalTextFieldWidth,
-                            buttonHeight + 15 + labelHeight)]},
+                            buttonHeight + reasonableSpacing + labelHeight)]},
       response_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight + 15 + labelHeight + 15, 250,
-                            labelHeight)]},
+          initWithFrame:NSMakeRect(0,
+                            buttonHeight + reasonableSpacing + labelHeight +
+                                reasonableSpacing,
+                            responseSubmissionWidth, labelHeight)]},
       correctKeywordsEntry_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight + 15, normalTextFieldWidth,
-                            labelHeight)]},
+          initWithFrame:NSMakeRect(0, buttonHeight + reasonableSpacing,
+                            normalTextFieldWidth, labelHeight)]},
       flagged_{[[NSButton alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight + 15, normalTextFieldWidth,
-                            labelHeight)]},
+          initWithFrame:NSMakeRect(0, buttonHeight + reasonableSpacing,
+                            normalTextFieldWidth, labelHeight)]},
       actions{[ExperimenterViewActions alloc]} {
     exitTestButton_ = button("exit test", actions, @selector(exitTest));
     [exitTestButton_ setFrame:NSMakeRect(0, r.size.height - buttonHeight,
@@ -526,10 +534,10 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     addSubview(responseSubmission, flagged_);
     addSubview(evaluationButtons, passButton_);
     addSubview(evaluationButtons, failButton_);
-    [continueTestingDialog.contentView addSubview:continueButton_];
-    [continueTestingDialog.contentView addSubview:exitButton_];
-    [continueTestingDialog.contentView
-        addSubview:continueTestingDialogMessage_];
+    addSubview(continueTestingDialog.contentView, continueButton_);
+    addSubview(continueTestingDialog.contentView, exitButton_);
+    addSubview(
+        continueTestingDialog.contentView, continueTestingDialogMessage_);
     addSubview(correctKeywordsSubmission, correctKeywordsEntry_);
     addSubview(correctKeywordsSubmission, submitCorrectKeywords_);
     addSubview(view_, nextTrialButton_);
@@ -653,7 +661,7 @@ void CocoaExperimenterView::declineContinuingTesting() {
     listener_->declineContinuingTesting();
 }
 
-constexpr auto windowPerimeterSpace{15};
+constexpr auto windowPerimeterSpace{reasonableSpacing};
 
 constexpr auto innerWidth(NSRect r) -> CGFloat {
     return r.size.width - 2 * windowPerimeterSpace;
@@ -695,11 +703,11 @@ CocoaView::CocoaView(NSRect r)
                    keyEquivalent:@"q"];
     [appMenu setSubmenu:appSubMenu];
     [app.mainMenu addItem:appMenu];
-    [view addSubview:testSetup_.view()];
-    [view addSubview:experimenter_.view()];
+    addSubview(view, testSetup_.view());
+    addSubview(view, experimenter_.view());
     addSubview(view, audioDevice_label);
     addSubview(view, deviceMenu);
-    [window.contentView addSubview:view];
+    addSubview(window.contentView, view);
     [window makeKeyAndOrderFront:nil];
 }
 
