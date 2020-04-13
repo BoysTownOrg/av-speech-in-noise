@@ -2,6 +2,7 @@
 #include "recognition-test/RecognitionTestModel.hpp"
 #include "tobii_research.h"
 #include "tobii_research_streams.h"
+#include <dlfcn.h>
 #include <gsl/gsl>
 #include <cmath>
 
@@ -13,31 +14,57 @@ static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
         : eyeTrackers->eyetrackers[0];
 }
 
-TobiiEyeTracker::TobiiEyeTracker() {
-    tobii_research_find_all_eyetrackers(&eyeTrackers);
+TobiiEyeTracker::TobiiEyeTracker()
+    : library{dlopen(
+          "/usr/local/lib/tobii_research/libtobii_research.dylib", RTLD_LAZY)} {
+    auto tobii_research_find_all_eyetrackers =
+        reinterpret_cast<TobiiResearchStatus (*)(TobiiResearchEyeTrackers **)>(
+            dlsym(library, "tobii_research_find_all_eyetrackers"));
+    if (tobii_research_find_all_eyetrackers != nullptr)
+        tobii_research_find_all_eyetrackers(&eyeTrackers);
 }
 
 TobiiEyeTracker::~TobiiEyeTracker() {
-    tobii_research_free_eyetrackers(eyeTrackers);
+    auto tobii_research_free_eyetrackers =
+        reinterpret_cast<void (*)(TobiiResearchEyeTrackers *)>(
+            dlsym(library, "tobii_research_free_eyetrackers"));
+    if (tobii_research_free_eyetrackers != nullptr)
+        tobii_research_free_eyetrackers(eyeTrackers);
+    dlclose(library);
 }
 
 void TobiiEyeTracker::allocateRecordingTimeSeconds(double seconds) {
     float gaze_output_frequency_Hz{};
-    tobii_research_get_gaze_output_frequency(
-        eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
+    auto tobii_research_get_gaze_output_frequency =
+        reinterpret_cast<TobiiResearchStatus (*)(
+            TobiiResearchEyeTracker *, float *)>(
+            dlsym(library, "tobii_research_get_gaze_output_frequency"));
+    if (tobii_research_get_gaze_output_frequency != nullptr)
+        tobii_research_get_gaze_output_frequency(
+            eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
     gazeData.resize(gsl::narrow<std::size_t>(
         std::ceil(gaze_output_frequency_Hz * seconds)));
     head = 0;
 }
 
 void TobiiEyeTracker::start() {
-    tobii_research_subscribe_to_gaze_data(
-        eyeTracker(eyeTrackers), gaze_data_callback, this);
+    auto tobii_research_subscribe_to_gaze_data =
+        reinterpret_cast<TobiiResearchStatus (*)(TobiiResearchEyeTracker *,
+            tobii_research_gaze_data_callback, void *)>(
+            dlsym(library, "tobii_research_subscribe_to_gaze_data"));
+    if (tobii_research_subscribe_to_gaze_data != nullptr)
+        tobii_research_subscribe_to_gaze_data(
+            eyeTracker(eyeTrackers), gaze_data_callback, this);
 }
 
 void TobiiEyeTracker::stop() {
-    tobii_research_unsubscribe_from_gaze_data(
-        eyeTracker(eyeTrackers), gaze_data_callback);
+    auto tobii_research_unsubscribe_from_gaze_data =
+        reinterpret_cast<TobiiResearchStatus (*)(
+            TobiiResearchEyeTracker *, tobii_research_gaze_data_callback)>(
+            dlsym(library, "tobii_research_unsubscribe_from_gaze_data"));
+    if (tobii_research_unsubscribe_from_gaze_data != nullptr)
+        tobii_research_unsubscribe_from_gaze_data(
+            eyeTracker(eyeTrackers), gaze_data_callback);
 }
 
 void TobiiEyeTracker::gaze_data_callback(

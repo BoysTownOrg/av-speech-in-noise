@@ -23,6 +23,7 @@ class TobiiEyeTracker : public EyeTracker {
     std::vector<TobiiResearchGazeData> gazeData{};
     TobiiResearchEyeTrackers *eyeTrackers{};
     std::size_t head{};
+    void *library;
 };
 }
 

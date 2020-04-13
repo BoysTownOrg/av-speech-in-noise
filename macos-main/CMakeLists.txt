@@ -22,10 +22,6 @@ find_library(AUDIO_TOOLBOX AudioToolbox)
 if (NOT AUDIO_TOOLBOX)
     message(FATAL_ERROR "AudioToolbox not found")
 endif()
-find_library(TOBII_RESEARCH tobii_research HINTS "/usr/local/lib/tobii_research")
-if (NOT TOBII_RESEARCH)
-    message(FATAL_ERROR "tobii_research not found")
-endif()
 add_executable(AvSpeechInNoise MACOSX_BUNDLE 
     TobiiEyeTracker.cpp
     AvFoundationPlayers.mm
@@ -46,7 +42,6 @@ target_link_libraries(AvSpeechInNoise
     ${CORE_MEDIA} 
     ${MEDIA_TOOLBOX}
     ${AUDIO_TOOLBOX}
-    ${TOBII_RESEARCH}
     GSL
 )
 target_include_directories(AvSpeechInNoise PRIVATE "/usr/local/include/tobii_research")
