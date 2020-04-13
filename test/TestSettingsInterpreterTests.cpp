@@ -271,8 +271,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
 
 TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithEyeTrackingReturnsMethod) {
-    assertMethod(interpreter,
-        Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
+    assertMethod(
+        interpreter, Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

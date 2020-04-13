@@ -144,9 +144,9 @@ static void throwRequestFailureOnInvalidAudioFile(
 RecognitionTestModelImpl::RecognitionTestModelImpl(TargetPlayer &targetPlayer,
     MaskerPlayer &maskerPlayer, ResponseEvaluator &evaluator,
     OutputFile &outputFile, Randomizer &randomizer, EyeTracker &eyeTracker)
-    : maskerPlayer{maskerPlayer},
-      targetPlayer{targetPlayer}, evaluator{evaluator}, outputFile{outputFile},
-      randomizer{randomizer}, eyeTracker{eyeTracker}, testMethod{&nullTestMethod} {
+    : maskerPlayer{maskerPlayer}, targetPlayer{targetPlayer},
+      evaluator{evaluator}, outputFile{outputFile}, randomizer{randomizer},
+      eyeTracker{eyeTracker}, testMethod{&nullTestMethod} {
     targetPlayer.subscribe(this);
     maskerPlayer.subscribe(this);
 }

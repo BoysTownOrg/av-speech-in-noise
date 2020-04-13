@@ -397,7 +397,7 @@ ADAPTIVE_TRACK_TEST(thresholdTooManyReversals) {
     update(track, "uuu");
     assertXEquals(track, 3);
     update(track, "dd");
-    assertThresholdEquals(track, 5, (-9 - 3 - 6 + 3)/4.);
+    assertThresholdEquals(track, 5, (-9 - 3 - 6 + 3) / 4.);
 }
 
 ADAPTIVE_TRACK_TEST(thresholdNegativeReversals) {

@@ -30,7 +30,7 @@ class ModelStub : public Model {
     void setTargetFileName(std::string s) { targetFileName_ = std::move(s); }
 
     auto targetFileName() -> std::string override { return targetFileName_; }
-    
+
     [[nodiscard]] auto
     fixedLevelTestWithSilentIntervalTargetsInitialized() const {
         return fixedLevelTestWithSilentIntervalTargetsInitialized_;
@@ -1861,8 +1861,7 @@ class PresenterFailureTests : public ::testing::Test {
     }
 
     void confirmTestSetup() {
-        Presenter presenter{
-            *model, view, testSetup, subject, experimenter};
+        Presenter presenter{*model, view, testSetup, subject, experimenter};
         setupView.confirmTestSetup();
     }
 
