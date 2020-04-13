@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace av_speech_in_noise {
 struct ConvertedAudioSampleSystemTime {
@@ -23,11 +24,12 @@ class OutputFile {
     virtual void write(const coordinate_response_measure::AdaptiveTrial &) = 0;
     virtual void write(
         const coordinate_response_measure::FixedLevelTrial &) = 0;
-    virtual void write(const open_set::FreeResponseTrial &) = 0;
-    virtual void write(const open_set::CorrectKeywordsTrial &) = 0;
+    virtual void write(const FreeResponseTrial &) = 0;
+    virtual void write(const CorrectKeywordsTrial &) = 0;
     virtual void write(const open_set::AdaptiveTrial &) = 0;
-    virtual void writeTest(const AdaptiveTest &) = 0;
-    virtual void writeTest(const FixedLevelTest &) = 0;
+    virtual void write(const AdaptiveTest &) = 0;
+    virtual void write(const FixedLevelTest &) = 0;
+    virtual void write(const AdaptiveTestResults &) = 0;
     virtual void write(const BinocularGazeSamples &) = 0;
     virtual void writeFadeInComplete(
         const ConvertedAudioSampleSystemTime &) = 0;
@@ -58,6 +60,7 @@ class AdaptiveMethod : public virtual TestMethod {
   public:
     virtual void initialize(const AdaptiveTest &, TargetListReader *) = 0;
     virtual void resetTracks() = 0;
+    virtual auto testResults() -> AdaptiveTestResults = 0;
 };
 
 class FixedLevelMethod : public virtual TestMethod {
@@ -69,21 +72,20 @@ class FixedLevelMethod : public virtual TestMethod {
 class RecognitionTestModel {
   public:
     virtual ~RecognitionTestModel() = default;
+    virtual void subscribe(Model::EventListener *) = 0;
     virtual void initialize(TestMethod *, const Test &) = 0;
     virtual void initializeWithSingleSpeaker(TestMethod *, const Test &) = 0;
     virtual void initializeWithDelayedMasker(TestMethod *, const Test &) = 0;
     virtual void initializeWithEyeTracking(TestMethod *, const Test &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
-    virtual void submit(const coordinate_response_measure::Response &) = 0;
-    virtual auto testComplete() -> bool = 0;
-    virtual auto audioDevices() -> std::vector<std::string> = 0;
-    virtual void subscribe(Model::EventListener *) = 0;
     virtual void playCalibration(const Calibration &) = 0;
+    virtual void submit(const coordinate_response_measure::Response &) = 0;
+    virtual void submit(const FreeResponse &) = 0;
+    virtual void submit(const CorrectKeywords &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
-    virtual void submit(const open_set::FreeResponse &) = 0;
-    virtual void submit(const open_set::CorrectKeywords &) = 0;
-    virtual void throwIfTrialInProgress() = 0;
+    virtual auto testComplete() -> bool = 0;
+    virtual auto audioDevices() -> AudioDevices = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
     virtual void prepareNextTrialIfNeeded() = 0;
@@ -97,6 +99,7 @@ class ModelImpl : public Model {
         TargetList &targetsWithReplacement,
         FiniteTargetList &silentIntervalTargets,
         FiniteTargetList &everyTargetOnce, RecognitionTestModel &);
+    void subscribe(Model::EventListener *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(const FixedLevelTest &) override;
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override;
@@ -110,17 +113,17 @@ class ModelImpl : public Model {
     void initializeWithEyeTracking(const AdaptiveTest &) override;
     void initializeWithCyclicTargets(const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
-    void submit(const coordinate_response_measure::Response &) override;
-    auto testComplete() -> bool override;
-    auto audioDevices() -> std::vector<std::string> override;
-    void subscribe(Model::EventListener *) override;
     void playCalibration(const Calibration &) override;
+    void submit(const coordinate_response_measure::Response &) override;
+    void submit(const FreeResponse &) override;
+    void submit(const CorrectKeywords &) override;
     void submitCorrectResponse() override;
     void submitIncorrectResponse() override;
-    void submit(const open_set::FreeResponse &) override;
-    void submit(const open_set::CorrectKeywords &) override;
+    auto testComplete() -> bool override;
+    auto audioDevices() -> AudioDevices override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
+    auto adaptiveTestResults() -> AdaptiveTestResults override;
     void restartAdaptiveTestWhilePreservingCyclicTargets() override;
 
   private:

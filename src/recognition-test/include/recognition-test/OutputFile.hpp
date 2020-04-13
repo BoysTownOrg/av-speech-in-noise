@@ -2,7 +2,6 @@
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_OUTPUTFILE_HPP_
 
 #include "Model.hpp"
-#include "RecognitionTestModel.hpp"
 #include <string>
 
 namespace av_speech_in_noise {
@@ -23,7 +22,7 @@ enum class HeadingItem {
     rightGaze
 };
 
-constexpr auto headingItemName(HeadingItem i) -> const char * {
+constexpr auto name(HeadingItem i) -> const char * {
     switch (i) {
     case HeadingItem::snr_dB:
         return "SNR (dB)";
@@ -56,7 +55,7 @@ constexpr auto headingItemName(HeadingItem i) -> const char * {
     }
 }
 
-constexpr auto colorName(coordinate_response_measure::Color c) -> const char * {
+constexpr auto name(coordinate_response_measure::Color c) -> const char * {
     switch (c) {
     case coordinate_response_measure::Color::green:
         return "green";
@@ -91,17 +90,18 @@ class OutputFilePath {
 
 class OutputFileImpl : public OutputFile {
   public:
-    OutputFileImpl(Writer *, OutputFilePath *);
+    OutputFileImpl(Writer &, OutputFilePath &);
     void openNewFile(const TestIdentity &) override;
     void close() override;
     void save() override;
-    void writeTest(const AdaptiveTest &) override;
-    void writeTest(const FixedLevelTest &) override;
+    void write(const AdaptiveTest &) override;
+    void write(const FixedLevelTest &) override;
     void write(const coordinate_response_measure::AdaptiveTrial &) override;
-    void write(const coordinate_response_measure::FixedLevelTrial &) override;
-    void write(const open_set::FreeResponseTrial &) override;
-    void write(const open_set::CorrectKeywordsTrial &) override;
     void write(const open_set::AdaptiveTrial &) override;
+    void write(const coordinate_response_measure::FixedLevelTrial &) override;
+    void write(const FreeResponseTrial &) override;
+    void write(const CorrectKeywordsTrial &) override;
+    void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;
     void writeFadeInComplete(const ConvertedAudioSampleSystemTime &) override;
     void writeTargetStartTimeNanoseconds(std::uintmax_t) override;
@@ -110,8 +110,8 @@ class OutputFileImpl : public OutputFile {
     void write(std::string);
     auto generateNewFilePath(const TestIdentity &) -> std::string;
 
-    Writer *writer;
-    OutputFilePath *path;
+    Writer &writer;
+    OutputFilePath &path;
     bool justWroteFixedLevelCoordinateResponseTrial{};
     bool justWroteAdaptiveCoordinateResponseTrial{};
     bool justWroteFreeResponseTrial{};

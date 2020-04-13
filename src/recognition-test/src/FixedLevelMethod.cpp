@@ -58,19 +58,19 @@ auto FixedLevelMethodImpl::currentTarget() -> std::string {
     return targetList->current();
 }
 
-void FixedLevelMethodImpl::writeTestingParameters(OutputFile *file) {
-    file->writeTest(*test);
+void FixedLevelMethodImpl::writeTestingParameters(OutputFile &file) {
+    file.write(*test);
 }
 
-void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
-    file->write(lastTrial);
+void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
+    file.write(lastTrial);
 }
 
 void FixedLevelMethodImpl::submitIncorrectResponse() {}
 
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
-void FixedLevelMethodImpl::submit(const open_set::FreeResponse &response) {
+void FixedLevelMethodImpl::submit(const FreeResponse &response) {
     if (usingFiniteTargetList_) {
         if (response.flagged)
             finiteTargetList->reinsertCurrent();

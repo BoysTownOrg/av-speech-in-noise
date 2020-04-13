@@ -7,6 +7,10 @@
 namespace av_speech_in_noise {
 class ModelStub : public Model {
   public:
+    void setAdaptiveTestResults(AdaptiveTestResults v) {
+        adaptiveTestResults_ = std::move(v);
+    }
+
     auto trialNumber() -> int override { return trialNumber_; }
 
     void setTrialNumber(int n) { trialNumber_ = n; }
@@ -73,7 +77,9 @@ class ModelStub : public Model {
     }
 
     [[nodiscard]] auto adaptiveTestRestartedWhilePreservingCyclicTargets() const
-        -> bool { return adaptiveTestRestartedWhilePreservingCyclicTargets_; }
+        -> bool {
+        return adaptiveTestRestartedWhilePreservingCyclicTargets_;
+    }
 
     [[nodiscard]] auto responseParameters() const -> auto & {
         return responseParameters_;
@@ -156,14 +162,16 @@ class ModelStub : public Model {
         incorrectResponseSubmitted_ = true;
     }
 
-    void submit(const open_set::FreeResponse &s) override { freeResponse_ = s; }
+    void submit(const FreeResponse &s) override { freeResponse_ = s; }
 
-    void submit(const open_set::CorrectKeywords &s) override {
-        correctKeywords_ = s;
-    }
+    void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
 
     void restartAdaptiveTestWhilePreservingCyclicTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
+    }
+
+    auto adaptiveTestResults() -> AdaptiveTestResults override {
+        return adaptiveTestResults_;
     }
 
   private:
@@ -173,8 +181,9 @@ class ModelStub : public Model {
     AudioSettings trialParameters_{};
     coordinate_response_measure::Response responseParameters_{};
     std::vector<std::string> audioDevices_{};
-    open_set::FreeResponse freeResponse_{};
-    open_set::CorrectKeywords correctKeywords_{};
+    AdaptiveTestResults adaptiveTestResults_{};
+    FreeResponse freeResponse_{};
+    CorrectKeywords correctKeywords_{};
     std::string targetFileName_{};
     EventListener *listener_{};
     int trialNumber_{};

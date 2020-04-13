@@ -1,0 +1,31 @@
+name: test and upload bundle
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    name: Test ${{ matrix.compiler }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        compiler: [g++, clang++]
+        os: [macOS-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - name: generate build system
+      env:
+        CXX: ${{ matrix.compiler }}
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
+    - name: build
+      run: cmake --build build
+    - name: test
+      run: build/tests/tests
+    - name: upload bundle
+      uses: actions/upload-artifact@v1
+      with:
+        name: AvSpeechInNoise
+        path: build/apps/AvSpeechInNoise.app

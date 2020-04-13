@@ -39,10 +39,11 @@ class RandomizedTargetListWithReplacement
     void loadFromDirectory(std::string) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
+    auto directory() -> std::string override;
 
   private:
     std::vector<std::string> files{};
-    std::string directory{};
+    std::string directory_{};
     std::string currentFile{};
     DirectoryReader *reader;
     Randomizer *randomizer;
@@ -57,10 +58,11 @@ class RandomizedTargetListWithoutReplacement
     auto next() -> std::string override;
     auto current() -> std::string override;
     void reinsertCurrent() override;
+    auto directory() -> std::string override;
 
   private:
     std::vector<std::string> files{};
-    std::string directory{};
+    std::string directory_{};
     std::string currentFile{};
     DirectoryReader *reader;
     Randomizer *randomizer;
@@ -88,10 +90,11 @@ class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
     void loadFromDirectory(std::string directory) override;
     auto next() -> std::string override;
     auto current() -> std::string override;
+    auto directory() -> std::string override;
 
   private:
     std::vector<std::string> files{};
-    std::string directory{};
+    std::string directory_{};
     DirectoryReader *reader;
     Randomizer *randomizer;
 };

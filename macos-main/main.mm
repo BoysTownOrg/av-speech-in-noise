@@ -206,7 +206,7 @@ void main() {
     OutputFilePathImpl path{&timeStamp, &systemPath};
     path.setRelativeOutputDirectory(
         "Documents/AvSpeechInNoise Data");
-    OutputFileImpl outputFile{&writer, &path};
+    OutputFileImpl outputFile{writer, path};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
     TextFileReaderImpl textFileReader;

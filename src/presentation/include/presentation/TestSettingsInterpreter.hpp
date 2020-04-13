@@ -4,7 +4,7 @@
 #include "Presenter.hpp"
 
 namespace av_speech_in_noise {
-constexpr auto methodName(Method c) -> const char * {
+constexpr auto name(Method c) -> const char * {
     switch (c) {
     case Method::adaptivePassFail:
         return "adaptive pass fail";
@@ -43,7 +43,8 @@ enum class TestSetting {
     up,
     down,
     reversalsPerStepSize,
-    stepSizes
+    stepSizes,
+    thresholdReversals
 };
 
 constexpr auto name(TestSetting p) -> const char * {
@@ -68,6 +69,8 @@ constexpr auto name(TestSetting p) -> const char * {
         return "reversals per step size";
     case TestSetting::stepSizes:
         return "step sizes (dB)";
+    case TestSetting::thresholdReversals:
+        return "threshold";
     }
 }
 

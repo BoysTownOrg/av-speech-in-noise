@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace av_speech_in_noise {
-struct Adaptive {
+struct AdaptiveProgress {
     int SNR_dB{};
     int reversals{};
 };
@@ -31,35 +31,35 @@ struct Trial : Target {
     bool correct{};
 };
 
-struct AdaptiveTrial : Adaptive, Trial {};
+struct AdaptiveTrial : AdaptiveProgress, Trial {};
 
 struct FixedLevelTrial : Trial {};
 }
 
 namespace open_set {
-struct FreeResponse {
-    std::string response;
-    bool flagged{};
+struct Trial : Target {};
+
+struct AdaptiveTrial : AdaptiveProgress, Trial {
+    bool correct{};
 };
+}
 
 struct CorrectKeywords {
     int count{};
 };
 
-struct Trial : Target {};
+struct CorrectKeywordsTrial : CorrectKeywords, open_set::AdaptiveTrial {};
 
-struct FreeResponseTrial : FreeResponse, Trial {};
-
-struct AdaptiveTrial : Adaptive, Trial {
-    bool correct{};
+struct FreeResponse {
+    std::string response;
+    bool flagged{};
 };
 
-struct CorrectKeywordsTrial : CorrectKeywords, AdaptiveTrial {};
-}
+struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
 enum class Condition { auditoryOnly, audioVisual };
 
-constexpr auto conditionName(Condition c) -> const char * {
+constexpr auto name(Condition c) -> const char * {
     switch (c) {
     case Condition::auditoryOnly:
         return "auditory-only";
@@ -116,7 +116,7 @@ constexpr auto name(Transducer c) -> const char * {
         return "1 speaker";
     case Transducer::twoSpeakers:
         return "2 speakers";
-    default:
+    case Transducer::unknown:
         return "unknown";
     }
 }
@@ -127,7 +127,7 @@ struct TestIdentity {
     std::string session;
     std::string method;
     std::string rmeSetting;
-    Transducer transducer;
+    Transducer transducer{};
 };
 
 struct Test {
@@ -145,7 +145,21 @@ struct AdaptiveTest : Test {
     int ceilingSnr_dB{};
     int floorSnr_dB{};
     int trackBumpLimit{};
+    int thresholdReversals{};
 };
+
+struct AdaptiveTestResult {
+    std::string targetListDirectory;
+    double threshold;
+};
+
+using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
+
+inline auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
+    -> bool {
+    return a.targetListDirectory == b.targetListDirectory &&
+        a.threshold == b.threshold;
+}
 
 struct FixedLevelTest : Test {
     int snr_dB{};
@@ -156,12 +170,13 @@ struct AudioSettings {
     std::string audioDevice;
 };
 
-struct Calibration {
-    AudioSettings audioSettings;
+struct Calibration : AudioSettings {
     std::string filePath;
     int level_dB_SPL{};
     int fullScaleLevel_dB_SPL{};
 };
+
+using AudioDevices = typename std::vector<std::string>;
 
 class Model {
   public:
@@ -190,15 +205,16 @@ class Model {
     virtual void playCalibration(const Calibration &) = 0;
     virtual void playTrial(const AudioSettings &) = 0;
     virtual void submit(const coordinate_response_measure::Response &) = 0;
-    virtual void submit(const open_set::FreeResponse &) = 0;
-    virtual void submit(const open_set::CorrectKeywords &) = 0;
+    virtual void submit(const FreeResponse &) = 0;
+    virtual void submit(const CorrectKeywords &) = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual auto testComplete() -> bool = 0;
-    virtual auto audioDevices() -> std::vector<std::string> = 0;
+    virtual auto audioDevices() -> AudioDevices = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
     virtual void restartAdaptiveTestWhilePreservingCyclicTargets() = 0;
+    virtual auto adaptiveTestResults() -> AdaptiveTestResults = 0;
 };
 }
 

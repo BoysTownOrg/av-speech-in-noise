@@ -24,6 +24,10 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return targetListReader_;
     }
 
+    void setTestResults(AdaptiveTestResults v) { testResults_ = std::move(v); }
+
+    auto testResults() -> AdaptiveTestResults override { return testResults_; }
+
     void resetTracks() override { tracksResetted_ = true; }
 
     auto complete() -> bool override { return {}; }
@@ -32,16 +36,18 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submit(const open_set::FreeResponse &) override {}
-    void submit(const open_set::CorrectKeywords &) override {}
-    void writeTestingParameters(OutputFile *) override {}
-    void writeLastCoordinateResponse(OutputFile *) override {}
-    void writeLastCorrectResponse(OutputFile *) override {}
-    void writeLastIncorrectResponse(OutputFile *) override {}
-    void writeLastCorrectKeywords(OutputFile *) override {}
+    void submit(const FreeResponse &) override {}
+    void submit(const CorrectKeywords &) override {}
+    void writeTestingParameters(OutputFile &) override {}
+    void writeLastCoordinateResponse(OutputFile &) override {}
+    void writeLastCorrectResponse(OutputFile &) override {}
+    void writeLastIncorrectResponse(OutputFile &) override {}
+    void writeLastCorrectKeywords(OutputFile &) override {}
+    void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
 
   private:
+    AdaptiveTestResults testResults_;
     const AdaptiveTest *test_{};
     TargetListReader *targetListReader_{};
     bool tracksResetted_{};
@@ -78,13 +84,14 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submit(const open_set::FreeResponse &) override {}
-    void submit(const open_set::CorrectKeywords &) override {}
-    void writeTestingParameters(OutputFile *) override {}
-    void writeLastCoordinateResponse(OutputFile *) override {}
-    void writeLastCorrectResponse(OutputFile *) override {}
-    void writeLastIncorrectResponse(OutputFile *) override {}
-    void writeLastCorrectKeywords(OutputFile *) override {}
+    void submit(const FreeResponse &) override {}
+    void submit(const CorrectKeywords &) override {}
+    void writeTestingParameters(OutputFile &) override {}
+    void writeLastCoordinateResponse(OutputFile &) override {}
+    void writeLastCorrectResponse(OutputFile &) override {}
+    void writeLastIncorrectResponse(OutputFile &) override {}
+    void writeLastCorrectKeywords(OutputFile &) override {}
+    void writeTestResult(OutputFile &) override {}
     void submit(const coordinate_response_measure::Response &) override {}
 };
 
@@ -97,7 +104,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
     const Test *test_{};
     const TestMethod *testMethod_{};
     const coordinate_response_measure::Response *coordinateResponse_{};
-    const open_set::CorrectKeywords *correctKeywords_{};
+    const CorrectKeywords *correctKeywords_{};
     int trialNumber_{};
     bool complete_{};
     bool initializedWithSingleSpeaker_{};
@@ -154,9 +161,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
         coordinateResponse_ = &p;
     }
 
-    void submit(const open_set::CorrectKeywords &p) override {
-        correctKeywords_ = &p;
-    }
+    void submit(const CorrectKeywords &p) override { correctKeywords_ = &p; }
 
     auto testComplete() -> bool override { return complete_; }
 
@@ -204,8 +209,7 @@ class RecognitionTestModelStub : public RecognitionTestModel {
 
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void submit(const open_set::FreeResponse &) override {}
-    void throwIfTrialInProgress() override {}
+    void submit(const FreeResponse &) override {}
 };
 
 class InitializingTestUseCase {
@@ -794,7 +798,7 @@ MODEL_TEST(submitResponsePassesCoordinateResponse) {
 }
 
 MODEL_TEST(submitCorrectKeywordsPassesCorrectKeywords) {
-    open_set::CorrectKeywords k;
+    CorrectKeywords k;
     model.submit(k);
     assertEqual(&std::as_const(k), internalModel.correctKeywords());
 }
@@ -820,6 +824,11 @@ MODEL_TEST(testCompleteWhenComplete) {
 MODEL_TEST(returnsAudioDevices) {
     internalModel.setAudioDevices({"a", "b", "c"});
     assertEqual({"a", "b", "c"}, model.audioDevices());
+}
+
+MODEL_TEST(returnsAdaptiveTestResults) {
+    adaptiveMethod.setTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
+    assertEqual({{"a", 1.}, {"b", 2.}, {"c", 3.}}, model.adaptiveTestResults());
 }
 
 MODEL_TEST(returnsTrialNumber) {

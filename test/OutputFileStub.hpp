@@ -2,20 +2,20 @@
 #define TESTS_OUTPUTFILESTUB_HPP_
 
 #include "LogString.hpp"
-#include "recognition-test/RecognitionTestModel.hpp"
-#include <cstdint>
+#include <av-speech-in-noise/Model.hpp>
 #include <recognition-test/Model.hpp>
 #include <string>
 
 namespace av_speech_in_noise {
 class OutputFileStub : public OutputFile {
     coordinate_response_measure::AdaptiveTrial
-        writtenAdaptiveCoordinateResponseTrial_{};
-    coordinate_response_measure::FixedLevelTrial writtenFixedLevelTrial_{};
-    open_set::FreeResponseTrial writtenFreeResponseTrial_{};
-    open_set::CorrectKeywordsTrial writtenCorrectKeywords_{};
-    open_set::AdaptiveTrial writtenOpenSetAdaptiveTrial_{};
+        adaptiveCoordinateResponseTrial_{};
+    coordinate_response_measure::FixedLevelTrial fixedLevelTrial_{};
+    FreeResponseTrial freeResponseTrial_{};
+    CorrectKeywordsTrial correctKeywords_{};
+    open_set::AdaptiveTrial openSetAdaptiveTrial_{};
     BinocularGazeSamples eyeGazes_;
+    AdaptiveTestResults adaptiveTestResult_{};
     LogString log_{};
     std::uintmax_t fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_{};
     std::uintmax_t targetStartTimeNanoseconds_{};
@@ -31,7 +31,7 @@ class OutputFileStub : public OutputFile {
     void write(
         const coordinate_response_measure::AdaptiveTrial &trial) override {
         addToLog("writeTrial ");
-        writtenAdaptiveCoordinateResponseTrial_ = trial;
+        adaptiveCoordinateResponseTrial_ = trial;
     }
 
     void openNewFile(const TestIdentity &p) override {
@@ -43,40 +43,42 @@ class OutputFileStub : public OutputFile {
 
     void close() override { addToLog("close "); }
 
-    void writeTest(const AdaptiveTest &test) override {
-        addToLog("writeTest ");
+    void write(const AdaptiveTest &test) override {
+        addToLog("write ");
         adaptiveTest_ = &test;
     }
 
-    void writeTest(const FixedLevelTest &p) override {
-        addToLog("writeTest ");
+    void write(const FixedLevelTest &p) override {
+        addToLog("write ");
         fixedLevelTest_ = &p;
     }
 
-    void write(const open_set::FreeResponseTrial &p) override {
+    void write(const FreeResponseTrial &p) override {
         addToLog("writeTrial ");
-        writtenFreeResponseTrial_ = p;
+        freeResponseTrial_ = p;
     }
 
-    void write(const open_set::CorrectKeywordsTrial &p) override {
+    void write(const CorrectKeywordsTrial &p) override {
         addToLog("writeTrial ");
-        writtenCorrectKeywords_ = p;
+        correctKeywords_ = p;
     }
 
     void write(const open_set::AdaptiveTrial &p) override {
         addToLog("writeTrial ");
-        writtenOpenSetAdaptiveTrial_ = p;
+        openSetAdaptiveTrial_ = p;
     }
 
     void write(
         const coordinate_response_measure::FixedLevelTrial &trial) override {
         addToLog("writeTrial ");
-        writtenFixedLevelTrial_ = trial;
+        fixedLevelTrial_ = trial;
     }
 
-    auto writtenFixedLevelTrial() const -> auto & {
-        return writtenFixedLevelTrial_;
+    void write(const AdaptiveTestResults &result) override {
+        adaptiveTestResult_ = result;
     }
+
+    auto writtenFixedLevelTrial() const -> auto & { return fixedLevelTrial_; }
 
     void addToLog(const std::string &s) { log_.insert(s); }
 
@@ -117,20 +119,20 @@ class OutputFileStub : public OutputFile {
         return fadeInCompleteAudioSampleOffset_;
     }
 
-    auto writtenAdaptiveCoordinateResponseTrial() const -> auto & {
-        return writtenAdaptiveCoordinateResponseTrial_;
+    auto adaptiveCoordinateResponseTrial() const -> auto & {
+        return adaptiveCoordinateResponseTrial_;
     }
 
-    auto writtenFreeResponseTrial() const -> auto & {
-        return writtenFreeResponseTrial_;
+    auto freeResponseTrial() const -> auto & { return freeResponseTrial_; }
+
+    auto correctKeywordsTrial() const -> auto & { return correctKeywords_; }
+
+    auto openSetAdaptiveTrial() const -> auto & {
+        return openSetAdaptiveTrial_;
     }
 
-    auto writtenCorrectKeywords() const -> auto & {
-        return writtenCorrectKeywords_;
-    }
-
-    auto writtenOpenSetAdaptiveTrial() const -> auto & {
-        return writtenOpenSetAdaptiveTrial_;
+    auto adaptiveTestResult() const -> AdaptiveTestResults {
+        return adaptiveTestResult_;
     }
 };
 }

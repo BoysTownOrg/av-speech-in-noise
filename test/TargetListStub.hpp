@@ -30,7 +30,9 @@ class TargetListStub : public virtual TargetList {
 
     void setNext(std::string s) { next_ = std::move(s); }
 
-    auto directory() { return directory_; }
+    auto directory() -> std::string override { return directory_; }
+
+    void setDirectory(std::string s) { directory_ = std::move(s); }
 
     auto log() const -> auto & { return log_; }
 

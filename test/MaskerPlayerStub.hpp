@@ -2,7 +2,6 @@
 #define TESTS_MASKERPLAYERSTUB_HPP_
 
 #include "LogString.hpp"
-#include <cstdint>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <utility>
 
@@ -117,7 +116,7 @@ class MaskerPlayerStub : public MaskerPlayer {
         return outputAudioDeviceDescriptions_;
     }
 
-    auto listener() const { return listener_; }
+    auto listener() const -> const EventListener * { return listener_; }
 
     void fadeInComplete(const AudioSampleSystemTime &t = {}) {
         listener_->fadeInComplete(t);

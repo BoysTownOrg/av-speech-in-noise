@@ -139,11 +139,9 @@ void ModelImpl::submitCorrectResponse() { model.submitCorrectResponse(); }
 
 void ModelImpl::submitIncorrectResponse() { model.submitIncorrectResponse(); }
 
-void ModelImpl::submit(const open_set::FreeResponse &response) {
-    model.submit(response);
-}
+void ModelImpl::submit(const FreeResponse &response) { model.submit(response); }
 
-void ModelImpl::submit(const open_set::CorrectKeywords &k) { model.submit(k); }
+void ModelImpl::submit(const CorrectKeywords &k) { model.submit(k); }
 
 void ModelImpl::playCalibration(const Calibration &p) {
     model.playCalibration(p);
@@ -153,6 +151,9 @@ auto ModelImpl::testComplete() -> bool { return model.testComplete(); }
 
 auto ModelImpl::audioDevices() -> std::vector<std::string> {
     return model.audioDevices();
+}
+auto ModelImpl::adaptiveTestResults() -> AdaptiveTestResults {
+    return adaptiveMethod.testResults();
 }
 
 void ModelImpl::subscribe(Model::EventListener *e) { model.subscribe(e); }

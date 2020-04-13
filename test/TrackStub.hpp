@@ -7,10 +7,28 @@
 
 namespace av_speech_in_noise {
 class TrackStub : public Track {
+    Settings settings_;
+    double thresholdWhenUpdated_{};
+    double threshold_{};
+    int x_{};
+    int reversals_{};
+    int reversalsWhenUpdated_{};
+    int xWhenUpdated_{};
+    int thresholdReversals_{};
+    bool pushedDown_{};
+    bool pushedUp_{};
+    bool complete_{};
+    bool resetted_{};
+    bool incompleteOnReset_{};
+
   public:
     void setXWhenUpdated(int x) { xWhenUpdated_ = x; }
 
     void setReversalsWhenUpdated(int x) { reversalsWhenUpdated_ = x; }
+
+    void setThresholdWhenUpdated(double x) { thresholdWhenUpdated_ = x; }
+
+    void setThreshold(double x) { threshold_ = x; }
 
     void setReversals(int x) { reversals_ = x; }
 
@@ -24,12 +42,14 @@ class TrackStub : public Track {
         pushedDown_ = true;
         reversals_ = reversalsWhenUpdated_;
         x_ = xWhenUpdated_;
+        threshold_ = thresholdWhenUpdated_;
     }
 
     void up() override {
         pushedUp_ = true;
         reversals_ = reversalsWhenUpdated_;
         x_ = xWhenUpdated_;
+        threshold_ = thresholdWhenUpdated_;
     }
 
     auto x() -> int override { return x_; }
@@ -50,17 +70,14 @@ class TrackStub : public Track {
 
     [[nodiscard]] auto resetted() const -> bool { return resetted_; }
 
-  private:
-    Settings settings_;
-    int x_{};
-    int reversals_{};
-    int reversalsWhenUpdated_{};
-    int xWhenUpdated_{};
-    bool pushedDown_{};
-    bool pushedUp_{};
-    bool complete_{};
-    bool resetted_{};
-    bool incompleteOnReset_{};
+    auto threshold(int reversals) -> double override {
+        thresholdReversals_ = reversals;
+        return threshold_;
+    }
+
+    [[nodiscard]] auto thresholdReversals() const -> int {
+        return thresholdReversals_;
+    }
 };
 
 class TrackFactoryStub : public Track::Factory {

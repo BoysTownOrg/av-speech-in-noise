@@ -14,13 +14,11 @@ static auto incomplete(const TargetListWithTrack &t) -> bool {
     return !complete(t);
 }
 
-static void assignReversals(Adaptive &trial, Track *track) {
+static void assignReversals(AdaptiveProgress &trial, Track *track) {
     trial.reversals = track->reversals();
 }
 
-static auto correct(const open_set::CorrectKeywords &p) -> bool {
-    return p.count >= 2;
-}
+static auto correct(const CorrectKeywords &p) -> bool { return p.count >= 2; }
 
 static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
     trial.SNR_dB = track->x();
@@ -35,10 +33,6 @@ static auto fileName(ResponseEvaluator &evaluator, const std::string &target)
     return evaluator.fileName(target);
 }
 
-static void assignTarget(open_set::Trial &trial, std::string s) {
-    trial.target = std::move(s);
-}
-
 static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
     Track::Settings trackSettings{};
     trackSettings.rule = &test.trackingRule;
@@ -49,6 +43,45 @@ static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
     return trackSettings;
 }
 
+static auto moveCompleteTracksToEnd(
+    std::vector<TargetListWithTrack> &targetListsWithTracks) -> gsl::index {
+    return std::distance(targetListsWithTracks.begin(),
+        std::stable_partition(targetListsWithTracks.begin(),
+            targetListsWithTracks.end(), incomplete));
+}
+
+static void down(Track *track) { track->down(); }
+
+static void up(Track *track) { track->up(); }
+
+static auto current(TargetList *list) -> std::string { return list->current(); }
+
+static void assignTarget(open_set::Trial &trial, ResponseEvaluator &evaluator,
+    TargetList *targetList) {
+    trial.target = fileName(evaluator, current(targetList));
+}
+
+static auto correct(ResponseEvaluator &evaluator, TargetList *targetList,
+    const coordinate_response_measure::Response &response) -> bool {
+    return evaluator.correct(current(targetList), response);
+}
+
+static void resetTrack(TargetListWithTrack &targetListWithTrack) {
+    track(targetListWithTrack)->reset();
+}
+
+static auto x(Track *track) -> int { return track->x(); }
+
+static auto testResults(
+    const std::vector<TargetListWithTrack> &targetListsWithTracks,
+    int thresholdReversals) -> AdaptiveTestResults {
+    AdaptiveTestResults results;
+    for (const auto &t : targetListsWithTracks)
+        results.push_back(
+            {t.list->directory(), t.track->threshold(thresholdReversals)});
+    return results;
+}
+
 AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
     ResponseEvaluator &evaluator, Randomizer &randomizer)
     : snrTrackFactory{snrTrackFactory}, evaluator{evaluator}, randomizer{
@@ -57,6 +90,7 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
 void AdaptiveMethodImpl::initialize(
     const AdaptiveTest &t, TargetListReader *targetListSetReader) {
     test = &t;
+    thresholdReversals = t.thresholdReversals;
     targetListsWithTracks.clear();
     for (auto &&list : targetListSetReader->read(t.targetListDirectory))
         targetListsWithTracks.push_back(
@@ -65,25 +99,20 @@ void AdaptiveMethodImpl::initialize(
 }
 
 void AdaptiveMethodImpl::resetTracks() {
-    for (const auto &t : targetListsWithTracks)
-        t.track->reset();
+    std::for_each(
+        targetListsWithTracks.begin(), targetListsWithTracks.end(), resetTrack);
     selectNextList();
 }
 
 void AdaptiveMethodImpl::selectNextList() {
-    moveCompleteTracksToEnd();
+    const auto tracksInProgress{moveCompleteTracksToEnd(targetListsWithTracks)};
     if (tracksInProgress == 0)
         return;
-    const auto &targetListsWithTrack{targetListsWithTracks.at(
-        randomizer.betweenInclusive(0, tracksInProgress - 1))};
-    currentSnrTrack = track(targetListsWithTrack);
-    currentTargetList = targetListsWithTrack.list.get();
-}
 
-void AdaptiveMethodImpl::moveCompleteTracksToEnd() {
-    tracksInProgress = std::distance(targetListsWithTracks.begin(),
-        std::stable_partition(targetListsWithTracks.begin(),
-            targetListsWithTracks.end(), incomplete));
+    const auto &next{targetListsWithTracks.at(
+        randomizer.betweenInclusive(0, tracksInProgress - 1))};
+    snrTrack = track(next);
+    targetList = next.list.get();
 }
 
 auto AdaptiveMethodImpl::complete() -> bool {
@@ -92,94 +121,97 @@ auto AdaptiveMethodImpl::complete() -> bool {
 }
 
 auto AdaptiveMethodImpl::nextTarget() -> std::string {
-    return currentTargetList->next();
+    return targetList->next();
 }
 
-auto AdaptiveMethodImpl::snr_dB() -> int { return currentSnrTrack->x(); }
+auto AdaptiveMethodImpl::snr_dB() -> int { return x(snrTrack); }
 
 auto AdaptiveMethodImpl::currentTarget() -> std::string {
-    return currentTargetList->current();
-}
-
-auto AdaptiveMethodImpl::correct(const std::string &target,
-    const coordinate_response_measure::Response &response) -> bool {
-    return evaluator.correct(target, response);
-}
-
-void AdaptiveMethodImpl::correct() { currentSnrTrack->down(); }
-
-void AdaptiveMethodImpl::incorrect() { currentSnrTrack->up(); }
-
-void AdaptiveMethodImpl::writeTestingParameters(OutputFile *file) {
-    file->writeTest(*test);
-}
-
-void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile *file) {
-    file->write(lastTrial);
-}
-
-void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile *file) {
-    file->write(lastOpenSetTrial);
-}
-
-void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile *file) {
-    file->write(lastOpenSetTrial);
-}
-
-void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile *file) {
-    file->write(lastCorrectKeywordsTrial);
+    return targetList->current();
 }
 
 void AdaptiveMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
-    const auto lastSnr_dB{snr_dB()};
-    if (correct(currentTarget(), response))
-        correct();
+    const auto lastSnr_dB{x(snrTrack)};
+    if (correct(evaluator, targetList, response))
+        down(snrTrack);
     else
-        incorrect();
-    lastTrial.subjectColor = response.color;
-    lastTrial.subjectNumber = response.number;
-    assignReversals(lastTrial, currentSnrTrack);
-    lastTrial.correctColor = evaluator.correctColor(currentTarget());
-    lastTrial.correctNumber = evaluator.correctNumber(currentTarget());
-    lastTrial.SNR_dB = lastSnr_dB;
-    lastTrial.correct = correct(currentTarget(), response);
+        up(snrTrack);
+    lastCoordinateResponseMeasureTrial.subjectColor = response.color;
+    lastCoordinateResponseMeasureTrial.subjectNumber = response.number;
+    assignReversals(lastCoordinateResponseMeasureTrial, snrTrack);
+    lastCoordinateResponseMeasureTrial.correctColor =
+        evaluator.correctColor(current(targetList));
+    lastCoordinateResponseMeasureTrial.correctNumber =
+        evaluator.correctNumber(current(targetList));
+    lastCoordinateResponseMeasureTrial.SNR_dB = lastSnr_dB;
+    lastCoordinateResponseMeasureTrial.correct =
+        correct(evaluator, targetList, response);
     selectNextList();
 }
 
 void AdaptiveMethodImpl::submitIncorrectResponse() {
     assignCorrectness(lastOpenSetTrial, false);
-    assignSnr(lastOpenSetTrial, currentSnrTrack);
-    assignTarget(lastOpenSetTrial, fileName(evaluator, currentTarget()));
-    incorrect();
-    assignReversals(lastOpenSetTrial, currentSnrTrack);
+    assignSnr(lastOpenSetTrial, snrTrack);
+    assignTarget(lastOpenSetTrial, evaluator, targetList);
+    up(snrTrack);
+    assignReversals(lastOpenSetTrial, snrTrack);
     selectNextList();
 }
 
 void AdaptiveMethodImpl::submitCorrectResponse() {
     assignCorrectness(lastOpenSetTrial, true);
-    assignSnr(lastOpenSetTrial, currentSnrTrack);
-    assignTarget(lastOpenSetTrial, fileName(evaluator, currentTarget()));
-    correct();
-    assignReversals(lastOpenSetTrial, currentSnrTrack);
+    assignSnr(lastOpenSetTrial, snrTrack);
+    assignTarget(lastOpenSetTrial, evaluator, targetList);
+    down(snrTrack);
+    assignReversals(lastOpenSetTrial, snrTrack);
+    lastAdaptiveTestResult.threshold = snrTrack->threshold({});
+    lastAdaptiveTestResult.targetListDirectory = targetList->directory();
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submit(const open_set::CorrectKeywords &p) {
+void AdaptiveMethodImpl::submit(const CorrectKeywords &p) {
     lastCorrectKeywordsTrial.count = p.count;
-    assignCorrectness(lastCorrectKeywordsTrial, av_speech_in_noise::correct(p));
-    assignSnr(lastCorrectKeywordsTrial, currentSnrTrack);
-    assignTarget(
-        lastCorrectKeywordsTrial, fileName(evaluator, currentTarget()));
-    if (av_speech_in_noise::correct(p))
-        correct();
+    assignCorrectness(lastCorrectKeywordsTrial, correct(p));
+    assignSnr(lastCorrectKeywordsTrial, snrTrack);
+    assignTarget(lastCorrectKeywordsTrial, evaluator, targetList);
+    if (correct(p))
+        down(snrTrack);
     else
-        incorrect();
-    assignReversals(lastCorrectKeywordsTrial, currentSnrTrack);
+        up(snrTrack);
+    assignReversals(lastCorrectKeywordsTrial, snrTrack);
     selectNextList();
 }
 
-void AdaptiveMethodImpl::submit(const open_set::FreeResponse &) {
-    selectNextList();
+void AdaptiveMethodImpl::submit(const FreeResponse &) { selectNextList(); }
+
+void AdaptiveMethodImpl::writeTestResult(OutputFile &file) {
+    file.write(av_speech_in_noise::testResults(
+        targetListsWithTracks, thresholdReversals));
+}
+
+void AdaptiveMethodImpl::writeTestingParameters(OutputFile &file) {
+    file.write(*test);
+}
+
+void AdaptiveMethodImpl::writeLastCoordinateResponse(OutputFile &file) {
+    file.write(lastCoordinateResponseMeasureTrial);
+}
+
+void AdaptiveMethodImpl::writeLastCorrectResponse(OutputFile &file) {
+    file.write(lastOpenSetTrial);
+}
+
+void AdaptiveMethodImpl::writeLastIncorrectResponse(OutputFile &file) {
+    file.write(lastOpenSetTrial);
+}
+
+void AdaptiveMethodImpl::writeLastCorrectKeywords(OutputFile &file) {
+    file.write(lastCorrectKeywordsTrial);
+}
+
+auto AdaptiveMethodImpl::testResults() -> AdaptiveTestResults {
+    return av_speech_in_noise::testResults(
+        targetListsWithTracks, thresholdReversals);
 }
 }
