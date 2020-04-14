@@ -1,6 +1,7 @@
 #include "CocoaView.h"
 #include "common-objc.h"
 #include <iterator>
+#include <array>
 
 @interface SetupViewActions : NSObject
 @property av_speech_in_noise::CocoaTestSetupView *controller;
@@ -304,9 +305,9 @@ static auto greenColor{NSColor.greenColor};
 static auto redColor{NSColor.redColor};
 static auto blueColor{NSColor.blueColor};
 static auto whiteColor{NSColor.whiteColor};
-static constexpr int numbers[] = {1, 2, 3, 4, 5, 6, 8, 9};
-static constexpr auto responseNumbers{std::size(numbers)};
-static constexpr auto responseColors{4};
+constexpr std::array<int, 8> numbers {{1, 2, 3, 4, 5, 6, 8, 9}};
+constexpr auto responseNumbers{std::size(numbers)};
+constexpr auto responseColors{4};
 
 CocoaSubjectView::CocoaSubjectView(NSRect r)
     : // Defer may be critical here...
@@ -333,7 +334,7 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
 
 void CocoaSubjectView::addButtonRow(NSColor *color, int row) {
     for (std::size_t col{0}; col < responseNumbers; ++col)
-        addNumberButton(color, numbers[col], row, col);
+        addNumberButton(color, numbers.at(col), row, col);
 }
 
 void CocoaSubjectView::addNumberButton(

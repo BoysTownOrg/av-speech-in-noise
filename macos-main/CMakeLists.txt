@@ -28,7 +28,7 @@ add_executable(AvSpeechInNoise MACOSX_BUNDLE
     CocoaView.mm
     main.mm
 )
-set_target_properties(AvSpeechInNoise PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION})
+set_target_properties(AvSpeechInNoise PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION} CXX_EXTENSIONS OFF)
 target_compile_features(AvSpeechInNoise PRIVATE cxx_std_17)
 target_link_libraries(AvSpeechInNoise 
     recognition-test 
