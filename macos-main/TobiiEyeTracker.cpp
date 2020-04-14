@@ -114,9 +114,13 @@ static auto x(EyeGaze &p) -> float & { return p.x; }
 
 static auto y(EyeGaze &p) -> float & { return p.y; }
 
+static auto size(const std::vector<BinocularGazeSample> &v) -> gsl::index {
+    return v.size();
+}
+
 auto TobiiEyeTracker::gazeSamples() -> BinocularGazeSamples {
     BinocularGazeSamples gazeSamples_(head > 0 ? head - 1 : 0);
-    for (gsl::index i{0}; i < gazeSamples_.size(); ++i) {
+    for (gsl::index i{0}; i < size(gazeSamples_); ++i) {
         at(gazeSamples_, i).systemTimeMicroseconds =
             at(gazeData, i).system_time_stamp;
         x(leftEyeGaze(gazeSamples_, i)) = x(leftEyeGaze(gazeData, i));

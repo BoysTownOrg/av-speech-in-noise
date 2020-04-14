@@ -11,7 +11,7 @@
 namespace av_speech_in_noise {
 class CocoaExperimenterView : public View::Experimenter {
   public:
-    CocoaExperimenterView(NSRect);
+    explicit CocoaExperimenterView(NSRect);
     NSView *view();
     void exitTest();
     void subscribe(EventListener *) override;
@@ -63,7 +63,7 @@ class CocoaExperimenterView : public View::Experimenter {
 
 class CocoaTestSetupView : public View::TestSetup {
   public:
-    CocoaTestSetupView(NSRect);
+    explicit CocoaTestSetupView(NSRect);
     void show() override;
     void hide() override;
     std::string testerId() override;
@@ -106,7 +106,7 @@ class CocoaTestSetupView : public View::TestSetup {
 
 class CocoaSubjectView : public View::CoordinateResponseMeasure {
   public:
-    CocoaSubjectView(NSRect);
+    explicit CocoaSubjectView(NSRect);
     std::string numberResponse() override;
     bool greenResponse() override;
     bool blueResponse() override;
@@ -137,7 +137,7 @@ class CocoaSubjectView : public View::CoordinateResponseMeasure {
 
 class CocoaView : public View {
   public:
-    CocoaView(NSRect);
+    explicit CocoaView(NSRect);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
     std::string browseForDirectory() override;
