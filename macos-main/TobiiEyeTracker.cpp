@@ -1,10 +1,8 @@
 #include "TobiiEyeTracker.hpp"
-#include "recognition-test/RecognitionTestModel.hpp"
-#include "tobii_research.h"
-#include "tobii_research_streams.h"
+#include <tobii_research.h>
+#include <tobii_research_streams.h>
 #include <dlfcn.h>
 #include <gsl/gsl>
-#include <cmath>
 
 namespace av_speech_in_noise {
 static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
@@ -17,30 +15,29 @@ static auto eyeTracker(TobiiResearchEyeTrackers *eyeTrackers)
 TobiiEyeTracker::TobiiEyeTracker()
     : library{dlopen(
           "/usr/local/lib/tobii_research/libtobii_research.dylib", RTLD_LAZY)} {
-    auto tobii_research_find_all_eyetrackers =
-        reinterpret_cast<TobiiResearchStatus (*)(TobiiResearchEyeTrackers **)>(
+    auto tobii_research_find_all_eyetrackers_ =
+        reinterpret_cast<decltype(&tobii_research_find_all_eyetrackers)>(
             dlsym(library, "tobii_research_find_all_eyetrackers"));
-    if (tobii_research_find_all_eyetrackers != nullptr)
-        tobii_research_find_all_eyetrackers(&eyeTrackers);
+    if (tobii_research_find_all_eyetrackers_ != nullptr)
+        tobii_research_find_all_eyetrackers_(&eyeTrackers);
 }
 
 TobiiEyeTracker::~TobiiEyeTracker() {
-    auto tobii_research_free_eyetrackers =
-        reinterpret_cast<void (*)(TobiiResearchEyeTrackers *)>(
+    auto tobii_research_free_eyetrackers_ =
+        reinterpret_cast<decltype(&tobii_research_free_eyetrackers)>(
             dlsym(library, "tobii_research_free_eyetrackers"));
-    if (tobii_research_free_eyetrackers != nullptr)
-        tobii_research_free_eyetrackers(eyeTrackers);
+    if (tobii_research_free_eyetrackers_ != nullptr)
+        tobii_research_free_eyetrackers_(eyeTrackers);
     dlclose(library);
 }
 
 void TobiiEyeTracker::allocateRecordingTimeSeconds(double seconds) {
     float gaze_output_frequency_Hz{};
-    auto tobii_research_get_gaze_output_frequency =
-        reinterpret_cast<TobiiResearchStatus (*)(
-            TobiiResearchEyeTracker *, float *)>(
+    auto tobii_research_get_gaze_output_frequency_ =
+        reinterpret_cast<decltype(&tobii_research_get_gaze_output_frequency)>(
             dlsym(library, "tobii_research_get_gaze_output_frequency"));
-    if (tobii_research_get_gaze_output_frequency != nullptr)
-        tobii_research_get_gaze_output_frequency(
+    if (tobii_research_get_gaze_output_frequency_ != nullptr)
+        tobii_research_get_gaze_output_frequency_(
             eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
     gazeData.resize(gsl::narrow<std::size_t>(
         std::ceil(gaze_output_frequency_Hz * seconds)));
@@ -48,22 +45,20 @@ void TobiiEyeTracker::allocateRecordingTimeSeconds(double seconds) {
 }
 
 void TobiiEyeTracker::start() {
-    auto tobii_research_subscribe_to_gaze_data =
-        reinterpret_cast<TobiiResearchStatus (*)(TobiiResearchEyeTracker *,
-            tobii_research_gaze_data_callback, void *)>(
+    auto tobii_research_subscribe_to_gaze_data_ =
+        reinterpret_cast<decltype(&tobii_research_subscribe_to_gaze_data)>(
             dlsym(library, "tobii_research_subscribe_to_gaze_data"));
-    if (tobii_research_subscribe_to_gaze_data != nullptr)
-        tobii_research_subscribe_to_gaze_data(
+    if (tobii_research_subscribe_to_gaze_data_ != nullptr)
+        tobii_research_subscribe_to_gaze_data_(
             eyeTracker(eyeTrackers), gaze_data_callback, this);
 }
 
 void TobiiEyeTracker::stop() {
-    auto tobii_research_unsubscribe_from_gaze_data =
-        reinterpret_cast<TobiiResearchStatus (*)(
-            TobiiResearchEyeTracker *, tobii_research_gaze_data_callback)>(
+    auto tobii_research_unsubscribe_from_gaze_data_ =
+        reinterpret_cast<decltype(&tobii_research_unsubscribe_from_gaze_data)>(
             dlsym(library, "tobii_research_unsubscribe_from_gaze_data"));
-    if (tobii_research_unsubscribe_from_gaze_data != nullptr)
-        tobii_research_unsubscribe_from_gaze_data(
+    if (tobii_research_unsubscribe_from_gaze_data_ != nullptr)
+        tobii_research_unsubscribe_from_gaze_data_(
             eyeTracker(eyeTrackers), gaze_data_callback);
 }
 
