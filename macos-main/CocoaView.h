@@ -49,11 +49,11 @@ class CocoaExperimenterView : public View::Experimenter {
     NSView *responseSubmission;
     NSView *correctKeywordsSubmission;
     NSWindow *continueTestingDialog;
-    NSTextField *response_;
-    NSTextField *correctKeywordsEntry_;
+    NSTextField *continueTestingDialogMessage_;
     NSTextField *displayedText_;
     NSTextField *secondaryDisplayedText_;
-    NSTextField *continueTestingDialogMessage_;
+    NSTextField *response_;
+    NSTextField *correctKeywordsEntry_;
     NSButton *flagged_;
     NSButton *exitTestButton_;
     NSButton *nextTrialButton_;

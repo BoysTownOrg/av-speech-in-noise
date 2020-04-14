@@ -4,25 +4,25 @@
 #include <array>
 
 @interface SetupViewActions : NSObject
-@property av_speech_in_noise::CocoaTestSetupView *controller;
+@property (nonatomic) av_speech_in_noise::CocoaTestSetupView *controller;
 - (void)confirmTestSetup;
 - (void)browseForTestSettings;
 - (void)playCalibration;
 @end
 
 @interface SubjectViewActions : NSObject
-@property av_speech_in_noise::CocoaSubjectView *controller;
+@property (nonatomic) av_speech_in_noise::CocoaSubjectView *controller;
 - (void)respond:(id)sender;
 - (void)playTrial;
 @end
 
 @interface ExperimenterViewActions : NSObject
-@property av_speech_in_noise::CocoaExperimenterView *controller;
+@property (nonatomic) av_speech_in_noise::CocoaExperimenterView *controller;
 - (void)exitTest;
 @end
 
 @interface TestingViewActions : NSObject
-@property av_speech_in_noise::CocoaExperimenterView *controller;
+@property (nonatomic) av_speech_in_noise::CocoaExperimenterView *controller;
 - (void)playTrial;
 - (void)submitFreeResponse;
 - (void)submitPassedTrial;
@@ -133,7 +133,6 @@ static constexpr auto labelWidth{90};
 static constexpr auto labelToTextFieldSpacing{5};
 static constexpr auto textFieldLeadingEdge{
     labelWidth + labelToTextFieldSpacing};
-static constexpr auto shortTextFieldWidth{75};
 static constexpr auto normalTextFieldWidth{150};
 static constexpr auto menuWidth{180};
 static constexpr auto filePathTextFieldWidth{500};
@@ -145,13 +144,9 @@ constexpr auto width(const NSRect &r) -> CGFloat { return r.size.width; }
 
 constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
 
-static auto textFieldSizeAtHeightWithWidth(CGFloat height, CGFloat buttonWidth)
+static auto textFieldSizeAtHeightWithWidth(CGFloat height, CGFloat width)
     -> NSRect {
-    return NSMakeRect(textFieldLeadingEdge, height, buttonWidth, labelHeight);
-}
-
-static auto shortTextFieldSizeAtHeight(CGFloat y) -> NSRect {
-    return textFieldSizeAtHeightWithWidth(y, shortTextFieldWidth);
+  return NSMakeRect(textFieldLeadingEdge, height, width, labelHeight);
 }
 
 static auto normalTextFieldSizeAtHeight(CGFloat y) -> NSRect {
@@ -173,17 +168,6 @@ static auto normalLabelWithHeight(CGFloat x, const std::string &s)
 
 static auto filePathTextFieldSizeWithHeight(CGFloat x) -> NSTextField * {
     return textFieldWithFrame(filePathTextFieldSizeAtHeight(x));
-}
-
-static auto shortTextFieldWithHeight(CGFloat x) -> NSTextField * {
-    return textFieldWithFrame(shortTextFieldSizeAtHeight(x));
-}
-
-static auto popUpButtonAtHeightWithWidth(CGFloat height, CGFloat width)
-    -> NSPopUpButton * {
-    return [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
-                                                    height, width, labelHeight)
-                                      pullsDown:NO];
 }
 
 static auto button(const std::string &s, id target, SEL action) -> NSButton * {
@@ -451,17 +435,6 @@ constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
 
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
-      displayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(leadingPrimaryTextEdge,
-                            lowerPrimaryTextEdge(r), primaryTextWidth,
-                            labelHeight)]},
-      secondaryDisplayedText_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
-                            lowerPrimaryTextEdge(r),
-                            width(r) - leadingSecondaryTextEdge, labelHeight)]},
-      continueTestingDialogMessage_{[[NSTextField alloc]
-          initWithFrame:NSMakeRect(0, buttonHeight, width(r),
-                            continueTestingDialogHeight)]},
       evaluationButtons{[[NSView alloc]
           initWithFrame:NSMakeRect(width(r) - evaluationButtonsWidth - buttonWidth, 0,
                             evaluationButtonsWidth, buttonHeight)]},
@@ -471,6 +444,17 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
                     styleMask:NSWindowStyleMaskBorderless
                       backing:NSBackingStoreBuffered
                         defer:YES]},
+      continueTestingDialogMessage_{[[NSTextField alloc]
+          initWithFrame:NSMakeRect(0, buttonHeight, width(r),
+                            continueTestingDialogHeight)]},
+      displayedText_{[[NSTextField alloc]
+          initWithFrame:NSMakeRect(leadingPrimaryTextEdge,
+                            lowerPrimaryTextEdge(r), primaryTextWidth,
+                            labelHeight)]},
+      secondaryDisplayedText_{[[NSTextField alloc]
+          initWithFrame:NSMakeRect(leadingSecondaryTextEdge,
+                            lowerPrimaryTextEdge(r),
+                            width(r) - leadingSecondaryTextEdge, labelHeight)]},
       responseSubmission{[[NSView alloc]
           initWithFrame:NSMakeRect(width(r) - responseSubmissionWidth, 0,
                             responseSubmissionWidth,
@@ -624,7 +608,7 @@ void CocoaExperimenterView::hideCorrectKeywordsSubmission() {
 
 void CocoaExperimenterView::showContinueTestingDialog() {
     [view_.window beginSheet:continueTestingDialog
-           completionHandler:^(NSModalResponse returnCode){
+           completionHandler:^(NSModalResponse){
            }];
 }
 

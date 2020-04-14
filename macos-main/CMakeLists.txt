@@ -28,6 +28,7 @@ set_target_properties(
   AvSpeechInNoise PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STRING
                              ${CMAKE_PROJECT_VERSION} CXX_EXTENSIONS OFF)
 target_compile_features(AvSpeechInNoise PRIVATE cxx_std_17)
+target_compile_options(AvSpeechInNoise PRIVATE ${AV_SPEECH_IN_NOISE_WARNINGS})
 target_link_libraries(
   AvSpeechInNoise
   recognition-test

@@ -55,10 +55,10 @@ auto combinePath(NSString *base, id toAppend) -> NSString * {
 
 auto toCStr(id item) -> const char *_Nullable { return [item UTF8String]; }
 
-auto collectContentsIf(std::string directory, BOOL (*f)(NSString *))
+auto collectContentsIf(const std::string& directory, BOOL (*f)(NSString *))
     -> std::vector<std::string> {
     std::vector<std::string> items{};
-    auto parent{asNsString(std::move(directory))};
+    auto parent{asNsString(directory)};
     for (id item in contents(parent)) {
         auto path{combinePath(parent, item)};
         if ((*f)(path) != 0)
@@ -79,12 +79,12 @@ auto notADirectory(NSString *path) -> BOOL {
 
 class MacOsDirectoryReader : public target_list::DirectoryReader {
     auto filesIn(std::string directory) -> std::vector<std::string> override {
-        return collectContentsIf(std::move(directory), notADirectory);
+        return collectContentsIf(directory, notADirectory);
     }
 
     auto subDirectories(std::string directory)
         -> std::vector<std::string> override {
-        return collectContentsIf(std::move(directory), isDirectory);
+        return collectContentsIf(directory, isDirectory);
     }
 };
 
@@ -183,7 +183,7 @@ class TimerImpl : public stimulus_players::Timer {
 @end
 
 namespace av_speech_in_noise {
-void main() {
+static void main() {
     MacOsDirectoryReader reader;
     target_list::FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
     target_list::FileFilterDecorator fileExtensions{&reader, &fileExtensions_};

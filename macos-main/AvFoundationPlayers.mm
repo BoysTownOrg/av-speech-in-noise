@@ -129,8 +129,8 @@ static auto videoTrack(AVAsset *asset) -> AVAssetTrack * {
     return firstTrack(asset, AVMediaTypeVideo);
 }
 
-static auto makeAvAsset(std::string filePath) -> AVURLAsset * {
-    const auto withPercents = [asNsString(std::move(filePath))
+static auto makeAvAsset(const std::string& filePath) -> AVURLAsset * {
+    const auto withPercents = [asNsString(filePath)
         stringByAddingPercentEncodingWithAllowedCharacters:
             NSCharacterSet.URLQueryAllowedCharacterSet];
     const auto url = [NSURL
@@ -171,7 +171,7 @@ auto CoreAudioBuffer::channel(int n) -> std::vector<int> {
 auto CoreAudioBuffer::empty() -> bool { return frames == 0; }
 
 void CoreAudioBufferedReader::loadFile(std::string filePath) {
-    const auto asset{makeAvAsset(std::move(filePath))};
+    const auto asset{makeAvAsset(filePath)};
     const auto reader{[[AVAssetReader alloc] initWithAsset:asset error:nil]};
     const auto track{audioTrack(asset)};
 
@@ -316,7 +316,7 @@ void AvFoundationVideoPlayer::playAt(
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
-    const auto asset{makeAvAsset(std::move(filePath))};
+    const auto asset{makeAvAsset(filePath)};
     // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an 
     // unplayable asset the player does not recover even when a subsequent call 
     // passes one that is playable.
@@ -481,7 +481,7 @@ auto AvFoundationAudioPlayer::audioBufferReady(AudioUnitRenderActionFlags *,
 void AvFoundationAudioPlayer::subscribe(EventListener *e) { listener_ = e; }
 
 void AvFoundationAudioPlayer::loadFile(std::string filePath) {
-    const auto asset{makeAvAsset(std::move(filePath))};
+    const auto asset{makeAvAsset(filePath)};
 
     AudioStreamBasicDescription streamFormat{};
 
