@@ -8,13 +8,11 @@
 
 @interface VideoPlayerActions : NSObject
 @property(nonatomic) stimulus_players::AvFoundationVideoPlayer *controller;
-- (void)playbackComplete;
 @end
 
 @implementation VideoPlayerActions
-@synthesize controller;
 - (void)playbackComplete {
-    controller->playbackComplete();
+    _controller->playbackComplete();
 }
 @end
 
