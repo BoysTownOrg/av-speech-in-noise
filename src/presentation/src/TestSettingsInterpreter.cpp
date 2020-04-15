@@ -54,8 +54,10 @@ static auto entryName(const std::string &line) -> std::string {
     return line.substr(0, entryDelimiter(line));
 }
 
+static auto size(const std::string &s) -> gsl::index { return s.size(); }
+
 static auto entry(const std::string &line) -> std::string {
-    return entryDelimiter(line) + 2 > line.size()
+    return entryDelimiter(line) + 2 > size(line)
         ? ""
         : line.substr(entryDelimiter(line) + 2);
 }

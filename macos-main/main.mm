@@ -38,6 +38,7 @@ class TimerImpl;
 
 @interface CallbackScheduler : NSObject
 @property(nonatomic) TimerImpl *controller;
+- (void)scheduleCallbackAfterSeconds:(double)x;
 @end
 
 namespace {
