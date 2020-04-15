@@ -39,8 +39,7 @@ void TobiiEyeTracker::allocateRecordingTimeSeconds(double seconds) {
     if (tobii_research_get_gaze_output_frequency_ != nullptr)
         tobii_research_get_gaze_output_frequency_(
             eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
-    gazeData.resize(gsl::narrow<std::size_t>(
-        std::ceil(gaze_output_frequency_Hz * seconds)));
+    gazeData.resize(std::ceil(gaze_output_frequency_Hz * seconds)+1);
     head = 0;
 }
 
