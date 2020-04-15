@@ -4,93 +4,72 @@
 #include <array>
 
 @interface SetupViewActions : NSObject
-@property (nonatomic) av_speech_in_noise::CocoaTestSetupView *controller;
-- (void)confirmTestSetup;
-- (void)browseForTestSettings;
-- (void)playCalibration;
+@property(nonatomic) av_speech_in_noise::CocoaTestSetupView *controller;
 @end
 
 @interface SubjectViewActions : NSObject
-@property (nonatomic) av_speech_in_noise::CocoaSubjectView *controller;
-- (void)respond:(id)sender;
-- (void)playTrial;
+@property(nonatomic) av_speech_in_noise::CocoaSubjectView *controller;
 @end
 
 @interface ExperimenterViewActions : NSObject
-@property (nonatomic) av_speech_in_noise::CocoaExperimenterView *controller;
-- (void)exitTest;
-@end
-
-@interface TestingViewActions : NSObject
-@property (nonatomic) av_speech_in_noise::CocoaExperimenterView *controller;
-- (void)playTrial;
-- (void)submitFreeResponse;
-- (void)submitPassedTrial;
-- (void)submitFailedTrial;
-- (void)submitCorrectKeywords;
+@property(nonatomic) av_speech_in_noise::CocoaExperimenterView *controller;
 @end
 
 @implementation SetupViewActions
-@synthesize controller;
-
 - (void)confirmTestSetup {
-    controller->confirm();
+    _controller->confirm();
 }
 
 - (void)browseForTestSettings {
-    controller->browseForTestSettings();
+    _controller->browseForTestSettings();
 }
 
 - (void)playCalibration {
-    controller->playCalibration();
+    _controller->playCalibration();
 }
 @end
 
 @implementation SubjectViewActions
-@synthesize controller;
-
 - (void)respond:(id)sender {
-    controller->respond(sender);
+    _controller->respond(sender);
 }
 
 - (void)playTrial {
-    controller->playTrial();
+    _controller->playTrial();
 }
 @end
 
 @implementation ExperimenterViewActions
-@synthesize controller;
-
 - (void)exitTest {
-    controller->exitTest();
+    _controller->exitTest();
 }
 
 - (void)playTrial {
-    controller->playTrial();
+    _controller->playTrial();
 }
 
 - (void)submitFreeResponse {
-    controller->submitFreeResponse();
+    _controller->submitFreeResponse();
 }
 
 - (void)submitPassedTrial {
-    controller->submitPassedTrial();
+    _controller->submitPassedTrial();
 }
 
 - (void)submitFailedTrial {
-    controller->submitFailedTrial();
+    _controller->submitFailedTrial();
 }
 
 - (void)submitCorrectKeywords {
-    controller->submitCorrectKeywords();
+    _controller->submitCorrectKeywords();
 }
 
 - (void)acceptContinuingTesting {
-    controller->acceptContinuingTesting();
+    _controller->acceptContinuingTesting();
 }
 
 - (void)declineContinuingTesting {
-    controller->declineContinuingTesting();
+    _controller->declineContinuingTesting();
 }
 @end
 
@@ -146,7 +125,7 @@ constexpr auto height(const NSRect &r) -> CGFloat { return r.size.height; }
 
 static auto textFieldSizeAtHeightWithWidth(CGFloat height, CGFloat width)
     -> NSRect {
-  return NSMakeRect(textFieldLeadingEdge, height, width, labelHeight);
+    return NSMakeRect(textFieldLeadingEdge, height, width, labelHeight);
 }
 
 static auto normalTextFieldSizeAtHeight(CGFloat y) -> NSRect {
@@ -202,7 +181,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
                                      pullsDown:NO]},
       testSettingsFile_label{normalLabelWithHeight(30, "test settings:")},
       testSettingsFile_{filePathTextFieldSizeWithHeight(30)},
-      actions{[SetupViewActions alloc]} {
+      actions{[[SetupViewActions alloc] init]} {
     actions.controller = this;
     const auto browseForTestSettingsButton {
         button("browse", actions, @selector(browseForTestSettings),
@@ -289,7 +268,7 @@ static auto greenColor{NSColor.greenColor};
 static auto redColor{NSColor.redColor};
 static auto blueColor{NSColor.blueColor};
 static auto whiteColor{NSColor.whiteColor};
-constexpr std::array<int, 8> numbers {{1, 2, 3, 4, 5, 6, 8, 9}};
+constexpr std::array<int, 8> numbers{{1, 2, 3, 4, 5, 6, 8, 9}};
 constexpr auto responseNumbers{std::size(numbers)};
 constexpr auto responseColors{4};
 
@@ -303,7 +282,7 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       nextTrialButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
-      actions{[SubjectViewActions alloc]} {
+      actions{[[SubjectViewActions alloc] init]} {
     actions.controller = this;
     addButtonRow(blueColor, 0);
     addButtonRow(greenColor, 1);
@@ -436,7 +415,8 @@ constexpr auto lowerPrimaryTextEdge(const NSRect &r) -> CGFloat {
 CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
       evaluationButtons{[[NSView alloc]
-          initWithFrame:NSMakeRect(width(r) - evaluationButtonsWidth - buttonWidth, 0,
+          initWithFrame:NSMakeRect(
+                            width(r) - evaluationButtonsWidth - buttonWidth, 0,
                             evaluationButtonsWidth, buttonHeight)]},
       continueTestingDialog{[[NSWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, width(r),
@@ -475,7 +455,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
       flagged_{[[NSButton alloc]
           initWithFrame:NSMakeRect(0, buttonHeight + reasonableSpacing,
                             normalTextFieldWidth, labelHeight)]},
-      actions{[ExperimenterViewActions alloc]} {
+      actions{[[ExperimenterViewActions alloc] init]} {
     exitTestButton_ = button("exit test", actions, @selector(exitTest));
     [exitTestButton_ setFrame:NSMakeRect(0, height(r) - buttonHeight,
                                   buttonWidth, buttonHeight)];
