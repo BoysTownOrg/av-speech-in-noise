@@ -32,14 +32,50 @@
 }
 @end
 
+@class CallbackScheduler;
+
 namespace {
-auto contents(NSString *parent) -> NSArray<NSString *> * {
+class TimerImpl : public stimulus_players::Timer {
+  public:
+    TimerImpl();
+    void subscribe(EventListener *e) override;
+    void scheduleCallbackAfterSeconds(double x) override;
+    void timerCallback();
+
+  private:
+    EventListener *listener{};
+    CallbackScheduler *scheduler;
+};
+}
+
+@interface CallbackScheduler : NSObject
+@end
+
+@implementation CallbackScheduler {
+  @public
+    TimerImpl *controller;
+}
+
+- (void)scheduleCallbackAfterSeconds:(double)x {
+    [NSTimer scheduledTimerWithTimeInterval:x
+                                     target:self
+                                   selector:@selector(timerCallback)
+                                   userInfo:nil
+                                    repeats:NO];
+}
+
+- (void)timerCallback {
+    controller->timerCallback();
+}
+@end
+
+static auto contents(NSString *parent) -> NSArray<NSString *> * {
     return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parent
                                                                error:nil];
 }
 
-auto collectContentsIf(const std::string &directory, BOOL (*f)(NSString *))
-    -> std::vector<std::string> {
+static auto collectContentsIf(const std::string &directory,
+    BOOL (*f)(NSString *)) -> std::vector<std::string> {
     std::vector<std::string> items{};
     auto parent{asNsString(directory)};
     for (NSString *item in contents(parent)) {
@@ -50,16 +86,17 @@ auto collectContentsIf(const std::string &directory, BOOL (*f)(NSString *))
     return items;
 }
 
-auto isDirectory(NSString *path) -> BOOL {
+static auto isDirectory(NSString *path) -> BOOL {
     BOOL isDir{NO};
     [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
     return isDir;
 }
 
-auto notADirectory(NSString *path) -> BOOL {
+static auto notADirectory(NSString *path) -> BOOL {
     return static_cast<BOOL>(isDirectory(path) == 0);
 }
 
+namespace {
 class MacOsDirectoryReader : public target_list::DirectoryReader {
     auto filesIn(std::string directory) -> std::vector<std::string> override {
         return collectContentsIf(directory, notADirectory);
@@ -131,46 +168,7 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
         return stream.str();
     }
 };
-}
 
-@class CallbackScheduler;
-
-namespace {
-class TimerImpl : public stimulus_players::Timer {
-  public:
-    TimerImpl();
-    void subscribe(EventListener *e) override;
-    void scheduleCallbackAfterSeconds(double x) override;
-    void timerCallback();
-
-  private:
-    EventListener *listener{};
-    CallbackScheduler *scheduler;
-};
-}
-
-@interface CallbackScheduler : NSObject
-@end
-
-@implementation CallbackScheduler {
-  @public
-    TimerImpl *controller;
-}
-
-- (void)scheduleCallbackAfterSeconds:(double)x {
-    [NSTimer scheduledTimerWithTimeInterval:x
-                                     target:self
-                                   selector:@selector(timerCallback)
-                                   userInfo:nil
-                                    repeats:NO];
-}
-
-- (void)timerCallback {
-    controller->timerCallback();
-}
-@end
-
-namespace {
 TimerImpl::TimerImpl() : scheduler{[[CallbackScheduler alloc] init]} {
     scheduler->controller = this;
 }
