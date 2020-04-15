@@ -12,7 +12,7 @@ namespace av_speech_in_noise {
 class CocoaExperimenterView : public View::Experimenter {
   public:
     explicit CocoaExperimenterView(NSRect);
-    NSView *view();
+    auto view() -> NSView *;
     void exitTest();
     void subscribe(EventListener *) override;
     void showExitTestButton() override;
@@ -32,9 +32,9 @@ class CocoaExperimenterView : public View::Experimenter {
     void hideNextTrialButton() override;
     void showEvaluationButtons() override;
     void showFreeResponseSubmission() override;
-    std::string freeResponse() override;
+    auto freeResponse() -> std::string override;
     auto correctKeywords() -> std::string override;
-    bool flagged() override;
+    auto flagged() -> bool override;
     void hideFreeResponseSubmission() override;
     void hideEvaluationButtons() override;
     void showCorrectKeywordsSubmission() override;
@@ -66,16 +66,16 @@ class CocoaTestSetupView : public View::TestSetup {
     explicit CocoaTestSetupView(NSRect);
     void show() override;
     void hide() override;
-    std::string testerId() override;
-    std::string subjectId() override;
-    std::string session() override;
-    std::string testSettingsFile() override;
+    auto testerId() -> std::string override;
+    auto subjectId() -> std::string override;
+    auto session() -> std::string override;
+    auto testSettingsFile() -> std::string override;
     auto transducer() -> std::string override;
     auto rmeSetting() -> std::string override;
     void populateTransducerMenu(std::vector<std::string>) override;
     void setTestSettingsFile(std::string) override;
     void subscribe(EventListener *) override;
-    NSView *view();
+    auto view() -> NSView *;
     void confirm();
     void browseForTargetList();
     void browseForMasker();
@@ -107,10 +107,10 @@ class CocoaTestSetupView : public View::TestSetup {
 class CocoaSubjectView : public View::CoordinateResponseMeasure {
   public:
     explicit CocoaSubjectView(NSRect);
-    std::string numberResponse() override;
-    bool greenResponse() override;
-    bool blueResponse() override;
-    bool whiteResponse() override;
+    auto numberResponse() -> std::string override;
+    auto greenResponse() -> bool override;
+    auto blueResponse() -> bool override;
+    auto whiteResponse() -> bool override;
     void showResponseButtons() override;
     void hideResponseButtons() override;
     void showNextTrialButton() override;
@@ -123,7 +123,7 @@ class CocoaSubjectView : public View::CoordinateResponseMeasure {
 
   private:
     void addNextTrialButton();
-    NSColor *lastPressedColor();
+    auto lastPressedColor() -> NSColor *;
     void addNumberButton(NSColor *color, int number, int row, std::size_t col);
     void addButtonRow(NSColor *color, int row);
 
@@ -140,10 +140,10 @@ class CocoaView : public View {
     explicit CocoaView(NSRect);
     void eventLoop() override;
     void showErrorMessage(std::string) override;
-    std::string browseForDirectory() override;
-    bool browseCancelled() override;
-    std::string browseForOpeningFile() override;
-    std::string audioDevice() override;
+    auto browseForDirectory() -> std::string override;
+    auto browseCancelled() -> bool override;
+    auto browseForOpeningFile() -> std::string override;
+    auto audioDevice() -> std::string override;
     void populateAudioDeviceMenu(std::vector<std::string>) override;
     void setDelegate(id<NSWindowDelegate>);
     void center();
@@ -151,7 +151,7 @@ class CocoaView : public View {
     auto experimenter() -> View::Experimenter &;
 
   private:
-    std::string browseModal(NSOpenPanel *panel);
+    auto browseModal(NSOpenPanel *panel) -> std::string;
 
     CocoaTestSetupView testSetup_;
     CocoaExperimenterView experimenter_;

@@ -32,7 +32,8 @@
 }
 @end
 
-@class CallbackScheduler;
+@interface CallbackScheduler : NSObject
+@end
 
 namespace {
 class TimerImpl : public stimulus_players::Timer {
@@ -44,12 +45,9 @@ class TimerImpl : public stimulus_players::Timer {
 
   private:
     EventListener *listener{};
-    CallbackScheduler *scheduler;
+    CallbackScheduler *scheduler{[[CallbackScheduler alloc] init]};
 };
 }
-
-@interface CallbackScheduler : NSObject
-@end
 
 @implementation CallbackScheduler {
   @public
@@ -169,9 +167,7 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
     }
 };
 
-TimerImpl::TimerImpl() : scheduler{[[CallbackScheduler alloc] init]} {
-    scheduler->controller = this;
-}
+TimerImpl::TimerImpl() { scheduler->controller = this; }
 
 void TimerImpl::subscribe(EventListener *e) { listener = e; }
 

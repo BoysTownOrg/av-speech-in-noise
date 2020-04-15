@@ -1,6 +1,5 @@
 #include "AvFoundationPlayers.h"
 #include "common-objc.h"
-#include "recognition-test/RecognitionTestModel.hpp"
 #include <mach/mach_time.h>
 #include <gsl/gsl>
 #include <limits>
@@ -21,9 +20,10 @@
 
 namespace stimulus_players {
 static auto sampleRateHz(AVAssetTrack *track) -> double {
-    const auto description = CMAudioFormatDescriptionGetStreamBasicDescription(
-        static_cast<CMAudioFormatDescriptionRef>(
-            track.formatDescriptions.firstObject));
+    const auto *const description{
+        CMAudioFormatDescriptionGetStreamBasicDescription(
+            static_cast<CMAudioFormatDescriptionRef>(
+                track.formatDescriptions.firstObject))};
     return description != nullptr ? description->mSampleRate : 0;
 }
 
@@ -163,7 +163,7 @@ auto CoreAudioBuffer::channels() -> int {
 
 auto CoreAudioBuffer::channel(int n) -> std::vector<int> {
     std::vector<int> channel{};
-    const auto data{static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData)};
+    auto *const data{static_cast<SInt16 *>(audioBufferList.mBuffers[n].mData)};
     for (int i{}; i < frames; ++i)
         channel.push_back(data[i]);
     return channel;
@@ -428,7 +428,7 @@ AvFoundationAudioPlayer::AvFoundationAudioPlayer() {
     audioComponentDescription.componentFlags = 0;
     audioComponentDescription.componentFlagsMask = 0;
 
-    const auto audioComponent =
+    auto *const audioComponent =
         AudioComponentFindNext(nullptr, &audioComponentDescription);
     AudioComponentInstanceNew(audioComponent, &audioUnit);
     AudioUnitInitialize(audioUnit);
