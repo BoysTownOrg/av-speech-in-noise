@@ -1396,25 +1396,24 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
         confirmingAdaptivePassFailTest, submittingPassedTrial);
 }
 
-TEST_F(
-    PresenterTests, confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
+PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
     assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);
 }
 
-TEST_F(PresenterTests, confirmingAdaptiveClosedSetTestShowsTargetFileName) {
+PRESENTER_TEST(confirmingAdaptiveClosedSetTestShowsTargetFileName) {
     assertShowsTargetFileName(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
-TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
+PRESENTER_TEST(submittingCorrectKeywordsShowsTargetFileName) {
     assertShowsTargetFileName(submittingCorrectKeywords);
 }
 
-TEST_F(PresenterTests, submittingCoordinateResponseShowsTargetFileName) {
+PRESENTER_TEST(submittingCoordinateResponseShowsTargetFileName) {
     assertShowsTargetFileName(respondingFromSubject);
 }
 
-TEST_F(PresenterTests, submittingFreeResponseShowsTargetFileName) {
+PRESENTER_TEST(submittingFreeResponseShowsTargetFileName) {
     assertShowsTargetFileName(submittingFreeResponse);
 }
 

@@ -11,7 +11,7 @@ static auto entryDelimiter(const std::string &s) -> gsl::index {
 static auto vectorOfInts(const std::string &s) -> std::vector<int> {
     std::vector<int> v;
     std::stringstream stream{s};
-    int x;
+    int x{};
     while (stream >> x)
         v.push_back(x);
     return v;
