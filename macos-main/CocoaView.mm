@@ -4,72 +4,81 @@
 #include <array>
 
 @interface SetupViewActions : NSObject
-@property(nonatomic) av_speech_in_noise::CocoaTestSetupView *controller;
 @end
 
 @interface SubjectViewActions : NSObject
-@property(nonatomic) av_speech_in_noise::CocoaSubjectView *controller;
 @end
 
 @interface ExperimenterViewActions : NSObject
-@property(nonatomic) av_speech_in_noise::CocoaExperimenterView *controller;
 @end
 
-@implementation SetupViewActions
+@implementation SetupViewActions {
+  @public
+    av_speech_in_noise::CocoaTestSetupView *controller;
+}
+
 - (void)confirmTestSetup {
-    _controller->confirm();
+    controller->confirm();
 }
 
 - (void)browseForTestSettings {
-    _controller->browseForTestSettings();
+    controller->browseForTestSettings();
 }
 
 - (void)playCalibration {
-    _controller->playCalibration();
+    controller->playCalibration();
 }
 @end
 
-@implementation SubjectViewActions
+@implementation SubjectViewActions {
+  @public
+    av_speech_in_noise::CocoaSubjectView *controller;
+}
+
 - (void)respond:(id)sender {
-    _controller->respond(sender);
+    controller->respond(sender);
 }
 
 - (void)playTrial {
-    _controller->playTrial();
+    controller->playTrial();
 }
 @end
 
-@implementation ExperimenterViewActions
+@implementation ExperimenterViewActions {
+  @public
+    av_speech_in_noise::CocoaExperimenterView *controller;
+}
+
 - (void)exitTest {
-    _controller->exitTest();
+    controller->exitTest();
 }
 
 - (void)playTrial {
-    _controller->playTrial();
+    controller->playTrial();
 }
 
 - (void)submitFreeResponse {
-    _controller->submitFreeResponse();
+    controller->submitFreeResponse();
 }
 
 - (void)submitPassedTrial {
-    _controller->submitPassedTrial();
+    controller->submitPassedTrial();
 }
 
 - (void)submitFailedTrial {
-    _controller->submitFailedTrial();
+    controller->submitFailedTrial();
 }
 
 - (void)submitCorrectKeywords {
-    _controller->submitCorrectKeywords();
+    controller->submitCorrectKeywords();
 }
 
 - (void)acceptContinuingTesting {
-    _controller->acceptContinuingTesting();
+    controller->acceptContinuingTesting();
 }
 
 - (void)declineContinuingTesting {
-    _controller->declineContinuingTesting();
+    controller->declineContinuingTesting();
 }
 @end
 
@@ -182,7 +191,7 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
       testSettingsFile_label{normalLabelWithHeight(30, "test settings:")},
       testSettingsFile_{filePathTextFieldSizeWithHeight(30)},
       actions{[[SetupViewActions alloc] init]} {
-    actions.controller = this;
+    actions->controller = this;
     const auto browseForTestSettingsButton {
         button("browse", actions, @selector(browseForTestSettings),
             NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 30,
@@ -283,7 +292,7 @@ CocoaSubjectView::CocoaSubjectView(NSRect r)
       nextTrialButton{
           [[NSView alloc] initWithFrame:NSMakeRect(0, 0, width(r), height(r))]},
       actions{[[SubjectViewActions alloc] init]} {
-    actions.controller = this;
+    actions->controller = this;
     addButtonRow(blueColor, 0);
     addButtonRow(greenColor, 1);
     addButtonRow(whiteColor, 2);
@@ -527,7 +536,7 @@ CocoaExperimenterView::CocoaExperimenterView(NSRect r)
     av_speech_in_noise::hide(responseSubmission);
     av_speech_in_noise::hide(correctKeywordsSubmission);
     av_speech_in_noise::hide(view_);
-    actions.controller = this;
+    actions->controller = this;
 }
 
 void CocoaExperimenterView::subscribe(EventListener *e) { listener_ = e; }

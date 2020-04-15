@@ -33,15 +33,6 @@
 @end
 
 namespace {
-class TimerImpl;
-}
-
-@interface CallbackScheduler : NSObject
-@property(nonatomic) TimerImpl *controller;
-- (void)scheduleCallbackAfterSeconds:(double)x;
-@end
-
-namespace {
 auto contents(NSString *parent) -> NSArray<NSString *> * {
     return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parent
                                                                error:nil];
@@ -140,26 +131,32 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
         return stream.str();
     }
 };
+}
 
+@class CallbackScheduler;
+
+namespace {
 class TimerImpl : public stimulus_players::Timer {
   public:
-    TimerImpl() { scheduler.controller = this; }
-
-    void subscribe(EventListener *e) override { listener = e; }
-
-    void scheduleCallbackAfterSeconds(double x) override {
-        [scheduler scheduleCallbackAfterSeconds:x];
-    }
-
-    void timerCallback() { listener->callback(); }
+    TimerImpl();
+    void subscribe(EventListener *e) override;
+    void scheduleCallbackAfterSeconds(double x) override;
+    void timerCallback();
 
   private:
     EventListener *listener{};
-    CallbackScheduler *scheduler{[CallbackScheduler alloc]};
+    CallbackScheduler *scheduler;
 };
 }
 
-@implementation CallbackScheduler
+@interface CallbackScheduler : NSObject
+@end
+
+@implementation CallbackScheduler {
+  @public
+    TimerImpl *controller;
+}
+
 - (void)scheduleCallbackAfterSeconds:(double)x {
     [NSTimer scheduledTimerWithTimeInterval:x
                                      target:self
@@ -169,9 +166,23 @@ class TimerImpl : public stimulus_players::Timer {
 }
 
 - (void)timerCallback {
-    _controller->timerCallback();
+    controller->timerCallback();
 }
 @end
+
+namespace {
+TimerImpl::TimerImpl() : scheduler{[[CallbackScheduler alloc] init]} {
+    scheduler->controller = this;
+}
+
+void TimerImpl::subscribe(EventListener *e) { listener = e; }
+
+void TimerImpl::scheduleCallbackAfterSeconds(double x) {
+    [scheduler scheduleCallbackAfterSeconds:x];
+}
+
+void TimerImpl::timerCallback() { listener->callback(); }
+}
 
 namespace av_speech_in_noise {
 static void main() {

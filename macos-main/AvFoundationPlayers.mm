@@ -7,12 +7,15 @@
 #include <atomic>
 
 @interface VideoPlayerActions : NSObject
-@property(nonatomic) stimulus_players::AvFoundationVideoPlayer *controller;
 @end
 
-@implementation VideoPlayerActions
+@implementation VideoPlayerActions {
+  @public
+    stimulus_players::AvFoundationVideoPlayer *controller;
+}
+
 - (void)playbackComplete {
-    _controller->playbackComplete();
+    controller->playbackComplete();
 }
 @end
 
@@ -127,7 +130,7 @@ static auto videoTrack(AVAsset *asset) -> AVAssetTrack * {
     return firstTrack(asset, AVMediaTypeVideo);
 }
 
-static auto makeAvAsset(const std::string& filePath) -> AVURLAsset * {
+static auto makeAvAsset(const std::string &filePath) -> AVURLAsset * {
     const auto withPercents = [asNsString(filePath)
         stringByAddingPercentEncodingWithAllowedCharacters:
             NSCharacterSet.URLQueryAllowedCharacterSet];
@@ -190,8 +193,7 @@ void CoreAudioBufferedReader::loadFile(std::string filePath) {
 
 auto CoreAudioBufferedReader::failed() -> bool { return trackOutput == nil; }
 
-auto CoreAudioBufferedReader::readNextBuffer()
-    -> std::shared_ptr<AudioBuffer> {
+auto CoreAudioBufferedReader::readNextBuffer() -> std::shared_ptr<AudioBuffer> {
     return std::make_shared<CoreAudioBuffer>(trackOutput);
 }
 
@@ -238,7 +240,7 @@ AvFoundationVideoPlayer::AvFoundationVideoPlayer(NSScreen *screen)
     MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
         kMTAudioProcessingTapCreationFlag_PostEffects, &tap);
     prepareWindow();
-    actions.controller = this;
+    actions->controller = this;
 }
 
 void AvFoundationVideoPlayer::prepareTap(MTAudioProcessingTapRef tap,
@@ -315,8 +317,8 @@ void AvFoundationVideoPlayer::playAt(
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     const auto asset{makeAvAsset(filePath)};
-    // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an 
-    // unplayable asset the player does not recover even when a subsequent call 
+    // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an
+    // unplayable asset the player does not recover even when a subsequent call
     // passes one that is playable.
     if (asset.playable == 0)
         return;
@@ -546,7 +548,8 @@ static auto denominator(const mach_timebase_info_data_t &t) -> uint32_t {
     return t.denom;
 }
 
-auto AvFoundationAudioPlayer::nanoseconds(av_speech_in_noise::system_time t) -> std::uintmax_t {
+auto AvFoundationAudioPlayer::nanoseconds(av_speech_in_noise::system_time t)
+    -> std::uintmax_t {
     // https://stackoverflow.com/questions/23378063/how-can-i-use-mach-absolute-time-without-overflowing
     mach_timebase_info_data_t tb;
     mach_timebase_info(&tb);
