@@ -24,7 +24,6 @@
 #include <utility>
 
 @interface WindowDelegate : NSObject <NSWindowDelegate>
-- (void)windowWillClose:(NSNotification *)notification;
 @end
 
 @implementation WindowDelegate
@@ -38,9 +37,7 @@ class TimerImpl;
 }
 
 @interface CallbackScheduler : NSObject
-@property (nonatomic) TimerImpl *controller;
-- (void)scheduleCallbackAfterSeconds:(double)x;
-- (void)timerCallback;
+@property(nonatomic) TimerImpl *controller;
 @end
 
 namespace {
@@ -49,20 +46,14 @@ auto contents(NSString *parent) -> NSArray<NSString *> * {
                                                                error:nil];
 }
 
-auto combinePath(NSString *base, id toAppend) -> NSString * {
-    return [base stringByAppendingPathComponent:toAppend];
-}
-
-auto toCStr(id item) -> const char *_Nullable { return [item UTF8String]; }
-
-auto collectContentsIf(const std::string& directory, BOOL (*f)(NSString *))
+auto collectContentsIf(const std::string &directory, BOOL (*f)(NSString *))
     -> std::vector<std::string> {
     std::vector<std::string> items{};
     auto parent{asNsString(directory)};
-    for (id item in contents(parent)) {
-        auto path{combinePath(parent, item)};
+    for (NSString *item in contents(parent)) {
+        auto path{[parent stringByAppendingPathComponent:item]};
         if ((*f)(path) != 0)
-            items.emplace_back(toCStr(item));
+            items.emplace_back([item UTF8String]);
     }
     return items;
 }
@@ -150,9 +141,6 @@ class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
 };
 
 class TimerImpl : public stimulus_players::Timer {
-    EventListener *listener{};
-    CallbackScheduler *scheduler{[CallbackScheduler alloc]};
-
   public:
     TimerImpl() { scheduler.controller = this; }
 
@@ -163,12 +151,14 @@ class TimerImpl : public stimulus_players::Timer {
     }
 
     void timerCallback() { listener->callback(); }
+
+  private:
+    EventListener *listener{};
+    CallbackScheduler *scheduler{[CallbackScheduler alloc]};
 };
 }
 
 @implementation CallbackScheduler
-@synthesize controller;
-
 - (void)scheduleCallbackAfterSeconds:(double)x {
     [NSTimer scheduledTimerWithTimeInterval:x
                                      target:self
@@ -178,7 +168,7 @@ class TimerImpl : public stimulus_players::Timer {
 }
 
 - (void)timerCallback {
-    controller->timerCallback();
+    _controller->timerCallback();
 }
 @end
 
@@ -204,8 +194,7 @@ static void main() {
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
     OutputFilePathImpl path{&timeStamp, &systemPath};
-    path.setRelativeOutputDirectory(
-        "Documents/AvSpeechInNoise Data");
+    path.setRelativeOutputDirectory("Documents/AvSpeechInNoise Data");
     OutputFileImpl outputFile{writer, path};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
@@ -254,8 +243,8 @@ static void main() {
     TobiiEyeTracker eyeTracker;
     RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, eyeTracker};
-    target_list::RandomizedTargetListWithReplacement::Factory targetsWithReplacementFactory{
-        &fileExtensions, &randomizer};
+    target_list::RandomizedTargetListWithReplacement::Factory
+        targetsWithReplacementFactory{&fileExtensions, &randomizer};
     target_list::SubdirectoryTargetListReader targetsWithReplacementReader{
         &targetsWithReplacementFactory, &reader};
     target_list::CyclicRandomizedTargetList::Factory cyclicTargetsFactory{
@@ -264,7 +253,8 @@ static void main() {
         &cyclicTargetsFactory, &reader};
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
-        targetsWithReplacement, silentIntervals, allStimuli, recognitionTestModel};
+        targetsWithReplacement, silentIntervals, allStimuli,
+        recognitionTestModel};
     CocoaView view{NSMakeRect(0, 0, 900, 240)};
     view.center();
     auto delegate{[WindowDelegate alloc]};
