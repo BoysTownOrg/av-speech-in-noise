@@ -1412,6 +1412,12 @@ PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
     assertTrue(experimenterView.continueTestingDialogShown());
 }
 
+PRESENTER_TEST(submittingPassedTrialShowsContinueTestingDialogWhenComplete) {
+    setTestComplete(model);
+    run(submittingPassedTrial);
+    assertTrue(experimenterView.continueTestingDialogShown());
+}
+
 PRESENTER_TEST(submittingCorrectKeywordsShowsThresholdsWhenTestingComplete) {
     setTestComplete(model);
     model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});

@@ -249,7 +249,12 @@ void Presenter::submitFreeResponse_() {
     model.submit(experimenterPresenter.freeResponse());
 }
 
-void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
+void Presenter::submitPassedTrial_() {
+    model.submitCorrectResponse();
+    if (testComplete(model)) {
+        experimenterPresenter.showContinueTestingDialog();
+    }
+}
 
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
