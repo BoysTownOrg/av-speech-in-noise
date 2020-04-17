@@ -223,21 +223,6 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
     assertEqual("a", adaptiveTest(model).targetListDirectory);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(badStartingSnrResolvesToZero) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::startingSnr, "a")});
-    assertEqual(0, adaptiveTest(model).startingSnr_dB);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(badFixedSnrResolvesToZero) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelFreeResponseWithTargetReplacement),
-            entryWithNewline(TestSetting::startingSnr, "a")});
-    assertEqual(0, fixedLevelTest(model).snr_dB);
-}
-
 TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),

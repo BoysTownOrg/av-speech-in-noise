@@ -108,16 +108,8 @@ static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
         applyToEachTrackingRule(test, applyToRunCount, entry);
     else if (entryName == name(TestSetting::stepSizes))
         applyToEachTrackingRule(test, applyToStepSize, entry);
-    else if (entryName == name(TestSetting::startingSnr))
-        test.startingSnr_dB = integer(entry);
     else if (entryName == name(TestSetting::thresholdReversals))
         test.thresholdReversals = integer(entry);
-}
-
-static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
-    const std::string &entry) {
-    if (entryName == name(TestSetting::startingSnr))
-        test.snr_dB = integer(entry);
 }
 
 static auto name(const std::string &contents) -> std::string {
@@ -186,11 +178,6 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
 static void initializeFixedLevelTest(Model &model, const std::string &contents,
     const TestIdentity &identity, int startingSnr) {
     FixedLevelTest test;
-    applyToEachEntry(
-        [&](auto entryName, auto entry) {
-            assignFixedLevel(test, entryName, entry);
-        },
-        contents);
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
