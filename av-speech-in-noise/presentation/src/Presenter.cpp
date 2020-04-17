@@ -116,6 +116,16 @@ static void showContinueTestingDialogWithResults(
     experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
 }
 
+static void showContinueTestingDialogWithResultsWhenComplete(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    if (testComplete(model)) {
+        experimenterPresenter.hideSubmissions();
+        experimenterPresenter.showContinueTestingDialog();
+        showContinueTestingDialogWithResults(experimenterPresenter, model);
+    } else
+        readyNextTrial(experimenterPresenter, model);
+}
+
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter,
@@ -216,16 +226,6 @@ void Presenter::submitFreeResponse() {
     proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
 }
 
-static void showContinueTestingDialogWithResultsWhenComplete(
-    Presenter::Experimenter &experimenterPresenter, Model &model) {
-    if (testComplete(model)) {
-        experimenterPresenter.hideSubmissions();
-        experimenterPresenter.showContinueTestingDialog();
-        showContinueTestingDialogWithResults(experimenterPresenter, model);
-    } else
-        readyNextTrial(experimenterPresenter, model);
-}
-
 void Presenter::submitPassedTrial() {
     submitPassedTrial_();
     showContinueTestingDialogWithResultsWhenComplete(
@@ -234,12 +234,8 @@ void Presenter::submitPassedTrial() {
 
 void Presenter::submitFailedTrial() {
     submitFailedTrial_();
-    if (testComplete(model)) {
-        experimenterPresenter.hideEvaluationButtons();
-        experimenterPresenter.showContinueTestingDialog();
-        showContinueTestingDialogWithResults(experimenterPresenter, model);
-    } else
-        readyNextTrial(experimenterPresenter, model);
+    showContinueTestingDialogWithResultsWhenComplete(
+        experimenterPresenter, model);
 }
 
 void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
@@ -252,11 +248,8 @@ void Presenter::acceptContinuingTesting() {
 void Presenter::submitCorrectKeywords() {
     try {
         submitCorrectKeywords_();
-        if (testComplete(model)) {
-            experimenterPresenter.hideCorrectKeywordsSubmission();
-            showContinueTestingDialogWithResults(experimenterPresenter, model);
-        } else
-            readyNextTrial(experimenterPresenter, model);
+        showContinueTestingDialogWithResultsWhenComplete(
+            experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
