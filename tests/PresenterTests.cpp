@@ -1248,6 +1248,12 @@ class PresenterTests : public ::testing::Test {
         exitTest(experimenterView);
         assertTrue(submission.responseViewHidden());
     }
+
+    void assertCompleteTestShowsContinueTestingDialog(UseCase &useCase) {
+        setTestComplete(model);
+        run(useCase);
+        assertTrue(experimenterView.continueTestingDialogShown());
+    }
 };
 
 class RequestFailingModel : public Model {
@@ -1407,15 +1413,11 @@ PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
-    setTestComplete(model);
-    run(submittingCorrectKeywords);
-    assertTrue(experimenterView.continueTestingDialogShown());
+    assertCompleteTestShowsContinueTestingDialog(submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(submittingPassedTrialShowsContinueTestingDialogWhenComplete) {
-    setTestComplete(model);
-    run(submittingPassedTrial);
-    assertTrue(experimenterView.continueTestingDialogShown());
+    assertCompleteTestShowsContinueTestingDialog(submittingPassedTrial);
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsThresholdsWhenTestingComplete) {
