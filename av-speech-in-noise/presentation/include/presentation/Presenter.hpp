@@ -194,6 +194,7 @@ class Presenter : public Model::EventListener {
         void trialComplete();
         void readyNextTrial();
         void showContinueTestingDialog();
+        void hideEvaluationButtons();
         void setContinueTestingDialogMessage(const std::string &);
         void display(std::string);
         void secondaryDisplay(std::string);

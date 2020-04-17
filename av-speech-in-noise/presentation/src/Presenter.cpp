@@ -105,6 +105,17 @@ static auto readInteger(const std::string &x, const std::string &identifier)
     }
 }
 
+static void showContinueTestingDialogWithResults(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    experimenterPresenter.showContinueTestingDialog();
+    std::stringstream thresholds;
+    thresholds << "thresholds (targets: dB SNR)";
+    for (const auto &result : model.adaptiveTestResults())
+        thresholds << '\n'
+                   << result.targetListDirectory << ": " << result.threshold;
+    experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
+}
+
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter,
@@ -206,7 +217,13 @@ void Presenter::submitFreeResponse() {
 }
 
 void Presenter::submitPassedTrial() {
-    proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
+    submitPassedTrial_();
+    if (testComplete(model)) {
+        experimenterPresenter.hideEvaluationButtons();
+        experimenterPresenter.showContinueTestingDialog();
+        showContinueTestingDialogWithResults(experimenterPresenter, model);
+    } else
+        readyNextTrial(experimenterPresenter, model);
 }
 
 void Presenter::submitFailedTrial() {
@@ -218,17 +235,6 @@ void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
 void Presenter::acceptContinuingTesting() {
     model.restartAdaptiveTestWhilePreservingCyclicTargets();
     readyNextTrial(experimenterPresenter, model);
-}
-
-static void showContinueTestingDialogWithResults(
-    Presenter::Experimenter &experimenterPresenter, Model &model) {
-    experimenterPresenter.showContinueTestingDialog();
-    std::stringstream thresholds;
-    thresholds << "thresholds (targets: dB SNR)";
-    for (const auto &result : model.adaptiveTestResults())
-        thresholds << '\n'
-                   << result.targetListDirectory << ": " << result.threshold;
-    experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
 }
 
 void Presenter::submitCorrectKeywords() {
@@ -252,13 +258,7 @@ void Presenter::submitFreeResponse_() {
     model.submit(experimenterPresenter.freeResponse());
 }
 
-void Presenter::submitPassedTrial_() {
-    model.submitCorrectResponse();
-    if (testComplete(model)) {
-        experimenterPresenter.showContinueTestingDialog();
-        showContinueTestingDialogWithResults(experimenterPresenter, model);
-    }
-}
+void Presenter::submitPassedTrial_() { model.submitCorrectResponse(); }
 
 void Presenter::submitFailedTrial_() { model.submitIncorrectResponse(); }
 
@@ -479,6 +479,10 @@ void Presenter::Experimenter::readyNextTrial() {
 
 void Presenter::Experimenter::showContinueTestingDialog() {
     view->showContinueTestingDialog();
+}
+
+void Presenter::Experimenter::hideEvaluationButtons() {
+    view->hideEvaluationButtons();
 }
 
 void Presenter::Experimenter::setContinueTestingDialogMessage(

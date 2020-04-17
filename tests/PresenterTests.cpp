@@ -1905,10 +1905,6 @@ PRESENTER_TEST(respondFromExperimenterShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingFreeResponse);
 }
 
-PRESENTER_TEST(submitPassedTrialShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(submittingPassedTrial);
-}
-
 PRESENTER_TEST(submitFailedTrialShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingFailedTrial);
 }
@@ -1940,10 +1936,6 @@ PRESENTER_TEST(respondFromSubjectHidesExperimenterViewWhenTestComplete) {
 
 PRESENTER_TEST(respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingFreeResponse);
-}
-
-PRESENTER_TEST(submitPassedTrialHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(submittingPassedTrial);
 }
 
 PRESENTER_TEST(submitFailedTrialHidesExperimenterViewWhenTestComplete) {
