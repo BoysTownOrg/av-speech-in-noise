@@ -1262,6 +1262,12 @@ class PresenterTests : public ::testing::Test {
         assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
             experimenterView.continueTestingDialogMessage());
     }
+
+    void assertCompleteTestHidesResponse(TrialSubmission &useCase) {
+        setTestComplete(model);
+        run(useCase);
+        assertTrue(useCase.responseViewHidden());
+    }
 };
 
 class RequestFailingModel : public Model {
@@ -1438,15 +1444,11 @@ PRESENTER_TEST(submittingPassedTrialShowsThresholdsWhenTestingComplete) {
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
-    setTestComplete(model);
-    run(submittingCorrectKeywords);
-    assertTrue(submittingCorrectKeywords.responseViewHidden());
+    assertCompleteTestHidesResponse(submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(submittingPassedTrialHidesSubmissionEvenWhenTestComplete) {
-    setTestComplete(model);
-    run(submittingPassedTrial);
-    assertTrue(submittingPassedTrial.responseViewHidden());
+    assertCompleteTestHidesResponse(submittingPassedTrial);
 }
 
 PRESENTER_TEST(
