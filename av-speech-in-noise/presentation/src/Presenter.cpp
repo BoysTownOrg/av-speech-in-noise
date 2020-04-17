@@ -105,23 +105,18 @@ static auto readInteger(const std::string &x, const std::string &identifier)
     }
 }
 
-static void showContinueTestingDialogWithResults(
-    Presenter::Experimenter &experimenterPresenter, Model &model) {
-    experimenterPresenter.showContinueTestingDialog();
-    std::stringstream thresholds;
-    thresholds << "thresholds (targets: dB SNR)";
-    for (const auto &result : model.adaptiveTestResults())
-        thresholds << '\n'
-                   << result.targetListDirectory << ": " << result.threshold;
-    experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
-}
-
 static void showContinueTestingDialogWithResultsWhenComplete(
     Presenter::Experimenter &experimenterPresenter, Model &model) {
     if (testComplete(model)) {
         experimenterPresenter.hideSubmissions();
         experimenterPresenter.showContinueTestingDialog();
-        showContinueTestingDialogWithResults(experimenterPresenter, model);
+        std::stringstream thresholds;
+        thresholds << "thresholds (targets: dB SNR)";
+        for (const auto &result : model.adaptiveTestResults())
+            thresholds << '\n'
+                       << result.targetListDirectory << ": "
+                       << result.threshold;
+        experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
     } else
         readyNextTrial(experimenterPresenter, model);
 }
