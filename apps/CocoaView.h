@@ -70,6 +70,7 @@ class CocoaTestSetupView : public View::TestSetup {
     std::string subjectId() override;
     std::string session() override;
     std::string testSettingsFile() override;
+    auto startingSnr() -> std::string override;
     auto transducer() -> std::string override;
     auto rmeSetting() -> std::string override;
     void populateTransducerMenu(std::vector<std::string>) override;
@@ -100,6 +101,8 @@ class CocoaTestSetupView : public View::TestSetup {
     NSPopUpButton *transducerMenu;
     NSTextField *testSettingsFile_label;
     NSTextField *testSettingsFile_;
+    NSTextField *startingSnr_label;
+    NSTextField *startingSnr_;
     SetupViewActions *actions;
     EventListener *listener_{};
 };

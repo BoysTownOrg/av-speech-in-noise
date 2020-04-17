@@ -128,7 +128,7 @@ static auto allocLabel(const std::string &label, NSRect frame)
 }
 
 static constexpr auto labelHeight{22};
-static constexpr auto labelWidth{90};
+static constexpr auto labelWidth{120};
 static constexpr auto labelToTextFieldSpacing{5};
 static constexpr auto textFieldLeadingEdge{
     labelWidth + labelToTextFieldSpacing};
@@ -202,26 +202,28 @@ static auto string(NSTextField *field) -> const char * {
 
 CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     : view_{[[NSView alloc] initWithFrame:r]},
-      subjectIdLabel{normalLabelWithHeight(180, "subject:")},
-      subjectId_{normalTextFieldWithHeight(180)},
-      testerIdLabel{normalLabelWithHeight(150, "tester:")},
-      testerId_{normalTextFieldWithHeight(150)},
-      sessionLabel{normalLabelWithHeight(120, "session:")},
-      session_{normalTextFieldWithHeight(120)},
-      rmeSettingLabel{normalLabelWithHeight(90, "RME setting:")},
-      rmeSetting_{normalTextFieldWithHeight(90)},
-      transducerLabel{normalLabelWithHeight(60, "transducer:")},
+      subjectIdLabel{normalLabelWithHeight(210, "subject:")},
+      subjectId_{normalTextFieldWithHeight(210)},
+      testerIdLabel{normalLabelWithHeight(180, "tester:")},
+      testerId_{normalTextFieldWithHeight(180)},
+      sessionLabel{normalLabelWithHeight(150, "session:")},
+      session_{normalTextFieldWithHeight(150)},
+      rmeSettingLabel{normalLabelWithHeight(120, "RME setting:")},
+      rmeSetting_{normalTextFieldWithHeight(120)},
+      transducerLabel{normalLabelWithHeight(90, "transducer:")},
       transducerMenu{
           [[NSPopUpButton alloc] initWithFrame:NSMakeRect(textFieldLeadingEdge,
-                                                   60, menuWidth, labelHeight)
+                                                   90, menuWidth, labelHeight)
                                      pullsDown:NO]},
-      testSettingsFile_label{normalLabelWithHeight(30, "test settings:")},
-      testSettingsFile_{filePathTextFieldSizeWithHeight(30)},
+      testSettingsFile_label{normalLabelWithHeight(60, "test settings:")},
+      testSettingsFile_{filePathTextFieldSizeWithHeight(60)},
+      startingSnr_label{normalLabelWithHeight(30, "starting SNR (dB):")},
+      startingSnr_{normalTextFieldWithHeight(30)},
       actions{[SetupViewActions alloc]} {
     actions.controller = this;
     const auto browseForTestSettingsButton {
         button("browse", actions, @selector(browseForTestSettings),
-            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 30,
+            NSMakeRect(filePathTextFieldWidth + textFieldLeadingEdge + 10, 60,
                 buttonWidth, buttonHeight))
     };
     const auto confirmButton {
@@ -237,6 +239,8 @@ CocoaTestSetupView::CocoaTestSetupView(NSRect r)
     addSubview(view_, browseForTestSettingsButton);
     addSubview(view_, confirmButton);
     addSubview(view_, playCalibrationButton);
+    addSubview(view_, startingSnr_label);
+    addSubview(view_, startingSnr_);
     addSubview(view_, subjectIdLabel);
     addSubview(view_, subjectId_);
     addSubview(view_, testerIdLabel);
@@ -263,6 +267,10 @@ auto CocoaTestSetupView::testSettingsFile() -> std::string {
 }
 
 auto CocoaTestSetupView::testerId() -> std::string { return string(testerId_); }
+
+auto CocoaTestSetupView::startingSnr() -> std::string {
+    return string(startingSnr_);
+}
 
 auto CocoaTestSetupView::subjectId() -> std::string {
     return string(subjectId_);
