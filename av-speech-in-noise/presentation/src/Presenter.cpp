@@ -216,14 +216,20 @@ void Presenter::submitFreeResponse() {
     proceedToNextTrialAfter(&Presenter::submitFreeResponse_);
 }
 
-void Presenter::submitPassedTrial() {
-    submitPassedTrial_();
+static void showContinueTestingDialogWithResultsWhenComplete(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
     if (testComplete(model)) {
-        experimenterPresenter.hideEvaluationButtons();
+        experimenterPresenter.hideSubmissions();
         experimenterPresenter.showContinueTestingDialog();
         showContinueTestingDialogWithResults(experimenterPresenter, model);
     } else
         readyNextTrial(experimenterPresenter, model);
+}
+
+void Presenter::submitPassedTrial() {
+    submitPassedTrial_();
+    showContinueTestingDialogWithResultsWhenComplete(
+        experimenterPresenter, model);
 }
 
 void Presenter::submitFailedTrial() {
@@ -467,7 +473,7 @@ void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
 }
 
 void Presenter::Experimenter::stop() {
-    hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view);
     view->hide();
 }
 
@@ -479,7 +485,7 @@ void Presenter::Experimenter::trialPlayed() {
 void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
 void Presenter::Experimenter::readyNextTrial() {
-    hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view);
     showNextTrialButton(view);
 }
 
@@ -489,6 +495,10 @@ void Presenter::Experimenter::showContinueTestingDialog() {
 
 void Presenter::Experimenter::hideEvaluationButtons() {
     view->hideEvaluationButtons();
+}
+
+void Presenter::Experimenter::hideSubmissions() {
+    av_speech_in_noise::hideSubmissions(view);
 }
 
 void Presenter::Experimenter::setContinueTestingDialogMessage(
