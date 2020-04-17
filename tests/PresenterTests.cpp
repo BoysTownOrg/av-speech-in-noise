@@ -1451,6 +1451,10 @@ PRESENTER_TEST(submittingPassedTrialHidesSubmissionEvenWhenTestComplete) {
     assertCompleteTestHidesResponse(submittingPassedTrial);
 }
 
+PRESENTER_TEST(submittingFailedTrialHidesSubmissionEvenWhenTestComplete) {
+    assertCompleteTestHidesResponse(submittingFailedTrial);
+}
+
 PRESENTER_TEST(
     completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveCorrectKeywordsTest) {
     assertCompleteTrialShowsResponseView(
