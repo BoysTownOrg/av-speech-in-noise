@@ -227,7 +227,13 @@ void Presenter::submitPassedTrial() {
 }
 
 void Presenter::submitFailedTrial() {
-    proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
+    submitFailedTrial_();
+    if (testComplete(model)) {
+        experimenterPresenter.hideEvaluationButtons();
+        experimenterPresenter.showContinueTestingDialog();
+        showContinueTestingDialogWithResults(experimenterPresenter, model);
+    } else
+        readyNextTrial(experimenterPresenter, model);
 }
 
 void Presenter::declineContinuingTesting() { switchToTestSetupView(); }

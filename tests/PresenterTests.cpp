@@ -1435,12 +1435,20 @@ PRESENTER_TEST(submittingPassedTrialShowsContinueTestingDialogWhenComplete) {
     assertCompleteTestShowsContinueTestingDialog(submittingPassedTrial);
 }
 
+PRESENTER_TEST(submittingFailedTrialShowsContinueTestingDialogWhenComplete) {
+    assertCompleteTestShowsContinueTestingDialog(submittingFailedTrial);
+}
+
 PRESENTER_TEST(submittingCorrectKeywordsShowsThresholdsWhenTestingComplete) {
     assertCompleteTestShowsThresholds(submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(submittingPassedTrialShowsThresholdsWhenTestingComplete) {
     assertCompleteTestShowsThresholds(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submittingFailedTrialShowsThresholdsWhenTestingComplete) {
+    assertCompleteTestShowsThresholds(submittingFailedTrial);
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
@@ -1911,10 +1919,6 @@ PRESENTER_TEST(respondFromExperimenterShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingFreeResponse);
 }
 
-PRESENTER_TEST(submitFailedTrialShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(submittingFailedTrial);
-}
-
 PRESENTER_TEST(
     submittingCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
@@ -1942,10 +1946,6 @@ PRESENTER_TEST(respondFromSubjectHidesExperimenterViewWhenTestComplete) {
 
 PRESENTER_TEST(respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingFreeResponse);
-}
-
-PRESENTER_TEST(submitFailedTrialHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(submittingFailedTrial);
 }
 
 PRESENTER_TEST(submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
