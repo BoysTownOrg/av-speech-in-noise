@@ -63,6 +63,8 @@ class ViewStub : public View {
             return testSettingsFile_;
         }
 
+        auto startingSnr() -> std::string override { return startingSnr_; }
+
         void setTestSettingsFile(std::string s) override {
             testSettingsFile_ = std::move(s);
         }
@@ -115,8 +117,11 @@ class ViewStub : public View {
             listener_ = listener;
         }
 
+        void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
+
       private:
         std::vector<std::string> transducers_;
+        std::string startingSnr_{"0"};
         std::string subjectId_;
         std::string testerId_;
         std::string session_;
@@ -403,8 +408,9 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return calibration_;
     }
 
-    void initialize(
-        Model &m, const std::string &t, const TestIdentity &id) override {
+    void initialize(Model &m, const std::string &t, const TestIdentity &id,
+        int snr) override {
+        startingSnr_ = snr;
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
@@ -419,6 +425,8 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return textForMethodQuery_;
     }
 
+    [[nodiscard]] auto startingSnr() const -> int { return startingSnr_; }
+
     void setMethod(Method m) { method_ = m; }
 
     auto method(const std::string &t) -> Method override {
@@ -432,6 +440,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     std::string text_;
     std::string textForMethodQuery_;
     TestIdentity identity_{};
+    int startingSnr_{};
     const Calibration &calibration_;
     Method method_{};
     bool initializeAnyTestOnApply_{};
@@ -1165,6 +1174,12 @@ class PresenterTests : public ::testing::Test {
         assertEqual("a", testSettingsInterpreter.textForMethodQuery());
     }
 
+    void assertPassesStartingSnr(ConfirmingTestSetup &useCase) {
+        setupView.setStartingSnr("1");
+        run(useCase);
+        assertEqual(1, testSettingsInterpreter.startingSnr());
+    }
+
     void assertPassesSubjectId(ConfirmingTestSetup &useCase) {
         setupView.setSubjectId("b");
         run(useCase);
@@ -1593,6 +1608,12 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     playingCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
     assertPassesTestSettingsTextToTestSettingsInterpreter(playingCalibration);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
+    assertPassesStartingSnr(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {

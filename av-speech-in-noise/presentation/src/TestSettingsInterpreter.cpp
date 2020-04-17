@@ -209,7 +209,7 @@ static void initializeFixedLevelTest(
 }
 
 void TestSettingsInterpreterImpl::initialize(
-    Model &model, const std::string &contents, const TestIdentity &identity) {
+    Model &model, const std::string &contents, const TestIdentity &identity, int) {
     if (adaptive(contents))
         initializeAdaptiveTest(model, contents, identity);
     else

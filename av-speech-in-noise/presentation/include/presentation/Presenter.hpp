@@ -24,7 +24,7 @@ class TestSettingsInterpreter {
   public:
     virtual ~TestSettingsInterpreter() = default;
     virtual void initialize(
-        Model &, const std::string &, const TestIdentity &) = 0;
+        Model &, const std::string &, const TestIdentity &, int) = 0;
     virtual auto method(const std::string &) -> Method = 0;
     virtual auto calibration(const std::string &) -> Calibration = 0;
 };
@@ -76,6 +76,7 @@ class View {
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual auto testSettingsFile() -> std::string = 0;
+        virtual auto startingSnr() -> std::string = 0;
         virtual auto testerId() -> std::string = 0;
         virtual auto subjectId() -> std::string = 0;
         virtual auto session() -> std::string = 0;
@@ -147,6 +148,7 @@ class Presenter : public Model::EventListener {
         void setTestSettingsFile(std::string);
         auto testSettingsFile() -> std::string;
         auto testIdentity() -> TestIdentity;
+        auto startingSnr() -> std::string;
 
       private:
         View::TestSetup *view;

@@ -127,8 +127,8 @@ void Presenter::confirmTestSetup() {
 
 void Presenter::confirmTestSetup_() {
     auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
-    testSettingsInterpreter.initialize(
-        model, testSettings, testIdentity(testSetup));
+    testSettingsInterpreter.initialize(model, testSettings,
+        testIdentity(testSetup), std::stoi(testSetup.startingSnr()));
     auto method{testSettingsInterpreter.method(testSettings)};
     if (!testComplete(model)) {
         switchToTestView(method);
@@ -354,6 +354,10 @@ void Presenter::TestSetup::setTestSettingsFile(std::string s) {
 
 auto Presenter::TestSetup::testSettingsFile() -> std::string {
     return view->testSettingsFile();
+}
+
+auto Presenter::TestSetup::startingSnr() -> std::string {
+    return view->startingSnr();
 }
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(

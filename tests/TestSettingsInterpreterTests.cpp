@@ -39,7 +39,7 @@ auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
 
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
     const std::vector<std::string> &v, const TestIdentity &identity = {}) {
-    interpreter.initialize(model, concatenate(v), identity);
+    interpreter.initialize(model, concatenate(v), identity, {});
 }
 
 void assertPassesSimpleAdaptiveSettings(
