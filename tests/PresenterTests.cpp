@@ -1412,7 +1412,7 @@ PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {
     assertShowsSetupView(decliningContinuingTesting);
 }
 
-PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
+PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialogWhenComplete) {
     assertCompleteTestShowsContinueTestingDialog(submittingCorrectKeywords);
 }
 
@@ -1432,6 +1432,12 @@ PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
     setTestComplete(model);
     run(submittingCorrectKeywords);
     assertTrue(submittingCorrectKeywords.responseViewHidden());
+}
+
+PRESENTER_TEST(submittingPassedTrialHidesSubmissionEvenWhenTestComplete) {
+    setTestComplete(model);
+    run(submittingPassedTrial);
+    assertTrue(submittingPassedTrial.responseViewHidden());
 }
 
 PRESENTER_TEST(
