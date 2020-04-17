@@ -220,20 +220,23 @@ void Presenter::acceptContinuingTesting() {
     readyNextTrial(experimenterPresenter, model);
 }
 
+static void showContinueTestingDialogWithResults(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    experimenterPresenter.showContinueTestingDialog();
+    std::stringstream thresholds;
+    thresholds << "thresholds (targets: dB SNR)";
+    for (const auto &result : model.adaptiveTestResults())
+        thresholds << '\n'
+                   << result.targetListDirectory << ": " << result.threshold;
+    experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
+}
+
 void Presenter::submitCorrectKeywords() {
     try {
         submitCorrectKeywords_();
         if (testComplete(model)) {
             experimenterPresenter.hideCorrectKeywordsSubmission();
-            experimenterPresenter.showContinueTestingDialog();
-            std::stringstream thresholds;
-            thresholds << "thresholds (targets: dB SNR)";
-            for (const auto &result : model.adaptiveTestResults())
-                thresholds << '\n'
-                           << result.targetListDirectory << ": "
-                           << result.threshold;
-            experimenterPresenter.setContinueTestingDialogMessage(
-                thresholds.str());
+            showContinueTestingDialogWithResults(experimenterPresenter, model);
         } else
             readyNextTrial(experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
@@ -253,13 +256,7 @@ void Presenter::submitPassedTrial_() {
     model.submitCorrectResponse();
     if (testComplete(model)) {
         experimenterPresenter.showContinueTestingDialog();
-        std::stringstream thresholds;
-        thresholds << "thresholds (targets: dB SNR)";
-        for (const auto &result : model.adaptiveTestResults())
-            thresholds << '\n'
-                       << result.targetListDirectory << ": "
-                       << result.threshold;
-        experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
+        showContinueTestingDialogWithResults(experimenterPresenter, model);
     }
 }
 
