@@ -91,6 +91,20 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
+static auto readInteger(const std::string &x, const std::string &identifier)
+    -> int {
+    try {
+        return std::stoi(x);
+    } catch (const std::invalid_argument &) {
+        std::stringstream stream;
+        stream << '"' << x << '"';
+        stream << " is not a valid ";
+        stream << identifier;
+        stream << '.';
+        throw BadInput{stream.str()};
+    }
+}
+
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter,
@@ -128,7 +142,8 @@ void Presenter::confirmTestSetup() {
 void Presenter::confirmTestSetup_() {
     auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
     testSettingsInterpreter.initialize(model, testSettings,
-        testIdentity(testSetup), std::stoi(testSetup.startingSnr()));
+        testIdentity(testSetup),
+        readInteger(testSetup.startingSnr(), "starting SNR"));
     auto method{testSettingsInterpreter.method(testSettings)};
     if (!testComplete(model)) {
         switchToTestView(method);
@@ -303,20 +318,6 @@ Presenter::TestSetup::TestSetup(View::TestSetup *view) : view{view} {
 void Presenter::TestSetup::show() { view->show(); }
 
 void Presenter::TestSetup::hide() { view->hide(); }
-
-static auto readInteger(const std::string &x, const std::string &identifier)
-    -> int {
-    try {
-        return std::stoi(x);
-    } catch (const std::invalid_argument &) {
-        std::stringstream stream;
-        stream << '\'' << x << '\'';
-        stream << " is not a valid ";
-        stream << identifier;
-        stream << '.';
-        throw BadInput{stream.str()};
-    }
-}
 
 static auto transducer(const std::string &s) -> Transducer {
     if (s == name(Transducer::headphone))

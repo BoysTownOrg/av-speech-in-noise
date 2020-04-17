@@ -1174,6 +1174,12 @@ class PresenterTests : public ::testing::Test {
         assertEqual("a", testSettingsInterpreter.textForMethodQuery());
     }
 
+    void assertInvalidSnrShowsMessage(ConfirmingTestSetup &useCase) {
+        setupView.setStartingSnr("a");
+        run(useCase);
+        assertEqual("\"a\" is not a valid starting SNR.", errorMessage(view));
+    }
+
     void assertPassesStartingSnr(ConfirmingTestSetup &useCase) {
         setupView.setStartingSnr("1");
         run(useCase);
@@ -1373,7 +1379,7 @@ PRESENTER_TEST(submittingCorrectKeywordsPassesCorrectKeywords) {
 PRESENTER_TEST(submittingInvalidCorrectKeywordsShowsErrorMessage) {
     setCorrectKeywords(experimenterView, "a");
     run(submittingCorrectKeywords);
-    assertEqual("'a' is not a valid number.", errorMessage(view));
+    assertEqual("\"a\" is not a valid number.", errorMessage(view));
 }
 
 PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
@@ -1613,6 +1619,12 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
     assertPassesStartingSnr(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
+    assertInvalidSnrShowsMessage(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
