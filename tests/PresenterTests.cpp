@@ -1254,6 +1254,14 @@ class PresenterTests : public ::testing::Test {
         run(useCase);
         assertTrue(experimenterView.continueTestingDialogShown());
     }
+
+    void assertCompleteTestShowsThresholds(UseCase &useCase) {
+        setTestComplete(model);
+        model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
+        run(useCase);
+        assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
+            experimenterView.continueTestingDialogMessage());
+    }
 };
 
 class RequestFailingModel : public Model {
@@ -1412,7 +1420,8 @@ PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {
     assertShowsSetupView(decliningContinuingTesting);
 }
 
-PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialogWhenComplete) {
+PRESENTER_TEST(
+    submittingCorrectKeywordsShowsContinueTestingDialogWhenComplete) {
     assertCompleteTestShowsContinueTestingDialog(submittingCorrectKeywords);
 }
 
@@ -1421,19 +1430,11 @@ PRESENTER_TEST(submittingPassedTrialShowsContinueTestingDialogWhenComplete) {
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsThresholdsWhenTestingComplete) {
-    setTestComplete(model);
-    model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
-    run(submittingCorrectKeywords);
-    assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
-        experimenterView.continueTestingDialogMessage());
+    assertCompleteTestShowsThresholds(submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(submittingPassedTrialShowsThresholdsWhenTestingComplete) {
-    setTestComplete(model);
-    model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
-    run(submittingPassedTrial);
-    assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
-        experimenterView.continueTestingDialogMessage());
+    assertCompleteTestShowsThresholds(submittingPassedTrial);
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
