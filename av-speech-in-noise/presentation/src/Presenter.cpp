@@ -253,6 +253,13 @@ void Presenter::submitPassedTrial_() {
     model.submitCorrectResponse();
     if (testComplete(model)) {
         experimenterPresenter.showContinueTestingDialog();
+        std::stringstream thresholds;
+        thresholds << "thresholds (targets: dB SNR)";
+        for (const auto &result : model.adaptiveTestResults())
+            thresholds << '\n'
+                       << result.targetListDirectory << ": "
+                       << result.threshold;
+        experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
     }
 }
 

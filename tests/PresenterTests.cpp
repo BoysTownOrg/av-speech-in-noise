@@ -1428,6 +1428,14 @@ PRESENTER_TEST(submittingCorrectKeywordsShowsThresholdsWhenTestingComplete) {
         experimenterView.continueTestingDialogMessage());
 }
 
+PRESENTER_TEST(submittingPassedTrialShowsThresholdsWhenTestingComplete) {
+    setTestComplete(model);
+    model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
+    run(submittingPassedTrial);
+    assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
+        experimenterView.continueTestingDialogMessage());
+}
+
 PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
     setTestComplete(model);
     run(submittingCorrectKeywords);
