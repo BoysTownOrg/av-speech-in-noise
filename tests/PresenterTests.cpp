@@ -364,9 +364,11 @@ class ViewStub : public View {
             return exitTestButtonHidden_;
         }
 
-        auto freeResponseCleared() -> bool { return freeResponseCleared_; }
+        [[nodiscard]] auto freeResponseCleared() const -> bool {
+            return freeResponseCleared_;
+        }
 
-        void clearFreeResponse() { freeResponseCleared_ = true; }
+        void clearFreeResponse() override { freeResponseCleared_ = true; }
 
       private:
         std::string displayed_;
