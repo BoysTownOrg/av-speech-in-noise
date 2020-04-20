@@ -63,6 +63,8 @@ class ViewStub : public View {
             return testSettingsFile_;
         }
 
+        auto startingSnr() -> std::string override { return startingSnr_; }
+
         void setTestSettingsFile(std::string s) override {
             testSettingsFile_ = std::move(s);
         }
@@ -115,8 +117,11 @@ class ViewStub : public View {
             listener_ = listener;
         }
 
+        void setStartingSnr(std::string s) { startingSnr_ = std::move(s); }
+
       private:
         std::vector<std::string> transducers_;
+        std::string startingSnr_{"0"};
         std::string subjectId_;
         std::string testerId_;
         std::string session_;
@@ -359,6 +364,12 @@ class ViewStub : public View {
             return exitTestButtonHidden_;
         }
 
+        [[nodiscard]] auto freeResponseCleared() const -> bool {
+            return freeResponseCleared_;
+        }
+
+        void clearFreeResponse() override { freeResponseCleared_ = true; }
+
       private:
         std::string displayed_;
         std::string secondaryDisplayed_;
@@ -366,6 +377,7 @@ class ViewStub : public View {
         std::string response_;
         std::string correctKeywords_{"0"};
         EventListener *listener_{};
+        bool freeResponseCleared_{};
         bool exitTestButtonHidden_{};
         bool exitTestButtonShown_{};
         bool nextTrialButtonShown_{};
@@ -403,8 +415,9 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return calibration_;
     }
 
-    void initialize(
-        Model &m, const std::string &t, const TestIdentity &id) override {
+    void initialize(Model &m, const std::string &t, const TestIdentity &id,
+        int snr) override {
+        startingSnr_ = snr;
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)
@@ -419,6 +432,8 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
         return textForMethodQuery_;
     }
 
+    [[nodiscard]] auto startingSnr() const -> int { return startingSnr_; }
+
     void setMethod(Method m) { method_ = m; }
 
     auto method(const std::string &t) -> Method override {
@@ -432,6 +447,7 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     std::string text_;
     std::string textForMethodQuery_;
     TestIdentity identity_{};
+    int startingSnr_{};
     const Calibration &calibration_;
     Method method_{};
     bool initializeAnyTestOnApply_{};
@@ -1186,6 +1202,18 @@ class PresenterTests : public ::testing::Test {
         assertEqual("a", testSettingsInterpreter.textForMethodQuery());
     }
 
+    void assertInvalidSnrShowsMessage(ConfirmingTestSetup &useCase) {
+        setupView.setStartingSnr("a");
+        run(useCase);
+        assertEqual("\"a\" is not a valid starting SNR.", errorMessage(view));
+    }
+
+    void assertPassesStartingSnr(ConfirmingTestSetup &useCase) {
+        setupView.setStartingSnr("1");
+        run(useCase);
+        assertEqual(1, testSettingsInterpreter.startingSnr());
+    }
+
     void assertPassesSubjectId(ConfirmingTestSetup &useCase) {
         setupView.setSubjectId("b");
         run(useCase);
@@ -1247,6 +1275,26 @@ class PresenterTests : public ::testing::Test {
         completeTrial(model);
         exitTest(experimenterView);
         assertTrue(submission.responseViewHidden());
+    }
+
+    void assertCompleteTestShowsContinueTestingDialog(UseCase &useCase) {
+        setTestComplete(model);
+        run(useCase);
+        assertTrue(experimenterView.continueTestingDialogShown());
+    }
+
+    void assertCompleteTestShowsThresholds(UseCase &useCase) {
+        setTestComplete(model);
+        model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
+        run(useCase);
+        assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
+            experimenterView.continueTestingDialogMessage());
+    }
+
+    void assertCompleteTestHidesResponse(TrialSubmission &useCase) {
+        setTestComplete(model);
+        run(useCase);
+        assertTrue(useCase.responseViewHidden());
     }
 };
 
@@ -1318,7 +1366,7 @@ class RequestFailingModel : public Model {
     void subscribe(EventListener *) override {}
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
-    void restartAdaptiveTestWhilePreservingCyclicTargets() override {}
+    void restartAdaptiveTestWhilePreservingTargets() override {}
 };
 
 class PresenterFailureTests : public ::testing::Test {
@@ -1426,7 +1474,7 @@ PRESENTER_TEST(submittingCorrectKeywordsPassesCorrectKeywords) {
 PRESENTER_TEST(submittingInvalidCorrectKeywordsShowsErrorMessage) {
     setCorrectKeywords(experimenterView, "a");
     run(submittingCorrectKeywords);
-    assertEqual("'a' is not a valid number.", errorMessage(view));
+    assertEqual("\"a\" is not a valid number.", errorMessage(view));
 }
 
 PRESENTER_TEST(submittingInvalidCorrectKeywordsDoesNotHideEntry) {
@@ -1453,24 +1501,41 @@ PRESENTER_TEST(decliningContinuingTestingShowsSetupView) {
     assertShowsSetupView(decliningContinuingTesting);
 }
 
-PRESENTER_TEST(submittingCorrectKeywordsShowsContinueTestingDialog) {
-    setTestComplete(model);
-    run(submittingCorrectKeywords);
-    assertTrue(experimenterView.continueTestingDialogShown());
+PRESENTER_TEST(
+    submittingCorrectKeywordsShowsContinueTestingDialogWhenComplete) {
+    assertCompleteTestShowsContinueTestingDialog(submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(submittingPassedTrialShowsContinueTestingDialogWhenComplete) {
+    assertCompleteTestShowsContinueTestingDialog(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submittingFailedTrialShowsContinueTestingDialogWhenComplete) {
+    assertCompleteTestShowsContinueTestingDialog(submittingFailedTrial);
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsThresholdsWhenTestingComplete) {
-    setTestComplete(model);
-    model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
-    run(submittingCorrectKeywords);
-    assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
-        experimenterView.continueTestingDialogMessage());
+    assertCompleteTestShowsThresholds(submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(submittingPassedTrialShowsThresholdsWhenTestingComplete) {
+    assertCompleteTestShowsThresholds(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submittingFailedTrialShowsThresholdsWhenTestingComplete) {
+    assertCompleteTestShowsThresholds(submittingFailedTrial);
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsHidesSubmissionEvenWhenTestComplete) {
-    setTestComplete(model);
-    run(submittingCorrectKeywords);
-    assertTrue(submittingCorrectKeywords.responseViewHidden());
+    assertCompleteTestHidesResponse(submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(submittingPassedTrialHidesSubmissionEvenWhenTestComplete) {
+    assertCompleteTestHidesResponse(submittingPassedTrial);
+}
+
+PRESENTER_TEST(submittingFailedTrialHidesSubmissionEvenWhenTestComplete) {
+    assertCompleteTestHidesResponse(submittingFailedTrial);
 }
 
 PRESENTER_TEST(
@@ -1673,6 +1738,18 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     playingCalibrationPassesTestSettingsTextToTestSettingsInterpreter) {
     assertPassesTestSettingsTextToTestSettingsInterpreter(playingCalibration);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
+    assertPassesStartingSnr(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
+    assertInvalidSnrShowsMessage(
+        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
@@ -1907,14 +1984,6 @@ PRESENTER_TEST(respondFromExperimenterShowsSetupViewWhenTestComplete) {
     assertCompleteTestShowsSetupView(submittingFreeResponse);
 }
 
-PRESENTER_TEST(submitPassedTrialShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(submittingPassedTrial);
-}
-
-PRESENTER_TEST(submitFailedTrialShowsSetupViewWhenTestComplete) {
-    assertCompleteTestShowsSetupView(submittingFailedTrial);
-}
-
 PRESENTER_TEST(
     submittingCorrectKeywordsDoesNotShowSetupViewWhenTestIncomplete) {
     assertIncompleteTestDoesNotShowSetupView(submittingCorrectKeywords);
@@ -1942,14 +2011,6 @@ PRESENTER_TEST(respondFromSubjectHidesExperimenterViewWhenTestComplete) {
 
 PRESENTER_TEST(respondFromExperimenterHidesExperimenterViewWhenTestComplete) {
     assertCompleteTestHidesExperimenterView(submittingFreeResponse);
-}
-
-PRESENTER_TEST(submitPassedTrialHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(submittingPassedTrial);
-}
-
-PRESENTER_TEST(submitFailedTrialHidesExperimenterViewWhenTestComplete) {
-    assertCompleteTestHidesExperimenterView(submittingFailedTrial);
 }
 
 PRESENTER_TEST(submitCoordinateResponseDoesNotPlayTrialWhenTestComplete) {
@@ -2197,6 +2258,12 @@ PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
     interpretedCalibration.fullScaleLevel_dB_SPL = 1;
     run(playingCalibration);
     assertEqual(1, calibration(model).fullScaleLevel_dB_SPL);
+}
+
+PRESENTER_TEST(completingTrialClearsFreeResponseForFixedLevelFreeResponseTest) {
+    run(confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+    completeTrial(model);
+    assertTrue(experimenterView.freeResponseCleared());
 }
 
 TEST_F(PresenterFailureTests,

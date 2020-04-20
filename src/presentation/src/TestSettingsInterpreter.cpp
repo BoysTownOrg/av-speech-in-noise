@@ -110,16 +110,8 @@ static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
         applyToEachTrackingRule(test, applyToRunCount, entry);
     else if (entryName == name(TestSetting::stepSizes))
         applyToEachTrackingRule(test, applyToStepSize, entry);
-    else if (entryName == name(TestSetting::startingSnr))
-        test.startingSnr_dB = integer(entry);
     else if (entryName == name(TestSetting::thresholdReversals))
         test.thresholdReversals = integer(entry);
-}
-
-static void assignFixedLevel(FixedLevelTest &test, const std::string &entryName,
-    const std::string &entry) {
-    if (entryName == name(TestSetting::startingSnr))
-        test.snr_dB = integer(entry);
 }
 
 static auto name(const std::string &contents) -> std::string {
@@ -157,8 +149,8 @@ static auto adaptive(const std::string &contents) -> bool {
         method_ == Method::adaptiveCoordinateResponseMeasureWithEyeTracking;
 }
 
-static void initializeAdaptiveTest(
-    Model &model, const std::string &contents, const TestIdentity &identity) {
+static void initializeAdaptiveTest(Model &model, const std::string &contents,
+    const TestIdentity &identity, int startingSnr) {
     AdaptiveTest test;
     applyToEachEntry(
         [&](auto entryName, auto entry) {
@@ -168,6 +160,7 @@ static void initializeAdaptiveTest(
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
+    test.startingSnr_dB = startingSnr;
     test.ceilingSnr_dB = Presenter::ceilingSnr_dB;
     test.floorSnr_dB = Presenter::floorSnr_dB;
     test.trackBumpLimit = Presenter::trackBumpLimit;
@@ -189,17 +182,13 @@ static void initializeAdaptiveTest(
         model.initialize(test);
 }
 
-static void initializeFixedLevelTest(
-    Model &model, const std::string &contents, const TestIdentity &identity) {
+static void initializeFixedLevelTest(Model &model, const std::string &contents,
+    const TestIdentity &identity, int startingSnr) {
     FixedLevelTest test;
-    applyToEachEntry(
-        [&](auto entryName, auto entry) {
-            assignFixedLevel(test, entryName, entry);
-        },
-        contents);
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
+    test.snr_dB = startingSnr;
     test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     test.identity = identity;
     auto method_{av_speech_in_noise::method(contents)};
@@ -215,12 +204,13 @@ static void initializeFixedLevelTest(
         model.initializeWithTargetReplacement(test);
 }
 
-void TestSettingsInterpreterImpl::initialize(
-    Model &model, const std::string &contents, const TestIdentity &identity) {
+void TestSettingsInterpreterImpl::initialize(Model &model,
+    const std::string &contents, const TestIdentity &identity,
+    int startingSnr) {
     if (adaptive(contents))
-        initializeAdaptiveTest(model, contents, identity);
+        initializeAdaptiveTest(model, contents, identity, startingSnr);
     else
-        initializeFixedLevelTest(model, contents, identity);
+        initializeFixedLevelTest(model, contents, identity, startingSnr);
 }
 
 auto TestSettingsInterpreterImpl::method(const std::string &s) -> Method {

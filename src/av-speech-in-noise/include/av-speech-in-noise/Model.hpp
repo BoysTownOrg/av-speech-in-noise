@@ -213,7 +213,7 @@ class Model {
     virtual auto audioDevices() -> AudioDevices = 0;
     virtual auto trialNumber() -> int = 0;
     virtual auto targetFileName() -> std::string = 0;
-    virtual void restartAdaptiveTestWhilePreservingCyclicTargets() = 0;
+    virtual void restartAdaptiveTestWhilePreservingTargets() = 0;
     virtual auto adaptiveTestResults() -> AdaptiveTestResults = 0;
 };
 }

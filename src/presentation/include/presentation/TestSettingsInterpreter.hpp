@@ -38,7 +38,6 @@ enum class TestSetting {
     targets,
     masker,
     maskerLevel,
-    startingSnr,
     condition,
     up,
     down,
@@ -57,8 +56,6 @@ constexpr auto name(TestSetting p) -> const char * {
         return "masker";
     case TestSetting::maskerLevel:
         return "masker level (dB SPL)";
-    case TestSetting::startingSnr:
-        return "starting SNR (dB)";
     case TestSetting::condition:
         return "condition";
     case TestSetting::up:
@@ -77,7 +74,7 @@ constexpr auto name(TestSetting p) -> const char * {
 class TestSettingsInterpreterImpl : public TestSettingsInterpreter {
   public:
     void initialize(
-        Model &, const std::string &, const TestIdentity &) override;
+        Model &, const std::string &, const TestIdentity &, int) override;
     auto method(const std::string &) -> Method override;
     auto calibration(const std::string &) -> Calibration override;
 };

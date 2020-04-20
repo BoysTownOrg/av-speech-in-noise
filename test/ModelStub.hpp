@@ -166,7 +166,7 @@ class ModelStub : public Model {
 
     void submit(const CorrectKeywords &s) override { correctKeywords_ = s; }
 
-    void restartAdaptiveTestWhilePreservingCyclicTargets() override {
+    void restartAdaptiveTestWhilePreservingTargets() override {
         adaptiveTestRestartedWhilePreservingCyclicTargets_ = true;
     }
 

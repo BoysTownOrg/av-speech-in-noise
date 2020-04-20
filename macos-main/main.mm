@@ -261,7 +261,7 @@ static void main() {
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervals, allStimuli,
         recognitionTestModel};
-    CocoaView view{NSMakeRect(0, 0, 900, 240)};
+    CocoaView view{NSMakeRect(0, 0, 900, 270)};
     view.center();
     auto delegate{[WindowDelegate alloc]};
     view.setDelegate(delegate);

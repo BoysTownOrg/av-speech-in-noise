@@ -92,6 +92,36 @@ static auto testComplete(Model &model) -> bool { return model.testComplete(); }
 
 static void hide(Presenter::TestSetup &testSetup) { testSetup.hide(); }
 
+static auto readInteger(const std::string &x, const std::string &identifier)
+    -> int {
+    try {
+        return std::stoi(x);
+    } catch (const std::invalid_argument &) {
+        std::stringstream stream;
+        stream << '"' << x << '"';
+        stream << " is not a valid ";
+        stream << identifier;
+        stream << '.';
+        throw BadInput{stream.str()};
+    }
+}
+
+static void showContinueTestingDialogWithResultsWhenComplete(
+    Presenter::Experimenter &experimenterPresenter, Model &model) {
+    if (testComplete(model)) {
+        experimenterPresenter.hideSubmissions();
+        experimenterPresenter.showContinueTestingDialog();
+        std::stringstream thresholds;
+        thresholds << "thresholds (targets: dB SNR)";
+        for (const auto &result : model.adaptiveTestResults())
+            thresholds << '\n'
+                       << result.targetListDirectory << ": "
+                       << result.threshold;
+        experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
+    } else
+        readyNextTrial(experimenterPresenter, model);
+}
+
 Presenter::Presenter(Model &model, View &view, TestSetup &testSetup,
     CoordinateResponseMeasure &coordinateResponseMeasurePresenter,
     Experimenter &experimenterPresenter,
@@ -128,8 +158,9 @@ void Presenter::confirmTestSetup() {
 
 void Presenter::confirmTestSetup_() {
     auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
-    testSettingsInterpreter.initialize(
-        model, testSettings, testIdentity(testSetup));
+    testSettingsInterpreter.initialize(model, testSettings,
+        testIdentity(testSetup),
+        readInteger(testSetup.startingSnr(), "starting SNR"));
     auto method{testSettingsInterpreter.method(testSettings)};
     if (!testComplete(model)) {
         switchToTestView(method);
@@ -192,36 +223,29 @@ void Presenter::submitFreeResponse() {
 }
 
 void Presenter::submitPassedTrial() {
-    proceedToNextTrialAfter(&Presenter::submitPassedTrial_);
+    submitPassedTrial_();
+    showContinueTestingDialogWithResultsWhenComplete(
+        experimenterPresenter, model);
 }
 
 void Presenter::submitFailedTrial() {
-    proceedToNextTrialAfter(&Presenter::submitFailedTrial_);
+    submitFailedTrial_();
+    showContinueTestingDialogWithResultsWhenComplete(
+        experimenterPresenter, model);
 }
 
 void Presenter::declineContinuingTesting() { switchToTestSetupView(); }
 
 void Presenter::acceptContinuingTesting() {
-    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    model.restartAdaptiveTestWhilePreservingTargets();
     readyNextTrial(experimenterPresenter, model);
 }
 
 void Presenter::submitCorrectKeywords() {
     try {
         submitCorrectKeywords_();
-        if (testComplete(model)) {
-            experimenterPresenter.hideCorrectKeywordsSubmission();
-            experimenterPresenter.showContinueTestingDialog();
-            std::stringstream thresholds;
-            thresholds << "thresholds (targets: dB SNR)";
-            for (const auto &result : model.adaptiveTestResults())
-                thresholds << '\n'
-                           << result.targetListDirectory << ": "
-                           << result.threshold;
-            experimenterPresenter.setContinueTestingDialogMessage(
-                thresholds.str());
-        } else
-            readyNextTrial(experimenterPresenter, model);
+        showContinueTestingDialogWithResultsWhenComplete(
+            experimenterPresenter, model);
     } catch (const std::runtime_error &e) {
         showErrorMessage(e.what());
     }
@@ -305,20 +329,6 @@ void Presenter::TestSetup::show() { view->show(); }
 
 void Presenter::TestSetup::hide() { view->hide(); }
 
-static auto readInteger(const std::string &x, const std::string &identifier)
-    -> int {
-    try {
-        return std::stoi(x);
-    } catch (const std::invalid_argument &) {
-        std::stringstream stream;
-        stream << '\'' << x << '\'';
-        stream << " is not a valid ";
-        stream << identifier;
-        stream << '.';
-        throw BadInput{stream.str()};
-    }
-}
-
 static auto transducer(const std::string &s) -> Transducer {
     if (s == name(Transducer::headphone))
         return Transducer::headphone;
@@ -355,6 +365,10 @@ void Presenter::TestSetup::setTestSettingsFile(std::string s) {
 
 auto Presenter::TestSetup::testSettingsFile() -> std::string {
     return view->testSettingsFile();
+}
+
+auto Presenter::TestSetup::startingSnr() -> std::string {
+    return view->startingSnr();
 }
 
 Presenter::CoordinateResponseMeasure::CoordinateResponseMeasure(
@@ -448,7 +462,7 @@ void Presenter::Experimenter::hideCorrectKeywordsSubmission() {
 }
 
 void Presenter::Experimenter::stop() {
-    hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view);
     view->hide();
 }
 
@@ -460,12 +474,20 @@ void Presenter::Experimenter::trialPlayed() {
 void Presenter::Experimenter::trialComplete() { view->showExitTestButton(); }
 
 void Presenter::Experimenter::readyNextTrial() {
-    hideSubmissions(view);
+    av_speech_in_noise::hideSubmissions(view);
     showNextTrialButton(view);
 }
 
 void Presenter::Experimenter::showContinueTestingDialog() {
     view->showContinueTestingDialog();
+}
+
+void Presenter::Experimenter::hideEvaluationButtons() {
+    view->hideEvaluationButtons();
+}
+
+void Presenter::Experimenter::hideSubmissions() {
+    av_speech_in_noise::hideSubmissions(view);
 }
 
 void Presenter::Experimenter::setContinueTestingDialogMessage(
@@ -484,6 +506,8 @@ void Presenter::Experimenter::showCorrectKeywordsSubmission() {
 void Presenter::Experimenter::showFreeResponseSubmission() {
     view->showFreeResponseSubmission();
 }
+
+void Presenter::Experimenter::clearFreeResponse() { view->clearFreeResponse(); }
 
 void Presenter::Experimenter::submitPassedTrial() {
     parent->submitPassedTrial();
