@@ -95,7 +95,7 @@ void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
     av_speech_in_noise::initialize(model, adaptiveMethod, test);
 }
 
-void ModelImpl::restartAdaptiveTestWhilePreservingCyclicTargets() {
+void ModelImpl::restartAdaptiveTestWhilePreservingTargets() {
     adaptiveMethod.resetTracks();
     model.prepareNextTrialIfNeeded();
 }

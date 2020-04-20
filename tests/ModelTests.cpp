@@ -472,13 +472,13 @@ class ModelTests : public ::testing::Test {
 
 MODEL_TEST(
     restartAdaptiveTestWhilePreservingCyclicTargetsPreparesNextTrialIfNeeded) {
-    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    model.restartAdaptiveTestWhilePreservingTargets();
     assertTrue(internalModel.nextTrialPreparedIfNeeded());
 }
 
 MODEL_TEST(
     restartAdaptiveTestWhilePreservingCyclicTargetsResetsAdaptiveMethodTracks) {
-    model.restartAdaptiveTestWhilePreservingCyclicTargets();
+    model.restartAdaptiveTestWhilePreservingTargets();
     assertTrue(adaptiveMethod.tracksResetted());
 }
 

@@ -38,8 +38,9 @@ auto fixedLevelTest(ModelStub &m) -> FixedLevelTest {
 }
 
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
-    const std::vector<std::string> &v, const TestIdentity &identity = {}) {
-    interpreter.initialize(model, concatenate(v), identity);
+    const std::vector<std::string> &v, int startingSnr = {},
+    const TestIdentity &identity = {}) {
+    interpreter.initialize(model, concatenate(v), identity, startingSnr);
 }
 
 void assertPassesSimpleAdaptiveSettings(
@@ -49,9 +50,9 @@ void assertPassesSimpleAdaptiveSettings(
             entryWithNewline(TestSetting::targets, "a"),
             entryWithNewline(TestSetting::masker, "b"),
             entryWithNewline(TestSetting::maskerLevel, "65"),
-            entryWithNewline(TestSetting::startingSnr, "5"),
             entryWithNewline(TestSetting::thresholdReversals, "4"),
-            entryWithNewline(TestSetting::condition, Condition::audioVisual)});
+            entryWithNewline(TestSetting::condition, Condition::audioVisual)},
+        5);
     assertEqual("a", adaptiveTest(model).targetListDirectory);
     assertEqual("b", adaptiveTest(model).maskerFilePath);
     assertEqual(65, adaptiveTest(model).maskerLevel_dB_SPL);
@@ -70,8 +71,8 @@ void assertPassesSimpleFixedLevelSettings(
         {entryWithNewline(TestSetting::method, m),
             entryWithNewline(TestSetting::targets, "a"),
             entryWithNewline(TestSetting::masker, "b"),
-            entryWithNewline(TestSetting::maskerLevel, "65"),
-            entryWithNewline(TestSetting::startingSnr, "5")});
+            entryWithNewline(TestSetting::maskerLevel, "65")},
+        5);
     assertEqual("a", fixedLevelTest(model).targetListDirectory);
     assertEqual("b", fixedLevelTest(model).maskerFilePath);
     assertEqual(65, fixedLevelTest(model).maskerLevel_dB_SPL);
@@ -81,9 +82,9 @@ void assertPassesSimpleFixedLevelSettings(
 }
 
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
-    Method m, const TestIdentity &identity = {}) {
+    Method m, const TestIdentity &identity = {}, int startingSnr = {}) {
     initialize(interpreter, model, {entryWithNewline(TestSetting::method, m)},
-        identity);
+        startingSnr, identity);
 }
 
 auto method(TestSettingsInterpreterImpl &interpreter,
@@ -220,21 +221,6 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
         {"\n", entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             "\n", entryWithNewline(TestSetting::targets, "a")});
     assertEqual("a", adaptiveTest(model).targetListDirectory);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(badStartingSnrResolvesToZero) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
-            entryWithNewline(TestSetting::startingSnr, "a")});
-    assertEqual(0, adaptiveTest(model).startingSnr_dB);
-}
-
-TEST_SETTINGS_INTERPRETER_TEST(badFixedSnrResolvesToZero) {
-    initialize(interpreter, model,
-        {entryWithNewline(TestSetting::method,
-             Method::fixedLevelFreeResponseWithTargetReplacement),
-            entryWithNewline(TestSetting::startingSnr, "a")});
-    assertEqual(0, fixedLevelTest(model).snr_dB);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
