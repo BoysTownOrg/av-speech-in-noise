@@ -42,6 +42,7 @@ class CocoaExperimenterView : public View::Experimenter {
     void showContinueTestingDialog() override;
     void hideContinueTestingDialog() override;
     void setContinueTestingDialogMessage(const std::string &) override;
+    void clearFreeResponse() override;
 
   private:
     NSView *view_;
