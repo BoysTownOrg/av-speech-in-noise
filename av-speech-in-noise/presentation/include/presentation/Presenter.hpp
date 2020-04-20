@@ -110,6 +110,7 @@ class View {
         virtual void showEvaluationButtons() = 0;
         virtual void hideEvaluationButtons() = 0;
         virtual void showFreeResponseSubmission() = 0;
+        virtual void clearFreeResponse() = 0;
         virtual void hideFreeResponseSubmission() = 0;
         virtual void showCorrectKeywordsSubmission() = 0;
         virtual void hideCorrectKeywordsSubmission() = 0;
@@ -202,6 +203,7 @@ class Presenter : public Model::EventListener {
         void showPassFailSubmission();
         void showCorrectKeywordsSubmission();
         void showFreeResponseSubmission();
+        void clearFreeResponse();
         auto correctKeywords() -> CorrectKeywords;
         auto freeResponse() -> FreeResponse;
 
@@ -267,6 +269,7 @@ class Presenter : public Model::EventListener {
             : experimenterPresenter{experimenterPresenter} {}
 
         void showResponseSubmission() override {
+            experimenterPresenter.clearFreeResponse();
             experimenterPresenter.showFreeResponseSubmission();
         }
 

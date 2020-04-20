@@ -364,6 +364,10 @@ class ViewStub : public View {
             return exitTestButtonHidden_;
         }
 
+        auto freeResponseCleared() -> bool { return freeResponseCleared_; }
+
+        void clearFreeResponse() { freeResponseCleared_ = true; }
+
       private:
         std::string displayed_;
         std::string secondaryDisplayed_;
@@ -371,6 +375,7 @@ class ViewStub : public View {
         std::string response_;
         std::string correctKeywords_{"0"};
         EventListener *listener_{};
+        bool freeResponseCleared_{};
         bool exitTestButtonHidden_{};
         bool exitTestButtonShown_{};
         bool nextTrialButtonShown_{};
@@ -2208,6 +2213,12 @@ PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
     interpretedCalibration.fullScaleLevel_dB_SPL = 1;
     run(playingCalibration);
     assertEqual(1, calibration(model).fullScaleLevel_dB_SPL);
+}
+
+PRESENTER_TEST(completingTrialClearsFreeResponseForFixedLevelFreeResponseTest) {
+    run(confirmingFixedLevelFreeResponseWithTargetReplacementTest);
+    completeTrial(model);
+    assertTrue(experimenterView.freeResponseCleared());
 }
 
 TEST_F(PresenterFailureTests,

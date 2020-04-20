@@ -506,6 +506,10 @@ void Presenter::Experimenter::showFreeResponseSubmission() {
     view->showFreeResponseSubmission();
 }
 
+void Presenter::Experimenter::clearFreeResponse() {
+    view->clearFreeResponse();
+}
+
 void Presenter::Experimenter::submitPassedTrial() {
     parent->submitPassedTrial();
 }
