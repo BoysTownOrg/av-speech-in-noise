@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace av_speech_in_noise {
 struct AdaptiveProgress {

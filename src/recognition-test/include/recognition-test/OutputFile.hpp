@@ -103,7 +103,6 @@ class OutputFileImpl : public OutputFile {
     void write(const CorrectKeywordsTrial &) override;
     void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;
-    void writeFadeInComplete(const ConvertedAudioSampleSystemTime &) override;
     void writeTargetStartTimeNanoseconds(std::uintmax_t) override;
 
   private:

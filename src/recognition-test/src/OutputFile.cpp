@@ -396,11 +396,6 @@ void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {
     write(format(gazeSamples));
 }
 
-void OutputFileImpl::writeFadeInComplete(
-    const ConvertedAudioSampleSystemTime &time) {
-    write(format(time));
-}
-
 void OutputFileImpl::writeTargetStartTimeNanoseconds(std::uintmax_t t) {
     write(formatTargetStartTimeNanoseconds(t));
 }
