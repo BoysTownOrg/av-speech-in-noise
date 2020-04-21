@@ -301,7 +301,7 @@ void RecognitionTestModelImpl::submit(
     testMethod->writeLastCoordinateResponse(outputFile);
     if (eyeTracking) {
         outputFile.writeTargetStartTimeNanoseconds(
-            maskerPlayer.nanoseconds(lastTargetStartTime.playerTime.system) +
+            maskerPlayer.nanoseconds(lastTargetStartTime.playerTime) +
             lastTargetStartTime.delay.seconds * 1e9);
         outputFile.write(eyeTracker.gazeSamples());
     }

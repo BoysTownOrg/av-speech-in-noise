@@ -79,7 +79,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void useFirstChannelOnly() override;
     void clearChannelDelays() override;
     void useAllChannels() override;
-    auto nanoseconds(av_speech_in_noise::system_time)
+    auto nanoseconds(av_speech_in_noise::PlayerTime)
         -> std::uintmax_t override;
 
   private:

@@ -219,7 +219,7 @@ void setNanoseconds(AudioPlayerStub &player, std::uintmax_t t) {
 
 auto nanoseconds(MaskerPlayerImpl &player,
     av_speech_in_noise::system_time t = {}) -> std::uintmax_t {
-    return player.nanoseconds(t);
+    return player.nanoseconds({t});
 }
 
 auto systemTimeForNanoseconds(AudioPlayerStub &player)
