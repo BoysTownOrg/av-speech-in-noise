@@ -48,7 +48,7 @@ class TargetPlayer {
     virtual void useFirstChannelOnly() = 0;
 };
 
-struct AudioSampleTime {
+struct AudioSampleTimeWithOffset {
     system_time system;
     gsl::index offset;
 };
@@ -58,7 +58,7 @@ class MaskerPlayer {
     class EventListener {
       public:
         virtual ~EventListener() = default;
-        virtual void fadeInComplete(const AudioSampleTime &) = 0;
+        virtual void fadeInComplete(const AudioSampleTimeWithOffset &) = 0;
         virtual void fadeOutComplete() = 0;
     };
 
@@ -115,7 +115,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto audioDevices() -> AudioDevices override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
-    void fadeInComplete(const AudioSampleTime &) override;
+    void fadeInComplete(const AudioSampleTimeWithOffset &) override;
     void fadeOutComplete() override;
     void playbackComplete() override;
     void prepareNextTrialIfNeeded() override;

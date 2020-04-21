@@ -470,7 +470,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     SubmittingIncorrectResponse submittingIncorrectResponse;
     FreeResponse freeResponse{};
     SubmittingFreeResponse submittingFreeResponse{freeResponse};
-    AudioSampleTime fadeInCompleteTime{};
+    AudioSampleTimeWithOffset fadeInCompleteTime{};
     SubmittingCorrectKeywords submittingCorrectKeywords;
 
     RecognitionTestModelTests() { model.subscribe(&listener); }

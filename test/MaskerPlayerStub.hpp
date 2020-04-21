@@ -118,7 +118,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     auto listener() const -> const EventListener * { return listener_; }
 
-    void fadeInComplete(const AudioSampleTime &t = {}) {
+    void fadeInComplete(const AudioSampleTimeWithOffset &t = {}) {
         listener_->fadeInComplete(t);
     }
 

@@ -222,7 +222,7 @@ auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
     return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
 }
 
-void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTime &t) {
+void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTimeWithOffset &t) {
     if (eyeTracking) {
         TargetTimeWithDelay timeToPlay{};
         timeToPlay.system = t.system;
