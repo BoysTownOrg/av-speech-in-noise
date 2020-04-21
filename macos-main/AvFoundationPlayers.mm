@@ -307,7 +307,7 @@ void AvFoundationVideoPlayer::playAt(
     // automaticallyWaitsToMinimizeStalling is YES will raise an
     // NSInvalidArgument exception."
     player.automaticallyWaitsToMinimizeStalling = NO;
-    auto hostTime{CMClockMakeHostTimeFromSystemUnits(t.systemTime)};
+    auto hostTime{CMClockMakeHostTimeFromSystemUnits(t.playerTime.system)};
     [player setRate:1.0
                time:kCMTimeInvalid
          atHostTime:CMTimeAdd(hostTime,

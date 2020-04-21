@@ -691,7 +691,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     auto eyeTrackerStopped() -> bool { return eyeTracker.stopped(); }
 
     void setMaskerPlayerFadeInCompleteAudioSampleSystemTime(system_time t) {
-        fadeInCompleteTime.systemTime = t;
+        fadeInCompleteTime.playerTime.system = t;
     }
 
     void setMaskerPlayerSystemTimeNanoseconds(std::uintmax_t t) {

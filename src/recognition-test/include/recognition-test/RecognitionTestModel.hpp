@@ -18,8 +18,12 @@ struct Delay {
     double seconds;
 };
 
+struct PlayerTime {
+    system_time system;
+};
+
 struct TargetTimeWithDelay {
-    system_time systemTime;
+    PlayerTime playerTime;
     Delay delay;
 };
 
@@ -49,7 +53,7 @@ class TargetPlayer {
 };
 
 struct AudioSampleTimeWithOffset {
-    system_time systemTime;
+    PlayerTime playerTime;
     gsl::index sampleOffset;
 };
 

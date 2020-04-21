@@ -74,7 +74,7 @@ class VideoPlayerStub : public VideoPlayer {
     }
 
     void playAt(const av_speech_in_noise::TargetTimeWithDelay &t) override {
-        baseSystemTimePlayedAt_ = t.systemTime;
+        baseSystemTimePlayedAt_ = t.playerTime.system;
         secondsDelayedPlayedAt_ = t.delay.seconds;
     }
 
@@ -150,7 +150,7 @@ class TargetPlayerTests : public ::testing::Test {
     void useAllChannels() { player.useAllChannels(); }
 
     void setBaseSystemTimeToPlayAt(av_speech_in_noise::system_time t) {
-        systemTimeWithDelay.systemTime = t;
+        systemTimeWithDelay.playerTime.system = t;
     }
 
     void setSecondsDelayedToPlayAt(double x) {
