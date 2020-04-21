@@ -59,7 +59,7 @@ class TargetPlayerStub : public TargetPlayer {
     void play() override { played_ = true; }
 
     void playAt(const TargetTimeWithDelay &t) override {
-        baseSystemTimePlayedAt_ = t.system;
+        baseSystemTimePlayedAt_ = t.systemTime;
         secondsDelayedPlayedAt_ = t.delay.seconds;
     }
 

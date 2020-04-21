@@ -691,7 +691,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     auto eyeTrackerStopped() -> bool { return eyeTracker.stopped(); }
 
     void setMaskerPlayerFadeInCompleteAudioSampleSystemTime(system_time t) {
-        fadeInCompleteTime.system = t;
+        fadeInCompleteTime.systemTime = t;
     }
 
     void setMaskerPlayerSystemTimeNanoseconds(std::uintmax_t t) {
@@ -699,7 +699,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     }
 
     void setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(gsl::index t) {
-        fadeInCompleteTime.offset = t;
+        fadeInCompleteTime.sampleOffset = t;
     }
 
     void setMaskerPlayerSampleRateHz(double x) {
