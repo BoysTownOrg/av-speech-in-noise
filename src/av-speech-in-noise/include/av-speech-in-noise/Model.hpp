@@ -89,12 +89,37 @@ struct EyeGaze {
     float y;
 };
 
-struct GazeSystemTime {
+struct EyeTrackerSystemTime {
     std::uintmax_t microseconds;
 };
 
+struct PlayerSystemTime {
+    std::uintmax_t nanoseconds;
+};
+
+struct EyeTrackerPlayerSynchronization {
+    EyeTrackerSystemTime eyeTrackerSystemTime;
+    PlayerSystemTime playerSystemTime;
+};
+
+constexpr auto operator==(
+    const EyeTrackerSystemTime &a, const EyeTrackerSystemTime &b) -> bool {
+    return a.microseconds == b.microseconds;
+}
+
+constexpr auto operator==(const PlayerSystemTime &a, const PlayerSystemTime &b)
+    -> bool {
+    return a.nanoseconds == b.nanoseconds;
+}
+
+constexpr auto operator==(const EyeTrackerPlayerSynchronization &a,
+    const EyeTrackerPlayerSynchronization &b) -> bool {
+    return a.eyeTrackerSystemTime == b.eyeTrackerSystemTime &&
+        a.playerSystemTime == b.playerSystemTime;
+}
+
 struct BinocularGazeSample {
-    GazeSystemTime systemTime;
+    EyeTrackerSystemTime systemTime;
     EyeGaze left;
     EyeGaze right;
 };

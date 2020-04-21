@@ -170,9 +170,9 @@ static auto format(const BinocularGazeSamples &gazeSamples) -> std::string {
     return stream.str();
 }
 
-static auto formatTargetStartTimeNanoseconds(std::uintmax_t t) -> std::string {
+static auto format(TargetStartTime t) -> std::string {
     std::stringstream stream;
-    writeLabeledLine(stream, "target start time (ns)", t);
+    writeLabeledLine(stream, "target start time (ns)", t.nanoseconds);
     return stream.str();
 }
 
@@ -385,9 +385,7 @@ void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {
     write(format(gazeSamples));
 }
 
-void OutputFileImpl::write(TargetStartTime t) {
-    write(formatTargetStartTimeNanoseconds(t.nanoseconds));
-}
+void OutputFileImpl::write(TargetStartTime t) { write(format(t)); }
 
 void OutputFileImpl::openNewFile(const TestIdentity &test) {
     writer.open(generateNewFilePath(test));

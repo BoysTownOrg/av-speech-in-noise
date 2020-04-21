@@ -86,6 +86,7 @@ class MaskerPlayer {
     virtual void clearChannelDelays() = 0;
     virtual void setChannelDelaySeconds(gsl::index channel, double seconds) = 0;
     virtual auto nanoseconds(PlayerTime) -> std::uintmax_t = 0;
+    virtual auto currentSystemTime() -> PlayerSystemTime = 0;
 };
 
 class EyeTracker {
@@ -95,6 +96,7 @@ class EyeTracker {
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual auto gazeSamples() -> BinocularGazeSamples = 0;
+    virtual auto currentSystemTime() -> EyeTrackerSystemTime = 0;
 };
 
 class RecognitionTestModelImpl : public TargetPlayer::EventListener,
@@ -141,6 +143,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     Randomizer &randomizer;
     EyeTracker &eyeTracker;
     PlayerTimeWithDelay lastTargetStartTimeWithDelay{};
+    EyeTrackerPlayerSynchronization lastEyeTrackerPlayerSynchronization{};
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
     int maskerLevel_dB_SPL{};

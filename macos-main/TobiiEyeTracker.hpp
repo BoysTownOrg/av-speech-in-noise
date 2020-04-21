@@ -14,6 +14,7 @@ class TobiiEyeTracker : public EyeTracker {
     void start() override;
     void stop() override;
     auto gazeSamples() -> BinocularGazeSamples override;
+    auto currentSystemTime() -> EyeTrackerSystemTime override;
 
   private:
     static void gaze_data_callback(

@@ -129,4 +129,17 @@ auto TobiiEyeTracker::gazeSamples() -> BinocularGazeSamples {
     }
     return gazeSamples_;
 }
+
+auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
+    EyeTrackerSystemTime currentSystemTime{};
+    auto tobii_research_get_system_time_stamp_ =
+        reinterpret_cast<decltype(&tobii_research_get_system_time_stamp)>(
+            dlsym(library, "tobii_research_get_system_time_stamp"));
+    if (tobii_research_get_system_time_stamp_ != nullptr) {
+        int64_t microseconds = 0;
+        tobii_research_get_system_time_stamp_(&microseconds);
+        currentSystemTime.microseconds = microseconds;
+    }
+    return currentSystemTime;
+}
 }

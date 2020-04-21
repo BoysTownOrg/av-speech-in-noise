@@ -17,6 +17,7 @@ class OutputFileStub : public OutputFile {
     BinocularGazeSamples eyeGazes_;
     AdaptiveTestResults adaptiveTestResult_{};
     LogString log_{};
+    EyeTrackerPlayerSynchronization eyeTrackerPlayerSynchronization_{};
     std::uintmax_t fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_{};
     std::uintmax_t targetStartTimeNanoseconds_{};
     gsl::index fadeInCompleteAudioSampleOffset_{};
@@ -96,6 +97,15 @@ class OutputFileStub : public OutputFile {
 
     auto targetStartTimeNanoseconds() const -> std::uintmax_t {
         return targetStartTimeNanoseconds_;
+    }
+
+    auto eyeTrackerPlayerSynchronization() const
+        -> const EyeTrackerPlayerSynchronization & {
+        return eyeTrackerPlayerSynchronization_;
+    }
+
+    void write(const EyeTrackerPlayerSynchronization &e) {
+        eyeTrackerPlayerSynchronization_ = e;
     }
 
     auto fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds() const

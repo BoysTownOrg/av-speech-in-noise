@@ -315,9 +315,18 @@ class EyeTrackerStub : public EyeTracker {
 
     void setGazes(BinocularGazeSamples g) { gazeSamples_ = std::move(g); }
 
+    auto currentSystemTime() -> EyeTrackerSystemTime override {
+        return currentSystemTime_;
+    }
+
+    void setCurrentSystemTime(EyeTrackerSystemTime t) {
+        currentSystemTime_ = t;
+    }
+
   private:
     BinocularGazeSamples gazeSamples_;
     LogString log_{};
+    EyeTrackerSystemTime currentSystemTime_{};
     double recordingTimeAllocatedSeconds_{};
     bool recordingTimeAllocated_{};
     bool started_{};
@@ -694,8 +703,16 @@ class RecognitionTestModelTests : public ::testing::Test {
         fadeInCompleteTime.playerTime.system = t;
     }
 
-    void setMaskerPlayerSystemTimeNanoseconds(std::uintmax_t t) {
-        maskerPlayer.setNanoseconds(t);
+    void setMaskerPlayerNanosecondsFromPlayerTime(std::uintmax_t t) {
+        maskerPlayer.setNanosecondsFromPlayerTime(t);
+    }
+
+    void setMaskerPlayerCurrentSystemTimeNanoseconds(std::uintmax_t t) {
+        maskerPlayer.setCurrentSystemTime({t});
+    }
+
+    void setEyeTrackerCurrentSystemTimeMicroseconds(std::uintmax_t t) {
+        eyeTracker.setCurrentSystemTime(EyeTrackerSystemTime{t});
     }
 
     void setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(gsl::index t) {
@@ -961,7 +978,7 @@ RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
 RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseWritesTargetStartTimeWhenEyeTracking) {
     run(initializingTestWithEyeTracking, model);
-    setMaskerPlayerSystemTimeNanoseconds(1);
+    setMaskerPlayerNanosecondsFromPlayerTime(1);
     setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(2);
     setMaskerPlayerSampleRateHz(3);
     fadeInComplete();
@@ -973,6 +990,19 @@ RECOGNITION_TEST_MODEL_TEST(
                     RecognitionTestModelImpl::additionalTargetDelaySeconds) *
                 1e9),
         outputFile.targetStartTimeNanoseconds());
+}
+
+RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesGazePlayerSyncTimes) {
+    run(initializingTestWithEyeTracking, model);
+    setMaskerPlayerCurrentSystemTimeNanoseconds(1);
+    setEyeTrackerCurrentSystemTimeMicroseconds(2);
+    fadeInComplete();
+    fadeOutComplete(maskerPlayer);
+    run(submittingCoordinateResponse, model);
+    EyeTrackerPlayerSynchronization s{};
+    s.eyeTrackerSystemTime.microseconds = 2;
+    s.playerSystemTime.nanoseconds = 1;
+    assertEqual(s, outputFile.eyeTrackerPlayerSynchronization());
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {
