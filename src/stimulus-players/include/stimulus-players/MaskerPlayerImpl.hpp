@@ -34,6 +34,7 @@ class AudioPlayer {
     virtual auto sampleRateHz() -> double = 0;
     virtual auto nanoseconds(av_speech_in_noise::system_time)
         -> std::uintmax_t = 0;
+    virtual auto currentSystemTime() -> av_speech_in_noise::system_time = 0;
 };
 
 class Timer {

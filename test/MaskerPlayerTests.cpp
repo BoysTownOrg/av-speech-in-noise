@@ -17,6 +17,12 @@ class AudioPlayerStub : public AudioPlayer {
   public:
     void setNanoseconds(std::uintmax_t t) { nanoseconds_ = t; }
 
+    void setCurrentSystemTime(std::uintmax_t t) { currentSystemTime_ = t; }
+
+    auto currentSystemTime() -> av_speech_in_noise::system_time {
+        return currentSystemTime_;
+    }
+
     auto outputDevice(int index) -> bool override {
         return outputDevices[index];
     }
@@ -87,6 +93,7 @@ class AudioPlayerStub : public AudioPlayer {
     std::map<int, bool> outputDevices;
     std::uintmax_t nanoseconds_{};
     av_speech_in_noise::system_time systemTimeForNanoseconds_{};
+    av_speech_in_noise::system_time currentSystemTime_{};
     double sampleRateHz_{};
     int deviceIndex_{};
     int deviceDescriptionDeviceIndex_{};
@@ -215,6 +222,10 @@ void resize(std::vector<float> &v, gsl::index n) { v.resize(n); }
 
 void setNanoseconds(AudioPlayerStub &player, std::uintmax_t t) {
     player.setNanoseconds(t);
+}
+
+void setCurrentSystemTime(AudioPlayerStub &player, std::uintmax_t t) {
+    player.setCurrentSystemTime(t);
 }
 
 auto nanoseconds(MaskerPlayerImpl &player,
@@ -997,6 +1008,13 @@ MASKER_PLAYER_TEST(returnsCurrentSystemTime) {
 
 MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForNanoseconds) {
     nanoseconds(player, 1);
+    assertEqual(av_speech_in_noise::system_time{1},
+        systemTimeForNanoseconds(audioPlayer));
+}
+
+MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForCurrentSystemTime) {
+    setCurrentSystemTime(audioPlayer, 1);
+    currentSystemTime(player);
     assertEqual(av_speech_in_noise::system_time{1},
         systemTimeForNanoseconds(audioPlayer));
 }
