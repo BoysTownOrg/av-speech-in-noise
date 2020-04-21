@@ -222,12 +222,12 @@ auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
     return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
 }
 
-void RecognitionTestModelImpl::fadeInComplete(const AudioSampleSystemTime &t) {
+void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTime &t) {
     if (eyeTracking) {
-        SystemTimeWithDelay timeToPlay{};
-        timeToPlay.time = t.time;
+        TargetTimeWithDelay timeToPlay{};
+        timeToPlay.system = t.system;
         timeToPlay.secondsDelayed =
-            t.sampleOffset / maskerPlayer.sampleRateHz() +
+            t.offset / maskerPlayer.sampleRateHz() +
             additionalTargetDelaySeconds;
         targetPlayer.playAt(timeToPlay);
         lastTargetStartTime = timeToPlay;
@@ -302,7 +302,7 @@ void RecognitionTestModelImpl::submit(
     testMethod->writeLastCoordinateResponse(outputFile);
     if (eyeTracking) {
         outputFile.writeTargetStartTimeNanoseconds(
-            maskerPlayer.nanoseconds(lastTargetStartTime.time) +
+            maskerPlayer.nanoseconds(lastTargetStartTime.system) +
             lastTargetStartTime.secondsDelayed * 1e9);
         outputFile.write(eyeTracker.gazeSamples());
     }

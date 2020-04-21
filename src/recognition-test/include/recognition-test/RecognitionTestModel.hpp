@@ -14,8 +14,8 @@ class InvalidAudioFile {};
 
 using system_time = std::uintmax_t;
 
-struct SystemTimeWithDelay {
-    system_time time;
+struct TargetTimeWithDelay {
+    system_time system;
     double secondsDelayed;
 };
 
@@ -31,7 +31,7 @@ class TargetPlayer {
     virtual void subscribe(EventListener *) = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void play() = 0;
-    virtual void playAt(const SystemTimeWithDelay &) = 0;
+    virtual void playAt(const TargetTimeWithDelay &) = 0;
     virtual auto playing() -> bool = 0;
     virtual void loadFile(std::string filePath) = 0;
     virtual void hideVideo() = 0;
@@ -44,9 +44,9 @@ class TargetPlayer {
     virtual void useFirstChannelOnly() = 0;
 };
 
-struct AudioSampleSystemTime {
-    system_time time;
-    gsl::index sampleOffset;
+struct AudioSampleTime {
+    system_time system;
+    gsl::index offset;
 };
 
 class MaskerPlayer {
@@ -54,7 +54,7 @@ class MaskerPlayer {
     class EventListener {
       public:
         virtual ~EventListener() = default;
-        virtual void fadeInComplete(const AudioSampleSystemTime &) = 0;
+        virtual void fadeInComplete(const AudioSampleTime &) = 0;
         virtual void fadeOutComplete() = 0;
     };
 
@@ -111,7 +111,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     auto audioDevices() -> AudioDevices override;
     auto trialNumber() -> int override;
     auto targetFileName() -> std::string override;
-    void fadeInComplete(const AudioSampleSystemTime &) override;
+    void fadeInComplete(const AudioSampleTime &) override;
     void fadeOutComplete() override;
     void playbackComplete() override;
     void prepareNextTrialIfNeeded() override;
@@ -132,7 +132,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     OutputFile &outputFile;
     Randomizer &randomizer;
     EyeTracker &eyeTracker;
-    SystemTimeWithDelay lastTargetStartTime{};
+    TargetTimeWithDelay lastTargetStartTime{};
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
     int maskerLevel_dB_SPL{};

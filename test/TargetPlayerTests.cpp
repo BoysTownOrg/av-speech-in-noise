@@ -73,8 +73,8 @@ class VideoPlayerStub : public VideoPlayer {
         return secondsDelayedPlayedAt_;
     }
 
-    void playAt(const av_speech_in_noise::SystemTimeWithDelay &t) override {
-        baseSystemTimePlayedAt_ = t.time;
+    void playAt(const av_speech_in_noise::TargetTimeWithDelay &t) override {
+        baseSystemTimePlayedAt_ = t.system;
         secondsDelayedPlayedAt_ = t.secondsDelayed;
     }
 
@@ -113,7 +113,7 @@ class TargetPlayerTests : public ::testing::Test {
     TargetPlayerListenerStub listener;
     AudioReaderStub audioReader{};
     TargetPlayerImpl player{&videoPlayer, &audioReader};
-    av_speech_in_noise::SystemTimeWithDelay systemTimeWithDelay{};
+    av_speech_in_noise::TargetTimeWithDelay systemTimeWithDelay{};
 
     TargetPlayerTests() { player.subscribe(&listener); }
 
@@ -150,7 +150,7 @@ class TargetPlayerTests : public ::testing::Test {
     void useAllChannels() { player.useAllChannels(); }
 
     void setBaseSystemTimeToPlayAt(av_speech_in_noise::system_time t) {
-        systemTimeWithDelay.time = t;
+        systemTimeWithDelay.system = t;
     }
 
     void setSecondsDelayedToPlayAt(double x) {
