@@ -156,7 +156,7 @@ static auto format(const BinocularGazeSamples &gazeSamples) -> std::string {
     insert(stream, name(HeadingItem::rightGaze));
     std::for_each(gazeSamples.begin(), gazeSamples.end(), [&](auto g) {
         insertNewLine(stream);
-        insert(stream, g.systemTimeMicroseconds);
+        insert(stream, g.systemTime.microseconds);
         insertCommaAndSpace(stream);
         insert(stream, g.left.x);
         insert(stream, " ");

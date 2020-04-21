@@ -88,8 +88,12 @@ struct EyeGaze {
     float y;
 };
 
+struct GazeSystemTime {
+    std::uintmax_t microseconds;
+};
+
 struct BinocularGazeSample {
-    std::uintmax_t systemTimeMicroseconds;
+    GazeSystemTime systemTime;
     EyeGaze left;
     EyeGaze right;
 };
@@ -102,7 +106,7 @@ constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
 
 constexpr auto operator==(
     const BinocularGazeSample &a, const BinocularGazeSample &b) -> bool {
-    return a.systemTimeMicroseconds == b.systemTimeMicroseconds &&
+    return a.systemTime.microseconds == b.systemTime.microseconds &&
         a.left == b.left && a.right == b.right;
 }
 
