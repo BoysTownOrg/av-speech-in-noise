@@ -104,7 +104,7 @@ class OutputFileStub : public OutputFile {
         return eyeTrackerPlayerSynchronization_;
     }
 
-    void write(const EyeTrackerPlayerSynchronization &e) {
+    void write(const EyeTrackerPlayerSynchronization &e) override {
         eyeTrackerPlayerSynchronization_ = e;
     }
 

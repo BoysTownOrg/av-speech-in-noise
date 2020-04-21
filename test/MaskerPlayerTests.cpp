@@ -19,7 +19,7 @@ class AudioPlayerStub : public AudioPlayer {
 
     void setCurrentSystemTime(std::uintmax_t t) { currentSystemTime_ = t; }
 
-    auto currentSystemTime() -> av_speech_in_noise::system_time {
+    auto currentSystemTime() -> av_speech_in_noise::system_time override {
         return currentSystemTime_;
     }
 

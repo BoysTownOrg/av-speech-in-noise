@@ -971,10 +971,10 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
 
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
     run(initializingTestWithEyeTracking, model);
-    setEyeGazes({{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}});
+    setEyeGazes({{{1}, {2, 3}, {4, 5}}, {{6}, {7, 8}, {9, 10}}});
     run(submittingCoordinateResponse, model);
     assertEqual(
-        {{1, {2, 3}, {4, 5}}, {6, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
+        {{{1}, {2, 3}, {4, 5}}, {{6}, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
 }
 
 RECOGNITION_TEST_MODEL_TEST(
