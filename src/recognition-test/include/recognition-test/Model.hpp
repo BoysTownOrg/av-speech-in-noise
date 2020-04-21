@@ -11,9 +11,7 @@
 #include <memory>
 
 namespace av_speech_in_noise {
-struct TargetStartTime {
-    std::uintmax_t nanoseconds;
-};
+struct TargetStartTime : PlayerSystemTime {};
 
 class OutputFile {
   public:

@@ -39,7 +39,7 @@ void TobiiEyeTracker::allocateRecordingTimeSeconds(double seconds) {
     if (tobii_research_get_gaze_output_frequency_ != nullptr)
         tobii_research_get_gaze_output_frequency_(
             eyeTracker(eyeTrackers), &gaze_output_frequency_Hz);
-    gazeData.resize(std::ceil(gaze_output_frequency_Hz * seconds)+1);
+    gazeData.resize(std::ceil(gaze_output_frequency_Hz * seconds) + 1);
     head = 0;
 }
 
@@ -132,14 +132,13 @@ auto TobiiEyeTracker::gazeSamples() -> BinocularGazeSamples {
 
 auto TobiiEyeTracker::currentSystemTime() -> EyeTrackerSystemTime {
     EyeTrackerSystemTime currentSystemTime{};
+    int64_t microseconds = 0;
     auto tobii_research_get_system_time_stamp_ =
         reinterpret_cast<decltype(&tobii_research_get_system_time_stamp)>(
             dlsym(library, "tobii_research_get_system_time_stamp"));
-    if (tobii_research_get_system_time_stamp_ != nullptr) {
-        int64_t microseconds = 0;
+    if (tobii_research_get_system_time_stamp_ != nullptr)
         tobii_research_get_system_time_stamp_(&microseconds);
-        currentSystemTime.microseconds = microseconds;
-    }
+    currentSystemTime.microseconds = microseconds;
     return currentSystemTime;
 }
 }
