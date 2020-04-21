@@ -280,13 +280,13 @@ class SubmittingIncorrectResponse : public TargetWritingUseCase {
 
 class EyeTrackerStub : public EyeTracker {
   public:
-    auto recordingTimeAllocatedSeconds() -> double {
+    auto recordingTimeAllocatedSeconds() const -> double {
         return recordingTimeAllocatedSeconds_;
     }
 
-    auto started() -> bool { return started_; }
+    auto started() const -> bool { return started_; }
 
-    auto stopped() -> bool { return stopped_; }
+    auto stopped() const -> bool { return stopped_; }
 
     auto log() const -> auto & { return log_; }
 
@@ -1002,8 +1002,8 @@ RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesGazePlayerSyncTimes) {
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
     EyeTrackerPlayerSynchronization s{};
-    s.eyeTrackerSystemTime.microseconds = 2;
     s.playerSystemTime.nanoseconds = 1;
+    s.eyeTrackerSystemTime.microseconds = 2;
     assertEqual(s, outputFile.eyeTrackerPlayerSynchronization());
 }
 

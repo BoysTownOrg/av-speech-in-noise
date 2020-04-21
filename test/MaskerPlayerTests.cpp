@@ -17,7 +17,9 @@ class AudioPlayerStub : public AudioPlayer {
   public:
     void setNanoseconds(std::uintmax_t t) { nanoseconds_ = t; }
 
-    void setCurrentSystemTime(std::uintmax_t t) { currentSystemTime_ = t; }
+    void setCurrentSystemTime(av_speech_in_noise::system_time t) {
+        currentSystemTime_ = t;
+    }
 
     auto currentSystemTime() -> av_speech_in_noise::system_time override {
         return currentSystemTime_;
@@ -94,10 +96,10 @@ class AudioPlayerStub : public AudioPlayer {
     std::uintmax_t nanoseconds_{};
     av_speech_in_noise::system_time systemTimeForNanoseconds_{};
     av_speech_in_noise::system_time currentSystemTime_{};
+    EventListener *listener_{};
     double sampleRateHz_{};
     int deviceIndex_{};
     int deviceDescriptionDeviceIndex_{};
-    EventListener *listener_{};
     bool playing_{};
     bool played_{};
     bool stopped_{};
