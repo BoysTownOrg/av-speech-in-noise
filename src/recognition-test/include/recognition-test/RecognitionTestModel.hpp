@@ -14,9 +14,13 @@ class InvalidAudioFile {};
 
 using system_time = std::uintmax_t;
 
+struct Delay {
+    double seconds;
+};
+
 struct TargetTimeWithDelay {
     system_time system;
-    double secondsDelayed;
+    Delay delay;
 };
 
 class TargetPlayer {

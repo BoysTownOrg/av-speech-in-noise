@@ -226,8 +226,7 @@ void RecognitionTestModelImpl::fadeInComplete(const AudioSampleTime &t) {
     if (eyeTracking) {
         TargetTimeWithDelay timeToPlay{};
         timeToPlay.system = t.system;
-        timeToPlay.secondsDelayed =
-            t.offset / maskerPlayer.sampleRateHz() +
+        timeToPlay.delay.seconds = t.offset / maskerPlayer.sampleRateHz() +
             additionalTargetDelaySeconds;
         targetPlayer.playAt(timeToPlay);
         lastTargetStartTime = timeToPlay;
@@ -303,7 +302,7 @@ void RecognitionTestModelImpl::submit(
     if (eyeTracking) {
         outputFile.writeTargetStartTimeNanoseconds(
             maskerPlayer.nanoseconds(lastTargetStartTime.system) +
-            lastTargetStartTime.secondsDelayed * 1e9);
+            lastTargetStartTime.delay.seconds * 1e9);
         outputFile.write(eyeTracker.gazeSamples());
     }
     save(outputFile);

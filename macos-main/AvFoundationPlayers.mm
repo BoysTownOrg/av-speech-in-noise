@@ -312,7 +312,7 @@ void AvFoundationVideoPlayer::playAt(
                time:kCMTimeInvalid
          atHostTime:CMTimeAdd(hostTime,
                         CMTimeMakeWithSeconds(
-                            t.secondsDelayed, hostTime.timescale))];
+                            t.delay.seconds, hostTime.timescale))];
 }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
