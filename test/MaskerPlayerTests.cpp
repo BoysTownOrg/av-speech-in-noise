@@ -222,6 +222,11 @@ auto nanoseconds(MaskerPlayerImpl &player,
     return player.nanoseconds({t});
 }
 
+auto currentSystemTime(MaskerPlayerImpl &player)
+    -> av_speech_in_noise::PlayerSystemTime {
+    return player.currentSystemTime();
+}
+
 auto systemTimeForNanoseconds(AudioPlayerStub &player)
     -> av_speech_in_noise::system_time {
     return player.systemTimeForNanoseconds();
@@ -981,6 +986,13 @@ MASKER_PLAYER_TEST(rmsPassesLoadedFileToVideoPlayer) {
 MASKER_PLAYER_TEST(returnsNanosecondConversion) {
     setNanoseconds(audioPlayer, 1);
     assertEqual(std::uintmax_t{1}, nanoseconds(player));
+}
+
+MASKER_PLAYER_TEST(returnsCurrentSystemTime) {
+    setNanoseconds(audioPlayer, 1);
+    av_speech_in_noise::PlayerSystemTime expected{};
+    expected.nanoseconds = 1;
+    assertEqual(expected, currentSystemTime(player));
 }
 
 MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForNanoseconds) {

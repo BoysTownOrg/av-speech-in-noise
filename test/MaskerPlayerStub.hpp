@@ -37,7 +37,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     auto currentSystemTime() -> PlayerSystemTime override {
         return currentSystemTime_;
     }
-    
+
     auto toNanosecondsSystemTime() const -> std::uintmax_t {
         return toNanosecondsSystemTime_;
     }

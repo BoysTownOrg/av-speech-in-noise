@@ -306,7 +306,9 @@ class EyeTrackerStub : public EyeTracker {
         stopped_ = true;
     }
 
-    auto recordingTimeAllocated() -> bool { return recordingTimeAllocated_; }
+    auto recordingTimeAllocated() const -> bool {
+        return recordingTimeAllocated_;
+    }
 
     auto gazeSamples() -> BinocularGazeSamples override {
         insert(log_, "gazeSamples ");
