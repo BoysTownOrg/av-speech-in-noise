@@ -11,6 +11,10 @@
 #include <memory>
 
 namespace av_speech_in_noise {
+struct TargetStartTime {
+    std::uintmax_t nanoseconds;
+};
+
 class OutputFile {
   public:
     virtual ~OutputFile() = default;
@@ -26,7 +30,7 @@ class OutputFile {
     virtual void write(const FixedLevelTest &) = 0;
     virtual void write(const AdaptiveTestResults &) = 0;
     virtual void write(const BinocularGazeSamples &) = 0;
-    virtual void writeTargetStartTimeNanoseconds(std::uintmax_t) = 0;
+    virtual void write(TargetStartTime) = 0;
     virtual void close() = 0;
     virtual void save() = 0;
 };

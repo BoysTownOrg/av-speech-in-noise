@@ -385,8 +385,8 @@ void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {
     write(format(gazeSamples));
 }
 
-void OutputFileImpl::writeTargetStartTimeNanoseconds(std::uintmax_t t) {
-    write(formatTargetStartTimeNanoseconds(t));
+void OutputFileImpl::write(TargetStartTime t) {
+    write(formatTargetStartTimeNanoseconds(t.nanoseconds));
 }
 
 void OutputFileImpl::openNewFile(const TestIdentity &test) {

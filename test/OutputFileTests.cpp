@@ -248,7 +248,7 @@ void write(OutputFileImpl &file, const BinocularGazeSamples &gazeSamples) {
 }
 
 void writeTargetStartTimeNanoseconds(OutputFileImpl &file, std::uintmax_t t) {
-    file.writeTargetStartTimeNanoseconds(t);
+    file.write(TargetStartTime{t});
 }
 
 void assertEndsWith(WriterStub &writer, const std::string &s) {
