@@ -225,7 +225,7 @@ auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
 void RecognitionTestModelImpl::fadeInComplete(
     const AudioSampleTimeWithOffset &t) {
     if (eyeTracking) {
-        TargetTimeWithDelay timeToPlayWithDelay{};
+        PlayerTimeWithDelay timeToPlayWithDelay{};
         timeToPlayWithDelay.playerTime.system = t.playerTime.system;
         timeToPlayWithDelay.delay.seconds =
             t.sampleOffset / maskerPlayer.sampleRateHz() +

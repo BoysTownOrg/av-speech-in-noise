@@ -47,7 +47,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
     void play() override;
-    void playAt(const av_speech_in_noise::TargetTimeWithDelay &) override;
+    void playAt(const av_speech_in_noise::PlayerTimeWithDelay &) override;
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
     void hide() override;

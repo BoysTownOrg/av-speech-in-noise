@@ -16,7 +16,7 @@ void TargetPlayerImpl::subscribe(TargetPlayer::EventListener *e) {
 void TargetPlayerImpl::play() { player->play(); }
 
 void TargetPlayerImpl::playAt(
-    const av_speech_in_noise::TargetTimeWithDelay &t) {
+    const av_speech_in_noise::PlayerTimeWithDelay &t) {
     player->playAt(t);
 }
 

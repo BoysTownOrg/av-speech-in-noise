@@ -22,7 +22,7 @@ struct PlayerTime {
     system_time system;
 };
 
-struct TargetTimeWithDelay {
+struct PlayerTimeWithDelay {
     PlayerTime playerTime;
     Delay delay;
 };
@@ -39,7 +39,7 @@ class TargetPlayer {
     virtual void subscribe(EventListener *) = 0;
     virtual void setAudioDevice(std::string) = 0;
     virtual void play() = 0;
-    virtual void playAt(const TargetTimeWithDelay &) = 0;
+    virtual void playAt(const PlayerTimeWithDelay &) = 0;
     virtual auto playing() -> bool = 0;
     virtual void loadFile(std::string filePath) = 0;
     virtual void hideVideo() = 0;
@@ -140,7 +140,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     OutputFile &outputFile;
     Randomizer &randomizer;
     EyeTracker &eyeTracker;
-    TargetTimeWithDelay lastTargetStartTimeWithDelay{};
+    PlayerTimeWithDelay lastTargetStartTimeWithDelay{};
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
     int maskerLevel_dB_SPL{};
