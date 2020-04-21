@@ -454,7 +454,7 @@ class OutputFileTests : public ::testing::Test {
         assertHeadingAtLine(useCase, 3);
     }
 
-    void setEyeGazes(std::vector<std::uintmax_t> t, std::vector<EyeGaze> left,
+    void setEyeGazes(std::vector<std::int_least64_t> t, std::vector<EyeGaze> left,
         std::vector<EyeGaze> right) {
         eyeGazes.resize(t.size());
         std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {

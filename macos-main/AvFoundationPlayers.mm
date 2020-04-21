@@ -559,4 +559,8 @@ auto AvFoundationAudioPlayer::nanoseconds(av_speech_in_noise::system_time t)
     high /= denominator(tb);
     return (high << 32) + highRem + low;
 }
+
+auto AvFoundationAudioPlayer::currentSystemTime() -> av_speech_in_noise::system_time {
+    return mach_absolute_time();
+}
 }

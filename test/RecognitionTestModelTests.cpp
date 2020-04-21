@@ -713,7 +713,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         maskerPlayer.setCurrentSystemTime({t});
     }
 
-    void setEyeTrackerCurrentSystemTimeMicroseconds(std::uintmax_t t) {
+    void setEyeTrackerCurrentSystemTimeMicroseconds(std::int_least64_t t) {
         eyeTracker.setCurrentSystemTime(EyeTrackerSystemTime{t});
     }
 

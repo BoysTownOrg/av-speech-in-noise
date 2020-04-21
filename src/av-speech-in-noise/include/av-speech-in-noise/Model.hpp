@@ -90,7 +90,7 @@ struct EyeGaze {
 };
 
 struct EyeTrackerSystemTime {
-    std::uintmax_t microseconds;
+    std::int_least64_t microseconds;
 };
 
 struct PlayerSystemTime {
