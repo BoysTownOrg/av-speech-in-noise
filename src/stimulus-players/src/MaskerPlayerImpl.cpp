@@ -322,8 +322,9 @@ void MaskerPlayerImpl::MainThread::fadeOut() {
 void MaskerPlayerImpl::MainThread::callback() {
     if (thisCallClears(sharedState->fadeInComplete)) {
         clear(fadingIn);
-        listener->fadeInComplete({sharedState->fadeInCompleteSystemTime.load(),
-            sharedState->fadeInCompleteSystemTimeSampleOffset.load()});
+        listener->fadeInComplete(
+            {{sharedState->fadeInCompleteSystemTime.load()},
+                sharedState->fadeInCompleteSystemTimeSampleOffset.load()});
         return;
     }
 

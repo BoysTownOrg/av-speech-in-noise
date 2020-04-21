@@ -1,6 +1,4 @@
 #include "Model.hpp"
-#include "TestMethod.hpp"
-#include <av-speech-in-noise/Model.hpp>
 
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,

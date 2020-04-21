@@ -38,7 +38,7 @@ class MaskerPlayerStub : public MaskerPlayer {
         return currentSystemTime_;
     }
 
-    auto toNanosecondsSystemTime() const -> std::uintmax_t {
+    auto toNanosecondsSystemTime() const -> system_time {
         return toNanosecondsSystemTime_;
     }
 
@@ -86,9 +86,9 @@ class MaskerPlayerStub : public MaskerPlayer {
             throw av_speech_in_noise::InvalidAudioDevice{};
     }
 
-    auto device() const { return device_; }
+    auto device() const -> std::string { return device_; }
 
-    auto setDeviceCalled() const { return setDeviceCalled_; }
+    auto setDeviceCalled() const -> bool { return setDeviceCalled_; }
 
     auto playing() -> bool override { return playing_; }
 
@@ -98,11 +98,11 @@ class MaskerPlayerStub : public MaskerPlayer {
         outputAudioDeviceDescriptions_ = std::move(v);
     }
 
-    auto fadeInCalled() const { return fadeInCalled_; }
+    auto fadeInCalled() const -> bool { return fadeInCalled_; }
 
     void fadeIn() override { fadeInCalled_ = true; }
 
-    auto fadeOutCalled() const { return fadeOutCalled_; }
+    auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
 
     void subscribe(EventListener *e) override { listener_ = e; }
 
@@ -127,11 +127,11 @@ class MaskerPlayerStub : public MaskerPlayer {
         listener_->fadeInComplete(t);
     }
 
-    auto filePath() const { return filePath_; }
+    auto filePath() const -> std::string { return filePath_; }
 
     void setRms(double x) { rms_ = x; }
 
-    auto level_dB() const { return level_dB_; }
+    auto level_dB() const -> double { return level_dB_; }
 
     auto rms() -> double override {
         addToLog("rms ");
