@@ -321,7 +321,6 @@ class OutputFileTests : public ::testing::Test {
     WritingAdaptiveTest writingAdaptiveTest;
     FreeResponseTrial freeResponseTrial;
     BinocularGazeSamples eyeGazes;
-    ConvertedAudioSampleSystemTime audioSampleTime;
 
     void assertConditionNameWritten(WritingTest &useCase, Condition c) {
         useCase.test().condition = c;

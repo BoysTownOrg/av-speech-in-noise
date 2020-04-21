@@ -11,11 +11,6 @@
 #include <memory>
 
 namespace av_speech_in_noise {
-struct ConvertedAudioSampleSystemTime {
-    std::uintmax_t nanoseconds;
-    gsl::index sampleOffset;
-};
-
 class OutputFile {
   public:
     virtual ~OutputFile() = default;

@@ -170,17 +170,6 @@ static auto format(const BinocularGazeSamples &gazeSamples) -> std::string {
     return stream.str();
 }
 
-static auto format(const ConvertedAudioSampleSystemTime &time) -> std::string {
-    std::stringstream stream;
-    insert(stream, "fade in complete audio sample system time");
-    insertNewLine(stream);
-    insert(stream, "    ");
-    writeLabeledLine(stream, "system time (ns)", time.nanoseconds);
-    insert(stream, "    ");
-    writeLabeledLine(stream, "offset (samples)", time.sampleOffset);
-    return stream.str();
-}
-
 static auto formatTargetStartTimeNanoseconds(std::uintmax_t t) -> std::string {
     std::stringstream stream;
     writeLabeledLine(stream, "target start time (ns)", t);
