@@ -97,9 +97,9 @@ struct TargetPlayerSystemTime {
     std::uintmax_t nanoseconds;
 };
 
-struct EyeTrackerPlayerSynchronization {
+struct EyeTrackerTargetPlayerSynchronization {
     EyeTrackerSystemTime eyeTrackerSystemTime;
-    TargetPlayerSystemTime playerSystemTime;
+    TargetPlayerSystemTime targetPlayerSystemTime;
 };
 
 constexpr auto operator==(
@@ -112,10 +112,10 @@ constexpr auto operator==(
     return a.nanoseconds == b.nanoseconds;
 }
 
-constexpr auto operator==(const EyeTrackerPlayerSynchronization &a,
-    const EyeTrackerPlayerSynchronization &b) -> bool {
+constexpr auto operator==(const EyeTrackerTargetPlayerSynchronization &a,
+    const EyeTrackerTargetPlayerSynchronization &b) -> bool {
     return a.eyeTrackerSystemTime == b.eyeTrackerSystemTime &&
-        a.playerSystemTime == b.playerSystemTime;
+        a.targetPlayerSystemTime == b.targetPlayerSystemTime;
 }
 
 struct BinocularGazeSample {

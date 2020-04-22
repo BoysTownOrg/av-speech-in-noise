@@ -176,7 +176,8 @@ static auto format(TargetStartTime t) -> std::string {
     return stream.str();
 }
 
-static auto format(const EyeTrackerPlayerSynchronization &s) -> std::string {
+static auto format(const EyeTrackerTargetPlayerSynchronization &s)
+    -> std::string {
     std::stringstream stream;
     insert(stream, "eye tracker (us)");
     insertCommaAndSpace(stream);
@@ -184,7 +185,7 @@ static auto format(const EyeTrackerPlayerSynchronization &s) -> std::string {
     insertNewLine(stream);
     insert(stream, s.eyeTrackerSystemTime.microseconds);
     insertCommaAndSpace(stream);
-    insert(stream, s.playerSystemTime.nanoseconds);
+    insert(stream, s.targetPlayerSystemTime.nanoseconds);
     insertNewLine(stream);
     return stream.str();
 }
@@ -400,7 +401,7 @@ void OutputFileImpl::write(const BinocularGazeSamples &gazeSamples) {
 
 void OutputFileImpl::write(TargetStartTime t) { write(format(t)); }
 
-void OutputFileImpl::write(const EyeTrackerPlayerSynchronization &s) {
+void OutputFileImpl::write(const EyeTrackerTargetPlayerSynchronization &s) {
     write(format(s));
 }
 

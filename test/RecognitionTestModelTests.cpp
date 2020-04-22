@@ -1004,8 +1004,8 @@ RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesGazePlayerSyncTimes) {
     fadeInComplete();
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
-    EyeTrackerPlayerSynchronization s{};
-    s.playerSystemTime.nanoseconds = 1;
+    EyeTrackerTargetPlayerSynchronization s{};
+    s.targetPlayerSystemTime.nanoseconds = 1;
     s.eyeTrackerSystemTime.microseconds = 2;
     assertEqual(s, outputFile.eyeTrackerPlayerSynchronization());
 }

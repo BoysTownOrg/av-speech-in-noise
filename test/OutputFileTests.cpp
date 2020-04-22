@@ -727,9 +727,9 @@ OUTPUT_FILE_TEST(writeFadeInCompleteTime) {
 }
 
 OUTPUT_FILE_TEST(writeEyeTrackerPlayerSynchronization) {
-    EyeTrackerPlayerSynchronization s;
+    EyeTrackerTargetPlayerSynchronization s;
     s.eyeTrackerSystemTime.microseconds = 1;
-    s.playerSystemTime.nanoseconds = 2;
+    s.targetPlayerSystemTime.nanoseconds = 2;
     file.write(s);
     assertNthCommaDelimitedEntryOfLine(writer, "eye tracker (us)", 1, 1);
     assertNthCommaDelimitedEntryOfLine(writer, "player (ns)", 2, 1);

@@ -104,7 +104,7 @@ class OutputFileImpl : public OutputFile {
     void write(const AdaptiveTestResults &) override;
     void write(const BinocularGazeSamples &) override;
     void write(TargetStartTime) override;
-    void write(const EyeTrackerPlayerSynchronization &) override;
+    void write(const EyeTrackerTargetPlayerSynchronization &) override;
 
   private:
     void write(std::string);
