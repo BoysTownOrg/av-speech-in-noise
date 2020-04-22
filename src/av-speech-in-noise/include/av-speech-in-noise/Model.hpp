@@ -78,32 +78,6 @@ struct TrackingSequence {
 
 using TrackingRule = typename std::vector<TrackingSequence>;
 
-struct EyeGaze {
-    float x;
-    float y;
-};
-
-struct EyeTrackerSystemTime {
-    std::int_least64_t microseconds;
-};
-
-struct TargetPlayerSystemTime {
-    std::uintmax_t nanoseconds;
-};
-
-struct EyeTrackerTargetPlayerSynchronization {
-    EyeTrackerSystemTime eyeTrackerSystemTime;
-    TargetPlayerSystemTime targetPlayerSystemTime;
-};
-
-struct BinocularGazeSample {
-    EyeTrackerSystemTime systemTime;
-    EyeGaze left;
-    EyeGaze right;
-};
-
-using BinocularGazeSamples = typename std::vector<BinocularGazeSample>;
-
 enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
 
 constexpr auto name(Transducer c) -> const char * {
@@ -152,12 +126,6 @@ struct AdaptiveTestResult {
 };
 
 using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
-
-inline auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
-    -> bool {
-    return a.targetListDirectory == b.targetListDirectory &&
-        a.threshold == b.threshold;
-}
 
 struct FixedLevelTest : Test {
     int snr_dB{};

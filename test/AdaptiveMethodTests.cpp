@@ -12,6 +12,12 @@
 #include <functional>
 
 namespace av_speech_in_noise {
+static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
+    -> bool {
+    return a.targetListDirectory == b.targetListDirectory &&
+        a.threshold == b.threshold;
+}
+
 namespace {
 class UseCase {
   public:
