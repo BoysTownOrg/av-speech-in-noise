@@ -52,6 +52,10 @@ static auto adaptiveCoordinateResponseMeasureWithDelayedMasker(Method m)
     return m == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker;
 }
 
+static auto adaptiveCoordinateResponseMeasureWithEyeTracking(Method m) -> bool {
+    return m == Method::adaptiveCoordinateResponseMeasureWithEyeTracking;
+}
+
 static auto fixedLevelCoordinateResponseMeasureWithTargetReplacement(Method m)
     -> bool {
     return m ==
@@ -75,7 +79,8 @@ static auto adaptiveCorrectKeywords(Method m) -> bool {
 static auto adaptiveCoordinateResponseMeasure(Method m) -> bool {
     return defaultAdaptiveCoordinateResponseMeasure(m) ||
         adaptiveCoordinateResponseMeasureWithSingleSpeaker(m) ||
-        adaptiveCoordinateResponseMeasureWithDelayedMasker(m);
+        adaptiveCoordinateResponseMeasureWithDelayedMasker(m) ||
+        adaptiveCoordinateResponseMeasureWithEyeTracking(m);
 }
 
 static auto fixedLevelCoordinateResponseMeasure(Method m) -> bool {

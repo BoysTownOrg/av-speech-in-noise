@@ -560,7 +560,7 @@ class ConfirmingAdaptiveCoordinateResponseMeasureTestWithEyeTracking
 
     void run() override {
         setMethod(interpreter,
-            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker);
+            Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
         confirmTestSetup(view);
     }
 };
