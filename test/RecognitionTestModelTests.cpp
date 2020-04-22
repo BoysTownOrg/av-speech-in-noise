@@ -472,6 +472,14 @@ void setFadeTimeSeconds(MaskerPlayerStub &player, double x) {
     player.setFadeTimeSeconds(x);
 }
 
+auto started(EyeTrackerStub &eyeTracker) -> bool {
+    return eyeTracker.started();
+}
+
+auto stopped(EyeTrackerStub &eyeTracker) -> bool {
+    return eyeTracker.stopped();
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -698,10 +706,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertPlayTrialDoesNotAllocateRecordingTime(useCase);
     }
 
-    auto eyeTrackerStarted() -> bool { return eyeTracker.started(); }
-
-    auto eyeTrackerStopped() -> bool { return eyeTracker.stopped(); }
-
     void setMaskerPlayerFadeInCompleteAudioSampleSystemTime(
         player_system_time_type t) {
         fadeInCompleteTime.playerTime.system = t;
@@ -852,13 +856,13 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(playTrialForTestWithEyeTrackingStartsEyeTracking) {
     run(initializingTestWithEyeTracking, model);
     run(playingTrial, model);
-    assertTrue(eyeTrackerStarted());
+    assertTrue(started(eyeTracker));
 }
 
 RECOGNITION_TEST_MODEL_TEST(playTrialForDefaultTestDoesNotStartEyeTracking) {
     run(initializingTest, model);
     run(playingTrial, model);
-    assertFalse(eyeTrackerStarted());
+    assertFalse(started(eyeTracker));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -872,14 +876,14 @@ RECOGNITION_TEST_MODEL_TEST(
     fadeOutCompleteForTestWithEyeTrackingStopsEyeTracking) {
     run(initializingTestWithEyeTracking, model);
     fadeOutComplete(maskerPlayer);
-    assertTrue(eyeTrackerStopped());
+    assertTrue(stopped(eyeTracker));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
     fadeOutCompleteForDefaultTestDoesNotStopEyeTracking) {
     run(initializingTest, model);
     fadeOutComplete(maskerPlayer);
-    assertFalse(eyeTrackerStopped());
+    assertFalse(stopped(eyeTracker));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
