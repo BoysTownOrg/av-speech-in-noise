@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 namespace av_speech_in_noise {
 struct AdaptiveProgress {
@@ -58,40 +57,7 @@ struct FreeResponse {
 
 struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
-enum class Condition { auditoryOnly, audioVisual };
-
-constexpr auto name(Condition c) -> const char * {
-    switch (c) {
-    case Condition::auditoryOnly:
-        return "auditory-only";
-    case Condition::audioVisual:
-        return "audio-visual";
-    }
-}
-
-struct TrackingSequence {
-    int runCount{};
-    int stepSize{};
-    int down{};
-    int up{};
-};
-
-using TrackingRule = typename std::vector<TrackingSequence>;
-
 enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
-
-constexpr auto name(Transducer c) -> const char * {
-    switch (c) {
-    case Transducer::headphone:
-        return "headphone";
-    case Transducer::oneSpeaker:
-        return "1 speaker";
-    case Transducer::twoSpeakers:
-        return "2 speakers";
-    case Transducer::unknown:
-        return "unknown";
-    }
-}
 
 struct TestIdentity {
     std::string subjectId;
@@ -102,6 +68,8 @@ struct TestIdentity {
     Transducer transducer{};
 };
 
+enum class Condition { auditoryOnly, audioVisual };
+
 struct Test {
     TestIdentity identity;
     std::string targetListDirectory;
@@ -110,6 +78,15 @@ struct Test {
     int fullScaleLevel_dB_SPL{};
     Condition condition{};
 };
+
+struct TrackingSequence {
+    int runCount{};
+    int stepSize{};
+    int down{};
+    int up{};
+};
+
+using TrackingRule = typename std::vector<TrackingSequence>;
 
 struct AdaptiveTest : Test {
     TrackingRule trackingRule;

@@ -33,6 +33,15 @@ constexpr auto name(Method c) -> const char * {
     }
 }
 
+constexpr auto name(Condition c) -> const char * {
+    switch (c) {
+    case Condition::auditoryOnly:
+        return "auditory-only";
+    case Condition::audioVisual:
+        return "audio-visual";
+    }
+}
+
 enum class TestSetting {
     method,
     targets,
