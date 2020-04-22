@@ -21,9 +21,8 @@ class AudioPlayerStub : public AudioPlayer {
         currentSystemTime_ = t;
     }
 
-    auto currentSystemTime()
-        -> av_speech_in_noise::player_system_time override {
-        return currentSystemTime_;
+    auto currentSystemTime() -> av_speech_in_noise::PlayerTime override {
+        return {currentSystemTime_};
     }
 
     auto outputDevice(int index) -> bool override {
