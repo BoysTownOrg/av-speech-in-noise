@@ -1000,6 +1000,11 @@ RECOGNITION_TEST_MODEL_TEST(
         outputFile.targetStartTime().nanoseconds);
 }
 
+auto eyeTrackerTargetPlayerSynchronization(OutputFileStub &file)
+    -> EyeTrackerTargetPlayerSynchronization {
+    return file.eyeTrackerTargetPlayerSynchronization();
+}
+
 RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
     run(initializingTestWithEyeTracking, model);
     setNanosecondsFromPlayerTime(maskerPlayer, 1);
@@ -1008,10 +1013,10 @@ RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
     assertEqual(std::uintmax_t{1},
-        outputFile.eyeTrackerTargetPlayerSynchronization()
+        eyeTrackerTargetPlayerSynchronization(outputFile)
             .targetPlayerSystemTime.nanoseconds);
     assertEqual(std::int_least64_t{2},
-        outputFile.eyeTrackerTargetPlayerSynchronization()
+        eyeTrackerTargetPlayerSynchronization(outputFile)
             .eyeTrackerSystemTime.microseconds);
 }
 
