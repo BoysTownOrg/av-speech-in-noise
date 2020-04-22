@@ -234,8 +234,8 @@ void RecognitionTestModelImpl::fadeInComplete(
         lastTargetStartTimeWithDelay = timeToPlayWithDelay;
         lastEyeTrackerPlayerSynchronization.eyeTrackerSystemTime =
             eyeTracker.currentSystemTime();
-        lastEyeTrackerPlayerSynchronization.targetPlayerSystemTime =
-            maskerPlayer.currentSystemTime();
+        lastEyeTrackerPlayerSynchronization.targetPlayerSystemTime.nanoseconds =
+            maskerPlayer.nanoseconds(maskerPlayer.currentSystemTime());
     } else {
         play(targetPlayer);
     }

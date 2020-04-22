@@ -999,7 +999,7 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesGazePlayerSyncTimes) {
     run(initializingTestWithEyeTracking, model);
-    setMaskerPlayerCurrentSystemTimeNanoseconds(1);
+    setMaskerPlayerNanosecondsFromPlayerTime(1);
     setEyeTrackerCurrentSystemTimeMicroseconds(2);
     fadeInComplete();
     fadeOutComplete(maskerPlayer);
@@ -1008,6 +1008,16 @@ RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesGazePlayerSyncTimes) {
     s.targetPlayerSystemTime.nanoseconds = 1;
     s.eyeTrackerSystemTime.microseconds = 2;
     assertEqual(s, outputFile.eyeTrackerPlayerSynchronization());
+}
+
+RECOGNITION_TEST_MODEL_TEST(passesCurrentMaskerTimeForNanosecondConversion) {
+    run(initializingTestWithEyeTracking, model);
+    av_speech_in_noise::PlayerTime t{};
+    t.system = 1;
+    maskerPlayer.setCurrentSystemTime(t);
+    fadeInComplete();
+    assertEqual(
+        player_system_time_type{1}, maskerPlayer.toNanosecondsSystemTime());
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {

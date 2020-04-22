@@ -22,6 +22,10 @@ struct PlayerTime {
     player_system_time_type system;
 };
 
+constexpr auto operator==(const PlayerTime &a, const PlayerTime &b) -> bool {
+    return a.system == b.system;
+}
+
 struct PlayerTimeWithDelay {
     PlayerTime playerTime;
     Delay delay;
@@ -86,7 +90,7 @@ class MaskerPlayer {
     virtual void clearChannelDelays() = 0;
     virtual void setChannelDelaySeconds(gsl::index channel, double seconds) = 0;
     virtual auto nanoseconds(PlayerTime) -> std::uintmax_t = 0;
-    virtual auto currentSystemTime() -> TargetPlayerSystemTime = 0;
+    virtual auto currentSystemTime() -> PlayerTime = 0;
 };
 
 class EyeTracker {

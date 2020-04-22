@@ -161,9 +161,8 @@ auto MaskerPlayerImpl::nanoseconds(av_speech_in_noise::PlayerTime t)
     return player->nanoseconds(t);
 }
 
-auto MaskerPlayerImpl::currentSystemTime()
-    -> av_speech_in_noise::TargetPlayerSystemTime {
-    return {player->nanoseconds(player->currentSystemTime())};
+auto MaskerPlayerImpl::currentSystemTime() -> av_speech_in_noise::PlayerTime {
+    return player->currentSystemTime();
 }
 
 void MaskerPlayerImpl::loadFile(std::string filePath) {
