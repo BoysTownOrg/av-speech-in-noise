@@ -12,14 +12,14 @@ namespace av_speech_in_noise {
 class InvalidAudioDevice {};
 class InvalidAudioFile {};
 
-using system_time = std::uintmax_t;
+using player_system_time = std::uintmax_t;
 
 struct Delay {
     double seconds;
 };
 
 struct PlayerTime {
-    system_time system;
+    player_system_time system;
 };
 
 struct PlayerTimeWithDelay {

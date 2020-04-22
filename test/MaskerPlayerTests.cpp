@@ -17,11 +17,12 @@ class AudioPlayerStub : public AudioPlayer {
   public:
     void setNanoseconds(std::uintmax_t t) { nanoseconds_ = t; }
 
-    void setCurrentSystemTime(av_speech_in_noise::system_time t) {
+    void setCurrentSystemTime(av_speech_in_noise::player_system_time t) {
         currentSystemTime_ = t;
     }
 
-    auto currentSystemTime() -> av_speech_in_noise::system_time override {
+    auto currentSystemTime()
+        -> av_speech_in_noise::player_system_time override {
         return currentSystemTime_;
     }
 
@@ -71,18 +72,18 @@ class AudioPlayerStub : public AudioPlayer {
     [[nodiscard]] auto played() const { return played_; }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio,
-        av_speech_in_noise::system_time t = {}) {
+        av_speech_in_noise::player_system_time t = {}) {
         listener_->fillAudioBuffer(audio, t);
     }
 
-    auto nanoseconds(av_speech_in_noise::system_time t)
+    auto nanoseconds(av_speech_in_noise::player_system_time t)
         -> std::uintmax_t override {
         systemTimeForNanoseconds_ = t;
         return nanoseconds_;
     }
 
     [[nodiscard]] auto systemTimeForNanoseconds() const
-        -> av_speech_in_noise::system_time {
+        -> av_speech_in_noise::player_system_time {
         return systemTimeForNanoseconds_;
     }
 
@@ -94,8 +95,8 @@ class AudioPlayerStub : public AudioPlayer {
     std::string audioFilePath_;
     std::map<int, bool> outputDevices;
     std::uintmax_t nanoseconds_{};
-    av_speech_in_noise::system_time systemTimeForNanoseconds_{};
-    av_speech_in_noise::system_time currentSystemTime_{};
+    av_speech_in_noise::player_system_time systemTimeForNanoseconds_{};
+    av_speech_in_noise::player_system_time currentSystemTime_{};
     EventListener *listener_{};
     double sampleRateHz_{};
     int deviceIndex_{};
@@ -140,7 +141,7 @@ class MaskerPlayerListenerStub
     }
 
   private:
-    av_speech_in_noise::system_time fadeInCompleteSystemTime_{};
+    av_speech_in_noise::player_system_time fadeInCompleteSystemTime_{};
     gsl::index fadeInCompleteSystemTimeSampleOffset_{};
     int fadeInCompletions_{};
     int fadeOutCompletions_{};
@@ -231,7 +232,7 @@ void setCurrentSystemTime(AudioPlayerStub &player, std::uintmax_t t) {
 }
 
 auto nanoseconds(MaskerPlayerImpl &player,
-    av_speech_in_noise::system_time t = {}) -> std::uintmax_t {
+    av_speech_in_noise::player_system_time t = {}) -> std::uintmax_t {
     return player.nanoseconds({t});
 }
 
@@ -241,7 +242,7 @@ auto currentSystemTime(MaskerPlayerImpl &player)
 }
 
 auto systemTimeForNanoseconds(AudioPlayerStub &player)
-    -> av_speech_in_noise::system_time {
+    -> av_speech_in_noise::player_system_time {
     return player.systemTimeForNanoseconds();
 }
 
@@ -260,12 +261,12 @@ class MaskerPlayerTests : public ::testing::Test {
     MaskerPlayerTests() { player.subscribe(&listener); }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio,
-        av_speech_in_noise::system_time t = {}) {
+        av_speech_in_noise::player_system_time t = {}) {
         audioPlayer.fillAudioBuffer(audio, t);
     }
 
     void fillAudioBufferMono(
-        channel_index_type n, av_speech_in_noise::system_time t = {}) {
+        channel_index_type n, av_speech_in_noise::player_system_time t = {}) {
         resizeLeftChannel(n);
         fillAudioBuffer({leftChannel}, t);
     }
@@ -858,7 +859,7 @@ MASKER_PLAYER_TEST(fadeInCompletePassesSystemTimeAndSampleOffset) {
     fillAudioBufferMono(5);
     fillAudioBufferMono(3 * 4 - 5 + 1, 6);
     timerCallback();
-    assertEqual(av_speech_in_noise::system_time{6},
+    assertEqual(av_speech_in_noise::player_system_time{6},
         listener.fadeInCompleteSystemTime());
     assertEqual(gsl::index{3 * 4 - 5 + 1},
         listener.fadeInCompleteSystemTimeSampleOffset());
@@ -1010,14 +1011,14 @@ MASKER_PLAYER_TEST(returnsCurrentSystemTime) {
 
 MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForNanoseconds) {
     nanoseconds(player, 1);
-    assertEqual(av_speech_in_noise::system_time{1},
+    assertEqual(av_speech_in_noise::player_system_time{1},
         systemTimeForNanoseconds(audioPlayer));
 }
 
 MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForCurrentSystemTime) {
     setCurrentSystemTime(audioPlayer, 1);
     currentSystemTime(player);
-    assertEqual(av_speech_in_noise::system_time{1},
+    assertEqual(av_speech_in_noise::player_system_time{1},
         systemTimeForNanoseconds(audioPlayer));
 }
 

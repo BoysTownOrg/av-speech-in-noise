@@ -104,9 +104,9 @@ class AvFoundationAudioPlayer : public AudioPlayer {
     void stop() override;
     void timerCallback();
     auto outputDevice(int index) -> bool override;
-    auto nanoseconds(av_speech_in_noise::system_time)
+    auto nanoseconds(av_speech_in_noise::player_system_time)
         -> std::uintmax_t override;
-    auto currentSystemTime() -> av_speech_in_noise::system_time override;
+    auto currentSystemTime() -> av_speech_in_noise::player_system_time override;
 
   private:
     static auto AU_RenderCallback(void *inRefCon,

@@ -85,7 +85,7 @@ class VideoPlayerStub : public VideoPlayer {
     std::string audioFilePath_{};
     double durationSeconds_{};
     double secondsDelayedPlayedAt_{};
-    av_speech_in_noise::system_time baseSystemTimePlayedAt_{};
+    av_speech_in_noise::player_system_time baseSystemTimePlayedAt_{};
     int deviceIndex_{};
     EventListener *listener_{};
     bool shown_{};
@@ -149,7 +149,7 @@ class TargetPlayerTests : public ::testing::Test {
 
     void useAllChannels() { player.useAllChannels(); }
 
-    void setBaseSystemTimeToPlayAt(av_speech_in_noise::system_time t) {
+    void setBaseSystemTimeToPlayAt(av_speech_in_noise::player_system_time t) {
         systemTimeWithDelay.playerTime.system = t;
     }
 
@@ -174,7 +174,7 @@ TEST_F(TargetPlayerTests, playAtPlaysVideoAt) {
     setBaseSystemTimeToPlayAt(1);
     setSecondsDelayedToPlayAt(2);
     playAt();
-    assertEqual(av_speech_in_noise::system_time{1},
+    assertEqual(av_speech_in_noise::player_system_time{1},
         videoPlayer.baseSystemTimePlayedAt());
     assertEqual(2., videoPlayer.secondsDelayedPlayedAt());
 }

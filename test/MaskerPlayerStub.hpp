@@ -38,7 +38,7 @@ class MaskerPlayerStub : public MaskerPlayer {
         return currentSystemTime_;
     }
 
-    auto toNanosecondsSystemTime() const -> system_time {
+    auto toNanosecondsSystemTime() const -> player_system_time {
         return toNanosecondsSystemTime_;
     }
 

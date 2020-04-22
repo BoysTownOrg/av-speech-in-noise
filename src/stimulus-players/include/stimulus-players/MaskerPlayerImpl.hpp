@@ -18,7 +18,7 @@ class AudioPlayer {
         virtual ~EventListener() = default;
         virtual void fillAudioBuffer(
             const std::vector<channel_buffer_type> &audio,
-            av_speech_in_noise::system_time) = 0;
+            av_speech_in_noise::player_system_time) = 0;
     };
 
     virtual ~AudioPlayer() = default;
@@ -32,9 +32,10 @@ class AudioPlayer {
     virtual auto outputDevice(int index) -> bool = 0;
     virtual void setDevice(int index) = 0;
     virtual auto sampleRateHz() -> double = 0;
-    virtual auto nanoseconds(av_speech_in_noise::system_time)
+    virtual auto nanoseconds(av_speech_in_noise::player_system_time)
         -> std::uintmax_t = 0;
-    virtual auto currentSystemTime() -> av_speech_in_noise::system_time = 0;
+    virtual auto currentSystemTime()
+        -> av_speech_in_noise::player_system_time = 0;
 };
 
 class Timer {
@@ -66,7 +67,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void setAudioDevice(std::string) override;
     void setLevel_dB(double) override;
     void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
-        av_speech_in_noise::system_time) override;
+        av_speech_in_noise::player_system_time) override;
     void setFadeInOutSeconds(double);
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
     auto rms() -> double override;
@@ -93,7 +94,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
       public:
         void setSharedState(MaskerPlayerImpl *);
         void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
-            av_speech_in_noise::system_time);
+            av_speech_in_noise::player_system_time);
 
       private:
         void copySourceAudio(
@@ -114,7 +115,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         auto sourceFrames() -> sample_index_type;
 
         MaskerPlayerImpl *sharedState{};
-        av_speech_in_noise::system_time systemTime{};
+        av_speech_in_noise::player_system_time systemTime{};
         int hannCounter{};
         int halfWindowLength{};
         bool fadingOut{};
@@ -157,7 +158,8 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioPlayer *player;
     AudioReader *reader;
     std::atomic<double> levelScalar{1};
-    std::atomic<av_speech_in_noise::system_time> fadeInCompleteSystemTime{};
+    std::atomic<av_speech_in_noise::player_system_time>
+        fadeInCompleteSystemTime{};
     std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
     std::atomic<int> levelTransitionSamples_{};
     std::atomic<bool> firstChannelOnly{};
