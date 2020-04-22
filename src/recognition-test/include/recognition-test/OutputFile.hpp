@@ -17,9 +17,10 @@ enum class HeadingItem {
     target,
     correctKeywords,
     freeResponse,
-    systemTime,
     leftGaze,
-    rightGaze
+    rightGaze,
+    eyeTrackerTime,
+    targetPlayerTime
 };
 
 constexpr auto name(HeadingItem i) -> const char * {
@@ -46,12 +47,14 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "response";
     case HeadingItem::correctKeywords:
         return "# correct keywords";
-    case HeadingItem::systemTime:
-        return "system time (us)";
     case HeadingItem::leftGaze:
         return "left gaze [x y]";
     case HeadingItem::rightGaze:
         return "right gaze [x y]";
+    case HeadingItem::eyeTrackerTime:
+        return "eye tracker time (us)";
+    case HeadingItem::targetPlayerTime:
+        return "target player time (ns)";
     }
 }
 

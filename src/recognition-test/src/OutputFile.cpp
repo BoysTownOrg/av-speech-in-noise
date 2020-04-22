@@ -149,7 +149,7 @@ static auto format(const FixedLevelTest &test) -> std::string {
 
 static auto format(const BinocularGazeSamples &gazeSamples) -> std::string {
     std::stringstream stream;
-    insert(stream, name(HeadingItem::systemTime));
+    insert(stream, name(HeadingItem::eyeTrackerTime));
     insertCommaAndSpace(stream);
     insert(stream, name(HeadingItem::leftGaze));
     insertCommaAndSpace(stream);
@@ -179,9 +179,9 @@ static auto format(TargetStartTime t) -> std::string {
 static auto format(const EyeTrackerTargetPlayerSynchronization &s)
     -> std::string {
     std::stringstream stream;
-    insert(stream, "eye tracker (us)");
+    insert(stream, HeadingItem::eyeTrackerTime);
     insertCommaAndSpace(stream);
-    insert(stream, "target player (ns)");
+    insert(stream, HeadingItem::targetPlayerTime);
     insertNewLine(stream);
     insert(stream, s.eyeTrackerSystemTime.microseconds);
     insertCommaAndSpace(stream);

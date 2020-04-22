@@ -707,7 +707,8 @@ OUTPUT_FILE_TEST(writeEyeGazes) {
     setEyeGazes({1, 2, 3}, {{0.4, 0.44}, {0.5, 0.55}, {0.6, 0.66}},
         {{0.7, 0.77}, {0.8, 0.88}, {0.9, 0.99}});
     write(file, eyeGazes);
-    assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::systemTime, 1, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::eyeTrackerTime, 1, 1);
     assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::leftGaze, 2, 1);
     assertNthCommaDelimitedEntryOfLine(writer, HeadingItem::rightGaze, 3, 1);
     assertNthCommaDelimitedEntryOfLine(writer, "1", 1, 2);
@@ -731,8 +732,10 @@ OUTPUT_FILE_TEST(writeEyeTrackerPlayerSynchronization) {
     s.eyeTrackerSystemTime.microseconds = 1;
     s.targetPlayerSystemTime.nanoseconds = 2;
     file.write(s);
-    assertNthCommaDelimitedEntryOfLine(writer, "eye tracker (us)", 1, 1);
-    assertNthCommaDelimitedEntryOfLine(writer, "target player (ns)", 2, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::eyeTrackerTime, 1, 1);
+    assertNthCommaDelimitedEntryOfLine(
+        writer, HeadingItem::targetPlayerTime, 2, 1);
     assertNthCommaDelimitedEntryOfLine(writer, "1", 1, 2);
     assertNthCommaDelimitedEntryOfLine(writer, "2", 2, 2);
 }
