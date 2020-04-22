@@ -146,7 +146,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     OutputFile &outputFile;
     Randomizer &randomizer;
     EyeTracker &eyeTracker;
-    PlayerTimeWithDelay lastTargetStartTimeWithDelay{};
     EyeTrackerTargetPlayerSynchronization lastEyeTrackerPlayerSynchronization{};
     TargetStartTime lastTargetStartTime{};
     Model::EventListener *listener_{};

@@ -222,19 +222,24 @@ auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
     return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
 }
 
+static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
+
+static auto offsetSeconds(
+    const AudioSampleTimeWithOffset &t, MaskerPlayer &player) -> double {
+    return t.sampleOffset / player.sampleRateHz();
+}
+
 void RecognitionTestModelImpl::fadeInComplete(
     const AudioSampleTimeWithOffset &t) {
     if (eyeTracking) {
         PlayerTimeWithDelay timeToPlayWithDelay{};
         timeToPlayWithDelay.playerTime.system = t.playerTime.system;
         timeToPlayWithDelay.delay.seconds =
-            t.sampleOffset / maskerPlayer.sampleRateHz() +
-            additionalTargetDelaySeconds;
+            offsetSeconds(t, maskerPlayer) + additionalTargetDelaySeconds;
         targetPlayer.playAt(timeToPlayWithDelay);
-        lastTargetStartTimeWithDelay = timeToPlayWithDelay;
         lastTargetStartTime.nanoseconds =
-            maskerPlayer.nanoseconds(lastTargetStartTimeWithDelay.playerTime) +
-            lastTargetStartTimeWithDelay.delay.seconds * 1e9;
+            maskerPlayer.nanoseconds(timeToPlayWithDelay.playerTime) +
+            nanoseconds(timeToPlayWithDelay.delay);
         lastEyeTrackerPlayerSynchronization.eyeTrackerSystemTime =
             eyeTracker.currentSystemTime();
         lastEyeTrackerPlayerSynchronization.targetPlayerSystemTime.nanoseconds =
