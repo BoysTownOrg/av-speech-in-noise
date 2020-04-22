@@ -17,7 +17,7 @@ constexpr auto name(Method c) -> const char * {
     case Method::adaptiveCoordinateResponseMeasureWithDelayedMasker:
         return "adaptive CRM spatial";
     case Method::adaptiveCoordinateResponseMeasureWithEyeTracking:
-        return "adaptive closed-set eye tracking";
+        return "adaptive CRM eye tracking";
     case Method::fixedLevelFreeResponseWithTargetReplacement:
         return "fixed-level free response with replacement";
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
