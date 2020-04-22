@@ -32,7 +32,7 @@ class AudioPlayer {
     virtual auto outputDevice(int index) -> bool = 0;
     virtual void setDevice(int index) = 0;
     virtual auto sampleRateHz() -> double = 0;
-    virtual auto nanoseconds(av_speech_in_noise::player_system_time)
+    virtual auto nanoseconds(av_speech_in_noise::PlayerTime)
         -> std::uintmax_t = 0;
     virtual auto currentSystemTime()
         -> av_speech_in_noise::player_system_time = 0;

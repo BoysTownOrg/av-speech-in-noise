@@ -548,13 +548,13 @@ static auto denominator(const mach_timebase_info_data_t &t) -> uint32_t {
     return t.denom;
 }
 
-auto AvFoundationAudioPlayer::nanoseconds(av_speech_in_noise::player_system_time t)
+auto AvFoundationAudioPlayer::nanoseconds(av_speech_in_noise::PlayerTime t)
     -> std::uintmax_t {
     // https://stackoverflow.com/questions/23378063/how-can-i-use-mach-absolute-time-without-overflowing
     mach_timebase_info_data_t tb;
     mach_timebase_info(&tb);
-    auto high{(t >> 32) * numerator(tb)};
-    auto low{(t & 0xffffffffULL) * numerator(tb) / denominator(tb)};
+    auto high{(t.system >> 32) * numerator(tb)};
+    auto low{(t.system & 0xffffffffULL) * numerator(tb) / denominator(tb)};
     auto highRem{((high % denominator(tb)) << 32) / denominator(tb)};
     high /= denominator(tb);
     return (high << 32) + highRem + low;
