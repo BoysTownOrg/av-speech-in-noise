@@ -732,7 +732,7 @@ OUTPUT_FILE_TEST(writeEyeTrackerPlayerSynchronization) {
     s.targetPlayerSystemTime.nanoseconds = 2;
     file.write(s);
     assertNthCommaDelimitedEntryOfLine(writer, "eye tracker (us)", 1, 1);
-    assertNthCommaDelimitedEntryOfLine(writer, "player (ns)", 2, 1);
+    assertNthCommaDelimitedEntryOfLine(writer, "target player (ns)", 2, 1);
     assertNthCommaDelimitedEntryOfLine(writer, "1", 1, 2);
     assertNthCommaDelimitedEntryOfLine(writer, "2", 2, 2);
 }

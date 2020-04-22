@@ -181,7 +181,7 @@ static auto format(const EyeTrackerTargetPlayerSynchronization &s)
     std::stringstream stream;
     insert(stream, "eye tracker (us)");
     insertCommaAndSpace(stream);
-    insert(stream, "player (ns)");
+    insert(stream, "target player (ns)");
     insertNewLine(stream);
     insert(stream, s.eyeTrackerSystemTime.microseconds);
     insertCommaAndSpace(stream);
