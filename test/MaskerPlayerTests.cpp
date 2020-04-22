@@ -236,7 +236,7 @@ auto nanoseconds(MaskerPlayerImpl &player,
 }
 
 auto currentSystemTime(MaskerPlayerImpl &player)
-    -> av_speech_in_noise::PlayerSystemTime {
+    -> av_speech_in_noise::TargetPlayerSystemTime {
     return player.currentSystemTime();
 }
 
@@ -1003,7 +1003,7 @@ MASKER_PLAYER_TEST(returnsNanosecondConversion) {
 
 MASKER_PLAYER_TEST(returnsCurrentSystemTime) {
     setNanoseconds(audioPlayer, 1);
-    av_speech_in_noise::PlayerSystemTime expected{};
+    av_speech_in_noise::TargetPlayerSystemTime expected{};
     expected.nanoseconds = 1;
     assertEqual(expected, currentSystemTime(player));
 }

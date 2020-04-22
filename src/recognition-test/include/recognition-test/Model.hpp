@@ -11,7 +11,7 @@
 #include <memory>
 
 namespace av_speech_in_noise {
-struct TargetStartTime : PlayerSystemTime {};
+struct TargetStartTime : TargetPlayerSystemTime {};
 
 class OutputFile {
   public:

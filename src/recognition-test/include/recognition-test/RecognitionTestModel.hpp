@@ -86,7 +86,7 @@ class MaskerPlayer {
     virtual void clearChannelDelays() = 0;
     virtual void setChannelDelaySeconds(gsl::index channel, double seconds) = 0;
     virtual auto nanoseconds(PlayerTime) -> std::uintmax_t = 0;
-    virtual auto currentSystemTime() -> PlayerSystemTime = 0;
+    virtual auto currentSystemTime() -> TargetPlayerSystemTime = 0;
 };
 
 class EyeTracker {

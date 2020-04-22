@@ -93,13 +93,13 @@ struct EyeTrackerSystemTime {
     std::int_least64_t microseconds;
 };
 
-struct PlayerSystemTime {
+struct TargetPlayerSystemTime {
     std::uintmax_t nanoseconds;
 };
 
 struct EyeTrackerPlayerSynchronization {
     EyeTrackerSystemTime eyeTrackerSystemTime;
-    PlayerSystemTime playerSystemTime;
+    TargetPlayerSystemTime playerSystemTime;
 };
 
 constexpr auto operator==(
@@ -107,8 +107,8 @@ constexpr auto operator==(
     return a.microseconds == b.microseconds;
 }
 
-constexpr auto operator==(const PlayerSystemTime &a, const PlayerSystemTime &b)
-    -> bool {
+constexpr auto operator==(
+    const TargetPlayerSystemTime &a, const TargetPlayerSystemTime &b) -> bool {
     return a.nanoseconds == b.nanoseconds;
 }
 

@@ -162,7 +162,7 @@ auto MaskerPlayerImpl::nanoseconds(av_speech_in_noise::PlayerTime t)
 }
 
 auto MaskerPlayerImpl::currentSystemTime()
-    -> av_speech_in_noise::PlayerSystemTime {
+    -> av_speech_in_noise::TargetPlayerSystemTime {
     return {player->nanoseconds(player->currentSystemTime())};
 }
 
