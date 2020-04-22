@@ -148,6 +148,7 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     EyeTracker &eyeTracker;
     PlayerTimeWithDelay lastTargetStartTimeWithDelay{};
     EyeTrackerTargetPlayerSynchronization lastEyeTrackerPlayerSynchronization{};
+    TargetStartTime lastTargetStartTime{};
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
     int maskerLevel_dB_SPL{};

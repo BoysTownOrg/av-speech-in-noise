@@ -21,7 +21,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     gsl::index channelDelayed_{};
     EventListener *listener_{};
     PlayerTime currentSystemTime_{};
-    std::uintmax_t toNanosecondsSystemTime_{};
+    std::vector<player_system_time_type> toNanosecondsSystemTime_{};
     std::uintmax_t nanoseconds_{};
     bool fadeInCalled_{};
     bool fadeOutCalled_{};
@@ -38,12 +38,13 @@ class MaskerPlayerStub : public MaskerPlayer {
         return currentSystemTime_;
     }
 
-    auto toNanosecondsSystemTime() const -> player_system_time_type {
+    auto toNanosecondsSystemTime() const
+        -> std::vector<player_system_time_type> {
         return toNanosecondsSystemTime_;
     }
 
     auto nanoseconds(PlayerTime t) -> std::uintmax_t override {
-        toNanosecondsSystemTime_ = t.system;
+        toNanosecondsSystemTime_.push_back(t.system);
         return nanoseconds_;
     }
 

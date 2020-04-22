@@ -232,6 +232,9 @@ void RecognitionTestModelImpl::fadeInComplete(
             additionalTargetDelaySeconds;
         targetPlayer.playAt(timeToPlayWithDelay);
         lastTargetStartTimeWithDelay = timeToPlayWithDelay;
+        lastTargetStartTime.nanoseconds =
+            maskerPlayer.nanoseconds(lastTargetStartTimeWithDelay.playerTime) +
+            lastTargetStartTimeWithDelay.delay.seconds * 1e9;
         lastEyeTrackerPlayerSynchronization.eyeTrackerSystemTime =
             eyeTracker.currentSystemTime();
         lastEyeTrackerPlayerSynchronization.targetPlayerSystemTime.nanoseconds =
@@ -306,11 +309,7 @@ void RecognitionTestModelImpl::submit(
     testMethod->submit(response);
     testMethod->writeLastCoordinateResponse(outputFile);
     if (eyeTracking) {
-        TargetStartTime targetStartTime{};
-        targetStartTime.nanoseconds =
-            maskerPlayer.nanoseconds(lastTargetStartTimeWithDelay.playerTime) +
-            lastTargetStartTimeWithDelay.delay.seconds * 1e9;
-        outputFile.write(targetStartTime);
+        outputFile.write(lastTargetStartTime);
         outputFile.write(lastEyeTrackerPlayerSynchronization);
         outputFile.write(eyeTracker.gazeSamples());
     }

@@ -957,13 +957,12 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(
-    submitCoordinateResponsePassesTargetStartSystemTimeForConversionWhenEyeTracking) {
+    fadeInCompletePassesTargetStartSystemTimeForConversionWhenEyeTracking) {
     run(initializingTestWithEyeTracking, model);
     setMaskerPlayerFadeInCompleteAudioSampleSystemTime(1);
     fadeInComplete();
-    run(submittingCoordinateResponse, model);
-    assertEqual(
-        player_system_time_type{1}, maskerPlayer.toNanosecondsSystemTime());
+    assertEqual(player_system_time_type{1},
+        maskerPlayer.toNanosecondsSystemTime().at(0));
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
@@ -997,7 +996,7 @@ RECOGNITION_TEST_MODEL_TEST(
         outputFile.targetStartTimeNanoseconds());
 }
 
-RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesGazePlayerSyncTimes) {
+RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
     run(initializingTestWithEyeTracking, model);
     setMaskerPlayerNanosecondsFromPlayerTime(1);
     setEyeTrackerCurrentSystemTimeMicroseconds(2);
@@ -1016,8 +1015,8 @@ RECOGNITION_TEST_MODEL_TEST(passesCurrentMaskerTimeForNanosecondConversion) {
     t.system = 1;
     maskerPlayer.setCurrentSystemTime(t);
     fadeInComplete();
-    assertEqual(
-        player_system_time_type{1}, maskerPlayer.toNanosecondsSystemTime());
+    assertEqual(player_system_time_type{1},
+        maskerPlayer.toNanosecondsSystemTime().at(1));
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetWhenDefaultTest) {
