@@ -480,6 +480,27 @@ auto stopped(EyeTrackerStub &eyeTracker) -> bool {
     return eyeTracker.stopped();
 }
 
+void setSystemTime(AudioSampleTimeWithOffset &time, player_system_time_type s) {
+    time.playerTime.system = s;
+}
+
+void setNanosecondsFromPlayerTime(MaskerPlayerStub &player, std::uintmax_t t) {
+    player.setNanosecondsFromPlayerTime(t);
+}
+
+void setCurrentSystemTimeMicroseconds(
+    EyeTrackerStub &eyeTracker, std::int_least64_t t) {
+    eyeTracker.setCurrentSystemTime({t});
+}
+
+void setSampleOffset(AudioSampleTimeWithOffset &time, gsl::index n) {
+    time.sampleOffset = n;
+}
+
+void setSampleRateHz(MaskerPlayerStub &player, double x) {
+    player.setSampleRateHz(x);
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -706,31 +727,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertPlayTrialDoesNotAllocateRecordingTime(useCase);
     }
 
-    void setMaskerPlayerFadeInCompleteAudioSampleSystemTime(
-        player_system_time_type t) {
-        fadeInCompleteTime.playerTime.system = t;
-    }
-
-    void setMaskerPlayerNanosecondsFromPlayerTime(std::uintmax_t t) {
-        maskerPlayer.setNanosecondsFromPlayerTime(t);
-    }
-
-    void setMaskerPlayerCurrentSystemTimeNanoseconds(std::uintmax_t t) {
-        maskerPlayer.setCurrentSystemTime({t});
-    }
-
-    void setEyeTrackerCurrentSystemTimeMicroseconds(std::int_least64_t t) {
-        eyeTracker.setCurrentSystemTime(EyeTrackerSystemTime{t});
-    }
-
-    void setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(gsl::index t) {
-        fadeInCompleteTime.sampleOffset = t;
-    }
-
-    void setMaskerPlayerSampleRateHz(double x) {
-        maskerPlayer.setSampleRateHz(x);
-    }
-
     void fadeInComplete() { maskerPlayer.fadeInComplete(fadeInCompleteTime); }
 };
 
@@ -951,9 +947,9 @@ RECOGNITION_TEST_MODEL_TEST(playCalibrationPlaysTarget) {
 
 RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     run(initializingTestWithEyeTracking, model);
-    setMaskerPlayerFadeInCompleteAudioSampleSystemTime(1);
-    setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(2);
-    setMaskerPlayerSampleRateHz(3);
+    setSystemTime(fadeInCompleteTime, 1);
+    setSampleOffset(fadeInCompleteTime, 2);
+    setSampleRateHz(maskerPlayer, 3);
     fadeInComplete();
     assertEqual(
         player_system_time_type{1}, targetPlayer.baseSystemTimePlayedAt());
@@ -964,7 +960,7 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
 RECOGNITION_TEST_MODEL_TEST(
     fadeInCompletePassesTargetStartSystemTimeForConversionWhenEyeTracking) {
     run(initializingTestWithEyeTracking, model);
-    setMaskerPlayerFadeInCompleteAudioSampleSystemTime(1);
+    setSystemTime(fadeInCompleteTime, 1);
     fadeInComplete();
     assertEqual(player_system_time_type{1},
         maskerPlayer.toNanosecondsSystemTime().at(0));
@@ -987,9 +983,9 @@ RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
 RECOGNITION_TEST_MODEL_TEST(
     submitCoordinateResponseWritesTargetStartTimeWhenEyeTracking) {
     run(initializingTestWithEyeTracking, model);
-    setMaskerPlayerNanosecondsFromPlayerTime(1);
-    setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(2);
-    setMaskerPlayerSampleRateHz(3);
+    setNanosecondsFromPlayerTime(maskerPlayer, 1);
+    setSampleOffset(fadeInCompleteTime, 2);
+    setSampleRateHz(maskerPlayer, 3);
     fadeInComplete();
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
@@ -1003,8 +999,8 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
     run(initializingTestWithEyeTracking, model);
-    setMaskerPlayerNanosecondsFromPlayerTime(1);
-    setEyeTrackerCurrentSystemTimeMicroseconds(2);
+    setNanosecondsFromPlayerTime(maskerPlayer, 1);
+    setCurrentSystemTimeMicroseconds(eyeTracker, 2);
     fadeInComplete();
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
