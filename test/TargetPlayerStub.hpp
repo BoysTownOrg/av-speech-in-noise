@@ -107,7 +107,7 @@ class TargetPlayerStub : public TargetPlayer {
     double level_dB_{};
     double durationSeconds_{};
     double secondsDelayedPlayedAt_{};
-    player_system_time baseSystemTimePlayedAt_{};
+    player_system_time_type baseSystemTimePlayedAt_{};
     EventListener *listener_{};
     bool played_{};
     bool videoHidden_{};

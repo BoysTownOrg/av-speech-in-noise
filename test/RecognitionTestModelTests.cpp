@@ -702,7 +702,7 @@ class RecognitionTestModelTests : public ::testing::Test {
     auto eyeTrackerStopped() -> bool { return eyeTracker.stopped(); }
 
     void setMaskerPlayerFadeInCompleteAudioSampleSystemTime(
-        player_system_time t) {
+        player_system_time_type t) {
         fadeInCompleteTime.playerTime.system = t;
     }
 
@@ -950,7 +950,8 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     setMaskerPlayerFadeInCompleteAudioSampleOffsetTime(2);
     setMaskerPlayerSampleRateHz(3);
     fadeInComplete();
-    assertEqual(player_system_time{1}, targetPlayer.baseSystemTimePlayedAt());
+    assertEqual(
+        player_system_time_type{1}, targetPlayer.baseSystemTimePlayedAt());
     assertEqual(2 / 3. + RecognitionTestModelImpl::additionalTargetDelaySeconds,
         targetPlayer.secondsDelayedPlayedAt());
 }
@@ -961,7 +962,8 @@ RECOGNITION_TEST_MODEL_TEST(
     setMaskerPlayerFadeInCompleteAudioSampleSystemTime(1);
     fadeInComplete();
     run(submittingCoordinateResponse, model);
-    assertEqual(player_system_time{1}, maskerPlayer.toNanosecondsSystemTime());
+    assertEqual(
+        player_system_time_type{1}, maskerPlayer.toNanosecondsSystemTime());
 }
 
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {

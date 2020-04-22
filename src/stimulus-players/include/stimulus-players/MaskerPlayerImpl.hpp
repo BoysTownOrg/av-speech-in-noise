@@ -18,7 +18,7 @@ class AudioPlayer {
         virtual ~EventListener() = default;
         virtual void fillAudioBuffer(
             const std::vector<channel_buffer_type> &audio,
-            av_speech_in_noise::player_system_time) = 0;
+            av_speech_in_noise::player_system_time_type) = 0;
     };
 
     virtual ~AudioPlayer() = default;
@@ -66,7 +66,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void setAudioDevice(std::string) override;
     void setLevel_dB(double) override;
     void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
-        av_speech_in_noise::player_system_time) override;
+        av_speech_in_noise::player_system_time_type) override;
     void setFadeInOutSeconds(double);
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
     auto rms() -> double override;
@@ -93,7 +93,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
       public:
         void setSharedState(MaskerPlayerImpl *);
         void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
-            av_speech_in_noise::player_system_time);
+            av_speech_in_noise::player_system_time_type);
 
       private:
         void copySourceAudio(
@@ -114,7 +114,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
         auto sourceFrames() -> sample_index_type;
 
         MaskerPlayerImpl *sharedState{};
-        av_speech_in_noise::player_system_time systemTime{};
+        av_speech_in_noise::player_system_time_type systemTime{};
         int hannCounter{};
         int halfWindowLength{};
         bool fadingOut{};
@@ -157,7 +157,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     AudioPlayer *player;
     AudioReader *reader;
     std::atomic<double> levelScalar{1};
-    std::atomic<av_speech_in_noise::player_system_time>
+    std::atomic<av_speech_in_noise::player_system_time_type>
         fadeInCompleteSystemTime{};
     std::atomic<gsl::index> fadeInCompleteSystemTimeSampleOffset{};
     std::atomic<int> levelTransitionSamples_{};

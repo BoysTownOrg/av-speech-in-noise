@@ -183,7 +183,7 @@ void MaskerPlayerImpl::loadFile(std::string filePath) {
 // real-time audio thread
 void MaskerPlayerImpl::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
-    av_speech_in_noise::player_system_time time) {
+    av_speech_in_noise::player_system_time_type time) {
     audioThread.fillAudioBuffer(audioBuffer, time);
 }
 
@@ -344,7 +344,7 @@ void MaskerPlayerImpl::AudioThread::setSharedState(MaskerPlayerImpl *p) {
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
-    av_speech_in_noise::player_system_time time) {
+    av_speech_in_noise::player_system_time_type time) {
     systemTime = time;
     if (noChannels(sharedState->sourceAudio))
         for (auto channel : audioBuffer)
