@@ -224,32 +224,38 @@ auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
 
 static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
 
-static auto offsetSeconds(
-    const AudioSampleTimeWithOffset &t, MaskerPlayer &player) -> double {
-    return t.sampleOffset / player.sampleRateHz();
+static auto nanoseconds(MaskerPlayer &player, const PlayerTime &t)
+    -> std::uintmax_t {
+    return player.nanoseconds(t);
 }
 
-static auto nanoseconds(const PlayerTimeWithDelay &t, MaskerPlayer &player)
+static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
     -> std::uintmax_t {
-    return player.nanoseconds(t.playerTime) + nanoseconds(t.delay);
+    return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
+}
+
+static auto offsetSeconds(
+    MaskerPlayer &player, const AudioSampleTimeWithOffset &t) -> double {
+    return t.sampleOffset / player.sampleRateHz();
 }
 
 void RecognitionTestModelImpl::fadeInComplete(
     const AudioSampleTimeWithOffset &t) {
     if (eyeTracking) {
         PlayerTimeWithDelay timeToPlayWithDelay{};
-        timeToPlayWithDelay.playerTime.system = t.playerTime.system;
-        timeToPlayWithDelay.delay.seconds =
-            offsetSeconds(t, maskerPlayer) + additionalTargetDelaySeconds;
+        timeToPlayWithDelay.playerTime = t.playerTime;
+        timeToPlayWithDelay.delay = Delay{
+            offsetSeconds(maskerPlayer, t) + additionalTargetDelaySeconds};
         targetPlayer.playAt(timeToPlayWithDelay);
 
         lastTargetStartTime.nanoseconds =
-            nanoseconds(timeToPlayWithDelay, maskerPlayer);
+            nanoseconds(maskerPlayer, timeToPlayWithDelay);
 
-        lastEyeTrackerPlayerSynchronization.eyeTrackerSystemTime =
+        lastEyeTrackerTargetPlayerSynchronization.eyeTrackerSystemTime =
             eyeTracker.currentSystemTime();
-        lastEyeTrackerPlayerSynchronization.targetPlayerSystemTime.nanoseconds =
-            maskerPlayer.nanoseconds(maskerPlayer.currentSystemTime());
+        lastEyeTrackerTargetPlayerSynchronization.targetPlayerSystemTime =
+            TargetPlayerSystemTime{
+                nanoseconds(maskerPlayer, maskerPlayer.currentSystemTime())};
     } else {
         play(targetPlayer);
     }
@@ -321,7 +327,7 @@ void RecognitionTestModelImpl::submit(
     testMethod->writeLastCoordinateResponse(outputFile);
     if (eyeTracking) {
         outputFile.write(lastTargetStartTime);
-        outputFile.write(lastEyeTrackerPlayerSynchronization);
+        outputFile.write(lastEyeTrackerTargetPlayerSynchronization);
         outputFile.write(eyeTracker.gazeSamples());
     }
     save(outputFile);

@@ -453,6 +453,25 @@ auto maskerPlayerEventListener(const RecognitionTestModelImpl &model)
     return &model;
 }
 
+void setEyeGazes(EyeTrackerStub &eyeTracker, BinocularGazeSamples g) {
+    eyeTracker.setGazes(std::move(g));
+}
+
+void runIgnoringFailure(UseCase &useCase, RecognitionTestModelImpl &model) {
+    try {
+        run(useCase, model);
+    } catch (const ModelImpl::RequestFailure &) {
+    }
+}
+
+void setDurationSeconds(TargetPlayerStub &player, double x) {
+    player.setDurationSeconds(x);
+}
+
+void setFadeTimeSeconds(MaskerPlayerStub &player, double x) {
+    player.setFadeTimeSeconds(x);
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -520,8 +539,8 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertSeeksToRandomMaskerPositionWithinTrialDuration(
         UseCase &useCase) {
-        setTargetPlayerDurationSeconds(1);
-        setMaskerPlayerFadeTimeSeconds(2);
+        setDurationSeconds(targetPlayer, 1);
+        setFadeTimeSeconds(maskerPlayer, 2);
         maskerPlayer.setDurationSeconds(3);
         run(useCase, model);
         assertEqual(0., randomizer.lowerFloatBound());
@@ -534,9 +553,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual(1., secondsSeeked(maskerPlayer));
     }
 
-    void setEyeGazes(BinocularGazeSamples g) {
-        eyeTracker.setGazes(std::move(g));
-    }
     void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
         run(useCase, model);
         assertTrue(log(outputFile).endsWith("save "));
@@ -569,14 +585,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void runIgnoringFailureWithTrialInProgress(UseCase &useCase) {
         setTrialInProgress(maskerPlayer);
-        runIgnoringFailure(useCase);
-    }
-
-    void runIgnoringFailure(UseCase &useCase) {
-        try {
-            run(useCase, model);
-        } catch (const ModelImpl::RequestFailure &) {
-        }
+        runIgnoringFailure(useCase, model);
     }
 
     void assertThrowsRequestFailureWhenTrialInProgress(UseCase &useCase) {
@@ -665,19 +674,11 @@ class RecognitionTestModelTests : public ::testing::Test {
         assertEqual("a", maskerPlayer.filePath());
     }
 
-    void setTargetPlayerDurationSeconds(double x) {
-        targetPlayer.setDurationSeconds(x);
-    }
-
-    void setMaskerPlayerFadeTimeSeconds(double x) {
-        maskerPlayer.setFadeTimeSeconds(x);
-    }
-
     void assertAllocatesTrialDurationForEyeTracking(
         UseCase &initializing, UseCase &useCase) {
         run(initializing, model);
-        setTargetPlayerDurationSeconds(3);
-        setMaskerPlayerFadeTimeSeconds(4);
+        setDurationSeconds(targetPlayer, 3);
+        setFadeTimeSeconds(maskerPlayer, 4);
         run(useCase, model);
         assertEqual(
             3 + 2 * 4. + RecognitionTestModelImpl::additionalTargetDelaySeconds,
@@ -973,7 +974,7 @@ RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
 
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
     run(initializingTestWithEyeTracking, model);
-    setEyeGazes({{{1}, {2, 3}, {4, 5}}, {{6}, {7, 8}, {9, 10}}});
+    setEyeGazes(eyeTracker, {{{1}, {2, 3}, {4, 5}}, {{6}, {7, 8}, {9, 10}}});
     run(submittingCoordinateResponse, model);
     assertEqual(
         {{{1}, {2, 3}, {4, 5}}, {{6}, {7, 8}, {9, 10}}}, outputFile.eyeGazes());
