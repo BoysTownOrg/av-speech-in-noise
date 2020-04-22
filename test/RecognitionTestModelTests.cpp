@@ -997,7 +997,7 @@ RECOGNITION_TEST_MODEL_TEST(
                 (2 / 3. +
                     RecognitionTestModelImpl::additionalTargetDelaySeconds) *
                 1e9),
-        outputFile.targetStartTimeNanoseconds());
+        outputFile.targetStartTime().nanoseconds);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
@@ -1007,10 +1007,12 @@ RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
     fadeInComplete(maskerPlayer, fadeInCompleteTime);
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
-    EyeTrackerTargetPlayerSynchronization s{};
-    s.targetPlayerSystemTime.nanoseconds = 1;
-    s.eyeTrackerSystemTime.microseconds = 2;
-    assertEqual(s, outputFile.eyeTrackerPlayerSynchronization());
+    assertEqual(std::uintmax_t{1},
+        outputFile.eyeTrackerTargetPlayerSynchronization()
+            .targetPlayerSystemTime.nanoseconds);
+    assertEqual(std::int_least64_t{2},
+        outputFile.eyeTrackerTargetPlayerSynchronization()
+            .eyeTrackerSystemTime.microseconds);
 }
 
 RECOGNITION_TEST_MODEL_TEST(passesCurrentMaskerTimeForNanosecondConversion) {

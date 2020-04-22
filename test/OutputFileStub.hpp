@@ -17,7 +17,9 @@ class OutputFileStub : public OutputFile {
     BinocularGazeSamples eyeGazes_;
     AdaptiveTestResults adaptiveTestResult_{};
     LogString log_{};
-    EyeTrackerTargetPlayerSynchronization eyeTrackerPlayerSynchronization_{};
+    EyeTrackerTargetPlayerSynchronization
+        eyeTrackerTargetPlayerSynchronization_{};
+    TargetStartTime targetStartTime_{};
     std::uintmax_t fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds_{};
     std::uintmax_t targetStartTimeNanoseconds_{};
     gsl::index fadeInCompleteAudioSampleOffset_{};
@@ -27,6 +29,8 @@ class OutputFileStub : public OutputFile {
     bool throwOnOpen_{};
 
   public:
+    auto targetStartTime() -> TargetStartTime { return targetStartTime_; }
+
     void save() override { addToLog("save "); }
 
     void write(
@@ -99,13 +103,13 @@ class OutputFileStub : public OutputFile {
         return targetStartTimeNanoseconds_;
     }
 
-    auto eyeTrackerPlayerSynchronization() const
+    auto eyeTrackerTargetPlayerSynchronization() const
         -> const EyeTrackerTargetPlayerSynchronization & {
-        return eyeTrackerPlayerSynchronization_;
+        return eyeTrackerTargetPlayerSynchronization_;
     }
 
     void write(const EyeTrackerTargetPlayerSynchronization &e) override {
-        eyeTrackerPlayerSynchronization_ = e;
+        eyeTrackerTargetPlayerSynchronization_ = e;
     }
 
     auto fadeInCompleteConvertedAudioSampleSystemTimeNanoseconds() const
@@ -117,6 +121,7 @@ class OutputFileStub : public OutputFile {
 
     void write(TargetStartTime t) override {
         targetStartTimeNanoseconds_ = t.nanoseconds;
+        targetStartTime_ = t;
     }
 
     auto fadeInCompleteAudioSampleOffset() const -> gsl::index {
