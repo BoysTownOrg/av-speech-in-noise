@@ -501,6 +501,11 @@ void setSampleRateHz(MaskerPlayerStub &player, double x) {
     player.setSampleRateHz(x);
 }
 
+void fadeInComplete(
+    MaskerPlayerStub &player, const AudioSampleTimeWithOffset &t) {
+    player.fadeInComplete(t);
+}
+
 class RecognitionTestModelTests : public ::testing::Test {
   protected:
     ModelEventListenerStub listener;
@@ -726,8 +731,6 @@ class RecognitionTestModelTests : public ::testing::Test {
         run(initializingTestWithEyeTracking, model);
         assertPlayTrialDoesNotAllocateRecordingTime(useCase);
     }
-
-    void fadeInComplete() { maskerPlayer.fadeInComplete(fadeInCompleteTime); }
 };
 
 #define RECOGNITION_TEST_MODEL_TEST(a) TEST_F(RecognitionTestModelTests, a)
@@ -950,7 +953,7 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     setSystemTime(fadeInCompleteTime, 1);
     setSampleOffset(fadeInCompleteTime, 2);
     setSampleRateHz(maskerPlayer, 3);
-    fadeInComplete();
+    fadeInComplete(maskerPlayer, fadeInCompleteTime);
     assertEqual(
         player_system_time_type{1}, targetPlayer.baseSystemTimePlayedAt());
     assertEqual(2 / 3. + RecognitionTestModelImpl::additionalTargetDelaySeconds,
@@ -961,7 +964,7 @@ RECOGNITION_TEST_MODEL_TEST(
     fadeInCompletePassesTargetStartSystemTimeForConversionWhenEyeTracking) {
     run(initializingTestWithEyeTracking, model);
     setSystemTime(fadeInCompleteTime, 1);
-    fadeInComplete();
+    fadeInComplete(maskerPlayer, fadeInCompleteTime);
     assertEqual(player_system_time_type{1},
         maskerPlayer.toNanosecondsSystemTime().at(0));
 }
@@ -986,7 +989,7 @@ RECOGNITION_TEST_MODEL_TEST(
     setNanosecondsFromPlayerTime(maskerPlayer, 1);
     setSampleOffset(fadeInCompleteTime, 2);
     setSampleRateHz(maskerPlayer, 3);
-    fadeInComplete();
+    fadeInComplete(maskerPlayer, fadeInCompleteTime);
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
     assertEqual(1 +
@@ -1001,7 +1004,7 @@ RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseWritesSyncTimes) {
     run(initializingTestWithEyeTracking, model);
     setNanosecondsFromPlayerTime(maskerPlayer, 1);
     setCurrentSystemTimeMicroseconds(eyeTracker, 2);
-    fadeInComplete();
+    fadeInComplete(maskerPlayer, fadeInCompleteTime);
     fadeOutComplete(maskerPlayer);
     run(submittingCoordinateResponse, model);
     EyeTrackerTargetPlayerSynchronization s{};
@@ -1015,7 +1018,7 @@ RECOGNITION_TEST_MODEL_TEST(passesCurrentMaskerTimeForNanosecondConversion) {
     av_speech_in_noise::PlayerTime t{};
     t.system = 1;
     maskerPlayer.setCurrentSystemTime(t);
-    fadeInComplete();
+    fadeInComplete(maskerPlayer, fadeInCompleteTime);
     assertEqual(player_system_time_type{1},
         maskerPlayer.toNanosecondsSystemTime().at(1));
 }
