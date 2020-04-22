@@ -229,6 +229,11 @@ static auto offsetSeconds(
     return t.sampleOffset / player.sampleRateHz();
 }
 
+static auto nanoseconds(const PlayerTimeWithDelay &t, MaskerPlayer &player)
+    -> std::uintmax_t {
+    return player.nanoseconds(t.playerTime) + nanoseconds(t.delay);
+}
+
 void RecognitionTestModelImpl::fadeInComplete(
     const AudioSampleTimeWithOffset &t) {
     if (eyeTracking) {
@@ -237,9 +242,10 @@ void RecognitionTestModelImpl::fadeInComplete(
         timeToPlayWithDelay.delay.seconds =
             offsetSeconds(t, maskerPlayer) + additionalTargetDelaySeconds;
         targetPlayer.playAt(timeToPlayWithDelay);
+
         lastTargetStartTime.nanoseconds =
-            maskerPlayer.nanoseconds(timeToPlayWithDelay.playerTime) +
-            nanoseconds(timeToPlayWithDelay.delay);
+            nanoseconds(timeToPlayWithDelay, maskerPlayer);
+
         lastEyeTrackerPlayerSynchronization.eyeTrackerSystemTime =
             eyeTracker.currentSystemTime();
         lastEyeTrackerPlayerSynchronization.targetPlayerSystemTime.nanoseconds =
