@@ -11,6 +11,16 @@
 #include <cmath>
 
 namespace av_speech_in_noise {
+constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
+    return a.x == b.x && a.y == b.y;
+}
+
+constexpr auto operator==(
+    const BinocularGazeSample &a, const BinocularGazeSample &b) -> bool {
+    return a.systemTime.microseconds == b.systemTime.microseconds &&
+        a.left == b.left && a.right == b.right;
+}
+
 namespace {
 void insert(LogString &log, const std::string &s) { log.insert(s); }
 

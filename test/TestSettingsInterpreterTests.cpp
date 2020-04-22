@@ -5,6 +5,12 @@
 #include <functional>
 
 namespace av_speech_in_noise {
+constexpr auto operator==(const TrackingSequence &a, const TrackingSequence &b)
+    -> bool {
+    return a.down == b.down && a.up == b.up && a.runCount == b.runCount &&
+        a.stepSize == b.stepSize;
+}
+
 namespace {
 auto concatenate(const std::vector<std::string> &v) -> std::string {
     std::string result;

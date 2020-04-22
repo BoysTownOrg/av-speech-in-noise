@@ -76,12 +76,6 @@ struct TrackingSequence {
     int up{};
 };
 
-constexpr auto operator==(const TrackingSequence &a, const TrackingSequence &b)
-    -> bool {
-    return a.down == b.down && a.up == b.up && a.runCount == b.runCount &&
-        a.stepSize == b.stepSize;
-}
-
 using TrackingRule = typename std::vector<TrackingSequence>;
 
 struct EyeGaze {
@@ -102,22 +96,6 @@ struct EyeTrackerTargetPlayerSynchronization {
     TargetPlayerSystemTime targetPlayerSystemTime;
 };
 
-constexpr auto operator==(
-    const EyeTrackerSystemTime &a, const EyeTrackerSystemTime &b) -> bool {
-    return a.microseconds == b.microseconds;
-}
-
-constexpr auto operator==(
-    const TargetPlayerSystemTime &a, const TargetPlayerSystemTime &b) -> bool {
-    return a.nanoseconds == b.nanoseconds;
-}
-
-constexpr auto operator==(const EyeTrackerTargetPlayerSynchronization &a,
-    const EyeTrackerTargetPlayerSynchronization &b) -> bool {
-    return a.eyeTrackerSystemTime == b.eyeTrackerSystemTime &&
-        a.targetPlayerSystemTime == b.targetPlayerSystemTime;
-}
-
 struct BinocularGazeSample {
     EyeTrackerSystemTime systemTime;
     EyeGaze left;
@@ -125,16 +103,6 @@ struct BinocularGazeSample {
 };
 
 using BinocularGazeSamples = typename std::vector<BinocularGazeSample>;
-
-constexpr auto operator==(const EyeGaze &a, const EyeGaze &b) -> bool {
-    return a.x == b.x && a.y == b.y;
-}
-
-constexpr auto operator==(
-    const BinocularGazeSample &a, const BinocularGazeSample &b) -> bool {
-    return a.systemTime.microseconds == b.systemTime.microseconds &&
-        a.left == b.left && a.right == b.right;
-}
 
 enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
 
