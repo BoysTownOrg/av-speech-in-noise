@@ -454,8 +454,8 @@ class OutputFileTests : public ::testing::Test {
         assertHeadingAtLine(useCase, 3);
     }
 
-    void setEyeGazes(std::vector<std::int_least64_t> t, std::vector<EyeGaze> left,
-        std::vector<EyeGaze> right) {
+    void setEyeGazes(std::vector<std::int_least64_t> t,
+        std::vector<EyeGaze> left, std::vector<EyeGaze> right) {
         eyeGazes.resize(t.size());
         std::generate(eyeGazes.begin(), eyeGazes.end(), [&, n = 0]() mutable {
             BinocularGazeSample gazeSamples{t.at(n), left.at(n), right.at(n)};
@@ -724,6 +724,17 @@ OUTPUT_FILE_TEST(writeEyeGazes) {
 OUTPUT_FILE_TEST(writeFadeInCompleteTime) {
     writeTargetStartTimeNanoseconds(file, 1);
     assertContainsColonDelimitedEntry(writer, "target start time (ns)", "1");
+}
+
+OUTPUT_FILE_TEST(writeEyeTrackerPlayerSynchronization) {
+    EyeTrackerPlayerSynchronization s;
+    s.eyeTrackerSystemTime.microseconds = 1;
+    s.playerSystemTime.nanoseconds = 2;
+    file.write(s);
+    assertNthCommaDelimitedEntryOfLine(writer, "eye tracker (us)", 1, 1);
+    assertNthCommaDelimitedEntryOfLine(writer, "player (ns)", 2, 1);
+    assertNthCommaDelimitedEntryOfLine(writer, "1", 1, 2);
+    assertNthCommaDelimitedEntryOfLine(writer, "2", 2, 2);
 }
 
 OUTPUT_FILE_TEST(openPassesFormattedFilePath) {
