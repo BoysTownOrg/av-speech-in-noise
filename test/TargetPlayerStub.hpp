@@ -17,8 +17,6 @@ class TargetPlayerStub : public TargetPlayer {
 
     auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
 
-    auto baseSystemTimePlayedAt() const { return baseSystemTimePlayedAt_; }
-
     void subscribeToPlaybackCompletion() override {
         playbackCompletionSubscribedTo_ = true;
     }
@@ -58,12 +56,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     void play() override { played_ = true; }
 
-    void playAt(const PlayerTimeWithDelay &t) override {
-        baseSystemTimePlayedAt_ = t.playerTime.system;
-        secondsDelayedPlayedAt_ = t.delay.seconds;
-    }
-
-    auto secondsDelayedPlayedAt() const { return secondsDelayedPlayedAt_; }
+    void playAt(const PlayerTimeWithDelay &t) override { timePlayedAt_ = t; }
 
     void subscribe(EventListener *listener) override { listener_ = listener; }
 
@@ -99,15 +92,16 @@ class TargetPlayerStub : public TargetPlayer {
 
     void throwInvalidAudioFileOnRms() { throwInvalidAudioFileOnRms_ = true; }
 
+    auto timePlayedAt() -> PlayerTimeWithDelay { return timePlayedAt_; }
+
   private:
     LogString log_;
     std::string filePath_;
     std::string device_;
+    PlayerTimeWithDelay timePlayedAt_{};
     double rms_{};
     double level_dB_{};
     double durationSeconds_{};
-    double secondsDelayedPlayedAt_{};
-    player_system_time_type baseSystemTimePlayedAt_{};
     EventListener *listener_{};
     bool played_{};
     bool videoHidden_{};
