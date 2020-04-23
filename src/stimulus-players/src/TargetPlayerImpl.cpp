@@ -35,11 +35,11 @@ template <typename T> auto rms(const std::vector<T> &x) -> T {
 }
 
 auto TargetPlayerImpl::rms() -> double {
-    auto audio = readAudio_();
+    auto audio{readAudio_()};
     if (audio.empty())
         return 0;
 
-    auto firstChannel = audio.front();
+    auto firstChannel{audio.front()};
     return stimulus_players::rms(firstChannel);
 }
 
@@ -69,8 +69,8 @@ constexpr auto end(const gsl::span<float> &channel)
 
 void TargetPlayerImpl::fillAudioBuffer(
     const std::vector<gsl::span<float>> &audio) {
-    auto scale = audioScale.load();
-    auto usingFirstChannelOnly = useFirstChannelOnly_.load();
+    auto scale{audioScale.load()};
+    auto usingFirstChannelOnly{useFirstChannelOnly_.load()};
     auto afterFirstChannel{false};
     for (auto channel : audio) {
         if (usingFirstChannelOnly && afterFirstChannel)
@@ -83,11 +83,11 @@ void TargetPlayerImpl::fillAudioBuffer(
 }
 
 void TargetPlayerImpl::setAudioDevice(std::string device) {
-    auto devices_ = audioDevices();
-    auto found = std::find(devices_.begin(), devices_.end(), device);
+    auto devices_{audioDevices()};
+    auto found{std::find(devices_.begin(), devices_.end(), device)};
     if (found == devices_.end())
         throw av_speech_in_noise::InvalidAudioDevice{};
-    auto deviceIndex = gsl::narrow<int>(found - devices_.begin());
+    auto deviceIndex{gsl::narrow<int>(found - devices_.begin())};
     player->setDevice(deviceIndex);
 }
 

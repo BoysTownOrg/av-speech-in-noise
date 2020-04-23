@@ -77,7 +77,7 @@ static void set(bool &x) { x = true; }
 static void clear(bool &x) { x = false; }
 
 static auto thisCallClears(std::atomic<bool> &x) -> bool {
-    auto expected = true;
+    auto expected{true};
     return x.compare_exchange_strong(expected, false);
 }
 
@@ -99,7 +99,7 @@ static auto framesToFill(const std::vector<channel_buffer_type> &audioBuffer)
     return noChannels(audioBuffer) ? 0 : firstChannel(audioBuffer).size();
 }
 
-constexpr auto maxChannels = 128;
+constexpr auto maxChannels{128};
 
 MaskerPlayerImpl::MaskerPlayerImpl(
     AudioPlayer *player, AudioReader *reader, Timer *timer)
@@ -121,7 +121,7 @@ auto MaskerPlayerImpl::durationSeconds() -> double {
 
 static auto mathModulus(sample_index_type a, sample_index_type b)
     -> sample_index_type {
-    auto result = a % b;
+    auto result{a % b};
     return result > 0 ? result : result + b;
 }
 
@@ -205,8 +205,8 @@ void MaskerPlayerImpl::setAudioDevice(std::string device) {
 }
 
 auto MaskerPlayerImpl::findDeviceIndex(const std::string &device) -> int {
-    auto devices = audioDeviceDescriptions_();
-    auto found = std::find(devices.begin(), devices.end(), device);
+    auto devices{audioDeviceDescriptions_()};
+    auto found{std::find(devices.begin(), devices.end(), device)};
     if (found == devices.end())
         throw av_speech_in_noise::InvalidAudioDevice{};
     return gsl::narrow<int>(std::distance(devices.begin(), found));
@@ -359,16 +359,16 @@ void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
 
 void MaskerPlayerImpl::AudioThread::copySourceAudio(
     const std::vector<channel_buffer_type> &audioBuffer) {
-    auto usingFirstChannelOnly = sharedState->firstChannelOnly.load();
+    auto usingFirstChannelOnly{sharedState->firstChannelOnly.load()};
     for (channel_index_type i{0}; i < channels(audioBuffer); ++i) {
-        const auto samplesToWait = at(sharedState->samplesToWaitPerChannel, i);
+        const auto samplesToWait{at(sharedState->samplesToWaitPerChannel, i)};
         const auto framesToMute =
             std::min(samplesToWait, framesToFill(audioBuffer));
         mute(channel(audioBuffer, i).first(framesToMute));
         at(sharedState->samplesToWaitPerChannel, i) =
             samplesToWait - framesToMute;
-        auto frameHead = at(sharedState->audioFrameHeadsPerChannel, i);
-        auto framesLeftToFill = framesToFill(audioBuffer) - framesToMute;
+        auto frameHead{at(sharedState->audioFrameHeadsPerChannel, i)};
+        auto framesLeftToFill{framesToFill(audioBuffer) - framesToMute};
         at(sharedState->audioFrameHeadsPerChannel, i) =
             (frameHead + framesLeftToFill) % sourceFrames();
         while (framesLeftToFill != 0) {
@@ -377,7 +377,7 @@ void MaskerPlayerImpl::AudioThread::copySourceAudio(
             const auto &source = channels(sharedState->sourceAudio) > i
                 ? channel(sharedState->sourceAudio, i)
                 : firstChannel(sharedState->sourceAudio);
-            const auto sourceBeginning = source.begin() + frameHead;
+            const auto sourceBeginning{source.begin() + frameHead};
             std::copy(sourceBeginning, sourceBeginning + framesAboutToFill,
                 channel(audioBuffer, i).begin() + framesToFill(audioBuffer) -
                     framesLeftToFill);
@@ -395,9 +395,9 @@ auto MaskerPlayerImpl::AudioThread::sourceFrames() -> sample_index_type {
 
 void MaskerPlayerImpl::AudioThread::applyLevel(
     const std::vector<channel_buffer_type> &audioBuffer) {
-    const auto levelScalar_ = read(sharedState->levelScalar);
-    for (auto i = sample_index_type{0}; i < framesToFill(audioBuffer); ++i) {
-        const auto fadeScalar = nextFadeScalar();
+    const auto levelScalar_{read(sharedState->levelScalar)};
+    for (auto i{sample_index_type{0}}; i < framesToFill(audioBuffer); ++i) {
+        const auto fadeScalar{nextFadeScalar()};
         updateFadeState(i);
         for (auto channel : audioBuffer)
             channel.at(i) *=
