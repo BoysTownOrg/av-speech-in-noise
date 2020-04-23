@@ -1717,6 +1717,12 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTrackingDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(
+        confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking);
+}
+
+PRESENTER_TEST(
     confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(
         confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
