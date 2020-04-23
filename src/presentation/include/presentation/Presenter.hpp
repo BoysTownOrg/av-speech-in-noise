@@ -50,7 +50,7 @@ class TestSettingsInterpreter {
 class TextFileReader {
   public:
     virtual ~TextFileReader() = default;
-    virtual auto read(const std::string &) -> std::string = 0;
+    virtual auto read(const LocalUrl &) -> std::string = 0;
 };
 
 class View {

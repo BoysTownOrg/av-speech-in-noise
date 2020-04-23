@@ -130,7 +130,7 @@ void Presenter::confirmTestSetup() {
 }
 
 void Presenter::confirmTestSetup_() {
-    auto testSettings{textFileReader.read(testSetup.testSettingsFile())};
+    auto testSettings{textFileReader.read({testSetup.testSettingsFile()})};
     testSettingsInterpreter.initialize(model, testSettings,
         testIdentity(testSetup),
         readInteger(testSetup.startingSnr(), "starting SNR"));
@@ -272,7 +272,7 @@ void Presenter::playCalibration() {
 
 void Presenter::playCalibration_() {
     auto p{testSettingsInterpreter.calibration(
-        textFileReader.read(testSetup.testSettingsFile()))};
+        textFileReader.read({testSetup.testSettingsFile()}))};
     p.audioDevice = view.audioDevice();
     model.playCalibration(p);
 }

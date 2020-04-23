@@ -159,8 +159,8 @@ class TimeStampImpl : public av_speech_in_noise::TimeStamp {
 };
 
 class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
-    auto read(const std::string &s) -> std::string override {
-        std::ifstream file{s};
+    auto read(const av_speech_in_noise::LocalUrl &s) -> std::string override {
+        std::ifstream file{s.path};
         std::stringstream stream;
         stream << file.rdbuf();
         return stream.str();

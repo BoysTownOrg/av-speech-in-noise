@@ -458,8 +458,8 @@ class TextFileReaderStub : public TextFileReader {
   public:
     [[nodiscard]] auto filePath() const -> std::string { return filePath_; }
 
-    auto read(const std::string &s) -> std::string override {
-        filePath_ = s;
+    auto read(const LocalUrl &s) -> std::string override {
+        filePath_ = s.path;
         return read_;
     }
 
