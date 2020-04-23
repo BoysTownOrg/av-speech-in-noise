@@ -51,7 +51,9 @@ class SubdirectoryTargetListReaderTests : public ::testing::Test {
 
     auto targetList(int n) { return targetLists.at(n); }
 
-    auto targetListDirectory(int n) { return targetList(n)->directory(); }
+    auto targetListDirectory(int n) -> std::string {
+        return targetList(n)->directory().path;
+    }
 };
 
 TEST_F(SubdirectoryTargetListReaderTests, readLoadsFullPathToEachSubDirectory) {

@@ -41,54 +41,64 @@ RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetListWithReplacement::loadFromDirectory(std::string d) {
-    shuffle(randomizer, files = filesIn(reader, directory_ = std::move(d)));
+void RandomizedTargetListWithReplacement::loadFromDirectory(
+    const av_speech_in_noise::LocalUrl &d) {
+    shuffle(randomizer, files = filesIn(reader, directory_ = d.path));
 }
 
-auto RandomizedTargetListWithReplacement::next() -> std::string {
+auto RandomizedTargetListWithReplacement::next()
+    -> av_speech_in_noise::LocalUrl {
     if (empty(files))
-        return "";
+        return {""};
 
     moveFrontToBack(files);
     shuffle(randomizer, allButLast(files));
-    return fullPathToLastFile(directory_, files);
+    return {fullPathToLastFile(directory_, files)};
 }
 
-auto RandomizedTargetListWithReplacement::current() -> std::string {
-    return fullPathToLastFile(directory_, files);
+auto RandomizedTargetListWithReplacement::current()
+    -> av_speech_in_noise::LocalUrl {
+    return {fullPathToLastFile(directory_, files)};
 }
 
-auto RandomizedTargetListWithReplacement::directory() -> std::string {
-    return directory_;
+auto RandomizedTargetListWithReplacement::directory()
+    -> av_speech_in_noise::LocalUrl {
+    return {directory_};
 }
 
 RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetListWithoutReplacement::loadFromDirectory(std::string d) {
-    shuffle(randomizer, files = filesIn(reader, directory_ = std::move(d)));
+void RandomizedTargetListWithoutReplacement::loadFromDirectory(
+    const av_speech_in_noise::LocalUrl &d) {
+    shuffle(randomizer, files = filesIn(reader, directory_ = d.path));
 }
 
 auto RandomizedTargetListWithoutReplacement::empty() -> bool {
     return target_list::empty(files);
 }
 
-auto RandomizedTargetListWithoutReplacement::next() -> std::string {
+auto RandomizedTargetListWithoutReplacement::next()
+    -> av_speech_in_noise::LocalUrl {
     if (target_list::empty(files))
-        return "";
+        return {""};
 
     currentFile = files.front();
     files.erase(files.begin());
-    return joinPaths(directory_, currentFile);
+    return {joinPaths(directory_, currentFile)};
 }
 
-auto RandomizedTargetListWithoutReplacement::current() -> std::string {
-    return currentFile.empty() ? "" : joinPaths(directory_, currentFile);
+auto RandomizedTargetListWithoutReplacement::current()
+    -> av_speech_in_noise::LocalUrl {
+    return currentFile.empty()
+        ? av_speech_in_noise::LocalUrl{""}
+        : av_speech_in_noise::LocalUrl{joinPaths(directory_, currentFile)};
 }
 
-auto RandomizedTargetListWithoutReplacement::directory() -> std::string {
-    return directory_;
+auto RandomizedTargetListWithoutReplacement::directory()
+    -> av_speech_in_noise::LocalUrl {
+    return {directory_};
 }
 
 void RandomizedTargetListWithoutReplacement::reinsertCurrent() {
@@ -99,23 +109,24 @@ CyclicRandomizedTargetList::CyclicRandomizedTargetList(
     DirectoryReader *reader, Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void CyclicRandomizedTargetList::loadFromDirectory(std::string d) {
-    shuffle(randomizer, files = filesIn(reader, directory_ = std::move(d)));
+void CyclicRandomizedTargetList::loadFromDirectory(
+    const av_speech_in_noise::LocalUrl &d) {
+    shuffle(randomizer, files = filesIn(reader, directory_ = d.path));
 }
 
-auto CyclicRandomizedTargetList::next() -> std::string {
+auto CyclicRandomizedTargetList::next() -> av_speech_in_noise::LocalUrl {
     if (empty(files))
-        return "";
+        return {""};
 
     moveFrontToBack(files);
-    return fullPathToLastFile(directory_, files);
+    return {fullPathToLastFile(directory_, files)};
 }
 
-auto CyclicRandomizedTargetList::current() -> std::string {
-    return fullPathToLastFile(directory_, files);
+auto CyclicRandomizedTargetList::current() -> av_speech_in_noise::LocalUrl {
+    return {fullPathToLastFile(directory_, files)};
 }
 
-auto CyclicRandomizedTargetList::directory() -> std::string {
-    return directory_;
+auto CyclicRandomizedTargetList::directory() -> av_speech_in_noise::LocalUrl {
+    return {directory_};
 }
 }

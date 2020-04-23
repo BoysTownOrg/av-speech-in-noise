@@ -5,7 +5,7 @@ FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator &evaluator)
     : evaluator{evaluator} {}
 
 static void loadFromDirectory(TargetList *list, const FixedLevelTest &test) {
-    list->loadFromDirectory(test.targetsUrl.path);
+    list->loadFromDirectory(test.targetsUrl);
 }
 
 void FixedLevelMethodImpl::initialize(
@@ -34,7 +34,7 @@ auto FixedLevelMethodImpl::complete() -> bool {
 }
 
 auto FixedLevelMethodImpl::nextTarget() -> std::string {
-    return targetList->next();
+    return targetList->next().path;
 }
 
 auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
@@ -55,7 +55,7 @@ void FixedLevelMethodImpl::submit(
 }
 
 auto FixedLevelMethodImpl::currentTarget() -> std::string {
-    return targetList->current();
+    return targetList->current().path;
 }
 
 void FixedLevelMethodImpl::writeTestingParameters(OutputFile &file) {

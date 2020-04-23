@@ -54,7 +54,9 @@ static void down(Track *track) { track->down(); }
 
 static void up(Track *track) { track->up(); }
 
-static auto current(TargetList *list) -> std::string { return list->current(); }
+static auto current(TargetList *list) -> std::string {
+    return list->current().path;
+}
 
 static void assignTarget(open_set::Trial &trial, ResponseEvaluator &evaluator,
     TargetList *targetList) {
@@ -121,13 +123,13 @@ auto AdaptiveMethodImpl::complete() -> bool {
 }
 
 auto AdaptiveMethodImpl::nextTarget() -> std::string {
-    return targetList->next();
+    return targetList->next().path;
 }
 
 auto AdaptiveMethodImpl::snr_dB() -> int { return x(snrTrack); }
 
 auto AdaptiveMethodImpl::currentTarget() -> std::string {
-    return targetList->current();
+    return targetList->current().path;
 }
 
 void AdaptiveMethodImpl::submit(
@@ -166,7 +168,7 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     down(snrTrack);
     assignReversals(lastOpenSetTrial, snrTrack);
     lastAdaptiveTestResult.threshold = snrTrack->threshold({});
-    lastAdaptiveTestResult.targetsUrl.path = targetList->directory();
+    lastAdaptiveTestResult.targetsUrl = targetList->directory();
     selectNextList();
 }
 

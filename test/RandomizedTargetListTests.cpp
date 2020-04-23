@@ -31,8 +31,8 @@ class RandomizerStub : public Randomizer {
 };
 
 void loadFromDirectory(
-    av_speech_in_noise::TargetList &list, std::string s = {}) {
-    list.loadFromDirectory(std::move(s));
+    av_speech_in_noise::TargetList &list, const std::string &s = {}) {
+    list.loadFromDirectory({s});
 }
 
 void setFileNames(DirectoryReaderStub &reader, std::vector<std::string> v) {
@@ -40,7 +40,7 @@ void setFileNames(DirectoryReaderStub &reader, std::vector<std::string> v) {
 }
 
 auto next(av_speech_in_noise::TargetList &list) -> std::string {
-    return list.next();
+    return list.next().path;
 }
 
 void assertNextEquals(
@@ -50,7 +50,7 @@ void assertNextEquals(
 
 void assertCurrentEquals(
     av_speech_in_noise::TargetList &list, const std::string &s) {
-    assertEqual(s, list.current());
+    assertEqual(s, list.current().path);
 }
 
 void assertShuffled(
@@ -114,7 +114,7 @@ void currentReturnsFullPathToFile(
 
 void directoryReturnsDirectory(av_speech_in_noise::TargetList &list) {
     loadFromDirectory(list, "a");
-    assertEqual("a", list.directory());
+    assertEqual("a", list.directory().path);
 }
 
 void nextReturnsEmptyIfNoFiles(

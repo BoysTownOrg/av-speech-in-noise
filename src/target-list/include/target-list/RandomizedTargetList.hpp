@@ -36,10 +36,10 @@ class RandomizedTargetListWithReplacement
     };
 
     RandomizedTargetListWithReplacement(DirectoryReader *, Randomizer *);
-    void loadFromDirectory(std::string) override;
-    auto next() -> std::string override;
-    auto current() -> std::string override;
-    auto directory() -> std::string override;
+    void loadFromDirectory(const av_speech_in_noise::LocalUrl &) override;
+    auto next() -> av_speech_in_noise::LocalUrl override;
+    auto current() -> av_speech_in_noise::LocalUrl override;
+    auto directory() -> av_speech_in_noise::LocalUrl override;
 
   private:
     std::vector<std::string> files{};
@@ -54,11 +54,11 @@ class RandomizedTargetListWithoutReplacement
   public:
     RandomizedTargetListWithoutReplacement(DirectoryReader *, Randomizer *);
     auto empty() -> bool override;
-    void loadFromDirectory(std::string directory) override;
-    auto next() -> std::string override;
-    auto current() -> std::string override;
+    void loadFromDirectory(const av_speech_in_noise::LocalUrl &directory) override;
+    auto next() -> av_speech_in_noise::LocalUrl override;
+    auto current() -> av_speech_in_noise::LocalUrl override;
     void reinsertCurrent() override;
-    auto directory() -> std::string override;
+    auto directory() -> av_speech_in_noise::LocalUrl override;
 
   private:
     std::vector<std::string> files{};
@@ -87,10 +87,10 @@ class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
     };
 
     CyclicRandomizedTargetList(DirectoryReader *, Randomizer *);
-    void loadFromDirectory(std::string directory) override;
-    auto next() -> std::string override;
-    auto current() -> std::string override;
-    auto directory() -> std::string override;
+    void loadFromDirectory(const av_speech_in_noise::LocalUrl &directory) override;
+    auto next() -> av_speech_in_noise::LocalUrl override;
+    auto current() -> av_speech_in_noise::LocalUrl override;
+    auto directory() -> av_speech_in_noise::LocalUrl override;
 
   private:
     std::vector<std::string> files{};

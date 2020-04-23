@@ -228,14 +228,14 @@ TEST_F(
     PreInitializedFixedLevelMethodTests, initializePassesTargetListDirectory) {
     test.targetsUrl.path = "a";
     run(initializingMethod, method);
-    assertEqual("a", targetList.directory());
+    assertEqual("a", targetList.directory().path);
 }
 
 TEST_F(PreInitializedFixedLevelMethodTests,
     initializeWithFiniteTargetListPassesTargetListDirectory) {
     test.targetsUrl.path = "a";
     run(initializingMethodWithFiniteTargetList, method);
-    assertEqual("a", finiteTargetList.directory());
+    assertEqual("a", finiteTargetList.directory().path);
 }
 
 void assertComplete(FixedLevelMethodImpl &method) {
@@ -328,10 +328,10 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
 
 class TargetListTestConcluderComboStub : public FiniteTargetList {
   public:
-    void loadFromDirectory(std::string) override {}
-    auto directory() -> std::string override { return {}; }
-    auto next() -> std::string override { return {}; }
-    auto current() -> std::string override { return {}; }
+    void loadFromDirectory(const LocalUrl &) override {}
+    auto directory() -> LocalUrl override { return {}; }
+    auto next() -> LocalUrl override { return {}; }
+    auto current() -> LocalUrl override { return {}; }
     auto empty() -> bool override {
         log_.insert("empty ");
         return {};

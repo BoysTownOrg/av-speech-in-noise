@@ -8,7 +8,7 @@
 namespace av_speech_in_noise {
 class TargetListStub : public virtual TargetList {
   public:
-    auto current() -> std::string override { return current_; }
+    auto current() -> LocalUrl override { return {current_}; }
 
     void setCurrent(std::string s) { current_ = std::move(s); }
 
@@ -16,21 +16,21 @@ class TargetListStub : public virtual TargetList {
         currentWhenNext_ = std::move(s);
     }
 
-    void loadFromDirectory(std::string directory) override {
+    void loadFromDirectory(const LocalUrl &directory) override {
         log_.insert("loadFromDirectory ");
-        directory_ = std::move(directory);
+        directory_ = directory.path;
     }
 
-    auto next() -> std::string override {
+    auto next() -> LocalUrl override {
         log_.insert("next ");
         nextCalled_ = true;
         current_ = currentWhenNext_;
-        return next_;
+        return {next_};
     }
 
     void setNext(std::string s) { next_ = std::move(s); }
 
-    auto directory() -> std::string override { return directory_; }
+    auto directory() -> LocalUrl override { return {directory_}; }
 
     void setDirectory(std::string s) { directory_ = std::move(s); }
 

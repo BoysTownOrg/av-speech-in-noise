@@ -13,11 +13,11 @@ auto SubdirectoryTargetListReader::read(
         lists.push_back(targetListFactory->make());
         auto fullPath{directory.path};
         fullPath.append("/" + subDirectory);
-        lists.back()->loadFromDirectory(fullPath);
+        lists.back()->loadFromDirectory({fullPath});
     }
     if (subDirectories_.empty()) {
         lists.push_back(targetListFactory->make());
-        lists.back()->loadFromDirectory(directory.path);
+        lists.back()->loadFromDirectory(directory);
     }
     return lists;
 }
