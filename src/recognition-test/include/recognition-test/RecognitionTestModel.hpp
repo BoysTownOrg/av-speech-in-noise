@@ -22,10 +22,6 @@ struct PlayerTime {
     player_system_time_type system;
 };
 
-constexpr auto operator==(const PlayerTime &a, const PlayerTime &b) -> bool {
-    return a.system == b.system;
-}
-
 struct PlayerTimeWithDelay {
     PlayerTime playerTime;
     Delay delay;

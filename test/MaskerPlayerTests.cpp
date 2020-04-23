@@ -7,6 +7,12 @@
 #include <cmath>
 #include <utility>
 
+namespace av_speech_in_noise {
+constexpr auto operator==(const PlayerTime &a, const PlayerTime &b) -> bool {
+    return a.system == b.system;
+}
+}
+
 namespace stimulus_players {
 namespace {
 auto at(const std::vector<std::string> &v, gsl::index n) -> std::string {
