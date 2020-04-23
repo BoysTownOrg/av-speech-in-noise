@@ -280,6 +280,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingReturnsMethod) {
+    assertMethod(interpreter,
+        Method::
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithSilentIntervalTargetsReturnsMethod) {
     assertMethod(
         interpreter, Method::fixedLevelFreeResponseWithSilentIntervalTargets);
@@ -510,7 +517,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
+        Method::
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

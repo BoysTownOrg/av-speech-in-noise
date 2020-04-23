@@ -123,18 +123,21 @@ static auto name(const std::string &contents) -> std::string {
 }
 
 static auto method(const std::string &s) -> Method {
-    for (auto m : {Method::adaptivePassFail, Method::adaptiveCorrectKeywords,
-             Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
-             Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
-             Method::fixedLevelFreeResponseWithTargetReplacement,
-             Method::fixedLevelFreeResponseWithSilentIntervalTargets,
-             Method::fixedLevelFreeResponseWithAllTargets,
-             Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
-             Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
-             Method::
-                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-             Method::defaultAdaptiveCoordinateResponseMeasure,
-             Method::adaptiveCoordinateResponseMeasureWithEyeTracking})
+    for (auto m :
+        {Method::adaptivePassFail, Method::adaptiveCorrectKeywords,
+            Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
+            Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
+            Method::fixedLevelFreeResponseWithTargetReplacement,
+            Method::fixedLevelFreeResponseWithSilentIntervalTargets,
+            Method::fixedLevelFreeResponseWithAllTargets,
+            Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+            Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
+            Method::
+                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
+            Method::
+                fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
+            Method::defaultAdaptiveCoordinateResponseMeasure,
+            Method::adaptiveCoordinateResponseMeasureWithEyeTracking})
         if (name(s) == name(m))
             return m;
     return Method::unknown;
