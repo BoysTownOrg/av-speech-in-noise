@@ -380,7 +380,7 @@ class OutputFileTests : public ::testing::Test {
     void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {
         using coordinate_response_measure::Color;
         auto &trial = writingAdaptiveCoordinateResponseTrial.trial();
-        trial.SNR_dB = 1;
+        trial.snr.dB = 1;
         trial.correctNumber = 2;
         trial.subjectNumber = 3;
         trial.correctColor = Color::green;
@@ -421,7 +421,7 @@ class OutputFileTests : public ::testing::Test {
 
     void assertWritesOpenSetAdaptiveTrialOnLine(int n) {
         open_set::AdaptiveTrial openSetAdaptiveTrial;
-        openSetAdaptiveTrial.SNR_dB = 11;
+        openSetAdaptiveTrial.snr.dB = 11;
         openSetAdaptiveTrial.target = "a";
         openSetAdaptiveTrial.reversals = 22;
         write(file, openSetAdaptiveTrial);
@@ -432,7 +432,7 @@ class OutputFileTests : public ::testing::Test {
 
     void assertWritesCorrectKeywordsTrialOnLine(int n) {
         CorrectKeywordsTrial correctKeywordsTrial;
-        correctKeywordsTrial.SNR_dB = 11;
+        correctKeywordsTrial.snr.dB = 11;
         correctKeywordsTrial.target = "a";
         correctKeywordsTrial.count = 22;
         correctKeywordsTrial.reversals = 33;
@@ -666,7 +666,7 @@ OUTPUT_FILE_TEST(writeCommonFixedLevelTest) {
 
 OUTPUT_FILE_TEST(writeAdaptiveTest) {
     AdaptiveTest adaptiveTest;
-    adaptiveTest.startingSnr_dB = 2;
+    adaptiveTest.startingSnr.dB = 2;
     file.write(adaptiveTest);
     assertContainsColonDelimitedEntry(writer, "starting SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");
@@ -674,7 +674,7 @@ OUTPUT_FILE_TEST(writeAdaptiveTest) {
 
 OUTPUT_FILE_TEST(writeFixedLevelTest) {
     FixedLevelTest fixedLevelTest;
-    fixedLevelTest.snr_dB = 2;
+    fixedLevelTest.snr.dB = 2;
     file.write(fixedLevelTest);
     assertContainsColonDelimitedEntry(writer, "SNR (dB)", "2");
     assertEndsWith(writer, "\n\n");

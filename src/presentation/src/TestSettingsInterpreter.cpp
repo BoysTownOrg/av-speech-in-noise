@@ -165,11 +165,11 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.startingSnr_dB = startingSnr;
-    test.ceilingSnr_dB = Presenter::ceilingSnr_dB;
-    test.floorSnr_dB = Presenter::floorSnr_dB;
+    test.startingSnr.dB = startingSnr;
+    test.ceilingSnr.dB = Presenter::ceilingSnr.dB;
+    test.floorSnr.dB = Presenter::floorSnr.dB;
     test.trackBumpLimit = Presenter::trackBumpLimit;
-    test.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    test.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel.dB_SPL;
     test.identity = identity;
     auto method_{av_speech_in_noise::method(contents)};
     test.identity.method = name(method_);
@@ -193,8 +193,8 @@ static void initializeFixedLevelTest(Model &model, const std::string &contents,
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.snr_dB = startingSnr;
-    test.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    test.snr.dB = startingSnr;
+    test.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel.dB_SPL;
     test.identity = identity;
     auto method_{av_speech_in_noise::method(contents)};
     test.identity.method = name(method_);
@@ -235,7 +235,7 @@ auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
     applyToEachEntry([&](auto entryName,
                          auto entry) { assign(calibration, entryName, entry); },
         contents);
-    calibration.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    calibration.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel.dB_SPL;
     return calibration;
 }
 }

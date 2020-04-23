@@ -59,11 +59,15 @@ struct TrackingSequence {
 
 using TrackingRule = typename std::vector<TrackingSequence>;
 
+struct SNR {
+    int dB{};
+};
+
 struct AdaptiveTest : Test {
     TrackingRule trackingRule;
-    int startingSnr_dB{};
-    int ceilingSnr_dB{};
-    int floorSnr_dB{};
+    SNR startingSnr{};
+    SNR ceilingSnr{};
+    SNR floorSnr{};
     int trackBumpLimit{};
     int thresholdReversals{};
 };
@@ -76,7 +80,7 @@ struct AdaptiveTestResult {
 using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
 
 struct FixedLevelTest : Test {
-    int snr_dB{};
+    SNR snr;
     int trials{30};
 };
 

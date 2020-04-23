@@ -21,7 +21,7 @@ static void assignReversals(AdaptiveProgress &trial, Track *track) {
 static auto correct(const CorrectKeywords &p) -> bool { return p.count >= 2; }
 
 static void assignSnr(open_set::AdaptiveTrial &trial, Track *track) {
-    trial.SNR_dB = track->x();
+    trial.snr.dB = track->x();
 }
 
 static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
@@ -36,9 +36,9 @@ static auto fileName(ResponseEvaluator &evaluator, const std::string &target)
 static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
     Track::Settings trackSettings{};
     trackSettings.rule = &test.trackingRule;
-    trackSettings.ceiling = test.ceilingSnr_dB;
-    trackSettings.startingX = test.startingSnr_dB;
-    trackSettings.floor = test.floorSnr_dB;
+    trackSettings.ceiling = test.ceilingSnr.dB;
+    trackSettings.startingX = test.startingSnr.dB;
+    trackSettings.floor = test.floorSnr.dB;
     trackSettings.bumpLimit = test.trackBumpLimit;
     return trackSettings;
 }
@@ -144,7 +144,7 @@ void AdaptiveMethodImpl::submit(
         evaluator.correctColor(current(targetList));
     lastCoordinateResponseMeasureTrial.correctNumber =
         evaluator.correctNumber(current(targetList));
-    lastCoordinateResponseMeasureTrial.SNR_dB = lastSnr_dB;
+    lastCoordinateResponseMeasureTrial.snr.dB = lastSnr_dB;
     lastCoordinateResponseMeasureTrial.correct =
         correct(evaluator, targetList, response);
     selectNextList();

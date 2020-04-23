@@ -212,14 +212,14 @@ class PreInitializedFixedLevelMethodTests : public ::testing::Test {
 };
 
 TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
-    test.snr_dB = 1;
+    test.snr.dB = 1;
     run(initializingMethod, method);
     assertEqual(1, method.snr_dB());
 }
 
 TEST_F(PreInitializedFixedLevelMethodTests,
     snrReturnsInitializedWithFiniteTargetListSnr) {
-    test.snr_dB = 1;
+    test.snr.dB = 1;
     run(initializingMethodWithFiniteTargetList, method);
     assertEqual(1, method.snr_dB());
 }

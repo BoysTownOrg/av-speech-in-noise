@@ -63,12 +63,12 @@ void assertPassesSimpleAdaptiveSettings(
     assertEqual("a", adaptiveTest(model).targetListDirectory);
     assertEqual("b", adaptiveTest(model).maskerFilePath);
     assertEqual(65, adaptiveTest(model).maskerLevel.dB_SPL);
-    assertEqual(5, adaptiveTest(model).startingSnr_dB);
+    assertEqual(5, adaptiveTest(model).startingSnr.dB);
     assertEqual(4, adaptiveTest(model).thresholdReversals);
-    assertEqual(Presenter::ceilingSnr_dB, adaptiveTest(model).ceilingSnr_dB);
-    assertEqual(Presenter::floorSnr_dB, adaptiveTest(model).floorSnr_dB);
+    assertEqual(Presenter::ceilingSnr.dB, adaptiveTest(model).ceilingSnr.dB);
+    assertEqual(Presenter::floorSnr.dB, adaptiveTest(model).floorSnr.dB);
     assertEqual(Presenter::trackBumpLimit, adaptiveTest(model).trackBumpLimit);
-    assertEqual(Presenter::fullScaleLevel_dB_SPL,
+    assertEqual(Presenter::fullScaleLevel.dB_SPL,
         adaptiveTest(model).fullScaleLevel.dB_SPL);
 }
 
@@ -83,8 +83,8 @@ void assertPassesSimpleFixedLevelSettings(
     assertEqual("a", fixedLevelTest(model).targetListDirectory);
     assertEqual("b", fixedLevelTest(model).maskerFilePath);
     assertEqual(65, fixedLevelTest(model).maskerLevel.dB_SPL);
-    assertEqual(5, fixedLevelTest(model).snr_dB);
-    assertEqual(Presenter::fullScaleLevel_dB_SPL,
+    assertEqual(5, fixedLevelTest(model).snr.dB);
+    assertEqual(Presenter::fullScaleLevel.dB_SPL,
         fixedLevelTest(model).fullScaleLevel.dB_SPL);
 }
 
@@ -206,7 +206,7 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
     assertEqual("a", calibration.filePath);
     assertEqual(1, calibration.level.dB_SPL);
     assertEqual(
-        Presenter::fullScaleLevel_dB_SPL, calibration.fullScaleLevel.dB_SPL);
+        Presenter::fullScaleLevel.dB_SPL, calibration.fullScaleLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {

@@ -297,9 +297,9 @@ class Presenter : public Model::EventListener {
     void acceptContinuingTesting();
     void exitTest();
 
-    static constexpr auto fullScaleLevel_dB_SPL{119};
-    static constexpr auto ceilingSnr_dB{20};
-    static constexpr auto floorSnr_dB{-40};
+    static constexpr Level fullScaleLevel{119};
+    static constexpr SNR ceilingSnr{20};
+    static constexpr SNR floorSnr{-40};
     static constexpr auto trackBumpLimit{10};
 
   private:

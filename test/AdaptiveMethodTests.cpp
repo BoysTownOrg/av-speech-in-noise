@@ -173,7 +173,7 @@ class WritingCoordinateResponse : public WritingResponseUseCase {
     }
 
     auto snr(OutputFileStub &file) -> int override {
-        return adaptiveCoordinateResponseTrial(file).SNR_dB;
+        return adaptiveCoordinateResponseTrial(file).snr.dB;
     }
 };
 
@@ -187,7 +187,7 @@ auto openSetReversals(OutputFileStub &file) -> int {
 }
 
 auto openSetSnr(OutputFileStub &file) -> int {
-    return openSetAdaptiveTrial(file).SNR_dB;
+    return openSetAdaptiveTrial(file).snr.dB;
 }
 
 auto openSetTarget(OutputFileStub &file) -> std::string {
@@ -263,7 +263,7 @@ class WritingCorrectKeywords : public WritingResponseUseCase,
     }
 
     auto snr(OutputFileStub &file) -> int override {
-        return correctKeywordsTrial(file).SNR_dB;
+        return correctKeywordsTrial(file).snr.dB;
     }
 
     auto target(OutputFileStub &file) -> std::string override {
@@ -527,19 +527,19 @@ ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithTargetLevelRule) {
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithSnr) {
-    test.startingSnr_dB = 1;
+    test.startingSnr.dB = 1;
     initialize(method, test, targetListReader);
     forEachSettings(snrTrackFactory, assertStartingXEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithCeiling) {
-    test.ceilingSnr_dB = 1;
+    test.ceilingSnr.dB = 1;
     initialize(method, test, targetListReader);
     forEachSettings(snrTrackFactory, assertCeilingEqualsOne);
 }
 
 ADAPTIVE_METHOD_TEST(initializeCreatesEachSnrTrackWithFloor) {
-    test.floorSnr_dB = 1;
+    test.floorSnr.dB = 1;
     initialize(method, test, targetListReader);
     forEachSettings(snrTrackFactory, assertFloorEqualsOne);
 }

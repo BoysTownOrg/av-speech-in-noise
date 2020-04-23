@@ -115,7 +115,7 @@ static auto format(const AdaptiveTest &test) -> std::string {
     writeMasker(stream, test);
     writeTargetList(stream, test);
     writeMaskerLevel(stream, test);
-    writeLabeledLine(stream, "starting SNR (dB)", test.startingSnr_dB);
+    writeLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
     writeCondition(stream, test);
     std::vector<int> up;
     std::vector<int> down;
@@ -142,7 +142,7 @@ static auto format(const FixedLevelTest &test) -> std::string {
     writeMasker(stream, test);
     writeTargetList(stream, test);
     writeMaskerLevel(stream, test);
-    writeLabeledLine(stream, "SNR (dB)", test.snr_dB);
+    writeLabeledLine(stream, "SNR (dB)", test.snr.dB);
     writeCondition(stream, test);
     insertNewLine(stream);
     return string(stream);
@@ -212,7 +212,7 @@ static auto format(const coordinate_response_measure::FixedLevelTrial &trial)
 static auto format(const coordinate_response_measure::AdaptiveTrial &trial)
     -> std::string {
     std::stringstream stream;
-    insert(stream, trial.SNR_dB);
+    insert(stream, trial.snr.dB);
     insertCommaAndSpace(stream);
     insert(stream, trial.correctNumber);
     insertCommaAndSpace(stream);
@@ -244,7 +244,7 @@ static auto format(const FreeResponseTrial &trial) -> std::string {
 
 static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
     std::stringstream stream;
-    insert(stream, trial.SNR_dB);
+    insert(stream, trial.snr.dB);
     insertCommaAndSpace(stream);
     insert(stream, trial.target);
     insertCommaAndSpace(stream);
@@ -257,7 +257,7 @@ static auto format(const open_set::AdaptiveTrial &trial) -> std::string {
 
 static auto format(const CorrectKeywordsTrial &trial) -> std::string {
     std::stringstream stream;
-    insert(stream, trial.SNR_dB);
+    insert(stream, trial.snr.dB);
     insertCommaAndSpace(stream);
     insert(stream, trial.target);
     insertCommaAndSpace(stream);

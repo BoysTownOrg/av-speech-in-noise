@@ -44,7 +44,7 @@ struct Target {
 };
 
 struct AdaptiveProgress {
-    int SNR_dB{};
+    SNR snr{};
     int reversals{};
 };
 

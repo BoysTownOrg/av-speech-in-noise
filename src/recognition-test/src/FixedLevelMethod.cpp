@@ -14,7 +14,7 @@ void FixedLevelMethodImpl::initialize(
     targetList = list;
     test = &p;
     trials_ = p.trials;
-    snr_dB_ = p.snr_dB;
+    snr_dB_ = p.snr.dB;
     loadFromDirectory(targetList, p);
 }
 
@@ -24,7 +24,7 @@ void FixedLevelMethodImpl::initialize(
     targetList = list;
     finiteTargetList = list;
     test = &p;
-    snr_dB_ = p.snr_dB;
+    snr_dB_ = p.snr.dB;
     loadFromDirectory(targetList, p);
     finiteTargetsExhausted_ = finiteTargetList->empty();
 }
