@@ -1951,6 +1951,13 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingShowsNextTrialButtonForSubject) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking,
+        playingTrialFromSubject);
+}
+
+PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsNextTrialButtonForSubject) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest,
