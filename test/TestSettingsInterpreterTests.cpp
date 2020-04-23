@@ -490,6 +490,12 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsAndEyeTrackingPassesSimpleFixedLevelSettings) {
+    assertPassesSimpleFixedLevelSettings(interpreter, model,
+        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargetsPassesSimpleFixedLevelSettings) {
     assertPassesSimpleFixedLevelSettings(interpreter, model,
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets);
