@@ -5,8 +5,9 @@
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <random>
 
+namespace av_speech_in_noise {
 class MersenneTwisterRandomizer : public target_list::Randomizer,
-                                  public av_speech_in_noise::Randomizer {
+                                  public Randomizer {
     std::mt19937 engine{std::random_device{}()};
 
   public:
@@ -28,5 +29,6 @@ class MersenneTwisterRandomizer : public target_list::Randomizer,
         return distribution(engine);
     }
 };
+}
 
 #endif

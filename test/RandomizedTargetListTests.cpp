@@ -11,9 +11,9 @@ static auto operator==(const LocalUrl &a, const LocalUrl &b) -> bool {
 }
 }
 
-namespace target_list {
+namespace av_speech_in_noise {
 namespace {
-class RandomizerStub : public Randomizer {
+class RandomizerStub : public target_list::Randomizer {
   public:
     [[nodiscard]] auto shuffledStrings() const { return shuffledStrings_; }
 

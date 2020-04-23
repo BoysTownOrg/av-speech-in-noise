@@ -1,6 +1,6 @@
 #include "SubdirectoryTargetListReader.hpp"
 
-namespace target_list {
+namespace av_speech_in_noise {
 SubdirectoryTargetListReader::SubdirectoryTargetListReader(
     TargetListFactory *targetListFactory, DirectoryReader *directoryReader)
     : targetListFactory{targetListFactory}, directoryReader{directoryReader} {}

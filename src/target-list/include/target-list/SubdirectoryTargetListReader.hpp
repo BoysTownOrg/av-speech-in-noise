@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-namespace target_list {
+namespace av_speech_in_noise {
 using LocalUrls = typename std::vector<av_speech_in_noise::LocalUrl>;
 
 class TargetListFactory {

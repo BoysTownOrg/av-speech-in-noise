@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 
+namespace av_speech_in_noise {
 namespace target_list {
 class Randomizer {
   public:
@@ -15,13 +16,14 @@ class Randomizer {
     virtual void shuffle(gsl::span<av_speech_in_noise::LocalUrl>) = 0;
     virtual void shuffle(gsl::span<int>) = 0;
 };
+}
 
 class RandomizedTargetListWithReplacement
     : public av_speech_in_noise::TargetList {
   public:
     class Factory : public TargetListFactory {
       public:
-        Factory(DirectoryReader *reader, Randomizer *randomizer)
+        Factory(DirectoryReader *reader, target_list::Randomizer *randomizer)
             : reader{reader}, randomizer{randomizer} {}
 
         auto make()
@@ -32,10 +34,11 @@ class RandomizedTargetListWithReplacement
 
       private:
         DirectoryReader *reader;
-        Randomizer *randomizer;
+        target_list::Randomizer *randomizer;
     };
 
-    RandomizedTargetListWithReplacement(DirectoryReader *, Randomizer *);
+    RandomizedTargetListWithReplacement(
+        DirectoryReader *, target_list::Randomizer *);
     void loadFromDirectory(const av_speech_in_noise::LocalUrl &) override;
     auto next() -> av_speech_in_noise::LocalUrl override;
     auto current() -> av_speech_in_noise::LocalUrl override;
@@ -46,13 +49,14 @@ class RandomizedTargetListWithReplacement
     av_speech_in_noise::LocalUrl directory_{};
     av_speech_in_noise::LocalUrl currentFile{};
     DirectoryReader *reader;
-    Randomizer *randomizer;
+    target_list::Randomizer *randomizer;
 };
 
 class RandomizedTargetListWithoutReplacement
     : public av_speech_in_noise::FiniteTargetList {
   public:
-    RandomizedTargetListWithoutReplacement(DirectoryReader *, Randomizer *);
+    RandomizedTargetListWithoutReplacement(
+        DirectoryReader *, target_list::Randomizer *);
     auto empty() -> bool override;
     void loadFromDirectory(
         const av_speech_in_noise::LocalUrl &directory) override;
@@ -66,14 +70,14 @@ class RandomizedTargetListWithoutReplacement
     av_speech_in_noise::LocalUrl directory_{};
     av_speech_in_noise::LocalUrl currentFile{};
     DirectoryReader *reader;
-    Randomizer *randomizer;
+    target_list::Randomizer *randomizer;
 };
 
 class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
   public:
     class Factory : public TargetListFactory {
       public:
-        Factory(DirectoryReader *reader, Randomizer *randomizer)
+        Factory(DirectoryReader *reader, target_list::Randomizer *randomizer)
             : reader{reader}, randomizer{randomizer} {}
 
         auto make()
@@ -84,10 +88,10 @@ class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
 
       private:
         DirectoryReader *reader;
-        Randomizer *randomizer;
+        target_list::Randomizer *randomizer;
     };
 
-    CyclicRandomizedTargetList(DirectoryReader *, Randomizer *);
+    CyclicRandomizedTargetList(DirectoryReader *, target_list::Randomizer *);
     void loadFromDirectory(
         const av_speech_in_noise::LocalUrl &directory) override;
     auto next() -> av_speech_in_noise::LocalUrl override;
@@ -98,7 +102,7 @@ class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
     LocalUrls files{};
     av_speech_in_noise::LocalUrl directory_{};
     DirectoryReader *reader;
-    Randomizer *randomizer;
+    target_list::Randomizer *randomizer;
 };
 }
 

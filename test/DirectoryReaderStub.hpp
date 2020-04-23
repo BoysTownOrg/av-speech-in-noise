@@ -4,7 +4,7 @@
 #include <target-list/SubdirectoryTargetListReader.hpp>
 #include <utility>
 
-namespace target_list {
+namespace av_speech_in_noise {
 class DirectoryReaderStub : public DirectoryReader {
     std::vector<av_speech_in_noise::LocalUrl> subDirectories_{};
     std::vector<av_speech_in_noise::LocalUrl> fileNames_;

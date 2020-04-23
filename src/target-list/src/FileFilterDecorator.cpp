@@ -3,7 +3,7 @@
 #include <numeric>
 #include <algorithm>
 
-namespace target_list {
+namespace av_speech_in_noise {
 static auto at(const std::vector<int> &x, gsl::index n) -> int {
     return x.at(n);
 }
@@ -91,7 +91,7 @@ auto FileIdentifierFilter::containsIdentifier(const std::string &file) -> bool {
     return file.find(identifier) != std::string::npos;
 }
 
-RandomSubsetFiles::RandomSubsetFiles(Randomizer *randomizer, int N)
+RandomSubsetFiles::RandomSubsetFiles(target_list::Randomizer *randomizer, int N)
     : randomizer{randomizer}, N{N} {}
 
 auto RandomSubsetFiles::filter(LocalUrls files) -> LocalUrls {

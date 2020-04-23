@@ -95,7 +95,7 @@ static auto notADirectory(NSString *path) -> BOOL {
 }
 
 namespace {
-class MacOsDirectoryReader : public target_list::DirectoryReader {
+class MacOsDirectoryReader : public av_speech_in_noise::DirectoryReader {
     auto filesIn(const av_speech_in_noise::LocalUrl &directory) -> std::vector<av_speech_in_noise::LocalUrl> override {
         return collectContentsIf(directory, notADirectory);
     }
@@ -181,8 +181,8 @@ void TimerImpl::timerCallback() { listener->callback(); }
 namespace av_speech_in_noise {
 static void main() {
     MacOsDirectoryReader reader;
-    target_list::FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
-    target_list::FileFilterDecorator fileExtensions{&reader, &fileExtensions_};
+    FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
+    FileFilterDecorator fileExtensions{&reader, &fileExtensions_};
     MersenneTwisterRandomizer randomizer;
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
@@ -207,55 +207,55 @@ static void main() {
     TextFileReaderImpl textFileReader;
     AdaptiveMethodImpl adaptiveMethod{
         snrTrackFactory, responseEvaluator, randomizer};
-    target_list::RandomizedTargetListWithReplacement targetsWithReplacement{
+    RandomizedTargetListWithReplacement targetsWithReplacement{
         &fileExtensions, &randomizer};
-    target_list::FileIdentifierExcluderFilter originalStimuli_{
+    FileIdentifierExcluderFilter originalStimuli_{
         {"100", "200", "300", "400"}};
-    target_list::FileIdentifierFilter oneHundredMsStimuli_{"100"};
-    target_list::FileIdentifierFilter twoHundredMsStimuli_{"200"};
-    target_list::FileIdentifierFilter threeHundredMsStimuli_{"300"};
-    target_list::FileIdentifierFilter fourHundredMsStimuli_{"400"};
-    target_list::FileFilterDecorator originalStimuli{
+    FileIdentifierFilter oneHundredMsStimuli_{"100"};
+    FileIdentifierFilter twoHundredMsStimuli_{"200"};
+    FileIdentifierFilter threeHundredMsStimuli_{"300"};
+    FileIdentifierFilter fourHundredMsStimuli_{"400"};
+    FileFilterDecorator originalStimuli{
         &fileExtensions, &originalStimuli_};
-    target_list::FileFilterDecorator oneHundredMsStimuli{
+    FileFilterDecorator oneHundredMsStimuli{
         &fileExtensions, &oneHundredMsStimuli_};
-    target_list::FileFilterDecorator twoHundredMsStimuli{
+    FileFilterDecorator twoHundredMsStimuli{
         &fileExtensions, &twoHundredMsStimuli_};
-    target_list::FileFilterDecorator threeHundredMsStimuli{
+    FileFilterDecorator threeHundredMsStimuli{
         &fileExtensions, &threeHundredMsStimuli_};
-    target_list::FileFilterDecorator fourHundredMsStimuli{
+    FileFilterDecorator fourHundredMsStimuli{
         &fileExtensions, &fourHundredMsStimuli_};
-    target_list::RandomSubsetFiles randomSubsetStimuli{&randomizer, 30};
-    target_list::FileFilterDecorator randomSubsetOriginalStimuli{
+    RandomSubsetFiles randomSubsetStimuli{&randomizer, 30};
+    FileFilterDecorator randomSubsetOriginalStimuli{
         &originalStimuli, &randomSubsetStimuli};
-    target_list::FileFilterDecorator randomSubsetOneHundredMsStimuli{
+    FileFilterDecorator randomSubsetOneHundredMsStimuli{
         &oneHundredMsStimuli, &randomSubsetStimuli};
-    target_list::FileFilterDecorator randomSubsetTwoHundredMsStimuli{
+    FileFilterDecorator randomSubsetTwoHundredMsStimuli{
         &twoHundredMsStimuli, &randomSubsetStimuli};
-    target_list::FileFilterDecorator randomSubsetThreeHundredMsStimuli{
+    FileFilterDecorator randomSubsetThreeHundredMsStimuli{
         &threeHundredMsStimuli, &randomSubsetStimuli};
-    target_list::FileFilterDecorator randomSubsetFourHundredMsStimuli{
+    FileFilterDecorator randomSubsetFourHundredMsStimuli{
         &fourHundredMsStimuli, &randomSubsetStimuli};
-    target_list::DirectoryReaderComposite composite{
+    DirectoryReaderComposite composite{
         {&randomSubsetOriginalStimuli, &randomSubsetOneHundredMsStimuli,
             &randomSubsetTwoHundredMsStimuli,
             &randomSubsetThreeHundredMsStimuli,
             &randomSubsetFourHundredMsStimuli}};
-    target_list::RandomizedTargetListWithoutReplacement silentIntervals{
+    RandomizedTargetListWithoutReplacement silentIntervals{
         &composite, &randomizer};
-    target_list::RandomizedTargetListWithoutReplacement allStimuli{
+    RandomizedTargetListWithoutReplacement allStimuli{
         &fileExtensions, &randomizer};
     FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     TobiiEyeTracker eyeTracker;
     RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, eyeTracker};
-    target_list::RandomizedTargetListWithReplacement::Factory
+    RandomizedTargetListWithReplacement::Factory
         targetsWithReplacementFactory{&fileExtensions, &randomizer};
-    target_list::SubdirectoryTargetListReader targetsWithReplacementReader{
+    SubdirectoryTargetListReader targetsWithReplacementReader{
         &targetsWithReplacementFactory, &reader};
-    target_list::CyclicRandomizedTargetList::Factory cyclicTargetsFactory{
+    CyclicRandomizedTargetList::Factory cyclicTargetsFactory{
         &fileExtensions, &randomizer};
-    target_list::SubdirectoryTargetListReader cyclicTargetsReader{
+    SubdirectoryTargetListReader cyclicTargetsReader{
         &cyclicTargetsFactory, &reader};
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,

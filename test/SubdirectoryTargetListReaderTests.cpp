@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 
-namespace target_list {
+namespace av_speech_in_noise {
 namespace {
 class TargetListFactoryStub : public TargetListFactory {
     std::vector<std::shared_ptr<av_speech_in_noise::TargetList>> lists_{};

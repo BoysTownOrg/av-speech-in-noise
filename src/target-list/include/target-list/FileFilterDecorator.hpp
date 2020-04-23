@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-namespace target_list {
+namespace av_speech_in_noise {
 class FileFilter {
   public:
     virtual ~FileFilter() = default;
@@ -52,11 +52,11 @@ class FileIdentifierExcluderFilter : public FileFilter {
 };
 
 class RandomSubsetFiles : public FileFilter {
-    Randomizer *randomizer;
+    target_list::Randomizer *randomizer;
     int N;
 
   public:
-    RandomSubsetFiles(Randomizer *, int);
+    RandomSubsetFiles(target_list::Randomizer *, int);
     auto filter(LocalUrls) -> LocalUrls override;
 };
 

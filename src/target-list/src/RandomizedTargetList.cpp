@@ -1,14 +1,14 @@
 #include "RandomizedTargetList.hpp"
 #include <algorithm>
 
-namespace target_list {
+namespace av_speech_in_noise {
 static auto filesIn(DirectoryReader *reader,
     const av_speech_in_noise::LocalUrl &s) -> LocalUrls {
     return reader->filesIn(s);
 }
 
-static auto shuffle(
-    Randomizer *randomizer, gsl::span<av_speech_in_noise::LocalUrl> v) {
+static auto shuffle(target_list::Randomizer *randomizer,
+    gsl::span<av_speech_in_noise::LocalUrl> v) {
     randomizer->shuffle(v);
 }
 
@@ -39,7 +39,7 @@ static auto allButLast(gsl::span<av_speech_in_noise::LocalUrl> s)
 }
 
 RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
-    DirectoryReader *reader, Randomizer *randomizer)
+    DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
 void RandomizedTargetListWithReplacement::loadFromDirectory(
@@ -68,7 +68,7 @@ auto RandomizedTargetListWithReplacement::directory()
 }
 
 RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
-    DirectoryReader *reader, Randomizer *randomizer)
+    DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
 void RandomizedTargetListWithoutReplacement::loadFromDirectory(
@@ -77,12 +77,12 @@ void RandomizedTargetListWithoutReplacement::loadFromDirectory(
 }
 
 auto RandomizedTargetListWithoutReplacement::empty() -> bool {
-    return target_list::empty(files);
+    return av_speech_in_noise::empty(files);
 }
 
 auto RandomizedTargetListWithoutReplacement::next()
     -> av_speech_in_noise::LocalUrl {
-    if (target_list::empty(files))
+    if (av_speech_in_noise::empty(files))
         return {""};
 
     currentFile = files.front();
@@ -106,7 +106,7 @@ void RandomizedTargetListWithoutReplacement::reinsertCurrent() {
 }
 
 CyclicRandomizedTargetList::CyclicRandomizedTargetList(
-    DirectoryReader *reader, Randomizer *randomizer)
+    DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
 void CyclicRandomizedTargetList::loadFromDirectory(
