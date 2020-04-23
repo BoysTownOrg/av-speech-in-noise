@@ -22,6 +22,9 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level free response with replacement";
     case Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement:
         return "fixed-level CRM with replacement";
+    case Method::
+        fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking:
+        return "fixed-level CRM with replacement eye tracking";
     case Method::fixedLevelFreeResponseWithSilentIntervalTargets:
         return "fixed-level free response silent intervals";
     case Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets:
