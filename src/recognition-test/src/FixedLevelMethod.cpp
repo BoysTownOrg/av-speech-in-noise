@@ -5,7 +5,7 @@ FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator &evaluator)
     : evaluator{evaluator} {}
 
 static void loadFromDirectory(TargetList *list, const FixedLevelTest &test) {
-    list->loadFromDirectory(test.targetListDirectory);
+    list->loadFromDirectory(test.targetsUrl.path);
 }
 
 void FixedLevelMethodImpl::initialize(

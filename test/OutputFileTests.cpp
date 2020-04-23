@@ -353,8 +353,8 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertCommonTestWritten(WritingTest &useCase) {
-        test(useCase).maskerFilePath = "a";
-        test(useCase).targetListDirectory = "d";
+        test(useCase).maskerFileUrl.path = "a";
+        test(useCase).targetsUrl.path = "d";
         test(useCase).maskerLevel.dB_SPL = 1;
         run(useCase, file);
         assertContainsColonDelimitedEntry(writer, "masker", "a");

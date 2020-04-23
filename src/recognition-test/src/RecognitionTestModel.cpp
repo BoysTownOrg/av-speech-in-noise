@@ -129,7 +129,7 @@ static void show(TargetPlayer &player) { player.showVideo(); }
 static void hide(TargetPlayer &player) { player.hideVideo(); }
 
 static auto maskerFilePath(const Test &test) -> std::string {
-    return test.maskerFilePath;
+    return test.maskerFileUrl.path;
 }
 
 static void throwRequestFailureOnInvalidAudioFile(
@@ -373,7 +373,7 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
             loadFile(targetPlayer, file);
             setLevel_dB(targetPlayer, level_dB(targetPlayer, calibration));
         },
-        calibration.filePath);
+        calibration.fileUrl.path);
     show(targetPlayer);
     play(targetPlayer);
 }

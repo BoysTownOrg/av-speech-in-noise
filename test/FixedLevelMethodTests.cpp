@@ -226,14 +226,14 @@ TEST_F(PreInitializedFixedLevelMethodTests,
 
 TEST_F(
     PreInitializedFixedLevelMethodTests, initializePassesTargetListDirectory) {
-    test.targetListDirectory = "a";
+    test.targetsUrl.path = "a";
     run(initializingMethod, method);
     assertEqual("a", targetList.directory());
 }
 
 TEST_F(PreInitializedFixedLevelMethodTests,
     initializeWithFiniteTargetListPassesTargetListDirectory) {
-    test.targetListDirectory = "a";
+    test.targetsUrl.path = "a";
     run(initializingMethodWithFiniteTargetList, method);
     assertEqual("a", finiteTargetList.directory());
 }

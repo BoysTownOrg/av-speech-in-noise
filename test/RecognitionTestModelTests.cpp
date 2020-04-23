@@ -418,7 +418,7 @@ void setFullScaleLevel_dB_SPL(Test &test, int x) {
 }
 
 void setMaskerFilePath(Test &test, std::string s) {
-    test.maskerFilePath = std::move(s);
+    test.maskerFileUrl.path = std::move(s);
 }
 
 void setRms(MaskerPlayerStub &player, double x) { player.setRms(x); }
@@ -1146,7 +1146,7 @@ RECOGNITION_TEST_MODEL_TEST(
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationPassesAudioFileToTargetPlayer) {
-    calibration.filePath = "a";
+    calibration.fileUrl.path = "a";
     run(playingCalibration, model);
     assertFilePathEquals(targetPlayer, "a");
 }
@@ -1383,7 +1383,7 @@ RECOGNITION_TEST_MODEL_TEST(
 
 RECOGNITION_TEST_MODEL_TEST(
     playCalibrationThrowsRequestFailureWhenTargetPlayerThrowsInvalidAudioFile) {
-    calibration.filePath = "a";
+    calibration.fileUrl.path = "a";
     targetPlayer.throwInvalidAudioFileOnRms();
     assertCallThrowsRequestFailure(playingCalibration, "unable to read a");
 }

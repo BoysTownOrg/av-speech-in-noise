@@ -1894,9 +1894,9 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(playCalibrationPassesFilePath) {
-    interpretedCalibration.filePath = "a";
+    interpretedCalibration.fileUrl.path = "a";
     playCalibration(setupView);
-    assertEqual("a", calibration(model).filePath);
+    assertEqual("a", calibration(model).fileUrl.path);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {

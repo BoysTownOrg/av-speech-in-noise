@@ -71,11 +71,11 @@ static void writeTransducer(std::stringstream &stream, const TestIdentity &p) {
 }
 
 static void writeMasker(std::stringstream &stream, const Test &p) {
-    writeLabeledLine(stream, "masker", p.maskerFilePath);
+    writeLabeledLine(stream, "masker", p.maskerFileUrl.path);
 }
 
 static void writeTargetList(std::stringstream &stream, const Test &p) {
-    writeLabeledLine(stream, "targets", p.targetListDirectory);
+    writeLabeledLine(stream, "targets", p.targetsUrl.path);
 }
 
 static void writeMaskerLevel(std::stringstream &stream, const Test &p) {

@@ -41,10 +41,14 @@ struct Level {
     int dB_SPL{};
 };
 
+struct LocalUrl {
+    std::string path;
+};
+
 struct Test {
     TestIdentity identity;
-    std::string targetListDirectory;
-    std::string maskerFilePath;
+    LocalUrl targetsUrl;
+    LocalUrl maskerFileUrl;
     Level maskerLevel;
     Level fullScaleLevel;
     Condition condition{};
@@ -89,7 +93,7 @@ struct AudioSettings {
 };
 
 struct Calibration : AudioSettings {
-    std::string filePath;
+    LocalUrl fileUrl;
     Level level;
     Level fullScaleLevel;
 };

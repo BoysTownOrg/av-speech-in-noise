@@ -82,9 +82,9 @@ static auto integer(const std::string &s) -> int {
 static void assign(
     Test &test, const std::string &entryName, const std::string &entry) {
     if (entryName == name(TestSetting::targets))
-        test.targetListDirectory = entry;
+        test.targetsUrl.path = entry;
     else if (entryName == name(TestSetting::masker))
-        test.maskerFilePath = entry;
+        test.maskerFileUrl.path = entry;
     else if (entryName == name(TestSetting::maskerLevel))
         test.maskerLevel.dB_SPL = integer(entry);
     else if (entryName == name(TestSetting::condition))
@@ -96,7 +96,7 @@ static void assign(
 static void assign(Calibration &calibration, const std::string &entryName,
     const std::string &entry) {
     if (entryName == name(TestSetting::masker))
-        calibration.filePath = entry;
+        calibration.fileUrl.path = entry;
     else if (entryName == name(TestSetting::maskerLevel))
         calibration.level.dB_SPL = integer(entry);
 }

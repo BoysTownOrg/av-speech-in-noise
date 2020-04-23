@@ -557,7 +557,7 @@ ADAPTIVE_METHOD_TEST(writeTestParametersPassesToOutputFile) {
 }
 
 ADAPTIVE_METHOD_TEST(initializePassesTargetListDirectory) {
-    test.targetListDirectory = "a";
+    test.targetsUrl.path = "a";
     initialize(method, test, targetListReader);
     assertEqual("a", targetListReader.directory());
 }

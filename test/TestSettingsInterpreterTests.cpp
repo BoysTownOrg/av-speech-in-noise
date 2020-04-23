@@ -60,8 +60,8 @@ void assertPassesSimpleAdaptiveSettings(
             entryWithNewline(TestSetting::thresholdReversals, "4"),
             entryWithNewline(TestSetting::condition, Condition::audioVisual)},
         5);
-    assertEqual("a", adaptiveTest(model).targetListDirectory);
-    assertEqual("b", adaptiveTest(model).maskerFilePath);
+    assertEqual("a", adaptiveTest(model).targetsUrl.path);
+    assertEqual("b", adaptiveTest(model).maskerFileUrl.path);
     assertEqual(65, adaptiveTest(model).maskerLevel.dB_SPL);
     assertEqual(5, adaptiveTest(model).startingSnr.dB);
     assertEqual(4, adaptiveTest(model).thresholdReversals);
@@ -80,8 +80,8 @@ void assertPassesSimpleFixedLevelSettings(
             entryWithNewline(TestSetting::masker, "b"),
             entryWithNewline(TestSetting::maskerLevel, "65")},
         5);
-    assertEqual("a", fixedLevelTest(model).targetListDirectory);
-    assertEqual("b", fixedLevelTest(model).maskerFilePath);
+    assertEqual("a", fixedLevelTest(model).targetsUrl.path);
+    assertEqual("b", fixedLevelTest(model).maskerFileUrl.path);
     assertEqual(65, fixedLevelTest(model).maskerLevel.dB_SPL);
     assertEqual(5, fixedLevelTest(model).snr.dB);
     assertEqual(Presenter::fullScaleLevel.dB_SPL,
@@ -203,7 +203,7 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
     auto calibration{interpreter.calibration(
         concatenate({entryWithNewline(TestSetting::masker, "a"),
             entryWithNewline(TestSetting::maskerLevel, "1")}))};
-    assertEqual("a", calibration.filePath);
+    assertEqual("a", calibration.fileUrl.path);
     assertEqual(1, calibration.level.dB_SPL);
     assertEqual(
         Presenter::fullScaleLevel.dB_SPL, calibration.fullScaleLevel.dB_SPL);
@@ -213,21 +213,21 @@ TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             "f:\n", entryWithNewline(TestSetting::targets, "a")});
-    assertEqual("a", adaptiveTest(model).targetListDirectory);
+    assertEqual("a", adaptiveTest(model).targetsUrl.path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine2) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail), "\n",
             entryWithNewline(TestSetting::targets, "a")});
-    assertEqual("a", adaptiveTest(model).targetListDirectory);
+    assertEqual("a", adaptiveTest(model).targetsUrl.path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine3) {
     initialize(interpreter, model,
         {"\n", entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             "\n", entryWithNewline(TestSetting::targets, "a")});
-    assertEqual("a", adaptiveTest(model).targetListDirectory);
+    assertEqual("a", adaptiveTest(model).targetsUrl.path);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
