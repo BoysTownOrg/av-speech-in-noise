@@ -3,7 +3,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
     : player{player}, reader{reader} {
     player->subscribe(this);
@@ -40,7 +40,7 @@ auto TargetPlayerImpl::rms() -> double {
         return 0;
 
     auto firstChannel{audio.front()};
-    return stimulus_players::rms(firstChannel);
+    return av_speech_in_noise::rms(firstChannel);
 }
 
 auto TargetPlayerImpl::readAudio_() -> audio_type {

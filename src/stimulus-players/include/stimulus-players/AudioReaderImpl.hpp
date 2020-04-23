@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 class AudioBuffer {
   public:
     virtual ~AudioBuffer() = default;

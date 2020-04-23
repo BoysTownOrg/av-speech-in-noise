@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 namespace {
 class AudioBufferStub : public AudioBuffer {
     std::vector<std::vector<int>> audio_{};

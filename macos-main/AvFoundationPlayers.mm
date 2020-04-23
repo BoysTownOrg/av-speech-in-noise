@@ -10,7 +10,7 @@
 
 @implementation VideoPlayerActions {
   @public
-    stimulus_players::AvFoundationVideoPlayer *controller;
+    av_speech_in_noise::AvFoundationVideoPlayer *controller;
 }
 
 - (void)playbackComplete {
@@ -18,7 +18,7 @@
 }
 @end
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 static auto sampleRateHz(AVAssetTrack *track) -> double {
     const auto *const description{
         CMAudioFormatDescriptionGetStreamBasicDescription(
@@ -202,7 +202,7 @@ auto CoreAudioBufferedReader::minimumPossibleSample() -> int {
 }
 
 auto CoreAudioBufferedReader::sampleRateHz() -> double {
-    return stimulus_players::sampleRateHz(trackOutput.track);
+    return av_speech_in_noise::sampleRateHz(trackOutput.track);
 }
 
 static void init(
@@ -389,7 +389,7 @@ void AvFoundationVideoPlayer::hide() { [videoWindow setIsVisible:NO]; }
 void AvFoundationVideoPlayer::show() { showWindow(); }
 
 auto AvFoundationVideoPlayer::deviceCount() -> int {
-    return stimulus_players::deviceCount();
+    return av_speech_in_noise::deviceCount();
 }
 
 auto AvFoundationVideoPlayer::deviceDescription(int index) -> std::string {
@@ -401,7 +401,7 @@ static auto playing(AVPlayer *player) -> bool {
 }
 
 auto AvFoundationVideoPlayer::playing() -> bool {
-    return stimulus_players::playing(player);
+    return av_speech_in_noise::playing(player);
 }
 
 static auto durationSeconds_(AVAsset *asset) -> Float64 {
@@ -486,7 +486,7 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
     AudioStreamBasicDescription streamFormat{};
 
     streamFormat.mSampleRate =
-        stimulus_players::sampleRateHz(audioTrack(asset));
+        av_speech_in_noise::sampleRateHz(audioTrack(asset));
     streamFormat.mFormatID = kAudioFormatLinearPCM;
     streamFormat.mFramesPerPacket = 1;
     streamFormat.mBytesPerPacket = 4;
@@ -503,7 +503,7 @@ void AvFoundationAudioPlayer::loadFile(std::string filePath) {
 }
 
 auto AvFoundationAudioPlayer::deviceCount() -> int {
-    return stimulus_players::deviceCount();
+    return av_speech_in_noise::deviceCount();
 }
 
 auto AvFoundationAudioPlayer::deviceDescription(int index) -> std::string {
@@ -537,7 +537,7 @@ auto AvFoundationAudioPlayer::sampleRateHz() -> double {
 void AvFoundationAudioPlayer::stop() { AudioOutputUnitStop(audioUnit); }
 
 auto AvFoundationAudioPlayer::outputDevice(int index) -> bool {
-    return stimulus_players::outputDevice(index);
+    return av_speech_in_noise::outputDevice(index);
 }
 
 static auto numerator(const mach_timebase_info_data_t &t) -> uint32_t {

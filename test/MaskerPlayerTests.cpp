@@ -13,7 +13,7 @@ constexpr auto operator==(const PlayerTime &a, const PlayerTime &b) -> bool {
 }
 }
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 namespace {
 auto at(const std::vector<std::string> &v, gsl::index n) -> std::string {
     return v.at(n);

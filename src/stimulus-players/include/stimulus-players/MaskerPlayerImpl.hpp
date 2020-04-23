@@ -8,7 +8,7 @@
 #include <vector>
 #include <atomic>
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 using channel_buffer_type = gsl::span<float>;
 
 class AudioPlayer {

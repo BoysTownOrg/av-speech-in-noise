@@ -8,7 +8,7 @@
 #include <string>
 #include <atomic>
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 class VideoPlayer {
   public:
     class EventListener {

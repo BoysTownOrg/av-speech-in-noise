@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 static auto at(std::vector<double> &x, gsl::index n) -> double & {
     return x.at(n);
 }
@@ -116,7 +116,7 @@ void MaskerPlayerImpl::subscribe(MaskerPlayer::EventListener *e) {
 }
 
 auto MaskerPlayerImpl::durationSeconds() -> double {
-    return samples(sourceAudio) / stimulus_players::sampleRateHz(player);
+    return samples(sourceAudio) / av_speech_in_noise::sampleRateHz(player);
 }
 
 static auto mathModulus(sample_index_type a, sample_index_type b)
@@ -133,7 +133,7 @@ void MaskerPlayerImpl::seekSeconds(double x) {
     std::fill(audioFrameHeadsPerChannel.begin(),
         audioFrameHeadsPerChannel.end(),
         mathModulus(gsl::narrow_cast<sample_index_type>(
-                        x * stimulus_players::sampleRateHz(player)),
+                        x * av_speech_in_noise::sampleRateHz(player)),
             samples(sourceAudio)));
 }
 
@@ -141,7 +141,7 @@ void MaskerPlayerImpl::recalculateSamplesToWaitPerChannel() {
     std::generate(samplesToWaitPerChannel.begin(),
         samplesToWaitPerChannel.end(), [&, n = 0]() mutable {
             return gsl::narrow_cast<channel_index_type>(
-                stimulus_players::sampleRateHz(player) *
+                av_speech_in_noise::sampleRateHz(player) *
                 mainThread.channelDelaySeconds(n++));
         });
 }
@@ -151,7 +151,7 @@ auto MaskerPlayerImpl::fadeTimeSeconds() -> double {
 }
 
 auto MaskerPlayerImpl::sampleRateHz() -> double {
-    return stimulus_players::sampleRateHz(player);
+    return av_speech_in_noise::sampleRateHz(player);
 }
 
 auto MaskerPlayerImpl::nanoseconds(av_speech_in_noise::PlayerTime t)
@@ -171,7 +171,7 @@ void MaskerPlayerImpl::loadFile(const av_speech_in_noise::LocalUrl &file) {
     recalculateSamplesToWaitPerChannel();
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(mainThread.fadeTimeSeconds() *
-            stimulus_players::sampleRateHz(player)));
+            av_speech_in_noise::sampleRateHz(player)));
     sourceAudio = readAudio(file.path);
     std::fill(
         audioFrameHeadsPerChannel.begin(), audioFrameHeadsPerChannel.end(), 0);
@@ -187,7 +187,7 @@ void MaskerPlayerImpl::fillAudioBuffer(
 auto MaskerPlayerImpl::rms() -> double {
     return noChannels(sourceAudio)
         ? 0
-        : stimulus_players::rms(firstChannel(sourceAudio));
+        : av_speech_in_noise::rms(firstChannel(sourceAudio));
 }
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
@@ -249,7 +249,7 @@ void MaskerPlayerImpl::clearChannelDelays() {
 }
 
 void MaskerPlayerImpl::useFirstChannelOnly() {
-    stimulus_players::set(firstChannelOnly);
+    av_speech_in_noise::set(firstChannelOnly);
 }
 
 void MaskerPlayerImpl::useAllChannels() { clear(firstChannelOnly); }
@@ -297,8 +297,8 @@ void MaskerPlayerImpl::MainThread::fadeIn() {
     if (fading())
         return;
 
-    stimulus_players::set(fadingIn);
-    stimulus_players::set(sharedState->pleaseFadeIn);
+    av_speech_in_noise::set(fadingIn);
+    av_speech_in_noise::set(sharedState->pleaseFadeIn);
     player->play();
     scheduleCallbackAfterSeconds(0.1);
 }
@@ -315,8 +315,8 @@ void MaskerPlayerImpl::MainThread::fadeOut() {
     if (fading())
         return;
 
-    stimulus_players::set(fadingOut);
-    stimulus_players::set(sharedState->pleaseFadeOut);
+    av_speech_in_noise::set(fadingOut);
+    av_speech_in_noise::set(sharedState->pleaseFadeOut);
     scheduleCallbackAfterSeconds(0.1);
 }
 
@@ -413,7 +413,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
 void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
     updateWindowLength();
     hannCounter = 0;
-    stimulus_players::set(fadingIn);
+    av_speech_in_noise::set(fadingIn);
 }
 
 void MaskerPlayerImpl::AudioThread::updateWindowLength() {
@@ -428,7 +428,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
 void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
     updateWindowLength();
     hannCounter = halfWindowLength;
-    stimulus_players::set(fadingOut);
+    av_speech_in_noise::set(fadingOut);
 }
 
 auto MaskerPlayerImpl::AudioThread::nextFadeScalar() -> double {
@@ -449,7 +449,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(
     if (doneFadingIn()) {
         sharedState->fadeInCompleteSystemTime.store(systemTime);
         sharedState->fadeInCompleteSystemTimeSampleOffset.store(offset + 1);
-        stimulus_players::set(sharedState->fadeInComplete);
+        av_speech_in_noise::set(sharedState->fadeInComplete);
         clear(fadingIn);
     }
 }
@@ -464,7 +464,7 @@ auto MaskerPlayerImpl::AudioThread::doneFadingOut() -> bool {
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
     if (doneFadingOut()) {
-        stimulus_players::set(sharedState->fadeOutComplete);
+        av_speech_in_noise::set(sharedState->fadeOutComplete);
         clear(fadingOut);
     }
 }

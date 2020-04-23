@@ -12,7 +12,7 @@
 
 @class VideoPlayerActions;
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 class CoreAudioBuffer : public AudioBuffer {
   public:
     explicit CoreAudioBuffer(AVAssetReaderTrackOutput *);

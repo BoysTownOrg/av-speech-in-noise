@@ -36,7 +36,7 @@
 @end
 
 namespace {
-class TimerImpl : public stimulus_players::Timer {
+class TimerImpl : public av_speech_in_noise::Timer {
   public:
     TimerImpl();
     void subscribe(EventListener *e) override;
@@ -187,13 +187,13 @@ static void main() {
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
-    stimulus_players::AvFoundationVideoPlayer videoPlayer{subjectScreen};
-    stimulus_players::CoreAudioBufferedReader bufferedReader;
-    stimulus_players::AudioReaderImpl audioReader{&bufferedReader};
-    stimulus_players::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
-    stimulus_players::AvFoundationAudioPlayer audioPlayer;
+    av_speech_in_noise::AvFoundationVideoPlayer videoPlayer{subjectScreen};
+    av_speech_in_noise::CoreAudioBufferedReader bufferedReader;
+    av_speech_in_noise::AudioReaderImpl audioReader{&bufferedReader};
+    av_speech_in_noise::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
+    av_speech_in_noise::AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
-    stimulus_players::MaskerPlayerImpl maskerPlayer{
+    av_speech_in_noise::MaskerPlayerImpl maskerPlayer{
         &audioPlayer, &audioReader, &timer};
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;

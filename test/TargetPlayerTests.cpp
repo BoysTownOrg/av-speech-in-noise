@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 namespace {
 class VideoPlayerStub : public VideoPlayer {
   public:

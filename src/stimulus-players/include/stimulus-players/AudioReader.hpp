@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 using sample_type = float;
 
 using channel_type = std::vector<sample_type>;

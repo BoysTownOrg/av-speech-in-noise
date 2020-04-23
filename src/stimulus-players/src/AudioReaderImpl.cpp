@@ -1,7 +1,7 @@
 #include "AudioReaderImpl.hpp"
 #include <gsl/gsl>
 
-namespace stimulus_players {
+namespace av_speech_in_noise {
 static void resize(audio_type &audio, gsl::index size) { audio.resize(size); }
 
 static auto channel(audio_type &audio, gsl::index n) -> channel_type & {
