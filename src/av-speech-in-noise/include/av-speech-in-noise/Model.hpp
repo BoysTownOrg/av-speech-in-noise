@@ -60,15 +60,6 @@ struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
 enum class Condition { auditoryOnly, audioVisual };
 
-constexpr auto name(Condition c) -> const char * {
-    switch (c) {
-    case Condition::auditoryOnly:
-        return "auditory-only";
-    case Condition::audioVisual:
-        return "audio-visual";
-    }
-}
-
 struct TrackingSequence {
     int runCount{};
     int stepSize{};

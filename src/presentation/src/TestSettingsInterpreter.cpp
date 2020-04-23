@@ -1,4 +1,5 @@
 #include "TestSettingsInterpreter.hpp"
+#include <av-speech-in-noise/name.hpp>
 #include <gsl/gsl>
 #include <sstream>
 #include <functional>

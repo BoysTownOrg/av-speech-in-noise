@@ -1,4 +1,5 @@
 #include "OutputFile.hpp"
+#include <av-speech-in-noise/name.hpp>
 #include <sstream>
 #include <algorithm>
 
