@@ -47,7 +47,7 @@ class AvFoundationVideoPlayer : public VideoPlayer {
     explicit AvFoundationVideoPlayer(NSScreen *);
     void playbackComplete();
     void play() override;
-    void playAt(const av_speech_in_noise::PlayerTimeWithDelay &) override;
+    void playAt(const PlayerTimeWithDelay &) override;
     void loadFile(std::string filePath) override;
     void setDevice(int index) override;
     void hide() override;
@@ -104,9 +104,9 @@ class AvFoundationAudioPlayer : public AudioPlayer {
     void stop() override;
     void timerCallback();
     auto outputDevice(int index) -> bool override;
-    auto nanoseconds(av_speech_in_noise::PlayerTime)
+    auto nanoseconds(PlayerTime)
         -> std::uintmax_t override;
-    auto currentSystemTime() -> av_speech_in_noise::PlayerTime override;
+    auto currentSystemTime() -> PlayerTime override;
 
   private:
     static auto AU_RenderCallback(void *inRefCon,

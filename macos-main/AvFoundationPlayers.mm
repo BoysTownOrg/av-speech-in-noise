@@ -300,7 +300,7 @@ void AvFoundationVideoPlayer::subscribe(EventListener *e) { listener_ = e; }
 void AvFoundationVideoPlayer::play() { [player play]; }
 
 void AvFoundationVideoPlayer::playAt(
-    const av_speech_in_noise::PlayerTimeWithDelay &t) {
+    const PlayerTimeWithDelay &t) {
     // https://developer.apple.com/documentation/avfoundation/avplayer/1386591-setrate?language=objc
     // "For clients linked against iOS 10.0 and later or macOS 10.12 and later,
     // invoking [[setRate:time:atHostTime:]] when
@@ -548,7 +548,7 @@ static auto denominator(const mach_timebase_info_data_t &t) -> uint32_t {
     return t.denom;
 }
 
-auto AvFoundationAudioPlayer::nanoseconds(av_speech_in_noise::PlayerTime t)
+auto AvFoundationAudioPlayer::nanoseconds(PlayerTime t)
     -> std::uintmax_t {
     // https://stackoverflow.com/questions/23378063/how-can-i-use-mach-absolute-time-without-overflowing
     mach_timebase_info_data_t tb;
@@ -560,8 +560,8 @@ auto AvFoundationAudioPlayer::nanoseconds(av_speech_in_noise::PlayerTime t)
     return (high << 32) + highRem + low;
 }
 
-auto AvFoundationAudioPlayer::currentSystemTime() -> av_speech_in_noise::PlayerTime {
-    av_speech_in_noise::PlayerTime t{};
+auto AvFoundationAudioPlayer::currentSystemTime() -> PlayerTime {
+    PlayerTime t{};
     t.system = mach_absolute_time();
     return t;
 }

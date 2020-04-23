@@ -187,13 +187,13 @@ static void main() {
     auto subjectScreen = [[NSScreen screens] lastObject];
     auto subjectScreenFrame = subjectScreen.frame;
     auto subjectScreenOrigin = subjectScreenFrame.origin;
-    av_speech_in_noise::AvFoundationVideoPlayer videoPlayer{subjectScreen};
-    av_speech_in_noise::CoreAudioBufferedReader bufferedReader;
-    av_speech_in_noise::AudioReaderImpl audioReader{&bufferedReader};
-    av_speech_in_noise::TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
-    av_speech_in_noise::AvFoundationAudioPlayer audioPlayer;
+    AvFoundationVideoPlayer videoPlayer{subjectScreen};
+    CoreAudioBufferedReader bufferedReader;
+    AudioReaderImpl audioReader{&bufferedReader};
+    TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
+    AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
-    av_speech_in_noise::MaskerPlayerImpl maskerPlayer{
+    MaskerPlayerImpl maskerPlayer{
         &audioPlayer, &audioReader, &timer};
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
