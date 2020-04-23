@@ -1859,6 +1859,12 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingPassesSubjectId) {
+    assertPassesSubjectId(
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
+}
+
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
     assertPassesTesterId(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
