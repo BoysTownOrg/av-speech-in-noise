@@ -1459,7 +1459,8 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
 }
 
-PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
+PRESENTER_TEST(
+    exitTestAfterCompletingTrialHidesFreeResponseSubmissionForFixedLevelFreeResponseTestWithAllTargets) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingFixedLevelFreeResponseTestWithAllTargets,
         submittingFreeResponse);
