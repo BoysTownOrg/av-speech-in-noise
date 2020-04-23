@@ -649,6 +649,26 @@ class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
     }
 };
 
+class
+    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest
+    : public ConfirmingTestSetup {
+    ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
+
+  public:
+    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
+
+    void run() override {
+        setMethod(interpreter,
+            Method::
+                fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
+        confirmTestSetup(view);
+    }
+};
+
 class ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
@@ -1079,6 +1099,9 @@ class PresenterTests : public ::testing::Test {
             &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest{
+            &setupView, testSettingsInterpreter};
+    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest{
             &setupView, testSettingsInterpreter};
     ConfirmingAdaptiveCorrectKeywordsTest confirmingAdaptiveCorrectKeywordsTest{
         &setupView, testSettingsInterpreter};
@@ -1630,6 +1653,12 @@ PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementHidesTestSetupView) {
     assertHidesTestSetupView(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingHidesTestSetupView) {
+    assertHidesTestSetupView(
+        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest);
 }
 
 PRESENTER_TEST(
