@@ -398,6 +398,15 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingInitializesFixedLevelTest) {
+    initialize(interpreter, model,
+        Method::
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking);
+    assertTrue(
+        model.fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsInitializesFixedLevelTest) {
     initialize(
         interpreter, model, Method::fixedLevelFreeResponseWithAllTargets);

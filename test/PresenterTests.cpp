@@ -1337,6 +1337,11 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void initializeWithTargetReplacementAndEyeTracking(
+        const FixedLevelTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void initializeWithSilentIntervalTargets(const FixedLevelTest &) override {
         throw RequestFailure{errorMessage};
     }

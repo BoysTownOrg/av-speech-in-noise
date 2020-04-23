@@ -29,6 +29,11 @@ class ModelStub : public Model {
     }
 
     [[nodiscard]] auto
+    fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized() const {
+        return fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_;
+    }
+
+    [[nodiscard]] auto
     fixedLevelTestWithAllTargetsAndEyeTrackingInitialized() const {
         return fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_;
     }
@@ -97,6 +102,12 @@ class ModelStub : public Model {
     void initializeWithTargetReplacement(const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         defaultFixedLevelTestInitialized_ = true;
+    }
+
+    void initializeWithTargetReplacementAndEyeTracking(
+        const FixedLevelTest &p) {
+        fixedLevelTest_ = p;
+        fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_ = true;
     }
 
     void initialize(const AdaptiveTest &p) override {
@@ -204,6 +215,7 @@ class ModelStub : public Model {
     bool defaultAdaptiveTestInitialized_{};
     bool fixedLevelTestWithSilentIntervalTargetsInitialized_{};
     bool fixedLevelTestWithAllTargetsInitialized_{};
+    bool fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_{};
     bool fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};

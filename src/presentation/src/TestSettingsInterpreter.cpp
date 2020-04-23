@@ -207,6 +207,10 @@ static void initializeFixedLevelTest(Model &model, const std::string &contents,
     else if (method_ ==
         Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking)
         model.initializeWithAllTargetsAndEyeTracking(test);
+    else if (method_ ==
+        Method::
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking)
+        model.initializeWithTargetReplacementAndEyeTracking(test);
     else
         model.initializeWithTargetReplacement(test);
 }
