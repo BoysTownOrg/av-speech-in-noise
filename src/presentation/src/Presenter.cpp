@@ -38,24 +38,6 @@ static void readyNextTrial(
     experimenterPresenter.readyNextTrial();
 }
 
-static auto defaultAdaptiveCoordinateResponseMeasure(Method m) -> bool {
-    return m == Method::defaultAdaptiveCoordinateResponseMeasure;
-}
-
-static auto adaptiveCoordinateResponseMeasureWithSingleSpeaker(Method m)
-    -> bool {
-    return m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker;
-}
-
-static auto adaptiveCoordinateResponseMeasureWithDelayedMasker(Method m)
-    -> bool {
-    return m == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker;
-}
-
-static auto adaptiveCoordinateResponseMeasureWithEyeTracking(Method m) -> bool {
-    return m == Method::adaptiveCoordinateResponseMeasureWithEyeTracking;
-}
-
 static auto fixedLevelCoordinateResponseMeasureWithTargetReplacement(Method m)
     -> bool {
     return m ==
@@ -77,10 +59,10 @@ static auto adaptiveCorrectKeywords(Method m) -> bool {
 }
 
 static auto adaptiveCoordinateResponseMeasure(Method m) -> bool {
-    return defaultAdaptiveCoordinateResponseMeasure(m) ||
-        adaptiveCoordinateResponseMeasureWithSingleSpeaker(m) ||
-        adaptiveCoordinateResponseMeasureWithDelayedMasker(m) ||
-        adaptiveCoordinateResponseMeasureWithEyeTracking(m);
+    return m == Method::defaultAdaptiveCoordinateResponseMeasure ||
+        m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
+        m == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
+        m == Method::adaptiveCoordinateResponseMeasureWithEyeTracking;
 }
 
 static auto fixedLevelCoordinateResponseMeasure(Method m) -> bool {
