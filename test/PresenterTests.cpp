@@ -1886,6 +1886,12 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingPassesTesterId) {
+    assertPassesTesterId(
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
+}
+
 PRESENTER_TEST(playCalibrationPassesFilePath) {
     interpretedCalibration.filePath = "a";
     playCalibration(setupView);
