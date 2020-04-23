@@ -118,8 +118,7 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
 }
 
 static auto level(TargetPlayer &player, const Calibration &p) -> DigitalLevel {
-    return {gsl::narrow_cast<double>(p.level.dB_SPL - p.fullScaleLevel.dB_SPL) -
-        dB(player.rms())};
+    return {p.level.dB_SPL - p.fullScaleLevel.dB_SPL - dB(player.rms())};
 }
 
 static void show(TargetPlayer &player) { player.showVideo(); }

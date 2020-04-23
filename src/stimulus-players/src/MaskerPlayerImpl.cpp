@@ -88,8 +88,6 @@ static auto rms(const channel_type &channel) -> sample_type {
         samples(channel));
 }
 
-static auto dB(double x) -> double { return std::pow(10, x / 20); }
-
 static auto pi() -> double { return std::acos(-1); }
 
 static void mute(channel_buffer_type x) {
@@ -195,7 +193,7 @@ auto MaskerPlayerImpl::rms() -> double {
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
 void MaskerPlayerImpl::set(av_speech_in_noise::DigitalLevel x) {
-    write(levelScalar, dB(x.dB));
+    write(levelScalar, std::pow(10, x.dB / 20));
 }
 
 void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
