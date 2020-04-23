@@ -466,7 +466,7 @@ class MaskerPlayerTests : public ::testing::Test {
 
     void setSampleRateHz(double x) { audioPlayer.setSampleRateHz(x); }
 
-    void loadFile(std::string s = {}) { player.loadFile(std::move(s)); }
+    void loadFile(const std::string &s = {}) { player.loadFile({s}); }
 
     void fadeInFillAndCallback(channel_index_type n) {
         fadeIn();

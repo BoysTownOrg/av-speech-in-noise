@@ -60,9 +60,9 @@ class TargetPlayerStub : public TargetPlayer {
 
     void subscribe(EventListener *listener) override { listener_ = listener; }
 
-    void loadFile(std::string filePath) override {
+    void loadFile(const LocalUrl &filePath) override {
         addToLog("loadFile ");
-        filePath_ = std::move(filePath);
+        filePath_ = filePath.path;
     }
 
     void addToLog(const std::string &s) { log_.insert(s); }

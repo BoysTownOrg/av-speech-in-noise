@@ -41,7 +41,7 @@ class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
     void subscribe(TargetPlayer::EventListener *) override;
     void play() override;
     void playAt(const av_speech_in_noise::PlayerTimeWithDelay &) override;
-    void loadFile(std::string filePath) override;
+    void loadFile(const av_speech_in_noise::LocalUrl &) override;
     void hideVideo() override;
     void showVideo() override;
     auto rms() -> double override;

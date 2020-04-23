@@ -109,9 +109,9 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void fadeOut() override { fadeOutCalled_ = true; }
 
-    void loadFile(std::string filePath) override {
+    void loadFile(const LocalUrl &filePath) override {
         addToLog("loadFile ");
-        filePath_ = std::move(filePath);
+        filePath_ = filePath.path;
         if (throwInvalidAudioFileOnLoad_)
             throw InvalidAudioFile{};
     }

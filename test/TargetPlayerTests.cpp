@@ -196,7 +196,7 @@ TEST_F(TargetPlayerTests, hideVideoHidesVideo) {
 }
 
 TEST_F(TargetPlayerTests, loadFileLoadsFile) {
-    player.loadFile("a");
+    player.loadFile({"a"});
     assertEqual("a", videoPlayer.filePath());
 }
 
@@ -269,7 +269,7 @@ TEST_F(TargetPlayerTests, rmsComputesFirstChannel) {
 }
 
 TEST_F(TargetPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
-    player.loadFile("a");
+    player.loadFile({"a"});
     player.rms();
     assertEqual("a", audioReader.filePath());
 }

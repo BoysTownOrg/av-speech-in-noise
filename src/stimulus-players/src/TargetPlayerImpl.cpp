@@ -20,8 +20,8 @@ void TargetPlayerImpl::playAt(
     player->playAt(t);
 }
 
-void TargetPlayerImpl::loadFile(std::string filePath) {
-    player->loadFile(filePath_ = std::move(filePath));
+void TargetPlayerImpl::loadFile(const av_speech_in_noise::LocalUrl &file) {
+    player->loadFile(filePath_ = file.path);
 }
 
 void TargetPlayerImpl::hideVideo() { player->hide(); }

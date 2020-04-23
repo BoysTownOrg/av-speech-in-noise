@@ -165,16 +165,16 @@ auto MaskerPlayerImpl::currentSystemTime() -> av_speech_in_noise::PlayerTime {
     return player->currentSystemTime();
 }
 
-void MaskerPlayerImpl::loadFile(std::string filePath) {
+void MaskerPlayerImpl::loadFile(const av_speech_in_noise::LocalUrl &file) {
     if (playing())
         return;
 
-    player->loadFile(filePath);
+    player->loadFile(file.path);
     recalculateSamplesToWaitPerChannel();
     write(levelTransitionSamples_,
         gsl::narrow_cast<int>(mainThread.fadeTimeSeconds() *
             stimulus_players::sampleRateHz(player)));
-    sourceAudio = readAudio(std::move(filePath));
+    sourceAudio = readAudio(file.path);
     std::fill(
         audioFrameHeadsPerChannel.begin(), audioFrameHeadsPerChannel.end(), 0);
 }

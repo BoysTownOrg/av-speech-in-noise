@@ -41,7 +41,7 @@ class TargetPlayer {
     virtual void play() = 0;
     virtual void playAt(const PlayerTimeWithDelay &) = 0;
     virtual auto playing() -> bool = 0;
-    virtual void loadFile(std::string filePath) = 0;
+    virtual void loadFile(const LocalUrl &) = 0;
     virtual void hideVideo() = 0;
     virtual void showVideo() = 0;
     virtual auto rms() -> double = 0;
@@ -73,7 +73,7 @@ class MaskerPlayer {
     virtual void setAudioDevice(std::string) = 0;
     virtual void fadeIn() = 0;
     virtual void fadeOut() = 0;
-    virtual void loadFile(std::string filePath) = 0;
+    virtual void loadFile(const LocalUrl &) = 0;
     virtual auto playing() -> bool = 0;
     virtual auto rms() -> double = 0;
     virtual void setLevel_dB(double) = 0;

@@ -95,8 +95,8 @@ static void setLevel_dB(TargetPlayer &player, double x) {
     player.setLevel_dB(x);
 }
 
-static void loadFile(TargetPlayer &player, std::string s) {
-    player.loadFile(std::move(s));
+static void loadFile(TargetPlayer &player, const LocalUrl &s) {
+    player.loadFile(s);
 }
 
 static void play(TargetPlayer &player) { player.play(); }
@@ -128,16 +128,16 @@ static void show(TargetPlayer &player) { player.showVideo(); }
 
 static void hide(TargetPlayer &player) { player.hideVideo(); }
 
-static auto maskerFilePath(const Test &test) -> std::string {
-    return test.maskerFileUrl.path;
+static auto maskerFilePath(const Test &test) -> LocalUrl {
+    return test.maskerFileUrl;
 }
 
 static void throwRequestFailureOnInvalidAudioFile(
-    const std::function<void(const std::string &)> &f, const std::string &s) {
+    const std::function<void(const LocalUrl &)> &f, const LocalUrl &s) {
     try {
         f(s);
     } catch (const InvalidAudioFile &) {
-        throw Model::RequestFailure{"unable to read " + s};
+        throw Model::RequestFailure{"unable to read " + s.path};
     }
 }
 
@@ -271,7 +271,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 }
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
-    loadFile(targetPlayer, testMethod->nextTarget().path);
+    loadFile(targetPlayer, testMethod->nextTarget());
     setLevel_dB(targetPlayer, targetLevel_dB());
     targetPlayer.subscribeToPlaybackCompletion();
     seekRandomMaskerPosition();
@@ -373,7 +373,7 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
             loadFile(targetPlayer, file);
             setLevel_dB(targetPlayer, level_dB(targetPlayer, calibration));
         },
-        calibration.fileUrl.path);
+        calibration.fileUrl);
     show(targetPlayer);
     play(targetPlayer);
 }
