@@ -18,10 +18,8 @@ class FileFilterDecorator : public DirectoryReader {
 
   public:
     FileFilterDecorator(DirectoryReader *, FileFilter *);
-    auto filesIn(const av_speech_in_noise::LocalUrl &directory)
-        -> LocalUrls override;
-    auto subDirectories(const av_speech_in_noise::LocalUrl &)
-        -> LocalUrls override;
+    auto filesIn(const LocalUrl &directory) -> LocalUrls override;
+    auto subDirectories(const LocalUrl &) -> LocalUrls override;
 };
 
 class FileExtensionFilter : public FileFilter {
@@ -65,9 +63,8 @@ class DirectoryReaderComposite : public DirectoryReader {
 
   public:
     explicit DirectoryReaderComposite(std::vector<DirectoryReader *>);
-    auto filesIn(const av_speech_in_noise::LocalUrl &) -> LocalUrls override;
-    auto subDirectories(const av_speech_in_noise::LocalUrl &)
-        -> LocalUrls override;
+    auto filesIn(const LocalUrl &) -> LocalUrls override;
+    auto subDirectories(const LocalUrl &) -> LocalUrls override;
 };
 }
 

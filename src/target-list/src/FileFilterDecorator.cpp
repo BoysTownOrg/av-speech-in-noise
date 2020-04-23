@@ -8,10 +8,7 @@ static auto at(const std::vector<int> &x, gsl::index n) -> int {
     return x.at(n);
 }
 
-static auto at(const LocalUrls &x, gsl::index n)
-    -> av_speech_in_noise::LocalUrl {
-    return x.at(n);
-}
+static auto at(const LocalUrls &x, gsl::index n) -> LocalUrl { return x.at(n); }
 
 static auto vectorOfStrings(gsl::index size) -> LocalUrls {
     return LocalUrls(size);
@@ -23,13 +20,12 @@ FileFilterDecorator::FileFilterDecorator(
     DirectoryReader *reader, FileFilter *filter)
     : reader{reader}, filter{filter} {}
 
-auto FileFilterDecorator::filesIn(const av_speech_in_noise::LocalUrl &directory)
-    -> LocalUrls {
+auto FileFilterDecorator::filesIn(const LocalUrl &directory) -> LocalUrls {
     return filter->filter(reader->filesIn(directory));
 }
 
-auto FileFilterDecorator::subDirectories(
-    const av_speech_in_noise::LocalUrl &directory) -> LocalUrls {
+auto FileFilterDecorator::subDirectories(const LocalUrl &directory)
+    -> LocalUrls {
     return reader->subDirectories(directory);
 }
 
@@ -110,13 +106,12 @@ DirectoryReaderComposite::DirectoryReaderComposite(
     std::vector<DirectoryReader *> readers)
     : readers{std::move(readers)} {}
 
-auto DirectoryReaderComposite::subDirectories(
-    const av_speech_in_noise::LocalUrl &directory) -> LocalUrls {
+auto DirectoryReaderComposite::subDirectories(const LocalUrl &directory)
+    -> LocalUrls {
     return readers.front()->subDirectories(directory);
 }
 
-auto DirectoryReaderComposite::filesIn(
-    const av_speech_in_noise::LocalUrl &directory) -> LocalUrls {
+auto DirectoryReaderComposite::filesIn(const LocalUrl &directory) -> LocalUrls {
     LocalUrls files;
     for (auto *r : readers) {
         auto next = r->filesIn(directory);

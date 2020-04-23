@@ -5,8 +5,8 @@ SubdirectoryTargetListReader::SubdirectoryTargetListReader(
     TargetListFactory *targetListFactory, DirectoryReader *directoryReader)
     : targetListFactory{targetListFactory}, directoryReader{directoryReader} {}
 
-auto SubdirectoryTargetListReader::read(
-    const av_speech_in_noise::LocalUrl &directory) -> lists_type {
+auto SubdirectoryTargetListReader::read(const LocalUrl &directory)
+    -> lists_type {
     lists_type lists{};
     auto subDirectories_ = subDirectories(directory);
     for (const auto &subDirectory : subDirectories_) {
@@ -22,8 +22,8 @@ auto SubdirectoryTargetListReader::read(
     return lists;
 }
 
-auto SubdirectoryTargetListReader::subDirectories(
-    const av_speech_in_noise::LocalUrl &directory) -> LocalUrls {
+auto SubdirectoryTargetListReader::subDirectories(const LocalUrl &directory)
+    -> LocalUrls {
     return directoryReader->subDirectories(directory);
 }
 }

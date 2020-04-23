@@ -20,24 +20,20 @@ class DirectoryReader {
     virtual ~DirectoryReader() = default;
     DirectoryReader() = default;
     DirectoryReader(const DirectoryReader &) = default;
-    virtual auto subDirectories(const av_speech_in_noise::LocalUrl &directory)
-        -> LocalUrls = 0;
-    virtual auto filesIn(const av_speech_in_noise::LocalUrl &directory)
-        -> LocalUrls = 0;
+    virtual auto subDirectories(const LocalUrl &directory) -> LocalUrls = 0;
+    virtual auto filesIn(const LocalUrl &directory) -> LocalUrls = 0;
 };
 
-class SubdirectoryTargetListReader
-    : public av_speech_in_noise::TargetListReader {
+class SubdirectoryTargetListReader : public TargetListReader {
     TargetListFactory *targetListFactory;
     DirectoryReader *directoryReader;
 
   public:
     SubdirectoryTargetListReader(TargetListFactory *, DirectoryReader *);
-    auto read(const av_speech_in_noise::LocalUrl &) -> lists_type override;
+    auto read(const LocalUrl &) -> lists_type override;
 
   private:
-    auto subDirectories(const av_speech_in_noise::LocalUrl &directory)
-        -> LocalUrls;
+    auto subDirectories(const LocalUrl &directory) -> LocalUrls;
 };
 }
 

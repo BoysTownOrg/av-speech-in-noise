@@ -36,8 +36,7 @@ class RandomizerStub : public target_list::Randomizer {
     int rotateToTheLeft_{};
 };
 
-void loadFromDirectory(
-    av_speech_in_noise::TargetList &list, const std::string &s = {}) {
+void loadFromDirectory(TargetList &list, const std::string &s = {}) {
     list.loadFromDirectory({s});
 }
 
@@ -46,17 +45,13 @@ void setFileNames(
     reader.setFileNames(std::move(v));
 }
 
-auto next(av_speech_in_noise::TargetList &list) -> std::string {
-    return list.next().path;
-}
+auto next(TargetList &list) -> std::string { return list.next().path; }
 
-void assertNextEquals(
-    av_speech_in_noise::TargetList &list, const std::string &s) {
+void assertNextEquals(TargetList &list, const std::string &s) {
     assertEqual(s, next(list));
 }
 
-void assertCurrentEquals(
-    av_speech_in_noise::TargetList &list, const std::string &s) {
+void assertCurrentEquals(TargetList &list, const std::string &s) {
     assertEqual(s, list.current().path);
 }
 
@@ -90,20 +85,19 @@ void assertDirectoryEquals(DirectoryReaderStub &reader, const std::string &s) {
 }
 
 void loadFromDirectoryPassesDirectoryToDirectoryReader(
-    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+    TargetList &list, DirectoryReaderStub &reader) {
     loadFromDirectory(list, "a");
     assertDirectoryEquals(reader, "a");
 }
 
-void loadFromDirectoryShufflesFileNames(av_speech_in_noise::TargetList &list,
-    DirectoryReaderStub &reader, RandomizerStub &randomizer) {
+void loadFromDirectoryShufflesFileNames(
+    TargetList &list, DirectoryReaderStub &reader, RandomizerStub &randomizer) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list);
     assertShuffled(randomizer, {{"a"}, {"b"}, {"c"}});
 }
 
-void nextReturnsFullPathToFile(
-    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+void nextReturnsFullPathToFile(TargetList &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     assertNextEquals(list, "C:/a");
@@ -112,27 +106,26 @@ void nextReturnsFullPathToFile(
 }
 
 void currentReturnsFullPathToFile(
-    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+    TargetList &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     next(list);
     assertCurrentEquals(list, "C:/a");
 }
 
-void directoryReturnsDirectory(av_speech_in_noise::TargetList &list) {
+void directoryReturnsDirectory(TargetList &list) {
     loadFromDirectory(list, "a");
     assertEqual("a", list.directory().path);
 }
 
-void nextReturnsEmptyIfNoFiles(
-    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+void nextReturnsEmptyIfNoFiles(TargetList &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {});
     loadFromDirectory(list);
     assertNextEquals(list, "");
 }
 
 void currentReturnsEmptyIfNoFiles(
-    av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
+    TargetList &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {});
     loadFromDirectory(list);
     assertCurrentEquals(list, "");
@@ -308,8 +301,7 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextCyclesBackToBeginningOfFiles) {
     assertNextEquals(list, "C:/c");
 }
 
-auto filesIn(
-    DirectoryReader &reader, const av_speech_in_noise::LocalUrl &directory = {})
+auto filesIn(DirectoryReader &reader, const LocalUrl &directory = {})
     -> std::vector<av_speech_in_noise::LocalUrl> {
     return reader.filesIn(directory);
 }
@@ -320,8 +312,7 @@ auto filter(FileFilter &filter_,
     return filter_.filter(files);
 }
 
-auto subDirectories(
-    DirectoryReader &reader, const av_speech_in_noise::LocalUrl &directory = {})
+auto subDirectories(DirectoryReader &reader, const LocalUrl &directory = {})
     -> std::vector<av_speech_in_noise::LocalUrl> {
     return reader.subDirectories(directory);
 }
