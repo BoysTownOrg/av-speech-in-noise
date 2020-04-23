@@ -86,7 +86,7 @@ static void assign(
     else if (entryName == name(TestSetting::masker))
         test.maskerFilePath = entry;
     else if (entryName == name(TestSetting::maskerLevel))
-        test.maskerLevel_dB_SPL = integer(entry);
+        test.maskerLevel.dB_SPL = integer(entry);
     else if (entryName == name(TestSetting::condition))
         for (auto c : {Condition::auditoryOnly, Condition::audioVisual})
             if (entry == name(c))
@@ -98,7 +98,7 @@ static void assign(Calibration &calibration, const std::string &entryName,
     if (entryName == name(TestSetting::masker))
         calibration.filePath = entry;
     else if (entryName == name(TestSetting::maskerLevel))
-        calibration.level_dB_SPL = integer(entry);
+        calibration.level.dB_SPL = integer(entry);
 }
 
 static void assignAdaptive(AdaptiveTest &test, const std::string &entryName,
@@ -169,7 +169,7 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
     test.ceilingSnr_dB = Presenter::ceilingSnr_dB;
     test.floorSnr_dB = Presenter::floorSnr_dB;
     test.trackBumpLimit = Presenter::trackBumpLimit;
-    test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    test.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     test.identity = identity;
     auto method_{av_speech_in_noise::method(contents)};
     test.identity.method = name(method_);
@@ -194,7 +194,7 @@ static void initializeFixedLevelTest(Model &model, const std::string &contents,
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
     test.snr_dB = startingSnr;
-    test.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    test.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     test.identity = identity;
     auto method_{av_speech_in_noise::method(contents)};
     test.identity.method = name(method_);
@@ -235,7 +235,7 @@ auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
     applyToEachEntry([&](auto entryName,
                          auto entry) { assign(calibration, entryName, entry); },
         contents);
-    calibration.fullScaleLevel_dB_SPL = Presenter::fullScaleLevel_dB_SPL;
+    calibration.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel_dB_SPL;
     return calibration;
 }
 }

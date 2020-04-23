@@ -120,7 +120,7 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
 }
 
 static auto level_dB(TargetPlayer &player, const Calibration &p) -> double {
-    return gsl::narrow_cast<double>(p.level_dB_SPL - p.fullScaleLevel_dB_SPL) -
+    return gsl::narrow_cast<double>(p.level.dB_SPL - p.fullScaleLevel.dB_SPL) -
         dB(player.rms());
 }
 
@@ -176,8 +176,8 @@ void RecognitionTestModelImpl::initialize_(
         [&](auto file) { maskerPlayer.loadFile(file); }, maskerFilePath(test));
 
     testMethod = testMethod_;
-    fullScaleLevel_dB_SPL = test.fullScaleLevel_dB_SPL;
-    maskerLevel_dB_SPL = test.maskerLevel_dB_SPL;
+    fullScaleLevel_dB_SPL = test.fullScaleLevel.dB_SPL;
+    maskerLevel_dB_SPL = test.maskerLevel.dB_SPL;
     condition = test.condition;
 
     hide(targetPlayer);

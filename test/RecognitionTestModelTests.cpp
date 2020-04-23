@@ -345,7 +345,7 @@ class EyeTrackerStub : public EyeTracker {
     bool stopped_{};
 };
 
-void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel_dB_SPL = x; }
+void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
 
 auto dB(double x) -> double { return 20 * std::log10(x); }
 
@@ -414,7 +414,7 @@ auto playbackCompletionSubscribed(TargetPlayerStub &player) -> bool {
 auto secondsSeeked(MaskerPlayerStub &player) { return player.secondsSeeked(); }
 
 void setFullScaleLevel_dB_SPL(Test &test, int x) {
-    test.fullScaleLevel_dB_SPL = x;
+    test.fullScaleLevel.dB_SPL = x;
 }
 
 void setMaskerFilePath(Test &test, std::string s) {
@@ -1308,8 +1308,8 @@ RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSetsTargetPlayerLevel) {
 }
 
 RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
-    calibration.level_dB_SPL = 1;
-    calibration.fullScaleLevel_dB_SPL = 2;
+    calibration.level.dB_SPL = 1;
+    calibration.fullScaleLevel.dB_SPL = 2;
     targetPlayer.setRms(3);
     run(playingCalibration, model);
     assertLevelEquals_dB(targetPlayer, 1 - 2 - dB(3));

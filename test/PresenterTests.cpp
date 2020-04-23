@@ -498,7 +498,7 @@ class PlayingCalibration : public LevelUseCase {
     void run() override { view->playCalibration(); }
 
     auto fullScaleLevel(ModelStub &m) -> int override {
-        return m.calibration().fullScaleLevel_dB_SPL;
+        return m.calibration().fullScaleLevel.dB_SPL;
     }
 };
 
@@ -1795,9 +1795,9 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(playCalibrationPassesLevel) {
-    interpretedCalibration.level_dB_SPL = 1;
+    interpretedCalibration.level.dB_SPL = 1;
     playCalibration(setupView);
-    assertEqual(1, calibration(model).level_dB_SPL);
+    assertEqual(1, calibration(model).level.dB_SPL);
 }
 
 PRESENTER_TEST(playingCalibrationPassesTestSettingsFileToTextFileReader) {
@@ -2394,9 +2394,9 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(playCalibrationPassesFullScaleLevel) {
-    interpretedCalibration.fullScaleLevel_dB_SPL = 1;
+    interpretedCalibration.fullScaleLevel.dB_SPL = 1;
     run(playingCalibration);
-    assertEqual(1, calibration(model).fullScaleLevel_dB_SPL);
+    assertEqual(1, calibration(model).fullScaleLevel.dB_SPL);
 }
 
 PRESENTER_TEST(completingTrialClearsFreeResponseForFixedLevelFreeResponseTest) {

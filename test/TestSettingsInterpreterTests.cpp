@@ -62,14 +62,14 @@ void assertPassesSimpleAdaptiveSettings(
         5);
     assertEqual("a", adaptiveTest(model).targetListDirectory);
     assertEqual("b", adaptiveTest(model).maskerFilePath);
-    assertEqual(65, adaptiveTest(model).maskerLevel_dB_SPL);
+    assertEqual(65, adaptiveTest(model).maskerLevel.dB_SPL);
     assertEqual(5, adaptiveTest(model).startingSnr_dB);
     assertEqual(4, adaptiveTest(model).thresholdReversals);
     assertEqual(Presenter::ceilingSnr_dB, adaptiveTest(model).ceilingSnr_dB);
     assertEqual(Presenter::floorSnr_dB, adaptiveTest(model).floorSnr_dB);
     assertEqual(Presenter::trackBumpLimit, adaptiveTest(model).trackBumpLimit);
     assertEqual(Presenter::fullScaleLevel_dB_SPL,
-        adaptiveTest(model).fullScaleLevel_dB_SPL);
+        adaptiveTest(model).fullScaleLevel.dB_SPL);
 }
 
 void assertPassesSimpleFixedLevelSettings(
@@ -82,10 +82,10 @@ void assertPassesSimpleFixedLevelSettings(
         5);
     assertEqual("a", fixedLevelTest(model).targetListDirectory);
     assertEqual("b", fixedLevelTest(model).maskerFilePath);
-    assertEqual(65, fixedLevelTest(model).maskerLevel_dB_SPL);
+    assertEqual(65, fixedLevelTest(model).maskerLevel.dB_SPL);
     assertEqual(5, fixedLevelTest(model).snr_dB);
     assertEqual(Presenter::fullScaleLevel_dB_SPL,
-        fixedLevelTest(model).fullScaleLevel_dB_SPL);
+        fixedLevelTest(model).fullScaleLevel.dB_SPL);
 }
 
 void initialize(TestSettingsInterpreterImpl &interpreter, Model &model,
@@ -204,9 +204,9 @@ TEST_SETTINGS_INTERPRETER_TEST(usesMaskerForCalibration) {
         concatenate({entryWithNewline(TestSetting::masker, "a"),
             entryWithNewline(TestSetting::maskerLevel, "1")}))};
     assertEqual("a", calibration.filePath);
-    assertEqual(1, calibration.level_dB_SPL);
+    assertEqual(1, calibration.level.dB_SPL);
     assertEqual(
-        Presenter::fullScaleLevel_dB_SPL, calibration.fullScaleLevel_dB_SPL);
+        Presenter::fullScaleLevel_dB_SPL, calibration.fullScaleLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(ignoresBadLine) {
@@ -234,7 +234,7 @@ TEST_SETTINGS_INTERPRETER_TEST(badMaskerLevelResolvesToZero) {
     initialize(interpreter, model,
         {entryWithNewline(TestSetting::method, Method::adaptivePassFail),
             entryWithNewline(TestSetting::maskerLevel, "a")});
-    assertEqual(0, adaptiveTest(model).maskerLevel_dB_SPL);
+    assertEqual(0, adaptiveTest(model).maskerLevel.dB_SPL);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {

@@ -79,7 +79,7 @@ static void writeTargetList(std::stringstream &stream, const Test &p) {
 }
 
 static void writeMaskerLevel(std::stringstream &stream, const Test &p) {
-    writeLabeledLine(stream, "masker level (dB SPL)", p.maskerLevel_dB_SPL);
+    writeLabeledLine(stream, "masker level (dB SPL)", p.maskerLevel.dB_SPL);
 }
 
 static void writeCondition(std::stringstream &stream, const Test &p) {
