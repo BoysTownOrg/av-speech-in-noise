@@ -36,12 +36,38 @@ struct BinocularGazeSample {
 };
 
 using BinocularGazeSamples = typename std::vector<BinocularGazeSample>;
+
 struct TargetStartTime : TargetPlayerSystemTime {};
 
+struct Target {
+    std::string target;
+};
+
+struct AdaptiveProgress {
+    int SNR_dB{};
+    int reversals{};
+};
+
 namespace open_set {
+struct Trial : Target {};
+
 struct AdaptiveTrial : AdaptiveProgress, Trial {
     bool correct{};
 };
+}
+
+namespace coordinate_response_measure {
+struct Trial : Target {
+    int correctNumber{};
+    int subjectNumber{};
+    Color correctColor{};
+    Color subjectColor{};
+    bool correct{};
+};
+
+struct AdaptiveTrial : AdaptiveProgress, Trial {};
+
+struct FixedLevelTrial : Trial {};
 }
 
 struct CorrectKeywordsTrial : CorrectKeywords, open_set::AdaptiveTrial {};
