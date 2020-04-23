@@ -2,9 +2,8 @@
 #include <algorithm>
 
 namespace target_list {
-static auto filesIn(
-    DirectoryReader *reader, const av_speech_in_noise::LocalUrl &s)
-    -> std::vector<av_speech_in_noise::LocalUrl> {
+static auto filesIn(DirectoryReader *reader,
+    const av_speech_in_noise::LocalUrl &s) -> LocalUrls {
     return reader->filesIn(s);
 }
 
@@ -13,13 +12,9 @@ static auto shuffle(
     randomizer->shuffle(v);
 }
 
-static auto empty(const std::vector<av_speech_in_noise::LocalUrl> &files)
-    -> bool {
-    return files.empty();
-}
+static auto empty(const LocalUrls &files) -> bool { return files.empty(); }
 
-static auto currentFile(const std::vector<av_speech_in_noise::LocalUrl> &v)
-    -> av_speech_in_noise::LocalUrl {
+static auto currentFile(const LocalUrls &v) -> av_speech_in_noise::LocalUrl {
     return empty(v) ? av_speech_in_noise::LocalUrl{""} : v.back();
 }
 
@@ -29,13 +24,12 @@ static auto joinPaths(const av_speech_in_noise::LocalUrl &directory,
 }
 
 static auto fullPathToLastFile(const av_speech_in_noise::LocalUrl &directory,
-    const std::vector<av_speech_in_noise::LocalUrl> &files)
-    -> av_speech_in_noise::LocalUrl {
+    const LocalUrls &files) -> av_speech_in_noise::LocalUrl {
     return empty(files) ? av_speech_in_noise::LocalUrl{""}
                         : joinPaths(directory, currentFile(files));
 }
 
-static void moveFrontToBack(std::vector<av_speech_in_noise::LocalUrl> &files) {
+static void moveFrontToBack(LocalUrls &files) {
     std::rotate(files.begin(), files.begin() + 1, files.end());
 }
 

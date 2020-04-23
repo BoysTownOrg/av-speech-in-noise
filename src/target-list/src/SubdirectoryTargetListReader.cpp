@@ -23,8 +23,7 @@ auto SubdirectoryTargetListReader::read(
 }
 
 auto SubdirectoryTargetListReader::subDirectories(
-    const av_speech_in_noise::LocalUrl &directory)
-    -> std::vector<av_speech_in_noise::LocalUrl> {
+    const av_speech_in_noise::LocalUrl &directory) -> LocalUrls {
     return directoryReader->subDirectories(directory);
 }
 }

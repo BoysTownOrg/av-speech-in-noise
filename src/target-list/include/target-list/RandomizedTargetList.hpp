@@ -42,7 +42,7 @@ class RandomizedTargetListWithReplacement
     auto directory() -> av_speech_in_noise::LocalUrl override;
 
   private:
-    std::vector<av_speech_in_noise::LocalUrl> files{};
+    LocalUrls files{};
     av_speech_in_noise::LocalUrl directory_{};
     av_speech_in_noise::LocalUrl currentFile{};
     DirectoryReader *reader;
@@ -62,7 +62,7 @@ class RandomizedTargetListWithoutReplacement
     auto directory() -> av_speech_in_noise::LocalUrl override;
 
   private:
-    std::vector<av_speech_in_noise::LocalUrl> files{};
+    LocalUrls files{};
     av_speech_in_noise::LocalUrl directory_{};
     av_speech_in_noise::LocalUrl currentFile{};
     DirectoryReader *reader;
@@ -95,7 +95,7 @@ class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
     auto directory() -> av_speech_in_noise::LocalUrl override;
 
   private:
-    std::vector<av_speech_in_noise::LocalUrl> files{};
+    LocalUrls files{};
     av_speech_in_noise::LocalUrl directory_{};
     DirectoryReader *reader;
     Randomizer *randomizer;

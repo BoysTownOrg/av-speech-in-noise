@@ -7,6 +7,8 @@
 #include <string>
 
 namespace target_list {
+using LocalUrls = typename std::vector<av_speech_in_noise::LocalUrl>;
+
 class TargetListFactory {
   public:
     virtual ~TargetListFactory() = default;
@@ -19,9 +21,9 @@ class DirectoryReader {
     DirectoryReader() = default;
     DirectoryReader(const DirectoryReader &) = default;
     virtual auto subDirectories(const av_speech_in_noise::LocalUrl &directory)
-        -> std::vector<av_speech_in_noise::LocalUrl> = 0;
+        -> LocalUrls = 0;
     virtual auto filesIn(const av_speech_in_noise::LocalUrl &directory)
-        -> std::vector<av_speech_in_noise::LocalUrl> = 0;
+        -> LocalUrls = 0;
 };
 
 class SubdirectoryTargetListReader
@@ -35,7 +37,7 @@ class SubdirectoryTargetListReader
 
   private:
     auto subDirectories(const av_speech_in_noise::LocalUrl &directory)
-        -> std::vector<av_speech_in_noise::LocalUrl>;
+        -> LocalUrls;
 };
 }
 
