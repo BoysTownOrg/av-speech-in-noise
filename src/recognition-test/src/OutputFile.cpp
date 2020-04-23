@@ -272,7 +272,7 @@ static auto format(const CorrectKeywordsTrial &trial) -> std::string {
 
 static auto format(const AdaptiveTestResult &result) -> std::string {
     std::stringstream stream;
-    writeLabeledLine(stream, "threshold for " + result.targetListDirectory,
+    writeLabeledLine(stream, "threshold for " + result.targetsUrl.path,
         result.threshold);
     return string(stream);
 }

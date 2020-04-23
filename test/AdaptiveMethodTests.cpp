@@ -14,8 +14,7 @@
 namespace av_speech_in_noise {
 static auto operator==(const AdaptiveTestResult &a, const AdaptiveTestResult &b)
     -> bool {
-    return a.targetListDirectory == b.targetListDirectory &&
-        a.threshold == b.threshold;
+    return a.targetsUrl.path == b.targetsUrl.path && a.threshold == b.threshold;
 }
 
 namespace {
@@ -791,11 +790,11 @@ ADAPTIVE_METHOD_TEST(writeTestResult) {
     targetLists.at(2)->setDirectory("c");
     method.writeTestResult(outputFile);
     assertEqual(11., adaptiveTestResult(outputFile).at(0).threshold);
-    assertEqual("a", adaptiveTestResult(outputFile).at(0).targetListDirectory);
+    assertEqual("a", adaptiveTestResult(outputFile).at(0).targetsUrl.path);
     assertEqual(22., adaptiveTestResult(outputFile).at(1).threshold);
-    assertEqual("b", adaptiveTestResult(outputFile).at(1).targetListDirectory);
+    assertEqual("b", adaptiveTestResult(outputFile).at(1).targetsUrl.path);
     assertEqual(33., adaptiveTestResult(outputFile).at(2).threshold);
-    assertEqual("c", adaptiveTestResult(outputFile).at(2).targetListDirectory);
+    assertEqual("c", adaptiveTestResult(outputFile).at(2).targetsUrl.path);
 }
 
 ADAPTIVE_METHOD_TEST(testResults) {

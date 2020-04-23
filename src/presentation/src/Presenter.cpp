@@ -88,7 +88,7 @@ static void showContinueTestingDialogWithResultsWhenComplete(
         thresholds << "thresholds (targets: dB SNR)";
         for (const auto &result : model.adaptiveTestResults())
             thresholds << '\n'
-                       << result.targetListDirectory << ": "
+                       << result.targetsUrl.path << ": "
                        << result.threshold;
         experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
     } else

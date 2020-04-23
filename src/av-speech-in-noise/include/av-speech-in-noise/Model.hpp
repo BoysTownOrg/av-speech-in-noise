@@ -75,8 +75,8 @@ struct AdaptiveTest : Test {
 };
 
 struct AdaptiveTestResult {
-    std::string targetListDirectory;
-    double threshold;
+    LocalUrl targetsUrl;
+    double threshold{};
 };
 
 using AdaptiveTestResults = typename std::vector<AdaptiveTestResult>;
