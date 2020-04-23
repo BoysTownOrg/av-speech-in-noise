@@ -2293,9 +2293,16 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    completingTrialShowsExperimenterResponseSubmissionForFixedLevelFreeResponseAllStimuliTest) {
+    completingTrialShowsExperimenterResponseSubmissionForFixedLevelFreeResponseTestWithAllTargets) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelFreeResponseTestWithAllTargets,
+        submittingFreeResponse);
+}
+
+PRESENTER_TEST(
+    completingTrialShowsExperimenterResponseSubmissionForFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking,
         submittingFreeResponse);
 }
 
