@@ -37,7 +37,7 @@ auto FixedLevelMethodImpl::nextTarget() -> LocalUrl {
     return targetList->next();
 }
 
-auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
+auto FixedLevelMethodImpl::snr() -> SNR { return {snr_dB_}; }
 
 void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {

@@ -630,7 +630,7 @@ ADAPTIVE_METHOD_TEST(snrReturnsThatOfCurrentTrack) {
     at(tracks, 0)->setX(1);
     selectNextList(randomizer, 0);
     initialize(method, test, targetListReader);
-    assertEqual(1, method.snr_dB());
+    assertEqual(1, method.snr().dB);
 }
 
 ADAPTIVE_METHOD_TEST(submitCoordinateResponsePassesCurrentTargetToEvaluator) {

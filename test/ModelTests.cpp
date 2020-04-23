@@ -38,7 +38,7 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
     auto currentTarget() -> LocalUrl override { return {}; }
-    auto snr_dB() -> int override { return {}; }
+    auto snr() -> SNR override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}
@@ -86,7 +86,7 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
     auto currentTarget() -> LocalUrl override { return {}; }
-    auto snr_dB() -> int override { return {}; }
+    auto snr() -> SNR override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
     void submit(const FreeResponse &) override {}

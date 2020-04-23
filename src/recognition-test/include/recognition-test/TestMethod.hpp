@@ -13,7 +13,7 @@ class TestMethod {
     virtual auto complete() -> bool = 0;
     virtual auto nextTarget() -> LocalUrl = 0;
     virtual auto currentTarget() -> LocalUrl = 0;
-    virtual auto snr_dB() -> int = 0;
+    virtual auto snr() -> SNR = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;
     virtual void submit(const FreeResponse &) = 0;

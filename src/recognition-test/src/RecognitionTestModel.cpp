@@ -9,7 +9,7 @@ class NullTestMethod : public TestMethod {
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
     auto currentTarget() -> LocalUrl override { return {}; }
-    auto snr_dB() -> int override { return {}; }
+    auto snr() -> SNR override { return {}; }
     void submit(const coordinate_response_measure::Response &) override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
@@ -278,7 +278,7 @@ void RecognitionTestModelImpl::preparePlayersForNextTrial() {
 }
 
 auto RecognitionTestModelImpl::targetLevel_dB() -> double {
-    return maskerLevel_dB() + testMethod->snr_dB();
+    return maskerLevel_dB() + testMethod->snr().dB;
 }
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {

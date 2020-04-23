@@ -126,7 +126,7 @@ auto AdaptiveMethodImpl::nextTarget() -> LocalUrl {
     return targetList->next();
 }
 
-auto AdaptiveMethodImpl::snr_dB() -> int { return x(snrTrack); }
+auto AdaptiveMethodImpl::snr() -> SNR { return {x(snrTrack)}; }
 
 auto AdaptiveMethodImpl::currentTarget() -> LocalUrl {
     return targetList->current();
