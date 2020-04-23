@@ -38,26 +38,6 @@ static void readyNextTrial(
     experimenterPresenter.readyNextTrial();
 }
 
-static auto fixedLevelCoordinateResponseMeasureWithTargetReplacement(Method m)
-    -> bool {
-    return m ==
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement;
-}
-
-static auto fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(
-    Method m) -> bool {
-    return m ==
-        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
-}
-
-static auto adaptivePassFail(Method m) -> bool {
-    return m == Method::adaptivePassFail;
-}
-
-static auto adaptiveCorrectKeywords(Method m) -> bool {
-    return m == Method::adaptiveCorrectKeywords;
-}
-
 static auto adaptiveCoordinateResponseMeasure(Method m) -> bool {
     return m == Method::defaultAdaptiveCoordinateResponseMeasure ||
         m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
@@ -66,8 +46,10 @@ static auto adaptiveCoordinateResponseMeasure(Method m) -> bool {
 }
 
 static auto fixedLevelCoordinateResponseMeasure(Method m) -> bool {
-    return fixedLevelCoordinateResponseMeasureWithTargetReplacement(m) ||
-        fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets(m);
+    return m ==
+        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement ||
+        m ==
+        Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
 
 static auto coordinateResponseMeasure(Method m) -> bool {
@@ -172,9 +154,9 @@ void Presenter::showTest(Method m) {
 auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
     if (coordinateResponseMeasure(m))
         return &coordinateResponseMeasureTrialCompletionHandler;
-    if (adaptivePassFail(m))
+    if (m == Method::adaptivePassFail)
         return &passFailTrialCompletionHandler;
-    if (adaptiveCorrectKeywords(m))
+    if (m == Method::adaptiveCorrectKeywords)
         return &correctKeywordsTrialCompletionHandler;
     return &freeResponseTrialCompletionHandler;
 }
