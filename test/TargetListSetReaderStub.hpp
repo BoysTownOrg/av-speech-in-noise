@@ -12,8 +12,8 @@ class TargetListSetReaderStub : public TargetListReader {
   public:
     void setTargetLists(lists_type lists) { targetLists_ = std::move(lists); }
 
-    auto read(std::string d) -> lists_type override {
-        directory_ = std::move(d);
+    auto read(const LocalUrl &d) -> lists_type override {
+        directory_ = d.path;
         return targetLists_;
     }
 

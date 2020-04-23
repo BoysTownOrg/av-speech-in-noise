@@ -92,7 +92,7 @@ void AdaptiveMethodImpl::initialize(
     test = &t;
     thresholdReversals = t.thresholdReversals;
     targetListsWithTracks.clear();
-    for (auto &&list : targetListSetReader->read(t.targetsUrl.path))
+    for (auto &&list : targetListSetReader->read(t.targetsUrl))
         targetListsWithTracks.push_back(
             {list, snrTrackFactory.make(trackSettings(t))});
     selectNextList();

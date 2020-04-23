@@ -110,7 +110,7 @@ class TargetListReader {
   public:
     virtual ~TargetListReader() = default;
     using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
-    virtual auto read(std::string directory) -> lists_type = 0;
+    virtual auto read(const LocalUrl &) -> lists_type = 0;
 };
 
 class AdaptiveMethod : public virtual TestMethod {

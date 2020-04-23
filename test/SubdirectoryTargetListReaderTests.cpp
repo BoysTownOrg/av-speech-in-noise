@@ -42,7 +42,7 @@ class SubdirectoryTargetListReaderTests : public ::testing::Test {
         targetListFactory.setLists({targetLists.begin(), targetLists.end()});
     }
 
-    auto read(std::string s = {}) { return listReader.read(std::move(s)); }
+    auto read(const std::string &s = {}) { return listReader.read({s}); }
 
     void setSubDirectories(std::vector<std::string> v) {
         setListCount(gsl::narrow<int>(v.size() + 1));
@@ -69,7 +69,7 @@ TEST_F(SubdirectoryTargetListReaderTests, readPassesDirectory) {
 
 TEST_F(SubdirectoryTargetListReaderTests, readReturnsReadLists) {
     setSubDirectories(std::vector<std::string>(3));
-    auto actual = read();
+    auto actual{read()};
     EXPECT_EQ(3, actual.size());
     EXPECT_EQ(targetList(0), actual.at(0));
     EXPECT_EQ(targetList(1), actual.at(1));
@@ -86,7 +86,7 @@ TEST_F(SubdirectoryTargetListReaderTests,
 TEST_F(
     SubdirectoryTargetListReaderTests, readReturnsFirstListIfNoSubdirectories) {
     setSubDirectories({});
-    auto actual = read();
+    auto actual{read()};
     EXPECT_EQ(1, actual.size());
     EXPECT_EQ(targetList(0), actual.at(0));
 }

@@ -30,7 +30,7 @@ class SubdirectoryTargetListReader
 
   public:
     SubdirectoryTargetListReader(TargetListFactory *, DirectoryReader *);
-    auto read(std::string directory) -> lists_type override;
+    auto read(const av_speech_in_noise::LocalUrl &) -> lists_type override;
 
   private:
     auto subDirectories(std::string directory) -> std::vector<std::string>;

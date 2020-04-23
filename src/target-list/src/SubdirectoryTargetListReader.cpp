@@ -5,18 +5,19 @@ SubdirectoryTargetListReader::SubdirectoryTargetListReader(
     TargetListFactory *targetListFactory, DirectoryReader *directoryReader)
     : targetListFactory{targetListFactory}, directoryReader{directoryReader} {}
 
-auto SubdirectoryTargetListReader::read(std::string directory) -> lists_type {
+auto SubdirectoryTargetListReader::read(
+    const av_speech_in_noise::LocalUrl &directory) -> lists_type {
     lists_type lists{};
-    auto subDirectories_ = subDirectories(directory);
+    auto subDirectories_ = subDirectories(directory.path);
     for (const auto &subDirectory : subDirectories_) {
         lists.push_back(targetListFactory->make());
-        auto fullPath = directory;
+        auto fullPath{directory.path};
         fullPath.append("/" + subDirectory);
-        lists.back()->loadFromDirectory(std::move(fullPath));
+        lists.back()->loadFromDirectory(fullPath);
     }
     if (subDirectories_.empty()) {
         lists.push_back(targetListFactory->make());
-        lists.back()->loadFromDirectory(directory);
+        lists.back()->loadFromDirectory(directory.path);
     }
     return lists;
 }
