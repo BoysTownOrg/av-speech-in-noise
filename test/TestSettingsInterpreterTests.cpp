@@ -268,6 +268,12 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsAndEyeTrackingReturnsMethod) {
+    assertMethod(interpreter,
+        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithTargetReplacementReturnsMethod) {
     assertMethod(
         interpreter, Method::fixedLevelFreeResponseWithTargetReplacement);

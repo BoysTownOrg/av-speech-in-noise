@@ -28,6 +28,8 @@ constexpr auto name(Method c) -> const char * {
         return "fixed-level CRM silent intervals";
     case Method::fixedLevelFreeResponseWithAllTargets:
         return "fixed-level free response all stimuli";
+    case Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking:
+        return "fixed-level free response all stimuli eye tracking";
     case Method::unknown:
         return "unknown";
     }

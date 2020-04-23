@@ -129,6 +129,7 @@ static auto method(const std::string &s) -> Method {
              Method::fixedLevelFreeResponseWithTargetReplacement,
              Method::fixedLevelFreeResponseWithSilentIntervalTargets,
              Method::fixedLevelFreeResponseWithAllTargets,
+             Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
              Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement,
              Method::
                  fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,

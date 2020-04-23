@@ -16,6 +16,7 @@ enum class Method {
     fixedLevelFreeResponseWithTargetReplacement,
     fixedLevelFreeResponseWithSilentIntervalTargets,
     fixedLevelFreeResponseWithAllTargets,
+    fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
     fixedLevelCoordinateResponseMeasureWithTargetReplacement,
     fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
     unknown
