@@ -2188,6 +2188,12 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTrackingShowsTrialNumber) {
+    assertShowsTrialNumber(
+        confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking);
+}
+
+PRESENTER_TEST(
     confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsShowsTrialNumber) {
     assertShowsTrialNumber(
         confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest);
