@@ -44,7 +44,7 @@ class SubdirectoryTargetListReaderTests : public ::testing::Test {
 
     auto read(const std::string &s = {}) { return listReader.read({s}); }
 
-    void setSubDirectories(std::vector<std::string> v) {
+    void setSubDirectories(std::vector<av_speech_in_noise::LocalUrl> v) {
         setListCount(gsl::narrow<int>(v.size() + 1));
         directoryReader.setSubDirectories(std::move(v));
     }
@@ -57,7 +57,7 @@ class SubdirectoryTargetListReaderTests : public ::testing::Test {
 };
 
 TEST_F(SubdirectoryTargetListReaderTests, readLoadsFullPathToEachSubDirectory) {
-    setSubDirectories({"a", "b", "c"});
+    setSubDirectories({{"a"}, {"b"}, {"c"}});
     read("d");
     assertEqual("d/a", targetListDirectory(0));
     assertEqual("d/b", targetListDirectory(1));
@@ -70,7 +70,7 @@ TEST_F(SubdirectoryTargetListReaderTests, readPassesDirectory) {
 }
 
 TEST_F(SubdirectoryTargetListReaderTests, readReturnsReadLists) {
-    setSubDirectories(std::vector<std::string>(3));
+    setSubDirectories(std::vector<av_speech_in_noise::LocalUrl>(3));
     auto actual{read()};
     EXPECT_EQ(3, actual.size());
     EXPECT_EQ(targetList(0), actual.at(0));

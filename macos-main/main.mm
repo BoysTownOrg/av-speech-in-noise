@@ -72,14 +72,14 @@ static auto contents(NSString *parent) -> NSArray<NSString *> * {
                                                                error:nil];
 }
 
-static auto collectContentsIf(const std::string &directory,
-    BOOL (*f)(NSString *)) -> std::vector<std::string> {
-    std::vector<std::string> items{};
-    auto parent{asNsString(directory)};
+static auto collectContentsIf(const av_speech_in_noise::LocalUrl &directory,
+    BOOL (*f)(NSString *)) -> std::vector<av_speech_in_noise::LocalUrl> {
+    std::vector<av_speech_in_noise::LocalUrl> items{};
+    auto parent{asNsString(directory.path)};
     for (NSString *item in contents(parent)) {
         auto path{[parent stringByAppendingPathComponent:item]};
         if ((*f)(path) != 0)
-            items.emplace_back([item UTF8String]);
+            items.push_back({[item UTF8String]});
     }
     return items;
 }
@@ -96,12 +96,12 @@ static auto notADirectory(NSString *path) -> BOOL {
 
 namespace {
 class MacOsDirectoryReader : public target_list::DirectoryReader {
-    auto filesIn(std::string directory) -> std::vector<std::string> override {
+    auto filesIn(const av_speech_in_noise::LocalUrl &directory) -> std::vector<av_speech_in_noise::LocalUrl> override {
         return collectContentsIf(directory, notADirectory);
     }
 
-    auto subDirectories(std::string directory)
-        -> std::vector<std::string> override {
+    auto subDirectories(const av_speech_in_noise::LocalUrl &directory)
+        -> std::vector<av_speech_in_noise::LocalUrl> override {
         return collectContentsIf(directory, isDirectory);
     }
 };

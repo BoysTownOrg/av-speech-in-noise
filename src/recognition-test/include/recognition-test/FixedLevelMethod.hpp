@@ -31,7 +31,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     TargetList *targetList{};
     FiniteTargetList *finiteTargetList{};
     ResponseEvaluator &evaluator;
-    int snr_dB_{};
+    SNR snr_{};
     int trials_{};
     bool finiteTargetsExhausted_{};
     bool usingFiniteTargetList_{};

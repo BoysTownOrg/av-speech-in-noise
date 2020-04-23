@@ -14,7 +14,7 @@ void FixedLevelMethodImpl::initialize(
     targetList = list;
     test = &p;
     trials_ = p.trials;
-    snr_dB_ = p.snr.dB;
+    snr_ = p.snr;
     loadFromDirectory(targetList, p);
 }
 
@@ -24,7 +24,7 @@ void FixedLevelMethodImpl::initialize(
     targetList = list;
     finiteTargetList = list;
     test = &p;
-    snr_dB_ = p.snr.dB;
+    snr_ = p.snr;
     loadFromDirectory(targetList, p);
     finiteTargetsExhausted_ = finiteTargetList->empty();
 }
@@ -37,7 +37,7 @@ auto FixedLevelMethodImpl::nextTarget() -> LocalUrl {
     return targetList->next();
 }
 
-auto FixedLevelMethodImpl::snr() -> SNR { return {snr_dB_}; }
+auto FixedLevelMethodImpl::snr() -> SNR { return snr_; }
 
 void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {

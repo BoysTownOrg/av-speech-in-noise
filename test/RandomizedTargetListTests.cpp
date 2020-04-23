@@ -5,6 +5,12 @@
 #include <gtest/gtest.h>
 #include <algorithm>
 
+namespace av_speech_in_noise {
+static auto operator==(const LocalUrl &a, const LocalUrl &b) -> bool {
+    return a.path == b.path;
+}
+}
+
 namespace target_list {
 namespace {
 class RandomizerStub : public Randomizer {
@@ -13,7 +19,7 @@ class RandomizerStub : public Randomizer {
 
     [[nodiscard]] auto shuffledInts() const { return shuffledInts_; }
 
-    void shuffle(gsl::span<std::string> s) override {
+    void shuffle(gsl::span<av_speech_in_noise::LocalUrl> s) override {
         shuffledStrings_ = {s.begin(), s.end()};
     }
 
@@ -25,7 +31,7 @@ class RandomizerStub : public Randomizer {
     void rotateToTheLeft(int N) { rotateToTheLeft_ = N; }
 
   private:
-    std::vector<std::string> shuffledStrings_;
+    std::vector<av_speech_in_noise::LocalUrl> shuffledStrings_;
     std::vector<int> shuffledInts_;
     int rotateToTheLeft_{};
 };
@@ -35,7 +41,8 @@ void loadFromDirectory(
     list.loadFromDirectory({s});
 }
 
-void setFileNames(DirectoryReaderStub &reader, std::vector<std::string> v) {
+void setFileNames(
+    DirectoryReaderStub &reader, std::vector<av_speech_in_noise::LocalUrl> v) {
     reader.setFileNames(std::move(v));
 }
 
@@ -53,8 +60,8 @@ void assertCurrentEquals(
     assertEqual(s, list.current().path);
 }
 
-void assertShuffled(
-    RandomizerStub &randomizer, const std::vector<std::string> &s) {
+void assertShuffled(RandomizerStub &randomizer,
+    const std::vector<av_speech_in_noise::LocalUrl> &s) {
     assertEqual(s, randomizer.shuffledStrings());
 }
 
@@ -90,14 +97,14 @@ void loadFromDirectoryPassesDirectoryToDirectoryReader(
 
 void loadFromDirectoryShufflesFileNames(av_speech_in_noise::TargetList &list,
     DirectoryReaderStub &reader, RandomizerStub &randomizer) {
-    setFileNames(reader, {"a", "b", "c"});
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list);
-    assertShuffled(randomizer, {"a", "b", "c"});
+    assertShuffled(randomizer, {{"a"}, {"b"}, {"c"}});
 }
 
 void nextReturnsFullPathToFile(
     av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
-    setFileNames(reader, {"a", "b", "c"});
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     assertNextEquals(list, "C:/a");
     assertNextEquals(list, "C:/b");
@@ -106,7 +113,7 @@ void nextReturnsFullPathToFile(
 
 void currentReturnsFullPathToFile(
     av_speech_in_noise::TargetList &list, DirectoryReaderStub &reader) {
-    setFileNames(reader, {"a", "b", "c"});
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     next(list);
     assertCurrentEquals(list, "C:/a");
@@ -253,23 +260,23 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(currentReturnsEmptyIfNoFiles) {
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     nextShufflesNextSetNotIncludingCurrent) {
-    setFileNames(reader, {"a", "b", "c", "d"});
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}, {"d"}});
     loadFromDirectory(list);
     next(list);
-    assertShuffled(randomizer, {"b", "c", "d"});
+    assertShuffled(randomizer, {{"b"}, {"c"}, {"d"}});
 }
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(nextReplacesSecondToLastTarget) {
-    setFileNames(reader, {"a", "b", "c", "d", "e"});
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}, {"d"}, {"e"}});
     loadFromDirectory(list);
     next(list);
     next(list);
-    assertShuffled(randomizer, {"c", "d", "e", "a"});
+    assertShuffled(randomizer, {{"c"}, {"d"}, {"e"}, {"a"}});
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
     emptyWhenStimulusFilesExhausted) {
-    setFileNames(reader, {"a", "b", "c"});
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list);
     assertNotEmpty(list);
     next(list);
@@ -281,7 +288,7 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(
 }
 
 RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
-    setFileNames(reader, {"a", "b", "c"});
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     assertNextEquals(list, "C:/a");
     assertNextEquals(list, "C:/b");
@@ -291,7 +298,7 @@ RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(reinsertCurrent) {
 }
 
 CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextCyclesBackToBeginningOfFiles) {
-    setFileNames(reader, {"a", "b", "c"});
+    setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     next(list);
     next(list);
@@ -301,36 +308,41 @@ CYCLIC_RANDOMIZED_TARGET_LIST_TEST(nextCyclesBackToBeginningOfFiles) {
     assertNextEquals(list, "C:/c");
 }
 
-auto filesIn(DirectoryReader &reader, std::string directory = {})
-    -> std::vector<std::string> {
-    return reader.filesIn(std::move(directory));
+auto filesIn(
+    DirectoryReader &reader, const av_speech_in_noise::LocalUrl &directory = {})
+    -> std::vector<av_speech_in_noise::LocalUrl> {
+    return reader.filesIn(directory);
 }
 
-auto filter(FileFilter &filter_, std::vector<std::string> files = {})
-    -> std::vector<std::string> {
-    return filter_.filter(std::move(files));
+auto filter(FileFilter &filter_,
+    const std::vector<av_speech_in_noise::LocalUrl> &files = {})
+    -> std::vector<av_speech_in_noise::LocalUrl> {
+    return filter_.filter(files);
 }
 
-auto subDirectories(DirectoryReader &reader, std::string directory = {})
-    -> std::vector<std::string> {
-    return reader.subDirectories(std::move(directory));
+auto subDirectories(
+    DirectoryReader &reader, const av_speech_in_noise::LocalUrl &directory = {})
+    -> std::vector<av_speech_in_noise::LocalUrl> {
+    return reader.subDirectories(directory);
 }
 
 class FileFilterStub : public FileFilter {
   public:
     [[nodiscard]] auto files() const { return files_; }
 
-    void setFiltered(std::vector<std::string> f) { filtered_ = std::move(f); }
+    void setFiltered(std::vector<av_speech_in_noise::LocalUrl> f) {
+        filtered_ = std::move(f);
+    }
 
-    auto filter(std::vector<std::string> f)
-        -> std::vector<std::string> override {
+    auto filter(std::vector<av_speech_in_noise::LocalUrl> f)
+        -> std::vector<av_speech_in_noise::LocalUrl> override {
         files_ = std::move(f);
         return filtered_;
     }
 
   private:
-    std::vector<std::string> filtered_;
-    std::vector<std::string> files_;
+    std::vector<av_speech_in_noise::LocalUrl> filtered_;
+    std::vector<av_speech_in_noise::LocalUrl> files_;
 };
 
 class FileFilterDecoratorTests : public ::testing::Test {
@@ -343,29 +355,29 @@ class FileFilterDecoratorTests : public ::testing::Test {
 #define FILE_FILTER_DECORATOR_TEST(a) TEST_F(FileFilterDecoratorTests, a)
 
 FILE_FILTER_DECORATOR_TEST(passesDirectoryToDecoratedForFiles) {
-    filesIn(decorator, "a");
+    filesIn(decorator, {"a"});
     assertEqual("a", directory(reader));
 }
 
 FILE_FILTER_DECORATOR_TEST(passesDirectoryToDecoratedForSubdirectories) {
-    subDirectories(decorator, "a");
+    subDirectories(decorator, {"a"});
     assertEqual("a", directory(reader));
 }
 
 FILE_FILTER_DECORATOR_TEST(passesFilesToFilter) {
-    reader.setFileNames({"a", "b", "c"});
+    reader.setFileNames({{"a"}, {"b"}, {"c"}});
     filesIn(decorator);
-    assertEqual({"a", "b", "c"}, filter.files());
+    assertEqual({{"a"}, {"b"}, {"c"}}, filter.files());
 }
 
 FILE_FILTER_DECORATOR_TEST(returnsFilteredFiles) {
-    filter.setFiltered({"a", "b", "c"});
-    assertEqual({"a", "b", "c"}, filesIn(decorator));
+    filter.setFiltered({{"a"}, {"b"}, {"c"}});
+    assertEqual({{"a"}, {"b"}, {"c"}}, filesIn(decorator));
 }
 
 FILE_FILTER_DECORATOR_TEST(returnsSubdirectories) {
-    reader.setSubDirectories({"a", "b", "c"});
-    assertEqual({"a", "b", "c"}, subDirectories(decorator));
+    reader.setSubDirectories({{"a"}, {"b"}, {"c"}});
+    assertEqual({{"a"}, {"b"}, {"c"}}, subDirectories(decorator));
 }
 
 class FileExtensionFilterTests : public ::testing::Test {
@@ -378,8 +390,8 @@ class FileExtensionFilterTests : public ::testing::Test {
 
 TEST_F(FileExtensionFilterTests, returnsFilteredFiles) {
     auto decorator = construct({".c", ".h"});
-    assertEqual({"b.c", "f.c", "g.h"},
-        filter(decorator, {"a", "b.c", "d.e", "f.c", "g.h"}));
+    assertEqual({{"b.c"}, {"f.c"}, {"g.h"}},
+        filter(decorator, {{"a"}, {"b.c"}, {"d.e"}, {"f.c"}, {"g.h"}}));
 }
 
 class FileIdentifierFilterTests : public ::testing::Test {
@@ -394,14 +406,14 @@ class FileIdentifierFilterTests : public ::testing::Test {
 
 FILE_IDENTIFIER_FILTER_TEST(returnsFilteredFiles) {
     auto decorator = construct("x");
-    assertEqual({"ax.j", "xf.c"},
-        filter(decorator, {"ax.j", "b.c", "d.e", "xf.c", "g.h"}));
+    assertEqual({{"ax.j"}, {"xf.c"}},
+        filter(decorator, {{"ax.j"}, {"b.c"}, {"d.e"}, {"xf.c"}, {"g.h"}}));
 }
 
 FILE_IDENTIFIER_FILTER_TEST(returnsFilesThatEndWithIdentifier) {
     auto decorator = construct("x");
-    assertEqual({"ax.j", "fx.c"},
-        filter(decorator, {"ax.j", "b.c", "d.e", "fx.c", "g.h"}));
+    assertEqual({{"ax.j"}, {"fx.c"}},
+        filter(decorator, {{"ax.j"}, {"b.c"}, {"d.e"}, {"fx.c"}, {"g.h"}}));
 }
 
 class FileIdentifierExcluderFilterTests : public ::testing::Test {
@@ -415,8 +427,8 @@ class FileIdentifierExcluderFilterTests : public ::testing::Test {
 TEST_F(
     FileIdentifierExcluderFilterTests, returnsFilesThatDontEndWithIdentifiers) {
     auto decorator = construct({"1", "2", "3"});
-    assertEqual({"ax.j", "d.e"},
-        filter(decorator, {"ax.j", "b1.c", "d.e", "fx2.c", "g3.h"}));
+    assertEqual({{"ax.j"}, {"d.e"}},
+        filter(decorator, {{"ax.j"}, {"b1.c"}, {"d.e"}, {"fx2.c"}, {"g3.h"}}));
 }
 
 class RandomSubsetFilesTests : public ::testing::Test {
@@ -436,19 +448,21 @@ class RandomSubsetFilesTests : public ::testing::Test {
 
 RANDOM_SUBSET_FILES_TEST(passesFileNumberRangeToRandomizer) {
     auto decorator = construct();
-    filter(decorator, {"a", "b", "c"});
+    filter(decorator, {{"a"}, {"b"}, {"c"}});
     assertHasBeenShuffled({0, 1, 2});
 }
 
 RANDOM_SUBSET_FILES_TEST(returnsFirstNShuffledIndexedFiles) {
     auto decorator = construct(3);
     randomizer.rotateToTheLeft(2);
-    assertEqual({"c", "d", "e"}, filter(decorator, {"a", "b", "c", "d", "e"}));
+    assertEqual({{"c"}, {"d"}, {"e"}},
+        filter(decorator, {{"a"}, {"b"}, {"c"}, {"d"}, {"e"}}));
 }
 
 RANDOM_SUBSET_FILES_TEST(returnsAllFilesIfLessThanAvailable) {
     auto decorator = construct(5);
-    assertEqual({"a", "b", "c"}, filter(decorator, {"a", "b", "c"}));
+    assertEqual(
+        {{"a"}, {"b"}, {"c"}}, filter(decorator, {{"a"}, {"b"}, {"c"}}));
 }
 
 class DirectoryReaderCompositeTests : public ::testing::Test {
@@ -471,7 +485,8 @@ class DirectoryReaderCompositeTests : public ::testing::Test {
 
     auto decoratedAt(int n) -> auto & { return decorated.at(n); }
 
-    void setFileNamesForDecorated(std::vector<std::string> v, int n) {
+    void setFileNamesForDecorated(
+        std::vector<av_speech_in_noise::LocalUrl> v, int n) {
         decoratedAt(n).setFileNames(std::move(v));
     }
 };
@@ -482,32 +497,32 @@ class DirectoryReaderCompositeTests : public ::testing::Test {
 DIRECTORY_READER_COMPOSITE_TEST(filesInPassesDirectoryToEach) {
     setDecoratedCount(3);
     auto reader = construct();
-    filesIn(reader, "a");
-    assertEachDecoratedDirectory("a", 3);
+    filesIn(reader, {"a"});
+    assertEachDecoratedDirectory({"a"}, 3);
 }
 
 DIRECTORY_READER_COMPOSITE_TEST(filesInPassesCollectsFilesFromEach) {
     setDecoratedCount(3);
-    setFileNamesForDecorated({"a"}, 0);
-    setFileNamesForDecorated({"b", "c", "d"}, 1);
-    setFileNamesForDecorated({"e", "f"}, 2);
+    setFileNamesForDecorated({{"a"}}, 0);
+    setFileNamesForDecorated({{"b"}, {"c"}, {"d"}}, 1);
+    setFileNamesForDecorated({{"e"}, {"f"}}, 2);
     auto reader = construct();
-    assertEqual({"a", "b", "c", "d", "e", "f"}, filesIn(reader));
+    assertEqual({{"a"}, {"b"}, {"c"}, {"d"}, {"e"}, {"f"}}, filesIn(reader));
 }
 
 TEST_F(DirectoryReaderCompositeTests,
     passesDirectoryToFirstDecoratedForSubdirectories) {
     setDecoratedCount(3);
     auto reader = construct();
-    subDirectories(reader, "a");
-    assertEqual("a", directory(decoratedAt(0)));
+    subDirectories(reader, {"a"});
+    assertEqual({"a"}, directory(decoratedAt(0)));
 }
 
 DIRECTORY_READER_COMPOSITE_TEST(returnsSubdirectoriesFromFirstDecorated) {
     setDecoratedCount(3);
     auto reader = construct();
-    decoratedAt(0).setSubDirectories({"a", "b", "c"});
-    assertEqual({"a", "b", "c"}, subDirectories(reader));
+    decoratedAt(0).setSubDirectories({{"a"}, {"b"}, {"c"}});
+    assertEqual({{"a"}, {"b"}, {"c"}}, subDirectories(reader));
 }
 }
 }

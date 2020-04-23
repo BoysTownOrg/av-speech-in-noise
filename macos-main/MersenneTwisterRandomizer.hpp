@@ -10,7 +10,7 @@ class MersenneTwisterRandomizer : public target_list::Randomizer,
     std::mt19937 engine{std::random_device{}()};
 
   public:
-    void shuffle(gsl::span<std::string> s) override {
+    void shuffle(gsl::span<av_speech_in_noise::LocalUrl> s) override {
         std::shuffle(s.begin(), s.end(), engine);
     }
 

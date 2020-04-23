@@ -18,9 +18,10 @@ class DirectoryReader {
     virtual ~DirectoryReader() = default;
     DirectoryReader() = default;
     DirectoryReader(const DirectoryReader &) = default;
-    virtual auto subDirectories(std::string directory)
-        -> std::vector<std::string> = 0;
-    virtual auto filesIn(std::string directory) -> std::vector<std::string> = 0;
+    virtual auto subDirectories(const av_speech_in_noise::LocalUrl &directory)
+        -> std::vector<av_speech_in_noise::LocalUrl> = 0;
+    virtual auto filesIn(const av_speech_in_noise::LocalUrl &directory)
+        -> std::vector<av_speech_in_noise::LocalUrl> = 0;
 };
 
 class SubdirectoryTargetListReader
@@ -33,7 +34,8 @@ class SubdirectoryTargetListReader
     auto read(const av_speech_in_noise::LocalUrl &) -> lists_type override;
 
   private:
-    auto subDirectories(std::string directory) -> std::vector<std::string>;
+    auto subDirectories(const av_speech_in_noise::LocalUrl &directory)
+        -> std::vector<av_speech_in_noise::LocalUrl>;
 };
 }
 

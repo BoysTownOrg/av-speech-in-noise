@@ -2,38 +2,45 @@
 #include <algorithm>
 
 namespace target_list {
-static auto filesIn(DirectoryReader *reader, std::string s)
-    -> std::vector<std::string> {
-    return reader->filesIn(std::move(s));
+static auto filesIn(
+    DirectoryReader *reader, const av_speech_in_noise::LocalUrl &s)
+    -> std::vector<av_speech_in_noise::LocalUrl> {
+    return reader->filesIn(s);
 }
 
-static auto shuffle(Randomizer *randomizer, gsl::span<std::string> v) {
+static auto shuffle(
+    Randomizer *randomizer, gsl::span<av_speech_in_noise::LocalUrl> v) {
     randomizer->shuffle(v);
 }
 
-static auto empty(const std::vector<std::string> &files) -> bool {
+static auto empty(const std::vector<av_speech_in_noise::LocalUrl> &files)
+    -> bool {
     return files.empty();
 }
 
-static auto currentFile(const std::vector<std::string> &v) -> std::string {
-    return empty(v) ? "" : v.back();
+static auto currentFile(const std::vector<av_speech_in_noise::LocalUrl> &v)
+    -> av_speech_in_noise::LocalUrl {
+    return empty(v) ? av_speech_in_noise::LocalUrl{""} : v.back();
 }
 
-static auto joinPaths(const std::string &directory, const std::string &file)
-    -> std::string {
-    return directory + '/' + file;
+static auto joinPaths(const av_speech_in_noise::LocalUrl &directory,
+    const av_speech_in_noise::LocalUrl &file) -> av_speech_in_noise::LocalUrl {
+    return {directory.path + '/' + file.path};
 }
 
-static auto fullPathToLastFile(const std::string &directory,
-    const std::vector<std::string> &files) -> std::string {
-    return empty(files) ? "" : joinPaths(directory, currentFile(files));
+static auto fullPathToLastFile(const av_speech_in_noise::LocalUrl &directory,
+    const std::vector<av_speech_in_noise::LocalUrl> &files)
+    -> av_speech_in_noise::LocalUrl {
+    return empty(files) ? av_speech_in_noise::LocalUrl{""}
+                        : joinPaths(directory, currentFile(files));
 }
 
-static void moveFrontToBack(std::vector<std::string> &files) {
+static void moveFrontToBack(std::vector<av_speech_in_noise::LocalUrl> &files) {
     std::rotate(files.begin(), files.begin() + 1, files.end());
 }
 
-static auto allButLast(gsl::span<std::string> s) -> gsl::span<std::string> {
+static auto allButLast(gsl::span<av_speech_in_noise::LocalUrl> s)
+    -> gsl::span<av_speech_in_noise::LocalUrl> {
     return s.first(s.size() - 1);
 }
 
@@ -43,7 +50,7 @@ RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
 
 void RandomizedTargetListWithReplacement::loadFromDirectory(
     const av_speech_in_noise::LocalUrl &d) {
-    shuffle(randomizer, files = filesIn(reader, directory_ = d.path));
+    shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
 auto RandomizedTargetListWithReplacement::next()
@@ -72,7 +79,7 @@ RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
 
 void RandomizedTargetListWithoutReplacement::loadFromDirectory(
     const av_speech_in_noise::LocalUrl &d) {
-    shuffle(randomizer, files = filesIn(reader, directory_ = d.path));
+    shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
 auto RandomizedTargetListWithoutReplacement::empty() -> bool {
@@ -91,7 +98,7 @@ auto RandomizedTargetListWithoutReplacement::next()
 
 auto RandomizedTargetListWithoutReplacement::current()
     -> av_speech_in_noise::LocalUrl {
-    return currentFile.empty()
+    return currentFile.path.empty()
         ? av_speech_in_noise::LocalUrl{""}
         : av_speech_in_noise::LocalUrl{joinPaths(directory_, currentFile)};
 }
@@ -111,7 +118,7 @@ CyclicRandomizedTargetList::CyclicRandomizedTargetList(
 
 void CyclicRandomizedTargetList::loadFromDirectory(
     const av_speech_in_noise::LocalUrl &d) {
-    shuffle(randomizer, files = filesIn(reader, directory_ = d.path));
+    shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
 auto CyclicRandomizedTargetList::next() -> av_speech_in_noise::LocalUrl {

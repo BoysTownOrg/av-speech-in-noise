@@ -12,7 +12,7 @@ namespace target_list {
 class Randomizer {
   public:
     virtual ~Randomizer() = default;
-    virtual void shuffle(gsl::span<std::string>) = 0;
+    virtual void shuffle(gsl::span<av_speech_in_noise::LocalUrl>) = 0;
     virtual void shuffle(gsl::span<int>) = 0;
 };
 
@@ -42,9 +42,9 @@ class RandomizedTargetListWithReplacement
     auto directory() -> av_speech_in_noise::LocalUrl override;
 
   private:
-    std::vector<std::string> files{};
-    std::string directory_{};
-    std::string currentFile{};
+    std::vector<av_speech_in_noise::LocalUrl> files{};
+    av_speech_in_noise::LocalUrl directory_{};
+    av_speech_in_noise::LocalUrl currentFile{};
     DirectoryReader *reader;
     Randomizer *randomizer;
 };
@@ -54,16 +54,17 @@ class RandomizedTargetListWithoutReplacement
   public:
     RandomizedTargetListWithoutReplacement(DirectoryReader *, Randomizer *);
     auto empty() -> bool override;
-    void loadFromDirectory(const av_speech_in_noise::LocalUrl &directory) override;
+    void loadFromDirectory(
+        const av_speech_in_noise::LocalUrl &directory) override;
     auto next() -> av_speech_in_noise::LocalUrl override;
     auto current() -> av_speech_in_noise::LocalUrl override;
     void reinsertCurrent() override;
     auto directory() -> av_speech_in_noise::LocalUrl override;
 
   private:
-    std::vector<std::string> files{};
-    std::string directory_{};
-    std::string currentFile{};
+    std::vector<av_speech_in_noise::LocalUrl> files{};
+    av_speech_in_noise::LocalUrl directory_{};
+    av_speech_in_noise::LocalUrl currentFile{};
     DirectoryReader *reader;
     Randomizer *randomizer;
 };
@@ -87,14 +88,15 @@ class CyclicRandomizedTargetList : public av_speech_in_noise::TargetList {
     };
 
     CyclicRandomizedTargetList(DirectoryReader *, Randomizer *);
-    void loadFromDirectory(const av_speech_in_noise::LocalUrl &directory) override;
+    void loadFromDirectory(
+        const av_speech_in_noise::LocalUrl &directory) override;
     auto next() -> av_speech_in_noise::LocalUrl override;
     auto current() -> av_speech_in_noise::LocalUrl override;
     auto directory() -> av_speech_in_noise::LocalUrl override;
 
   private:
-    std::vector<std::string> files{};
-    std::string directory_{};
+    std::vector<av_speech_in_noise::LocalUrl> files{};
+    av_speech_in_noise::LocalUrl directory_{};
     DirectoryReader *reader;
     Randomizer *randomizer;
 };

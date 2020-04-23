@@ -8,11 +8,11 @@ SubdirectoryTargetListReader::SubdirectoryTargetListReader(
 auto SubdirectoryTargetListReader::read(
     const av_speech_in_noise::LocalUrl &directory) -> lists_type {
     lists_type lists{};
-    auto subDirectories_ = subDirectories(directory.path);
+    auto subDirectories_ = subDirectories(directory);
     for (const auto &subDirectory : subDirectories_) {
         lists.push_back(targetListFactory->make());
         auto fullPath{directory.path};
-        fullPath.append("/" + subDirectory);
+        fullPath.append("/" + subDirectory.path);
         lists.back()->loadFromDirectory({fullPath});
     }
     if (subDirectories_.empty()) {
@@ -22,8 +22,9 @@ auto SubdirectoryTargetListReader::read(
     return lists;
 }
 
-auto SubdirectoryTargetListReader::subDirectories(std::string directory)
-    -> std::vector<std::string> {
-    return directoryReader->subDirectories(std::move(directory));
+auto SubdirectoryTargetListReader::subDirectories(
+    const av_speech_in_noise::LocalUrl &directory)
+    -> std::vector<av_speech_in_noise::LocalUrl> {
+    return directoryReader->subDirectories(directory);
 }
 }
