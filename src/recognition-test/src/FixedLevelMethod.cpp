@@ -33,8 +33,8 @@ auto FixedLevelMethodImpl::complete() -> bool {
     return usingFiniteTargetList_ ? finiteTargetsExhausted_ : trials_ == 0;
 }
 
-auto FixedLevelMethodImpl::nextTarget() -> std::string {
-    return targetList->next().path;
+auto FixedLevelMethodImpl::nextTarget() -> LocalUrl {
+    return targetList->next();
 }
 
 auto FixedLevelMethodImpl::snr_dB() -> int { return snr_dB_; }
@@ -47,15 +47,15 @@ void FixedLevelMethodImpl::submit(
     lastTrial.correctColor = evaluator.correctColor({current_});
     lastTrial.correctNumber = evaluator.correctNumber({current_});
     lastTrial.correct = evaluator.correct({current_}, response);
-    lastTrial.target = current_;
+    lastTrial.target = current_.path;
     if (usingFiniteTargetList_)
         finiteTargetsExhausted_ = finiteTargetList->empty();
     else
         --trials_;
 }
 
-auto FixedLevelMethodImpl::currentTarget() -> std::string {
-    return targetList->current().path;
+auto FixedLevelMethodImpl::currentTarget() -> LocalUrl {
+    return targetList->current();
 }
 
 void FixedLevelMethodImpl::writeTestingParameters(OutputFile &file) {

@@ -48,17 +48,17 @@ class TestMethodStub : public TestMethod {
 
     void setNextTarget(std::string s) { nextTarget_ = std::move(s); }
 
-    auto nextTarget() -> std::string override {
+    auto nextTarget() -> LocalUrl override {
         insert(log_, "next ");
         currentTarget_ = currentTargetWhenNextTarget_;
-        return nextTarget_;
+        return {nextTarget_};
     }
 
     void setComplete() { complete_ = true; }
 
     auto complete() -> bool override { return complete_; }
 
-    auto currentTarget() -> std::string override { return currentTarget_; }
+    auto currentTarget() -> LocalUrl override { return {currentTarget_}; }
 
     void setCurrentTarget(std::string s) { currentTarget_ = std::move(s); }
 

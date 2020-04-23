@@ -21,9 +21,9 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
     void writeTestingParameters(OutputFile &) override;
     void writeTestResult(OutputFile &) override {}
     auto snr_dB() -> int override;
-    auto nextTarget() -> std::string override;
+    auto nextTarget() -> LocalUrl override;
+    auto currentTarget() -> LocalUrl override;
     auto complete() -> bool override;
-    auto currentTarget() -> std::string override;
 
   private:
     coordinate_response_measure::FixedLevelTrial lastTrial{};

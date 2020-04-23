@@ -66,7 +66,7 @@ void run(UseCase &useCase, FixedLevelMethodImpl &method) {
 }
 
 auto nextTarget(FixedLevelMethodImpl &method) -> std::string {
-    return method.nextTarget();
+    return method.nextTarget().path;
 }
 
 void assertNextTargetEquals(

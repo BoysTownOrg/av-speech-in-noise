@@ -11,8 +11,8 @@ class TestMethod {
   public:
     virtual ~TestMethod() = default;
     virtual auto complete() -> bool = 0;
-    virtual auto nextTarget() -> std::string = 0;
-    virtual auto currentTarget() -> std::string = 0;
+    virtual auto nextTarget() -> LocalUrl = 0;
+    virtual auto currentTarget() -> LocalUrl = 0;
     virtual auto snr_dB() -> int = 0;
     virtual void submitCorrectResponse() = 0;
     virtual void submitIncorrectResponse() = 0;

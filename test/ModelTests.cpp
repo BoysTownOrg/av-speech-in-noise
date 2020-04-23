@@ -36,8 +36,8 @@ class AdaptiveMethodStub : public AdaptiveMethod {
     void resetTracks() override { tracksResetted_ = true; }
 
     auto complete() -> bool override { return {}; }
-    auto nextTarget() -> std::string override { return {}; }
-    auto currentTarget() -> std::string override { return {}; }
+    auto nextTarget() -> LocalUrl override { return {}; }
+    auto currentTarget() -> LocalUrl override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}
@@ -84,8 +84,8 @@ class FixedLevelMethodStub : public FixedLevelMethod {
     [[nodiscard]] auto test() const { return test_; }
 
     auto complete() -> bool override { return {}; }
-    auto nextTarget() -> std::string override { return {}; }
-    auto currentTarget() -> std::string override { return {}; }
+    auto nextTarget() -> LocalUrl override { return {}; }
+    auto currentTarget() -> LocalUrl override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submitCorrectResponse() override {}
     void submitIncorrectResponse() override {}

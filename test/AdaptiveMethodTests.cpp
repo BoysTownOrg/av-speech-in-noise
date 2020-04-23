@@ -360,7 +360,7 @@ void selectNextList(RandomizerStub &randomizer, int n) {
 }
 
 void assertNextTargetEquals(AdaptiveMethodImpl &method, const std::string &s) {
-    assertEqual(s, method.nextTarget());
+    assertEqual(s, method.nextTarget().path);
 }
 
 auto adaptiveTestResult(OutputFileStub &file) -> AdaptiveTestResults {

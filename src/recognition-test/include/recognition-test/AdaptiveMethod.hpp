@@ -59,8 +59,8 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     void writeTestResult(OutputFile &) override;
     auto snr_dB() -> int override;
     auto complete() -> bool override;
-    auto nextTarget() -> std::string override;
-    auto currentTarget() -> std::string override;
+    auto nextTarget() -> LocalUrl override;
+    auto currentTarget() -> LocalUrl override;
     auto testResults() -> AdaptiveTestResults override;
     void resetTracks() override;
 

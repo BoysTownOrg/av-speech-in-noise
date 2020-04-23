@@ -122,14 +122,14 @@ auto AdaptiveMethodImpl::complete() -> bool {
         targetListsWithTracks.end(), av_speech_in_noise::complete);
 }
 
-auto AdaptiveMethodImpl::nextTarget() -> std::string {
-    return targetList->next().path;
+auto AdaptiveMethodImpl::nextTarget() -> LocalUrl {
+    return targetList->next();
 }
 
 auto AdaptiveMethodImpl::snr_dB() -> int { return x(snrTrack); }
 
-auto AdaptiveMethodImpl::currentTarget() -> std::string {
-    return targetList->current().path;
+auto AdaptiveMethodImpl::currentTarget() -> LocalUrl {
+    return targetList->current();
 }
 
 void AdaptiveMethodImpl::submit(

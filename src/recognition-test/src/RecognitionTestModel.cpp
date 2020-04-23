@@ -7,8 +7,8 @@ namespace av_speech_in_noise {
 namespace {
 class NullTestMethod : public TestMethod {
     auto complete() -> bool override { return {}; }
-    auto nextTarget() -> std::string override { return {}; }
-    auto currentTarget() -> std::string override { return {}; }
+    auto nextTarget() -> LocalUrl override { return {}; }
+    auto currentTarget() -> LocalUrl override { return {}; }
     auto snr_dB() -> int override { return {}; }
     void submit(const coordinate_response_measure::Response &) override {}
     void submit(const FreeResponse &) override {}
@@ -271,7 +271,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 }
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
-    loadFile(targetPlayer, testMethod->nextTarget());
+    loadFile(targetPlayer, testMethod->nextTarget().path);
     setLevel_dB(targetPlayer, targetLevel_dB());
     targetPlayer.subscribeToPlaybackCompletion();
     seekRandomMaskerPosition();
