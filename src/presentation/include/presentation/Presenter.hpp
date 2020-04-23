@@ -42,7 +42,7 @@ class TestSettingsInterpreter {
   public:
     virtual ~TestSettingsInterpreter() = default;
     virtual void initialize(
-        Model &, const std::string &, const TestIdentity &, int) = 0;
+        Model &, const std::string &, const TestIdentity &, SNR) = 0;
     virtual auto method(const std::string &) -> Method = 0;
     virtual auto calibration(const std::string &) -> Calibration = 0;
 };

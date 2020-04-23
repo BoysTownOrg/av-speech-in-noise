@@ -417,8 +417,8 @@ class TestSettingsInterpreterStub : public TestSettingsInterpreter {
     }
 
     void initialize(Model &m, const std::string &t, const TestIdentity &id,
-        int snr) override {
-        startingSnr_ = snr;
+        SNR snr) override {
+        startingSnr_ = snr.dB;
         text_ = t;
         identity_ = id;
         if (initializeAnyTestOnApply_)

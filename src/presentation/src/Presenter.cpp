@@ -88,8 +88,7 @@ static void showContinueTestingDialogWithResultsWhenComplete(
         thresholds << "thresholds (targets: dB SNR)";
         for (const auto &result : model.adaptiveTestResults())
             thresholds << '\n'
-                       << result.targetsUrl.path << ": "
-                       << result.threshold;
+                       << result.targetsUrl.path << ": " << result.threshold;
         experimenterPresenter.setContinueTestingDialogMessage(thresholds.str());
     } else
         readyNextTrial(experimenterPresenter, model);
@@ -133,7 +132,7 @@ void Presenter::confirmTestSetup_() {
     auto testSettings{textFileReader.read({testSetup.testSettingsFile()})};
     testSettingsInterpreter.initialize(model, testSettings,
         testIdentity(testSetup),
-        readInteger(testSetup.startingSnr(), "starting SNR"));
+        {readInteger(testSetup.startingSnr(), "starting SNR")});
     auto method{testSettingsInterpreter.method(testSettings)};
     if (!testComplete(model)) {
         switchToTestView(method);

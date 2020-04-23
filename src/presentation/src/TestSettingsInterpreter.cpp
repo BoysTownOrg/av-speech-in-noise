@@ -155,7 +155,7 @@ static auto adaptive(const std::string &contents) -> bool {
 }
 
 static void initializeAdaptiveTest(Model &model, const std::string &contents,
-    const TestIdentity &identity, int startingSnr) {
+    const TestIdentity &identity, SNR startingSnr) {
     AdaptiveTest test;
     applyToEachEntry(
         [&](auto entryName, auto entry) {
@@ -165,7 +165,7 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.startingSnr.dB = startingSnr;
+    test.startingSnr.dB = startingSnr.dB;
     test.ceilingSnr.dB = Presenter::ceilingSnr.dB;
     test.floorSnr.dB = Presenter::floorSnr.dB;
     test.trackBumpLimit = Presenter::trackBumpLimit;
@@ -188,12 +188,12 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
 }
 
 static void initializeFixedLevelTest(Model &model, const std::string &contents,
-    const TestIdentity &identity, int startingSnr) {
+    const TestIdentity &identity, SNR startingSnr) {
     FixedLevelTest test;
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.snr.dB = startingSnr;
+    test.snr.dB = startingSnr.dB;
     test.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel.dB_SPL;
     test.identity = identity;
     auto method_{av_speech_in_noise::method(contents)};
@@ -218,7 +218,7 @@ static void initializeFixedLevelTest(Model &model, const std::string &contents,
 
 void TestSettingsInterpreterImpl::initialize(Model &model,
     const std::string &contents, const TestIdentity &identity,
-    int startingSnr) {
+    SNR startingSnr) {
     if (adaptive(contents))
         initializeAdaptiveTest(model, contents, identity, startingSnr);
     else
