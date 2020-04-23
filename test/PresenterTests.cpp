@@ -1782,6 +1782,12 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingShowsExperimenterView) {
+    assertShowsExperimenterView(
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
+}
+
+PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsExperimenterView) {
     assertShowsExperimenterView(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
