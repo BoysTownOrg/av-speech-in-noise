@@ -2276,6 +2276,12 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingShowsTrialNumber) {
+    assertShowsTrialNumber(
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
+}
+
+PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargetsShowsTrialNumber) {
     assertShowsTrialNumber(
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest);
