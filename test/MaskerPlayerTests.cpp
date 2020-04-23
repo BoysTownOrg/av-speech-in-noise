@@ -23,11 +23,11 @@ class AudioPlayerStub : public AudioPlayer {
   public:
     void setNanoseconds(std::uintmax_t t) { nanoseconds_ = t; }
 
-    void setCurrentSystemTime(av_speech_in_noise::player_system_time_type t) {
+    void setCurrentSystemTime(player_system_time_type t) {
         currentSystemTime_ = t;
     }
 
-    auto currentSystemTime() -> av_speech_in_noise::PlayerTime override {
+    auto currentSystemTime() -> PlayerTime override {
         return {currentSystemTime_};
     }
 
@@ -77,18 +77,17 @@ class AudioPlayerStub : public AudioPlayer {
     [[nodiscard]] auto played() const { return played_; }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio,
-        av_speech_in_noise::player_system_time_type t = {}) {
+        player_system_time_type t = {}) {
         listener_->fillAudioBuffer(audio, t);
     }
 
-    auto nanoseconds(av_speech_in_noise::PlayerTime t)
-        -> std::uintmax_t override {
+    auto nanoseconds(PlayerTime t) -> std::uintmax_t override {
         systemTimeForNanoseconds_ = t.system;
         return nanoseconds_;
     }
 
     [[nodiscard]] auto systemTimeForNanoseconds() const
-        -> av_speech_in_noise::player_system_time_type {
+        -> player_system_time_type {
         return systemTimeForNanoseconds_;
     }
 
@@ -100,8 +99,8 @@ class AudioPlayerStub : public AudioPlayer {
     std::string audioFilePath_;
     std::map<int, bool> outputDevices;
     std::uintmax_t nanoseconds_{};
-    av_speech_in_noise::player_system_time_type systemTimeForNanoseconds_{};
-    av_speech_in_noise::player_system_time_type currentSystemTime_{};
+    player_system_time_type systemTimeForNanoseconds_{};
+    player_system_time_type currentSystemTime_{};
     EventListener *listener_{};
     double sampleRateHz_{};
     int deviceIndex_{};
@@ -111,11 +110,9 @@ class AudioPlayerStub : public AudioPlayer {
     bool stopped_{};
 };
 
-class MaskerPlayerListenerStub
-    : public av_speech_in_noise::MaskerPlayer::EventListener {
+class MaskerPlayerListenerStub : public MaskerPlayer::EventListener {
   public:
-    void fadeInComplete(
-        const av_speech_in_noise::AudioSampleTimeWithOffset &t) override {
+    void fadeInComplete(const AudioSampleTimeWithOffset &t) override {
         fadeInCompleteSystemTime_ = t.playerTime.system;
         fadeInCompleteSystemTimeSampleOffset_ = t.sampleOffset;
         fadeInCompleted_ = true;
@@ -146,7 +143,7 @@ class MaskerPlayerListenerStub
     }
 
   private:
-    av_speech_in_noise::player_system_time_type fadeInCompleteSystemTime_{};
+    player_system_time_type fadeInCompleteSystemTime_{};
     gsl::index fadeInCompleteSystemTimeSampleOffset_{};
     int fadeInCompletions_{};
     int fadeOutCompletions_{};
@@ -236,18 +233,17 @@ void setCurrentSystemTime(AudioPlayerStub &player, std::uintmax_t t) {
     player.setCurrentSystemTime(t);
 }
 
-auto nanoseconds(MaskerPlayerImpl &player,
-    av_speech_in_noise::player_system_time_type t = {}) -> std::uintmax_t {
+auto nanoseconds(MaskerPlayerImpl &player, player_system_time_type t = {})
+    -> std::uintmax_t {
     return player.nanoseconds({t});
 }
 
-auto currentSystemTime(MaskerPlayerImpl &player)
-    -> av_speech_in_noise::PlayerTime {
+auto currentSystemTime(MaskerPlayerImpl &player) -> PlayerTime {
     return player.currentSystemTime();
 }
 
 auto systemTimeForNanoseconds(AudioPlayerStub &player)
-    -> av_speech_in_noise::player_system_time_type {
+    -> player_system_time_type {
     return player.systemTimeForNanoseconds();
 }
 
@@ -266,12 +262,12 @@ class MaskerPlayerTests : public ::testing::Test {
     MaskerPlayerTests() { player.subscribe(&listener); }
 
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio,
-        av_speech_in_noise::player_system_time_type t = {}) {
+        player_system_time_type t = {}) {
         audioPlayer.fillAudioBuffer(audio, t);
     }
 
-    void fillAudioBufferMono(channel_index_type n,
-        av_speech_in_noise::player_system_time_type t = {}) {
+    void fillAudioBufferMono(
+        channel_index_type n, player_system_time_type t = {}) {
         resizeLeftChannel(n);
         fillAudioBuffer({leftChannel}, t);
     }
@@ -687,7 +683,7 @@ MASKER_PLAYER_TEST(fadeInPlaysVideoPlayer) {
 }
 
 MASKER_PLAYER_TEST(twentydBMultipliesSignalByTen) {
-    player.set(av_speech_in_noise::DigitalLevel{20});
+    player.set(DigitalLevel{20});
     loadMonoAudio({1, 2, 3});
     fillAudioBufferMono(3);
     assertLeftChannelEquals({10, 20, 30});
@@ -864,8 +860,8 @@ MASKER_PLAYER_TEST(fadeInCompletePassesSystemTimeAndSampleOffset) {
     fillAudioBufferMono(5);
     fillAudioBufferMono(3 * 4 - 5 + 1, 6);
     timerCallback();
-    assertEqual(av_speech_in_noise::player_system_time_type{6},
-        listener.fadeInCompleteSystemTime());
+    assertEqual(
+        player_system_time_type{6}, listener.fadeInCompleteSystemTime());
     assertEqual(gsl::index{3 * 4 - 5 + 1},
         listener.fadeInCompleteSystemTimeSampleOffset());
 }
@@ -980,7 +976,7 @@ MASKER_PLAYER_TEST(setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
     try {
         setAudioDevice("third");
         FAIL() << "Expected recognition_test::InvalidAudioDevice";
-    } catch (const av_speech_in_noise::InvalidAudioDevice &) {
+    } catch (const InvalidAudioDevice &) {
     }
 }
 
@@ -1009,15 +1005,15 @@ MASKER_PLAYER_TEST(returnsNanosecondConversion) {
 
 MASKER_PLAYER_TEST(returnsCurrentSystemTime) {
     setCurrentSystemTime(audioPlayer, 1);
-    av_speech_in_noise::PlayerTime expected{};
+    PlayerTime expected{};
     expected.system = 1;
     assertEqual(expected, currentSystemTime(player));
 }
 
 MASKER_PLAYER_TEST(passesSystemTimeToAudioPlayerForNanoseconds) {
     nanoseconds(player, 1);
-    assertEqual(av_speech_in_noise::player_system_time_type{1},
-        systemTimeForNanoseconds(audioPlayer));
+    assertEqual(
+        player_system_time_type{1}, systemTimeForNanoseconds(audioPlayer));
 }
 
 MASKER_PLAYER_TEST(loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
@@ -1025,7 +1021,7 @@ MASKER_PLAYER_TEST(loadFileThrowsInvalidAudioFileWhenAudioReaderThrows) {
     try {
         loadFile();
         FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
-    } catch (const av_speech_in_noise::InvalidAudioFile &) {
+    } catch (const InvalidAudioFile &) {
     }
 }
 }

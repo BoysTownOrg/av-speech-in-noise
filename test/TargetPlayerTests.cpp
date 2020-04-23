@@ -73,7 +73,7 @@ class VideoPlayerStub : public VideoPlayer {
         return secondsDelayedPlayedAt_;
     }
 
-    void playAt(const av_speech_in_noise::PlayerTimeWithDelay &t) override {
+    void playAt(const PlayerTimeWithDelay &t) override {
         baseSystemTimePlayedAt_ = t.playerTime.system;
         secondsDelayedPlayedAt_ = t.delay.seconds;
     }
@@ -85,7 +85,7 @@ class VideoPlayerStub : public VideoPlayer {
     std::string audioFilePath_{};
     double durationSeconds_{};
     double secondsDelayedPlayedAt_{};
-    av_speech_in_noise::player_system_time_type baseSystemTimePlayedAt_{};
+    player_system_time_type baseSystemTimePlayedAt_{};
     int deviceIndex_{};
     EventListener *listener_{};
     bool shown_{};
@@ -95,8 +95,7 @@ class VideoPlayerStub : public VideoPlayer {
     bool playbackCompletionSubscribedTo_{};
 };
 
-class TargetPlayerListenerStub
-    : public av_speech_in_noise::TargetPlayer::EventListener {
+class TargetPlayerListenerStub : public TargetPlayer::EventListener {
     bool notified_{};
 
   public:
@@ -113,7 +112,7 @@ class TargetPlayerTests : public ::testing::Test {
     TargetPlayerListenerStub listener;
     AudioReaderStub audioReader{};
     TargetPlayerImpl player{&videoPlayer, &audioReader};
-    av_speech_in_noise::PlayerTimeWithDelay systemTimeWithDelay{};
+    PlayerTimeWithDelay systemTimeWithDelay{};
 
     TargetPlayerTests() { player.subscribe(&listener); }
 
@@ -143,16 +142,13 @@ class TargetPlayerTests : public ::testing::Test {
         assertEqual(x, rightChannel);
     }
 
-    void setLevel_dB(double x) {
-        player.set(av_speech_in_noise::DigitalLevel{x});
-    }
+    void setLevel_dB(double x) { player.set(DigitalLevel{x}); }
 
     void setFirstChannelOnly() { player.useFirstChannelOnly(); }
 
     void useAllChannels() { player.useAllChannels(); }
 
-    void setBaseSystemTimeToPlayAt(
-        av_speech_in_noise::player_system_time_type t) {
+    void setBaseSystemTimeToPlayAt(player_system_time_type t) {
         systemTimeWithDelay.playerTime.system = t;
     }
 
@@ -177,8 +173,8 @@ TEST_F(TargetPlayerTests, playAtPlaysVideoAt) {
     setBaseSystemTimeToPlayAt(1);
     setSecondsDelayedToPlayAt(2);
     playAt();
-    assertEqual(av_speech_in_noise::player_system_time_type{1},
-        videoPlayer.baseSystemTimePlayedAt());
+    assertEqual(
+        player_system_time_type{1}, videoPlayer.baseSystemTimePlayedAt());
     assertEqual(2., videoPlayer.secondsDelayedPlayedAt());
 }
 
@@ -256,7 +252,7 @@ TEST_F(TargetPlayerTests, setAudioDeviceThrowsInvalidAudioDeviceIfDoesntExist) {
     try {
         player.setAudioDevice("third");
         FAIL() << "Expected av_coordinate_response_measure::InvalidAudioDevice";
-    } catch (const av_speech_in_noise::InvalidAudioDevice &) {
+    } catch (const InvalidAudioDevice &) {
     }
 }
 
@@ -286,7 +282,7 @@ TEST_F(TargetPlayerTests, rmsThrowsInvalidAudioFileWhenAudioReaderThrows) {
     try {
         player.rms();
         FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
-    } catch (const av_speech_in_noise::InvalidAudioFile &) {
+    } catch (const InvalidAudioFile &) {
     }
 }
 }
