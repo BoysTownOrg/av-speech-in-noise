@@ -38,6 +38,16 @@ struct BinocularGazeSample {
 using BinocularGazeSamples = typename std::vector<BinocularGazeSample>;
 struct TargetStartTime : TargetPlayerSystemTime {};
 
+namespace open_set {
+struct AdaptiveTrial : AdaptiveProgress, Trial {
+    bool correct{};
+};
+}
+
+struct CorrectKeywordsTrial : CorrectKeywords, open_set::AdaptiveTrial {};
+
+struct FreeResponseTrial : FreeResponse, open_set::Trial {};
+
 class OutputFile {
   public:
     virtual ~OutputFile() = default;

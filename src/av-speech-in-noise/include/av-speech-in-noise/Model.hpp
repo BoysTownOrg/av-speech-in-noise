@@ -39,24 +39,16 @@ struct FixedLevelTrial : Trial {};
 
 namespace open_set {
 struct Trial : Target {};
-
-struct AdaptiveTrial : AdaptiveProgress, Trial {
-    bool correct{};
-};
 }
 
 struct CorrectKeywords {
     int count{};
 };
 
-struct CorrectKeywordsTrial : CorrectKeywords, open_set::AdaptiveTrial {};
-
 struct FreeResponse {
     std::string response;
     bool flagged{};
 };
-
-struct FreeResponseTrial : FreeResponse, open_set::Trial {};
 
 enum class Condition { auditoryOnly, audioVisual };
 
