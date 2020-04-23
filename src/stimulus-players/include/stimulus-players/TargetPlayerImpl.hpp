@@ -45,7 +45,7 @@ class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
     void hideVideo() override;
     void showVideo() override;
     auto rms() -> double override;
-    void setLevel_dB(double) override;
+    void set(av_speech_in_noise::DigitalLevel) override;
     void setAudioDevice(std::string) override;
     auto playing() -> bool override;
     void subscribeToPlaybackCompletion() override;

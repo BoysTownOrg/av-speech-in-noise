@@ -91,9 +91,7 @@ static void throwRequestFailureIfTrialInProgress(MaskerPlayer &player) {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
-static void setLevel_dB(TargetPlayer &player, double x) {
-    player.setLevel_dB(x);
-}
+static void set(TargetPlayer &player, DigitalLevel x) { player.set(x); }
 
 static void loadFile(TargetPlayer &player, const LocalUrl &s) {
     player.loadFile(s);
@@ -119,9 +117,9 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
     }
 }
 
-static auto level_dB(TargetPlayer &player, const Calibration &p) -> double {
-    return gsl::narrow_cast<double>(p.level.dB_SPL - p.fullScaleLevel.dB_SPL) -
-        dB(player.rms());
+static auto level(TargetPlayer &player, const Calibration &p) -> DigitalLevel {
+    return {gsl::narrow_cast<double>(p.level.dB_SPL - p.fullScaleLevel.dB_SPL) -
+        dB(player.rms())};
 }
 
 static void show(TargetPlayer &player) { player.showVideo(); }
@@ -176,12 +174,12 @@ void RecognitionTestModelImpl::initialize_(
         [&](auto file) { maskerPlayer.loadFile(file); }, maskerFilePath(test));
 
     testMethod = testMethod_;
-    fullScaleLevel.dB_SPL = test.fullScaleLevel.dB_SPL;
-    maskerLevel.dB_SPL = test.maskerLevel.dB_SPL;
+    fullScaleLevel_ = test.fullScaleLevel;
+    maskerLevel_ = test.maskerLevel;
     condition = test.condition;
 
     hide(targetPlayer);
-    maskerPlayer.setLevel_dB(maskerLevel_dB());
+    maskerPlayer.set(maskerLevel());
     preparePlayersForNextTrial();
     testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;
@@ -214,8 +212,9 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
     eyeTracking = true;
 }
 
-auto RecognitionTestModelImpl::maskerLevel_dB() -> double {
-    return maskerLevel.dB_SPL - fullScaleLevel.dB_SPL - dB(maskerPlayer.rms());
+auto RecognitionTestModelImpl::maskerLevel() -> DigitalLevel {
+    return {
+        maskerLevel_.dB_SPL - fullScaleLevel_.dB_SPL - dB(maskerPlayer.rms())};
 }
 
 static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
@@ -268,13 +267,13 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     loadFile(targetPlayer, testMethod->nextTarget());
-    setLevel_dB(targetPlayer, targetLevel_dB());
+    set(targetPlayer, targetLevel());
     targetPlayer.subscribeToPlaybackCompletion();
     seekRandomMaskerPosition();
 }
 
-auto RecognitionTestModelImpl::targetLevel_dB() -> double {
-    return maskerLevel_dB() + testMethod->snr().dB;
+auto RecognitionTestModelImpl::targetLevel() -> DigitalLevel {
+    return {maskerLevel().dB + testMethod->snr().dB};
 }
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
@@ -367,7 +366,7 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) {
             loadFile(targetPlayer, file);
-            setLevel_dB(targetPlayer, level_dB(targetPlayer, calibration));
+            set(targetPlayer, level(targetPlayer, calibration));
         },
         calibration.fileUrl);
     show(targetPlayer);

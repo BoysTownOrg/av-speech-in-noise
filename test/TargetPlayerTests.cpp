@@ -143,7 +143,9 @@ class TargetPlayerTests : public ::testing::Test {
         assertEqual(x, rightChannel);
     }
 
-    void setLevel_dB(double x) { player.setLevel_dB(x); }
+    void setLevel_dB(double x) {
+        player.set(av_speech_in_noise::DigitalLevel{x});
+    }
 
     void setFirstChannelOnly() { player.useFirstChannelOnly(); }
 

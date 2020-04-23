@@ -64,7 +64,7 @@ class MaskerPlayerImpl : public av_speech_in_noise::MaskerPlayer,
     void loadFile(const av_speech_in_noise::LocalUrl &) override;
     auto playing() -> bool override;
     void setAudioDevice(std::string) override;
-    void setLevel_dB(double) override;
+    void set(av_speech_in_noise::DigitalLevel) override;
     void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
         av_speech_in_noise::player_system_time_type) override;
     void setFadeInOutSeconds(double);

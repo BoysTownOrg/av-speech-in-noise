@@ -687,7 +687,7 @@ MASKER_PLAYER_TEST(fadeInPlaysVideoPlayer) {
 }
 
 MASKER_PLAYER_TEST(twentydBMultipliesSignalByTen) {
-    player.setLevel_dB(20);
+    player.set(av_speech_in_noise::DigitalLevel{20});
     loadMonoAudio({1, 2, 3});
     fillAudioBufferMono(3);
     assertLeftChannelEquals({10, 20, 30});

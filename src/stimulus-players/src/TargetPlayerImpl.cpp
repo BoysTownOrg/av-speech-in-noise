@@ -51,8 +51,8 @@ auto TargetPlayerImpl::readAudio_() -> audio_type {
     }
 }
 
-void TargetPlayerImpl::setLevel_dB(double x) {
-    audioScale.store(std::pow(10, x / 20));
+void TargetPlayerImpl::set(av_speech_in_noise::DigitalLevel x) {
+    audioScale.store(std::pow(10, x.dB / 20));
 }
 
 void TargetPlayerImpl::playbackComplete() { listener_->playbackComplete(); }

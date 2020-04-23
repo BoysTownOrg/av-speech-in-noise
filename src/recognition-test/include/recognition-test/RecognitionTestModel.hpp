@@ -27,6 +27,10 @@ struct PlayerTimeWithDelay {
     Delay delay;
 };
 
+struct DigitalLevel {
+    double dB;
+};
+
 class TargetPlayer {
   public:
     class EventListener {
@@ -45,7 +49,7 @@ class TargetPlayer {
     virtual void hideVideo() = 0;
     virtual void showVideo() = 0;
     virtual auto rms() -> double = 0;
-    virtual void setLevel_dB(double) = 0;
+    virtual void set(DigitalLevel) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual auto durationSeconds() -> double = 0;
     virtual void useAllChannels() = 0;
@@ -76,7 +80,7 @@ class MaskerPlayer {
     virtual void loadFile(const LocalUrl &) = 0;
     virtual auto playing() -> bool = 0;
     virtual auto rms() -> double = 0;
-    virtual void setLevel_dB(double) = 0;
+    virtual void set(DigitalLevel) = 0;
     virtual auto durationSeconds() -> double = 0;
     virtual auto sampleRateHz() -> double = 0;
     virtual void seekSeconds(double) = 0;
@@ -132,8 +136,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void initialize_(TestMethod *, const Test &);
     void preparePlayersForNextTrial();
     void seekRandomMaskerPosition();
-    auto targetLevel_dB() -> double;
-    auto maskerLevel_dB() -> double;
+    auto targetLevel() -> DigitalLevel;
+    auto maskerLevel() -> DigitalLevel;
 
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
@@ -146,8 +150,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     TargetStartTime lastTargetStartTime{};
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
-    Level maskerLevel{};
-    Level fullScaleLevel{};
+    Level maskerLevel_{};
+    Level fullScaleLevel_{};
     int trialNumber_{};
     Condition condition{};
     bool eyeTracking{};

@@ -194,7 +194,9 @@ auto MaskerPlayerImpl::rms() -> double {
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
-void MaskerPlayerImpl::setLevel_dB(double x) { write(levelScalar, dB(x)); }
+void MaskerPlayerImpl::set(av_speech_in_noise::DigitalLevel x) {
+    write(levelScalar, dB(x.dB));
+}
 
 void MaskerPlayerImpl::setFadeInOutSeconds(double x) {
     mainThread.setFadeInOutSeconds(x);
@@ -248,7 +250,9 @@ void MaskerPlayerImpl::clearChannelDelays() {
     recalculateSamplesToWaitPerChannel();
 }
 
-void MaskerPlayerImpl::useFirstChannelOnly() { set(firstChannelOnly); }
+void MaskerPlayerImpl::useFirstChannelOnly() {
+    stimulus_players::set(firstChannelOnly);
+}
 
 void MaskerPlayerImpl::useAllChannels() { clear(firstChannelOnly); }
 
@@ -295,8 +299,8 @@ void MaskerPlayerImpl::MainThread::fadeIn() {
     if (fading())
         return;
 
-    set(fadingIn);
-    set(sharedState->pleaseFadeIn);
+    stimulus_players::set(fadingIn);
+    stimulus_players::set(sharedState->pleaseFadeIn);
     player->play();
     scheduleCallbackAfterSeconds(0.1);
 }
@@ -313,8 +317,8 @@ void MaskerPlayerImpl::MainThread::fadeOut() {
     if (fading())
         return;
 
-    set(fadingOut);
-    set(sharedState->pleaseFadeOut);
+    stimulus_players::set(fadingOut);
+    stimulus_players::set(sharedState->pleaseFadeOut);
     scheduleCallbackAfterSeconds(0.1);
 }
 
@@ -411,7 +415,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeIn() {
 void MaskerPlayerImpl::AudioThread::prepareToFadeIn() {
     updateWindowLength();
     hannCounter = 0;
-    set(fadingIn);
+    stimulus_players::set(fadingIn);
 }
 
 void MaskerPlayerImpl::AudioThread::updateWindowLength() {
@@ -426,7 +430,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeOut() {
 void MaskerPlayerImpl::AudioThread::prepareToFadeOut() {
     updateWindowLength();
     hannCounter = halfWindowLength;
-    set(fadingOut);
+    stimulus_players::set(fadingOut);
 }
 
 auto MaskerPlayerImpl::AudioThread::nextFadeScalar() -> double {
@@ -447,7 +451,7 @@ void MaskerPlayerImpl::AudioThread::checkForFadeInComplete(
     if (doneFadingIn()) {
         sharedState->fadeInCompleteSystemTime.store(systemTime);
         sharedState->fadeInCompleteSystemTimeSampleOffset.store(offset + 1);
-        set(sharedState->fadeInComplete);
+        stimulus_players::set(sharedState->fadeInComplete);
         clear(fadingIn);
     }
 }
@@ -462,7 +466,7 @@ auto MaskerPlayerImpl::AudioThread::doneFadingOut() -> bool {
 
 void MaskerPlayerImpl::AudioThread::checkForFadeOutComplete() {
     if (doneFadingOut()) {
-        set(sharedState->fadeOutComplete);
+        stimulus_players::set(sharedState->fadeOutComplete);
         clear(fadingOut);
     }
 }
