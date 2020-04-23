@@ -28,6 +28,11 @@ class ModelStub : public Model {
         return fixedLevelTestWithAllTargetsInitialized_;
     }
 
+    [[nodiscard]] auto
+    fixedLevelTestWithAllTargetsAndEyeTrackingInitialized() const {
+        return fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_;
+    }
+
     [[nodiscard]] auto initializedWithSingleSpeaker() const {
         return initializedWithSingleSpeaker_;
     }
@@ -129,6 +134,11 @@ class ModelStub : public Model {
         fixedLevelTestWithAllTargetsInitialized_ = true;
     }
 
+    void initializeWithAllTargetsAndEyeTracking(const FixedLevelTest &p) {
+        fixedLevelTest_ = p;
+        fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_ = true;
+    }
+
     void completeTrial() { listener_->trialComplete(); }
 
     void setAudioDevices(std::vector<std::string> v) {
@@ -193,6 +203,7 @@ class ModelStub : public Model {
     bool defaultAdaptiveTestInitialized_{};
     bool fixedLevelTestWithSilentIntervalTargetsInitialized_{};
     bool fixedLevelTestWithAllTargetsInitialized_{};
+    bool fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
     bool initializedWithEyeTracking_{};

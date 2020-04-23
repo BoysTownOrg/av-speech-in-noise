@@ -398,6 +398,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsAndEyeTrackingInitializesFixedLevelTest) {
+    initialize(interpreter, model,
+        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
+    assertTrue(model.fixedLevelTestWithAllTargetsAndEyeTrackingInitialized());
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithSilentIntervalTargetsInitializesFixedLevelTest) {
     initialize(interpreter, model,
         Method::fixedLevelFreeResponseWithSilentIntervalTargets);
