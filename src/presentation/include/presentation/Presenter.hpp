@@ -23,6 +23,8 @@ enum class Method {
     unknown
 };
 
+enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
+
 constexpr auto name(Transducer c) -> const char * {
     switch (c) {
     case Transducer::headphone:

@@ -24,15 +24,13 @@ struct FreeResponse {
     bool flagged{};
 };
 
-enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
-
 struct TestIdentity {
     std::string subjectId;
     std::string testerId;
     std::string session;
     std::string method;
     std::string rmeSetting;
-    std::string transducer{};
+    std::string transducer;
 };
 
 enum class Condition { auditoryOnly, audioVisual };
