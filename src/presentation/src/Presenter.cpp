@@ -49,6 +49,9 @@ static auto fixedLevelCoordinateResponseMeasure(Method m) -> bool {
     return m ==
         Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement ||
         m ==
+        Method::
+            fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking ||
+        m ==
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
 }
 

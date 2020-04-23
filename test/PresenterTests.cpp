@@ -631,13 +631,13 @@ class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
     }
 };
 
-class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
+class ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
-    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest(
+    ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement(
         ViewStub::TestSetupViewStub *view,
         TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
@@ -650,13 +650,13 @@ class ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
 };
 
 class
-    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest
+    ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
-    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest(
+    ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking(
         ViewStub::TestSetupViewStub *view,
         TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
@@ -1097,11 +1097,11 @@ class PresenterTests : public ::testing::Test {
     ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
         confirmingFixedLevelFreeResponseWithTargetReplacementTest{
             &setupView, testSettingsInterpreter};
-    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest{
+    ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement{
             &setupView, testSettingsInterpreter};
-    ConfirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest{
+    ConfirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking{
             &setupView, testSettingsInterpreter};
     ConfirmingAdaptiveCorrectKeywordsTest confirmingAdaptiveCorrectKeywordsTest{
         &setupView, testSettingsInterpreter};
@@ -1652,13 +1652,13 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementHidesTestSetupView) {
     assertHidesTestSetupView(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingHidesTestSetupView) {
     assertHidesTestSetupView(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTrackingTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
 }
 
 PRESENTER_TEST(
@@ -1715,7 +1715,13 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsSubjectView) {
     assertShowsSubjectView(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
+}
+
+PRESENTER_TEST(
+    confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTrackingShowsSubjectView) {
+    assertShowsSubjectView(
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking);
 }
 
 PRESENTER_TEST(
@@ -1772,7 +1778,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsExperimenterView) {
     assertShowsExperimenterView(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 PRESENTER_TEST(
@@ -1844,7 +1850,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesSubjectId) {
     assertPassesSubjectId(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
@@ -1865,7 +1871,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTesterId) {
     assertPassesTesterId(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 PRESENTER_TEST(playCalibrationPassesFilePath) {
@@ -1891,19 +1897,19 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesSession) {
     assertPassesSession(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesRmeSetting) {
     assertPassesRmeSetting(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementPassesTransducer) {
     assertPassesTransducer(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 PRESENTER_TEST(
@@ -1922,7 +1928,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsNextTrialButtonForSubject) {
     assertConfirmTestSetupShowsNextTrialButton(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest,
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement,
         playingTrialFromSubject);
 }
 
@@ -2241,7 +2247,7 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestShowsTrialNumber) {
 PRESENTER_TEST(
     confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementShowsTrialNumber) {
     assertShowsTrialNumber(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement);
 }
 
 PRESENTER_TEST(
@@ -2303,7 +2309,7 @@ PRESENTER_TEST(
 PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureWithTargetReplacementTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest,
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement,
         respondingFromSubject);
 }
 
