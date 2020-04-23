@@ -105,7 +105,7 @@ class ModelStub : public Model {
     }
 
     void initializeWithTargetReplacementAndEyeTracking(
-        const FixedLevelTest &p) {
+        const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithTargetReplacementAndEyeTrackingInitialized_ = true;
     }

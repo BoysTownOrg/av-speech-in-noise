@@ -129,7 +129,8 @@ class ModelImpl : public Model {
         const FixedLevelTest &) override;
     void initializeWithSingleSpeaker(const AdaptiveTest &) override;
     void initializeWithDelayedMasker(const AdaptiveTest &) override;
-    void initializeWithTargetReplacementAndEyeTracking(const FixedLevelTest &);
+    void initializeWithTargetReplacementAndEyeTracking(
+        const FixedLevelTest &) override;
     void initializeWithSilentIntervalTargetsAndEyeTracking(
         const FixedLevelTest &);
     void initializeWithEyeTracking(const AdaptiveTest &) override;
