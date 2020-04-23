@@ -2338,9 +2338,16 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureWithTargetReplacementTest) {
+    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureTestWithTargetReplacement) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacement,
+        respondingFromSubject);
+}
+
+PRESENTER_TEST(
+    completingTrialShowsSubjectResponseButtonsForFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking) {
+    assertCompleteTrialShowsResponseView(
+        confirmingFixedLevelCoordinateResponseMeasureTestWithTargetReplacementAndEyeTracking,
         respondingFromSubject);
 }
 
