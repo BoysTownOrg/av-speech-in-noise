@@ -313,6 +313,13 @@ TEST_SETTINGS_INTERPRETER_TEST(
         Method::fixedLevelFreeResponseWithAllTargets, fixedLevelTestIdentity);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    fixedLevelFreeResponseWithAllTargetsAndEyeTrackingPassesMethod) {
+    assertPassesTestMethod(interpreter, model,
+        Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking,
+        fixedLevelTestIdentity);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesTestIdentity) {
     assertPassesTestIdentity(
         interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
