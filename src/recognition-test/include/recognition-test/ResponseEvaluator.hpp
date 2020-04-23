@@ -6,13 +6,13 @@
 namespace av_speech_in_noise {
 class ResponseEvaluatorImpl : public ResponseEvaluator {
   public:
-    auto correct(const std::string &filePath,
+    auto correct(const LocalUrl &filePath,
         const coordinate_response_measure::Response &r) -> bool override;
     static int invalidNumber;
-    auto correctNumber(const std::string &filePath) -> int override;
-    auto correctColor(const std::string &filePath)
+    auto correctNumber(const LocalUrl &filePath) -> int override;
+    auto correctColor(const LocalUrl &filePath)
         -> coordinate_response_measure::Color override;
-    auto fileName(const std::string &filePath) -> std::string override;
+    auto fileName(const LocalUrl &filePath) -> std::string override;
 };
 }
 

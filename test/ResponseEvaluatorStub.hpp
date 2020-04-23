@@ -31,26 +31,26 @@ class ResponseEvaluatorStub : public ResponseEvaluator {
 
     void setIncorrect() { correct_ = false; }
 
-    auto correct(const std::string &target,
+    auto correct(const LocalUrl &target,
         const coordinate_response_measure::Response &p) -> bool override {
-        correctTarget_ = target;
+        correctTarget_ = target.path;
         response_ = &p;
         return correct_;
     }
 
-    auto correctColor(const std::string &filePath)
+    auto correctColor(const LocalUrl &filePath)
         -> coordinate_response_measure::Color override {
-        correctColorFilePath_ = filePath;
+        correctColorFilePath_ = filePath.path;
         return correctColor_;
     }
 
-    auto correctNumber(const std::string &filePath) -> int override {
-        correctNumberFilePath_ = filePath;
+    auto correctNumber(const LocalUrl &filePath) -> int override {
+        correctNumberFilePath_ = filePath.path;
         return correctNumber_;
     }
 
-    auto fileName(const std::string &filePath) -> std::string override {
-        filePathForFileName_ = filePath;
+    auto fileName(const LocalUrl &filePath) -> std::string override {
+        filePathForFileName_ = filePath.path;
         return fileName_;
     }
 

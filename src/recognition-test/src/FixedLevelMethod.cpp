@@ -44,9 +44,9 @@ void FixedLevelMethodImpl::submit(
     auto current_ = currentTarget();
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
-    lastTrial.correctColor = evaluator.correctColor(current_);
-    lastTrial.correctNumber = evaluator.correctNumber(current_);
-    lastTrial.correct = evaluator.correct(current_, response);
+    lastTrial.correctColor = evaluator.correctColor({current_});
+    lastTrial.correctNumber = evaluator.correctNumber({current_});
+    lastTrial.correct = evaluator.correct({current_}, response);
     lastTrial.target = current_;
     if (usingFiniteTargetList_)
         finiteTargetsExhausted_ = finiteTargetList->empty();

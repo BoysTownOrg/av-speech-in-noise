@@ -20,7 +20,7 @@ static auto subString(const std::string &s, gsl::index position)
 
 int ResponseEvaluatorImpl::invalidNumber = -1;
 
-auto ResponseEvaluatorImpl::correct(const std::string &filePath,
+auto ResponseEvaluatorImpl::correct(const LocalUrl &filePath,
     const coordinate_response_measure::Response &r) -> bool {
     return correctNumber(filePath) == r.number &&
         correctColor(filePath) == r.color &&
@@ -29,21 +29,21 @@ auto ResponseEvaluatorImpl::correct(const std::string &filePath,
 }
 
 static auto colorNameLength(
-    const std::string &filePath, gsl::index leadingPathLength_) -> gsl::index {
-    auto fileNameBeginning = filePath.begin() + leadingPathLength_;
-    auto notAlpha = std::find_if(fileNameBeginning, filePath.end(),
+    const LocalUrl &filePath, gsl::index leadingPathLength_) -> gsl::index {
+    auto fileNameBeginning = filePath.path.begin() + leadingPathLength_;
+    auto notAlpha = std::find_if(fileNameBeginning, filePath.path.end(),
         [](unsigned char c) { return std::isalpha(c) == 0; });
     return std::distance(fileNameBeginning, notAlpha);
 }
 
-static auto correctNumber_(const std::string &filePath) -> int {
-    auto leadingPathLength_ = leadingPathLength(filePath);
-    auto number = subString(filePath,
+static auto correctNumber_(const LocalUrl &filePath) -> int {
+    auto leadingPathLength_ = leadingPathLength(filePath.path);
+    auto number = subString(filePath.path,
         leadingPathLength_ + colorNameLength(filePath, leadingPathLength_), 1);
     return std::stoi(number);
 }
 
-auto ResponseEvaluatorImpl::correctNumber(const std::string &filePath) -> int {
+auto ResponseEvaluatorImpl::correctNumber(const LocalUrl &filePath) -> int {
     try {
         return correctNumber_(filePath);
     } catch (const std::invalid_argument &) {
@@ -51,9 +51,8 @@ auto ResponseEvaluatorImpl::correctNumber(const std::string &filePath) -> int {
     }
 }
 
-auto ResponseEvaluatorImpl::fileName(const std::string &filePath)
-    -> std::string {
-    return subString(filePath, leadingPathLength(filePath));
+auto ResponseEvaluatorImpl::fileName(const LocalUrl &filePath) -> std::string {
+    return subString(filePath.path, leadingPathLength(filePath.path));
 }
 
 static auto color(const std::string &colorName)
@@ -71,10 +70,10 @@ static auto color(const std::string &colorName)
     return Color::unknown;
 }
 
-auto ResponseEvaluatorImpl::correctColor(const std::string &filePath)
+auto ResponseEvaluatorImpl::correctColor(const LocalUrl &filePath)
     -> coordinate_response_measure::Color {
-    auto leadingPathLength_ = leadingPathLength(filePath);
-    auto colorName = subString(filePath, leadingPathLength_,
+    auto leadingPathLength_ = leadingPathLength(filePath.path);
+    auto colorName = subString(filePath.path, leadingPathLength_,
         colorNameLength(filePath, leadingPathLength_));
     return color(colorName);
 }

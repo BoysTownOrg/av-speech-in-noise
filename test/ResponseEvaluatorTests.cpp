@@ -11,7 +11,7 @@ class ResponseEvaluatorTests : public ::testing::Test {
     ResponseEvaluatorImpl evaluator{};
 
     auto correct(const std::string &s, Response r) -> bool {
-        return evaluator.correct(s, r);
+        return evaluator.correct({s}, r);
     }
 
     void assertCorrect(const std::string &s, Response r) {
@@ -71,9 +71,9 @@ TEST_F(ResponseEvaluatorTests, invalidFormatIsAlwaysIncorrect) {
 }
 
 TEST_F(ResponseEvaluatorTests, fileNameReturnsEverythingAfterFinalSlash) {
-    assertEqual("b", evaluator.fileName("a/b"));
-    assertEqual("a", evaluator.fileName("a"));
-    assertEqual("c.txt", evaluator.fileName("a/b/c.txt"));
+    assertEqual("b", evaluator.fileName({"a/b"}));
+    assertEqual("a", evaluator.fileName({"a"}));
+    assertEqual("c.txt", evaluator.fileName({"a/b/c.txt"}));
 }
 
 TEST_F(ResponseEvaluatorTests, onlyEvaluatesFirstPartOfFileName) {

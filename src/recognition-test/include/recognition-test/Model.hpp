@@ -98,12 +98,12 @@ class OutputFile {
 class ResponseEvaluator {
   public:
     virtual ~ResponseEvaluator() = default;
-    virtual auto correct(const std::string &filePath,
+    virtual auto correct(const LocalUrl &,
         const coordinate_response_measure::Response &) -> bool = 0;
-    virtual auto correctColor(const std::string &filePath)
+    virtual auto correctColor(const LocalUrl &)
         -> coordinate_response_measure::Color = 0;
-    virtual auto correctNumber(const std::string &filePath) -> int = 0;
-    virtual auto fileName(const std::string &filePath) -> std::string = 0;
+    virtual auto correctNumber(const LocalUrl &) -> int = 0;
+    virtual auto fileName(const LocalUrl &) -> std::string = 0;
 };
 
 class TargetListReader {

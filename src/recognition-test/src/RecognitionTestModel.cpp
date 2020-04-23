@@ -105,7 +105,7 @@ static auto dB(double x) -> double { return 20 * std::log10(x); }
 
 static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
     -> std::string {
-    return evaluator.fileName(testMethod->currentTarget());
+    return evaluator.fileName({testMethod->currentTarget()});
 }
 
 static void save(OutputFile &file) { file.save(); }

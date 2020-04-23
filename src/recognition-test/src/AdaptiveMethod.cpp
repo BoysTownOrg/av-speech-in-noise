@@ -28,7 +28,7 @@ static void assignCorrectness(open_set::AdaptiveTrial &trial, bool c) {
     trial.correct = c;
 }
 
-static auto fileName(ResponseEvaluator &evaluator, const std::string &target)
+static auto fileName(ResponseEvaluator &evaluator, const LocalUrl &target)
     -> std::string {
     return evaluator.fileName(target);
 }
@@ -58,12 +58,12 @@ static auto current(TargetList *list) -> std::string { return list->current(); }
 
 static void assignTarget(open_set::Trial &trial, ResponseEvaluator &evaluator,
     TargetList *targetList) {
-    trial.target = fileName(evaluator, current(targetList));
+    trial.target = fileName(evaluator, {current(targetList)});
 }
 
 static auto correct(ResponseEvaluator &evaluator, TargetList *targetList,
     const coordinate_response_measure::Response &response) -> bool {
-    return evaluator.correct(current(targetList), response);
+    return evaluator.correct({current(targetList)}, response);
 }
 
 static void resetTrack(TargetListWithTrack &targetListWithTrack) {
@@ -141,9 +141,9 @@ void AdaptiveMethodImpl::submit(
     lastCoordinateResponseMeasureTrial.subjectNumber = response.number;
     assignReversals(lastCoordinateResponseMeasureTrial, snrTrack);
     lastCoordinateResponseMeasureTrial.correctColor =
-        evaluator.correctColor(current(targetList));
+        evaluator.correctColor({current(targetList)});
     lastCoordinateResponseMeasureTrial.correctNumber =
-        evaluator.correctNumber(current(targetList));
+        evaluator.correctNumber({current(targetList)});
     lastCoordinateResponseMeasureTrial.snr.dB = lastSnr_dB;
     lastCoordinateResponseMeasureTrial.correct =
         correct(evaluator, targetList, response);
