@@ -1,5 +1,6 @@
 #include "Presenter.hpp"
 #include <av-speech-in-noise/Model.hpp>
+#include <av-speech-in-noise/name.hpp>
 #include <string>
 #include <sstream>
 

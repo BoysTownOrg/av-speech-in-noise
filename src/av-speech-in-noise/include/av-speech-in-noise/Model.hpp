@@ -71,19 +71,6 @@ using TrackingRule = typename std::vector<TrackingSequence>;
 
 enum class Transducer { headphone, oneSpeaker, twoSpeakers, unknown };
 
-constexpr auto name(Transducer c) -> const char * {
-    switch (c) {
-    case Transducer::headphone:
-        return "headphone";
-    case Transducer::oneSpeaker:
-        return "1 speaker";
-    case Transducer::twoSpeakers:
-        return "2 speakers";
-    case Transducer::unknown:
-        return "unknown";
-    }
-}
-
 struct TestIdentity {
     std::string subjectId;
     std::string testerId;
