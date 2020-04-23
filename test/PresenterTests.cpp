@@ -704,6 +704,24 @@ class ConfirmingFixedLevelFreeResponseTestWithAllTargets
     }
 };
 
+class ConfirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking
+    : public ConfirmingTestSetup {
+    ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
+
+  public:
+    ConfirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
+
+    void run() override {
+        setMethod(interpreter,
+            Method::fixedLevelFreeResponseWithAllTargetsAndEyeTracking);
+        confirmTestSetup(view);
+    }
+};
+
 class TrialSubmission : public virtual UseCase {
   public:
     virtual auto nextTrialButtonShown() -> bool = 0;
@@ -1073,6 +1091,9 @@ class PresenterTests : public ::testing::Test {
     ConfirmingFixedLevelFreeResponseTestWithAllTargets
         confirmingFixedLevelFreeResponseTestWithAllTargets{
             &setupView, testSettingsInterpreter};
+    ConfirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking
+        confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking{
+            &setupView, testSettingsInterpreter};
     PlayingCalibration playingCalibration{&setupView};
     PlayingTrialFromSubject playingTrialFromSubject{&subjectView};
     PlayingTrialFromExperimenter playingTrialFromExperimenter{experimenterView};
@@ -1441,6 +1462,13 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesFreeResponseSubmission) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingFixedLevelFreeResponseTestWithAllTargets,
+        submittingFreeResponse);
+}
+
+PRESENTER_TEST(
+    exitTestAfterCompletingTrialHidesFreeResponseSubmissionForFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking,
         submittingFreeResponse);
 }
 
