@@ -134,7 +134,8 @@ class ModelStub : public Model {
         fixedLevelTestWithAllTargetsInitialized_ = true;
     }
 
-    void initializeWithAllTargetsAndEyeTracking(const FixedLevelTest &p) {
+    void initializeWithAllTargetsAndEyeTracking(
+        const FixedLevelTest &p) override {
         fixedLevelTest_ = p;
         fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_ = true;
     }
