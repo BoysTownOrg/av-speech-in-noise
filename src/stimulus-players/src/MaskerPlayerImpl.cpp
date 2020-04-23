@@ -154,16 +154,15 @@ auto MaskerPlayerImpl::sampleRateHz() -> double {
     return av_speech_in_noise::sampleRateHz(player);
 }
 
-auto MaskerPlayerImpl::nanoseconds(av_speech_in_noise::PlayerTime t)
-    -> std::uintmax_t {
+auto MaskerPlayerImpl::nanoseconds(PlayerTime t) -> std::uintmax_t {
     return player->nanoseconds(t);
 }
 
-auto MaskerPlayerImpl::currentSystemTime() -> av_speech_in_noise::PlayerTime {
+auto MaskerPlayerImpl::currentSystemTime() -> PlayerTime {
     return player->currentSystemTime();
 }
 
-void MaskerPlayerImpl::loadFile(const av_speech_in_noise::LocalUrl &file) {
+void MaskerPlayerImpl::loadFile(const LocalUrl &file) {
     if (playing())
         return;
 
@@ -180,7 +179,7 @@ void MaskerPlayerImpl::loadFile(const av_speech_in_noise::LocalUrl &file) {
 // real-time audio thread
 void MaskerPlayerImpl::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
-    av_speech_in_noise::player_system_time_type time) {
+    player_system_time_type time) {
     audioThread.fillAudioBuffer(audioBuffer, time);
 }
 
@@ -192,7 +191,7 @@ auto MaskerPlayerImpl::rms() -> double {
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
-void MaskerPlayerImpl::set(av_speech_in_noise::DigitalLevel x) {
+void MaskerPlayerImpl::set(DigitalLevel x) {
     write(levelScalar, std::pow(10, x.dB / 20));
 }
 
@@ -208,7 +207,7 @@ auto MaskerPlayerImpl::findDeviceIndex(const std::string &device) -> int {
     auto devices{audioDeviceDescriptions_()};
     auto found{std::find(devices.begin(), devices.end(), device)};
     if (found == devices.end())
-        throw av_speech_in_noise::InvalidAudioDevice{};
+        throw InvalidAudioDevice{};
     return gsl::narrow<int>(std::distance(devices.begin(), found));
 }
 
@@ -216,7 +215,7 @@ auto MaskerPlayerImpl::readAudio(std::string filePath) -> audio_type {
     try {
         return reader->read(std::move(filePath));
     } catch (const AudioReader::InvalidFile &) {
-        throw av_speech_in_noise::InvalidAudioFile{};
+        throw InvalidAudioFile{};
     }
 }
 
@@ -345,7 +344,7 @@ void MaskerPlayerImpl::AudioThread::setSharedState(MaskerPlayerImpl *p) {
 
 void MaskerPlayerImpl::AudioThread::fillAudioBuffer(
     const std::vector<channel_buffer_type> &audioBuffer,
-    av_speech_in_noise::player_system_time_type time) {
+    player_system_time_type time) {
     systemTime = time;
     if (noChannels(sharedState->sourceAudio))
         for (auto channel : audioBuffer)

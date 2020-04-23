@@ -26,7 +26,7 @@ class VideoPlayer {
     virtual void hide() = 0;
     virtual void loadFile(std::string) = 0;
     virtual void play() = 0;
-    virtual void playAt(const av_speech_in_noise::PlayerTimeWithDelay &) = 0;
+    virtual void playAt(const PlayerTimeWithDelay &) = 0;
     virtual auto playing() -> bool = 0;
     virtual auto deviceCount() -> int = 0;
     virtual auto deviceDescription(int index) -> std::string = 0;
@@ -34,18 +34,18 @@ class VideoPlayer {
     virtual auto durationSeconds() -> double = 0;
 };
 
-class TargetPlayerImpl : public av_speech_in_noise::TargetPlayer,
+class TargetPlayerImpl : public TargetPlayer,
                          public VideoPlayer::EventListener {
   public:
     TargetPlayerImpl(VideoPlayer *, AudioReader *);
     void subscribe(TargetPlayer::EventListener *) override;
     void play() override;
-    void playAt(const av_speech_in_noise::PlayerTimeWithDelay &) override;
-    void loadFile(const av_speech_in_noise::LocalUrl &) override;
+    void playAt(const PlayerTimeWithDelay &) override;
+    void loadFile(const LocalUrl &) override;
     void hideVideo() override;
     void showVideo() override;
     auto rms() -> double override;
-    void set(av_speech_in_noise::DigitalLevel) override;
+    void set(DigitalLevel) override;
     void setAudioDevice(std::string) override;
     auto playing() -> bool override;
     void subscribeToPlaybackCompletion() override;

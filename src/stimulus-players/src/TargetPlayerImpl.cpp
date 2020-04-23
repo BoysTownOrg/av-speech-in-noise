@@ -15,12 +15,11 @@ void TargetPlayerImpl::subscribe(TargetPlayer::EventListener *e) {
 
 void TargetPlayerImpl::play() { player->play(); }
 
-void TargetPlayerImpl::playAt(
-    const av_speech_in_noise::PlayerTimeWithDelay &t) {
+void TargetPlayerImpl::playAt(const PlayerTimeWithDelay &t) {
     player->playAt(t);
 }
 
-void TargetPlayerImpl::loadFile(const av_speech_in_noise::LocalUrl &file) {
+void TargetPlayerImpl::loadFile(const LocalUrl &file) {
     player->loadFile(filePath_ = file.path);
 }
 
@@ -47,11 +46,11 @@ auto TargetPlayerImpl::readAudio_() -> audio_type {
     try {
         return reader->read(filePath_);
     } catch (const AudioReader::InvalidFile &) {
-        throw av_speech_in_noise::InvalidAudioFile{};
+        throw InvalidAudioFile{};
     }
 }
 
-void TargetPlayerImpl::set(av_speech_in_noise::DigitalLevel x) {
+void TargetPlayerImpl::set(DigitalLevel x) {
     audioScale.store(std::pow(10, x.dB / 20));
 }
 
@@ -86,7 +85,7 @@ void TargetPlayerImpl::setAudioDevice(std::string device) {
     auto devices_{audioDevices()};
     auto found{std::find(devices_.begin(), devices_.end(), device)};
     if (found == devices_.end())
-        throw av_speech_in_noise::InvalidAudioDevice{};
+        throw InvalidAudioDevice{};
     auto deviceIndex{gsl::narrow<int>(found - devices_.begin())};
     player->setDevice(deviceIndex);
 }
