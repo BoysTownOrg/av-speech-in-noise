@@ -60,17 +60,17 @@ auto RandomizedTargetListWithReplacement::next()
 
     moveFrontToBack(files);
     shuffle(randomizer, allButLast(files));
-    return {fullPathToLastFile(directory_, files)};
+    return fullPathToLastFile(directory_, files);
 }
 
 auto RandomizedTargetListWithReplacement::current()
     -> av_speech_in_noise::LocalUrl {
-    return {fullPathToLastFile(directory_, files)};
+    return fullPathToLastFile(directory_, files);
 }
 
 auto RandomizedTargetListWithReplacement::directory()
     -> av_speech_in_noise::LocalUrl {
-    return {directory_};
+    return directory_;
 }
 
 RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
@@ -93,19 +93,18 @@ auto RandomizedTargetListWithoutReplacement::next()
 
     currentFile = files.front();
     files.erase(files.begin());
-    return {joinPaths(directory_, currentFile)};
+    return joinPaths(directory_, currentFile);
 }
 
 auto RandomizedTargetListWithoutReplacement::current()
     -> av_speech_in_noise::LocalUrl {
-    return currentFile.path.empty()
-        ? av_speech_in_noise::LocalUrl{""}
-        : av_speech_in_noise::LocalUrl{joinPaths(directory_, currentFile)};
+    return currentFile.path.empty() ? av_speech_in_noise::LocalUrl{""}
+                                    : joinPaths(directory_, currentFile);
 }
 
 auto RandomizedTargetListWithoutReplacement::directory()
     -> av_speech_in_noise::LocalUrl {
-    return {directory_};
+    return directory_;
 }
 
 void RandomizedTargetListWithoutReplacement::reinsertCurrent() {
@@ -126,14 +125,14 @@ auto CyclicRandomizedTargetList::next() -> av_speech_in_noise::LocalUrl {
         return {""};
 
     moveFrontToBack(files);
-    return {fullPathToLastFile(directory_, files)};
+    return fullPathToLastFile(directory_, files);
 }
 
 auto CyclicRandomizedTargetList::current() -> av_speech_in_noise::LocalUrl {
-    return {fullPathToLastFile(directory_, files)};
+    return fullPathToLastFile(directory_, files);
 }
 
 auto CyclicRandomizedTargetList::directory() -> av_speech_in_noise::LocalUrl {
-    return {directory_};
+    return directory_;
 }
 }
