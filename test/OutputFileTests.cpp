@@ -341,15 +341,14 @@ class OutputFileTests : public ::testing::Test {
         testIdentity(useCase).session = "c";
         testIdentity(useCase).method = "d";
         testIdentity(useCase).rmeSetting = "e";
-        testIdentity(useCase).transducer = Transducer::twoSpeakers;
+        testIdentity(useCase).transducer = "f";
         run(useCase, file);
         assertContainsColonDelimitedEntry(writer, "subject", "a");
         assertContainsColonDelimitedEntry(writer, "tester", "b");
         assertContainsColonDelimitedEntry(writer, "session", "c");
         assertContainsColonDelimitedEntry(writer, "method", "d");
         assertContainsColonDelimitedEntry(writer, "RME setting", "e");
-        assertContainsColonDelimitedEntry(
-            writer, "transducer", name(Transducer::twoSpeakers));
+        assertContainsColonDelimitedEntry(writer, "transducer", "f");
     }
 
     void assertCommonTestWritten(WritingTest &useCase) {

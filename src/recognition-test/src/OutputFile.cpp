@@ -67,7 +67,7 @@ static void writeRmeSetting(std::stringstream &stream, const TestIdentity &p) {
 }
 
 static void writeTransducer(std::stringstream &stream, const TestIdentity &p) {
-    writeLabeledLine(stream, "transducer", name(p.transducer));
+    writeLabeledLine(stream, "transducer", p.transducer);
 }
 
 static void writeMasker(std::stringstream &stream, const Test &p) {

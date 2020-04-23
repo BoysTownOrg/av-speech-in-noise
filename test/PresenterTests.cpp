@@ -1284,10 +1284,9 @@ class PresenterTests : public ::testing::Test {
     }
 
     void assertPassesTransducer(ConfirmingTestSetup &useCase) {
-        setupView.setTransducer(name(Transducer::twoSpeakers));
+        setupView.setTransducer("a");
         run(useCase);
-        assertEqual(Transducer::twoSpeakers,
-            testSettingsInterpreter.identity().transducer);
+        assertEqual("a", testSettingsInterpreter.identity().transducer);
     }
 
     void assertCompleteTrialShowsResponseView(

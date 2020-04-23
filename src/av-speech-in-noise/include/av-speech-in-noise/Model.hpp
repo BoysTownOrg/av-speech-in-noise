@@ -32,7 +32,7 @@ struct TestIdentity {
     std::string session;
     std::string method;
     std::string rmeSetting;
-    Transducer transducer{};
+    std::string transducer{};
 };
 
 enum class Condition { auditoryOnly, audioVisual };

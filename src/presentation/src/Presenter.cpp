@@ -302,23 +302,13 @@ void Presenter::TestSetup::show() { view->show(); }
 
 void Presenter::TestSetup::hide() { view->hide(); }
 
-static auto transducer(const std::string &s) -> Transducer {
-    if (s == name(Transducer::headphone))
-        return Transducer::headphone;
-    if (s == name(Transducer::oneSpeaker))
-        return Transducer::oneSpeaker;
-    if (s == name(Transducer::twoSpeakers))
-        return Transducer::twoSpeakers;
-    return Transducer::unknown;
-}
-
 auto Presenter::TestSetup::testIdentity() -> TestIdentity {
     TestIdentity p;
     p.subjectId = view->subjectId();
     p.testerId = view->testerId();
     p.session = view->session();
     p.rmeSetting = view->rmeSetting();
-    p.transducer = transducer(view->transducer());
+    p.transducer = view->transducer();
     return p;
 }
 
