@@ -1919,6 +1919,13 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTrackingShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingFixedLevelFreeResponseTestWithAllTargetsAndEyeTracking,
+        playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(
     confirmingFixedLevelFreeResponseTestWithSilentIntervalTargetsShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingFixedLevelFreeResponseWithSilentIntervalTargetsTest,
