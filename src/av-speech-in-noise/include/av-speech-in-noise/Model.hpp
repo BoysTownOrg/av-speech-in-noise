@@ -67,9 +67,9 @@ struct SNR {
 
 struct AdaptiveTest : Test {
     TrackingRule trackingRule;
-    SNR startingSnr{};
-    SNR ceilingSnr{};
-    SNR floorSnr{};
+    SNR startingSnr;
+    SNR ceilingSnr;
+    SNR floorSnr;
     int trackBumpLimit{};
     int thresholdReversals{};
 };

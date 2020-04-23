@@ -176,8 +176,8 @@ void RecognitionTestModelImpl::initialize_(
         [&](auto file) { maskerPlayer.loadFile(file); }, maskerFilePath(test));
 
     testMethod = testMethod_;
-    fullScaleLevel_dB_SPL = test.fullScaleLevel.dB_SPL;
-    maskerLevel_dB_SPL = test.maskerLevel.dB_SPL;
+    fullScaleLevel.dB_SPL = test.fullScaleLevel.dB_SPL;
+    maskerLevel.dB_SPL = test.maskerLevel.dB_SPL;
     condition = test.condition;
 
     hide(targetPlayer);
@@ -215,11 +215,7 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
 }
 
 auto RecognitionTestModelImpl::maskerLevel_dB() -> double {
-    return desiredMaskerLevel_dB() - dB(maskerPlayer.rms());
-}
-
-auto RecognitionTestModelImpl::desiredMaskerLevel_dB() -> int {
-    return maskerLevel_dB_SPL - fullScaleLevel_dB_SPL;
+    return maskerLevel.dB_SPL - fullScaleLevel.dB_SPL - dB(maskerPlayer.rms());
 }
 
 static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }

@@ -12,11 +12,11 @@ namespace av_speech_in_noise {
 class InvalidAudioDevice {};
 class InvalidAudioFile {};
 
-using player_system_time_type = std::uintmax_t;
-
 struct Delay {
     double seconds;
 };
+
+using player_system_time_type = std::uintmax_t;
 
 struct PlayerTime {
     player_system_time_type system;
@@ -132,7 +132,6 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void initialize_(TestMethod *, const Test &);
     void preparePlayersForNextTrial();
     void seekRandomMaskerPosition();
-    auto desiredMaskerLevel_dB() -> int;
     auto targetLevel_dB() -> double;
     auto maskerLevel_dB() -> double;
 
@@ -147,8 +146,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     TargetStartTime lastTargetStartTime{};
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
-    int maskerLevel_dB_SPL{};
-    int fullScaleLevel_dB_SPL{};
+    Level maskerLevel{};
+    Level fullScaleLevel{};
     int trialNumber_{};
     Condition condition{};
     bool eyeTracking{};
