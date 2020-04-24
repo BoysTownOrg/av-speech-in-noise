@@ -147,7 +147,7 @@ static auto method(const std::string &s) -> Method {
 }
 
 static auto adaptive(const std::string &contents) -> bool {
-    auto method_{av_speech_in_noise::method(contents)};
+    const auto method_{av_speech_in_noise::method(contents)};
     return method_ == Method::adaptivePassFail ||
         method_ == Method::adaptivePassFailWithEyeTracking ||
         method_ == Method::adaptiveCorrectKeywords ||
@@ -169,13 +169,13 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.startingSnr.dB = startingSnr.dB;
-    test.ceilingSnr.dB = Presenter::ceilingSnr.dB;
-    test.floorSnr.dB = Presenter::floorSnr.dB;
+    test.startingSnr = startingSnr;
+    test.ceilingSnr = Presenter::ceilingSnr;
+    test.floorSnr = Presenter::floorSnr;
     test.trackBumpLimit = Presenter::trackBumpLimit;
-    test.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel.dB_SPL;
+    test.fullScaleLevel = Presenter::fullScaleLevel;
     test.identity = identity;
-    auto method_{av_speech_in_noise::method(contents)};
+    const auto method_{av_speech_in_noise::method(contents)};
     test.identity.method = name(method_);
     if (method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker)
         model.initializeWithDelayedMasker(test);
@@ -200,10 +200,10 @@ static void initializeFixedLevelTest(Model &model, const std::string &contents,
     applyToEachEntry(
         [&](auto entryName, auto entry) { assign(test, entryName, entry); },
         contents);
-    test.snr.dB = startingSnr.dB;
-    test.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel.dB_SPL;
+    test.snr = startingSnr;
+    test.fullScaleLevel = Presenter::fullScaleLevel;
     test.identity = identity;
-    auto method_{av_speech_in_noise::method(contents)};
+    const auto method_{av_speech_in_noise::method(contents)};
     test.identity.method = name(method_);
     if (method_ ==
             Method::
@@ -242,7 +242,7 @@ auto TestSettingsInterpreterImpl::calibration(const std::string &contents)
     applyToEachEntry([&](auto entryName,
                          auto entry) { assign(calibration, entryName, entry); },
         contents);
-    calibration.fullScaleLevel.dB_SPL = Presenter::fullScaleLevel.dB_SPL;
+    calibration.fullScaleLevel = Presenter::fullScaleLevel;
     return calibration;
 }
 }
