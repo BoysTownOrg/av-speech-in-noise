@@ -249,7 +249,8 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsReturnsMethod) {
     assertMethod(interpreter, Method::adaptiveCorrectKeywords);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsWithEyeTrackingReturnsMethod) {
+TEST_SETTINGS_INTERPRETER_TEST(
+    adaptiveCorrectKeywordsWithEyeTrackingReturnsMethod) {
     assertMethod(interpreter, Method::adaptiveCorrectKeywordsWithEyeTracking);
 }
 
@@ -381,8 +382,10 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
     assertTrue(model.initializedWithCyclicTargets());
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsWithEyeTrackingInitializesAdaptiveTest) {
-    initialize(interpreter, model, Method::adaptiveCorrectKeywordsWithEyeTracking);
+TEST_SETTINGS_INTERPRETER_TEST(
+    adaptiveCorrectKeywordsWithEyeTrackingInitializesAdaptiveTest) {
+    initialize(
+        interpreter, model, Method::adaptiveCorrectKeywordsWithEyeTracking);
     assertTrue(model.adaptiveTestInitializedWithCyclicTargetsAndEyeTracking());
 }
 
@@ -480,6 +483,12 @@ TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCorrectKeywordsPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptiveCorrectKeywords);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
+    adaptiveCorrectKeywordsWithEyeTrackingPassesSimpleAdaptiveSettings) {
+    assertPassesSimpleAdaptiveSettings(
+        interpreter, model, Method::adaptiveCorrectKeywordsWithEyeTracking);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
