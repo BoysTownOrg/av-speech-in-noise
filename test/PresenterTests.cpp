@@ -614,6 +614,23 @@ class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
     }
 };
 
+class ConfirmingAdaptiveCorrectKeywordsTestWithEyeTracking
+    : public ConfirmingTestSetup {
+    ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
+
+  public:
+    ConfirmingAdaptiveCorrectKeywordsTestWithEyeTracking(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
+
+    void run() override {
+        setMethod(interpreter, Method::adaptiveCorrectKeywordsWithEyeTracking);
+        confirmTestSetup(view);
+    }
+};
+
 class ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
@@ -1106,6 +1123,9 @@ class PresenterTests : public ::testing::Test {
             &setupView, testSettingsInterpreter};
     ConfirmingAdaptiveCorrectKeywordsTest confirmingAdaptiveCorrectKeywordsTest{
         &setupView, testSettingsInterpreter};
+    ConfirmingAdaptiveCorrectKeywordsTestWithEyeTracking
+        confirmingAdaptiveCorrectKeywordsTestWithEyeTracking{
+            &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelCoordinateResponseMeasureTestWithSilentIntervalTargets
         confirmingFixedLevelCoordinateResponseMeasureSilentIntervalsTest{
             &setupView, testSettingsInterpreter};
@@ -1490,6 +1510,13 @@ PRESENTER_TEST(
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
+}
+
+PRESENTER_TEST(
+    exitTestAfterCompletingTrialHidesCorrectKeywordsSubmissionForAdaptiveCorrectKeywordsTestWithEyeTracking) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingAdaptiveCorrectKeywordsTestWithEyeTracking,
+        submittingCorrectKeywords);
 }
 
 PRESENTER_TEST(
