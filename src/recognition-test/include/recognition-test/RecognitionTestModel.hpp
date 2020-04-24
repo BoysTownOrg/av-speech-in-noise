@@ -35,6 +35,10 @@ struct Duration {
     double seconds;
 };
 
+struct LevelAmplification {
+    double dB;
+};
+
 class TargetPlayer {
   public:
     class EventListener {
@@ -53,7 +57,7 @@ class TargetPlayer {
     virtual void hideVideo() = 0;
     virtual void showVideo() = 0;
     virtual auto rms() -> double = 0;
-    virtual void set(DigitalLevel) = 0;
+    virtual void set(LevelAmplification) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual auto duration() -> Duration = 0;
     virtual void useAllChannels() = 0;
@@ -84,7 +88,7 @@ class MaskerPlayer {
     virtual void loadFile(const LocalUrl &) = 0;
     virtual auto playing() -> bool = 0;
     virtual auto rms() -> double = 0;
-    virtual void set(DigitalLevel) = 0;
+    virtual void set(LevelAmplification) = 0;
     virtual auto duration() -> Duration = 0;
     virtual auto sampleRateHz() -> double = 0;
     virtual void seekSeconds(double) = 0;
@@ -140,8 +144,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void initialize_(TestMethod *, const Test &);
     void preparePlayersForNextTrial();
     void seekRandomMaskerPosition();
-    auto targetLevel() -> DigitalLevel;
-    auto maskerLevel() -> DigitalLevel;
+    auto targetLevel() -> LevelAmplification;
+    auto maskerLevel() -> LevelAmplification;
 
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;

@@ -139,7 +139,7 @@ class MaskerPlayerStub : public MaskerPlayer {
         return rms_;
     }
 
-    void set(DigitalLevel x) override { level_dB_ = x.dB; }
+    void set(LevelAmplification x) override { level_dB_ = x.dB; }
 
     auto duration() -> Duration override { return Duration{durationSeconds_}; }
 

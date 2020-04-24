@@ -87,7 +87,7 @@ static void throwRequestFailureIfTrialInProgress(MaskerPlayer &player) {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
-static void set(TargetPlayer &player, DigitalLevel x) { player.set(x); }
+static void set(TargetPlayer &player, LevelAmplification x) { player.set(x); }
 
 static void loadFile(TargetPlayer &player, const LocalUrl &s) {
     player.loadFile(s);
@@ -99,7 +99,7 @@ static auto dB(double x) -> double { return 20 * std::log10(x); }
 
 static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
     -> std::string {
-    return evaluator.fileName({testMethod->currentTarget()});
+    return evaluator.fileName(testMethod->currentTarget());
 }
 
 static void save(OutputFile &file) { file.save(); }
@@ -118,8 +118,9 @@ constexpr auto operator-(const RealLevel &a, const RealLevel &b)
     return RealLevelDifference{a.dB_SPL - b.dB_SPL};
 }
 
-static auto level(TargetPlayer &player, const Calibration &p) -> DigitalLevel {
-    return DigitalLevel{
+static auto level(TargetPlayer &player, const Calibration &p)
+    -> LevelAmplification {
+    return LevelAmplification{
         RealLevelDifference{p.level - p.fullScaleLevel}.dB - dB(player.rms())};
 }
 
@@ -213,8 +214,9 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
     eyeTracking = true;
 }
 
-auto RecognitionTestModelImpl::maskerLevel() -> DigitalLevel {
-    return DigitalLevel{RealLevelDifference{maskerLevel_ - fullScaleLevel_}.dB -
+auto RecognitionTestModelImpl::maskerLevel() -> LevelAmplification {
+    return LevelAmplification{
+        RealLevelDifference{maskerLevel_ - fullScaleLevel_}.dB -
         dB(maskerPlayer.rms())};
 }
 
@@ -273,7 +275,7 @@ void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     seekRandomMaskerPosition();
 }
 
-auto RecognitionTestModelImpl::targetLevel() -> DigitalLevel {
+auto RecognitionTestModelImpl::targetLevel() -> LevelAmplification {
     return {maskerLevel().dB + testMethod->snr().dB};
 }
 

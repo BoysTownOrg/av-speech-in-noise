@@ -190,7 +190,7 @@ auto MaskerPlayerImpl::rms() -> double {
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
-void MaskerPlayerImpl::set(DigitalLevel x) {
+void MaskerPlayerImpl::set(LevelAmplification x) {
     write(levelScalar, std::pow(10, x.dB / 20));
 }
 

@@ -142,7 +142,7 @@ class TargetPlayerTests : public ::testing::Test {
         assertEqual(x, rightChannel);
     }
 
-    void setLevel_dB(double x) { player.set(DigitalLevel{x}); }
+    void setLevel_dB(double x) { player.set(LevelAmplification{x}); }
 
     void setFirstChannelOnly() { player.useFirstChannelOnly(); }
 

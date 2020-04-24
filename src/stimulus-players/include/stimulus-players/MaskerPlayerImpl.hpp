@@ -63,7 +63,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void loadFile(const LocalUrl &) override;
     auto playing() -> bool override;
     void setAudioDevice(std::string) override;
-    void set(DigitalLevel) override;
+    void set(LevelAmplification) override;
     void fillAudioBuffer(const std::vector<channel_buffer_type> &audio,
         player_system_time_type) override;
     void setFadeInOutSeconds(double);
