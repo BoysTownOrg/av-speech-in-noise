@@ -1368,7 +1368,7 @@ class PresenterTests : public ::testing::Test {
 
     void assertCompleteTestShowsThresholds(UseCase &useCase) {
         setTestComplete(model);
-        model.setAdaptiveTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
+        model.setAdaptiveTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
         run(useCase);
         assertEqual("thresholds (targets: dB SNR)\na: 1\nb: 2\nc: 3",
             experimenterView.continueTestingDialogMessage());

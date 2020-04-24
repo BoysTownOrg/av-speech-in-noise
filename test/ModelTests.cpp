@@ -886,8 +886,8 @@ MODEL_TEST(returnsAudioDevices) {
 }
 
 MODEL_TEST(returnsAdaptiveTestResults) {
-    adaptiveMethod.setTestResults({{"a", 1.}, {"b", 2.}, {"c", 3.}});
-    assertEqual({{"a", 1.}, {"b", 2.}, {"c", 3.}}, model.adaptiveTestResults());
+    adaptiveMethod.setTestResults({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}});
+    assertEqual({{{"a"}, 1.}, {{"b"}, 2.}, {{"c"}, 3.}}, model.adaptiveTestResults());
 }
 
 MODEL_TEST(returnsTrialNumber) {

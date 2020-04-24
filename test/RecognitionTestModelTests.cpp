@@ -347,8 +347,6 @@ class EyeTrackerStub : public EyeTracker {
 
 void setMaskerLevel_dB_SPL(Test &test, int x) { test.maskerLevel.dB_SPL = x; }
 
-auto dB(double x) -> double { return 20 * std::log10(x); }
-
 void setCurrentTarget(TestMethodStub &m, std::string s) {
     m.setCurrentTarget(std::move(s));
 }

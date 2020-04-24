@@ -139,7 +139,7 @@ class ModelStub : public Model {
         initializedWithCyclicTargets_ = true;
     }
 
-    void initializeWithCyclicTargetsAndEyeTracking(const AdaptiveTest &p) {
+    void initializeWithCyclicTargetsAndEyeTracking(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_ = true;
     }

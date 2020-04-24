@@ -37,7 +37,10 @@ struct BinocularGazeSample {
 
 using BinocularGazeSamples = typename std::vector<BinocularGazeSample>;
 
-struct TargetStartTime : TargetPlayerSystemTime {};
+struct TargetStartTime : TargetPlayerSystemTime {
+    explicit constexpr TargetStartTime(std::uintmax_t nanoseconds = 0)
+        : TargetPlayerSystemTime{nanoseconds} {}
+};
 
 struct Target {
     std::string target;
