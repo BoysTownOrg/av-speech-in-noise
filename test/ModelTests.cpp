@@ -551,6 +551,10 @@ class InitializingFixedLevelTestWithAllTargetsAndEyeTracking
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
+auto initializedWithEyeTracking(RecognitionTestModelStub &m) -> bool {
+    return m.initializedWithEyeTracking();
+}
+
 class ModelTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveMethod;
@@ -825,25 +829,25 @@ MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesSingleSpeaker) {
 
 MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithEyeTracking);
-    assertTrue(internalModel.initializedWithEyeTracking());
+    assertTrue(initializedWithEyeTracking(internalModel));
 }
 
 MODEL_TEST(
     initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
-    assertTrue(internalModel.initializedWithEyeTracking());
+    assertTrue(initializedWithEyeTracking(internalModel));
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
-    assertTrue(internalModel.initializedWithEyeTracking());
+    assertTrue(initializedWithEyeTracking(internalModel));
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking);
-    assertTrue(internalModel.initializedWithEyeTracking());
+    assertTrue(initializedWithEyeTracking(internalModel));
 }
 
 MODEL_TEST(submitResponsePassesCoordinateResponse) {
