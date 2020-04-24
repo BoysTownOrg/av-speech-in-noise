@@ -9,7 +9,7 @@ class NullTestMethod : public TestMethod {
     auto complete() -> bool override { return {}; }
     auto nextTarget() -> LocalUrl override { return {}; }
     auto currentTarget() -> LocalUrl override { return {}; }
-    auto snr() -> SNR override { return {}; }
+    auto snr() -> SNR override { return SNR{}; }
     void submit(const coordinate_response_measure::Response &) override {}
     void submit(const FreeResponse &) override {}
     void submit(const CorrectKeywords &) override {}
@@ -113,8 +113,14 @@ static void tryOpening(OutputFile &file, const TestIdentity &p) {
     }
 }
 
+constexpr auto operator-(const RealLevel &a, const RealLevel &b)
+    -> RealLevelDifference {
+    return RealLevelDifference{a.dB_SPL - b.dB_SPL};
+}
+
 static auto level(TargetPlayer &player, const Calibration &p) -> DigitalLevel {
-    return {p.level.dB_SPL - p.fullScaleLevel.dB_SPL - dB(player.rms())};
+    return DigitalLevel{
+        RealLevelDifference{p.level - p.fullScaleLevel}.dB - dB(player.rms())};
 }
 
 static void show(TargetPlayer &player) { player.showVideo(); }
@@ -208,8 +214,8 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
 }
 
 auto RecognitionTestModelImpl::maskerLevel() -> DigitalLevel {
-    return DigitalLevel{
-        maskerLevel_.dB_SPL - fullScaleLevel_.dB_SPL - dB(maskerPlayer.rms())};
+    return DigitalLevel{RealLevelDifference{maskerLevel_ - fullScaleLevel_}.dB -
+        dB(maskerPlayer.rms())};
 }
 
 static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
