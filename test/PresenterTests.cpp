@@ -1554,7 +1554,8 @@ PRESENTER_TEST(
         submittingFreeResponse);
 }
 
-PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
+PRESENTER_TEST(
+    exitTestAfterCompletingTrialHidesPassFailSubmissionForAdaptivePassFailTest) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingAdaptivePassFailTest, submittingPassedTrial);
 }
@@ -1722,6 +1723,11 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestHidesTestSetupView) {
 }
 
 PRESENTER_TEST(
+    confirmingAdaptivePassFailTestWithEyeTrackingHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptivePassFailTestWithEyeTracking);
+}
+
+PRESENTER_TEST(
     confirmingFixedLevelFreeResponseTestWithTargetReplacementHidesTestSetupView) {
     assertHidesTestSetupView(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest);
@@ -1757,6 +1763,11 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(confirmingAdaptivePassFailTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptivePassFailTestWithEyeTrackingShowsExperimenterView) {
+    assertShowsExperimenterView(confirmingAdaptivePassFailTestWithEyeTracking);
 }
 
 PRESENTER_TEST(
@@ -1833,6 +1844,11 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotShowSubjectView) {
     assertDoesNotShowSubjectView(confirmingAdaptivePassFailTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptivePassFailTestWithEyeTrackingDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(confirmingAdaptivePassFailTestWithEyeTracking);
 }
 
 PRESENTER_TEST(
