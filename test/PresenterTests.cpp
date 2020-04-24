@@ -1507,7 +1507,8 @@ PRESENTER_TEST(
     assertFalse(experimenterView.nextTrialButtonShown());
 }
 
-PRESENTER_TEST(exitTestAfterCompletingTrialHidesCorrectKeywordsSubmission) {
+PRESENTER_TEST(
+    exitTestAfterCompletingTrialHidesCorrectKeywordsSubmissionForAdaptiveCorrectKeywordsTest) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
 }
@@ -1540,6 +1541,12 @@ PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
 
 PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
     assertShowsTargetFileName(confirmingAdaptiveCorrectKeywordsTest);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestWithEyeTrackingShowsTargetFileName) {
+    assertShowsTargetFileName(
+        confirmingAdaptiveCorrectKeywordsTestWithEyeTracking);
 }
 
 PRESENTER_TEST(confirmingAdaptiveClosedSetTestShowsTargetFileName) {
