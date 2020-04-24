@@ -72,7 +72,6 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
         lastCoordinateResponseMeasureTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
     CorrectKeywordsTrial lastCorrectKeywordsTrial{};
-    AdaptiveTestResult lastAdaptiveTestResult{};
     const AdaptiveTest *test{};
     Track::Factory &snrTrackFactory;
     ResponseEvaluator &evaluator;

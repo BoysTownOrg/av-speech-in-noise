@@ -54,18 +54,16 @@ static void down(Track *track) { track->down(); }
 
 static void up(Track *track) { track->up(); }
 
-static auto current(TargetList *list) -> std::string {
-    return list->current().path;
-}
+static auto current(TargetList *list) -> LocalUrl { return list->current(); }
 
 static void assignTarget(open_set::Trial &trial, ResponseEvaluator &evaluator,
     TargetList *targetList) {
-    trial.target = fileName(evaluator, {current(targetList)});
+    trial.target = fileName(evaluator, current(targetList));
 }
 
 static auto correct(ResponseEvaluator &evaluator, TargetList *targetList,
     const coordinate_response_measure::Response &response) -> bool {
-    return evaluator.correct({current(targetList)}, response);
+    return evaluator.correct(current(targetList), response);
 }
 
 static void resetTrack(TargetListWithTrack &targetListWithTrack) {
@@ -94,7 +92,7 @@ void AdaptiveMethodImpl::initialize(
     test = &t;
     thresholdReversals = t.thresholdReversals;
     targetListsWithTracks.clear();
-    for (auto &&list : targetListSetReader->read(t.targetsUrl))
+    for (const auto &list : targetListSetReader->read(t.targetsUrl))
         targetListsWithTracks.push_back(
             {list, snrTrackFactory.make(trackSettings(t))});
     selectNextList();
@@ -122,11 +120,9 @@ auto AdaptiveMethodImpl::complete() -> bool {
         targetListsWithTracks.end(), av_speech_in_noise::complete);
 }
 
-auto AdaptiveMethodImpl::nextTarget() -> LocalUrl {
-    return targetList->next();
-}
+auto AdaptiveMethodImpl::nextTarget() -> LocalUrl { return targetList->next(); }
 
-auto AdaptiveMethodImpl::snr() -> SNR { return {x(snrTrack)}; }
+auto AdaptiveMethodImpl::snr() -> SNR { return SNR{x(snrTrack)}; }
 
 auto AdaptiveMethodImpl::currentTarget() -> LocalUrl {
     return targetList->current();
@@ -134,7 +130,7 @@ auto AdaptiveMethodImpl::currentTarget() -> LocalUrl {
 
 void AdaptiveMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
-    const auto lastSnr_dB{x(snrTrack)};
+    const auto lastX{x(snrTrack)};
     if (correct(evaluator, targetList, response))
         down(snrTrack);
     else
@@ -143,10 +139,10 @@ void AdaptiveMethodImpl::submit(
     lastCoordinateResponseMeasureTrial.subjectNumber = response.number;
     assignReversals(lastCoordinateResponseMeasureTrial, snrTrack);
     lastCoordinateResponseMeasureTrial.correctColor =
-        evaluator.correctColor({current(targetList)});
+        evaluator.correctColor(current(targetList));
     lastCoordinateResponseMeasureTrial.correctNumber =
-        evaluator.correctNumber({current(targetList)});
-    lastCoordinateResponseMeasureTrial.snr.dB = lastSnr_dB;
+        evaluator.correctNumber(current(targetList));
+    lastCoordinateResponseMeasureTrial.snr.dB = lastX;
     lastCoordinateResponseMeasureTrial.correct =
         correct(evaluator, targetList, response);
     selectNextList();
@@ -167,8 +163,6 @@ void AdaptiveMethodImpl::submitCorrectResponse() {
     assignTarget(lastOpenSetTrial, evaluator, targetList);
     down(snrTrack);
     assignReversals(lastOpenSetTrial, snrTrack);
-    lastAdaptiveTestResult.threshold = snrTrack->threshold({});
-    lastAdaptiveTestResult.targetsUrl = targetList->directory();
     selectNextList();
 }
 
