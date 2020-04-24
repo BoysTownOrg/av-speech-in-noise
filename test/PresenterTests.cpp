@@ -1723,6 +1723,12 @@ PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingAdaptiveCorrectKeywordsTest);
 }
 
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestWithEyeTrackingShowsExperimenterView) {
+    assertShowsExperimenterView(
+        confirmingAdaptiveCorrectKeywordsTestWithEyeTracking);
+}
+
 PRESENTER_TEST(confirmingAdaptivePassFailTestShowsExperimenterView) {
     assertShowsExperimenterView(confirmingAdaptivePassFailTest);
 }
