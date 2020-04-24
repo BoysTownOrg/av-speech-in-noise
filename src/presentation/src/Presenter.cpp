@@ -159,7 +159,8 @@ auto Presenter::trialCompletionHandler(Method m) -> TrialCompletionHandler * {
         return &coordinateResponseMeasureTrialCompletionHandler;
     if (m == Method::adaptivePassFail)
         return &passFailTrialCompletionHandler;
-    if (m == Method::adaptiveCorrectKeywords)
+    if (m == Method::adaptiveCorrectKeywords ||
+        m == Method::adaptiveCorrectKeywordsWithEyeTracking)
         return &correctKeywordsTrialCompletionHandler;
     return &freeResponseTrialCompletionHandler;
 }

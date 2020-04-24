@@ -1645,6 +1645,13 @@ PRESENTER_TEST(
         confirmingAdaptiveCorrectKeywordsTest, submittingCorrectKeywords);
 }
 
+PRESENTER_TEST(
+    completingTrialShowsExperimenterCorrectKeywordsEntryForAdaptiveCorrectKeywordsTestWithEyeTracking) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptiveCorrectKeywordsTestWithEyeTracking,
+        submittingCorrectKeywords);
+}
+
 PRESENTER_TEST(callsEventLoopWhenRun) {
     presenter.run();
     assertTrue(view.eventLoopCalled());
