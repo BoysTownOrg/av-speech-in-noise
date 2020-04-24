@@ -180,7 +180,7 @@ TEST_F(TargetPlayerTests, playAtPlaysVideoAt) {
 
 TEST_F(TargetPlayerTests, durationReturnsDuration) {
     videoPlayer.setDurationSeconds(1);
-    EXPECT_EQ(1, player.durationSeconds());
+    EXPECT_EQ(1, player.duration().seconds);
 }
 
 TEST_F(TargetPlayerTests, showVideoShowsVideo) {

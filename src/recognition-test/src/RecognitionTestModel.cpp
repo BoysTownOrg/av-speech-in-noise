@@ -26,10 +26,6 @@ class NullTestMethod : public TestMethod {
 
 static NullTestMethod nullTestMethod;
 
-static auto auditoryOnly(const Condition &c) -> bool {
-    return c == Condition::auditoryOnly;
-}
-
 static void useAllChannels(MaskerPlayer &player) { player.useAllChannels(); }
 
 static void clearChannelDelays(MaskerPlayer &player) {
@@ -38,21 +34,21 @@ static void clearChannelDelays(MaskerPlayer &player) {
 
 static void useAllChannels(TargetPlayer &player) { player.useAllChannels(); }
 
-static auto fadeTimeSeconds(MaskerPlayer &player) -> double {
-    return player.fadeTimeSeconds();
+static auto fadeTime(MaskerPlayer &player) -> Duration {
+    return player.fadeTime();
 }
 
-static auto totalFadeTimeSeconds(MaskerPlayer &player) -> double {
-    return 2 * fadeTimeSeconds(player);
+static auto totalFadeTime(MaskerPlayer &player) -> Duration {
+    return Duration{2 * fadeTime(player).seconds};
 }
 
-static auto durationSeconds(TargetPlayer &player) -> double {
-    return player.durationSeconds();
+static auto duration(TargetPlayer &player) -> Duration {
+    return player.duration();
 }
 
-static auto trialDurationSeconds(TargetPlayer &target, MaskerPlayer &masker)
-    -> double {
-    return totalFadeTimeSeconds(masker) + durationSeconds(target);
+static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
+    -> Duration {
+    return Duration{totalFadeTime(masker).seconds + duration(target).seconds};
 }
 
 static void turnOff(bool &b) { b = false; }
@@ -276,8 +272,8 @@ auto RecognitionTestModelImpl::targetLevel() -> DigitalLevel {
 }
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
-    auto upperLimit = maskerPlayer.durationSeconds() -
-        2 * maskerPlayer.fadeTimeSeconds() - targetPlayer.durationSeconds();
+    const auto upperLimit{maskerPlayer.duration().seconds -
+        2 * maskerPlayer.fadeTime().seconds - targetPlayer.duration().seconds};
     maskerPlayer.seekSeconds(randomizer.betweenInclusive(0., upperLimit));
 }
 
@@ -292,11 +288,11 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
 
     if (eyeTracking) {
         eyeTracker.allocateRecordingTimeSeconds(
-            trialDurationSeconds(targetPlayer, maskerPlayer) +
+            trialDuration(targetPlayer, maskerPlayer).seconds +
             additionalTargetDelaySeconds);
         eyeTracker.start();
     }
-    if (!auditoryOnly(condition))
+    if (condition == Condition::audioVisual)
         show(targetPlayer);
     maskerPlayer.fadeIn();
 }

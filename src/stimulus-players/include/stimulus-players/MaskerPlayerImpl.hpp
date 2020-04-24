@@ -69,9 +69,9 @@ class MaskerPlayerImpl : public MaskerPlayer,
     void setFadeInOutSeconds(double);
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
     auto rms() -> double override;
-    auto durationSeconds() -> double override;
+    auto duration() -> Duration override;
     void seekSeconds(double) override;
-    auto fadeTimeSeconds() -> double override;
+    auto fadeTime() -> Duration override;
     auto sampleRateHz() -> double override;
     void callback() override;
     void setChannelDelaySeconds(
@@ -132,7 +132,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         void clearChannelDelays();
         auto channelDelaySeconds(channel_index_type channel) -> double;
         void setFadeInOutSeconds(double);
-        auto fadeTimeSeconds() -> double;
+        auto fadeTime() -> Duration;
 
       private:
         auto fading() -> bool;

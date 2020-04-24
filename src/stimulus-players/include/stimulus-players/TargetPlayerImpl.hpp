@@ -49,7 +49,7 @@ class TargetPlayerImpl : public TargetPlayer,
     void setAudioDevice(std::string) override;
     auto playing() -> bool override;
     void subscribeToPlaybackCompletion() override;
-    auto durationSeconds() -> double override;
+    auto duration() -> Duration override;
     void playbackComplete() override;
     void fillAudioBuffer(const std::vector<gsl::span<float>> &audio) override;
     auto audioDevices() -> std::vector<std::string>;

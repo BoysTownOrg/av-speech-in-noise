@@ -141,13 +141,13 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void set(DigitalLevel x) override { level_dB_ = x.dB; }
 
-    auto durationSeconds() -> double override { return durationSeconds_; }
+    auto duration() -> Duration override { return Duration{durationSeconds_}; }
 
     void seekSeconds(double x) override { secondsSeeked_ = x; }
 
     auto secondsSeeked() const { return secondsSeeked_; }
 
-    auto fadeTimeSeconds() -> double override { return fadeTimeSeconds_; }
+    auto fadeTime() -> Duration override { return Duration{fadeTimeSeconds_}; }
 
     void setFadeTimeSeconds(double x) { fadeTimeSeconds_ = x; }
 

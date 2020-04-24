@@ -31,6 +31,10 @@ struct DigitalLevel {
     double dB;
 };
 
+struct Duration {
+    double seconds;
+};
+
 class TargetPlayer {
   public:
     class EventListener {
@@ -51,7 +55,7 @@ class TargetPlayer {
     virtual auto rms() -> double = 0;
     virtual void set(DigitalLevel) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
-    virtual auto durationSeconds() -> double = 0;
+    virtual auto duration() -> Duration = 0;
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
 };
@@ -81,10 +85,10 @@ class MaskerPlayer {
     virtual auto playing() -> bool = 0;
     virtual auto rms() -> double = 0;
     virtual void set(DigitalLevel) = 0;
-    virtual auto durationSeconds() -> double = 0;
+    virtual auto duration() -> Duration = 0;
     virtual auto sampleRateHz() -> double = 0;
     virtual void seekSeconds(double) = 0;
-    virtual auto fadeTimeSeconds() -> double = 0;
+    virtual auto fadeTime() -> Duration = 0;
     virtual void useAllChannels() = 0;
     virtual void useFirstChannelOnly() = 0;
     virtual void clearChannelDelays() = 0;

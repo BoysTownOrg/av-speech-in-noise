@@ -112,7 +112,7 @@ void TargetPlayerImpl::subscribeToPlaybackCompletion() {
     player->subscribeToPlaybackCompletion();
 }
 
-auto TargetPlayerImpl::durationSeconds() -> double {
-    return player->durationSeconds();
+auto TargetPlayerImpl::duration() -> Duration {
+    return {player->durationSeconds()};
 }
 }

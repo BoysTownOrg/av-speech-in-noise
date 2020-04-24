@@ -512,7 +512,7 @@ MASKER_PLAYER_TEST(playingWhenAudioPlayerPlaying) {
 MASKER_PLAYER_TEST(durationReturnsDuration) {
     setSampleRateHz(3);
     loadMonoAudio({1, 2, 3, 4, 5, 6});
-    assertEqual(6. / 3, player.durationSeconds());
+    assertEqual(6. / 3, player.duration().seconds);
 }
 
 MASKER_PLAYER_TEST(seekSeeksAudio) {
@@ -669,7 +669,7 @@ MASKER_PLAYER_TEST(noAudioLoadedMutesChannel) {
 
 MASKER_PLAYER_TEST(fadeTimeReturnsFadeTime) {
     player.setFadeInOutSeconds(1);
-    assertEqual(1., player.fadeTimeSeconds());
+    assertEqual(1., player.fadeTime().seconds);
 }
 
 MASKER_PLAYER_TEST(loadFileLoadsAudioFile) {
