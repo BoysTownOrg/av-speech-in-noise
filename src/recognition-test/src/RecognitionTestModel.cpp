@@ -208,7 +208,7 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
 }
 
 auto RecognitionTestModelImpl::maskerLevel() -> DigitalLevel {
-    return {
+    return DigitalLevel{
         maskerLevel_.dB_SPL - fullScaleLevel_.dB_SPL - dB(maskerPlayer.rms())};
 }
 

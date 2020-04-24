@@ -154,8 +154,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     TargetStartTime lastTargetStartTime{};
     Model::EventListener *listener_{};
     TestMethod *testMethod{};
-    Level maskerLevel_{};
-    Level fullScaleLevel_{};
+    RealLevel maskerLevel_{};
+    RealLevel fullScaleLevel_{};
     int trialNumber_{};
     Condition condition{};
     bool eyeTracking{};

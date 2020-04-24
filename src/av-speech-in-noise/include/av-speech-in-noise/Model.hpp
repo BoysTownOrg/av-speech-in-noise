@@ -35,7 +35,7 @@ struct TestIdentity {
 
 enum class Condition { auditoryOnly, audioVisual };
 
-struct Level {
+struct RealLevel {
     int dB_SPL{};
 };
 
@@ -47,8 +47,8 @@ struct Test {
     TestIdentity identity;
     LocalUrl targetsUrl;
     LocalUrl maskerFileUrl;
-    Level maskerLevel;
-    Level fullScaleLevel;
+    RealLevel maskerLevel;
+    RealLevel fullScaleLevel;
     Condition condition{};
 };
 
@@ -92,8 +92,8 @@ struct AudioSettings {
 
 struct Calibration : AudioSettings {
     LocalUrl fileUrl;
-    Level level;
-    Level fullScaleLevel;
+    RealLevel level;
+    RealLevel fullScaleLevel;
 };
 
 using AudioDevices = typename std::vector<std::string>;
