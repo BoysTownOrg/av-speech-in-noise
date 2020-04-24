@@ -2495,6 +2495,12 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    completingTrialShowsExperimenterEvaluationButtonsForAdaptivePassFailTestWithEyeTracking) {
+    assertCompleteTrialShowsResponseView(
+        confirmingAdaptivePassFailTestWithEyeTracking, submittingPassedTrial);
+}
+
+PRESENTER_TEST(
     completingTrialShowsExperimenterResponseSubmissionForFixedLevelFreeResponseTest) {
     assertCompleteTrialShowsResponseView(
         confirmingFixedLevelFreeResponseWithTargetReplacementTest,
