@@ -50,6 +50,10 @@ class ModelStub : public Model {
         return initializedWithCyclicTargets_;
     }
 
+    auto adaptiveTestInitializedWithCyclicTargetsAndEyeTracking() -> bool {
+        return adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_;
+    }
+
     [[nodiscard]] auto adaptiveTestInitializedWithEyeTracking() const {
         return adaptiveTestInitializedWithEyeTracking_;
     }
@@ -133,6 +137,11 @@ class ModelStub : public Model {
     void initializeWithCyclicTargets(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
         initializedWithCyclicTargets_ = true;
+    }
+
+    void initializeWithCyclicTargetsAndEyeTracking(const AdaptiveTest &p) {
+        adaptiveTest_ = p;
+        adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_ = true;
     }
 
     void initializeWithSilentIntervalTargets(const FixedLevelTest &p) override {
@@ -223,6 +232,7 @@ class ModelStub : public Model {
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
     bool initializedWithCyclicTargets_{};
+    bool adaptiveTestInitializedWithCyclicTargetsAndEyeTracking_{};
     bool adaptiveTestRestartedWhilePreservingCyclicTargets_{};
 };
 }

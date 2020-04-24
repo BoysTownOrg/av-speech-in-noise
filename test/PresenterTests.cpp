@@ -1390,6 +1390,11 @@ class RequestFailingModel : public Model {
         throw RequestFailure{errorMessage};
     }
 
+    void initializeWithCyclicTargetsAndEyeTracking(
+        const AdaptiveTest &) override {
+        throw RequestFailure{errorMessage};
+    }
+
     void initializeWithEyeTracking(const AdaptiveTest &) override {
         throw RequestFailure{errorMessage};
     }

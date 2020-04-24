@@ -151,6 +151,7 @@ static auto adaptive(const std::string &contents) -> bool {
     return method_ == Method::adaptivePassFail ||
         method_ == Method::adaptivePassFailWithEyeTracking ||
         method_ == Method::adaptiveCorrectKeywords ||
+        method_ == Method::adaptiveCorrectKeywordsWithEyeTracking ||
         method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
         method_ == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
         method_ == Method::defaultAdaptiveCoordinateResponseMeasure ||
@@ -183,6 +184,8 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
         model.initializeWithSingleSpeaker(test);
     else if (method_ == Method::adaptiveCorrectKeywords)
         model.initializeWithCyclicTargets(test);
+    else if (method_ == Method::adaptiveCorrectKeywordsWithEyeTracking)
+        model.initializeWithCyclicTargetsAndEyeTracking(test);
     else if (method_ ==
             Method::adaptiveCoordinateResponseMeasureWithEyeTracking ||
         method_ == Method::adaptivePassFailWithEyeTracking)

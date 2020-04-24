@@ -121,6 +121,8 @@ class Model {
     virtual void initializeWithDelayedMasker(const AdaptiveTest &) = 0;
     virtual void initializeWithEyeTracking(const AdaptiveTest &) = 0;
     virtual void initializeWithCyclicTargets(const AdaptiveTest &) = 0;
+    virtual void initializeWithCyclicTargetsAndEyeTracking(
+        const AdaptiveTest &) = 0;
     virtual void initializeWithSilentIntervalTargets(
         const FixedLevelTest &) = 0;
     virtual void initializeWithAllTargets(const FixedLevelTest &) = 0;

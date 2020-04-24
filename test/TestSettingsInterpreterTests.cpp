@@ -381,6 +381,11 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
     assertTrue(model.initializedWithCyclicTargets());
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsWithEyeTrackingInitializesAdaptiveTest) {
+    initialize(interpreter, model, Method::adaptiveCorrectKeywordsWithEyeTracking);
+    assertTrue(model.adaptiveTestInitializedWithCyclicTargetsAndEyeTracking());
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(
     defaultAdaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
     initialize(
