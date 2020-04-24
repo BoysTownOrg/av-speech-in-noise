@@ -462,6 +462,12 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesSimpleAdaptiveSettings) {
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
+    adaptivePassFailWithEyeTrackingPassesSimpleAdaptiveSettings) {
+    assertPassesSimpleAdaptiveSettings(
+        interpreter, model, Method::adaptivePassFailWithEyeTracking);
+}
+
+TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCorrectKeywordsPassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
         interpreter, model, Method::adaptiveCorrectKeywords);
