@@ -123,7 +123,7 @@ void ModelImpl::initializeWithCyclicTargets(const AdaptiveTest &test) {
 void ModelImpl::initializeWithCyclicTargetsAndEyeTracking(
     const AdaptiveTest &test) {
     av_speech_in_noise::initialize(adaptiveMethod, test, cyclicTargetsReader);
-    av_speech_in_noise::initialize(model, adaptiveMethod, test);
+    av_speech_in_noise::initializeWithEyeTracking(model, adaptiveMethod, test);
 }
 
 void ModelImpl::restartAdaptiveTestWhilePreservingTargets() {

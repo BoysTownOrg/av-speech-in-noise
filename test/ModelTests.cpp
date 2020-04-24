@@ -829,6 +829,12 @@ MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
 }
 
 MODEL_TEST(
+    initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesWithEyeTracking) {
+    run(initializingAdaptiveTestWithCyclicTargetsWithEyeTracking);
+    assertTrue(internalModel.initializedWithEyeTracking());
+}
+
+MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithEyeTracking) {
     run(initializingFixedLevelTestWithTargetReplacementAndEyeTracking);
     assertTrue(internalModel.initializedWithEyeTracking());
