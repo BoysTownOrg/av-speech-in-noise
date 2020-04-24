@@ -39,26 +39,17 @@ static void readyNextTrial(
     experimenterPresenter.readyNextTrial();
 }
 
-static auto adaptiveCoordinateResponseMeasure(Method m) -> bool {
+static auto coordinateResponseMeasure(Method m) -> bool {
     return m == Method::adaptiveCoordinateResponseMeasure ||
         m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
         m == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
-        m == Method::adaptiveCoordinateResponseMeasureWithEyeTracking;
-}
-
-static auto fixedLevelCoordinateResponseMeasure(Method m) -> bool {
-    return m ==
-        Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement ||
+        m == Method::adaptiveCoordinateResponseMeasureWithEyeTracking ||
+        m == Method::fixedLevelCoordinateResponseMeasureWithTargetReplacement ||
         m ==
         Method::
             fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking ||
         m ==
         Method::fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets;
-}
-
-static auto coordinateResponseMeasure(Method m) -> bool {
-    return adaptiveCoordinateResponseMeasure(m) ||
-        fixedLevelCoordinateResponseMeasure(m);
 }
 
 static auto testComplete(Model &model) -> bool { return model.testComplete(); }
@@ -129,12 +120,13 @@ void Presenter::confirmTestSetup() {
 }
 
 void Presenter::confirmTestSetup_() {
-    auto testSettings{textFileReader.read({testSetup.testSettingsFile()})};
+    const auto testSettings{
+        textFileReader.read({testSetup.testSettingsFile()})};
     testSettingsInterpreter.initialize(model, testSettings,
         testIdentity(testSetup),
-        {readInteger(testSetup.startingSnr(), "starting SNR")});
-    auto method{testSettingsInterpreter.method(testSettings)};
+        SNR{readInteger(testSetup.startingSnr(), "starting SNR")});
     if (!testComplete(model)) {
+        const auto method{testSettingsInterpreter.method(testSettings)};
         switchToTestView(method);
         trialCompletionHandler_ = trialCompletionHandler(method);
     }
