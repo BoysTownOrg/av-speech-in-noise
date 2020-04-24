@@ -421,7 +421,9 @@ void setMaskerFilePath(Test &test, std::string s) {
     test.maskerFileUrl.path = std::move(s);
 }
 
-void setRms(MaskerPlayerStub &player, double x) { player.setRms(x); }
+void setDigitalLevel(MaskerPlayerStub &player, DigitalLevel x) {
+    player.setDigitalLevel(x);
+}
 
 void setSnr_dB(TestMethodStub &method, int x) { method.setSnr_dB(x); }
 
@@ -641,10 +643,10 @@ class RecognitionTestModelTests : public ::testing::Test {
         setMaskerLevel_dB_SPL(test, 3);
         setFullScaleLevel_dB_SPL(test, 4);
         run(initializingTest, model);
-        setRms(maskerPlayer, 5);
+        setDigitalLevel(maskerPlayer, DigitalLevel{5});
         setSnr_dB(testMethod, 2);
         run(useCase, model);
-        assertLevelEquals_dB(targetPlayer, 2 + 3 - 4 - dB(5));
+        assertLevelEquals_dB(targetPlayer, 2 + 3 - 4 - 5);
     }
 
     void assertResponseDoesNotLoadNextTargetWhenComplete(UseCase &useCase) {
@@ -1273,18 +1275,18 @@ RECOGNITION_TEST_MODEL_TEST(submitCorrectKeywordsSeeksToRandomMaskerPosition) {
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsInitialMaskerPlayerLevel) {
     setMaskerLevel_dB_SPL(test, 1);
     setFullScaleLevel_dB_SPL(test, 2);
-    setRms(maskerPlayer, 3);
+    setDigitalLevel(maskerPlayer, DigitalLevel{3});
     run(initializingTest, model);
-    assertEqual(1 - 2 - dB(3), maskerPlayer.level_dB());
+    assertEqual(1 - 2 - 3., maskerPlayer.level_dB());
 }
 
 RECOGNITION_TEST_MODEL_TEST(initializeDefaultTestSetsTargetPlayerLevel) {
     setSnr_dB(testMethod, 2);
     setMaskerLevel_dB_SPL(test, 3);
     setFullScaleLevel_dB_SPL(test, 4);
-    setRms(maskerPlayer, 5);
+    setDigitalLevel(maskerPlayer, DigitalLevel{5});
     run(initializingTest, model);
-    assertLevelEquals_dB(targetPlayer, 2 + 3 - 4 - dB(5));
+    assertLevelEquals_dB(targetPlayer, 2 + 3 - 4 - 5);
 }
 
 RECOGNITION_TEST_MODEL_TEST(submitCoordinateResponseSetsTargetPlayerLevel) {
@@ -1310,9 +1312,9 @@ RECOGNITION_TEST_MODEL_TEST(submitIncorrectResponseSetsTargetPlayerLevel) {
 RECOGNITION_TEST_MODEL_TEST(playCalibrationSetsTargetPlayerLevel) {
     calibration.level.dB_SPL = 1;
     calibration.fullScaleLevel.dB_SPL = 2;
-    targetPlayer.setRms(3);
+    targetPlayer.setDigitalLevel(DigitalLevel{3});
     run(playingCalibration, model);
-    assertLevelEquals_dB(targetPlayer, 1 - 2 - dB(3));
+    assertLevelEquals_dB(targetPlayer, 1 - 2 - 3);
 }
 
 RECOGNITION_TEST_MODEL_TEST(startTrialShowsTargetPlayerWhenAudioVisual) {

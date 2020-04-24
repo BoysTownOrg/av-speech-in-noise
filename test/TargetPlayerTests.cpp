@@ -261,14 +261,16 @@ TEST_F(TargetPlayerTests, audioDevicesReturnsDescriptions) {
     assertEqual({"a", "b", "c"}, player.audioDevices());
 }
 
-TEST_F(TargetPlayerTests, rmsComputesFirstChannel) {
+TEST_F(TargetPlayerTests, digitalLevelComputesFirstChannel) {
     audioReader.set({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    EXPECT_EQ(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F), player.rms());
+    assertEqual<double>(
+        20 * std::log10(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F)),
+        player.digitalLevel().dBov);
 }
 
-TEST_F(TargetPlayerTests, rmsPassesLoadedFileToVideoPlayer) {
+TEST_F(TargetPlayerTests, digitalLevelPassesLoadedFileToVideoPlayer) {
     player.loadFile({"a"});
-    player.rms();
+    player.digitalLevel();
     assertEqual("a", audioReader.filePath());
 }
 
@@ -277,10 +279,10 @@ TEST_F(TargetPlayerTests, subscribesToTargetPlaybackCompletionNotification) {
     EXPECT_TRUE(videoPlayer.playbackCompletionSubscribedTo());
 }
 
-TEST_F(TargetPlayerTests, rmsThrowsInvalidAudioFileWhenAudioReaderThrows) {
+TEST_F(TargetPlayerTests, digitalLevelThrowsInvalidAudioFileWhenAudioReaderThrows) {
     audioReader.throwOnRead();
     try {
-        player.rms();
+        player.digitalLevel();
         FAIL() << "Expected av_coordinate_response_measure::InvalidAudioFile";
     } catch (const InvalidAudioFile &) {
     }

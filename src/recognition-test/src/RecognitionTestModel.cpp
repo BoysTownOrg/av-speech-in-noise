@@ -95,8 +95,6 @@ static void loadFile(TargetPlayer &player, const LocalUrl &s) {
 
 static void play(TargetPlayer &player) { player.play(); }
 
-static auto dB(double x) -> double { return 20 * std::log10(x); }
-
 static auto targetName(ResponseEvaluator &evaluator, TestMethod *testMethod)
     -> std::string {
     return evaluator.fileName(testMethod->currentTarget());
@@ -121,7 +119,8 @@ constexpr auto operator-(const RealLevel &a, const RealLevel &b)
 static auto level(TargetPlayer &player, const Calibration &p)
     -> LevelAmplification {
     return LevelAmplification{
-        RealLevelDifference{p.level - p.fullScaleLevel}.dB - dB(player.rms())};
+        RealLevelDifference{p.level - p.fullScaleLevel}.dB -
+        player.digitalLevel().dBov};
 }
 
 static void show(TargetPlayer &player) { player.showVideo(); }
@@ -217,7 +216,7 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
 auto RecognitionTestModelImpl::maskerLevel() -> LevelAmplification {
     return LevelAmplification{
         RealLevelDifference{maskerLevel_ - fullScaleLevel_}.dB -
-        dB(maskerPlayer.rms())};
+        maskerPlayer.digitalLevel().dBov};
 }
 
 static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }

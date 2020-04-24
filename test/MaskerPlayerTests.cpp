@@ -499,7 +499,7 @@ class MaskerPlayerTests : public ::testing::Test {
         assertEqual(n, listener.fadeOutCompletions());
     }
 
-    auto rms() -> double { return player.rms(); }
+    auto digitalLevel() -> DigitalLevel { return player.digitalLevel(); }
 };
 
 #define MASKER_PLAYER_TEST(a) TEST_F(MaskerPlayerTests, a)
@@ -987,14 +987,16 @@ MASKER_PLAYER_TEST(outputAudioDevicesReturnsDescriptions) {
     assertEqual({"a", "c"}, player.outputAudioDeviceDescriptions());
 }
 
-MASKER_PLAYER_TEST(rmsComputedFromFirstChannel) {
+MASKER_PLAYER_TEST(digitalLevelComputedFromFirstChannel) {
     loadAudio({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-    assertEqual<double>(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F), rms());
+    assertEqual<double>(
+        20 * std::log10(std::sqrt((1 * 1 + 2 * 2 + 3 * 3) / 3.F)),
+        digitalLevel().dBov);
 }
 
-MASKER_PLAYER_TEST(rmsPassesLoadedFileToVideoPlayer) {
+MASKER_PLAYER_TEST(digitalLevelPassesLoadedFileToVideoPlayer) {
     loadFile("a");
-    rms();
+    digitalLevel();
     assertEqual("a", audioReader.filePath());
 }
 

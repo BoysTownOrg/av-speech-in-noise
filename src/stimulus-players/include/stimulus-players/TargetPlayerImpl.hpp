@@ -44,7 +44,7 @@ class TargetPlayerImpl : public TargetPlayer,
     void loadFile(const LocalUrl &) override;
     void hideVideo() override;
     void showVideo() override;
-    auto rms() -> double override;
+    auto digitalLevel() -> DigitalLevel override;
     void set(LevelAmplification) override;
     void setAudioDevice(std::string) override;
     auto playing() -> bool override;

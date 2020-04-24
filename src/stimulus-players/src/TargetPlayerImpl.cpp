@@ -2,6 +2,7 @@
 #include <gsl/gsl>
 #include <cmath>
 #include <algorithm>
+#include <limits>
 
 namespace av_speech_in_noise {
 TargetPlayerImpl::TargetPlayerImpl(VideoPlayer *player, AudioReader *reader)
@@ -33,13 +34,13 @@ template <typename T> auto rms(const std::vector<T> &x) -> T {
     }) / x.size());
 }
 
-auto TargetPlayerImpl::rms() -> double {
+auto TargetPlayerImpl::digitalLevel() -> DigitalLevel {
     auto audio{readAudio_()};
     if (audio.empty())
-        return 0;
+        return DigitalLevel{-std::numeric_limits<double>::infinity()};
 
     auto firstChannel{audio.front()};
-    return av_speech_in_noise::rms(firstChannel);
+    return DigitalLevel{20 * std::log10(rms(firstChannel))};
 }
 
 auto TargetPlayerImpl::readAudio_() -> audio_type {

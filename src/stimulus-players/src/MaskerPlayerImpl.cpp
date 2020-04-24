@@ -3,6 +3,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <limits>
 
 namespace av_speech_in_noise {
 static auto at(std::vector<double> &x, gsl::index n) -> double & {
@@ -182,10 +183,12 @@ void MaskerPlayerImpl::fillAudioBuffer(
     audioThread.fillAudioBuffer(audioBuffer, time);
 }
 
-auto MaskerPlayerImpl::rms() -> double {
+static_assert(std::numeric_limits<double>::is_iec559, "IEEE 754 required");
+
+auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
     return noChannels(sourceAudio)
-        ? 0
-        : av_speech_in_noise::rms(firstChannel(sourceAudio));
+        ? DigitalLevel{-std::numeric_limits<double>::infinity()}
+        : DigitalLevel{20 * std::log10(rms(firstChannel(sourceAudio)))};
 }
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }

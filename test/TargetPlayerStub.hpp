@@ -42,7 +42,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     auto level_dB() const { return level_dB_; }
 
-    void setRms(double x) { rms_ = x; }
+    void setDigitalLevel(DigitalLevel x) { digitalLevel_ = x; }
 
     void showVideo() override { videoShown_ = true; }
 
@@ -67,11 +67,11 @@ class TargetPlayerStub : public TargetPlayer {
 
     void addToLog(const std::string &s) { log_.insert(s); }
 
-    auto rms() -> double override {
-        addToLog("rms ");
+    auto digitalLevel() -> DigitalLevel override {
+        addToLog("digitalLevel ");
         if (throwInvalidAudioFileOnRms_)
             throw InvalidAudioFile{};
-        return rms_;
+        return digitalLevel_;
     }
 
     void set(LevelAmplification x) override { level_dB_ = x.dB; }
@@ -99,7 +99,7 @@ class TargetPlayerStub : public TargetPlayer {
     std::string filePath_;
     std::string device_;
     PlayerTimeWithDelay timePlayedAt_{};
-    double rms_{};
+    DigitalLevel digitalLevel_{};
     double level_dB_{};
     double durationSeconds_{};
     EventListener *listener_{};

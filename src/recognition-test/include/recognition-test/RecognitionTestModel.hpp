@@ -28,7 +28,7 @@ struct PlayerTimeWithDelay {
 };
 
 struct DigitalLevel {
-    double dB;
+    double dBov;
 };
 
 struct Duration {
@@ -56,7 +56,7 @@ class TargetPlayer {
     virtual void loadFile(const LocalUrl &) = 0;
     virtual void hideVideo() = 0;
     virtual void showVideo() = 0;
-    virtual auto rms() -> double = 0;
+    virtual auto digitalLevel() -> DigitalLevel = 0;
     virtual void set(LevelAmplification) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual auto duration() -> Duration = 0;
@@ -87,7 +87,7 @@ class MaskerPlayer {
     virtual void fadeOut() = 0;
     virtual void loadFile(const LocalUrl &) = 0;
     virtual auto playing() -> bool = 0;
-    virtual auto rms() -> double = 0;
+    virtual auto digitalLevel() -> DigitalLevel = 0;
     virtual void set(LevelAmplification) = 0;
     virtual auto duration() -> Duration = 0;
     virtual auto sampleRateHz() -> double = 0;

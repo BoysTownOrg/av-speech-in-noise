@@ -68,7 +68,7 @@ class MaskerPlayerImpl : public MaskerPlayer,
         player_system_time_type) override;
     void setFadeInOutSeconds(double);
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override;
-    auto rms() -> double override;
+    auto digitalLevel() -> DigitalLevel override;
     auto duration() -> Duration override;
     void seekSeconds(double) override;
     auto fadeTime() -> Duration override;

@@ -11,7 +11,7 @@ class MaskerPlayerStub : public MaskerPlayer {
     LogString log_;
     std::string filePath_;
     std::string device_;
-    double rms_{};
+    DigitalLevel digitalLevel_{};
     double level_dB_{};
     double fadeTimeSeconds_{};
     double durationSeconds_{};
@@ -130,13 +130,13 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     auto filePath() const -> std::string { return filePath_; }
 
-    void setRms(double x) { rms_ = x; }
+    void setDigitalLevel(DigitalLevel x) { digitalLevel_ = x; }
 
     auto level_dB() const -> double { return level_dB_; }
 
-    auto rms() -> double override {
-        addToLog("rms ");
-        return rms_;
+    auto digitalLevel() -> DigitalLevel override {
+        addToLog("digitalLevel ");
+        return digitalLevel_;
     }
 
     void set(LevelAmplification x) override { level_dB_ = x.dB; }
