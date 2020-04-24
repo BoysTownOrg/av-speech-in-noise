@@ -390,13 +390,13 @@ class InitializingAdaptiveTestWithCyclicTargets
     auto testMethod() -> const TestMethod * override { return method; }
 };
 
-class InitializingAdaptiveTestWithCyclicTargetsWithEyeTracking
+class InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
     : public InitializingAdaptiveTest {
     AdaptiveTest test_;
     AdaptiveMethodStub *method;
 
   public:
-    explicit InitializingAdaptiveTestWithCyclicTargetsWithEyeTracking(
+    explicit InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking(
         AdaptiveMethodStub *method)
         : method{method} {}
 
@@ -577,8 +577,8 @@ class ModelTests : public ::testing::Test {
         initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
     InitializingAdaptiveTestWithCyclicTargets
         initializingAdaptiveTestWithCyclicTargets{&adaptiveMethod};
-    InitializingAdaptiveTestWithCyclicTargetsWithEyeTracking
-        initializingAdaptiveTestWithCyclicTargetsWithEyeTracking{
+    InitializingAdaptiveTestWithCyclicTargetsAndEyeTracking
+        initializingAdaptiveTestWithCyclicTargetsAndEyeTracking{
             &adaptiveMethod};
     InitializingFixedLevelTestWithTargetReplacement
         initializingFixedLevelTestWithTargetReplacement{&fixedLevelMethod};
@@ -747,9 +747,9 @@ MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesAdaptiveMethod) {
 }
 
 MODEL_TEST(
-    initializeAdaptiveTestWithCyclicTargetsWithEyeTrackingInitializesAdaptiveMethod) {
+    initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(
-        initializingAdaptiveTestWithCyclicTargetsWithEyeTracking,
+        initializingAdaptiveTestWithCyclicTargetsAndEyeTracking,
         cyclicTargetsReader);
 }
 
@@ -808,9 +808,9 @@ MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesInternalModel) {
 }
 
 MODEL_TEST(
-    initializeAdaptiveTestWithCyclicTargetsWithEyeTrackingInitializesInternalModel) {
+    initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesInternalModel) {
     assertInitializesInternalModel(
-        initializingAdaptiveTestWithCyclicTargetsWithEyeTracking);
+        initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
 }
 
 MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
@@ -830,7 +830,7 @@ MODEL_TEST(initializeAdaptiveTestWithEyeTrackingInitializesWithEyeTracking) {
 
 MODEL_TEST(
     initializeAdaptiveTestWithCyclicTargetsAndEyeTrackingInitializesWithEyeTracking) {
-    run(initializingAdaptiveTestWithCyclicTargetsWithEyeTracking);
+    run(initializingAdaptiveTestWithCyclicTargetsAndEyeTracking);
     assertTrue(internalModel.initializedWithEyeTracking());
 }
 
