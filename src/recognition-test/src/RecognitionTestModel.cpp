@@ -34,21 +34,18 @@ static void clearChannelDelays(MaskerPlayer &player) {
 
 static void useAllChannels(TargetPlayer &player) { player.useAllChannels(); }
 
-static auto fadeTime(MaskerPlayer &player) -> Duration {
-    return player.fadeTime();
-}
-
 static auto totalFadeTime(MaskerPlayer &player) -> Duration {
-    return Duration{2 * fadeTime(player).seconds};
+    return Duration{2 * player.fadeTime().seconds};
 }
 
-static auto duration(TargetPlayer &player) -> Duration {
-    return player.duration();
+static constexpr auto operator+(const Duration &a, const Duration &b)
+    -> Duration {
+    return Duration{a.seconds + b.seconds};
 }
 
 static auto trialDuration(TargetPlayer &target, MaskerPlayer &masker)
     -> Duration {
-    return Duration{totalFadeTime(masker).seconds + duration(target).seconds};
+    return totalFadeTime(masker) + target.duration();
 }
 
 static void turnOff(bool &b) { b = false; }
@@ -87,7 +84,9 @@ static void throwRequestFailureIfTrialInProgress(MaskerPlayer &player) {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
-static void apply(TargetPlayer &player, LevelAmplification x) { player.apply(x); }
+static void apply(TargetPlayer &player, LevelAmplification x) {
+    player.apply(x);
+}
 
 static void loadFile(TargetPlayer &player, const LocalUrl &s) {
     player.loadFile(s);
@@ -285,10 +284,16 @@ auto RecognitionTestModelImpl::targetLevelAmplification()
         maskerLevelAmplification().dB + testMethod->snr().dB};
 }
 
+static constexpr auto operator-(const Duration &a, const Duration &b)
+    -> Duration {
+    return Duration{a.seconds - b.seconds};
+}
+
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
-    const auto upperLimit{maskerPlayer.duration().seconds -
-        2 * maskerPlayer.fadeTime().seconds - targetPlayer.duration().seconds};
-    maskerPlayer.seekSeconds(randomizer.betweenInclusive(0., upperLimit));
+    const auto upperLimit{
+        maskerPlayer.duration() - trialDuration(targetPlayer, maskerPlayer)};
+    maskerPlayer.seekSeconds(
+        randomizer.betweenInclusive(0., upperLimit.seconds));
 }
 
 void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
