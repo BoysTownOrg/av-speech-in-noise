@@ -10,6 +10,7 @@ enum class Method {
     adaptivePassFail,
     adaptivePassFailWithEyeTracking,
     adaptiveCorrectKeywords,
+    adaptiveCorrectKeywordsWithEyeTracking,
     defaultAdaptiveCoordinateResponseMeasure,
     adaptiveCoordinateResponseMeasureWithSingleSpeaker,
     adaptiveCoordinateResponseMeasureWithDelayedMasker,

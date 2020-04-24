@@ -127,6 +127,7 @@ static auto method(const std::string &s) -> Method {
     for (auto m :
         {Method::adaptivePassFail, Method::adaptivePassFailWithEyeTracking,
             Method::adaptiveCorrectKeywords,
+            Method::adaptiveCorrectKeywordsWithEyeTracking,
             Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker,
             Method::adaptiveCoordinateResponseMeasureWithDelayedMasker,
             Method::fixedLevelFreeResponseWithTargetReplacement,

@@ -249,6 +249,10 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsReturnsMethod) {
     assertMethod(interpreter, Method::adaptiveCorrectKeywords);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsWithEyeTrackingReturnsMethod) {
+    assertMethod(interpreter, Method::adaptiveCorrectKeywordsWithEyeTracking);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(
     defaultAdaptiveCoordinateResponseMeasureReturnsMethod) {
     assertMethod(interpreter, Method::defaultAdaptiveCoordinateResponseMeasure);
