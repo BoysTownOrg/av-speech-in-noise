@@ -1953,6 +1953,10 @@ PRESENTER_TEST(confirmingAdaptivePassFailTestPassesSubjectId) {
     assertPassesSubjectId(confirmingAdaptivePassFailTest);
 }
 
+PRESENTER_TEST(confirmingAdaptivePassFailTestWithEyeTrackingPassesSubjectId) {
+    assertPassesSubjectId(confirmingAdaptivePassFailTestWithEyeTracking);
+}
+
 PRESENTER_TEST(
     confirmingFixedLevelFreeResponseTestWithTargetReplacementPassesSubjectId) {
     assertPassesSubjectId(
@@ -2081,6 +2085,13 @@ PRESENTER_TEST(
     confirmingAdaptivePassFailTestShowsNextTrialButtonForExperimenter) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingAdaptivePassFailTest, playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(
+    confirmingAdaptivePassFailTestWithEyeTrackingShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingAdaptivePassFailTestWithEyeTracking,
+        playingTrialFromExperimenter);
 }
 
 PRESENTER_TEST(
