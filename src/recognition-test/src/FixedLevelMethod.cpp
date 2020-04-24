@@ -9,13 +9,13 @@ static void loadFromDirectory(TargetList *list, const FixedLevelTest &test) {
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, TargetList *list) {
+    const FixedLevelTest &test, TargetList *list) {
     usingFiniteTargetList_ = false;
     targetList = list;
-    test = &p;
-    trials_ = p.trials;
-    snr_ = p.snr;
-    loadFromDirectory(targetList, p);
+    test_ = &test;
+    trials_ = test.trials;
+    snr_ = test.snr;
+    loadFromDirectory(targetList, test);
 }
 
 void FixedLevelMethodImpl::initialize(
@@ -23,7 +23,7 @@ void FixedLevelMethodImpl::initialize(
     usingFiniteTargetList_ = true;
     targetList = list;
     finiteTargetList = list;
-    test = &p;
+    test_ = &p;
     snr_ = p.snr;
     loadFromDirectory(targetList, p);
     finiteTargetsExhausted_ = finiteTargetList->empty();
@@ -39,15 +39,16 @@ auto FixedLevelMethodImpl::nextTarget() -> LocalUrl {
 
 auto FixedLevelMethodImpl::snr() -> SNR { return snr_; }
 
+static auto current(TargetList *list) -> LocalUrl { return list->current(); }
+
 void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
-    auto current_ = currentTarget();
     lastTrial.subjectColor = response.color;
     lastTrial.subjectNumber = response.number;
-    lastTrial.correctColor = evaluator.correctColor({current_});
-    lastTrial.correctNumber = evaluator.correctNumber({current_});
-    lastTrial.correct = evaluator.correct({current_}, response);
-    lastTrial.target = current_.path;
+    lastTrial.correctColor = evaluator.correctColor(current(targetList));
+    lastTrial.correctNumber = evaluator.correctNumber(current(targetList));
+    lastTrial.correct = evaluator.correct(current(targetList), response);
+    lastTrial.target = current(targetList).path;
     if (usingFiniteTargetList_)
         finiteTargetsExhausted_ = finiteTargetList->empty();
     else
@@ -55,11 +56,11 @@ void FixedLevelMethodImpl::submit(
 }
 
 auto FixedLevelMethodImpl::currentTarget() -> LocalUrl {
-    return targetList->current();
+    return current(targetList);
 }
 
 void FixedLevelMethodImpl::writeTestingParameters(OutputFile &file) {
-    file.write(*test);
+    file.write(*test_);
 }
 
 void FixedLevelMethodImpl::writeLastCoordinateResponse(OutputFile &file) {

@@ -27,7 +27,7 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
 
   private:
     coordinate_response_measure::FixedLevelTrial lastTrial{};
-    const FixedLevelTest *test{};
+    const FixedLevelTest *test_{};
     TargetList *targetList{};
     FiniteTargetList *finiteTargetList{};
     ResponseEvaluator &evaluator;
