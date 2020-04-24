@@ -235,9 +235,9 @@ static auto nanoseconds(MaskerPlayer &player, const PlayerTimeWithDelay &t)
     return nanoseconds(player, t.playerTime) + nanoseconds(t.delay);
 }
 
-static auto offsetSeconds(
-    MaskerPlayer &player, const AudioSampleTimeWithOffset &t) -> double {
-    return t.sampleOffset / player.sampleRateHz();
+static auto offsetDuration(
+    MaskerPlayer &player, const AudioSampleTimeWithOffset &t) -> Duration {
+    return Duration{t.sampleOffset / player.sampleRateHz()};
 }
 
 void RecognitionTestModelImpl::fadeInComplete(
@@ -246,7 +246,8 @@ void RecognitionTestModelImpl::fadeInComplete(
         PlayerTimeWithDelay timeToPlayWithDelay{};
         timeToPlayWithDelay.playerTime = t.playerTime;
         timeToPlayWithDelay.delay = Delay{
-            offsetSeconds(maskerPlayer, t) + additionalTargetDelay.seconds};
+            Duration{offsetDuration(maskerPlayer, t) + additionalTargetDelay}
+                .seconds};
         targetPlayer.playAt(timeToPlayWithDelay);
 
         lastTargetStartTime.nanoseconds =
@@ -306,9 +307,9 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
         settings.audioDevice);
 
     if (eyeTracking) {
-        eyeTracker.allocateRecordingTimeSeconds(
-            trialDuration(targetPlayer, maskerPlayer).seconds +
-            additionalTargetDelay.seconds);
+        eyeTracker.allocateRecordingTimeSeconds(Duration{
+            trialDuration(targetPlayer, maskerPlayer) + additionalTargetDelay}
+                                                    .seconds);
         eyeTracker.start();
     }
     if (condition == Condition::audioVisual)

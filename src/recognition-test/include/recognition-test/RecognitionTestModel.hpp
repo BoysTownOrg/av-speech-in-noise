@@ -12,27 +12,27 @@ namespace av_speech_in_noise {
 class InvalidAudioDevice {};
 class InvalidAudioFile {};
 
-struct Delay {
+struct Duration {
     double seconds;
+};
+
+struct Delay : Duration {
+    explicit constexpr Delay(double seconds = 0.) : Duration{seconds} {}
 };
 
 using player_system_time_type = std::uintmax_t;
 
 struct PlayerTime {
-    player_system_time_type system;
+    player_system_time_type system{};
 };
 
 struct PlayerTimeWithDelay {
     PlayerTime playerTime;
-    Delay delay;
+    Delay delay{};
 };
 
 struct DigitalLevel {
     double dBov;
-};
-
-struct Duration {
-    double seconds;
 };
 
 struct LevelAmplification {
