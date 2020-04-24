@@ -148,6 +148,7 @@ static auto method(const std::string &s) -> Method {
 static auto adaptive(const std::string &contents) -> bool {
     auto method_{av_speech_in_noise::method(contents)};
     return method_ == Method::adaptivePassFail ||
+        method_ == Method::adaptivePassFailWithEyeTracking ||
         method_ == Method::adaptiveCorrectKeywords ||
         method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
         method_ == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||

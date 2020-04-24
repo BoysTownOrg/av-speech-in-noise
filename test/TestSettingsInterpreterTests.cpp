@@ -319,6 +319,11 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailPassesMethod) {
         interpreter, model, Method::adaptivePassFail, adaptiveTestIdentity);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailWithEyeTrackingPassesMethod) {
+    assertPassesTestMethod(interpreter, model,
+        Method::adaptivePassFailWithEyeTracking, adaptiveTestIdentity);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(
     fixedLevelFreeResponseWithAllTargetsPassesMethod) {
     assertPassesTestMethod(interpreter, model,
