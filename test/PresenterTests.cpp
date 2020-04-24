@@ -2305,6 +2305,12 @@ PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTrialNumber) {
     assertShowsTrialNumber(confirmingAdaptiveCorrectKeywordsTest);
 }
 
+PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestWithEyeTrackingShowsTrialNumber) {
+    assertShowsTrialNumber(
+        confirmingAdaptiveCorrectKeywordsTestWithEyeTracking);
+}
+
 PRESENTER_TEST(submittingCorrectKeywordsShowsTrialNumber) {
     assertShowsTrialNumber(submittingCorrectKeywords);
 }
