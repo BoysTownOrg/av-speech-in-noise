@@ -599,6 +599,23 @@ class ConfirmingAdaptivePassFailTest : public ConfirmingTestSetup {
     }
 };
 
+class ConfirmingAdaptivePassFailTestWithEyeTracking
+    : public ConfirmingTestSetup {
+    ViewStub::TestSetupViewStub *view;
+    TestSettingsInterpreterStub &interpreter;
+
+  public:
+    ConfirmingAdaptivePassFailTestWithEyeTracking(
+        ViewStub::TestSetupViewStub *view,
+        TestSettingsInterpreterStub &interpreter)
+        : view{view}, interpreter{interpreter} {}
+
+    void run() override {
+        setMethod(interpreter, Method::adaptivePassFailWithEyeTracking);
+        confirmTestSetup(view);
+    }
+};
+
 class ConfirmingAdaptiveCorrectKeywordsTest : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
@@ -1112,6 +1129,9 @@ class PresenterTests : public ::testing::Test {
             &setupView, testSettingsInterpreter};
     ConfirmingAdaptivePassFailTest confirmingAdaptivePassFailTest{
         &setupView, testSettingsInterpreter};
+    ConfirmingAdaptivePassFailTestWithEyeTracking
+        confirmingAdaptivePassFailTestWithEyeTracking{
+            &setupView, testSettingsInterpreter};
     ConfirmingFixedLevelFreeResponseWithTargetReplacementTest
         confirmingFixedLevelFreeResponseWithTargetReplacementTest{
             &setupView, testSettingsInterpreter};
@@ -1537,6 +1557,12 @@ PRESENTER_TEST(
 PRESENTER_TEST(exitTestAfterCompletingTrialHidesPassFailSubmission) {
     assertExitTestAfterCompletingTrialHidesResponseSubmission(
         confirmingAdaptivePassFailTest, submittingPassedTrial);
+}
+
+PRESENTER_TEST(
+    exitTestAfterCompletingTrialHidesPassFailSubmissionForAdaptivePassFailTestWithEyeTracking) {
+    assertExitTestAfterCompletingTrialHidesResponseSubmission(
+        confirmingAdaptivePassFailTestWithEyeTracking, submittingPassedTrial);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestShowsTargetFileName) {
