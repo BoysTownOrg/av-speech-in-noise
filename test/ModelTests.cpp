@@ -807,6 +807,12 @@ MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesInternalModel) {
     assertInitializesInternalModel(initializingAdaptiveTestWithCyclicTargets);
 }
 
+MODEL_TEST(
+    initializeAdaptiveTestWithCyclicTargetsWithEyeTrackingInitializesInternalModel) {
+    assertInitializesInternalModel(
+        initializingAdaptiveTestWithCyclicTargetsWithEyeTracking);
+}
+
 MODEL_TEST(initializeAdaptiveTestWithSingleSpeakerInitializesSingleSpeaker) {
     run(initializingAdaptiveTestWithSingleSpeaker);
     assertTrue(internalModel.initializedWithSingleSpeaker());
