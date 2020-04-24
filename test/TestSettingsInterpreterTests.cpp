@@ -366,6 +366,12 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailInitializesAdaptiveTest) {
     assertDefaultAdaptiveTestInitialized(model);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(
+    adaptivePassFailWithEyeTrackingInitializesAdaptiveTest) {
+    initialize(interpreter, model, Method::adaptivePassFailWithEyeTracking);
+    assertTrue(model.adaptiveTestInitializedWithEyeTracking());
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsInitializesAdaptiveTest) {
     initialize(interpreter, model, Method::adaptiveCorrectKeywords);
     assertTrue(model.initializedWithCyclicTargets());
@@ -396,7 +402,7 @@ TEST_SETTINGS_INTERPRETER_TEST(
     adaptiveCoordinateResponseMeasureWithEyeTrackingInitializesAdaptiveTest) {
     initialize(interpreter, model,
         Method::adaptiveCoordinateResponseMeasureWithEyeTracking);
-    assertTrue(model.initializedWithEyeTracking());
+    assertTrue(model.adaptiveTestInitializedWithEyeTracking());
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(

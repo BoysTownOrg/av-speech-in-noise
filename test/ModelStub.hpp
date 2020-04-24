@@ -50,8 +50,8 @@ class ModelStub : public Model {
         return initializedWithCyclicTargets_;
     }
 
-    [[nodiscard]] auto initializedWithEyeTracking() const {
-        return initializedWithEyeTracking_;
+    [[nodiscard]] auto adaptiveTestInitializedWithEyeTracking() const {
+        return adaptiveTestInitializedWithEyeTracking_;
     }
 
     [[nodiscard]] auto defaultFixedLevelTestInitialized() const {
@@ -127,7 +127,7 @@ class ModelStub : public Model {
 
     void initializeWithEyeTracking(const AdaptiveTest &p) override {
         adaptiveTest_ = p;
-        initializedWithEyeTracking_ = true;
+        adaptiveTestInitializedWithEyeTracking_ = true;
     }
 
     void initializeWithCyclicTargets(const AdaptiveTest &p) override {
@@ -219,7 +219,7 @@ class ModelStub : public Model {
     bool fixedLevelTestWithAllTargetsAndEyeTrackingInitialized_{};
     bool initializedWithSingleSpeaker_{};
     bool initializedWithDelayedMasker_{};
-    bool initializedWithEyeTracking_{};
+    bool adaptiveTestInitializedWithEyeTracking_{};
     bool correctResponseSubmitted_{};
     bool incorrectResponseSubmitted_{};
     bool initializedWithCyclicTargets_{};

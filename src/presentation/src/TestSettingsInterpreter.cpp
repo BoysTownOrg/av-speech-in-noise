@@ -183,7 +183,8 @@ static void initializeAdaptiveTest(Model &model, const std::string &contents,
     else if (method_ == Method::adaptiveCorrectKeywords)
         model.initializeWithCyclicTargets(test);
     else if (method_ ==
-        Method::adaptiveCoordinateResponseMeasureWithEyeTracking)
+            Method::adaptiveCoordinateResponseMeasureWithEyeTracking ||
+        method_ == Method::adaptivePassFailWithEyeTracking)
         model.initializeWithEyeTracking(test);
     else
         model.initialize(test);
