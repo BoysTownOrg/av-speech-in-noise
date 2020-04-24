@@ -256,6 +256,11 @@ void initializeWithCyclicTargets(ModelImpl &model, const AdaptiveTest &test) {
     model.initializeWithCyclicTargets(test);
 }
 
+void initializeWithCyclicTargetsAndEyeTracking(
+    ModelImpl &model, const AdaptiveTest &test) {
+    model.initializeWithCyclicTargetsAndEyeTracking(test);
+}
+
 void initializeWithSilentIntervalTargets(
     ModelImpl &model, const FixedLevelTest &test) {
     model.initializeWithSilentIntervalTargets(test);
@@ -378,6 +383,29 @@ class InitializingAdaptiveTestWithCyclicTargets
 
     void run(ModelImpl &model, const AdaptiveTest &test) override {
         initializeWithCyclicTargets(model, test);
+    }
+
+    auto test() -> const Test & override { return test_; }
+
+    auto testMethod() -> const TestMethod * override { return method; }
+};
+
+class InitializingAdaptiveTestWithCyclicTargetsWithEyeTracking
+    : public InitializingAdaptiveTest {
+    AdaptiveTest test_;
+    AdaptiveMethodStub *method;
+
+  public:
+    explicit InitializingAdaptiveTestWithCyclicTargetsWithEyeTracking(
+        AdaptiveMethodStub *method)
+        : method{method} {}
+
+    void run(ModelImpl &model) override {
+        initializeWithCyclicTargetsAndEyeTracking(model, test_);
+    }
+
+    void run(ModelImpl &model, const AdaptiveTest &test) override {
+        initializeWithCyclicTargetsAndEyeTracking(model, test);
     }
 
     auto test() -> const Test & override { return test_; }
@@ -549,6 +577,9 @@ class ModelTests : public ::testing::Test {
         initializingAdaptiveTestWithDelayedMasker{&adaptiveMethod};
     InitializingAdaptiveTestWithCyclicTargets
         initializingAdaptiveTestWithCyclicTargets{&adaptiveMethod};
+    InitializingAdaptiveTestWithCyclicTargetsWithEyeTracking
+        initializingAdaptiveTestWithCyclicTargetsWithEyeTracking{
+            &adaptiveMethod};
     InitializingFixedLevelTestWithTargetReplacement
         initializingFixedLevelTestWithTargetReplacement{&fixedLevelMethod};
     InitializingFixedLevelTestWithSilentIntervalTargets
@@ -713,6 +744,13 @@ MODEL_TEST(initializeAdaptiveTestWithDelayedMaskerInitializesAdaptiveMethod) {
 MODEL_TEST(initializeAdaptiveTestWithCyclicTargetsInitializesAdaptiveMethod) {
     assertInitializesAdaptiveMethod(
         initializingAdaptiveTestWithCyclicTargets, cyclicTargetsReader);
+}
+
+MODEL_TEST(
+    initializeAdaptiveTestWithCyclicTargetsWithEyeTrackingInitializesAdaptiveMethod) {
+    assertInitializesAdaptiveMethod(
+        initializingAdaptiveTestWithCyclicTargetsWithEyeTracking,
+        cyclicTargetsReader);
 }
 
 MODEL_TEST(

@@ -172,7 +172,7 @@ class ModelImpl : public Model {
     void initializeWithEyeTracking(const AdaptiveTest &) override;
     void initializeWithCyclicTargets(const AdaptiveTest &) override;
     void initializeWithCyclicTargetsAndEyeTracking(
-        const AdaptiveTest &) override {}
+        const AdaptiveTest &) override;
     void playTrial(const AudioSettings &) override;
     void playCalibration(const Calibration &) override;
     void submit(const coordinate_response_measure::Response &) override;
