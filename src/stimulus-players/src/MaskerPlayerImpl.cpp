@@ -193,7 +193,7 @@ auto MaskerPlayerImpl::digitalLevel() -> DigitalLevel {
 
 auto MaskerPlayerImpl::playing() -> bool { return player->playing(); }
 
-void MaskerPlayerImpl::set(LevelAmplification x) {
+void MaskerPlayerImpl::apply(LevelAmplification x) {
     write(levelScalar, std::pow(10, x.dB / 20));
 }
 

@@ -51,7 +51,7 @@ auto TargetPlayerImpl::readAudio_() -> audio_type {
     }
 }
 
-void TargetPlayerImpl::set(LevelAmplification x) {
+void TargetPlayerImpl::apply(LevelAmplification x) {
     audioScale.store(std::pow(10, x.dB / 20));
 }
 

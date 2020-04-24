@@ -57,7 +57,7 @@ class TargetPlayer {
     virtual void hideVideo() = 0;
     virtual void showVideo() = 0;
     virtual auto digitalLevel() -> DigitalLevel = 0;
-    virtual void set(LevelAmplification) = 0;
+    virtual void apply(LevelAmplification) = 0;
     virtual void subscribeToPlaybackCompletion() = 0;
     virtual auto duration() -> Duration = 0;
     virtual void useAllChannels() = 0;
@@ -88,7 +88,7 @@ class MaskerPlayer {
     virtual void loadFile(const LocalUrl &) = 0;
     virtual auto playing() -> bool = 0;
     virtual auto digitalLevel() -> DigitalLevel = 0;
-    virtual void set(LevelAmplification) = 0;
+    virtual void apply(LevelAmplification) = 0;
     virtual auto duration() -> Duration = 0;
     virtual auto sampleRateHz() -> double = 0;
     virtual void seekSeconds(double) = 0;

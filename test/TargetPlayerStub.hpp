@@ -74,7 +74,7 @@ class TargetPlayerStub : public TargetPlayer {
         return digitalLevel_;
     }
 
-    void set(LevelAmplification x) override { level_dB_ = x.dB; }
+    void apply(LevelAmplification x) override { level_dB_ = x.dB; }
 
     auto duration() -> Duration override { return Duration{durationSeconds_}; }
 

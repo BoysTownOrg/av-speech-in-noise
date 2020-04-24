@@ -142,7 +142,7 @@ class TargetPlayerTests : public ::testing::Test {
         assertEqual(x, rightChannel);
     }
 
-    void setLevel_dB(double x) { player.set(LevelAmplification{x}); }
+    void setLevel_dB(double x) { player.apply(LevelAmplification{x}); }
 
     void setFirstChannelOnly() { player.useFirstChannelOnly(); }
 
@@ -279,7 +279,8 @@ TEST_F(TargetPlayerTests, subscribesToTargetPlaybackCompletionNotification) {
     EXPECT_TRUE(videoPlayer.playbackCompletionSubscribedTo());
 }
 
-TEST_F(TargetPlayerTests, digitalLevelThrowsInvalidAudioFileWhenAudioReaderThrows) {
+TEST_F(TargetPlayerTests,
+    digitalLevelThrowsInvalidAudioFileWhenAudioReaderThrows) {
     audioReader.throwOnRead();
     try {
         player.digitalLevel();

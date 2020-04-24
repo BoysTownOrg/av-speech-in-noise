@@ -87,7 +87,7 @@ static void throwRequestFailureIfTrialInProgress(MaskerPlayer &player) {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
-static void apply(TargetPlayer &player, LevelAmplification x) { player.set(x); }
+static void apply(TargetPlayer &player, LevelAmplification x) { player.apply(x); }
 
 static void loadFile(TargetPlayer &player, const LocalUrl &s) {
     player.loadFile(s);
@@ -117,14 +117,14 @@ constexpr auto operator-(const RealLevel &a, const RealLevel &b)
 }
 
 static constexpr auto operator-(
-    const RealLevelDifference &a, const DigitalLevel &b) -> LevelAmplification {
-    return LevelAmplification{a.dB - b.dBov};
+    const RealLevelDifference &a, const DigitalLevel &b) -> DigitalLevel {
+    return DigitalLevel{a.dB - b.dBov};
 }
 
 static auto levelAmplification(TargetPlayer &player, const Calibration &p)
     -> LevelAmplification {
     return LevelAmplification{
-        p.level - p.fullScaleLevel - player.digitalLevel()};
+        DigitalLevel{p.level - p.fullScaleLevel - player.digitalLevel()}.dBov};
 }
 
 static void show(TargetPlayer &player) { player.showVideo(); }
@@ -184,7 +184,7 @@ void RecognitionTestModelImpl::initialize_(
     condition = test.condition;
 
     hide(targetPlayer);
-    maskerPlayer.set(maskerLevelAmplification());
+    maskerPlayer.apply(maskerLevelAmplification());
     preparePlayersForNextTrial();
     testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;
@@ -219,8 +219,9 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
 
 auto RecognitionTestModelImpl::maskerLevelAmplification()
     -> LevelAmplification {
-    return LevelAmplification{
-        maskerLevel_ - fullScaleLevel_ - maskerPlayer.digitalLevel()};
+    return LevelAmplification{DigitalLevel{
+        maskerLevel_ - fullScaleLevel_ - maskerPlayer.digitalLevel()}
+                                  .dBov};
 }
 
 static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
