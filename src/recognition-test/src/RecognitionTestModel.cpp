@@ -116,11 +116,15 @@ constexpr auto operator-(const RealLevel &a, const RealLevel &b)
     return RealLevelDifference{a.dB_SPL - b.dB_SPL};
 }
 
-static auto level(TargetPlayer &player, const Calibration &p)
+static constexpr auto operator-(
+    const RealLevelDifference &a, const DigitalLevel &b) -> LevelAmplification {
+    return LevelAmplification{a.dB - b.dBov};
+}
+
+static auto levelAmplification(TargetPlayer &player, const Calibration &p)
     -> LevelAmplification {
-    return LevelAmplification{
-        RealLevelDifference{p.level - p.fullScaleLevel}.dB -
-        player.digitalLevel().dBov};
+    return LevelAmplification{RealLevelDifference{p.level - p.fullScaleLevel} -
+        player.digitalLevel()};
 }
 
 static void show(TargetPlayer &player) { player.showVideo(); }
@@ -180,7 +184,7 @@ void RecognitionTestModelImpl::initialize_(
     condition = test.condition;
 
     hide(targetPlayer);
-    maskerPlayer.set(maskerLevel());
+    maskerPlayer.set(maskerLevelAmplification());
     preparePlayersForNextTrial();
     testMethod->writeTestingParameters(outputFile);
     trialNumber_ = 1;
@@ -213,10 +217,11 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
     eyeTracking = true;
 }
 
-auto RecognitionTestModelImpl::maskerLevel() -> LevelAmplification {
+auto RecognitionTestModelImpl::maskerLevelAmplification()
+    -> LevelAmplification {
     return LevelAmplification{
-        RealLevelDifference{maskerLevel_ - fullScaleLevel_}.dB -
-        maskerPlayer.digitalLevel().dBov};
+        RealLevelDifference{maskerLevel_ - fullScaleLevel_} -
+        maskerPlayer.digitalLevel()};
 }
 
 static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
@@ -269,13 +274,15 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     loadFile(targetPlayer, testMethod->nextTarget());
-    set(targetPlayer, targetLevel());
+    set(targetPlayer, targetLevelAmplification());
     targetPlayer.subscribeToPlaybackCompletion();
     seekRandomMaskerPosition();
 }
 
-auto RecognitionTestModelImpl::targetLevel() -> LevelAmplification {
-    return {maskerLevel().dB + testMethod->snr().dB};
+auto RecognitionTestModelImpl::targetLevelAmplification()
+    -> LevelAmplification {
+    return LevelAmplification{
+        maskerLevelAmplification().dB + testMethod->snr().dB};
 }
 
 void RecognitionTestModelImpl::seekRandomMaskerPosition() {
@@ -368,7 +375,7 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) {
             loadFile(targetPlayer, file);
-            set(targetPlayer, level(targetPlayer, calibration));
+            set(targetPlayer, levelAmplification(targetPlayer, calibration));
         },
         calibration.fileUrl);
     show(targetPlayer);

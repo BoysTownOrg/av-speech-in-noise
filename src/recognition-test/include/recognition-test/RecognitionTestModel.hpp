@@ -144,8 +144,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void initialize_(TestMethod *, const Test &);
     void preparePlayersForNextTrial();
     void seekRandomMaskerPosition();
-    auto targetLevel() -> LevelAmplification;
-    auto maskerLevel() -> LevelAmplification;
+    auto targetLevelAmplification() -> LevelAmplification;
+    auto maskerLevelAmplification() -> LevelAmplification;
 
     MaskerPlayer &maskerPlayer;
     TargetPlayer &targetPlayer;
