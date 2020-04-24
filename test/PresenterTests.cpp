@@ -2001,6 +2001,13 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestWithEyeTrackingShowsNextTrialButtonForExperimenter) {
+    assertConfirmTestSetupShowsNextTrialButton(
+        confirmingAdaptiveCorrectKeywordsTestWithEyeTracking,
+        playingTrialFromExperimenter);
+}
+
+PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsNextTrialButtonForSubject) {
     assertConfirmTestSetupShowsNextTrialButton(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest,
