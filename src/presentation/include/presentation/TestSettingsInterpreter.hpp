@@ -14,7 +14,7 @@ constexpr auto name(Method c) -> const char * {
         return "adaptive number keywords";
     case Method::adaptiveCorrectKeywordsWithEyeTracking:
         return "adaptive number keywords eye tracking";
-    case Method::defaultAdaptiveCoordinateResponseMeasure:
+    case Method::adaptiveCoordinateResponseMeasure:
         return "adaptive CRM";
     case Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker:
         return "adaptive CRM not spatial";

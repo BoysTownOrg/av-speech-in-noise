@@ -40,7 +40,7 @@ static void readyNextTrial(
 }
 
 static auto adaptiveCoordinateResponseMeasure(Method m) -> bool {
-    return m == Method::defaultAdaptiveCoordinateResponseMeasure ||
+    return m == Method::adaptiveCoordinateResponseMeasure ||
         m == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
         m == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
         m == Method::adaptiveCoordinateResponseMeasureWithEyeTracking;

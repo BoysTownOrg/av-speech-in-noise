@@ -512,20 +512,19 @@ void setMethod(TestSettingsInterpreterStub &interpeter, Method m) {
     interpeter.setMethod(m);
 }
 
-class ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
+class ConfirmingAdaptiveCoordinateResponseMeasureTest
     : public ConfirmingTestSetup {
     ViewStub::TestSetupViewStub *view;
     TestSettingsInterpreterStub &interpreter;
 
   public:
-    ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest(
+    ConfirmingAdaptiveCoordinateResponseMeasureTest(
         ViewStub::TestSetupViewStub *view,
         TestSettingsInterpreterStub &interpreter)
         : view{view}, interpreter{interpreter} {}
 
     void run() override {
-        setMethod(
-            interpreter, Method::defaultAdaptiveCoordinateResponseMeasure);
+        setMethod(interpreter, Method::adaptiveCoordinateResponseMeasure);
         confirmTestSetup(view);
     }
 };
@@ -1115,8 +1114,8 @@ class PresenterTests : public ::testing::Test {
     Presenter presenter{model, view, testSetup, subject, experimenter,
         testSettingsInterpreter, textFileReader};
     BrowsingForTestSettingsFile browsingForTestSettingsFile{&setupView};
-    ConfirmingDefaultAdaptiveCoordinateResponseMeasureTest
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest{
+    ConfirmingAdaptiveCoordinateResponseMeasureTest
+        confirmingAdaptiveCoordinateResponseMeasureTest{
             &setupView, testSettingsInterpreter};
     ConfirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker
         confirmingAdaptiveCoordinateResponseMeasureTestWithSingleSpeaker{
@@ -1523,7 +1522,7 @@ TEST_F(PresenterConstructionTests, populatesTransducerMenu) {
 
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowExperimentersNextTrialButton) {
-    run(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    run(confirmingAdaptiveCoordinateResponseMeasureTest);
     assertFalse(experimenterView.nextTrialButtonShown());
 }
 
@@ -1577,8 +1576,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(confirmingAdaptiveClosedSetTestShowsTargetFileName) {
-    assertShowsTargetFileName(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    assertShowsTargetFileName(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(submittingCorrectKeywordsShowsTargetFileName) {
@@ -1695,9 +1693,8 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestHidesTestSetupView) {
-    assertHidesTestSetupView(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    confirmingAdaptiveCoordinateResponseMeasureTestHidesTestSetupView) {
+    assertHidesTestSetupView(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
@@ -1777,16 +1774,15 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotHideSetupViewWhenTestComplete) {
+    confirmingAdaptiveCoordinateResponseMeasureTestDoesNotHideSetupViewWhenTestComplete) {
     setTestComplete(model);
     assertDoesNotHideTestSetupView(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+        confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsSubjectView) {
-    assertShowsSubjectView(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    confirmingAdaptiveCoordinateResponseMeasureTestShowsSubjectView) {
+    assertShowsSubjectView(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
@@ -1836,10 +1832,10 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotShowSubjectViewWhenTestComplete) {
+    confirmingAdaptiveCoordinateResponseMeasureTestDoesNotShowSubjectViewWhenTestComplete) {
     setTestComplete(model);
     assertDoesNotShowSubjectView(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+        confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(confirmingAdaptivePassFailTestDoesNotShowSubjectView) {
@@ -1876,9 +1872,9 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsExperimenterView) {
+    confirmingAdaptiveCoordinateResponseMeasureTestShowsExperimenterView) {
     assertShowsExperimenterView(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+        confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
@@ -1912,19 +1908,19 @@ PRESENTER_TEST(playingCalibrationPassesTestSettingsFileToTextFileReader) {
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsFileToTextFileReader) {
     assertPassesTestSettingsFileToTextFileReader(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+        confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery) {
     assertPassesTestSettingsTextToTestSettingsInterpreterForMethodQuery(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+        confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesTestSettingsTextToTestSettingsInterpreter) {
     assertPassesTestSettingsTextToTestSettingsInterpreter(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+        confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
@@ -1934,19 +1930,17 @@ PRESENTER_TEST(
 
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestPassesStartingSnr) {
-    assertPassesStartingSnr(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    assertPassesStartingSnr(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(
     confirmingAdaptiveCoordinateResponseMeasureTestWithInvalidStartingSnrShowsMessage) {
     assertInvalidSnrShowsMessage(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+        confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSubjectId) {
-    assertPassesSubjectId(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    assertPassesSubjectId(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(confirmingAdaptivePassFailTestPassesSubjectId) {
@@ -1976,8 +1970,7 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
-    assertPassesTesterId(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    assertPassesTesterId(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(confirmingAdaptivePassFailTestPassesTesterId) {
@@ -2009,7 +2002,7 @@ PRESENTER_TEST(playCalibrationPassesFilePath) {
 }
 
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesSession) {
-    assertPassesSession(confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    assertPassesSession(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(confirmingAdaptivePassFailTestPassesSession) {
@@ -2054,9 +2047,9 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsNextTrialButtonForSubject) {
+    confirmingAdaptiveCoordinateResponseMeasureTestShowsNextTrialButtonForSubject) {
     assertConfirmTestSetupShowsNextTrialButton(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest,
+        confirmingAdaptiveCoordinateResponseMeasureTest,
         playingTrialFromSubject);
 }
 
@@ -2418,9 +2411,8 @@ PRESENTER_TEST(
 }
 
 PRESENTER_TEST(
-    confirmingDefaultAdaptiveCoordinateResponseMeasureTestShowsTrialNumber) {
-    assertShowsTrialNumber(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
+    confirmingAdaptiveCoordinateResponseMeasureTestShowsTrialNumber) {
+    assertShowsTrialNumber(confirmingAdaptiveCoordinateResponseMeasureTest);
 }
 
 PRESENTER_TEST(submittingResponseFromExperimenterShowsTrialNumber) {
@@ -2442,8 +2434,7 @@ PRESENTER_TEST(submittingFailedTrialShowsTrialNumber) {
 PRESENTER_TEST(
     completingTrialShowsSubjectResponseButtonsForAdaptiveCoordinateResponseMeasureTest) {
     assertCompleteTrialShowsResponseView(
-        confirmingDefaultAdaptiveCoordinateResponseMeasureTest,
-        respondingFromSubject);
+        confirmingAdaptiveCoordinateResponseMeasureTest, respondingFromSubject);
 }
 
 PRESENTER_TEST(

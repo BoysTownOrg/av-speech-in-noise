@@ -254,9 +254,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
     assertMethod(interpreter, Method::adaptiveCorrectKeywordsWithEyeTracking);
 }
 
-TEST_SETTINGS_INTERPRETER_TEST(
-    defaultAdaptiveCoordinateResponseMeasureReturnsMethod) {
-    assertMethod(interpreter, Method::defaultAdaptiveCoordinateResponseMeasure);
+TEST_SETTINGS_INTERPRETER_TEST(adaptiveCoordinateResponseMeasureReturnsMethod) {
+    assertMethod(interpreter, Method::adaptiveCoordinateResponseMeasure);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
@@ -390,9 +389,8 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
-    defaultAdaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
-    initialize(
-        interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
+    adaptiveCoordinateResponseMeasureInitializesAdaptiveTest) {
+    initialize(interpreter, model, Method::adaptiveCoordinateResponseMeasure);
     assertDefaultAdaptiveTestInitialized(model);
 }
 
@@ -510,9 +508,9 @@ TEST_SETTINGS_INTERPRETER_TEST(
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(
-    defaultAdaptiveCoordinateResponseMeasurePassesSimpleAdaptiveSettings) {
+    adaptiveCoordinateResponseMeasurePassesSimpleAdaptiveSettings) {
     assertPassesSimpleAdaptiveSettings(
-        interpreter, model, Method::defaultAdaptiveCoordinateResponseMeasure);
+        interpreter, model, Method::adaptiveCoordinateResponseMeasure);
 }
 
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveAudioVisual) {

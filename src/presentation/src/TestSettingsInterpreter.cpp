@@ -139,7 +139,7 @@ static auto method(const std::string &s) -> Method {
                 fixedLevelCoordinateResponseMeasureWithTargetReplacementAndEyeTracking,
             Method::
                 fixedLevelCoordinateResponseMeasureWithSilentIntervalTargets,
-            Method::defaultAdaptiveCoordinateResponseMeasure,
+            Method::adaptiveCoordinateResponseMeasure,
             Method::adaptiveCoordinateResponseMeasureWithEyeTracking})
         if (name(s) == name(m))
             return m;
@@ -154,7 +154,7 @@ static auto adaptive(const std::string &contents) -> bool {
         method_ == Method::adaptiveCorrectKeywordsWithEyeTracking ||
         method_ == Method::adaptiveCoordinateResponseMeasureWithDelayedMasker ||
         method_ == Method::adaptiveCoordinateResponseMeasureWithSingleSpeaker ||
-        method_ == Method::defaultAdaptiveCoordinateResponseMeasure ||
+        method_ == Method::adaptiveCoordinateResponseMeasure ||
         method_ == Method::adaptiveCoordinateResponseMeasureWithEyeTracking;
 }
 
