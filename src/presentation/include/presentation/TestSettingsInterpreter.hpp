@@ -8,6 +8,8 @@ constexpr auto name(Method c) -> const char * {
     switch (c) {
     case Method::adaptivePassFail:
         return "adaptive pass fail";
+    case Method::adaptivePassFailWithEyeTracking:
+        return "adaptive pass fail eye tracking";
     case Method::adaptiveCorrectKeywords:
         return "adaptive number keywords";
     case Method::defaultAdaptiveCoordinateResponseMeasure:

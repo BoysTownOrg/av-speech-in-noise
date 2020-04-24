@@ -241,6 +241,10 @@ TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailReturnsMethod) {
     assertMethod(interpreter, Method::adaptivePassFail);
 }
 
+TEST_SETTINGS_INTERPRETER_TEST(adaptivePassFailWithEyeTrackingReturnsMethod) {
+    assertMethod(interpreter, Method::adaptivePassFailWithEyeTracking);
+}
+
 TEST_SETTINGS_INTERPRETER_TEST(adaptiveCorrectKeywordsReturnsMethod) {
     assertMethod(interpreter, Method::adaptiveCorrectKeywords);
 }

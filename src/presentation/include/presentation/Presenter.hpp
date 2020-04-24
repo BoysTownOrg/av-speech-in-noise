@@ -8,6 +8,7 @@
 namespace av_speech_in_noise {
 enum class Method {
     adaptivePassFail,
+    adaptivePassFailWithEyeTracking,
     adaptiveCorrectKeywords,
     defaultAdaptiveCoordinateResponseMeasure,
     adaptiveCoordinateResponseMeasureWithSingleSpeaker,
