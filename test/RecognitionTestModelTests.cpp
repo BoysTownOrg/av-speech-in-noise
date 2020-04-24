@@ -726,8 +726,8 @@ class RecognitionTestModelTests : public ::testing::Test {
         setDurationSeconds(targetPlayer, 3);
         setFadeTimeSeconds(maskerPlayer, 4);
         run(useCase, model);
-        assertEqual(
-            3 + 2 * 4. + RecognitionTestModelImpl::additionalTargetDelaySeconds,
+        assertEqual(3 + 2 * 4. +
+                RecognitionTestModelImpl::additionalTargetDelay.seconds,
             eyeTracker.recordingTimeAllocatedSeconds());
     }
 
@@ -844,7 +844,7 @@ RECOGNITION_TEST_MODEL_TEST(
     initializeTestWithDelayedMaskerSetsFirstChannelMaskerDelay) {
     run(initializingTestWithDelayedMasker, model);
     assertEqual(gsl::index{0}, maskerPlayer.channelDelayed());
-    assertEqual(RecognitionTestModelImpl::maskerChannelDelaySeconds,
+    assertEqual(RecognitionTestModelImpl::maskerChannelDelay.seconds,
         maskerPlayer.channelDelaySeconds());
 }
 
@@ -968,7 +968,8 @@ RECOGNITION_TEST_MODEL_TEST(fadeInCompletePlaysTargetAtWhenEyeTracking) {
     fadeInComplete(maskerPlayer, fadeInCompleteTime);
     assertEqual(player_system_time_type{1},
         targetPlayer.timePlayedAt().playerTime.system);
-    assertEqual(2 / 3. + RecognitionTestModelImpl::additionalTargetDelaySeconds,
+    assertEqual(
+        2 / 3. + RecognitionTestModelImpl::additionalTargetDelay.seconds,
         targetPlayer.timePlayedAt().delay.seconds);
 }
 
@@ -1007,7 +1008,7 @@ RECOGNITION_TEST_MODEL_TEST(
     assertEqual(1 +
             gsl::narrow_cast<std::uintmax_t>(
                 (2 / 3. +
-                    RecognitionTestModelImpl::additionalTargetDelaySeconds) *
+                    RecognitionTestModelImpl::additionalTargetDelay.seconds) *
                 1e9),
         outputFile.targetStartTime().nanoseconds);
 }

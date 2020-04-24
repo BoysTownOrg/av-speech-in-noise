@@ -137,8 +137,8 @@ class RecognitionTestModelImpl : public TargetPlayer::EventListener,
     void fadeOutComplete() override;
     void playbackComplete() override;
     void prepareNextTrialIfNeeded() override;
-    static constexpr auto maskerChannelDelaySeconds{0.004};
-    static constexpr auto additionalTargetDelaySeconds{0.5};
+    static constexpr Delay maskerChannelDelay{0.004};
+    static constexpr Delay additionalTargetDelay{0.5};
 
   private:
     void initialize_(TestMethod *, const Test &);

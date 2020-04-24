@@ -87,7 +87,7 @@ static void throwRequestFailureIfTrialInProgress(MaskerPlayer &player) {
         throw Model::RequestFailure{"Trial in progress."};
 }
 
-static void set(TargetPlayer &player, LevelAmplification x) { player.set(x); }
+static void apply(TargetPlayer &player, LevelAmplification x) { player.set(x); }
 
 static void loadFile(TargetPlayer &player, const LocalUrl &s) {
     player.loadFile(s);
@@ -123,15 +123,15 @@ static constexpr auto operator-(
 
 static auto levelAmplification(TargetPlayer &player, const Calibration &p)
     -> LevelAmplification {
-    return LevelAmplification{RealLevelDifference{p.level - p.fullScaleLevel} -
-        player.digitalLevel()};
+    return LevelAmplification{
+        p.level - p.fullScaleLevel - player.digitalLevel()};
 }
 
 static void show(TargetPlayer &player) { player.showVideo(); }
 
 static void hide(TargetPlayer &player) { player.hideVideo(); }
 
-static auto maskerFilePath(const Test &test) -> LocalUrl {
+static auto maskerFileUrl(const Test &test) -> LocalUrl {
     return test.maskerFileUrl;
 }
 
@@ -176,7 +176,7 @@ void RecognitionTestModelImpl::initialize_(
 
     tryOpening(outputFile, test.identity);
     throwRequestFailureOnInvalidAudioFile(
-        [&](auto file) { maskerPlayer.loadFile(file); }, maskerFilePath(test));
+        [&](auto file) { maskerPlayer.loadFile(file); }, maskerFileUrl(test));
 
     testMethod = testMethod_;
     fullScaleLevel_ = test.fullScaleLevel;
@@ -204,7 +204,7 @@ void RecognitionTestModelImpl::initializeWithDelayedMasker(
     initialize_(testMethod_, test);
     useFirstChannelOnly(targetPlayer);
     useAllChannels(maskerPlayer);
-    maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelaySeconds);
+    maskerPlayer.setChannelDelaySeconds(0, maskerChannelDelay.seconds);
     turnOff(eyeTracking);
 }
 
@@ -220,8 +220,7 @@ void RecognitionTestModelImpl::initializeWithEyeTracking(
 auto RecognitionTestModelImpl::maskerLevelAmplification()
     -> LevelAmplification {
     return LevelAmplification{
-        RealLevelDifference{maskerLevel_ - fullScaleLevel_} -
-        maskerPlayer.digitalLevel()};
+        maskerLevel_ - fullScaleLevel_ - maskerPlayer.digitalLevel()};
 }
 
 static auto nanoseconds(Delay x) -> std::uintmax_t { return x.seconds * 1e9; }
@@ -247,7 +246,7 @@ void RecognitionTestModelImpl::fadeInComplete(
         PlayerTimeWithDelay timeToPlayWithDelay{};
         timeToPlayWithDelay.playerTime = t.playerTime;
         timeToPlayWithDelay.delay = Delay{
-            offsetSeconds(maskerPlayer, t) + additionalTargetDelaySeconds};
+            offsetSeconds(maskerPlayer, t) + additionalTargetDelay.seconds};
         targetPlayer.playAt(timeToPlayWithDelay);
 
         lastTargetStartTime.nanoseconds =
@@ -274,7 +273,7 @@ void RecognitionTestModelImpl::fadeOutComplete() {
 
 void RecognitionTestModelImpl::preparePlayersForNextTrial() {
     loadFile(targetPlayer, testMethod->nextTarget());
-    set(targetPlayer, targetLevelAmplification());
+    apply(targetPlayer, targetLevelAmplification());
     targetPlayer.subscribeToPlaybackCompletion();
     seekRandomMaskerPosition();
 }
@@ -303,7 +302,7 @@ void RecognitionTestModelImpl::playTrial(const AudioSettings &settings) {
     if (eyeTracking) {
         eyeTracker.allocateRecordingTimeSeconds(
             trialDuration(targetPlayer, maskerPlayer).seconds +
-            additionalTargetDelaySeconds);
+            additionalTargetDelay.seconds);
         eyeTracker.start();
     }
     if (condition == Condition::audioVisual)
@@ -375,7 +374,7 @@ void RecognitionTestModelImpl::playCalibration(const Calibration &calibration) {
     throwRequestFailureOnInvalidAudioFile(
         [&](auto file) {
             loadFile(targetPlayer, file);
-            set(targetPlayer, levelAmplification(targetPlayer, calibration));
+            apply(targetPlayer, levelAmplification(targetPlayer, calibration));
         },
         calibration.fileUrl);
     show(targetPlayer);
