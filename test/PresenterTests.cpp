@@ -1793,6 +1793,12 @@ PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestDoesNotShowSubjectView) {
 }
 
 PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestWithEyeTrackingDoesNotShowSubjectView) {
+    assertDoesNotShowSubjectView(
+        confirmingAdaptiveCorrectKeywordsTestWithEyeTracking);
+}
+
+PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestDoesNotShowSubjectViewWhenTestComplete) {
     setTestComplete(model);
     assertDoesNotShowSubjectView(
