@@ -1662,6 +1662,12 @@ PRESENTER_TEST(confirmingAdaptiveCorrectKeywordsTestHidesTestSetupView) {
 }
 
 PRESENTER_TEST(
+    confirmingAdaptiveCorrectKeywordsTestWithEyeTrackingHidesTestSetupView) {
+    assertHidesTestSetupView(
+        confirmingAdaptiveCorrectKeywordsTestWithEyeTracking);
+}
+
+PRESENTER_TEST(
     confirmingDefaultAdaptiveCoordinateResponseMeasureTestHidesTestSetupView) {
     assertHidesTestSetupView(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
