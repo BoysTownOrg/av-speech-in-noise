@@ -1,72 +1,53 @@
 #ifndef TESTS_LOGSTRING_HPP_
 #define TESTS_LOGSTRING_HPP_
 
+#include <gsl/gsl>
 #include <sstream>
-#include <utility>
 #include <string>
 
-class LogString {
-    std::stringstream log{};
+inline auto string(const std::stringstream &log) -> std::string {
+    return log.str();
+}
 
-  public:
-    void insert(const std::string &s_) { log << s_; }
+inline auto length(const std::string &s) -> gsl::index { return s.length(); }
 
-    auto isEmpty() const -> bool { return log.str().empty(); }
+inline auto length(const std::stringstream &s) -> gsl::index {
+    return length(string(s));
+}
 
-    auto beginsWith(std::string const &beginning) const -> bool {
-        if (log.str().length() >= beginning.length())
-            return 0 == log.str().compare(0, beginning.length(), beginning);
+inline void insert(std::stringstream &s, const std::string &what) { s << what; }
 
-        return false;
-    }
+inline auto isEmpty(const std::stringstream &s) -> bool {
+    return string(s).empty();
+}
 
-    auto endsWith(std::string const &ending) const -> bool {
-        if (log.str().length() >= ending.length())
-            return 0 ==
-                log.str().compare(log.str().length() - ending.length(),
-                    ending.length(), ending);
+inline auto matches(const std::stringstream &s, gsl::index position,
+    const std::string &other) -> bool {
+    return 0 == string(s).compare(position, length(other), other);
+}
 
-        return false;
-    }
-
-    auto contains(const std::string &s2) const -> bool {
-        return log.str().find(s2) != std::string::npos;
-    }
-
-    operator std::string() const { return log.str(); }
-};
-
-inline void insert(std::stringstream &log, const std::string &s_) { log << s_; }
-
-inline auto isEmpty(const std::stringstream &log) -> bool {
-    return log.str().empty();
+inline auto isAsLongAs(const std::stringstream &s, const std::string &what)
+    -> bool {
+    return length(s) >= length(what);
 }
 
 inline auto beginsWith(
     const std::stringstream &log, std::string const &beginning) -> bool {
-    if (log.str().length() >= beginning.length())
-        return 0 == log.str().compare(0, beginning.length(), beginning);
-
+    if (isAsLongAs(log, beginning))
+        return matches(log, 0, beginning);
     return false;
 }
 
 inline auto endsWith(const std::stringstream &log, std::string const &ending)
     -> bool {
-    if (log.str().length() >= ending.length())
-        return 0 ==
-            log.str().compare(
-                log.str().length() - ending.length(), ending.length(), ending);
-
+    if (isAsLongAs(log, ending))
+        return matches(log, length(log) - length(ending), ending);
     return false;
 }
 
-inline auto contains(const std::stringstream &log, const std::string &s2)
+inline auto contains(const std::stringstream &log, const std::string &s)
     -> bool {
-    return log.str().find(s2) != std::string::npos;
-}
-
-inline auto string(const std::stringstream &log) -> std::string {
-    return log.str();
+    return string(log).find(s) != std::string::npos;
 }
 
 #endif

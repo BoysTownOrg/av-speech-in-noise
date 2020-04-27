@@ -15,7 +15,7 @@ class WriterStub : public Writer {
 
     void open(std::string f) override { filePath_ = std::move(f); }
 
-    void write(std::string s) override { written_.insert(s); }
+    void write(std::string s) override { insert(written_, s); }
 
     auto failed() -> bool override { return {}; }
 
@@ -25,10 +25,10 @@ class WriterStub : public Writer {
 
     auto closed() const -> bool { return closed_; }
 
-    auto written() const -> const LogString & { return written_; }
+    auto written() const -> const std::stringstream & { return written_; }
 
   private:
-    LogString written_;
+    std::stringstream written_;
     std::string filePath_;
     bool closed_{};
     bool saved_{};
@@ -212,7 +212,7 @@ class WritingFreeResponseTrial : public WritingTrial {
 
 void run(UseCase &useCase, OutputFileImpl &file) { useCase.run(file); }
 
-auto written(WriterStub &writer) -> const LogString & {
+auto written(WriterStub &writer) -> const std::stringstream & {
     return writer.written();
 }
 
@@ -253,7 +253,7 @@ void writeTargetStartTimeNanoseconds(OutputFileImpl &file, std::uintmax_t t) {
 }
 
 void assertEndsWith(WriterStub &writer, const std::string &s) {
-    assertTrue(written(writer).endsWith(s));
+    assertTrue(endsWith(written(writer), s));
 }
 
 auto find_nth_element(const std::string &content, gsl::index n, char what)
@@ -275,7 +275,7 @@ auto testIdentity(WritingTest &useCase) -> TestIdentity & {
 
 auto nthCommaDelimitedEntryOfLine(WriterStub &writer, gsl::index n, int line)
     -> std::string {
-    std::string written_ = written(writer);
+    std::string written_ = string(written(writer));
     auto precedingNewLine{find_nth_element(written_, line - 1, '\n')};
     auto line_{written_.substr(precedingNewLine + 1)};
     auto precedingComma{find_nth_element(line_, n - 1, ',')};
@@ -286,7 +286,7 @@ auto nthCommaDelimitedEntryOfLine(WriterStub &writer, gsl::index n, int line)
 
 void assertContainsColonDelimitedEntry(
     WriterStub &writer, const std::string &label, const std::string &what) {
-    assertTrue(written(writer).contains(label + ": " + what + '\n'));
+    assertTrue(contains(written(writer), label + ": " + what + '\n'));
 }
 
 void assertNthCommaDelimitedEntryOfLine(
@@ -607,7 +607,7 @@ OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {
 OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
     freeResponseTrial.flagged = false;
     write(file, freeResponseTrial);
-    std::string written_ = written(writer);
+    std::string written_ = string(written(writer));
     auto precedingNewLine{find_nth_element(written_, 2 - 1, '\n')};
     auto line_{written_.substr(precedingNewLine + 1)};
     assertEqual(
