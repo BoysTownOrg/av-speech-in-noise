@@ -100,7 +100,7 @@ struct HeadingLabel {
 
 class WritingTrial : public virtual UseCase {
   public:
-    virtual auto headingLabels() -> std::vector<HeadingLabel> = 0;
+    virtual auto headingLabels() -> std::map<HeadingItem, gsl::index> = 0;
     virtual void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &, gsl::index line) = 0;
 };
@@ -224,11 +224,8 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::correctNumber},
-            {3, HeadingItem::subjectNumber}, {4, HeadingItem::correctColor},
-            {5, HeadingItem::subjectColor}, {6, HeadingItem::evaluation},
-            {7, HeadingItem::reversals}};
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
@@ -275,11 +272,11 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
 
     auto evaluationEntryIndex() -> gsl::index override { return 5; }
 
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::correctNumber},
-            {2, HeadingItem::subjectNumber}, {3, HeadingItem::correctColor},
-            {4, HeadingItem::subjectColor}, {5, HeadingItem::evaluation},
-            {6, HeadingItem::stimulus}};
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return {{HeadingItem::correctNumber, 1},
+            {HeadingItem::subjectNumber, 2}, {HeadingItem::correctColor, 3},
+            {HeadingItem::subjectColor, 4}, {HeadingItem::evaluation, 5},
+            {HeadingItem::stimulus, 6}};
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
@@ -313,9 +310,9 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
 
     auto evaluationEntryIndex() -> gsl::index override { return 3; }
 
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
-            {3, HeadingItem::evaluation}, {4, HeadingItem::reversals}};
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return {{HeadingItem::snr_dB, 1}, {HeadingItem::target, 2},
+            {HeadingItem::evaluation, 3}, {HeadingItem::reversals, 4}};
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
@@ -346,10 +343,10 @@ class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
 
     auto evaluationEntryIndex() -> gsl::index override { return 4; }
 
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
-            {3, HeadingItem::correctKeywords}, {4, HeadingItem::evaluation},
-            {5, HeadingItem::reversals}};
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return {{HeadingItem::snr_dB, 1}, {HeadingItem::target, 2},
+            {HeadingItem::correctKeywords, 3}, {HeadingItem::evaluation, 4},
+            {HeadingItem::reversals, 5}};
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
@@ -373,8 +370,8 @@ class WritingFreeResponseTrial : public WritingTrial {
 
     void run(OutputFileImpl &file) override { file.write(trial); }
 
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::target}, {2, HeadingItem::freeResponse}};
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return {{HeadingItem::target, 1}, {HeadingItem::freeResponse, 2}};
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
@@ -411,9 +408,9 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertHeadingAtLine(WritingTrial &useCase, gsl::index line) {
-        for (auto label : useCase.headingLabels())
+        for (auto [headingItem, index] : useCase.headingLabels())
             assertNthCommaDelimitedEntryOfLine(
-                writer, label.headingItem, label.index, line);
+                writer, headingItem, index, line);
     }
 
     void assertTestIdentityWritten(WritingTest &useCase) {
