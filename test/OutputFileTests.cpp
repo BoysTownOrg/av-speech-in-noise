@@ -140,6 +140,11 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
     coordinate_response_measure::AdaptiveTrial trial_{};
 };
 
+auto trial(WritingAdaptiveCoordinateResponseTrial &t)
+    -> coordinate_response_measure::AdaptiveTrial & {
+    return t.trial();
+}
+
 class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
   public:
     auto trial() -> auto & { return trial_; }
@@ -217,6 +222,10 @@ auto written(WriterStub &writer) -> const std::stringstream & {
     return writer.written();
 }
 
+auto writtenString(WriterStub &writer) -> std::string {
+    return string(written(writer));
+}
+
 void openNewFile(OutputFileImpl &file, const TestIdentity &identity = {}) {
     file.openNewFile(identity);
 }
@@ -276,9 +285,9 @@ auto testIdentity(WritingTest &useCase) -> TestIdentity & {
 
 auto nthCommaDelimitedEntryOfLine(
     WriterStub &writer, gsl::index n, gsl::index line) -> std::string {
-    const auto written_{string(written(writer))};
-    const auto precedingNewLine{find_nth_element(written_, line - 1, '\n')};
-    const auto line_{written_.substr(precedingNewLine + 1)};
+    const auto precedingNewLine{
+        find_nth_element(writtenString(writer), line - 1, '\n')};
+    const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
     const auto precedingComma{find_nth_element(line_, n - 1, ',')};
     const auto entryBeginning =
         (precedingComma == std::string::npos) ? 0U : precedingComma + 2;
@@ -293,6 +302,11 @@ void assertContainsColonDelimitedEntry(
 void assertNthCommaDelimitedEntryOfLine(WriterStub &writer,
     const std::string &what, gsl::index n, gsl::index line) {
     assertEqual(what, nthCommaDelimitedEntryOfLine(writer, n, line));
+}
+
+void assertNthCommaDelimitedEntryOfLine(WriterStub &writer,
+    coordinate_response_measure::Color what, gsl::index n, gsl::index line) {
+    assertNthCommaDelimitedEntryOfLine(writer, name(what), n, line);
 }
 
 void assertNthCommaDelimitedEntryOfLine(
@@ -330,7 +344,7 @@ class OutputFileTests : public ::testing::Test {
         assertContainsColonDelimitedEntry(writer, "condition", name(c));
     }
 
-    void assertHeadingAtLine(WritingTrial &useCase, int n) {
+    void assertHeadingAtLine(WritingTrial &useCase, gsl::index n) {
         for (auto label : useCase.headingLabels())
             assertNthCommaDelimitedEntryOfLine(
                 writer, label.headingItem, label.index, n);
@@ -379,19 +393,19 @@ class OutputFileTests : public ::testing::Test {
 
     void assertWritesAdaptiveCoordinateResponseTrialOnLine(gsl::index n) {
         using coordinate_response_measure::Color;
-        auto &trial = writingAdaptiveCoordinateResponseTrial.trial();
-        trial.snr.dB = 1;
-        trial.correctNumber = 2;
-        trial.subjectNumber = 3;
-        trial.correctColor = Color::green;
-        trial.subjectColor = Color::red;
-        trial.reversals = 4;
+        trial(writingAdaptiveCoordinateResponseTrial).snr.dB = 1;
+        trial(writingAdaptiveCoordinateResponseTrial).correctNumber = 2;
+        trial(writingAdaptiveCoordinateResponseTrial).subjectNumber = 3;
+        trial(writingAdaptiveCoordinateResponseTrial).correctColor =
+            Color::green;
+        trial(writingAdaptiveCoordinateResponseTrial).subjectColor = Color::red;
+        trial(writingAdaptiveCoordinateResponseTrial).reversals = 4;
         run(writingAdaptiveCoordinateResponseTrial, file);
         assertNthCommaDelimitedEntryOfLine(writer, "1", 1, n);
         assertNthCommaDelimitedEntryOfLine(writer, "2", 2, n);
         assertNthCommaDelimitedEntryOfLine(writer, "3", 3, n);
-        assertNthCommaDelimitedEntryOfLine(writer, name(Color::green), 4, n);
-        assertNthCommaDelimitedEntryOfLine(writer, name(Color::red), 5, n);
+        assertNthCommaDelimitedEntryOfLine(writer, Color::green, 4, n);
+        assertNthCommaDelimitedEntryOfLine(writer, Color::red, 5, n);
         assertNthCommaDelimitedEntryOfLine(writer, "4", 7, n);
     }
 
@@ -406,8 +420,8 @@ class OutputFileTests : public ::testing::Test {
         run(writingFixedLevelCoordinateResponseTrial, file);
         assertNthCommaDelimitedEntryOfLine(writer, "2", 1, n);
         assertNthCommaDelimitedEntryOfLine(writer, "3", 2, n);
-        assertNthCommaDelimitedEntryOfLine(writer, name(Color::green), 3, n);
-        assertNthCommaDelimitedEntryOfLine(writer, name(Color::red), 4, n);
+        assertNthCommaDelimitedEntryOfLine(writer, Color::green, 3, n);
+        assertNthCommaDelimitedEntryOfLine(writer, Color::red, 4, n);
         assertNthCommaDelimitedEntryOfLine(writer, "a", 6, n);
     }
 
@@ -608,9 +622,9 @@ OUTPUT_FILE_TEST(writeFlaggedFreeResponseTrial) {
 OUTPUT_FILE_TEST(writeNoFlagFreeResponseTrialOnlyTwoEntries) {
     freeResponseTrial.flagged = false;
     write(file, freeResponseTrial);
-    std::string written_ = string(written(writer));
-    auto precedingNewLine{find_nth_element(written_, 2 - 1, '\n')};
-    auto line_{written_.substr(precedingNewLine + 1)};
+    const auto precedingNewLine{
+        find_nth_element(writtenString(writer), 2 - 1, '\n')};
+    const auto line_{writtenString(writer).substr(precedingNewLine + 1)};
     assertEqual(
         std::iterator_traits<std::string::iterator>::difference_type{2 - 1},
         std::count(line_.begin(), line_.end(), ','));
@@ -729,7 +743,7 @@ OUTPUT_FILE_TEST(writeFadeInCompleteTime) {
 }
 
 OUTPUT_FILE_TEST(writeEyeTrackerPlayerSynchronization) {
-    EyeTrackerTargetPlayerSynchronization s;
+    EyeTrackerTargetPlayerSynchronization s{};
     s.eyeTrackerSystemTime.microseconds = 1;
     s.targetPlayerSystemTime.nanoseconds = 2;
     file.write(s);
