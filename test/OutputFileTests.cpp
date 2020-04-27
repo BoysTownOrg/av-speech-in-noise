@@ -100,6 +100,8 @@ struct HeadingLabel {
 class WritingTrial : public virtual UseCase {
   public:
     virtual auto headingLabels() -> std::vector<HeadingLabel> = 0;
+    virtual void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) = 0;
 };
 
 class WritingEvaluatedTrial : public virtual WritingTrial {
@@ -249,7 +251,7 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
-        WriterStub &writer, gsl::index line) {
+        WriterStub &writer, gsl::index line) override {
         assertNthCommaDelimitedEntryOfLine(writer, "1", 1, line);
         assertNthCommaDelimitedEntryOfLine(writer, "2", 2, line);
         assertNthCommaDelimitedEntryOfLine(writer, "3", 3, line);
@@ -274,8 +276,6 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
         trial_.target = "a";
     }
 
-    auto trial() -> auto & { return trial_; }
-
     void incorrect() override { setIncorrect(trial_); }
 
     void correct() override { setCorrect(trial_); }
@@ -292,7 +292,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
-        WriterStub &writer, gsl::index line) {
+        WriterStub &writer, gsl::index line) override {
         assertNthCommaDelimitedEntryOfLine(writer, "2", 1, line);
         assertNthCommaDelimitedEntryOfLine(writer, "3", 2, line);
         assertNthCommaDelimitedEntryOfLine(
@@ -308,6 +308,12 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
 
 class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
   public:
+    WritingOpenSetAdaptiveTrial() {
+        trial_.snr.dB = 11;
+        trial_.target = "a";
+        trial_.reversals = 22;
+    }
+
     void incorrect() override { trial_.correct = false; }
 
     void correct() override { trial_.correct = true; }
@@ -321,12 +327,26 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
             {3, HeadingItem::evaluation}, {4, HeadingItem::reversals}};
     }
 
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "22", 4, line);
+    }
+
   private:
     open_set::AdaptiveTrial trial_{};
 };
 
 class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
   public:
+    WritingCorrectKeywordsTrial() {
+        trial_.snr.dB = 11;
+        trial_.target = "a";
+        trial_.count = 22;
+        trial_.reversals = 33;
+    }
+
     void incorrect() override { trial_.correct = false; }
 
     void correct() override { trial_.correct = true; }
@@ -341,17 +361,39 @@ class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
             {5, HeadingItem::reversals}};
     }
 
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "22", 3, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "33", 5, line);
+    }
+
   private:
     CorrectKeywordsTrial trial_{};
 };
 
 class WritingFreeResponseTrial : public WritingTrial {
   public:
-    void run(OutputFileImpl &file) override { file.write(FreeResponseTrial{}); }
+    WritingFreeResponseTrial() {
+        trial.target = "a";
+        trial.response = "b";
+    }
+
+    void run(OutputFileImpl &file) override { file.write(trial); }
 
     auto headingLabels() -> std::vector<HeadingLabel> override {
         return {{1, HeadingItem::target}, {2, HeadingItem::freeResponse}};
     }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 1, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "b", 2, line);
+    }
+
+  private:
+    FreeResponseTrial trial{};
 };
 
 class OutputFileTests : public ::testing::Test {
@@ -437,35 +479,26 @@ class OutputFileTests : public ::testing::Test {
     }
 
     void assertWritesFreeResponseTrialOnLine(gsl::index line) {
-        freeResponseTrial.target = "a";
-        freeResponseTrial.response = "b";
-        write(file, freeResponseTrial);
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 1, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "b", 2, line);
+        run(writingFreeResponseTrial, file);
+        writingFreeResponseTrial.assertContainsCommaDelimitedTrialOnLine(
+            writer, line);
     }
 
     void assertWritesOpenSetAdaptiveTrialOnLine(gsl::index line) {
-        open_set::AdaptiveTrial openSetAdaptiveTrial;
-        openSetAdaptiveTrial.snr.dB = 11;
-        openSetAdaptiveTrial.target = "a";
-        openSetAdaptiveTrial.reversals = 22;
-        write(file, openSetAdaptiveTrial);
-        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "22", 4, line);
+        run(writingOpenSetAdaptiveTrial, file);
+        writingOpenSetAdaptiveTrial.assertContainsCommaDelimitedTrialOnLine(
+            writer, line);
     }
 
     void assertWritesCorrectKeywordsTrialOnLine(gsl::index line) {
-        CorrectKeywordsTrial correctKeywordsTrial;
-        correctKeywordsTrial.snr.dB = 11;
-        correctKeywordsTrial.target = "a";
-        correctKeywordsTrial.count = 22;
-        correctKeywordsTrial.reversals = 33;
-        write(file, correctKeywordsTrial);
-        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "22", 3, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "33", 5, line);
+        run(writingCorrectKeywordsTrial, file);
+        writingCorrectKeywordsTrial.assertContainsCommaDelimitedTrialOnLine(
+            writer, line);
+    }
+
+    void assertWritesTrialOnLine(WritingTrial &useCase, gsl::index line) {
+        run(useCase, file);
+        useCase.assertContainsCommaDelimitedTrialOnLine(writer, line);
     }
 
     void assertWritesHeadingOnFirstLine(WritingTrial &useCase) {
@@ -516,24 +549,24 @@ OUTPUT_FILE_TEST(writingOpenSetAdaptiveTrialWritesHeadingOnFirstLine) {
 }
 
 OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialWritesTrialOnSecondLine) {
-    assertWritesAdaptiveCoordinateResponseTrialOnLine(2);
+    assertWritesTrialOnLine(writingAdaptiveCoordinateResponseTrial, 2);
 }
 
 OUTPUT_FILE_TEST(
     writeFixedLevelCoordinateResponseTrialWritesTrialOnSecondLine) {
-    assertWritesFixedLevelCoordinateResponseTrialOnLine(2);
+    assertWritesTrialOnLine(writingFixedLevelCoordinateResponseTrial, 2);
 }
 
 OUTPUT_FILE_TEST(writeFreeResponseTrialWritesTrialOnSecondLine) {
-    assertWritesFreeResponseTrialOnLine(2);
+    assertWritesTrialOnLine(writingFreeResponseTrial, 2);
 }
 
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialWritesTrialOnSecondLine) {
-    assertWritesOpenSetAdaptiveTrialOnLine(2);
+    assertWritesTrialOnLine(writingOpenSetAdaptiveTrial, 2);
 }
 
 OUTPUT_FILE_TEST(writeCorrectKeywordsTrialWritesTrialOnSecondLine) {
-    assertWritesCorrectKeywordsTrialOnLine(2);
+    assertWritesTrialOnLine(writingCorrectKeywordsTrial, 2);
 }
 
 OUTPUT_FILE_TEST(
