@@ -243,7 +243,9 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
 
     void correct() override { setCorrect(trial_); }
 
-    auto evaluationEntryIndex() -> gsl::index override { return 6; }
+    auto evaluationEntryIndex() -> gsl::index override {
+        return at(headingLabels_, HeadingItem::evaluation);
+    }
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
@@ -291,7 +293,9 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
-    auto evaluationEntryIndex() -> gsl::index override { return 5; }
+    auto evaluationEntryIndex() -> gsl::index override {
+        return at(headingLabels_, HeadingItem::evaluation);
+    }
 
     auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
         return headingLabels_;
@@ -319,7 +323,9 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
-    auto evaluationEntryIndex() -> gsl::index override { return 3; }
+    auto evaluationEntryIndex() -> gsl::index override {
+        return at(headingLabels_, HeadingItem::evaluation);
+    }
 
     auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
         return headingLabels_;
@@ -357,7 +363,9 @@ class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
-    auto evaluationEntryIndex() -> gsl::index override { return 4; }
+    auto evaluationEntryIndex() -> gsl::index override {
+        return at(headingLabels_, HeadingItem::evaluation);
+    }
 
     auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
         return headingLabels_;
