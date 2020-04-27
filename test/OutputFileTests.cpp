@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <vector>
+#include <map>
 
 namespace av_speech_in_noise {
 namespace {
@@ -101,7 +102,7 @@ class WritingTrial : public virtual UseCase {
   public:
     virtual auto headingLabels() -> std::vector<HeadingLabel> = 0;
     virtual void assertContainsCommaDelimitedTrialOnLine(
-        WriterStub &writer, gsl::index line) = 0;
+        WriterStub &, gsl::index line) = 0;
 };
 
 class WritingEvaluatedTrial : public virtual WritingTrial {
@@ -232,18 +233,28 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
 
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
-        assertNthCommaDelimitedEntryOfLine(writer, "1", 1, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "2", 2, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "3", 3, line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, coordinate_response_measure::Color::green, 4, line);
+            writer, "1", headingLabels_.at(HeadingItem::snr_dB), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, coordinate_response_measure::Color::red, 5, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "4", 7, line);
+            writer, "2", headingLabels_.at(HeadingItem::correctNumber), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "3", headingLabels_.at(HeadingItem::subjectNumber), line);
+        assertNthCommaDelimitedEntryOfLine(writer,
+            coordinate_response_measure::Color::green,
+            headingLabels_.at(HeadingItem::correctColor), line);
+        assertNthCommaDelimitedEntryOfLine(writer,
+            coordinate_response_measure::Color::red,
+            headingLabels_.at(HeadingItem::subjectColor), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "4", headingLabels_.at(HeadingItem::reversals), line);
     }
 
   private:
     coordinate_response_measure::AdaptiveTrial trial_{};
+    std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::snr_dB, 1},
+        {HeadingItem::correctNumber, 2}, {HeadingItem::subjectNumber, 3},
+        {HeadingItem::correctColor, 4}, {HeadingItem::subjectColor, 5},
+        {HeadingItem::evaluation, 6}, {HeadingItem::reversals, 7}};
 };
 
 class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
