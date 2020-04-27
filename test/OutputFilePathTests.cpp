@@ -6,7 +6,7 @@
 namespace av_speech_in_noise {
 namespace {
 class TimeStampStub : public TimeStamp {
-    LogString log_{};
+    std::stringstream log_{};
     int year_{};
     int month_{};
     int dayOfMonth_{};
@@ -15,9 +15,9 @@ class TimeStampStub : public TimeStamp {
     int second_{};
 
   public:
-    void capture() override { log_.insert("capture "); }
+    void capture() override { insert(log_, "capture "); }
 
-    auto log() const -> auto & { return log_; }
+    auto log() const -> const std::stringstream & { return log_; }
 
     void setYear(int y) { year_ = y; }
 
@@ -32,32 +32,32 @@ class TimeStampStub : public TimeStamp {
     void setSecond(int y) { second_ = y; }
 
     auto year() -> int override {
-        log_.insert("year ");
+        insert(log_, "year ");
         return year_;
     }
 
     auto month() -> int override {
-        log_.insert("month ");
+        insert(log_, "month ");
         return month_;
     }
 
     auto dayOfMonth() -> int override {
-        log_.insert("dayOfMonth ");
+        insert(log_, "dayOfMonth ");
         return dayOfMonth_;
     }
 
     auto hour() -> int override {
-        log_.insert("hour ");
+        insert(log_, "hour ");
         return hour_;
     }
 
     auto minute() -> int override {
-        log_.insert("minute ");
+        insert(log_, "minute ");
         return minute_;
     }
 
     auto second() -> int override {
-        log_.insert("second ");
+        insert(log_, "second ");
         return second_;
     }
 };
@@ -114,7 +114,7 @@ TEST_F(OutputFilePathTests, generateFileNameFormatsTestInformationAndTime) {
 
 TEST_F(OutputFilePathTests, generateFileNameCapturesTimePriorToQueries) {
     generateFileName();
-    EXPECT_TRUE(timeStamp.log().beginsWith("capture"));
+    assertTrue(beginsWith(timeStamp.log(), "capture"));
 }
 
 TEST_F(OutputFilePathTests, outputDirectoryReturnsFullPath) {
