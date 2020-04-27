@@ -333,14 +333,14 @@ class TargetListTestConcluderComboStub : public FiniteTargetList {
     auto next() -> LocalUrl override { return {}; }
     auto current() -> LocalUrl override { return {}; }
     auto empty() -> bool override {
-        log_.insert("empty ");
+        insert(log_, "empty ");
         return {};
     }
-    void reinsertCurrent() override { log_.insert("reinsertCurrent "); }
-    auto log() const -> auto & { return log_; }
+    void reinsertCurrent() override { insert(log_, "reinsertCurrent "); }
+    auto log() const -> const std::stringstream & { return log_; }
 
   private:
-    LogString log_;
+    std::stringstream log_;
 };
 
 TEST(FixedLevelMethodTestsTBD,
@@ -353,7 +353,7 @@ TEST(FixedLevelMethodTestsTBD,
     FreeResponse response;
     response.flagged = true;
     method.submit(response);
-    assertTrue(combo.log().endsWith("reinsertCurrent empty "));
+    assertTrue(endsWith(combo.log(), "reinsertCurrent empty "));
 }
 }
 }
