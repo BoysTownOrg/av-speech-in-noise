@@ -4,6 +4,7 @@
 #include <av-speech-in-noise/name.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
+#include <vector>
 
 namespace av_speech_in_noise {
 namespace {
@@ -105,7 +106,7 @@ class WritingEvaluatedTrial : public virtual WritingTrial {
   public:
     virtual void incorrect() = 0;
     virtual void correct() = 0;
-    virtual auto evaluationEntryIndex() -> int = 0;
+    virtual auto evaluationEntryIndex() -> gsl::index = 0;
 };
 
 void setCorrect(coordinate_response_measure::Trial &trial) {
@@ -124,7 +125,7 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
 
     void correct() override { setCorrect(trial_); }
 
-    auto evaluationEntryIndex() -> int override { return 6; }
+    auto evaluationEntryIndex() -> gsl::index override { return 6; }
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
@@ -149,7 +150,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
-    auto evaluationEntryIndex() -> int override { return 5; }
+    auto evaluationEntryIndex() -> gsl::index override { return 5; }
 
     auto headingLabels() -> std::vector<HeadingLabel> override {
         return {{1, HeadingItem::correctNumber},
@@ -170,7 +171,7 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
-    auto evaluationEntryIndex() -> int override { return 3; }
+    auto evaluationEntryIndex() -> gsl::index override { return 3; }
 
     auto headingLabels() -> std::vector<HeadingLabel> override {
         return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
@@ -189,7 +190,7 @@ class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
 
     void run(OutputFileImpl &file) override { file.write(trial_); }
 
-    auto evaluationEntryIndex() -> int override { return 4; }
+    auto evaluationEntryIndex() -> gsl::index override { return 4; }
 
     auto headingLabels() -> std::vector<HeadingLabel> override {
         return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
@@ -273,13 +274,13 @@ auto testIdentity(WritingTest &useCase) -> TestIdentity & {
     return useCase.test().identity;
 }
 
-auto nthCommaDelimitedEntryOfLine(WriterStub &writer, gsl::index n, int line)
-    -> std::string {
-    std::string written_ = string(written(writer));
-    auto precedingNewLine{find_nth_element(written_, line - 1, '\n')};
-    auto line_{written_.substr(precedingNewLine + 1)};
-    auto precedingComma{find_nth_element(line_, n - 1, ',')};
-    auto entryBeginning =
+auto nthCommaDelimitedEntryOfLine(
+    WriterStub &writer, gsl::index n, gsl::index line) -> std::string {
+    const auto written_{string(written(writer))};
+    const auto precedingNewLine{find_nth_element(written_, line - 1, '\n')};
+    const auto line_{written_.substr(precedingNewLine + 1)};
+    const auto precedingComma{find_nth_element(line_, n - 1, ',')};
+    const auto entryBeginning =
         (precedingComma == std::string::npos) ? 0U : precedingComma + 2;
     return upUntilFirstOfAny(line_.substr(entryBeginning), {',', '\n'});
 }
@@ -289,18 +290,18 @@ void assertContainsColonDelimitedEntry(
     assertTrue(contains(written(writer), label + ": " + what + '\n'));
 }
 
-void assertNthCommaDelimitedEntryOfLine(
-    WriterStub &writer, const std::string &what, int n, int line) {
+void assertNthCommaDelimitedEntryOfLine(WriterStub &writer,
+    const std::string &what, gsl::index n, gsl::index line) {
     assertEqual(what, nthCommaDelimitedEntryOfLine(writer, n, line));
 }
 
 void assertNthCommaDelimitedEntryOfLine(
-    WriterStub &writer, HeadingItem item, gsl::index n, int line) {
+    WriterStub &writer, HeadingItem item, gsl::index n, gsl::index line) {
     assertEqual(name(item), nthCommaDelimitedEntryOfLine(writer, n, line));
 }
 
 void assertNthEntryOfSecondLine(
-    WriterStub &writer, const std::string &what, int n) {
+    WriterStub &writer, const std::string &what, gsl::index n) {
     assertNthCommaDelimitedEntryOfLine(writer, what, n, 2);
 }
 
@@ -376,7 +377,7 @@ class OutputFileTests : public ::testing::Test {
             writer, "correct", useCase.evaluationEntryIndex());
     }
 
-    void assertWritesAdaptiveCoordinateResponseTrialOnLine(int n) {
+    void assertWritesAdaptiveCoordinateResponseTrialOnLine(gsl::index n) {
         using coordinate_response_measure::Color;
         auto &trial = writingAdaptiveCoordinateResponseTrial.trial();
         trial.snr.dB = 1;
@@ -394,7 +395,7 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(writer, "4", 7, n);
     }
 
-    void assertWritesFixedLevelCoordinateResponseTrialOnLine(int n) {
+    void assertWritesFixedLevelCoordinateResponseTrialOnLine(gsl::index n) {
         using coordinate_response_measure::Color;
         auto &trial = writingFixedLevelCoordinateResponseTrial.trial();
         trial.correctNumber = 2;
@@ -410,7 +411,7 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(writer, "a", 6, n);
     }
 
-    void assertWritesFreeResponseTrialOnLine(int n) {
+    void assertWritesFreeResponseTrialOnLine(gsl::index n) {
         freeResponseTrial.target = "a";
         freeResponseTrial.response = "b";
         write(file, freeResponseTrial);
@@ -418,7 +419,7 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(writer, "b", 2, n);
     }
 
-    void assertWritesOpenSetAdaptiveTrialOnLine(int n) {
+    void assertWritesOpenSetAdaptiveTrialOnLine(gsl::index n) {
         open_set::AdaptiveTrial openSetAdaptiveTrial;
         openSetAdaptiveTrial.snr.dB = 11;
         openSetAdaptiveTrial.target = "a";
@@ -429,7 +430,7 @@ class OutputFileTests : public ::testing::Test {
         assertNthCommaDelimitedEntryOfLine(writer, "22", 4, n);
     }
 
-    void assertWritesCorrectKeywordsTrialOnLine(int n) {
+    void assertWritesCorrectKeywordsTrialOnLine(gsl::index n) {
         CorrectKeywordsTrial correctKeywordsTrial;
         correctKeywordsTrial.snr.dB = 11;
         correctKeywordsTrial.target = "a";
