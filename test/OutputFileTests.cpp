@@ -216,18 +216,6 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
         trial_.reversals = 4;
     }
 
-    void incorrect() override { setIncorrect(trial_); }
-
-    void correct() override { setCorrect(trial_); }
-
-    auto evaluationEntryIndex() -> gsl::index override { return 6; }
-
-    void run(OutputFileImpl &file) override { file.write(trial_); }
-
-    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
-        return headingLabels_;
-    }
-
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
         assertNthCommaDelimitedEntryOfLine(
@@ -244,6 +232,18 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
             headingLabels_.at(HeadingItem::subjectColor), line);
         assertNthCommaDelimitedEntryOfLine(
             writer, "4", headingLabels_.at(HeadingItem::reversals), line);
+    }
+
+    void incorrect() override { setIncorrect(trial_); }
+
+    void correct() override { setCorrect(trial_); }
+
+    auto evaluationEntryIndex() -> gsl::index override { return 6; }
+
+    void run(OutputFileImpl &file) override { file.write(trial_); }
+
+    auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
+        return headingLabels_;
     }
 
   private:
@@ -264,6 +264,22 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
         trial_.target = "a";
     }
 
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) override {
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "2", headingLabels_.at(HeadingItem::correctNumber), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "3", headingLabels_.at(HeadingItem::subjectNumber), line);
+        assertNthCommaDelimitedEntryOfLine(writer,
+            coordinate_response_measure::Color::green,
+            headingLabels_.at(HeadingItem::correctColor), line);
+        assertNthCommaDelimitedEntryOfLine(writer,
+            coordinate_response_measure::Color::red,
+            headingLabels_.at(HeadingItem::subjectColor), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", headingLabels_.at(HeadingItem::stimulus), line);
+    }
+
     void incorrect() override { setIncorrect(trial_); }
 
     void correct() override { setCorrect(trial_); }
@@ -273,25 +289,15 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
     auto evaluationEntryIndex() -> gsl::index override { return 5; }
 
     auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
-        return {{HeadingItem::correctNumber, 1},
-            {HeadingItem::subjectNumber, 2}, {HeadingItem::correctColor, 3},
-            {HeadingItem::subjectColor, 4}, {HeadingItem::evaluation, 5},
-            {HeadingItem::stimulus, 6}};
-    }
-
-    void assertContainsCommaDelimitedTrialOnLine(
-        WriterStub &writer, gsl::index line) override {
-        assertNthCommaDelimitedEntryOfLine(writer, "2", 1, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "3", 2, line);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, coordinate_response_measure::Color::green, 3, line);
-        assertNthCommaDelimitedEntryOfLine(
-            writer, coordinate_response_measure::Color::red, 4, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 6, line);
+        return headingLabels_;
     }
 
   private:
     coordinate_response_measure::FixedLevelTrial trial_{};
+    std::map<HeadingItem, gsl::index> headingLabels_{
+        {HeadingItem::correctNumber, 1}, {HeadingItem::subjectNumber, 2},
+        {HeadingItem::correctColor, 3}, {HeadingItem::subjectColor, 4},
+        {HeadingItem::evaluation, 5}, {HeadingItem::stimulus, 6}};
 };
 
 class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
