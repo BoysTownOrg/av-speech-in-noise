@@ -12,7 +12,6 @@ enum class HeadingItem {
     correctColor,
     subjectColor,
     evaluation,
-    stimulus,
     reversals,
     target,
     correctKeywords,
@@ -37,8 +36,6 @@ constexpr auto name(HeadingItem i) -> const char * {
         return "subject color";
     case HeadingItem::evaluation:
         return "evaluation";
-    case HeadingItem::stimulus:
-        return "stimulus";
     case HeadingItem::target:
         return "target";
     case HeadingItem::reversals:

@@ -277,7 +277,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
             coordinate_response_measure::Color::red,
             headingLabels_.at(HeadingItem::subjectColor), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "a", headingLabels_.at(HeadingItem::stimulus), line);
+            writer, "a", headingLabels_.at(HeadingItem::target), line);
     }
 
     void incorrect() override { setIncorrect(trial_); }
@@ -297,7 +297,7 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
     std::map<HeadingItem, gsl::index> headingLabels_{
         {HeadingItem::correctNumber, 1}, {HeadingItem::subjectNumber, 2},
         {HeadingItem::correctColor, 3}, {HeadingItem::subjectColor, 4},
-        {HeadingItem::evaluation, 5}, {HeadingItem::stimulus, 6}};
+        {HeadingItem::evaluation, 5}, {HeadingItem::target, 6}};
 };
 
 class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {

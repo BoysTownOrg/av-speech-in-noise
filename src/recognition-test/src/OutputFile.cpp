@@ -332,7 +332,7 @@ static auto formatFixedLevelCoordinateResponseTrialHeading() -> std::string {
     insertCommaAndSpace(stream);
     insert(stream, HeadingItem::evaluation);
     insertCommaAndSpace(stream);
-    insert(stream, HeadingItem::stimulus);
+    insert(stream, HeadingItem::target);
     insertNewLine(stream);
     return string(stream);
 }
