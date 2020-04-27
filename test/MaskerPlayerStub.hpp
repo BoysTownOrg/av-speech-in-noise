@@ -8,7 +8,6 @@
 namespace av_speech_in_noise {
 class MaskerPlayerStub : public MaskerPlayer {
     std::vector<std::string> outputAudioDeviceDescriptions_;
-    LogString log_;
     std::string filePath_;
     std::string device_;
     DigitalLevel digitalLevel_{};
@@ -38,7 +37,7 @@ class MaskerPlayerStub : public MaskerPlayer {
         return currentSystemTime_;
     }
 
-    auto toNanosecondsSystemTime() const
+    [[nodiscard]] auto toNanosecondsSystemTime() const
         -> std::vector<player_system_time_type> {
         return toNanosecondsSystemTime_;
     }
@@ -57,21 +56,27 @@ class MaskerPlayerStub : public MaskerPlayer {
         channelDelayed_ = channel;
     }
 
-    auto channelDelaySeconds() const { return channelDelaySeconds_; }
+    [[nodiscard]] auto channelDelaySeconds() const {
+        return channelDelaySeconds_;
+    }
 
-    auto channelDelayed() const { return channelDelayed_; }
+    [[nodiscard]] auto channelDelayed() const { return channelDelayed_; }
 
     void clearChannelDelays() override { channelDelaysCleared_ = true; }
 
     void useFirstChannelOnly() override { usingFirstChannelOnly_ = true; }
 
-    auto usingFirstChannelOnly() const { return usingFirstChannelOnly_; }
+    [[nodiscard]] auto usingFirstChannelOnly() const {
+        return usingFirstChannelOnly_;
+    }
 
-    auto channelDelaysCleared() const { return channelDelaysCleared_; }
+    [[nodiscard]] auto channelDelaysCleared() const {
+        return channelDelaysCleared_;
+    }
 
     void useAllChannels() override { usingAllChannels_ = true; }
 
-    auto usingAllChannels() const { return usingAllChannels_; }
+    [[nodiscard]] auto usingAllChannels() const { return usingAllChannels_; }
 
     void throwInvalidAudioFileOnLoad() { throwInvalidAudioFileOnLoad_ = true; }
 
@@ -87,9 +92,11 @@ class MaskerPlayerStub : public MaskerPlayer {
             throw av_speech_in_noise::InvalidAudioDevice{};
     }
 
-    auto device() const -> std::string { return device_; }
+    [[nodiscard]] auto device() const -> std::string { return device_; }
 
-    auto setDeviceCalled() const -> bool { return setDeviceCalled_; }
+    [[nodiscard]] auto setDeviceCalled() const -> bool {
+        return setDeviceCalled_;
+    }
 
     auto playing() -> bool override { return playing_; }
 
@@ -99,45 +106,41 @@ class MaskerPlayerStub : public MaskerPlayer {
         outputAudioDeviceDescriptions_ = std::move(v);
     }
 
-    auto fadeInCalled() const -> bool { return fadeInCalled_; }
+    [[nodiscard]] auto fadeInCalled() const -> bool { return fadeInCalled_; }
 
     void fadeIn() override { fadeInCalled_ = true; }
 
-    auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
+    [[nodiscard]] auto fadeOutCalled() const -> bool { return fadeOutCalled_; }
 
     void subscribe(EventListener *e) override { listener_ = e; }
 
     void fadeOut() override { fadeOutCalled_ = true; }
 
     void loadFile(const LocalUrl &filePath) override {
-        addToLog("loadFile ");
         filePath_ = filePath.path;
         if (throwInvalidAudioFileOnLoad_)
             throw InvalidAudioFile{};
     }
 
-    void addToLog(const std::string &s) { log_.insert(s); }
-
     auto outputAudioDeviceDescriptions() -> std::vector<std::string> override {
         return outputAudioDeviceDescriptions_;
     }
 
-    auto listener() const -> const EventListener * { return listener_; }
+    [[nodiscard]] auto listener() const -> const EventListener * {
+        return listener_;
+    }
 
     void fadeInComplete(const AudioSampleTimeWithOffset &t = {}) {
         listener_->fadeInComplete(t);
     }
 
-    auto filePath() const -> std::string { return filePath_; }
+    [[nodiscard]] auto filePath() const -> std::string { return filePath_; }
 
     void setDigitalLevel(DigitalLevel x) { digitalLevel_ = x; }
 
-    auto level_dB() const -> double { return level_dB_; }
+    [[nodiscard]] auto level_dB() const -> double { return level_dB_; }
 
-    auto digitalLevel() -> DigitalLevel override {
-        addToLog("digitalLevel ");
-        return digitalLevel_;
-    }
+    auto digitalLevel() -> DigitalLevel override { return digitalLevel_; }
 
     void apply(LevelAmplification x) override { level_dB_ = x.dB; }
 
@@ -145,7 +148,7 @@ class MaskerPlayerStub : public MaskerPlayer {
 
     void seekSeconds(double x) override { secondsSeeked_ = x; }
 
-    auto secondsSeeked() const { return secondsSeeked_; }
+    [[nodiscard]] auto secondsSeeked() const { return secondsSeeked_; }
 
     auto fadeTime() -> Duration override { return Duration{fadeTimeSeconds_}; }
 
