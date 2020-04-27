@@ -17,12 +17,12 @@ class TargetListStub : public virtual TargetList {
     }
 
     void loadFromDirectory(const LocalUrl &directory) override {
-        log_.insert("loadFromDirectory ");
+        insert(log_, "loadFromDirectory ");
         directory_ = directory.path;
     }
 
     auto next() -> LocalUrl override {
-        log_.insert("next ");
+        insert(log_, "next ");
         nextCalled_ = true;
         current_ = currentWhenNext_;
         return {next_};
@@ -34,10 +34,10 @@ class TargetListStub : public virtual TargetList {
 
     void setDirectory(std::string s) { directory_ = std::move(s); }
 
-    auto log() const -> auto & { return log_; }
+    auto log() const -> const std::stringstream & { return log_; }
 
   private:
-    LogString log_{};
+    std::stringstream log_{};
     std::string currentWhenNext_{};
     std::string directory_{};
     std::string next_{};

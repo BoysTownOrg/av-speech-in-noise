@@ -22,8 +22,6 @@ constexpr auto operator==(
 }
 
 namespace {
-void insert(LogString &log, const std::string &s) { log.insert(s); }
-
 class TestMethodStub : public TestMethod {
   public:
     auto submittedCorrectResponse() const -> bool {
@@ -115,10 +113,10 @@ class TestMethodStub : public TestMethod {
         insert(log_, "writeTestResult ");
     }
 
-    auto log() const -> const LogString & { return log_; }
+    auto log() const -> const std::stringstream & { return log_; }
 
   private:
-    LogString log_{};
+    std::stringstream log_{};
     std::string currentTarget_{};
     std::string currentTargetWhenNextTarget_{};
     std::string nextTarget_{};
@@ -298,7 +296,7 @@ class EyeTrackerStub : public EyeTracker {
 
     auto stopped() const -> bool { return stopped_; }
 
-    auto log() const -> auto & { return log_; }
+    auto log() const -> const std::stringstream & { return log_; }
 
     void allocateRecordingTimeSeconds(double x) override {
         insert(log_, "allocateRecordingTimeSeconds ");
@@ -337,7 +335,7 @@ class EyeTrackerStub : public EyeTracker {
 
   private:
     BinocularGazeSamples gazeSamples_;
-    LogString log_{};
+    std::stringstream log_{};
     EyeTrackerSystemTime currentSystemTime_{};
     double recordingTimeAllocatedSeconds_{};
     bool recordingTimeAllocated_{};
@@ -675,7 +673,7 @@ class RecognitionTestModelTests : public ::testing::Test {
         UseCase &useCase, const std::string &what) {
         run(initializingTest, model);
         run(useCase, model);
-        assertTrue(testMethod.log().contains(what));
+        assertTrue(contains(testMethod.log(), what));
     }
 
     void assertYieldsTrialNumber(UseCase &useCase, int n) {
@@ -878,7 +876,8 @@ RECOGNITION_TEST_MODEL_TEST(
     playTrialForTestWithEyeTrackingStartsEyeTrackingAfterAllocatingRecordingTime) {
     run(initializingTestWithEyeTracking, model);
     run(playingTrial, model);
-    assertEqual("allocateRecordingTimeSeconds start ", eyeTracker.log());
+    assertEqual(
+        "allocateRecordingTimeSeconds start ", string(eyeTracker.log()));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
@@ -983,7 +982,7 @@ RECOGNITION_TEST_MODEL_TEST(
 RECOGNITION_TEST_MODEL_TEST(fadeOutCompleteStopsEyeTracker) {
     run(initializingTestWithEyeTracking, model);
     fadeOutComplete(maskerPlayer);
-    assertEqual("stop ", eyeTracker.log());
+    assertEqual("stop ", string(eyeTracker.log()));
 }
 
 RECOGNITION_TEST_MODEL_TEST(submittingCoordinateResponseWritesEyeGazes) {
@@ -1112,7 +1111,7 @@ RECOGNITION_TEST_MODEL_TEST(
     run(initializingTest, model);
     testMethod.setComplete();
     run(submittingCorrectKeywords, model);
-    assertTrue(testMethod.log().endsWith("writeTestResult "));
+    assertTrue(endsWith(testMethod.log(), "writeTestResult "));
     assertTrue(log(outputFile).endsWith("save "));
 }
 
