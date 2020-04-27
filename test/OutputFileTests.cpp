@@ -117,105 +117,6 @@ void setIncorrect(coordinate_response_measure::Trial &trial) {
     trial.correct = false;
 }
 
-class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
-  public:
-    auto trial() -> auto & { return trial_; }
-
-    void incorrect() override { setIncorrect(trial_); }
-
-    void correct() override { setCorrect(trial_); }
-
-    auto evaluationEntryIndex() -> gsl::index override { return 6; }
-
-    void run(OutputFileImpl &file) override { file.write(trial_); }
-
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::correctNumber},
-            {3, HeadingItem::subjectNumber}, {4, HeadingItem::correctColor},
-            {5, HeadingItem::subjectColor}, {6, HeadingItem::evaluation},
-            {7, HeadingItem::reversals}};
-    }
-
-  private:
-    coordinate_response_measure::AdaptiveTrial trial_{};
-};
-
-auto trial(WritingAdaptiveCoordinateResponseTrial &t)
-    -> coordinate_response_measure::AdaptiveTrial & {
-    return t.trial();
-}
-
-class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
-  public:
-    auto trial() -> auto & { return trial_; }
-
-    void incorrect() override { setIncorrect(trial_); }
-
-    void correct() override { setCorrect(trial_); }
-
-    void run(OutputFileImpl &file) override { file.write(trial_); }
-
-    auto evaluationEntryIndex() -> gsl::index override { return 5; }
-
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::correctNumber},
-            {2, HeadingItem::subjectNumber}, {3, HeadingItem::correctColor},
-            {4, HeadingItem::subjectColor}, {5, HeadingItem::evaluation},
-            {6, HeadingItem::stimulus}};
-    }
-
-  private:
-    coordinate_response_measure::FixedLevelTrial trial_{};
-};
-
-class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
-  public:
-    void incorrect() override { trial_.correct = false; }
-
-    void correct() override { trial_.correct = true; }
-
-    void run(OutputFileImpl &file) override { file.write(trial_); }
-
-    auto evaluationEntryIndex() -> gsl::index override { return 3; }
-
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
-            {3, HeadingItem::evaluation}, {4, HeadingItem::reversals}};
-    }
-
-  private:
-    open_set::AdaptiveTrial trial_{};
-};
-
-class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
-  public:
-    void incorrect() override { trial_.correct = false; }
-
-    void correct() override { trial_.correct = true; }
-
-    void run(OutputFileImpl &file) override { file.write(trial_); }
-
-    auto evaluationEntryIndex() -> gsl::index override { return 4; }
-
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
-            {3, HeadingItem::correctKeywords}, {4, HeadingItem::evaluation},
-            {5, HeadingItem::reversals}};
-    }
-
-  private:
-    CorrectKeywordsTrial trial_{};
-};
-
-class WritingFreeResponseTrial : public WritingTrial {
-  public:
-    void run(OutputFileImpl &file) override { file.write(FreeResponseTrial{}); }
-
-    auto headingLabels() -> std::vector<HeadingLabel> override {
-        return {{1, HeadingItem::target}, {2, HeadingItem::freeResponse}};
-    }
-};
-
 void run(UseCase &useCase, OutputFileImpl &file) { useCase.run(file); }
 
 auto written(WriterStub &writer) -> const std::stringstream & {
@@ -321,6 +222,138 @@ void assertNthEntryOfSecondLine(
 
 auto test(WritingTest &useCase) -> Test & { return useCase.test(); }
 
+class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
+  public:
+    WritingAdaptiveCoordinateResponseTrial() {
+        trial_.snr.dB = 1;
+        trial_.correctNumber = 2;
+        trial_.subjectNumber = 3;
+        trial_.correctColor = coordinate_response_measure::Color::green;
+        trial_.subjectColor = coordinate_response_measure::Color::red;
+        trial_.reversals = 4;
+    }
+
+    void incorrect() override { setIncorrect(trial_); }
+
+    void correct() override { setCorrect(trial_); }
+
+    auto evaluationEntryIndex() -> gsl::index override { return 6; }
+
+    void run(OutputFileImpl &file) override { file.write(trial_); }
+
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::correctNumber},
+            {3, HeadingItem::subjectNumber}, {4, HeadingItem::correctColor},
+            {5, HeadingItem::subjectColor}, {6, HeadingItem::evaluation},
+            {7, HeadingItem::reversals}};
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) {
+        assertNthCommaDelimitedEntryOfLine(writer, "1", 1, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "2", 2, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "3", 3, line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, coordinate_response_measure::Color::green, 4, line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, coordinate_response_measure::Color::red, 5, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "4", 7, line);
+    }
+
+  private:
+    coordinate_response_measure::AdaptiveTrial trial_{};
+};
+
+class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
+  public:
+    WritingFixedLevelCoordinateResponseTrial() {
+        trial_.correctNumber = 2;
+        trial_.subjectNumber = 3;
+        trial_.correctColor = coordinate_response_measure::Color::green;
+        trial_.subjectColor = coordinate_response_measure::Color::red;
+        trial_.target = "a";
+    }
+
+    auto trial() -> auto & { return trial_; }
+
+    void incorrect() override { setIncorrect(trial_); }
+
+    void correct() override { setCorrect(trial_); }
+
+    void run(OutputFileImpl &file) override { file.write(trial_); }
+
+    auto evaluationEntryIndex() -> gsl::index override { return 5; }
+
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::correctNumber},
+            {2, HeadingItem::subjectNumber}, {3, HeadingItem::correctColor},
+            {4, HeadingItem::subjectColor}, {5, HeadingItem::evaluation},
+            {6, HeadingItem::stimulus}};
+    }
+
+    void assertContainsCommaDelimitedTrialOnLine(
+        WriterStub &writer, gsl::index line) {
+        assertNthCommaDelimitedEntryOfLine(writer, "2", 1, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "3", 2, line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, coordinate_response_measure::Color::green, 3, line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, coordinate_response_measure::Color::red, 4, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 6, line);
+    }
+
+  private:
+    coordinate_response_measure::FixedLevelTrial trial_{};
+};
+
+class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
+  public:
+    void incorrect() override { trial_.correct = false; }
+
+    void correct() override { trial_.correct = true; }
+
+    void run(OutputFileImpl &file) override { file.write(trial_); }
+
+    auto evaluationEntryIndex() -> gsl::index override { return 3; }
+
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
+            {3, HeadingItem::evaluation}, {4, HeadingItem::reversals}};
+    }
+
+  private:
+    open_set::AdaptiveTrial trial_{};
+};
+
+class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
+  public:
+    void incorrect() override { trial_.correct = false; }
+
+    void correct() override { trial_.correct = true; }
+
+    void run(OutputFileImpl &file) override { file.write(trial_); }
+
+    auto evaluationEntryIndex() -> gsl::index override { return 4; }
+
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::snr_dB}, {2, HeadingItem::target},
+            {3, HeadingItem::correctKeywords}, {4, HeadingItem::evaluation},
+            {5, HeadingItem::reversals}};
+    }
+
+  private:
+    CorrectKeywordsTrial trial_{};
+};
+
+class WritingFreeResponseTrial : public WritingTrial {
+  public:
+    void run(OutputFileImpl &file) override { file.write(FreeResponseTrial{}); }
+
+    auto headingLabels() -> std::vector<HeadingLabel> override {
+        return {{1, HeadingItem::target}, {2, HeadingItem::freeResponse}};
+    }
+};
+
 class OutputFileTests : public ::testing::Test {
   protected:
     WriterStub writer;
@@ -344,10 +377,10 @@ class OutputFileTests : public ::testing::Test {
         assertContainsColonDelimitedEntry(writer, "condition", name(c));
     }
 
-    void assertHeadingAtLine(WritingTrial &useCase, gsl::index n) {
+    void assertHeadingAtLine(WritingTrial &useCase, gsl::index line) {
         for (auto label : useCase.headingLabels())
             assertNthCommaDelimitedEntryOfLine(
-                writer, label.headingItem, label.index, n);
+                writer, label.headingItem, label.index, line);
     }
 
     void assertTestIdentityWritten(WritingTest &useCase) {
@@ -391,70 +424,48 @@ class OutputFileTests : public ::testing::Test {
             writer, "correct", useCase.evaluationEntryIndex());
     }
 
-    void assertWritesAdaptiveCoordinateResponseTrialOnLine(gsl::index n) {
-        using coordinate_response_measure::Color;
-        trial(writingAdaptiveCoordinateResponseTrial).snr.dB = 1;
-        trial(writingAdaptiveCoordinateResponseTrial).correctNumber = 2;
-        trial(writingAdaptiveCoordinateResponseTrial).subjectNumber = 3;
-        trial(writingAdaptiveCoordinateResponseTrial).correctColor =
-            Color::green;
-        trial(writingAdaptiveCoordinateResponseTrial).subjectColor = Color::red;
-        trial(writingAdaptiveCoordinateResponseTrial).reversals = 4;
+    void assertWritesAdaptiveCoordinateResponseTrialOnLine(gsl::index line) {
         run(writingAdaptiveCoordinateResponseTrial, file);
-        assertNthCommaDelimitedEntryOfLine(writer, "1", 1, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "2", 2, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "3", 3, n);
-        assertNthCommaDelimitedEntryOfLine(writer, Color::green, 4, n);
-        assertNthCommaDelimitedEntryOfLine(writer, Color::red, 5, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "4", 7, n);
+        writingAdaptiveCoordinateResponseTrial
+            .assertContainsCommaDelimitedTrialOnLine(writer, line);
     }
 
-    void assertWritesFixedLevelCoordinateResponseTrialOnLine(gsl::index n) {
-        using coordinate_response_measure::Color;
-        auto &trial = writingFixedLevelCoordinateResponseTrial.trial();
-        trial.correctNumber = 2;
-        trial.subjectNumber = 3;
-        trial.correctColor = Color::green;
-        trial.subjectColor = Color::red;
-        trial.target = "a";
+    void assertWritesFixedLevelCoordinateResponseTrialOnLine(gsl::index line) {
         run(writingFixedLevelCoordinateResponseTrial, file);
-        assertNthCommaDelimitedEntryOfLine(writer, "2", 1, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "3", 2, n);
-        assertNthCommaDelimitedEntryOfLine(writer, Color::green, 3, n);
-        assertNthCommaDelimitedEntryOfLine(writer, Color::red, 4, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 6, n);
+        writingFixedLevelCoordinateResponseTrial
+            .assertContainsCommaDelimitedTrialOnLine(writer, line);
     }
 
-    void assertWritesFreeResponseTrialOnLine(gsl::index n) {
+    void assertWritesFreeResponseTrialOnLine(gsl::index line) {
         freeResponseTrial.target = "a";
         freeResponseTrial.response = "b";
         write(file, freeResponseTrial);
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 1, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "b", 2, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 1, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "b", 2, line);
     }
 
-    void assertWritesOpenSetAdaptiveTrialOnLine(gsl::index n) {
+    void assertWritesOpenSetAdaptiveTrialOnLine(gsl::index line) {
         open_set::AdaptiveTrial openSetAdaptiveTrial;
         openSetAdaptiveTrial.snr.dB = 11;
         openSetAdaptiveTrial.target = "a";
         openSetAdaptiveTrial.reversals = 22;
         write(file, openSetAdaptiveTrial);
-        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "22", 4, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "22", 4, line);
     }
 
-    void assertWritesCorrectKeywordsTrialOnLine(gsl::index n) {
+    void assertWritesCorrectKeywordsTrialOnLine(gsl::index line) {
         CorrectKeywordsTrial correctKeywordsTrial;
         correctKeywordsTrial.snr.dB = 11;
         correctKeywordsTrial.target = "a";
         correctKeywordsTrial.count = 22;
         correctKeywordsTrial.reversals = 33;
         write(file, correctKeywordsTrial);
-        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "22", 3, n);
-        assertNthCommaDelimitedEntryOfLine(writer, "33", 5, n);
+        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "22", 3, line);
+        assertNthCommaDelimitedEntryOfLine(writer, "33", 5, line);
     }
 
     void assertWritesHeadingOnFirstLine(WritingTrial &useCase) {
@@ -504,23 +515,24 @@ OUTPUT_FILE_TEST(writingOpenSetAdaptiveTrialWritesHeadingOnFirstLine) {
     assertWritesHeadingOnFirstLine(writingOpenSetAdaptiveTrial);
 }
 
-OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrial) {
+OUTPUT_FILE_TEST(writeAdaptiveCoordinateResponseTrialWritesTrialOnSecondLine) {
     assertWritesAdaptiveCoordinateResponseTrialOnLine(2);
 }
 
-OUTPUT_FILE_TEST(writeFixedLevelCoordinateResponseTrial) {
+OUTPUT_FILE_TEST(
+    writeFixedLevelCoordinateResponseTrialWritesTrialOnSecondLine) {
     assertWritesFixedLevelCoordinateResponseTrialOnLine(2);
 }
 
-OUTPUT_FILE_TEST(writeFreeResponseTrial) {
+OUTPUT_FILE_TEST(writeFreeResponseTrialWritesTrialOnSecondLine) {
     assertWritesFreeResponseTrialOnLine(2);
 }
 
-OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrial) {
+OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialWritesTrialOnSecondLine) {
     assertWritesOpenSetAdaptiveTrialOnLine(2);
 }
 
-OUTPUT_FILE_TEST(writeCorrectKeywordsTrial) {
+OUTPUT_FILE_TEST(writeCorrectKeywordsTrialWritesTrialOnSecondLine) {
     assertWritesCorrectKeywordsTrialOnLine(2);
 }
 
