@@ -317,19 +317,24 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
     auto evaluationEntryIndex() -> gsl::index override { return 3; }
 
     auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
-        return {{HeadingItem::snr_dB, 1}, {HeadingItem::target, 2},
-            {HeadingItem::evaluation, 3}, {HeadingItem::reversals, 4}};
+        return headingLabels_;
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
-        assertNthCommaDelimitedEntryOfLine(writer, "11", 1, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 2, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "22", 4, line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "11", headingLabels_.at(HeadingItem::snr_dB), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", headingLabels_.at(HeadingItem::target), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "22", headingLabels_.at(HeadingItem::reversals), line);
     }
 
   private:
     open_set::AdaptiveTrial trial_{};
+    std::map<HeadingItem, gsl::index> headingLabels_{{HeadingItem::snr_dB, 1},
+        {HeadingItem::target, 2}, {HeadingItem::evaluation, 3},
+        {HeadingItem::reversals, 4}};
 };
 
 class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
