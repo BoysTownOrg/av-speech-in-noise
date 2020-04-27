@@ -23,7 +23,7 @@ class TargetPlayerStub : public TargetPlayer {
 
     auto playing() -> bool override { return playing_; }
 
-    auto log() const -> auto & { return log_; }
+    auto log() const -> const std::stringstream & { return log_; }
 
     auto setDeviceCalled() const { return setDeviceCalled_; }
 
@@ -65,7 +65,7 @@ class TargetPlayerStub : public TargetPlayer {
         filePath_ = filePath.path;
     }
 
-    void addToLog(const std::string &s) { log_.insert(s); }
+    void addToLog(const std::string &s) { insert(log_, s); }
 
     auto digitalLevel() -> DigitalLevel override {
         addToLog("digitalLevel ");
@@ -95,7 +95,7 @@ class TargetPlayerStub : public TargetPlayer {
     auto timePlayedAt() -> PlayerTimeWithDelay { return timePlayedAt_; }
 
   private:
-    LogString log_;
+    std::stringstream log_;
     std::string filePath_;
     std::string device_;
     PlayerTimeWithDelay timePlayedAt_{};
