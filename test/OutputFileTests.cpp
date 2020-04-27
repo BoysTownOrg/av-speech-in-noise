@@ -205,6 +205,11 @@ void assertNthEntryOfSecondLine(
 
 auto test(WritingTest &useCase) -> Test & { return useCase.test(); }
 
+auto at(const std::map<HeadingItem, gsl::index> &m, HeadingItem item)
+    -> gsl::index {
+    return m.at(item);
+}
+
 class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
   public:
     WritingAdaptiveCoordinateResponseTrial() {
@@ -219,19 +224,19 @@ class WritingAdaptiveCoordinateResponseTrial : public WritingEvaluatedTrial {
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
         assertNthCommaDelimitedEntryOfLine(
-            writer, "1", headingLabels_.at(HeadingItem::snr_dB), line);
+            writer, "1", at(headingLabels_, HeadingItem::snr_dB), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "2", headingLabels_.at(HeadingItem::correctNumber), line);
+            writer, "2", at(headingLabels_, HeadingItem::correctNumber), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "3", headingLabels_.at(HeadingItem::subjectNumber), line);
+            writer, "3", at(headingLabels_, HeadingItem::subjectNumber), line);
         assertNthCommaDelimitedEntryOfLine(writer,
             coordinate_response_measure::Color::green,
-            headingLabels_.at(HeadingItem::correctColor), line);
+            at(headingLabels_, HeadingItem::correctColor), line);
         assertNthCommaDelimitedEntryOfLine(writer,
             coordinate_response_measure::Color::red,
-            headingLabels_.at(HeadingItem::subjectColor), line);
+            at(headingLabels_, HeadingItem::subjectColor), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "4", headingLabels_.at(HeadingItem::reversals), line);
+            writer, "4", at(headingLabels_, HeadingItem::reversals), line);
     }
 
     void incorrect() override { setIncorrect(trial_); }
@@ -267,17 +272,17 @@ class WritingFixedLevelCoordinateResponseTrial : public WritingEvaluatedTrial {
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
         assertNthCommaDelimitedEntryOfLine(
-            writer, "2", headingLabels_.at(HeadingItem::correctNumber), line);
+            writer, "2", at(headingLabels_, HeadingItem::correctNumber), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "3", headingLabels_.at(HeadingItem::subjectNumber), line);
+            writer, "3", at(headingLabels_, HeadingItem::subjectNumber), line);
         assertNthCommaDelimitedEntryOfLine(writer,
             coordinate_response_measure::Color::green,
-            headingLabels_.at(HeadingItem::correctColor), line);
+            at(headingLabels_, HeadingItem::correctColor), line);
         assertNthCommaDelimitedEntryOfLine(writer,
             coordinate_response_measure::Color::red,
-            headingLabels_.at(HeadingItem::subjectColor), line);
+            at(headingLabels_, HeadingItem::subjectColor), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "a", headingLabels_.at(HeadingItem::target), line);
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
     }
 
     void incorrect() override { setIncorrect(trial_); }
@@ -323,11 +328,11 @@ class WritingOpenSetAdaptiveTrial : public WritingEvaluatedTrial {
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
         assertNthCommaDelimitedEntryOfLine(
-            writer, "11", headingLabels_.at(HeadingItem::snr_dB), line);
+            writer, "11", at(headingLabels_, HeadingItem::snr_dB), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "a", headingLabels_.at(HeadingItem::target), line);
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "22", headingLabels_.at(HeadingItem::reversals), line);
+            writer, "22", at(headingLabels_, HeadingItem::reversals), line);
     }
 
   private:
@@ -361,13 +366,13 @@ class WritingCorrectKeywordsTrial : public WritingEvaluatedTrial {
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
         assertNthCommaDelimitedEntryOfLine(
-            writer, "11", headingLabels_.at(HeadingItem::snr_dB), line);
+            writer, "11", at(headingLabels_, HeadingItem::snr_dB), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "a", headingLabels_.at(HeadingItem::target), line);
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
         assertNthCommaDelimitedEntryOfLine(writer, "22",
-            headingLabels_.at(HeadingItem::correctKeywords), line);
+            at(headingLabels_, HeadingItem::correctKeywords), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "33", headingLabels_.at(HeadingItem::reversals), line);
+            writer, "33", at(headingLabels_, HeadingItem::reversals), line);
     }
 
   private:
@@ -393,9 +398,9 @@ class WritingFreeResponseTrial : public WritingTrial {
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
         assertNthCommaDelimitedEntryOfLine(
-            writer, "a", headingLabels_.at(HeadingItem::target), line);
+            writer, "a", at(headingLabels_, HeadingItem::target), line);
         assertNthCommaDelimitedEntryOfLine(
-            writer, "b", headingLabels_.at(HeadingItem::freeResponse), line);
+            writer, "b", at(headingLabels_, HeadingItem::freeResponse), line);
     }
 
   private:
