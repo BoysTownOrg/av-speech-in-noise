@@ -387,17 +387,21 @@ class WritingFreeResponseTrial : public WritingTrial {
     void run(OutputFileImpl &file) override { file.write(trial); }
 
     auto headingLabels() -> std::map<HeadingItem, gsl::index> override {
-        return {{HeadingItem::target, 1}, {HeadingItem::freeResponse, 2}};
+        return headingLabels_;
     }
 
     void assertContainsCommaDelimitedTrialOnLine(
         WriterStub &writer, gsl::index line) override {
-        assertNthCommaDelimitedEntryOfLine(writer, "a", 1, line);
-        assertNthCommaDelimitedEntryOfLine(writer, "b", 2, line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "a", headingLabels_.at(HeadingItem::target), line);
+        assertNthCommaDelimitedEntryOfLine(
+            writer, "b", headingLabels_.at(HeadingItem::freeResponse), line);
     }
 
   private:
     FreeResponseTrial trial{};
+    std::map<HeadingItem, gsl::index> headingLabels_{
+        {HeadingItem::target, 1}, {HeadingItem::freeResponse, 2}};
 };
 
 class OutputFileTests : public ::testing::Test {
