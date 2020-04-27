@@ -137,26 +137,6 @@ void write(OutputFileImpl &file, const FreeResponseTrial &trial) {
     file.write(trial);
 }
 
-void writeFreeResponseTrial(OutputFileImpl &file) {
-    write(file, FreeResponseTrial{});
-}
-
-void write(OutputFileImpl &file, const CorrectKeywordsTrial &trial) {
-    file.write(trial);
-}
-
-void writeCorrectKeywordsTrial(OutputFileImpl &file) {
-    write(file, CorrectKeywordsTrial{});
-}
-
-void write(OutputFileImpl &file, const open_set::AdaptiveTrial &trial) {
-    file.write(trial);
-}
-
-void writeOpenSetAdaptiveTrial(OutputFileImpl &file) {
-    write(file, open_set::AdaptiveTrial{});
-}
-
 void write(OutputFileImpl &file, const BinocularGazeSamples &gazeSamples) {
     file.write(gazeSamples);
 }
@@ -466,36 +446,6 @@ class OutputFileTests : public ::testing::Test {
             writer, "correct", useCase.evaluationEntryIndex());
     }
 
-    void assertWritesAdaptiveCoordinateResponseTrialOnLine(gsl::index line) {
-        run(writingAdaptiveCoordinateResponseTrial, file);
-        writingAdaptiveCoordinateResponseTrial
-            .assertContainsCommaDelimitedTrialOnLine(writer, line);
-    }
-
-    void assertWritesFixedLevelCoordinateResponseTrialOnLine(gsl::index line) {
-        run(writingFixedLevelCoordinateResponseTrial, file);
-        writingFixedLevelCoordinateResponseTrial
-            .assertContainsCommaDelimitedTrialOnLine(writer, line);
-    }
-
-    void assertWritesFreeResponseTrialOnLine(gsl::index line) {
-        run(writingFreeResponseTrial, file);
-        writingFreeResponseTrial.assertContainsCommaDelimitedTrialOnLine(
-            writer, line);
-    }
-
-    void assertWritesOpenSetAdaptiveTrialOnLine(gsl::index line) {
-        run(writingOpenSetAdaptiveTrial, file);
-        writingOpenSetAdaptiveTrial.assertContainsCommaDelimitedTrialOnLine(
-            writer, line);
-    }
-
-    void assertWritesCorrectKeywordsTrialOnLine(gsl::index line) {
-        run(writingCorrectKeywordsTrial, file);
-        writingCorrectKeywordsTrial.assertContainsCommaDelimitedTrialOnLine(
-            writer, line);
-    }
-
     void assertWritesTrialOnLine(WritingTrial &useCase, gsl::index line) {
         run(useCase, file);
         useCase.assertContainsCommaDelimitedTrialOnLine(writer, line);
@@ -572,28 +522,28 @@ OUTPUT_FILE_TEST(writeCorrectKeywordsTrialWritesTrialOnSecondLine) {
 OUTPUT_FILE_TEST(
     writeAdaptiveCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
     run(writingAdaptiveCoordinateResponseTrial, file);
-    assertWritesAdaptiveCoordinateResponseTrialOnLine(3);
+    assertWritesTrialOnLine(writingAdaptiveCoordinateResponseTrial, 3);
 }
 
 OUTPUT_FILE_TEST(
     writeFixedLevelCoordinateResponseTrialTwiceDoesNotWriteHeadingTwice) {
     run(writingFixedLevelCoordinateResponseTrial, file);
-    assertWritesFixedLevelCoordinateResponseTrialOnLine(3);
+    assertWritesTrialOnLine(writingFixedLevelCoordinateResponseTrial, 3);
 }
 
 OUTPUT_FILE_TEST(writeFreeResponseTrialTwiceDoesNotWriteHeadingTwice) {
-    writeFreeResponseTrial(file);
-    assertWritesFreeResponseTrialOnLine(3);
+    run(writingFreeResponseTrial, file);
+    assertWritesTrialOnLine(writingFreeResponseTrial, 3);
 }
 
 OUTPUT_FILE_TEST(writeOpenSetAdaptiveTrialTwiceDoesNotWriteHeadingTwice) {
-    writeOpenSetAdaptiveTrial(file);
-    assertWritesOpenSetAdaptiveTrialOnLine(3);
+    run(writingOpenSetAdaptiveTrial, file);
+    assertWritesTrialOnLine(writingOpenSetAdaptiveTrial, 3);
 }
 
 OUTPUT_FILE_TEST(writeCorrectKeywordsTrialTwiceDoesNotWriteHeadingTwice) {
-    writeCorrectKeywordsTrial(file);
-    assertWritesCorrectKeywordsTrialOnLine(3);
+    run(writingCorrectKeywordsTrial, file);
+    assertWritesTrialOnLine(writingCorrectKeywordsTrial, 3);
 }
 
 OUTPUT_FILE_TEST(
