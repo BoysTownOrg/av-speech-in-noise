@@ -110,9 +110,9 @@ class FileWriter : public av_speech_in_noise::Writer {
     std::ofstream file{};
 
   public:
-    void write(std::string s) override { file << s; }
+    void write(const std::string & s) override { file << s; }
 
-    void open(std::string s) override { file.open(s); }
+    void open(const std::string & s) override { file.open(s); }
 
     auto failed() -> bool override { return file.fail(); }
 

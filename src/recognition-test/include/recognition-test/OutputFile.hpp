@@ -76,8 +76,8 @@ constexpr auto name(coordinate_response_measure::Color c) -> const char * {
 class Writer {
   public:
     virtual ~Writer() = default;
-    virtual void write(std::string) = 0;
-    virtual void open(std::string) = 0;
+    virtual void write(const std::string &) = 0;
+    virtual void open(const std::string &) = 0;
     virtual auto failed() -> bool = 0;
     virtual void close() = 0;
     virtual void save() = 0;

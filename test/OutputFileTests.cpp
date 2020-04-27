@@ -13,9 +13,9 @@ class WriterStub : public Writer {
 
     void close() override { closed_ = true; }
 
-    void open(std::string f) override { filePath_ = std::move(f); }
+    void open(const std::string &f) override { filePath_ = f; }
 
-    void write(std::string s) override { insert(written_, s); }
+    void write(const std::string &s) override { insert(written_, s); }
 
     auto failed() -> bool override { return {}; }
 
@@ -767,12 +767,12 @@ class FailingWriter : public Writer {
     bool failed_{};
 
   public:
-    void open(std::string) override { failed_ = true; }
+    void open(const std::string &) override { failed_ = true; }
 
     auto failed() -> bool override { return failed_; }
 
     void close() override {}
-    void write(std::string) override {}
+    void write(const std::string &) override {}
     void save() override {}
 };
 
