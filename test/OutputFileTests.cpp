@@ -758,8 +758,8 @@ OUTPUT_FILE_TEST(writeFixedLevelTestWithAuditoryOnlyCondition) {
 }
 
 OUTPUT_FILE_TEST(writeEyeGazes) {
-    setEyeGazes({1, 2, 3}, {{0.4, 0.44}, {0.5, 0.55}, {0.6, 0.66}},
-        {{0.7, 0.77}, {0.8, 0.88}, {0.9, 0.99}});
+    setEyeGazes({1, 2, 3}, {{0.4F, 0.44F}, {0.5F, 0.55F}, {0.6F, 0.66F}},
+        {{0.7F, 0.77F}, {0.8F, 0.88F}, {0.9F, 0.99F}});
     write(file, eyeGazes);
     assertNthCommaDelimitedEntryOfLine(
         writer, HeadingItem::eyeTrackerTime, 1, 1);
@@ -776,12 +776,12 @@ OUTPUT_FILE_TEST(writeEyeGazes) {
     assertNthCommaDelimitedEntryOfLine(writer, "0.9 0.99", 3, 4);
 }
 
-OUTPUT_FILE_TEST(writeFadeInCompleteTime) {
+OUTPUT_FILE_TEST(writeTargetStartTime) {
     writeTargetStartTimeNanoseconds(file, 1);
     assertContainsColonDelimitedEntry(writer, "target start time (ns)", "1");
 }
 
-OUTPUT_FILE_TEST(writeEyeTrackerPlayerSynchronization) {
+OUTPUT_FILE_TEST(writeEyeTrackerTargetPlayerSynchronization) {
     EyeTrackerTargetPlayerSynchronization s{};
     s.eyeTrackerSystemTime.microseconds = 1;
     s.targetPlayerSystemTime.nanoseconds = 2;
