@@ -16,7 +16,7 @@ class OutputFileStub : public OutputFile {
     open_set::AdaptiveTrial openSetAdaptiveTrial_{};
     BinocularGazeSamples eyeGazes_;
     AdaptiveTestResults adaptiveTestResult_{};
-    LogString log_{};
+    std::stringstream log_{};
     EyeTrackerTargetPlayerSynchronization
         eyeTrackerTargetPlayerSynchronization_{};
     TargetStartTime targetStartTime_{};
@@ -85,13 +85,13 @@ class OutputFileStub : public OutputFile {
 
     auto writtenFixedLevelTrial() const -> auto & { return fixedLevelTrial_; }
 
-    void addToLog(const std::string &s) { log_.insert(s); }
+    void addToLog(const std::string &s) { insert(log_, s); }
 
     void throwOnOpen() { throwOnOpen_ = true; }
 
     auto openNewFileParameters() const { return openNewFileParameters_; }
 
-    auto log() const -> auto & { return log_; }
+    auto log() const -> const std::stringstream & { return log_; }
 
     auto adaptiveTest() const { return adaptiveTest_; }
 

@@ -383,7 +383,9 @@ void assertOnlyShown(TargetPlayerStub &targetPlayer) {
     assertTrue(shown(targetPlayer));
 }
 
-auto log(OutputFileStub &file) -> const LogString & { return file.log(); }
+auto log(OutputFileStub &file) -> const std::stringstream & {
+    return file.log();
+}
 
 void run(UseCase &useCase, RecognitionTestModelImpl &model) {
     useCase.run(model);
@@ -549,7 +551,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertClosesOutputFileOpensAndWritesTestInOrder(UseCase &useCase) {
         run(useCase, model);
-        assertEqual("close openNewFile write ", log(outputFile));
+        assertEqual("close openNewFile write ", string(log(outputFile)));
     }
 
     template <typename T>
@@ -597,7 +599,7 @@ class RecognitionTestModelTests : public ::testing::Test {
 
     void assertSavesOutputFileAfterWritingTrial(UseCase &useCase) {
         run(useCase, model);
-        assertTrue(log(outputFile).endsWith("save "));
+        assertTrue(endsWith(log(outputFile), "save "));
     }
 
     void assertCallThrowsRequestFailure(
@@ -1112,7 +1114,7 @@ RECOGNITION_TEST_MODEL_TEST(
     testMethod.setComplete();
     run(submittingCorrectKeywords, model);
     assertTrue(endsWith(testMethod.log(), "writeTestResult "));
-    assertTrue(log(outputFile).endsWith("save "));
+    assertTrue(endsWith(log(outputFile), "save "));
 }
 
 RECOGNITION_TEST_MODEL_TEST(
