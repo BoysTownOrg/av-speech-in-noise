@@ -188,44 +188,45 @@ void main() {
     TimerImpl timer;
     MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
     maskerPlayer.setFadeInOutSeconds(0.5);
-    FileWriter writer;
+    FileWriter fileWriter;
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
-    OutputFilePathImpl path{&timeStamp, &systemPath};
-    path.setRelativeOutputDirectory("Documents/AvSpeechInNoise Data");
-    OutputFileImpl outputFile{writer, path};
+    OutputFilePathImpl outputFilePath{&timeStamp, &systemPath};
+    outputFilePath.setRelativeOutputDirectory("Documents/AvSpeechInNoise Data");
+    OutputFileImpl outputFile{fileWriter, outputFilePath};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
     TextFileReaderImpl textFileReader;
     MersenneTwisterRandomizer randomizer;
     AdaptiveMethodImpl adaptiveMethod{
         snrTrackFactory, responseEvaluator, randomizer};
-    MacOsDirectoryReader reader;
+    MacOsDirectoryReader directoryReader;
     FileExtensionFilter targetFileExtensionFilter{{".mov", ".avi", ".wav"}};
-    FileFilterDecorator passesTargetFileExtensions{
-        &reader, &targetFileExtensionFilter};
+    FileFilterDecorator onlyIncludesTargetFileExtensions{
+        &directoryReader, &targetFileExtensionFilter};
     RandomizedTargetListWithReplacement targetsWithReplacement{
-        &passesTargetFileExtensions, &randomizer};
+        &onlyIncludesTargetFileExtensions, &randomizer};
     FileIdentifierExcluderFilter
-        filtersOutTargetsThatHave100_200_300Or400InTheirName_{
+        excludesTargetsThatHave100_200_300Or400InTheirName{
             {"100", "200", "300", "400"}};
-    FileIdentifierFilter targetsThatHave100InTheirName_{"100"};
-    FileIdentifierFilter targetsThatHave200InTheirName_{"200"};
-    FileIdentifierFilter targetsThatHave300InTheirName_{"300"};
-    FileIdentifierFilter targetsThatHave400InTheirName_{"400"};
-    FileFilterDecorator noSilentIntervalTargets{&passesTargetFileExtensions,
-        &filtersOutTargetsThatHave100_200_300Or400InTheirName_};
+    FileIdentifierFilter targetsThatHave100InTheirName{"100"};
+    FileIdentifierFilter targetsThatHave200InTheirName{"200"};
+    FileIdentifierFilter targetsThatHave300InTheirName{"300"};
+    FileIdentifierFilter targetsThatHave400InTheirName{"400"};
+    FileFilterDecorator allButSilentIntervalTargets{
+        &onlyIncludesTargetFileExtensions,
+        &excludesTargetsThatHave100_200_300Or400InTheirName};
     FileFilterDecorator oneHundred_ms_SilentIntervalTargets{
-        &passesTargetFileExtensions, &targetsThatHave100InTheirName_};
+        &onlyIncludesTargetFileExtensions, &targetsThatHave100InTheirName};
     FileFilterDecorator twoHundred_ms_SilentIntervalTargets{
-        &passesTargetFileExtensions, &targetsThatHave200InTheirName_};
+        &onlyIncludesTargetFileExtensions, &targetsThatHave200InTheirName};
     FileFilterDecorator threeHundred_ms_SilentIntervalTargets{
-        &passesTargetFileExtensions, &targetsThatHave300InTheirName_};
+        &onlyIncludesTargetFileExtensions, &targetsThatHave300InTheirName};
     FileFilterDecorator fourHundred_ms_SilentIntervalTargets{
-        &passesTargetFileExtensions, &targetsThatHave400InTheirName_};
+        &onlyIncludesTargetFileExtensions, &targetsThatHave400InTheirName};
     RandomSubsetFiles passesThirtyRandomFiles{&randomizer, 30};
-    FileFilterDecorator thirtyRandomNoSilentIntervalTargets{
-        &noSilentIntervalTargets, &passesThirtyRandomFiles};
+    FileFilterDecorator thirtyRandomAllButSilentIntervalTargets{
+        &allButSilentIntervalTargets, &passesThirtyRandomFiles};
     FileFilterDecorator thirtyRandomOneHundred_ms_SilentIntervalTargets{
         &oneHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
     FileFilterDecorator thirtyRandomTwoHundred_ms_SilentIntervalTargets{
@@ -235,7 +236,7 @@ void main() {
     FileFilterDecorator thirtyRandomFourHundred_ms_SilentIntervalTargets{
         &fourHundred_ms_SilentIntervalTargets, &passesThirtyRandomFiles};
     DirectoryReaderComposite silentIntervalTargetsDirectoryReader{
-        {&thirtyRandomNoSilentIntervalTargets,
+        {&thirtyRandomAllButSilentIntervalTargets,
             &thirtyRandomOneHundred_ms_SilentIntervalTargets,
             &thirtyRandomTwoHundred_ms_SilentIntervalTargets,
             &thirtyRandomThreeHundred_ms_SilentIntervalTargets,
@@ -243,19 +244,19 @@ void main() {
     RandomizedTargetListWithoutReplacement silentIntervalTargets{
         &silentIntervalTargetsDirectoryReader, &randomizer};
     RandomizedTargetListWithoutReplacement everyTargetOnce{
-        &passesTargetFileExtensions, &randomizer};
+        &onlyIncludesTargetFileExtensions, &randomizer};
     FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     TobiiEyeTracker eyeTracker;
     RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, eyeTracker};
     RandomizedTargetListWithReplacement::Factory targetsWithReplacementFactory{
-        &passesTargetFileExtensions, &randomizer};
+        &onlyIncludesTargetFileExtensions, &randomizer};
     SubdirectoryTargetListReader targetsWithReplacementReader{
-        &targetsWithReplacementFactory, &reader};
+        &targetsWithReplacementFactory, &directoryReader};
     CyclicRandomizedTargetList::Factory cyclicTargetsFactory{
-        &passesTargetFileExtensions, &randomizer};
+        &onlyIncludesTargetFileExtensions, &randomizer};
     SubdirectoryTargetListReader cyclicTargetsReader{
-        &cyclicTargetsFactory, &reader};
+        &cyclicTargetsFactory, &directoryReader};
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
         targetsWithReplacement, silentIntervalTargets, everyTargetOnce,
