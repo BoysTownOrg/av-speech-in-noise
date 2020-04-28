@@ -1,7 +1,7 @@
 #include "DirectoryReaderStub.hpp"
 #include "assert-utility.hpp"
 #include <target-playlists/FileFilterDecorator.hpp>
-#include <target-playlists/RandomizedTargetPlaylist.hpp>
+#include <target-playlists/RandomizedTargetPlaylists.hpp>
 #include <gtest/gtest.h>
 #include <algorithm>
 

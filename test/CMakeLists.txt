@@ -12,7 +12,7 @@ add_executable(
   ModelTests.cpp
   ResponseEvaluatorTests.cpp
   SubdirectoryTargetListReaderTests.cpp
-  RandomizedTargetListTests.cpp
+  RandomizedTargetPlaylistsTests.cpp
   TargetPlayerTests.cpp
   TestSettingsInterpreterTests.cpp)
 target_compile_features(tests PRIVATE cxx_std_17)

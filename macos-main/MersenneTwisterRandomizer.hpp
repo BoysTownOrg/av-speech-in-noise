@@ -1,7 +1,7 @@
 #ifndef MACOS_MAIN_MERSENNETWISTERRANDOMIZER_HPP_
 #define MACOS_MAIN_MERSENNETWISTERRANDOMIZER_HPP_
 
-#include <target-playlists/RandomizedTargetPlaylist.hpp>
+#include <target-playlists/RandomizedTargetPlaylists.hpp>
 #include <recognition-test/RecognitionTestModel.hpp>
 #include <random>
 

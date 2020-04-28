@@ -1,5 +1,5 @@
 add_library(
-  target-playlists src/FileFilterDecorator.cpp src/RandomizedTargetPlaylist.cpp
+  target-playlists src/FileFilterDecorator.cpp src/RandomizedTargetPlaylists.cpp
               src/SubdirectoryTargetPlaylistReader.cpp)
 target_include_directories(
   target-playlists

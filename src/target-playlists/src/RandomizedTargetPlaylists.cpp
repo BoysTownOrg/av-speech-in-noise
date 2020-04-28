@@ -1,4 +1,4 @@
-#include "RandomizedTargetPlaylist.hpp"
+#include "RandomizedTargetPlaylists.hpp"
 #include <algorithm>
 
 namespace av_speech_in_noise {
