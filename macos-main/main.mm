@@ -35,8 +35,9 @@
 @interface CallbackScheduler : NSObject
 @end
 
+namespace av_speech_in_noise {
 namespace {
-class TimerImpl : public av_speech_in_noise::Timer {
+class TimerImpl : public Timer {
   public:
     TimerImpl();
     void subscribe(EventListener *e) override;
@@ -48,10 +49,11 @@ class TimerImpl : public av_speech_in_noise::Timer {
     CallbackScheduler *scheduler{[[CallbackScheduler alloc] init]};
 };
 }
+}
 
 @implementation CallbackScheduler {
   @public
-    TimerImpl *controller;
+    av_speech_in_noise::TimerImpl *controller;
 }
 
 - (void)scheduleCallbackAfterSeconds:(double)x {
@@ -67,52 +69,51 @@ class TimerImpl : public av_speech_in_noise::Timer {
 }
 @end
 
-static auto contents(NSString *parent) -> NSArray<NSString *> * {
+namespace av_speech_in_noise {
+namespace {
+auto contents(NSString *parent) -> NSArray<NSString *> * {
     return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parent
                                                                error:nil];
 }
 
-static auto collectContentsIf(const av_speech_in_noise::LocalUrl &directory,
-    BOOL (*f)(NSString *)) -> std::vector<av_speech_in_noise::LocalUrl> {
-    std::vector<av_speech_in_noise::LocalUrl> items{};
+auto collectContentsIf(const LocalUrl &directory, bool (*f)(NSString *))
+    -> std::vector<LocalUrl> {
+    std::vector<LocalUrl> items{};
     auto parent{asNsString(directory.path)};
     for (NSString *item in contents(parent)) {
         auto path{[parent stringByAppendingPathComponent:item]};
-        if ((*f)(path) != 0)
+        if ((*f)(path))
             items.push_back({[item UTF8String]});
     }
     return items;
 }
 
-static auto isDirectory(NSString *path) -> BOOL {
+auto isDirectory(NSString *path) -> bool {
     BOOL isDir{NO};
     [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
-    return isDir;
+    return isDir == YES;
 }
 
-static auto notADirectory(NSString *path) -> BOOL {
-    return static_cast<BOOL>(isDirectory(path) == 0);
-}
+auto notADirectory(NSString *path) -> bool { return !isDirectory(path); }
 
-namespace {
-class MacOsDirectoryReader : public av_speech_in_noise::DirectoryReader {
-    auto filesIn(const av_speech_in_noise::LocalUrl &directory) -> std::vector<av_speech_in_noise::LocalUrl> override {
+class MacOsDirectoryReader : public DirectoryReader {
+    auto filesIn(const LocalUrl &directory) -> std::vector<LocalUrl> override {
         return collectContentsIf(directory, notADirectory);
     }
 
-    auto subDirectories(const av_speech_in_noise::LocalUrl &directory)
-        -> std::vector<av_speech_in_noise::LocalUrl> override {
+    auto subDirectories(const LocalUrl &directory)
+        -> std::vector<LocalUrl> override {
         return collectContentsIf(directory, isDirectory);
     }
 };
 
-class FileWriter : public av_speech_in_noise::Writer {
+class FileWriter : public Writer {
     std::ofstream file{};
 
   public:
-    void write(const std::string & s) override { file << s; }
+    void write(const std::string &s) override { file << s; }
 
-    void open(const std::string & s) override { file.open(s); }
+    void open(const std::string &s) override { file.open(s); }
 
     auto failed() -> bool override { return file.fail(); }
 
@@ -121,7 +122,7 @@ class FileWriter : public av_speech_in_noise::Writer {
     void save() override { file.flush(); }
 };
 
-class UnixFileSystemPath : public av_speech_in_noise::FileSystemPath {
+class UnixFileSystemPath : public FileSystemPath {
     auto homeDirectory() -> std::string override { return std::getenv("HOME"); }
 
     void createDirectory(std::string s) override {
@@ -129,7 +130,7 @@ class UnixFileSystemPath : public av_speech_in_noise::FileSystemPath {
     }
 };
 
-class TimeStampImpl : public av_speech_in_noise::TimeStamp {
+class TimeStampImpl : public TimeStamp {
     tm dummyTime{};
     tm *time{&dummyTime};
 
@@ -158,8 +159,8 @@ class TimeStampImpl : public av_speech_in_noise::TimeStamp {
     }
 };
 
-class TextFileReaderImpl : public av_speech_in_noise::TextFileReader {
-    auto read(const av_speech_in_noise::LocalUrl &s) -> std::string override {
+class TextFileReaderImpl : public TextFileReader {
+    auto read(const LocalUrl &s) -> std::string override {
         std::ifstream file{s.path};
         std::stringstream stream;
         stream << file.rdbuf();
@@ -176,10 +177,8 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 }
 
 void TimerImpl::timerCallback() { listener->callback(); }
-}
 
-namespace av_speech_in_noise {
-static void main() {
+void main() {
     MacOsDirectoryReader reader;
     FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
     FileFilterDecorator fileExtensions{&reader, &fileExtensions_};
@@ -193,8 +192,7 @@ static void main() {
     TargetPlayerImpl targetPlayer{&videoPlayer, &audioReader};
     AvFoundationAudioPlayer audioPlayer;
     TimerImpl timer;
-    MaskerPlayerImpl maskerPlayer{
-        &audioPlayer, &audioReader, &timer};
+    MaskerPlayerImpl maskerPlayer{&audioPlayer, &audioReader, &timer};
     maskerPlayer.setFadeInOutSeconds(0.5);
     FileWriter writer;
     TimeStampImpl timeStamp;
@@ -209,14 +207,12 @@ static void main() {
         snrTrackFactory, responseEvaluator, randomizer};
     RandomizedTargetListWithReplacement targetsWithReplacement{
         &fileExtensions, &randomizer};
-    FileIdentifierExcluderFilter originalStimuli_{
-        {"100", "200", "300", "400"}};
+    FileIdentifierExcluderFilter originalStimuli_{{"100", "200", "300", "400"}};
     FileIdentifierFilter oneHundredMsStimuli_{"100"};
     FileIdentifierFilter twoHundredMsStimuli_{"200"};
     FileIdentifierFilter threeHundredMsStimuli_{"300"};
     FileIdentifierFilter fourHundredMsStimuli_{"400"};
-    FileFilterDecorator originalStimuli{
-        &fileExtensions, &originalStimuli_};
+    FileFilterDecorator originalStimuli{&fileExtensions, &originalStimuli_};
     FileFilterDecorator oneHundredMsStimuli{
         &fileExtensions, &oneHundredMsStimuli_};
     FileFilterDecorator twoHundredMsStimuli{
@@ -236,11 +232,9 @@ static void main() {
         &threeHundredMsStimuli, &randomSubsetStimuli};
     FileFilterDecorator randomSubsetFourHundredMsStimuli{
         &fourHundredMsStimuli, &randomSubsetStimuli};
-    DirectoryReaderComposite composite{
-        {&randomSubsetOriginalStimuli, &randomSubsetOneHundredMsStimuli,
-            &randomSubsetTwoHundredMsStimuli,
-            &randomSubsetThreeHundredMsStimuli,
-            &randomSubsetFourHundredMsStimuli}};
+    DirectoryReaderComposite composite{{&randomSubsetOriginalStimuli,
+        &randomSubsetOneHundredMsStimuli, &randomSubsetTwoHundredMsStimuli,
+        &randomSubsetThreeHundredMsStimuli, &randomSubsetFourHundredMsStimuli}};
     RandomizedTargetListWithoutReplacement silentIntervals{
         &composite, &randomizer};
     RandomizedTargetListWithoutReplacement allStimuli{
@@ -249,8 +243,8 @@ static void main() {
     TobiiEyeTracker eyeTracker;
     RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, eyeTracker};
-    RandomizedTargetListWithReplacement::Factory
-        targetsWithReplacementFactory{&fileExtensions, &randomizer};
+    RandomizedTargetListWithReplacement::Factory targetsWithReplacementFactory{
+        &fileExtensions, &randomizer};
     SubdirectoryTargetListReader targetsWithReplacementReader{
         &targetsWithReplacementFactory, &reader};
     CyclicRandomizedTargetList::Factory cyclicTargetsFactory{
@@ -280,6 +274,7 @@ static void main() {
     Presenter presenter{model, view, testSetup, subject, experimenter,
         testSettingsInterpreter, textFileReader};
     presenter.run();
+}
 }
 }
 
