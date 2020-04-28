@@ -104,8 +104,7 @@ class AvFoundationAudioPlayer : public AudioPlayer {
     void stop() override;
     void timerCallback();
     auto outputDevice(int index) -> bool override;
-    auto nanoseconds(PlayerTime)
-        -> std::uintmax_t override;
+    auto nanoseconds(PlayerTime) -> std::uintmax_t override;
     auto currentSystemTime() -> PlayerTime override;
 
   private:
