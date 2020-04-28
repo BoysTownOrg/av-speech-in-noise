@@ -93,11 +93,6 @@ class WritingFixedLevelTest : public WritingTest {
     FixedLevelTest test_{};
 };
 
-struct HeadingLabel {
-    gsl::index index;
-    HeadingItem headingItem;
-};
-
 class WritingTrial : public virtual UseCase {
   public:
     virtual auto headingLabels() -> std::map<HeadingItem, gsl::index> = 0;
