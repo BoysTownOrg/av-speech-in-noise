@@ -24,6 +24,6 @@ target_link_libraries(
   adaptive-track
   presentation
   stimulus-players
-  target-list
+  target-playlists
   gtest_main
   GSL)

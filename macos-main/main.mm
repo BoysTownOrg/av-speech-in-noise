@@ -15,8 +15,8 @@
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
-#include <target-list/RandomizedTargetPlaylist.hpp>
-#include <target-list/FileFilterDecorator.hpp>
+#include <target-playlists/RandomizedTargetPlaylist.hpp>
+#include <target-playlists/FileFilterDecorator.hpp>
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <sys/stat.h>
 #include <fstream>

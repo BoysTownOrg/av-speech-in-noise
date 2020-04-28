@@ -34,7 +34,7 @@ target_link_libraries(
   recognition-test
   stimulus-players
   presentation
-  target-list
+  target-playlists
   adaptive-track
   ${AV_FOUNDATION}
   ${CORE_AUDIO}
