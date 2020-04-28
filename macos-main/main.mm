@@ -22,6 +22,7 @@
 #include <fstream>
 #include <sstream>
 #include <utility>
+#include <functional>
 
 @interface WindowDelegate : NSObject <NSWindowDelegate>
 @end
@@ -76,13 +77,13 @@ auto contents(NSString *parent) -> NSArray<NSString *> * {
                                                                error:nil];
 }
 
-auto collectContentsIf(const LocalUrl &directory, bool (*f)(NSString *))
-    -> std::vector<LocalUrl> {
+auto collectContentsIf(const LocalUrl &directory,
+    const std::function<bool(NSString *)> &predicate) -> std::vector<LocalUrl> {
     std::vector<LocalUrl> items{};
-    auto parent{asNsString(directory.path)};
+    const auto parent{asNsString(directory.path)};
     for (NSString *item in contents(parent)) {
-        auto path{[parent stringByAppendingPathComponent:item]};
-        if ((*f)(path))
+        const auto path{[parent stringByAppendingPathComponent:item]};
+        if (predicate(path))
             items.push_back({[item UTF8String]});
     }
     return items;
@@ -151,9 +152,8 @@ class TimeStampImpl : public TimeStamp {
     auto second() -> int override { return time->tm_sec; }
 
     void capture() override {
-        auto now{std::time(nullptr)};
+        const auto now{std::time(nullptr)};
         time = std::localtime(&now);
-        // Add fail method?
         if (time == nullptr)
             time = &dummyTime;
     }
@@ -179,13 +179,7 @@ void TimerImpl::scheduleCallbackAfterSeconds(double x) {
 void TimerImpl::timerCallback() { listener->callback(); }
 
 void main() {
-    MacOsDirectoryReader reader;
-    FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
-    FileFilterDecorator fileExtensions{&reader, &fileExtensions_};
-    MersenneTwisterRandomizer randomizer;
-    auto subjectScreen = [[NSScreen screens] lastObject];
-    auto subjectScreenFrame = subjectScreen.frame;
-    auto subjectScreenOrigin = subjectScreenFrame.origin;
+    const auto subjectScreen{[[NSScreen screens] lastObject]};
     AvFoundationVideoPlayer videoPlayer{subjectScreen};
     CoreAudioBufferedReader bufferedReader;
     AudioReaderImpl audioReader{&bufferedReader};
@@ -203,40 +197,46 @@ void main() {
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
     TextFileReaderImpl textFileReader;
+    MersenneTwisterRandomizer randomizer;
     AdaptiveMethodImpl adaptiveMethod{
         snrTrackFactory, responseEvaluator, randomizer};
+    MacOsDirectoryReader reader;
+    FileExtensionFilter fileExtensions_{{".mov", ".avi", ".wav"}};
+    FileFilterDecorator fileExtensions{&reader, &fileExtensions_};
     RandomizedTargetListWithReplacement targetsWithReplacement{
         &fileExtensions, &randomizer};
     FileIdentifierExcluderFilter originalStimuli_{{"100", "200", "300", "400"}};
-    FileIdentifierFilter oneHundredMsStimuli_{"100"};
-    FileIdentifierFilter twoHundredMsStimuli_{"200"};
-    FileIdentifierFilter threeHundredMsStimuli_{"300"};
-    FileIdentifierFilter fourHundredMsStimuli_{"400"};
+    FileIdentifierFilter targetsThatHave100InTheirName_{"100"};
+    FileIdentifierFilter targetsThatHave200InTheirName_{"200"};
+    FileIdentifierFilter targetsThatHave300InTheirName_{"300"};
+    FileIdentifierFilter targetsThatHave400InTheirName_{"400"};
     FileFilterDecorator originalStimuli{&fileExtensions, &originalStimuli_};
-    FileFilterDecorator oneHundredMsStimuli{
-        &fileExtensions, &oneHundredMsStimuli_};
-    FileFilterDecorator twoHundredMsStimuli{
-        &fileExtensions, &twoHundredMsStimuli_};
-    FileFilterDecorator threeHundredMsStimuli{
-        &fileExtensions, &threeHundredMsStimuli_};
-    FileFilterDecorator fourHundredMsStimuli{
-        &fileExtensions, &fourHundredMsStimuli_};
+    FileFilterDecorator targetsThatHave100InTheirName{
+        &fileExtensions, &targetsThatHave100InTheirName_};
+    FileFilterDecorator targetsThatHave200InTheirName{
+        &fileExtensions, &targetsThatHave200InTheirName_};
+    FileFilterDecorator targetsThatHave300InTheirName{
+        &fileExtensions, &targetsThatHave300InTheirName_};
+    FileFilterDecorator targetsThatHave400InTheirName{
+        &fileExtensions, &targetsThatHave400InTheirName_};
     RandomSubsetFiles randomSubsetStimuli{&randomizer, 30};
     FileFilterDecorator randomSubsetOriginalStimuli{
         &originalStimuli, &randomSubsetStimuli};
     FileFilterDecorator randomSubsetOneHundredMsStimuli{
-        &oneHundredMsStimuli, &randomSubsetStimuli};
+        &targetsThatHave100InTheirName, &randomSubsetStimuli};
     FileFilterDecorator randomSubsetTwoHundredMsStimuli{
-        &twoHundredMsStimuli, &randomSubsetStimuli};
+        &targetsThatHave200InTheirName, &randomSubsetStimuli};
     FileFilterDecorator randomSubsetThreeHundredMsStimuli{
-        &threeHundredMsStimuli, &randomSubsetStimuli};
+        &targetsThatHave300InTheirName, &randomSubsetStimuli};
     FileFilterDecorator randomSubsetFourHundredMsStimuli{
-        &fourHundredMsStimuli, &randomSubsetStimuli};
-    DirectoryReaderComposite composite{{&randomSubsetOriginalStimuli,
-        &randomSubsetOneHundredMsStimuli, &randomSubsetTwoHundredMsStimuli,
-        &randomSubsetThreeHundredMsStimuli, &randomSubsetFourHundredMsStimuli}};
+        &targetsThatHave400InTheirName, &randomSubsetStimuli};
+    DirectoryReaderComposite silentIntervalsDirectoryReader{
+        {&randomSubsetOriginalStimuli, &randomSubsetOneHundredMsStimuli,
+            &randomSubsetTwoHundredMsStimuli,
+            &randomSubsetThreeHundredMsStimuli,
+            &randomSubsetFourHundredMsStimuli}};
     RandomizedTargetListWithoutReplacement silentIntervals{
-        &composite, &randomizer};
+        &silentIntervalsDirectoryReader, &randomizer};
     RandomizedTargetListWithoutReplacement allStimuli{
         &fileExtensions, &randomizer};
     FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
@@ -257,12 +257,14 @@ void main() {
         recognitionTestModel};
     CocoaView view{NSMakeRect(0, 0, 900, 270)};
     view.center();
-    auto delegate{[WindowDelegate alloc]};
+    const auto delegate{[WindowDelegate alloc]};
     view.setDelegate(delegate);
-    auto subjectScreenSize{subjectScreenFrame.size};
-    auto subjectViewHeight{subjectScreenSize.height / 4};
-    auto subjectScreenWidth{subjectScreenSize.width};
-    auto subjectViewWidth{subjectScreenWidth / 3};
+    const auto subjectScreenFrame{subjectScreen.frame};
+    const auto subjectScreenOrigin{subjectScreenFrame.origin};
+    const auto subjectScreenSize{subjectScreenFrame.size};
+    const auto subjectViewHeight{subjectScreenSize.height / 4};
+    const auto subjectScreenWidth{subjectScreenSize.width};
+    const auto subjectViewWidth{subjectScreenWidth / 3};
     auto subjectViewLeadingEdge =
         subjectScreenOrigin.x + (subjectScreenWidth - subjectViewWidth) / 2;
     CocoaSubjectView subjectView{NSMakeRect(subjectViewLeadingEdge,
