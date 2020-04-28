@@ -37,15 +37,15 @@ class Track {
     };
 };
 
-struct TargetListWithTrack {
-    std::shared_ptr<TargetList> list;
+struct TargetPlaylistWithTrack {
+    std::shared_ptr<TargetPlaylist> list;
     std::shared_ptr<Track> track;
 };
 
 class AdaptiveMethodImpl : public AdaptiveMethod {
   public:
     AdaptiveMethodImpl(Track::Factory &, ResponseEvaluator &, Randomizer &);
-    void initialize(const AdaptiveTest &, TargetListReader *) override;
+    void initialize(const AdaptiveTest &, TargetPlaylistReader *) override;
     void submitIncorrectResponse() override;
     void submitCorrectResponse() override;
     void submit(const CorrectKeywords &) override;
@@ -67,7 +67,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
   private:
     void selectNextList();
 
-    std::vector<TargetListWithTrack> targetListsWithTracks{};
+    std::vector<TargetPlaylistWithTrack> targetListsWithTracks{};
     coordinate_response_measure::AdaptiveTrial
         lastCoordinateResponseMeasureTrial{};
     open_set::AdaptiveTrial lastOpenSetTrial{};
@@ -77,7 +77,7 @@ class AdaptiveMethodImpl : public AdaptiveMethod {
     ResponseEvaluator &evaluator;
     Randomizer &randomizer;
     Track *snrTrack{};
-    TargetList *targetList{};
+    TargetPlaylist *targetList{};
     int thresholdReversals{};
 };
 }

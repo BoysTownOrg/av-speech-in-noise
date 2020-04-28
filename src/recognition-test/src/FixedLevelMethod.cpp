@@ -4,13 +4,13 @@ namespace av_speech_in_noise {
 FixedLevelMethodImpl::FixedLevelMethodImpl(ResponseEvaluator &evaluator)
     : evaluator{evaluator} {}
 
-static void loadFromDirectory(TargetList *list, const FixedLevelTest &test) {
+static void loadFromDirectory(TargetPlaylist *list, const FixedLevelTest &test) {
     list->loadFromDirectory(test.targetsUrl);
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &test, TargetList *list) {
-    usingFiniteTargetList_ = false;
+    const FixedLevelTest &test, TargetPlaylist *list) {
+    usingFiniteTargetPlaylist_ = false;
     targetList = list;
     test_ = &test;
     trials_ = test.trials;
@@ -19,18 +19,18 @@ void FixedLevelMethodImpl::initialize(
 }
 
 void FixedLevelMethodImpl::initialize(
-    const FixedLevelTest &p, FiniteTargetList *list) {
-    usingFiniteTargetList_ = true;
+    const FixedLevelTest &p, FiniteTargetPlaylist *list) {
+    usingFiniteTargetPlaylist_ = true;
     targetList = list;
-    finiteTargetList = list;
+    finiteTargetPlaylist = list;
     test_ = &p;
     snr_ = p.snr;
     loadFromDirectory(targetList, p);
-    finiteTargetsExhausted_ = finiteTargetList->empty();
+    finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
 }
 
 auto FixedLevelMethodImpl::complete() -> bool {
-    return usingFiniteTargetList_ ? finiteTargetsExhausted_ : trials_ == 0;
+    return usingFiniteTargetPlaylist_ ? finiteTargetsExhausted_ : trials_ == 0;
 }
 
 auto FixedLevelMethodImpl::nextTarget() -> LocalUrl {
@@ -39,7 +39,7 @@ auto FixedLevelMethodImpl::nextTarget() -> LocalUrl {
 
 auto FixedLevelMethodImpl::snr() -> SNR { return snr_; }
 
-static auto current(TargetList *list) -> LocalUrl { return list->current(); }
+static auto current(TargetPlaylist *list) -> LocalUrl { return list->current(); }
 
 void FixedLevelMethodImpl::submit(
     const coordinate_response_measure::Response &response) {
@@ -49,8 +49,8 @@ void FixedLevelMethodImpl::submit(
     lastTrial.correctNumber = evaluator.correctNumber(current(targetList));
     lastTrial.correct = evaluator.correct(current(targetList), response);
     lastTrial.target = current(targetList).path;
-    if (usingFiniteTargetList_)
-        finiteTargetsExhausted_ = finiteTargetList->empty();
+    if (usingFiniteTargetPlaylist_)
+        finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
     else
         --trials_;
 }
@@ -72,10 +72,10 @@ void FixedLevelMethodImpl::submitIncorrectResponse() {}
 void FixedLevelMethodImpl::submitCorrectResponse() {}
 
 void FixedLevelMethodImpl::submit(const FreeResponse &response) {
-    if (usingFiniteTargetList_) {
+    if (usingFiniteTargetPlaylist_) {
         if (response.flagged)
-            finiteTargetList->reinsertCurrent();
-        finiteTargetsExhausted_ = finiteTargetList->empty();
+            finiteTargetPlaylist->reinsertCurrent();
+        finiteTargetsExhausted_ = finiteTargetPlaylist->empty();
     } else
         --trials_;
 }

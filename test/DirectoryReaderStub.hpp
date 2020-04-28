@@ -1,7 +1,7 @@
 #ifndef TESTS_DIRECTORYREADERSTUB_HPP_
 #define TESTS_DIRECTORYREADERSTUB_HPP_
 
-#include <target-list/SubdirectoryTargetListReader.hpp>
+#include <target-list/SubdirectoryTargetPlaylistReader.hpp>
 #include <utility>
 
 namespace av_speech_in_noise {

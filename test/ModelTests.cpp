@@ -1,6 +1,6 @@
 #include "ModelEventListenerStub.hpp"
-#include "TargetListStub.hpp"
-#include "TargetListSetReaderStub.hpp"
+#include "TargetPlaylistStub.hpp"
+#include "TargetPlaylistSetReaderStub.hpp"
 #include "assert-utility.hpp"
 #include <recognition-test/Model.hpp>
 #include <gtest/gtest.h>
@@ -18,14 +18,14 @@ class AdaptiveMethodStub : public AdaptiveMethod {
         return tracksResetted_;
     }
 
-    void initialize(const AdaptiveTest &t, TargetListReader *reader) override {
+    void initialize(const AdaptiveTest &t, TargetPlaylistReader *reader) override {
         test_ = &t;
         targetListReader_ = reader;
     }
 
     [[nodiscard]] auto test() const { return test_; }
 
-    [[nodiscard]] auto targetListReader() const -> TargetListReader * {
+    [[nodiscard]] auto targetListReader() const -> TargetPlaylistReader * {
         return targetListReader_;
     }
 
@@ -54,29 +54,29 @@ class AdaptiveMethodStub : public AdaptiveMethod {
   private:
     AdaptiveTestResults testResults_;
     const AdaptiveTest *test_{};
-    TargetListReader *targetListReader_{};
+    TargetPlaylistReader *targetListReader_{};
     bool tracksResetted_{};
 };
 
 class FixedLevelMethodStub : public FixedLevelMethod {
     const FixedLevelTest *test_{};
-    TargetList *targetList_{};
-    bool initializedWithFiniteTargetList_{};
+    TargetPlaylist *targetList_{};
+    bool initializedWithFiniteTargetPlaylist_{};
 
   public:
-    void initialize(const FixedLevelTest &t, TargetList *list) override {
+    void initialize(const FixedLevelTest &t, TargetPlaylist *list) override {
         targetList_ = list;
         test_ = &t;
     }
 
-    void initialize(const FixedLevelTest &t, FiniteTargetList *list) override {
+    void initialize(const FixedLevelTest &t, FiniteTargetPlaylist *list) override {
         targetList_ = list;
         test_ = &t;
-        initializedWithFiniteTargetList_ = true;
+        initializedWithFiniteTargetPlaylist_ = true;
     }
 
-    [[nodiscard]] auto initializedWithFiniteTargetList() const -> bool {
-        return initializedWithFiniteTargetList_;
+    [[nodiscard]] auto initializedWithFiniteTargetPlaylist() const -> bool {
+        return initializedWithFiniteTargetPlaylist_;
     }
 
     [[nodiscard]] auto targetList() const { return targetList_; }
@@ -559,11 +559,11 @@ class ModelTests : public ::testing::Test {
   protected:
     AdaptiveMethodStub adaptiveMethod;
     FixedLevelMethodStub fixedLevelMethod;
-    TargetListStub targetsWithReplacement;
-    TargetListSetReaderStub targetsWithReplacementReader;
-    TargetListSetReaderStub cyclicTargetsReader;
-    FiniteTargetListStub silentIntervals;
-    FiniteTargetListStub everyTargetOnce;
+    TargetPlaylistStub targetsWithReplacement;
+    TargetPlaylistSetReaderStub targetsWithReplacementReader;
+    TargetPlaylistSetReaderStub cyclicTargetsReader;
+    FiniteTargetPlaylistStub silentIntervals;
+    FiniteTargetPlaylistStub everyTargetOnce;
     RecognitionTestModelStub internalModel;
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,
@@ -617,22 +617,22 @@ class ModelTests : public ::testing::Test {
     }
 
     void assertInitializesAdaptiveMethod(
-        InitializingAdaptiveTest &useCase, TargetListReader &reader) {
+        InitializingAdaptiveTest &useCase, TargetPlaylistReader &reader) {
         useCase.run(model, adaptiveTest);
         assertEqual(&std::as_const(adaptiveTest), adaptiveMethod.test());
         assertEqual(&reader, adaptiveMethod.targetListReader());
     }
 
-    void assertInitializesFixedLevelTestWithTargetList(
-        InitializingTestUseCase &useCase, TargetList &targetList) {
+    void assertInitializesFixedLevelTestWithTargetPlaylist(
+        InitializingTestUseCase &useCase, TargetPlaylist &targetList) {
         run(useCase);
         assertEqual(&targetList, fixedLevelMethod.targetList());
     }
 
-    void assertInitializesFixedLevelMethodWithFiniteTargetList(
+    void assertInitializesFixedLevelMethodWithFiniteTargetPlaylist(
         InitializingTestUseCase &useCase) {
         run(useCase);
-        assertTrue(fixedLevelMethod.initializedWithFiniteTargetList());
+        assertTrue(fixedLevelMethod.initializedWithFiniteTargetPlaylist());
     }
 };
 
@@ -676,52 +676,52 @@ MODEL_TEST(
 
 MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementInitializesWithTargetsWithReplacement) {
-    assertInitializesFixedLevelTestWithTargetList(
+    assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithTargetReplacement,
         targetsWithReplacement);
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithTargetReplacementAndEyeTrackingInitializesWithTargetsWithReplacement) {
-    assertInitializesFixedLevelTestWithTargetList(
+    assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithTargetReplacementAndEyeTracking,
         targetsWithReplacement);
 }
 
 MODEL_TEST(
     initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTrackingInitializesWithSilentIntervalTargets) {
-    assertInitializesFixedLevelTestWithTargetList(
+    assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithSilentIntervalTargetsAndEyeTracking,
         silentIntervals);
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithSilentIntervalTargetsInitializesWithSilentIntervals) {
-    assertInitializesFixedLevelTestWithTargetList(
+    assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithSilentIntervalTargets, silentIntervals);
 }
 
 MODEL_TEST(initializeFixedLevelTestWithAllTargetsInitializesWithAllTargets) {
-    assertInitializesFixedLevelTestWithTargetList(
+    assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithAllTargets, everyTargetOnce);
 }
 
 MODEL_TEST(
     initializeFixedLevelTestWithAllTargetsAndEyeTrackingInitializesWithAllTargets) {
-    assertInitializesFixedLevelTestWithTargetList(
+    assertInitializesFixedLevelTestWithTargetPlaylist(
         initializingFixedLevelTestWithAllTargetsAndEyeTracking,
         everyTargetOnce);
 }
 
 MODEL_TEST(
-    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethodWithFiniteTargetList) {
-    assertInitializesFixedLevelMethodWithFiniteTargetList(
+    initializeFixedLevelTestWithSilentIntervalTargetsInitializesFixedLevelMethodWithFiniteTargetPlaylist) {
+    assertInitializesFixedLevelMethodWithFiniteTargetPlaylist(
         initializingFixedLevelTestWithSilentIntervalTargets);
 }
 
 MODEL_TEST(
-    initializingFixedLevelTestWithAllTargetsInitializesFixedLevelMethodWithFiniteTargetList) {
-    assertInitializesFixedLevelMethodWithFiniteTargetList(
+    initializingFixedLevelTestWithAllTargetsInitializesFixedLevelMethodWithFiniteTargetPlaylist) {
+    assertInitializesFixedLevelMethodWithFiniteTargetPlaylist(
         initializingFixedLevelTestWithAllTargets);
 }
 

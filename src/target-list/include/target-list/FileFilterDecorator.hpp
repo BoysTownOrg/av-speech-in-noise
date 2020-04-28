@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_TARGET_LIST_INCLUDE_TARGET_LIST_FILEFILTERDECORATOR_HPP_
 #define AV_SPEECH_IN_NOISE_TARGET_LIST_INCLUDE_TARGET_LIST_FILEFILTERDECORATOR_HPP_
 
-#include "RandomizedTargetList.hpp"
+#include "RandomizedTargetPlaylist.hpp"
 #include <vector>
 #include <string>
 

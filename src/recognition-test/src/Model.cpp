@@ -3,9 +3,9 @@
 namespace av_speech_in_noise {
 ModelImpl::ModelImpl(AdaptiveMethod &adaptiveMethod,
     FixedLevelMethod &fixedLevelMethod,
-    TargetListReader &targetsWithReplacementReader,
-    TargetListReader &cyclicTargetsReader, TargetList &targetsWithReplacement,
-    FiniteTargetList &silentIntervalTargets, FiniteTargetList &everyTargetOnce,
+    TargetPlaylistReader &targetsWithReplacementReader,
+    TargetPlaylistReader &cyclicTargetsReader, TargetPlaylist &targetsWithReplacement,
+    FiniteTargetPlaylist &silentIntervalTargets, FiniteTargetPlaylist &everyTargetOnce,
     RecognitionTestModel &model)
     : adaptiveMethod{adaptiveMethod}, fixedLevelMethod{fixedLevelMethod},
       targetsWithReplacementReader{targetsWithReplacementReader},
@@ -20,17 +20,17 @@ static void initialize(
 }
 
 static void initialize(
-    FixedLevelMethod &method, const FixedLevelTest &test, TargetList &targets) {
+    FixedLevelMethod &method, const FixedLevelTest &test, TargetPlaylist &targets) {
     method.initialize(test, &targets);
 }
 
 static void initialize(FixedLevelMethod &method, const FixedLevelTest &test,
-    FiniteTargetList &targets) {
+    FiniteTargetPlaylist &targets) {
     method.initialize(test, &targets);
 }
 
 static void initialize(AdaptiveMethod &method, const AdaptiveTest &test,
-    TargetListReader &reader) {
+    TargetPlaylistReader &reader) {
     method.initialize(test, &reader);
 }
 

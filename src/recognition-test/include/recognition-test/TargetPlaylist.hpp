@@ -5,16 +5,16 @@
 #include <string>
 
 namespace av_speech_in_noise {
-class TargetList {
+class TargetPlaylist {
   public:
-    virtual ~TargetList() = default;
+    virtual ~TargetPlaylist() = default;
     virtual void loadFromDirectory(const LocalUrl &directory) = 0;
     virtual auto next() -> LocalUrl = 0;
     virtual auto current() -> LocalUrl = 0;
     virtual auto directory() -> LocalUrl = 0;
 };
 
-class FiniteTargetList : public virtual TargetList {
+class FiniteTargetPlaylist : public virtual TargetPlaylist {
   public:
     virtual auto empty() -> bool = 0;
     virtual void reinsertCurrent() = 0;

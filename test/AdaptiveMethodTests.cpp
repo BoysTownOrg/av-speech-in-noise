@@ -1,8 +1,8 @@
 #include "OutputFileStub.hpp"
 #include "RandomizerStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
-#include "TargetListSetReaderStub.hpp"
-#include "TargetListStub.hpp"
+#include "TargetPlaylistSetReaderStub.hpp"
+#include "TargetPlaylistStub.hpp"
 #include "TrackStub.hpp"
 #include "assert-utility.hpp"
 #include <recognition-test/AdaptiveMethod.hpp>
@@ -25,13 +25,13 @@ class UseCase {
 };
 
 void initialize(AdaptiveMethodImpl &method, const AdaptiveTest &test,
-    TargetListReader &targetListReader) {
+    TargetPlaylistReader &targetListReader) {
     method.initialize(test, &targetListReader);
 }
 
 class Initializing : public UseCase {
   public:
-    explicit Initializing(TargetListReader &reader) : reader{reader} {}
+    explicit Initializing(TargetPlaylistReader &reader) : reader{reader} {}
 
     void run(AdaptiveMethodImpl &method) override {
         initialize(method, test, reader);
@@ -39,7 +39,7 @@ class Initializing : public UseCase {
 
   private:
     AdaptiveTest test{};
-    TargetListReader &reader;
+    TargetPlaylistReader &reader;
 };
 
 void submit(AdaptiveMethodImpl &method,
@@ -315,12 +315,12 @@ void forEachSettings(const TrackFactoryStub &factory,
         f(settings(factory, i));
 }
 
-void setNext(const std::vector<std::shared_ptr<TargetListStub>> &lists,
+void setNext(const std::vector<std::shared_ptr<TargetPlaylistStub>> &lists,
     gsl::index n, std::string s) {
     lists.at(n)->setNext(std::move(s));
 }
 
-void setCurrent(const std::vector<std::shared_ptr<TargetListStub>> &lists,
+void setCurrent(const std::vector<std::shared_ptr<TargetPlaylistStub>> &lists,
     gsl::index n, std::string s) {
     lists.at(n)->setCurrent(std::move(s));
 }
@@ -385,7 +385,7 @@ class AdaptiveMethodTests : public ::testing::Test {
     RandomizerStub randomizer;
     AdaptiveMethodImpl method{snrTrackFactory, evaluator, randomizer};
     OutputFileStub outputFile;
-    TargetListSetReaderStub targetListReader;
+    TargetPlaylistSetReaderStub targetListReader;
     Initializing initializing{targetListReader};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingCorrectCoordinateResponse submittingCorrectCoordinateResponse{
@@ -404,15 +404,15 @@ class AdaptiveMethodTests : public ::testing::Test {
     AdaptiveTest test{};
     coordinate_response_measure::Response coordinateResponse{};
     CorrectKeywords correctKeywords{};
-    std::vector<std::shared_ptr<TargetListStub>> targetLists;
+    std::vector<std::shared_ptr<TargetPlaylistStub>> targetLists;
     std::vector<std::shared_ptr<TrackStub>> tracks;
 
     AdaptiveMethodTests() : targetLists(listCount), tracks(listCount) {
         std::generate(targetLists.begin(), targetLists.end(),
-            std::make_shared<TargetListStub>);
+            std::make_shared<TargetPlaylistStub>);
         std::generate(
             tracks.begin(), tracks.end(), std::make_shared<TrackStub>);
-        targetListReader.setTargetLists(
+        targetListReader.setTargetPlaylists(
             {targetLists.begin(), targetLists.end()});
         snrTrackFactory.setTracks({tracks.begin(), tracks.end()});
     }
@@ -460,7 +460,7 @@ class AdaptiveMethodTests : public ::testing::Test {
         assertPassedIntegerBounds(randomizer, 0, 1);
     }
 
-    void assertNextTargetEqualsNextFromSelectedTargetListAfter(
+    void assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(
         UseCase &useCase) {
         setNext(targetLists, 1, "a");
         selectNextList(randomizer, 1);
@@ -555,37 +555,37 @@ ADAPTIVE_METHOD_TEST(writeTestParametersPassesToOutputFile) {
     assertEqual(&std::as_const(test), outputFile.adaptiveTest());
 }
 
-ADAPTIVE_METHOD_TEST(initializePassesTargetListDirectory) {
+ADAPTIVE_METHOD_TEST(initializePassesTargetPlaylistDirectory) {
     test.targetsUrl.path = "a";
     initialize(method, test, targetListReader);
     assertEqual("a", targetListReader.directory());
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterInitialize) {
-    assertNextTargetEqualsNextFromSelectedTargetListAfter(initializing);
+    assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(initializing);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCoordinateResponse) {
     initialize(method, test, targetListReader);
-    assertNextTargetEqualsNextFromSelectedTargetListAfter(
+    assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(
         submittingCoordinateResponse);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCorrectResponse) {
     initialize(method, test, targetListReader);
-    assertNextTargetEqualsNextFromSelectedTargetListAfter(
+    assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(
         submittingCorrectResponse);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterIncorrectResponse) {
     initialize(method, test, targetListReader);
-    assertNextTargetEqualsNextFromSelectedTargetListAfter(
+    assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(
         submittingIncorrectResponse);
 }
 
 ADAPTIVE_METHOD_TEST(nextReturnsNextFilePathAfterCorrectKeywords) {
     initialize(method, test, targetListReader);
-    assertNextTargetEqualsNextFromSelectedTargetListAfter(
+    assertNextTargetEqualsNextFromSelectedTargetPlaylistAfter(
         submittingCorrectKeywords);
 }
 

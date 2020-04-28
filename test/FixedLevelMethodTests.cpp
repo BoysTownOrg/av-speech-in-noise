@@ -1,7 +1,7 @@
 #include "LogString.hpp"
 #include "OutputFileStub.hpp"
 #include "ResponseEvaluatorStub.hpp"
-#include "TargetListStub.hpp"
+#include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
 #include <recognition-test/FixedLevelMethod.hpp>
 #include <gtest/gtest.h>
@@ -15,26 +15,26 @@ class UseCase {
 };
 
 class InitializingMethod : public UseCase {
-    TargetList &list;
+    TargetPlaylist &list;
     const FixedLevelTest &test;
 
   public:
-    InitializingMethod(TargetList &list, const FixedLevelTest &test)
+    InitializingMethod(TargetPlaylist &list, const FixedLevelTest &test)
         : list{list}, test{test} {}
 
     void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
 };
 
-class InitializingMethodWithFiniteTargetList : public UseCase {
+class InitializingMethodWithFiniteTargetPlaylist : public UseCase {
   public:
-    InitializingMethodWithFiniteTargetList(
-        FiniteTargetList &list, const FixedLevelTest &test)
+    InitializingMethodWithFiniteTargetPlaylist(
+        FiniteTargetPlaylist &list, const FixedLevelTest &test)
         : list{list}, test{test} {}
 
     void run(FixedLevelMethodImpl &m) override { m.initialize(test, &list); }
 
   private:
-    FiniteTargetList &list;
+    FiniteTargetPlaylist &list;
     const FixedLevelTest &test;
 };
 
@@ -74,14 +74,14 @@ void assertNextTargetEquals(
     assertEqual(s, nextTarget(method));
 }
 
-void setNext(TargetListStub &list, std::string s) {
+void setNext(TargetPlaylistStub &list, std::string s) {
     list.setNext(std::move(s));
 }
 
 class FixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
-    TargetListStub targetList;
+    TargetPlaylistStub targetList;
     OutputFileStub outputFile;
     FixedLevelMethodImpl method{evaluator};
     FixedLevelTest test{};
@@ -202,13 +202,13 @@ FIXED_LEVEL_METHOD_TEST(
 class PreInitializedFixedLevelMethodTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
-    TargetListStub targetList;
-    FiniteTargetListStub finiteTargetList;
+    TargetPlaylistStub targetList;
+    FiniteTargetPlaylistStub finiteTargetPlaylist;
     FixedLevelMethodImpl method{evaluator};
     FixedLevelTest test{};
     InitializingMethod initializingMethod{targetList, test};
-    InitializingMethodWithFiniteTargetList
-        initializingMethodWithFiniteTargetList{finiteTargetList, test};
+    InitializingMethodWithFiniteTargetPlaylist
+        initializingMethodWithFiniteTargetPlaylist{finiteTargetPlaylist, test};
 };
 
 TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
@@ -218,24 +218,24 @@ TEST_F(PreInitializedFixedLevelMethodTests, snrReturnsInitializedSnr) {
 }
 
 TEST_F(PreInitializedFixedLevelMethodTests,
-    snrReturnsInitializedWithFiniteTargetListSnr) {
+    snrReturnsInitializedWithFiniteTargetPlaylistSnr) {
     test.snr.dB = 1;
-    run(initializingMethodWithFiniteTargetList, method);
+    run(initializingMethodWithFiniteTargetPlaylist, method);
     assertEqual(1, method.snr().dB);
 }
 
 TEST_F(
-    PreInitializedFixedLevelMethodTests, initializePassesTargetListDirectory) {
+    PreInitializedFixedLevelMethodTests, initializePassesTargetPlaylistDirectory) {
     test.targetsUrl.path = "a";
     run(initializingMethod, method);
     assertEqual("a", targetList.directory().path);
 }
 
 TEST_F(PreInitializedFixedLevelMethodTests,
-    initializeWithFiniteTargetListPassesTargetListDirectory) {
+    initializeWithFiniteTargetPlaylistPassesTargetPlaylistDirectory) {
     test.targetsUrl.path = "a";
-    run(initializingMethodWithFiniteTargetList, method);
-    assertEqual("a", finiteTargetList.directory().path);
+    run(initializingMethodWithFiniteTargetPlaylist, method);
+    assertEqual("a", finiteTargetPlaylist.directory().path);
 }
 
 void assertComplete(FixedLevelMethodImpl &method) {
@@ -247,43 +247,43 @@ void assertIncomplete(FixedLevelMethodImpl &method) {
 }
 
 void assertTestCompleteOnlyAfter(UseCase &useCase, FixedLevelMethodImpl &method,
-    FiniteTargetListStub &list) {
+    FiniteTargetPlaylistStub &list) {
     list.setEmpty();
     assertIncomplete(method);
     run(useCase, method);
     assertComplete(method);
 }
 
-auto reinsertCurrentCalled(FiniteTargetListStub &list) -> bool {
+auto reinsertCurrentCalled(FiniteTargetPlaylistStub &list) -> bool {
     return list.reinsertCurrentCalled();
 }
 
-void assertCurrentTargetNotReinserted(FiniteTargetListStub &list) {
+void assertCurrentTargetNotReinserted(FiniteTargetPlaylistStub &list) {
     assertFalse(reinsertCurrentCalled(list));
 }
 
-void assertCurrentTargetReinserted(FiniteTargetListStub &list) {
+void assertCurrentTargetReinserted(FiniteTargetPlaylistStub &list) {
     assertTrue(reinsertCurrentCalled(list));
 }
 
-class FixedLevelMethodWithFiniteTargetListTests : public ::testing::Test {
+class FixedLevelMethodWithFiniteTargetPlaylistTests : public ::testing::Test {
   protected:
     ResponseEvaluatorStub evaluator;
-    FiniteTargetListStub targetList;
+    FiniteTargetPlaylistStub targetList;
     FixedLevelMethodImpl method{evaluator};
     FixedLevelTest test{};
-    InitializingMethodWithFiniteTargetList
-        initializingMethodWithFiniteTargetList{targetList, test};
+    InitializingMethodWithFiniteTargetPlaylist
+        initializingMethodWithFiniteTargetPlaylist{targetList, test};
     SubmittingCoordinateResponse submittingCoordinateResponse;
     SubmittingFreeResponse submittingFreeResponse;
 
-    FixedLevelMethodWithFiniteTargetListTests() {
-        run(initializingMethodWithFiniteTargetList, method);
+    FixedLevelMethodWithFiniteTargetPlaylistTests() {
+        run(initializingMethodWithFiniteTargetPlaylist, method);
     }
 };
 
 #define FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(a)                     \
-    TEST_F(FixedLevelMethodWithFiniteTargetListTests, a)
+    TEST_F(FixedLevelMethodWithFiniteTargetPlaylistTests, a)
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(nextReturnsNextTarget) {
     setNext(targetList, "a");
@@ -310,7 +310,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     completeWhenTestCompleteAfterInitializing) {
     assertTestCompleteOnlyAfter(
-        initializingMethodWithFiniteTargetList, method, targetList);
+        initializingMethodWithFiniteTargetPlaylist, method, targetList);
 }
 
 FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
@@ -326,7 +326,7 @@ FIXED_LEVEL_METHOD_WITH_FINITE_TARGET_LIST_TEST(
     assertCurrentTargetReinserted(targetList);
 }
 
-class TargetListTestConcluderComboStub : public FiniteTargetList {
+class TargetPlaylistTestConcluderComboStub : public FiniteTargetPlaylist {
   public:
     void loadFromDirectory(const LocalUrl &) override {}
     auto directory() -> LocalUrl override { return {}; }
@@ -346,7 +346,7 @@ class TargetListTestConcluderComboStub : public FiniteTargetList {
 TEST(FixedLevelMethodTestsTBD,
     submitFreeResponseReinsertsCurrentTargetIfFlaggedBeforeQueryingCompletion) {
     ResponseEvaluatorStub evaluator;
-    TargetListTestConcluderComboStub combo;
+    TargetPlaylistTestConcluderComboStub combo;
     FixedLevelMethodImpl method{evaluator};
     FixedLevelTest test;
     method.initialize(test, &combo);

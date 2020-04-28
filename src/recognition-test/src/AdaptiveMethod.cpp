@@ -2,15 +2,15 @@
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
-static auto track(const TargetListWithTrack &t) -> Track * {
+static auto track(const TargetPlaylistWithTrack &t) -> Track * {
     return t.track.get();
 }
 
-static auto complete(const TargetListWithTrack &t) -> bool {
+static auto complete(const TargetPlaylistWithTrack &t) -> bool {
     return track(t)->complete();
 }
 
-static auto incomplete(const TargetListWithTrack &t) -> bool {
+static auto incomplete(const TargetPlaylistWithTrack &t) -> bool {
     return !complete(t);
 }
 
@@ -44,7 +44,7 @@ static auto trackSettings(const AdaptiveTest &test) -> Track::Settings {
 }
 
 static auto moveCompleteTracksToEnd(
-    std::vector<TargetListWithTrack> &targetListsWithTracks) -> gsl::index {
+    std::vector<TargetPlaylistWithTrack> &targetListsWithTracks) -> gsl::index {
     return std::distance(targetListsWithTracks.begin(),
         std::stable_partition(targetListsWithTracks.begin(),
             targetListsWithTracks.end(), incomplete));
@@ -54,26 +54,26 @@ static void down(Track *track) { track->down(); }
 
 static void up(Track *track) { track->up(); }
 
-static auto current(TargetList *list) -> LocalUrl { return list->current(); }
+static auto current(TargetPlaylist *list) -> LocalUrl { return list->current(); }
 
 static void assignTarget(open_set::Trial &trial, ResponseEvaluator &evaluator,
-    TargetList *targetList) {
+    TargetPlaylist *targetList) {
     trial.target = fileName(evaluator, current(targetList));
 }
 
-static auto correct(ResponseEvaluator &evaluator, TargetList *targetList,
+static auto correct(ResponseEvaluator &evaluator, TargetPlaylist *targetList,
     const coordinate_response_measure::Response &response) -> bool {
     return evaluator.correct(current(targetList), response);
 }
 
-static void resetTrack(TargetListWithTrack &targetListWithTrack) {
+static void resetTrack(TargetPlaylistWithTrack &targetListWithTrack) {
     track(targetListWithTrack)->reset();
 }
 
 static auto x(Track *track) -> int { return track->x(); }
 
 static auto testResults(
-    const std::vector<TargetListWithTrack> &targetListsWithTracks,
+    const std::vector<TargetPlaylistWithTrack> &targetListsWithTracks,
     int thresholdReversals) -> AdaptiveTestResults {
     AdaptiveTestResults results;
     for (const auto &t : targetListsWithTracks)
@@ -88,7 +88,7 @@ AdaptiveMethodImpl::AdaptiveMethodImpl(Track::Factory &snrTrackFactory,
                                                                   randomizer} {}
 
 void AdaptiveMethodImpl::initialize(
-    const AdaptiveTest &t, TargetListReader *targetListSetReader) {
+    const AdaptiveTest &t, TargetPlaylistReader *targetListSetReader) {
     test = &t;
     thresholdReversals = t.thresholdReversals;
     targetListsWithTracks.clear();

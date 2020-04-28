@@ -9,10 +9,10 @@
 namespace av_speech_in_noise {
 using LocalUrls = typename std::vector<av_speech_in_noise::LocalUrl>;
 
-class TargetListFactory {
+class TargetPlaylistFactory {
   public:
-    virtual ~TargetListFactory() = default;
-    virtual auto make() -> std::shared_ptr<av_speech_in_noise::TargetList> = 0;
+    virtual ~TargetPlaylistFactory() = default;
+    virtual auto make() -> std::shared_ptr<av_speech_in_noise::TargetPlaylist> = 0;
 };
 
 class DirectoryReader {
@@ -24,12 +24,12 @@ class DirectoryReader {
     virtual auto filesIn(const LocalUrl &directory) -> LocalUrls = 0;
 };
 
-class SubdirectoryTargetListReader : public TargetListReader {
-    TargetListFactory *targetListFactory;
+class SubdirectoryTargetPlaylistReader : public TargetPlaylistReader {
+    TargetPlaylistFactory *targetListFactory;
     DirectoryReader *directoryReader;
 
   public:
-    SubdirectoryTargetListReader(TargetListFactory *, DirectoryReader *);
+    SubdirectoryTargetPlaylistReader(TargetPlaylistFactory *, DirectoryReader *);
     auto read(const LocalUrl &) -> lists_type override;
 
   private:

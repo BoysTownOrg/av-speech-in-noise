@@ -6,7 +6,7 @@
 #include <utility>
 
 namespace av_speech_in_noise {
-class TargetListStub : public virtual TargetList {
+class TargetPlaylistStub : public virtual TargetPlaylist {
   public:
     auto current() -> LocalUrl override { return {current_}; }
 
@@ -45,7 +45,7 @@ class TargetListStub : public virtual TargetList {
     bool nextCalled_{};
 };
 
-class FiniteTargetListStub : public FiniteTargetList, public TargetListStub {
+class FiniteTargetPlaylistStub : public FiniteTargetPlaylist, public TargetPlaylistStub {
   public:
     void setEmpty() { empty_ = true; }
 

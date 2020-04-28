@@ -1,4 +1,4 @@
-#include "RandomizedTargetList.hpp"
+#include "RandomizedTargetPlaylist.hpp"
 #include <algorithm>
 
 namespace av_speech_in_noise {
@@ -37,15 +37,15 @@ static auto allButLast(gsl::span<av_speech_in_noise::LocalUrl> s)
     return s.first(s.size() - 1);
 }
 
-RandomizedTargetListWithReplacement::RandomizedTargetListWithReplacement(
+RandomizedTargetPlaylistWithReplacement::RandomizedTargetPlaylistWithReplacement(
     DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetListWithReplacement::loadFromDirectory(const LocalUrl &d) {
+void RandomizedTargetPlaylistWithReplacement::loadFromDirectory(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
-auto RandomizedTargetListWithReplacement::next() -> LocalUrl {
+auto RandomizedTargetPlaylistWithReplacement::next() -> LocalUrl {
     if (empty(files))
         return {""};
 
@@ -54,28 +54,28 @@ auto RandomizedTargetListWithReplacement::next() -> LocalUrl {
     return fullPathToLastFile(directory_, files);
 }
 
-auto RandomizedTargetListWithReplacement::current() -> LocalUrl {
+auto RandomizedTargetPlaylistWithReplacement::current() -> LocalUrl {
     return fullPathToLastFile(directory_, files);
 }
 
-auto RandomizedTargetListWithReplacement::directory() -> LocalUrl {
+auto RandomizedTargetPlaylistWithReplacement::directory() -> LocalUrl {
     return directory_;
 }
 
-RandomizedTargetListWithoutReplacement::RandomizedTargetListWithoutReplacement(
+RandomizedTargetPlaylistWithoutReplacement::RandomizedTargetPlaylistWithoutReplacement(
     DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void RandomizedTargetListWithoutReplacement::loadFromDirectory(
+void RandomizedTargetPlaylistWithoutReplacement::loadFromDirectory(
     const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
-auto RandomizedTargetListWithoutReplacement::empty() -> bool {
+auto RandomizedTargetPlaylistWithoutReplacement::empty() -> bool {
     return av_speech_in_noise::empty(files);
 }
 
-auto RandomizedTargetListWithoutReplacement::next() -> LocalUrl {
+auto RandomizedTargetPlaylistWithoutReplacement::next() -> LocalUrl {
     if (av_speech_in_noise::empty(files))
         return {""};
 
@@ -84,28 +84,28 @@ auto RandomizedTargetListWithoutReplacement::next() -> LocalUrl {
     return joinPaths(directory_, currentFile);
 }
 
-auto RandomizedTargetListWithoutReplacement::current() -> LocalUrl {
+auto RandomizedTargetPlaylistWithoutReplacement::current() -> LocalUrl {
     return currentFile.path.empty() ? av_speech_in_noise::LocalUrl{""}
                                     : joinPaths(directory_, currentFile);
 }
 
-auto RandomizedTargetListWithoutReplacement::directory() -> LocalUrl {
+auto RandomizedTargetPlaylistWithoutReplacement::directory() -> LocalUrl {
     return directory_;
 }
 
-void RandomizedTargetListWithoutReplacement::reinsertCurrent() {
+void RandomizedTargetPlaylistWithoutReplacement::reinsertCurrent() {
     files.push_back(currentFile);
 }
 
-CyclicRandomizedTargetList::CyclicRandomizedTargetList(
+CyclicRandomizedTargetPlaylist::CyclicRandomizedTargetPlaylist(
     DirectoryReader *reader, target_list::Randomizer *randomizer)
     : reader{reader}, randomizer{randomizer} {}
 
-void CyclicRandomizedTargetList::loadFromDirectory(const LocalUrl &d) {
+void CyclicRandomizedTargetPlaylist::loadFromDirectory(const LocalUrl &d) {
     shuffle(randomizer, files = filesIn(reader, directory_ = d));
 }
 
-auto CyclicRandomizedTargetList::next() -> LocalUrl {
+auto CyclicRandomizedTargetPlaylist::next() -> LocalUrl {
     if (empty(files))
         return {""};
 
@@ -113,9 +113,9 @@ auto CyclicRandomizedTargetList::next() -> LocalUrl {
     return fullPathToLastFile(directory_, files);
 }
 
-auto CyclicRandomizedTargetList::current() -> LocalUrl {
+auto CyclicRandomizedTargetPlaylist::current() -> LocalUrl {
     return fullPathToLastFile(directory_, files);
 }
 
-auto CyclicRandomizedTargetList::directory() -> LocalUrl { return directory_; }
+auto CyclicRandomizedTargetPlaylist::directory() -> LocalUrl { return directory_; }
 }

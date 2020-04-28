@@ -7,8 +7,8 @@ namespace av_speech_in_noise {
 class FixedLevelMethodImpl : public FixedLevelMethod {
   public:
     explicit FixedLevelMethodImpl(ResponseEvaluator &);
-    void initialize(const FixedLevelTest &, TargetList *) override;
-    void initialize(const FixedLevelTest &, FiniteTargetList *) override;
+    void initialize(const FixedLevelTest &, TargetPlaylist *) override;
+    void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) override;
     void submit(const coordinate_response_measure::Response &) override;
     void submit(const FreeResponse &) override;
     void submit(const CorrectKeywords &) override {}
@@ -28,13 +28,13 @@ class FixedLevelMethodImpl : public FixedLevelMethod {
   private:
     coordinate_response_measure::FixedLevelTrial lastTrial{};
     const FixedLevelTest *test_{};
-    TargetList *targetList{};
-    FiniteTargetList *finiteTargetList{};
+    TargetPlaylist *targetList{};
+    FiniteTargetPlaylist *finiteTargetPlaylist{};
     ResponseEvaluator &evaluator;
     SNR snr_{};
     int trials_{};
     bool finiteTargetsExhausted_{};
-    bool usingFiniteTargetList_{};
+    bool usingFiniteTargetPlaylist_{};
 };
 }
 

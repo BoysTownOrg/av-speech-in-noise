@@ -15,7 +15,7 @@
 #include <stimulus-players/MaskerPlayerImpl.hpp>
 #include <stimulus-players/TargetPlayerImpl.hpp>
 #include <stimulus-players/AudioReaderImpl.hpp>
-#include <target-list/RandomizedTargetList.hpp>
+#include <target-list/RandomizedTargetPlaylist.hpp>
 #include <target-list/FileFilterDecorator.hpp>
 #include <adaptive-track/AdaptiveTrack.hpp>
 #include <sys/stat.h>
@@ -204,7 +204,7 @@ void main() {
     FileExtensionFilter targetFileExtensionFilter{{".mov", ".avi", ".wav"}};
     FileFilterDecorator onlyIncludesTargetFileExtensions{
         &directoryReader, &targetFileExtensionFilter};
-    RandomizedTargetListWithReplacement targetsWithReplacement{
+    RandomizedTargetPlaylistWithReplacement targetsWithReplacement{
         &onlyIncludesTargetFileExtensions, &randomizer};
     FileIdentifierExcluderFilter
         excludesTargetsThatHave100_200_300Or400InTheirName{
@@ -241,21 +241,21 @@ void main() {
             &thirtyRandomTwoHundred_ms_SilentIntervalTargets,
             &thirtyRandomThreeHundred_ms_SilentIntervalTargets,
             &thirtyRandomFourHundred_ms_SilentIntervalTargets}};
-    RandomizedTargetListWithoutReplacement silentIntervalTargets{
+    RandomizedTargetPlaylistWithoutReplacement silentIntervalTargets{
         &silentIntervalTargetsDirectoryReader, &randomizer};
-    RandomizedTargetListWithoutReplacement everyTargetOnce{
+    RandomizedTargetPlaylistWithoutReplacement everyTargetOnce{
         &onlyIncludesTargetFileExtensions, &randomizer};
     FixedLevelMethodImpl fixedLevelMethod{responseEvaluator};
     TobiiEyeTracker eyeTracker;
     RecognitionTestModelImpl recognitionTestModel{targetPlayer, maskerPlayer,
         responseEvaluator, outputFile, randomizer, eyeTracker};
-    RandomizedTargetListWithReplacement::Factory targetsWithReplacementFactory{
+    RandomizedTargetPlaylistWithReplacement::Factory targetsWithReplacementFactory{
         &onlyIncludesTargetFileExtensions, &randomizer};
-    SubdirectoryTargetListReader targetsWithReplacementReader{
+    SubdirectoryTargetPlaylistReader targetsWithReplacementReader{
         &targetsWithReplacementFactory, &directoryReader};
-    CyclicRandomizedTargetList::Factory cyclicTargetsFactory{
+    CyclicRandomizedTargetPlaylist::Factory cyclicTargetsFactory{
         &onlyIncludesTargetFileExtensions, &randomizer};
-    SubdirectoryTargetListReader cyclicTargetsReader{
+    SubdirectoryTargetPlaylistReader cyclicTargetsReader{
         &cyclicTargetsFactory, &directoryReader};
     ModelImpl model{adaptiveMethod, fixedLevelMethod,
         targetsWithReplacementReader, cyclicTargetsReader,

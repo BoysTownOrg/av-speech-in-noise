@@ -1,7 +1,7 @@
 #ifndef AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_MODEL_HPP_
 #define AV_SPEECH_IN_NOISE_RECOGNITION_TEST_INCLUDE_RECOGNITION_TEST_MODEL_HPP_
 
-#include "TargetList.hpp"
+#include "TargetPlaylist.hpp"
 #include "TestMethod.hpp"
 #include <av-speech-in-noise/Model.hpp>
 #include <gsl/gsl>
@@ -109,24 +109,24 @@ class ResponseEvaluator {
     virtual auto fileName(const LocalUrl &) -> std::string = 0;
 };
 
-class TargetListReader {
+class TargetPlaylistReader {
   public:
-    virtual ~TargetListReader() = default;
-    using lists_type = typename std::vector<std::shared_ptr<TargetList>>;
+    virtual ~TargetPlaylistReader() = default;
+    using lists_type = typename std::vector<std::shared_ptr<TargetPlaylist>>;
     virtual auto read(const LocalUrl &) -> lists_type = 0;
 };
 
 class AdaptiveMethod : public virtual TestMethod {
   public:
-    virtual void initialize(const AdaptiveTest &, TargetListReader *) = 0;
+    virtual void initialize(const AdaptiveTest &, TargetPlaylistReader *) = 0;
     virtual void resetTracks() = 0;
     virtual auto testResults() -> AdaptiveTestResults = 0;
 };
 
 class FixedLevelMethod : public virtual TestMethod {
   public:
-    virtual void initialize(const FixedLevelTest &, TargetList *) = 0;
-    virtual void initialize(const FixedLevelTest &, FiniteTargetList *) = 0;
+    virtual void initialize(const FixedLevelTest &, TargetPlaylist *) = 0;
+    virtual void initialize(const FixedLevelTest &, FiniteTargetPlaylist *) = 0;
 };
 
 class RecognitionTestModel {
@@ -154,11 +154,11 @@ class RecognitionTestModel {
 class ModelImpl : public Model {
   public:
     ModelImpl(AdaptiveMethod &, FixedLevelMethod &,
-        TargetListReader &targetsWithReplacementReader,
-        TargetListReader &cyclicTargetsReader,
-        TargetList &targetsWithReplacement,
-        FiniteTargetList &silentIntervalTargets,
-        FiniteTargetList &everyTargetOnce, RecognitionTestModel &);
+        TargetPlaylistReader &targetsWithReplacementReader,
+        TargetPlaylistReader &cyclicTargetsReader,
+        TargetPlaylist &targetsWithReplacement,
+        FiniteTargetPlaylist &silentIntervalTargets,
+        FiniteTargetPlaylist &everyTargetOnce, RecognitionTestModel &);
     void subscribe(Model::EventListener *) override;
     void initialize(const AdaptiveTest &) override;
     void initializeWithTargetReplacement(const FixedLevelTest &) override;
@@ -195,11 +195,11 @@ class ModelImpl : public Model {
 
     AdaptiveMethod &adaptiveMethod;
     FixedLevelMethod &fixedLevelMethod;
-    TargetListReader &targetsWithReplacementReader;
-    TargetListReader &cyclicTargetsReader;
-    TargetList &targetsWithReplacement;
-    FiniteTargetList &silentIntervalTargets;
-    FiniteTargetList &everyTargetOnce;
+    TargetPlaylistReader &targetsWithReplacementReader;
+    TargetPlaylistReader &cyclicTargetsReader;
+    TargetPlaylist &targetsWithReplacement;
+    FiniteTargetPlaylist &silentIntervalTargets;
+    FiniteTargetPlaylist &everyTargetOnce;
     RecognitionTestModel &model;
 };
 }

@@ -1,8 +1,8 @@
 #ifndef AV_SPEECH_IN_NOISE_TARGET_LIST_INCLUDE_TARGET_LIST_RANDOMIZEDTARGETLIST_HPP_
 #define AV_SPEECH_IN_NOISE_TARGET_LIST_INCLUDE_TARGET_LIST_RANDOMIZEDTARGETLIST_HPP_
 
-#include "SubdirectoryTargetListReader.hpp"
-#include <recognition-test/TargetList.hpp>
+#include "SubdirectoryTargetPlaylistReader.hpp"
+#include <recognition-test/TargetPlaylist.hpp>
 #include <gsl/gsl>
 #include <vector>
 #include <string>
@@ -18,16 +18,16 @@ class Randomizer {
 };
 }
 
-class RandomizedTargetListWithReplacement : public TargetList {
+class RandomizedTargetPlaylistWithReplacement : public TargetPlaylist {
   public:
-    class Factory : public TargetListFactory {
+    class Factory : public TargetPlaylistFactory {
       public:
         Factory(DirectoryReader *reader, target_list::Randomizer *randomizer)
             : reader{reader}, randomizer{randomizer} {}
 
         auto make()
-            -> std::shared_ptr<av_speech_in_noise::TargetList> override {
-            return std::make_shared<RandomizedTargetListWithReplacement>(
+            -> std::shared_ptr<av_speech_in_noise::TargetPlaylist> override {
+            return std::make_shared<RandomizedTargetPlaylistWithReplacement>(
                 reader, randomizer);
         }
 
@@ -36,7 +36,7 @@ class RandomizedTargetListWithReplacement : public TargetList {
         target_list::Randomizer *randomizer;
     };
 
-    RandomizedTargetListWithReplacement(
+    RandomizedTargetPlaylistWithReplacement(
         DirectoryReader *, target_list::Randomizer *);
     void loadFromDirectory(const LocalUrl &) override;
     auto next() -> LocalUrl override;
@@ -51,9 +51,9 @@ class RandomizedTargetListWithReplacement : public TargetList {
     target_list::Randomizer *randomizer;
 };
 
-class RandomizedTargetListWithoutReplacement : public FiniteTargetList {
+class RandomizedTargetPlaylistWithoutReplacement : public FiniteTargetPlaylist {
   public:
-    RandomizedTargetListWithoutReplacement(
+    RandomizedTargetPlaylistWithoutReplacement(
         DirectoryReader *, target_list::Randomizer *);
     auto empty() -> bool override;
     void loadFromDirectory(const LocalUrl &directory) override;
@@ -70,16 +70,16 @@ class RandomizedTargetListWithoutReplacement : public FiniteTargetList {
     target_list::Randomizer *randomizer;
 };
 
-class CyclicRandomizedTargetList : public TargetList {
+class CyclicRandomizedTargetPlaylist : public TargetPlaylist {
   public:
-    class Factory : public TargetListFactory {
+    class Factory : public TargetPlaylistFactory {
       public:
         Factory(DirectoryReader *reader, target_list::Randomizer *randomizer)
             : reader{reader}, randomizer{randomizer} {}
 
         auto make()
-            -> std::shared_ptr<av_speech_in_noise::TargetList> override {
-            return std::make_shared<CyclicRandomizedTargetList>(
+            -> std::shared_ptr<av_speech_in_noise::TargetPlaylist> override {
+            return std::make_shared<CyclicRandomizedTargetPlaylist>(
                 reader, randomizer);
         }
 
@@ -88,7 +88,7 @@ class CyclicRandomizedTargetList : public TargetList {
         target_list::Randomizer *randomizer;
     };
 
-    CyclicRandomizedTargetList(DirectoryReader *, target_list::Randomizer *);
+    CyclicRandomizedTargetPlaylist(DirectoryReader *, target_list::Randomizer *);
     void loadFromDirectory(const LocalUrl &directory) override;
     auto next() -> LocalUrl override;
     auto current() -> LocalUrl override;

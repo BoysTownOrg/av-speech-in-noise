@@ -1,11 +1,11 @@
-#include "SubdirectoryTargetListReader.hpp"
+#include "SubdirectoryTargetPlaylistReader.hpp"
 
 namespace av_speech_in_noise {
-SubdirectoryTargetListReader::SubdirectoryTargetListReader(
-    TargetListFactory *targetListFactory, DirectoryReader *directoryReader)
+SubdirectoryTargetPlaylistReader::SubdirectoryTargetPlaylistReader(
+    TargetPlaylistFactory *targetListFactory, DirectoryReader *directoryReader)
     : targetListFactory{targetListFactory}, directoryReader{directoryReader} {}
 
-auto SubdirectoryTargetListReader::read(const LocalUrl &directory)
+auto SubdirectoryTargetPlaylistReader::read(const LocalUrl &directory)
     -> lists_type {
     lists_type lists{};
     auto subDirectories_ = subDirectories(directory);
@@ -22,7 +22,7 @@ auto SubdirectoryTargetListReader::read(const LocalUrl &directory)
     return lists;
 }
 
-auto SubdirectoryTargetListReader::subDirectories(const LocalUrl &directory)
+auto SubdirectoryTargetPlaylistReader::subDirectories(const LocalUrl &directory)
     -> LocalUrls {
     return directoryReader->subDirectories(directory);
 }

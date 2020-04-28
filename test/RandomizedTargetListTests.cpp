@@ -1,7 +1,7 @@
 #include "DirectoryReaderStub.hpp"
 #include "assert-utility.hpp"
 #include <target-list/FileFilterDecorator.hpp>
-#include <target-list/RandomizedTargetList.hpp>
+#include <target-list/RandomizedTargetPlaylist.hpp>
 #include <gtest/gtest.h>
 #include <algorithm>
 
@@ -36,7 +36,7 @@ class RandomizerStub : public target_list::Randomizer {
     int rotateToTheLeft_{};
 };
 
-void loadFromDirectory(TargetList &list, const std::string &s = {}) {
+void loadFromDirectory(TargetPlaylist &list, const std::string &s = {}) {
     list.loadFromDirectory({s});
 }
 
@@ -45,13 +45,13 @@ void setFileNames(
     reader.setFileNames(std::move(v));
 }
 
-auto next(TargetList &list) -> std::string { return list.next().path; }
+auto next(TargetPlaylist &list) -> std::string { return list.next().path; }
 
-void assertNextEquals(TargetList &list, const std::string &s) {
+void assertNextEquals(TargetPlaylist &list, const std::string &s) {
     assertEqual(s, next(list));
 }
 
-void assertCurrentEquals(TargetList &list, const std::string &s) {
+void assertCurrentEquals(TargetPlaylist &list, const std::string &s) {
     assertEqual(s, list.current().path);
 }
 
@@ -60,19 +60,19 @@ void assertShuffled(RandomizerStub &randomizer,
     assertEqual(s, randomizer.shuffledStrings());
 }
 
-auto empty(RandomizedTargetListWithoutReplacement &list) {
+auto empty(RandomizedTargetPlaylistWithoutReplacement &list) {
     return list.empty();
 }
 
-void assertNotEmpty(RandomizedTargetListWithoutReplacement &list) {
+void assertNotEmpty(RandomizedTargetPlaylistWithoutReplacement &list) {
     assertFalse(empty(list));
 }
 
-void assertEmpty(RandomizedTargetListWithoutReplacement &list) {
+void assertEmpty(RandomizedTargetPlaylistWithoutReplacement &list) {
     assertTrue(empty(list));
 }
 
-void reinsertCurrent(RandomizedTargetListWithoutReplacement &list) {
+void reinsertCurrent(RandomizedTargetPlaylistWithoutReplacement &list) {
     list.reinsertCurrent();
 }
 
@@ -85,19 +85,19 @@ void assertDirectoryEquals(DirectoryReaderStub &reader, const std::string &s) {
 }
 
 void loadFromDirectoryPassesDirectoryToDirectoryReader(
-    TargetList &list, DirectoryReaderStub &reader) {
+    TargetPlaylist &list, DirectoryReaderStub &reader) {
     loadFromDirectory(list, "a");
     assertDirectoryEquals(reader, "a");
 }
 
 void loadFromDirectoryShufflesFileNames(
-    TargetList &list, DirectoryReaderStub &reader, RandomizerStub &randomizer) {
+    TargetPlaylist &list, DirectoryReaderStub &reader, RandomizerStub &randomizer) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list);
     assertShuffled(randomizer, {{"a"}, {"b"}, {"c"}});
 }
 
-void nextReturnsFullPathToFile(TargetList &list, DirectoryReaderStub &reader) {
+void nextReturnsFullPathToFile(TargetPlaylist &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     assertNextEquals(list, "C:/a");
@@ -106,60 +106,60 @@ void nextReturnsFullPathToFile(TargetList &list, DirectoryReaderStub &reader) {
 }
 
 void currentReturnsFullPathToFile(
-    TargetList &list, DirectoryReaderStub &reader) {
+    TargetPlaylist &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {{"a"}, {"b"}, {"c"}});
     loadFromDirectory(list, "C:");
     next(list);
     assertCurrentEquals(list, "C:/a");
 }
 
-void directoryReturnsDirectory(TargetList &list) {
+void directoryReturnsDirectory(TargetPlaylist &list) {
     loadFromDirectory(list, "a");
     assertEqual("a", list.directory().path);
 }
 
-void nextReturnsEmptyIfNoFiles(TargetList &list, DirectoryReaderStub &reader) {
+void nextReturnsEmptyIfNoFiles(TargetPlaylist &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {});
     loadFromDirectory(list);
     assertNextEquals(list, "");
 }
 
 void currentReturnsEmptyIfNoFiles(
-    TargetList &list, DirectoryReaderStub &reader) {
+    TargetPlaylist &list, DirectoryReaderStub &reader) {
     setFileNames(reader, {});
     loadFromDirectory(list);
     assertCurrentEquals(list, "");
 }
 
-class RandomizedTargetListWithReplacementTests : public ::testing::Test {
+class RandomizedTargetPlaylistWithReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    RandomizedTargetListWithReplacement list{&reader, &randomizer};
+    RandomizedTargetPlaylistWithReplacement list{&reader, &randomizer};
 };
 
-class RandomizedTargetListWithoutReplacementTests : public ::testing::Test {
+class RandomizedTargetPlaylistWithoutReplacementTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    RandomizedTargetListWithoutReplacement list{&reader, &randomizer};
+    RandomizedTargetPlaylistWithoutReplacement list{&reader, &randomizer};
 };
 
-class CyclicRandomizedTargetListTests : public ::testing::Test {
+class CyclicRandomizedTargetPlaylistTests : public ::testing::Test {
   protected:
     DirectoryReaderStub reader;
     RandomizerStub randomizer;
-    CyclicRandomizedTargetList list{&reader, &randomizer};
+    CyclicRandomizedTargetPlaylist list{&reader, &randomizer};
 };
 
 #define RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(a)                        \
-    TEST_F(RandomizedTargetListWithReplacementTests, a)
+    TEST_F(RandomizedTargetPlaylistWithReplacementTests, a)
 
 #define RANDOMIZED_TARGET_LIST_WITHOUT_REPLACEMENT_TEST(a)                     \
-    TEST_F(RandomizedTargetListWithoutReplacementTests, a)
+    TEST_F(RandomizedTargetPlaylistWithoutReplacementTests, a)
 
 #define CYCLIC_RANDOMIZED_TARGET_LIST_TEST(a)                                  \
-    TEST_F(CyclicRandomizedTargetListTests, a)
+    TEST_F(CyclicRandomizedTargetPlaylistTests, a)
 
 RANDOMIZED_TARGET_LIST_WITH_REPLACEMENT_TEST(
     loadFromDirectoryPassesDirectoryToDirectoryReader) {

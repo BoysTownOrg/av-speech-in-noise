@@ -1,44 +1,44 @@
 #include "DirectoryReaderStub.hpp"
-#include "TargetListStub.hpp"
+#include "TargetPlaylistStub.hpp"
 #include "assert-utility.hpp"
-#include <target-list/SubdirectoryTargetListReader.hpp>
+#include <target-list/SubdirectoryTargetPlaylistReader.hpp>
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 
 namespace av_speech_in_noise {
 namespace {
-class TargetListFactoryStub : public TargetListFactory {
-    std::vector<std::shared_ptr<av_speech_in_noise::TargetList>> lists_{};
+class TargetPlaylistFactoryStub : public TargetPlaylistFactory {
+    std::vector<std::shared_ptr<av_speech_in_noise::TargetPlaylist>> lists_{};
 
   public:
-    auto make() -> std::shared_ptr<av_speech_in_noise::TargetList> override {
+    auto make() -> std::shared_ptr<av_speech_in_noise::TargetPlaylist> override {
         auto list = lists_.front();
         lists_.erase(lists_.begin());
         return list;
     }
 
     void setLists(
-        std::vector<std::shared_ptr<av_speech_in_noise::TargetList>> v) {
+        std::vector<std::shared_ptr<av_speech_in_noise::TargetPlaylist>> v) {
         lists_ = std::move(v);
     }
 };
 
-class SubdirectoryTargetListReaderTests : public ::testing::Test {
+class SubdirectoryTargetPlaylistReaderTests : public ::testing::Test {
   protected:
-    TargetListFactoryStub targetListFactory;
+    TargetPlaylistFactoryStub targetListFactory;
     DirectoryReaderStub directoryReader;
-    SubdirectoryTargetListReader listReader{
+    SubdirectoryTargetPlaylistReader listReader{
         &targetListFactory, &directoryReader};
-    std::vector<std::shared_ptr<av_speech_in_noise::TargetListStub>>
+    std::vector<std::shared_ptr<av_speech_in_noise::TargetPlaylistStub>>
         targetLists;
 
-    SubdirectoryTargetListReaderTests() { setListCount(1); }
+    SubdirectoryTargetPlaylistReaderTests() { setListCount(1); }
 
     void setListCount(int n) {
         targetLists.clear();
         for (int i = 0; i < n; ++i)
             targetLists.push_back(
-                std::make_shared<av_speech_in_noise::TargetListStub>());
+                std::make_shared<av_speech_in_noise::TargetPlaylistStub>());
         targetListFactory.setLists({targetLists.begin(), targetLists.end()});
     }
 
@@ -56,7 +56,7 @@ class SubdirectoryTargetListReaderTests : public ::testing::Test {
     }
 };
 
-TEST_F(SubdirectoryTargetListReaderTests, readLoadsFullPathToEachSubDirectory) {
+TEST_F(SubdirectoryTargetPlaylistReaderTests, readLoadsFullPathToEachSubDirectory) {
     setSubDirectories({{"a"}, {"b"}, {"c"}});
     read("d");
     assertEqual("d/a", targetListDirectory(0));
@@ -64,12 +64,12 @@ TEST_F(SubdirectoryTargetListReaderTests, readLoadsFullPathToEachSubDirectory) {
     assertEqual("d/c", targetListDirectory(2));
 }
 
-TEST_F(SubdirectoryTargetListReaderTests, readPassesDirectory) {
+TEST_F(SubdirectoryTargetPlaylistReaderTests, readPassesDirectory) {
     read("a");
     assertEqual("a", directoryReader.directory());
 }
 
-TEST_F(SubdirectoryTargetListReaderTests, readReturnsReadLists) {
+TEST_F(SubdirectoryTargetPlaylistReaderTests, readReturnsReadLists) {
     setSubDirectories(std::vector<av_speech_in_noise::LocalUrl>(3));
     auto actual{read()};
     EXPECT_EQ(3, actual.size());
@@ -78,7 +78,7 @@ TEST_F(SubdirectoryTargetListReaderTests, readReturnsReadLists) {
     EXPECT_EQ(targetList(2), actual.at(2));
 }
 
-TEST_F(SubdirectoryTargetListReaderTests,
+TEST_F(SubdirectoryTargetPlaylistReaderTests,
     readPassesParentDirectoryToFirstListIfNoSubdirectories) {
     setSubDirectories({});
     read("d");
@@ -86,7 +86,7 @@ TEST_F(SubdirectoryTargetListReaderTests,
 }
 
 TEST_F(
-    SubdirectoryTargetListReaderTests, readReturnsFirstListIfNoSubdirectories) {
+    SubdirectoryTargetPlaylistReaderTests, readReturnsFirstListIfNoSubdirectories) {
     setSubDirectories({});
     auto actual{read()};
     EXPECT_EQ(1, actual.size());

@@ -74,7 +74,7 @@ static void writeMasker(std::stringstream &stream, const Test &p) {
     writeLabeledLine(stream, "masker", p.maskerFileUrl.path);
 }
 
-static void writeTargetList(std::stringstream &stream, const Test &p) {
+static void writeTargetPlaylist(std::stringstream &stream, const Test &p) {
     writeLabeledLine(stream, "targets", p.targetsUrl.path);
 }
 
@@ -113,7 +113,7 @@ static auto format(const AdaptiveTest &test) -> std::string {
     std::stringstream stream;
     write(stream, identity(test));
     writeMasker(stream, test);
-    writeTargetList(stream, test);
+    writeTargetPlaylist(stream, test);
     writeMaskerLevel(stream, test);
     writeLabeledLine(stream, "starting SNR (dB)", test.startingSnr.dB);
     writeCondition(stream, test);
@@ -140,7 +140,7 @@ static auto format(const FixedLevelTest &test) -> std::string {
     std::stringstream stream;
     write(stream, identity(test));
     writeMasker(stream, test);
-    writeTargetList(stream, test);
+    writeTargetPlaylist(stream, test);
     writeMaskerLevel(stream, test);
     writeLabeledLine(stream, "SNR (dB)", test.snr.dB);
     writeCondition(stream, test);

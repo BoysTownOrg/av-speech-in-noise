@@ -5,12 +5,12 @@
 #include <utility>
 
 namespace av_speech_in_noise {
-class TargetListSetReaderStub : public TargetListReader {
+class TargetPlaylistSetReaderStub : public TargetPlaylistReader {
     lists_type targetLists_{};
     std::string directory_{};
 
   public:
-    void setTargetLists(lists_type lists) { targetLists_ = std::move(lists); }
+    void setTargetPlaylists(lists_type lists) { targetLists_ = std::move(lists); }
 
     auto read(const LocalUrl &d) -> lists_type override {
         directory_ = d.path;
