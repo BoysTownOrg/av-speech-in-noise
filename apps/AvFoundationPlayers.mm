@@ -127,12 +127,11 @@ static auto videoTrack(AVAsset *asset) -> AVAssetTrack * {
     return firstTrack(asset, AVMediaTypeVideo);
 }
 
-static auto makeAvAsset(std::string filePath) -> AVURLAsset * {
-    const auto withPercents = [asNsString(std::move(filePath))
-        stringByAddingPercentEncodingWithAllowedCharacters:
-            NSCharacterSet.URLQueryAllowedCharacterSet];
+static auto makeAvAsset(const std::string &filePath) -> AVURLAsset * {
     const auto url = [NSURL
-        URLWithString:[NSString stringWithFormat:@"file://%@/", withPercents]];
+        fileURLWithPath:[asNsString(filePath).stringByExpandingTildeInPath
+                            stringByAddingPercentEncodingWithAllowedCharacters:
+                                NSCharacterSet.URLPathAllowedCharacterSet]];
     return [AVURLAsset URLAssetWithURL:url options:nil];
 }
 
@@ -190,8 +189,7 @@ void CoreAudioBufferedReader::loadFile(std::string filePath) {
 
 auto CoreAudioBufferedReader::failed() -> bool { return trackOutput == nil; }
 
-auto CoreAudioBufferedReader::readNextBuffer()
-    -> std::shared_ptr<AudioBuffer> {
+auto CoreAudioBufferedReader::readNextBuffer() -> std::shared_ptr<AudioBuffer> {
     return std::make_shared<CoreAudioBuffer>(trackOutput);
 }
 
@@ -299,8 +297,8 @@ void AvFoundationVideoPlayer::play() { [player play]; }
 
 void AvFoundationVideoPlayer::loadFile(std::string filePath) {
     const auto asset{makeAvAsset(std::move(filePath))};
-    // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an 
-    // unplayable asset the player does not recover even when a subsequent call 
+    // It seems if AVPlayer's replaceCurrentItemWithPlayerItem is called with an
+    // unplayable asset the player does not recover even when a subsequent call
     // passes one that is playable.
     if (asset.playable == 0)
         return;
