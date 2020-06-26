@@ -34,10 +34,10 @@ auto combinePath(NSString *base, id toAppend) -> NSString * {
 
 auto toCStr(id item) -> const char *_Nullable { return [item UTF8String]; }
 
-auto collectContentsIf(std::string directory, BOOL (*f)(NSString *))
+auto collectContentsIf(const std::string &directory, BOOL (*f)(NSString *))
     -> std::vector<std::string> {
     std::vector<std::string> items{};
-    auto parent = asNsString(std::move(directory));
+    auto parent = asNsString(directory).stringByExpandingTildeInPath;
     for (id item in contents(parent)) {
         auto path = combinePath(parent, item);
         if ((*f)(path) != 0)
@@ -58,12 +58,12 @@ auto notADirectory(NSString *path) -> BOOL {
 
 class MacOsDirectoryReader : public target_list::DirectoryReader {
     auto filesIn(std::string directory) -> std::vector<std::string> override {
-        return collectContentsIf(std::move(directory), notADirectory);
+        return collectContentsIf(directory, notADirectory);
     }
 
     auto subDirectories(std::string directory)
         -> std::vector<std::string> override {
-        return collectContentsIf(std::move(directory), isDirectory);
+        return collectContentsIf(directory, isDirectory);
     }
 };
 
@@ -206,8 +206,7 @@ void main() {
     TimeStampImpl timeStamp;
     UnixFileSystemPath systemPath;
     OutputFilePathImpl path{&timeStamp, &systemPath};
-    path.setRelativeOutputDirectory(
-        "Documents/AvSpeechInNoise Data");
+    path.setRelativeOutputDirectory("Documents/AvSpeechInNoise Data");
     OutputFileImpl outputFile{writer, path};
     adaptive_track::AdaptiveTrack::Factory snrTrackFactory;
     ResponseEvaluatorImpl responseEvaluator;
@@ -253,10 +252,10 @@ void main() {
     target_list::RandomizedTargetListWithoutReplacement allStimuli{
         &fileExtensions, &randomizer};
     FixedLevelMethodImpl fixedLevelMethod{&responseEvaluator};
-    RecognitionTestModelImpl model_internal{targetPlayer, maskerPlayer,
-        responseEvaluator, outputFile, randomizer};
-    target_list::RandomizedTargetListWithReplacement::Factory targetsWithReplacementFactory{
-        &fileExtensions, &randomizer};
+    RecognitionTestModelImpl model_internal{
+        targetPlayer, maskerPlayer, responseEvaluator, outputFile, randomizer};
+    target_list::RandomizedTargetListWithReplacement::Factory
+        targetsWithReplacementFactory{&fileExtensions, &randomizer};
     target_list::SubdirectoryTargetListReader targetsWithReplacementReader{
         &targetsWithReplacementFactory, &reader};
     target_list::CyclicRandomizedTargetList::Factory cyclicTargetsFactory{
