@@ -20,6 +20,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
       CACHE BOOL "" FORCE)
 endif()
 
+option(AV_SPEECH_IN_NOISE_ENABLE_TESTS
+       "Enables tests for av-speech-in-noise target" OFF)
 if(${AV_SPEECH_IN_NOISE_ENABLE_TESTS})
   enable_testing()
 
