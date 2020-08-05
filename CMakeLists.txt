@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 project(
   AvSpeechInNoise
-  VERSION 3.4.1
+  VERSION 3.5.0
   LANGUAGES CXX)
 
 include(FetchContent)
@@ -20,9 +20,16 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
       CACHE BOOL "" FORCE)
 endif()
 
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest
-  GIT_TAG release-1.10.0)
-FetchContent_MakeAvailable(googletest)
-add_subdirectory(tests)
+option(AV_SPEECH_IN_NOISE_ENABLE_TESTS
+       "Enables tests for av-speech-in-noise target" OFF)
+if(${AV_SPEECH_IN_NOISE_ENABLE_TESTS})
+  enable_testing()
+
+  FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest
+    GIT_TAG release-1.10.0)
+  FetchContent_MakeAvailable(googletest)
+
+  add_subdirectory(tests)
+endif()
