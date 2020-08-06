@@ -2244,7 +2244,7 @@ PRESENTER_TEST(submittingConsonantHidesResponseButtons) {
 
 PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
     setTestComplete(model);
-    submitResponse(coordinateResponseMeasureView);
+    run(submittingCoordinateResponseMeasure);
     assertHidden(coordinateResponseMeasureView);
 }
 
