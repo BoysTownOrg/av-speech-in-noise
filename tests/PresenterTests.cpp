@@ -1764,6 +1764,10 @@ PRESENTER_TEST(
         confirmingFixedLevelCoordinateResponseMeasureWithTargetReplacementTest);
 }
 
+PRESENTER_TEST(confirmingFixedLevelConsonantTestPassesSubjectId) {
+    assertPassesSubjectId(confirmingFixedLevelConsonantTest);
+}
+
 PRESENTER_TEST(confirmingAdaptiveCoordinateResponseMeasureTestPassesTesterId) {
     assertPassesTesterId(
         confirmingDefaultAdaptiveCoordinateResponseMeasureTest);
