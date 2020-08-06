@@ -2390,12 +2390,16 @@ PRESENTER_TEST(confirmingFixedLevelConsonantTestShowsTargetFileName) {
     assertShowsTargetFileName(confirmingFixedLevelConsonantTest);
 }
 
-TEST_F(PresenterTests, submittingCorrectKeywordsShowsTargetFileName) {
+PRESENTER_TEST(submittingCorrectKeywordsShowsTargetFileName) {
     assertShowsTargetFileName(submittingCorrectKeywords);
 }
 
-TEST_F(PresenterTests, submittingCoordinateResponseShowsTargetFileName) {
+PRESENTER_TEST(submittingCoordinateResponseShowsTargetFileName) {
     assertShowsTargetFileName(submittingCoordinateResponseMeasure);
+}
+
+PRESENTER_TEST(submittingConsonantResponseShowsTargetFileName) {
+    assertShowsTargetFileName(submittingConsonant);
 }
 
 TEST_F(PresenterTests, submittingFreeResponseShowsTargetFileName) {

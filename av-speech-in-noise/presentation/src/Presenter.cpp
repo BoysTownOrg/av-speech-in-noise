@@ -232,6 +232,7 @@ void Presenter::submitConsonantResponse() {
     if (testComplete(model))
         switchToTestSetupView();
     else {
+        displayTrialInformation(experimenterPresenter, model);
         playTrial();
     }
 }
