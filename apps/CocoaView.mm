@@ -313,9 +313,15 @@ CocoaConsonantView::CocoaConsonantView(NSRect r)
       window{[[NSWindow alloc] initWithContentRect:r
                                          styleMask:NSWindowStyleMaskBorderless
                                            backing:NSBackingStoreBuffered
-                                             defer:YES]} {}
+                                             defer:YES]},
+      nextTrialButton{[[NSView alloc]
+          initWithFrame:NSMakeRect(0, 0, width(r), height(r))]} {}
 
 void CocoaConsonantView::show() { [window makeKeyAndOrderFront:nil]; }
+
+void CocoaConsonantView::showNextTrialButton() {
+    av_speech_in_noise::show(nextTrialButton);
+}
 
 static auto greenColor{NSColor.greenColor};
 static auto redColor{NSColor.redColor};

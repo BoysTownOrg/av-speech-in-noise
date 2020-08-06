@@ -143,7 +143,7 @@ class ViewStub : public View {
 
         void subscribe(EventListener *e) { listener_ = e; }
 
-        void showNextTrialButton() { nextTrialButtonShown_ = true; }
+        void showNextTrialButton() override { nextTrialButtonShown_ = true; }
 
         [[nodiscard]] auto nextTrialButtonShown() const {
             return nextTrialButtonShown_;

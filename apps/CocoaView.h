@@ -112,9 +112,11 @@ class CocoaConsonantView : public View::Consonant {
   public:
     explicit CocoaConsonantView(NSRect);
     void show() override;
+    void showNextTrialButton() override;
 
   private:
     NSWindow *window;
+    NSView *nextTrialButton;
 };
 
 class CocoaCoordinateResponseMeasureView
