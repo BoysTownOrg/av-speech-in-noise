@@ -2238,6 +2238,10 @@ PRESENTER_TEST(subjectResponseHidesResponseButtons) {
     assertResponseViewHidden(submittingCoordinateResponseMeasure);
 }
 
+PRESENTER_TEST(submittingConsonantHidesResponseButtons) {
+    assertResponseViewHidden(submittingConsonant);
+}
+
 PRESENTER_TEST(subjectResponseHidesSubjectViewWhenTestComplete) {
     setTestComplete(model);
     submitResponse(coordinateResponseMeasureView);

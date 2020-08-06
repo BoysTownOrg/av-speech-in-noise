@@ -51,6 +51,7 @@ class View {
         virtual void show() = 0;
         virtual void showNextTrialButton() = 0;
         virtual void hideNextTrialButton() = 0;
+        virtual void hideResponseButtons() = 0;
         virtual auto consonant() -> std::string = 0;
     };
 

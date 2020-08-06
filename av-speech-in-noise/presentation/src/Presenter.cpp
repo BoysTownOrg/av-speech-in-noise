@@ -405,6 +405,7 @@ void Presenter::Consonant::playTrial() {
 
 void Presenter::Consonant::submitResponse() {
     parent->submitConsonantResponse();
+    view->hideResponseButtons();
 }
 
 void Presenter::Consonant::becomeChild(Presenter *p) { parent = p; }
